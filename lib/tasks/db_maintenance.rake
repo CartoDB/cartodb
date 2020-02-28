@@ -1026,7 +1026,8 @@ namespace :cartodb do
       tables = JSON.parse(File.read(args['table_definition_json_path'].to_s))
       u.in_database({as: :superuser, no_cartodb_in_schema: true}) do |db|
         db.transaction do
-          server_name = "oracle_#{args[:oracle_url].sanitize}_#{Time.now.to_i}"
+          name = CartoDB::Importer2::StringSanitizer.sanitize(args[:oracle_url], transliterate_cyrillic: true)
+          server_name = "oracle_#{name}_#{Time.now.to_i}"
           db.run('CREATE EXTENSION oracle_fdw') unless db.fetch(%Q{
               SELECT count(*) FROM pg_extension WHERE extname='oracle_fdw'
           }).first[:count] > 0

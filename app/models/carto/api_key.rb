@@ -35,6 +35,7 @@ module Carto
 
     API_SQL       = 'sql'.freeze
     API_MAPS      = 'maps'.freeze
+    API_DO        = 'do'.freeze
 
     GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS] }.freeze
     GRANTS_ALL_DATA_SERVICES = {
@@ -193,6 +194,10 @@ module Carto
 
     def dataset_metadata_permissions
       @dataset_metadata_permissions ||= process_dataset_metadata_permissions
+    end
+
+    def data_observatory_permissions?
+      granted_apis&.include?(API_DO)
     end
 
     def table_permissions_from_db
@@ -549,8 +554,6 @@ module Carto
     end
 
     def reassign_owner
-      # The other type of keys are reassigned in oauth_app_user for example
-      return unless regular?
       db_run("REASSIGN OWNED BY \"#{db_role}\" TO \"#{user.database_username}\";")
     end
 

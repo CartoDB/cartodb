@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'active_record'
 require 'fileutils'
 require_relative '../../../services/user-mover/export_user'

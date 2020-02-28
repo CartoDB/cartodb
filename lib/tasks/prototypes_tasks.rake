@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 namespace :cartodb do
   namespace :prototypes do
     desc 'Generates data for Madrid Clubbing prototype'

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 shared_examples_for "layer presenters" do |tested_klass, model_klass|
   describe '#show legacy tests' do
     def set_tested_classes(tested_class, model_class)

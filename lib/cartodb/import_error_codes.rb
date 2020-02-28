@@ -296,8 +296,13 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     8007 => {
-      title: 'Over account public maps limit, please upgrade',
+      title: 'Over account maps limit, please upgrade',
       what_about: "To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.",
+      source: ERROR_SOURCE_USER
+    },
+    8008 => {
+      title: 'Over account datasets limit or publication is disabled in your account',
+      what_about: "Please contact us at support@carto.com indicating this error code for more information.",
       source: ERROR_SOURCE_USER
     },
     6666 => {

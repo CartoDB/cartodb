@@ -131,8 +131,6 @@
     "trackjs_customer": null,
     "trackjs_enabled": null,
     "trackjs_app_key": null,
-    "google_analytics_ua": null,
-    "google_analytics_domain": null,
     "hubspot_enabled": true,
     "intercom_app_id": null,
     "dropbox_api_key": null,

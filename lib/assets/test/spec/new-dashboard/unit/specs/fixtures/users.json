@@ -51,6 +51,7 @@
     "org_admin": false,
     "public_visualization_count": 3,
     "all_visualization_count": 16,
+    "owned_visualization_count": 16,
     "org_user": false,
     "remove_logo": false,
     "next_billing_period": "2019-01-11",
@@ -58,8 +59,9 @@
     "password_privacy_map_count": 3,
     "public_privacy_map_count": 2,
     "public_map_quota": 10,
+    "private_map_quota": 0,
     "regular_api_key_quota": 3,
-    "account_type": "Professional"
+    "account_type": "Individual"
   },
   {
     "id":"5e7bd9aa-51a7-4ceb-a9d0-fc67cc68a944",

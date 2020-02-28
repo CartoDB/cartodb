@@ -3,8 +3,10 @@
     <Welcome />
     <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-    <MapsSection class="section" @contentChanged="onContentChanged"/>
-    <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged"/>
+    <DatasetsSection v-if="isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged"/>
+    <MapsSection v-if="isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged"/>
+    <MapsSection v-if="!isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged"/>
+    <DatasetsSection v-if="!isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged"/>
     <QuotaSection></QuotaSection>
 
     <router-view name="onboarding-modal"/>
@@ -81,10 +83,6 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-
-header.is-user-notification + section.page--welcome {
-  padding: 0;
-}
 
 .section {
   position: relative;

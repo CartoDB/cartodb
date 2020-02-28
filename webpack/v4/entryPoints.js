@@ -6,10 +6,11 @@ const removeDuplicated = array => Array.from(new Set(array));
 
 module.exports = {
   common_new: removeDuplicated([
-    rootDir('assets/stylesheets/common/utilities.scss'),
+    rootDir('assets/stylesheets/common/utilities/utilities.scss'),
     rootDir('assets/stylesheets/common/icon-font-specials.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/**/*.scss')),
-    rootDir('node_modules/cartoassets/src/scss/entry.scss')
+    rootDir('node_modules/cartoassets/src/scss/entry.scss'),
+    rootDir('assets/stylesheets/editor-3/_codemirror.scss')
   ]),
 
   deep_insights_new: [
@@ -142,7 +143,7 @@ module.exports = {
     rootDir('assets/stylesheets/common/spinner.scss'),
     rootDir('assets/stylesheets/common/tabs.scss'),
     rootDir('assets/stylesheets/common/titles.scss'),
-    rootDir('assets/stylesheets/common/utilities.scss'),
+    rootDir('assets/stylesheets/common/utilities/utilities.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/background-polling/**/*.scss')),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
     rootDir('assets/stylesheets/common/pagination.scss'),
@@ -153,6 +154,7 @@ module.exports = {
     rootDir('assets/stylesheets/common/form-content.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/forms/**/*.scss')),
     rootDir('assets/stylesheets/common/option-card.scss'),
+    rootDir('assets/stylesheets/common/notification-badge.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/icons/**/*.scss')),
     rootDir('assets/stylesheets/common/maps-list.scss'),
     rootDir('assets/stylesheets/common/map-card.scss')
@@ -168,6 +170,8 @@ module.exports = {
     'whatwg-fetch',
     resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js'),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
+    rootDir('assets/stylesheets/deep-insights/entry.scss'),
+    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss'),
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
 

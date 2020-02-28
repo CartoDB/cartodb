@@ -9,16 +9,7 @@
         <template slot="title">
           <VisualizationsTitle
             :defaultTitle="$t(`DataPage.header.title['${appliedFilter}']`)"
-            :selectedItems="selectedDatasets.length"
-            :vizQuota="datasetsQuota"
-            :vizCount="datasetsCount"
-            :isOutOfQuota="isOutOfDatasetsQuota"/>
-        </template>
-
-        <template v-if="shouldShowLimitsWarning" slot="warning">
-          <BadgeWarning>
-            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
-          </BadgeWarning>
+            :selectedItems="selectedDatasets.length"/>
         </template>
 
         <template slot="dropdownButton">
@@ -41,11 +32,18 @@
           </SettingsDropdown>
         </template>
 
-        <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedDatasets.length">
+        <template slot="actionButton" v-if="showCreateButton">
           <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">
             {{ $t(`DataPage.createDataset`) }}
           </CreateButton>
         </template>
+
+        <template v-if="shouldShowLimitsWarning" slot="warning">
+          <NotificationBadge type="warning" :has-margin='false'>
+            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
+          </NotificationBadge>
+        </template>
+
       </SectionTitle>
     </div>
 
@@ -66,7 +64,11 @@
     <div
         v-if="shouldShowHeader"
         class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
-        :class="{ 'is-user-notification': isNotificationVisible }">
+        :class="{
+          'has-user-notification': isNotificationVisible,
+          'in-home': isInHomePage,
+          'no-secondary-navbar': !hasSecondaryNavbar
+        }">
 
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
@@ -94,7 +96,7 @@
 
     <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
       <li v-for="n in maxVisibleDatasets" :key="n" class="dataset-item">
-        <DatasetCardFake></DatasetCardfake>
+        <DatasetCardFake></DatasetCardFake>
       </li>
     </ul>
 
@@ -109,12 +111,13 @@ import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import SettingsDropdown from '../components/Settings/Settings';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
-import BadgeWarning from 'new-dashboard/components/BadgeWarning';
+import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
+import * as accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'DatasetsList',
@@ -137,7 +140,7 @@ export default {
     SettingsDropdown,
     SectionTitle,
     VisualizationsTitle,
-    BadgeWarning,
+    NotificationBadge,
     DatasetCard,
     DatasetCardFake,
     InitialState,
@@ -165,7 +168,8 @@ export default {
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
-      upgradeUrl: state => state.config.upgrade_url
+      upgradeUrl: state => state.config.upgrade_url,
+      planAccountType: state => state.user.account_type
     }),
     ...mapGetters({
       datasetsCount: 'user/datasetsCount',
@@ -179,7 +183,10 @@ export default {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
     shouldShowHeader () {
-      return !this.emptyState && !this.initialState && this.currentEntriesCount > 0;
+      return !this.emptyState && !this.initialState;
+    },
+    showCreateButton () {
+      return (this.totalUserEntries || !this.isFirstTimeViewingDashboard) && !this.selectedDatasets.length;
     },
     initialState () {
       return this.isFirstTimeViewingDashboard &&
@@ -208,10 +215,16 @@ export default {
       return this.selectedDatasets.length > 0;
     },
     shouldShowLimitsWarning () {
-      return !this.selectedDatasets.length && this.isOutOfDatasetsQuota;
+      return this.isOutOfDatasetsQuota;
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];
+    },
+    isInHomePage () {
+      return this.$router.currentRoute.name === 'home';
+    },
+    hasSecondaryNavbar () {
+      return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
     }
   },
   methods: {
@@ -280,11 +293,21 @@ export default {
 }
 
 .grid__head--sticky {
-  top: 64px;
-}
+  top: $header__height + $subheader__height;
 
-.grid__head--sticky.is-user-notification {
-  top: 64px + $notification-warning__height;
+  &.in-home,
+  &.no-secondary-navbar {
+    top: $header__height;
+  }
+
+  &.has-user-notification {
+    top: $header__height + $subheader__height + $notification-warning__height;
+
+    &.in-home,
+    &.no-secondary-navbar {
+      top: $header__height + $notification-warning__height;
+    }
+  }
 }
 
 .pagination-element {

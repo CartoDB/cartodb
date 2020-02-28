@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>onboarding_analysis</title>
+  <meta name="description" content="None">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <!-- Include CARTO VL JS -->
+  <script src="https://libs.cartocdn.com/carto-vl/v1.4/carto-vl.min.js"></script>
+  <!-- Include Mapbox GL JS -->
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js"></script>
+  <!-- Include Mapbox GL CSS -->
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css" rel="stylesheet" />
+
+  <!-- Include Airship -->
+  <script nomodule="" src="https://libs.cartocdn.com/airship-components/v2.2/airship.js"></script>
+  <script type="module" src="https://libs.cartocdn.com/airship-components/v2.2/airship/airship.esm.js"></script>
+  <script src="https://libs.cartocdn.com/airship-bridge/v2.2/asbridge.min.js"></script>
+  <link href="https://libs.cartocdn.com/airship-style/v2.2/airship.min.css" rel="stylesheet">
+  <link href="https://libs.cartocdn.com/airship-icons/v2.2/icons.css" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+
+  <!-- External libraries -->
+
+  <!-- pako -->
+  <script src="https://libs.cartocdn.com/cartoframes/dependencies/pako_inflate.min.js"></script>
+  
+  <!-- html2canvas -->
+  
+
+  
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  aside.as-sidebar {
+    min-width: 300px;
+  }
+
+  .map-image {
+    display: none;
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+  <style>
+  .map {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+  }
+
+  .map-info {
+    position: absolute;
+    bottom: 0;
+    padding: 0 5px;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 12px;
+    width: auto;
+    height: 18px;
+    font-family: 'Open Sans';
+  }
+
+  .map-footer {
+    background: #F2F6F9;
+    font-family: Roboto;
+    font-size: 12px;
+    line-height: 24px;
+    color: #162945;
+    text-align: center;
+    z-index: 2;
+  }
+
+  .map-footer a {
+    text-decoration: none;
+  }
+
+  .map-footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+    <style>
+    #error-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      visibility: hidden;
+      padding: 1em;
+      font-family: "Courier New", Courier, monospace;
+      margin: 0 auto;
+      font-size: 14px;
+      overflow: auto;
+      z-index: 1000;
+      color: black;
+    }
+
+    .error-section {
+      padding: 1em;
+      border-radius: 5px;
+      background-color: #fee;
+    }
+
+    #error-container #error-highlight {
+      font-weight: bold;
+      color: inherit;
+    }
+
+    #error-container #error-type {
+      color: #008000;
+    }
+
+    #error-container #error-name {
+      color: #ba2121;
+    }
+
+    #error-container #error-content {
+      margin-top: 0.4em;
+    }
+
+    .error-details {
+      margin-top: 1em;
+    }
+
+    #error-stacktrace {
+      list-style: none;
+    }
+</style>
+  <style>
+    .popup-content {
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+    }
+
+    .popup-name {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+
+    .popup-value {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 20px;
+    }
+
+    .popup-value:not(:last-of-type) {
+      margin-bottom: 16px;
+    }
+</style>
+  <style>
+  as-widget-header .as-widget-header__header {
+    margin-bottom: 8px;
+    overflow-wrap: break-word;
+  }
+
+  as-widget-header .as-widget-header__subheader {
+    margin-bottom: 12px;
+  }
+
+  as-category-widget {
+    max-height: 250px;
+  }
+</style>
+</head>
+
+<body class="as-app-body as-app">
+  <img id="map-image" class="map-image" alt='Static map image' />
+  <as-responsive-content id="main-container">
+    
+      
+
+<aside class="as-sidebar as-sidebar--right" id="widgets" data-name="Widgets">
+  
+    
+      
+        
+          <div class="as-box">
+            <section class="as-body">
+    
+      <div>
+  <as-histogram-widget
+    id="layer0_widget0"
+    description=""
+    heading="revenue">
+  </as-histogram-widget>
+  
+</div>
+    
+  </section>
+          </div>
+        
+    
+  
+    
+  
+</aside>
+    
+    <main class="as-main">
+      <div class="as-map-area">
+        <div id="map" class="map"></div>
+        
+        
+          <div class="as-map-panels" data-name="Legends">
+            <div class="as-panel as-panel--left as-panel--top">
+              
+
+<div class="as-panel__element" id="legends">
+  
+    
+    
+      
+        
+          <as-legend
+            heading="revenue"
+            description="">
+            <as-legend-size-continuous id="layer0_map0_legend0" slot="legends"></as-legend-size-continuous>
+            
+          </as-legend>
+        
+      
+    
+  
+    
+    
+      
+        
+          <as-legend
+            heading="total_pop"
+            description="">
+            <as-legend-color-continuous id="layer1_map0_legend0" slot="legends"></as-legend-color-continuous>
+            
+          </as-legend>
+        
+      
+    
+  
+</div>
+            </div> <!-- as-panel -->
+          </div> <!-- as-map-panels -->
+        
+      </div> <!-- as-map-area -->
+    </main> <!-- as-main -->
+  </as-responsive-content>
+
+  
+    <div class="map-footer">
+  <span>Crafted with ♥ and CARTOframes | <a href="https://carto.com/developers/cartoframes/">Learn more</a></span>
+</div>
+  
+
+  <div id="error-container" class="error">
+  <p>There is a <span class="errors" id="error-highlight"></span>
+  from the <a href="https://carto.com/developers/carto-vl/" target="_blank" rel="noopener noreferrer">CARTO VL</a> library:</p>
+  <section class="error-section">
+    <span class="errors" id="error-name"></span>:
+    <section id="error-content">
+      <span class="errors" id="error-type"></span>
+      <span class="errors" id="error-message"></span>
+    </section>
+  </section>
+
+  <details class="error-details">
+    <summary>StackTrace</summary>
+    <ul id="error-stacktrace"></ul>
+  </details>
+</div>
+</body>
+
+<script>
+  var init = (function () {
+  'use strict';
+
+  const BASEMAPS = {
+    DarkMatter: carto.basemaps.darkmatter,
+    Voyager: carto.basemaps.voyager,
+    Positron: carto.basemaps.positron
+  };
+
+  const attributionControl = new mapboxgl.AttributionControl({
+    compact: false
+  });
+
+  const FIT_BOUNDS_SETTINGS = { animate: false, padding: 50, maxZoom: 16 };
+
+  /** From https://github.com/errwischt/stacktrace-parser/blob/master/src/stack-trace-parser.js */
+
+  /**
+   * This parses the different stack traces and puts them into one format
+   * This borrows heavily from TraceKit (https://github.com/csnover/TraceKit)
+   */
+
+  const UNKNOWN_FUNCTION = '<unknown>';
+  const chromeRe = /^\s*at (.*?) ?\(((?:file|https?|blob|chrome-extension|native|eval|webpack|<anonymous>|\/).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i;
+  const chromeEvalRe = /\((\S*)(?::(\d+))(?::(\d+))\)/;
+  const winjsRe = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i;
+  const geckoRe = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)((?:file|https?|blob|chrome|webpack|resource|\[native).*?|[^@]*bundle)(?::(\d+))?(?::(\d+))?\s*$/i;
+  const geckoEvalRe = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i;
+
+  function parse(stackString) {
+    const lines = stackString.split('\n');
+
+    return lines.reduce((stack, line) => {
+      const parseResult =
+        parseChrome(line) ||
+        parseWinjs(line) ||
+        parseGecko(line);
+
+      if (parseResult) {
+        stack.push(parseResult);
+      }
+
+      return stack;
+    }, []);
+  }
+
+  function parseChrome(line) {
+    const parts = chromeRe.exec(line);
+
+    if (!parts) {
+      return null;
+    }
+
+    const isNative = parts[2] && parts[2].indexOf('native') === 0; // start of line
+    const isEval = parts[2] && parts[2].indexOf('eval') === 0; // start of line
+
+    const submatch = chromeEvalRe.exec(parts[2]);
+    if (isEval && submatch != null) {
+      // throw out eval line/column and use top-most line/column number
+      parts[2] = submatch[1]; // url
+      parts[3] = submatch[2]; // line
+      parts[4] = submatch[3]; // column
+    }
+
+    return {
+      file: !isNative ? parts[2] : null,
+      methodName: parts[1] || UNKNOWN_FUNCTION,
+      arguments: isNative ? [parts[2]] : [],
+      lineNumber: parts[3] ? +parts[3] : null,
+      column: parts[4] ? +parts[4] : null,
+    };
+  }
+
+  function parseWinjs(line) {
+    const parts = winjsRe.exec(line);
+
+    if (!parts) {
+      return null;
+    }
+
+    return {
+      file: parts[2],
+      methodName: parts[1] || UNKNOWN_FUNCTION,
+      arguments: [],
+      lineNumber: +parts[3],
+      column: parts[4] ? +parts[4] : null,
+    };
+  }
+
+  function parseGecko(line) {
+    const parts = geckoRe.exec(line);
+
+    if (!parts) {
+      return null;
+    }
+
+    const isEval = parts[3] && parts[3].indexOf(' > eval') > -1;
+
+    const submatch = geckoEvalRe.exec(parts[3]);
+    if (isEval && submatch != null) {
+      // throw out eval line/column and use top-most line number
+      parts[3] = submatch[1];
+      parts[4] = submatch[2];
+      parts[5] = null; // no column when eval
+    }
+
+    return {
+      file: parts[3],
+      methodName: parts[1] || UNKNOWN_FUNCTION,
+      arguments: parts[2] ? parts[2].split(',') : [],
+      lineNumber: parts[4] ? +parts[4] : null,
+      column: parts[5] ? +parts[5] : null,
+    };
+  }
+
+  function displayError(e) {
+    const error$ = document.getElementById('error-container');
+    const errors$ = error$.getElementsByClassName('errors');
+    const stacktrace$ = document.getElementById('error-stacktrace');
+
+    errors$[0].innerHTML = e.name;
+    errors$[1].innerHTML = e.name;
+    errors$[2].innerHTML = e.type;
+    errors$[3].innerHTML = e.message.replace(e.type, '');
+
+    error$.style.visibility = 'visible';
+
+    const stack = parse(e.stack);
+    const list = stack.map(item => {
+      return `<li>
+      at <span class="stacktrace-method">${item.methodName}:</span>
+      (${item.file}:${item.lineNumber}:${item.column})
+    </li>`;
+    });
+
+    stacktrace$.innerHTML = list.join('\n');
+  }
+
+  function format(value) {
+    if (Array.isArray(value)) {
+      const [first, second] = value;
+      if (first === -Infinity) {
+        return `< ${formatValue(second)}`;
+      }
+      if (second === Infinity) {
+        return `> ${formatValue(first)}`;
+      }
+      return `${formatValue(first)} - ${formatValue(second)}`;
+    }
+    return formatValue(value);
+  }
+
+  function formatValue(value) {
+    if (typeof value === 'number') {
+      return formatNumber(value);
+    }
+    return value;
+  }
+
+  function formatNumber(value) {
+    const log = Math.log10(Math.abs(value));
+
+    if ((log > 4 || log < -2.00000001) && value) {
+      return value.toExponential(2);
+    }
+    
+    if (!Number.isInteger(value)) {
+      return value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 3
+      });
+    }
+    
+    return value.toLocaleString();
+  }
+
+  function updateViewport(map) {
+    function updateMapInfo() {
+      const mapInfo$ = document.getElementById('map-info');
+      const center = map.getCenter();
+      const lat = center.lat.toFixed(6);
+      const lng = center.lng.toFixed(6);
+      const zoom = map.getZoom().toFixed(2);
+    
+      mapInfo$.innerText = `viewport={'zoom': ${zoom}, 'lat': ${lat}, 'lng': ${lng}}`;
+    }
+
+    updateMapInfo();
+
+    map.on('zoom', updateMapInfo);
+    map.on('move', updateMapInfo); 
+  }
+
+  function getBasecolorSettings(basecolor) {
+    return {
+      'version': 8,
+      'sources': {},
+      'layers': [{
+          'id': 'background',
+          'type': 'background',
+          'paint': {
+              'background-color': basecolor
+          }
+      }]
+    };
+  }
+
+  function getImageElement(mapIndex) {
+    const id = mapIndex !== undefined ? `map-image-${mapIndex}` : 'map-image';
+    return document.getElementById(id);
+  }
+
+  function getContainerElement(mapIndex) {
+    const id = mapIndex !== undefined ? `main-container-${mapIndex}` : 'main-container';
+    return document.getElementById(id);
+  }
+
+  function saveImage(mapIndex) {
+    const img = getImageElement(mapIndex);
+    const container = getContainerElement(mapIndex);
+
+    html2canvas(container)
+      .then((canvas) => setMapImage(canvas, img, container));
+  }
+
+  function setMapImage(canvas, img, container) {
+    const src = canvas.toDataURL();
+    img.setAttribute('src', src);
+    img.style.display = 'block';
+    container.style.display = 'none';
+  }
+
+  function resetPopupClick(interactivity) {
+    interactivity.off('featureClick');
+  }
+
+  function resetPopupHover(interactivity) {
+    interactivity.off('featureHover');
+  }
+
+  function setPopupsClick(map, clickPopup, hoverPopup, interactivity, attrs) {
+    interactivity.on('featureClick', (event) => {
+      updatePopup(map, clickPopup, event, attrs);
+      hoverPopup.remove();
+    });
+  }
+
+  function setPopupsHover(map, hoverPopup, interactivity, attrs) {
+    interactivity.on('featureHover', (event) => {
+      updatePopup(map, hoverPopup, event, attrs);
+    });
+  }
+
+  function updatePopup(map, popup, event, attrs) {
+    if (event.features.length > 0) {
+      let popupHTML = '';
+      const layerIDs = [];
+
+      for (const feature of event.features) {
+        if (layerIDs.includes(feature.layerId)) {
+          continue;
+        }
+        // Track layers to add only one feature per layer
+        layerIDs.push(feature.layerId);
+    
+        for (const item of attrs) {
+          const variable = feature.variables[item.name];
+          if (variable) {
+            let value = variable.value;
+            value = formatValue(value);
+
+            popupHTML = `
+            <span class="popup-name">${item.title}</span>
+            <span class="popup-value">${value}</span>
+          ` + popupHTML;
+          }
+        }
+      }
+
+      popup
+          .setLngLat([event.coordinates.lng, event.coordinates.lat])
+          .setHTML(`<div class="popup-content">${popupHTML}</div>`);
+
+      if (!popup.isOpen()) {
+        popup.addTo(map);
+      }
+    } else {
+      popup.remove();
+    }
+  }
+
+  function setInteractivity(map, interactiveLayers, interactiveMapLayers) {
+    const interactivity = new carto.Interactivity(interactiveMapLayers);
+
+    const clickPopup = new mapboxgl.Popup({
+      closeButton: true,
+      closeOnClick: false
+    });
+
+    const hoverPopup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false
+    });
+
+    const { clickAttrs, hoverAttrs } = _setInteractivityAttrs(interactiveLayers);
+
+    resetPopupClick(map);
+    resetPopupHover(map);
+
+    if (clickAttrs.length > 0) {
+      setPopupsClick(map, clickPopup, hoverPopup, interactivity, clickAttrs);
+    }
+
+    if (hoverAttrs.length > 0) {
+      setPopupsHover(map, hoverPopup, interactivity, hoverAttrs);
+    }
+  }
+
+  function _setInteractivityAttrs(interactiveLayers) {
+    let clickAttrs = [];
+    let hoverAttrs = [];
+
+    interactiveLayers.forEach((interactiveLayer) => {
+      interactiveLayer.interactivity.forEach((interactivityDef) => {
+        if (interactivityDef.event === 'click') {
+          clickAttrs = clickAttrs.concat(interactivityDef.attrs);
+        } else if (interactivityDef.event === 'hover') {
+          hoverAttrs = hoverAttrs.concat(interactivityDef.attrs);
+        }
+      });
+    });
+
+    return { clickAttrs, hoverAttrs };
+  }
+
+  function renderWidget(widget, value) {
+    widget.element = widget.element || document.querySelector(`#${widget.id}-value`);
+
+    if (value && widget.element) {
+      widget.element.innerText = typeof value === 'number' ? format(value) : value;
+    }
+  }
+
+  function renderBridge(bridge, widget, mapLayer) {
+    widget.element = widget.element || document.querySelector(`#${widget.id}`);
+
+    switch (widget.type) {
+      case 'histogram':
+        const type = _getWidgetType(mapLayer, widget.value, widget.prop);
+        const histogram = type === 'category' ? 'categoricalHistogram' : 'numericalHistogram';
+        bridge[histogram](widget.element, widget.value, widget.options);
+
+        break;
+      case 'category':
+        bridge.category(widget.element, widget.value, widget.options);
+        break;
+      case 'animation':
+        widget.options.propertyName = widget.prop;
+        bridge.animationControls(widget.element, widget.value, widget.options);
+        break;
+      case 'time-series':
+        widget.options.propertyName = widget.prop;
+        bridge.timeSeries(widget.element, widget.value, widget.options);
+        break;
+    }
+  }
+
+  function bridgeLayerWidgets(map, mapLayer, mapSource, widgets) {
+    const bridge = new AsBridge.VL.Bridge({
+      carto: carto,
+      layer: mapLayer,
+      source: mapSource,
+      map: map
+    });
+
+    widgets
+      .filter((widget) => widget.has_bridge)
+      .forEach((widget) => renderBridge(bridge, widget, mapLayer));
+
+    bridge.build();
+  }
+
+  function _getWidgetType(layer, property, value) {
+    return layer.metadata && layer.metadata.properties[value] ?
+      layer.metadata.properties[value].type
+      : _getWidgetPropertyType(layer, property);
+  }
+
+  function _getWidgetPropertyType(layer, property) {
+    return layer.metadata && layer.metadata.properties[property] ?
+      layer.metadata.properties[property].type
+      : null;
+  }
+
+  function createLegends(layer, legends, layerIndex, mapIndex=0) {
+    if (legends.length) {
+      legends.forEach((legend, legendIndex) => _createLegend(layer, legend, layerIndex, legendIndex, mapIndex));
+    } else {
+      _createLegend(layer, legends, layerIndex, 0, mapIndex);
+    }
+  }
+
+  function _createLegend(layer, legend, layerIndex, legendIndex, mapIndex=0) {
+    const element = document.querySelector(`#layer${layerIndex}_map${mapIndex}_legend${legendIndex}`);
+
+    if (legend.prop) {
+      const othersLabel = 'Others';   // TODO: i18n
+      const prop = legend.prop;
+      const dynamic = legend.dynamic;
+      const variable = legend.variable;
+      const config = { othersLabel, variable };
+      const options = { format, config, dynamic };
+
+      if (legend.type.startsWith('size-continuous')) {
+        config.samples = 4;
+      }
+
+      AsBridge.VL.Legends.rampLegend(element, layer, prop, options);
+    }
+  }
+
+  function SourceFactory() {
+    const sourceTypes = { GeoJSON, Query, MVT };
+
+    this.createSource = (layer) => {
+      return sourceTypes[layer.type](layer);
+    };
+  }
+
+  function GeoJSON(layer) {
+    const options = JSON.parse(JSON.stringify(layer.options));
+    const data = _decodeJSONData(layer.data);
+
+    return new carto.source.GeoJSON(data, options);
+  }
+
+  function Query(layer) {
+    const auth = {
+      username: layer.credentials.username,
+      apiKey: layer.credentials.api_key || 'default_public'
+    };
+
+    const config = {
+      serverURL: layer.credentials.base_url || `https://${layer.credentials.username}.carto.com/`
+    };
+
+    return new carto.source.SQL(layer.data, auth, config);
+  }
+
+  function MVT(layer) {
+    return new carto.source.MVT(layer.data.file, JSON.parse(layer.data.metadata));
+  }
+
+  function _decodeJSONData(b64Data) {
+    return JSON.parse(pako.inflate(atob(b64Data), { to: 'string' }));
+  }
+
+  const factory = new SourceFactory();
+
+  function initMapLayer(layer, layerIndex, numLayers, hasLegends, map, mapIndex) {
+    const mapSource = factory.createSource(layer);
+    const mapViz = new carto.Viz(layer.viz);
+    const mapLayer = new carto.Layer(`layer${layerIndex}`, mapSource, mapViz);
+    const mapLayerIndex = numLayers - layerIndex - 1;
+
+    try {
+      mapLayer._updateLayer.catch(displayError);
+    } catch (e) {
+      throw e;
+    }
+
+
+    mapLayer.addTo(map);
+
+    setLayerLegend(layer, mapLayerIndex, mapLayer, mapIndex, hasLegends);
+    setLayerWidgets(map, layer, mapLayer, mapLayerIndex, mapSource);
+
+    return mapLayer;
+  }
+
+  function getInteractiveLayers(layers, mapLayers) {
+    const interactiveLayers = [];
+    const interactiveMapLayers = [];
+
+    layers.forEach((layer, index) => {
+      if (layer.interactivity) {
+        interactiveLayers.push(layer);
+        interactiveMapLayers.push(mapLayers[index]);
+      }
+    });
+
+    return { interactiveLayers, interactiveMapLayers };
+  }
+
+  function setLayerLegend(layer, mapLayerIndex, mapLayer, mapIndex, hasLegends) {
+    if (hasLegends && layer.legends) {
+      createLegends(mapLayer, layer.legends, mapLayerIndex, mapIndex);
+    }
+  }
+
+  function setLayerWidgets(map, layer, mapLayer, mapLayerIndex, mapSource) {
+    if (layer.widgets.length) {
+      initLayerWidgets(layer.widgets, mapLayerIndex);
+      updateLayerWidgets(layer.widgets, mapLayer);
+      bridgeLayerWidgets(map, mapLayer, mapSource, layer.widgets);
+    }
+  }
+
+  function initLayerWidgets(widgets, mapLayerIndex) {
+    widgets.forEach((widget, widgetIndex) => {
+      const id = `layer${mapLayerIndex}_widget${widgetIndex}`;
+      widget.id = id;
+    });
+  }
+
+  function updateLayerWidgets(widgets, mapLayer) {
+    mapLayer.on('updated', () => renderLayerWidgets(widgets, mapLayer));
+  }
+
+  function renderLayerWidgets(widgets, mapLayer) {
+    const variables = mapLayer.viz.variables;
+
+    widgets
+      .filter((widget) => !widget.has_bridge)
+      .forEach((widget) => {
+        const name = widget.variable_name;
+        const value = getWidgetValue(name, variables);
+        renderWidget(widget, value);
+      });
+  }
+
+  function getWidgetValue(name, variables) {
+    return name && variables[name] ? variables[name].value : null;
+  }
+
+  function setReady(settings) {
+    try {
+      return settings.maps ? initMaps(settings.maps) : initMap(settings);
+    } catch (e) {
+      displayError(e);
+    }
+  }
+
+  function initMaps(maps) {
+    return maps.map((mapSettings, mapIndex) => {
+      return initMap(mapSettings, mapIndex);
+    });
+  }
+
+  function initMap(settings, mapIndex) {
+    const basecolor = getBasecolorSettings(settings.basecolor);
+    const basemapStyle =  BASEMAPS[settings.basemap] || settings.basemap || basecolor;
+    const container = mapIndex !== undefined ? `map-${mapIndex}` : 'map';
+    const map = createMap(container, basemapStyle, settings.bounds, settings.mapboxtoken);
+
+    if (settings.show_info) {
+      updateViewport(map);
+    }
+
+    if (settings.camera) {
+      map.flyTo(settings.camera);
+    }
+
+    return initLayers(map, settings, mapIndex);
+  }
+
+  function initLayers(map, settings, mapIndex) {
+    const numLayers = settings.layers.length;
+    const hasLegends = settings.has_legends;
+    const isStatic = settings.is_static;
+    const layers = settings.layers;
+    const mapLayers = getMapLayers(
+      layers,
+      numLayers,
+      hasLegends,
+      map,
+      mapIndex
+    );
+
+    setInteractiveLayers(map, layers, mapLayers);
+
+    return waitForMapLayersLoad(isStatic, mapIndex, mapLayers);
+  }
+
+  function waitForMapLayersLoad(isStatic, mapIndex, mapLayers) {
+    return new Promise((resolve) => {
+      carto.on('loaded', mapLayers, onMapLayersLoaded.bind(
+        this, isStatic, mapIndex, mapLayers, resolve)
+      );
+    });
+  }
+
+  function onMapLayersLoaded(isStatic, mapIndex, mapLayers, resolve) {
+    if (isStatic) {
+      saveImage(mapIndex);
+    }
+
+    resolve(mapLayers);
+  }
+
+  function getMapLayers(layers, numLayers, hasLegends, map, mapIndex) {
+    return layers.map((layer, layerIndex) => {
+      return initMapLayer(layer, layerIndex, numLayers, hasLegends, map, mapIndex);
+    });
+  }
+
+  function setInteractiveLayers(map, layers, mapLayers) {
+    const { interactiveLayers, interactiveMapLayers } = getInteractiveLayers(layers, mapLayers);
+
+    if (interactiveLayers && interactiveLayers.length > 0) {
+      setInteractivity(map, interactiveLayers, interactiveMapLayers);
+    }
+  }
+
+  function createMap(container, basemapStyle, bounds, accessToken) {
+    const map = createMapboxGLMap(container, basemapStyle, accessToken);
+
+    map.addControl(attributionControl);
+    map.fitBounds(bounds, FIT_BOUNDS_SETTINGS);
+
+    return map;
+  }
+
+  function createMapboxGLMap(container, style, accessToken) {
+    if (accessToken) {
+      mapboxgl.accessToken = accessToken;
+    }
+
+    return new mapboxgl.Map({
+      container,
+      style,
+      zoom: 9,
+      dragRotate: false,
+      attributionControl: false
+    });
+  }
+
+  function init(settings) {
+    setReady(settings);
+  }
+
+  return init;
+
+}());
+</script>
+<script>
+  document
+  .querySelector('as-responsive-content')
+  .addEventListener('ready', () => {
+    const basecolor = '';
+    const basemap = 'Positron';
+    const bounds = [[-74.04169, 40.57381], [-73.85992, 40.70181]];
+    const camera = null;
+    const has_legends = 'True' === 'True';
+    const is_static = 'None' === 'True';
+    const layers = [{"credentials": null, "data": "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", "has_legend_list": true, "interactivity": [{"attrs": {"name": "ve38b29", "title": "total_pop"}, "event": "hover"}], "legends": [{"description": "", "dynamic": true, "footer": "", "prop": "color", "title": "total_pop", "type": "color-continuous", "variable": null}], "options": {"dateColumns": []}, "type": "GeoJSON", "viz": "@ve38b29: $total_pop\ncolor: opacity(ramp(linear($total_pop, globalMIN($total_pop), globalMAX($total_pop)), bluyl), 0.7)\nstrokeWidth: 0\nstrokeColor: opacity(#2c2c2c,ramp(linear(zoom(),2,18),[0.2,0.6]))\nfilter: 1\n", "widgets": []}, {"credentials": null, "data": "H4sIAI6NJF4C/5XTwWrDMAwG4HfxOTOWZEtWr4Oddx89lNYbgS4pWTooJe8+J80gPeoq5HxI+nN34+1S3M69lcN4Hcprfz6X49j2nWvc56P243Yfd9eealeo1ecHtXAZ+ksZxnZuvLuh/JbuWjuAEEIMXgSnxn2V/ruMw21uWb/w3rfdWN8f+344td1hXKQXIa+cGJr6lgUj7KepWX2w+Mg55OAjZLsPiLOfRJQ3Ppr8mIHIs6rZz5of84OmDU8WHnKSgHWFbOOjDygsC08Y4saPJj/miFLXD2Y/BM3L+rVmaOMnmx8Ds2dO5vUrrvHLOerGZ4sfavwz1WWaz58lQFr8RLC9vxh8xXp+8URovz8R0Bo/lI2fDb5wEiUfGezpj2n5+1ifpleLHhWBPUG28zW38J/+efr99AeAz8fVJgUAAA==", "has_legend_list": true, "interactivity": [{"attrs": {"name": "v1085d4", "title": "revenue"}, "event": "hover"}], "legends": [{"description": "", "dynamic": true, "footer": "", "prop": "width", "title": "revenue", "type": "size-continuous", "variable": "size_value"}], "options": {"dateColumns": []}, "type": "GeoJSON", "viz": "@v1085d4: $revenue\n@vabf72c: $revenue\ncolor: opacity(#FFB927, 0.8)\nwidth: ramp(linear(sqrt($revenue), sqrt(globalMIN($revenue)), sqrt(globalMAX($revenue))), [2, 40])\nstrokeWidth: ramp(linear(zoom(),0,18),[0,1])\nstrokeColor: white\n@size_value: ramp(linear($revenue, globalMIN($revenue), globalMAX($revenue)), [2, 40])\nfilter: 1\n", "widgets": [{"description": "", "footer": "", "has_bridge": true, "options": {"buckets": 20, "readOnly": false}, "prop": "", "title": "revenue", "type": "histogram", "value": "revenue", "variable_name": "vabf72c"}]}];
+    const mapboxtoken = '';
+    const show_info = 'False' === 'True';
+
+    init({
+      basecolor,
+      basemap,
+      bounds,
+      camera,
+      has_legends,
+      is_static,
+      layers,
+      mapboxtoken,
+      show_info
+    });
+});
+</script>
+</html>

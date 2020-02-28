@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../../../lib/carto/http/client'
 
 module CartoDB

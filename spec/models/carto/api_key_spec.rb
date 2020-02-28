@@ -177,7 +177,7 @@ describe Carto::ApiKey do
       @carto_user1.in_database.execute("drop table test_table")
     end
 
-    it 'reassign created table ownership after delete the api key' do
+    it 'reassigns role ownerships after deleting a regular API key' do
       grants = [schema_grant(@carto_user1.database_schema), apis_grant]
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'drop_test', grants: grants)
 
@@ -452,6 +452,16 @@ describe Carto::ApiKey do
         grants = [apis_grant, database_grants]
         expect {
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
+        }.to_not raise_error
+      end
+
+      it 'validates do API grant' do
+        apis_grants = {
+          type: "apis",
+          apis: ["do"]
+        }
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
         }.to_not raise_error
       end
 
@@ -830,6 +840,28 @@ describe Carto::ApiKey do
         api_keys.count.should eq 2
       end
     end
+
+    describe '#data_observatory_permissions?' do
+      it 'returns true when it has the do api grant' do
+        apis_grants = {
+          type: "apis",
+          apis: ["do"]
+        }
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
+
+        expect(api_key.data_observatory_permissions?).to eq true
+      end
+
+      it 'returns false when it does not have the do api grant' do
+        apis_grants = {
+          type: "apis",
+          apis: ["sql"]
+        }
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
+
+        expect(api_key.data_observatory_permissions?).to eq false
+      end
+    end
   end
 
   describe 'with plain users' do
@@ -899,6 +931,26 @@ describe Carto::ApiKey do
       table_user1.destroy
       table_user2.destroy
       user2.destroy
+    end
+
+    it 'reassigns role ownerships after deleting an OAuth API key' do
+      create_schema
+      create_role
+      grant_user
+      api_key = create_oauth_api_key
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("create table test.wadus()")
+      end
+
+      api_key.destroy
+
+      ownership_query = "select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'wadus'"
+      @carto_user1.in_database.execute(ownership_query) do |result|
+        result[0]['owner'].should eq @carto_user1.database_username
+      end
+
+      @carto_user1.in_database(as: :superuser).execute("drop table test.wadus")
     end
   end
 

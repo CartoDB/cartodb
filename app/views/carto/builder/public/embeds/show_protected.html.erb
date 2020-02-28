@@ -16,13 +16,13 @@
           </a>
         </div>
 
-        <p class='CDB-Text CDB-Size-large is-light u-whiteTextColor u-bSpace--xl'>This map is protected with password</p>
+        <p class='CDB-Text CDB-Size-large is-light u-whiteTextColor u-bSpace--xl'>This map is password protected</p>
 
         <div class='PublicPage-form'>
           <%= form_tag "embed_protected?#{request.query_string}", method: :post do %>
 
             <div class='PublicPage-field-withTooltip'>
-              <%= password_field_tag 'password', params[:password], class: "PublicPage-form--inputText RoundBorders-all CDB-Text CDB-Size-medium is-light u-whiteTextColor #{ flash[:error].present? ? 'is-alert' : ''}", placeholder: 'Insert your password'%>
+              <%= password_field_tag 'password', params[:password], autocomplete: "off", class: "PublicPage-form--inputText RoundBorders-all CDB-Text CDB-Size-medium is-light u-whiteTextColor #{ flash[:error].present? ? 'is-alert' : ''}", placeholder: 'Insert your password'%>
 
               <%- if flash[:error].present? %>
                 <div class="PublicPage-inputTooltip CDB-InfoTooltip CDB-InfoTooltip--left u-lSpace--xl is-error">
@@ -34,7 +34,7 @@
           <% end %>
         </div>
 
-        <p class='CDB-Text CDB-Size-medium is-light u-hintTextColor u-tSpace-xl'>Contact with the owner in case you want access to it.</p>
+        <p class='CDB-Text CDB-Size-medium is-light u-hintTextColor u-tSpace-xl'>Contact the owner if you need to access this map.</p>
       </div>
     </div>
   </body>

@@ -32,12 +32,14 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota'
+      isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota',
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
+      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota'
     }),
     actions () {
       return {
         mine: [
-          { name: this.$t('QuickActions.createMap'), event: 'createMap' },
+          { name: this.$t('QuickActions.createMap'), event: 'createMap', shouldBeDisabled: this.isOutOfPrivateMapsQuota },
           { name: this.$t('QuickActions.editInfo'), event: 'editInfo' },
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
           { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },

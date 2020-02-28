@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Carto
   module Tracking
     module Formats
@@ -13,7 +11,6 @@ module Carto
           @page = hash[:page]
           @quota_overage = hash[:quota_overage]
           @mapviews = hash[:mapviews]
-          @action = hash[:action]
           @analysis = hash[:analysis]
 
           # add anything else as it arrives
@@ -26,7 +23,6 @@ module Carto
                                                :page,
                                                :quota_overage,
                                                :mapviews,
-                                               :action,
                                                :analysis)
         end
 
@@ -36,7 +32,6 @@ module Carto
           properties.merge!(user_properties) if @user
           properties.merge!(visualization_properties) if @visualization
           properties.merge!(connection_properties) if @connection
-          properties.merge!(map_liking_properties) if @action
           properties.merge!(trending_map_properties) if @mapviews
           properties.merge!(analysis_properties) if @analysis
           properties.merge!(widget_properties) if @widget
@@ -51,14 +46,13 @@ module Carto
         private
 
         def visualization_properties
-          created_at = @visualization.created_at
-          lifetime_in_days_with_decimals = days_with_decimals(now - created_at)
+          lifetime_in_days_with_decimals = days_with_decimals(now - @visualization.created_at)
 
           properties = {
             vis_id: @visualization.id,
             privacy: @visualization.privacy,
             type: @visualization.type,
-            object_created_at: created_at,
+            object_created_at: @visualization.created_at,
             lifetime: lifetime_in_days_with_decimals
           }
 
@@ -68,16 +62,15 @@ module Carto
         end
 
         def user_properties
-          user_created_at = @user.created_at
-          user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
+          user_age_in_days_with_decimals = days_with_decimals(now - @user.created_at)
 
           {
             event_user_id: @user.id,
             event_origin: @user.builder_enabled? ? 'Builder' : 'Editor',
             plan: @user.account_type,
             user_active_for: user_age_in_days_with_decimals,
-            user_created_at: user_created_at,
-            organization: @user.organization_user? ? @user.organization.name : nil
+            user_created_at: @user.created_at,
+            organization: @user.organization&.name
           }
         end
 
@@ -103,18 +96,6 @@ module Carto
             map_id: @visualization.id,
             map_name: @visualization.name,
             mapviews: @mapviews
-          }
-        end
-
-        def map_liking_properties
-          visualization_user = @visualization.user
-
-          {
-            action: @action,
-            vis_id: @visualization.id,
-            vis_name: @visualization.name,
-            vis_type: @visualization.type == 'derived' ? 'map' : 'dataset',
-            vis_author_id: visualization_user.id
           }
         end
 

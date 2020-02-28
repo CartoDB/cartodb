@@ -84,7 +84,8 @@ export default {
     // We set content-box because it seems like
     // older content was laid out that way
     .Dialog-footer,
-    .ImportOptions {
+    .ImportOptions,
+    .ImportDataPanel {
       box-sizing: content-box;
 
       * {

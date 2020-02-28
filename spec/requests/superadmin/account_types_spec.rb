@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../acceptance_helper'
 require 'helpers/account_types_helper'
 
@@ -10,14 +8,14 @@ describe Superadmin::AccountTypesController do
     before(:each) do
       @account_type = create_account_type_fg('PRO')
       @account_type_param = {
-        account_type: "Professional",
+        account_type: "Individual",
         rate_limit: @account_type.rate_limit.api_attributes
       }
     end
 
     after(:each) do
       @account_type.destroy
-      Carto::AccountType.where(account_type: "Professional").each(&:destroy)
+      Carto::AccountType.where(account_type: "Individual").each(&:destroy)
     end
 
     it 'should create account_type' do

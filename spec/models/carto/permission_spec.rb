@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 require 'spec_helper'
 require 'models/permissions_shared_examples'
 

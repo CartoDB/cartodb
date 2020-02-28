@@ -21,6 +21,12 @@ module Carto
     class InvalidParametersError < ConnectorError
     end
 
+    class NotImplemented < ConnectorError
+      def initialize(message: 'Not implemented yet', user: nil, provider: nil)
+        super
+      end
+    end
+
     class ConnectorsDisabledError < ConnectorError # ServiceDisabledError ?
       def initialize(message: 'CARTO-Connector disabled', user: nil, provider: nil)
         super

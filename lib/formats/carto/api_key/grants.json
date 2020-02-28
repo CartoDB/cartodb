@@ -22,7 +22,8 @@
           "type": "string",
           "enum": [
             "sql",
-            "maps"
+            "maps",
+            "do"
           ]
         }
       },

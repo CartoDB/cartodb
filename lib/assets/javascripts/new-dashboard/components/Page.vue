@@ -1,5 +1,5 @@
 <template>
-  <section class="page" :class="{ 'is-user-notification': isNotificationVisible }">
+  <section class="page">
     <slot />
   </section>
 </template>
@@ -7,12 +7,7 @@
 <script>
 
 export default {
-  name: 'Page',
-  computed: {
-    isNotificationVisible () {
-      return this.$store && this.$store.getters['user/isNotificationVisible'];
-    }
-  }
+  name: 'Page'
 }
 </script>
 
@@ -22,19 +17,17 @@ export default {
 .page {
   position: relative;
   min-height: calc(100vh - 392px);
-  padding: 128px 0 120px;
+  padding: 64px 0 120px;
   border-bottom: 1px solid $border-color;
 
-  &--welcome {
-    padding-top: 64px;
-  }
-
-  &.is-user-notification {
-    padding-top: 128px - $notification-warning__height;
+  &--welcome,
+  &--settings,
+  &--data {
+    padding-top: 0;
   }
 }
 
 .page.page__sticky-subheader {
-  padding: 192px 0 120px;
+  padding: $subheader__height + 64px 0 120px;
 }
 </style>

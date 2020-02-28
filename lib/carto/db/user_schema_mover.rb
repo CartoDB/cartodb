@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Carto
   module Db
     class UserSchemaMover

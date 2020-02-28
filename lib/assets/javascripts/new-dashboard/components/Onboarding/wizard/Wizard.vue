@@ -14,7 +14,7 @@ export default {
   name: 'Wizard',
   components: {
     builder: createWizard(BuilderWizard.wizardName, BuilderWizard.steps),
-    cartoframes: createWizard(CARTOframesWizard.wizardName, CARTOframesWizard.steps),
+    cartoframes: createWizard(CARTOframesWizard.wizardName, CARTOframesWizard.steps, CARTOframesWizard.showFooter),
     'carto-vl': createWizard(CARTOVLWizard.wizardName, CARTOVLWizard.steps)
   },
   computed: {

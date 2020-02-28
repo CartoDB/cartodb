@@ -24,7 +24,7 @@
         <div class="cell-placeholder cell--small">
           <div class="text-placeholder"/>
         </div>
-        <div class="cell-placeholder cell--small">
+        <div class="cell-placeholder cell--xsmall">
           <div class="text-placeholder"/>
         </div>
         <div class="cell-placeholder cell--quick-actions">
@@ -36,7 +36,7 @@
 
 <script>
 export default {
-  name: 'FakeDatasetCard'
+  name: 'DatasetCardFake'
 };
 </script>
 

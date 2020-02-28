@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class AddLogAndErrorCodeToSynchronization < Sequel::Migration
   def up
     alter_table :synchronizations do

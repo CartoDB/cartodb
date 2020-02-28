@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'fileutils'
 require_relative '../../lib/importer/shp_normalizer'
 require_relative '../doubles/job'

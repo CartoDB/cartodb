@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # NOTE: this depends on migration SequenceForAutomatedFeatureFlags
 class FeatureFlagsForNewDashboard < Sequel::Migration
 

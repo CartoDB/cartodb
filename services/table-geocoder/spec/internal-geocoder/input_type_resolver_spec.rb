@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../lib/internal-geocoder/input_type_resolver.rb'
 require_relative '../../../../spec/rspec_configuration.rb'
 

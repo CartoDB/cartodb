@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './user_presenter'
 
 module Carto
@@ -15,7 +13,7 @@ module Carto
       before_filter :ensure_edit_permissions, only: [:show, :update, :destroy]
 
       def index
-        presentations = @organization.users.each do |user|
+        presentations = @organization.users.map do |user|
           Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_eumapi_poro
         end
 

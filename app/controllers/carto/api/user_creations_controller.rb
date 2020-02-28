@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require_relative 'user_creation_presenter'
 
 module Carto

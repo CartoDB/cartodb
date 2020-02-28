@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/organizations_controller'
 require 'helpers/unique_names_helper'
@@ -257,12 +255,12 @@ describe Carto::Api::OrganizationUsersController do
         response.status.should eq 200
         response.body[:username].should eq username
         response.body[:email].should eq email
-      end
 
-      @organization.reload
-      last_user_created = @organization.users.find { |u| u.username == username }
-      last_user_created.username.should eq username
-      last_user_created.email.should eq email
+        @organization.reload
+        last_user_created = @organization.users.find { |u| u.username == username }
+        last_user_created.username.should eq username
+        last_user_created.email.should eq email
+      end
     end
 
     it 'assigns soft_geocoding_limit to false by default' do

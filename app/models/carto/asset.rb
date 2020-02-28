@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_dependency 'carto/assets/image_assets_service'
 require_dependency 'carto/assets/organization_image_assets_service'
 require_dependency 'carto/assets/kuviz_assets_service'

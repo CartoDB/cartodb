@@ -25,11 +25,15 @@ $yellow--300: #FEE600;
 $yellow--500: #FFC300;
 $yellow--700: #F90;
 
+$red--400: #F15743;
 $red--500: #FA1414;
-$red--600: #E20703;
+$red--600: #EB1510;
+$red--700: #E20703;
 
 $green--500: #74FFA8;
 $green--700: #72EEA8;
+
+$purple--500: #3D33CC;
 
 /* Theme */
 $color-primary--soft: $blue--100;
@@ -39,6 +43,9 @@ $color-primary--dark: $blue--700;
 $color-premium: $yellow--700;
 
 /* === TYPE === */
+$base__font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif;
+$title__font-family: 'Montserrat', 'Helvetica Neue', Helvetica, sans-serif;
+
 $text__color: $neutral--800;
 $text__color--secondary: $neutral--600;
 
@@ -58,8 +65,10 @@ $border-color--dark: $neutral--300;
 
 $success__bg-color: $green--700;
 $warning__bg-color: $yellow--500;
+$warning__border-color: $yellow--500;
 $danger__bg-color: $red--500;
-$danger__color: $red--600;
+$danger__color: $red--700;
+$info__bg-color: $blue--500;
 
 /* buttons */
 $button__color: $white;
@@ -76,6 +85,15 @@ $button-ghost__color: $color-primary;
 $button-cta__color: $neutral--800;
 $button-cta__bg-color: $yellow--300;
 $button-cta__bg-color--hover: $yellow--100;
+
+$button-alert__bg-color: $red--400;
+$button-alert__bg-color--hover: $red--700;
+
+/* header */
+$header__height: 64px;
+
+/* subheader */
+$subheader__height: 64px;
 
 /* navbar */
 $navbar-avatar__bg-color: $neutral--500;
@@ -99,6 +117,18 @@ $progressbar__bg-color: $neutral--200;
 $card__shadow-color: rgba($neutral--400, 0.8);
 $card__shadow: 0 8px 20px 0 $card__shadow-color;
 $thumbnail__bg-color: $neutral--200;
+
+/* badges */
+// default
+$badge__color: $text__color--secondary;
+$badge__bg-color:  $white;
+$badge__border-color: $neutral--600;
+
+// condensed
+$badge-condensed__bg-color:  $blue--100;
+
+// cartoframes
+$badge-cf__color: $purple--500;
 
 /* notification warning */
 

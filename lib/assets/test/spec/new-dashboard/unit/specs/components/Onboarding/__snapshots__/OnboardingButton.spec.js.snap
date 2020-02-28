@@ -12,8 +12,8 @@ exports[`OnboardingButton.vue should render properly 1`] = `
 </button>
 `;
 
-exports[`OnboardingButton.vue should set button--cta if isFirstTimeViewingDashboard is true 1`] = `
+exports[`OnboardingButton.vue should set button--cta with extended text if isFirstTimeViewingDashboard is true 1`] = `
 <button class="button button--cta">
-  Wizards.Distributor.cta
+  Wizards.Distributor.extendedCta
 </button>
 `;

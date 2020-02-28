@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'uuidtools'
 require_relative '../../geocoder/lib/hires_geocoder_factory'
 require_relative '../../geocoder/lib/geocoder_config'

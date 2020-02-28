@@ -34,6 +34,10 @@
     justify-content: space-evenly;
   }
 
+  &.grid--around {
+    justify-content: space-around;
+  }
+
   &.grid--out {
     margin-right: -10px;
     margin-left: -10px;
@@ -50,7 +54,7 @@
   top: 0;
 }
 
-header.is-user-notification + section .grid__head--sticky {
+header.has-user-notification + section .grid__head--sticky {
   top: 124px;
 }
 

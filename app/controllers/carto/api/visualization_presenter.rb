@@ -6,6 +6,12 @@ module Carto
   module Api
     class VisualizationPresenter
 
+      ALLOWED_PARAMS = [:related, :related_canonical_visualizations, :show_user,
+                        :show_stats, :show_table, :show_liked,
+                        :show_permission, :show_synchronization, :show_uses_builder_features,
+                        :show_table_size_and_row_count, :show_auth_tokens, :show_user_basemaps,
+                        :password, :with_dependent_visualizations].freeze
+
       def initialize(visualization, current_viewer, context,
                      related: true, related_canonical_visualizations: false, show_user: false,
                      show_stats: true, show_table: true, show_liked: true,
@@ -158,8 +164,9 @@ module Carto
       # INFO: For now, no support for non-org users, as intended use is for sharing urls
       def privacy_aware_map_url(additional_params = {}, action = 'public_visualizations_show_map')
         organization = @visualization.user.organization
-
         return unless organization
+
+        return kuviz_url(@visualization) if @visualization.kuviz?
 
         # When a visualization is private, checks of permissions need not only the Id but also the vis owner database schema
         # Logic on public_map route will handle permissions so here we only "namespace the id" when proceeds
@@ -181,6 +188,13 @@ module Carto
         schema.nil? ? @visualization.id : "#{schema}.#{@visualization.id}"
       end
 
+      def kuviz_url(visualization)
+        org_name = visualization.user.organization.name
+        username = visualization.user.username
+        path = CartoDB.path(@context, 'kuviz_show', id: visualization.id)
+        "#{CartoDB.base_url(org_name, username)}#{path}"
+      end
+
       private
 
       attr_reader :related, :load_related_canonical_visualizations, :show_user,
@@ -191,7 +205,8 @@ module Carto
 
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
-                                           show_size_and_row_count: show_table_size_and_row_count)
+                                           show_size_and_row_count: show_table_size_and_row_count,
+                                           show_permission: show_permission)
                                       .with_presenter_cache(@presenter_cache).to_poro
       end
 

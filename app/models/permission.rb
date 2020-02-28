@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './permission/presenter'
 require_relative './visualization/member'
 require_relative 'shared_entity'
@@ -59,7 +57,7 @@ module CartoDB
               # be applied to a type of object. But with an array this is open
               # to more than one permission change at a time
               perm.each do |p|
-                if self.real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
+                if Carto::Visualization::MAP_TYPES.include?(real_entity_type)
                   if p['action'] == 'grant'
                     # At this moment just inform as read grant
                     if p['type'].include?('r')

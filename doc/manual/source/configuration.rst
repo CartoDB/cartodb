@@ -16,7 +16,7 @@ is not present a set of default basemaps will be used (CARTO and Stamen ones,
 check the default basemaps file
 https://github.com/CartoDB/cartodb/blob/master/lib/assets/javascripts/cartodb/table/default_layers.js)
 
-Also, it's always necessary to have a default basemap among all the confifured
+Also, it's always necessary to have a default basemap among all the configured
 ones in the app_config.yml. The way to set a basemap as default a "default"
 attribute needs to be added to the basemap. There can be several basemaps in the
 config with the attribute default set, however, only the first one found in the
@@ -36,7 +36,7 @@ Here is an example config.yml:
           maxZoom: '18'
           name: 'Positron'
           className: 'positron_rainbow'
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/attributions">CARTO</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/attributions/">CARTO</a>'
         dark_matter_rainbow:
           url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
           subdomains: 'abcd'
@@ -44,7 +44,7 @@ Here is an example config.yml:
           maxZoom: '18'
           name: 'Dark matter'
           className: 'dark_matter_rainbow'
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
         positron_lite_rainbow:
           url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
           subdomains: 'abcd'
@@ -52,7 +52,7 @@ Here is an example config.yml:
           maxZoom: '18'
           name: 'Positron (lite)'
           className: 'positron_lite_rainbow'
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
 
       stamen:
         toner_stamen:
@@ -79,7 +79,7 @@ you should add the labels key to the basemap config, as follows:
     maxZoom: '18'
     name: 'Positron'
     className: 'positron_rainbow'
-    attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/attributions">CARTO</a>'
+    attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/attributions/">CARTO</a>'
     labels:
       url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
 

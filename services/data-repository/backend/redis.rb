@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'redis'
 require_relative 'redis/set'
 require_relative 'redis/string'

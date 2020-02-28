@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'bolt.rb'
 
 module Carto
@@ -22,12 +20,17 @@ module Carto
       if should_run_synchronously?
         link_ghost_tables_synchronously
       else
-        ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)
+        link_ghost_tables_asynchronously
       end
     end
 
     def link_ghost_tables_synchronously
       sync_user_tables_with_db unless user_tables_synced_with_db?
+    end
+
+    def link_ghost_tables_asynchronously
+      ::Resque.dequeue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username)
+      ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username)
     end
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run
@@ -51,8 +54,7 @@ module Carto
     def self.run_synchronized(user_id, attempts: 10, timeout: 30000, **warning_params)
       gtm = new(user_id)
       bolt = gtm.get_bolt
-      rerun_func = lambda { gtm.send(:sync) }
-      lock_acquired = bolt.run_locked(attempts: attempts, timeout: timeout, rerun_func: rerun_func) do
+      lock_acquired = bolt.run_locked(attempts: attempts, timeout: timeout) do
         yield
       end
       if !lock_acquired && warning_params.present?
@@ -76,9 +78,7 @@ module Carto
     end
 
     def sync_user_tables_with_db
-      got_locked = get_bolt.run_locked(rerun_func: lambda { sync }) { sync }
-
-      CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: user) unless got_locked
+      got_locked = get_bolt.run_locked(fail_function: lambda { link_ghost_tables_asynchronously }) { sync }
     end
 
     def sync
@@ -220,11 +220,6 @@ module Carto
     end
 
     def create_user_table
-      CartoDB::Logger.debug(message: 'ghost tables',
-                            action: 'linking new table',
-                            user: user,
-                            table_name: name,
-                            table_id: id)
       user_table = Carto::UserTable.new
       user_table.user_id = user.id
       user_table.table_id = id
@@ -244,12 +239,6 @@ module Carto
     end
 
     def rename_user_table_vis
-      CartoDB::Logger.debug(message: 'ghost tables',
-                            action: 'relinking renamed table',
-                            user: user,
-                            table_name: name,
-                            table_id: id)
-
       user_table_vis = user_table_with_matching_id.table_visualization
 
       user_table_vis.register_table_only = true
@@ -265,12 +254,6 @@ module Carto
     end
 
     def drop_user_table
-      CartoDB::Logger.debug(message: 'ghost tables',
-                            action: 'unlinking dropped table',
-                            user: user,
-                            table_name: name,
-                            table_id: id)
-
       user_table_to_drop = user.tables.where(table_id: id, name: name).first
       return unless user_table_to_drop # The table has already been deleted
 
@@ -286,12 +269,6 @@ module Carto
     end
 
     def regenerate_user_table
-      CartoDB::Logger.debug(message: 'ghost tables',
-                            action: 'regenerating table_id',
-                            user: user,
-                            table_name: name,
-                            table_id: id)
-
       user_table_to_regenerate = user_table_with_matching_name
 
       user_table_to_regenerate.table_id = id

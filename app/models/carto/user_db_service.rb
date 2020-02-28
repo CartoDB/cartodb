@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Carto
   class UserDBService
     # Also default schema for new users

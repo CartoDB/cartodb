@@ -5,7 +5,7 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  overflow: auto;
+  overflow: hidden auto;
   background-color: $onboarding__bg-color;
 
   // Fix for Safari Scrolling with GPU acceleration

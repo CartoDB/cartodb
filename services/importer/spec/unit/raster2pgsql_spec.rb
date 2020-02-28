@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'pg'
 require 'sequel'
 require_relative '../../../../spec/spec_helper'

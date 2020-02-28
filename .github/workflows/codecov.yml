@@ -1,0 +1,25 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Codecov
+      uses: codecov/codecov-action@v1.0.5
+      with:
+        # User defined upload name. Visible in Codecov UI
+        name: Push to master (GitHub action)
+        # Repository upload token - get it from codecov.io
+        token: 2b93aa5e-75e2-45c6-878a-954764d763c4
+        # Specify whether or not CI build should fail if Codecov runs into an error during upload. OPTIONAL
+        fail_ci_if_error: false
+        # Path to coverage file to upload. OPTIONAL
+        # file: optional
+        # Flag upload to group coverage metrics (e.g. unittests | integration | ui,chrome). OPTIONAL
+        # flags:
+        # Specify the location of the .codecov.yml config file. OPTIONAL
+        # yml:

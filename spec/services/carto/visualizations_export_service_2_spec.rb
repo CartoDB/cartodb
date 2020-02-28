@@ -1925,6 +1925,21 @@ describe Carto::VisualizationsExportService2 do
 
         destroy_visualization(imported_viz.id)
       end
+
+      it 'raises an unauthorized error when the import is over public dataset quota' do
+        @table_visualization.update_attributes(privacy: 'public')
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        # Create user db table (destroyed above)
+        @user_no_private_tables.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+        @user_no_private_tables.public_dataset_quota = 0
+        @user_no_private_tables.save!
+
+        expect {
+          Carto::VisualizationsExportPersistenceService.new.save_import(@user_no_private_tables, built_viz)
+        }.to raise_error(Carto::UnauthorizedError)
+      end
     end
   end
 end

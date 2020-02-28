@@ -222,6 +222,10 @@ The following table contains a list of known errors codes and possible solutions
       <td>Over account maps limit, please upgrade - To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.</td>
     </tr>
     <tr>
+      <td>8008</td>
+      <td>Over account public datasets limit or publication is disabled in your account, please contact us at support@carto.com indicating this error code for more information.</td>
+    </tr>
+    <tr>
       <td>6666</td>
       <td>Dataset too big - The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@carto.com?subject=Dataset%20too%20big%20import%20error'>support@carto.com</a>.</td>
     </tr>

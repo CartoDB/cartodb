@@ -1,11 +1,13 @@
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/feature_flag_helper'
+require 'helpers/database_connection_helper'
 
 describe Carto::Api::Public::DataObservatoryController do
   include_context 'users helper'
   include HelperMethods
   include FeatureFlagHelper
+  include DatabaseConnectionHelper
 
   before(:all) do
     @master = @user1.api_key
@@ -19,7 +21,7 @@ describe Carto::Api::Public::DataObservatoryController do
   end
 
   after(:all) do
-    Carto::User.find_by_username('do-metadata').destroy
+    unpopulate_do_metadata
     @feature_flag.destroy
   end
 
@@ -269,21 +271,12 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 404 if the metadata user does not exist' do
-      Carto::User.find_by_username('do-metadata').destroy
-
-      get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers do |response|
-        expect(response.status).to eq(404)
-        expect(response.body).to eq(errors: 'No Data Observatory metadata found', errors_cause: nil)
-      end
-
-      populate_do_metadata
-    end
-
     it 'returns 404 if the dataset metadata does not exist' do
-      get_json endpoint_url(api_key: @master, id: 'carto.abc.inexistent', type: 'dataset'), @headers do |response|
+      id = 'carto.abc.inexistent'
+
+      get_json endpoint_url(api_key: @master, id: id, type: 'dataset'), @headers do |response|
         expect(response.status).to eq(404)
-        expect(response.body).to eq(errors: 'No metadata found for carto.abc.inexistent', errors_cause: nil)
+        expect(response.body).to eq(errors: "No metadata found for #{id}", errors_cause: nil)
       end
     end
 
@@ -379,6 +372,18 @@ describe Carto::Api::Public::DataObservatoryController do
         end
       end
     end
+
+    it 'returns 200 with different array options in available_in' do
+      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayempty', type: 'dataset'), @headers do |response|
+        expect(response.status).to eq(200)
+      end
+      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearraynil', type: 'dataset'), @headers do |response|
+        expect(response.status).to eq(200)
+      end
+      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayseveraldata', type: 'dataset'), @headers do |response|
+        expect(response.status).to eq(200)
+      end
+    end
   end
 
   describe 'subscribe' do
@@ -403,17 +408,6 @@ describe Carto::Api::Public::DataObservatoryController do
         }
         expect(response.body).to eq expected_response
       end
-    end
-
-    it 'returns 404 if the metadata user does not exist' do
-      Carto::User.find_by_username('do-metadata').destroy
-
-      post_json endpoint_url(api_key: @master), @payload do |response|
-        expect(response.status).to eq(404)
-        expect(response.body).to eq(errors: "No Data Observatory metadata found", errors_cause: nil)
-      end
-
-      populate_do_metadata
     end
 
     it 'returns 404 if the dataset metadata does not exist' do
@@ -546,25 +540,44 @@ describe Carto::Api::Public::DataObservatoryController do
   end
 
   def populate_do_metadata
-    metadata_user = FactoryGirl.create(:user, username: 'do-metadata')
-    db_seed = %{
-      CREATE TABLE datasets(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
-                            tos_link text, licenses text, licenses_link text, rights text, available_in text[],
-                            name text);
-      INSERT INTO datasets VALUES ('carto.abc.dataset1', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                   'rights', '{bq}', 'CARTO dataset 1');
-      INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                   'rights', NULL, 'Incomplete dataset');
-      INSERT INTO datasets VALUES ('carto.abc.datasetnull', NULL, NULL, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                   'rights', '{bq}', 'CARTO dataset null');
-      INSERT INTO datasets VALUES ('carto.abc.datasetzero', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                   'rights', '{bq}', 'CARTO dataset zero');
-      CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
-                               tos_link text, licenses text, licenses_link text, rights text, available_in text[],
-                               name text);
-      INSERT INTO geographies VALUES ('carto.abc.geography1', 3.0, 90.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                      'rights', '{bq}', 'CARTO geography 1');
-          }
-    metadata_user.in_database.run(db_seed)
+    with_do_connection() do |connection|
+      queries = %{
+        CREATE TABLE datasets(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
+                              tos_link text, licenses text, licenses_link text, rights text, available_in text[],
+                              name text);
+        INSERT INTO datasets VALUES ('carto.abc.dataset1', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', '{bq}', 'CARTO dataset 1');
+        INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', NULL, 'Incomplete dataset');
+        INSERT INTO datasets VALUES ('carto.abc.datasetnull', NULL, NULL, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', '{bq}', 'CARTO dataset null');
+        INSERT INTO datasets VALUES ('carto.abc.datasetzero', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', '{bq}', 'CARTO dataset zero');
+        INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearrayempty', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', '{}', 'CARTO dataset array empty');
+        INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearraynil', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', NULL, 'CARTO dataset array nil');
+        INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearrayseveraldata', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', '{bq,bigtable,carto}', 'CARTO dataset array several data');
+        CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
+                                 tos_link text, licenses text, licenses_link text, rights text, available_in text[],
+                                 name text);
+        INSERT INTO geographies VALUES ('carto.abc.geography1', 3.0, 90.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                        'rights', '{bq}', 'CARTO geography 1');
+      }
+
+      connection.execute(queries)
+    end
+  end
+
+  def unpopulate_do_metadata
+    with_do_connection() do |connection|
+      queries = %{
+        DROP TABLE datasets;
+        DROP TABLE geographies;
+      }
+
+      connection.execute(queries)
+    end
   end
 end

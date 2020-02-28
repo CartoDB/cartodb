@@ -91,6 +91,7 @@ feature "Superadmin's users API" do
       response.body[:quota_in_bytes].should == 104857600
       response.body[:table_quota].should == 5
       response.body[:public_map_quota].should == nil
+      response.body[:public_dataset_quota].should == nil
       response.body[:private_map_quota].should == nil
       response.body[:regular_api_key_quota].should == nil
       response.body[:account_type].should == 'FREE'
@@ -103,6 +104,7 @@ feature "Superadmin's users API" do
       user.quota_in_bytes.should == 104857600
       user.table_quota.should == 5
       user.public_map_quota.should == nil
+      user.public_dataset_quota.should == nil
       user.private_map_quota.should == nil
       user.regular_api_key_quota.should == nil
       user.account_type.should == 'FREE'
@@ -135,6 +137,7 @@ feature "Superadmin's users API" do
     @user_atts[:quota_in_bytes] = 2000
     @user_atts[:table_quota] = 20
     @user_atts[:public_map_quota] = 20
+    @user_atts[:public_dataset_quota] = 20
     @user_atts[:private_map_quota] = 20
     @user_atts[:regular_api_key_quota] = 20
     @user_atts[:account_type] = 'Juliet'
@@ -157,6 +160,7 @@ feature "Superadmin's users API" do
       response.body[:quota_in_bytes].should == 2000
       response.body[:table_quota].should == 20
       response.body[:public_map_quota].should == 20
+      response.body[:public_dataset_quota].should == 20
       response.body[:private_map_quota].should == 20
       response.body[:regular_api_key_quota].should == 20
       response.body[:account_type].should == 'Juliet'
@@ -179,6 +183,7 @@ feature "Superadmin's users API" do
       user.quota_in_bytes.should == 2000
       user.table_quota.should == 20
       user.public_map_quota.should == 20
+      user.public_dataset_quota.should == 20
       user.private_map_quota.should == 20
       user.regular_api_key_quota.should == 20
       user.account_type.should == 'Juliet'
@@ -204,6 +209,7 @@ feature "Superadmin's users API" do
     @update_atts = { quota_in_bytes: 2000,
                      table_quota: 20,
                      public_map_quota: 20,
+                     public_dataset_quota: 20,
                      private_map_quota: 20,
                      regular_api_key_quota: 20,
                      max_layers: 10,
@@ -235,6 +241,7 @@ feature "Superadmin's users API" do
     user.quota_in_bytes.should == 2000
     user.table_quota.should == 20
     user.public_map_quota.should == 20
+    user.public_dataset_quota.should == 20
     user.private_map_quota.should == 20
     user.regular_api_key_quota.should == 20
     user.account_type.should == 'Juliet'
@@ -732,6 +739,7 @@ feature "Superadmin's users API" do
         quota_in_bytes: 2000,
         table_quota: 20,
         public_map_quota: 20,
+        public_dataset_quota: 20,
         private_map_quota: 20,
         regular_api_key_quota: 20,
         max_layers: 10,

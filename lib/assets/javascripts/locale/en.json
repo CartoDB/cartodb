@@ -3,8 +3,8 @@
         "trial_notification": {
             "views": {
                 "trial_notification": {
-                    "message": "%{trial_days} days left in your trial.",
-                    "add_payment": "Subscribe now to keep using our platform."
+                    "message": "%{trial_days} days left in your account.",
+                    "add_payment": "Upgrade now."
                 }
             }
         }
@@ -60,7 +60,7 @@
         },
         "views": {
             "content": {
-                "form_title": "Edit your plan information"
+                "form_title": "Your account information"
             },
             "form": {
                 "username": "Username",
@@ -81,7 +81,7 @@
                 "save_changes": "Save changes",
                 "delete_account": "Delete account",
                 "confirm": "Are you sure?",
-                "delete_all": "Delete my account and all my data",
+                "delete_all": "Yes, delete my account and all my data",
                 "email_google": "Your account is linked to your Google account.",
                 "errors": {
                     "change_email": "You can change the email if you set a password."

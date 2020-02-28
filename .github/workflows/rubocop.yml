@@ -1,14 +1,14 @@
 name: Rubocop
-on:
-  push:
-    branches-ignore:
-      - master
-
+on: [pull_request]
 jobs:
-  check:
+  rubocop:
+    name: check
     runs-on: ubuntu-latest
     steps:
-      - name: Rubocop checks
-        uses: lyttco/github-actions-rubocop@1.3.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: rubocop
+        uses: reviewdog/action-rubocop@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-check # github-pr-review

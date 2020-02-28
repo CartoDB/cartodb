@@ -7,8 +7,7 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v1
-      - name: rubocop
-        uses: reviewdog/action-rubocop@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-check # github-pr-review
+      - name: Rubocop checks
+        uses: gimenete/rubocop-action@1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

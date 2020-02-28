@@ -1,0 +1,52 @@
+# .github/config/rubocop_linter_action.yml
+
+# Description: The name of the check that will be created.
+# Valid Options: A reasonably sized string.
+# Default: 'Rubocop Action'
+check_name: 'Rubocop Results'
+
+# Description: Versions required to run your RuboCop checks.
+# Valid options: RuboCop and any RuboCop extension, by default the latest gem version will be used. You can explicitly state that
+# (not required) or use a version number, like '1.5.1'.
+# Default:
+#   versions:
+#     - rubocop: 'latest'
+# versions:
+#   - rubocop
+#   - rubocop-rails
+#   - rubocop-minitest
+#   - rubocop-performance: '1.5.1'
+#   - rubocop-rspec: '1.37.0'
+
+# Description: Rubocop configuration file path relative to the workspace.
+# Valid options: A valid file path inside of the workspace.
+# Default: nil
+# Note: This does not need to be filled out for Rubocop to still find your config.
+# Resource: https://rubocop.readthedocs.io/en/stable/configuration/
+rubocop_config_path: '.rubocop.yml'
+
+# Run all cops enabled by configuration except this list.
+# Valid options: list of valid cop(s) and/or departments.
+# Default: nil
+# Resource: https://rubocop.readthedocs.io/en/stable/cops/
+# rubocop_excluded_cops:
+#   - 'Style/FrozenStringLiteralComment'
+
+# Minimum severity for exit with error code
+# Valid options: 'refactor', 'convention', 'warning', 'error', or 'fatal'.
+# Default: 'warning'
+# Resource: https://rubocop.readthedocs.io/en/stable/configuration/#severity
+rubocop_fail_level: 'warning'
+
+# Instead of installing gems from rubygems, we can run `bundle install` on your project,
+# you would need to do this if you are using something like 'rubocop-github' or if you don't
+# want to list out dependencies with the `versions` key.
+# Valid options: true || false
+# Default: false
+bundle: false
+
+# The scope of code that Rubocop should lint. Use this if you only want to lint changed files. If this is not set
+# or not equal to 'modified', Rubocop is run against the entire codebase. Note that this will not work on the master branch.
+# Valid options: 'modified'
+# Default: nil
+check_scope: 'modified'

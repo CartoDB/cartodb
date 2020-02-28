@@ -8,7 +8,16 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - name: Rubocop checks
-        uses: andrewmcodes/rubocop-linter-action@v3.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run rubocop with reviewdog
+        uses: reviewdog/action-rubocop@v1
+        with:
+          # GITHUB_TOKEN.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # rubocop flags. (rubocop <rubocop_flags>)
+          # rubocop_flags: # optional, default is 
+          # Tool name to use for reviewdog reporter
+          # tool_name: # optional, default is rubocop
+          # Report level for reviewdog [info,warning,error]
+          level: info
+          # Reporter of reviewdog command [github-pr-check,github-pr-review]
+          reporter: github-pr-check

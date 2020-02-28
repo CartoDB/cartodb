@@ -1,0 +1,12 @@
+name: Rubocop
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rubocop checks
+        uses: gimenete/rubocop-action@1.0

@@ -122,7 +122,6 @@ class GearResolverPlugin {
     compiler.hooks.normalModuleFactory.tap(
       'GearResolverPlugin',
       nmf => {
-
         nmf.hooks.afterResolve.tap('NormalModuleReplacementPlugin', result => {
           if (!result) return;
           return this._resolve(result, 'resource');

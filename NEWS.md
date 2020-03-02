@@ -14,6 +14,7 @@ Development
 - Update footer links based on account types ([#15502](https://github.com/CartoDB/cartodb/pull/15502))
 - Improve welcome copy font ([#15503](https://github.com/CartoDB/cartodb/pull/15503))
 - Fix dataset creation without map quotas ([#15504](https://github.com/CartoDB/cartodb/pull/15504))
+- Fix imports when user quota cannot be calculated ([#15512](https://github.com/CartoDB/cartodb/pull/15512))
 
 4.35.0 (2020-02-21)
 -------------------

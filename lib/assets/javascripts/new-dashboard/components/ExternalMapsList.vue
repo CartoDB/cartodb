@@ -28,12 +28,12 @@
         </template>
 
         <template slot="dropdownButton">
-          <MapBulkActions
+          <ExternalMapBulkActions
             :selectedMaps="selectedMaps"
             :areAllMapsSelected="areAllMapsSelected"
             v-if="hasBulkActions && selectedMaps.length"
             @selectAll="selectAll"
-            @deselectAll="deselectAll"></MapBulkActions>
+            @deselectAll="deselectAll"></ExternalMapBulkActions>
 
           <SettingsDropdown
             section="maps"
@@ -106,7 +106,7 @@ import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import CreateMapCard from 'new-dashboard/components/CreateMapCard';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import InitialState from 'new-dashboard/components/States/InitialState';
-import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
+import ExternalMapBulkActions from 'new-dashboard/components/BulkActions/ExternalMapBulkActions.vue';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
 import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
 import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
@@ -145,7 +145,7 @@ export default {
     CreateMapCard,
     EmptyState,
     SettingsDropdown,
-    MapBulkActions,
+    ExternalMapBulkActions,
     MapCard,
     CondensedMapHeader,
     MapCardFake,

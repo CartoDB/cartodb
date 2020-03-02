@@ -32,12 +32,12 @@ export default {
             name: this.$t('BulkActions.maps.selectAll'),
             event: 'selectAll',
             shouldBeHidden: this.areAllMapsSelected
-          },
-          {
-            name: this.$t('BulkActions.maps.delete'),
-            event: 'deleteMap',
-            isDestructive: true
           }
+          // {
+          //   name: this.$t('BulkActions.maps.delete'),
+          //   event: 'deleteMap',
+          //   isDestructive: true
+          // }
         ],
         multiple: [
           {
@@ -48,12 +48,12 @@ export default {
           {
             name: this.$t('BulkActions.maps.deselectAll'),
             event: 'deselectAll'
-          },
-          {
-            name: this.$t('BulkActions.maps.delete'),
-            event: 'deleteMaps',
-            isDestructive: true
           }
+          // {
+          //   name: this.$t('BulkActions.maps.delete'),
+          //   event: 'deleteMaps',
+          //   isDestructive: true
+          // }
         ]
       };
     },

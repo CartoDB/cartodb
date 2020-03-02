@@ -105,7 +105,7 @@
         "private": "Your Private Maps",
         "builder": "Your Builder Maps",
         "cartoframes": "Your CARTOframes Maps",
-        "external": "Your External Maps"
+        "external": "Your Kepler.gl Maps"
       },
       "warning": {
         "counter": "{counter} {type} maps used.&nbsp",
@@ -125,7 +125,7 @@
     },
     "tabs": {
       "carto": "CARTO",
-      "external": "External"
+      "external": "Kepler.gl"
     }
   },
   "NotificationsPage": {

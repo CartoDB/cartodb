@@ -83,7 +83,7 @@
 
         <div class="cell quick-actions cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isSharedWithMe"></div>
-          <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
+          <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements && !isKeplergl" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
         </div>
       </div>
     </div>

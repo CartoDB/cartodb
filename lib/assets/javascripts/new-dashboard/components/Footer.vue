@@ -27,12 +27,6 @@
           </h4>
           <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.GISStackExchange.description`) }}</p>
         </a>
-        <a href="mailto:support@carto.com" class="footer-link" v-if="isFreeUser">
-          <h4 class="title-link title is-caption is-txtGrey">
-            {{ $t(`Footer.TechSupport.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
-          </h4>
-          <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.TechSupport.description`) }}</p>
-        </a>
         <a href="mailto:support@carto.com" class="footer-link" v-if="isIndividualUser">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.DedicatedSupport.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
@@ -57,6 +51,8 @@
 </template>
 
 <script>
+import * as accounts from 'new-dashboard/core/constants/accounts';
+
 export default {
   name: 'Footer',
   props: {
@@ -66,13 +62,26 @@ export default {
     userAccountType () {
       return this.user.account_type.toLowerCase();
     },
+
+    free2020Lowecase () {
+      return accounts.free2020.map(item => item.toLowerCase());
+    },
+
+    freeLowecase () {
+      return accounts.free.map(item => item.toLowerCase());
+    },
+
+    studentLowecase () {
+      return accounts.student.map(item => item.toLowerCase());
+    },
+
     isFreeUser () {
-      return this.userAccountType === 'free';
+      return this.freeLowecase.includes(this.userAccountType);
     },
 
     isIndividualUser () {
-      const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization);
+      const noIndividualUsers = ['internal', 'partner', 'ambassador', ...this.freeLowecase, ...this.free2020Lowecase, ...this.studentLowecase];
+      return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization || this.isFreeUser);
     },
 
     isOrganizationUser () {

@@ -802,13 +802,19 @@ development:
     critical: false # either the failure is considered an error or a warning
     timeout: 1 # socket timeout
     trigger_verbose: false
+  do_metadata_database:
+    host: 'localhost'
+    port: 5432
+    database: 'catalog'
+    username: ''
+    password: ''
 
 test:
   <<: *defaults
   http_port: 53716
   redis:
     host: '127.0.0.1'
-    port: 6379
+    port: 6335
   enforce_non_empty_layer_css: false
   api_requests_es_service:
     url: "http://api-calls-service.localhost.lan/search"
@@ -837,7 +843,12 @@ test:
     critical: false # either the failure is considered an error or a warning
     timeout: 1 # socket timeout
     trigger_verbose: false
-
+  do_metadata_database:
+    host: 'localhost'
+    port: 5432
+    database: 'carto_db_test'
+    username: 'postgres'
+    password: ''
 
 staging:
   <<: *defaults

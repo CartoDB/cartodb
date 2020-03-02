@@ -9,6 +9,7 @@ module Carto
       DISALLOWED_STARTING_CHARACTERS_REGEX = /^[^a-z]+/
       DISALLOWED_CHARACTERS_REGEX = /[^a-z|_|0-9]/
       REPEATED_UNDERSCORES_REGEX = /_{2,}/
+      # PG12_DEPRECATED raster, raster_overviews and raster_columns not supported in postgis 3+
       SYSTEM_TABLE_NAMES    = %w(spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews
                                  cdb_tablemetadata geometry raster).freeze
       RESERVED_TABLE_NAMES  = %w(layergroup all public).freeze

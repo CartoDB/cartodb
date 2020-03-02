@@ -27,7 +27,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota'
+      isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota',
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
+      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota'
     }),
     actions () {
       return {
@@ -40,7 +42,8 @@ export default {
           {
             name: this.$t('BulkActions.datasets.createMap'),
             event: 'createMap',
-            shouldBeHidden: this.isAnyLocked
+            shouldBeHidden: this.isAnyLocked,
+            shouldBeDisabled: this.isOutOfPrivateMapsQuota
           },
           {
             name: this.$t('BulkActions.datasets.changePrivacy'),

@@ -784,7 +784,7 @@ class Carto::Visualization < ActiveRecord::Base
 
     return unless !privacy_was || privacy_was != Carto::Visualization::PRIVACY_PRIVATE
 
-    if CartoDB::QuotaChecker.new(user).will_be_over_private_map_quota?
+    if map? && CartoDB::QuotaChecker.new(user).will_be_over_private_map_quota?
       errors.add(:privacy, 'over account private map quota')
     end
   end

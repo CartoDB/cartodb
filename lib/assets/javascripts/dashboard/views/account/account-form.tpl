@@ -88,7 +88,7 @@
       </div>
     <% } %>
   <% } else { %>
-    <% if (!isInsideOrg || isOrgOwner) { %>
+    <% if (!isInsideOrg && !isFree2020User || isOrgOwner) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.account_type') %></p>
     </div>

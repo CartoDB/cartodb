@@ -2,7 +2,7 @@
   <section class="welcome-first">
     <div class="container">
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
-      <div class="welcome-first__text text is-caption" v-html="text"></div>
+      <div class="welcome-first__text text is-body" v-html="text"></div>
       <div class="welcome-first__actions">
         <OnboardingButton v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></OnboardingButton>
         <a class="button button--border"
@@ -17,13 +17,11 @@
 
 <script>
 import differenceInDays from 'date-fns/difference_in_days';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import OnboardingButton from 'new-dashboard/components/Onboarding/OnboardingButton.vue';
 
 export default {
   name: 'WelcomeFirst',
   components: {
-    CreateButton,
     OnboardingButton
   },
   props: {
@@ -35,6 +33,9 @@ export default {
       return this.$t('HomePage.WelcomeSection.greeting', {name: this.$props.name});
     },
     text () {
+      if (this.isFree2020User) {
+        return this.$t(`HomePage.WelcomeSection.firstTime.planMessage.${this.userType}`);
+      }
       const organizationName = this.$store.state.user.organization && this.$store.state.user.organization.name;
 
       const firstTimeMessage = this.$t('HomePage.WelcomeSection.firstTime.message');
@@ -54,15 +55,15 @@ export default {
     isOrganizationUser () {
       return this.userType === 'organizationUser';
     },
+    isFree2020User () {
+      return this.userType === 'free2020';
+    },
     organizationMail () {
       const organization = this.$store.state.user.organization;
       return organization.admin_email;
     },
     canCreateDatasets () {
       return this.$store.getters['user/canCreateDatasets'];
-    },
-    isViewer () {
-      return this.$store.getters['user/isViewer'];
     },
     trialLength () {
       const trialEndDate = this.$store.state.user.trial_ends_at;

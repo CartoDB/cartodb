@@ -7,6 +7,7 @@ Development
 ### Features
 - New Free 2020 Plan, Dashboard and Builder changes ([#15497](https://github.com/CartoDB/cartodb/pull/15497))
 - Metadata API integration in license workflow ([#15483](https://github.com/CartoDB/cartodb/issues/15483))
+- Hooks to override org settings via private gears ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
 
 ### Bug fixes / enhancements
 - Hide DataCatalog to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))

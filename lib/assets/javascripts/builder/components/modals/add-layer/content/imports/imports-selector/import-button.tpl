@@ -1,7 +1,7 @@
 <div class="gtm-connectors-<%= name %>"></div>
-<div class="ImportOptions__overlay">
-  <div class="ImportOptions__lock"></div>
+<div class="ImportButton__taglist">
+  <div class="ImportButton__tag ImportButton__tag--enterprise">Enterprise</div>
+  <div class="ImportButton__tag ImportButton__tag--beta">Beta</div>
 </div>
-<div class="ImportOptions__tag">Beta</div>
-<i class='is-<%- name %>'></i>
-<span><%= cdb.core.sanitize.html(title || name) %></span>
+<i class='ImportButton__icon is-<%- name %>'></i>
+<span class="ImportButton__name"><%= cdb.core.sanitize.html(title || name) %></span>

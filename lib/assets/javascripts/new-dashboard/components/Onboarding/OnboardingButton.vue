@@ -3,7 +3,7 @@
     class="button"
     :class="[{'not-visited': !(hasVisitedOnboarding || isFirstTimeViewingDashboard)}, isFirstTimeViewingDashboard ? 'button--cta' : 'button--ghost']"
     @click="openOnboarding()">
-    {{ $t('Wizards.Distributor.cta') }}
+    {{ buttonText }}
   </button>
 </template>
 
@@ -23,6 +23,14 @@ export default {
   },
   mounted () {
     this.hasVisitedOnboarding = this.setHasVisitedOnboarding();
+  },
+  computed: {
+    buttonText () {
+      if (this.isFirstTimeViewingDashboard) {
+        return this.$t('Wizards.Distributor.extendedCta');
+      }
+      return this.$t('Wizards.Distributor.cta');
+    }
   },
   methods: {
     openOnboarding () {

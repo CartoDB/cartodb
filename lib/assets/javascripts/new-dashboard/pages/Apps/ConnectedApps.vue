@@ -10,7 +10,7 @@
         <p v-if="hasConnectedApps" class="text is-small">{{ $t(`ConnectedAppsPage.description`) }}</p>
         <p v-else class="text is-small u-mb--96">{{ $t(`ConnectedAppsPage.emptyDescription`) }}</p>
 
-        <div v-if="!hasConnectedApps" class="u-mt--16">
+        <div v-if="!hasConnectedApps && showOauthApps" class="u-mt--16">
           <div class="connectedapps__title">
             <h2 class="text is-caption">{{ $t(`ConnectedAppsPage.emptyTipTitle`) }}</h2>
           </div>
@@ -59,6 +59,7 @@ import AppElement from '../../components/Apps/AppElement';
 import SettingsSidebar from 'new-dashboard/components/Apps/SettingsSidebar';
 import Modal from 'new-dashboard/components/Modal';
 import { mapState } from 'vuex';
+import * as accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'ConnectedApps',
@@ -84,9 +85,13 @@ export default {
       isFetchingConnectedApps: state => state.connectedApps.isFetching,
       user: state => state.user,
       baseUrl: state => state.user.base_url,
+      planAccountType: state => state.user.account_type,
       connectedApps: state => state.connectedApps.list,
       hasConnectedApps: state => !state.connectedApps.isFetching && !!Object.keys(state.connectedApps.list).length
-    })
+    }),
+    showOauthApps () {
+      return !accounts.accountsWithOauthAppsLimits.includes(this.planAccountType);
+    }
   },
   methods: {
     openModal (selectedApp) {

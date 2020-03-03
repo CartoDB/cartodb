@@ -290,6 +290,15 @@ export default {
     }
   }
 
+  .viz-column--shareS .cell {
+    display: flex;
+    align-items: center;
+
+    .text.is-small {
+      line-height: 17px;
+    }
+  }
+
   .quick-actions {
     .quick-actions__placeholder {
       width: 24px;

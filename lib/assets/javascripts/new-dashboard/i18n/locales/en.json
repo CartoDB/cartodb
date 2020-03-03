@@ -95,7 +95,7 @@
   "MapsPage": {
     "header": {
       "title": {
-        "mine": "Your Maps",
+        "mine": "Your CARTO Maps",
         "shared": "Shared with you",
         "favorited": "Your Favorited Maps",
         "locked": "Your Locked Maps",
@@ -126,6 +126,15 @@
     "tabs": {
       "carto": "CARTO",
       "external": "Kepler.gl"
+    }
+  },
+  "ExternalMapsPage": {
+    "header": {
+      "title": {
+        "mine": "Your Kepler.gl Maps",
+        "link": "Your Link-shared Maps",
+        "private": "Your Private Maps"
+      }
     }
   },
   "NotificationsPage": {

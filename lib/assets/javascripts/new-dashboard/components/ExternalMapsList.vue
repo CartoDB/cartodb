@@ -8,7 +8,7 @@
 
         <template slot="title">
           <VisualizationsTitle
-            :defaultTitle="$t(`MapsPage.header.title['${appliedFilter}']`)"
+            :defaultTitle="$t(`ExternalMapsPage.header.title['${appliedFilter}']`)"
             :selectedItems="selectedMaps.length"
             :vizQuota="publicMapsQuota"
             :vizCount="publicMapsCount"

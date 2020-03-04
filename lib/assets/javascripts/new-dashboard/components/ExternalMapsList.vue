@@ -102,10 +102,8 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import CreateMapCard from 'new-dashboard/components/CreateMapCard';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
-import InitialState from 'new-dashboard/components/States/InitialState';
 import ExternalMapBulkActions from 'new-dashboard/components/BulkActions/ExternalMapBulkActions.vue';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
 import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
@@ -141,7 +139,6 @@ export default {
     }
   },
   components: {
-    CreateButton,
     CreateMapCard,
     EmptyState,
     SettingsDropdown,
@@ -151,8 +148,7 @@ export default {
     MapCardFake,
     SectionTitle,
     VisualizationsTitle,
-    NotificationBadge,
-    InitialState
+    NotificationBadge
   },
   data () {
     return {
@@ -202,7 +198,7 @@ export default {
         !this.currentEntriesCount;
     },
     emptyStateText () {
-      const route = this.$router.resolve({name: 'external_filtered', params: { filter: 'shared' }});
+      const route = this.$router.resolve({ name: 'external_filtered', params: { filter: 'shared' } });
 
       return this.hasSharedMaps
         ? this.$t('MapsPage.emptyCase.onlyShared', { path: route.href })

@@ -202,7 +202,7 @@ export default {
         !this.currentEntriesCount;
     },
     emptyStateText () {
-      const route = this.$router.resolve({name: 'external_filtered', params: { filter: 'shared' }});
+      const route = this.$router.resolve({ name: 'external_filtered', params: { filter: 'shared' } });
 
       return this.hasSharedMaps
         ? this.$t('MapsPage.emptyCase.onlyShared', { path: route.href })

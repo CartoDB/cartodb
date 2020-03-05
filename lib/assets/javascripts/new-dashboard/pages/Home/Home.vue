@@ -33,7 +33,7 @@ export default {
     QuotaSection,
     Page
   },
-  async beforeMount () {
+  beforeMount () {
     this.$store.dispatch('recentContent/fetch');
 
     this.$store.dispatch('maps/resetFilters');
@@ -51,9 +51,11 @@ export default {
     }
 
     this.$store.dispatch('maps/fetch');
-    await this.$store.dispatch('externalMaps/init');
-    this.$store.dispatch('externalMaps/fetch');
-    this.$store.dispatch('datasets/fetch');
+    this.$store.dispatch('externalMaps/init')
+      .then(() => {
+        this.$store.dispatch('externalMaps/fetch');
+        this.$store.dispatch('datasets/fetch');
+      });
   },
   data () {
     return {

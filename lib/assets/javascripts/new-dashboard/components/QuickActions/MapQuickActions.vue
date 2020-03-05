@@ -38,14 +38,14 @@ export default {
     actions () {
       return {
         mine: [
-          { name: this.$t('QuickActions.editInfo'), event: 'editInfo' },
-          { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
-          { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy', shouldBeDisabled: !this.canChangePrivacy },
-          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
+          { name: this.$t('QuickActions.editInfo'), event: 'editInfo', shouldBeHidden: this.isKeplergl },
+          { name: this.$t('QuickActions.manageTags'), event: 'manageTags', shouldBeHidden: this.isKeplergl },
+          { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy', shouldBeDisabled: !this.canChangePrivacy, shouldBeHidden: this.isKeplergl },
+          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization || this.isKeplergl },
           { name: this.$t('QuickActions.shareViaURL'), event: 'shareViaUrl', shouldBeHidden: !this.isKuviz },
-          { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap', shouldBeDisabled: !this.canDuplicate, shouldBeHidden: this.isKuviz },
-          { name: this.$t('QuickActions.lock'), event: 'lockMap' },
-          { name: this.$t('QuickActions.delete'), event: 'deleteMap', isDestructive: true }
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap', shouldBeDisabled: !this.canDuplicate, shouldBeHidden: this.isKuviz || this.isKeplergl },
+          { name: this.$t('QuickActions.lock'), event: 'lockMap', shouldBeHidden: this.isKeplergl },
+          { name: this.$t('QuickActions.delete'), event: 'deleteMap', isDestructive: true, shouldBeHidden: this.isKeplergl }
         ],
         locked: [
           { name: this.$t('QuickActions.unlock'), event: 'unlockMap' }
@@ -75,6 +75,9 @@ export default {
     },
     isKuviz () {
       return this.map.type === 'kuviz';
+    },
+    isKeplergl () {
+      return this.map.type === 'keplergl';
     }
   },
   methods: {
@@ -141,7 +144,8 @@ export default {
       this.closeDropdown();
     },
     deleteMap () {
-      DialogActions.deleteVisualization.apply(this, [this.map, 'maps', this.getActionHandlers()]);
+      const contentType = !this.isKeplergl ? 'maps' : 'externalMaps';
+      DialogActions.deleteVisualization.apply(this, [this.map, contentType, this.getActionHandlers()]);
       this.closeDropdown();
     },
     shareVisualization () {

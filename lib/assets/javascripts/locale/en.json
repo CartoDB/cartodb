@@ -1409,15 +1409,41 @@
                         "button": "Request data source",
                         "url": "https://docs.google.com/forms/d/e/1FAIpQLSeSP4idHpOLdGlUkCCve1BfCsakZdmeAO_5yrHH4FSIJt5cdw/viewform"
                     },
-                    "other": {
-                        "request": "Request connector",
+                    "tags": {
+                        "enterprise": "Enterprise",
+                        "beta": "Beta",
+                        "soon": "Soon"
+                    },
+                    "request": {
+                        "other": "Request connector",
                         "type": "Type the one you look for",
-                        "submit": "Submit",
                         "sending": "Sending request",
-                        "success": "Request sent. We will contact you soon.",
-                        "error": "Request not successful.",
-                        "try-again": "Try again",
-                        "ok": "Ok, got it!"
+                        "submit": "Submit",
+                        "success": {
+                            "title": "Request sent",
+                            "desc": "We will notify you."
+                        },
+                        "error": {
+                            "title": "Request failed",
+                            "desc": "Try again later."
+                        },
+                        "ok": "Ok, got it!",
+                        "beta": {
+                            "desc": "This connector is in beta",
+                            "cta": "Request beta"
+                        },
+                        "soon": {
+                            "desc": "Not available yet",
+                            "cta": "Notify me"
+                        },
+                        "enable": {
+                            "desc": "Needs to be activated",
+                            "cta": "Request access"
+                        },
+                        "upgrade": {
+                            "desc": "Needs to be activated",
+                            "cta": "View plans"
+                        }
                     }
                 },
                 "datasets": {

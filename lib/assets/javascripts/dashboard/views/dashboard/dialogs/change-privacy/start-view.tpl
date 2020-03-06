@@ -7,46 +7,42 @@
     Although we believe in the power of open data, you can also protect your <%- vis.isVisualization() ? 'map' : 'dataset' %>.
   </p>
 </div>
-<div class="CDB-Text Dialog-body u-inner OptionCards">
-  <% privacyOptions.each(function(m, index) { %>
-    <div class="OptionCard OptionCard--blocky <%- m.classNames() %> js-option" data-index="<%- index %>">
-      <div class="OptionCard-icon IllustrationIcon IllustrationIcon--<%- m.get('illustrationType') %>">
-        <i class="CDB-IconFont CDB-IconFont-<%- m.get('iconFontType') %>"></i>
-      </div>
-      <h5 class="OptionCard-title OptionCard-title CDB-Text CDB-Size-large"><%- m.get('title') %></h5>
-      <% if (m.get('privacy') == 'PASSWORD') { %>
-        <% if (m.get('disabled')) { %>
-          <input class="js-password-input Input CDB-Text CDB-Size-medium ChangePrivacy-passwordInput u-altTextColor" placeholder="Type your password here" value="<%- password %>" type="password" autocomplete="off" disabled/>
+<div class="CDB-Text Dialog-body u-inner u-flex  u-flex__direction--column u-flex__align--center">
+  <% if (upgradeBannerData.show) { %>
+    <div class="NotificationBadge NotificationBadge--warning">
+      <div class="NotificationBadge__icon"></div>
+        <% if (!upgradeBannerData.hasRemainingPublicMaps && upgradeBannerData.hasRemainingPrivateMaps) { %>
+          <span class="is-bold"><%- upgradeBannerData.publicCounter %> public maps used.&nbsp;</span>
+        <% } %>
+        <% if (upgradeBannerData.hasRemainingPublicMaps && !upgradeBannerData.hasRemainingPrivateMaps) { %>
+          <span class="is-bold"><%- upgradeBannerData.privateCounter %> private maps used.&nbsp;</span>
+        <% } %>
+        <% if (!upgradeBannerData.hasRemainingPublicMaps && !upgradeBannerData.hasRemainingPrivateMaps) { %>
+          <span class="is-bold"><%- upgradeBannerData.publicCounter %> public and <%- upgradeBannerData.privateCounter %> maps used.&nbsp;</span>
+        <% } %>
+      <span><a href="<%- upgradeBannerData.upgradeUrl %>" class="is-bold">Upgrade now</a> to get more maps.</span>
+    </div>
+  <% } %>
+  <div class="OptionCards">
+    <% privacyOptions.each(function(m, index) { %>
+      <div class="OptionCard OptionCard--blocky <%- m.classNames() %> js-option" data-index="<%- index %>">
+        <div class="OptionCard-icon IllustrationIcon IllustrationIcon--<%- m.get('illustrationType') %>">
+          <i class="CDB-IconFont CDB-IconFont-<%- m.get('iconFontType') %>"></i>
+        </div>
+        <h5 class="OptionCard-title OptionCard-title CDB-Text CDB-Size-large"><%- m.get('title') %></h5>
+        <% if (m.get('privacy') == 'PASSWORD') { %>
+          <% if (m.get('disabled')) { %>
+            <input class="js-password-input Input CDB-Text CDB-Size-medium ChangePrivacy-passwordInput u-altTextColor" placeholder="Type your password here" value="<%- password %>" type="password" autocomplete="off" disabled/>
+          <% } else { %>
+            <input class="js-password-input Input CDB-Text CDB-Size-medium ChangePrivacy-passwordInput u-altTextColor" placeholder="Type your password here" value="<%- password %>" type="password" autocomplete="off" />
+          <% } %>
         <% } else { %>
-          <input class="js-password-input Input CDB-Text CDB-Size-medium ChangePrivacy-passwordInput u-altTextColor" placeholder="Type your password here" value="<%- password %>" type="password" autocomplete="off" />
+        <div class="OptionCard-desc CDB-Text CDB-Size-medium u-altTextColor"><%- m.get('desc') %></div>
         <% } %>
-      <% } else { %>
-      <div class="OptionCard-desc CDB-Text CDB-Size-medium u-altTextColor"><%- m.get('desc') %></div>
-      <% } %>
-    </div>
-  <% }); %>
-</div>
-
-<% if (showUpgradeBanner) { %>
-  <div class="CDB-Text Dialog-body u-inner ChangePrivacy-upgradeBanner">
-    <div class="UpgradeElement ChangePrivacy-upgradeBannerInner">
-      <div class="UpgradeElement-info">
-        <p class="UpgradeElement-infoText u-ellipsLongText">To get advantage of all the privacy options you should upgrade your plan</p>
       </div>
-      <div class="UpgradeElement-actions">
-        <% if (showTrial) { %>
-          <div class="UpgradeElement-trial">
-            <i class="CDB-IconFont CDB-IconFont-gift UpgradeElement-trialIcon"></i>
-            <p class="UpgradeElement-trialText u-ellipsLongText">14 days Free trial</p>
-          </div>
-        <% } %>
-        <a href="<%- upgradeUrl %>" class="Button Button--secondary UpgradeElement-button ChangePrivacy-upgradeActionButton">
-          <span>upgrade</span>
-        </a>
-      </div>
-    </div>
+    <% }); %>
   </div>
-<% } %>
+</div>
 
 <% if (showShareBanner) { %>
   <% if (sharedEntitiesCount > 0) { %>

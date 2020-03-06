@@ -1206,6 +1206,15 @@ class User < Sequel::Model
     public_visualization_count
   end
 
+  def public_privacy_dataset_count
+    visualization_count(
+      type: Carto::Visualization::TYPE_CANONICAL,
+      privacy: Carto::Visualization::PRIVACY_PUBLIC,
+      exclude_shared: true,
+      exclude_raster: true
+    )
+  end
+
   def link_privacy_visualization_count
     visualization_count(type: Carto::Visualization::MAP_TYPES,
                         privacy: Carto::Visualization::PRIVACY_LINK,
@@ -1370,6 +1379,7 @@ class User < Sequel::Model
       twitter_datasource_quota twitter_datasource_block_price twitter_datasource_block_size here_isolines_quota
       here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota obs_snapshot_block_price
       soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit private_map_quota
+      public_dataset_quota
     )
     to.set_fields(self, attributes_to_copy)
     to.invite_token = make_token

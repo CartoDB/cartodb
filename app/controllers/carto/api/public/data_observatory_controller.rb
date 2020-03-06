@@ -136,26 +136,31 @@ module Carto
 
         def present_metadata(metadata)
           metadata[:estimated_delivery_days] = present_delivery_days(metadata[:estimated_delivery_days])
-          metadata[:subscription_list_price] = metadata[:subscription_list_price]&.to_f
           metadata.slice(*METADATA_FIELDS)
         end
 
         def present_delivery_days(delivery_days)
           return DEFAULT_DELIVERY_DAYS if delivery_days&.zero? && !@user.has_feature_flag?('do-instant-licensing')
 
-          delivery_days&.to_f
+          delivery_days
         end
 
         def subscription_metadata
-          metadata_user = ::User.where(username: 'do-metadata').first
-          raise Carto::LoadError.new('No Data Observatory metadata found') unless metadata_user
+          connection = Carto::Db::Connection.do_metadata_connection()
 
           query = "SELECT *, '#{@type}' as type FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
-
-          result = metadata_user.in_database[query].first
+          result = connection.execute(query).first
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 
-          result
+          cast_metadata_result(result)
+        end
+
+        def cast_metadata_result(metadata)
+          metadata = metadata.symbolize_keys
+          metadata[:subscription_list_price] = metadata[:subscription_list_price]&.to_f
+          metadata[:estimated_delivery_days] = metadata[:estimated_delivery_days]&.to_f
+          metadata[:available_in] = metadata[:available_in].delete('{}').split(',') unless metadata[:available_in].nil?
+          metadata
         end
 
         def license_info(metadata)

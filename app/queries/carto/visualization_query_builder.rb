@@ -20,6 +20,10 @@ class Carto::VisualizationQueryBuilder
     user_public(user).with_types(Carto::Visualization::MAP_TYPES)
   end
 
+  def self.user_public_privacy_datasets(user)
+    user_public(user).with_types(Carto::Visualization::TYPE_CANONICAL)
+  end
+
   def self.user_link_privacy_visualizations(user)
     new.with_user_id(user.id)
        .with_types(Carto::Visualization::MAP_TYPES)

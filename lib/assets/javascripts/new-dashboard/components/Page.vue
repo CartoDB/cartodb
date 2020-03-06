@@ -22,7 +22,8 @@ export default {
 
   &--welcome,
   &--settings,
-  &--data {
+  &--data,
+  &--maps {
     padding-top: 0;
   }
 }

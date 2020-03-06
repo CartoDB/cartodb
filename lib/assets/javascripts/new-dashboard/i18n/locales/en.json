@@ -15,7 +15,8 @@
     "tags": "tags",
     "type": {
       "derived": "BUILDER",
-      "kuviz": "CARTOFRAMES"
+      "kuviz": "CARTOFRAMES",
+      "keplergl": "KEPLER.GL"
     }
   },
   "MapListHeader": {
@@ -94,7 +95,7 @@
   "MapsPage": {
     "header": {
       "title": {
-        "mine": "Your Maps",
+        "mine": "Your CARTO Maps",
         "shared": "Shared with you",
         "favorited": "Your Favorited Maps",
         "locked": "Your Locked Maps",
@@ -103,7 +104,8 @@
         "password": "Your Password-protected Maps",
         "private": "Your Private Maps",
         "builder": "Your Builder Maps",
-        "cartoframes": "Your CARTOframes Maps"
+        "cartoframes": "Your CARTOframes Maps",
+        "external": "Your Kepler.gl Maps"
       },
       "warning": {
         "counter": "{counter} {type} maps used.&nbsp",
@@ -120,6 +122,19 @@
     "emptyCase": {
       "default": "There are no maps here.",
       "onlyShared": "No maps here. Go to the <a href='{path}'>maps shared with you</a>."
+    },
+    "tabs": {
+      "carto": "CARTO",
+      "external": "Kepler.gl"
+    }
+  },
+  "ExternalMapsPage": {
+    "header": {
+      "title": {
+        "mine": "Your Kepler.gl Maps",
+        "link": "Your Link-shared Maps",
+        "private": "Your Private Maps"
+      }
     }
   },
   "NotificationsPage": {

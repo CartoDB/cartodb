@@ -7,6 +7,7 @@ Development
 ### Features
 - New Free 2020 Plan, Dashboard and Builder changes ([#15497](https://github.com/CartoDB/cartodb/pull/15497))
 - Metadata API integration in license workflow ([#15483](https://github.com/CartoDB/cartodb/issues/15483))
+- Kepler.gl visualizations (Dashboard): Integrate Kepler.gl visualizations saved to CARTO into Dashboard ([#15484](https://github.com/CartoDB/cartodb/issues/15484))
 
 ### Bug fixes / enhancements
 - Hide DataCatalog to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))

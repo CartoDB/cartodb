@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Org. PG role deleted on org. deletion ([#12642](https://github.com/CartoDB/cartodb/issues/12642))
 
 4.36.0 (2020-03-09)
 -------------------

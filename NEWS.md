@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Rise to 50 the number of tables created by a compressed file ([#14952](https://github.com/CartoDB/cartodb/pull/14952))
 
 4.36.0 (2020-03-09)
 -------------------

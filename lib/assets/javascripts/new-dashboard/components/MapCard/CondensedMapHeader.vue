@@ -35,7 +35,7 @@
             {{ $t(`MapListHeader.lastModified`) }}
           </span>
         </div>
-        <div class="cell cell--xsmall u-txt-right u-p--0" @click="changeOrder('mapviews')">
+        <div class="cell cell--xsmall u-txt-right u-p--0" @click="changeOrder('mapviews')" v-if="showViews">
           <span class="text is-small is-txtSoftGrey"
                 :class="{
                   'is-active': isOrderApplied('mapviews'),
@@ -71,6 +71,10 @@ export default {
     order: String,
     orderDirection: String,
     isSortable: {
+      type: Boolean,
+      default: true
+    },
+    showViews: {
       type: Boolean,
       default: true
     }

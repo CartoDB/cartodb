@@ -3,7 +3,6 @@ module Carto::GoogleMaps
     organization&.google_maps_key.presence || google_maps_key
   end
 
-  # TODO: this is the correct name for what's stored in the model, refactor changing that name
   alias_method :google_maps_query_string, :google_maps_api_key
 
   def google_maps_geocoder_enabled?

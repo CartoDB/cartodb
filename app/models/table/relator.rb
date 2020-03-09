@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../visualization/collection'
 require_relative '../visualization/member'
 

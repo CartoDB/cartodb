@@ -1,4 +1,3 @@
-# coding: UTF-8
 require_relative '../../spec_helper'
 require_relative '../organization_shared_examples'
 require 'helpers/storage_helper'

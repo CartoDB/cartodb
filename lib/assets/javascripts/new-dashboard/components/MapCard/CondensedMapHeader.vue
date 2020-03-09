@@ -16,7 +16,15 @@
     </div>
 
     <div class="viz-column--extra-info">
-      <div class="viz-column--status">
+      <div class="viz-column--statusL">
+        <div class="cell cell--medium u-p--0">
+          <span class="text is-small is-txtSoftGrey"
+                :class="{
+                  'element-sort': false
+                }">
+            {{ $t(`MapListHeader.type`) }}
+          </span>
+        </div>
         <div class="cell cell--large" @click="changeOrder('updated_at')">
           <span class="text is-small is-txtSoftGrey"
                 :class="{
@@ -27,7 +35,7 @@
             {{ $t(`MapListHeader.lastModified`) }}
           </span>
         </div>
-        <div class="cell cell--large u-txt-right u-p--0 " @click="changeOrder('mapviews')">
+        <div class="cell cell--xsmall u-txt-right u-p--0" @click="changeOrder('mapviews')" v-if="showViews">
           <span class="text is-small is-txtSoftGrey"
                 :class="{
                   'is-active': isOrderApplied('mapviews'),
@@ -39,7 +47,7 @@
         </div>
       </div>
 
-      <div class="viz-column--share">
+      <div class="viz-column--shareS">
         <div class="cell cell--small" @click="changeOrder('privacy')">
           <span class="text is-small is-txtSoftGrey"
                 :class="{
@@ -63,6 +71,10 @@ export default {
     order: String,
     orderDirection: String,
     isSortable: {
+      type: Boolean,
+      default: true
+    },
+    showViews: {
       type: Boolean,
       default: true
     }

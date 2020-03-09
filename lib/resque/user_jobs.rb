@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './base_job'
 require 'resque-metrics'
 require_relative '../cartodb/metrics'
@@ -65,6 +63,20 @@ module Resque
         rescue StandardError => e
           CartoDB::Logger.error(exception: e, message: 'Error syncing rate limits to redis', account_type: account_type)
           raise e
+        end
+      end
+    end
+
+    module Notifications
+      module Send
+        extend ::Resque::Metrics
+        @queue = :users
+
+        def self.perform(user_ids, notification_id)
+          notification = Carto::Notification.find(notification_id)
+          Carto::User.where(id: user_ids).find_each do |user|
+            user.received_notifications.create!(notification: notification, received_at: DateTime.now)
+          end
         end
       end
     end

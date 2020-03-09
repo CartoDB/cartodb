@@ -69,7 +69,7 @@ describe CartoDB::ConnectionPool do
       end
       database_object_count.should < (initial_db_count + MAX_ALLOWABLE_CONNECTIONS)
 
-      # Destroy new user and ensure it does not leaks (as soon as his db connection is evicted)
+      # Destroy new user and ensure it does not leaks (as soon as their db connection is evicted)
       @users.delete_at(0).destroy
 
       (0..4).each do |_|

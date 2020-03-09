@@ -1,14 +1,16 @@
 <template>
-  <section class="page page--welcome">
+  <Page class="page--welcome">
     <Welcome />
     <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-    <MapsSection class="section" @contentChanged="onContentChanged"/>
-    <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged"/>
+    <DatasetsSection v-if="isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged"/>
+    <MapsSection v-if="isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged"/>
+    <MapsSection v-if="!isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged"/>
+    <DatasetsSection v-if="!isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged"/>
     <QuotaSection></QuotaSection>
 
     <router-view name="onboarding-modal"/>
-  </section>
+  </Page>
 </template>
 
 <script>
@@ -18,6 +20,7 @@ import RecentSection from './RecentSection/RecentSection.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
+import Page from 'new-dashboard/components/Page';
 
 export default {
   name: 'Home',
@@ -27,19 +30,32 @@ export default {
     RecentSection,
     MapsSection,
     DatasetsSection,
-    QuotaSection
+    QuotaSection,
+    Page
   },
   beforeMount () {
     this.$store.dispatch('recentContent/fetch');
 
     this.$store.dispatch('maps/resetFilters');
+    this.$store.dispatch('externalMaps/resetFilters');
     this.$store.dispatch('datasets/resetFilters');
 
     this.$store.dispatch('maps/setResultsPerPage', 6);
+    // this.$store.dispatch('externalMaps/setResultsPerPage', 6);
     this.$store.dispatch('datasets/setResultsPerPage', 6);
 
+    // If user is viewer, show shared maps and datasets
+    if (this.$store.getters['user/isViewer']) {
+      this.$store.dispatch('maps/filter', 'shared');
+      this.$store.dispatch('datasets/filter', 'shared');
+    }
+
     this.$store.dispatch('maps/fetch');
-    this.$store.dispatch('datasets/fetch');
+    this.$store.dispatch('externalMaps/init')
+      .then(() => {
+        this.$store.dispatch('externalMaps/fetch');
+        this.$store.dispatch('datasets/fetch');
+      });
   },
   data () {
     return {
@@ -65,6 +81,7 @@ export default {
     onContentChanged () {
       this.$store.dispatch('recentContent/fetch');
       this.$store.dispatch('maps/fetch');
+      this.$store.dispatch('externalMaps/fetch');
       this.$store.dispatch('datasets/fetch');
     }
   }
@@ -73,12 +90,6 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-
-.page {
-  &--welcome {
-    padding: 64px 0 0;
-  }
-}
 
 .section {
   position: relative;

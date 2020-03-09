@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 class SearchTweet < Sequel::Model
 
   # @param id

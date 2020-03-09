@@ -66,23 +66,23 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'displays published layers, not ("live") visualization layers' do
-      @map, @table, @table_visualization, @visualization = create_full_builder_vis(@carto_user)
-      Carto::Mapcap.create!(visualization_id: @visualization.id)
+      map, table, table_visualization, visualization = create_full_builder_vis(@carto_user)
+      Carto::Mapcap.create!(visualization_id: visualization.id)
 
-      layer = @visualization.layers[1]
+      layer = visualization.layers[1]
       old_tile_style = layer.options['tile_style']
 
       new_layer_style = '#layer { marker-width: 7; }'
       layer.options['tile_style'] = new_layer_style
       layer.save
 
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+      get builder_visualization_public_embed_url(visualization_id: visualization.id)
 
       response.status.should == 200
       response.body.should_not include(new_layer_style)
       response.body.should include(old_tile_style)
 
-      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
     it 'embeds visualizations' do
@@ -103,18 +103,18 @@ describe Carto::Builder::Public::EmbedsController do
 
     describe 'connectivity issues' do
       it 'does not need connection to the user db' do
-        @map, @table, @table_visualization, @visualization = create_full_builder_vis(@carto_user)
-        Carto::Mapcap.create!(visualization_id: @visualization.id)
+        map, table, table_visualization, visualization = create_full_builder_vis(@carto_user)
+        Carto::Mapcap.create!(visualization_id: visualization.id)
 
-        @actual_database_name = @visualization.user.database_name
-        @visualization.user.update_attribute(:database_name, 'wadus')
+        actual_database_name = visualization.user.database_name
+        visualization.user.update_attribute(:database_name, 'wadus')
 
         CartoDB::Logger.expects(:warning).never
-        get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+        get builder_visualization_public_embed_url(visualization_id: visualization.id)
         response.status.should == 200
 
-        @visualization.user.update_attribute(:database_name, @actual_database_name)
-        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+        visualization.user.update_attribute(:database_name, actual_database_name)
+        destroy_full_visualization(map, table, table_visualization, visualization)
       end
     end
 
@@ -171,7 +171,8 @@ describe Carto::Builder::Public::EmbedsController do
     it 'includes 3rd party scripts for analytics' do
       Cartodb.with_config(
         trackjs: {
-          'customer' => 'fake_trackjs_customer'
+          'customer' => 'fake_trackjs_customer',
+          'frequency' => 1
         },
         metrics: {
           'hubspot': {
@@ -179,14 +180,10 @@ describe Carto::Builder::Public::EmbedsController do
             'token' => 'fake_hubspot_token'
           }
         },
-        google_analytics: {
-          'embeds' => 'fake_embed_id',
-          'domain' => 'carto-test.com'
-        }
+        google_tag_manager_id: 'google_tag_manager_id'
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
-        response.body.should include("www.google-analytics.com/analytics")
         response.body.should include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
       end
     end
@@ -194,7 +191,8 @@ describe Carto::Builder::Public::EmbedsController do
     it 'does not include 3rd party scripts if cookies=0 query param is present' do
       Cartodb.with_config(
         trackjs: {
-          'customer' => 'fake_trackjs_customer'
+          'customer' => 'fake_trackjs_customer',
+          'frequency' => 1
         },
         metrics: {
           'hubspot': {
@@ -202,14 +200,10 @@ describe Carto::Builder::Public::EmbedsController do
             'token' => 'fake_hubspot_token'
           }
         },
-        google_analytics: {
-          'embeds' => 'fake_embed_id',
-          'domain' => 'carto-test.com'
-        }
+        google_tag_manager_id: 'google_tag_manager_id'
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id, cookies: '0')
 
-        response.body.should_not include("www.google-analytics.com/analytics")
         response.body.should_not include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
       end
     end
@@ -365,7 +359,6 @@ describe Carto::Builder::Public::EmbedsController do
       unpublished_visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
       unpublished_visualization.published?.should be_false
 
-
       post builder_visualization_public_embed_protected_url(visualization_id: unpublished_visualization.id, password: TEST_PASSWORD)
 
       response.body.include?('Invalid password').should be false
@@ -381,7 +374,6 @@ describe Carto::Builder::Public::EmbedsController do
       Carto::Mapcap.create!(visualization_id: published_visualization.id)
       published_visualization.published?.should be_true
 
-
       post builder_visualization_public_embed_protected_url(visualization_id: published_visualization.id, password: TEST_PASSWORD)
 
       response.status.should == 200
@@ -395,7 +387,6 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
-
       post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: "${TEST_PASSWORD}NO!")
 
       response.body.include?('Invalid password').should be true
@@ -406,7 +397,6 @@ describe Carto::Builder::Public::EmbedsController do
       stub_passwords(TEST_PASSWORD)
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
-
 
       post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: TEST_PASSWORD)
 
@@ -419,7 +409,6 @@ describe Carto::Builder::Public::EmbedsController do
       stub_passwords(TEST_PASSWORD)
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
-
 
       post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: TEST_PASSWORD)
 

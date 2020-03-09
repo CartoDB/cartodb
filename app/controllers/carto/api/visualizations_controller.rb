@@ -85,7 +85,7 @@ module Carto
         valid_order_combinations = VALID_ORDER_PARAMS - offdatabase_orders
         opts = { valid_order_combinations: valid_order_combinations }
         page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS, opts)
-        _, total_types = get_types_parameters
+        types = get_types_parameters
 
         vqb = query_builder_with_filter_from_hash(params)
 
@@ -102,7 +102,7 @@ module Carto
           total_entries: vqb.build.size
         }
         if current_user && (params[:load_totals].to_s != 'false')
-          response.merge!(calculate_totals(total_types))
+          response.merge!(calculate_totals(types))
         end
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
@@ -228,6 +228,7 @@ module Carto
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue => e
         CartoDB::Logger.error(message: "Error creating visualization", visualization_id: vis.try(:id), exception: e)
+        raise e if e.is_a?(Carto::UnauthorizedError)
         render_jsonp({ errors: vis.try(:errors).try(:full_messages) }, 400)
       end
 
@@ -272,7 +273,9 @@ module Carto
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue => e
         CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error updating'] : vis.errors.full_messages }, 400)
+        error_code = vis.errors.include?(:privacy) ? 403 : 400
+        render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error updating'] : vis.errors.full_messages },
+                     error_code)
       end
 
       def destroy

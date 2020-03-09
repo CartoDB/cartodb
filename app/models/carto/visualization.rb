@@ -38,8 +38,10 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_DERIVED = 'derived'.freeze
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
+  TYPE_KUVIZ = 'kuviz'.freeze
 
-  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ].freeze
+  MAP_TYPES = [TYPE_DERIVED, TYPE_KUVIZ].freeze
 
   KIND_GEOM   = 'geom'.freeze
   KIND_RASTER = 'raster'.freeze
@@ -77,6 +79,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
 
+  has_one :asset, class_name: Carto::Asset, inverse_of: :visualization, dependent: :destroy
+
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
   has_one :synchronization, class_name: Carto::Synchronization, dependent: :destroy
@@ -92,6 +96,7 @@ class Carto::Visualization < ActiveRecord::Base
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }
   validates :type, inclusion: { in: VALID_TYPES }
+  validates :name, uniqueness: { scope: [:user_id, :type] }, if: :kuviz?
   validate :validate_password_presence
   validate :validate_privacy_changes
   validate :validate_user_not_viewer, on: :create
@@ -300,12 +305,20 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_CANONICAL
   end
 
+  def map?
+    kuviz? || derived?
+  end
+
   def derived?
     type == TYPE_DERIVED
   end
 
   def remote?
     type == TYPE_REMOTE
+  end
+
+  def kuviz?
+    type == TYPE_KUVIZ
   end
 
   def layers
@@ -759,8 +772,32 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def validate_privacy_changes
-    if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
+    return unless privacy_changed? && (map? || table?)
+
+    is_privacy_private? ? validate_change_to_private : validate_change_to_public
+  end
+
+  def validate_change_to_private
+    if (!user&.private_tables_enabled? && table?) || (!user&.private_maps_enabled? && map?)
       errors.add(:privacy, 'cannot be set to private')
+    end
+
+    return unless !privacy_was || privacy_was != Carto::Visualization::PRIVACY_PRIVATE
+
+    if map? && CartoDB::QuotaChecker.new(user).will_be_over_private_map_quota?
+      errors.add(:privacy, 'over account private map quota')
+    end
+  end
+
+  def validate_change_to_public
+    return unless !privacy_was || privacy_was == Carto::Visualization::PRIVACY_PRIVATE
+
+    if map? && CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
+      errors.add(:privacy, 'over account public map quota')
+    end
+
+    if table? && CartoDB::QuotaChecker.new(user).will_be_over_public_dataset_quota?
+      errors.add(:privacy, 'over account public dataset quota')
     end
   end
 

@@ -1,12 +1,15 @@
 <template>
   <div id="app">
-    <NavigationBar
-      :user="user"
-      :baseUrl="baseUrl"
-      :notificationsCount="notificationsCount"
-      :isFirstTimeInDashboard="isFirstTimeInDashboard"
-      bundleType="dashboard"/>
-
+    <header class="header" :class="{ 'has-user-notification': isNotificationVisible }">
+      <NotificationWarning v-if="isNotificationVisible" :htmlBody=user.notification />
+      <NavigationBar
+        :user="user"
+        :baseUrl="baseUrl"
+        :notificationsCount="notificationsCount"
+        :isNotificationVisible=isNotificationVisible
+        :isFirstTimeInDashboard="isFirstTimeInDashboard"
+        bundleType="dashboard"/>
+    </header>
     <router-view/>
 
     <Footer :user="user"/>
@@ -17,6 +20,7 @@
 
 <script>
 import NavigationBar from 'new-dashboard/components/NavigationBar/NavigationBar';
+import NotificationWarning from 'new-dashboard/components/NotificationWarning';
 import Footer from 'new-dashboard/components/Footer';
 import BackgroundPollingView from './components/Backbone/BackgroundPollingView.vue';
 import MamufasImportView from './components/Backbone/MamufasImportView.vue';
@@ -26,6 +30,7 @@ export default {
   name: 'App',
   components: {
     NavigationBar,
+    NotificationWarning,
     BackgroundPollingView,
     Footer,
     MamufasImportView
@@ -36,6 +41,9 @@ export default {
   computed: {
     user () {
       return this.$store.state.user;
+    },
+    isNotificationVisible () {
+      return !!this.$store.getters['user/isNotificationVisible'];
     },
     baseUrl () {
       return this.$store.state.user.base_url;
@@ -65,7 +73,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+@import 'new-dashboard/styles/variables';
+
 #app {
   font-family: 'Montserrat', 'Open Sans', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -75,4 +85,13 @@ export default {
 * {
   box-sizing: border-box;
 }
+
+.header {
+  padding-top: $header__height;
+
+  &.has-user-notification {
+    padding-top: $header__height + $notification-warning__height;
+  }
+}
+
 </style>

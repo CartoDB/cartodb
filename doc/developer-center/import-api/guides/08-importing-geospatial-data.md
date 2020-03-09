@@ -130,7 +130,7 @@ The format of the uploaded Spreadsheet must apply the following format:
 * Merged cells are not supported
 * Graphs, charts, or other kind of elements are not supported
 
-For multi-sheet spreadsheets, only the first sheet will be imported.
+For multi-sheet spreadsheets, only the first sheet will be imported. For the case of Google Drive the maximum size of the spreadhseet is limited to 10MB.
 
 #### GPX
 

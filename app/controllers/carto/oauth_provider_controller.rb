@@ -1,13 +1,14 @@
-# encoding: UTF-8
-
 require_dependency 'carto/errors'
 require_dependency 'carto/oauth_provider/errors'
 require_dependency 'carto/oauth_provider/grant_strategies'
 require_dependency 'carto/oauth_provider/response_strategies'
 require_dependency 'carto/oauth_provider/token_presenter'
+require_dependency 'carto/helpers/frame_options_helper'
 
 module Carto
   class OauthProviderController < ApplicationController
+    include Carto::FrameOptionsHelper
+
     GRANT_STRATEGIES = {
       'authorization_code' => OauthProvider::GrantStrategies::AuthorizationCodeStrategy,
       'refresh_token' => OauthProvider::GrantStrategies::RefreshTokenStrategy
@@ -30,7 +31,7 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
-    before_action :allow_silent_flow_iframe, only: :consent, if: :silent_flow?
+    before_action :x_frame_options_allow, only: :consent, if: :silent_flow?
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
@@ -67,6 +68,7 @@ module Carto
         @oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
         validate_oauth_app_user(@oauth_app_user)
         @oauth_app_user.save!
+        track_event
       end
 
       create_authorization_code
@@ -210,8 +212,13 @@ module Carto
       RESPONSE_STRATEGIES[params[:response_type]]
     end
 
-    def allow_silent_flow_iframe
-      response.headers.except! 'X-Frame-Options'
+    def track_event
+      properties = {
+        user_id: @oauth_app_user.user_id,
+        app_id: @oauth_app_user.oauth_app.id,
+        app_name: @oauth_app_user.oauth_app.name
+      }
+      Carto::Tracking::Events::CreatedOauthAppUser.new(current_viewer.id, properties).report
     end
   end
 end

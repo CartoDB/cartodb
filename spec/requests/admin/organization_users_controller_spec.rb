@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../spec_helper_min'
 
 describe Admin::OrganizationUsersController do
@@ -617,7 +615,7 @@ describe Admin::OrganizationUsersController do
           @user.destroy if @user
         end
 
-        it 'owner cannot enable soft limits if he has not' do
+        it 'owner cannot enable soft limits if she/he has not' do
           old_limits = update_soft_limits(@org_user_owner, false)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
@@ -630,7 +628,7 @@ describe Admin::OrganizationUsersController do
           update_soft_limits(@org_user_owner, old_limits)
         end
 
-        it 'owner cannot enable geocoding limit if he has not' do
+        it 'owner cannot enable geocoding limit if she/he has not' do
           old_limits = update_soft_limits(@org_user_owner, false)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
@@ -658,7 +656,7 @@ describe Admin::OrganizationUsersController do
           update_soft_limits(@org_user_owner, old_limits)
         end
 
-        it 'owner can enable soft limits if he has' do
+        it 'owner can enable soft limits if she/he has' do
           old_limits = update_soft_limits(@org_user_owner, true)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
@@ -678,7 +676,7 @@ describe Admin::OrganizationUsersController do
           ::User[@existing_user.id].destroy if @existing_user
         end
 
-        it 'owner cannot enable soft limits if he has not' do
+        it 'owner cannot enable soft limits if she/he has not' do
           old_limits = update_soft_limits(@org_user_owner, false)
           check_soft_limits(@carto_org_user_owner, false)
           @existing_user = FactoryGirl.create(:carto_user,
@@ -694,7 +692,7 @@ describe Admin::OrganizationUsersController do
           update_soft_limits(@org_user_owner, old_limits)
         end
 
-        it 'owner can enable soft limits if he has' do
+        it 'owner can enable soft limits if she/he has' do
           old_limits = update_soft_limits(@org_user_owner, true)
           @existing_user = FactoryGirl.create(:carto_user,
                                               soft_limits_params(false).merge(organization: @carto_organization))
@@ -709,7 +707,7 @@ describe Admin::OrganizationUsersController do
           update_soft_limits(@org_user_owner, old_limits)
         end
 
-        it 'owner can disable soft limits if he has' do
+        it 'owner can disable soft limits if she/he has' do
           old_limits = update_soft_limits(@org_user_owner, true)
           @existing_user = FactoryGirl.create(:carto_user,
                                               soft_limits_params(true).merge(organization: @carto_organization))

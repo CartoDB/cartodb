@@ -1,9 +1,15 @@
 <template>
   <div class="container grid">
     <div class="full-width">
-      <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="!selectedDatasets.length" ref="headerContainer">
+      <SectionTitle class="grid-cell" :showActionButton="!selectedDatasets.length" ref="headerContainer">
         <template slot="icon">
           <img src="../assets/icons/section-title/data.svg" width="18" height="20" />
+        </template>
+
+        <template slot="title">
+          <VisualizationsTitle
+            :defaultTitle="$t(`DataPage.header.title['${appliedFilter}']`)"
+            :selectedItems="selectedDatasets.length"/>
         </template>
 
         <template slot="dropdownButton">
@@ -26,11 +32,18 @@
           </SettingsDropdown>
         </template>
 
-        <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedDatasets.length">
+        <template slot="actionButton" v-if="showCreateButton">
           <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">
             {{ $t(`DataPage.createDataset`) }}
           </CreateButton>
         </template>
+
+        <template v-if="shouldShowLimitsWarning" slot="warning">
+          <NotificationBadge type="warning" :has-margin='false'>
+            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
+          </NotificationBadge>
+        </template>
+
       </SectionTitle>
     </div>
 
@@ -48,7 +61,15 @@
       </InitialState>
     </div>
 
-    <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="shouldShowHeader">
+    <div
+        v-if="shouldShowHeader"
+        class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+        :class="{
+          'has-user-notification': isNotificationVisible,
+          'in-home': isInHomePage,
+          'no-secondary-navbar': !hasSecondaryNavbar
+        }">
+
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
 
@@ -75,7 +96,7 @@
 
     <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
       <li v-for="n in maxVisibleDatasets" :key="n" class="dataset-item">
-        <DatasetCardFake></DatasetCardfake>
+        <DatasetCardFake></DatasetCardFake>
       </li>
     </ul>
 
@@ -83,17 +104,20 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import DatasetCard from '../components/Dataset/DatasetCard';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import SettingsDropdown from '../components/Settings/Settings';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
+import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
+import * as accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'DatasetsList',
@@ -115,6 +139,8 @@ export default {
     CreateButton,
     SettingsDropdown,
     SectionTitle,
+    VisualizationsTitle,
+    NotificationBadge,
     DatasetCard,
     DatasetCardFake,
     InitialState,
@@ -141,21 +167,26 @@ export default {
       currentEntriesCount: state => state.datasets.metadata.total_entries,
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
-      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
+      upgradeUrl: state => state.config.upgrade_url,
+      planAccountType: state => state.user.account_type
+    }),
+    ...mapGetters({
+      datasetsCount: 'user/datasetsCount',
+      datasetsQuota: 'user/datasetsQuota',
+      isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota'
     }),
     canCreateDatasets () {
       return this.$store.getters['user/canCreateDatasets'];
-    },
-    pageTitle () {
-      return this.selectedDatasets.length
-        ? this.$t('BulkActions.selected', {count: this.selectedDatasets.length})
-        : this.$t(`DataPage.header.title['${this.appliedFilter}']`);
     },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
     shouldShowHeader () {
-      return !this.emptyState && !this.initialState && this.currentEntriesCount > 0;
+      return !this.emptyState && !this.initialState;
+    },
+    showCreateButton () {
+      return (this.totalUserEntries || !this.isFirstTimeViewingDashboard) && !this.selectedDatasets.length;
     },
     initialState () {
       return this.isFirstTimeViewingDashboard &&
@@ -182,6 +213,18 @@ export default {
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;
+    },
+    shouldShowLimitsWarning () {
+      return this.isOutOfDatasetsQuota;
+    },
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    },
+    isInHomePage () {
+      return this.$router.currentRoute.name === 'home';
+    },
+    hasSecondaryNavbar () {
+      return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
     }
   },
   methods: {
@@ -234,6 +277,9 @@ export default {
   watch: {
     selectedDatasets () {
       this.$emit('selectionChange', this.selectedDatasets);
+    },
+    totalUserEntries () {
+      this.$store.dispatch('user/updateTableCount', this.totalUserEntries);
     }
   }
 };
@@ -247,7 +293,21 @@ export default {
 }
 
 .grid__head--sticky {
-  top: 64px;
+  top: $header__height + $subheader__height;
+
+  &.in-home,
+  &.no-secondary-navbar {
+    top: $header__height;
+  }
+
+  &.has-user-notification {
+    top: $header__height + $subheader__height + $notification-warning__height;
+
+    &.in-home,
+    &.no-secondary-navbar {
+      top: $header__height + $notification-warning__height;
+    }
+  }
 }
 
 .pagination-element {
@@ -262,5 +322,9 @@ export default {
 
 .empty-state {
   margin: 20vh 0 8vh;
+}
+
+.warning {
+  white-space: nowrap;
 }
 </style>

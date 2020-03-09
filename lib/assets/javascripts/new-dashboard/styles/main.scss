@@ -18,6 +18,7 @@
 @import 'components/welcome';
 
 // pages
+@import 'pages/catalog';
 @import 'pages/solutionsIcons';
 @import 'pages/visualizations';
 
@@ -26,3 +27,9 @@
 @import 'helpers/flexbox';
 @import 'helpers/spacing';
 @import 'helpers/utilities';
+
+//hangar
+@import 'hangar/main';
+
+//vendors
+@import 'vendors/perfect-scrollbar';

@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_relative './data_import'
 require_relative './visualization/external_source'
 

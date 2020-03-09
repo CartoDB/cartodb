@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require_relative '../../helpers/unique_names_helper'
 
 module CartoDB

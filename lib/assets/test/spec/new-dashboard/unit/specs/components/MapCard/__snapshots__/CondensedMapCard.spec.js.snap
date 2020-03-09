@@ -18,11 +18,14 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -55,11 +58,14 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -92,11 +98,14 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -129,11 +138,14 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -167,11 +179,14 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -204,11 +219,14 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -241,11 +259,14 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -278,11 +299,14 @@ exports[`MapCard.vue should render correct contents 1`] = `
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -322,11 +346,14 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -377,11 +404,14 @@ exports[`MapCard.vue should render description and tags 1`] = `
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -418,11 +448,14 @@ exports[`MapCard.vue should render shared brief with all organisation members 1`
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -459,11 +492,14 @@ exports[`MapCard.vue should show the map is shared 1`] = `
     </div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0">
+        <typebadge-stub visualizationtype="derived" incondensedcard="true"></typebadge-stub>
+      </div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey">0</span></div>
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC

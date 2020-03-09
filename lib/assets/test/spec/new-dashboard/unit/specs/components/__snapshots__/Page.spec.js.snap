@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NavigationBar.vue should have is-user-notification class when the user has a notification 1`] = `<section class="page"></section>`;
+
+exports[`NavigationBar.vue should not have is-user-notification class when the user has a notification 1`] = `<section class="page"></section>`;

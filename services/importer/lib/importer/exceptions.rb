@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../../services/datasources/lib/datasources/exceptions'
 require_relative './connector_runner'
 
@@ -68,6 +66,18 @@ module CartoDB
     class CartoDBfyInvalidID < BaseImportError
       def initialize(message = "Invalid cartodb_id")
         super(message, 2011)
+      end
+    end
+
+    class MapQuotaExceededError < BaseImportError
+      def initialize(message = "Map quota exceeded")
+        super(message, 8007)
+      end
+    end
+
+    class PublicDatasetQuotaExceededError < BaseImportError
+      def initialize(message = "Public dataset quota exceeded")
+        super(message, 8008)
       end
     end
 
@@ -171,6 +181,8 @@ module CartoDB
       StuckImportJobError                   => 6671,
       StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
+      MapQuotaExceededError                 => 8007,
+      PublicDatasetQuotaExceededError       => 8008,
       UnknownError                          => 99999,
       CartoDB::Datasources::DatasourceBaseError                   => 1012,
       CartoDB::Datasources::AuthError                             => 1012,

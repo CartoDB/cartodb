@@ -15,12 +15,12 @@ exports[`SearchSuggestions.vue Rendering should render correctly 1`] = `
       </div>
     </li>
     <li class="">
-      <div><a href="http://user.carto.com/viz/67a6fa8c-237f-41d7-a499-33dfa28a4e06/map" target="_blank" class="suggestions__item text is-caption suggestions__item--derived">
+      <div><a href="http://user.carto.com/viz/67a6fa8c-237f-41d7-a499-33dfa28a4e06/map" target="_blank" rel="noopener noreferrer" class="suggestions__item text is-caption suggestions__item--derived">
           Citi Bike Map Import
         </a></div>
     </li>
     <li class="">
-      <div><a href="http://user.carto.com/viz/c24a70b4-e18f-4836-82b9-c9be6377a37a/map" target="_blank" class="suggestions__item text is-caption suggestions__item--derived">
+      <div><a href="http://user.carto.com/viz/c24a70b4-e18f-4836-82b9-c9be6377a37a/map" target="_blank" rel="noopener noreferrer" class="suggestions__item text is-caption suggestions__item--derived">
           Madrid traffic map
         </a></div>
     </li>

@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_relative '../spec_helper'
 
 # Tests should define the following methods:
@@ -12,6 +10,8 @@ shared_examples_for "organization models" do
   describe "#get_geocoding_calls" do
 
     it "counts all geocodings within the org" do
+      base_line = get_geocoding_calls_by_organization_id(@organization.id)
+
       get_organization.owner.geocoder_provider = 'heremaps'
       org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
         @org_user_1.username,
@@ -32,7 +32,33 @@ shared_examples_for "organization models" do
       user1_geocoder_metrics.incr(:geocoder_cache, :success_responses, 3)
 
       ::User.any_instance.expects(:get_geocoding_calls).never
-      get_geocoding_calls_by_organization_id(@organization.id).should == 14
+      get_geocoding_calls_by_organization_id(@organization.id).should == base_line + 14
+    end
+
+    it "counts all geocodings within the org using the org provider" do
+      base_line = get_geocoding_calls_by_organization_id(@organization.id)
+
+      get_organization.owner.geocoder_provider = 'tomtom'
+      org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
+        @org_user_1.username,
+        @org_user_1.organization.name
+      )
+      org_user_1_geocoder_metrics.incr(:geocoder_here, :success_responses, 2)
+      org_user_1_geocoder_metrics.incr(:geocoder_cache, :success_responses, 3)
+
+      org_user_2_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
+        @org_user_2.username,
+        @org_user_2.organization.name
+      )
+      org_user_2_geocoder_metrics.incr(:geocoder_here, :success_responses, 4)
+      org_user_2_geocoder_metrics.incr(:geocoder_cache, :success_responses, 5)
+
+      user1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user1.username, nil)
+      user1_geocoder_metrics.incr(:geocoder_here, :success_responses, 2)
+      user1_geocoder_metrics.incr(:geocoder_cache, :success_responses, 3)
+
+      ::User.any_instance.expects(:get_geocoding_calls).never
+      get_geocoding_calls_by_organization_id(get_organization.id).should == base_line + 14
     end
 
   end

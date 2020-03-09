@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/storage_helper'
@@ -231,7 +229,7 @@ describe Carto::Api::OrganizationAssetsController do
     end
 
     it 'works for organization owners' do
-      Carto::OrganizationAssetsService.instance
+      Carto::OrganizationImageAssetsService.instance
                                       .stubs(:fetch_file)
                                       .returns(Tempfile.new('test'))
 

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../support/factories/tables'
 require 'helpers/unique_names_helper'
 
@@ -45,6 +43,9 @@ end
 
 shared_context 'visualization creation helpers' do
   include Warden::Test::Helpers
+
+  BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-75.234375,54.57206166],[4.921875,54.36775852],[7.03125,-0.35156029],[-71.71875,1.75753681],[-75.234375,54.57206166]]]]}'.freeze
+  OUTSIDE_BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-149.4140625,79.74993208],[-139.921875,79.74993208],[-136.0546875,78.13449318],[-148.7109375,78.06198919],[-149.4140625,79.74993208]]]]}'.freeze
 
   CARTO_OPTIONS = '{"query":"","opacity":0.99,"auto_bound":false,"interactivity":"cartodb_id","debug":false,' \
                   '"visible":true,"tiler_domain":"localhost.lan","tiler_port":"80","tiler_protocol":"http",' \

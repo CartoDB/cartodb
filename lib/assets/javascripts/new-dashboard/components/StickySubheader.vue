@@ -1,5 +1,7 @@
 <template>
-  <section class="sticky-subheader" :class="{ 'is-visible': $props.isVisible }">
+  <section
+    class="sticky-subheader"
+    :class="{ 'is-visible': $props.isVisible, 'has-user-notification': isNotificationVisible }">
     <div class="container subheader-container">
       <slot />
     </div>
@@ -13,6 +15,11 @@ export default {
     isVisible: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
     }
   }
 };
@@ -35,7 +42,12 @@ export default {
   background-color: $white;
 
   &.is-visible {
-    transform: translate3d(0, 64px, 0);
+    transform: translate3d(0, $header__height, 0);
+
+    &.has-user-notification {
+      $stickyHeaderPosition: $header__height + $notification-warning__height;
+      transform: translate3d(0, $stickyHeaderPosition, 0);
+    }
   }
 }
 

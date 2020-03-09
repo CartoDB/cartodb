@@ -8,5 +8,13 @@
 </div>
 <div class="AddLayer-tabs">
   <ul class="ImportOptions-tabsList js-menu CDB-Text CDB-Size-medium u-altTextColor"></ul>
+  <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace-xl">
+    <%- _t('components.modals.add-layer.imports.feedback.text') %>
+    <a href="<%- _t('components.modals.add-layer.imports.feedback.url') %>" target="_blank" rel="noopener noreferrer">
+      <%- _t('components.modals.add-layer.imports.feedback.button') %>
+    </a>
+  </p>
+
+
 </div>
 <div class="ImportOptions-panes js-content"></div>

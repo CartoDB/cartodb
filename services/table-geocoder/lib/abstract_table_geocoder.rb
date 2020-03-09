@@ -1,6 +1,5 @@
-# encoding: utf-8
-
 require_relative 'exceptions'
+require 'active_support'
 require 'active_support/core_ext/numeric'
 
 module CartoDB

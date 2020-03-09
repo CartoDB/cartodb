@@ -28,12 +28,20 @@ module Carto
           {
             type: 'apis',
             apis: @api_key.granted_apis
-          },
-          {
-            type: 'database',
-            tables: table_permissions_for_api_key
           }
         ]
+
+        type_database = {
+          type: 'database',
+          tables: table_permissions_for_api_key,
+          schemas: schema_permissions_for_api_key
+        }
+
+        if @api_key.dataset_metadata_permissions
+          type_database['table_metadata'] = []
+        end
+
+        grants << type_database
 
         if @api_key.data_services?
           grants << {
@@ -51,6 +59,18 @@ module Carto
         @api_key.table_permissions_from_db.map do |p|
           {
             schema: p.schema,
+            name: p.name,
+            owner: p.owner,
+            permissions: p.permissions
+          }
+        end
+      end
+
+      def schema_permissions_for_api_key
+        return [] if @api_key.master? || @api_key.default_public?
+
+        @api_key.schema_permissions_from_db.map do |p|
+          {
             name: p.name,
             permissions: p.permissions
           }

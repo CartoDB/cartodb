@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/connector_runner'
 require_relative '../../lib/importer/job'
@@ -47,6 +46,8 @@ describe CartoDB::Importer2::ConnectorRunner do
       # Simulate connector success by ignoring all db opeartions
       Carto::Connector::Context.any_instance.stubs(:execute_as_superuser).returns(nil)
       Carto::Connector::Context.any_instance.stubs(:execute).returns(nil)
+      Carto::Connector::Context.any_instance.stubs(:execute_as_superuser_with_timeout).returns(nil)
+      Carto::Connector::Context.any_instance.stubs(:execute_with_timeout).returns(nil)
     end
 
     it "Succeeds if parameters are correct" do
@@ -172,7 +173,9 @@ describe CartoDB::Importer2::ConnectorRunner do
     before(:all) do
       # Simulate connector success when executing non-privileged SQL
       Carto::Connector::Context.any_instance.stubs(:execute_as_superuser).returns(nil)
-      Carto::Connector::Context.any_instance.stubs(:execute).raises("SQL EXECUTION ERROR")
+      Carto::Connector::Context.any_instance.stubs(:execute_as_superuser_with_timeout).returns(nil)
+      Carto::Connector::Context.any_instance.stubs(:execute).returns(nil)
+      Carto::Connector::Context.any_instance.stubs(:execute_with_timeout).raises("SQL EXECUTION ERROR")
     end
 
     it "Always fails" do
@@ -209,6 +212,9 @@ describe CartoDB::Importer2::ConnectorRunner do
   describe 'with invalid provider' do
     Carto::Connector::Context.any_instance.stubs(:execute_as_superuser).returns(nil)
     Carto::Connector::Context.any_instance.stubs(:execute).returns(nil)
+    Carto::Connector::Context.any_instance.stubs(:execute_as_superuser_with_timeout).returns(nil)
+    Carto::Connector::Context.any_instance.stubs(:execute_with_timeout).returns(nil)
+
 
     it "Fails at creation" do
       with_feature_flag @user, 'carto-connectors', true do

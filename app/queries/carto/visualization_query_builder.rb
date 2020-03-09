@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
@@ -15,11 +13,37 @@ class Carto::VisualizationQueryBuilder
   end
 
   def self.user_public_visualizations(user)
-    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
+    user_public_privacy_visualizations(user).with_published
+  end
+
+  def self.user_public_privacy_visualizations(user)
+    user_public(user).with_types(Carto::Visualization::MAP_TYPES)
+  end
+
+  def self.user_public_privacy_datasets(user)
+    user_public(user).with_types(Carto::Visualization::TYPE_CANONICAL)
+  end
+
+  def self.user_link_privacy_visualizations(user)
+    new.with_user_id(user.id)
+       .with_types(Carto::Visualization::MAP_TYPES)
+       .with_privacy(Carto::Visualization::PRIVACY_LINK)
+  end
+
+  def self.user_password_privacy_visualizations(user)
+    new.with_user_id(user.id)
+       .with_types(Carto::Visualization::MAP_TYPES)
+       .with_privacy(Carto::Visualization::PRIVACY_PROTECTED)
+  end
+
+  def self.user_private_privacy_visualizations(user)
+    new.with_user_id(user.id)
+       .with_types(Carto::Visualization::MAP_TYPES)
+       .with_privacy(Carto::Visualization::PRIVACY_PRIVATE)
   end
 
   def self.user_all_visualizations(user)
-    new.with_user_id(user ? user.id : nil).with_type(Carto::Visualization::TYPE_DERIVED)
+    new.with_user_id(user ? user.id : nil).with_types(Carto::Visualization::MAP_TYPES)
   end
 
   def self.user_public(user)

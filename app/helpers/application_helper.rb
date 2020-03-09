@@ -1,4 +1,3 @@
-# coding: utf-8
 require_dependency 'cartodb_config_utils'
 require_dependency 'carto/configuration'
 
@@ -7,9 +6,7 @@ module ApplicationHelper
   include CartoDB::ConfigUtils
   include SafeJsObject
   include TrackjsHelper
-  include GoogleAnalyticsHelper
   include GoogleTagManagerHelper
-  include HubspotHelper
   include FrontendConfigHelper
   include AppAssetsHelper
   include MapsApiHelper

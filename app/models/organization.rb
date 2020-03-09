@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'
@@ -482,6 +480,10 @@ class Organization < Sequel::Model
 
   def auth_saml_enabled?
     auth_saml_configuration.present?
+  end
+
+  def inheritable_feature_flags
+    inherit_owner_ffs ? owner.feature_flags_user : []
   end
 
   private

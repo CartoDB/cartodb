@@ -36,7 +36,7 @@ module FileServerHelper
     used_ports_command = `netstat -tln | tail -n +3 | awk '{ print $4 }' | cut -f2 -d ':'`
     used_ports = used_ports_command.split("\n").map(&:to_i)
 
-    (10000..65535).each do |port|
+    (rand(10000..10100)..65535).each do |port|
       return port if !used_ports.include?(port)
     end
 

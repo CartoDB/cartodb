@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/account_types_helper'
@@ -10,10 +8,6 @@ describe Carto::AccountType do
 
   before :each do
     @account_type = create_account_type_fg('PRO')
-  end
-
-  after :each do
-    @account_type.destroy if @account_type
   end
 
   describe '#create' do

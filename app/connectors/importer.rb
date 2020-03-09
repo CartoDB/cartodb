@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'uuidtools'
 require 'carto/importer/table_setup'
 
@@ -58,35 +57,53 @@ module CartoDB
         if quota_checker.will_be_over_table_quota?(results.length)
           log('Results would set overquota')
           @aborted = true
-          results.each { |result|
-            drop(result.table_name)
-          }
+          results.each { |result| drop(result.table_name) }
         else
+          check_map_quotas(runner.visualizations)
+          check_dataset_quotas(runner.visualizations)
           log('Proceeding to register')
           register_results(results)
-          results.select(&:success?).each { |result|
-            create_overviews(result)
-          }
+          results.select(&:success?).each { |result| create_overviews(result) }
           create_visualization if data_import.create_visualization
         end
         self
       end
 
-      def register_results(results)
-        gtm = Carto::GhostTablesManager.new(user.id)
-        bolt = gtm.get_bolt
-        rerun_func = lambda { gtm.send(:sync) }
-        lock_acquired = bolt.run_locked(attempts: 10, timeout: 30000, rerun_func: rerun_func) do
-          results.select(&:success?).each do |result|
-            register(result)
-          end
+      def check_map_quotas(visualizations)
+        log('Checking public and private map quota')
+        public_maps = visualizations.select do |v|
+          v.type == Carto::Visualization::TYPE_DERIVED && v.privacy != Carto::Visualization::PRIVACY_PRIVATE
         end
-        # In case we couldnt acquire bolt we want to continue with the import work so we register the
-        # results anyway
-        unless lock_acquired
-          CartoDB::Logger.warning(message: "Couldn't acquire bolt to register. Registering without bolt",
-                                  user: user,
-                                  import_id: @data_import_id)
+        private_maps = visualizations.select do |v|
+          v.type == Carto::Visualization::TYPE_DERIVED && v.privacy == Carto::Visualization::PRIVACY_PRIVATE
+        end
+        quota_checker = CartoDB::QuotaChecker.new(data_import.user)
+        return unless quota_checker.will_be_over_public_map_quota?(public_maps.count) ||
+                      quota_checker.will_be_over_private_map_quota?(private_maps.count)
+
+        log('Results would set map overquota')
+        raise CartoDB::Importer2::MapQuotaExceededError.new
+      end
+
+      def check_dataset_quotas(visualizations)
+        log('Checking public datasets quota')
+        public_datasets = visualizations.select do |v|
+          v.type == Carto::Visualization::TYPE_CANONICAL && v.privacy != Carto::Visualization::PRIVACY_PRIVATE
+        end
+        quota_checker = CartoDB::QuotaChecker.new(data_import.user)
+        return unless quota_checker.will_be_over_public_dataset_quota?(public_datasets.count)
+
+        log('Results would set dataset overquota')
+        raise CartoDB::Importer2::PublicDatasetQuotaExceededError.new
+      end
+
+      def register_results(results)
+        Carto::GhostTablesManager.run_synchronized(
+          user.id, attempts: 10, timeout: 3000,
+          message: "Couldn't acquire bolt to register. Registering without bolt",
+          user: user,
+          import_id: @data_import_id
+        ) do
           results.select(&:success?).each do |result|
             register(result)
           end

@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 class DataLibraryController < ApplicationController
   layout 'data_library'
 

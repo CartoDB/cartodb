@@ -1,15 +1,17 @@
 <template>
-  <section class="page">
+  <Page>
     <ExpirationMessage :expirationDays="expirationDays" :addPaymentsURL="addPaymentsURL"></ExpirationMessage>
-  </section>
+  </Page>
 </template>
 
 <script>
+import Page from 'new-dashboard/components/Page';
 import ExpirationMessage from 'new-dashboard/components/TrialExpired/ExpirationMessage';
 
 export default {
   name: 'TrialExpired',
   components: {
+    Page,
     ExpirationMessage
   },
   data () {

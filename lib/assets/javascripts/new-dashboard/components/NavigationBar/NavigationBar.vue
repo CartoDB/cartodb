@@ -1,5 +1,5 @@
 <template>
-<nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
+<nav class="navbar" :class="{ 'is-search-open': isSearchOpen, 'has-user-notification': isNotificationVisible }">
   <ul class="navbar-elementsContainer">
       <router-link :to="{ name: 'home' }" class="navbar-elementItem" :class="{'is-active': isHomePage()}" staticRoute="/dashboard">
         <span class="navbar-icon">
@@ -63,6 +63,10 @@ export default {
     user: Object,
     baseUrl: String,
     notificationsCount: Number,
+    isNotificationVisible: {
+      type: Boolean,
+      default: false
+    },
     isFirstTimeInDashboard: Boolean,
     bundleType: {
       type: String,
@@ -121,6 +125,7 @@ export default {
 .navbar {
   display: flex;
   position: fixed;
+  top: 0;
   z-index: $z-index__navbar;
   align-items: center;
   justify-content: space-between;
@@ -266,6 +271,10 @@ export default {
     position: absolute;
     right: 16px;
   }
+}
+
+.navbar.has-user-notification {
+  top: $notification-warning__height;
 }
 
 .feedback-popup {

@@ -5,6 +5,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import BulkActions from 'new-dashboard/components/BulkActions/BulkActions';
+import * as DialogActions from 'new-dashboard/core/dialog-actions';
 
 export default {
   name: 'ExternalMapBulkActions',
@@ -32,12 +33,12 @@ export default {
             name: this.$t('BulkActions.maps.selectAll'),
             event: 'selectAll',
             shouldBeHidden: this.areAllMapsSelected
+          },
+          {
+            name: this.$t('BulkActions.maps.delete'),
+            event: 'deleteMaps',
+            isDestructive: true
           }
-          // {
-          //   name: this.$t('BulkActions.maps.delete'),
-          //   event: 'deleteMap',
-          //   isDestructive: true
-          // }
         ],
         multiple: [
           {
@@ -48,12 +49,12 @@ export default {
           {
             name: this.$t('BulkActions.maps.deselectAll'),
             event: 'deselectAll'
+          },
+          {
+            name: this.$t('BulkActions.maps.delete'),
+            event: 'deleteMaps',
+            isDestructive: true
           }
-          // {
-          //   name: this.$t('BulkActions.maps.delete'),
-          //   event: 'deleteMaps',
-          //   isDestructive: true
-          // }
         ]
       };
     },
@@ -101,11 +102,12 @@ export default {
     deselectAll () {
       this.$emit('deselectAll');
     },
-    deleteMap () {
-      throw new Error('TODO: Implement');
-    },
     deleteMaps () {
-      throw new Error('TODO: Implement');
+      DialogActions.deleteVisualizations.apply(this, [
+        this.selectedMaps,
+        'externalMaps',
+        this.getActionHandlers()
+      ]);
     }
   }
 };

@@ -45,7 +45,7 @@ export default {
           { name: this.$t('QuickActions.shareViaURL'), event: 'shareViaUrl', shouldBeHidden: !this.isKuviz },
           { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap', shouldBeDisabled: !this.canDuplicate, shouldBeHidden: this.isKuviz || this.isKeplergl },
           { name: this.$t('QuickActions.lock'), event: 'lockMap', shouldBeHidden: this.isKeplergl },
-          { name: this.$t('QuickActions.delete'), event: 'deleteMap', isDestructive: true, shouldBeHidden: this.isKeplergl }
+          { name: this.$t('QuickActions.delete'), event: 'deleteMap', isDestructive: true }
         ],
         locked: [
           { name: this.$t('QuickActions.unlock'), event: 'unlockMap' }

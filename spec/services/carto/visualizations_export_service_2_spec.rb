@@ -1601,7 +1601,7 @@ describe Carto::VisualizationsExportService2 do
         destroy_visualization(imported_viz.id)
       end
 
-      it 'unauthorized error when the import is over public map quota' do
+      it 'raises an unauthorized error when the import is over public map quota' do
         @visualization.privacy = 'password'
         @visualization.user_id = @user2.id
         @visualization.password = 'super_secure_secret'
@@ -1612,8 +1612,22 @@ describe Carto::VisualizationsExportService2 do
         built_viz = export_service.build_visualization_from_json_export(exported_string)
         expect {
           Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-        }.to raise_error(Carto::UnauthorizedError)    
+        }.to raise_error(Carto::UnauthorizedError)
         @user2.unstub(:public_map_quota)
+      end
+
+      it 'raises an unauthorized error when the import is over private map quota' do
+        @visualization.privacy = 'private'
+        @visualization.user_id = @user2.id
+        @visualization.save!
+
+        @user2.stubs(:private_map_quota).returns(1)
+        exported_string = export_service.export_visualization_json_string(@visualization.id, @user, with_password: true)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+        expect {
+          Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+        }.to raise_error(Carto::UnauthorizedError)
+        @user2.unstub(:private_map_quota)
       end
 
       describe 'if full_restore is' do
@@ -1910,6 +1924,21 @@ describe Carto::VisualizationsExportService2 do
         expect(imported_viz.user_table.privacy).to(eq(Carto::UserTable::PRIVACY_PUBLIC))
 
         destroy_visualization(imported_viz.id)
+      end
+
+      it 'raises an unauthorized error when the import is over public dataset quota' do
+        @table_visualization.update_attributes(privacy: 'public')
+        exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
+        built_viz = export_service.build_visualization_from_json_export(exported_string)
+
+        # Create user db table (destroyed above)
+        @user_no_private_tables.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")
+        @user_no_private_tables.public_dataset_quota = 0
+        @user_no_private_tables.save!
+
+        expect {
+          Carto::VisualizationsExportPersistenceService.new.save_import(@user_no_private_tables, built_viz)
+        }.to raise_error(Carto::UnauthorizedError)
       end
     end
   end

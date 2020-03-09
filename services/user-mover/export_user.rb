@@ -73,6 +73,14 @@ module CartoDB
 
       def orphan_overview_tables
         return @orphan_overviews if @orphan_overviews
+        # PG12_DEPRECATED checks if the table raster_columns exsits
+        raster_available = user_pg_conn.exec(%{
+          SELECT 1
+          FROM   pg_views
+          WHERE  viewname = 'raster_overviews';
+        }).count > 0
+
+        return @orphan_overviews ||= [] unless raster_available
         raster_tables = user_pg_conn.exec("SELECT DISTINCT r_table_schema, r_table_name FROM raster_columns").map {
           |r| "#{r['r_table_schema']}.#{r['r_table_name']}"
         }
@@ -81,6 +89,7 @@ module CartoDB
           match = overview_re.match(table)
           match && !raster_tables.include?("#{match.captures.first}.#{match.captures.last}")
         end
+        @orphan_overviews ||= []
       end
 
       def pg_dump_bin_path
@@ -159,7 +168,8 @@ module CartoDB
         }
       }.freeze
       # the next fields won't be discarded if set to NULL
-      TABLE_NULL_EXCEPTIONS = ['table_quota', 'public_map_quota', 'regular_api_key_quota', 'builder_enabled'].freeze
+      TABLE_NULL_EXCEPTIONS = ['table_quota', 'public_map_quota', 'private_map_quota', 'regular_api_key_quota', 
+                               'builder_enabled', 'public_dataset_quota'].freeze
       include CartoDB::DataMover::Utils
 
       def get_user_metadata(user_id)
@@ -184,7 +194,13 @@ module CartoDB
       end
 
       def get_org_users(organization_id)
-        q = pg_conn.exec("SELECT * FROM users WHERE organization_id = '#{organization_id}'")
+        # owners have to be in the last position to prevent errors
+        q = pg_conn.exec(%{
+          SELECT u.* FROM users u INNER JOIN organizations o
+          ON u.organization_id = o.id
+          WHERE o.id = '#{organization_id}'
+          ORDER BY (CASE WHEN u.id = o.owner_id THEN 1 ELSE 0 END) ASC;
+        })
         if q.count > 0
           return q
         else
@@ -478,6 +494,14 @@ module CartoDB
         size
       end
 
+      def disable_ghost_tables_event_trigger
+        user_pg_conn.exec("SELECT CDB_DisableGhostTablesTrigger()")
+      end
+
+      def enable_ghost_tables_event_trigger
+        user_pg_conn.exec("SELECT CDB_EnableGhostTablesTrigger()")
+      end
+
       def initialize(options)
         default_options = { metadata: true, data: true, split_user_schemas: true, path: '', set_banner: true }
         @options = default_options.merge(options)
@@ -502,16 +526,19 @@ module CartoDB
                        trace:        nil
                      }
         begin
+
           if @options[:id]
             @user_data = get_user_metadata(options[:id])
             @username = @user_data["username"]
             @user_id = @user_data["id"]
             @database_host = @user_data['database_host']
             @database_name = @user_data['database_name']
+            disable_ghost_tables_event_trigger
             export_log[:db_source] = @database_host
             export_log[:db_size] = get_db_size(@database_name)
             dump_user_metadata if @options[:metadata]
             redis_conn.quit
+
             if @options[:data]
               DumpJob.new(
                 user_pg_conn,
@@ -556,6 +583,7 @@ module CartoDB
             export_log[:db_size] ||= get_db_size(@database_name)
 
             if @options[:data] && !@options[:split_user_schemas]
+              disable_ghost_tables_event_trigger
               DumpJob.new(
                 user_pg_conn,
                 @database_host,
@@ -595,6 +623,7 @@ module CartoDB
           export_log[:status] = 'success'
         ensure
           exportjob_logger.info(export_log.to_json) unless options[:from_org]
+          enable_ghost_tables_event_trigger
         end
       end
     end

@@ -10,7 +10,7 @@
         <input type="text"
           class="text is-caption catalogDropdown__input"
           :class="{ 'has-error': hasError }"
-          :placeholder="[isOpen ?  $t('CatalogDropdown.placeholder') : placeholder]"
+          :placeholder="placeholder"
           v-model="searchFilter"
           @focus="onInputFocus"
           @click="openDropdown"
@@ -67,7 +67,8 @@ export default {
   },
   props: {
     title: String,
-    placeholder: String,
+    placeholderActive: String,
+    placeholderInactive: String,
     options: {
       type: Array,
       default () {
@@ -99,6 +100,9 @@ export default {
     };
   },
   computed: {
+    placeholder () {
+      return !this.isDisabled ? this.placeholderActive : this.placeholderInactive;
+    },
     maxItemsScroll () {
       const PAGE_HEIGHT = window.innerHeight;
       const SMALL_HEIGHT = 680;
@@ -107,7 +111,7 @@ export default {
       const HEIGHT_MEDIUM_MAX_ITEMS = 5;
       const HEIGHT_DEFAULT_MAX_ITEMS = 8;
 
-      if (PAGE_HEIGHT < SMALL_HEIGHT ) {
+      if (PAGE_HEIGHT < SMALL_HEIGHT) {
         return HEIGHT_SMALL_MAX_ITEMS;
       }
 
@@ -142,7 +146,7 @@ export default {
       return this.isOpen && Object.keys(this.selected).length === 0;
     }
   },
-  mounted() {
+  mounted () {
     this.$refs.catalogDropdownList.scrollTop = 0;
     PerfectScrollbar.initialize(this.$refs.catalogDropdownList, {
       wheelSpeed: 1,
@@ -153,7 +157,7 @@ export default {
       useBothWheelAxes: true
     });
   },
-  beforeDestroy() {
+  beforeDestroy () {
     PerfectScrollbar.destroy(this.$refs.catalogDropdownList);
   },
   methods: {

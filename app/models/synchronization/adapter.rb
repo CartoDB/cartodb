@@ -276,7 +276,15 @@ module CartoDB
         user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
 
           # For consistency with regular imports, also eases testing
-          Table.sanitize_columns(table_name, {database_schema: schema_name, connection: user_database})
+          # The sanitization of @table_name is applied to the newly imported table_name
+          # This should not be necessary, since setup_table, called after cartodbfication
+          # also perfomes column sanitization via Table#import_to_cartodb
+          # but is kept because there may be existing syncs for which this double sanitization
+          # (version 1 sanitization which wasn't idemponent) had the effect of altering some
+          # satinizated names (e.g. __1 -> _1).
+          table = ::Table.new(name: @table_name, user_id: @user.id)
+          # we could as well: table = Carto::UserTable.find(@user.tables.where(name: @table_name).first.id).service
+          table.sanitize_columns(table_name: table_name, database_schema: schema_name, connection: user_database)
 
           # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
           # In that case:

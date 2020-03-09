@@ -18,9 +18,9 @@
         <% if (isViewer) { %>
           You will be able to create your own maps!
         <% } else if (userType === 'org' || userType === 'org_admin' || userType === 'client') { %>
-          Remember that there is a lot of information in our <a href="http://gis.stackexchange.com/questions/tagged/carto" target="_blank">community forums</a>.
+          Remember that there is a lot of information in our <a href="http://gis.stackexchange.com/questions/tagged/carto" target="_blank" rel="noopener noreferrer">community forums</a>.
         <% } else if (userType === "internal") { %>
-          Don't forget to share your knowledge in our <a href="http://gis.stackexchange.com/questions/tagged/carto"  target="_blank">community forums</a>.
+          Don't forget to share your knowledge in our <a href="http://gis.stackexchange.com/questions/tagged/carto"  target="_blank" rel="noopener noreferrer">community forums</a>.
         <% } else { %>
           If you experience any problems with the CARTO service, feel free to <a href="mailto:support@carto.com">contact us</a>.
         <% } %>
@@ -39,7 +39,7 @@
         <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">Contact us</span>
       </a>
     <% } else { %>
-      <a href="http://gis.stackexchange.com/questions/tagged/carto" class="SupportBanner-link CDB-Button CDB-Button--secondary" target="_blank">
+      <a href="http://gis.stackexchange.com/questions/tagged/carto" class="SupportBanner-link CDB-Button CDB-Button--secondary" target="_blank" rel="noopener noreferrer">
         <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">Community support</span>
       </a>
     <% } %>

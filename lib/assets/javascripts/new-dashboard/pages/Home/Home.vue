@@ -3,8 +3,10 @@
     <Welcome />
     <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-    <MapsSection class="section" @contentChanged="onContentChanged"/>
-    <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged"/>
+    <DatasetsSection v-if="isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged"/>
+    <MapsSection v-if="isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged"/>
+    <MapsSection v-if="!isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged"/>
+    <DatasetsSection v-if="!isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged"/>
     <QuotaSection></QuotaSection>
 
     <router-view name="onboarding-modal"/>
@@ -35,9 +37,11 @@ export default {
     this.$store.dispatch('recentContent/fetch');
 
     this.$store.dispatch('maps/resetFilters');
+    this.$store.dispatch('externalMaps/resetFilters');
     this.$store.dispatch('datasets/resetFilters');
 
     this.$store.dispatch('maps/setResultsPerPage', 6);
+    // this.$store.dispatch('externalMaps/setResultsPerPage', 6);
     this.$store.dispatch('datasets/setResultsPerPage', 6);
 
     // If user is viewer, show shared maps and datasets
@@ -47,7 +51,11 @@ export default {
     }
 
     this.$store.dispatch('maps/fetch');
-    this.$store.dispatch('datasets/fetch');
+    this.$store.dispatch('externalMaps/init')
+      .then(() => {
+        this.$store.dispatch('externalMaps/fetch');
+        this.$store.dispatch('datasets/fetch');
+      });
   },
   data () {
     return {
@@ -73,6 +81,7 @@ export default {
     onContentChanged () {
       this.$store.dispatch('recentContent/fetch');
       this.$store.dispatch('maps/fetch');
+      this.$store.dispatch('externalMaps/fetch');
       this.$store.dispatch('datasets/fetch');
     }
   }

@@ -128,7 +128,9 @@ module Carto
           "sql_queries":    false,
           "list_databases": false,
           "list_tables":    true,
-          "preview_table":  false
+          "preview_table":  false,
+          "dry_run":        false,
+          "list_projects":  false
         }
       end
 

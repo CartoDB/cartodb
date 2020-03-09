@@ -1,5 +1,5 @@
 <% if (link) { %>
-<a class="Editor-HeaderInfo-link CDB-Text CDB-FontSize-small u-lSpace u-actionTextColor u-upperCase track-<%- type %>-form-learn" href="<%- link %>" target="_blank">
+<a class="Editor-HeaderInfo-link CDB-Text CDB-FontSize-small u-lSpace u-actionTextColor u-upperCase track-<%- type %>-form-learn" href="<%- link %>" target="_blank" rel="noopener noreferrer">
   <%- _t('editor.layers.analysis-form.more-info') %>
 </a>
 <% } %>

@@ -18,80 +18,56 @@ $w: $sLayout-width;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    height: 86px;
-  }
-
-  &__item {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 170px;
-    height: 84px;
-    margin-right: 16px;
-    border: 1px solid $cStructure-mainLine;
-    border-radius: 4px;
-    background-color: $cStructure-mainBkg;
-    color: $cTypography-helpSecondary;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 12px;
-    line-height: 16px;
-
-    &:hover {
-      border-color: #1785FB;
-    }
-  }
-
-  &__overlay {
-    display: none;
-  }
-
-  &__tag {
-    display: none;
-  }
-
-  &__lock {
-    display: block;
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 12px;
-    height: 16px;
-    background-image: url($assetsDir + '/images/layout/connectors/locked.svg');
-    background-repeat: no-repeat;
-    background-position: center;
+    height: 106px;
   }
 
   &__input {
     &--long {
       box-sizing: border-box !important;
-      width: 460px;
+      width: 540px;
     }
   }
 
   &__label {
+    max-width: 100px;
     padding-top: 12px;
+  }
+
+  &__form-error {
+    position: relative;
+    width: 465px;
+    padding-left: 20px;
+    color: $cHighlight-negative;
+    font-size: 12px;
+    line-height: 16px;
+
+    &::before {
+      content: '🚫';
+      position: absolute;
+      left: 0;
+      line-height: 18px;
+    }
   }
 
   &__input-error {
     margin-top: -4px;
-    padding: 0 12px;
+    padding: 10px 12px;
     border: 1px solid $cHighlight-negative;
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
     background: #FFF4F4;
     color: $cHighlight-negative;
-    font-size: $sFontSize-normal;
-    line-height: 38px;
+    font-size: 12px;
+    line-height: 16px;
   }
 
   &__CodeMirror {
     position: relative;
-    width: 460px;
+    width: 540px;
 
     .CodeMirror {
-      height: 114px;
+      position: relative;
+      height: 150px;
       margin-top: 0;
       margin-bottom: 0;
       padding: 10px 0;
@@ -116,38 +92,13 @@ $w: $sLayout-width;
   }
 
   &__hint {
-    width: 460px;
+    width: 540px;
   }
 
   &__feedback {
-    padding-top: 75px;
+    padding-top: 60px;
     text-align: center;
   }
-}
-
-.is-disabled .ImportOptions__overlay {
-  display: block;
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.6;
-  background: $cStructure-mainBkg;
-}
-
-.is-beta .ImportOptions__tag {
-  display: block;
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  width: 32px;
-  height: 16px;
-  border-radius: 10px;
-  background: $cTypography-linkSecondary;
-  color: $cTypography-headersOverBlack;
-  font-size: $sFontSize-smaller;
-  font-weight: 600;
 }
 
 div[class^="gtm-connectors"] {
@@ -175,8 +126,8 @@ div[class^="gtm-connectors"] {
 }
 
 .ImportOptions-navigationButton.is-disabled:hover {
-  border-color: #CCC;
-  color: #CCC;
+  border-color: $cForms-border;
+  color: $cForms-border;
 }
 
 .ImportOptions-tabs {
@@ -198,15 +149,101 @@ div[class^="gtm-connectors"] {
   text-align: center;
 }
 
+$import-button-width: 174px;
+
+.ImportButton {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: $import-button-width;
+  height: 102px;
+  margin-right: 16px;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: 4px;
+  background-color: $cStructure-mainBkg;
+  color: $cTypography-helpSecondary;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+
+  &:hover {
+    border-color: $cLocationBlue;
+  }
+
+  &.is-disabled {
+    background-color: transparent;
+  }
+
+  &:not(.is-enterprise) .ImportButton__tag--beta {
+    @extend .ImportButton__tag:first-of-type;
+  }
+
+  &__taglist {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &__tag {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 16px;
+    margin-right: 4px;
+    padding: 1px 6px 2px;
+    border: 1px solid $cStructure-mainLine;
+    border-top: 0;
+    border-radius: 0 0 4px 4px;
+    background: #F0F0F0;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 17px;
+
+    &--enterprise::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 11px;
+      margin-right: 6px;
+      background-image: url($assetsDir + '/images/layout/connectors/locked.svg');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+    }
+
+    &:first-of-type {
+      border-left: 0;
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 0;
+    }
+  }
+}
+
+.is-disabled {
+  .ImportButton__icon,
+  .ImportButton__name {
+    opacity: 0.4;
+  }
+}
+
+.is-beta .ImportButton__tag--beta,
+.is-enterprise .ImportButton__tag--enterprise {
+  display: inline-block;
+}
+
 @mixin importIcon($name) {
-  .ImportOptions__item .is-#{$name} {
+  .ImportButton .is-#{$name} {
     display: block;
-    width: 44px;
-    height: 20px;
+    width: 65px;
+    height: 30px;
     margin-bottom: 8px;
     background-image: url($assetsDir + '/images/layout/connectors/#{$name}.svg');
     background-repeat: no-repeat;
     background-position: center center;
+    background-size: contain;
   }
 }
 
@@ -282,23 +319,27 @@ div[class^="gtm-connectors"] {
   }
 }
 
+.ImportOther__step1.is-active {
+  color: $cLocationBlue;
+}
+
 .ImportOther__step2,
 .ImportOther__step3,
 .ImportOther__step4 {
   flex-direction: column;
-  width: 192px;
+  width: $import-button-width;
   height: 104px;
-  border: 1px solid $cHighlight-main;
+  border: 1px solid $cLocationBlue;
 }
 
 .ImportOther__step1 {
   flex-direction: row;
-  width: 170px;
-  height: 84px;
+  width: $import-button-width;
+  height: 102px;
   border: 1px solid $cStructure-mainLine;
 
   &:hover {
-    border-color: $cHighlight-main;
+    border-color: $cLocationBlue;
   }
 
   .icon {
@@ -319,7 +360,7 @@ div[class^="gtm-connectors"] {
     height: 32px;
     margin-top: 12px;
     padding: 0 48px 0 12px;
-    border: 1px solid #CCC;
+    border: 1px solid $cForms-border;
     border-radius: 4px;
     outline: none;
     color: #666;
@@ -333,7 +374,7 @@ div[class^="gtm-connectors"] {
     position: absolute;
     z-index: 2;
     top: 50%;
-    right: 32px;
+    right: 24px;
     height: 54px;
     margin-top: -14px;
     padding: 0;

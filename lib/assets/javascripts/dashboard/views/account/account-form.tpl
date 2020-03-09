@@ -19,7 +19,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.new_password') %></label>
         </div>
         <div class="FormAccount-rowData">
-          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['new_password']) { %>has-error<% } %> <% if (!canChangePassword) { %>is-disabled<% } %>" id="user_new_password" name="user[new_password]" size="30" type="password" <% if (!canChangePassword) { %>readonly="readonly"<% } %>>
+          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['new_password']) { %>has-error<% } %> <% if (!canChangePassword) { %>is-disabled<% } %>" id="user_new_password" name="user[new_password]" size="30" type="password" autocomplete="off" <% if (!canChangePassword) { %>readonly="readonly"<% } %>>
         </div>
         <div class="FormAccount-rowInfo">
           <% if (errors['new_password']) { %>
@@ -33,7 +33,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.confirm_password') %></label>
         </div>
         <div class="FormAccount-rowData">
-          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (!canChangePassword) { %>is-disabled<% } %>" id="confirm_password" name="user[confirm_password]" size="30" type="password" <% if (!canChangePassword) { %>readonly="readonly"<% } %>>
+          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (!canChangePassword) { %>is-disabled<% } %>" id="confirm_password" name="user[confirm_password]" size="30" type="password" autocomplete="off" <% if (!canChangePassword) { %>readonly="readonly"<% } %>>
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@
       <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('account.views.form.mfa_description') %></p>
     </div>
   </div>
-  
+
   <% if (isCartoDBHosted) { %>
     <% if ((isOrgAdmin || isOrgOwner) && licenseExpiration) { %>
       <div class="FormAccount-title">
@@ -86,13 +86,13 @@
       </div>
     <% } %>
   <% } else { %>
-    <% if (!isInsideOrg || isOrgOwner) { %>
+    <% if (!isInsideOrg && !isFree2020User || isOrgOwner) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.account_type') %></p>
     </div>
-    
+
     <span class="FormAccount-separator"></span>
-    
+
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label
@@ -108,7 +108,7 @@
     </div>
     <% } %>
   <% } %>
-  
+
   <% if (services.length > 0) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.connect_external_datasources') %></p>

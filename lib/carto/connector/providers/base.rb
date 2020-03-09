@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Base class for Connector Providers
 #
 # This is an abstract class; concrete classes derived from this one
@@ -17,13 +15,32 @@
 module Carto
   class Connector
     class Provider
+      # Provider identifier (internal name, used in APIs, etc)
+      def self.id
+        must_be_defined_in_derived_class
+      end
+
+      # Human-readable name of the provider
+      def self.name
+        must_be_defined_in_derived_class
+      end
+
+      # This means that the provider is publicly announced (so it is accessible through UI, visible in lists of
+      # providers, etc.) A provider may be available or not (see Connector.limits) independently of its public status,
+      # so that a public provider may not be available for all users, and non-public providers may be available to
+      # some users.
+      def self.public?
+        # Providers are public by default
+        true
+      end
+
       def initialize(connector_context, params = {})
         @connector_context = connector_context
         @params = Parameters.new(params, required: required_parameters + [:provider], optional: optional_parameters)
       end
 
-      def errors(only: nil)
-        @params.errors(only: only)
+      def errors(only_for: nil)
+        @params.errors(only_for: only_for)
       end
 
       def valid?
@@ -31,7 +48,7 @@ module Carto
       end
 
       def validate!(only: nil)
-        errors = self.errors(only: only)
+        errors = self.errors(only_for: only)
         raise InvalidParametersError.new(message: errors * "\n") if errors.present?
       end
 
@@ -43,7 +60,23 @@ module Carto
         must_be_defined_in_derived_class limits: limits
       end
 
+      def list_projects
+        must_be_defined_in_derived_class
+      end
+
+      def list_project_datasets(project_id)
+        must_be_defined_in_derived_class
+      end
+
+      def list_project_dataset_tables(project_id, dataset_id)
+        must_be_defined_in_derived_class
+      end
+
       def check_connection
+        must_be_defined_in_derived_class
+      end
+
+      def dry_run
         must_be_defined_in_derived_class
       end
 
@@ -104,10 +137,32 @@ module Carto
         info
       end
 
+      def provider_id
+        self.class.id
+      end
+
+      class <<self
+        def metadata(options)
+          options.each do |key, value|
+            define_singleton_method(key) { value.freeze }
+          end
+        end
+        def optional_parameters(params)
+          define_method(:optional_parameters) { params.freeze }
+        end
+        def required_parameters(params)
+          define_method(:required_parameters) { params.freeze }
+        end
+      end
+
       private
 
       def must_be_defined_in_derived_class(*_)
-        raise NotImplementedError, "Method #{caller_locations(1, 1)[0].label} must be defined in derived class"
+        raise NotImplementedError, "Method \"#{caller_locations(1, 1)[0].label}\" must be defined in derived class"
+      end
+
+      def self.must_be_defined_in_derived_class(*_)
+        raise NotImplementedError, "Class method \"#{caller_locations(1, 1)[0].label}\" must be defined in derived class"
       end
 
       def log(message, truncate = true)
@@ -120,6 +175,20 @@ module Carto
 
       def execute_as_superuser(sql)
         @connector_context.execute_as_superuser(sql)
+      end
+
+      def execute_with_timeout(command, timeout=nil)
+        timeout ||= default_timeout
+        @connector_context.execute_with_timeout command, timeout
+      end
+
+      def execute_as_superuser_with_timeout(command, timeout=nil)
+        timeout ||= default_timeout
+        @connector_context.execute_as_superuser_with_timeout command, timeout
+      end
+
+      def default_timeout
+        @connector_context.user.connector_configuration(provider_id)&.timeout
       end
     end
 

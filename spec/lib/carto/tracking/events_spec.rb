@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'factories/carto_visualizations'
 require 'spec_helper_min'
 

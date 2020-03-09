@@ -1,6 +1,16 @@
 require 'active_record'
 require_dependency 'carto/db/sanitize'
 
+# Integer type for PostgreSQL oid columns, with proper range
+class Carto::OidType < ActiveRecord::Type::Integer
+  def max_value
+    (1 << 32) - 1
+  end
+  def min_value
+    0
+  end
+end
+
 module Carto
   class UserTable < ActiveRecord::Base
     PRIVACY_PRIVATE = 0
@@ -12,6 +22,10 @@ module Carto
       PRIVACY_PUBLIC => 'public',
       PRIVACY_LINK => 'link'
     }.freeze
+
+    # Column table_id is of type oid and the type casting provided by ActiveRecord is not
+    # good for it since it only supports signed values
+    attribute 'table_id', Carto::OidType.new
 
     # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
     # so the `before_validation` hook sets an appropriate privacy based on the table owner
@@ -236,6 +250,10 @@ module Carto
     def validate_privacy_changes
       if !user.try(:private_tables_enabled) && !public? && (new_record? || privacy_changed?)
         errors.add(:privacy, 'unauthorized to create private tables')
+      end
+
+      if public? && (new_record? || privacy_changed?) && CartoDB::QuotaChecker.new(user).will_be_over_public_dataset_quota?
+        errors.add(:privacy, 'unauthorized to create public tables')
       end
     end
 

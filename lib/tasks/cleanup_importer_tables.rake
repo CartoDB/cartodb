@@ -1,4 +1,3 @@
-# encoding: utf-8
 namespace :cartodb do
   namespace :db do
     desc 'Moves left-over tables from failed imports from the public to the cdb_importer schema'

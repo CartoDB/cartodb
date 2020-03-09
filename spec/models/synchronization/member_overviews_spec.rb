@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../spec_helper'
 
 require_relative '../../../services/data-repository/backend/sequel'
@@ -23,10 +21,7 @@ describe Synchronization::Member do
 
     before(:each) do
       bypass_named_maps
-    end
-
-    around(:each) do |example|
-      Cartodb.with_config(metrics: {}, &example)
+      ::Hubspot::EventsAPI.any_instance.stubs(:enabled?).returns(false)
     end
 
     after(:all) do

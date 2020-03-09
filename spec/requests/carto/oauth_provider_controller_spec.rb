@@ -103,9 +103,27 @@ describe Carto::OauthProviderController do
         expect(qs['error']).to(eq('invalid_scope'))
       end
 
+      it 'redirects with an error if requesting non-existent schemas' do
+        request_endpoint(valid_payload.merge(scope: 'schemas:c:blabla'))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_uri_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_scope'))
+      end
+
       it 'redirects with an error if requesting invalid dataset scopes' do
         user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
         request_endpoint(valid_payload.merge(scope: "datasets:wtf:#{user_table.name}"))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_uri_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_scope'))
+      end
+
+      it 'redirects with an error if requesting invalid schema scopes' do
+        request_endpoint(valid_payload.merge(scope: "schemas:wtf:#{@developer.database_schema}"))
 
         expect(response.status).to(eq(302))
         expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
@@ -259,9 +277,41 @@ describe Carto::OauthProviderController do
       expect(response.body).to(include(valid_payload[:state]))
     end
 
+    it 'with valid payload, shows the username in the consent form' do
+      get oauth_provider_authorize_url(valid_payload)
+
+      expect(response.status).to(eq(200))
+      expect(response.body).to(include(valid_payload[:client_id]))
+      expect(response.body).to(include(valid_payload[:state]))
+      expect(response.body).to(include("by <strong>#{@oauth_app.user.name_or_username}"))
+    end
+
+    it 'with valid payload, does not show the username in the consent form if the oauth_app does not have user' do
+      @oauth_app.user = nil
+      @oauth_app.avoid_sync_central = true
+      @oauth_app.stubs(:central_enabled?).returns(true)
+      @oauth_app.save!
+      get oauth_provider_authorize_url(valid_payload)
+
+      expect(response.status).to(eq(200))
+      expect(response.body).to(include(valid_payload[:client_id]))
+      expect(response.body).to(include(valid_payload[:state]))
+      expect(response.body).to_not(include("by <strong>"))
+    end
+
     it 'with valid payload and datasets scopes shows the consent form' do
       user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
-      get oauth_provider_authorize_url(valid_payload.merge(scopes: "datasets:r:#{user_table.name}"))
+      scopes = ["datasets:r:#{user_table.name}", "datasets:metadata"]
+      get oauth_provider_authorize_url(valid_payload.merge(scopes: scopes))
+
+      expect(response.status).to(eq(200))
+      expect(response.body).to(include(valid_payload[:client_id]))
+      expect(response.body).to(include(valid_payload[:state]))
+    end
+
+    it 'with valid payload and schemas scopes shows the consent form' do
+      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
+      get oauth_provider_authorize_url(valid_payload.merge(scopes: "schemas:r:#{user_table.name}"))
 
       expect(response.status).to(eq(200))
       expect(response.body).to(include(valid_payload[:client_id]))

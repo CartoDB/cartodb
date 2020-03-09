@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'active_record'
 require 'fileutils'
 require_relative '../../../services/user-mover/import_user'
@@ -32,6 +30,7 @@ module Carto
 
     def run_import
       raise errors.full_messages.join(', ') unless valid?
+
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)
@@ -45,7 +44,8 @@ module Carto
 
       log.append('=== Complete ===')
       update_attributes(state: STATE_COMPLETE)
-    rescue => e
+    rescue StandardError => e
+      puts "ERROR: #{e}"
       log.append_exception('Importing', exception: e)
       CartoDB::Logger.error(exception: e, message: 'Error importing user data', job: inspect)
       update_attributes(state: STATE_FAILURE)

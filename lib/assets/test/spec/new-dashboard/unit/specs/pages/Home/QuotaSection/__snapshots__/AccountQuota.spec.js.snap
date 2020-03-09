@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AccountQuota.vue should render correct contents 1`] = `
+<quotacontainer-stub title="QuotaSection.account">
+  <quotawidget-stub name="QuotaSection.storage" availablequota="1024" usedquota="6.78125" unit="MB" helplink="https://carto.com/help/your-account/your-disk-storage/"></quotawidget-stub>
+  <quotawidget-stub name="QuotaSection.publicMaps" availablequota="10" usedquota="7" formattolocale="true"></quotawidget-stub>
+  <!---->
+  <quotawidget-stub name="QuotaSection.datasets" availablequota="40" usedquota="12" formattolocale="true"></quotawidget-stub>
+  <quotawidget-stub name="QuotaSection.apiKeys" availablequota="3" usedquota="2" formattolocale="true"></quotawidget-stub>
+</quotacontainer-stub>
+`;

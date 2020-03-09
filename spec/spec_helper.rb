@@ -21,11 +21,16 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # Inline Resque for queue handling
 Resque.inline = true
 
+# host_validation is set to support `example.com` emails in specs
+# in production we do check for the existance of mx records associated to the domain
+EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
+
 RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include CartoDB::Factories
   config.include HelperMethods
   config.include NamedMapsHelper
+  config.include Capybara::DSL
 
   config.after(:each) do
     Delorean.back_to_the_present
@@ -49,14 +54,14 @@ RSpec.configure do |config|
   end
 
   config.after(:all) do
-    unless ENV['PARALLEL']
+    unless ENV['PARALLEL'] || ENV['BUILD_ID']
       close_pool_connections
       drop_leaked_test_user_databases
       delete_database_test_users
     end
   end
 
-  unless ENV['PARALLEL']
+  unless ENV['PARALLEL'] || ENV['BUILD_ID']
     config.after(:suite) do
       CartoDB::RedisTest.down
     end

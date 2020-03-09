@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Support methods to generate FDW-related SQL commands
 
 module Carto

@@ -1,0 +1,781 @@
+openapi: 3.0.0
+info:
+  title: Federated Tables API
+  description: >
+    **Warning:** Federated Tables is in **BETA** stage and the API might change or have limited support.
+
+    # Introduction
+
+    A Federated Table is a PostgreSQL Foreign Data Wrapper to a remote server,
+    allowing us to perform live queries to a remote database. Think of it as a
+    virtual table that looks like a regular sync table in CARTO — but when used,
+    makes the queries you perform in CARTO travel to the remote database and get
+    executed there.
+
+    Typically, the use cases for Federated Tables include having frequently changing
+    data that you join with other tables in CARTO. Having a large amount of data that
+    is dificult to sync with CARTO but that you only need to query distinct parts of,
+    like in the case of time-series databases. Even when you want to leverage the
+    scalability or low latency of your cloud database from within the CARTO ecosystem.
+
+    The API allows you to register remote databases, then you can browse remote schemas and tables
+    to register those you want to use with CARTO as a regular table.
+
+    # Authorization
+
+    In order to access Federated Tables API you must provide an API key. The CARTO
+    Authorization guide explains how these keys are sent (TLDR: _HTTP basic
+    auth_ or _query string param_ with the API key token). Depending on the
+    permissions granted to the provided API key, the request will be authorized
+    or not.
+
+  version: 0.0.1
+  contact:
+    name: Have you found an error? Github issues
+    url: 'https://github.com/CartoDB/Windshaft-cartodb/issues'
+servers:
+  - url: 'https://{user}.{domain}/api'
+    description: Production server (uses live data)
+    variables:
+      domain:
+        default: carto.com
+        description: 'If on premises, change it to your domain'
+      user:
+        default: username
+        description: Your username
+      api_key:
+        default: wadus
+        description: Your api key token
+paths:
+  '/v4/federated_servers':
+    post:
+      summary: Register a Federated Server
+      description: |
+        The Federated Server handles the information about the remote database,
+        that is its address and authentication values so CARTO can gain access to it.
+      parameters:
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FederatedServerRequest'
+            example:
+              federated_server_name: example_server
+              mode: read-only
+              dbname: geometries
+              host: example.com
+              port: "5432"
+              username: read_only_user
+              password: secret
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FederatedServerResponse'
+              example:
+                federated_server_name: example_server
+                mode: read-only
+                dbname: geometries
+                host: example.com
+                port: "5432"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X POST -H "Content-Type: application/json" "https://{user}.carto.com/api/v4/federated_servers?api_key={api_key}" -d ''{
+                "federated_server_name": "example_server",
+                "mode": "read-only",
+                "dbname": "geometries",
+                "host": "example.com",
+                "port": "5432",
+                "username": "remote_user",
+                "password": "remote_password"
+            }''
+    get:
+      summary: List all existing Federated Servers
+      description: |
+        This endpoint allows you to access the information of all registered servers accesible by the caller.
+      parameters:
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFederatedServerResponse'
+              example:
+                - federated_server_name: example_server
+                  mode: read-only
+                  dbname: geometries
+                  host: example.com
+                  port: "5432"
+                - federated_server_name: another_example_server
+                  mode: read-only
+                  dbname: countries
+                  host: example.com
+                  port: "5432"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers?api_key={api_key}"
+  '/v4/federated_servers/{federated_server_name}':
+    get:
+      summary: Get a Federated Server
+      description: |
+        This endpoint returns the configuration of a single server that matches the federated server name.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FederatedServerResponse'
+              example:
+                federated_server_name: example_server
+                mode: read-only
+                dbname: geometries
+                host: example.com
+                port: "5432"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}?api_key={api_key}"
+    put:
+      summary: Update a Federated Server
+      description: |
+        This endpoint allows the modification of an already registered server. If the server didn't already exist it will create it.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FederatedServerRequest'
+            example:
+              mode: read-only
+              dbname: geometries
+              host: example.com
+              port: "5432"
+              username: read_only_user
+              password: secret
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FederatedServerResponse'
+              example:
+                federated_server_name: example_server
+                mode: read-only
+                dbname: geometries
+                host: example.com
+                port: "5432"
+        '204':
+          description: Updated
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X PUT -H "Content-Type: application/json" "https://{user}.carto.com/api/v4/federated_servers/example_server?api_key={api_key}" -d ''{
+                "mode": "read-only",
+                "dbname": "geometries",
+                "host": "example.com",
+                "port": "5432",
+                "username": "new_user",
+                "password": "new_password"
+            }''
+    delete:
+      summary: Unregister a Federated Server
+      description: |
+        This endpoint will remove a registered server and all the registered tables created through it.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '204':
+          description: Unregistered
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  '/v4/federated_servers/{federated_server_name}/remote_schemas':
+    get:
+      summary: List remote schemas
+      description: |
+        Once we have a server registered, we can check what information is available to us
+        (via the provided database's user), so first we'll list the available schemas.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfRemoteSchemasResponse'
+              example:
+                federated_server_name: example_server
+                mode: read-only
+                dbname: geometries
+                host: example.com
+                port: "5432"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas?api_key={api_key}"
+  '/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}/remote_tables':
+    post:
+      summary: Register a Federated Table
+      description: |
+        From the list of remote tables of a Federated Server, we can register one of them so it's available in the CARTO platform.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: path
+          name: remote_schema_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote schema
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteTableRequest'
+            example:
+              remote_table_name: world_borders
+              id_column_name: id
+              geom_column_name: the_geom
+              webmercator_column_name: the_geom_webmercator
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteTableResponse'
+              example:
+                registered: true
+                remote_schema_name: borders
+                remote_table_name: world_borders
+                qualified_name: cdb_fs_example_server.world_borders
+                id_column_name: id
+                geom_column_name: the_geom
+                webmercator_column_name: the_geom_webmercator
+                columns:
+                  - Name: id
+                    Type: integer
+                  - Name: the_geom
+                    Type: GEOMETRY,4326
+                  - Name: the_geom_webmercator
+                    Type: GEOMETRY,3857
+                  - Name: name
+                    Type: text
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X POST -H "Content-Type: application/json" "https://{user}.carto.com/api/v4/federated_servers/example_server/remote_schemas/borders/remote_tables/?api_key={api_key}" -d ''{
+                "remote_table_name": "world_borders",
+                "id_column_name": "cartodb_id",
+                "geom_column_name": "the_geom",
+                "webmercator_column_name": "the_geom_webmercator"
+            }''
+    get:
+      summary: List all remote tables whitin a remote schema
+      description: |
+        Once we know which schema we want to check, we can list what are the available tables and
+        their columns so we can register them as a Federated Table.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: path
+          name: remote_schema_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote schema
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfRemoteTableResponse'
+              example:
+                - registered: false
+                  remote_schema_name: borders
+                  remote_table_name: world_borders
+                  columns:
+                    - Name: id
+                      Type: integer
+                    - Name: the_geom
+                      Type: GEOMETRY,4326
+                    - Name: the_geom_webmercator
+                      Type: GEOMETRY,3857
+                    - Name: name
+                      Type: text
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}?api_key={api_key}"
+  '/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}/remote_tables/{remote_table_name}':
+    get:
+      summary: List a single remote table
+      description: |
+        If we want to see a single remote table, we can use this endpoint
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: path
+          name: remote_schema_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote schema
+        - in: path
+          name: remote_table_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote table
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteTableResponse'
+              example:
+                registered: true
+                remote_schema_name: borders
+                remote_table_name: world_borders
+                qualified_name: cdb_fs_example_server.world_borders
+                id_column_name: id
+                geom_column_name: the_geom
+                webmercator_column_name: the_geom_webmercator
+                columns:
+                  - Name: id
+                    Type: integer
+                  - Name: the_geom
+                    Type: GEOMETRY,4326
+                  - Name: the_geom_webmercator
+                    Type: GEOMETRY,3857
+                  - Name: name
+                    Type: text
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}/remote_tables/{remote_table_name}?api_key={api_key}"
+    put:
+      summary: Modify a registered Federated Table
+      description: Allows the modification of an already registered table. If it wasn't already, the table will be registered.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: path
+          name: remote_schema_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote schema
+        - in: path
+          name: remote_table_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote table
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteTableRequest'
+            example:
+              remote_table_name: world_borders
+              local_table_name_override: countries
+              id_column_name: id
+              geom_column_name: the_geom
+              webmercator_column_name: the_geom_webmercator
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteTableResponse'
+              example:
+                registered: true
+                remote_schema_name: borders
+                remote_table_name: world_borders
+                local_table_name_override: countries
+                qualified_name: cdb_fs_example_server.countries
+                id_column_name: id
+                geom_column_name: the_geom
+                webmercator_column_name: the_geom_webmercator
+                columns:
+                  - Name: id
+                    Type: integer
+                  - Name: the_geom
+                    Type: GEOMETRY,4326
+                  - Name: the_geom_webmercator
+                    Type: GEOMETRY,3857
+                  - Name: name
+                    Type: text
+        '204':
+          description: Updated
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X PUT -H "Content-Type: application/json" "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}/remote_tables/{remote_table_name}?api_key={api_key}" -d ''{
+                "local_table_name_override": "countries"
+                "id_column_name": "cartodb_id",
+                "geom_column_name": "the_geom",
+                "webmercator_column_name": "the_geom_webmercator"
+            }''
+    delete:
+      summary: Unregister a Federated Table
+      description: |
+        This endpoint will remove a registered table.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: path
+          name: remote_schema_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote schema
+        - in: path
+          name: remote_table_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote table
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '204':
+          description: Unregistered
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  schemas:
+    FederatedServerRequest:
+      type: object
+      properties:
+        federated_server_name:
+          type: string
+          title: federated server name
+          description: Alias for the federated server. It must be unique per user/organization and lower-case (required).
+        mode:
+          type: string
+          enum:
+            - read-only
+          title: mode
+          description: only read-only available
+        dbname:
+          type: string
+          title: federated server database name
+          description: database name
+        host:
+          type: string
+          title: Host's URL
+          description: Domain name of the federated server.
+        port:
+          type: string
+          title: port
+          description: available port number
+        username:
+          type: string
+          title: username
+          description: database role with login privileges
+        password:
+          type: string
+          title: password
+          description: the role’s secret password
+    FederatedServerResponse:
+      type: object
+      properties:
+        federated_server_name:
+          type: string
+          title: federated server name
+          description: Alias for the federated server. It must be unique per user/organization and lower-case (required).
+        mode:
+          type: string
+          enum:
+            - read-only
+          title: mode
+          description: only read-only available
+        dbname:
+          type: string
+          title: federated server database name
+          description: database name
+        host:
+          type: string
+          title: Host's URL
+          description: Domain name of the federated server.
+        port:
+          type: string
+          title: port
+          description: available port number
+    ListOfFederatedServerResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/FederatedServerResponse'
+    RemoteSchemasResponse:
+      type: object
+      properties:
+        remote_schema_name:
+          type: string
+          title: schema name
+          description: Name of the schema of the federated server
+    ListOfRemoteSchemasResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/RemoteSchemasResponse'
+    RemoteTableRequest:
+      type: object
+      properties:
+        remote_table_name:
+          type: string
+          title: remote table name
+          description: Name of the table of the federated server
+        local_table_name_override:
+          type: string
+          title: local table name override
+          description: Defaults to remote_table_name. Useful to avoid name clashing, should be needed
+        id_column_name:
+          type: string
+          title: id column name
+          description: Name of the primary key column
+        geom_column_name:
+          type: string
+          title: geom column name
+          description: Name of the geometry column with SRID 4326 (optional). If not passed, it’ll try to use geom_column_name if available
+        webmercator_column_name:
+          type: string
+          title: webmercator column name
+          description: Name of the geometry column with SRID 3857 (optional). If not passed, it’ll try to use geom_column_name if available
+    RemoteTableResponse:
+      type: object
+      properties:
+        remote_schema_name:
+          type: string
+          title: schema name
+          description: Name of the schema of the federated server
+        remote_table_name:
+          type: string
+          title: remote table name
+          description: Name of the table of the federated server
+        local_table_name_override:
+          type: string
+          title: local table name override
+          description: Defaults to remote_table_name. Useful to avoid name clashing, should be needed
+        qualified_name:
+          type: string
+          title: qualified name
+          description: Full qualified name to be used in maps/queries in CARTO
+        id_column_name:
+          type: string
+          title: id column name
+          description: Name of the primary key column
+        geom_column_name:
+          type: string
+          title: geom column name
+          description: Name of the geometry column with SRID 4326 (optional). If not passed, it’ll try to use geom_column_name if available
+        webmercator_column_name:
+          type: string
+          title: webmercator column name
+          description: Name of the geometry column with SRID 3857 (optional). If not passed, it’ll try to use geom_column_name if available
+        registered:
+          type: boolean
+          title: registered
+          description: Whether the table is ready to be used as a regular table in CARTO
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListOfRemoteTableColumn'
+    ListOfRemoteTableResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/RemoteTableResponse'
+    RemoteTableColumn:
+      type: object
+      properties:
+        Name:
+          type: string
+          title: the column name
+          description: the column name
+        Type:
+          type: string
+          title: the column type
+          description: the column type
+    ListOfRemoteTableColumn:
+      type: array
+      items:
+        $ref: '#/components/schemas/RemoteTableColumn'
+
+  responses:
+    NotFound:
+      description: The specified resource was not found
+    Unauthorized:
+      description: Unauthorized. No authentication provided.
+    Forbidden:
+      description: Forbidden. The API key does not authorize this request.
+    UnprocessableEntity:
+      description: Request's parameters error

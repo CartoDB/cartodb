@@ -11,11 +11,24 @@
     <p class="Dialog-headerText">Remember, once you delete it there is no going back</p>
   </div>
 
+  <% if (passwordNeeded) { %>
+    <div class="CDB-Text Dialog-body">
+      <div class="Form-row Form-row--centered has-label">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Your password</label>
+        </div>
+        <div class="Form-rowData">
+          <input type="password" autocomplete="off" id="deletion_password_confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long" value=""/>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
   <div class="Dialog-footer u-inner">
-    <button type="button" class="CDB-Button CDB-Button--secondary cancel">
+    <button type="button" class="CDB-Button CDB-Button--secondary js-cancel">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
     </button>
-    <button type="submit" class="CDB-Button CDB-Button--error js-ok">
+    <button type="submit" class="CDB-Button CDB-Button--error js-save">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Delete this application</span>
     </button>
   </div>

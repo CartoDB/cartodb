@@ -2,6 +2,30 @@ module CartoDB
   module UserDecorator
     include AccountTypeHelper
 
+    def activity(options = {})
+      calls = options.fetch(:show_api_calls, true) ? get_api_calls(from: last_billing_cycle, to: Date.today) : []
+      map_views = calls.reduce(0, :+)
+
+      {
+        id: id,
+        email: email,
+        username: username,
+        state: state,
+        account_type: account_type,
+        table_count: table_count,
+        public_map_count: public_privacy_visualization_count + link_privacy_visualization_count +
+          password_privacy_visualization_count,
+        private_map_count: private_privacy_visualization_count,
+        map_count: all_visualization_count,
+        map_views: map_views,
+        geocoding_credits_count: organization_user? ? organization.get_geocoding_calls : get_geocoding_calls,
+        routing_credits_count: organization_user? ? organization.get_mapzen_routing_calls : get_mapzen_routing_calls,
+        isolines_credits_count: organization_user? ? organization.get_here_isolines_calls : get_here_isolines_calls,
+        billing_period: last_billing_cycle ? last_billing_cycle.strftime('%Q') : nil,
+        regular_api_key_count: api_keys.by_type('regular').count
+      }
+    end
+
     # Options:
     # - show_api_calls: load api calls. Default: true.
     # - extended: load real_table_count and last_active_time. Default: false.
@@ -23,12 +47,15 @@ module CartoDB
         account_type_display_name: plan_name(account_type),
         table_quota: table_quota,
         public_map_quota: public_map_quota,
+        public_dataset_quota: public_dataset_quota,
+        private_map_quota: private_map_quota,
         regular_api_key_quota: regular_api_key_quota,
         table_count: table_count,
         public_visualization_count: public_visualization_count,
         public_privacy_map_count: public_privacy_visualization_count,
         link_privacy_map_count: link_privacy_visualization_count,
         password_privacy_map_count: password_privacy_visualization_count,
+        private_privacy_map_count: private_privacy_visualization_count,
         all_visualization_count: all_visualization_count,
         visualization_count: visualization_count,
         owned_visualization_count: owned_visualizations_count,
@@ -97,7 +124,7 @@ module CartoDB
         layers: layers.map(&:public_values),
         trial_ends_at: trial_ends_at,
         upgraded_at: upgraded_at,
-        show_trial_reminder: trial_ends_at.present?,
+        show_trial_reminder: show_trial_reminder?,
         show_upgraded_message: (account_type.downcase != 'free' && upgraded_at && upgraded_at + 15.days > Date.today ? true : false),
         actions: {
           private_tables: private_tables_enabled,
@@ -131,6 +158,8 @@ module CartoDB
         available_for_hire: available_for_hire,
         location: location,
         industry: industry,
+        company_employees: company_employees,
+        use_case: use_case,
         company: company,
         phone: phone,
         job_role: job_role

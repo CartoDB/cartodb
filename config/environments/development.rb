@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 require 'carto/configuration'
 
 CartoDB::Application.configure do

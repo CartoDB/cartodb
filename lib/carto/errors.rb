@@ -69,13 +69,31 @@ module Carto
   class RelationDoesNotExistError < UnprocesableEntityError
     def initialize(error_messages, error_relations)
       super(error_messages.join(', '))
-      @user_message = "The following datasets don't exist: #{error_relations.join(', ')}"
+      @user_message = "#{error_relations.join(', ')} don't exist."
     end
   end
 
   class MissingParamsError < CartoError
-    def initialize(missing_params, status: 400)
+    def initialize(missing_params, status = 400)
       super("The following required params are missing: #{missing_params.join(', ')}", status)
+    end
+  end
+
+  class InvalidParameterFormatError < CartoError
+    def initialize(parameter, extra_message = nil)
+      super("Wrong '#{parameter}' parameter value. #{extra_message}", 422)
+    end
+  end
+
+  class PaymentRequiredError < CartoError
+    def initialize(message = "Payment Required")
+      super(message, 402)
+    end
+  end
+
+  class QuotaExceededError < PaymentRequiredError
+    def initialize(message = "Your quota has been exceeded")
+      super(message)
     end
   end
 end

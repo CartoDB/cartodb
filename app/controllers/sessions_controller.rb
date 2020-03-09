@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require_dependency 'carto/oauth/github/config'
 require_dependency 'carto/oauth/google/config'
 require_dependency 'carto/saml_service'
@@ -296,6 +295,8 @@ class SessionsController < ApplicationController
   end
 
   def mfa_inactivity_period_expired?(user)
+    return false unless warden.session(user.username)[:multifactor_authentication_last_activity]
+
     time_inactive = Time.now.to_i - warden.session(user.username)[:multifactor_authentication_last_activity]
     time_inactive > MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY
   rescue Warden::NotAuthenticated

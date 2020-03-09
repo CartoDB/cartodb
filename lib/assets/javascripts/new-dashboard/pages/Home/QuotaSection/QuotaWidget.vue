@@ -1,11 +1,14 @@
 <template>
-  <div class="quota-widget" @mouseover="onMouseOver" @mouseleave="onMouseLeave">
+  <div class="quota-widget" :class="{'is-disabled': isDisabled }" @mouseover="onMouseOver" @mouseleave="onMouseLeave">
     <div class="quota-main">
       <div class="quota-cell cell--title">
         <h4 class="text is-caption is-semibold is-txtGrey">{{name}}</h4>
       </div>
       <div class="quota-cell cell--large">
-        <div class="progressbar">
+        <NotificationBadge  v-if="isDisabled">
+          <div class="text is-small" v-html="$t('QuotaSection.upgrade', { path: upgradeUrl })"></div>
+        </NotificationBadge>
+        <div v-else class="progressbar">
             <div :class="`progressbar progressbar--${getStatusBar}`"  :style="{width: `${getUsedPercent}%`}">
             </div>
         </div>
@@ -29,13 +32,16 @@
         </span>
       </div>
       <div class="quota-help cell--small">
-        <a :href="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
+        <a :href="helpLink" v-if="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import NotificationBadge from 'new-dashboard/components/NotificationBadge';
+import { mapState } from 'vuex';
+
 export default {
   name: 'QuotaCard',
   props: {
@@ -48,7 +54,14 @@ export default {
       type: Boolean,
       default: true
     },
-    helpLink: String
+    helpLink: String,
+    isDisabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  components: {
+    NotificationBadge
   },
   data: function () {
     return {
@@ -56,6 +69,9 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      upgradeUrl: state => state.config.upgrade_url
+    }),
     remainingQuota () {
       const remainingQuota = this.availableQuota - this.usedQuota;
       return Math.max(0, remainingQuota);
@@ -104,7 +120,15 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: 80px;
-  cursor: pointer;
+
+  &.is-disabled {
+    background-color: rgba($color-primary--soft, 0.3);
+
+    .cell--title,
+    .quota-data {
+      opacity: 0.3;
+    }
+  }
 
   &:not(:last-of-type) {
     border-bottom: 1px solid $softblue;
@@ -145,6 +169,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   padding-right: 16px;
+  cursor: pointer;
 }
 
 .quota-image {
@@ -156,7 +181,7 @@ export default {
 }
 
 .cell--title {
-  width: 110px;
+  width: 160px;
   margin-left: 36px;
 }
 
@@ -172,7 +197,7 @@ export default {
 }
 
 .cell--medium {
-  width: 120px;
+  width: 110px;
 }
 
 .cell--small {
@@ -185,7 +210,7 @@ export default {
 
 .progressbar {
   width: 100%;
-  max-width: 240px;
+  max-width: 260px;
   height: 8px;
   border-radius: 4px;
   background-color: $progressbar__bg-color;
@@ -201,6 +226,10 @@ export default {
   .progressbar--problem {
     background-color: $danger__bg-color;
   }
+}
+
+.warning-icon {
+  margin-right: 5px;
 }
 
 </style>

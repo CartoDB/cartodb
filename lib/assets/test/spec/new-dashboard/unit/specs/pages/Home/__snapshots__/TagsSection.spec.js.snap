@@ -3,7 +3,7 @@
 exports[`TagsSection.vue Render should render empty state 1`] = `
 <section class="tags-section is-bgSoftBlue">
   <div class="container">
-    <sectiontitle-stub title="HomePage.TagsSection.title" class="grid-cell"><template></template> <template></template></sectiontitle-stub>
+    <sectiontitle-stub class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
     <!---->
     <emptystate-stub text="HomePage.TagsSection.emptyState.title" subtitle="HomePage.TagsSection.emptyState.subtitle"></emptystate-stub>
     <!---->
@@ -15,7 +15,7 @@ exports[`TagsSection.vue Render should render empty state 1`] = `
 exports[`TagsSection.vue Render should render loading state 1`] = `
 <section class="tags-section is-bgSoftBlue">
   <div class="container">
-    <sectiontitle-stub title="HomePage.TagsSection.title" class="grid-cell"><template></template> <template></template></sectiontitle-stub>
+    <sectiontitle-stub class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
     <loadingstate-stub text="HomePage.TagsSection.loading" class="loading"></loadingstate-stub>
     <!---->
     <!---->
@@ -27,7 +27,7 @@ exports[`TagsSection.vue Render should render loading state 1`] = `
 exports[`TagsSection.vue Render should render properly 1`] = `
 <section class="tags-section is-bgSoftBlue">
   <div class="container">
-    <sectiontitle-stub title="HomePage.TagsSection.title" class="grid-cell"><template></template> <template></template></sectiontitle-stub>
+    <sectiontitle-stub class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
     <!---->
     <!---->
     <ul class="grid tags">

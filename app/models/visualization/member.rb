@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'forwardable'
 require 'virtus'
 require 'json'
@@ -36,6 +35,7 @@ module CartoDB
       TYPE_DERIVED    = 'derived'.freeze
       TYPE_SLIDE      = 'slide'.freeze
       TYPE_REMOTE = 'remote'.freeze
+      TYPE_KUVIZ = 'kuviz'.freeze
 
       VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
 
@@ -414,6 +414,10 @@ module CartoDB
 
       def type_slide?
         type == TYPE_SLIDE
+      end
+
+      def kuviz?
+        type == TYPE_KUVIZ
       end
 
       def invalidate_cache

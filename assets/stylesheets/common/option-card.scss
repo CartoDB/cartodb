@@ -18,6 +18,7 @@
   display: flex;
   align-content: space-between;
   align-items: stretch;
+  justify-content: center;
 }
 
 .OptionCard {
@@ -36,8 +37,9 @@
 
 .OptionCard--blocky {
   position: relative;
+  min-width: 220px;
   max-width: 230px; // set a max-width to appear nicer for dataset privacy dialog
-  padding: 32px 32px 27px;
+  padding: 32px 24px 27px;
 }
 
 .OptionCard--code {

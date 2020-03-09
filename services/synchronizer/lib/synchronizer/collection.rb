@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'yaml'
 require 'resque'
 require_relative '../../../../app/models/log'
@@ -61,6 +60,7 @@ module CartoDB
                   OR (r.state = '#{CartoDB::Synchronization::Member::STATE_FAILURE}'
                       AND r.retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES})
                 )
+              ORDER BY ran_at
             ))
           end
           success = true

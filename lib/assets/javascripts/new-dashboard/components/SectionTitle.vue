@@ -3,7 +3,7 @@
     <div class="head-sectionContainer">
       <h2 class="head-sectionTitle is-txtGrey">
         <span class="icon icon--large"><slot name="icon"></slot></span>
-        {{title}}
+        <slot name="title"></slot>
       </h2>
 
       <ul class="head-sectionActions">
@@ -18,6 +18,8 @@
     </div>
 
     <p v-if="description" class="head-sectionDescription">{{description}}</p>
+
+    <slot name="warning"></slot>
   </header>
 </template>
 
@@ -25,7 +27,6 @@
 export default {
   name: 'SectionTitle',
   props: {
-    title: String,
     description: String,
     showActionButton: Boolean
   }
@@ -70,8 +71,11 @@ export default {
 }
 
 .head-sectionDescription {
+  max-width: 66.6666%;
+  margin-top: 18px;
+  margin-bottom: 60px;
   color: $text__color;
-  font: 400 16px/1.6 'Open Sans';
+  font: 400 20px/1.6 'Open Sans';
 
   a {
     color: $text__color;
@@ -87,7 +91,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .head-sectionActions {

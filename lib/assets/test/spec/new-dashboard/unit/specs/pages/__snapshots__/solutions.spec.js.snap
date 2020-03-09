@@ -19,7 +19,7 @@ exports[`Solutions.vue should render correct contents 1`] = `
     <div class="talk-us-card">
       <h3 class="title is-medium">SolutionsPage.talkUsTitle</h3>
       <p class="text is-caption card-description">SolutionsPage.talkUsDescription</p>
-      <div class="talk-us-button"><a href="https://carto.com/request-live-demo/" target="_blank" class="button u-no-decoration"><span>SolutionsPage.talkUsButton</span></a></div>
+      <div class="talk-us-button"><a href="https://carto.com/request-live-demo/" target="_blank" rel="noopener noreferrer" class="button u-no-decoration"><span>SolutionsPage.talkUsButton</span></a></div>
     </div>
   </div>
 </page-stub>

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Kill redis
-killall redis-server
 # Drop all databases
 databases=$(psql -U postgres -t -c "select datname from pg_database where datname like 'carto_db_test_%'")
 touch parallel_tests/databases.log
@@ -11,6 +9,7 @@ sed -e 's/\s\+/\n/g' parallel_tests/databases.log > parallel_tests/databases_new
 
 while read -r line
 do
+  [ -z "$line" ] && continue
   psql -U postgres -t -c "drop database $line" >> parallel_tests/cleaner.log
 done < parallel_tests/databases_new.log
 
@@ -24,6 +23,7 @@ sed -e 's/\s\+/\n/g' parallel_tests/user_databases.log > parallel_tests/user_dat
 
 while read -r line
 do
+  [ -z "$line" ] && continue
   psql -U postgres -t -c "drop database \"$line\"" >> parallel_tests/cleaner.log
 done < parallel_tests/user_databases_new.log
 
@@ -39,13 +39,16 @@ sed -e 's/\s\+/\n/g' parallel_tests/user_databases.log > parallel_tests/user_dat
 
 while read -r line
 do
+  [ -z "$line" ] && continue
   psql -U postgres -t -c "drop database \"$line\"" >> parallel_tests/cleaner.log
 done < parallel_tests/user_databases_new.log
 
 # Cleanup
-rm parallel_tests/databases.log
-rm parallel_tests/databases_new.log
-rm parallel_tests/user_databases.log
-rm parallel_tests/users_databases_new.log
+rm -f parallel_tests/databases.log
+rm -f parallel_tests/databases_new.log
+rm -f parallel_tests/user_databases.log
+rm -f parallel_tests/users_databases_new.log
+rm -f .zeu*
+rm -f /cartodb/tmp/pids/server.pid
 
 echo "# Cleaner finished"

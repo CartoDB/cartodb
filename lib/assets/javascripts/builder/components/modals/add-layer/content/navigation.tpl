@@ -10,6 +10,11 @@
 
     <ul class="Filters-group js-links-list">
       <li class="Filters-typeItem js-filter-type">
+        <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-upload <%- listingType === 'upload' ? 'is-selected' : '' %> <%- !canCreateDataset ? 'is-disabled' : '' %>">
+          <%- _t('components.modals.add-layer.navigation.upload-dataset') %>
+        </button>
+      </li>
+      <li class="Filters-typeItem js-filter-type">
         <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-connect <%- listingType === 'import' ? 'is-selected' : '' %> <%- !canCreateDataset ? 'is-disabled' : '' %>">
           <%- _t('components.modals.add-layer.navigation.connect-dataset') %>
         </button>

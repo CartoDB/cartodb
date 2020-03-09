@@ -81,6 +81,7 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
+    frequency: 0.2
   #fullstory:
     #org: 'XXXXX'
   facebook:
@@ -89,6 +90,10 @@ defaults: &defaults
   hubspot: ''
   segment:
     api_key:
+  pubsub:
+      project_id: ''
+      credentials: ''
+      topic: ''
   passwords:
     expiration_in_d:
     rate_limit:
@@ -328,11 +333,11 @@ defaults: &defaults
       options: { color: '#ffffff' }
   cartodb_com_hosted: true
   cartodb_central_domain_name: 'carto.com'
-  aws:
-    s3:
-      access_key_id: "test"
-      secret_access_key: "test"
-      region: ''
+  #aws:
+    #s3:
+      #access_key_id: "test"
+      #secret_access_key: "test"
+      #region: ''
   assets:
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
@@ -343,6 +348,10 @@ defaults: &defaults
     #   bucket: "tests" # Required if 'aws.s3' config is present. Bucket must exist beforehand. If no 'aws.s3' config is present, organization assets will be stored locally and this line is not needed.
     #   max_size_in_bytes: 1048576 # Optional, default is 1 MB
     #   location: 'organization_assets' # Optional subdirectory for local assets, default is 'organization_assets'
+    # kuviz:
+    #   bucket: "tests" # Required if 'aws.s3' config is present. Bucket must exist beforehand. If no 'aws.s3' config is present, kuviz assets will be stored locally and this line is not needed.
+    #   max_size_in_bytes: 1048576 # Optional, default is 1 MB
+    #   location: 'kuviz_assets' # Optional subdirectory for local assets, default is 'kuviz_assets'
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
@@ -369,6 +378,15 @@ defaults: &defaults
   oauth:
     # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
+    bigquery:
+      application_name: ''
+      client_id: ''
+      client_secret: ''
+      scope: ["https://www.googleapis.com/auth/bigquery"]
+      authorization_uri: "https://accounts.google.com/o/oauth2/auth"
+      revoke_auth_uri: "https://accounts.google.com/o/oauth2/revoke"
+      token_credential_uri: "https://oauth2.googleapis.com/token"
+      callback_url: "https://oauth.carto-staging.com"
     gdrive:
       application_name:     ''
       client_id:            ''
@@ -440,7 +458,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Voyager'
         className: 'voyager_labels'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
         labels:
           urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png'
           urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}@2x.png'
@@ -452,7 +470,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Positron'
         className: 'positron_rainbow_labels'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
         labels:
           urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
           urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png'
@@ -464,7 +482,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter'
         className: 'dark_matter_rainbow_labels'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
         labels:
           urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png'
           urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}@2x.png'
@@ -476,7 +494,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Voyager (labels below)'
         className: 'voyager'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
       positron_rainbow:
         urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
         urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png'
@@ -485,7 +503,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Positron (labels below)'
         className: 'positron_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
       dark_matter_rainbow:
         urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
         urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png'
@@ -494,7 +512,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter (labels below)'
         className: 'dark_matter_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
       voyager_lite:
         urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
         urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png'
@@ -503,7 +521,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Voyager (lite)'
         className: 'voyager_lite'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
       positron_lite_rainbow:
         urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png'
@@ -512,7 +530,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Positron (lite)'
         className: 'positron_lite_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
       dark_matter_lite_rainbow:
         urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
         urlTemplate2x: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png'
@@ -521,7 +539,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter (lite)'
         className: 'dark_matter_lite_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
       eco_cartodb:
         urlTemplate: 'https://cartocdn_{s}.global.ssl.fastly.net/base-eco/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -742,6 +760,9 @@ defaults: &defaults
     sqlserver:
       enabled: false
       max_rows: 500000
+    bigquery:
+      enabled: false
+      max_rows: 1000000
   enforce_non_empty_layer_css: false
   dataservices:
     enabled:
@@ -750,7 +771,7 @@ defaults: &defaults
         isolines: false
         routing: false
         data_observatory: false
-
+  disable_email_mx_check: false # Disables MX DNS record check and just performs syntax validation.
 
 development:
   <<: *defaults
@@ -763,6 +784,30 @@ development:
     url_purge_command: 'url.purge'
     retries: 5
     timeout: 5
+  varnish_management:
+    critical: false
+    host: '127.0.0.1'
+    port: 6082
+    http_port: 6081
+    purge_command: 'purge'
+    retries: 1
+    timeout: 1
+    # 'warning' or 'error'
+    trigger_verbose: false
+  invalidation_service:
+    enabled: false
+    host: '127.0.0.1'
+    port: 3142
+    retries: 1 # number of retries before considering failure
+    critical: false # either the failure is considered an error or a warning
+    timeout: 1 # socket timeout
+    trigger_verbose: false
+  do_metadata_database:
+    host: 'localhost'
+    port: 5432
+    database: 'catalog'
+    username: ''
+    password: ''
 
 test:
   <<: *defaults
@@ -776,6 +821,34 @@ test:
     body: ""
   session_domain:     '.localhost.lan'
   subdomainless_urls: false
+  federated_server:
+    dir: "/tmp/federated_server_db"
+    port: 22665
+    test_user: "remote_user"
+  varnish_management:
+    critical: false
+    host: '127.0.0.1'
+    port: 6082
+    http_port: 6081
+    purge_command: 'purge'
+    retries: 1
+    timeout: 1
+    # 'warning' or 'error'
+    trigger_verbose: false
+  invalidation_service:
+    enabled: false
+    host: '127.0.0.1'
+    port: 3142
+    retries: 1 # number of retries before considering failure
+    critical: false # either the failure is considered an error or a warning
+    timeout: 1 # socket timeout
+    trigger_verbose: false
+  do_metadata_database:
+    host: 'localhost'
+    port: 5432
+    database: 'carto_db_test'
+    username: 'postgres'
+    password: ''
 
 staging:
   <<: *defaults

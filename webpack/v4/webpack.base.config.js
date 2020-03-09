@@ -37,7 +37,9 @@ module.exports = {
     new webpack.DefinePlugin({
       __IN_DEV__: JSON.stringify(false),
       __ENV__: JSON.stringify('prod'),
-      __ASSETS_VERSION__: JSON.stringify(version)
+      __ASSETS_VERSION__: JSON.stringify(version),
+      __ASSETS_PATH__: JSON.stringify(`${http_path_prefix}/assets/${version}`),
+      __KEPLERGL_BASE_URL__: JSON.stringify('https://kepler.gl')
     }),
 
     new MiniCssExtractPlugin({

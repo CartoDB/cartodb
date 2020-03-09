@@ -1,5 +1,3 @@
-# coding: utf-8
-
 require File.expand_path('../boot', __FILE__)
 
 require "action_controller/railtie"
@@ -134,6 +132,7 @@ module CartoDB
       organization.js
       lockout.js
       new_lockout.js
+      maintenance.js
 
       tipsy.js
       modernizr.js
@@ -159,6 +158,7 @@ module CartoDB
       editor.css
       new_lockout.css
       new_dashboard.css
+      maintenance.css
 
       common_editor3.css
       editor3.css

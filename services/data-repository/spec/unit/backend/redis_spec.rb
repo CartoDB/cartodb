@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'minitest/autorun'
 require 'set'
 require_relative '../../spec_helper'

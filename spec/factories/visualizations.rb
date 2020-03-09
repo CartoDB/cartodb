@@ -37,4 +37,21 @@ FactoryGirl.define do
     end
   end
 
+  factory :kuviz_visualization, class: Carto::Visualization do
+    id { random_uuid }
+    type 'kuviz'
+    name 'factory kuviz'
+    title 'kuviz title'
+    privacy 'public'
+
+    association :user, factory: :carto_user
+    permission { FactoryGirl.create :carto_permission, owner: user }
+
+    factory :kuviz_protected_visualization do
+      privacy Carto::Visualization::PRIVACY_PROTECTED
+      password 'test'
+    end
+
+  end
+
 end

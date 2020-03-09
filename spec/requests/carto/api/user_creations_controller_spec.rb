@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'uuidtools'
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/user_creations_controller'

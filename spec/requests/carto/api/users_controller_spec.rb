@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../spec_helper_min'
 require 'support/helpers'
 require_relative '../../../../app/controllers/carto/api/users_controller'
@@ -21,6 +19,7 @@ describe Carto::Api::UsersController do
     user = @organization.owner
     carto_user = Carto::User.where(id: user.id).first
     FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+    FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_PRIVATE)
     FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_LINK)
     FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_LINK)
     FactoryGirl.create(:carto_visualization, user: carto_user,
@@ -81,6 +80,7 @@ describe Carto::Api::UsersController do
         expect(response.body[:user_data][:public_privacy_map_count]).to eq 1
         expect(response.body[:user_data][:link_privacy_map_count]).to eq 2
         expect(response.body[:user_data][:password_privacy_map_count]).to eq 3
+        expect(response.body[:user_data][:private_privacy_map_count]).to eq 1
       end
     end
 
@@ -89,6 +89,47 @@ describe Carto::Api::UsersController do
         expect(response.status).to eq(200)
         expect(response.body).to have_key(:config)
         expect(response.body[:user_frontend_version]).to eq(CartoDB::Application.frontend_version)
+      end
+    end
+
+    context 'license_expiration field' do
+      before(:each) do
+        @expiration_date = Time.parse("2020-11-05T00:00:00.000+00:00")
+      end
+
+      after(:each) do
+        Carto::Api::UsersController.any_instance.unstub(:license_expiration_date)
+      end
+
+      it 'is nil for cloud' do
+        Carto::Api::UsersController.any_instance.stubs(:license_expiration_date).returns(@expiration_date)
+
+        Cartodb.with_config(cartodb_com_hosted: false) do
+          get_json api_v3_users_me_url, @headers do |response|
+            expect(response.status).to eq(200)
+            expect(response.body[:license_expiration]).to be_nil
+          end
+        end
+      end
+
+      it 'is nil if the license_expiration_date does not exist (gear not loaded)' do
+        Cartodb.with_config(cartodb_com_hosted: true) do
+          get_json api_v3_users_me_url, @headers do |response|
+            expect(response.status).to eq(200)
+            expect(response.body[:license_expiration]).to be_nil
+          end
+        end
+      end
+
+      it 'gets the date from the license' do
+        Carto::Api::UsersController.any_instance.stubs(:license_expiration_date).returns(@expiration_date)
+
+        Cartodb.with_config(cartodb_com_hosted: true) do
+          get_json api_v3_users_me_url, @headers do |response|
+            expect(response.status).to eq(200)
+            expect(response.body[:license_expiration]).to eq "2020-11-05T00:00:00.000+00:00"
+          end
+        end
       end
     end
   end

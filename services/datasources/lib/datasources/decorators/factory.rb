@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../url/instagram_oauth'
 require_relative './base_decorator'
 require_relative './instagram_decorator'

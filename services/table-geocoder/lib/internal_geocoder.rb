@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../sql-api/sql_api'
 require_relative '../../importer/lib/importer/query_batcher'
 require_relative 'internal-geocoder/query_generator_factory'

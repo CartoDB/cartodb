@@ -551,13 +551,19 @@ module CartoDB
             drop_user(conn, @user.database_public_username)
           end
 
-          if is_owner
-            conn.run("DROP DATABASE \"#{@user.database_name}\"")
-          end
+          drop_owner_database(conn) if is_owner
           drop_user(conn)
         end.join
 
         monitor_user_notification
+      end
+
+      def drop_owner_database(conn)
+        org_member_role = organization_member_group_role_member_name
+        @user.in_database.disconnect
+        conn.run("DROP DATABASE \"#{@user.database_name}\"")
+        conn.run("DROP OWNED BY \"#{org_member_role}\" CASCADE")
+        conn.run("DROP ROLE IF EXISTS \"#{org_member_role}\"")
       end
 
       def configure_extension_org_metadata_api_endpoint

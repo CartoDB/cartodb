@@ -147,6 +147,25 @@ describe Organization do
       @organization.destroy
     end
 
+    it 'destroy member group role' do
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
+      owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+      owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+      owner_org.promote_user_to_admin
+      owner.reload
+      organization.reload
+
+      db = owner.in_database(as: :cluster_admin)
+      role = owner.db_service.organization_member_group_role_member_name
+
+      db.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{role}'").first.should be
+      organization.destroy_cascade
+      Organization.where(id: organization.id).first.should_not be
+
+      db.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{role}'").first.should_not be
+      db.disconnect
+    end
+
     it 'destroys assets' do
       bypass_storage
       asset = FactoryGirl.create(:organization_asset,

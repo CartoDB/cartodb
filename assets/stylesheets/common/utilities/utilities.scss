@@ -1,0 +1,210 @@
+@import '../../variables/mixins';
+@import '../../variables/colors';
+@import '../../variables/sizes';
+@import 'flexbox';
+@import 'spacing';
+
+.u-transparent {
+  opacity: 0;
+}
+
+// Center the content within the defined layout width
+.u-inner {
+  margin: 0 auto;
+  padding: 0 $sMargin-elementInline;
+}
+
+.u-capitalize {
+  text-transform: capitalize;
+}
+
+.u-breakLongWords {
+  word-break: break-word;
+}
+
+.u-ellipsLongText {
+  display: block; // required for text-overflow to work with some elements that are inline by default (e.g. <a> tags)
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.u-hide,
+.u-showOnMobile,
+.u-showOnTablet {
+  display: none !important;
+}
+
+.u-disabled {
+  opacity: 0.4;
+
+  @include grayscale();
+}
+
+.u-iblock {
+  display: inline-block;
+}
+
+.u-txt-center {
+  text-align: center;
+}
+
+.u-txt-left {
+  text-align: left;
+}
+
+.u-txt-right {
+  text-align: right;
+}
+
+.u-whiteSpace-nowrap {
+  white-space: nowrap;
+}
+
+.u-valign::before {
+  content: "";
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.u-malign {
+  vertical-align: middle;
+}
+
+.u-vspace-xxl {
+  margin-bottom: 120px;
+}
+
+.u-vspace-xl {
+  margin-bottom: 60px;
+}
+
+.u-vspace-l {
+  margin-bottom: 40px;
+}
+
+.u-vspace-m {
+  margin-bottom: 24px;
+}
+
+.u-vspace-s {
+  margin-bottom: 12px;
+}
+
+.u-vspace-xs {
+  margin-bottom: 8px;
+}
+
+.u-tspace-xl {
+  margin-top: 60px;
+}
+
+.u-tspace-l {
+  margin-top: 40px;
+}
+
+.u-tspace-m {
+  margin-top: 24px;
+}
+
+.u-tspace-s {
+  margin-top: 12px;
+}
+
+.u-tspace-xs {
+  margin-top: 8px;
+}
+
+.u-rspace-xl {
+  margin-right: 60px;
+}
+
+.u-rspace-l {
+  margin-right: 40px;
+}
+
+.u-rspace-m {
+  margin-right: 24px;
+}
+
+.u-rspace-s {
+  margin-right: 12px;
+}
+
+.u-rspace-xs {
+  margin-right: 8px;
+}
+
+.u-tspace--20 {
+  margin-top: 20px;
+}
+
+.u-rspace--20 {
+  margin-right: 20px;
+}
+
+.u-vspace--20 {
+  margin-bottom: 20px;
+}
+
+.u-lspace-28 {
+  margin-left: 28px;
+}
+
+.u-lspace-23 {
+  margin-left: 23px;
+}
+
+.u-tupper {
+  text-transform: uppercase;
+}
+
+.u-border-bottom {
+  box-shadow: 0px 1px 0px $cStructure-mainLine;
+}
+
+@media (min-width: $sMedia-desktop) {
+  .u-inner {
+    width: $sLayout-width;
+    padding: 0;
+  }
+}
+
+@media (max-width: $sMedia-tablet) {
+  .u-hideOnMobile {
+    display: none !important;
+  }
+
+  .u-showOnMobile {
+    display: inline-block !important;
+  }
+}
+
+@media (max-width: $sMedia-desktop) {
+  .u-hideOnTablet {
+    display: none !important;
+  }
+
+  .u-showOnTablet {
+    display: inline-block !important;
+  }
+}
+
+@media (min-width: $sMedia-tablet + 1) {
+  .u-block--mobile {
+    display: none !important;
+  }
+}
+
+@media (max-width: $sMedia-tablet) {
+  .u-mobile-hide {
+    display: none !important;
+  }
+
+  .u-block--mobile {
+    display: block !important;
+  }
+}
+
+

@@ -20,12 +20,17 @@ module Carto
       if should_run_synchronously?
         link_ghost_tables_synchronously
       else
-        ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)
+        link_ghost_tables_asynchronously
       end
     end
 
     def link_ghost_tables_synchronously
       sync_user_tables_with_db unless user_tables_synced_with_db?
+    end
+
+    def link_ghost_tables_asynchronously
+      ::Resque.dequeue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username)
+      ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username)
     end
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run
@@ -49,8 +54,7 @@ module Carto
     def self.run_synchronized(user_id, attempts: 10, timeout: 30000, **warning_params)
       gtm = new(user_id)
       bolt = gtm.get_bolt
-      rerun_func = lambda { gtm.send(:sync) }
-      lock_acquired = bolt.run_locked(attempts: attempts, timeout: timeout, rerun_func: rerun_func) do
+      lock_acquired = bolt.run_locked(attempts: attempts, timeout: timeout) do
         yield
       end
       if !lock_acquired && warning_params.present?
@@ -74,7 +78,7 @@ module Carto
     end
 
     def sync_user_tables_with_db
-      got_locked = get_bolt.run_locked(rerun_func: lambda { sync }) { sync }
+      got_locked = get_bolt.run_locked(fail_function: lambda { link_ghost_tables_asynchronously }) { sync }
     end
 
     def sync

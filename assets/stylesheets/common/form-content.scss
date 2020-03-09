@@ -143,6 +143,10 @@ $sLabel-width: 140px;
   text-align: left;
 }
 
+.Form-rowLabel--small {
+  width: 60px;
+}
+
 .Form-label {
   color: $cTypography-paragraphs;
   font-size: $sFontSize-normal;
@@ -318,22 +322,18 @@ $sLabel-width: 140px;
 
 .Form-input::-webkit-input-placeholder {
   color: #AAA;
-  font-style: italic;
 }
 
 .Form-input:-moz-placeholder {
   color: #AAA;
-  font-style: italic;
 }
 
 .Form-input::-moz-placeholder {
   color: #AAA;
-  font-style: italic;
 }
 
 .Form-input:-ms-input-placeholder {
   color: #AAA;
-  font-style: italic;
 }
 // Sizes
 .Form-input--longer {

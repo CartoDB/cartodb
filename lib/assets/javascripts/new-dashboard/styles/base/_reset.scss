@@ -136,6 +136,10 @@ a {
   text-decoration: none;
 }
 
+input::-webkit-input-placeholder {
+  color: $neutral--500;
+}
+
 * {
   box-sizing: border-box;
 }

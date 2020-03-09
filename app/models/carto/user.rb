@@ -1,5 +1,6 @@
 require 'active_record'
 require 'cartodb-common'
+require 'securerandom'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
@@ -32,12 +33,6 @@ class Carto::User < ActiveRecord::Base
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Individual'].freeze
-
-  MAGELLAN_TRIAL_DAYS = 15
-  PERSONAL30_TRIAL_DAYS = 30
-  INDIVIDUAL_TRIAL_DAYS = 14
-  TRIAL_PLANS = ['personal30', 'individual'].freeze
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
@@ -48,7 +43,8 @@ class Carto::User < ActiveRecord::Base
                    "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
                    "users.description, users.available_for_hire, users.frontend_version, users.asset_host, "\
                    "users.no_map_logo, users.industry, users.company, users.phone, users.job_role, "\
-                   "users.public_map_quota, users.maintenance_mode, users.company_employees, users.use_case".freeze
+                   "users.public_map_quota, users.public_dataset_quota, users.private_map_quota, "\
+                   "users.maintenance_mode, users.company_employees, users.use_case, users.session_salt".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -92,7 +88,8 @@ class Carto::User < ActiveRecord::Base
     :database_username, :database_password, :in_database,
     :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
     :visualization_count, :owned_visualization_count, :twitter_imports_count,
-    :link_privacy_visualization_count, :password_privacy_visualization_count, :public_privacy_visualization_count
+    :link_privacy_visualization_count, :password_privacy_visualization_count, :public_privacy_visualization_count,
+    :private_privacy_visualization_count
   ] => :service
 
   attr_reader :password
@@ -106,6 +103,7 @@ class Carto::User < ActiveRecord::Base
 
   before_create :set_database_host
   before_create :generate_api_key
+  before_create :generate_session_salt
 
   after_save { reset_password_rate_limit if crypted_password_changed? }
 
@@ -169,15 +167,19 @@ class Carto::User < ActiveRecord::Base
     # TODO: Implement
   end
 
-  def default_avatar
-    "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
+  def security_token
+    return if self.session_salt.blank?
+
+    Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: crypted_password, salt: session_salt)
   end
 
-  def feature_flag_names
-    @feature_flag_names ||= (feature_flags_user.map do |ff|
-                               ff.feature_flag.name
-                             end +
-                            FeatureFlag.where(restricted: false).map(&:name)).uniq.sort
+  def invalidate_all_sessions!
+    user = ::User.where(id: self.id).first
+    user&.invalidate_all_sessions!
+  end
+
+  def default_avatar
+    "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
   end
 
   # TODO: Revisit methods below to delegate to the service, many look like not proper of the model itself
@@ -224,7 +226,8 @@ class Carto::User < ActiveRecord::Base
   end
 
   def feature_flags_list
-    @feature_flag_names ||= (feature_flags_user
+    ffs = feature_flags_user + (organization&.inheritable_feature_flags || [])
+    @feature_flag_names = (ffs
                                  .map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false)
                                                                                  .map(&:name)).uniq.sort
   end
@@ -485,14 +488,21 @@ class Carto::User < ActiveRecord::Base
     !soft_mapzen_routing_limit?
   end
   alias_method :hard_mapzen_routing_limit, :hard_mapzen_routing_limit?
+
   def trial_ends_at
-    if account_type.to_s.casecmp('magellan').zero? && upgraded_at && upgraded_at + 15.days > Date.today
-      upgraded_at + MAGELLAN_TRIAL_DAYS.days
-    elsif account_type.to_s.casecmp('personal30').zero?
-      created_at + PERSONAL30_TRIAL_DAYS.days
-    elsif account_type.to_s.casecmp('individual').zero?
-      created_at + INDIVIDUAL_TRIAL_DAYS.days
-    end
+    return nil unless Carto::AccountType::TRIAL_PLANS.include?(account_type)
+
+    created_at + Carto::AccountType::TRIAL_DURATION[account_type]
+  end
+
+  def remaining_trial_days
+    return 0 if trial_ends_at.nil? || trial_ends_at < Time.now
+
+    ((trial_ends_at - Time.now) / 1.day).ceil
+  end
+
+  def show_trial_reminder?
+    remaining_trial_days.between?(1, 30)
   end
 
   def remaining_days_deletion
@@ -673,17 +683,17 @@ class Carto::User < ActiveRecord::Base
       revoke_url = ::User::OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
                 when 'gdrive'
-                  Cartodb.config[:oauth][serv]['client_id'].present?
+                  Cartodb.get_config(:oauth, serv, 'client_id')
                 when 'box'
-                  Cartodb.config[:oauth][serv]['client_id'].present?
+                  Cartodb.get_config(:oauth, serv, 'client_id')
                 when 'dropbox'
-                  Cartodb.config[:oauth]['dropbox']['app_key'].present?
+                  Cartodb.get_config(:oauth, serv, 'app_key')
                 when 'mailchimp'
-                  Cartodb.config[:oauth]['mailchimp']['app_key'].present? && has_feature_flag?('mailchimp_import')
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('mailchimp_import')
                 when 'instagram'
-                  Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('instagram_import')
                 when 'bigquery'
-                  Cartodb.config[:oauth][serv]['client_id'].present? &&
+                  Cartodb.get_config(:oauth, serv, 'client_id') &&
                   Carto::Connector.provider_available?('bigquery', self)
                 else
                   true
@@ -728,7 +738,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def fullstory_enabled?
-    FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
+    Carto::AccountType::FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
   end
 
   def password_expired?
@@ -770,15 +780,6 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
-  def remaining_trial_days
-    return 0 unless trial_ends_at
-    ((trial_ends_at - Time.now) / 1.day).round
-  end
-
-  def trial_user?
-    TRIAL_PLANS.include?(account_type.to_s.downcase)
-  end
-
   def get_database_roles
     api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
     oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
@@ -801,6 +802,10 @@ class Carto::User < ActiveRecord::Base
 
   def generate_api_key
     self.api_key ||= make_token
+  end
+
+  def generate_session_salt
+    self.session_salt ||= SecureRandom.hex
   end
 
   def generate_token(column)

@@ -12,7 +12,7 @@ module Carto
       # to search based on params hash (can be request params).
       # It doesn't apply ordering or paging, just filtering.
       def query_builder_with_filter_from_hash(params)
-        types, total_types = get_types_parameters
+        types = get_types_parameters
 
         validate_parameters(types, params)
 
@@ -98,14 +98,12 @@ module Carto
 
       def presenter_options_from_hash(params)
         options = {}
-        options[:show_stats] = false if params[:show_stats].to_s == 'false'
-        options[:show_table] = false if params[:show_table].to_s == 'false'
-        options[:show_permission] = false if params[:show_permission].to_s == 'false'
-        options[:show_uses_builder_features] = false if params[:show_uses_builder_features].to_s == 'false'
-        options[:show_synchronization] = false if params[:show_synchronization].to_s == 'false'
-        options[:show_table_size_and_row_count] = false if params[:show_table_size_and_row_count].to_s == 'false'
+
+        params.each { |k, v| options[k.to_sym] = false if params[k].to_s == 'false' }
+
         options[:with_dependent_visualizations] = params[:with_dependent_visualizations].to_i
-        options
+
+        options.slice(*Carto::Api::VisualizationPresenter::ALLOWED_PARAMS)
       end
 
       private
@@ -114,17 +112,13 @@ module Carto
         # INFO: this fits types and type into types, so only types is used for search.
         # types defaults to type if empty.
         # types defaults to derived if type is also empty.
-        # total_types are the types used for total counts.
         types = params.fetch(:types, "").split(',')
-
         type = params[:type].present? ? params[:type] : (types.empty? ? nil : types[0])
-        # TODO: add this assumption to a test or remove it (this is coupled to the UI)
-        total_types = [(type == Carto::Visualization::TYPE_REMOTE ? Carto::Visualization::TYPE_CANONICAL : type)].compact
 
         types = [type].compact if types.empty?
         types = [Carto::Visualization::TYPE_DERIVED] if types.empty?
 
-        return types, total_types
+        return types
       end
 
       def compose_shared(shared, only_shared, exclude_shared)

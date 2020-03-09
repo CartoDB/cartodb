@@ -25,7 +25,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota'
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
+      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota'
     }),
     actions () {
       return {
@@ -44,7 +45,8 @@ export default {
           {
             name: this.$t('BulkActions.maps.duplicate'),
             event: 'duplicateMap',
-            shouldBeDisabled: !this.canDuplicate
+            shouldBeDisabled: !this.canDuplicate,
+            shouldBeHidden: this.isAnyKuviz
           },
           {
             name: this.$t('BulkActions.maps.lock'),
@@ -114,10 +116,15 @@ export default {
       return this.selectedMaps.some(map => ['PRIVATE'].includes(map.privacy));
     },
     canChangePrivacy () {
-      return !this.isOutOfPublicMapsQuota || !this.isSelectedMapPrivate;
+      return (this.isSelectedMapPrivate && !this.isOutOfPublicMapsQuota) ||
+      !this.isSelectedMapPrivate;
     },
     canDuplicate () {
-      return !this.isOutOfPublicMapsQuota || this.isSelectedMapPrivate;
+      return (!this.isOutOfPrivateMapsQuota && this.isSelectedMapPrivate) ||
+        (!this.isOutOfPublicMapsQuota && !this.isSelectedMapPrivate);
+    },
+    isAnyKuviz () {
+      return this.selectedMaps.some(map => map.type === 'kuviz');
     }
   },
   methods: {

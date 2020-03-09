@@ -44,11 +44,24 @@ module Carto
       end
 
       def errors(only_for: nil)
-        super + @connection.errors(parameters_term: 'connection parameters')
+        additional_errors = []
+        parameters_to_validate = @params.normalize_parameter_names(only_for)
+        if parameters_to_validate.blank? || (parameters_to_validate & [:table, :sql_query, :import_as]).present?
+          if !@params.normalized_names.include?(:table) && !@params.normalized_names.include?(:sql_query)
+            additional_errors << "The table parameter is required if no sql_query parameter is provided"
+          end
+          if @params.normalized_names.include?(:sql_query) && !@params.normalized_names.include?(:import_as) &&
+            !@params.normalized_names.include?(:table)
+            # note that for backwards compatibility we support definining the result name with `table`
+            # but that is deprecated
+            additional_errors << "The import_as parameter is required to name the sql_query results"
+          end
+        end
+        super + @connection.errors(parameters_term: 'connection parameters') + additional_errors
       end
 
-      required_parameters %I(table connection)
-      optional_parameters %I(schema sql_query sql_count encoding columns)
+      required_parameters %I(connection)
+      optional_parameters %I(table import_as schema sql_query sql_count encoding columns)
 
       # ODBC attributes for (non-connection) parameters: { name: :internal_name }#
       # The :internal_name is what is passed to the driver (through odbc_fdw 'odbc_' options)
@@ -80,12 +93,23 @@ module Carto
         must_be_defined_in_derived_class
       end
 
+      # Name that will be given to the local imported table
       def table_name
-        @params[:table]
+        @params[:import_as] || @params[:table]
+      end
+
+      # Name of the external table to be imported.
+      # For queries this is a conventional name that can be used to name the foreign table.
+      def external_table_name
+        if @params[:sql_query].present?
+          table_name
+        else
+          @params[:table]
+        end
       end
 
       def foreign_table_name_for(server_name, name = nil)
-        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || table_name}")
+        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || external_table_name}")
       end
 
       def unique_prefix_for(server_name)
@@ -113,6 +137,7 @@ module Carto
         cmds = []
         foreign_table_name = foreign_table_name_for(server_name)
         if @columns.present?
+          # note that it uses table for both imported external table and local name (with prefix) <<<<<
           cmds << fdw_create_foreign_table_sql(
             server_name, foreign_table_schema, foreign_table_name, @columns, table_options
           )
@@ -133,10 +158,11 @@ module Carto
 
       def fdw_check_connection(server_name)
         cmds = []
-        foreign_table_name = foreign_table_name_for(server_name, 'check_connection')
+        name = 'check_connection'
+        foreign_table_name = foreign_table_name_for(server_name, name)
         columns = ['ok int']
         cmds << fdw_create_foreign_table_sql(
-          server_name, foreign_table_schema, foreign_table_name, columns, check_table_options("SELECT 1 AS ok")
+          server_name, foreign_table_schema, foreign_table_name, columns, check_table_options("SELECT 1 AS ok", server_name, name)
         )
         cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, @connector_context.database_username)
         execute_as_superuser cmds.join("\n")
@@ -151,7 +177,9 @@ module Carto
           "sql_queries":    true,
           "list_databases": false,
           "list_tables":    true,
-          "preview_table":  false
+          "preview_table":  false,
+          "dry_run":        false,
+          "list_projects":  false
         }
       end
 
@@ -198,7 +226,8 @@ module Carto
         attributes.reverse_merge! Hash[non_nil_defaults.map { |k, v| [k.to_s, v.values.first] }]
 
         # Map attribute names to internal (driver) attributes
-        attributes = attributes.map { |k, v| [attribute_name_map(optional_params, required_params)[k.to_s.downcase] || k, v] }
+        parameter_to_odbc_attr_map = attribute_name_map(optional_params, required_params)
+        attributes = attributes.map { |k, v| [parameter_to_odbc_attr_map[k.to_s.downcase] || k, v] }
 
         attributes
       end
@@ -209,11 +238,11 @@ module Carto
         # attributes from connection parameters
         attributes = parameters_to_odbc_attributes(@connection, odbc_attributes_for_optional_connection_parameters, odbc_attributes_for_required_connection_parameters)
 
-        # attributes from other parameters
-        attributes.merge! parameters_to_odbc_attributes(@params, odbc_attributes_for_optional_parameters, odbc_attributes_for_required_parameters)
-
         # fixed attribute values
         attributes.merge! fixed_odbc_attributes
+
+        # attributes from other parameters
+        attributes.merge! parameters_to_odbc_attributes(@params, odbc_attributes_for_optional_parameters, odbc_attributes_for_required_parameters)
 
         attributes
       end
@@ -307,13 +336,18 @@ module Carto
       # FDW table-level options
       def table_options
         params = connection_options connection_attributes.except(*(server_attributes + user_attributes))
-        params.merge(non_connection_parameters).parameters
+        params = params.merge(non_connection_parameters).parameters
+
+        # The `table` parameter here will be used by the odbc_fdw to name the foreing_table
+        # and also to select the external table if no sql_query is given.
+        params.merge(table: external_table_name).except(:import_as)
       end
 
-      def check_table_options(query)
+      def check_table_options(query, server_name, name)
         table_options.merge(
           sql_query: query,
-          table: 'check_table' # Not used, but required
+          prefix: unique_prefix_for(server_name),
+          table: name # Not used, but required
         )
       end
     end

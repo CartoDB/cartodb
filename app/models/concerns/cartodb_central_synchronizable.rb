@@ -75,7 +75,7 @@ module Concerns
              obs_general_block_price salesforce_datasource_enabled geocoder_provider
              isolines_provider routing_provider engine_enabled builder_enabled
              mapzen_routing_quota mapzen_routing_block_price no_map_logo auth_github_enabled
-             password_expiration_in_d)
+             password_expiration_in_d inherit_owner_ffs)
         when :update
           %i(seats viewer_seats quota_in_bytes display_name description website
              discus_shortname twitter_username geocoding_quota map_view_quota
@@ -88,24 +88,19 @@ module Concerns
              obs_general_block_price salesforce_datasource_enabled geocoder_provider
              isolines_provider routing_provider engine_enabled builder_enabled
              mapzen_routing_quota mapzen_routing_block_price no_map_logo auth_github_enabled
-             password_expiration_in_d)
+             password_expiration_in_d inherit_owner_ffs)
         end
       elsif is_a?(::User)
         %i(account_type admin org_admin crypted_password database_host
            database_timeout description disqus_shortname available_for_hire email
-           geocoding_block_price geocoding_quota map_view_block_price
-           map_view_quota max_layers
+           geocoding_block_price geocoding_quota map_view_block_price map_view_quota max_layers
            max_import_file_size max_import_table_row_count max_concurrent_import_count
-           name last_name notification organization_id
-           period_end_date private_tables_enabled quota_in_bytes
-           sync_tables_enabled table_quota public_map_quota regular_api_key_quota twitter_username upgraded_at
-           user_timeout username website soft_geocoding_limit
-           batch_queries_statement_timeout
-           twitter_datasource_enabled twitter_datasource_block_size
-           twitter_datasource_block_price twitter_datasource_quota
-           soft_twitter_datasource_limit
-           google_sign_in last_password_change_date github_user_id
-           google_maps_key google_maps_private_key
+           name last_name notification organization_id period_end_date private_tables_enabled quota_in_bytes
+           sync_tables_enabled table_quota public_map_quota regular_api_key_quota
+           twitter_username upgraded_at user_timeout username website soft_geocoding_limit
+           batch_queries_statement_timeout twitter_datasource_enabled twitter_datasource_block_size
+           twitter_datasource_block_price twitter_datasource_quota soft_twitter_datasource_limit
+           google_sign_in last_password_change_date github_user_id google_maps_key google_maps_private_key
            private_maps_enabled here_isolines_quota here_isolines_block_price soft_here_isolines_limit
            obs_snapshot_quota obs_snapshot_block_price soft_obs_snapshot_limit
            obs_general_quota obs_general_block_price soft_obs_general_limit
@@ -115,7 +110,8 @@ module Concerns
            isolines_provider routing_provider engine_enabled builder_enabled
            mapzen_routing_quota mapzen_routing_block_price soft_mapzen_routing_limit no_map_logo
            user_render_timeout database_render_timeout state industry company phone job_role
-           password_reset_token password_reset_sent_at maintenance_mode company_employees use_case)
+           password_reset_token password_reset_sent_at maintenance_mode company_employees use_case private_map_quota
+           session_salt public_dataset_quota)
       end
     end
 
@@ -126,7 +122,8 @@ module Concerns
           raise "Can't create organizations from editor"
         when :update
           allowed_attributes = %i(seats viewer_seats display_name description website discus_shortname twitter_username
-                                  auth_username_password_enabled auth_google_enabled password_expiration_in_d)
+                                  auth_username_password_enabled auth_google_enabled password_expiration_in_d
+                                  inherit_owner_ffs)
           values.slice(*allowed_attributes)
         end
       elsif is_a?(::User)
@@ -142,7 +139,7 @@ module Concerns
           soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit viewer
           geocoder_provider isolines_provider routing_provider builder_enabled engine_enabled mapzen_routing_quota
           mapzen_routing_block_price soft_mapzen_routing_limit industry company phone job_role password_reset_token
-          password_reset_sent_at company_employees use_case
+          password_reset_sent_at company_employees use_case private_map_quota session_salt public_dataset_quota
         )
         attrs = values.slice(*allowed_attributes)
         attrs[:multifactor_authentication_status] = multifactor_authentication_status

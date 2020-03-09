@@ -58,6 +58,10 @@ describe Carto::UserCreation do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
     end
 
+    after(:all) do
+      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
+    end
+
     it 'assigns an enable_account_token if user has not signed up with Google' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)

@@ -90,6 +90,10 @@ module Cartodb
       send_request("api/users/#{username}", nil, :delete, [204, 404])
     end
 
+    def check_do_enabled(username)
+      send_request("api/users/#{username}/do_status", nil, :get, [200])
+    end
+
     def get_do_token(username)
       send_request("api/users/#{username}/do_token", nil, :get, [200])
     end

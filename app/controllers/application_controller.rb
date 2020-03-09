@@ -85,7 +85,13 @@ class ApplicationController < ActionController::Base
     auth.request.session_options[:skip] = true if opts[:store] == false
   end
 
-  Warden::Manager.before_logout do |_user, auth, _opts|
+  Warden::Manager.before_logout do |user, auth, opts|
+    if user.present?
+      user.invalidate_all_sessions!
+    elsif opts[:scope]
+      scope_user = ::User.where(username: opts[:scope]).first
+      scope_user&.invalidate_all_sessions!
+    end
     auth.cookies.delete(ME_ENDPOINT_COOKIE, domain: Cartodb.config[:session_domain])
   end
 
@@ -95,12 +101,12 @@ class ApplicationController < ActionController::Base
 
   # @see Warden::Manager.after_set_user
   def update_session_security_token(user)
-    warden.session(user.username)[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
+    warden.session(user.username)[:sec_token] = user.security_token
   end
 
   def session_security_token_valid?(user)
     warden.session(user.username).key?(:sec_token) &&
-      warden.session(user.username)[:sec_token] == Digest::SHA1.hexdigest(user.crypted_password)
+      warden.session(user.username)[:sec_token] == user.security_token
   rescue Warden::NotAuthenticated
     false
   end
@@ -264,8 +270,7 @@ class ApplicationController < ActionController::Base
   end
 
   def multifactor_authentication_required?(user = current_viewer)
-    user &&
-      user.multifactor_authentication_configured? &&
+    user&.multifactor_authentication_configured? &&
       !warden.session(user.username)[:multifactor_authentication_performed] &&
       !warden.session(user.username)[:skip_multifactor_authentication]
   rescue Warden::NotAuthenticated
@@ -462,10 +467,22 @@ class ApplicationController < ActionController::Base
     current_user.set_last_ip_address request.remote_ip
   end
 
-  def ensure_required_params(required_params)
+  def ensure_required_params(required_params, status = 400)
     params_with_value = params.reject { |_, v| v.empty? }
     missing_params = required_params - params_with_value.keys
-    raise Carto::MissingParamsError.new(missing_params) unless missing_params.empty?
+    raise Carto::MissingParamsError.new(missing_params, status) unless missing_params.empty?
+  end
+
+  def ensure_required_request_params(required_params, status = 422)
+    params_with_value = request.request_parameters.reject { |_, v| v.empty? }
+    missing_params = required_params - params_with_value.keys
+    raise Carto::UnprocesableEntityError.new("Missing parameter: #{missing_params}", status) unless missing_params.empty?
+  end
+
+  def ensure_no_extra_request_params(allowed_params, status = 422)
+    params_with_value = request.request_parameters.reject { |_, v| v.empty? }
+    extra_params = params_with_value.keys - allowed_params
+    raise Carto::UnprocesableEntityError.new("Invalid parameter: #{extra_params}", status) unless extra_params.empty?
   end
 
   protected :current_user

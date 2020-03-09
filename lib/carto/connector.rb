@@ -28,23 +28,46 @@ module Carto
     end
 
     def self.list_tables?(provider)
-      information = Connector.information(provider)
-      information[:features][:list_tables]
+      has_feature? provider, :list_tables
+    end
+
+    def self.list_projects?(provider)
+      has_feature? provider, :list_projects
+    end
+
+    def self.dry_run?(provider)
+      has_feature? provider, :dry_run
     end
 
     def list_tables(limit = nil)
       @provider.list_tables(limits: limits.merge(max_listed_tables: limit))
     end
 
+    def list_projects
+      @provider.list_projects
+    end
+
+    def list_project_datasets(project_id)
+      @provider.list_project_datasets(project_id)
+    end
+
+    def list_project_dataset_tables(project_id, dataset_id)
+      @provider.list_project_dataset_tables(project_id, dataset_id)
+    end
+
     def check_connection
       @provider.check_connection
+    end
+
+    def dry_run
+      @provider.dry_run
     end
 
     def remote_data_updated?
       @provider.remote_data_updated?
     end
 
-    def remote_table_name
+    def table_name
       @provider.table_name
     end
 
@@ -160,6 +183,11 @@ module Carto
     end
 
     private
+
+    def self.has_feature?(provider, feature)
+      information = Connector.information(provider)
+      information[:features][feature]
+    end
 
     # Validate parameters.
     # An array of parameter names to validate can be passed via :only.

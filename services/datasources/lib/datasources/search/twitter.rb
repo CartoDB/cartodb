@@ -245,7 +245,7 @@ module CartoDB
           @user_defined_limits.fetch(USER_LIMITS_FILTER_CREDITS, 0)
         end
 
-        # Wraps check of specified user limit or not (to use instead his max quota)
+        # Wraps check of specified user limit or not (to use instead their max quota)
         # @return Integer
         def remaining_quota
           twitter_credit_limits > 0 ? [@user.remaining_twitter_quota, twitter_credit_limits].min

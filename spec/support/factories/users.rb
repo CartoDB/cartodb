@@ -49,12 +49,15 @@ module CartoDB
       user.email                 = attributes[:email]    || unique_email
       user.password              = attributes[:password] || user.email.split('@').first
       user.password_confirmation = user.password
+      user.session_salt          = attributes[:session_salt] || "123456789f"
       user.admin                 = attributes[:admin] == false ? false : true
       user.private_tables_enabled = attributes[:private_tables_enabled] == true ? true : false
       user.private_maps_enabled  = attributes[:private_maps_enabled] == true ? true : false
       user.enabled               = attributes[:enabled] == false ? false : true
       user.table_quota           = attributes[:table_quota]     if attributes[:table_quota]
       user.public_map_quota      = attributes[:public_map_quota] if attributes[:public_map_quota]
+      user.public_dataset_quota  = attributes[:public_dataset_quota] if attributes[:public_dataset_quota]
+      user.private_map_quota     = attributes[:private_map_quota] if attributes[:private_map_quota]
       user.regular_api_key_quota = attributes[:regular_api_key_quota] if attributes[:regular_api_key_quota]
       user.quota_in_bytes        = attributes[:quota_in_bytes]  if attributes[:quota_in_bytes]
       user.account_type          = attributes[:account_type]    if attributes[:account_type]
@@ -135,6 +138,7 @@ module CartoDB
         username: username,
         email: "#{username}@example.com",
         password: "000#{username}",
+        session_salt: "123456789f",
         private_tables_enabled: true,
         database_schema: organization.nil? ? 'public' : username,
         organization: organization,

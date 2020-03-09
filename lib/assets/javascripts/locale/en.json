@@ -3,8 +3,8 @@
         "trial_notification": {
             "views": {
                 "trial_notification": {
-                    "message": "%{trial_days} days left in your trial.",
-                    "add_payment": "Subscribe now to keep using our platform."
+                    "message": "%{trial_days} days left in your account.",
+                    "add_payment": "Upgrade now."
                 }
             }
         }
@@ -60,7 +60,7 @@
         },
         "views": {
             "content": {
-                "form_title": "Edit your plan information"
+                "form_title": "Your account information"
             },
             "form": {
                 "username": "Username",
@@ -70,6 +70,8 @@
                 "confirm_password": "Confirm password",
                 "account_type": "Account type",
                 "billing_plan": "Your billing plan",
+                "license_expiration": "License expiration",
+                "license_renew_info": "To renew it, please contact <a href=mailto:sales@carto.com>sales@carto.com</a>",
                 "view_details": "View details",
                 "multifactor_authentication": "Multi-factor authentication",
                 "mfa_enabled": "Enabled",
@@ -79,7 +81,7 @@
                 "save_changes": "Save changes",
                 "delete_account": "Delete account",
                 "confirm": "Are you sure?",
-                "delete_all": "Delete my account and all my data",
+                "delete_all": "Yes, delete my account and all my data",
                 "email_google": "Your account is linked to your Google account.",
                 "errors": {
                     "change_email": "You can change the email if you set a password."
@@ -891,7 +893,9 @@
                 }
             },
             "create-dialog": {
-                "creating-map": "Creating map"
+                "creating-map": "Creating map",
+                "upload": "Upload",
+                "connect": "Connect"
             },
             "export-data": {
                 "title": "Export data",
@@ -1216,7 +1220,8 @@
                 "navigation": {
                     "search": "Search",
                     "search-placeholder": "by name, description, or :tag",
-                    "connect-dataset": "Connect dataset",
+                    "upload-dataset": "Upload",
+                    "connect-dataset": "Connect",
                     "shared-with-you": "Shared with you",
                     "data-library": "Data library",
                     "create-empty-map": "Create empty map",
@@ -1228,9 +1233,18 @@
                 "adding-new-layer": "Adding new layer…",
                 "add-layer-error": "Could not add layer",
                 "imports": {
+                    "header": "Connect with %{brand}",
+                    "header-alt": "%{brand} connector logo",
+                    "go-connectors": "Connectors",
                     "ask-for-demo": "ask for demo",
                     "contact-us": "Contact us",
+                    "loading": "Sending request",
+                    "contact-soon": "Our team will contact you soon.",
+                    "got-it": "Ok, got it",
+                    "try-again": "Try again",
                     "connector": "connector",
+                    "feedback-text": "Have feedback or questions about the %{brand} connector?",
+                    "feedback-link": "Please let us know!",
                     "demo-email-title": "I am interested in the %{name} connector",
                     "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please contact me to schedule a demo of this feature.",
                     "tab-options-error": {
@@ -1261,7 +1275,10 @@
                         "sync-disabled": "Sync options are not available",
                         "type-selected": "%{brand} selected",
                         "type-import": "%{brand} import",
-                        "upload-file-url": "Upload a file or a URL |||| Upload a URL"
+                        "upload-file-url": "Upload a file or a URL |||| Upload a URL",
+                        "import-data": "Import your data from a %{brand} instance",
+                        "sync-options": "Sync options only available for a layer",
+                        "go-back": "Back"
                     },
                     "service-import": {
                         "and": "and",
@@ -1316,9 +1333,7 @@
                     "arcgis": {
                         "fallback-desc": "Enable the %{brand} connector in your account to connect your %{brand} data to CARTO and mantain it in sync with the source.",
                         "input-placeholder": "Paste your %{brand} table URL here",
-                        "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL",
-                        "import-data": "Import your data from a %{brand} instance",
-                        "sync-options": "Sync options only available for a layer"
+                        "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL"
                     },
                     "instagram": {
                         "fallback-desc": "Enable the %{brand} connector to map your photos or videos from your account in CARTO."
@@ -1341,10 +1356,68 @@
                         "fallback-desc": "Contact us to learn more about %{brand} integration",
                         "input-placeholder": "Paste your %{brand} URL here"
                     },
+                    "bigquery": {
+                        "field-billing-project": "Billing Project ID",
+                        "billing-project-hint": "Project ID for the Google Cloud project that will run the queries and be charged for the expenses. Example: my-project-identifier. More info <a href='https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_project' target='_blank'>here</a>.",
+                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM project.dataset.table"
+                    },
+                    "database": {
+                        "title": "Enter your %{brand} credentials",
+                        "desc": "Get tables or custom SQL queries from your database and keep them in sync.",
+                        "label-server": "Server",
+                        "placeholder-server": "Paste your %{brand} Server URL",
+                        "label-port": "Port",
+                        "placeholder-port": "Type your port",
+                        "label-database": "Database",
+                        "placeholder-database": "Type your database name",
+                        "label-username": "Username",
+                        "placeholder-username": "Type your username",
+                        "label-password": "Password",
+                        "placeholder-password": "Type your password",
+                        "connect-button": "Connect",
+                        "connection-error": "The connection could not be established. Please, check the entered parameters.",
+                        "general-error": "Unfortunately, there was an error. Please, try again.",
+                        "field-sql-query": "SQL query",
+                        "sql-hint": "If your query contains geographic data in EPSG:4326 format, name that column with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
+                        "sql-error": "There has been an error parsing your query",
+                        "import-as-field": "CARTO Dataset",
+                        "import-as-hint": "Name of the new Dataset that will be created in your CARTO Dashboard with the imported data.",
+                        "run": "Run SQL query",
+                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM table",
+                        "sidebar-connect": {
+                            "title": "Getting connected",
+                            "desc": "To ensure CARTO has access to your %{brand} database, please make sure your firewall is configured to allow the connections from these IP addesses:",
+                            "IP1": "54.68.30.98",
+                            "IP2": "54.68.45.3",
+                            "IP3": "54.164.204.122",
+                            "IP4": "54.172.100.146"
+                        }
+                    },
+                    "notenabled": {
+                        "fallback-desc": "This connector is not currently enabled in your account. Please, contact us if you are interested.",
+                        "request-sent": "Your request has been received.",
+                        "fallback-error": "There has been an error requesting the connector."
+                    },
+                    "beta": {
+                        "fallback-desc": "This connector is currently in beta. Please, contact us if you want to give it a try.",
+                        "request-access": "Request beta access",
+                        "request-sent": "Your request has been received.",
+                        "fallback-error": "There has been an error requesting the access to the connector."
+                    },
                     "feedback": {
-                        "text": "Is your data somewhere else? Please let us know!",
+                        "text": "Is your data somewhere else? Please, let us know!",
                         "button": "Request data source",
                         "url": "https://docs.google.com/forms/d/e/1FAIpQLSeSP4idHpOLdGlUkCCve1BfCsakZdmeAO_5yrHH4FSIJt5cdw/viewform"
+                    },
+                    "other": {
+                        "request": "Request connector",
+                        "type": "Type the one you look for",
+                        "submit": "Submit",
+                        "sending": "Sending request",
+                        "success": "Request sent. We will contact you soon.",
+                        "error": "Request not successful.",
+                        "try-again": "Try again",
+                        "ok": "Ok, got it!"
                     }
                 },
                 "datasets": {

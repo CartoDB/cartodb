@@ -22,7 +22,7 @@
               <%= f.hidden_field :username %>
               <div class="Sessions-fieldsGorup">
                 <div class="Sessions-field">
-                  <%= password_field_tag :old_password, "", placeholder: "Type your current password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+                  <%= password_field_tag :old_password, "",  autocomplete: "off", placeholder: "Type your current password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                   <% if @old_password_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @old_password_error %>">!</div>
@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="Sessions-field">
-                  <%= password_field_tag :password, "", placeholder: "Type your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+                  <%= password_field_tag :password, "", autocomplete: "off", placeholder: "Type your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                   <% if @new_password_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @new_password_error %>">!</div>
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="Sessions-field">
-                  <%= password_field_tag :password_confirmation, "", placeholder: "Retype your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+                  <%= password_field_tag :password_confirmation, "", autocomplete: "off", placeholder: "Retype your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                   <% if @new_password_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @new_password_error %>">!</div>

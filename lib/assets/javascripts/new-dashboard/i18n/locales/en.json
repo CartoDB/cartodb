@@ -7,18 +7,25 @@
       "PASSWORD": "Password"
     },
     "views": "{views} views (30 days)",
+    "noViewsToDisplay": "-",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
     "lastUpdate": "Updated {date} ago",
-    "tags": "tags"
+    "tags": "tags",
+    "type": {
+      "derived": "BUILDER",
+      "kuviz": "CARTOFRAMES",
+      "keplergl": "KEPLER.GL"
+    }
   },
   "MapListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",
     "views": "Views (30d)",
     "usage": "Usage",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "type": "Type"
   },
   "QuickActions": {
     "title": "Quick actions",
@@ -30,7 +37,9 @@
     "duplicate": "Duplicate",
     "lock": "Lock",
     "unlock": "Unlock",
-    "delete": "Delete"
+    "delete": "Delete",
+    "shareViaURL": "Share via URL",
+    "upgrade": "<a class='is-bold' href='{path}'>Upgrade</a>"
   },
   "BulkActions": {
     "selected": "{count} selected",
@@ -66,13 +75,13 @@
         "password": "Your Password-protected Datasets",
         "private": "Your Private Datasets"
       },
-      "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}'>Upgrade your account</a> to get unlimited datasets."
+      "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}' class='is-bold'>Upgrade now</a> to get more datasets."
     },
     "createDataset": "New Dataset",
     "zeroCase": {
-      "title": "Upload, connect, or create your first dataset",
-      "description": "Bring your location data to CARTO so that you can visualise it and start predicting key insights. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
-      "createDataset": "Create your first dataset"
+      "title": "Upload your first dataset",
+      "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
+      "createDataset": "New Dataset"
     },
     "emptyCase": {
       "default": "There are no datasets here.",
@@ -86,26 +95,46 @@
   "MapsPage": {
     "header": {
       "title": {
-        "mine": "Your Maps",
+        "mine": "Your CARTO Maps",
         "shared": "Shared with you",
         "favorited": "Your Favorited Maps",
         "locked": "Your Locked Maps",
         "public": "Your Public Maps",
         "link": "Your Link-shared Maps",
         "password": "Your Password-protected Maps",
-        "private": "Your Private Maps"
+        "private": "Your Private Maps",
+        "builder": "Your Builder Maps",
+        "cartoframes": "Your CARTOframes Maps",
+        "external": "Your Kepler.gl Maps"
       },
-      "warning": "<span class='is-bold'>{counter} public maps used.</span> <a href='{path}'>Upgrade your account</a> to get unlimited public maps."
+      "warning": {
+        "counter": "{counter} {type} maps used.&nbsp",
+        "doubleCounter": "{publicCounter} public and {privateCounter} maps used.&nbsp",
+        "upgrade": "<a href='{path}' class='is-bold'>Upgrade now</a> to get more maps."
+      }
     },
     "createMap": "New Map",
     "zeroCase": {
       "title": "Create your first map to predict key insights",
-      "description": "Build your first Location Intelligence app and start predicting key insights from your location data with our drag and drop tool for analysts and business users. Learn about Builder <a href='https://carto.com/help/tutorials/builder/'>here</a>.",
-      "createMap": "Create your first map"
+      "description": "Build your first map and unlock new spatial insights. Learn about Builder <a href='https://carto.com/help/tutorials/builder/'>here</a>.",
+      "createMap": "New Map"
     },
     "emptyCase": {
       "default": "There are no maps here.",
       "onlyShared": "No maps here. Go to the <a href='{path}'>maps shared with you</a>."
+    },
+    "tabs": {
+      "carto": "CARTO",
+      "external": "Kepler.gl"
+    }
+  },
+  "ExternalMapsPage": {
+    "header": {
+      "title": {
+        "mine": "Your Kepler.gl Maps",
+        "link": "Your Link-shared Maps",
+        "private": "Your Private Maps"
+      }
     }
   },
   "NotificationsPage": {
@@ -127,7 +156,9 @@
       "publicPrivacy": "Public",
       "privatePrivacy": "Private",
       "linkPrivacy": "Link",
-      "passwordPrivacy": "Password"
+      "passwordPrivacy": "Password",
+      "builderType": "Builder",
+      "kuvizType": "CARTOframes"
     }
   },
   "DatasetCard": {
@@ -150,7 +181,7 @@
     "lastModified": "Last Modified",
     "rows": "Rows",
     "size": "Size",
-    "usage": "Usage",
+    "usage": "Builder Usage",
     "privacy": "Privacy"
   },
   "UserDropdown": {
@@ -216,6 +247,7 @@
         "message": "Welcome to your new dashboard! We hope you like it. You can learn more about it <a class='welcome-first__link' href='https://carto.com/help/getting-started/new-dashboard' target='_blank'>here</a>.",
         "planMessage": {
           "free": "Remember that you're currently on the FREE plan.",
+          "free2020": "Welcome to CARTO. You're currently in your <span class='is-bold'>one-year free account</span>.",
           "30day": "Remember that you're currently on the 30-day personal trial.",
           "individual": "Remember that you're currently on the {trialLength}-day Individual trial.",
           "organizationAdmin": "Remember that you're currently the admin of the {organizationName} organization.",
@@ -225,14 +257,16 @@
         "contactOrganizationAdmin": "Contact the admin",
         "manageOrganization": "Manage my organization"
       },
-      "trialMessage": "{date} left in your trial.&nbsp;",
+      "trialMessage": "{date} days left in your trial.&nbsp;",
+      "accountMessage": "{date} days left in your account.&nbsp;",
       "notificationsButton": "Go to Notifications",
       "learnMoreButton": "Learn More",
       "actions": {
         "createMap": "New map",
         "createDataset": "New dataset"
       },
-      "subscribeNow": " Subscribe now."
+      "subscribeNow": " Subscribe now.",
+      "upgradeNow": " Upgrade now"
     },
     "MapsSection": {
       "title": "Your Maps",
@@ -289,17 +323,19 @@
     "dataServices": "Data Services",
     "storage": "Storage",
     "publicMaps": "Public Maps",
+    "privateMaps": "Private Maps",
     "datasets": "Datasets",
-    "apiKeys": "API keys",
+    "apiKeys": "Custom API keys",
     "geocoding": "Geocoding",
     "isolines": "Isolines",
     "routing": "Routing",
-    "credits": "Your credits will be renewed in 0 days ({day} of each month). | Your credits will be renewed in {remainingDays} day ({day} of each month). | Your credits will be renewed in {remainingDays} days ({day} of each month)."
+    "credits": "Your credits are reset on the {day} of each month.",
+    "upgrade": "Not included in your current plan. <a class='is-bold' href='{path}'>Upgrade now</a>"
   },
   "Footer": {
     "HelpCenter": {
       "title": "Help Center",
-      "description": "Find answers to frequently asked questions, guides and tutorials about working with data, making Builder maps, managing your account, etc."
+      "description": "Explore our guides, tutorials, and FAQs to work with spatial data, create maps, manage your account, and more."
     },
     "DeveloperCenter": {
       "title": "Developer Center",
@@ -340,6 +376,7 @@
   "Wizards": {
     "Distributor": {
       "cta": "Get started",
+      "extendedCta": "Let's get started!",
       "headerTitle": "Getting started",
       "title": "What do you want to do?",
       "feedback": {
@@ -460,9 +497,10 @@
           "howto": "What does it look like?"
         },
         "text1": "No more⁠ context switching—visualize your data straight out of your notebook",
-        "text2": "Share your work right away—publicly or privately",
-        "text3": "Spend less time in data preparation using Data Observatory, our location data repository",
-        "text4": "(Coming soon)",
+        "text2": "Access location data services, such as geocoding our routing, and create your areas of influence",
+        "text3": "Spend less time enriching your data by accessing Data Observatory, our location data repository",
+        "text4": "Share your work right away, publicly or privately",
+        "text5": "...and much more!",
         "footer": {
           "returnToDashboard": "Return to your dashboard",
           "learnMore": "Learn more"
@@ -635,9 +673,9 @@
     }
   },
   "ConnectedAppsPage": {
-    "title": "Apps connected to your account",
+    "title": "App permissions",
     "description": "These are the apps you gave access to some of your CARTO information.",
-    "emptyDescription": "You don’t have given permission to any app to access to your CARTO account data.",
+    "emptyDescription": "No apps connected. You haven't allowed any applications to access your CARTO account.",
     "emptyTipTitle": "Are you looking to create an OAuth application?",
     "emptyTipDescription": "You can do it from your <a href='{url}'>developer settings</a>.",
     "listTitle": "Connected Apps",
@@ -665,7 +703,8 @@
     }
   },
   "CatalogPage": {
-    "header": "Catalog"
+    "header": "Catalog",
+    "description": "Broaden your analysis and augment your own data with our curated selection of location datasets."
   },
   "CatalogListHeader": {
     "name": "Name",
@@ -675,14 +714,17 @@
   },
   "CatalogDropdown" : {
     "placeholder": "Search...",
+    "select": "Select",
     "category": {
       "title": "Select a category",
-      "placeholder": "Search...",
+      "placeholderInactive": "Select",
+      "placeholderActive": "Select",
       "extra": "Interested in a different data category? <a href='mailto:sdr@carto.com'>Contact Us</a>"
     },
     "country": {
       "title": "Select a country",
-      "placeholder": "Select a country",
+      "placeholderInactive": "Select a country",
+      "placeholderActive": "Search...",
       "extra": "Interested in data from a non-listed country? <a href='mailto:sdr@carto.com'>Contact Us</a>"
     }
   },
@@ -693,5 +735,12 @@
     "variableGroups": "Variable Groups",
     "category": "Category",
     "country": "Country"
+  },
+  "Dialogs": {
+    "ShareViaURL": {
+      "map": "map",
+      "headerText": "Share current map via URL",
+      "close": "close"
+    }
   }
 }

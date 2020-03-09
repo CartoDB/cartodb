@@ -4,8 +4,6 @@ module FrontendConfigHelper
   include AvatarHelper
   include FullstoryHelper
 
-  UPGRADE_LINK_ACCOUNTS = ['personal30', 'basic', 'student-engine', 'individual'].freeze
-
   def frontend_config_hash(user = current_user)
     config = {
       app_assets_base_url:        app_assets_base_url,
@@ -35,6 +33,10 @@ module FrontendConfigHelper
       oauth_mechanism_bigquery:   Cartodb.get_config(:oauth, 'bigquery', 'oauth_mechanism'),
       arcgis_enabled:             Cartodb.get_config(:datasources, 'arcgis_enabled'),
       salesforce_enabled:         Cartodb.get_config(:datasources, 'salesforce_enabled'),
+      mysql_enabled:              Cartodb.get_config(:connectors, 'mysql', 'enabled'),
+      postgres_enabled:           Cartodb.get_config(:connectors, 'postgres', 'enabled'),
+      sqlserver_enabled:          Cartodb.get_config(:connectors, 'sqlserver', 'enabled'),
+      hive_enabled:               Cartodb.get_config(:connectors, 'hive', 'enabled'),
       datasource_search_twitter:  nil,
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
@@ -78,20 +80,10 @@ module FrontendConfigHelper
       config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
     end
 
-    if CartoDB.account_host.present? && show_account_update_url(user)
-      config[:account_update_url] = "#{CartoDB.account_host}"\
-                                    "#{CartoDB.account_path}/"\
-                                    "#{user.username}/update_payment"
-    end
-
     config
   end
 
   def frontend_config
     frontend_config_hash.to_json
-  end
-
-  def show_account_update_url(user)
-    user && UPGRADE_LINK_ACCOUNTS.include?(user.account_type.downcase)
   end
 end

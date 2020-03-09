@@ -34,7 +34,7 @@ shared_examples_for "user models" do
     end
 
     it 'is enabled if organization has it enabled and with custom config, no matter whether user has it or not,
-        and enabled if he has it enabled and with custom config, no matter whether org has it or not' do
+        and enabled if he/she has it enabled and with custom config, no matter whether org has it or not' do
       twitter_search_conf = @config[:datasource_search]['twitter_search']
       custom_wadus = {
         "auth_required" => false,
@@ -1040,6 +1040,110 @@ shared_examples_for "user models" do
       result = @user.valid_password_confirmation('wrong_pass')
 
       result.should be_true
+    end
+  end
+
+  describe '#trial_ends_at' do
+    before(:each) do
+      @user = build_user
+    end
+
+    it 'returns nil if the account does not have a trial' do
+      @user.account_type = 'CORONELLI'
+
+      expect(@user.trial_ends_at).to be_nil
+    end
+
+    it 'returns the expected date for trial accounts' do
+      @user.account_type = 'Individual'
+      @user.created_at = Time.parse('2020-02-01 10:00:00')
+      expected_date = Time.parse('2020-02-15 10:00:00')
+
+      expect(@user.trial_ends_at).to eql expected_date
+    end
+  end
+
+  describe '#remaining_trial_days' do
+    before(:each) do
+      @user = build_user
+    end
+
+    it 'returns 0 if the plan has no trial' do
+      @user.account_type = 'FREE'
+
+      expect(@user.remaining_trial_days).to eq 0
+    end
+
+    it 'returns 0 the trial has ended' do
+      @user.account_type = 'Individual'
+      @user.created_at = Time.now - 2.months
+
+      expect(@user.remaining_trial_days).to eq 0
+    end
+
+    it 'returns the remaining number of trial days of the plan' do
+      @user.account_type = 'Individual'
+      @user.created_at = Time.now - 4.days
+
+      expect(@user.remaining_trial_days).to eq 10
+    end
+
+    it 'rounds up the remaining days' do
+      @user.account_type = 'Individual'
+      @user.created_at = Time.now - 28.hours
+
+      expect(@user.remaining_trial_days).to eq 13
+    end
+
+    it 'starts with 365 days for Free accounts in regular years' do
+      Delorean.time_travel_to('2019-01-15') do
+        @user.account_type = 'Free 2020'
+        @user.created_at = Time.now
+
+        expect(@user.remaining_trial_days).to eq 365
+      end
+    end
+
+    it 'starts with 366 days for Free accounts in leap years' do
+      Delorean.time_travel_to('2020-01-15') do
+        @user.account_type = 'Free 2020'
+        @user.created_at = Time.now
+
+        expect(@user.remaining_trial_days).to eq 366
+      end
+    end
+  end
+
+  describe '#show_trial_reminder?' do
+    before(:each) do
+      @user = build_user
+    end
+
+    it 'returns false if the account does not have a trial' do
+      @user.account_type = 'FREE'
+
+      expect(@user.show_trial_reminder?).to be_false
+    end
+
+    it 'returns false if the account has an expired trial' do
+      @user.account_type = 'Individual'
+      @user.created_at = Time.now - 2.months
+
+      expect(@user.show_trial_reminder?).to be_false
+    end
+
+    it 'returns true if the account has an active trial with less than 30 remaining days' do
+      @user.account_type = 'Individual'
+      @user.created_at = Time.now - 1.day
+
+      expect(@user.show_trial_reminder?).to be_true
+    end
+
+    it 'returns false if the account has an active trial with more than 30 remaining days' do
+      @user.account_type = 'Free 2020'
+      @user.created_at = Time.now - 1.day
+
+      expect(@user.show_trial_reminder?).to be_false
     end
   end
 end

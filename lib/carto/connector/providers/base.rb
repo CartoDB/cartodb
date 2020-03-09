@@ -60,7 +60,23 @@ module Carto
         must_be_defined_in_derived_class limits: limits
       end
 
+      def list_projects
+        must_be_defined_in_derived_class
+      end
+
+      def list_project_datasets(project_id)
+        must_be_defined_in_derived_class
+      end
+
+      def list_project_dataset_tables(project_id, dataset_id)
+        must_be_defined_in_derived_class
+      end
+
       def check_connection
+        must_be_defined_in_derived_class
+      end
+
+      def dry_run
         must_be_defined_in_derived_class
       end
 

@@ -6,14 +6,12 @@
         <% } else { %>
         <%- _t('components.modals.add-layer.imports.service-import.item-selected') %>
       <% } %>
-    <% } else { %>
-      <%- _t('components.modals.add-layer.imports.service-import.connect-with', { title: title }) %>
     <% } %>
   </h3>
   <p class="CDB-Text CDB-Size-medium u-altTextColor <% if (state === "error") { %>ImportPanel-headerDescription--negative<% } %>">
     <% if (state === "idle") { %>
       <% if (fileExtensions.length > 0) { %>
-        <% formatsLink = _t('components.modals.add-layer.imports.service-import.and') + ' <a target="_blank" href="https://docs.carto.com/cartodb-editor/datasets/#supported-file-formats" class="ImportPanel-headerDescriptionLink">' + _t('components.modals.add-layer.imports.service-import.many-more-formats') + '</a>' %>
+        <% formatsLink = _t('components.modals.add-layer.imports.service-import.and') + ' <a target="_blank" rel="noopener noreferrer" href="https://docs.carto.com/cartodb-editor/datasets/#supported-file-formats" class="ImportPanel-headerDescriptionLink">' + _t('components.modals.add-layer.imports.service-import.many-more-formats') + '</a>' %>
         <%- fileExtensions.join(', ') %><% if (showAvailableFormats) { %> <%- formatsLink %> <% } %> <%- _t('components.modals.add-layer.imports.service-import.supported') %>.
       <% } else { %>
         <%- _t('components.modals.add-layer.imports.service-import.state-idle-login') %>
@@ -44,8 +42,9 @@
     <% } %>
   </p>
   <% if (state === "selected" && items > 1) { %>
-    <button class="CDB-Size-large ImportPanel-headerButton js-back">
-      <i class="CDB-IconFont CDB-IconFont-arrowPrev u-actionTextColor"></i>
+    <button class="ImportPanel-headerButton CDB-Text is-semibold u-upperCase CDB-Size-medium u-actionTextColor js-back">
+      <i class="CDB-IconFont is-semibold CDB-IconFont-arrowPrev u-mr--4"></i>
+      <span><%= _t('components.modals.add-layer.imports.header-import.go-back') %></span>
     </button>
   <% } %>
 <% } %>

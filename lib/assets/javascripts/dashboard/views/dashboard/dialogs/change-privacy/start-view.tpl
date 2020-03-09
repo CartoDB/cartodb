@@ -8,7 +8,7 @@
   </p>
 </div>
 <div class="CDB-Text Dialog-body u-inner u-flex  u-flex__direction--column u-flex__align--center">
-  <% if (upgradeBannerData.show) { %>
+  <% if (upgradeBannerData.show && !publicSharingIsDisabled) { %>
     <div class="NotificationBadge NotificationBadge--warning">
       <div class="NotificationBadge__icon"></div>
         <% if (!upgradeBannerData.hasRemainingPublicMaps && upgradeBannerData.hasRemainingPrivateMaps) { %>

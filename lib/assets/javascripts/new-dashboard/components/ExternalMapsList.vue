@@ -9,22 +9,7 @@
         <template slot="title">
           <VisualizationsTitle
             :defaultTitle="$t(`ExternalMapsPage.header.title['${appliedFilter}']`)"
-            :selectedItems="selectedMaps.length"
-            :vizQuota="publicMapsQuota"
-            :vizCount="publicMapsCount"
-            :isOutOfQuota="isOutOfPublicMapsQuota"
-            :counterLabel="'Public Maps'"/>
-        </template>
-
-        <template slot="warning">
-          <NotificationBadge type="warning" v-if="shouldShowLimitsWarning">
-            <div class="warning">
-              <span v-if="isOutOfPublicMapsQuota && !isOutOfPrivateMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${publicMapsCount}/${publicMapsQuota}`, type: `public` })"></span>
-              <span v-if="isOutOfPrivateMapsQuota && !isOutOfPublicMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${privateMapsCount}/${privateMapsQuota}`, type: `private` })"></span>
-              <span v-if="isOutOfPublicMapsQuota && isOutOfPrivateMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.doubleCounter', { publicCounter: `${publicMapsCount}/${publicMapsQuota}`, privateCounter: `${privateMapsCount}/${privateMapsQuota}`})"></span>
-              <span v-html="$t('MapsPage.header.warning.upgrade', { path: upgradeUrl })"></span>
-            </div>
-          </NotificationBadge>
+            :selectedItems="selectedMaps.length" />
         </template>
 
         <template slot="dropdownButton">
@@ -52,10 +37,6 @@
           </div>
         </template>
       </SectionTitle>
-
-      <div class="grid-cell" v-if="initialState">
-        <CreateMapCard></CreateMapCard>
-      </div>
 
       <div
           v-if="shouldShowListHeader"
@@ -101,7 +82,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import CreateMapCard from 'new-dashboard/components/CreateMapCard';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import ExternalMapBulkActions from 'new-dashboard/components/BulkActions/ExternalMapBulkActions.vue';
@@ -174,14 +155,6 @@ export default {
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
       upgradeUrl: state => state.config.upgrade_url
     }),
-    ...mapGetters({
-      publicMapsQuota: 'user/publicMapsQuota',
-      publicMapsCount: 'user/publicMapsCount',
-      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
-      privateMapsQuota: 'user/privateMapsQuota',
-      privateMapsCount: 'user/privateMapsCount',
-      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota'
-    }),
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
     },
@@ -213,9 +186,6 @@ export default {
     },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
-    },
-    shouldShowLimitsWarning () {
-      return !this.selectedMaps.length && this.isOutOfPublicMapsQuota;
     },
     shouldShowViewSwitcher () {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;

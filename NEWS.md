@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix wording for feedback
 
 4.36.0 (2020-03-09)
 -------------------

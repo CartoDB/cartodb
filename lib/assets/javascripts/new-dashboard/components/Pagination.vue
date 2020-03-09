@@ -96,16 +96,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .Pagination-list {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 28px;
 }
 
 .Pagination-listItem {
-  border: 1px $grey solid;
+  border: 1px solid $border-color--dark;
   border-right-width: 0;
 }
 
@@ -120,7 +121,7 @@ export default {
 
 .Pagination-listItemInner--more {
   background-color: $white;
-  color: $text-color;
+  color: $text__color;
   cursor: default;
 }
 
@@ -141,11 +142,16 @@ export default {
   }
 }
 
+.Pagination-listItemInner--link:hover {
+  background-color: $softblue;
+  text-decoration: underline;
+}
+
 .Pagination-listItem.is-current,
 .Pagination-listItem.is-current .Pagination-listItemInner--link,
 .Pagination-listItem.is-current .Pagination-listItemInner--link:hover {
   background-color: $softblue;
-  color: $text-color;
+  color: $text__color;
   text-decoration: none;
   cursor: default;
   pointer-events: none;

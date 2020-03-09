@@ -1,11 +1,14 @@
 <template>
-  <div class="quota-widget" @mouseover="onMouseOver" @mouseleave="onMouseLeave">
+  <div class="quota-widget" :class="{'is-disabled': isDisabled }" @mouseover="onMouseOver" @mouseleave="onMouseLeave">
     <div class="quota-main">
       <div class="quota-cell cell--title">
         <h4 class="text is-caption is-semibold is-txtGrey">{{name}}</h4>
       </div>
       <div class="quota-cell cell--large">
-        <div class="progressbar">
+        <NotificationBadge  v-if="isDisabled">
+          <div class="text is-small" v-html="$t('QuotaSection.upgrade', { path: upgradeUrl })"></div>
+        </NotificationBadge>
+        <div v-else class="progressbar">
             <div :class="`progressbar progressbar--${getStatusBar}`"  :style="{width: `${getUsedPercent}%`}">
             </div>
         </div>
@@ -14,22 +17,31 @@
 
     <div class="quota-data">
       <div class="quota-cell cell--medium">
-        <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(remainingQuota)}} {{unit}}</span>
+        <span class="text is-small is-txtSoftGrey">
+          {{ formatToLocale ? getNumberInLocaleFormat(roundOneDecimal(remainingQuota)) : roundOneDecimal(remainingQuota) }} {{unit}}
+        </span>
       </div>
       <div class="quota-cell cell--medium cell--mobile">
-        <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(usedQuota)}} {{unit}}</span>
+        <span class="text is-small is-txtSoftGrey">
+          {{ formatToLocale ? getNumberInLocaleFormat(roundOneDecimal(usedQuota)) : roundOneDecimal(usedQuota) }} {{unit}}
+        </span>
       </div>
       <div class="quota-cell cell--medium">
-        <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(availableQuota)}} {{unit}}</span>
+        <span class="text is-small is-txtSoftGrey">
+          {{ formatToLocale ? getNumberInLocaleFormat(roundOneDecimal(availableQuota)) : roundOneDecimal(availableQuota) }} {{unit}}
+        </span>
       </div>
       <div class="quota-help cell--small">
-        <a href=""><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
+        <a :href="helpLink" v-if="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import NotificationBadge from 'new-dashboard/components/NotificationBadge';
+import { mapState } from 'vuex';
+
 export default {
   name: 'QuotaCard',
   props: {
@@ -37,7 +49,19 @@ export default {
     availableQuota: Number,
     usedQuota: Number,
     unit: String,
-    billingPeriod: String
+    billingPeriod: String,
+    formatToLocale: {
+      type: Boolean,
+      default: true
+    },
+    helpLink: String,
+    isDisabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  components: {
+    NotificationBadge
   },
   data: function () {
     return {
@@ -45,8 +69,12 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      upgradeUrl: state => state.config.upgrade_url
+    }),
     remainingQuota () {
-      return this.availableQuota - this.usedQuota;
+      const remainingQuota = this.availableQuota - this.usedQuota;
+      return Math.max(0, remainingQuota);
     },
     getUsedPercent () {
       if (this.availableQuota === 0) {
@@ -70,6 +98,9 @@ export default {
     roundOneDecimal (number) {
       return Math.round(number * 10) / 10;
     },
+    getNumberInLocaleFormat (number) {
+      return number.toLocaleString();
+    },
     onMouseOver () {
       this.active = true;
     },
@@ -81,7 +112,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .quota-widget {
   display: flex;
@@ -89,7 +120,15 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: 80px;
-  cursor: pointer;
+
+  &.is-disabled {
+    background-color: rgba($color-primary--soft, 0.3);
+
+    .cell--title,
+    .quota-data {
+      opacity: 0.3;
+    }
+  }
 
   &:not(:last-of-type) {
     border-bottom: 1px solid $softblue;
@@ -130,6 +169,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   padding-right: 16px;
+  cursor: pointer;
 }
 
 .quota-image {
@@ -141,7 +181,7 @@ export default {
 }
 
 .cell--title {
-  width: 110px;
+  width: 160px;
   margin-left: 36px;
 }
 
@@ -157,7 +197,7 @@ export default {
 }
 
 .cell--medium {
-  width: 120px;
+  width: 110px;
 }
 
 .cell--small {
@@ -170,22 +210,26 @@ export default {
 
 .progressbar {
   width: 100%;
-  max-width: 240px;
+  max-width: 260px;
   height: 8px;
   border-radius: 4px;
-  background-color: $light-grey;
+  background-color: $progressbar__bg-color;
 
   &.progressbar--good {
-    background-color: $good-state;
+    background-color: $success__bg-color;
   }
 
   &.progressbar--warning {
-    background-color: $warning-state;
+    background-color: $warning__bg-color;
   }
 
   .progressbar--problem {
-    background-color: $error-state;
+    background-color: $danger__bg-color;
   }
+}
+
+.warning-icon {
+  margin-right: 5px;
 }
 
 </style>

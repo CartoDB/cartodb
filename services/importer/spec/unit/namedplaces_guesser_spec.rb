@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'active_record'
 require_relative '../../lib/importer/namedplaces_guesser'
 require_relative '../../../../spec/rspec_configuration.rb'

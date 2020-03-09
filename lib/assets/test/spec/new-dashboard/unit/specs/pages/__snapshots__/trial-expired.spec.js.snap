@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TrialExpired.vue should render correct contents 1`] = `
+<page-stub>
+  <expirationmessage-stub addpaymentsurl="https://carto.com/account/user/plan" expirationdays="30"></expirationmessage-stub>
+</page-stub>
+`;

@@ -8,7 +8,7 @@ Sequel.migration do
     SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :bi_datasets do
-      Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       String :import_config, null: false, type: 'json'
       String :state, null: false
       foreign_key :user_id, :users, type: 'uuid', null: false
@@ -19,7 +19,7 @@ Sequel.migration do
     end
 
     create_table :bi_visualizations do
-      Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       String :viz_json, null: false, type: 'json'
       foreign_key :bi_dataset_id, :bi_datasets, type: 'uuid', null: false
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP

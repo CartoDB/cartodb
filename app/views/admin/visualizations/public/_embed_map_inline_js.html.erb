@@ -2,7 +2,7 @@
   <%= insert_google_maps(@visualization.user.google_maps_query_string) %>
 <% end %>
 
-<%= editor_javascript_include_tag 'embed.js', 'public_like.js' %>
+<%= editor_javascript_include_tag 'embed.js' %>
 
 <script>
 
@@ -112,7 +112,7 @@
     opt.mobile_layout = true;
 
     cartodb.config.set({
-      cartodb_attributions: "CARTO <a href='https://carto.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>",
+      cartodb_attributions: "CARTO <a href='https://carto.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank' rel='noopener noreferrer'>attribution</a>",
       cartodb_logo_link: "https://carto.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
     })
 
@@ -122,16 +122,6 @@
       visReadyTime.end();
       vis.on('load', function() {
         loadingTime.end();
-      });
-
-      var like = new cdb.open.LikeView({
-        el: $(".js-like"),
-        auto_fetch: false,
-        model: cdb.open.Like.newByVisData({
-          url: "<%= CartoDB.url(self, 'api_v1_visualizations_add_like', { id: @visualization.id }, @visualization.user) %>",
-          vis_id: "<%= @visualization.id %>",
-          likes: <%= @visualization.to_vizjson[:likes] %>
-        })
       });
 
       window.vis = vis;

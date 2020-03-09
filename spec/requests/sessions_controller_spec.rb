@@ -5,6 +5,11 @@ require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
+
+  after(:each) do
+    Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
+  end
+
   def create_ldap_user(admin_user_username, admin_user_password)
     admin_user_email = "#{@organization.name}-admin@test.com"
     admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
@@ -535,6 +540,7 @@ describe SessionsController do
 
       before(:all) do
         create
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
         @user.save
 
@@ -671,6 +677,7 @@ describe SessionsController do
       include Warden::Test::Helpers
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling not first login' do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         login(::User.where(id: @user.id).first)
         logout
 
@@ -755,6 +762,19 @@ describe SessionsController do
         expect_login
       end
 
+      it 'redirects to login and then to code verification when there is no session' do
+        get dashboard_url
+        follow_redirect!
+
+        login
+        post create_session_url(email: @user.username, password: @user.password)
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@user)
+        ApplicationController.any_instance.stubs(:multifactor_authentication_required?).returns(true)
+        follow_redirect!
+
+        request.path.should eq multifactor_authentication_verify_code_path
+      end
+
       it 'does not verify an invalid code' do
         login
 
@@ -827,6 +847,7 @@ describe SessionsController do
             }
           }
         ) do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           @user.reset_password_rate_limit
           login
 
@@ -892,8 +913,37 @@ describe SessionsController do
       end
     end
 
+    shared_examples_for 'organizational user' do
+      shared_examples_for 'organization custom view' do
+        it 'shows organization custom view' do
+          get multifactor_authentication_session_url
+
+          expect(response.body).to include(@organization.name)
+        end
+      end
+
+      context 'subdomainless' do
+        before(:each) do
+          stub_subdomainless
+          login
+        end
+
+        include_examples 'organization custom view'
+      end
+
+      context 'domainful' do
+        before(:each) do
+          stub_domainful(@organization.name)
+          login
+        end
+
+        include_examples 'organization custom view'
+      end
+    end
+
     describe 'as individual user' do
       before(:all) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @user = FactoryGirl.create(:carto_user_mfa)
       end
 
@@ -906,9 +956,10 @@ describe SessionsController do
 
     describe 'as org owner' do
       before(:all) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.owner
-        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '00012345678'
+        @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
       end
 
@@ -921,13 +972,15 @@ describe SessionsController do
       end
 
       it_behaves_like 'all users workflow'
+      it_behaves_like 'organizational user'
     end
 
     describe 'as org user' do
       before(:all) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.users.last
-        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '00012345678'
+        @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
       end
 
@@ -940,16 +993,18 @@ describe SessionsController do
       end
 
       it_behaves_like 'all users workflow'
+      it_behaves_like 'organizational user'
     end
 
     describe 'as org without user pass enabled' do
       before(:all) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
         @organization = FactoryGirl.create(:organization_with_users,
                                            :mfa_enabled,
                                            auth_username_password_enabled: false)
         @user = @organization.users.last
-        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '00012345678'
+        @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
       end
 
@@ -982,6 +1037,7 @@ describe SessionsController do
 
     shared_examples_for 'logout endpoint' do
       it 'redirects to user dashboard' do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         post create_session_url(email: @user.username, password: @user.password)
         get CartoDB.base_url(@user.username) + logout_path
         response.status.should eq 302
@@ -994,6 +1050,7 @@ describe SessionsController do
 
       before(:each) do
         stub_domainful(@user.username)
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       end
     end
 
@@ -1002,12 +1059,14 @@ describe SessionsController do
 
       before(:each) do
         stub_subdomainless
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       end
     end
   end
 
   describe '#destroy' do
     it 'deletes the _cartodb_base_url cookie' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       @user = FactoryGirl.create(:carto_user)
       login_as(@user, scope: @user.username)
       host! "localhost.lan"

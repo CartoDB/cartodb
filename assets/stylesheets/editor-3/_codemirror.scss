@@ -47,12 +47,37 @@
   color: $cError;
 }
 
-.CodeMirror-error a {
+.CodeMirror-error a,
+.CodeMirror-warning a {
   color: $cWhite;
 }
 
 .CodeMirror-error span {
   color: #4F5B60;
+}
+
+.CodeMirror-warning {
+  display: flex;
+  align-items: self-start;
+  justify-content: flex-start;
+  margin: 0 0 24px;
+  padding: $baseSize 16px;
+  background-color: #27333A;
+  color: #FEB714;
+  line-height: 16px;
+  text-align: left;
+}
+
+.CodeMirror-warning-icon__wrapper {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.CodeMirror-warning-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .CodeMirror-readonlyLine {

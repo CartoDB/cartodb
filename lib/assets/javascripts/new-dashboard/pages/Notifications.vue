@@ -1,11 +1,12 @@
 <template>
-  <section class="page">
-    <div class="notifications-list-container container grid">
+  <Page>
+    <div class="notifications-list-container container grid grid__content">
       <div class="full-width">
-        <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="false" ref="headerContainer">
+        <SectionTitle class="grid-cell" :showActionButton="false" ref="headerContainer">
           <template slot="icon">
             <img src="../assets/icons/section-title/envelope.svg">
           </template>
+          <template slot="title">{{ pageTitle }}</template>
         </SectionTitle>
         <ul v-if="!emptyState" class="notifications-list grid-cell  grid-cell--col9 grid-cell--col12--tablet">
           <li class="notification-item" v-for="notification in notifications" :key="notification.id">
@@ -19,20 +20,23 @@
         <EmptyState v-if="!isFetching && emptyState" :text="emptyStateText">
           <img svg-inline src="../assets/icons/common/check-bubble.svg">
         </EmptyState>
-        <LoadingState v-if="isFetching" :text="loadingStateText"></LoadingState>
+        <LoadingState v-if="isFetching" :text="loadingStateText" class="loading-state"></LoadingState>
       </div>
     </div>
-  </section>
+  </Page>
 </template>
 
 <script>
+import Page from 'new-dashboard/components/Page';
 import EmptyState from '../components/States/EmptyState';
 import LoadingState from '../components/States/LoadingState';
 import NotificationCard from '../components/NotificationCard';
 import SectionTitle from '../components/SectionTitle';
+
 export default {
   name: 'NotificationsPage',
   components: {
+    Page,
     EmptyState,
     LoadingState,
     NotificationCard,
@@ -57,12 +61,15 @@ export default {
     isFetching () {
       return this.$store.state.notifications.isFetching;
     }
+  },
+  mounted: function () {
+    this.$store.dispatch('user/resetOrganizationNotifications');
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import "stylesheets/new-dashboard/variables";
+@import "new-dashboard/styles/variables";
 
 .notifications-list-container {
   margin-bottom: 44px;
@@ -85,7 +92,8 @@ export default {
   }
 }
 
-.empty-state {
+.empty-state,
+.loading-state {
   margin: 20vh 0 8vh;
 }
 </style>

@@ -36,7 +36,10 @@ module.exports = {
 
     new webpack.DefinePlugin({
       __IN_DEV__: JSON.stringify(false),
-      __ENV__: JSON.stringify('prod')
+      __ENV__: JSON.stringify('prod'),
+      __ASSETS_VERSION__: JSON.stringify(version),
+      __ASSETS_PATH__: JSON.stringify(`${http_path_prefix}/assets/${version}`),
+      __KEPLERGL_BASE_URL__: JSON.stringify('https://kepler.gl')
     }),
 
     new MiniCssExtractPlugin({
@@ -67,6 +70,10 @@ module.exports = {
       }, {
         from: rootDir('app/assets/images/google-maps-basemap-icons'),
         to: `./unversioned/images/google-maps-basemap-icon`,
+        toType: 'dir'
+      }, {
+        from: rootDir('lib/assets/javascripts/new-dashboard/assets/resources/onboarding'),
+        to: `./unversioned/onboarding/`,
         toType: 'dir'
       }
     ]),
@@ -222,7 +229,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(ttf|eot|woff|woff2|svg)(.+#.+)?$/,
+        test: /\.(ttf|eot|woff|woff2)(.+#.+)?$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -233,7 +240,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(png|gif)$/,
+        test: /\.(png|gif|svg)$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -256,6 +263,14 @@ module.exports = {
           {
             loader: 'vue-svg-inline-loader'
           }
+        ]
+      },
+      {
+        test: /\.html$/,
+        use: 'raw-loader',
+        include: [
+          rootDir('lib/assets/javascripts/new-dashboard/assets/resources/onboarding'),
+          rootDir('lib/assets/javascripts/new-dashboard/components/Onboarding/wizard')
         ]
       }
     ]

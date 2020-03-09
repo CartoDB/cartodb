@@ -1,7 +1,0 @@
-<%- message = "<p style='margin: 0;'><img alt='Like' src='http://carto-email-assets.s3.amazonaws.com/heart.png' width='16' height='15' style='display: inline-block; margin: 0 auto; vertical-align: middle;' border='0'> #{@greetings.sample.capitalize}! <strong><a href='#{@viewer_maps_link}' style='color: #666666;'>#{@viewer_name}</a></strong> likes your map <strong>#{@map_name}</strong></p>" %>
-
-<%= render partial: 'mailer_modules/neutral_message', locals: { message: message } %>
-
-<%= render partial: 'mailer_modules/visualization_preview_image', locals: { preview_image: @preview_image } %>
-
-<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: 'View your map' } %>

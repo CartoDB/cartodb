@@ -25,31 +25,24 @@
       <ul>
         <li><a href="http://www.apple.com/safari/" class="safari">Safari</a></li>
         <li><a href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
-        <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
+        <li class="last"><a href="https://www.mozilla.org/en-US/firefox/" class="firefox">Firefox</a></li>
       </ul>
     </div>
 
     <div class="cartodb-text">
       Map created by
       <% username = @visualization.user.name_or_username %>
-      <a class="user" href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank">
+      <a class="user" href="<%= CartoDB.url(self, 'public_user_feed_home', user: @visualization.user) %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank" rel="noopener noreferrer">
         <% if !@visualization.user.avatar_url.blank? %>
           <img src="<%= @visualization.user.avatar_url %>" width="16" height="16" alt="<%= username %>" title="<%= username %>" />
         <% end %>
         <span class="username"><%= username %></span>
       </a>
-
-      <a href="#like" class="like js-like">
-        <span class="icon"></span>
-        <span class="counter"><% if (@visualization.to_vizjson[:likes] > 2) %><%= @visualization.to_vizjson[:likes] %><% end %></span>
-      </a>
-
     </div>
   <% end %>
 <% end %>
 
 <%= content_for(:js) do %>
-  <%= insert_trackjs('embeds') %>
+  <%= insert_trackjs('embeds', Cartodb.get_config(:trackjs, 'frequency')) %>
   <%= render :partial => 'admin/visualizations/public/embed_map_inline_js' %>
-  <%= insert_google_analytics('embeds', true) %>
 <% end %>

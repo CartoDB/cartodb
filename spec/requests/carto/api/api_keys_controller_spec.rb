@@ -1,11 +1,13 @@
 require 'spec_helper_min'
 require 'support/helpers'
 require 'factories/carto_visualizations'
+require 'helpers/database_connection_helper'
 require 'base64'
 
 describe Carto::Api::ApiKeysController do
   include CartoDB::Factories
   include HelperMethods
+  include DatabaseConnectionHelper
 
   def response_grants_should_include_request_permissions(reponse_grants, table_permissions)
     table_permissions.each do |stp|
@@ -59,6 +61,12 @@ describe Carto::Api::ApiKeysController do
             {
               schema: @carto_user.database_schema,
               name: @table1.name,
+              permissions: []
+            }
+          ],
+          schemas: [
+            {
+              name: @carto_user.database_schema,
               permissions: []
             }
           ]
@@ -284,7 +292,7 @@ describe Carto::Api::ApiKeysController do
         post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
           response.status.should eq 422
           error_response = response.body
-          error_response[:errors].should match /can only grant permissions you have/
+          error_response[:errors].should match /can only grant table permissions you have/
         end
       end
 
@@ -307,7 +315,7 @@ describe Carto::Api::ApiKeysController do
         post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
           response.status.should eq 422
           error_response = response.body
-          error_response[:errors].should match /can only grant permissions you have/
+          error_response[:errors].should match /can only grant table permissions you have/
         end
       end
 
@@ -344,6 +352,26 @@ describe Carto::Api::ApiKeysController do
 
         Carto::ApiKey.where(name: 'wadus').each(&:destroy)
       end
+
+      context 'without enough regular api key quota' do
+        before(:all) do
+          @carto_user.regular_api_key_quota = 0
+          @carto_user.save
+        end
+
+        after(:all) do
+          @carto_user.regular_api_key_quota = be_nil
+          @carto_user.save
+        end
+
+        it 'fails creating a regular key' do
+          auth_user(@carto_user)
+          post_json api_keys_url, auth_params.merge(create_payload), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /limit of API keys/
+          end
+        end
+      end
     end
 
     describe '#destroy' do
@@ -351,8 +379,7 @@ describe Carto::Api::ApiKeysController do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
         auth_user(@carto_user)
         delete_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
-          response.status.should eq 200
-          response.body[:name].should eq api_key.name
+          response.status.should eq 204
         end
 
         Carto::ApiKey.where(name: api_key.name, user_id: @user.id).first.should be_nil
@@ -432,11 +459,71 @@ describe Carto::Api::ApiKeysController do
 
     describe '#show' do
       it 'returns requested API key' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        grants = [
+          {
+            'type' => 'database',
+            'tables' => [
+              'schema' => @table1.database_schema,
+              :name => @table1.name,
+              'permissions' => ['select']
+            ],
+            'table_metadata' => []
+          },
+          {
+            'type' => 'apis',
+            'apis' => ['maps', 'sql']
+          }
+        ]
         auth_user(@carto_user)
+        api_key = nil
+        post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
+          response.status.should eq 201
+          api_key = Carto::ApiKey.where(user_id: @carto_user.id, name: response.body[:name]).user_visible.first
+        end
         get_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
           response.status.should eq 200
-          response.body[:name].should eq api_key.name
+          response.body[:grants][1][:tables][0][:owner] = false
+          response.body[:grants][1][:table_metadata] = []
+        end
+        api_key.destroy
+      end
+
+      it 'returns requested API key with owner true for the created table' do
+        grants = [
+          {
+            'type' => 'database',
+            'tables' => [
+              'schema' => @table1.database_schema,
+              :name => @table1.name,
+              'permissions' => ['select']
+            ],
+            'schemas' => [
+              'name': @carto_user.database_schema,
+              'permissions' => ['create']
+            ]
+          },
+          {
+            'type' => 'apis',
+            'apis' => ['maps', 'sql']
+          }
+        ]
+        auth_user(@carto_user)
+        api_key = nil
+        post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
+          response.status.should eq 201
+          api_key = Carto::ApiKey.where(user_id: @carto_user.id, name: response.body[:name]).user_visible.first
+        end
+        with_connection_from_api_key(api_key) do |connection|
+          connection.execute("create table test_table(id INT)")
+          connection.execute("insert into test_table values (999)")
+          connection.execute("select id from test_table") do |result|
+            result[0]['id'].should eq '999'
+          end
+          get_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
+            response.status.should eq 200
+            response.body[:grants][1][:tables][0][:owner] = true
+          end
+          connection.execute("drop table test_table")
         end
         api_key.destroy
       end
@@ -480,6 +567,11 @@ describe Carto::Api::ApiKeysController do
       it 'does not include internal keys' do
         auth_user(@carto_user_index)
         get_json api_keys_url, auth_params.merge(per_page: 20), auth_headers do |response|
+          expect(response.body[:result].map { |ak| ak[:type] }).not_to(include('internal'))
+        end
+
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(per_page: 20, type: ''), auth_headers do |response|
           expect(response.body[:result].map { |ak| ak[:type] }).not_to(include('internal'))
         end
       end
@@ -595,6 +687,82 @@ describe Carto::Api::ApiKeysController do
         get_json api_keys_url, auth_params.merge(per_page: 2, page: 2, order: :invalid), auth_headers do |response|
           response.status.should eq 400
           response.body.fetch(:errors).should_not be_nil
+        end
+      end
+
+      it 'validates type param with valid types' do
+        Carto::Api::ApiKeysController::VALID_TYPE_PARAMS.each do |param|
+          auth_user(@carto_user_index)
+          get_json api_keys_url, auth_params.merge(type: param), auth_headers do |response|
+            response.status.should eq 200
+          end
+        end
+      end
+
+      it 'validates type param with invalid' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'INVALID'), auth_headers do |response|
+          response.status.should eq 400
+          response.body.fetch(:errors).should_not be_nil
+        end
+      end
+
+      it 'validates type param with several types' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'master,regular'), auth_headers do |response|
+          response.status.should eq 200
+        end
+      end
+
+      it 'validates type param with empty type' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: ''), auth_headers do |response|
+          response.status.should eq 200
+        end
+      end
+
+      it 'filters by master type param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'master'), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 1
+        end
+      end
+
+      it 'filters by default type param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'default'), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 1
+        end
+      end
+
+      it 'filters by several types param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'master,regular'), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:result][0][:type].should eq 'master'
+          response.body[:result][1][:type].should eq 'regular'
+        end
+      end
+
+      it 'filters by all types param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'master,default, regular'), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:result][0][:type].should eq 'master'
+          response.body[:result][1][:type].should eq 'default'
+          response.body[:result][2][:type].should eq 'regular'
+        end
+      end
+
+      it 'filters by all user visible if empty type param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: ''), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:result][0][:type].should eq 'master'
+          response.body[:result][1][:type].should eq 'default'
+          response.body[:result][2][:type].should eq 'regular'
         end
       end
     end
@@ -803,8 +971,7 @@ describe Carto::Api::ApiKeysController do
       it 'destroys the API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
         delete_json generate_api_key_url(header_params, name: api_key.name), {}, json_headers_for_key(@master_api_key) do |response|
-          response.status.should eq 200
-          response.body[:name].should eq api_key.name
+          response.status.should eq 204
         end
 
         Carto::ApiKey.where(name: api_key.name, user_id: @carto_user.id).first.should be_nil

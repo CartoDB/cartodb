@@ -6,10 +6,11 @@ const removeDuplicated = array => Array.from(new Set(array));
 
 module.exports = {
   common_new: removeDuplicated([
-    rootDir('assets/stylesheets/common/utilities.scss'),
+    rootDir('assets/stylesheets/common/utilities/utilities.scss'),
     rootDir('assets/stylesheets/common/icon-font-specials.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/**/*.scss')),
-    rootDir('node_modules/cartoassets/src/scss/entry.scss')
+    rootDir('node_modules/cartoassets/src/scss/entry.scss'),
+    rootDir('assets/stylesheets/editor-3/_codemirror.scss')
   ]),
 
   deep_insights_new: [
@@ -19,18 +20,21 @@ module.exports = {
 
   public_map_new: glob.sync(rootDir('assets/stylesheets/public_map/**/*.scss')),
 
-  dashboard: [
-    rootDir('lib/assets/javascripts/dashboard/dashboard.js'),
-    ...glob.sync(rootDir('assets/stylesheets/dashboard/*.scss')),
-    rootDir('assets/stylesheets/editor-3/_scroll-view.scss'),
-    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
-  ],
-
   new_dashboard: [
     '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/main.js'),
-    ...glob.sync(rootDir('assets/stylesheets/new-dashboard/main.scss')),
+    rootDir('lib/assets/javascripts/new-dashboard/styles/main.scss'),
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
+  ],
+
+  header: [
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/header/header.js'),
+    rootDir('lib/assets/javascripts/new-dashboard/styles/bundles/header.scss')
+  ],
+
+  footer: [
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/footer/footer.js'),
+    rootDir('lib/assets/javascripts/new-dashboard/styles/bundles/footer.scss')
   ],
 
   public_table_new: [
@@ -95,6 +99,16 @@ module.exports = {
 
   lockout: rootDir('lib/assets/javascripts/dashboard/lockout.js'),
 
+  new_lockout: [
+    '@babel/polyfill',
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/lockout/lockout.js')
+  ],
+
+  maintenance: [
+    '@babel/polyfill',
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/maintenance/maintenance.js')
+  ],
+
   organization: [
     rootDir('lib/assets/javascripts/dashboard/organization.js'),
     rootDir('assets/stylesheets/plugins/tagit.scss'),
@@ -123,14 +137,13 @@ module.exports = {
     rootDir('assets/stylesheets/common/default-time-diff.scss'),
     rootDir('assets/stylesheets/common/privacy-indicator.scss'),
     rootDir('assets/stylesheets/common/no-results.scss'),
-    rootDir('assets/stylesheets/common/likes-indicator.scss'),
     rootDir('assets/stylesheets/common/filters.scss'),
     rootDir('assets/stylesheets/common/intermediate-info.scss'),
     rootDir('assets/stylesheets/common/nav-button.scss'),
     rootDir('assets/stylesheets/common/spinner.scss'),
     rootDir('assets/stylesheets/common/tabs.scss'),
     rootDir('assets/stylesheets/common/titles.scss'),
-    rootDir('assets/stylesheets/common/utilities.scss'),
+    rootDir('assets/stylesheets/common/utilities/utilities.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/background-polling/**/*.scss')),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
     rootDir('assets/stylesheets/common/pagination.scss'),
@@ -141,6 +154,7 @@ module.exports = {
     rootDir('assets/stylesheets/common/form-content.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/forms/**/*.scss')),
     rootDir('assets/stylesheets/common/option-card.scss'),
+    rootDir('assets/stylesheets/common/notification-badge.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/icons/**/*.scss')),
     rootDir('assets/stylesheets/common/maps-list.scss'),
     rootDir('assets/stylesheets/common/map-card.scss')
@@ -156,6 +170,8 @@ module.exports = {
     'whatwg-fetch',
     resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js'),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
+    rootDir('assets/stylesheets/deep-insights/entry.scss'),
+    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss'),
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
 

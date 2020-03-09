@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'request'
 require_relative 'response_logger'
 require_relative 'null_logger'

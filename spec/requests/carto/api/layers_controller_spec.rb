@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/layers_controller'
 require 'helpers/unique_names_helper'
@@ -641,6 +639,8 @@ describe Carto::Api::LayersController do
           next_id:                  attributes.fetch(:next_id, nil)
         }
       end
+
+      create_account_type_fg('ORGANIZATION USER')
 
       user_1 = create_user(
         username: unique_name('user'),

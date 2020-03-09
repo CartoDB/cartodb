@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'db_queries'
 require_dependency 'carto/db/database'
 require_dependency 'carto/db/user_schema_mover'
@@ -22,13 +20,15 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.26.0'.freeze
-      ODBC_FDW_VERSION = '0.3.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.28.0'.freeze
+      ODBC_FDW_VERSION = '0.4.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user
         @user = user
         @queries = CartoDB::UserModule::DBQueries.new(@user)
+        @pgversion = nil
+        @plpythonu = nil
       end
 
       def queries
@@ -38,6 +38,8 @@ module CartoDB
       # This method is used both upon user creation and by the UserMover
       # All methods called inside should allow to be executed multiple times without errors
       def configure_database
+        set_pgversion
+
         set_database_search_path
 
         grant_user_in_database
@@ -62,6 +64,7 @@ module CartoDB
       def setup_single_user_schema
         set_user_privileges_at_db
         rebuild_quota_trigger
+        create_ghost_tables_event_trigger
       end
 
       # All methods called inside should allow to be executed multiple times without errors
@@ -77,6 +80,7 @@ module CartoDB
         # INFO: organization privileges are set for org_member_role, which is assigned to each org user
         if @user.organization_owner?
           setup_organization_owner
+          create_ghost_tables_event_trigger
         end
 
         if @user.organization_admin?
@@ -190,12 +194,8 @@ module CartoDB
               db.run("SET statement_timeout TO '#{statement_timeout}';")
             end
 
-            db.run('CREATE EXTENSION plpythonu FROM unpackaged') unless db.fetch(%{
-                SELECT count(*) FROM pg_extension WHERE extname='plpythonu'
-              }).first[:count] > 0
-            db.run('CREATE EXTENSION postgis FROM unpackaged') unless db.fetch(%{
-                SELECT count(*) FROM pg_extension WHERE extname='postgis'
-              }).first[:count] > 0
+            db.run("CREATE EXTENSION IF NOT EXISTS #{@plpythonu}")
+            db.run("CREATE EXTENSION IF NOT EXISTS postgis")
 
             unless statement_timeout.nil?
               db.run("SET statement_timeout TO '#{old_timeout}';")
@@ -251,6 +251,17 @@ module CartoDB
       def self.build_search_path(user_schema, quote_user_schema = true)
         quote_char = quote_user_schema ? "\"" : ""
         "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, #{SCHEMA_PUBLIC}"
+      end
+
+      def set_pgversion
+        @user.in_database(as: :superuser) do |database|
+          @pgversion = database.fetch("select current_setting('server_version_num') as version").first[:version].to_i
+        end
+        if @pgversion >= 120000
+          @plpythonu = "plpython3u"
+        else
+          @plpythonu = "plpythonu"
+        end
       end
 
       def set_database_search_path
@@ -356,14 +367,7 @@ module CartoDB
       end
 
       def all_tables_granted(role = nil)
-        roles = []
-        if role.present?
-          roles << role
-        else
-          roles = all_user_roles
-        end
-        roles_str = roles.map { |r| "'#{r}'" }.join(',')
-
+        roles_str = role ? "'#{role}'" : all_user_roles.map { |r| "'#{r}'" }.join(',')
         query = %{
           SELECT
             s.nspname as schema,
@@ -397,6 +401,75 @@ module CartoDB
         end
 
         privileges_hashed
+      end
+
+      def all_schemas_granted(role)
+        roles_str = role ? role : all_user_roles.join(',')
+        permissions = 'create,usage'
+        query = %{
+          WITH
+          roles AS (
+            SELECT unnest('{#{roles_str}}'::text[]) AS rname
+          ),
+          permissions AS (
+            SELECT 'SCHEMA' AS ptype, unnest('{#{permissions}}'::text[]) AS pname
+          ),
+          schemas AS (
+            SELECT schema_name AS sname
+            FROM information_schema.schemata
+            WHERE schema_name !~ '^pg_'
+              AND schema_name NOT IN ('cartodb', 'cdb', 'cdb_importer')
+          ),
+          schemas_roles_permissions AS (
+          SELECT
+              permissions.ptype,
+              schemas.sname AS obj_name,
+              roles.rname,
+              permissions.pname,
+              has_schema_privilege(roles.rname, schemas.sname, permissions.pname) AS has_permission
+          FROM
+            schemas
+            CROSS JOIN roles
+            CROSS JOIN permissions
+          WHERE
+            permissions.ptype = 'SCHEMA'
+          ),
+          schemas_and_grants AS (
+            SELECT obj_name AS object_name,
+            COALESCE(string_agg(DISTINCT CASE WHEN has_permission THEN pname END, ','), '') AS granted_permissions
+            FROM schemas_roles_permissions
+            GROUP BY 1
+            ORDER BY 1
+          )
+          SELECT
+            object_name, granted_permissions
+          FROM
+            schemas_and_grants
+          WHERE
+            granted_permissions is not null and granted_permissions <> '';
+        }
+
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(query)
+        end
+      end
+
+      def all_schemas_granted_hashed(role = nil)
+        results = all_schemas_granted(role)
+        return {} if results.nil?
+
+        results.map { |row| [row[:object_name], row[:granted_permissions].split(',')] }.to_h
+      end
+
+      def exists_role?(rolname)
+        query = %{
+          SELECT 1
+          FROM   pg_catalog.pg_roles
+          WHERE  rolname = '#{rolname}'
+        }
+
+        result = @user.in_database(as: :superuser).fetch(query)
+        result.count > 0
       end
 
       def drop_owned_by_user(conn, role)
@@ -571,9 +644,6 @@ module CartoDB
         configuration = db_configuration_for
         configuration[:port] = configuration.fetch(:direct_port, configuration["direct_port"]) || configuration[:port] || configuration["port"]
 
-        # Temporary trace to be removed once https://github.com/CartoDB/cartodb/issues/7047 is solved
-        CartoDB::Logger.warning(message: 'Direct connection not used from queue') unless Socket.gethostname =~ /^que/
-
         connection = @user.get_connection(_opts = {}, configuration)
 
         begin
@@ -592,7 +662,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.24.1'
+          cdb_extension_target_version = '0.36.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -612,21 +682,17 @@ module CartoDB
                 EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
                   RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
                   BEGIN
-                    CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' FROM unpackaged;
+                    CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' CASCADE;
                   EXCEPTION WHEN undefined_table THEN
                     RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
-                    CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}';
+                    CREATE EXTENSION cartodb CASCADE VERSION '#{cdb_extension_target_version}';
                     RETURN;
                   END;
                   RETURN;
                 END;
                 ver := '#{cdb_extension_target_version}';
-                IF position('dev' in ver) > 0 THEN
-                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
-                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-                ELSE
-                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-                END IF;
+                EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
+                EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
               END;
               $$;
             })
@@ -693,9 +759,9 @@ module CartoDB
 
       def set_statement_timeouts
         @user.in_database(as: :superuser) do |user_database|
-          user_database["ALTER ROLE \"?\" SET statement_timeout to ?", @user.database_username.lit,
+          user_database["ALTER ROLE \"?\" SET statement_timeout to ?", Sequel.lit(@user.database_username),
                         @user.user_timeout].all
-          user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", @user.database_name.lit,
+          user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", Sequel.lit(@user.database_name),
                         @user.database_timeout].all
         end
         @user.in_database.disconnect
@@ -839,14 +905,17 @@ module CartoDB
         @queries.run_in_transaction(queries, true)
       end
 
+      # PG12_DEPRECATED in postgis 3+
       def set_raster_privileges(role_name = nil)
+        database = @user.in_database(as: :superuser)
+        return unless database.table_exists?('raster_overviews')
         # Postgis lives at public schema, so raster catalogs too
         catalogs_schema = SCHEMA_PUBLIC
         queries = [
           "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
           "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\""
         ]
-        target_user = role_name.nil? ? @user.database_public_username : role_name
+        target_user = role_name || @user.database_public_username
         unless @user.organization.nil?
           queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{target_user}\""
           queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{target_user}\""
@@ -917,13 +986,7 @@ module CartoDB
 
         @user.in_database(as: :superuser) do |database|
           # Non-aggregate functions
-          drop_function_sqls = database.fetch(%{
-            SELECT 'DROP FUNCTION "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
-              AS sql
-            FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
-            WHERE ns.nspname = '#{schema_name}'
-          })
-
+          drop_function_sqls = database.fetch(get_drop_functions_sql(database, schema_name))
           # Simulate a controlled environment drop cascade contained to only functions
           failed_sqls = []
           recursivity_level = 0
@@ -953,12 +1016,7 @@ module CartoDB
 
           # And now aggregate functions
           failed_sqls = []
-          drop_function_sqls = database.fetch(%{
-            SELECT 'DROP AGGREGATE ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');'
-              AS sql
-            FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = TRUE)
-            WHERE ns.nspname = '#{schema_name}'
-          })
+          drop_function_sqls = database.fetch(get_drop_functions_sql(database, schema_name, aggregated: true))
           drop_function_sqls.each do |sql_sentence|
             begin
               database.run(sql_sentence[:sql])
@@ -988,6 +1046,23 @@ module CartoDB
         end
       end
 
+      def get_drop_functions_sql(database, schema_name, aggregated: false)
+        set_pgversion
+
+        if @pgversion >= 110000
+          agg_join_clause = "pg_proc.prokind #{aggregated ? ' = ' : ' <> '} 'a'"
+        else
+          agg_join_clause = "pg_proc.proisagg = #{aggregated ? 'TRUE' : 'FALSE'}"
+        end
+
+        drop_type = aggregated ? 'AGGREGATE' : 'FUNCTION'
+
+        %{SELECT 'DROP #{drop_type} "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
+         AS sql
+         FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND #{agg_join_clause} )
+         WHERE ns.nspname = '#{schema_name}'}
+      end
+
       # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish
       #
       # The function can only be used by the superuser, we expect
@@ -1012,10 +1087,12 @@ module CartoDB
 
       # Add plpythonu pl handler
       def add_python
+        set_pgversion
+
         @user.in_database(
           as: :superuser,
           no_cartodb_in_schema: true
-        ).run("CREATE OR REPLACE PROCEDURAL LANGUAGE 'plpythonu' HANDLER plpython_call_handler;")
+        ).run("CREATE EXTENSION IF NOT EXISTS #{@plpythonu};")
       end
 
       # Needed because in some cases it might not exist and failure ends transaction
@@ -1337,6 +1414,31 @@ module CartoDB
         raise exception.cause
       end
 
+      def create_ghost_tables_event_trigger
+        return if @user.has_feature_flag?('ghost_tables_trigger_disabled')
+        configure_ghost_table_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_EnableGhostTablesTrigger()')
+      end
+
+      def configure_ghost_table_event_trigger
+        tis_config = Cartodb.config[:invalidation_service]
+        return unless tis_config
+        @user.in_database(as: :superuser)
+             .run("SELECT cartodb.CDB_Conf_SetConf('invalidation_service', '#{tis_config.to_json}')")
+      end
+
+      def drop_ghost_tables_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_DisableGhostTablesTrigger()')
+      end
+
+      def create_oauth_reassign_ownership_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_EnableOAuthReassignTablesTrigger()')
+      end
+
+      def drop_oauth_reassign_ownership_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_DisableOAuthReassignTablesTrigger()')
+      end
+
       private
 
       def http_client
@@ -1397,7 +1499,7 @@ module CartoDB
                       break
                     retry -= 1 # try reconnecting
             $$
-            LANGUAGE 'plpythonu' VOLATILE;
+            LANGUAGE '#{@plpythonu}' VOLATILE;
             REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
             COMMIT;
         TRIGGER
@@ -1414,6 +1516,7 @@ module CartoDB
         varnish_retry = Cartodb.config[:varnish_management].try(:[], 'retry') || 5
         varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
 
+        # PG12_DEPRECATED remove support for python 2
         @user.in_database(as: :superuser).run(
           <<-TRIGGER
             BEGIN;
@@ -1423,18 +1526,34 @@ module CartoDB
                 timeout = #{varnish_timeout}
                 retry = #{varnish_retry}
                 trigger_verbose = #{varnish_trigger_verbose}
-                for i in ('httplib', 'base64', 'hashlib'):
+
+                if not 'httplib' in GD:
+                  try:
+                    GD['httplib'] = __import__('httplib')
+                  except:
+                    from http import client
+                    GD['httplib'] = client
+
+                for i in ('base64', 'hashlib'):
                   if not i in GD:
                     GD[i] = __import__(i)
 
                 while True:
 
                   try:
-                    client = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-                    raw_cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    database_table = '#{@user.database_name}:%s' % table_name
+                    try:
+                      conn = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
+                      dbtable_hash = GD['hashlib'].sha256(database_table).digest()
+                      dbtable_encoded = GD['base64'].b64encode(dbtable_hash)[0:6]
+                    except Exception:
+                      conn = GD['httplib'].HTTPConnection('#{varnish_host}', port=#{varnish_port}, timeout=timeout)
+                      dbtable_hash = GD['hashlib'].sha256(database_table.encode()).digest()
+                      dbtable_encoded = GD['base64'].b64encode(dbtable_hash)[0:6].decode()
+                    raw_cache_key = 't:%s' % dbtable_encoded
                     cache_key = raw_cache_key.replace('+', r'\+')
-                    client.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
-                    response = client.getresponse()
+                    conn.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
+                    response = conn.getresponse()
                     assert response.status == 204
                     break
                   except Exception as err:
@@ -1446,7 +1565,7 @@ module CartoDB
                       break
                     retry -= 1 # try reconnecting
             $$
-            LANGUAGE 'plpythonu' VOLATILE;
+            LANGUAGE '#{@plpythonu}' VOLATILE;
             REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
             COMMIT;
           TRIGGER
@@ -1540,7 +1659,7 @@ module CartoDB
                   syslog.syslog(syslog.LOG_INFO, "invalidation: %s" % json.dumps(invalidation_result))
 
             $$
-            LANGUAGE 'plpythonu' VOLATILE;
+            LANGUAGE '#{@plpythonu}' VOLATILE;
             REVOKE ALL ON FUNCTION public.cdb_invalidate_varnish(TEXT) FROM PUBLIC;
             COMMIT;
           TRIGGER

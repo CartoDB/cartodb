@@ -3,7 +3,7 @@ Sequel.migration do
     SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :groups do
-      Uuid      :id,                primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid      :id,                primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       # INFO: name is the name of the group from a database point of view
       String    :name,              null: false
       # INFO: display_name is the name of the group from a user point of view
@@ -42,7 +42,7 @@ Sequel.migration do
     })
 
     create_table :users_groups do
-      Uuid    :id,              primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid    :id,              primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       Uuid    :user_id,         null: false
       Uuid    :group_id,        null: false
     end
@@ -74,7 +74,7 @@ Sequel.migration do
     run "ALTER TABLE shared_entities DROP CONSTRAINT recipient_type_check;"
     run "ALTER TABLE shared_entities ADD CONSTRAINT recipient_type_check CHECK (recipient_type IN ('user', 'org', 'group'));"
   end
-  
+
   down do
     #run "ALTER TABLE shared_entities ALTER CONSTRAINT recipient_type_check CHECK (recipient_type IN ('user', 'org'));"
     run "ALTER TABLE shared_entities DROP CONSTRAINT recipient_type_check;"

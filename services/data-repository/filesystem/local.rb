@@ -1,4 +1,3 @@
-# encoding: utf-8 
 require 'fileutils'
 
 module DataRepository
@@ -15,20 +14,20 @@ module DataRepository
       end
 
       def store(path, data)
-        FileUtils.mkpath( File.dirname( fullpath_for(path) ) )
+        FileUtils.mkpath(File.dirname(fullpath_for(path)))
 
         File.open(fullpath_for(path), 'wb') do |file|
-          data.read { |chunk| file.write(chunk)}
-        end if data.respond_to?(:bucket)
-        
-        File.open(fullpath_for(path), 'wb') do |file|
-          chunk = data.gets
-          while chunk
-            file.write(chunk)
+          data.rewind if data.eof?
+          if data.respond_to?(:bucket)
+            data.read { |chunk| file.write(chunk) }
+          else
             chunk = data.gets
+            while chunk
+              file.write(chunk)
+              chunk = data.gets
+            end
           end
-        end unless data.respond_to?(:bucket)
-
+        end
         path
       end
 
@@ -57,7 +56,7 @@ module DataRepository
 
       def targets_for(path)
         fullpath = fullpath_for(path)
-        [ 
+        [
           Dir.glob(fullpath),
           Dir.glob("#{fullpath}/*"),
           Dir.glob("#{fullpath}/**/*")

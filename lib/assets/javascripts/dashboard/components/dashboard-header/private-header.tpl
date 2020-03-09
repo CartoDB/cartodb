@@ -19,10 +19,10 @@
     <ul class="Header-settingsList CDB-Text CDB-Size-medium">
       <% if (!isCartoDBHosted) { %>
         <li class="Header-settingsItem">
-          <a target="_blank" href="https://carto.com/learn/guides" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Guides</a>
+          <a target="_blank" href="https://carto.com/learn/guides" rel="noopener noreferrer" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Guides</a>
         </li>
         <li class="Header-settingsItem">
-          <a target="_blank" href="https://carto.com/developers" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Developers</a>
+          <a target="_blank" href="https://carto.com/developers/" rel="noopener noreferrer" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Developers</a>
         </li>
       <% } %>
       <li class="Header-settingsItem Header-settingsItemNotifications js-user-notifications">

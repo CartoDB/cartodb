@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'uuidtools'
 require_relative '../../geocoder/lib/hires_geocoder_factory'
 require_relative '../../geocoder/lib/geocoder_config'
@@ -169,7 +168,7 @@ module CartoDB
     end
 
     def import_results_to_temp_table
-      connection.copy_into(temp_table_name.lit, data: File.read(deflated_results_path), format: :csv)
+      connection.copy_into(Sequel.lit(temp_table_name), data: File.read(deflated_results_path), format: :csv)
     end
 
     def load_results_into_original_table

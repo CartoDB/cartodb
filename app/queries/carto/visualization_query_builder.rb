@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'active_record'
 
 require_relative '../../models/carto/shared_entity'
@@ -15,11 +13,37 @@ class Carto::VisualizationQueryBuilder
   end
 
   def self.user_public_visualizations(user)
-    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
+    user_public_privacy_visualizations(user).with_published
+  end
+
+  def self.user_public_privacy_visualizations(user)
+    user_public(user).with_types(Carto::Visualization::MAP_TYPES)
+  end
+
+  def self.user_public_privacy_datasets(user)
+    user_public(user).with_types(Carto::Visualization::TYPE_CANONICAL)
+  end
+
+  def self.user_link_privacy_visualizations(user)
+    new.with_user_id(user.id)
+       .with_types(Carto::Visualization::MAP_TYPES)
+       .with_privacy(Carto::Visualization::PRIVACY_LINK)
+  end
+
+  def self.user_password_privacy_visualizations(user)
+    new.with_user_id(user.id)
+       .with_types(Carto::Visualization::MAP_TYPES)
+       .with_privacy(Carto::Visualization::PRIVACY_PROTECTED)
+  end
+
+  def self.user_private_privacy_visualizations(user)
+    new.with_user_id(user.id)
+       .with_types(Carto::Visualization::MAP_TYPES)
+       .with_privacy(Carto::Visualization::PRIVACY_PRIVATE)
   end
 
   def self.user_all_visualizations(user)
-    new.with_user_id(user ? user.id : nil).with_type(Carto::Visualization::TYPE_DERIVED)
+    new.with_user_id(user ? user.id : nil).with_types(Carto::Visualization::MAP_TYPES)
   end
 
   def self.user_public(user)
@@ -226,9 +250,17 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_associations(query)
-    query = query.includes(@include_associations)
-    query = query.eager_load(@eager_load_associations)
-    query = with_favorited(query)
+    query = query.includes(@include_associations) unless @include_associations.empty?
+    query = query.eager_load(@eager_load_associations) unless @eager_load_associations.empty?
+    # We have to include favorites if we're not filtering by them
+    # Why? Both of them include a join with the likes table: favorited uses
+    # a left-join one and the filter will use an inner-join.
+    # So what is the problem? It'll fail because is not possible to include two
+    # joins for the same table
+    # And what is the difference?
+    #  - Filtering leaves only the favorited/liked visualizations by the user
+    #  - With favorited we add the like/favorite data to the visualization information
+    query = with_favorited(query) unless @filtering_params[:liked_by_user_id]
     with_dependent_visualization_count(query)
   end
 

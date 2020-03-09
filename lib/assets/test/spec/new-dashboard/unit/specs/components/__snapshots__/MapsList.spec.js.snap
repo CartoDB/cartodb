@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MapsList.vue should render empty state 1`] = `
+<div class="container grid">
+  <div class="full-width">
+    <sectiontitle-stub showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template> <template></template> <template></template></sectiontitle-stub>
+    <!---->
+    <!---->
+    <!---->
+    <!---->
+    <emptystate-stub text="MapsPage.emptyCase.default"><img svg-inline="" src="../assets/icons/common/compass.svg"></emptystate-stub>
+  </div>
+</div>
+`;
+
+exports[`MapsList.vue should render initial state 1`] = `
+<div class="container grid">
+  <div class="full-width">
+    <sectiontitle-stub showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template> <template></template> <template></template></sectiontitle-stub>
+    <!---->
+    <!---->
+    <!---->
+    <!---->
+    <emptystate-stub text="MapsPage.emptyCase.default"><img svg-inline="" src="../assets/icons/common/compass.svg"></emptystate-stub>
+  </div>
+</div>
+`;
+
+exports[`MapsList.vue should render properly with condensed card and without change view mode available 1`] = `
+<div class="container grid" showviewall="true">
+  <div class="full-width">
+    <sectiontitle-stub showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template> <template></template> <template></template></sectiontitle-stub>
+    <!---->
+    <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">
+      <condensedmapheader-stub order="updated_at" orderdirection="desc" issortable="true" showviews="true"></condensedmapheader-stub>
+    </div>
+    <!---->
+    <ul class="grid grid-column grid-cell">
+      <li class="card-condensed">
+        <mapcard-stub visualization="[object Object]" storeactiontype="maps" canhover="true" condensed="true"></mapcard-stub>
+      </li>
+      <li class="card-condensed">
+        <mapcard-stub visualization="[object Object]" storeactiontype="maps" canhover="true" condensed="true"></mapcard-stub>
+      </li>
+    </ul>
+    <!---->
+  </div>
+</div>
+`;
+
+exports[`MapsList.vue should render properly with simple card and with change view mode available 1`] = `
+<div class="container grid" showviewall="true">
+  <div class="full-width">
+    <sectiontitle-stub showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template> <template></template> <template></template></sectiontitle-stub>
+    <!---->
+    <!---->
+    <!---->
+    <ul class="grid">
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
+        <mapcard-stub visualization="[object Object]" storeactiontype="maps" canhover="true"></mapcard-stub>
+      </li>
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
+        <mapcard-stub visualization="[object Object]" storeactiontype="maps" canhover="true"></mapcard-stub>
+      </li>
+    </ul>
+    <!---->
+  </div>
+</div>
+`;

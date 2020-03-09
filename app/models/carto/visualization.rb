@@ -1,9 +1,11 @@
 require 'active_record'
+require 'cartodb-common'
 require_relative '../visualization/stats'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/visualization_invalidation_service'
+require_dependency 'carto/visualization_backup_service'
 
 module Carto::VisualizationDependencies
   def fully_dependent_on?(user_table)
@@ -30,15 +32,16 @@ class Carto::Visualization < ActiveRecord::Base
   include Carto::UUIDHelper
   include Carto::AuthTokenGenerator
   include Carto::VisualizationDependencies
-
-  AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
+  include Carto::VisualizationBackupService
 
   TYPE_CANONICAL = 'table'.freeze
   TYPE_DERIVED = 'derived'.freeze
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
+  TYPE_KUVIZ = 'kuviz'.freeze
 
-  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ].freeze
+  MAP_TYPES = [TYPE_DERIVED, TYPE_KUVIZ].freeze
 
   KIND_GEOM   = 'geom'.freeze
   KIND_RASTER = 'raster'.freeze
@@ -76,6 +79,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
 
+  has_one :asset, class_name: Carto::Asset, inverse_of: :visualization, dependent: :destroy
+
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
   has_one :synchronization, class_name: Carto::Synchronization, dependent: :destroy
@@ -91,6 +96,7 @@ class Carto::Visualization < ActiveRecord::Base
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }
   validates :type, inclusion: { in: VALID_TYPES }
+  validates :name, uniqueness: { scope: [:user_id, :type] }, if: :kuviz?
   validate :validate_password_presence
   validate :validate_privacy_changes
   validate :validate_user_not_viewer, on: :create
@@ -103,7 +109,6 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_privacy_and_name_to, if: :table
 
   before_destroy :backup_visualization
-
   after_commit :perform_invalidations
 
   attr_accessor :register_table_only
@@ -199,24 +204,32 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
-  def liked_by?(user_id)
-    likes_by_user_id(user_id).any?
+  def liked_by?(user)
+    likes_by_user(user).any?
   end
 
-  def likes_by_user_id(user_id)
-    likes.where(actor: user_id)
+  def likes_by_user(user)
+    likes.where(actor: user.id)
   end
 
-  def add_like_from(user_id)
-    likes.create!(actor: user_id)
+  def add_like_from(user)
+    unless has_read_permission?(user)
+      raise UnauthorizedLikeError
+    end
+
+    likes.create!(actor: user.id)
 
     self
   rescue ActiveRecord::RecordNotUnique
     raise AlreadyLikedError
   end
 
-  def remove_like_from(user_id)
-    item = likes.where(actor: user_id)
+  def remove_like_from(user)
+    unless has_read_permission?(user)
+      raise UnauthorizedLikeError
+    end
+
+    item = likes.where(actor: user.id)
     item.first.destroy unless item.first.nil?
 
     self
@@ -292,12 +305,20 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_CANONICAL
   end
 
+  def map?
+    kuviz? || derived?
+  end
+
   def derived?
     type == TYPE_DERIVED
   end
 
   def remote?
     type == TYPE_REMOTE
+  end
+
+  def kuviz?
+    type == TYPE_KUVIZ
   end
 
   def layers
@@ -333,7 +354,9 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def password_valid?(password)
-    password_protected? && has_password? && (password_digest(password, password_salt) == encrypted_password)
+    password_protected? &&
+      Carto::Common::EncryptionService.verify(password: password, secure_password: encrypted_password,
+                                              salt: password_salt, secret: Cartodb.config[:password_secret])
   end
 
   def organization?
@@ -405,10 +428,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def can_be_cached?
     !is_privacy_private?
-  end
-
-  def likes_count
-    likes.size
   end
 
   def widgets
@@ -604,8 +623,9 @@ class Carto::Visualization < ActiveRecord::Base
 
   def password=(value)
     if value.present?
-      self.password_salt = generate_salt if password_salt.nil?
-      self.encrypted_password = password_digest(value, password_salt)
+      self.password_salt = ""
+      self.encrypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                         secret: Cartodb.config[:password_secret])
     end
   end
 
@@ -617,11 +637,15 @@ class Carto::Visualization < ActiveRecord::Base
     user_table.try(:dependent_visualizations) || []
   end
 
-  private
+  def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)
+    return true if remote?
 
-  def generate_salt
-    secure_digest(Time.now, (1..10).map { rand.to_s })
+    if map && !destroyed?
+      create_visualization_backup(visualization: self, category: category)
+    end
   end
+
+  private
 
   def remove_password
     self.password_salt = nil
@@ -707,18 +731,6 @@ class Carto::Visualization < ActiveRecord::Base
     self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
   end
 
-  def password_digest(password, salt)
-    digest = AUTH_DIGEST
-    10.times do
-      digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-    end
-    digest
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
-  end
-
   def has_private_tables?
     !related_tables.index { |table| table.private? }.nil?
   end
@@ -760,8 +772,32 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def validate_privacy_changes
-    if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
+    return unless privacy_changed? && (map? || table?)
+
+    is_privacy_private? ? validate_change_to_private : validate_change_to_public
+  end
+
+  def validate_change_to_private
+    if (!user&.private_tables_enabled? && table?) || (!user&.private_maps_enabled? && map?)
       errors.add(:privacy, 'cannot be set to private')
+    end
+
+    return unless !privacy_was || privacy_was != Carto::Visualization::PRIVACY_PRIVATE
+
+    if map? && CartoDB::QuotaChecker.new(user).will_be_over_private_map_quota?
+      errors.add(:privacy, 'over account private map quota')
+    end
+  end
+
+  def validate_change_to_public
+    return unless !privacy_was || privacy_was == Carto::Visualization::PRIVACY_PRIVATE
+
+    if map? && CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
+      errors.add(:privacy, 'over account public map quota')
+    end
+
+    if table? && CartoDB::QuotaChecker.new(user).will_be_over_public_dataset_quota?
+      errors.add(:privacy, 'over account public dataset quota')
     end
   end
 
@@ -769,21 +805,6 @@ class Carto::Visualization < ActiveRecord::Base
     if user.viewer
       errors.add(:user, 'cannot be viewer')
     end
-  end
-
-  def backup_visualization
-    return true if remote?
-
-    if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
-      Carto::VisualizationsExportService.new.export(id)
-    end
-  rescue => exception
-    # Don't break deletion flow
-    CartoDB::Logger.error(
-      message: 'Error backing up visualization',
-      exception: exception,
-      visualization_id: id
-    )
   end
 
   def invalidation_service
@@ -833,4 +854,5 @@ class Carto::Visualization < ActiveRecord::Base
 
   class WatcherError < CartoDB::BaseCartoDBError; end
   class AlreadyLikedError < StandardError; end
+  class UnauthorizedLikeError < StandardError; end
 end

@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 class HomeController < ApplicationController
   layout 'frontend'
 
@@ -7,11 +5,11 @@ class HomeController < ApplicationController
   STATUS[true] = 'ok'
   STATUS[false] = 'error'
 
-  OS_VERSION = "Description:\tUbuntu 16.04"
-  PG_VERSION = 'PostgreSQL 10'.freeze
-  POSTGIS_VERSION = '2.4'.freeze
-  CDB_VALID_VERSION = '0.24.1'.freeze
-  CDB_LATEST_VERSION = '0.24.1'.freeze
+  OS_VERSION = "Description:\tUbuntu 18.04"
+  PG_VERSION = 'PostgreSQL 12'.freeze
+  POSTGIS_VERSION = '3.0'.freeze
+  CDB_VALID_VERSION = '0.36.0'.freeze
+  CDB_LATEST_VERSION = '0.36.0'.freeze
   REDIS_VERSION = '4'.freeze
   RUBY_BIN_VERSION = 'ruby 2.2'.freeze
   NODE_VERSION = 'v6.9.2'.freeze
@@ -78,8 +76,8 @@ class HomeController < ApplicationController
     ['', [
       "Environment: #{environment}",
       "Subdomainless URLs: #{Cartodb.config[:subdomainless_urls]}",
-      "Sample Editor URL: #{CartoDB.url(self, 'datasets_index', {}, user)}",
-      "Sample Editor APIs URL: #{CartoDB.url(self, 'api_v1_visualizations_index', {}, user)}"
+      "Sample Editor URL: #{CartoDB.url(self, 'datasets_index', user: user)}",
+      "Sample Editor APIs URL: #{CartoDB.url(self, 'api_v1_visualizations_index', user: user)}"
     ]]
   end
 

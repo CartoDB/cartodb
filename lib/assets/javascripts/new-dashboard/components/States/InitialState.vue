@@ -23,7 +23,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .initial-state {
   display: flex;
@@ -31,7 +31,7 @@ export default {
   align-items: center;
   width: 100%;
   padding: 36px;
-  border: 2px dashed $grey;
+  border: 2px dashed $border-color--dark;
   border-radius: 2px;
 }
 

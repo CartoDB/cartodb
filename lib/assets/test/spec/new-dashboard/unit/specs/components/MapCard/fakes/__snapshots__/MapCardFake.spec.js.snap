@@ -2,7 +2,7 @@
 
 exports[`MapCardFake.vue should render by default the simpleMapCardFake 1`] = `
 <div>
-  <simplemapcardfake-stub></simplemapcardfake-stub>
+  <simplemapcardfake-stub visiblesections="description,privacy,lastModification,tags"></simplemapcardfake-stub>
 </div>
 `;
 
@@ -14,6 +14,6 @@ exports[`MapCardFake.vue should render the condensedMapCardFake if condensed is 
 
 exports[`MapCardFake.vue should render the simpleMapCardFake if condensed is false 1`] = `
 <div>
-  <simplemapcardfake-stub></simplemapcardfake-stub>
+  <simplemapcardfake-stub visiblesections="description,privacy,lastModification,tags"></simplemapcardfake-stub>
 </div>
 `;

@@ -45,11 +45,7 @@
 }
 
 .ChangePrivacy-passwordInput {
-  position: absolute;
-  bottom: 9px;
-  left: 9px;
-  width: 172px;
-  outline: none;
+  margin-top: 12px;
 }
 
 .ChangePrivacy-shareListItem {
@@ -102,5 +98,6 @@
   align-items: center;
   justify-content: space-between;
   height: 97px;
+  border-top: 1px solid $cStructure-mainLine;
   background-color: $cStructure-grayBkg;
 }

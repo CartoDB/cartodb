@@ -80,6 +80,7 @@ body.is-inDialog {
   position: fixed;
   bottom: 0;
   width: 100%;
+  background: $cStructure-grayBkg;
 }
 
 .Dialog-content.is-newContent {
@@ -113,8 +114,11 @@ body.is-inDialog {
 }
 
 .Dialog-body.Dialog-body--create {
+  $createDialog-footerInner-height: 72px;
+  $createDialog-footerInner-padding: 16px;
   position: relative;
   width: 100%;
+  margin-bottom: $createDialog-footerInner-height + 2 * $createDialog-footerInner-padding;
   overflow: auto;
 }
 
@@ -336,9 +340,10 @@ $sStickyHeight: 97px;
 
 .Dialog-expandedSubContent {
   flex-grow: 100;
+  margin-bottom: 97px;
   overflow-x: hidden;
   overflow-y: auto;
-  border: 1px solid $cStructure-mainLine;
+  border-top: 1px solid $cStructure-mainLine;
   background-color: $cStructure-grayBkg;
 }
 
@@ -360,6 +365,7 @@ $sStickyHeight: 97px;
   bottom: 0;
   width: 100%;
   height: $sStickyHeight;
+  background-color: $cStructure-grayBkg;
 }
 
 .Dialog-contentSubHeader {

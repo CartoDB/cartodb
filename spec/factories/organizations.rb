@@ -23,6 +23,9 @@ FactoryGirl.define do
     twitter_username 'cartodb'
     location 'Madrid'
     builder_enabled false # Most tests still assume editor
+    geocoder_provider 'heremaps'
+    isolines_provider 'heremaps'
+    routing_provider 'heremaps'
 
     factory :organization_whitelist_carto do
       whitelisted_email_domains ['carto.com']

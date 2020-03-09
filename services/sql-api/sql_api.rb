@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'open-uri'
 require 'json'
 require_relative '../../lib/carto/http/client'
@@ -44,7 +43,7 @@ module CartoDB
       build_request(query, format, filename, :get, :public).url
     end
 
-    def export_table_url(table, format = 'shp', filename = table)
+    def export_table_url(table, format = 'gpkg', filename = table)
       query = %{select * from "#{table}"}
       url(query, format, filename)
     end

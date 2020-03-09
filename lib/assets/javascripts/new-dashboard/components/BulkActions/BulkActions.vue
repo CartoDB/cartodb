@@ -1,14 +1,19 @@
 <template>
   <section class="bulk-actions">
-    <button
-      class="bulk-actions__button button button--ghost"
-      :class="{'is-txtAlert': action.isDestructive}"
-      v-if="!action.shouldBeHidden"
-      v-for="action in actions"
-      :key="action.event"
-      @click="emitEvent(action.event)">
-      {{ action.name }}
-    </button>
+    <template
+      v-for="action in actions">
+      <button
+        class="bulk-actions__button button button--ghost"
+        v-if="!action.shouldBeHidden"
+        :class="{
+          'is-txtAlert': action.isDestructive,
+          'u-is-disabled': action.shouldBeDisabled}"
+        :disabled="action.shouldBeDisabled"
+        :key="action.event"
+        @click="emitEvent(action.event)">
+        {{ action.name }}
+      </button>
+    </template>
   </section>
 </template>
 

@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 # NOTE: Implement further methods from ActiveRecord::Relation here as needed
 module Carto
   class OffdatabaseQueryAdapter
@@ -54,7 +52,7 @@ module Carto
     end
 
     # NOTE: Sorting for model associations (which return arrays) or arrays will be done based on length
-    # e.g. visualization.likes
+    # e.g. visualization.analyses
     def get_results
       all = @query.all
       @order_by_asc_or_desc_by_attribute.each do |attribute, asc_or_desc|

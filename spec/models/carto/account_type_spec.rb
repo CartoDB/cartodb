@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/account_types_helper'
@@ -9,13 +7,7 @@ describe Carto::AccountType do
   include AccountTypesHelper
 
   before :each do
-    @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
     @account_type = create_account_type_fg('PRO')
-  end
-
-  after :each do
-    @account_type.destroy if @account_type
-    @limits_feature_flag.destroy
   end
 
   describe '#create' do

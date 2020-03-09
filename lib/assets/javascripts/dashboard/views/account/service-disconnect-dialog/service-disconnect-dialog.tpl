@@ -27,7 +27,7 @@
 
 <div class="Dialog-footer u-inner">
   <% if (revoke_url) { %>
-    <a href="<%- revoke_url%>" target="_blank" class="Button Button-inner Button--inline Button--secondary ">
+    <a href="<%- revoke_url%>" target="_blank" rel="noopener noreferrer" class="Button Button-inner Button--inline Button--secondary ">
       <span>go to<%= title %></span>
     </a>
   <% } else { %>

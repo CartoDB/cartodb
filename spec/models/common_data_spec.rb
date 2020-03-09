@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 require 'json'
 require_relative '../spec_helper'
 
@@ -12,7 +10,7 @@ describe CommonData do
     @common_data.stubs(:config).with('username').returns('common-data')
     @common_data.stubs(:config).with('base_url').returns(nil)
     @common_data.stubs(:config).with('api_key').returns('wadus')
-    @common_data.stubs(:config).with('format', 'shp').returns('shp')
+    @common_data.stubs(:config).with('format', 'gpkg').returns('gpkg')
     CommonDataRedisCache.new.invalidate
   end
 

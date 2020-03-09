@@ -1,0 +1,15 @@
+name: cartodb check NEWS.md
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  cartodb-news:
+    runs-on: ubuntu-16.04
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v1
+
+      - name: Check NEWS.md was updated
+        run: if git diff $(git merge-base $(git rev-parse HEAD) origin/master) --name-only | grep NEWS.md > /dev/null; then exit 0; else exit 1; fi

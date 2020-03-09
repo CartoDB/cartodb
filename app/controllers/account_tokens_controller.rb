@@ -19,7 +19,7 @@ class AccountTokensController < ApplicationController
 
     @user = user.reload
     @organization = @user.organization
-    @destination_url = CartoDB.url(self, 'dashboard', {}, @user)
+    @destination_url = CartoDB.url(self, 'dashboard', user: @user)
 
     flash.now[:success] = 'Account enabled, yikes!'
     render 'signup/account_enabled'

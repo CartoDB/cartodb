@@ -1,0 +1,21 @@
+{
+  "result": [
+    {
+      "type": "tag",
+      "name": "example of map with analyses",
+      "url": "http://user.carto.com/dashboard/search/tag/example%20of%20map%20with%20analyses"
+    },
+    {
+      "type": "derived",
+      "name": "Citi Bike Map Import",
+      "url": "http://user.carto.com/viz/67a6fa8c-237f-41d7-a499-33dfa28a4e06/map"
+    },
+    {
+      "type": "derived",
+      "name": "Madrid traffic map",
+      "url": "http://user.carto.com/viz/c24a70b4-e18f-4836-82b9-c9be6377a37a/map"
+    }
+  ],
+  "total_count": 3
+}
+

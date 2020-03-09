@@ -1,0 +1,40 @@
+.viz-column--main-info,
+.viz-column--extra-info,
+.viz-column--status,
+.viz-column--statusL,
+.viz-column--share,
+.viz-column--shareS {
+  @extend .grid;
+  @extend .grid--no-wrap;
+}
+
+.viz-column--main-info,
+.viz-column--share {
+  @extend .grid-cell--col5;
+  @extend .grid--align-center;
+}
+
+.viz-column--extra-info,
+.viz-column--status {
+  @extend .grid-cell--col7;
+}
+
+.viz-column--status {
+  @extend .grid--align-center;
+}
+
+/* Larger version of status column */
+.viz-column--statusL {
+  @extend .grid-cell--col8;
+  @extend .grid--align-center;
+}
+
+.viz-column--share {
+  @extend .grid--around;
+}
+
+/* Smaller version of share column */
+.viz-column--shareS {
+  @extend .grid-cell--col4;
+  @extend .grid--justify-end;
+}

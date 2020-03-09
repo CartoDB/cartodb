@@ -1,9 +1,9 @@
 <%= render :layout => 'form' do %>
-  <% url = CartoDB.url(self, 'edit_password_reset', id: params[:id]) %>
+  <% url = CartoDB.url(self, 'edit_password_reset', params: { id: params[:id] }) %>
   <%= form_for @user, url: url, class: "js-Loading-form" do |f| %>
     <div class="Sessions-fieldsGorup">
       <div class="Sessions-field">
-        <%= f.password_field :password, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", placeholder: 'Password' %>
+        <%= f.password_field :password,  autocomplete: "off", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", placeholder: 'Password' %>
 
         <% if @user.errors['password'].present? %>
           <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password'].first %>.">!</div>
@@ -11,7 +11,7 @@
       </div>
 
       <div class="Sessions-field">
-        <%= f.password_field :password_confirmation, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius", placeholder: 'Retype your password' %>
+        <%= f.password_field :password_confirmation, autocomplete: "off", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius", placeholder: 'Retype your password' %>
         <% if @user.errors['password_confirmation'].present? %>
           <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password_confirmation'].first %>.">!</div>
         <% end %>

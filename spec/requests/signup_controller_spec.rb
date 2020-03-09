@@ -152,7 +152,6 @@ describe SignupController do
     DEFAULT_QUOTA_IN_BYTES = 1000
 
     before(:all) do
-      @organization.whitelisted_email_domains = ['carto.com']
       @organization.default_quota_in_bytes = DEFAULT_QUOTA_IN_BYTES
       @organization.save
 
@@ -160,6 +159,7 @@ describe SignupController do
     end
 
     before(:each) do
+      @organization.whitelisted_email_domains = ['carto.com']      
       @organization.auth_username_password_enabled = true
       @organization.auth_google_enabled = true
       @organization.strong_passwords_enabled = true
@@ -228,7 +228,6 @@ describe SignupController do
       last_user_creation.username.should == username
       last_user_creation.email.should == email
       last_user_creation.crypted_password.should_not be_empty
-      last_user_creation.salt.should_not be_empty
       last_user_creation.organization_id.should == @organization.id
       last_user_creation.quota_in_bytes.should == @organization.default_quota_in_bytes
       last_user_creation.requires_validation_email?.should == true
@@ -251,7 +250,6 @@ describe SignupController do
       last_user_creation.username.should == username
       last_user_creation.email.should == email
       last_user_creation.crypted_password.should_not be_empty
-      last_user_creation.salt.should_not be_empty
       last_user_creation.organization_id.should == @organization.id
       last_user_creation.quota_in_bytes.should == @organization.default_quota_in_bytes
       last_user_creation.requires_validation_email?.should == true

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Sequel.migration do
 
   up do
@@ -21,7 +19,7 @@ Sequel.migration do
 
     # INFO: we're not adding FKs because this is for monitoring and log purposes
     create_table :user_creations do
-      Uuid      :id,                primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid      :id,                primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       String    :username,          null: false
       String    :email,             null: false
       String    :crypted_password,  null: false

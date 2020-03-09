@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NotificationWarning.vue basic behaviour should render the body 1`] = `<div class="notification"><span class="text notification__text">Notification message</span> <button aria-label="Close" class="notification__close-button"><img src="../assets/icons/common/close.svg"></button></div>`;

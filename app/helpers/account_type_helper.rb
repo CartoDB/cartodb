@@ -21,14 +21,19 @@ module AccountTypeHelper
 
   PUBLIC_PLAN_NAME = {
     'FREE' => 'Free',
+    'Individual' => 'Individual',
+    'Annual Individual' => 'Annual Individual',
     'PERSONAL30' => 'Professional Trial',
     'BASIC' => 'Professional',
     'BASIC LUMP-SUM' => 'Professional Lump-Sum',
-    'ENTERPRISE' => 'Enterprise'
+    'ENTERPRISE' => 'Enterprise',
+    'Free 2020' => 'Free'
   }.freeze
 
   PLAN_NAME_BY_ACCOUNT_TYPE = {
     'FREE' => 'Free',
+    'Individual' => 'Individual',
+    'Annual Individual' => 'Annual Individual',
     'PERSONAL30' => 'Professional Trial',
     'BASIC' => 'Professional',
     'BASIC LUMP-SUM' => 'Professional',
@@ -53,7 +58,8 @@ module AccountTypeHelper
     'CARTO for Community - Annual' => 'Ambassador',
     'Free Basemap LDS - Annual' => 'Free',
     'Enterprise LDS - Annual' => 'Enterprise',
-    'CARTO Trial Account - Annual' => 'Trial'
+    'CARTO Trial Account - Annual' => 'Trial',
+    'Free 2020' => 'Free'
   }.freeze
 
   PLAN_NAME_BY_ACCOUNT_TYPE_DOWN = Hash[PLAN_NAME_BY_ACCOUNT_TYPE.map { |k, v| [k.downcase, v] }]

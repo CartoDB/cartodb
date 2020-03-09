@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'active_record'
 require_dependency 'cartodb/errors'
 require_dependency 'carto/helpers/auth_token_generator'

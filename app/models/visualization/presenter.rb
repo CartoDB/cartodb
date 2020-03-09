@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './member'
 require_relative './external_source'
 
@@ -40,7 +38,6 @@ module CartoDB
           license: visualization.license,
           attributions: visualization.attributions,
           kind: visualization.kind,
-          likes: visualization.likes_count,
           prev_id: visualization.prev_id,
           next_id: visualization.next_id,
           transition_options: visualization.transition_options,
@@ -51,7 +48,7 @@ module CartoDB
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
         poro.merge!(children: children)
-        poro.merge!(liked: visualization.liked_by?(@viewing_user.id)) unless @viewing_user.nil?
+        poro[:liked] = visualization.liked_by?(@viewing_user) unless @viewing_user.nil?
         poro
       end
 
@@ -67,7 +64,6 @@ module CartoDB
           title:            visualization.title,
           kind:             visualization.kind,
           privacy:          privacy_for_vizjson.upcase,
-          likes:            visualization.likes_count
         }
       end
 

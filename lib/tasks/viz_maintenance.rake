@@ -75,58 +75,6 @@ namespace :cartodb do
       puts "\n> #{Time.now}\nFinished ##{count} items"
     end
 
-    desc "Outputs a visualization JSON. Usage example: `bundle exec rake cartodb:vizs:export_user_visualization_json['c54710aa-ad8f-11e5-8046-080027880ca6'] > c54710aa-ad8f-11e5-8046-080027880ca6.json`"
-    task :export_user_visualization_json, [:vis_id] => :environment do |_, args|
-      # Output is meant to be forwarded to a file, so we don't want logging output
-      ActiveRecord::Base.logger = nil
-      vis_id = args[:vis_id]
-      raise "vis_id argument missing" unless vis_id
-
-      puts Carto::VisualizationsExportService.new.export_to_json(Carto::Visualization.find(vis_id))
-    end
-
-    desc "Imports a visualization JSON from input (from export_user_visualization_json). Usage example: `cat c54710aa-ad8f-11e5-8046-080027880ca6.json | bundle exec rake cartodb:vizs:import_user_visualization_json['6950b745-5524-4d8d-9478-98a8a04d84ba']`. Ids are preserved, so if you want to import an existing visualization you must edit the JSON file and change the ids (any valid UUID will work)."
-    task :import_user_visualization_json, [:user_id] => :environment do |_, args|
-      json_string = STDIN.gets
-      json = JSON.parse(json_string)
-
-      user_id = args[:user_id]
-      raise "user_id argument missing" unless user_id
-
-      user = Carto::User.find(user_id)
-
-      json["owner"]["id"] = user_id
-      json["layers"].each do |layer|
-        if layer.fetch("options", {}).fetch("user_name", nil)
-          layer["options"]["user_name"] = user.username
-        end
-      end
-
-      Carto::VisualizationsExportService.new.restore_from_json(json)
-    end
-
-    desc "Exports/Backups a visualization"
-    task :export_user_visualization, [:vis_id] => :environment do |_, args|
-      vis_export_service = Carto::VisualizationsExportService.new
-
-      puts "Exporting visualization #{args[:vis_id]}..."
-      result = vis_export_service.export(args[:vis_id])
-      puts "Export result was: #{result ? 'OK' : 'NOK (export already present)'}"
-      puts "Export complete"
-    end
-
-    desc "Imports/Restores a visualization"
-    task :import_user_visualization, [:vis_id, :skip_version_check] => :environment do |_, args|
-      vis_export_service = Carto::VisualizationsExportService.new
-
-      skip_version_check = (args[:skip_version_check] == "true")
-
-      puts "Importing visualization data for uuid #{args[:vis_id]}"
-      vis_export_service.import(args[:vis_id], skip_version_check)
-
-      puts "Visualization #{args[:vis_id]} imported"
-    end
-
     desc "Exports a .carto file including visualization metadata and the tables"
     task :export_full_visualization, [:vis_id] => :environment do |_, args|
       visualization_id = args[:vis_id]
@@ -137,17 +85,6 @@ namespace :cartodb do
 
       file = Carto::VisualizationExport.new.export(visualization, visualization.user)
       puts "Visualization exported: #{file}"
-    end
-
-    desc "Purges old visualization backups"
-    task :purge_old_visualization_backups => :environment do |_|
-      vis_export_service = Carto::VisualizationsExportService.new
-
-      puts "Purging visualization backups older tan #{Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP} days"
-
-      purged_count = vis_export_service.purge_old
-
-      puts "Purge complete. Removed #{purged_count} items"
     end
 
     desc "Updates visualizations auth tokens from named maps"
@@ -225,6 +162,16 @@ namespace :cartodb do
           end
         end
       end
+    end
+
+    desc "Restore visualization from backup"
+    task :restore_visualization, [:backup_id] => :environment do |_, args|
+      include Carto::VisualizationBackupService
+
+      backup_id = args[:backup_id]
+      visualization = restore_visualization_backup(backup_id)
+      puts "Error restoring visualization" if visualization.nil?
+      puts "Visualization #{visualization.id} restored" unless visualization.nil?
     end
 
     private

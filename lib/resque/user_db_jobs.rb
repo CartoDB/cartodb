@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './base_job'
 require 'resque-metrics'
 require_relative '../cartodb/metrics'
@@ -13,6 +12,19 @@ module Resque
         def self.perform(user_id)
           Carto::GhostTablesManager.new(user_id).link_ghost_tables_synchronously
         rescue => e
+          CartoDB.notify_exception(e)
+          raise e
+        end
+      end
+
+      module LinkGhostTablesByUsername
+        extend ::Resque::Metrics
+        @queue = :user_dbs
+
+        def self.perform(username)
+          user = Carto::User.find_by_username!(username)
+          Carto::GhostTablesManager.new(user.id).link_ghost_tables_synchronously
+        rescue StandardError => e
           CartoDB.notify_exception(e)
           raise e
         end

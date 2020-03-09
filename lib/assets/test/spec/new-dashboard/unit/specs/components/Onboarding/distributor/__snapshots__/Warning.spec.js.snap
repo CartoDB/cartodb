@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Warning.vue should render properly 1`] = `
+<div class="warning"><span class="text is-small">
+    Wizards.Distributor.engineWarning.text <a target="_blank" href="Wizards.Distributor.engineWarning.link" rel="noopener noreferrer" class="warning__link">Wizards.Distributor.engineWarning.linkText</a></span></div>
+`;

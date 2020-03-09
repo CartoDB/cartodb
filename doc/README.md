@@ -5,3 +5,11 @@ Yes, there's a lot of docs missing, we appreciate [contributions](../CONTRIBUTIN
 - [API](api.md)
 - [redis](redis.md)
 - [Frontend](frontend/README.md)
+
+#### Developer Center
+
+The `developer-center` folder contains the public documentation for Auth API, Import API and CartoCSS published in the [Developer Center site](https://carto.com/developers/).
+
+The structure of folders replicates the section structure on the site. Guides, Support and Examples articles are written in markdown. Reference pages are documented using [Swagger](https://swagger.io/) (The following [Swagger editor]( https://swagger.io/tools/swagger-editor/) can be useful to test new content)
+
+Changes of updates in this files are periodically fetched and updated in [Developer Center site](https://carto.com/developers/). Find some editing guidelines [here](https://github.com/CartoDB/developers/wiki/Editing-and-contributing-guidelines).

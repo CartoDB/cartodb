@@ -13,7 +13,8 @@ module.exports = merge(baseConfig, {
   plugins: [
     new webpack.DefinePlugin({
       __IN_DEV__: JSON.stringify(false),
-      __ENV__: JSON.stringify('prod')
+      __ENV__: JSON.stringify('prod'),
+      __KEPLERGL_BASE_URL__: JSON.stringify('https://kepler.gl')
     })
   ],
   optimization: {
@@ -35,7 +36,9 @@ module.exports = merge(baseConfig, {
           zindex: false,
           reduceIdents: false,
           autoprefixer: {
-            remove: false
+            remove: false,
+            add: true,
+            browsers: ['> 1%']
           }
         }
       })

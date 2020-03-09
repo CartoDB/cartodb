@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExpirationMessage.vue should render correctly with trial expired date 1`] = `
+<section upgradeurl="https://user.carto.com/plan">
+  <div class="container warning-container">
+    <div class="warning-icon"><img src="../../assets/icons/common/warning-icon.svg"></div>
+    <h2 class="warning-title title is-title is-txtDarkBlue is-bold">
+      TrialExpired.ExpirationMessage.title
+    </h2>
+    <p class="text is-body is-txtDarkBlue">
+      TrialExpired.ExpirationMessage.description.phrase1.withDate
+    </p>
+    <p class="warning-description text is-body is-txtDarkBlue">TrialExpired.ExpirationMessage.description.phrase2</p>
+    <div class="buttons-container"><a class="button upgrade-button is-caption">
+        TrialExpired.ExpirationMessage.actions.addPayments
+      </a> <a class="button button--ghost is-txtDarkBlue is-caption">
+        TrialExpired.ExpirationMessage.actions.deleteAccount
+      </a></div>
+  </div>
+</section>
+`;
+
+exports[`ExpirationMessage.vue should render correctly without trial expired date 1`] = `
+<section upgradeurl="https://user.carto.com/plan">
+  <div class="container warning-container">
+    <div class="warning-icon"><img src="../../assets/icons/common/warning-icon.svg"></div>
+    <h2 class="warning-title title is-title is-txtDarkBlue is-bold">
+      TrialExpired.ExpirationMessage.title
+    </h2>
+    <p class="text is-body is-txtDarkBlue">
+      TrialExpired.ExpirationMessage.description.phrase1.noDate
+    </p>
+    <p class="warning-description text is-body is-txtDarkBlue">TrialExpired.ExpirationMessage.description.phrase2</p>
+    <div class="buttons-container"><a class="button upgrade-button is-caption">
+        TrialExpired.ExpirationMessage.actions.addPayments
+      </a> <a class="button button--ghost is-txtDarkBlue is-caption">
+        TrialExpired.ExpirationMessage.actions.deleteAccount
+      </a></div>
+  </div>
+</section>
+`;

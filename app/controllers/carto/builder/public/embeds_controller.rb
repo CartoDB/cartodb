@@ -26,7 +26,7 @@ module Carto
         layout false
 
         def show
-          @viz_owner_base_url = @visualization.user.public_url
+          @viz_owner = @visualization.user
 
           @layers_data = visualization_for_presentation.layers.map do |l|
             Carto::Api::LayerPresenter.new(l).to_embed_poro
@@ -111,7 +111,7 @@ module Carto
 
         def redirect_to_old_embed_if_v2
           if @visualization.version != 3
-            redirect_to CartoDB.url(self, 'public_visualizations_embed_map', id: @visualization.id)
+            redirect_to CartoDB.url(self, 'public_visualizations_embed_map', params: { id: @visualization.id })
           end
         end
       end

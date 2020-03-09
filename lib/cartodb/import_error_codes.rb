@@ -270,7 +270,7 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     8002 => {
-      title: 'Over account table limit, please upgrade',
+      title: 'You have reached the limit of datasets for your plan. Upgrade your account to get unlimited datasets',
       what_about: "To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.",
       source: ERROR_SOURCE_USER
     },
@@ -293,6 +293,16 @@ module CartoDB
       title: "Not enough Twitter credits",
       what_about: "Unfortunately, you don't have enough Twitter credits to proceed. Please contact <a href='mailto:sales@carto.com?subject=Exceeded%20Twitter%20quota'>" \
                   "Sales</a> if you have questions about how to obtain more credits.",
+      source: ERROR_SOURCE_USER
+    },
+    8007 => {
+      title: 'Over account maps limit, please upgrade',
+      what_about: "To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.",
+      source: ERROR_SOURCE_USER
+    },
+    8008 => {
+      title: 'Over account datasets limit or publication is disabled in your account',
+      what_about: "Please contact us at support@carto.com indicating this error code for more information.",
       source: ERROR_SOURCE_USER
     },
     6666 => {

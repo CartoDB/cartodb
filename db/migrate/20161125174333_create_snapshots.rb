@@ -5,7 +5,7 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     create_table :snapshots do
-      Uuid     :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid     :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
       String   :state, null: false, type: 'json', default: '{}'

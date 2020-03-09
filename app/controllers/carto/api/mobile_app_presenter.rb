@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Carto
   module Api
     class MobileAppPresenter
@@ -64,12 +62,12 @@ module Carto
           data[:app_types] = {
             "open": {
               text: "Limits based on your CARTO plan. <a href='https://carto.com/developers/fundamentals/limits/'
-                target='_blank'>Learn more</a>.",
+                target='_blank' rel='noopener noreferrer'>Learn more</a>.",
               available: app_type_available?('open', @current_user.open_apps_enabled?),
               selected: app_type_selected?('open')
             },
             "private": {
-              text: "Only for enterprise. <a href='https://carto.com/pricing/' target='_blank'>Learn more</a>.",
+              text: "Only for enterprise. <a href='https://carto.com/pricing/' target='_blank' rel='noopener noreferrer'>Learn more</a>.",
               available: app_type_available?('private', @current_user.private_apps_enabled?),
               selected: app_type_selected?('private')
             }

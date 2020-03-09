@@ -17,7 +17,7 @@
         <div class="u-flex logos">
           <slot name="demo-logos"></slot>
         </div>
-        <a :href=demoUrl target="_blank" class="button card-demo-button u-no-decoration">
+        <a :href=demoUrl target="_blank" rel="noopener noreferrer" class="button card-demo-button u-no-decoration">
           <span>{{ $t(`SolutionCard.goDemo`) }}</span>
         </a>
       </div>
@@ -38,7 +38,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .solutions-card {
   justify-content: space-between;

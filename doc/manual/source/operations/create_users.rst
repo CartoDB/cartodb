@@ -1,7 +1,7 @@
 Creating users
 ==============
 
-Creating users in CartoDB is simple thanks to the ``create_dev_user`` script located in ``scripts/create_dev_user``. To execute this script, be sure to be located at the cartodb repository root directory and simply run:
+Creating users in CARTO is simple thanks to the ``create_dev_user`` script located in ``scripts/create_dev_user``. To execute this script, be sure to be located at the cartodb repository root directory and simply run:
 
 .. code-block:: bash
 

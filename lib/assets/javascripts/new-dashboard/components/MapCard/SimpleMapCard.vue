@@ -9,63 +9,86 @@
        'card--can-hover': canHover
      }"
     @click="onClick">
-    <div class="card-media" :class="{'has-error': isThumbnailErrored}">
-      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
-      <div class="MapCard-error" v-if="isThumbnailErrored"></div>
+    <div class="card-media" :class="{ 'is-kuviz': isKuviz ,'has-error': !isKuviz && isThumbnailErrored  }">
+      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="(isBuilderMap && !isThumbnailErrored) || isKeplergl"/>
+
+      <div class="media-dataset" v-if="!(isBuilderMap || isKuviz || isKeplergl)">
+        <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
+      </div>
+
+      <TypeBadge v-if="isBuilderMap || isKuviz || isKeplergl" class="card-badge" :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="false" />
+      <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
     </div>
 
-    <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
+    <span class="checkbox card-select" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <input class="checkbox-input" :class="{'is-selected': isSelected }" @click.stop.prevent="toggleSelection($event)"  type="checkbox">
       <span class="checkbox-decoration">
         <img svg-inline src="../../assets/icons/common/checkbox.svg">
       </span>
     </span>
 
     <div class="card-actions" v-if="showInteractiveElements" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <MapQuickActions :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged"></MapQuickActions>
+      <component
+        :is="quickActionsComponent"
+
+        :map="visualization"
+        :dataset="visualization"
+        :storeActionType="storeActionType"
+
+        @open="openQuickActions"
+        @close="closeQuickActions"
+        @contentChanged="onContentChanged"></component>
     </div>
 
     <div class="card-text">
-      <div class="card-header">
-        <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
-          {{ map.name }}&nbsp;
-          <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <div class="card-header" :class="{ 'card-header__no-description': !sectionsToShow.description}">
+        <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine) && !singleLineTitle, 'single-line': singleLineTitle}">
+          <span :class="{ 'title-element': singleLineTitle }">{{ visualization.name }}</span>
+          <span
+            v-if="showInteractiveElements && !isKeplergl"
+            class="card-favorite"
+            :class="{'is-favorite': visualization.liked, 'favorite-overflow': titleOverflow}"
+            @click.prevent="toggleFavorite"
+            @mouseover="mouseOverChildElement"
+            @mouseleave="mouseOutChildElement">
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </h2>
-        <p class="card-description text is-caption" :title="map.description" v-if="map.description" :class="{'single-line': multilineTitle}">{{ map.description }}</p>
-        <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`MapCard.noDescription`) }}</p>
+        <template v-if="sectionsToShow.description">
+          <p class="card-description text is-caption" :title="visualization.description" v-if="visualization.description" :class="{'single-line': multilineTitle}">{{ visualization.description }}</p>
+          <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`MapCard.noDescription`) }}</p>
+        </template>
       </div>
 
       <ul class="card-metadata">
-        <li class="card-metadataItem text is-caption" v-if="!isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && !isSharedWithMe">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
-          <p>{{ $t(`MapCard.shared.${map.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
+          <p>{{ $t(`MapCard.shared.${visualization.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
         </li>
 
-        <li class="card-metadataItem text is-caption" v-if="isShared">
-          <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${map.permission.owner.avatar_url}')` }"></span>
-          <p>{{ $t(`MapCard.sharedBy`, { owner: map.permission.owner.username })}}</p>
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && isSharedWithMe">
+          <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${visualization.permission.owner.avatar_url}')` }"></span>
+          <p>{{ $t(`MapCard.sharedBy`, { owner: visualization.permission.owner.username })}}</p>
         </li>
 
-        <li class="card-metadataItem text is-caption">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.lastModification">
           <span class="icon"><img inline-svg src="../../assets/icons/maps/calendar.svg"></span>
           <p>{{ lastUpdated }}</p>
         </li>
 
-        <li class="card-metadataItem text is-caption">
-          <span class="icon"><img inline-svg src="../../assets/icons/maps/tag.svg"></span>
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.tags">
+          <span class="icon"><img class="icon__tags" svg-inline src="../../assets/icons/common/tag.svg"></span>
 
-          <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
-            <li v-for="(tag, index) in map.tags" :key="tag">
-              <router-link :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < map.tags.length - 1">,&#32;</span>
+          <ul class="card-tags" v-if="tagsChars <= maxTagsChars">
+            <li v-for="(tag, index) in visualization.tags" :key="tag">
+              <router-link class="card-tags__tag" :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < visualization.tags.length - 1">,&#32;</span>
             </li>
 
             <li v-if="!tagsLength">
               <span>{{ $t(`MapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags linkRoute="tagSearch" feature="tag">
+          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=visualization.tags linkRoute="tagSearch" feature="tag">
             <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`MapCard.tags`)}}</span>
           </FeaturesDropdown>
         </li>
@@ -77,6 +100,8 @@
 <script>
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
+import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
+import TypeBadge from './TypeBadge';
 import props from './shared/props';
 import methods from './shared/methods';
 import data from './shared/data';
@@ -86,12 +111,54 @@ export default {
   name: 'SimpleMapCard',
   components: {
     MapQuickActions,
-    FeaturesDropdown
+    DatasetQuickActions,
+    FeaturesDropdown,
+    TypeBadge
   },
-  props,
-  data,
-  computed,
-  methods,
+  props: {
+    ...props,
+    visibleSections: Array,
+    singleLineTitle: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data () {
+    return {
+      ...data(),
+      thumbnailWidth: 600,
+      thumbnailHeight: 280
+    };
+  },
+  computed: {
+    ...computed,
+    quickActionsComponent () {
+      const visualizationType = this.$props.visualization.type;
+
+      if (visualizationType === 'table') {
+        return 'DatasetQuickActions';
+      }
+
+      if (visualizationType === 'derived' || visualizationType === 'kuviz') {
+        return 'MapQuickActions';
+      }
+    },
+    sectionsToShow () {
+      const defaultSections = ['description', 'privacy', 'lastModification', 'tags'];
+      const visibleSections = this.$props.visibleSections || defaultSections;
+
+      return visibleSections.reduce((allSections, section) => {
+        allSections[section] = true;
+        return allSections;
+      }, {});
+    }
+  },
+  methods: {
+    ...methods,
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
+    }
+  },
   mounted: function () {
     function isStarUnderText (textNode, starNode) {
       const range = document.createRange();
@@ -112,7 +179,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .map-card {
   display: block;
@@ -122,22 +189,45 @@ export default {
 .card {
   position: relative;
   height: 100%;
-  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid $light-grey;
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid $border-color;
+  border-radius: 2px;
+  background-clip: padding-box;
   background-color: $white;
 
   &:hover {
+    border-color: transparent;
+    box-shadow: $card__shadow;
     cursor: pointer;
 
     &:not(.card--child-hover) {
       .card-title {
         color: $primary-color;
+        text-decoration: underline;
+      }
+    }
+
+    &.card--child-hover {
+      .card-title {
+        color: $text__color;
+      }
+
+      .card-tags {
+        .card-tags__tag {
+          text-decoration: none;
+        }
       }
     }
 
     .card-actions,
     .card-favorite {
       opacity: 1;
+    }
+
+    .card-tags {
+      .card-tags__tag {
+        text-decoration: underline;
+      }
     }
   }
 
@@ -168,7 +258,13 @@ export default {
 
 .card-text {
   padding: 24px 16px;
-  color: $text-color;
+  color: $text__color;
+}
+
+.card-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
 }
 
 .card-media {
@@ -178,6 +274,11 @@ export default {
   overflow: hidden;
   background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
   background-size: cover;
+
+  &.is-kuviz {
+    display: block;
+    background: url("../../assets/icons/maps/kuviz-map-bkg.svg");
+  }
 
   img {
     width: 100%;
@@ -189,12 +290,25 @@ export default {
       display: block;
     }
   }
+
+  .media-dataset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: $primary-color;
+  }
 }
 
 .card-header {
   display: flex;
   flex-direction: column;
   height: 88px;
+
+  &.card-header__no-description {
+    height: auto;
+  }
 }
 
 .card-title {
@@ -206,10 +320,21 @@ export default {
   max-height: 48px;
   margin-bottom: 8px;
   overflow: hidden;
-  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &.title-overflow {
     padding-right: 24px;
+  }
+
+  .title-element {
+    max-height: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &.single-line {
+    display: flex;
   }
 }
 
@@ -232,7 +357,7 @@ export default {
   margin-bottom: 8px;
 
   a {
-    color: $text-color;
+    color: $text__color;
     text-decoration: none;
   }
 
@@ -241,7 +366,7 @@ export default {
   }
 
   a:hover {
-    color: $text-color;
+    color: $text__color;
     text-decoration: underline;
   }
 
@@ -278,6 +403,15 @@ export default {
       border-radius: 2px;
       background-size: contain;
     }
+
+    .icon__tags {
+      width: 16px;
+      height: 16px;
+
+      g {
+        fill: $text__color;
+      }
+    }
   }
 }
 
@@ -289,7 +423,6 @@ export default {
   border-radius: 4px;
   opacity: 0;
   background: $white;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
   -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
@@ -312,19 +445,8 @@ export default {
   opacity: 0;
 }
 
-.card-actionsSelect {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  background: $white;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
-}
-
 .card-favorite {
-  margin-left: 4px;
+  margin-left: 8px;
   opacity: 0;
 
   svg {
@@ -359,7 +481,7 @@ export default {
   }
 }
 
-.card-tagList > li {
+.card-tags > li {
   display: inline;
 }
 </style>

@@ -19,7 +19,7 @@
             <% if breadcrumb %>
               <li class="Header-navigationBreadcrumbItem CDB-Text CDB-Size-large">
                 <% if params[:controller] != "admin/visualizations" %>
-                  <p class="Header-navigationBreadcrumbParagraph"><%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', {}, current_user), :class => "Header-navigationBreadcrumbLink" %></p> /
+                  <p class="Header-navigationBreadcrumbParagraph"><%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', user: current_user), :class => "Header-navigationBreadcrumbLink" %></p> /
                 <% else %>
                   <p class="Header-navigationBreadcrumbParagraph"><%= current_user.name_or_username %></p> /
                 <% end %>
@@ -34,10 +34,10 @@
       <ul class="Header-settingsList CDB-Text CDB-Size-medium">
         <% unless cartodb_com_hosted? %>
           <li class="Header-settingsItem">
-            <a target="_blank" href="https://carto.com/learn/guides" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Guides</a>
+            <a target="_blank" rel="noopener noreferrer" href="https://carto.com/learn/guides" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Guides</a>
           </li>
           <li class="Header-settingsItem">
-            <a target="_blank" href="https://carto.com/developers" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Developers</a>
+            <a target="_blank" rel="noopener noreferrer" href="https://carto.com/developers/" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Developers</a>
           </li>
         <% end %>
         <li class="Header-settingsItem Header-settingsItemNotifications js-user-notifications">

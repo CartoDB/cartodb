@@ -1,4 +1,4 @@
-<%= form_for @mobile_app, as: :mobile_app, url: (@mobile_app.persisted? ? CartoDB.url(self, 'mobile_app', { id: @mobile_app.id }, current_user) : CartoDB.url(self, 'mobile_apps', {}, current_user)), html: { class: "js-MobileAppForm" } do |f| %>
+<%= form_for @mobile_app, as: :mobile_app, url: (@mobile_app.persisted? ? CartoDB.url(self, 'mobile_app', params: { id: @mobile_app.id }, user: current_user) : CartoDB.url(self, 'mobile_apps', user: current_user)), html: { class: "js-MobileAppForm" } do |f| %>
   <%= csrf_meta_tags %>
 
   <span class="FormAccount-separator"></span>
@@ -122,7 +122,7 @@
 
   <div class="FormAccount-footer FormAccount-footer--noMarginBottom">
     <p class="FormAccount-footerText"></p>
-    <button type="submit" class="CDB-Button CDB-Button--primary">
+    <button type="submit" class="CDB-Button CDB-Button--primary js-save">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
     </button>
   </div>

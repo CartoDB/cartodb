@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 module CartoDB
   class Migrator
     class << self
@@ -43,12 +41,8 @@ module CartoDB
     end
 
     def migrate!
-      # # Check if the file had data, if not rise an error because probably something went wrong
-
-      # Sanitize column names where needed
-      column_names = @db_connection.schema(@current_name, {:schema => @target_schema}).map{ |s| s[0].to_s }
-
-      sanitize(column_names)
+      # Already done by Table#sanitize_columns in app/models/table.rb
+      #sanitize_columns!
 
       # Rename our table
       if @current_name != @suggested_name
@@ -81,16 +75,23 @@ module CartoDB
       end
     end
 
+    # Sanitize column names where needed
+    def sanitize_columns!
+      column_names = @db_connection.schema(@current_name, {:schema => @target_schema}).map{ |s| s[0].to_s }
+      sanitize(column_names)
+    end
+
+
     def sanitize(column_names)
       columns_to_sanitize = column_names.select do |column_name|
-        column_name != column_name.sanitize_column_name
+        column_name != CartoDB::Importer2::Column.sanitize_name(column_name)
       end
 
       correct_columns = column_names - columns_to_sanitize
 
       sanitization_map = Hash[
         columns_to_sanitize.map { |column_name|
-          [column_name, column_name.sanitize_column_name]
+          [column_name, CartoDB::Importer2::Column.sanitize_name(column_name)]
         }
       ]
 

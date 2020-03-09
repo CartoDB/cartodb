@@ -1,6 +1,6 @@
 <template>
-<section class="page is-bgSoftBlue">
-  <div class="container grid">
+<Page class="is-bgSoftBlue">
+  <div class="container grid grid__content">
     <h3 class="title is-body solutions-title">{{ $t(`SolutionsPage.solutionsTitle`) }}</h3>
     <p class="text is-caption solutions-description">{{ $t(`SolutionsPage.solutionsDescription`) }}</p>
 
@@ -56,21 +56,23 @@
       <h3 class="title is-medium">{{ $t(`SolutionsPage.talkUsTitle`) }}</h3>
       <p class="text is-caption card-description">{{ $t(`SolutionsPage.talkUsDescription`) }}</p>
       <div class="talk-us-button">
-        <a href="https://carto.com/request-live-demo/" target="_blank" class="button u-no-decoration">
+        <a href="https://carto.com/request-live-demo/" target="_blank" rel="noopener noreferrer" class="button u-no-decoration">
           <span>{{ $t(`SolutionsPage.talkUsButton`) }}</span>
         </a>
       </div>
     </div>
   </div>
-</section>
+</Page>
 </template>
 
 <script>
+import Page from 'new-dashboard/components/Page';
 import SolutionCard from 'new-dashboard/components/Solutions/SolutionCard';
 
 export default {
   name: 'SolutionsPage',
   components: {
+    Page,
     SolutionCard
   }
 };
@@ -78,7 +80,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .solutions-title {
   width: 100%;

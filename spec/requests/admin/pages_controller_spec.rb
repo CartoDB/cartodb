@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/admin/pages_controller'
 require_relative '../../factories/organizations_contexts'
@@ -243,54 +242,6 @@ describe Admin::PagesController do
     end
   end
 
-  describe '#explore' do
-    before(:each) do
-      host! "#{@org_name}.localhost.lan"
-    end
-
-    it 'should go to explore page' do
-      user = mock_explore_feature_flag
-      host! 'localhost.lan'
-
-      get '/explore', {}, JSON_HEADER
-
-      last_response.status.should == 200
-      uri = URI.parse(last_request.url)
-      uri.host.should == 'localhost.lan'
-      uri.path.should == '/explore'
-
-      user.delete
-    end
-
-    it 'should go to explore search page' do
-      user = mock_explore_feature_flag
-      host! 'localhost.lan'
-
-      get '/search', {}, JSON_HEADER
-
-      last_response.status.should == 200
-      uri = URI.parse(last_request.url)
-      uri.host.should == 'localhost.lan'
-      uri.path.should == '/search'
-
-      user.delete
-    end
-
-    it 'should go to explore search page with a query variable' do
-      user = mock_explore_feature_flag
-      host! 'localhost.lan'
-
-      get '/search/lala', {}, JSON_HEADER
-
-      last_response.status.should == 200
-      uri = URI.parse(last_request.url)
-      uri.host.should == 'localhost.lan'
-      uri.path.should == '/search/lala'
-
-      user.delete
-    end
-  end
-
   describe '#sitemap' do
     include Carto::Factories::Visualizations
     it 'should return 404 if no user or organization is provided' do
@@ -352,6 +303,27 @@ describe Admin::PagesController do
         url1 = public_visualizations_public_map_url(id: visualization.id)
         url_and_dates.map { |url_and_date| url_and_date[0] }.should eq [url1.gsub(/\/user\/[^\/]*\//, '/')]
       end
+    end
+  end
+
+  describe '#datasets' do
+    include_context 'users helper'
+
+    before(:each) do
+      host! "#{@carto_user1.username}.localhost.lan:#{Cartodb.config[:http_port]}"
+      Carto::Visualization.find_each(&:destroy)
+    end
+
+    it 'returns 200 if a dataset has no table' do
+      FactoryGirl.create(:table_visualization, user_id: @carto_user1.id, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+      Carto::Visualization.count.should eql 1
+      visualization = Carto::Visualization.first
+      visualization.table.should be_nil
+
+      get public_datasets_home_url(user_domain: @carto_user1.username)
+
+      last_response.status.should == 200
+      last_response.body.should =~ /doesn\'t have any items/
     end
   end
 

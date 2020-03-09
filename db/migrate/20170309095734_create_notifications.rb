@@ -5,7 +5,7 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     create_table :notifications do
-      Uuid        :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :organization_id, :organizations, type: :uuid, on_delete: :cascade
       String      :icon, null: false
       String      :recipients

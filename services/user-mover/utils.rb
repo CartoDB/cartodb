@@ -1,4 +1,3 @@
-# coding: utf-8
 require 'open3'
 require 'tempfile'
 
@@ -82,7 +81,7 @@ module CartoDB
           return_code = wait_thr.value
         end
         logger.debug(log_message)
-        throw "Error running #{cmd}, output code: #{return_code}" if return_code != 0
+        throw "Error running #{cmd}, output code: #{return_code}, message: #{log_message}" if return_code != 0
       end
 
       def get_pg_dump_bin_path(conn)

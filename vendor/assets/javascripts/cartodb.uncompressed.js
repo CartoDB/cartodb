@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.19
+// cartodb.js version: 3.15.20
 // uncompressed version: cartodb.uncompressed.js
-// sha: 0843288cca8571f0b00a37ebfe442360c312b011
+// sha: 404bb1646014c3669373ca26093230641d5fef48
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25659,7 +25659,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.19";
+    cdb.VERSION = "3.15.20";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26876,7 +26876,9 @@ cdb.geo.geocoder.MAPBOX = {
       protocol = 'http:';
     }
 
-    $.getJSON(protocol + '//api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURIComponent(address) + '.json?access_token=' + this.keys.access_token, function (response) {
+    var requestUrl = protocol + '//api.mapbox.com/geocoding/v5/mapbox.places-permanent/' + encodeURIComponent(address) + '.json?access_token=' + this.keys.access_token;
+
+    $.getJSON(requestUrl, function (response) {
       callback(this._formatResponse(response));
     }.bind(this));
   },
@@ -26894,7 +26896,8 @@ cdb.geo.geocoder.MAPBOX = {
       title: rawResponse.features[0].text,
     }];
   }
-};/***** DEPRECATED *****/
+};
+/***** DEPRECATED *****/
 
 cdb.geo.geocoder.MAPZEN = {
   keys: {

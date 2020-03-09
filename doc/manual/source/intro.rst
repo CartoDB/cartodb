@@ -1,12 +1,12 @@
-CartoDB introduction
-====================
+CARTO introduction
+==================
 
-CartoDB is an open source tool that allows for the storage and
+CARTO is an open source tool that allows for the storage and
 visualization of geospatial data on the web.
 
 It was built to make it easier for people to tell their stories by
 providing them with flexible and intuitive ways to create maps and design
-geospatial applications. CartoDB can be installed on your own server
+geospatial applications. CARTO can be installed on your own server
 and we also offer a hosted service at `carto.com <https://carto.com>`_.
 
 If you would like to see some live demos, check out our
@@ -17,21 +17,21 @@ We hope you like it!
    :alt: Map View
    :align: center
 
-What can I do with CartoDB?
+What can I do with CARTO?
 ----------------------------
 
-With CartoDB, you can upload your geospatial data (Shapefiles, GeoJSON,
+With CARTO, you can upload your geospatial data (Shapefiles, GeoJSON,
 etc) using a web form and then make it public or private.
 
 After it is uploaded, you can visualize it in a table or on a map, search
 it using SQL, and apply map styles using CartoCSS. You can even access it
-using the CartoDB `API OVERVIEW <https://docs.carto.com/cartodb-platform.html>`_
+using the CARTO `API OVERVIEW <https://docs.carto.com/cartodb-platform.html>`_
 and `SQL API <https://docs.carto.com/cartodb-platform/sql-api.html>`_, or export it
 to a file.
 
-In other words, with CartoDB you can make awesome maps and build
-powerful geospatial applications! Definitely check out the `CartoDB
-Develop <https://docs.carto.com/>`_ for interactive examples
+In other words, with CARTO you can make awesome maps and build
+powerful geospatial applications! Definitely check out the `CARTO
+Help Center <https://carto.com/help/>`_ for interactive examples
 and code.
 
 .. image:: static/map_view_wizard.png

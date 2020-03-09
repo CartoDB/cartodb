@@ -6,6 +6,10 @@ module Carto
   module Oauth
     module Google
       class Api < Carto::Oauth::Api
+        include Carto::EmailCleaner
+
+        USERINFO_ENDPOINT = 'https://openidconnect.googleapis.com/v1/userinfo'.freeze
+
         def student?
           false
         end
@@ -21,7 +25,7 @@ module Carto
         end
 
         def user
-          User.where(email: email).first
+          User.where(email: clean_email(email)).first
         end
 
         def hidden_fields
@@ -39,19 +43,19 @@ module Carto
         private
 
         def id
-          user_data['id']
+          user_data['sub']
         end
 
         def first_name
-          user_data.fetch('name', {}).fetch('givenName', nil)
+          user_data.fetch('given_name', nil)
         end
 
         def last_name
-          user_data.fetch('name', {}).fetch('familyName', nil)
+          user_data.fetch('family_name', nil)
         end
 
         def email
-          user_data['emails'].select { |mail| mail['type'] == 'account' }.first['value']
+          user_data['email']
         end
 
         def user_data
@@ -64,7 +68,7 @@ module Carto
 
         def get_user_data
           response = Typhoeus::Request.new(
-            "https://www.googleapis.com/plus/v1/people/me?access_token=#{access_token}",
+            "#{USERINFO_ENDPOINT}?access_token=#{access_token}",
             method: 'GET',
             ssl_verifypeer: true,
             timeout: 600

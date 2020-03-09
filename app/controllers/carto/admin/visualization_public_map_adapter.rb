@@ -16,12 +16,12 @@ module Carto
           }
 
       delegate [
-        :type_slide?, :derived?, :organization, :organization?, :id, :likes,
+        :type_slide?, :derived?, :organization, :organization?, :id,
         :password_protected?, :varnish_key, :related_tables, :password_valid?, :get_auth_tokens, :table, :name,
         :overlays, :created_at, :updated_at, :description, :mapviews, :geometry_types, :privacy, :tags,
         :surrogate_key, :has_password?, :total_mapviews, :is_viewable_by_user?, :is_accesible_by_user?,
         :can_be_cached?, :is_privacy_private?, :source, :kind_raster?, :has_read_permission?, :has_write_permission?,
-        :open_in_editor?, :version, :kind, :public?, :public_with_link?, :user_table, :liked_by?
+        :open_in_editor?, :version, :kind, :public?, :public_with_link?, :user_table, :liked_by?, :kuviz?
       ] => :visualization
 
       attr_reader :visualization

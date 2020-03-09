@@ -17,6 +17,12 @@ export default {
     close () {
       this.$emit('close');
     }
+  },
+  beforeMount () {
+    document.body.classList.add('u-overflow-hidden');
+  },
+  beforeDestroy () {
+    document.body.classList.remove('u-overflow-hidden');
   }
 };
 </script>

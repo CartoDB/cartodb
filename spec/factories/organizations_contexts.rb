@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../support/factories/users'
 require 'helpers/unique_names_helper'
 
@@ -42,6 +41,9 @@ shared_context 'organization with users helper' do
     organization.seats = 15
     organization.viewer_seats = 15
     organization.builder_enabled = false
+    organization.geocoder_provider = 'heremaps'
+    organization.isolines_provider = 'heremaps'
+    organization.routing_provider = 'heremaps'
     organization
   end
 

@@ -4,7 +4,6 @@ require 'carto/export/data_import_exporter'
 require_dependency 'carto/export/connector_configuration_exporter'
 
 # Not migrated
-# likes -> difficult to do between clouds
 # snapshots -> difficult to do between clouds, not in use yet
 # tags -> regenerated from tables
 # visualization_export -> only purpose would be logging
@@ -20,30 +19,38 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.7: export password_reset_token and password_reset_sent_at user fields
 # 1.0.8: user_multifactor_auths
 # 1.0.9: oauth_apps, oauth_app_users and friends
+# 1.0.10: public_map_quota
+# 1.0.11: regular_api_key_quota
+# 1.0.12: maintenance_mode
+# 1.0.13: company_employees, use_case
+# 1.0.14: private_map_quota
+# 1.0.15: session_salt
+# 1.0.16: public_dataset_quota
 
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.9'.freeze
-    EXPORTED_USER_ATTRIBUTES = [
-      :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
-      :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
-      :map_view_quota, :max_layers, :database_timeout, :user_timeout, :upgraded_at, :map_view_block_price,
-      :geocoding_quota, :dashboard_viewed_at, :sync_tables_enabled, :database_host, :geocoding_block_price, :api_key,
-      :notification, :organization_id, :created_at, :updated_at, :disqus_shortname, :id, :twitter_username, :website,
-      :description, :name, :avatar_url, :database_schema, :soft_geocoding_limit, :auth_token,
-      :twitter_datasource_enabled, :twitter_datasource_block_price, :twitter_datasource_block_size,
-      :twitter_datasource_quota, :soft_twitter_datasource_limit, :available_for_hire, :private_maps_enabled,
-      :google_sign_in, :last_password_change_date, :max_import_file_size, :max_import_table_row_count,
-      :max_concurrent_import_count, :last_common_data_update_date, :google_maps_key, :google_maps_private_key,
-      :enable_account_token, :location, :here_isolines_quota, :here_isolines_block_price, :soft_here_isolines_limit,
-      :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit, :mobile_xamarin,
-      :mobile_custom_watermark, :mobile_offline_maps, :mobile_gis_extension, :mobile_max_open_users,
-      :mobile_max_private_users, :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit, :viewer,
-      :salesforce_datasource_enabled, :builder_enabled, :geocoder_provider, :isolines_provider, :routing_provider,
-      :github_user_id, :engine_enabled, :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
-      :no_map_logo, :org_admin, :last_name, :user_render_timeout, :database_render_timeout, :frontend_version,
-      :asset_host, :state, :company, :phone, :industry, :job_role, :password_reset_token, :password_reset_sent_at
-    ].freeze
+    CURRENT_VERSION = '1.0.16'.freeze
+    EXPORTED_USER_ATTRIBUTES = %i(
+      email crypted_password database_name username admin enabled invite_token invite_token_date
+      map_enabled quota_in_bytes table_quota public_map_quota regular_api_key_quota account_type private_tables_enabled
+      period_end_date map_view_quota max_layers database_timeout user_timeout upgraded_at map_view_block_price
+      geocoding_quota dashboard_viewed_at sync_tables_enabled database_host geocoding_block_price api_key
+      notification organization_id created_at updated_at disqus_shortname id twitter_username website
+      description name avatar_url database_schema soft_geocoding_limit auth_token
+      twitter_datasource_enabled twitter_datasource_block_price twitter_datasource_block_size
+      twitter_datasource_quota soft_twitter_datasource_limit available_for_hire private_maps_enabled
+      google_sign_in last_password_change_date max_import_file_size max_import_table_row_count
+      max_concurrent_import_count last_common_data_update_date google_maps_key google_maps_private_key
+      enable_account_token location here_isolines_quota here_isolines_block_price soft_here_isolines_limit
+      obs_snapshot_quota obs_snapshot_block_price soft_obs_snapshot_limit mobile_xamarin
+      mobile_custom_watermark mobile_offline_maps mobile_gis_extension mobile_max_open_users
+      mobile_max_private_users obs_general_quota obs_general_block_price soft_obs_general_limit viewer
+      salesforce_datasource_enabled builder_enabled geocoder_provider isolines_provider routing_provider
+      github_user_id engine_enabled mapzen_routing_quota mapzen_routing_block_price soft_mapzen_routing_limit
+      no_map_logo org_admin last_name user_render_timeout database_render_timeout frontend_version
+      asset_host state company phone industry job_role password_reset_token password_reset_sent_at maintenance_mode
+      company_employees use_case private_map_quota session_salt public_dataset_quota
+    ).freeze
 
     BLANK_UUID = '00000000-0000-0000-0000-000000000000'.freeze
 
@@ -150,7 +157,7 @@ module Carto
     def build_feature_flag_from_name(ff_name)
       ff = FeatureFlag.where(name: ff_name).first
       if ff
-        FeatureFlagsUser.new(feature_flag_id: ff.id)
+        Carto::FeatureFlagsUser.new(feature_flag_id: ff.id)
       else
         CartoDB::Logger.warning(message: 'Feature flag not found in user import', feature_flag: ff_name)
         nil

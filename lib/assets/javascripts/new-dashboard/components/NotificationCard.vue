@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import format from 'date-fns/format';
 export default {
   name: 'NotificationCard',
   props: {
@@ -20,13 +19,13 @@ export default {
   },
   computed: {
     receivedAtFormatted () {
-      return format(new Date(this.receivedAt), 'DD/MM/YYYY');
+      return new Date(this.receivedAt).toLocaleDateString();
     }
   }
 };
 </script>
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .notification-info {
   display: flex;
@@ -35,7 +34,7 @@ export default {
 }
 
 .notification-received {
-  color: $text-secondary-color;
+  color: $text__color--secondary;
 }
 
 .notification-read {
@@ -44,12 +43,12 @@ export default {
   height: 12px;
   margin-left: 24px;
   border-radius: 50%;
-  background: $notification;
+  background: $notification__bg-color;
 }
 
 .notification-html {
   margin-top: 16px;
-  color: $text-color;
+  color: $text__color;
 
   &.is-unread {
     font-weight: 600;

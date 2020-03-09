@@ -1,4 +1,3 @@
-# coding: utf-8
 require_dependency 'cartodb_config_utils'
 require_dependency 'carto/configuration'
 
@@ -7,9 +6,7 @@ module ApplicationHelper
   include CartoDB::ConfigUtils
   include SafeJsObject
   include TrackjsHelper
-  include GoogleAnalyticsHelper
   include GoogleTagManagerHelper
-  include HubspotHelper
   include FrontendConfigHelper
   include AppAssetsHelper
   include MapsApiHelper
@@ -239,12 +236,14 @@ module ApplicationHelper
     'https://carto.com/privacy'
   end
 
-  def vis_json_url(vis_id, context, user=nil)
-    "#{ CartoDB.url(context, 'api_v2_visualizations_vizjson', { id: vis_id }, user).sub(/(http:|https:)/i, '') }.json"
+  def vis_json_url(vis_id, context, user = nil)
+    "#{CartoDB.url(context, 'api_v2_visualizations_vizjson',
+                   params: { id: vis_id }, user: user).sub(/(http:|https:)/i, '')}.json"
   end
 
-  def vis_json_v3_url(vis_id, context, user=nil)
-    "#{ CartoDB.url(context, 'api_v3_visualizations_vizjson', { id: vis_id }, user).sub(/(http:|https:)/i, '') }.json"
+  def vis_json_v3_url(vis_id, context, user = nil)
+    "#{CartoDB.url(context, 'api_v3_visualizations_vizjson',
+                   params: { id: vis_id }, user: user).sub(/(http:|https:)/i, '')}.json"
   end
 
   def model_errors(model)

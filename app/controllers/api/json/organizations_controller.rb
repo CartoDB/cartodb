@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Api::Json::OrganizationsController < Api::ApplicationController
   include CartoDB
 

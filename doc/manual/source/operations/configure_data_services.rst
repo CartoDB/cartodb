@@ -103,7 +103,7 @@ Add the following entry to the `geocoder` entry of the `cartodb/config/app_confi
       host: 'localhost'
       port: '5432'
       user: 'dataservices_user'
-      dbname: 'dataservices_db'`
+      dbname: 'dataservices_db'
 
 
 In the `cartodb/config/app_config.yml` file, enable the desired dataservices:

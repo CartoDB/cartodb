@@ -1,6 +1,3 @@
-# coding: utf-8
-require_dependency 'google_plus_api'
-require_dependency 'google_plus_config'
 require_dependency 'carto/controller_helper'
 require_dependency 'dummy_password_generator'
 
@@ -17,7 +14,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
   before_filter :login_required, :check_permissions, :load_organization
   before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
-  before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   layout 'application'
 
@@ -93,13 +89,14 @@ class Admin::OrganizationUsersController < Admin::AdminController
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
     ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
-    @user.organization.notify_if_seat_limit_reached
+    @user.organization.notify_if_seat_limit_reached unless @user.viewer?
     CartoGearsApi::Events::EventManager.instance.notify(
       CartoGearsApi::Events::UserCreationEvent.new(
         CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_ADMIN, @user
       )
     )
-    redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
+    redirect_to CartoDB.url(self, 'organization', user: current_user),
+                flash: { success: "New user created successfully" }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
@@ -185,7 +182,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
       @user.update_in_central
     end
 
-    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
+    redirect_to CartoDB.url(self, 'edit_organization_user', params: { id: @user.username }, user: current_user),
+                flash: { success: "Your changes have been saved correctly." }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
@@ -210,11 +208,11 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.destroy
     @user.delete_in_central
     flash[:success] = "User was successfully deleted."
-    redirect_to CartoDB.url(self, 'organization', {}, current_user)
+    redirect_to CartoDB.url(self, 'organization', user: current_user)
   rescue CartoDB::CentralCommunicationFailure => e
     if e.user_message =~ /No organization user found with username/
       flash[:success] = "User was successfully deleted."
-      redirect_to CartoDB.url(self, 'organization', {}, current_user)
+      redirect_to CartoDB.url(self, 'organization', user: current_user)
     else
       CartoDB::Logger.error(exception: e, message: 'Error deleting organizational user from central', target_user: @user.username)
       flash[:success] = "#{e.user_message}. User was deleted from the organization server."
@@ -233,7 +231,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     valid_password_confirmation
     @user.regenerate_all_api_keys
     flash[:success] = "User API key regenerated successfully"
-    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
+    redirect_to CartoDB.url(self, 'edit_organization_user', params: { id: @user.username }, user: current_user),
+                flash: { success: "Your changes have been saved correctly." }
   rescue Carto::PasswordConfirmationError => e
     flash[:error] = e.message
     render action: 'edit', status: e.status
@@ -284,11 +283,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @extras_enabled = extras_enabled?
     @extra_geocodings_enabled = extra_geocodings_enabled?
     @extra_tweets_enabled = extra_tweets_enabled?
-  end
-
-  def initialize_google_plus_config
-    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
   end
 
   def check_permissions

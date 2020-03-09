@@ -1,0 +1,30 @@
+@import "../variables";
+@import "../base/reset";
+@import "../base/typography";
+@import "../helpers/colors";
+@import "../helpers/utilities";
+
+.navbar-placeholder {
+  display: flex;
+  position: fixed;
+  z-index: 11;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 64px;
+  border-bottom: 1px solid $white;
+  background-color: $primary-color;
+}
+
+.navbar-placeholder-logo {
+  width: 24px;
+  height: 24px;
+}
+
+#header {
+  padding-top: 64px;
+
+  &.has-user-notification {
+    padding-top: 124px;
+  }
+}

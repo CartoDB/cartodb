@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'singleton'
 require 'carto/storage_options/s3'
 require 'carto/storage_options/local'
@@ -16,10 +14,10 @@ module Carto
       proposed_location = get_or_set_location(location)
       proposed_type = proposed_location.class.name.demodulize.downcase
 
-      if proposed_type == (preferred_type || proposed_type)
-        proposed_location
-      elsif proposed_type == 'local'
+      if (preferred_type || proposed_type) == 'local'
         Carto::StorageOptions::Local.new(location)
+      elsif proposed_type == (preferred_type || proposed_type)
+        proposed_location
       else
         available_storage_option.new(location)
       end

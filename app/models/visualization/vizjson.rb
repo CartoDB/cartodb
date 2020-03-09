@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'json'
 require 'ostruct'
 require_relative '../layer/presenter'
@@ -56,7 +55,6 @@ module CartoDB
           id:             visualization.id,
           version:        VIZJSON_VERSION,
           title:          visualization.qualified_name(@user),
-          likes:          visualization.likes.count,
           description:    markdown_html_safe(visualization.description),
           scrollwheel:    map.scrollwheel,
           legends:        map.legends,

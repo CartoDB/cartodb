@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_relative '../../../models/carto/permission'
 
 module Carto
@@ -59,7 +57,7 @@ module Carto
 
         current_user.in_database
                     .select
-                    .from(@user_table.service.name.to_sym.qualify(schema_name.to_sym))
+                    .from(Sequel.qualify(schema_name.to_sym, @user_table.service.name.to_sym))
                     .where(cartodb_id: id)
                     .delete
 

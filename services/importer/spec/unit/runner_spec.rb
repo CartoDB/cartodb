@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
@@ -195,6 +194,28 @@ describe CartoDB::Importer2::Runner do
       result.error_code.should eq 6666 # @see services/importer/lib/importer/exceptions.rb -> FileTooBigError
 
       # Shouldn't test here a zipped file as that
+    end
+
+    it 'uses a default quota if the user remaining quota cannot be calculated' do
+      @user.stubs(:remaining_quota).returns(nil)
+
+      source_file = CartoDB::Importer2::SourceFile.new(@filepath)
+      job = CartoDB::Importer2::Job.new(pg_options: @pg_options, logger: @fake_log)
+      fake_loader = fake_loader_for(job, source_file)
+      def fake_loader.run(arg = nil); end
+
+      limits = {
+        import_file_size_instance: CartoDB::Importer2::Doubles::InputFileSizeLimit.new(max_size: 5),
+        table_row_count_limit_instance: CartoDB::Importer2::Doubles::TableRowCountLimit.new
+      }
+      runner = CartoDB::Importer2::Runner.new(pg: @pg_options, downloader: Object.new, log: @fake_log, user: @user,
+                                              limits: limits, job: job)
+
+      runner.send(:import, source_file, nil, fake_loader)
+      result = runner.results.first
+      result.success?.should eq true
+
+      @user.unstub(:remaining_quota)
     end
   end
 

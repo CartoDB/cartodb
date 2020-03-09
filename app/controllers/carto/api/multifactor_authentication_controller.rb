@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Carto
   module Api
     class MultifactorAuthenticationController < ::Api::ApplicationController
@@ -16,6 +14,10 @@ module Carto
       before_action :ensure_edit_permissions
 
       setup_default_rescues
+
+      def show
+        render_jsonp({ mfa_required: @service.exists?(type: base_params[:type]) }, 200)
+      end
 
       def create
         if @service.exists?(type: base_params[:type])

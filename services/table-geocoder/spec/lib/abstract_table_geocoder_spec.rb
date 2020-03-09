@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../factories/pg_connection'
 require_relative '../../lib/abstract_table_geocoder'
 require_relative '../../../../spec/rspec_configuration.rb'
@@ -72,7 +70,7 @@ describe CartoDB::AbstractTableGeocoder do
 
   def load_csv(path)
     @db.run("CREATE TABLE #{@table_name} (the_geom geometry, cartodb_id integer, name text, iso3 text)")
-    @db.run("COPY #{@table_name.lit}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
+    @db.run("COPY #{Sequel.lit(@table_name)}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
   end
 
   def path_to(filepath = '')

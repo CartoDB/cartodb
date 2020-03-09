@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../models/visualization/collection'
 require_relative '../models/table/user_table'
 require_dependency 'carto/bounding_box_utils'
@@ -169,20 +168,12 @@ class Map < Sequel::Model
 
   # (lat,lon) points on all map data
   def center_data
-    (center.nil? || center == '') ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
+    center.presence || DEFAULT_OPTIONS[:center]
   end
 
   def view_bounds_data
-    if view_bounds_sw.nil? || view_bounds_sw == ''
-      bbox_sw = DEFAULT_OPTIONS[:bounding_box_sw]
-    else
-      bbox_sw = view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-    end
-    if view_bounds_ne.nil? || view_bounds_ne == ''
-      bbox_ne = DEFAULT_OPTIONS[:bounding_box_ne]
-    else
-      bbox_ne = view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-    end
+    bbox_sw = view_bounds_sw.presence || DEFAULT_OPTIONS[:bounding_box_sw]
+    bbox_ne = view_bounds_ne.presence || DEFAULT_OPTIONS[:bounding_box_ne]
 
     {
       # LowerCorner longitude, in decimal degrees

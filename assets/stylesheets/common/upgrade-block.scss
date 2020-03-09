@@ -7,8 +7,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 80px;
   padding: 20px;
-  border: 1px solid #E0E0E0;
   border-radius: $sIcon-borderRadius;
   background: $cCard-hoverFill;
 }
@@ -38,9 +38,12 @@
 }
 
 .UpgradeElement-infoText {
-  color: $cTypography-paragraphs;
-  font-size: $sFontSize-large;
-  line-height: $sLineHeight-normal;
+  font-family: 'Montserrat';
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: $sLineHeight-small;
+  text-align: right;
 }
 
 .UpgradeElement-actions {

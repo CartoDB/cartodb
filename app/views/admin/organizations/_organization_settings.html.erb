@@ -10,7 +10,7 @@
     <script type="text/javascript">
         var username = "<%= current_user.username %>";
         var organization_data = {
-            base_url: "<%= CartoDB.url(self, 'create_organization_user', {}, current_user) %>", // HACK!!!
+            base_url: "<%= CartoDB.url(self, 'create_organization_user', user: current_user) %>", // HACK!!!
             id: "<%= current_user.organization.id %>",
             quota_in_bytes: <%= current_user.organization.quota_in_bytes %>,
             seats: <%= current_user.organization.seats %>,
@@ -48,8 +48,4 @@
   </div>
 </div>
 
-<% if !Cartodb.config[:cartodb_com_hosted].present? %>
-    <div class="SupportBanner" id="support-banner"></div>
-<% end %>
-
-<%= render 'admin/shared/footer' %>
+<%= render 'admin/shared/new_private_footer' %>

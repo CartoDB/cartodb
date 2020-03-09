@@ -92,7 +92,6 @@
     </div>
   </div>
 
-
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.industry') %></label>
@@ -107,6 +106,44 @@
 
         <% if (!_.contains(industries, user.industry) && !_.isEmpty(user.industry)) { %>
           <option selected><%= user.industry %></option>
+        <% } %>
+      </select>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.company_employees') %></label>
+    </div>
+    <div class="FormAccount-rowData">
+      <select class="CDB-SelectFake CDB-Text FormAccount-input FormAccount-input--med is-cursor" id="user_company_employees" name="user[company_employees]">
+        <option value="">Select one</option>
+
+        <% company_employees_ranges.forEach(function (range) { %>
+          <option<% if (range === user.company_employees) { %> selected<% } %>><%= range %></option>
+        <% }); %>
+
+        <% if (!_.contains(company_employees_ranges, user.company_employees) && !_.isEmpty(user.company_employees)) { %>
+          <option selected><%= user.company_employees %></option>
+        <% } %>
+      </select>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.use_case') %></label>
+    </div>
+    <div class="FormAccount-rowData">
+      <select class="CDB-SelectFake CDB-Text FormAccount-input FormAccount-input--med is-cursor" id="user_use_case" name="user[use_case]">
+        <option value="">Select one</option>
+
+        <% use_cases.forEach(function (use_case) { %>
+          <option<% if (use_case === user.use_case) { %> selected<% } %>><%= use_case %></option>
+        <% }); %>
+
+        <% if (!_.contains(use_cases, user.use_case) && !_.isEmpty(user.use_case)) { %>
+          <option selected><%= user.use_case %></option>
         <% } %>
       </select>
     </div>

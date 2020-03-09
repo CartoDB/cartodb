@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.25",
+  "version": "1.0.0-assets.162",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -15,13 +15,15 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@babel/polyfill": "https://registry.npmjs.org/@babel/polyfill/-/polyfill-7.0.0.tgz",
-    "@carto/carto.js": "^4.1.3",
+    "@carto/carto.js": "^4.1.10",
+    "@carto/toolkit": "0.0.1-rc.16",
     "@carto/zera": "1.0.7",
     "backbone": "1.2.3",
     "backbone-forms": "0.14.0",
     "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.2",
     "backbone-undo": "cartodb/Backbone.Undo.js#c10e997",
     "bootstrap-colorpicker": "2.5.0",
+    "broken-link-checker": "^0.7.8",
     "browserify": "13.0.0",
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.34.0",
@@ -30,14 +32,16 @@
     "cartodb-pecan": "0.2.x",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
+    "confetti-js": "0.0.14",
     "d3-interpolate": "^1.1.6",
     "d3-queue": "^3.0.7",
     "date-fns": "^1.29.0",
     "fastclick": "^1.0.6",
     "html-webpack-plugin": "^3.2.0",
-    "internal-carto.js": "CartoDB/carto.js#v4.1.9",
+    "internal-carto.js": "CartoDB/carto.js#v4.2.0",
     "jquery": "2.1.4",
     "leaflet": "CartoDB/Leaflet#v1.3.1-carto1",
+    "loader-utils": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz",
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",
     "node-polyglot": "1.0.0",
@@ -50,15 +54,16 @@
     "rangeslider.js": "2.3.0",
     "tinycolor2": "^1.4.1",
     "torque.js": "CartoDB/torque#master",
+    "trackjs": "^3.1.2",
     "underscore": "1.8.3",
     "urijs": "^1.19.0",
     "url-parse": "^1.4.0",
     "vue": "^2.5.20",
-    "vue-template-compiler": "^2.5.20",
     "vue-i18n": "^8.2.1",
     "vue-js-modal": "^1.3.26",
     "vue-router": "^3.0.1",
     "vue-svg-inline-loader": "^1.2.1",
+    "vue-template-compiler": "^2.5.20",
     "vuex": "^3.0.1",
     "webpack": "4.12.0",
     "webpack-cli": "^3.0.4",
@@ -193,7 +198,8 @@
     "moment-v3": "global:moment"
   },
   "engine": {
-    "node": "6.9.2"
+    "node": "^10.15.1",
+    "npm": "^6.4.1"
   },
   "scripts": {
     "start": "npm run carto-node && npm run build:static && npm run dev",
@@ -208,8 +214,8 @@
     "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",
     "lint:fix": "eslint . --fix",
     "bump": "npm --no-git-tag-version version prerelease --preid=assets",
-    "postversion": "git add package.json npm-shrinkwrap.json && git commit -m 'Bump assets version' && git push origin master",
-    "update-internal-deps": "rm -rf node_modules && npm install --production --no-optional --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
+    "postversion": "git add package.json package-lock.json && git commit -m 'Bump assets version' && git push",
+    "update-internal-deps": "rm -rf node_modules && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack --progress --config webpack/v4/webpack.prod.config.js",
@@ -220,7 +226,6 @@
     "dev:editor": "grunt editor",
     "dev:editor:cdb": "grunt editor-cdb",
     "dev:static": "webpack --progress --watch --config webpack/static-pages/webpack.dev.config.js",
-    "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json",
-    "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
+    "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json"
   }
 }

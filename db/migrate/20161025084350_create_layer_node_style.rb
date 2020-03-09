@@ -5,7 +5,7 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     create_table :layer_node_styles do
-      primary_key :id, type: :uuid, default: 'uuid_generate_v4()'.lit
+      primary_key :id, type: :uuid, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :layer_id, :layers, type: :uuid, null: false, on_delete: :cascade
       String      :source_id, null: false
       json        :options, null: false

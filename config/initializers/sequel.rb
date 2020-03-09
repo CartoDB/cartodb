@@ -1,10 +1,16 @@
 require_dependency 'carto/configuration'
 require 'sequel_rails/railties/legacy_model_config'
 
-# Make Sequel messages (SQL stastements) to have debug level.
-# They'll' appear in the logs only if the Logger's level is 0 (debug).
-# Note that Rails.logger will be used.
-::Sequel::DATABASES.each{|d| d.sql_log_level = :debug }
+Sequel::Model.plugin :after_initialize
+
+::Sequel::DATABASES.each do |d|
+  # Make Sequel messages (SQL stastements) to have debug level.
+  # They'll' appear in the logs only if the Logger's level is 0 (debug).
+  # Note that Rails.logger will be used.
+  d.sql_log_level = :debug
+
+  d.extension(:pagination)
+end
 @dbconfig = Carto::Conf.new.db_config
 
 # For consistency, in devevelopment environment,  we'll make SQL statements originated in ActiveRecord appear

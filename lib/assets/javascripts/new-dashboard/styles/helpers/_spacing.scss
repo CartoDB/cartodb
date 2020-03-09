@@ -1,0 +1,49 @@
+$sizes: (0, 4, 8, 10, 12, 16, 20, 24, 28, 32, 36, 40, 48, 60, 64, 72, 80, 96, 120);
+
+// paddings
+.u-p--0 {
+  padding: 0 !important;
+}
+
+@each $size in $sizes {
+  .u-pt--#{$size} {
+    padding-top: #{$size}px;
+  }
+
+  .u-pr--#{$size} {
+    padding-right: #{$size}px;
+  }
+
+  .u-pb--#{$size} {
+    padding-bottom: #{$size}px;
+  }
+
+  .u-pl--#{$size} {
+    padding-left: #{$size}px;
+  }
+}
+
+// Margins
+.u-m--0 {
+  margin: 0 !important;
+}
+
+@each $size in $sizes {
+  .u-mt--#{$size} {
+    margin-top: #{$size}px;
+  }
+
+  .u-mr--#{$size} {
+    margin-right: #{$size}px;
+  }
+
+  .u-mb--#{$size} {
+    margin-bottom: #{$size}px;
+  }
+
+  .u-ml--#{$size} {
+    margin-left: #{$size}px;
+  }
+}
+
+

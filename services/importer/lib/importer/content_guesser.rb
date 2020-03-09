@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'ip_checker'
 require_relative 'table_sampler'
 require_relative 'namedplaces_guesser'
@@ -14,7 +12,7 @@ module CartoDB
       COUNTRIES_COLUMN = 'name_'
       COUNTRIES_QUERY = "SELECT #{COUNTRIES_COLUMN} FROM admin0_synonyms"
       DEFAULT_MINIMUM_ENTROPY = 0.9
-      ID_COLUMNS = ['ogc_fid', 'gid', 'cartodb_id']
+      ID_COLUMNS = ['ogc_fid', 'gid', 'cartodb_id', 'objectid'].freeze
 
       attr_reader :country_name_normalizer
 
@@ -124,12 +122,12 @@ module CartoDB
         if normalizer
           sample.each do |row|
             elem = normalizer.call(row[column_name_sym])
-            frequency_table[elem] += 1 rescue frequency_table[elem] = 1
+            update_frequency_element(frequency_table, elem)
           end
         else
           sample.each do |row|
             elem = row[column_name_sym]
-            frequency_table[elem] += 1 rescue frequency_table[elem] = 1
+            update_frequency_element(frequency_table, elem)
           end
         end
         length = sample.count.to_f
@@ -205,6 +203,16 @@ module CartoDB
 
       def qualified_table_name
         %Q("#{@schema}"."#{@table_name}")
+      end
+
+      private
+
+      def update_frequency_element(frequency_table, elem)
+        if frequency_table.key?(elem)
+          frequency_table[elem] += 1
+        else
+          frequency_table[elem] = 1
+        end
       end
 
     end

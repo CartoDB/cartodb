@@ -58,7 +58,7 @@
         <label class="FormAccount-label">Request token URL</label>
       </div>
       <div class="FormAccount-rowData">
-        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', {}, current_user) %>" readonly />
+        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', user: current_user) %>" readonly />
         <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
       </div>
     </div>
@@ -68,7 +68,7 @@
         <label class="FormAccount-label">Access token URL</label>
       </div>
       <div class="FormAccount-rowData">
-        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', {}, current_user) %>" readonly />
+        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', user: current_user) %>" readonly />
         <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
       </div>
     </div>
@@ -88,4 +88,5 @@
 
 </div>
 
-<%= render 'admin/shared/footer' %>
+<%= render 'admin/shared/new_private_footer' %>
+

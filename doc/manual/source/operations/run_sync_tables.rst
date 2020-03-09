@@ -1,5 +1,5 @@
 Running Sync Tables
-==============
+===================
 
 If you are working with the **Sync Tables** feature, you must run a rake task to trigger the synchronization of the dataset. This rake retrieves all sync tables that should get synchronized, and puts the synchronization tasks at Resque:
 

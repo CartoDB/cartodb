@@ -6,9 +6,15 @@ module Carto
   module Api
     class VisualizationPresenter
 
+      ALLOWED_PARAMS = [:related, :related_canonical_visualizations, :show_user,
+                        :show_stats, :show_table, :show_liked,
+                        :show_permission, :show_synchronization, :show_uses_builder_features,
+                        :show_table_size_and_row_count, :show_auth_tokens, :show_user_basemaps,
+                        :password, :with_dependent_visualizations].freeze
+
       def initialize(visualization, current_viewer, context,
                      related: true, related_canonical_visualizations: false, show_user: false,
-                     show_stats: true, show_likes: true, show_liked: true, show_table: true,
+                     show_stats: true, show_table: true, show_liked: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
                      show_table_size_and_row_count: true, show_auth_tokens: true, show_user_basemaps: false,
                      password: nil, with_dependent_visualizations: 0)
@@ -20,7 +26,6 @@ module Carto
         @load_related_canonical_visualizations = related_canonical_visualizations
         @show_user = show_user
         @show_stats = show_stats
-        @show_likes = show_likes
         @show_liked = show_liked
         @show_table = show_table
         @show_permission = show_permission
@@ -62,7 +67,7 @@ module Carto
           end
         end
 
-        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
+        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
 
@@ -111,7 +116,6 @@ module Carto
         }
 
         poro[:related_tables] = related_tables if related
-        poro[:likes] = @visualization.likes_count if show_likes
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features
 
@@ -134,7 +138,6 @@ module Carto
           title:            @visualization.title,
           kind:             @visualization.kind,
           privacy:          @visualization.privacy.upcase,
-          likes:            @visualization.likes_count
         }
       end
 
@@ -149,12 +152,21 @@ module Carto
         }
       end
 
+      def to_search_preview_poro
+        {
+          type: @visualization.type,
+          name: @visualization.name,
+          url: url
+        }
+      end
+
       # Ideally this should go at a lower level, as relates to url generation, but at least centralize logic here
       # INFO: For now, no support for non-org users, as intended use is for sharing urls
       def privacy_aware_map_url(additional_params = {}, action = 'public_visualizations_show_map')
         organization = @visualization.user.organization
-
         return unless organization
+
+        return kuviz_url(@visualization) if @visualization.kuviz?
 
         # When a visualization is private, checks of permissions need not only the Id but also the vis owner database schema
         # Logic on public_map route will handle permissions so here we only "namespace the id" when proceeds
@@ -176,17 +188,25 @@ module Carto
         schema.nil? ? @visualization.id : "#{schema}.#{@visualization.id}"
       end
 
+      def kuviz_url(visualization)
+        org_name = visualization.user.organization.name
+        username = visualization.user.username
+        path = CartoDB.path(@context, 'kuviz_show', id: visualization.id)
+        "#{CartoDB.base_url(org_name, username)}#{path}"
+      end
+
       private
 
       attr_reader :related, :load_related_canonical_visualizations, :show_user,
-                  :show_stats, :show_likes, :show_liked, :show_table,
+                  :show_stats, :show_table, :show_liked,
                   :show_permission, :show_synchronization, :show_uses_builder_features,
                   :show_table_size_and_row_count, :show_auth_tokens,
                   :show_user_basemaps, :with_dependent_visualizations
 
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
-                                           show_size_and_row_count: show_table_size_and_row_count)
+                                           show_size_and_row_count: show_table_size_and_row_count,
+                                           show_permission: show_permission)
                                       .with_presenter_cache(@presenter_cache).to_poro
       end
 
@@ -219,7 +239,7 @@ module Carto
                   end
 
         related.map do |table|
-          Carto::Api::UserTablePresenter.new(table, @current_viewer).to_poro
+          Carto::Api::UserTablePresenter.new(table, @current_viewer).with_presenter_cache(@presenter_cache).to_poro
         end
       end
 
@@ -243,10 +263,18 @@ module Carto
 
       def url
         if @visualization.canonical?
-          CartoDB.url(@context, 'public_tables_show_bis', { id: @visualization.qualified_name(@current_viewer) },
-                      @current_viewer)
+          dataset_name = @visualization.qualified_name(@current_viewer).tr('"', '')
+          CartoDB.url(@context, 'public_tables_show_bis',
+                      params: { id: dataset_name },
+                      user: @current_viewer)
+        elsif @visualization.kuviz?
+          CartoDB.url(@context, 'kuviz_show',
+                      params: { id: @visualization.id },
+                      user: @current_viewer)
         else
-          CartoDB.url(@context, 'public_visualizations_show_map', { id: @visualization.id }, @current_viewer)
+          CartoDB.url(@context, 'public_visualizations_show_map',
+                      params: { id: @visualization.id },
+                      user: @current_viewer)
         end
       end
 

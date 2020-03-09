@@ -1,8 +1,8 @@
-# encoding: utf-8
 require_relative './url/arcgis'
 require_relative './url/dropbox'
 require_relative './url/box'
 require_relative './url/gdrive'
+require_relative './url/bigquery'
 require_relative './url/instagram_oauth'
 require_relative './url/mailchimp'
 require_relative './url/public_url'
@@ -42,6 +42,8 @@ module CartoDB
               Url::Box.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Url::GDrive::DATASOURCE_NAME
               Url::GDrive.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
+            when Url::BigQuery::DATASOURCE_NAME
+              Url::BigQuery.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Url::InstagramOAuth::DATASOURCE_NAME
               Url::InstagramOAuth.get_new(DatasourcesFactory.config_for(datasource_name, user), user)
             when Url::PublicUrl::DATASOURCE_NAME
@@ -66,6 +68,7 @@ module CartoDB
             Url::Dropbox::DATASOURCE_NAME,
             Url::Box::DATASOURCE_NAME,
             Url::GDrive::DATASOURCE_NAME,
+            Url::BigQuery::DATASOURCE_NAME,
             # Url::InstagramOAuth::DATASOURCE_NAME,
             Url::MailChimp::DATASOURCE_NAME
           ]
@@ -112,7 +115,7 @@ module CartoDB
 
           case datasource_name
           when Url::Dropbox::DATASOURCE_NAME, Url::Box::DATASOURCE_NAME, Url::GDrive::DATASOURCE_NAME, Url::InstagramOAuth::DATASOURCE_NAME,
-              Url::MailChimp::DATASOURCE_NAME
+               Url::MailChimp::DATASOURCE_NAME, Url::BigQuery::DATASOURCE_NAME
             config = (config_source[:oauth] rescue nil)
             config ||= (config_source[:oauth.to_s] rescue nil)
           when Search::Twitter::DATASOURCE_NAME

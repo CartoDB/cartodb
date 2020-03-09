@@ -34,4 +34,4 @@ Exporting/Importing full visualizations
 
 You can export a complete visualization (data, metadata and map) with this command: ``bundle exec rake cartodb:vizs:export_full_visualization['5478433b-b791-419c-91d9-d934c56f2053']``
 
-That will generate a `.carto` file that you can import in any CartoDB installation just dropping the file as usual.
+That will generate a `.carto` file that you can import in any CARTO installation just dropping the file as usual.

@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'tmpdir'
 require 'fileutils'
 require_relative '../../../spec/rspec_configuration.rb'

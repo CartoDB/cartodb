@@ -7,13 +7,14 @@
 </h3>
 <p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% if (state !== "selected") { %>
-    <%= _t('components.modals.add-layer.imports.arcgis.import-data', { brand: 'ArcGIS<sup>&trade;</sup>' }) %>
+    <%= _t('components.modals.add-layer.imports.header-import.import-data', { brand: 'ArcGIS<sup>&trade;</sup>' }) %>
   <% } else { %>
-    <%- _t('components.modals.add-layer.imports.arcgis.sync-options') %>
+    <%- _t('components.modals.add-layer.imports.header-import.sync-options') %>
   <% } %>
 </p>
 <% if (state === "selected") { %>
-  <button class="NavButton NavButton--back ImportPanel-headerButton js-back">
-    <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
+  <button class="ImportPanel-headerButton CDB-Text is-semibold u-upperCase CDB-Size-medium u-actionTextColor js-back">
+    <i class="CDB-IconFont is-semibold CDB-IconFont-arrowPrev u-mr--4"></i>
+    <span><%= _t('components.modals.add-layer.imports.header-import.go-back') %></span>
   </button>
 <% } %>

@@ -1,5 +1,3 @@
-require_dependency 'google_plus_api'
-require_dependency 'google_plus_config'
 require_relative '../../helpers/avatar_helper'
 require_dependency 'carto/controller_helper'
 
@@ -14,22 +12,28 @@ module Carto
       include FrontendConfigHelper
       include AccountTypeHelper
       include AvatarHelper
+      include Carto::ControllerHelper
+      begin
+        include OnpremisesLicensingGear::ApplicationHelper
+      rescue NameError
+      end
 
-      UPDATE_ME_FIELDS = [
-        :name, :last_name, :website, :description, :location, :twitter_username,
-        :disqus_shortname, :available_for_hire, :company, :industry, :phone, :job_role
-      ].freeze
+      UPDATE_ME_FIELDS = %i(
+        name last_name website description location twitter_username disqus_shortname available_for_hire company
+        industry phone job_role company_employees use_case
+      ).freeze
 
       PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
       ssl_required
 
-      before_action :initialize_google_plus_config, only: [:me]
       before_action :optional_api_authorization, only: [:me]
       before_action :any_api_authorization_required, only: [:me_public]
       before_action :recalculate_user_db_size, only: [:me]
       skip_before_action :api_authorization_required, only: [:me, :me_public, :get_authenticated_users]
       skip_before_action :check_user_state, only: [:me, :delete_me]
+
+      rescue_from StandardError, with: :rescue_from_standard_error
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
@@ -63,9 +67,8 @@ module Carto
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
           asset_host: carto_viewer.try(:asset_host),
           google_sign_in: carto_viewer.try(:google_sign_in),
-          google_plus_iframe_src: carto_viewer.present? ? google_plus_iframe_src : nil,
-          google_plus_client_id: carto_viewer.present? ? google_plus_client_id : nil,
-          mfa_required: multifactor_authentication_required?
+          mfa_required: multifactor_authentication_required?,
+          license_expiration: license_expiration
         }
       end
 
@@ -140,14 +143,6 @@ module Carto
 
       private
 
-      def google_plus_iframe_src
-        @google_plus_config.present? ? @google_plus_config.iframe_src : nil
-      end
-
-      def google_plus_client_id
-        @google_plus_config.present? ? @google_plus_config.client_id : nil
-      end
-
       def unfiltered_organization_notifications(carto_viewer)
         carto_viewer.received_notifications.order('received_at DESC').limit(10).map do |n|
           Carto::Api::ReceivedNotificationPresenter.new(n).to_hash
@@ -156,11 +151,6 @@ module Carto
 
       def organization_notifications(carto_viewer)
         carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n).to_hash }
-      end
-
-      def initialize_google_plus_config
-        signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-        @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
       end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
@@ -257,6 +247,12 @@ module Carto
         service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
         service.update(enabled: mfa_enabled)
         warden.session(user.username)[:multifactor_authentication_performed] = false unless mfa_enabled
+      end
+
+      def license_expiration
+        return nil unless cartodb_com_hosted?
+
+        send(:license_expiration_date) if respond_to?(:license_expiration_date)
       end
     end
   end

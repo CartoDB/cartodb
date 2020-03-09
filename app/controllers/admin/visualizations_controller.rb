@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../models/map/presenter'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
@@ -39,6 +38,7 @@ class Admin::VisualizationsController < Admin::AdminController
                        :show_protected_public_map, :show_protected_embed_map]
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
+  before_filter :redirect_to_kuviz_if_needed, only: [:embed_map]
   before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
                                                          :show_organization_embed_map, :show_protected_public_map,
                                                          :show_protected_embed_map,
@@ -58,9 +58,9 @@ class Admin::VisualizationsController < Admin::AdminController
     table_action = request.original_fullpath =~ %r{/tables/}
     unless current_user.present?
       if table_action
-        return(redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id]))
+        return(redirect_to CartoDB.url(self, 'public_table_map', params: { id: request.params[:id] }))
       else
-        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', id: request.params[:id]))
+        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', params: { id: request.params[:id] }))
       end
     end
 
@@ -69,17 +69,18 @@ class Admin::VisualizationsController < Admin::AdminController
 
     if table_action
       if current_user.builder_enabled? && @visualization.has_read_permission?(current_user)
-        return redirect_to CartoDB.url(self, 'builder_dataset', { id: request.params[:id] }, current_user)
+        return redirect_to CartoDB.url(self, 'builder_dataset', params: { id: request.params[:id] }, user: current_user)
       elsif !@visualization.has_write_permission?(current_user)
-        return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
+        return redirect_to CartoDB.url(self, 'public_table_map', params: { id: request.params[:id], redirected: true })
       end
     elsif current_user.builder_enabled? && !@visualization.open_in_editor?
-      return redirect_to CartoDB.url(self, 'builder_visualization', { id: request.params[:id] }, current_user)
+      return redirect_to CartoDB.url(self, 'builder_visualization', params: { id: request.params[:id] },
+                                                                    user: current_user)
     elsif current_user.has_feature_flag?('static_editor') && !current_user.builder_enabled?
       return render(file: 'public/static/show/index.html', layout: false)
     elsif !@visualization.has_write_permission?(current_user)
       return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
-                                     id: request.params[:id], redirected: true)
+                                     params: { id: request.params[:id], redirected: true })
     end
 
     if @visualization.is_privacy_private? && @visualization.has_read_permission?(current_user)
@@ -93,8 +94,6 @@ class Admin::VisualizationsController < Admin::AdminController
     return(render_pretty_404) if @visualization.private?
 
     get_viewed_user
-    ff_user = @viewed_user || @org.try(:owner)
-    @has_new_dashboard = ff_user.builder_enabled?
 
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]
@@ -102,7 +101,8 @@ class Admin::VisualizationsController < Admin::AdminController
       else
         destination_user = nil
       end
-      return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}, destination_user))
+      return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', params: { id: request.params[:id] },
+                                                                               user: destination_user))
     end
 
     if current_user.nil? && !request.params[:redirected].present?
@@ -125,9 +125,9 @@ class Admin::VisualizationsController < Admin::AdminController
     if eligible_for_redirect?(@visualization.user)
       redirect_to CartoDB.url(self,
                               'public_table',
-                              { id: "#{params[:id]}", redirected:true },
-                              @visualization.user
-                              ) and return
+                              params: { id: params[:id].to_s, redirected: true },
+                              user: @visualization.user)
+      return
     end
 
     @vizjson = @visualization.to_vizjson({https_request: request.protocol == 'https://'})
@@ -157,7 +157,7 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     @name = @visualization.user.name_or_username
-    @user_url = CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user)
+    @user_url = CartoDB.url(self, 'public_user_feed_home', user: @visualization.user)
 
     @is_data_library = data_library_user?
 
@@ -173,8 +173,6 @@ class Admin::VisualizationsController < Admin::AdminController
     @user_domain = user_domain_variable(request)
 
     @visualization_id = @visualization.id
-    @is_liked         = is_liked(@visualization)
-    @likes_count      = @visualization.likes.count
 
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.public_table_count
@@ -193,7 +191,6 @@ class Admin::VisualizationsController < Admin::AdminController
     respond_to do |format|
       format.html { render 'public_dataset', layout: 'application_table_public' }
     end
-
   end
 
   def public_map
@@ -233,7 +230,7 @@ class Admin::VisualizationsController < Admin::AdminController
       end
       additional_keys = " #{additional_keys.join(' ')}"
     else
-       additional_keys = ''
+      additional_keys = ''
     end
 
     if @visualization.can_be_cached?
@@ -260,7 +257,7 @@ class Admin::VisualizationsController < Admin::AdminController
       unless @related_tables_owners.include?(table.user_id)
         table_owner = ::User.where(id: table.user_id).first
         if table_owner.nil?
-          # strange scenario, as user has been deleted but his table still exists
+          # strange scenario, as user has been deleted but their table still exists
           @related_tables_owners[table.user_id] = nil
         else
           @related_tables_owners[table.user_id] = table_owner
@@ -273,9 +270,6 @@ class Admin::VisualizationsController < Admin::AdminController
     @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|t| !t.public? }.count
 
-    @is_liked    = is_liked(@visualization)
-    @likes_count = @visualization.likes.count
-
     # We need to know if visualization logo is visible or not
     @hide_logo = is_logo_hidden(@visualization, params)
 
@@ -283,8 +277,8 @@ class Admin::VisualizationsController < Admin::AdminController
       format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
-  rescue => e
-    CartoDB.notify_exception(e, {user:current_user})
+  rescue StandardError => e
+    CartoDB.notify_exception(e, user: current_user)
     embed_forbidden
   end
 
@@ -353,7 +347,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @related_tables         = @visualization.related_tables
     @related_canonical_visualizations = @visualization.related_canonical_visualizations
     @public_tables_count    = @visualization.user.public_table_count
-    @nonpublic_tables_count = @related_tables.select{|p| !p.public?  }.count
+    @nonpublic_tables_count = @related_tables.select{|p| !p.public? }.count
 
     # We need to know if visualization logo is visible or not
     @hide_logo = is_logo_hidden(@visualization, params)
@@ -361,7 +355,7 @@ class Admin::VisualizationsController < Admin::AdminController
     respond_to do |format|
       format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end
-  rescue => e
+  rescue StandardError => e
     CartoDB::Logger.error(exception: e)
     public_map_protected
   end
@@ -385,13 +379,13 @@ class Admin::VisualizationsController < Admin::AdminController
     respond_to do |format|
       format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
     end
-  rescue => e
+  rescue StandardError => e
     CartoDB::Logger.error(exception: e)
     embed_protected
   end
 
   def embed_map
-    if @viewed_user && @viewed_user.has_feature_flag?('static_embed_map')
+    if @viewed_user&.has_feature_flag?('static_embed_map')
       return render(file: "public/static/embed_map/index.html", layout: false)
     end
 
@@ -410,7 +404,7 @@ class Admin::VisualizationsController < Admin::AdminController
     else
       resp = embed_map_actual
       if response.ok? && (@visualization.public? || @visualization.public_with_link?)
-        #cache response
+        # cache response
         is_https = (request.protocol == 'https://')
         embed_redis_cache.set(@visualization.id, is_https, response.headers, response.body)
       end
@@ -515,10 +509,12 @@ class Admin::VisualizationsController < Admin::AdminController
             if user.organization.id == organization.id
               if for_table
                 url = CartoDB.url(self, 'public_tables_show',
-                                  {id: "#{params[:user_domain]}.#{params[:id]}", redirected:true}, user)
+                                  params: { id: "#{params[:user_domain]}.#{params[:id]}", redirected: true },
+                                  user: user)
               else
                 url = CartoDB.url(self, 'public_visualizations_show',
-                                  {id: "#{params[:user_domain]}.#{params[:id]}", redirected:true}, user)
+                                  params: { id: "#{params[:user_domain]}.#{params[:id]}", redirected: true },
+                                  user: user)
               end
             end
           end
@@ -586,11 +582,6 @@ class Admin::VisualizationsController < Admin::AdminController
     }
   end
 
-  def is_liked(vis)
-    return false unless current_user.present?
-    vis.liked_by?(current_user.id)
-  end
-
   def render_pretty_404
     render(file: "public/404.html", layout: false, status: 404)
   end
@@ -650,7 +641,7 @@ class Admin::VisualizationsController < Admin::AdminController
     respond_to do |format|
       format.html { render layout: 'application_public_visualization_layout' }
     end
-  rescue => e
+  rescue StandardError => e
     CartoDB::Logger.error(exception: e)
     embed_forbidden
   end
@@ -677,11 +668,16 @@ class Admin::VisualizationsController < Admin::AdminController
     @viewed_user && Cartodb.get_config(:data_library, 'username') == @viewed_user.username
   end
 
+  def redirect_to_kuviz_if_needed
+    redirect_to(CartoDB.url(self, 'kuviz_show', params: { id: @visualization.id })) if @visualization&.kuviz?
+  end
+
   def redirect_to_builder_embed_if_v3
     # @visualization is not loaded if the embed is cached
     # Changing version invalidates the embed cache
     if @visualization && @visualization.version == 3
-      redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: @visualization.id)
+      redirect_to CartoDB.url(self, 'builder_visualization_public_embed',
+                              params: { visualization_id: @visualization.id })
     end
   end
 end

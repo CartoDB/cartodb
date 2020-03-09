@@ -1,19 +1,21 @@
-# encoding: UTF-8
-
 require 'active_record'
 
 module Carto
   class VisualizationBackup < ActiveRecord::Base
 
-    # @param String username
-    # @param Uuid visualization
-    # @param String export_vizjson
-    # @param DateTime created_at (Self-generated)
+    # @param Uuid id
+    # @param Uuid user_id
+    # @param Uuid visualization_id
+    # @param DateTime created_at (CURRENT_TIMESTAMP)
+    # @param String category
+    # @param JSON export
 
-    # Allow mass-setting upon .new
-    attr_accessible :username, :visualization, :export_vizjson
+    attr_accessible :id, :user_id, :visualization_id, :category, :export
+    validates :user_id, :visualization_id, :category, :export, presence: true
+    serialize :export, CartoJsonSymbolizerSerializer
+    validates :export, carto_json_symbolizer: true
 
-    validates :username, :visualization, :export_vizjson, presence: true
-
+    CATEGORY_VISUALIZATION = 'visualization'.freeze
+    CATEGORY_LAYER = 'layer'.freeze
   end
 end

@@ -75,10 +75,6 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
     respond_with({:count => CartoDB::Stats::Platform.new.active_users})
   end
 
-  def total_likes
-    respond_with({:count => CartoDB::Stats::Platform.new.likes})
-  end
-
   private
 
   def check_for_database_host

@@ -1,5 +1,5 @@
 <template>
-  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit">
+  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit" @keydown.down.prevent="onKeydownDown" @keydown.up.prevent="onKeydownUp" @keydown.enter.prevent="onKeydownEnter">
     <input type="text"
            v-model.trim="searchTerm"
            ref="searchInput"
@@ -8,12 +8,15 @@
            :placeholder="placeholder"
            @focus="onInputFocus"
            @blur="onInputBlur">
-    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled" @pageChange="resetInput"/>
+    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled" @pageChange="resetInput" ref="searchSuggestions"/>
   </form>
 </template>
 
 <script>
 import SearchSuggestions from './Suggestions/SearchSuggestions';
+import getCARTOData from 'new-dashboard/store/utils/getCARTOData';
+
+const CARTOData = getCARTOData();
 
 export default {
   name: 'Search',
@@ -23,7 +26,8 @@ export default {
   data () {
     return {
       searchTerm: '',
-      isInputFocused: false
+      isInputFocused: false,
+      baseUrl: CARTOData.user_data.base_url
     };
   },
   props: {
@@ -48,37 +52,48 @@ export default {
     onInputFocus () {
       this.isInputFocused = true;
     },
-
     onInputBlur () {
       this.isInputFocused = false;
     },
-
     onFormSubmit () {
       this.blurInput();
-
-      if (this.searchTerm.includes(':')) {
-        this.$router.push({ name: 'tagSearch', params: { tag: this.searchTerm.substring(1) } });
-      } else if (this.searchTerm) {
-        this.$router.push({ name: 'search', params: { query: this.searchTerm } });
-      }
-
+      this.goToSearchTermPage();
       this.searchTerm = '';
     },
-
+    goToSearchTermPage () {
+      if (this.$router) {
+        this.$router.push({ name: 'search', params: { query: this.searchTerm } });
+      } else {
+        window.location = `${this.baseUrl}/dashboard/search/${this.searchTerm}`;
+      }
+    },
     blurInput () {
       this.$refs.searchInput.blur();
     },
-
     resetInput () {
       this.searchTerm = '';
       this.blurInput();
+    },
+    onKeydownDown () {
+      this.$refs.searchSuggestions.keydownDown();
+    },
+    onKeydownUp () {
+      this.$refs.searchSuggestions.keydownUp();
+    },
+    onKeydownEnter () {
+      const activeSuggestion = this.$refs.searchSuggestions.getActiveSuggestionElement();
+      if (activeSuggestion) {
+        activeSuggestion.click();
+      } else {
+        this.onFormSubmit();
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .navbar-search {
   @media (max-width: $layout-mobile) {
@@ -111,7 +126,7 @@ export default {
 
       &:focus {
         &::placeholder {
-          color: $text-secondary-color;
+          color: $text__color--secondary;
         }
       }
     }
@@ -131,10 +146,10 @@ export default {
   transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
   border: 0;
   border-radius: 18px;
-  background-color: #FFF;
+  background-color: $white;
 
   &::placeholder {
-    color: $text-secondary-color;
+    color: $text__color--secondary;
   }
 
   &:focus,

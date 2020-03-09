@@ -7,14 +7,15 @@
 
       <div class="quota-labels">
         <div class="quota-cell cell--medium">
-          <span class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.remaining') }}</span>
+          <p class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.remaining') }}</p>
         </div>
         <div class="quota-cell cell--medium cell--mobile">
-          <span class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.used') }}</span>
+          <p class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.used') }}</p>
         </div>
         <div class="quota-cell cell--medium">
-          <span class="text is-small is-txtSoftGrey quota-total" :class="{'is-active' : perMonth }">{{$t(`QuotaSection.header.total`)}}</span>
-          <span class="text is-small is-txtSoftGrey quota-month" :class="{'is-active' : perMonth }">&nbsp;{{$t(`QuotaSection.header.perMonth`)}}</span>
+          <p class="text is-small is-txtSoftGrey quota-total">
+            {{$t(`QuotaSection.header.total`)}} <span v-if="perMonth" class="quota-month">{{ $t(`QuotaSection.header.perMonth`) }}</span>
+          </p>
         </div>
         <div class="quota-cell cell--small"></div>
       </div>
@@ -36,7 +37,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .quota-headers {
   display: flex;
@@ -88,7 +89,7 @@ export default {
 }
 
 .cell--medium {
-  width: 120px;
+  width: 110px;
 }
 
 .cell--small {
@@ -100,29 +101,20 @@ export default {
 }
 
 .quota-month {
-  display: none;
+  &::after {
+    content: '*';
+  }
 }
 
-.is-active {
-  &.quota-total {
-    @media (max-width: $layout-tablet) and (min-width: $layout-mobile) {
-      &::after {
-        content: '*';
-      }
-    }
-  }
-
-  &.quota-month {
-    display: flex;
-
-    @media (max-width: $layout-tablet) and (min-width: $layout-mobile) {
-      display: none;
-    }
-
+@media (max-width: $layout-tablet) and (min-width: $layout-mobile) {
+  .quota-total {
     &::after {
       content: '*';
     }
   }
-}
 
+  .quota-month {
+    display: none;
+  }
+}
 </style>

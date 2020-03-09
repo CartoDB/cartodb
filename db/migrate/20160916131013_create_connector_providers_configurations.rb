@@ -1,7 +1,7 @@
 Sequel.migration do
   up do
     create_table :connector_providers do
-      Uuid     :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid     :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
       String   :name, null: false
@@ -12,7 +12,7 @@ Sequel.migration do
     end
 
     create_table :connector_configurations do
-      Uuid     :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid     :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
       Boolean  :enabled, null: false

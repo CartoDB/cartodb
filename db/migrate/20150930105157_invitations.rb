@@ -3,7 +3,7 @@ Sequel.migration do
     SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :invitations do
-      Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       Uuid :organization_id, null: false
       Uuid :inviter_user_id, null: false
       # users_emails shouldn't allow null. See Carto::Invitation.

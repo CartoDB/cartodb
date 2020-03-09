@@ -1,7 +1,7 @@
 Changing Feature Flags
 ======================
 
-CartoDB uses feature flags, so different users can have access to different features of CartoDB. If you would like to enable or disable feature flags to one or all users or to a given organization, you can use the rake tasks described in this section. Feature flag creation and deletion are also covered.
+CARTO uses feature flags, so different users can have access to different features of CARTO. If you would like to enable or disable feature flags to one or all users or to a given organization, you can use the rake tasks described in this section. Feature flag creation and deletion are also covered.
 
 
 Enabling a feature for all users
@@ -39,7 +39,7 @@ This task is executed like:
   $ bundle exec rake cartodb:features:enable_feature_for_user[<feature_flag_name>,<user_name>]
 
 .. warning::
-  
+
   Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
 
 And an example to enable the 'special_dashboard' feature for user with user name 'manolo' could be:
@@ -64,7 +64,7 @@ This task is executed like:
   $ bundle exec rake cartodb:features:enable_feature_for_organization[<feature_flag_name>,<organization_name``
 
 .. warning::
-  
+
   Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
 
 And an example to enable the 'special_dashboard' feature for organization 'cartodb' could be:
@@ -109,7 +109,7 @@ This task is executed like:
   $ bundle exec rake cartodb:features:disable_feature_for_user[<feature_flag_name>,<user_name>]
 
 .. warning::
-  
+
   Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
 
 And an example to disable the 'special_dashboard' feature for user with user name 'manolo' could be:
@@ -134,7 +134,7 @@ This task is executed like:
   $ bundle exec rake cartodb:features:disable_feature_for_organization[<feature_flag_name>,<organization_name``
 
 .. warning::
-  
+
   Please be very careful **NOT** to leave a space between parameters, as it will cause rake to spit a ``don't know how to build task`` type error.
 
 And an example to disable the 'special_dashboard' feature for organization 'cartodb' could be:
@@ -187,7 +187,7 @@ And an example to remove a feature flag named "special_dashboard" could be:
 Listing all feature flags
 -------------------------
 
-All existing feature flags can be listed using the rake task called ``list_all_features``. 
+All existing feature flags can be listed using the rake task called ``list_all_features``.
 
 This task is executed like:
 

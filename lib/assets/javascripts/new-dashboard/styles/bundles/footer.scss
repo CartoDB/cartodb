@@ -1,0 +1,10 @@
+@import "../variables";
+@import "../base/reset";
+@import "../base/typography";
+@import "../layout/grid";
+@import "../helpers/colors";
+@import "../helpers/utilities";
+
+#footer {
+  border-top: 1px solid $border-color;
+}

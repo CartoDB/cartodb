@@ -1,0 +1,12 @@
+.section {
+  padding: 64px 0 128px;
+  border-bottom: 1px solid $border-color;
+
+  &.section--borderTop {
+    border-top: 1px solid $border-color;
+  }
+
+  &.section--noBorder {
+    border-bottom: none;
+  }
+}

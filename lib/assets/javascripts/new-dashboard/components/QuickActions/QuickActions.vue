@@ -1,14 +1,19 @@
 <template>
-  <div class="quick-actions">
-    <a href="javascript:void(0)" class="quick-actions-select" @click="toggleDropdown" :class="{'is-active': isOpen, 'has-shadow': hasShadow}">
+  <div class="quick-actions" v-click-outside="closeDropdown">
+    <a href="javascript:void(0)" class="quick-actions-select" @click="toggleDropdown" :class="{'is-active': isOpen }">
       <img svg-inline src="new-dashboard/assets/icons/common/options.svg">
     </a>
-    <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" v-click-outside="closeDropdown" @click="killEvent">
+    <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" @click="killEvent">
       <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">{{ $t(`QuickActions.title`) }}</h6>
       <ul>
-        <li v-for="action in actions" :key="action.name" v-if="!action.shouldBeHidden">
-          <a href="#" class="action text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="emitEvent(action.event)">{{action.name}}</a>
-        </li>
+        <template v-for="action in actions">
+          <li class="action__item" :key="action.name" v-if="!action.shouldBeHidden">
+            <div class="action__badge" v-if="action.shouldBeDisabled">
+              <div @click="goToUpgrade" v-html="$t('QuickActions.upgrade', { path: upgradeUrl })"></div>
+            </div>
+            <a href="#" class="action__text text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive, 'u-is-disabled': action.shouldBeDisabled}" @click="emitEvent(action.event)">{{action.name}}</a>
+          </li>
+        </template>
       </ul>
     </div>
   </div>
@@ -25,10 +30,7 @@ export default {
   },
   props: {
     actions: Array,
-    hasShadow: {
-      type: Boolean,
-      default: true
-    }
+    upgradeUrl: String
   },
   methods: {
     emitEvent (action) {
@@ -48,13 +50,16 @@ export default {
     },
     killEvent (event) {
       event.preventDefault();
+    },
+    goToUpgrade () {
+      window.location.href = this.upgradeUrl;
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .quick-actions-select {
   display: flex;
@@ -62,7 +67,8 @@ export default {
   justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  border-radius: 2px;
   background: $white;
 
   &.is-active {
@@ -73,10 +79,6 @@ export default {
     }
   }
 
-  &.has-shadow {
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
-  }
-
   &:hover {
     border: 1px solid $primary-color;
   }
@@ -84,25 +86,55 @@ export default {
 
 .quick-actions-dropdown {
   position: absolute;
-  z-index: 2;
+  z-index: $z-index__local-dropdown;
   right: 0;
   width: 260px;
   margin-top: 8px;
-  border: 1px solid $grey;
+  border: 1px solid $border-color--dark;
   border-radius: 2px;
   background-color: $white;
   cursor: default;
 }
 
 .quick-actions-title {
-  margin-top: 16px;
+  margin-top: 20px;
+  margin-bottom: 12px;
   margin-left: 24px;
   text-transform: uppercase;
 }
 
 .action {
-  display: block;
-  padding: 14px 24px 16px;
-  border-bottom: 1px solid $softblue;
+  &__item {
+    position: relative;
+
+    &:not(:last-of-type) {
+      border-bottom: 1px solid $softblue;
+    }
+  }
+
+  &__text {
+    display: block;
+    padding: 12px 24px;
+
+    &:hover,
+    &:focus {
+      background-color: $softblue;
+    }
+
+    &.u-is-disabled {
+      color: grey;
+      pointer-events: none;
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: 14px;
+    right: 24px;
+    padding: 0.4em 1em;
+    border-radius: 30px;
+    background-color: rgba($info__bg-color, 0.2);
+    font-size: 12px;
+  }
 }
 </style>

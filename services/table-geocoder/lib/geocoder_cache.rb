@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative 'exceptions'
 require_relative '../../../lib/carto/http/client'
 
@@ -115,7 +114,7 @@ module CartoDB
     end
 
     def load_results_to_temp_table
-      connection.copy_into(temp_table_name.lit, data: File.read(cache_results), format: :csv)
+      connection.copy_into(Sequel.lit(temp_table_name), data: File.read(cache_results), format: :csv)
     end
 
     def copy_results_to_table

@@ -5,3 +5,4 @@
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
 CartoDB::Application.config.secret_token = Cartodb.config[:secret_token]
+CartoDB::Application.config.secret_key_base = Cartodb.config[:secret_key_base]

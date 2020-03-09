@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OnboardingButton.vue should not contain not-visited class after opening onboarding 1`] = `
+<button class="button button--ghost">
+  Wizards.Distributor.cta
+</button>
+`;
+
+exports[`OnboardingButton.vue should render properly 1`] = `
+<button class="button not-visited button--ghost">
+  Wizards.Distributor.cta
+</button>
+`;
+
+exports[`OnboardingButton.vue should set button--cta with extended text if isFirstTimeViewingDashboard is true 1`] = `
+<button class="button button--cta">
+  Wizards.Distributor.extendedCta
+</button>
+`;

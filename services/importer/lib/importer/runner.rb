@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './loader'
 require_relative './tiff_loader'
 require_relative './sql_loader'
@@ -54,8 +53,7 @@ module CartoDB
         @downloader          = options.fetch(:downloader)
 
         @user = options.fetch(:user, nil)
-        @available_quota =
-          !@user.nil? && @user.respond_to?(:remaining_quota) ? @user.remaining_quota : DEFAULT_AVAILABLE_QUOTA
+        @available_quota = @user&.remaining_quota || DEFAULT_AVAILABLE_QUOTA
         @unpacker            = options.fetch(:unpacker, nil) || Unp.new
         @post_import_handler = options.fetch(:post_import_handler, nil)
         @importer_config = options.fetch(:importer_config, nil)

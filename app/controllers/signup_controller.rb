@@ -1,4 +1,3 @@
-require_dependency 'google_plus_config'
 require_dependency 'account_creator'
 
 require_relative '../../lib/user_account_creator'
@@ -136,10 +135,10 @@ class SignupController < ApplicationController
   end
 
   def initialize_oauth_config
-    @oauth_configs = [google_plus_config, github_config].compact
+    @oauth_configs = [google_config, github_config].compact
   end
 
-  def google_plus_config
+  def google_config
     unless @organization && !@organization.auth_google_enabled
       @google_config = Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
                                                              invitation_token: params[:invitation_token],

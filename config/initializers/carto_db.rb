@@ -20,18 +20,21 @@ module CartoDB
   SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'.freeze
   SURROGATE_NAMESPACE_VIZJSON = 'rj'.freeze
 
-  RESERVED_COLUMN_NAMES = %w(FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
-
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
   # Helper method to encapsulate Rails full URL generation compatible with our subdomainless mode
   # @param context ActionController::Base or a View or something that holds a request
   # @param path String Rails route name
-  # @param params Hash Parameters to send to the url (Optional)
+  # @param params Hash (Optional) Parameters to send to the url
   # @param user ::User (Optional) If not sent will use subdomain or /user/xxx from controller request
-  def self.url(context, path, params = {}, user = nil)
+  # @param keep_base_url Boolean (Optional) Keeps the base url from the request in case of subdomainful
+  def self.url(context, path, params: {}, user: nil, keep_base_url: false)
+    base_url = if keep_base_url && !subdomainless_urls?
+                 context.request.base_url
+               else
+                 CartoDB.base_url_from_request(context.request, user)
+               end
     # Must clean user_domain or else polymorphic_path will use it and generate again /u/xxx/user/xxx
-    base_url = CartoDB.base_url_from_request(context.request, user)
     base_url + main_context(context).polymorphic_path(path, params.merge(user_domain: nil))
   end
 

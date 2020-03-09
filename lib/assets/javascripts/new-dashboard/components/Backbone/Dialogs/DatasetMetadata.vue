@@ -43,10 +43,6 @@ export default {
 
       datasetMetadataView.render();
 
-      // Listen to close button click in Footer
-      const closeButton = datasetMetadataView.$el.find('.js-close');
-      closeButton.on('click', () => this.$emit('close'));
-
       return datasetMetadataView;
     }
   }

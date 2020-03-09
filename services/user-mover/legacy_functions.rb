@@ -27,15 +27,24 @@ module CartoDB
         'AGGREGATE st_polygonize(geometry)',
         'AGGREGATE st_union(geometry)',
         'AGGREGATE st_union_old(geometry)',
-        'AGGREGATE st_union(raster)',
-        'AGGREGATE st_union(raster,integer)',
-        'AGGREGATE st_union(raster,integer,text)',
-        'AGGREGATE st_union(raster,text)',
-        'AGGREGATE st_union(raster,text,text)',
-        'AGGREGATE st_union(raster,text,text,text)',
-        'AGGREGATE st_union(raster,text,text,text,double precision)',
-        'AGGREGATE st_union(raster,text,text,text,double precision,text,text,text,double precision)',
-        'AGGREGATE st_union(raster,text,text,text,double precision,text,text,text,double precision,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'AGGREGATE st_union(raster)',
+         # PG12_DEPRECATED
+         'AGGREGATE st_union(raster,integer)',
+         # PG12_DEPRECATED
+         'AGGREGATE st_union(raster,integer,text)',
+         # PG12_DEPRECATED
+         'AGGREGATE st_union(raster,text)',
+         # PG12_DEPRECATED
+         'AGGREGATE st_union(raster,text,text)',
+         # PG12_DEPRECATED
+         'AGGREGATE st_union(raster,text,text,text)',
+         # PG12_DEPRECATED
+         'AGGREGATE st_union(raster,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'AGGREGATE st_union(raster,text,text,text,double precision,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'AGGREGATE st_union(raster,text,text,text,double precision,text,text,text,double precision,text,text,text,double precision)',
         'AGGREGATE topoelementarray_agg(topoelement)',
         'CAST CAST (boolean AS text)',
         'CAST CAST (bytea AS public.geography)',
@@ -59,13 +68,20 @@ module CartoDB
         'CAST CAST (public.geometry AS public.geography)',
         'CAST CAST (public.geometry AS public.geometry)',
         'CAST CAST (public.geometry AS text)',
-        'CAST CAST (public.raster AS box2d)',
-        'CAST CAST (public.raster AS bytea)',
-        'CAST CAST (public.raster AS public.box2d)',
-        'CAST CAST (public.raster AS public.box3d)',
-        'CAST CAST (public.raster AS public.geometry)',
-        'CAST CAST (raster AS bytea)',
-        'CAST CAST (raster AS geometry)',
+         # PG12_DEPRECATED
+         'CAST CAST (public.raster AS box2d)',
+         # PG12_DEPRECATED
+         'CAST CAST (public.raster AS bytea)',
+         # PG12_DEPRECATED
+         'CAST CAST (public.raster AS public.box2d)',
+         # PG12_DEPRECATED
+         'CAST CAST (public.raster AS public.box3d)',
+         # PG12_DEPRECATED
+         'CAST CAST (public.raster AS public.geometry)',
+         # PG12_DEPRECATED
+         'CAST CAST (raster AS bytea)',
+         # PG12_DEPRECATED
+         'CAST CAST (raster AS geometry)',
         'CAST CAST (text AS public.geometry)',
         'CAST CAST (topology.topogeometry AS geometry)',
         'CAST CAST (topology.topogeometry AS public.geometry)',
@@ -78,10 +94,14 @@ module CartoDB
         'COMMENT AGGREGATE st_memunion(geometry)',
         'COMMENT AGGREGATE st_polygonize(geometry)',
         'COMMENT AGGREGATE st_union(geometry)',
-        'COMMENT AGGREGATE st_union(raster)',
-        'COMMENT AGGREGATE st_union(raster,integer)',
-        'COMMENT AGGREGATE st_union(raster,integer,text)',
-        'COMMENT AGGREGATE st_union(raster,text)',
+         # PG12_DEPRECATED
+         'COMMENT AGGREGATE st_union(raster)',
+         # PG12_DEPRECATED
+         'COMMENT AGGREGATE st_union(raster,integer)',
+         # PG12_DEPRECATED
+         'COMMENT AGGREGATE st_union(raster,integer,text)',
+         # PG12_DEPRECATED
+         'COMMENT AGGREGATE st_union(raster,text)',
         'COMMENT AGGREGATE topoelementarray_agg(topoelement)',
         'COMMENT DOMAIN topoelement',
         'COMMENT DOMAIN topoelementarray',
@@ -97,10 +117,14 @@ module CartoDB
         'COMMENT FUNCTION addgeometrycolumn(character varying,character varying,integer,character varying,integer,boolean)',
         'COMMENT FUNCTION addnode(character varying,apoint public.geometry,allowedgesplitting boolean,setcontainingface boolean)',
         'COMMENT FUNCTION addnode(varying,public.geometry)',
-        'COMMENT FUNCTION addrasterconstraints(rastschema name,rasttable name,rastcolumn name,srid boolean,scale_x boolean,scale_y boolean,blocksize_x boolean,blocksize_y boolean,same_alignment boolean,regular_blocking boolean,num_bands boolean,pixel_types boolean,nodata_values boolean,extent boolean)',
-        'COMMENT FUNCTION addrasterconstraints(rastschema name,rasttable name,rastcolumn name,variadic constraints text[])',
-        'COMMENT FUNCTION addrasterconstraints(rasttable name,rastcolumn name,srid boolean,scale_x boolean,scale_y boolean,blocksize_x boolean,blocksize_y boolean,same_alignment boolean,regular_blocking boolean,num_bands boolean,pixel_types boolean,nodata_values boolean,extent boolean)',
-        'COMMENT FUNCTION addrasterconstraints(rasttable name,rastcolumn name,variadic constraints text[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION addrasterconstraints(rastschema name,rasttable name,rastcolumn name,srid boolean,scale_x boolean,scale_y boolean,blocksize_x boolean,blocksize_y boolean,same_alignment boolean,regular_blocking boolean,num_bands boolean,pixel_types boolean,nodata_values boolean,extent boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION addrasterconstraints(rastschema name,rasttable name,rastcolumn name,variadic constraints text[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION addrasterconstraints(rasttable name,rastcolumn name,srid boolean,scale_x boolean,scale_y boolean,blocksize_x boolean,blocksize_y boolean,same_alignment boolean,regular_blocking boolean,num_bands boolean,pixel_types boolean,nodata_values boolean,extent boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION addrasterconstraints(rasttable name,rastcolumn name,variadic constraints text[])',
         'COMMENT FUNCTION addtopogeometrycolumn(character varying,character varying,character varying,character varying,character varying)',
         'COMMENT FUNCTION addtopogeometrycolumn(character varying,character varying,character varying,character varying,character varying,integer)',
         'COMMENT FUNCTION addtopogeometrycolumn(character varying,character varying,character varying,character varying,character varying,integer)',
@@ -114,7 +138,8 @@ module CartoDB
         'COMMENT FUNCTION asgml(tgtopogeometry,visitedtable regclass,nsprefix text)',
         'COMMENT FUNCTION box2d(geometry)',
         'COMMENT FUNCTION box3d(geometry)',
-        'COMMENT FUNCTION box3d(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION box3d(raster)',
         'COMMENT FUNCTION checkauth(text,text)',
         'COMMENT FUNCTION checkauth(text,text,text)',
         'COMMENT FUNCTION copytopology(character varying,character varying)',
@@ -138,8 +163,10 @@ module CartoDB
         'COMMENT FUNCTION dropgeometrytable(character varying,character varying,character varying)',
         'COMMENT FUNCTION dropgeometrytable(echaracter varying,character varying)',
         'COMMENT FUNCTION dropgeometrytable(character varying)',
-        'COMMENT FUNCTION droprasterconstraints(rastschema name,rasttable name,rastcolumn name,variadic constraints text[])',
-        'COMMENT FUNCTION droprasterconstraints(rasttablename,rastcolumnname,sridboolean,scale_xboolean,scale_yboolean,blocksize_xboolean,blocksize_yboolean,same_alignmentboolean,regular_blockingboolean,num_bandsboolean,pixel_typesboolean,nodata_valuesboolean,extentboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION droprasterconstraints(rastschema name,rasttable name,rastcolumn name,variadic constraints text[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION droprasterconstraints(rasttablename,rastcolumnname,sridboolean,scale_xboolean,scale_yboolean,blocksize_xboolean,blocksize_yboolean,same_alignmentboolean,regular_blockingboolean,num_bandsboolean,pixel_typesboolean,nodata_valuesboolean,extentboolean)',
         'COMMENT FUNCTION droptopogeometrycolumn(character varying,character varying,character varying)',
         'COMMENT FUNCTION droptopogeometrycolumn(schema character varying,tbl character varying,col character varying)',
         'COMMENT FUNCTION droptopology(atopology character varying)',
@@ -179,8 +206,10 @@ module CartoDB
         'COMMENT FUNCTION postgis_lib_version()',
         'COMMENT FUNCTION postgis_libxml_version()',
         'COMMENT FUNCTION postgis_proj_version()',
-        'COMMENT FUNCTION postgis_raster_lib_build_date()',
-        'COMMENT FUNCTION postgis_raster_lib_version()',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION postgis_raster_lib_build_date()',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION postgis_raster_lib_version()',
         'COMMENT FUNCTION postgis_scripts_build_date()',
         'COMMENT FUNCTION postgis_scripts_installed()',
         'COMMENT FUNCTION postgis_scripts_released()',
@@ -208,10 +237,14 @@ module CartoDB
         'COMMENT FUNCTION st_3dperimeter(geometry)',
         'COMMENT FUNCTION st_3dshortestline(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_3dshortestline(geometry,geometry)',
-        'COMMENT FUNCTION st_addband(rast raster,indexinteger,pixeltypetext,initialvaluedouble precision,nodatavaldouble precision)',
-        'COMMENT FUNCTION st_addband(rast raster,pixeltypetext,initialvaluedouble precision,nodatavaldouble precision)',
-        'COMMENT FUNCTION st_addband(torast raster,fromrast raster,frombandinteger,torastindexinteger)',
-        'COMMENT FUNCTION st_addband(torast raster,fromrastsraster[],frombandinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_addband(rast raster,indexinteger,pixeltypetext,initialvaluedouble precision,nodatavaldouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_addband(rast raster,pixeltypetext,initialvaluedouble precision,nodatavaldouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_addband(torast raster,fromrast raster,frombandinteger,torastindexinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_addband(torast raster,fromrastsraster[],frombandinteger)',
         'COMMENT FUNCTION st_addbbox(geometry)',
         'COMMENT FUNCTION st_addedgemodface(atopologycharacter varying,anodeinteger,anothernodeinteger,acurvepublic.geometry)',
         'COMMENT FUNCTION st_addedgenewfaces(atopologycharacter varying,anodeinteger,anothernodeinteger,acurvepublic.geometry)',
@@ -233,13 +266,15 @@ module CartoDB
         'COMMENT FUNCTION st_asbinary(geography,text)',
         'COMMENT FUNCTION st_asbinary(geometry)',
         'COMMENT FUNCTION st_asbinary(geometry,text)',
-        'COMMENT FUNCTION st_asbinary(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asbinary(raster)',
         'COMMENT FUNCTION st_asencodedpolyline(geometry)',
         'COMMENT FUNCTION st_asencodedpolyline(geometry,integer)',
         'COMMENT FUNCTION st_asewkb(geometry)',
         'COMMENT FUNCTION st_asewkb(geometry,text)',
         'COMMENT FUNCTION st_asewkt(geometry)',
-        'COMMENT FUNCTION st_asgdalraster(rast raster,formattext,optionstext[],sridinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asgdalraster(rast raster,formattext,optionstext[],sridinteger)',
         'COMMENT FUNCTION st_asgeojson(geog geography,maxdecimaldigits integer,options integer)',
         'COMMENT FUNCTION st_asgeojson(geography)',
         'COMMENT FUNCTION st_asgeojson(geography,integer)',
@@ -276,11 +311,16 @@ module CartoDB
         'COMMENT FUNCTION st_asgml(version integer,geom geometry,maxdecimaldigits integer,options integer,nprefix text)',
         'COMMENT FUNCTION st_ashexewkb(geometry)',
         'COMMENT FUNCTION st_ashexewkb(geometry,text)',
-        'COMMENT FUNCTION st_asjpeg(rast raster,nband integer,optionstext[])',
-        'COMMENT FUNCTION st_asjpeg(rast raster,nband integer,qualityinteger)',
-        'COMMENT FUNCTION st_asjpeg(rast raster,nbands integer[],optionstext[])',
-        'COMMENT FUNCTION st_asjpeg(rast raster,nbands integer[],qualityinteger)',
-        'COMMENT FUNCTION st_asjpeg(rast raster,optionstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asjpeg(rast raster,nband integer,optionstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asjpeg(rast raster,nband integer,qualityinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asjpeg(rast raster,nbands integer[],optionstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asjpeg(rast raster,nbands integer[],qualityinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asjpeg(rast raster,optionstext[])',
         'COMMENT FUNCTION st_askml(geog geography,maxdecimaldigits integer)',
         'COMMENT FUNCTION st_askml(geography)',
         'COMMENT FUNCTION st_askml(geography,integer)',
@@ -297,20 +337,34 @@ module CartoDB
         'COMMENT FUNCTION st_askml(version integer,geom geometry,maxdecimaldigits integer,nprefix text)',
         'COMMENT FUNCTION st_aslatlontext(geometry)',
         'COMMENT FUNCTION st_aslatlontext(geometry,text)',
-        'COMMENT FUNCTION st_aspng(rast raster,nband integer,compressioninteger)',
-        'COMMENT FUNCTION st_aspng(rast raster,nband integer,optionstext[])',
-        'COMMENT FUNCTION st_aspng(rast raster,nbands integer[],compressioninteger)',
-        'COMMENT FUNCTION st_aspng(rast raster,nbands integer[],optionstext[])',
-        'COMMENT FUNCTION st_aspng(rast raster,optionstext[])',
-        'COMMENT FUNCTION st_asraster(geomgeometry,refraster,pixeltypetext,valuedouble precision,nodatavaldouble precision,touchedboolean)',
-        'COMMENT FUNCTION st_asraster(geomgeometry,refraster,pixeltypetext[],valuedouble precision[],nodatavaldouble precision[],touchedboolean)',
-        'COMMENT FUNCTION st_asraster(geomgeometry,scalexdouble precision,scaleydouble precision,gridxdouble precision,gridydouble precision,pixeltypetext,valuedouble precision,nodatavaldouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
-        'COMMENT FUNCTION st_asraster(geomgeometry,scalexdouble precision,scaleydouble precision,gridxdouble precision,gridydouble precision,pixeltypetext[],valuedouble precision[],nodatavaldouble precision[],skewxdouble precision,skewydouble precision,touchedboolean)',
-        'COMMENT FUNCTION st_asraster(geomgeometry,scalexdouble precision,scaleydouble precision,pixeltypetext,valuedouble precision,nodatavaldouble precision,upperleftxdouble precision,upperleftydouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
-        'COMMENT FUNCTION st_asraster(geomgeometry,widthinteger,heightinteger,gridxdouble precision,gridydouble precision,pixeltypetext,valuedouble precision,nodatavaldouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
-        'COMMENT FUNCTION st_asraster(geomgeometry,widthinteger,heightinteger,gridxdouble precision,gridydouble precision,pixeltypetext[],valuedouble precision[],nodatavaldouble precision[],skewxdouble precision,skewydouble precision,touchedboolean)',
-        'COMMENT FUNCTION st_asraster(geomgeometry,widthinteger,heightinteger,pixeltypetext,valuedouble precision,nodatavaldouble precision,upperleftxdouble precision,upperleftydouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
-        'COMMENT FUNCTION st_asraster(geomgeometry,widthinteger,heightinteger,pixeltypetext[],valuedouble precision[],nodatavaldouble precision[],upperleftxdouble precision,upperleftydouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_aspng(rast raster,nband integer,compressioninteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_aspng(rast raster,nband integer,optionstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_aspng(rast raster,nbands integer[],compressioninteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_aspng(rast raster,nbands integer[],optionstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_aspng(rast raster,optionstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asraster(geomgeometry,refraster,pixeltypetext,valuedouble precision,nodatavaldouble precision,touchedboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asraster(geomgeometry,refraster,pixeltypetext[],valuedouble precision[],nodatavaldouble precision[],touchedboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asraster(geomgeometry,scalexdouble precision,scaleydouble precision,gridxdouble precision,gridydouble precision,pixeltypetext,valuedouble precision,nodatavaldouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asraster(geomgeometry,scalexdouble precision,scaleydouble precision,gridxdouble precision,gridydouble precision,pixeltypetext[],valuedouble precision[],nodatavaldouble precision[],skewxdouble precision,skewydouble precision,touchedboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asraster(geomgeometry,scalexdouble precision,scaleydouble precision,pixeltypetext,valuedouble precision,nodatavaldouble precision,upperleftxdouble precision,upperleftydouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asraster(geomgeometry,widthinteger,heightinteger,gridxdouble precision,gridydouble precision,pixeltypetext,valuedouble precision,nodatavaldouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asraster(geomgeometry,widthinteger,heightinteger,gridxdouble precision,gridydouble precision,pixeltypetext[],valuedouble precision[],nodatavaldouble precision[],skewxdouble precision,skewydouble precision,touchedboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asraster(geomgeometry,widthinteger,heightinteger,pixeltypetext,valuedouble precision,nodatavaldouble precision,upperleftxdouble precision,upperleftydouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_asraster(geomgeometry,widthinteger,heightinteger,pixeltypetext[],valuedouble precision[],nodatavaldouble precision[],upperleftxdouble precision,upperleftydouble precision,skewxdouble precision,skewydouble precision,touchedboolean)',
         'COMMENT FUNCTION st_assvg(geog geography,rel integer,maxdecimaldigits integer)',
         'COMMENT FUNCTION st_assvg(geography)',
         'COMMENT FUNCTION st_assvg(geography,integer)',
@@ -321,24 +375,37 @@ module CartoDB
         'COMMENT FUNCTION st_assvg(geom geometry,rel integer,maxdecimaldigits integer)',
         'COMMENT FUNCTION st_astext(geography)',
         'COMMENT FUNCTION st_astext(geometry)',
-        'COMMENT FUNCTION st_astiff(rast raster,compressiontext,sridinteger)',
-        'COMMENT FUNCTION st_astiff(rast raster,nbands integer[],compressiontext,sridinteger)',
-        'COMMENT FUNCTION st_astiff(rast raster,nbands integer[],optionstext[],sridinteger)',
-        'COMMENT FUNCTION st_astiff(rast raster,optionstext[],sridinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_astiff(rast raster,compressiontext,sridinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_astiff(rast raster,nbands integer[],compressiontext,sridinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_astiff(rast raster,nbands integer[],optionstext[],sridinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_astiff(rast raster,optionstext[],sridinteger)',
         'COMMENT FUNCTION st_asx3d(geom geometry,maxdecimaldigits integer,options integer)',
         'COMMENT FUNCTION st_asx3d(geomgeometry,precinteger)',
         'COMMENT FUNCTION st_azimuth(geog1 geography,geog2 geography)',
         'COMMENT FUNCTION st_azimuth(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_azimuth(geometry,geometry)',
-        'COMMENT FUNCTION st_bandisnodata(rast raster,bandinteger,forcecheckingboolean)',
-        'COMMENT FUNCTION st_bandisnodata(rast raster,forcechecking boolean)',
-        'COMMENT FUNCTION st_bandmetadata(rast raster,bandinteger,OUT pixeltype text,OUT hasnodata boolean,OUT nodatavalue double precision,OUT isoutdb boolean,OUT path text)',
-        'COMMENT FUNCTION st_bandnodatavalue(rast raster,bandinteger)',
-        'COMMENT FUNCTION st_bandpath(rast raster,bandinteger)',
-        'COMMENT FUNCTION st_bandpixeltype(rast raster,bandinteger)',
-        'COMMENT FUNCTION st_band(rast raster,nband integer)',
-        'COMMENT FUNCTION st_band(rast raster,nbands integer[])',
-        'COMMENT FUNCTION st_band(rast raster,nbandstext,delimitercharacter)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_bandisnodata(rast raster,bandinteger,forcecheckingboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_bandisnodata(rast raster,forcechecking boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_bandmetadata(rast raster,bandinteger,OUT pixeltype text,OUT hasnodata boolean,OUT nodatavalue double precision,OUT isoutdb boolean,OUT path text)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_bandnodatavalue(rast raster,bandinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_bandpath(rast raster,bandinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_bandpixeltype(rast raster,bandinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_band(rast raster,nband integer)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_band(rast raster,nbands integer[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_band(rast raster,nbandstext,delimitercharacter)',
         'COMMENT FUNCTION st_bdmpolyfromtext(text,integer)',
         'COMMENT FUNCTION st_bdpolyfromtext(text,integer)',
         'COMMENT FUNCTION st_boundary(geometry)',
@@ -353,12 +420,18 @@ module CartoDB
         'COMMENT FUNCTION st_buildarea(geometry)',
         'COMMENT FUNCTION st_centroid(geometry)',
         'COMMENT FUNCTION st_changeedgegeom(atopologycharacter varying,anedgeinteger,acurvepublic.geometry)',
-        'COMMENT FUNCTION st_clip(rast raster,band integer,geom geometry,crop boolean)',
-        'COMMENT FUNCTION st_clip(rast raster,band integer,geom geometry,nodata double precision,trimraster boolean)',
-        'COMMENT FUNCTION st_clip(rast raster,band integer,geom geometry,trimraster boolean)',
-        'COMMENT FUNCTION st_clip(rast raster,geom geometry,crop boolean)',
-        'COMMENT FUNCTION st_clip(rast raster,geom geometry,nodata double precision,trimraster boolean)',
-        'COMMENT FUNCTION st_clip(rast raster,geom geometry,trimraster boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_clip(rast raster,band integer,geom geometry,crop boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_clip(rast raster,band integer,geom geometry,nodata double precision,trimraster boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_clip(rast raster,band integer,geom geometry,trimraster boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_clip(rast raster,geom geometry,crop boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_clip(rast raster,geom geometry,nodata double precision,trimraster boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_clip(rast raster,geom geometry,trimraster boolean)',
         'COMMENT FUNCTION st_closestpoint(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_closestpoint(geometry,geometry)',
         'COMMENT FUNCTION st_collect(geom1 geometry,geom2 geometry)',
@@ -371,13 +444,18 @@ module CartoDB
         'COMMENT FUNCTION st_containsproperly(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_containsproperly(geometry,geometry)',
         'COMMENT FUNCTION st_convexhull(geometry)',
-        'COMMENT FUNCTION st_convexhull(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_convexhull(raster)',
         'COMMENT FUNCTION st_coorddim(geometry)',
         'COMMENT FUNCTION st_coorddim(geometry geometry)',
-        'COMMENT FUNCTION st_count(rastertabletext,rastercolumntext,exclude_nodata_valueboolean)',
-        'COMMENT FUNCTION st_count(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean)',
-        'COMMENT FUNCTION st_count(rast raster,exclude_nodata_valueboolean)',
-        'COMMENT FUNCTION st_count(rast raster,nband integer,exclude_nodata_valueboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_count(rastertabletext,rastercolumntext,exclude_nodata_valueboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_count(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_count(rast raster,exclude_nodata_valueboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_count(rast raster,nband integer,exclude_nodata_valueboolean)',
         'COMMENT FUNCTION st_coveredby(geography,geography)',
         'COMMENT FUNCTION st_coveredby(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_coveredby(geometry,geometry)',
@@ -405,7 +483,8 @@ module CartoDB
         'COMMENT FUNCTION st_distance_spheroid(geom1 geometry,geom2 geometry,spheroid)',
         'COMMENT FUNCTION st_distance_spheroid(geometry,geometry,spheroid)',
         'COMMENT FUNCTION st_dropbbox(geometry)',
-        'COMMENT FUNCTION st_dumpaspolygons(rast raster,bandinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_dumpaspolygons(rast raster,bandinteger)',
         'COMMENT FUNCTION st_dump(geometry)',
         'COMMENT FUNCTION st_dumppoints(geometry)',
         'COMMENT FUNCTION st_dumprings(geometry)',
@@ -415,7 +494,8 @@ module CartoDB
         'COMMENT FUNCTION st_dwithin(geometry,geometry,double precision)',
         'COMMENT FUNCTION st_endpoint(geometry)',
         'COMMENT FUNCTION st_envelope(geometry)',
-        'COMMENT FUNCTION st_envelope(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_envelope(raster)',
         'COMMENT FUNCTION st_equals(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_equals(geometry,geometry)',
         'COMMENT FUNCTION st_estimated_extent(text,text)',
@@ -461,7 +541,8 @@ module CartoDB
         'COMMENT FUNCTION st_geomfromtext(text,integer)',
         'COMMENT FUNCTION st_geomfromwkb(bytea)',
         'COMMENT FUNCTION st_geomfromwkb(bytea,integer)',
-        'COMMENT FUNCTION st_georeference(rast raster,formattext)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_georeference(rast raster,formattext)',
         'COMMENT FUNCTION st_getfaceedges(character varying,face_idinteger)',
         'COMMENT FUNCTION st_getfacegeometry(character varying,afaceinteger)',
         'COMMENT FUNCTION st_gmltosql(text)',
@@ -469,42 +550,63 @@ module CartoDB
         'COMMENT FUNCTION st_hasarc(geometry)',
         'COMMENT FUNCTION st_hasarc(geometry geometry)',
         'COMMENT FUNCTION st_hasbbox(geometry)',
-        'COMMENT FUNCTION st_hasnoband(rast raster,nband integer)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_hasnoband(rast raster,nband integer)',
         'COMMENT FUNCTION st_hausdorffdistance(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_hausdorffdistance(geom1 geometry,geom2 geometry,double precision)',
         'COMMENT FUNCTION st_hausdorffdistance(geometry,geometry)',
         'COMMENT FUNCTION st_hausdorffdistance(geometry,geometry,double precision)',
-        'COMMENT FUNCTION st_height(raster)',
-        'COMMENT FUNCTION st_hillshade(rast raster,band integer,pixeltype text,azimuth double precision,altitude double precision,max_bright double precision,elevation_scale double precision)',
-        'COMMENT FUNCTION st_histogram(rastertabletext,rastercolumntext,nband integer,binsinteger,"right"boolean)',
-        'COMMENT FUNCTION st_histogram(rastertabletext,rastercolumntext,nband integer,binsinteger,widthdouble precision[],"right"boolean)',
-        'COMMENT FUNCTION st_histogram(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean,binsinteger,"right"boolean)',
-        'COMMENT FUNCTION st_histogram(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean,binsinteger,widthdouble precision[],"right"boolean)',
-        'COMMENT FUNCTION st_histogram(rast raster,nband integer,binsinteger,"right"boolean)',
-        'COMMENT FUNCTION st_histogram(rast raster,nband integer,binsinteger,widthdouble precision[],"right"boolean)',
-        'COMMENT FUNCTION st_histogram(rast raster,nband integer,exclude_nodata_valueboolean,binsinteger,"right"boolean)',
-        'COMMENT FUNCTION st_histogram(rast raster,nband integer,exclude_nodata_valueboolean,binsinteger,widthdouble precision[],"right"boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_height(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_hillshade(rast raster,band integer,pixeltype text,azimuth double precision,altitude double precision,max_bright double precision,elevation_scale double precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_histogram(rastertabletext,rastercolumntext,nband integer,binsinteger,"right"boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_histogram(rastertabletext,rastercolumntext,nband integer,binsinteger,widthdouble precision[],"right"boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_histogram(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean,binsinteger,"right"boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_histogram(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean,binsinteger,widthdouble precision[],"right"boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_histogram(rast raster,nband integer,binsinteger,"right"boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_histogram(rast raster,nband integer,binsinteger,widthdouble precision[],"right"boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_histogram(rast raster,nband integer,exclude_nodata_valueboolean,binsinteger,"right"boolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_histogram(rast raster,nband integer,exclude_nodata_valueboolean,binsinteger,widthdouble precision[],"right"boolean)',
         'COMMENT FUNCTION st_inittopogeo(atopologycharacter varying)',
         'COMMENT FUNCTION st_interiorringn(geometry,integer)',
         'COMMENT FUNCTION st_intersection(geography,geography)',
         'COMMENT FUNCTION st_intersection(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_intersection(geometry,geometry)',
-        'COMMENT FUNCTION st_intersection(geomingeometry,rast raster,bandinteger)',
-        'COMMENT FUNCTION st_intersection(rast1raster,band1integer,geomgeometry,extenttypetext,otheruserfuncregprocedure)',
-        'COMMENT FUNCTION st_intersection(rast1raster,band1integer,geomgeometry,otheruserfuncregprocedure)',
-        'COMMENT FUNCTION st_intersection(rast1raster,geomgeometry,extenttypetext,otheruserfuncregprocedure)',
-        'COMMENT FUNCTION st_intersection(rast1raster,geomgeometry,otheruserfuncregprocedure)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_intersection(geomingeometry,rast raster,bandinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_intersection(rast1raster,band1integer,geomgeometry,extenttypetext,otheruserfuncregprocedure)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_intersection(rast1raster,band1integer,geomgeometry,otheruserfuncregprocedure)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_intersection(rast1raster,geomgeometry,extenttypetext,otheruserfuncregprocedure)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_intersection(rast1raster,geomgeometry,otheruserfuncregprocedure)',
         'COMMENT FUNCTION st_intersects(geography,geography)',
         'COMMENT FUNCTION st_intersects(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_intersects(geometry,geometry)',
-        'COMMENT FUNCTION st_intersects(geomgeometry,rast raster,nband integer)',
-        'COMMENT FUNCTION st_intersects(rast1raster,nband1integer,rast2raster,nband2integer)',
-        'COMMENT FUNCTION st_intersects(rast1raster,rast2raster)',
-        'COMMENT FUNCTION st_intersects(rast raster,nband integer,geomgeometry)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_intersects(geomgeometry,rast raster,nband integer)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_intersects(rast1raster,nband1integer,rast2raster,nband2integer)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_intersects(rast1raster,rast2raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_intersects(rast raster,nband integer,geomgeometry)',
         'COMMENT FUNCTION st_isclosed(geometry)',
         'COMMENT FUNCTION st_iscollection(geometry)',
         'COMMENT FUNCTION st_isempty(geometry)',
-        'COMMENT FUNCTION st_isempty(rast raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_isempty(rast raster)',
         'COMMENT FUNCTION st_isring(geometry)',
         'COMMENT FUNCTION st_issimple(geometry)',
         'COMMENT FUNCTION st_isvaliddetail(geometry)',
@@ -549,9 +651,12 @@ module CartoDB
         'COMMENT FUNCTION st_makebox2d(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_makebox2d(geometry,geometry)',
         'COMMENT FUNCTION st_makebox3d(geometry,geometry)',
-        'COMMENT FUNCTION st_makeemptyraster(rast raster)',
-        'COMMENT FUNCTION st_makeemptyraster(widthinteger,heightinteger,upperleftxdouble precision,upperleftydouble precision,pixelsizedouble precision)',
-        'COMMENT FUNCTION st_makeemptyraster(widthinteger,heightinteger,upperleftxdouble precision,upperleftydouble precision,scalexdouble precision,scaleydouble precision,skewxdouble precision,skewydouble precision,sridinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_makeemptyraster(rast raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_makeemptyraster(widthinteger,heightinteger,upperleftxdouble precision,upperleftydouble precision,pixelsizedouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_makeemptyraster(widthinteger,heightinteger,upperleftxdouble precision,upperleftydouble precision,scalexdouble precision,scaleydouble precision,skewxdouble precision,skewydouble precision,sridinteger)',
         'COMMENT FUNCTION st_makeenvelope(double precision,double precision,double precision,double precision,integer)',
         'COMMENT FUNCTION st_makeline(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_makeline(geometry[])',
@@ -563,26 +668,42 @@ module CartoDB
         'COMMENT FUNCTION st_makepolygon(geometry)',
         'COMMENT FUNCTION st_makepolygon(geometry,geometry[])',
         'COMMENT FUNCTION st_makevalid(geometry)',
-        'COMMENT FUNCTION st_mapalgebraexpr(rast1raster,band1integer,rast2raster,band2integer,expressiontext,pixeltypetext,extenttypetext,nodata1exprtext,nodata2exprtext,nodatanodatavaldouble precision)',
-        'COMMENT FUNCTION st_mapalgebraexpr(rast1raster,rast2raster,expressiontext,pixeltypetext,extenttypetext,nodata1exprtext,nodata2exprtext,nodatanodatavaldouble precision)',
-        'COMMENT FUNCTION st_mapalgebraexpr(rast raster,bandinteger,pixeltypetext,expressiontext,nodatavaldouble precision)',
-        'COMMENT FUNCTION st_mapalgebraexpr(rast raster,pixeltypetext,expressiontext,nodatavaldouble precision)',
-        'COMMENT FUNCTION st_mapalgebrafctngb(rast raster,bandinteger,pixeltypetext,ngbwidthinteger,ngbheightinteger,onerastngbuserfuncregprocedure,nodatamodetext,variadicargstext[])',
-        'COMMENT FUNCTION st_mapalgebrafct(rast1raster,band1integer,rast2raster,band2integer,tworastuserfuncregprocedure,pixeltypetext,extenttypetext,variadicuserargstext[])',
-        'COMMENT FUNCTION st_mapalgebrafct(rast1raster,rast2raster,tworastuserfuncregprocedure,pixeltypetext,extenttypetext,variadicuserargstext[])',
-        'COMMENT FUNCTION st_mapalgebrafct(rast raster,bandinteger,onerastuserfuncregprocedure)',
-        'COMMENT FUNCTION st_mapalgebrafct(rast raster,bandinteger,onerastuserfuncregprocedure,variadicargstext[])',
-        'COMMENT FUNCTION st_mapalgebrafct(rast raster,bandinteger,pixeltypetext,onerastuserfuncregprocedure)',
-        'COMMENT FUNCTION st_mapalgebrafct(rast raster,bandinteger,pixeltypetext,onerastuserfuncregprocedure,variadicargstext[])',
-        'COMMENT FUNCTION st_mapalgebrafct(rast raster,onerastuserfuncregprocedure)',
-        'COMMENT FUNCTION st_mapalgebrafct(rast raster,onerastuserfuncregprocedure,variadicargstext[])',
-        'COMMENT FUNCTION st_mapalgebrafct(rast raster,pixeltypetext,onerastuserfuncregprocedure)',
-        'COMMENT FUNCTION st_mapalgebrafct(rast raster,pixeltypetext,onerastuserfuncregprocedure,variadicargstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebraexpr(rast1raster,band1integer,rast2raster,band2integer,expressiontext,pixeltypetext,extenttypetext,nodata1exprtext,nodata2exprtext,nodatanodatavaldouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebraexpr(rast1raster,rast2raster,expressiontext,pixeltypetext,extenttypetext,nodata1exprtext,nodata2exprtext,nodatanodatavaldouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebraexpr(rast raster,bandinteger,pixeltypetext,expressiontext,nodatavaldouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebraexpr(rast raster,pixeltypetext,expressiontext,nodatavaldouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafctngb(rast raster,bandinteger,pixeltypetext,ngbwidthinteger,ngbheightinteger,onerastngbuserfuncregprocedure,nodatamodetext,variadicargstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast1raster,band1integer,rast2raster,band2integer,tworastuserfuncregprocedure,pixeltypetext,extenttypetext,variadicuserargstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast1raster,rast2raster,tworastuserfuncregprocedure,pixeltypetext,extenttypetext,variadicuserargstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast raster,bandinteger,onerastuserfuncregprocedure)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast raster,bandinteger,onerastuserfuncregprocedure,variadicargstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast raster,bandinteger,pixeltypetext,onerastuserfuncregprocedure)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast raster,bandinteger,pixeltypetext,onerastuserfuncregprocedure,variadicargstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast raster,onerastuserfuncregprocedure)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast raster,onerastuserfuncregprocedure,variadicargstext[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast raster,pixeltypetext,onerastuserfuncregprocedure)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_mapalgebrafct(rast raster,pixeltypetext,onerastuserfuncregprocedure,variadicargstext[])',
         'COMMENT FUNCTION st_maxdistance(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_max_distance(geometry,geometry)',
         'COMMENT FUNCTION st_maxdistance(geometry,geometry)',
         'COMMENT FUNCTION st_mem_size(geometry)',
-        'COMMENT FUNCTION st_metadata(rast raster,OUTupperleftxdouble precision,OUTupperleftydouble precision,OUTwidthinteger,OUTheightinteger,OUTscalexdouble precision,OUTscaleydouble precision,OUTskewxdouble precision,OUTskewydouble precision,OUTsridinteger,OUTnumbandsinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_metadata(rast raster,OUTupperleftxdouble precision,OUTupperleftydouble precision,OUTwidthinteger,OUTheightinteger,OUTscalexdouble precision,OUTscaleydouble precision,OUTskewxdouble precision,OUTskewydouble precision,OUTsridinteger,OUTnumbandsinteger)',
         'COMMENT FUNCTION st_m(geometry)',
         'COMMENT FUNCTION st_minimumboundingcircle(geometry)',
         'COMMENT FUNCTION st_minimumboundingcircle(inputgeomgeometry,segs_per_quarterinteger)',
@@ -605,7 +726,8 @@ module CartoDB
         'COMMENT FUNCTION st_node(ggeometry)',
         'COMMENT FUNCTION st_npoints(geometry)',
         'COMMENT FUNCTION st_nrings(geometry)',
-        'COMMENT FUNCTION st_numbands(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_numbands(raster)',
         'COMMENT FUNCTION st_numgeometries(geometry)',
         'COMMENT FUNCTION st_numinteriorring(geometry)',
         'COMMENT FUNCTION st_numinteriorrings(geometry)',
@@ -621,10 +743,14 @@ module CartoDB
         'COMMENT FUNCTION st_perimeter3d(geometry)',
         'COMMENT FUNCTION st_perimeter(geoggeography,use_spheroidboolean)',
         'COMMENT FUNCTION st_perimeter(geometry)',
-        'COMMENT FUNCTION st_pixelaspolygon(rast raster,bandinteger,xinteger,yinteger)',
-        'COMMENT FUNCTION st_pixelaspolygon(rast raster,xinteger,yinteger)',
-        'COMMENT FUNCTION st_pixelheight(raster)',
-        'COMMENT FUNCTION st_pixelwidth(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_pixelaspolygon(rast raster,bandinteger,xinteger,yinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_pixelaspolygon(rast raster,xinteger,yinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_pixelheight(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_pixelwidth(raster)',
         'COMMENT FUNCTION st_point(double precision,double precision)',
         'COMMENT FUNCTION st_pointfromgeohash(text)',
         'COMMENT FUNCTION st_pointfromgeohash(text,integer)',
@@ -637,22 +763,37 @@ module CartoDB
         'COMMENT FUNCTION st_polygonfromtext(text,integer)',
         'COMMENT FUNCTION st_polygon(geometry,integer)',
         'COMMENT FUNCTION st_polygonize(geometry[])',
-        'COMMENT FUNCTION st_polygon(rast raster,bandinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_polygon(rast raster,bandinteger)',
         'COMMENT FUNCTION st_project(geog geography,distance double precision,azimuth double precision)',
-        'COMMENT FUNCTION st_quantile(rast raster,exclude_nodata_valueboolean,quantiledouble precision)',
-        'COMMENT FUNCTION st_quantile(rast raster,nband integer,exclude_nodata_valueboolean,quantiledouble precision)',
-        'COMMENT FUNCTION st_quantile(rast raster,nband integer,exclude_nodata_valueboolean,quantilesdouble precision[])',
-        'COMMENT FUNCTION st_quantile(rast raster,nband integer,quantiledouble precision)',
-        'COMMENT FUNCTION st_quantile(rast raster,nband integer,quantilesdouble precision[])',
-        'COMMENT FUNCTION st_quantile(rast raster,quantiledouble precision)',
-        'COMMENT FUNCTION st_quantile(rast raster,quantilesdouble precision[])',
-        'COMMENT FUNCTION st_raster2worldcoordx(rast raster,xrinteger)',
-        'COMMENT FUNCTION st_raster2worldcoordx(rast raster,xrinteger,yrinteger)',
-        'COMMENT FUNCTION st_raster2worldcoordy(rast raster,xrinteger,yrinteger)',
-        'COMMENT FUNCTION st_raster2worldcoordy(rast raster,yrinteger)',
-        'COMMENT FUNCTION st_reclass(rast raster,nband integer,reclassexprtext,pixeltypetext,nodatavaldouble precision)',
-        'COMMENT FUNCTION st_reclass(rast raster,reclassexprtext,pixeltypetext)',
-        'COMMENT FUNCTION st_reclass(rast raster,variadicreclassargsetreclassarg[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_quantile(rast raster,exclude_nodata_valueboolean,quantiledouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_quantile(rast raster,nband integer,exclude_nodata_valueboolean,quantiledouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_quantile(rast raster,nband integer,exclude_nodata_valueboolean,quantilesdouble precision[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_quantile(rast raster,nband integer,quantiledouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_quantile(rast raster,nband integer,quantilesdouble precision[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_quantile(rast raster,quantiledouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_quantile(rast raster,quantilesdouble precision[])',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_raster2worldcoordx(rast raster,xrinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_raster2worldcoordx(rast raster,xrinteger,yrinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_raster2worldcoordy(rast raster,xrinteger,yrinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_raster2worldcoordy(rast raster,yrinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_reclass(rast raster,nband integer,reclassexprtext,pixeltypetext,nodatavaldouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_reclass(rast raster,reclassexprtext,pixeltypetext)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_reclass(rast raster,variadicreclassargsetreclassarg[])',
         'COMMENT FUNCTION st_relate(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_relate(geom1 geometry,geom2 geometry,integer)',
         'COMMENT FUNCTION st_relate(geom1 geometry,geom2 geometry,text)',
@@ -666,42 +807,67 @@ module CartoDB
         'COMMENT FUNCTION st_removeisonode(character varying,integer)',
         'COMMENT FUNCTION st_removepoint(geometry,integer)',
         'COMMENT FUNCTION st_removerepeatedpoints(geometry)',
-        'COMMENT FUNCTION st_resample(rast raster,refraster,algorithmtext,maxerrdouble precision,usescaleboolean)',
-        'COMMENT FUNCTION st_resample(rast raster,refraster,usescaleboolean,algorithmtext,maxerrdouble precision)',
-        'COMMENT FUNCTION st_resample(rast raster,sridinteger,scalexdouble precision,scaleydouble precision,gridxdouble precision,gridydouble precision,skewxdouble precision,skewydouble precision,algorithmtext,maxerrdouble precision)',
-        'COMMENT FUNCTION st_resample(rast raster,widthinteger,heightinteger,sridinteger,gridxdouble precision,gridydouble precision,skewxdouble precision,skewydouble precision,algorithmtext,maxerrdouble precision)',
-        'COMMENT FUNCTION st_rescale(rast raster,scalexdouble precision,scaleydouble precision,algorithmtext,maxerrdouble precision)',
-        'COMMENT FUNCTION st_rescale(rast raster,scalexydouble precision,algorithmtext,maxerrdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_resample(rast raster,refraster,algorithmtext,maxerrdouble precision,usescaleboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_resample(rast raster,refraster,usescaleboolean,algorithmtext,maxerrdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_resample(rast raster,sridinteger,scalexdouble precision,scaleydouble precision,gridxdouble precision,gridydouble precision,skewxdouble precision,skewydouble precision,algorithmtext,maxerrdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_resample(rast raster,widthinteger,heightinteger,sridinteger,gridxdouble precision,gridydouble precision,skewxdouble precision,skewydouble precision,algorithmtext,maxerrdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_rescale(rast raster,scalexdouble precision,scaleydouble precision,algorithmtext,maxerrdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_rescale(rast raster,scalexydouble precision,algorithmtext,maxerrdouble precision)',
         'COMMENT FUNCTION st_reverse(geometry)',
         'COMMENT FUNCTION st_rotate(geometry,double precision)',
         'COMMENT FUNCTION st_rotatex(geometry,double precision)',
         'COMMENT FUNCTION st_rotatey(geometry,double precision)',
         'COMMENT FUNCTION st_rotatez(geometry,double precision)',
-        'COMMENT FUNCTION st_rotation(raster)',
-        'COMMENT FUNCTION st_samealignment(rast1raster,rast2raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_rotation(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_samealignment(rast1raster,rast2raster)',
         'COMMENT FUNCTION st_samealignment(ulx1double precision,uly1double precision,scalex1double precision,scaley1double precision,skewx1double precision,skewy1double precision,ulx2double precision,uly2double precision,scalex2double precision,scaley2double precision,skewx2double precision,skewy2double precision)',
         'COMMENT FUNCTION st_scale(geometry,double precision,double precision)',
         'COMMENT FUNCTION st_scale(geometry,double precision,double precision,double precision)',
-        'COMMENT FUNCTION st_scalex(raster)',
-        'COMMENT FUNCTION st_scaley(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_scalex(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_scaley(raster)',
         'COMMENT FUNCTION st_segmentize(geometry,double precision)',
-        'COMMENT FUNCTION st_setbandisnodata(rast raster,bandinteger)',
-        'COMMENT FUNCTION st_setbandnodatavalue(rast raster,bandinteger,nodatavaluedouble precision,forcecheckingboolean)',
-        'COMMENT FUNCTION st_setbandnodatavalue(rast raster,nodatavaluedouble precision)',
-        'COMMENT FUNCTION st_setgeoreference(rast raster,georeftext,formattext)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setbandisnodata(rast raster,bandinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setbandnodatavalue(rast raster,bandinteger,nodatavaluedouble precision,forcecheckingboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setbandnodatavalue(rast raster,nodatavaluedouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setgeoreference(rast raster,georeftext,formattext)',
         'COMMENT FUNCTION st_setpoint(geometry,integer,geometry)',
-        'COMMENT FUNCTION st_setrotation(rast raster,rotationdouble precision)',
-        'COMMENT FUNCTION st_setscale(rast raster,scaledouble precision)',
-        'COMMENT FUNCTION st_setscale(rast raster,scalexdouble precision,scaleydouble precision)',
-        'COMMENT FUNCTION st_setskew(rast raster,skewdouble precision)',
-        'COMMENT FUNCTION st_setskew(rast raster,skewxdouble precision,skewydouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setrotation(rast raster,rotationdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setscale(rast raster,scaledouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setscale(rast raster,scalexdouble precision,scaleydouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setskew(rast raster,skewdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setskew(rast raster,skewxdouble precision,skewydouble precision)',
         'COMMENT FUNCTION st_setsrid(geometry,integer)',
-        'COMMENT FUNCTION st_setsrid(rast raster,sridinteger)',
-        'COMMENT FUNCTION st_setupperleft(rast raster,upperleftxdouble precision,upperleftydouble precision)',
-        'COMMENT FUNCTION st_setvalue(rast raster,bandinteger,ptgeometry,newvaluedouble precision)',
-        'COMMENT FUNCTION st_setvalue(rast raster,bandinteger,xinteger,yinteger,newvaluedouble precision)',
-        'COMMENT FUNCTION st_setvalue(rast raster,ptgeometry,newvaluedouble precision)',
-        'COMMENT FUNCTION st_setvalue(rast raster,xinteger,yinteger,newvaluedouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setsrid(rast raster,sridinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setupperleft(rast raster,upperleftxdouble precision,upperleftydouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setvalue(rast raster,bandinteger,ptgeometry,newvaluedouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setvalue(rast raster,bandinteger,xinteger,yinteger,newvaluedouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setvalue(rast raster,ptgeometry,newvaluedouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_setvalue(rast raster,xinteger,yinteger,newvaluedouble precision)',
         'COMMENT FUNCTION st_sharedpaths(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_sharedpaths(geometry,geometry)',
         'COMMENT FUNCTION st_shift_longitude(geometry)',
@@ -709,8 +875,10 @@ module CartoDB
         'COMMENT FUNCTION st_shortestline(geometry,geometry)',
         'COMMENT FUNCTION st_simplify(geometry,double precision)',
         'COMMENT FUNCTION st_simplifypreservetopology(geometry,double precision)',
-        'COMMENT FUNCTION st_skewx(raster)',
-        'COMMENT FUNCTION st_skewy(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_skewx(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_skewy(raster)',
         'COMMENT FUNCTION st_snap(geom1 geometry,geom2 geometry,double precision)',
         'COMMENT FUNCTION st_snap(geometry,geometry,double precision)',
         'COMMENT FUNCTION st_snaptogrid(geom1 geometry,geom2 geometry,double precision,double precision,double precision,double precision)',
@@ -721,20 +889,27 @@ module CartoDB
         'COMMENT FUNCTION st_split(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_split(geometry,geometry)',
         'COMMENT FUNCTION st_srid(geometry)',
-        'COMMENT FUNCTION st_srid(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_srid(raster)',
         'COMMENT FUNCTION st_startpoint(geometry)',
         'COMMENT FUNCTION st_summary(geometry)',
-        'COMMENT FUNCTION st_summarystats(rastertabletext,rastercolumntext,exclude_nodata_valueboolean)',
-        'COMMENT FUNCTION st_summarystats(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean)',
-        'COMMENT FUNCTION st_summarystats(rast raster,exclude_nodata_valueboolean)',
-        'COMMENT FUNCTION st_summarystats(rast raster,nband integer,exclude_nodata_valueboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_summarystats(rastertabletext,rastercolumntext,exclude_nodata_valueboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_summarystats(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_summarystats(rast raster,exclude_nodata_valueboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_summarystats(rast raster,nband integer,exclude_nodata_valueboolean)',
         'COMMENT FUNCTION st_symdifference(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_symdifference(geometry,geometry)',
         'COMMENT FUNCTION st_touches(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_touches(geometry,geometry)',
         'COMMENT FUNCTION st_transform(geometry,integer)',
-        'COMMENT FUNCTION st_transform(rast raster,sridinteger,algorithmtext,maxerrdouble precision,scalexdouble precision,scaleydouble precision)',
-        'COMMENT FUNCTION st_transform(rast raster,sridinteger,scalexdouble precision,scaleydouble precision,algorithmtext,maxerrdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_transform(rast raster,sridinteger,algorithmtext,maxerrdouble precision,scalexdouble precision,scaleydouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_transform(rast raster,sridinteger,scalexdouble precision,scaleydouble precision,algorithmtext,maxerrdouble precision)',
         'COMMENT FUNCTION st_translate(geometry,double precision,double precision)',
         'COMMENT FUNCTION st_translate(geometry,double precision,double precision,double precision)',
         'COMMENT FUNCTION st_transscale(geometry,double precision,double precision,double precision,double precision)',
@@ -742,36 +917,61 @@ module CartoDB
         'COMMENT FUNCTION st_union(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_union(geometry[])',
         'COMMENT FUNCTION st_union(geometry,geometry)',
-        'COMMENT FUNCTION st_upperleftx(raster)',
-        'COMMENT FUNCTION st_upperlefty(raster)',
-        'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean,searchvaluedouble precision,roundtodouble precision)',
-        'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
-        'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,nband integer,searchvaluedouble precision,roundtodouble precision)',
-        'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,nband integer,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
-        'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,searchvaluedouble precision,roundtodouble precision)',
-        'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
-        'COMMENT FUNCTION st_valuecount(rast raster,nband integer,exclude_nodata_valueboolean,searchvaluedouble precision,roundtodouble precision)',
-        'COMMENT FUNCTION st_valuecount(rast raster,nband integer,exclude_nodata_valueboolean,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
-        'COMMENT FUNCTION st_valuecount(rast raster,nband integer,searchvaluedouble precision,roundtodouble precision)',
-        'COMMENT FUNCTION st_valuecount(rast raster,nband integer,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
-        'COMMENT FUNCTION st_valuecount(rast raster,searchvaluedouble precision,roundtodouble precision)',
-        'COMMENT FUNCTION st_valuecount(rast raster,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
-        'COMMENT FUNCTION st_value(rast raster,bandinteger,ptgeometry,hasnodataboolean)',
-        'COMMENT FUNCTION st_value(rast raster,bandinteger,xinteger,yinteger,hasnodataboolean)',
-        'COMMENT FUNCTION st_value(rast raster,ptgeometry,hasnodataboolean)',
-        'COMMENT FUNCTION st_value(rast raster,xinteger,yinteger,hasnodataboolean)',
-        'COMMENT FUNCTION st_width(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_upperleftx(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_upperlefty(raster)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean,searchvaluedouble precision,roundtodouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,nband integer,exclude_nodata_valueboolean,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,nband integer,searchvaluedouble precision,roundtodouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,nband integer,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,searchvaluedouble precision,roundtodouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rastertabletext,rastercolumntext,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rast raster,nband integer,exclude_nodata_valueboolean,searchvaluedouble precision,roundtodouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rast raster,nband integer,exclude_nodata_valueboolean,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rast raster,nband integer,searchvaluedouble precision,roundtodouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rast raster,nband integer,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rast raster,searchvaluedouble precision,roundtodouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_valuecount(rast raster,searchvaluesdouble precision[],roundtodouble precision,OUTvaluedouble precision,OUTcountinteger)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_value(rast raster,bandinteger,ptgeometry,hasnodataboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_value(rast raster,bandinteger,xinteger,yinteger,hasnodataboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_value(rast raster,ptgeometry,hasnodataboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_value(rast raster,xinteger,yinteger,hasnodataboolean)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_width(raster)',
         'COMMENT FUNCTION st_within(geom1 geometry,geom2 geometry)',
         'COMMENT FUNCTION st_within(geometry,geometry)',
         'COMMENT FUNCTION st_wkbtosql(bytea)',
         'COMMENT FUNCTION st_wkbtosql(wkb bytea)',
         'COMMENT FUNCTION st_wkttosql(text)',
-        'COMMENT FUNCTION st_world2rastercoordx(rast raster,ptgeometry)',
-        'COMMENT FUNCTION st_world2rastercoordx(rast raster,xwdouble precision)',
-        'COMMENT FUNCTION st_world2rastercoordx(rast raster,xwdouble precision,ywdouble precision)',
-        'COMMENT FUNCTION st_world2rastercoordy(rast raster,ptgeometry)',
-        'COMMENT FUNCTION st_world2rastercoordy(rast raster,xwdouble precision,ywdouble precision)',
-        'COMMENT FUNCTION st_world2rastercoordy(rast raster,ywdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_world2rastercoordx(rast raster,ptgeometry)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_world2rastercoordx(rast raster,xwdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_world2rastercoordx(rast raster,xwdouble precision,ywdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_world2rastercoordy(rast raster,ptgeometry)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_world2rastercoordy(rast raster,xwdouble precision,ywdouble precision)',
+         # PG12_DEPRECATED
+         'COMMENT FUNCTION st_world2rastercoordy(rast raster,ywdouble precision)',
         'COMMENT FUNCTION st_x(geometry)',
         'COMMENT FUNCTION st_xmax(box3d)',
         'COMMENT FUNCTION st_xmin(box3d)',
@@ -803,7 +1003,8 @@ module CartoDB
         'COMMENT TYPE geomval',
         'COMMENT TYPE getfaceedges_returntype',
         'COMMENT TYPE histogram',
-        'COMMENT TYPE raster',
+         # PG12_DEPRECATED
+         'COMMENT TYPE raster',
         'COMMENT TYPE reclassarg',
         'COMMENT TYPE summarystats',
         'COMMENT TYPE topogeometry',
@@ -828,26 +1029,46 @@ module CartoDB
         'FUNCTION addoverviewconstraints(name,name,name,name,name,name,integer)',
         'FUNCTION addpoint(geometry,geometry)',
         'FUNCTION addpoint(geometry,geometry,integer)',
-        'FUNCTION addrastercolumn(character varying,character varying,character varying,character varying,integer,character varying[],boolean,boolean,double precision[],double precision,double precision,integer,integer,geometry)',
-        'FUNCTION addrastercolumn(character varying,character varying,character varying,integer,character varying[],boolean,boolean,double precision[],double precision,double precision,integer,integer,geometry)',
-        'FUNCTION addrastercolumn(character varying,character varying,integer,character varying[],boolean,boolean,double precision[],double precision,double precision,integer,integer,geometry)',
-        'FUNCTION _add_raster_constraint_alignment(name,name,name)',
-        'FUNCTION _add_raster_constraint_blocksize(name,name,name,text)',
-        'FUNCTION _add_raster_constraint_extent(name,name,name)',
-        'FUNCTION _add_raster_constraint(name,text)',
-        'FUNCTION _add_raster_constraint_nodata_values(name,name,name)',
-        'FUNCTION _add_raster_constraint_num_bands(name,name,name)',
-        'FUNCTION _add_raster_constraint_out_db(name,name,name)',
-        'FUNCTION _add_raster_constraint_pixel_types(name,name,name)',
-        'FUNCTION _add_raster_constraint_regular_blocking(name,name,name)',
-        'FUNCTION _add_raster_constraint_scale(name,name,name,character)',
-        'FUNCTION addrasterconstraints(name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
-        'FUNCTION addrasterconstraints(name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
-        'FUNCTION addrasterconstraints(name,name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
-        'FUNCTION addrasterconstraints(name,name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
-        'FUNCTION addrasterconstraints(name,name,name,text[])',
-        'FUNCTION addrasterconstraints(name,name,text[])',
-        'FUNCTION _add_raster_constraint_srid(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION addrastercolumn(character varying,character varying,character varying,character varying,integer,character varying[],boolean,boolean,double precision[],double precision,double precision,integer,integer,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION addrastercolumn(character varying,character varying,character varying,integer,character varying[],boolean,boolean,double precision[],double precision,double precision,integer,integer,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION addrastercolumn(character varying,character varying,integer,character varying[],boolean,boolean,double precision[],double precision,double precision,integer,integer,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_alignment(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_blocksize(name,name,name,text)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_extent(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint(name,text)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_nodata_values(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_num_bands(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_out_db(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_pixel_types(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_regular_blocking(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_scale(name,name,name,character)',
+         # PG12_DEPRECATED
+         'FUNCTION addrasterconstraints(name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION addrasterconstraints(name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION addrasterconstraints(name,name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION addrasterconstraints(name,name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION addrasterconstraints(name,name,name,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION addrasterconstraints(name,name,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION _add_raster_constraint_srid(name,name,name)',
         'FUNCTION addtopogeometrycolumn(character varying,character varying,character varying,character varying,character varying)',
         'FUNCTION addtopogeometrycolumn(character varying,character varying,character varying,character varying,character varying,integer)',
         'FUNCTION addtosearchpath(character varying)',
@@ -914,7 +1135,8 @@ module CartoDB
         'FUNCTION box2d_overlap(box2d,box2d)',
         'FUNCTION box2d_overleft(box2d,box2d)',
         'FUNCTION box2d_overright(box2d,box2d)',
-        'FUNCTION box2d(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION box2d(raster)',
         'FUNCTION box2d_right(box2d,box2d)',
         'FUNCTION box2d_same(box2d,box2d)',
         'FUNCTION box3d(box2d)',
@@ -924,7 +1146,8 @@ module CartoDB
         'FUNCTION box3d(geometry)',
         'FUNCTION box3d_in(cstring)',
         'FUNCTION box3d_out(box3d)',
-        'FUNCTION box3d(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION box3d(raster)',
         'FUNCTION box3dtobox(box3d)',
         'FUNCTION box(box3d)',
         'FUNCTION box(geometry)',
@@ -935,7 +1158,8 @@ module CartoDB
         'FUNCTION build_histogram2d(histogram2d,text,text,text)',
         'FUNCTION bytea(geography)',
         'FUNCTION bytea(geometry)',
-        'FUNCTION bytea(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION bytea(raster)',
         'FUNCTION cache_bbox()',
         'FUNCTION centroid(geometry)',
         'FUNCTION checkauth(text,text)',
@@ -979,32 +1203,56 @@ module CartoDB
         'FUNCTION _drop_overview_constraint(name,name,name)',
         'FUNCTION dropoverviewconstraints(name,name)',
         'FUNCTION dropoverviewconstraints(name,name,name)',
-        'FUNCTION droprastercolumn(character varying,character varying)',
-        'FUNCTION droprastercolumn(character varying,character varying,character varying)',
-        'FUNCTION droprastercolumn(character varying,character varying,character varying,character varying)',
-        'FUNCTION _drop_raster_constraint_alignment(name,name,name)',
-        'FUNCTION _drop_raster_constraint_blocksize(name,name,name,text)',
-        'FUNCTION _drop_raster_constraint_extent(name,name,name)',
-        'FUNCTION _drop_raster_constraint(name,name,name)',
-        'FUNCTION _drop_raster_constraint_nodata_values(name,name,name)',
-        'FUNCTION _drop_raster_constraint_num_bands(name,name,name)',
-        'FUNCTION _drop_raster_constraint_out_db(name,name,name)',
-        'FUNCTION _drop_raster_constraint_pixel_types(name,name,name)',
-        'FUNCTION _drop_raster_constraint_regular_blocking(name,name,name)',
-        'FUNCTION _drop_raster_constraint_scale(name,name,name,character)',
-        'FUNCTION droprasterconstraints(name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
-        'FUNCTION droprasterconstraints(name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
-        'FUNCTION droprasterconstraints(name,name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
-        'FUNCTION droprasterconstraints(name,name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
-        'FUNCTION droprasterconstraints(name,name,name,text[])',
-        'FUNCTION droprasterconstraints(name,name,text[])',
-        'FUNCTION _drop_raster_constraint_srid(name,name,name)',
-        'FUNCTION droprastertable(character varying)',
-        'FUNCTION droprastertable(character varying,character varying)',
-        'FUNCTION droprastertable(character varying,character varying,character varying)',
+         # PG12_DEPRECATED
+         'FUNCTION droprastercolumn(character varying,character varying)',
+         # PG12_DEPRECATED
+         'FUNCTION droprastercolumn(character varying,character varying,character varying)',
+         # PG12_DEPRECATED
+         'FUNCTION droprastercolumn(character varying,character varying,character varying,character varying)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_alignment(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_blocksize(name,name,name,text)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_extent(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_nodata_values(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_num_bands(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_out_db(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_pixel_types(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_regular_blocking(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_scale(name,name,name,character)',
+         # PG12_DEPRECATED
+         'FUNCTION droprasterconstraints(name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION droprasterconstraints(name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION droprasterconstraints(name,name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION droprasterconstraints(name,name,name,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION droprasterconstraints(name,name,name,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION droprasterconstraints(name,name,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION _drop_raster_constraint_srid(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION droprastertable(character varying)',
+         # PG12_DEPRECATED
+         'FUNCTION droprastertable(character varying,character varying)',
+         # PG12_DEPRECATED
+         'FUNCTION droprastertable(character varying,character varying,character varying)',
         'FUNCTION droptopogeometrycolumn(character varying,character varying,character varying)',
         'FUNCTION droptopology(character varying)',
-        'FUNCTION dumpaswktpolygons(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION dumpaswktpolygons(raster,integer)',
         'FUNCTION dump(geometry)',
         'FUNCTION dumprings(geometry)',
         'FUNCTION enablelongtransactions()',
@@ -1121,8 +1369,10 @@ module CartoDB
         'FUNCTION geometry_overlaps_nd(geometry,geometry)',
         'FUNCTION geometry_overleft(geometry,geometry)',
         'FUNCTION geometry_overright(geometry,geometry)',
-        'FUNCTION geometry_raster_contain(geometry,raster)',
-        'FUNCTION geometry_raster_overlap(geometry,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION geometry_raster_contain(geometry,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION geometry_raster_overlap(geometry,raster)',
         'FUNCTION geometry_recv(internal)',
         'FUNCTION geometry_right(geometry,geometry)',
         'FUNCTION geometry_samebox(geometry,geometry)',
@@ -1218,16 +1468,26 @@ module CartoDB
         'FUNCTION makepointm(double precision,double precision,double precision)',
         'FUNCTION makepolygon(geometry)',
         'FUNCTION makepolygon(geometry,geometry[])',
-        'FUNCTION mapalgebra4unionfinal1(rastexpr)',
-        'FUNCTION mapalgebra4unionfinal3(rastexpr)',
-        'FUNCTION mapalgebra4unionstate(raster,raster,text,text,text,double precision,text,text,text,double precision)',
-        'FUNCTION mapalgebra4unionstate(rastexpr,raster)',
-        'FUNCTION mapalgebra4unionstate(rastexpr,raster,text)',
-        'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text)',
-        'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text,text)',
-        'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text,text,double precision)',
-        'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text,text,double precision,text,text,text,double precision)',
-        'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text,text,double precision,text,text,text,double precision,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionfinal1(rastexpr)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionfinal3(rastexpr)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionstate(raster,raster,text,text,text,double precision,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionstate(rastexpr,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionstate(rastexpr,raster,text)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text,text,double precision,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION mapalgebra4unionstate(rastexpr,raster,text,text,text,double precision,text,text,text,double precision,text,text,text,double precision)',
         'FUNCTION max_distance(geometry,geometry)',
         'FUNCTION mem_size(geometry)',
         'FUNCTION m(geometry)',
@@ -1266,7 +1526,8 @@ module CartoDB
         'FUNCTION numpoints(geometry)',
         'FUNCTION overlaps(geometry,geometry)',
         'FUNCTION _overview_constraint_info(name,name,name)',
-        'FUNCTION _overview_constraint(raster,integer,name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _overview_constraint(raster,integer,name,name,name)',
         'FUNCTION perimeter2d(geometry)',
         'FUNCTION perimeter3d(geometry)',
         'FUNCTION perimeter(geometry)',
@@ -1274,6 +1535,10 @@ module CartoDB
         'FUNCTION pgis_abs_out(pgis_abs)',
         'FUNCTION pgis_geometry_accum_finalfn(pgis_abs)',
         'FUNCTION pgis_geometry_accum_transfn(pgis_abs,geometry)',
+        'FUNCTION pgis_geometry_accum_transfn(pgis_abs,geometry,double precision)',
+        'FUNCTION pgis_geometry_accum_transfn(pgis_abs,geometry,double precision,integer)',
+        'FUNCTION pgis_geometry_clusterintersecting_finalfn(pgis_abs)',
+        'FUNCTION pgis_geometry_clusterwithin_finalfn(pgis_abs)',
         'FUNCTION pgis_geometry_collect_finalfn(pgis_abs)',
         'FUNCTION pgis_geometry_makeline_finalfn(pgis_abs)',
         'FUNCTION pgis_geometry_polygonize_finalfn(pgis_abs)',
@@ -1319,9 +1584,12 @@ module CartoDB
         'FUNCTION postgis_libxml_version()',
         'FUNCTION postgis_noop(geometry)',
         'FUNCTION postgis_proj_version()',
-        'FUNCTION postgis_raster_lib_build_date()',
-        'FUNCTION postgis_raster_lib_version()',
-        'FUNCTION postgis_raster_scripts_installed()',
+         # PG12_DEPRECATED
+         'FUNCTION postgis_raster_lib_build_date()',
+         # PG12_DEPRECATED
+         'FUNCTION postgis_raster_lib_version()',
+         # PG12_DEPRECATED
+         'FUNCTION postgis_raster_scripts_installed()',
         'FUNCTION postgis_scripts_build_date()',
         'FUNCTION postgis_scripts_installed()',
         'FUNCTION postgis_scripts_released()',
@@ -1334,41 +1602,71 @@ module CartoDB
         'FUNCTION postgis_uses_stats()',
         'FUNCTION postgis_version()',
         'FUNCTION probe_geometry_columns()',
-        'FUNCTION raster_above(raster,raster)',
-        'FUNCTION raster_below(raster,raster)',
-        'FUNCTION _raster_constraint_info_alignment(name,name,name)',
-        'FUNCTION _raster_constraint_info_blocksize(name,name,name,text)',
-        'FUNCTION _raster_constraint_info_extent(name,name,name)',
-        'FUNCTION _raster_constraint_info_nodata_values(name,name,name)',
-        'FUNCTION _raster_constraint_info_num_bands(name,name,name)',
-        'FUNCTION _raster_constraint_info_out_db(name,name,name)',
-        'FUNCTION _raster_constraint_info_pixel_types(name,name,name)',
-        'FUNCTION _raster_constraint_info_regular_blocking(name,name,name)',
-        'FUNCTION _raster_constraint_info_scale(name,name,name,character)',
-        'FUNCTION _raster_constraint_info_srid(name,name,name)',
-        'FUNCTION _raster_constraint_nodata_values(raster)',
-        'FUNCTION _raster_constraint_out_db(raster)',
-        'FUNCTION _raster_constraint_pixel_types(raster)',
-        'FUNCTION raster_contained(raster,raster)',
-        'FUNCTION raster_contain(raster,raster)',
-        'FUNCTION raster_geometry_contain(raster,geometry)',
-        'FUNCTION raster_geometry_overlap(raster,geometry)',
-        'FUNCTION raster_in(cstring)',
-        'FUNCTION raster_left(raster,raster)',
-        'FUNCTION raster_out(raster)',
-        'FUNCTION raster_overabove(raster,raster)',
-        'FUNCTION raster_overbelow(raster,raster)',
-        'FUNCTION raster_overlap(raster,raster)',
-        'FUNCTION raster_overleft(raster,raster)',
-        'FUNCTION raster_overright(raster,raster)',
-        'FUNCTION raster_right(raster,raster)',
-        'FUNCTION raster_same(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_above(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_below(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_alignment(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_blocksize(name,name,name,text)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_extent(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_nodata_values(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_num_bands(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_out_db(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_pixel_types(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_regular_blocking(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_scale(name,name,name,character)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_info_srid(name,name,name)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_nodata_values(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_out_db(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION _raster_constraint_pixel_types(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_contained(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_contain(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_geometry_contain(raster,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_geometry_overlap(raster,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_in(cstring)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_left(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_out(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_overabove(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_overbelow(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_overlap(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_overleft(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_overright(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_right(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION raster_same(raster,raster)',
         'FUNCTION relate(geometry,geometry)',
         'FUNCTION relate(geometry,geometry,text)',
         'FUNCTION relationtrigger()',
         'FUNCTION removepoint(geometry,integer)',
         'FUNCTION rename_geometry_table_constraints()',
-        'FUNCTION _rename_raster_tables()',
+         # PG12_DEPRECATED
+         'FUNCTION _rename_raster_tables()',
         'FUNCTION reverse(geometry)',
         'FUNCTION rotate(geometry,double precision)',
         'FUNCTION rotatex(geometry,double precision)',
@@ -1414,17 +1712,28 @@ module CartoDB
         'FUNCTION st_3dperimeter(geometry)',
         'FUNCTION ST_3DPerimeter(geometry)',
         'FUNCTION st_3dshortestline(geometry,geometry)',
-        'FUNCTION st_above(raster,raster)',
-        'FUNCTION st_addband(raster,integer,text)',
-        'FUNCTION st_addband(raster,integer,text,double precision)',
-        'FUNCTION st_addband(raster,integer,text,double precision,double precision)',
-        'FUNCTION st_addband(raster,raster)',
-        'FUNCTION st_addband(raster,raster,integer)',
-        'FUNCTION st_addband(raster,raster[],integer)',
-        'FUNCTION st_addband(raster,raster,integer,integer)',
-        'FUNCTION st_addband(raster,text)',
-        'FUNCTION st_addband(raster,text,double precision)',
-        'FUNCTION st_addband(raster,text,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_above(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,integer,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,integer,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,integer,text,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,raster[],integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_addband(raster,text,double precision,double precision)',
         'FUNCTION st_addbbox(geometry)',
         'FUNCTION st_addedgemodface(character varying,integer,integer,public.geometry)',
         'FUNCTION st_addedgenewfaces(character varying,integer,integer,public.geometry)',
@@ -1435,35 +1744,54 @@ module CartoDB
         'FUNCTION st_addpoint(geometry,geometry,integer)',
         'FUNCTION st_affine(geometry,double precision,double precision,double precision,double precision,double precision,double precision)',
         'FUNCTION st_affine(geometry,double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision)',
-        'FUNCTION st_approxcount(raster,boolean,double precision)',
-        'FUNCTION st_approxcount(raster,double precision)',
-        'FUNCTION st_approxcount(raster,integer,boolean,double precision)',
-        'FUNCTION st_approxcount(raster,integer,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxcount(raster,boolean,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxcount(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxcount(raster,integer,boolean,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxcount(raster,integer,double precision)',
         'FUNCTION st_approxcount(text,text,boolean,double precision)',
         'FUNCTION st_approxcount(text,text,double precision)',
         'FUNCTION st_approxcount(text,text,integer,boolean,double precision)',
         'FUNCTION st_approxcount(text,text,integer,double precision)',
-        'FUNCTION st_approxhistogram(raster,double precision)',
-        'FUNCTION st_approxhistogram(raster,integer,boolean,double precision,integer,boolean)',
-        'FUNCTION st_approxhistogram(raster,integer,boolean,double precision,integer,double precision[],boolean)',
-        'FUNCTION st_approxhistogram(raster,integer,double precision)',
-        'FUNCTION st_approxhistogram(raster,integer,double precision,integer,boolean)',
-        'FUNCTION st_approxhistogram(raster,integer,double precision,integer,double precision[],boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxhistogram(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxhistogram(raster,integer,boolean,double precision,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxhistogram(raster,integer,boolean,double precision,integer,double precision[],boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxhistogram(raster,integer,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxhistogram(raster,integer,double precision,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxhistogram(raster,integer,double precision,integer,double precision[],boolean)',
         'FUNCTION st_approxhistogram(text,text,double precision)',
         'FUNCTION st_approxhistogram(text,text,integer,boolean,double precision,integer,boolean)',
         'FUNCTION st_approxhistogram(text,text,integer,boolean,double precision,integer,double precision[],boolean)',
         'FUNCTION st_approxhistogram(text,text,integer,double precision)',
         'FUNCTION st_approxhistogram(text,text,integer,double precision,integer,boolean)',
         'FUNCTION st_approxhistogram(text,text,integer,double precision,integer,double precision[],boolean)',
-        'FUNCTION st_approxquantile(raster,boolean,double precision)',
-        'FUNCTION st_approxquantile(raster,double precision)',
-        'FUNCTION st_approxquantile(raster,double precision[])',
-        'FUNCTION st_approxquantile(raster,double precision,double precision)',
-        'FUNCTION st_approxquantile(raster,double precision,double precision[])',
-        'FUNCTION st_approxquantile(raster,integer,boolean,double precision,double precision)',
-        'FUNCTION st_approxquantile(raster,integer,boolean,double precision,double precision[])',
-        'FUNCTION st_approxquantile(raster,integer,double precision,double precision)',
-        'FUNCTION st_approxquantile(raster,integer,double precision,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxquantile(raster,boolean,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxquantile(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxquantile(raster,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxquantile(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxquantile(raster,double precision,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxquantile(raster,integer,boolean,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxquantile(raster,integer,boolean,double precision,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxquantile(raster,integer,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxquantile(raster,integer,double precision,double precision[])',
         'FUNCTION st_approxquantile(text,text,boolean,double precision)',
         'FUNCTION st_approxquantile(text,text,double precision)',
         'FUNCTION st_approxquantile(text,text,double precision[])',
@@ -1473,10 +1801,14 @@ module CartoDB
         'FUNCTION st_approxquantile(text,text,integer,boolean,double precision,double precision[])',
         'FUNCTION st_approxquantile(text,text,integer,double precision,double precision)',
         'FUNCTION st_approxquantile(text,text,integer,double precision,double precision[])',
-        'FUNCTION st_approxsummarystats(raster,boolean,double precision)',
-        'FUNCTION st_approxsummarystats(raster,double precision)',
-        'FUNCTION st_approxsummarystats(raster,integer,boolean,double precision)',
-        'FUNCTION st_approxsummarystats(raster,integer,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxsummarystats(raster,boolean,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxsummarystats(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxsummarystats(raster,integer,boolean,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_approxsummarystats(raster,integer,double precision)',
         'FUNCTION st_approxsummarystats(text,text,boolean)',
         'FUNCTION st_approxsummarystats(text,text,double precision)',
         'FUNCTION st_approxsummarystats(text,text,integer,boolean,double precision)',
@@ -1491,7 +1823,8 @@ module CartoDB
         'FUNCTION st_asbinary(geography,text)',
         'FUNCTION st_asbinary(geometry)',
         'FUNCTION st_asbinary(geometry,text)',
-        'FUNCTION st_asbinary(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asbinary(raster)',
         'FUNCTION st_asbinary(text)',
         'FUNCTION st_asencodedpolyline(geometry)',
         'FUNCTION st_asencodedpolyline(geometry,integer)',
@@ -1500,7 +1833,8 @@ module CartoDB
         'FUNCTION st_asewkt(geography)',
         'FUNCTION st_asewkt(geometry)',
         'FUNCTION st_asewkt(text)',
-        'FUNCTION st_asgdalraster(raster,text,text[],integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asgdalraster(raster,text,text[],integer)',
         'FUNCTION st_asgeojson(geography)',
         'FUNCTION st_asgeojson(geography,integer)',
         'FUNCTION st_asgeojson(geography,integer,integer)',
@@ -1538,11 +1872,16 @@ module CartoDB
         'FUNCTION st_asgml(text)',
         'FUNCTION st_ashexewkb(geometry)',
         'FUNCTION st_ashexewkb(geometry,text)',
-        'FUNCTION st_asjpeg(raster,integer,integer)',
-        'FUNCTION st_asjpeg(raster,integer[],integer)',
-        'FUNCTION st_asjpeg(raster,integer,text[])',
-        'FUNCTION st_asjpeg(raster,integer[],text[])',
-        'FUNCTION st_asjpeg(raster,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_asjpeg(raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asjpeg(raster,integer[],integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asjpeg(raster,integer,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_asjpeg(raster,integer[],text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_asjpeg(raster,text[])',
         'FUNCTION st_askml(geography)',
         'FUNCTION st_askml(geography,integer)',
         'FUNCTION st_askml(geometry)',
@@ -1561,32 +1900,58 @@ module CartoDB
         'FUNCTION st_aslatlontext(geometry)',
         'FUNCTION st_aslatlontext(geometry,text)',
         'FUNCTION _st_aspect4ma(double precision[],text,text[])',
-        'FUNCTION st_aspect(raster,integer,text)',
-        'FUNCTION st_aspect(raster,integer,text,boolean)',
-        'FUNCTION st_aspect(raster,integer,text,text,boolean)',
-        'FUNCTION st_aspng(raster,integer,integer)',
-        'FUNCTION st_aspng(raster,integer[],integer)',
-        'FUNCTION st_aspng(raster,integer,text[])',
-        'FUNCTION st_aspng(raster,integer[],text[])',
-        'FUNCTION st_aspng(raster,text[])',
-        'FUNCTION st_asraster(geometry,double precision,double precision,double precision,double precision,text,double precision,double precision,double precision,double precision,boolean)',
-        'FUNCTION st_asraster(geometry,double precision,double precision,double precision,double precision,text[],double precision[],double precision[],double precision,double precision,boolean)',
-        'FUNCTION _st_asraster(geometry,double precision,double precision,integer,integer,text[],double precision[],double precision[],double precision,double precision,double precision,double precision,double precision,double precision,boolean)',
-        'FUNCTION _st_asraster(geometry,double precision,double precision,integer,integer,text[],double precision[],double precision[],double precision,double precision,double precision,double precision,double precision,double precision,touched boolean)',
-        'FUNCTION st_asraster(geometry,double precision,double precision,text,double precision,double precision,double precision,double precision,double precision,double precision)',
-        'FUNCTION st_asraster(geometry,double precision,double precision,text,double precision,double precision,double precision,double precision,double precision,double precision,boolean)',
-        'FUNCTION st_asraster(geometry,double precision,double precision,text[],double precision[],double precision[],double precision,double precision,double precision,double precision,boolean)',
-        'FUNCTION st_asraster(geometry,integer,integer,double precision,double precision,text,double precision,double precision,double precision,double precision)',
-        'FUNCTION st_asraster(geometry,integer,integer,double precision,double precision,text[],double precision[],double precision[],double precision,double precision)',
-        'FUNCTION st_asraster(geometry,integer,integer,double precision,double precision,text,double precision,double precision,double precision,double precision,boolean)',
-        'FUNCTION st_asraster(geometry,integer,integer,double precision,double precision,text[],double precision[],double precision[],double precision,double precision,boolean)',
-        'FUNCTION st_asraster(geometry,integer,integer,text,double precision,double precision,double precision,double precision,double precision,double precision)',
-        'FUNCTION st_asraster(geometry,integer,integer,text[],double precision[],double precision[],double precision,double precision,double precision,double precision)',
-        'FUNCTION st_asraster(geometry,integer,integer,text,double precision,double precision,double precision,double precision,double precision,double precision,boolean)',
-        'FUNCTION st_asraster(geometry,integer,integer,text[],double precision[],double precision[],double precision,double precision,double precision,double precision,boolean)',
-        'FUNCTION st_asraster(geometry,raster,text,double precision,double precision)',
-        'FUNCTION st_asraster(geometry,raster,text,double precision,double precision,boolean)',
-        'FUNCTION st_asraster(geometry,raster,text[],double precision[],double precision[],boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_aspect(raster,integer,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_aspect(raster,integer,text,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_aspect(raster,integer,text,text,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_aspng(raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_aspng(raster,integer[],integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_aspng(raster,integer,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_aspng(raster,integer[],text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_aspng(raster,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,double precision,double precision,double precision,double precision,text,double precision,double precision,double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,double precision,double precision,double precision,double precision,text[],double precision[],double precision[],double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_asraster(geometry,double precision,double precision,integer,integer,text[],double precision[],double precision[],double precision,double precision,double precision,double precision,double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_asraster(geometry,double precision,double precision,integer,integer,text[],double precision[],double precision[],double precision,double precision,double precision,double precision,double precision,double precision,touched boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,double precision,double precision,text,double precision,double precision,double precision,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,double precision,double precision,text,double precision,double precision,double precision,double precision,double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,double precision,double precision,text[],double precision[],double precision[],double precision,double precision,double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,integer,integer,double precision,double precision,text,double precision,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,integer,integer,double precision,double precision,text[],double precision[],double precision[],double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,integer,integer,double precision,double precision,text,double precision,double precision,double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,integer,integer,double precision,double precision,text[],double precision[],double precision[],double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,integer,integer,text,double precision,double precision,double precision,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,integer,integer,text[],double precision[],double precision[],double precision,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,integer,integer,text,double precision,double precision,double precision,double precision,double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,integer,integer,text[],double precision[],double precision[],double precision,double precision,double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,raster,text,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,raster,text,double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_asraster(geometry,raster,text[],double precision[],double precision[],boolean)',
         'FUNCTION st_assvg(geography)',
         'FUNCTION st_assvg(geography,integer)',
         'FUNCTION st_assvg(geography,integer,integer)',
@@ -1597,10 +1962,14 @@ module CartoDB
         'FUNCTION st_astext(geography)',
         'FUNCTION st_astext(geometry)',
         'FUNCTION st_astext(text)',
-        'FUNCTION st_astiff(raster,integer[],text,integer)',
-        'FUNCTION st_astiff(raster,integer[],text[],integer)',
-        'FUNCTION st_astiff(raster,text,integer)',
-        'FUNCTION st_astiff(raster,text[],integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_astiff(raster,integer[],text,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_astiff(raster,integer[],text[],integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_astiff(raster,text,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_astiff(raster,text[],integer)',
         'FUNCTION st_astwkb(geometry,integer)',
         'FUNCTION st_astwkb(geometry,integer,bigint)',
         'FUNCTION st_astwkb(geometry,integer,bigint,boolean)',
@@ -1613,27 +1982,46 @@ module CartoDB
         'FUNCTION _st_asx3d(integer,geometry,integer,integer,text)',
         'FUNCTION st_azimuth(geography,geography)',
         'FUNCTION st_azimuth(geometry,geometry)',
-        'FUNCTION st_bandisnodata(raster)',
-        'FUNCTION st_bandisnodata(raster,boolean)',
-        'FUNCTION st_bandisnodata(raster,integer)',
-        'FUNCTION st_bandisnodata(raster,integer,boolean)',
-        'FUNCTION st_bandmetadata(raster)',
-        'FUNCTION st_bandmetadata(raster,integer)',
-        'FUNCTION st_bandmetadata(raster,integer[])',
-        'FUNCTION st_bandmetadata(raster,variadic integer[])',
-        'FUNCTION st_bandnodatavalue(raster)',
-        'FUNCTION st_bandnodatavalue(raster,integer)',
-        'FUNCTION st_bandpath(raster)',
-        'FUNCTION st_bandpath(raster,integer)',
-        'FUNCTION st_bandpixeltype(raster)',
-        'FUNCTION st_bandpixeltype(raster,integer)',
-        'FUNCTION st_band(raster,integer)',
-        'FUNCTION st_band(raster,integer[])',
-        'FUNCTION st_band(raster,text,character)',
-        'FUNCTION st_bandsurface(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandisnodata(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandisnodata(raster,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandisnodata(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandisnodata(raster,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandmetadata(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandmetadata(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandmetadata(raster,integer[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandmetadata(raster,variadic integer[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandnodatavalue(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandnodatavalue(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandpath(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandpath(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandpixeltype(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandpixeltype(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_band(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_band(raster,integer[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_band(raster,text,character)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bandsurface(raster,integer)',
         'FUNCTION st_bdmpolyfromtext(text,integer)',
         'FUNCTION st_bdpolyfromtext(text,integer)',
-        'FUNCTION st_below(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_below(raster,raster)',
         'FUNCTION _st_bestsrid(geography)',
         'FUNCTION _st_bestsrid(geography,geography)',
         'FUNCTION st_boundary(geometry)',
@@ -1668,7 +2056,8 @@ module CartoDB
         'FUNCTION st_build_histogram2d(histogram2d,text,text)',
         'FUNCTION st_build_histogram2d(histogram2d,text,text,text)',
         'FUNCTION st_bytea(geometry)',
-        'FUNCTION st_bytea(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_bytea(raster)',
         'FUNCTION st_cache_bbox()',
         'FUNCTION st_centroid(geometry)',
         'FUNCTION _st_changeedgegeom_adjacent_edges(character varying,integer,integer)',
@@ -1676,12 +2065,18 @@ module CartoDB
         'FUNCTION st_chip_in(cstring)',
         'FUNCTION st_chip_out(chip)',
         'FUNCTION st_cleangeometry(geometry)',
-        'FUNCTION st_clip(raster,geometry,boolean)',
-        'FUNCTION st_clip(raster,geometry,double precision,boolean)',
-        'FUNCTION st_clip(raster,geometry,double precision[],boolean)',
-        'FUNCTION st_clip(raster,integer,geometry,boolean)',
-        'FUNCTION st_clip(raster,integer,geometry,double precision,boolean)',
-        'FUNCTION st_clip(raster,integer,geometry,double precision[],boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_clip(raster,geometry,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_clip(raster,geometry,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_clip(raster,geometry,double precision[],boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_clip(raster,integer,geometry,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_clip(raster,integer,geometry,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_clip(raster,integer,geometry,double precision[],boolean)',
         'FUNCTION st_closestpoint(geometry,geometry)',
         'FUNCTION st_collect_garray(geometry[])',
         'FUNCTION st_collect(geometry[])',
@@ -1697,24 +2092,36 @@ module CartoDB
         'FUNCTION st_concavehull(geometry,double precision,boolean)',
         'FUNCTION st_concavehull(geometry,float)',
         'FUNCTION _st_concvehull(geometry)',
-        'FUNCTION st_contained(raster,raster)',
-        'FUNCTION st_contain(raster,raster)',
-        'FUNCTION st_contain(raster,raster)**/',
+         # PG12_DEPRECATED
+         'FUNCTION st_contained(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_contain(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_contain(raster,raster)**/',
         'FUNCTION _st_contains(geometry,geometry)',
         'FUNCTION st_contains(geometry,geometry)',
-        'FUNCTION _st_contains(geometry,raster,integer)',
-        'FUNCTION st_contains(geometry,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_contains(geometry,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_contains(geometry,raster,integer)',
         'FUNCTION _st_containsproperly(geometry,geometry)',
         'FUNCTION st_containsproperly(geometry,geometry)',
-        'FUNCTION _st_contains(raster,geometry,integer)',
-        'FUNCTION st_contains(raster,geometry,integer)',
-        'FUNCTION st_contains(raster,integer,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_contains(raster,geometry,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_contains(raster,geometry,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_contains(raster,integer,geometry)',
         'FUNCTION st_convexhull(geometry)',
-        'FUNCTION st_convexhull(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_convexhull(raster)',
         'FUNCTION st_coorddim(geometry)',
-        'FUNCTION st_count(raster,boolean)',
-        'FUNCTION st_count(raster,integer,boolean)',
-        'FUNCTION _st_count(raster,integer,boolean,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_count(raster,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_count(raster,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_count(raster,integer,boolean,double precision)',
         'FUNCTION st_count(text,text,boolean)',
         'FUNCTION st_count(text,text,integer,boolean)',
         'FUNCTION _st_count(text,text,integer,boolean,double precision)',
@@ -1747,9 +2154,12 @@ module CartoDB
         'FUNCTION st_distance_spheroid(geometry,geometry,spheroid)',
         'FUNCTION st_distance(text,text)',
         'FUNCTION st_dropbbox(geometry)',
-        'FUNCTION st_dumpaspolygons(raster)',
-        'FUNCTION st_dumpaspolygons(raster,integer)',
-        'FUNCTION _st_dumpaswktpolygons(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_dumpaspolygons(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_dumpaspolygons(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_dumpaswktpolygons(raster,integer)',
         'FUNCTION st_dump(geometry)',
         'FUNCTION st_dumppoints(geometry)',
         'FUNCTION _st_dumppoints(geometry,integer[])',
@@ -1762,7 +2172,8 @@ module CartoDB
         'FUNCTION st_dwithin(text,text,double precision)',
         'FUNCTION st_endpoint(geometry)',
         'FUNCTION st_envelope(geometry)',
-        'FUNCTION st_envelope(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_envelope(raster)',
         'FUNCTION _st_equals(geometry,geometry)',
         'FUNCTION st_equals(geometry,geometry)',
         'FUNCTION st_estimated_extent(text,text)',
@@ -1841,9 +2252,12 @@ module CartoDB
         'FUNCTION st_geomfromtext(text,integer)',
         'FUNCTION st_geomfromwkb(bytea)',
         'FUNCTION st_geomfromwkb(bytea,integer)',
-        'FUNCTION st_georeference(raster)',
-        'FUNCTION st_georeference(raster,text)',
-        'FUNCTION st_geotransform(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_georeference(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_georeference(raster,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_geotransform(raster)',
         'FUNCTION st_getfaceedges(character varying,integer)',
         'FUNCTION _st_getfacegeometry(character varying,integer)',
         'FUNCTION st_getfacegeometry(character varying,integer)',
@@ -1851,24 +2265,36 @@ module CartoDB
         'FUNCTION st_gmltosql(text,integer)',
         'FUNCTION st_hasarc(geometry)',
         'FUNCTION st_hasbbox(geometry)',
-        'FUNCTION st_hasnoband(raster)',
-        'FUNCTION st_hasnoband(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_hasnoband(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_hasnoband(raster,integer)',
         'FUNCTION st_hausdorffdistance(geometry,geometry)',
         'FUNCTION st_hausdorffdistance(geometry,geometry,double precision)',
         'FUNCTION st_height(chip)',
-        'FUNCTION st_height(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_height(raster)',
         'FUNCTION _st_hillshade4ma(double precision[],text,text[])',
-        'FUNCTION st_hillshade(raster,integer,text,double precision,double precision,double precision,double precision)',
-        'FUNCTION st_hillshade(raster,integer,text,double precision,double precision,double precision,double precision,boolean)',
-        'FUNCTION st_hillshade(raster,integer,text,float,float,float,float)',
-        'FUNCTION st_hillshade(raster,integer,text,float,float,float,float,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_hillshade(raster,integer,text,double precision,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_hillshade(raster,integer,text,double precision,double precision,double precision,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_hillshade(raster,integer,text,float,float,float,float)',
+         # PG12_DEPRECATED
+         'FUNCTION st_hillshade(raster,integer,text,float,float,float,float,boolean)',
         'FUNCTION st_histogram2d_in(cstring)',
         'FUNCTION st_histogram2d_out(histogram2d)',
-        'FUNCTION _st_histogram(raster,integer,boolean,double precision,integer,double precision[],boolean,double precision,double precision)',
-        'FUNCTION st_histogram(raster,integer,boolean,integer,boolean)',
-        'FUNCTION st_histogram(raster,integer,boolean,integer,double precision[],boolean)',
-        'FUNCTION st_histogram(raster,integer,integer,boolean)',
-        'FUNCTION st_histogram(raster,integer,integer,double precision[],boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_histogram(raster,integer,boolean,double precision,integer,double precision[],boolean,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_histogram(raster,integer,boolean,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_histogram(raster,integer,boolean,integer,double precision[],boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_histogram(raster,integer,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_histogram(raster,integer,integer,double precision[],boolean)',
         'FUNCTION _st_histogram(text,text,integer,boolean,double precision,integer,double precision[],boolean)',
         'FUNCTION st_histogram(text,text,integer,boolean,integer,boolean)',
         'FUNCTION st_histogram(text,text,integer,boolean,integer,double precision[],boolean)',
@@ -1879,52 +2305,90 @@ module CartoDB
         'FUNCTION st_interpolatepoint(geometry,geometry)',
         'FUNCTION st_intersection(geography,geography)',
         'FUNCTION st_intersection(geometry,geometry)',
-        'FUNCTION st_intersection(geometry,raster)',
-        'FUNCTION st_intersection(geometry,raster,integer)',
-        'FUNCTION st_intersection(raster,geometry)',
-        'FUNCTION st_intersection(raster,geometry,regprocedure)',
-        'FUNCTION st_intersection(raster,geometry,text,regprocedure)',
-        'FUNCTION st_intersection(raster,integer,geometry)',
-        'FUNCTION st_intersection(raster,integer,geometry,regprocedure)',
-        'FUNCTION st_intersection(raster,integer,geometry,text,regprocedure)',
-        'FUNCTION st_intersection(raster,integer,raster,integer,double precision)',
-        'FUNCTION st_intersection(raster,integer,raster,integer,double precision[])',
-        'FUNCTION st_intersection(raster,integer,raster,integer,regprocedure)',
-        'FUNCTION st_intersection(raster,integer,raster,integer,text,double precision)',
-        'FUNCTION st_intersection(raster,integer,raster,integer,text,double precision[])',
-        'FUNCTION st_intersection(raster,integer,raster,integer,text,regprocedure)',
-        'FUNCTION _st_intersection(raster,integer,raster,integer,text,text,regprocedure)',
-        'FUNCTION st_intersection(raster,raster,double precision)',
-        'FUNCTION st_intersection(raster,raster,double precision[])',
-        'FUNCTION st_intersection(raster,raster,integer,integer)',
-        'FUNCTION st_intersection(raster,raster,regprocedure)',
-        'FUNCTION st_intersection(raster,raster,text,double precision)',
-        'FUNCTION st_intersection(raster,raster,text,double precision[])',
-        'FUNCTION st_intersection(raster,raster,text,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(geometry,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(geometry,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,geometry,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,geometry,text,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,integer,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,integer,geometry,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,integer,geometry,text,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,integer,raster,integer,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,integer,raster,integer,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,integer,raster,integer,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,integer,raster,integer,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,integer,raster,integer,text,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,integer,raster,integer,text,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_intersection(raster,integer,raster,integer,text,text,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,raster,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,raster,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,raster,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,raster,text,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersection(raster,raster,text,regprocedure)',
         'FUNCTION st_intersection(text,text)',
         'FUNCTION st_intersects(geography,geography)',
         'FUNCTION _st_intersects(geometry,geometry)',
         'FUNCTION st_intersects(geometry,geometry)',
-        'FUNCTION st_intersects(geometry,raster)',
-        'FUNCTION st_intersects(geometry,raster,boolean)',
-        'FUNCTION _st_intersects(geometry,raster,integer)',
-        'FUNCTION st_intersects(geometry,raster,integer)',
-        'FUNCTION _st_intersects(geometry,raster,integer,boolean)',
-        'FUNCTION st_intersects(geometry,raster,integer,boolean)',
-        'FUNCTION st_intersects(raster,boolean,geometry)',
-        'FUNCTION st_intersects(raster,geometry)',
-        'FUNCTION _st_intersects(raster,geometry,integer)',
-        'FUNCTION st_intersects(raster,geometry,integer)',
-        'FUNCTION st_intersects(raster,integer,boolean,geometry)',
-        'FUNCTION st_intersects(raster,integer,geometry)',
-        'FUNCTION _st_intersects(raster,integer,raster,integer)',
-        'FUNCTION st_intersects(raster,integer,raster,integer)',
-        'FUNCTION st_intersects(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(geometry,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(geometry,raster,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_intersects(geometry,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(geometry,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_intersects(geometry,raster,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(geometry,raster,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(raster,boolean,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(raster,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_intersects(raster,geometry,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(raster,geometry,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(raster,integer,boolean,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(raster,integer,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_intersects(raster,integer,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(raster,integer,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_intersects(raster,raster)',
         'FUNCTION st_intersects(text,text)',
         'FUNCTION st_isclosed(geometry)',
         'FUNCTION st_iscollection(geometry)',
         'FUNCTION st_isempty(geometry)',
-        'FUNCTION st_isempty(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_isempty(raster)',
         'FUNCTION st_isring(geometry)',
         'FUNCTION st_issimple(geometry)',
         'FUNCTION st_isvaliddetail(geometry)',
@@ -1933,7 +2397,8 @@ module CartoDB
         'FUNCTION st_isvalid(geometry,integer)',
         'FUNCTION st_isvalidreason(geometry)',
         'FUNCTION st_isvalidreason(geometry,integer)',
-        'FUNCTION st_left(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_left(raster,raster)',
         'FUNCTION st_length2d(geometry)',
         'FUNCTION st_length2d_spheroid(geometry,spheroid)',
         'FUNCTION st_length3d(geometry)',
@@ -1970,10 +2435,14 @@ module CartoDB
         'FUNCTION st_longestline(geometry,geometry)',
         'FUNCTION st_makebox2d(geometry,geometry)',
         'FUNCTION st_makebox3d(geometry,geometry)',
-        'FUNCTION st_makeemptyraster(integer,integer,double precision,double precision,double precision)',
-        'FUNCTION st_makeemptyraster(integer,integer,double precision,double precision,double precision,double precision,double precision,double precision)',
-        'FUNCTION st_makeemptyraster(integer,integer,double precision,double precision,double precision,double precision,double precision,double precision,integer)',
-        'FUNCTION st_makeemptyraster(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_makeemptyraster(integer,integer,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_makeemptyraster(integer,integer,double precision,double precision,double precision,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_makeemptyraster(integer,integer,double precision,double precision,double precision,double precision,double precision,double precision,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_makeemptyraster(raster)',
         'FUNCTION st_makeenvelope(double precision,double precision,double precision,double precision)',
         'FUNCTION st_makeenvelope(double precision,double precision,double precision,double precision,integer)',
         'FUNCTION st_makeline_garray(geometry[])',
@@ -1986,52 +2455,92 @@ module CartoDB
         'FUNCTION st_makepolygon(geometry)',
         'FUNCTION st_makepolygon(geometry,geometry[])',
         'FUNCTION st_makevalid(geometry)',
-        'FUNCTION _st_mapalgebra4unionfinal1(raster)',
-        'FUNCTION _st_mapalgebra4unionstate(raster,raster)',
-        'FUNCTION _st_mapalgebra4unionstate(raster,raster,integer)',
-        'FUNCTION _st_mapalgebra4unionstate(raster,raster,integer,text)',
-        'FUNCTION _st_mapalgebra4unionstate(raster,raster,text)',
-        'FUNCTION _st_mapalgebra4unionstate(raster,raster,text,text,text,double precision,text,text,text,double precision)',
-        'FUNCTION st_mapalgebraexpr(raster,integer,raster,integer,text,text,text,text,text,double precision)',
-        'FUNCTION st_mapalgebraexpr(raster,integer,text,text,double precision)',
-        'FUNCTION st_mapalgebraexpr(raster,integer,text,text,text)',
-        'FUNCTION st_mapalgebraexpr(raster,raster,text,text,text,text,text,double precision)',
-        'FUNCTION st_mapalgebraexpr(raster,text,text,double precision)',
-        'FUNCTION st_mapalgebraexpr(raster,text,text,text)',
-        'FUNCTION st_mapalgebrafctngb(raster,integer,text,integer,integer,regprocedure,text,text[])',
-        'FUNCTION st_mapalgebrafctngb(raster,integer,text,integer,integer,regprocedure,text,variadic text[])',
-        'FUNCTION st_mapalgebrafct(raster,integer,raster,integer,regprocedure,text,text,text[])',
-        'FUNCTION st_mapalgebrafct(raster,integer,raster,integer,regprocedure,text,text,variadic text[])',
-        'FUNCTION st_mapalgebrafct(raster,integer,regprocedure)',
-        'FUNCTION st_mapalgebrafct(raster,integer,regprocedure,text[])',
-        'FUNCTION st_mapalgebrafct(raster,integer,regprocedure,variadic text[])',
-        'FUNCTION st_mapalgebrafct(raster,integer,text,regprocedure)',
-        'FUNCTION st_mapalgebrafct(raster,integer,text,regprocedure,text[])',
-        'FUNCTION st_mapalgebrafct(raster,integer,text,regprocedure,variadic text[])',
-        'FUNCTION st_mapalgebrafct(raster,raster,regprocedure,text,text,text[])',
-        'FUNCTION st_mapalgebrafct(raster,raster,regprocedure,text,text,variadic text[])',
-        'FUNCTION  st_mapalgebrafct(raster,raster,regprocedure,variadic text[])',
-        'FUNCTION st_mapalgebrafct(raster,regprocedure)',
-        'FUNCTION st_mapalgebrafct(raster,regprocedure,text[])',
-        'FUNCTION st_mapalgebrafct(raster,regprocedure,variadic text[])',
-        'FUNCTION st_mapalgebrafct(raster,text,regprocedure)',
-        'FUNCTION st_mapalgebrafct(raster,text,regprocedure,text[])',
-        'FUNCTION st_mapalgebrafct(raster,text,regprocedure,variadic text[])',
-        'FUNCTION st_mapalgebra(raster,integer,text)',
-        'FUNCTION st_mapalgebra(raster,integer,text,text)',
-        'FUNCTION st_mapalgebra(raster,integer,text,text,nodatavaluerepl text)',
-        'FUNCTION st_mapalgebra(raster,integer,text,text,text)',
-        'FUNCTION st_mapalgebra(raster,pixeltype text,expression text,nodatavaluerepl text)',
-        'FUNCTION st_mapalgebra(raster,text)',
-        'FUNCTION st_mapalgebra(raster,text,text)',
-        'FUNCTION st_mapalgebra(raster,text,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_mapalgebra4unionfinal1(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_mapalgebra4unionstate(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_mapalgebra4unionstate(raster,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_mapalgebra4unionstate(raster,raster,integer,text)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_mapalgebra4unionstate(raster,raster,text)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_mapalgebra4unionstate(raster,raster,text,text,text,double precision,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebraexpr(raster,integer,raster,integer,text,text,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebraexpr(raster,integer,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebraexpr(raster,integer,text,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebraexpr(raster,raster,text,text,text,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebraexpr(raster,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebraexpr(raster,text,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafctngb(raster,integer,text,integer,integer,regprocedure,text,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafctngb(raster,integer,text,integer,integer,regprocedure,text,variadic text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,integer,raster,integer,regprocedure,text,text,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,integer,raster,integer,regprocedure,text,text,variadic text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,integer,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,integer,regprocedure,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,integer,regprocedure,variadic text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,integer,text,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,integer,text,regprocedure,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,integer,text,regprocedure,variadic text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,raster,regprocedure,text,text,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,raster,regprocedure,text,text,variadic text[])',
+         # PG12_DEPRECATED
+         'FUNCTION  st_mapalgebrafct(raster,raster,regprocedure,variadic text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,regprocedure,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,regprocedure,variadic text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,text,regprocedure)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,text,regprocedure,text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebrafct(raster,text,regprocedure,variadic text[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebra(raster,integer,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebra(raster,integer,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebra(raster,integer,text,text,nodatavaluerepl text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebra(raster,integer,text,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebra(raster,pixeltype text,expression text,nodatavaluerepl text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebra(raster,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebra(raster,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_mapalgebra(raster,text,text,text)',
         'FUNCTION st_max4ma(double precision[],text,text[])',
         'FUNCTION _st_maxdistance(geometry,geometry)',
         'FUNCTION st_max_distance(geometry,geometry)',
         'FUNCTION st_maxdistance(geometry,geometry)',
         'FUNCTION st_mean4ma(double precision[],text,text[])',
         'FUNCTION st_mem_size(geometry)',
-        'FUNCTION st_metadata(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_metadata(raster)',
         'FUNCTION st_m(geometry)',
         'FUNCTION st_min4ma(double precision[],text,text[])',
         'FUNCTION  st_minimumboundingcircle(geometry)',
@@ -2067,19 +2576,26 @@ module CartoDB
         'FUNCTION st_multipolygonfromtext(text)',
         'FUNCTION st_multipolygonfromtext(text,integer)',
         'FUNCTION st_ndims(geometry)',
-        'FUNCTION st_nearestvalue(raster,integer,integer,boolean)',
-        'FUNCTION st_nearestvalue(raster,integer,integer,integer,boolean)',
-        'FUNCTION st_neighborhood(raster,geometry,integer,boolean)',
-        'FUNCTION st_neighborhood(raster,integer,geometry,integer,boolean)',
-        'FUNCTION st_neighborhood(raster,integer,integer,integer,boolean)',
-        'FUNCTION st_neighborhood(raster,integer,integer,integer,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_nearestvalue(raster,integer,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_nearestvalue(raster,integer,integer,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_neighborhood(raster,geometry,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_neighborhood(raster,integer,geometry,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_neighborhood(raster,integer,integer,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_neighborhood(raster,integer,integer,integer,integer,boolean)',
         'FUNCTION st_newedgeheal(character varying,integer,integer)',
         'FUNCTION st_newedgessplit(character varying,integer,public.geometry)',
         'FUNCTION st_node(geometry)',
         'FUNCTION st_noop(geometry)',
         'FUNCTION st_npoints(geometry)',
         'FUNCTION st_nrings(geometry)',
-        'FUNCTION st_numbands(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_numbands(raster)',
         'FUNCTION st_numgeometries(geometry)',
         'FUNCTION st_numinteriorring(geometry)',
         'FUNCTION st_numinteriorrings(geometry)',
@@ -2089,30 +2605,46 @@ module CartoDB
         'FUNCTION st_offsetcurve(geometry,double precision,text)',
         'FUNCTION _st_orderingequals(geometry,geometry)',
         'FUNCTION st_orderingequals(geometry,geometry)',
-        'FUNCTION st_overabove(raster,raster)',
-        'FUNCTION st_overbelow(raster,raster)',
-        'FUNCTION st_overlap(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_overabove(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_overbelow(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_overlap(raster,raster)',
         'FUNCTION _st_overlaps(geometry,geometry)',
         'FUNCTION st_overlaps(geometry,geometry)',
-        'FUNCTION _st_overlaps(geometry,raster,integer)',
-        'FUNCTION st_overlaps(geometry,raster,integer)',
-        'FUNCTION _st_overlaps(raster,geometry,integer)',
-        'FUNCTION st_overlaps(raster,geometry,integer)',
-        'FUNCTION st_overlaps(raster,integer,geometry)',
-        'FUNCTION st_overleft(raster,raster)',
-        'FUNCTION st_overright(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_overlaps(geometry,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_overlaps(geometry,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_overlaps(raster,geometry,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_overlaps(raster,geometry,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_overlaps(raster,integer,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION st_overleft(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_overright(raster,raster)',
         'FUNCTION st_patchn(geometry,integer)',
         'FUNCTION st_perimeter2d(geometry)',
         'FUNCTION st_perimeter3d(geometry)',
         'FUNCTION st_perimeter(geography)',
         'FUNCTION st_perimeter(geography,boolean)',
         'FUNCTION st_perimeter(geometry)',
-        'FUNCTION st_pixelaspolygon(raster,integer,integer)',
-        'FUNCTION st_pixelaspolygon(raster,integer,integer,integer)',
-        'FUNCTION st_pixelaspolygons(raster)',
-        'FUNCTION st_pixelaspolygons(raster,integer)',
-        'FUNCTION st_pixelheight(raster)',
-        'FUNCTION st_pixelwidth(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_pixelaspolygon(raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_pixelaspolygon(raster,integer,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_pixelaspolygons(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_pixelaspolygons(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_pixelheight(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_pixelwidth(raster)',
         'FUNCTION st_point(double precision,double precision)',
         'FUNCTION st_pointfromtext(text)',
         'FUNCTION st_pointfromtext(text,integer)',
@@ -2134,19 +2666,29 @@ module CartoDB
         'FUNCTION st_polygon(geometry,integer)',
         'FUNCTION st_polygonize_garray(geometry[])',
         'FUNCTION st_polygonize(geometry[])',
-        'FUNCTION st_polygon(raster)',
-        'FUNCTION st_polygon(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_polygon(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_polygon(raster,integer)',
         'FUNCTION st_postgis_gist_joinsel(internal,oid,internal,smallint)',
         'FUNCTION st_postgis_gist_sel(internal,oid,internal,integer)',
         'FUNCTION st_project(geography,double precision,double precision)',
-        'FUNCTION st_quantile(raster,boolean,double precision)',
-        'FUNCTION st_quantile(raster,double precision)',
-        'FUNCTION st_quantile(raster,double precision[])',
-        'FUNCTION st_quantile(raster,integer,boolean,double precision)',
-        'FUNCTION st_quantile(raster,integer,boolean,double precision[])',
-        'FUNCTION _st_quantile(raster,integer,boolean,double precision,double precision[])',
-        'FUNCTION st_quantile(raster,integer,double precision)',
-        'FUNCTION st_quantile(raster,integer,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_quantile(raster,boolean,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_quantile(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_quantile(raster,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_quantile(raster,integer,boolean,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_quantile(raster,integer,boolean,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION _st_quantile(raster,integer,boolean,double precision,double precision[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_quantile(raster,integer,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_quantile(raster,integer,double precision[])',
         'FUNCTION st_quantile(text,text,boolean,double precision)',
         'FUNCTION st_quantile(text,text,double precision)',
         'FUNCTION st_quantile(text,text,double precision[])',
@@ -2156,16 +2698,26 @@ module CartoDB
         'FUNCTION st_quantile(text,text,integer,double precision)',
         'FUNCTION st_quantile(text,text,integer,double precision[])',
         'FUNCTION st_range4ma(double precision[],text,text[])',
-        'FUNCTION _st_raster2worldcoord(raster,integer,integer)',
-        'FUNCTION st_raster2worldcoord(raster,integer,integer)',
-        'FUNCTION st_raster2worldcoordx(raster,integer)',
-        'FUNCTION st_raster2worldcoordx(raster,integer,integer)',
-        'FUNCTION st_raster2worldcoordy(raster,integer)',
-        'FUNCTION st_raster2worldcoordy(raster,integer,integer)',
-        'FUNCTION st_reclass(raster,integer,text,text,double precision)',
-        'FUNCTION _st_reclass(raster,reclassarg[])',
-        'FUNCTION st_reclass(raster,reclassarg[])',
-        'FUNCTION st_reclass(raster,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_raster2worldcoord(raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_raster2worldcoord(raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_raster2worldcoordx(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_raster2worldcoordx(raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_raster2worldcoordy(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_raster2worldcoordy(raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_reclass(raster,integer,text,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_reclass(raster,reclassarg[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_reclass(raster,reclassarg[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_reclass(raster,text,text)',
         'FUNCTION st_relate(geometry,geometry)',
         'FUNCTION st_relate(geometry,geometry,integer)',
         'FUNCTION st_relate(geometry,geometry,text)',
@@ -2177,112 +2729,174 @@ module CartoDB
         'FUNCTION st_removeisonode(character varying,integer)',
         'FUNCTION st_removepoint(geometry,integer)',
         'FUNCTION st_removerepeatedpoints(geometry)',
-        'FUNCTION st_resample(raster,integer,double precision,double precision,double precision,double precision,double precision,double precision,text,double precision)',
-        'FUNCTION st_resample(raster,integer,integer,integer,double precision,double precision,double precision,double precision,text,double precision)',
-        'FUNCTION st_resample(raster,raster,boolean,text,double precision)',
-        'FUNCTION st_resample(raster,raster,text,double precision)',
-        'FUNCTION st_resample(raster,raster,text,double precision,boolean)',
-        'FUNCTION _st_resample(raster,text,double precision,integer,double precision,double precision,double precision,double precision,double precision,double precision)',
-        'FUNCTION _st_resample(raster,text,double precision,integer,double precision,double precision,double precision,double precision,double precision,double precision,integer,integer)',
-        'FUNCTION st_rescale(raster,double precision,double precision,text,double precision)',
-        'FUNCTION st_rescale(raster,double precision,text,double precision)',
-        'FUNCTION st_reskew(raster,double precision,double precision,text,double precision)',
-        'FUNCTION st_reskew(raster,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_resample(raster,integer,double precision,double precision,double precision,double precision,double precision,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_resample(raster,integer,integer,integer,double precision,double precision,double precision,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_resample(raster,raster,boolean,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_resample(raster,raster,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_resample(raster,raster,text,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_resample(raster,text,double precision,integer,double precision,double precision,double precision,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_resample(raster,text,double precision,integer,double precision,double precision,double precision,double precision,double precision,double precision,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_rescale(raster,double precision,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_rescale(raster,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_reskew(raster,double precision,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_reskew(raster,double precision,text,double precision)',
         'FUNCTION st_reverse(geometry)',
-        'FUNCTION st_right(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_right(raster,raster)',
         'FUNCTION st_rotate(geometry,double precision)',
         'FUNCTION st_rotate(geometry,double precision,double precision,double precision)',
         'FUNCTION st_rotate(geometry,double precision,geometry)',
         'FUNCTION st_rotatex(geometry,double precision)',
         'FUNCTION st_rotatey(geometry,double precision)',
         'FUNCTION st_rotatez(geometry,double precision)',
-        'FUNCTION st_rotation(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_rotation(raster)',
         'FUNCTION st_samealignment(double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision,double precision)',
-        'FUNCTION st_samealignment(raster,raster)',
-        'FUNCTION st_same(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_samealignment(raster,raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_same(raster,raster)',
         'FUNCTION st_scale(geometry,double precision,double precision)',
         'FUNCTION st_scale(geometry,double precision,double precision,double precision)',
-        'FUNCTION st_scalex(raster)',
-        'FUNCTION st_scaley(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_scalex(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_scaley(raster)',
         'FUNCTION st_segmentize(geometry,double precision)',
-        'FUNCTION st_setbandisnodata(raster)',
-        'FUNCTION st_setbandisnodata(raster,integer)',
-        'FUNCTION st_setbandnodatavalue(raster,double precision)',
-        'FUNCTION st_setbandnodatavalue(raster,integer,double precision)',
-        'FUNCTION st_setbandnodatavalue(raster,integer,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setbandisnodata(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setbandisnodata(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setbandnodatavalue(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setbandnodatavalue(raster,integer,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setbandnodatavalue(raster,integer,double precision,boolean)',
         'FUNCTION st_setfactor(chip,real)',
-        'FUNCTION st_setgeoreference(raster,text)',
-        'FUNCTION st_setgeoreference(raster,text,text)',
-        'FUNCTION st_setgeotransform(raster,double precision,double precision,double precision,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setgeoreference(raster,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setgeoreference(raster,text,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setgeotransform(raster,double precision,double precision,double precision,double precision,double precision,double precision)',
         'FUNCTION st_setpoint(geometry,integer,geometry)',
-        'FUNCTION st_setrotation(raster,double precision)',
-        'FUNCTION st_setscale(raster,double precision)',
-        'FUNCTION st_setscale(raster,double precision,double precision)',
-        'FUNCTION st_setskew(raster,double precision)',
-        'FUNCTION st_setskew(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setrotation(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setscale(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setscale(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setskew(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setskew(raster,double precision,double precision)',
         'FUNCTION st_setsrid(geometry,integer)',
-        'FUNCTION st_setsrid(raster,integer)',
-        'FUNCTION st_setupperleft(raster,double precision,double precision)',
-        'FUNCTION st_setvalue(raster,geometry,double precision)',
-        'FUNCTION st_setvalue(raster,integer,geometry,double precision)',
-        'FUNCTION st_setvalue(raster,integer,integer,double precision)',
-        'FUNCTION st_setvalue(raster,integer,integer,integer,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setsrid(raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setupperleft(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setvalue(raster,geometry,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setvalue(raster,integer,geometry,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setvalue(raster,integer,integer,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_setvalue(raster,integer,integer,integer,double precision)',
         'FUNCTION st_sharedpaths(geometry,geometry)',
         'FUNCTION st_shift_longitude(geometry)',
         'FUNCTION st_shortestline(geometry,geometry)',
         'FUNCTION st_simplify(geometry,double precision)',
         'FUNCTION st_simplifypreservetopology(geometry,double precision)',
-        'FUNCTION st_skewx(raster)',
-        'FUNCTION st_skewy(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_skewx(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_skewy(raster)',
         'FUNCTION _st_slope4ma(double precision[],text,text[])',
-        'FUNCTION st_slope(raster,integer,text)',
-        'FUNCTION st_slope(raster,integer,text,boolean)',
-        'FUNCTION st_slope(raster,integer,text,text,double precision,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_slope(raster,integer,text)',
+         # PG12_DEPRECATED
+         'FUNCTION st_slope(raster,integer,text,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_slope(raster,integer,text,text,double precision,boolean)',
         'FUNCTION st_snap(geometry,geometry,double precision)',
         'FUNCTION st_snaptogrid(geometry,double precision)',
         'FUNCTION st_snaptogrid(geometry,double precision,double precision)',
         'FUNCTION st_snaptogrid(geometry,double precision,double precision,double precision,double precision)',
         'FUNCTION st_snaptogrid(geometry,geometry,double precision,double precision,double precision,double precision)',
-        'FUNCTION st_snaptogrid(raster,double precision,double precision,double precision,double precision,text,double precision)',
-        'FUNCTION st_snaptogrid(raster,double precision,double precision,double precision,text,double precision)',
-        'FUNCTION st_snaptogrid(raster,double precision,double precision,text,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_snaptogrid(raster,double precision,double precision,double precision,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_snaptogrid(raster,double precision,double precision,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_snaptogrid(raster,double precision,double precision,text,double precision,double precision,double precision)',
         'FUNCTION st_spheroid_in(cstring)',
         'FUNCTION st_spheroid_out(spheroid)',
         'FUNCTION st_split(geometry,geometry)',
         'FUNCTION st_srid(chip)',
         'FUNCTION st_srid(geometry)',
-        'FUNCTION st_srid(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_srid(raster)',
         'FUNCTION st_startpoint(geometry)',
         'FUNCTION st_sum4ma(double precision[],text,text[])',
         'FUNCTION st_summary(geography)',
         'FUNCTION st_summary(geometry)',
-        'FUNCTION st_summarystats(raster,boolean)',
-        'FUNCTION st_summarystats(raster,integer,boolean)',
-        'FUNCTION _st_summarystats(raster,integer,boolean,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_summarystats(raster,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_summarystats(raster,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_summarystats(raster,integer,boolean,double precision)',
         'FUNCTION st_summarystats(text,text,boolean)',
         'FUNCTION st_summarystats(text,text,integer,boolean)',
         'FUNCTION _st_summarystats(text,text,integer,boolean,double precision)',
         'FUNCTION st_symdifference(geometry,geometry)',
         'FUNCTION st_symmetricdifference(geometry,geometry)',
-        'FUNCTION st_testraster(double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_testraster(double precision,double precision,double precision)',
         'FUNCTION st_text(boolean)',
         'FUNCTION st_text(geometry)',
-        'FUNCTION st_tile(raster,integer,integer)',
-        'FUNCTION _st_tile(raster,integer,integer,integer[])',
-        'FUNCTION st_tile(raster,integer,integer,integer)',
-        'FUNCTION st_tile(raster,integer,integer,integer[])',
-        'FUNCTION st_tile(raster,integer[],integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_tile(raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_tile(raster,integer,integer,integer[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_tile(raster,integer,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_tile(raster,integer,integer,integer[])',
+         # PG12_DEPRECATED
+         'FUNCTION st_tile(raster,integer[],integer,integer)',
         'FUNCTION _st_touches(geometry,geometry)',
         'FUNCTION st_touches(geometry,geometry)',
-        'FUNCTION _st_touches(geometry,raster,integer)',
-        'FUNCTION st_touches(geometry,raster,integer)',
-        'FUNCTION _st_touches(raster,geometry,integer)',
-        'FUNCTION st_touches(raster,geometry,integer)',
-        'FUNCTION st_touches(raster,integer,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_touches(geometry,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_touches(geometry,raster,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_touches(raster,geometry,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_touches(raster,geometry,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_touches(raster,integer,geometry)',
         'FUNCTION st_transform(geometry,integer)',
-        'FUNCTION st_transform(raster,integer,double precision,double precision,text,double precision)',
-        'FUNCTION st_transform(raster,integer,double precision,text,double precision)',
-        'FUNCTION st_transform(raster,integer,text,double precision,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_transform(raster,integer,double precision,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_transform(raster,integer,double precision,text,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_transform(raster,integer,text,double precision,double precision,double precision)',
         'FUNCTION st_translate(geometry,double precision,double precision)',
         'FUNCTION st_translate(geometry,double precision,double precision,double precision)',
         'FUNCTION st_transscale(geometry,double precision,double precision,double precision,double precision)',
@@ -2290,15 +2904,24 @@ module CartoDB
         'FUNCTION st_union(geometry[])',
         'FUNCTION st_union(geometry,geometry)',
         'FUNCTION st_unite_garray(geometry[])',
-        'FUNCTION st_upperleftx(raster)',
-        'FUNCTION st_upperlefty(raster)',
-        'FUNCTION st_valuecount(raster,double precision,double precision)',
-        'FUNCTION st_valuecount(raster,double precision[],double precision)',
-        'FUNCTION _st_valuecount(raster,integer,boolean,double precision[],double precision)',
-        'FUNCTION st_valuecount(raster,integer,boolean,double precision,double precision)',
-        'FUNCTION st_valuecount(raster,integer,boolean,double precision[],double precision)',
-        'FUNCTION st_valuecount(raster,integer,double precision,double precision)',
-        'FUNCTION st_valuecount(raster,integer,double precision[],double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_upperleftx(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_upperlefty(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuecount(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuecount(raster,double precision[],double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_valuecount(raster,integer,boolean,double precision[],double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuecount(raster,integer,boolean,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuecount(raster,integer,boolean,double precision[],double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuecount(raster,integer,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuecount(raster,integer,double precision[],double precision)',
         'FUNCTION st_valuecount(text,text,double precision,double precision)',
         'FUNCTION st_valuecount(text,text,double precision[],double precision)',
         'FUNCTION _st_valuecount(text,text,integer,boolean,double precision[],double precision)',
@@ -2306,43 +2929,69 @@ module CartoDB
         'FUNCTION st_valuecount(text,text,integer,boolean,double precision[],double precision)',
         'FUNCTION st_valuecount(text,text,integer,double precision,double precision)',
         'FUNCTION st_valuecount(text,text,integer,double precision[],double precision)',
-        'FUNCTION st_valuepercent(raster,double precision,double precision)',
-        'FUNCTION st_valuepercent(raster,double precision[],double precision)',
-        'FUNCTION st_valuepercent(raster,integer,boolean,double precision,double precision)',
-        'FUNCTION st_valuepercent(raster,integer,boolean,double precision[],double precision)',
-        'FUNCTION st_valuepercent(raster,integer,double precision,double precision)',
-        'FUNCTION st_valuepercent(raster,integer,double precision[],double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuepercent(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuepercent(raster,double precision[],double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuepercent(raster,integer,boolean,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuepercent(raster,integer,boolean,double precision[],double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuepercent(raster,integer,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_valuepercent(raster,integer,double precision[],double precision)',
         'FUNCTION st_valuepercent(text,text,double precision,double precision)',
         'FUNCTION st_valuepercent(text,text,double precision[],double precision)',
         'FUNCTION st_valuepercent(text,text,integer,boolean,double precision,double precision)',
         'FUNCTION st_valuepercent(text,text,integer,boolean,double precision[],double precision)',
         'FUNCTION st_valuepercent(text,text,integer,double precision,double precision)',
         'FUNCTION st_valuepercent(text,text,integer,double precision[],double precision)',
-        'FUNCTION st_value(raster,geometry)',
-        'FUNCTION st_value(raster,geometry,boolean)',
-        'FUNCTION st_value(raster,geometry,double precision)',
-        'FUNCTION st_value(raster,integer,geometry)',
-        'FUNCTION st_value(raster,integer,geometry,boolean)',
-        'FUNCTION st_value(raster,integer,geometry,double precision)',
-        'FUNCTION st_value(raster,integer,integer)',
-        'FUNCTION st_value(raster,integer,integer,boolean)',
-        'FUNCTION st_value(raster,integer,integer,integer)',
-        'FUNCTION st_value(raster,integer,integer,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,geometry,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,geometry,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,integer,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,integer,geometry,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,integer,geometry,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,integer,integer,boolean)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,integer,integer,integer)',
+         # PG12_DEPRECATED
+         'FUNCTION st_value(raster,integer,integer,integer,boolean)',
         'FUNCTION st_width(chip)',
-        'FUNCTION st_width(raster)',
+         # PG12_DEPRECATED
+         'FUNCTION st_width(raster)',
         'FUNCTION _st_within(geometry,geometry)',
         'FUNCTION st_within(geometry,geometry)',
         'FUNCTION st_wkbtosql(bytea)',
         'FUNCTION st_wkttosql(text)',
-        'FUNCTION _st_world2rastercoord(raster,double precision,double precision)',
-        'FUNCTION st_world2rastercoord(raster,double precision,double precision)',
-        'FUNCTION st_world2rastercoord(raster,geometry)',
-        'FUNCTION st_world2rastercoordx(raster,double precision)',
-        'FUNCTION st_world2rastercoordx(raster,double precision,double precision)',
-        'FUNCTION st_world2rastercoordx(raster,geometry)',
-        'FUNCTION st_world2rastercoordy(raster,double precision)',
-        'FUNCTION st_world2rastercoordy(raster,double precision,double precision)',
-        'FUNCTION st_world2rastercoordy(raster,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION _st_world2rastercoord(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_world2rastercoord(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_world2rastercoord(raster,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION st_world2rastercoordx(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_world2rastercoordx(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_world2rastercoordx(raster,geometry)',
+         # PG12_DEPRECATED
+         'FUNCTION st_world2rastercoordy(raster,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_world2rastercoordy(raster,double precision,double precision)',
+         # PG12_DEPRECATED
+         'FUNCTION st_world2rastercoordy(raster,geometry)',
         'FUNCTION st_x(geometry)',
         'FUNCTION st_xmax(box3d)',
         'FUNCTION st_xmin(box3d)',
@@ -2411,7 +3060,8 @@ module CartoDB
         'OPERATOR FAMILY gist_geography_ops',
         'OPERATOR FAMILY gist_geometry_ops_2d',
         'OPERATOR FAMILY gist_geometry_ops_nd',
-        'OPERATOR FAMILY hash_raster_ops',
+         # PG12_DEPRECATED
+         'OPERATOR FAMILY hash_raster_ops',
         'OPERATOR ~=(geography,geography)',
         'OPERATOR ~(geography,geography)',
         'OPERATOR <<|(geography,geography)',
@@ -2450,22 +3100,38 @@ module CartoDB
         'OPERATOR &>(geometry,geometry)',
         'OPERATOR &&(geometry,geometry)',
         'OPERATOR &&&(geometry,geometry)',
-        'OPERATOR ~(geometry,raster)',
-        'OPERATOR &&(geometry,raster)',
-        'OPERATOR ~(raster,geometry)',
-        'OPERATOR &&(raster,geometry)',
-        'OPERATOR ~=(raster,raster)',
-        'OPERATOR ~(raster,raster)',
-        'OPERATOR <<|(raster,raster)',
-        'OPERATOR <<(raster,raster)',
-        'OPERATOR >>(raster,raster)',
-        'OPERATOR |>>(raster,raster)',
-        'OPERATOR |&>(raster,raster)',
-        'OPERATOR @(raster,raster)',
-        'OPERATOR &<|(raster,raster)',
-        'OPERATOR &<(raster,raster)',
-        'OPERATOR &>(raster,raster)',
-        'OPERATOR &&(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR ~(geometry,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR &&(geometry,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR ~(raster,geometry)',
+         # PG12_DEPRECATED
+         'OPERATOR &&(raster,geometry)',
+         # PG12_DEPRECATED
+         'OPERATOR ~=(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR ~(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR <<|(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR <<(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR >>(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR |>>(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR |&>(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR @(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR &<|(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR &<(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR &>(raster,raster)',
+         # PG12_DEPRECATED
+         'OPERATOR &&(raster,raster)',
         'PROCEDURALLANGUAGE plpgsql',
         'SHELLTYPE box2d',
         'SHELLTYPE box2df',
@@ -2476,7 +3142,8 @@ module CartoDB
         'SHELLTYPE geometry',
         'SHELLTYPE gidx',
         'SHELLTYPE pgis_abs',
-        'SHELLTYPE raster',
+         # PG12_DEPRECATED
+         'SHELLTYPE raster',
         'SHELLTYPE spheroid',
         'TYPE box2d',
         'TYPE box2df',
@@ -2493,8 +3160,10 @@ module CartoDB
         'TYPE histogram2d',
         'TYPE pgis_abs',
         'TYPE quantile',
-        'TYPE raster',
-        'TYPE rastexpr',
+         # PG12_DEPRECATED
+         'TYPE raster',
+         # PG12_DEPRECATED
+         'TYPE rastexpr',
         'TYPE reclassarg',
         'TYPE spheroid',
         'TYPE summarystats',

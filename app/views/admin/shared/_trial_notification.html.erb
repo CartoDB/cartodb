@@ -1,14 +1,11 @@
-<% if current_user.account_type == 'PERSONAL30' %>
-    <div class="CDB-Text FlashMessage FlashMessage--main">
-        <div class="u-inner">
-            <div class="FlashMessage FlashMessage-info FlashMessage--main u-flex u-justifySpace u-alignCenter">
-                <p>You're currently under your 30-day Trial Period. Add your billing info to keep using our platform.</p>
-                <p class="u-flex">
-                    <a href="<%= current_user.update_payment_url(request.protocol) %>" class="CDB-Button CDB-Button--secondary CDB-Button--secondary--background CDB-Button--big">
-                        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">Add payment method</span>
-                    </a>
-                </p>
-            </div>
-        </div>
+<% if current_user.show_trial_reminder? %>
+  <div class="CDB-Text FlashMessage FlashMessage--main">
+    <div class="u-inner">
+      <div class="FlashMessage FlashMessage-info FlashMessage--main u-flex u-justifyCenter u-alignCenter">
+        <p class="FlashMessage--text"><%= current_user.remaining_trial_days %> days left in your account.
+          <a href="<%= current_user.upgrade_url(request.protocol) %>" class="FlashMessage--text">Upgrade now.</a>
+        </p>
+      </div>
     </div>
+  </div>
 <% end %>

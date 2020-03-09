@@ -20,5 +20,5 @@
 </p>
 
 <p class="CDB-Text Onboarding-description">
-  <a href="http://postgis.net/docs/manual-2.2/" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.read-more') %></a>
+  <a href="http://postgis.net/docs/manual-2.2/" class="Onboarding-readMore" target="_blank" rel="noopener noreferrer"><%- _t('analyses-onboarding.read-more') %></a>
 </p>

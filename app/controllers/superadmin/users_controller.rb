@@ -35,6 +35,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       respond_with(:superadmin, username_dbsize.map do |username, db_size_in_bytes|
         { 'username' => username, 'db_size_in_bytes' => db_size_in_bytes }
       end) and return
+    elsif params[:account_type].present? && params[:state].present?
+      users = ::User.where(account_type: params[:account_type], state: params[:state])
+      respond_with(:superadmin, users.map(&:activity))
     else
       users = ::User.all
       respond_with(:superadmin, users.map(&:data))
@@ -69,6 +72,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
 
     @user.update_rate_limits(user_param[:rate_limit])
+    @user.update_gcloud_settings(user_param[:gcloud_settings])
     @user.save
     respond_with(:superadmin, @user)
   end
@@ -120,7 +124,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def data_imports
     page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
-    dataset = @user.data_imports_dataset.order(order.desc).paginate(page, per_page)
+    dataset = @user.data_imports_dataset.order(Sequel.desc(order)).paginate(page, per_page)
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
     total_entries = dataset.pagination_record_count

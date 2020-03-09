@@ -143,7 +143,7 @@ class Carto::Permission < ActiveRecord::Base
           # be applied to a type of object. But with an array this is open
           # to more than one permission change at a time
           perm.each do |p|
-            if visualization.derived?
+            if visualization.derived? || visualization.kuviz?
               if p['action'] == 'grant'
                 # At this moment just inform as read grant
                 if p['type'].include?('r')
@@ -319,6 +319,8 @@ class Carto::Permission < ActiveRecord::Base
       Carto::DbPermissionService.shared_entities_revokes(@old_acl, acl, entity.table) if entity.table?
     end
     update_shared_entities
+    # Notify change, caches should be invalidated
+    entity.table.update_cdb_tablemetadata if entity && entity.table
   end
 
   def update_changes_deletion

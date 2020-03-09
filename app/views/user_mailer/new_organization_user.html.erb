@@ -1,12 +1,14 @@
 <tr>
   <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-    <p>You have been invited to CARTO as part of the <strong><%= @organization.name_to_display %></strong> organization. Please login to your dashboard with your organization username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you entered' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
-    <p>Here are some resources to get you up and running:</p>
-    <ul>
-      <li><a href="https://carto.com/developers/">Developer Center</a>: Guides, FAQs and tutorials</li>
-      <li><a href="https://carto.com/resources/">Resource Center</a>: Case studies and white papers for inspiration</li>
-      <li>Builder training videos: <a href="https://vimeo.com/173657117/340039d93f">UI</a>, <a href="https://vimeo.com/173657596/572660d9d2">Styling</a>, <a href="https://vimeo.com/173657654/970529bced">Analysis</a>, <a href="https://vimeo.com/173658241/dd37f7ea8c">Widgets</a>, <a href="https://vimeo.com/173658333/21259b1d37">Publishing</a></li>
-    </ul>
+    <p>You have been invited to <%= @app_name %> as part of the <strong><%= @organization.name_to_display %></strong> organization. Please login to your dashboard with your organization username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you entered' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
+    <% unless Cartodb.get_config(:mailer, 'template', 'avoid_carto_links') %>
+      <p>Here are some resources to get you up and running:</p>
+      <ul>
+        <li><a href="https://carto.com/developers/">Developer Center</a>: Guides, FAQs and tutorials</li>
+        <li><a href="https://carto.com/resources/">Resource Center</a>: Case studies and white papers for inspiration</li>
+        <li>Builder training videos: <a href="https://vimeo.com/173657117/340039d93f">UI</a>, <a href="https://vimeo.com/173657596/572660d9d2">Styling</a>, <a href="https://vimeo.com/173657654/970529bced">Analysis</a>, <a href="https://vimeo.com/173658241/dd37f7ea8c">Widgets</a>, <a href="https://vimeo.com/173658333/21259b1d37">Publishing</a></li>
+      </ul>
+    <% end %>
 
     <% if @user_needs_password %>
       <p>If you have not received your password, contact your administrator at <strong><%= @owner.email %></strong>.</p>

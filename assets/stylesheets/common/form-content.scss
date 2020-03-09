@@ -143,6 +143,10 @@ $sLabel-width: 140px;
   text-align: left;
 }
 
+.Form-rowLabel--small {
+  width: 60px;
+}
+
 .Form-label {
   color: $cTypography-paragraphs;
   font-size: $sFontSize-normal;
@@ -318,22 +322,18 @@ $sLabel-width: 140px;
 
 .Form-input::-webkit-input-placeholder {
   color: #AAA;
-  font-style: italic;
 }
 
 .Form-input:-moz-placeholder {
   color: #AAA;
-  font-style: italic;
 }
 
 .Form-input::-moz-placeholder {
   color: #AAA;
-  font-style: italic;
 }
 
 .Form-input:-ms-input-placeholder {
   color: #AAA;
-  font-style: italic;
 }
 // Sizes
 .Form-input--longer {
@@ -751,6 +751,8 @@ $sLabel-width: 140px;
 }
 
 .Form-tagsList.tagit {
+  display: flex;
+  align-items: flex-start;
   padding: 0 5px 5px;
 }
 
@@ -778,6 +780,7 @@ $sLabel-width: 140px;
 }
 
 .Form-tagsList.tagit li.tagit-new {
+  flex: 1;
   padding: 7px 4px 2px 7px;
 }
 

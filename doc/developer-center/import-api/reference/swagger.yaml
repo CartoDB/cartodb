@@ -1,0 +1,971 @@
+openapi: 3.0.0
+info:
+  title: Import API
+  description: >
+    # Introduction
+
+    The CARTO Import API allows you to upload files to a CARTO account, 
+    check on their current upload status, as well as delete and list importing 
+    processes on a given account. This API consists of several HTTP requests targeted 
+    at a set of CARTO endpoints that deal with the conversion and import of the sent files. 
+    CARTO tables can be classified as Standard Tables or Sync Tables. Additionally, 
+    the ArcGIS Server™ Connector enables you to import ArcGIS™ layers into your datasets.
+
+    # Authorization
+
+    In order to access Maps API you must provide an API key. The CARTO
+    Authorization guide explains how these keys are sent (TLDR: _HTTP basic
+    auth_ or _query string param_ with the API key token). Depending on the
+    permissions granted to the provided API key, the request will be authorized
+    or not.
+  version: 0.0.1
+  contact:
+    name: Have you found an error? Github issues
+    url: 'https://github.com/CartoDB/Windshaft-cartodb/issues'
+servers:
+  - url: 'https://{user}.{domain}/api'
+    description: Production server (uses live data)
+    variables:
+      domain:
+        default: carto.com
+        description: 'If on premise, change it to your domain'
+      user:
+        default: username
+        description: Your username
+tags:
+  - name: Standard Tables
+    description: Store data you upload from files creating tables at CARTO
+    externalDocs:
+      url: 'http://doc.carto.com/pet-operations.htm'
+  - name: CARTO Map Visualizations
+    description: Download a map, and the connected dataset, as a .carto file
+    externalDocs:
+      url: 'http://doc.carto.com/pet-operations.htm'
+  - name: Sync Tables
+    description: Store data from a remote file and refresh their contents during periodic intervals
+    externalDocs:
+      url: 'http://doc.carto.com/pet-operations.htm'
+paths:
+  '/v1/imports':
+    post:
+      summary: Create import
+      description: |
+        Upload File
+      tags:
+        - Standard Tables
+      operationId: createImport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateImport'
+            examples:
+              url:
+                $ref: '#/components/examples/CreateImportUrl'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestResponse'
+              example:
+                item_queue_id: 9906bce0-f1a3-4b07-be71-818f4bfd7673
+                success: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -v -F file=@/path/to/local/file "https://{account}
+            .carto.com/api/v1/imports/?api_key={account API Key}"
+    get:
+      summary: List current import processes
+      description: Lists the import identifiers of the files that are being imported in the targeted CARTO account
+      tags:
+        - Standard Tables
+      operationId: getImports
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imports:
+                    type: array
+                    description: A list of unique alphanumeric identifiers referencing the import processes in the targeted CARTO account
+                    items:
+                      type: string
+                  success:
+                    type: boolean
+                    description: A boolean value indicating if the request was successful
+              example:
+                imports:
+                  - "1234abcd-1234-1a2b-3c4d-4321dcba5678"
+                success: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: >
+            curl -v "https://{account}.carto.com/api/v1/imports/?api_key={account API Key}"
+  '/v1/imports/{import_id}':
+    get:
+      parameters:
+        - in: path
+          name: import_id
+          description: A unique alphanumeric element that identifies the import process to be retrieved. It is the `item_queue_id` element returned after running the upload request successfully.
+          schema:
+            type: string
+          required: true
+      summary: Check import status
+      description: |
+        Returns the Import's status and its associated metadata.
+      tags:
+        - Standard Tables
+      operationId: getImportStatus
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportStatusResponse'
+              example:
+                id: 029a6053-b2fb-43dd-baa6-805d679c404f
+                user_id: ca8c5ace-d573-450b-8a43-6c7eafadd80e
+                table_id: null
+                data_type: url
+                table_name: null
+                state: failure
+                error_code: 1002
+                queue_id: 029a6053-b2fb-43dd-baa6-805d679c404f
+                tables_created_count: null
+                synchronization_id: null
+                type_guessing: true
+                quoted_fields_guessing: true
+                content_guessing: false
+                create_visualization: false
+                visualization_id: null
+                user_defined_limits: '{twitter_credits_limit:0}'
+                get_error_text:
+                  title: Unsupported/Unrecognized file type
+                  what_about: 'Should we support this filetype? Let us know in our <a href=''mailto:support@carto.com''>support email</a>!'
+                  source: user
+                display_name: shapefile_streets.cpg
+                success: false
+                warnings: null
+                is_raster: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: >
+            curl -v "https://{account}.carto.com/api/v1/imports/{import_id}?api_key={account API Key}
+  '/v3/visualization_exports':
+    post:
+      summary: Export as .carto file
+      description: |
+        The Export map option enables you to download a map, 
+        and the connected dataset, as a .carto file. This .carto
+        file includes the dataset and visualization definition,
+        which contains any SQL queries, CartoCSS, basemaps,
+        attributions, metadata, and styling that was applied to a
+        map. This is useful for downloading complete CARTO
+        visualizations that you can share or import.
+
+        Note: The Import API export visualization command only works for maps created from `Your maps` dashboard.
+      tags:
+        - CARTO Map Visualizations
+      operationId: exportCarto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportCarto'
+            example:
+              visualization_id: 'ace62506-brc8-6570-2p91-8vf3af3ftc44'
+                
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportCartoResponse'
+              example:
+                id: 'b94c26f3-fa16-4f13-b672-45ebbd5a9c95'
+                visualization_id: 'ace62506-brc8-6570-2p91-8vf3af3ftc44'
+                user_id: '42b78090-6a11-475a-8060-0a90322752af2b'
+                state: 'pending'
+                url: null
+                created_at: '2016-05-05T09:36:09+00:00'
+                updated_at: '2016-05-05T09:36:09+00:00'
+                
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -v -H 'Content-Type: application/json' https://{username}.carto.com/api/v3/visualization_exports\?api_key\={api_key} -X POST --data '{"visualization_id":"9a0f4384-afe3-412a-8b09-136b7d9a4013"}'
+  '/v3/visualization_exports/{visualization_export_id}':
+    get:
+      parameters:
+        - in: path
+          name: visualization_export_id
+          description: A unique alphanumeric element that identifies the export process to be retrieved. It is the `id` element returned after running the export request successfully.
+          schema:
+            type: string
+          required: true
+      summary: Check .carto export status
+      description: |
+        After making the POST request to create the export, it is expected that the request will take some time. You must poll the server by making a GET request, until state becomes complete. Once completed, the response status changes to `complete` and displays the upload url location of the .carto visualization file
+      tags:
+        - CARTO Map Visualizations
+      operationId: getExportStatus
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportCartoResponse'
+              example:
+                id: 'b94c26f3-fa16-4f13-b672-45ebbd5a9c95'
+                visualization_id: 'ace62506-brc8-6570-2p91-8vf3af3ftc44'
+                user_id: '42b78090-6a11-475a-8060-0a90322752af2b'
+                state: 'complete'
+                url: '/uploads/6a2b6fbd86e2c750160a/ace62506-brc8-6570-2p91-8vf3af3ftc44.carto'
+                created_at: '2016-05-05T09:36:09+00:00'
+                updated_at: '2016-05-05T09:36:13+00:00'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: >
+            curl -v "https://{account}.carto.com/api/v3/visualization_exports/{visualization_export_id}?api_key={account API Key}
+  '/v1/synchronizations':
+    get:
+      summary: List current sync tables
+      description: List current sync tables
+      tags:
+        - Sync Tables
+      operationId: getSyncTables
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSyncTablesResponse'
+              example:
+                synchronizations:
+                - id: 246dae5e-5302-1ae5-af51-0e85ad047bba
+                  name: barrios_5
+                  interval: 2592000
+                  url: https://common-data.carto.com/api/v2/sql?q=select+*+from+%22barrios%22&format=shp&filename=barrios
+                  state: success
+                  created_at: '2015-09-04T12:40:37+00:00'
+                  updated_at: '2016-02-01T12:45:07+00:00'
+                  run_at: '2016-03-02T12:45:07+00:00'
+                  retried_times: 0
+                  log_id: 2d9b4a52-1daa-429b-b425-6ad561609cb1
+                  error_code: null
+                  error_message: null
+                  ran_at: '2016-02-01T12:45:07+00:00'
+                  modified_at: '2015-04-22T12:17:50+00:00'
+                  etag: null
+                  checksum: null
+                  user_id: cf8a5cce-d573-4a0b-8c43-6caeaf1dd80e
+                  service_name: null
+                  service_item_id: https://common-data.carto.com/api/v2/sql?q=select+*+from+%22barrios%22&format=shp&filename=barrios
+                  type_guessing: true
+                  quoted_fields_guessing: true
+                  content_guessing: true
+                  visualization_id: 2954fa60-5a02-11e5-888a-0e5e07bb5d8a
+                  from_external_source: false
+                total_entries: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: >
+            curl -v "https://{username}.carto.com/api/v1/synchronizations/?api_key={account API Key}"
+    post:
+      summary: Sync a file from a URL
+      description: |
+        Desc
+      tags:
+        - Sync Tables
+      operationId: syncTable
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSyncTablesPayload'
+            example:
+              url: 'https://public.url.to.file/sample_file'
+              interval: 3600
+                
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSyncTablesResponse'
+              example:
+                  data_import:
+                    endpoint: "/api/v1/imports"
+                    item_queue_id: 1234abcd-1234-1a2b-3c4d-4321dcba5678
+                  id: abcd1234-a5b6-c7d8-1a2b-efgh5678abcd
+                  name: null
+                  interval: 3600
+                  url: https://public.url.to.file/sample_file
+                  state: created
+                  user_id: aaaabbbb-1234-5678-dcba-abcd1234efgh
+                  created_at: '2014-08-05T13:39:15+00:00'
+                  updated_at: '2014-08-05T13:39:15+00:00'
+                  run_at: '2014-08-05T14:39:15+00:00'
+                  ran_at: '2014-08-05T13:39:15+00:00'
+                  modified_at: null
+                  etag: null
+                  checksum: ''
+                  log_id: 06fafab8-3502-11e4-9514-0e230854a1cb
+                  error_code: null
+                  error_message: null
+                  retried_times: 0
+                  service_name: null
+                  service_item_id: null
+                  type_guessing: true
+                  quoted_fields_guessing: true
+                  content_guessing: false
+                  visualization_id: null
+                  from_external_source: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -v -H "Content-Type: application/json" -d '{"url":"https://public.url.to.file/sample_file", "interval":"3600"}' "https://{username}.carto.com/api/v1/synchronizations/?api_key={account API Key}"
+  '/v1/synchronizations/{import_id}':
+    delete:
+      summary: Remove sync feature from table
+      description: A sync table can be converted to a standard dataset (a dataset that never gets synced)
+      tags:
+        - Sync Tables
+      operationId: removeSyncTables
+      parameters:
+        - in: path
+          name: import_id
+          description: The unique alphanumeric identifier of the target sync dataset
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: >
+            curl -v -X "DELETE" https://{username}.carto.com/api/v1/synchronizations/{import_id}?api_key={account API Key}"
+  '/v1/synchronizations/{import_id}/sync_now':
+    get:
+      summary: Check whether a sync table is syncing or not
+      description: A large synced table may take some time to get fully synced. In the meantime, it could be useful to check whether it finished refreshing its contents
+      tags:
+        - Sync Tables
+      operationId: checkSyncTables
+      parameters:
+        - in: path
+          name: import_id
+          description: The unique alphanumeric identifier of the target sync dataset
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  state:
+                    type: string
+                    enum:
+                      - created
+                      - queued
+                      - syncing
+                      - success
+                      - failure
+                    title: State
+                    description: A string value indicating the status of the synchronization
+              example:
+                  state: syncing
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: >
+            curl -v -X "GET" "https://{username}.carto.com/api/v1/synchronizations/{import_id}/sync_now?api_key={account API Key}"
+    put:
+      summary: Force a synchronization action on a sync table
+      description: |
+        Sync tables have their contents synchronized with the source file in periodic time intervals as specified by the user during the creation process. However, a dataset can be synchronized at an arbitrary moment in time if desired. Note: Forcing a synchronization can only be performed when the last synchronization attempt occurred at least 900 seconds (15 minutes) before.
+      tags:
+        - Sync Tables
+      operationId: forceSyncTable
+      parameters:
+        - in: path
+          name: import_id
+          description: The unique alphanumeric identifier of the target sync dataset
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  enqueued:
+                    type: boolean
+                    title: Enqueued
+                    description: A boolean value indicating whether the request has been successfully appended to the processing queue
+                  synchronization_id  :
+                    type: string
+                    title: Synchronization ID
+                    description: A unique alphanumeric identifier referring to the queue element just added
+              example:
+                enqueued: false
+                synchronization_id: "1234abcd-aaaa-2222-4444-dcba4321a1b2"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -v -X "PUT" "https://{username}.carto.com/api/v1/synchronizations/<import_id>/sync_now?api_key={account API Key}" -H "Content-Length:0"
+components:
+  schemas:
+    CreateImport:
+      type: object
+      properties:
+        file:
+          $ref: '#/components/schemas/File'
+        url:
+          $ref: '#/components/schemas/Url'
+        type_guessing:
+          type: boolean
+          default: true
+          title: Type guessing
+          description:   If set to `false` disables field type guessing (for Excel and CSVs)
+        quoted_fields_guessing:
+          type: boolean
+          default: false
+          title: Quoted fields guessing
+          description:   If set to `false` disables type guessing of CSV fields that come inside double quotes
+        content_guessing:
+          type: boolean
+          default: false
+          title: Content guessing
+          description:   Set to `true` to enable content guessing and automatic geocoding based on results. Currently, this only implements geocoding of countries, cities and IP addresses
+        create_vis:
+          type: boolean
+          default: false
+          title: Create Vis
+          description:   Set to `true` to flag the import so that when it finishes, it creates a Map automatically after importing the Dataset
+        collision_strategy:
+          type: string
+          enum:
+            - skip
+            - overwrite
+          title: Collision strategy
+          description: > 
+            Determines the behavior when importing a dataset 
+            that has the same name as an existing table. By default,
+            it is imported and renamed with a sequential number
+            (*mytable*, *mytable_1*…).
+            
+            - `skip`: the table with the
+            matching name will not be imported.
+            
+            - `overwrite`: it will replace
+            the table with the matching name, but only if the new
+            dataset table includes the same columns and data types as
+            the original table. The new table can also include
+            additional columns, but not fewer than the original table. 
+        privacy:
+          type: string
+          enum:
+            - public
+            - private
+            - link
+          title: Collision strategy
+          description: > 
+              Used to set the privacy settings of the table or
+              tables resulting from the import.
+              If `create_vis` is set to true, the resulting
+              visualization privacy settings will also be 
+              determined by this parameter. 
+              
+              `privacy` can be set to:
+            
+              - `public`: The resulting table or visualization can be viewed by anyone
+              
+              - `private`: The resulting table or visualization can only be viewed by the uploader
+              
+              - `link`: The resulting table or visualization can only be viewed through a private link shared by the uploader
+        table_name:
+          type: string
+          title: Table name
+          description:   Used to duplicate one of your existing tables. **Do not mix with File/URL imports**
+        sql:
+          type: string
+          title: SQL
+          description:   Used to create a new table from a SQL query applied to one of your tables. **Do not mix with File/URL imports**
+    File:
+      type: string
+      title: file
+      description: When importing local files, you need to perform a POST with a file 
+    Url:
+      type: string
+      title: url
+      description: When importing remote files, the full URL to the publicly accessible file
+    RequestResponse:
+      type: object
+      properties:
+        item_queue_id:
+          type: string
+          description: A unique alphanumeric identifier referencing the import process in the targeted account
+        success:
+          type: boolean
+          description: A boolean value indicating whether the import process was started or not.
+    ImportStatusResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          title: ID
+          description: A unique identifier for the import process. It is the same as the `import_id` provided in the request
+        user_id:
+          type: string
+          title: User ID
+          description: A unique alphanumeric element that identifies the CARTO account user in the internal database
+        table_id:
+          type: string
+          title: Table ID
+          description:   A unique alphanumeric element that identifies the created table in the internal CARTO database
+        data_type:
+          type: string
+          enum:
+            - file
+            - url
+            - external_table
+            - query
+            - table
+            - datasource
+          title: Data type
+          description: This element identifies the service type used to import the file
+        table_name:
+          type: string
+          title: Table name
+          description: The final name of the created table in the targeted CARTO account. It usually has the same name as the uploaded file, unless there already exists a table with the same name (in this case, an integer number is appended to the table name)
+        status:
+          type: string
+          enum:
+            - enqueued
+            - pending
+            - uploading
+            - unpacking
+            - importing
+            - guessing
+            - complete
+            - failure   
+          title: State
+          description: A string value indicating the current state of the importing process
+        error_code:
+          type: number
+          title: Error code
+          description: A number corresponding to the error code in case of failure during the import process, that is, when the `success` item has a `false` value
+        queue_id:
+          type: string
+          title: Queue ID
+          description:  A unique identifier for the import process in the importing queue. It is the same as the `import_id` provided in the request
+        tables_created_count:
+          type: number
+          title: Tables created counter
+          description: The number of tables that the import process generated. For multi-file uploads, this value can be greater than one
+          nullable: true
+        synchronization_id:
+          type: string
+          title: Synchronization ID
+          description: This element has a `null` value when the import is not configured as a Sync Table
+          nullable: true
+        type_guessing:
+          type: boolean
+          title: Type guessing
+          description: A boolean indicating whether field type guessing (for Excel and CSVs) is enabled or not
+        quoted_fields_guessing:
+          type: boolean
+          title: Quoted fields guessing
+          description: A boolean indicating whether type guessing of CSV fields inside double quotes is enabled for the data import
+        content_guessing:
+          type: boolean
+          title: Content guessing
+          description: A boolean indicating whether content guessing and automatic geocoding is enabled for the data import
+        create_visualization:
+          type: boolean
+          title: Create visualization
+          description:   A boolean indicating whether the import process will create a map automatically or not. Its value corresponds to the import option `create_vis` chosen by the user
+        visualization_id:
+          type: string
+          title: Visualization ID
+          description: A unique identifier for the map created in the import process. Only applies if `created_visualization` is set to `true`
+          nullable: true
+        get_error_text:
+          type: string
+          title: Get error text
+          description: This element contains an error description to be outputted in case of a failure during the import process. It contains the error title and description, its source (`user` or `cartodb`), and troubleshooting details
+        display_name:
+          type: string
+          title: Display name
+          description: Similar to `table_name`. For `url` uploads, it shows the name of the file. Otherwise, it shows the `import_id`
+        success:
+          type: boolean
+          title: Success
+          description: A boolean value indicating whether the import process succeeded
+        warnings:
+          type: string
+          title: Warnings
+          description: A text field containing warning messages related to the import process, if applicable of the file. Otherwise, it shows the `import_id`
+          nullable: true
+        is_raster:
+          type: boolean
+          title: Is raster
+          description: A boolean value indicating whether the imported table contains raster data or not
+    ExportCarto:
+      type: object
+      properties:
+        visualization_id:
+          type: string
+          title: Visualization ID
+          description: A unique identifier for the map created in the export process. Only applies if `created_visualization` is set to `true` when the map was created. 
+    ExportCartoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          title: ID
+          description: A unique identifier for the export process. It is the same as the _export id_ provided in the request
+        visualization_id:
+          type: string
+          title: Visualization ID
+          description: A unique identifier for the map created in the export process. Only applies if `created_visualization` is set to `true` when the map was created
+        user_id:
+          type: string
+          title: User ID
+          description: A unique alphanumeric element that identifies the CARTO account user in the internal database
+        state:
+          type: string
+          enum:
+            - enqueued
+            - pending
+            - uploading
+            - unpacking
+            - importing
+            - guessing
+            - complete
+            - failure 
+          title: State
+          description: A string value indicating the current state of the export process
+        url:
+          type: string
+          title: URL
+          description: The **public** URL address where the file to be exported is located
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          title: Created at
+          description: The date time at which the visualization was created in the CARTO database
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated at
+          description: The date time at which the visualization had its contents modified
+    SyncTablesResponseItem:
+      type: object
+      properties:
+        id:
+          type: string
+          title: ID
+          description: A unique alphanumeric identifier of the synced table
+        name:
+          type: string
+          title: Name
+          description: The actual name of the created sync table
+        interval:
+          type: integer
+          title: Interval
+          description: An integer value representing the number of seconds between synchronizations of the table contents
+        url:
+          type: string
+          title: URL
+          description: The **public** URL address where the file to be synchronized is located
+          nullable: true
+        state:
+          type: string
+          enum:
+            - created
+            - queued
+            - syncing
+            - success
+            - failure
+          title: State
+          description: A string value indicating the current state of the synchronized dataset
+        created_at:
+          type: string
+          format: date-time
+          title: Created at
+          description: The date time at which the table was created in the CARTO database
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated at
+          description: The date time at which the table had its contents modified
+        run_at:
+          type: string
+          format: date-time
+          title: Run at
+          description: The date time at which the table **will** get its contents synched with the source file
+        retried_times:
+          type: integer
+          title: Retried times
+          description: An integer value indicating the number of attempts that were performed to sync the table
+        log_id:
+          type: string
+          title: Log ID
+          description: A unique alphanumeric identifier to locate the log traces of the given table
+        error_code:
+          type: integer
+          title: Error code
+          description: An integer value representing a unique error identifier
+          nullable: true
+        error_message:
+          type: string
+          title: Error message
+          description: A string value indicating the message related to the _error_code_ element
+          nullable: true
+        ran_at:
+          type: string
+          format: date-time
+          title: Ran at
+          description: The date time at which the table **had** its contents synched with the source file
+        modified_at:
+          type: string
+          format: date-time
+          title: Modified at
+          description: The date time at which the table was manually modified, if applicable
+        etag:
+          type: string
+          title: ETAG
+          description: HTTP entity tag of the source file
+          nullable: true
+        checksum:
+          type: string
+          title: Checksum
+          description: See **etag**
+          nullable: true
+        user_id:
+          type: string
+          title: User ID
+          description: A unique alphanumeric element that identifies the CARTO account user in the internal database
+        service_name:
+          type: string
+          enum:
+            - gdrive
+            - dropbox
+          title: State
+          description: |
+            A string with the name of the datasource used to import the file
+            It can have any of the following values: 
+            - **gdrive** - Google Drive
+            - **dropbox** - Dropbox
+            - `null` - URL imports
+          nullable: true
+        service_item_id:
+          type: string
+          title: Service item ID
+          description: A unique identifier used by CARTO to reference the sync table and its related datasource service
+        type_guessing:
+          type: boolean
+          title: Type guessing
+          description:   If set to `false` disables field type guessing (for Excel and CSVs)
+        quoted_fields_guessing:
+          type: boolean
+          title: Quoted fields guessing
+          description:   If set to `false` disables type guessing of CSV fields that come inside double quotes
+        content_guessing:
+          type: boolean
+          title: Content guessing
+          description:   Set to `true` to enable content guessing and automatic geocoding based on results. Currently, this only implements geocoding of countries, cities and IP addresses
+        visualization_id:
+          type: string
+          title: Visualization ID
+          description: A unique identifier for the map created in the import process. Only applies if created_visualization is set to `true`
+        from_external_source:
+          type: boolean
+          title: From external source
+          description: A boolean indicating whether the Sync Table is connected to an external source, generally the CARTO Data library
+    ListSyncTablesResponse:
+      type: object
+      properties:
+        syncronizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/SyncTablesResponseItem'
+        total_entries:
+          type: integer
+          title: Total entries
+          description: Number of items contained in the response array
+    CreateSyncTablesPayload:
+      type: object
+      properties:
+        url:
+          type: string
+          title: URL
+          description: The **public** URL address where the file to be imported is located
+        interval:
+          type: integer
+          title: Interval
+          minimum: 900
+          description: 'The number of seconds for the synchronization period. Note: Sync interval must be at least 900 (15 minutes)'
+        type_guessing:
+          type: boolean
+          title: Type guessing
+          default: true
+          description:   If set to `false` disables field type guessing (for Excel and CSVs)
+        quoted_fields_guessing:
+          type: boolean
+          title: Quoted fields guessing
+          default: true
+          description:   If set to `false` disables type guessing of CSV fields that come inside double quotes
+        content_guessing:
+          type: boolean
+          title: Content guessing
+          default: false
+          description:  Set to `true` to enable content guessing and automatic geocoding based on results. Currently, this only implements geocoding of countries, cities and IP addresses
+    CreateSyncTablesResponse:
+      allOf:
+        - type: object
+          properties:
+            data_import:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  title: Endpoint
+                  description: This item refers to the internal CARTO controller code responsible for performing the import
+                item_queue_id:
+                  type: string
+                  title: Item queue ID
+                  description: A unique alphanumeric identifier that refers to the import process. It can be used to retrieve data related to the created table
+        - $ref: '#/components/schemas/SyncTablesResponseItem'
+          
+  securitySchemes:
+    ApiKeyHTTPBasicAuth:
+      type: http
+      scheme: basic
+    ApiKeyQueryParam:
+      type: apiKey
+      in: header
+      name: api_key
+  examples:
+    CreateImportUrl:
+      value:
+        url: https://remotehost.url/path/to/remotefile
+      summary: Import from URL
+    RequestResponseSuccess:
+      value:
+        item_queue_id: 9906bce0-f1a3-4b07-be71-818f4bfd7673
+        success: true
+      summary: A success response  
+  responses:
+    NotFound:
+      description: The specified resource was not found
+    Unauthorized:
+      description: Unauthorized. No authentication provided.
+    Forbidden:
+      description: Forbidden. The API key does not authorize this request.
+    BadInput:
+      description: Request's parameters error

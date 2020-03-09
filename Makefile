@@ -7,14 +7,17 @@ all:
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
 
-WORKING_SPECS_INTEGRATIONS = \
-	$(NULL)
-
 WORKING_SPECS_1 = \
 	spec/models/table_spec.rb \
 	spec/models/table_privacy_manager_spec.rb \
 	spec/models/table/column_typecaster_spec.rb \
-	spec/models/user_spec.rb \
+	spec/models/user_part_app_spec.rb \
+	spec/models/user_part_crud_spec.rb \
+	spec/models/user_part_database_and_cache_spec.rb \
+	spec/models/user_part_organization_spec.rb \
+	spec/models/user_part_plans_and_services_spec.rb \
+	spec/models/user_part_validation_and_authentication_spec.rb \
+	spec/models/user_part_refactored_behaviour_spec.rb \
 	spec/models/user_presenter_spec.rb \
 	spec/models/user_table_spec.rb \
 	spec/models/layer_spec.rb \
@@ -34,8 +37,10 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/templates_controller_spec.rb \
 	spec/requests/carto/api/user_creations_controller_spec.rb \
 	spec/requests/carto/api/widgets_controller_spec.rb \
+	spec/requests/carto/api/custom_visualizations_controller_spec.rb \
 	spec/requests/carto/builder/public/embeds_controller_spec.rb \
 	spec/requests/carto/builder/visualizations_controller_spec.rb \
+	spec/requests/carto/kuviz/visualizations_controller_spec.rb \
 	spec/requests/visualizations_controller_helper_spec.rb \
 	spec/requests/warden_spec.rb \
 	spec/models/map_spec.rb \
@@ -61,7 +66,6 @@ WORKING_SPECS_1 = \
 	spec/lib/image_metadata_spec.rb \
 	spec/lib/central_spec.rb \
 	spec/lib/trending_maps_spec.rb \
-	spec/lib/explore_api_spec.rb \
 	spec/lib/user_account_creator_spec.rb \
 	spec/lib/carto/filename_generator_spec.rb \
 	spec/lib/carto/http_header_authentication_spec.rb \
@@ -83,8 +87,8 @@ WORKING_SPECS_1 = \
 	spec/services/carto/data_library_service_spec.rb \
 	spec/services/carto/user_authenticator_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
-	spec/services/carto/visualizations_export_service_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
+	spec/services/carto/visualization_backup_service_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_2 = \
@@ -139,7 +143,11 @@ WORKING_SPECS_4 = \
 	services/sql-api/spec/sql_api_spec.rb \
 	spec/requests/admin/organizations_controller_spec.rb \
 	spec/requests/admin/visualizations_spec.rb \
-	spec/requests/carto/api/visualizations_controller_spec.rb \
+	spec/requests/carto/api/visualizations_controller_spec_part_1.rb \
+	spec/requests/carto/api/visualizations_controller_spec_part_2.rb \
+	spec/requests/carto/api/visualizations_controller_spec_part_3.rb \
+	spec/requests/carto/api/visualizations_controller_index_spec.rb \
+	spec/requests/carto/api/visualizations_controller_vizjson_spec.rb \
 	spec/requests/carto/api/tables_controller_spec.rb \
 	spec/queries/carto/visualization_query_builder_spec.rb \
 	spec/requests/admin/tables_spec.rb \
@@ -266,7 +274,6 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/rate_limit_spec.rb \
 	spec/models/carto/received_notification_spec.rb \
 	spec/models/carto/user_db_service_spec.rb \
-	spec/models/carto/user_migration_spec.rb \
 	spec/models/carto/user_multifactor_auth_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/models/carto/user_migration_import_spec.rb \
@@ -314,7 +321,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
 	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
-	spec/lib/carto/oauth_provider/scopes_spec.rb \
+	spec/lib/carto/oauth_provider/scopes/scopes_spec.rb \
 	spec/models/carto/legend_spec.rb \
 	spec/requests/carto/api/legends_controller_spec.rb \
 	spec/lib/carto/legend_definition_validator_spec.rb \
@@ -327,13 +334,16 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/helpers/carto/html_safe_spec.rb \
 	spec/models/carto/asset_spec.rb \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
-	spec/lib/carto/assets_service_spec.rb \
-	spec/lib/carto/organization_assets_service_spec.rb \
+	spec/lib/carto/assets/image_assets_service_spec.rb \
+	spec/lib/carto/assets/organization_image_assets_service_spec.rb \
+	spec/lib/carto/assets/kuviz_assets_service_spec.rb \
 	spec/lib/carto/storage_options/local_spec.rb \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
 	spec/lib/tasks/layers_rake_spec.rb \
 	spec/lib/tasks/fix_unique_legends_spec.rb \
 	spec/lib/tasks/oauth_rake_spec.rb \
+	spec/lib/tasks/user_rake_spec.rb \
+	spec/lib/tasks/user_database_host_update_rake_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
 	spec/services/visualization/common_data_service_spec.rb \
@@ -347,6 +357,22 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/gears/carto_gears_api/users_service_spec.rb \
 	spec/queries/carto/visualization_query_searcher_spec.rb \
 	spec/queries/carto/visualization_query_orderer_spec.rb \
+	spec/queries/carto/tag_query_builder_spec.rb \
+	spec/requests/carto/api/tags_controller_spec.rb \
+	spec/lib/carto/oauth/google/api_spec.rb \
+	spec/queries/carto/dashboard_preview_searcher_spec.rb \
+	spec/requests/carto/api/search_preview_controller_spec.rb \
+	spec/requests/carto/api/public/oauth_apps_controller_spec.rb \
+	spec/requests/carto/api/public/datasets_controller_spec.rb \
+	spec/models/carto/user_migration_api_key_spec.rb \
+	spec/models/carto/user_migration_rollback_spec.rb \
+	spec/models/carto/user_migration_base_spec.rb \
+	spec/requests/carto/api/public/data_observatory_controller_spec.rb \
+	spec/lib/tasks/data_observatory_rake_spec.rb \
+	spec/services/carto/do_licensing_service_spec.rb \
+	spec/requests/carto/api/public/federated_tables_controller_spec.rb \
+	spec/services/carto/federated_tables_service_spec.rb \
+	spec/mailers/data_observatory_mailer_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace
@@ -384,15 +410,13 @@ check-spec-helper-min:
 	CHECK_SPEC=50 RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
 check-carto-db-class:
 	CHECK_SPEC=51 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
-check-integrations:
-	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
 
 check-gear/%: %
 	cd $< && bundle install && RAILS_ENV=test bundle exec rspec
 
 check-gears: $(addprefix check-gear/, $(wildcard gears/*))
 
-check-external: prepare-test-db check-integrations
+check-external: prepare-test-db
 
 check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
 

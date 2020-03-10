@@ -37,20 +37,27 @@
 </template>
 
 <script>
-
+import { mapState } from 'vuex';
 export default {
   name: 'DeleteExternalMapsDialog',
+  computed: {
+    ...mapState({
+      mapsList: state => state.externalMaps.list
+    })
+  },
   props: {
     visualizations: Array
   },
   methods: {
     deleteMap () {
-      console.log(this.visualizations[0].id);
       this.$store.dispatch('externalMaps/delete', this.visualizations);
-      this.$emit('deselectAll');
-      // TODO: Clear selection and close modal
     },
     close () {
+      this.$emit('close');
+    }
+  },
+  watch: {
+    mapsList () {
       this.$emit('close');
     }
   }

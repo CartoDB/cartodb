@@ -229,7 +229,7 @@ export default {
       this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map, this.lastCheckedItem || map);
     },
     selectAll () {
-      this.selectedMaps = [...Object.values(this.$store.state.maps.list)];
+      this.selectedMaps = [...Object.values(this.$store.state.externalMaps.list)];
     },
     deselectAll () {
       this.selectedMaps = [];
@@ -260,6 +260,9 @@ export default {
     },
     selectedMaps () {
       this.$emit('selectionChange', this.selectedMaps);
+    },
+    maps () {
+      this.deselectAll();
     }
   }
 };

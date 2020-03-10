@@ -13,7 +13,7 @@
     <div class="viz-column--main-info">
       <div class="cell cell--thumbnail cell--first">
         <div class="cell__media" :class="{ 'is-kuviz': isKuviz ,'has-error': !isKuviz && isThumbnailErrored }">
-          <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isBuilderMap && !isThumbnailErrored"/>
+          <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="(isBuilderMap && !isThumbnailErrored) || isKeplergl"/>
 
           <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
         </div>
@@ -32,7 +32,7 @@
             {{ visualization.name }}
           </h3>
 
-          <span v-if="showInteractiveElements" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <span v-if="showInteractiveElements && !isKeplergl" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </div>
@@ -69,7 +69,7 @@
         <div class="cell cell--large">
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
-        <div class="cell cell--xsmall u-txt-right u-p--0">
+        <div class="cell cell--xsmall u-txt-right u-p--0" v-if="!isKeplergl">
           <span class="text is-small is-txtSoftGrey">{{ numberViews }}</span>
         </div>
       </div>
@@ -83,7 +83,7 @@
 
         <div class="cell quick-actions cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isSharedWithMe"></div>
-          <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
+          <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements && !isKeplergl" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
         </div>
       </div>
     </div>
@@ -287,6 +287,15 @@ export default {
 
     &:hover + .metadata .metadata__tag {
       text-decoration: none;
+    }
+  }
+
+  .viz-column--shareS .cell {
+    display: flex;
+    align-items: center;
+
+    .text.is-small {
+      line-height: 17px;
     }
   }
 

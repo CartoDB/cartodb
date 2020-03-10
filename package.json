@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.161",
+  "version": "1.0.0-assets.162",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@babel/polyfill": "https://registry.npmjs.org/@babel/polyfill/-/polyfill-7.0.0.tgz",
     "@carto/carto.js": "^4.1.10",
+    "@carto/toolkit": "0.0.1-rc.16",
     "@carto/zera": "1.0.7",
     "backbone": "1.2.3",
     "backbone-forms": "0.14.0",
@@ -223,6 +224,7 @@
     "carto-node": "NODE_ENV=production webpack --progress --config webpack/carto-node/webpack.config.js",
     "dev": "NODE_ENV=development webpack --progress --watch --config webpack/v4/webpack.dev.config.js",
     "dev:editor": "grunt editor",
+    "dev:editor:cdb": "grunt editor-cdb",
     "dev:static": "webpack --progress --watch --config webpack/static-pages/webpack.dev.config.js",
     "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json"
   }

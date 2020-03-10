@@ -5,17 +5,27 @@ Development
 - DB Connectors removed from the main repository
 
 ### Features
-- New Free 2020 Plan, Dashboard and Builder changes ([#15497](https://github.com/CartoDB/cartodb/pull/15497))
-- Metadata API integration in license workflow ([#15483](https://github.com/CartoDB/cartodb/issues/15483))
+- None yet
 
 ### Bug fixes / enhancements
-- Hide DataCatalog to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
-- Hide Create oAuth Apps section in Connected Apps page to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
-- Update footer links based on account types ([#15502](https://github.com/CartoDB/cartodb/pull/15502))
-- Improve welcome copy font ([#15503](https://github.com/CartoDB/cartodb/pull/15503))
-- Fix dataset creation without map quotas ([#15504](https://github.com/CartoDB/cartodb/pull/15504))
-- Fix imports when user quota cannot be calculated ([#15512](https://github.com/CartoDB/cartodb/pull/15512))
-- Update Connectors UI styling ([#15514](https://github.com/CartoDB/cartodb/pull/15514))
+- Fix wording for feedback
+
+4.36.0 (2020-03-09)
+-------------------
+
+### Features
+* New Free 2020 Plan, Dashboard and Builder changes ([#15497](https://github.com/CartoDB/cartodb/pull/15497))
+* Metadata API integration in license workflow ([#15483](https://github.com/CartoDB/cartodb/issues/15483))
+* Kepler.gl visualizations (Dashboard): Integrate Kepler.gl visualizations saved to CARTO into Dashboard ([#15484](https://github.com/CartoDB/cartodb/issues/15484))
+
+### Bug fixes / enhancements
+* Hide DataCatalog to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
+* Hide Create oAuth Apps section in Connected Apps page to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
+* Update footer links based on account types ([#15502](https://github.com/CartoDB/cartodb/pull/15502))
+* Improve welcome copy font ([#15503](https://github.com/CartoDB/cartodb/pull/15503))
+* Fix dataset creation without map quotas ([#15504](https://github.com/CartoDB/cartodb/pull/15504))
+* Fix imports when user quota cannot be calculated ([#15512](https://github.com/CartoDB/cartodb/pull/15512))
+* Update Connectors UI styling ([#15514](https://github.com/CartoDB/cartodb/pull/15514))
 
 4.35.0 (2020-02-21)
 -------------------

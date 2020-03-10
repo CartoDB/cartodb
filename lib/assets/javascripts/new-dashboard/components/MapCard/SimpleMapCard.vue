@@ -10,13 +10,13 @@
      }"
     @click="onClick">
     <div class="card-media" :class="{ 'is-kuviz': isKuviz ,'has-error': !isKuviz && isThumbnailErrored  }">
-      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isBuilderMap && !isThumbnailErrored"/>
+      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="(isBuilderMap && !isThumbnailErrored) || isKeplergl"/>
 
-      <div class="media-dataset" v-if="!(isBuilderMap || isKuviz)">
+      <div class="media-dataset" v-if="!(isBuilderMap || isKuviz || isKeplergl)">
         <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
       </div>
 
-      <TypeBadge v-if="isBuilderMap || isKuviz" class="card-badge" :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="false" />
+      <TypeBadge v-if="isBuilderMap || isKuviz || isKeplergl" class="card-badge" :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="false" />
       <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
     </div>
 
@@ -45,7 +45,7 @@
         <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine) && !singleLineTitle, 'single-line': singleLineTitle}">
           <span :class="{ 'title-element': singleLineTitle }">{{ visualization.name }}</span>
           <span
-            v-if="showInteractiveElements"
+            v-if="showInteractiveElements && !isKeplergl"
             class="card-favorite"
             :class="{'is-favorite': visualization.liked, 'favorite-overflow': titleOverflow}"
             @click.prevent="toggleFavorite"

@@ -5,7 +5,6 @@ const Package = require('./../../package.json');
 
 const VERSION = Package.version;
 
-
 module.exports = {
   entry: Object.assign({
     main: './lib/assets/javascripts/dashboard/statics/static.js'

@@ -41,8 +41,8 @@
           } else if (value === false) {
             if (this.options.disabled) {
                 this.$element
-                    .removeAttr('disabled');
-                this.$elementFilestyle.find('label').removeAttr('disabled');
+                    .prop('disabled', false);
+                this.$elementFilestyle.find('label').prop('disabled', false);
                 this.options.disabled = false;
             }
             } else {
@@ -248,7 +248,7 @@
 
             $labelFocusableContainer
                 .attr('tabindex', "0")
-                .keypress(function(e) {
+                .on('keypress', function(e) {
                     if (e.keyCode === 13 || e.charCode === 32) {
                         $label.click();
                     }
@@ -265,7 +265,7 @@
             }
 
             // Getting input file value
-            this.$element.change(function () {
+            this.$element.on('change', function () {
                 var content = '';
                 if (this.files === undefined) {
                     files[0] = {'name': this.value};

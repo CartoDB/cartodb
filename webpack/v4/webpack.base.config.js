@@ -144,6 +144,9 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'shim-loader',
+        exclude: [
+          rootDir('node_modules')
+        ],
         include: [
           rootDir('node_modules/internal-carto.js')
         ],
@@ -163,10 +166,7 @@ module.exports = {
       },
       {
         test: /\.tpl$/,
-        use: [{
-          loader: 'tpl-loader',
-          options: {}
-        }],
+        use: 'tpl-loader',
         include: [
           rootDir('lib/assets/javascripts/builder'),
           rootDir('lib/assets/javascripts/dashboard'),

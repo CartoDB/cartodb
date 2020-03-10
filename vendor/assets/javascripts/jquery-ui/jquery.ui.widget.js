@@ -52,7 +52,7 @@ $.widget = function( name, base, prototype ) {
 	}
 
 	// create selector for plugin
-	$.expr[ ":" ][ fullName ] = function( elem ) {
+	$.expr.pseudos[ fullName ] = function( elem ) {
 		return !!$.data( elem, name );
 	};
 

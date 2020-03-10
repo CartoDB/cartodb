@@ -686,7 +686,7 @@
 					if (options.onShow.apply(this, [cal.get(0)]) != false) {
 						cal.show();
 					}
-					$(document).bind('mousedown', {cal: cal, trigger: this}, hide);
+					$(document).on('mousedown', {cal: cal, trigger: this}, hide);
 				}
 				return false;
 			},
@@ -695,7 +695,7 @@
 					if (ev.data.cal.data('datepicker').onHide.apply(this, [ev.data.cal.get(0)]) != false) {
 						ev.data.cal.hide();
 					}
-					$(document).unbind('mousedown', hide);
+					$(document).off('mousedown', hide);
 				}
 			};
 		return {
@@ -738,7 +738,7 @@
 						var id = 'datepicker_' + parseInt(Math.random() * 1000), cnt;
 						options.id = id;
 						$(this).data('datepickerId', options.id);
-						var cal = $(tpl.wrapper).attr('id', id).bind('click', click).data('datepicker', options);
+						var cal = $(tpl.wrapper).attr('id', id).on('click', click).data('datepicker', options);
 						if (options.className) {
 							cal.addClass(options.className);
 						}
@@ -770,7 +770,7 @@
 							layout(cal.get(0));
 						} else {
 							cal.appendTo(document.body);
-							$(this).bind(options.eventName, show);
+							$(this).on(options.eventName, show);
 						}
 					}
 				});

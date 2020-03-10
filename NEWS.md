@@ -107,6 +107,7 @@ sudo make install
 * Fix ensuring uniqueness working with kuviz [#15417](https://github.com/CartoDB/cartodb/pull/15417)
 * Update CARTOframes onboarding [#15420](https://github.com/CartoDB/cartodb/pull/15420)
 * Update CartoCSS info about URI images [CartoDB/developers#651](https://github.com/CartoDB/developers/issues/651)
+* Upgrade jQuery to 3.4.1 to fix dependency vulnerabilities ([CartoDB/support#2057](https://github.com/CartoDB/support/issues/2057))
 
 4.32.0 (2019-12-27)
 -------------------

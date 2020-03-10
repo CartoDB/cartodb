@@ -16,14 +16,7 @@ Object {
       "staticRenderFns": Array [],
     },
     "Search": Object {
-      "_Ctor": Object {
-        "10": [Function],
-        "18": [Function],
-        "2": [Function],
-        "26": [Function],
-        "34": [Function],
-        "42": [Function],
-      },
+      "_Ctor": Object {},
       "components": Object {
         "SearchSuggestions": Object {
           "components": Object {
@@ -100,14 +93,7 @@ Object {
       "staticRenderFns": Array [],
     },
     "UserDropdown": Object {
-      "_Ctor": Object {
-        "10": [Function],
-        "18": [Function],
-        "2": [Function],
-        "26": [Function],
-        "34": [Function],
-        "42": [Function],
-      },
+      "_Ctor": Object {},
       "computed": Object {
         "isOrganizationAdmin": [Function],
       },

@@ -27,6 +27,7 @@ Development
 * Fix dataset creation without map quotas ([#15504](https://github.com/CartoDB/cartodb/pull/15504))
 * Fix imports when user quota cannot be calculated ([#15512](https://github.com/CartoDB/cartodb/pull/15512))
 * Update Connectors UI styling ([#15514](https://github.com/CartoDB/cartodb/pull/15514))
+* Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))
 
 4.35.0 (2020-02-21)
 -------------------

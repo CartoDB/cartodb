@@ -103,11 +103,7 @@ export default {
       this.$emit('deselectAll');
     },
     deleteMaps () {
-      DialogActions.deleteVisualizations.apply(this, [
-        this.selectedMaps,
-        'externalMaps',
-        this.getActionHandlers()
-      ]);
+      DialogActions.deleteExternalVisualizations.apply(this, [this.selectedMaps]);
     }
   }
 };

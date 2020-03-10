@@ -625,13 +625,16 @@ describe Carto::Visualization do
   context 'quota check' do
     before(:all) do
       @carto_user.public_map_quota = nil
+      @carto_user.public_dataset_quota = nil
       @carto_user.private_map_quota = nil
       @carto_user.private_maps_enabled = true
+      @carto_user.private_tables_enabled = true
       @carto_user.save
     end
 
     after(:all) do
       @carto_user.public_map_quota = nil
+      @carto_user.public_dataset_quota = nil
       @carto_user.private_map_quota = nil
       @carto_user.save
     end
@@ -692,5 +695,35 @@ describe Carto::Visualization do
       end
     end
 
+    context 'having a private dataset' do
+      before(:each) do
+        @carto_user.private_map_quota = 0
+        @carto_user.public_map_quota = 0
+        @carto_user.save
+        @visualization = FactoryGirl.create(:carto_table_visualization, user: @carto_user,
+                                                                        privacy: Carto::Visualization::PRIVACY_PRIVATE)
+      end
+
+      it 'does not allow to make it public when the limit is reached' do
+        @carto_user.public_dataset_quota = 0
+        @carto_user.save
+
+        @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+        @visualization.save
+
+        @visualization.reload.privacy.should eql Carto::Visualization::PRIVACY_PRIVATE
+        @visualization.errors.count.should eql 1
+      end
+
+      it 'allows to make it public if the limit is not reached' do
+        @carto_user.public_dataset_quota = 1
+        @carto_user.save
+
+        @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+        @visualization.save
+
+        @visualization.reload.privacy.should eql Carto::Visualization::PRIVACY_PUBLIC
+      end
+    end
   end
 end

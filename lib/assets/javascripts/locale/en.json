@@ -3,8 +3,8 @@
         "trial_notification": {
             "views": {
                 "trial_notification": {
-                    "message": "%{trial_days} days left in your trial.",
-                    "add_payment": "Subscribe now to keep using our platform."
+                    "message": "%{trial_days} days left in your account.",
+                    "add_payment": "Upgrade now."
                 }
             }
         }
@@ -60,7 +60,7 @@
         },
         "views": {
             "content": {
-                "form_title": "Edit your plan information"
+                "form_title": "Your account information"
             },
             "form": {
                 "username": "Username",
@@ -81,7 +81,7 @@
                 "save_changes": "Save changes",
                 "delete_account": "Delete account",
                 "confirm": "Are you sure?",
-                "delete_all": "Delete my account and all my data",
+                "delete_all": "Yes, delete my account and all my data",
                 "email_google": "Your account is linked to your Google account.",
                 "errors": {
                     "change_email": "You can change the email if you set a password."
@@ -1235,6 +1235,7 @@
                 "imports": {
                     "header": "Connect with %{brand}",
                     "header-alt": "%{brand} connector logo",
+                    "go-connectors": "Connectors",
                     "ask-for-demo": "ask for demo",
                     "contact-us": "Contact us",
                     "loading": "Sending request",
@@ -1276,7 +1277,8 @@
                         "type-import": "%{brand} import",
                         "upload-file-url": "Upload a file or a URL |||| Upload a URL",
                         "import-data": "Import your data from a %{brand} instance",
-                        "sync-options": "Sync options only available for a layer"
+                        "sync-options": "Sync options only available for a layer",
+                        "go-back": "Back"
                     },
                     "service-import": {
                         "and": "and",
@@ -1378,6 +1380,8 @@
                         "field-sql-query": "SQL query",
                         "sql-hint": "If your query contains geographic data in EPSG:4326 format, name that column with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
                         "sql-error": "There has been an error parsing your query",
+                        "import-as-field": "CARTO Dataset",
+                        "import-as-hint": "Name of the new Dataset that will be created in your CARTO Dashboard with the imported data.",
                         "run": "Run SQL query",
                         "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM table",
                         "sidebar-connect": {

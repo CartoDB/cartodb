@@ -47,6 +47,7 @@ module CartoDB
         account_type_display_name: plan_name(account_type),
         table_quota: table_quota,
         public_map_quota: public_map_quota,
+        public_dataset_quota: public_dataset_quota,
         private_map_quota: private_map_quota,
         regular_api_key_quota: regular_api_key_quota,
         table_count: table_count,
@@ -123,7 +124,7 @@ module CartoDB
         layers: layers.map(&:public_values),
         trial_ends_at: trial_ends_at,
         upgraded_at: upgraded_at,
-        show_trial_reminder: trial_ends_at.present?,
+        show_trial_reminder: show_trial_reminder?,
         show_upgraded_message: (account_type.downcase != 'free' && upgraded_at && upgraded_at + 15.days > Date.today ? true : false),
         actions: {
           private_tables: private_tables_enabled,

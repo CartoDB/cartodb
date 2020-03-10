@@ -373,6 +373,7 @@ describe Carto::OrganizationMetadataExportService do
         auth_saml_configuration: {},
         no_map_logo: false,
         password_expiration_in_d: 365,
+        inherit_owner_ffs: false,
         assets: [{
           public_url: "http://localhost.lan:3000/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0",
           kind: "organization_asset",

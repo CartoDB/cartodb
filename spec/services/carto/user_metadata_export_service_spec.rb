@@ -188,8 +188,12 @@ describe Carto::UserMetadataExportService do
 
     it 'imports latest' do
       user = test_import_user_from_export(full_export)
+    end
 
-      expect(user.session_salt).to eq '123456789f'
+    it 'imports 1.0.15 (without public_dataset_quota)' do
+      user = test_import_user_from_export(full_export_one_zero_fifteen)
+
+      expect(user.public_dataset_quota).to be_nil
     end
 
     it 'imports 1.0.14 (without session_salt)' do
@@ -779,7 +783,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.15",
+      version: "1.0.16",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -796,6 +800,7 @@ describe Carto::UserMetadataExportService do
         quota_in_bytes: 5000000,
         table_quota: nil,
         public_map_quota: 20,
+        public_dataset_quota: 20,
         private_map_quota: 20,
         regular_api_key_quota: 20,
         account_type: "FREE",
@@ -1157,8 +1162,15 @@ describe Carto::UserMetadataExportService do
     }
   end
 
+  let(:full_export_one_zero_fifteen) do
+    user_hash = full_export[:user].except!(:public_dataset_quota)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_fourteen) do
-    user_hash = full_export[:user].except!(:session_salt)
+    user_hash = full_export_one_zero_fifteen[:user].except!(:session_salt)
 
     full_export[:user] = user_hash
     full_export

@@ -372,8 +372,8 @@
     "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
   },
   "FeedbackMessage": {
-    "title": "Share your feedback with us.",
-    "message": "Do you miss something? Should we be doing something differently?"
+    "title": "Let us know what you think.",
+    "message": "Missing something? Should we be doing something differently?"
   },
   "SharedBrief": {
     "sharedWith": "Shared with",

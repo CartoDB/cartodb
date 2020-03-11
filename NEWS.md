@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Use Dataservices API client 0.29.0
 
 ### Bug fixes / enhancements
 - Fix wording for feedback

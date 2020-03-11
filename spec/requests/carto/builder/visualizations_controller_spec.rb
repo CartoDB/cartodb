@@ -208,6 +208,7 @@ describe Carto::Builder::VisualizationsController do
 
     it 'includes the google maps client id if configured' do
       @map.provider = 'googlemaps'
+      @map.save
       @user1.google_maps_key = 'client=wadus_cid'
       @user1.save
       @visualization

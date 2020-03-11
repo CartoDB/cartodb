@@ -9,9 +9,6 @@ require_dependency 'carto/tracking/validators/layer'
 require_dependency 'carto/tracking/validators/user'
 require_dependency 'carto/tracking/validators/widget'
 
-#  IMPORTANT: Events must be kept in sync with frontend!
-#  See `/lib/assets/javascripts/builder/components/metrics/metrics-types.js`
-
 module Carto
   module Tracking
     module Events

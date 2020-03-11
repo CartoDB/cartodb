@@ -51,7 +51,7 @@ module CartoDB
         new_logfile = "/tmp/redis-#{ENV['REDIS_PORT']}/stdout"
         Dir.mkdir "/tmp/redis-#{ENV['REDIS_PORT']}" unless File.exists?("/tmp/redis-#{ENV['REDIS_PORT']}")
       else
-        port = Cartodb.config[:redis]["port"]
+        port = Cartodb.get_config(:redis, 'port')
       end
       print "[redis] Starting test server on port #{port}... "
 

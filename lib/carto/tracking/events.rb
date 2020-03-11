@@ -225,9 +225,7 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class CreatedDataset < DatasetEvent
-        include Carto::Tracking::Services::Hubspot
-        
+      class CreatedDataset < DatasetEvent        
         required_properties :origin
 
         def pubsub_name

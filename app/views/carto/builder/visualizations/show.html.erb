@@ -21,8 +21,8 @@
   var geocoderConfiguration = <%= safe_js_object geocoder_config.to_json %>;
 </script>
 
-<% if @google_maps_qs.present? %>
-  <%= insert_google_maps(@google_maps_qs) %>
+<% if @google_maps_query_string.present? %>
+  <%= insert_google_maps(@google_maps_query_string) %>
 <% end %>
 
 <%= javascript_include_tag 'common.js' %>

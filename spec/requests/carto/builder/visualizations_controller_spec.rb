@@ -13,8 +13,8 @@ describe Carto::Builder::VisualizationsController do
 
   describe '#show' do
     before(:each) do
-      map = FactoryGirl.create(:map, user_id: @user1.id)
-      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: map.id)
+      @map = FactoryGirl.create(:map, user_id: @user1.id)
+      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: @map.id)
       login(@user1)
     end
 
@@ -207,8 +207,10 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'includes the google maps client id if configured' do
+      @map.provider = 'googlemaps'
       @user1.google_maps_key = 'client=wadus_cid'
       @user1.save
+      @visualization
       get builder_visualization_url(id: @visualization.id)
 
       response.status.should == 200

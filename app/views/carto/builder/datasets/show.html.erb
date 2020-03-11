@@ -12,8 +12,8 @@
   var geocoderConfiguration = <%= safe_js_object geocoder_config.to_json %>;
 </script>
 
-<% if @canonical_visualization.map.provider == 'googlemaps' && @google_maps_query_string.present? %>
-  <%= insert_google_maps(@google_maps_query_string) %>
+<% if @canonical_visualization.map.provider == 'googlemaps' %>
+  <%= insert_google_maps(@canonical_visualization.user.google_maps_query_string) %>
 <% end %>
 
 <%= javascript_include_tag 'common', 'common_vendor', 'dataset' %>

@@ -2,14 +2,15 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+* None yet
 
 ### Features
-- Use Dataservices API client 0.29.0
+* Use Dataservices API client 0.29.0
 
 ### Bug fixes / enhancements
-- Fix wording for feedback
-- Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
+* Fix wording for feedback
+* Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
+* Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394)
 
 4.36.0 (2020-03-09)
 -------------------

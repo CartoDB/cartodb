@@ -7,7 +7,7 @@ module Carto
     FREE_2020 = 'Free 2020'.freeze
 
     TRIAL_PLANS = [FREE_2020].freeze
-    TRIAL_DURATION = { INDIVIDUAL => 14.days, FREE_2020 => 1.year }.freeze
+    TRIAL_DURATION = { FREE_2020 => 1.year }.freeze
 
     FULLSTORY_SUPPORTED_PLANS = [FREE, PERSONAL30, INDIVIDUAL, FREE_2020].freeze
 

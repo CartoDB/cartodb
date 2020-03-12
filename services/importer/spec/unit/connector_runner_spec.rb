@@ -8,9 +8,8 @@ require_relative '../doubles/log'
 require_relative '../doubles/indexer'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/user'
-require_relative '../doubles/input_file_size_limit'
-require_relative '../doubles/table_row_count_limit'
 require_relative '../../../../spec/helpers/feature_flag_helper'
+require_relative '../doubles/connector'
 
 describe CartoDB::Importer2::ConnectorRunner do
   before(:all) do
@@ -19,8 +18,9 @@ describe CartoDB::Importer2::ConnectorRunner do
     @pg_options = @user.db_service.db_configuration_for
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'carto-connectors', restricted: true)
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
-    @providers = %w(mysql postgres sqlserver hive)
+    @providers = %w(dummy)
     @fake_log.clear
+    Carto::Connector::PROVIDERS << DummyConnectorProvider
     Carto::Connector.providers(all: true).keys.each do |provider_name|
       Carto::ConnectorProvider.create! name: provider_name
     end
@@ -37,30 +37,23 @@ describe CartoDB::Importer2::ConnectorRunner do
     Carto::Connector.providers(all: true).keys.each do |provider_name|
       Carto::ConnectorProvider.find_by_name(provider_name).destroy
     end
+    Carto::Connector::PROVIDERS.delete DummyConnectorProvider
+  end
+
+  after(:each) do
+    DummyConnectorProvider.copies.clear
   end
 
   include FeatureFlagHelper
 
   describe 'with working connectors' do
-    before(:all) do
-      # Simulate connector success by ignoring all db opeartions
-      Carto::Connector::Context.any_instance.stubs(:execute_as_superuser).returns(nil)
-      Carto::Connector::Context.any_instance.stubs(:execute).returns(nil)
-      Carto::Connector::Context.any_instance.stubs(:execute_as_superuser_with_timeout).returns(nil)
-      Carto::Connector::Context.any_instance.stubs(:execute_with_timeout).returns(nil)
-    end
-
     it "Succeeds if parameters are correct" do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
-          connection: {
-            server:   'theserver',
-            username: 'theuser',
-            password: 'thepassword',
-            database: 'thedatabase'
-          },
           table:    'thetable',
-          encoding: 'theencoding'
+          req1: 'a',
+          req2: 'b',
+          opt1: 'c'
         }
         options = {
           pg:   @pg_options,
@@ -76,20 +69,18 @@ describe CartoDB::Importer2::ConnectorRunner do
             connector.provider_name.should eq provider
           end
         end
+        DummyConnectorProvider.copies.size.should eq 1
+        DummyConnectorProvider.copies[0][0].should eq 'cdb_importer'
+        DummyConnectorProvider.copies[0][1].should match /\Aimporter_/
       end
     end
 
     it "Fails if parameters are invalid" do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
-          connection: {
-            server:   'theserver',
-            username: 'theuser',
-            password: 'thepassword',
-            database: 'thedatabase'
-          },
           table:    'thetable',
-          encoding: 'theencoding',
+          req1: 'a',
+          req2: 'b',
           invalid_parameter: 'xyz'
         }
         options = {
@@ -110,17 +101,37 @@ describe CartoDB::Importer2::ConnectorRunner do
       end
     end
 
+    it "Fails if parameters are missing" do
+      with_feature_flag @user, 'carto-connectors', true do
+        parameters = {
+          table:    'thetable',
+          req1: 'a',
+          opt1: 'c'
+        }
+        options = {
+          pg:   @pg_options,
+          log:  @fake_log,
+          user: @user
+        }
+        @providers.each do |provider|
+          config = { provider => { 'enabled' => true } }
+          Cartodb.with_config connectors: config do
+            connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
+            connector.run
+            connector.success?.should be false
+            connector.provider_name.should eq provider
+            @fake_log.to_s.should match /Error Missing required parameters req2/m
+          end
+        end
+      end
+    end
+
     it "Fails without the feature flag" do
       with_feature_flag @user, 'carto-connectors', false do
         parameters = {
-          connection: {
-            server:   'theserver',
-            username: 'theuser',
-            password: 'thepassword',
-            database: 'thedatabase'
-          },
           table:    'thetable',
-          encoding: 'theencoding'
+          req1: 'a',
+          req2: 'b'
         }
         options = {
           pg:   @pg_options,
@@ -142,14 +153,9 @@ describe CartoDB::Importer2::ConnectorRunner do
     it "Fails if provider is not available" do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
-          connection: {
-            server:   'theserver',
-            username: 'theuser',
-            password: 'thepassword',
-            database: 'thedatabase'
-          },
           table:    'thetable',
-          encoding: 'theencoding'
+          req1: 'a',
+          req2: 'b',
         }
         options = {
           pg:   @pg_options,
@@ -170,25 +176,12 @@ describe CartoDB::Importer2::ConnectorRunner do
   end
 
   describe 'with failing connectors' do
-    before(:all) do
-      # Simulate connector success when executing non-privileged SQL
-      Carto::Connector::Context.any_instance.stubs(:execute_as_superuser).returns(nil)
-      Carto::Connector::Context.any_instance.stubs(:execute_as_superuser_with_timeout).returns(nil)
-      Carto::Connector::Context.any_instance.stubs(:execute).returns(nil)
-      Carto::Connector::Context.any_instance.stubs(:execute_with_timeout).raises("SQL EXECUTION ERROR")
-    end
-
     it "Always fails" do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
-          connection: {
-            server:   'theserver',
-            username: 'theuser',
-            password: 'thepassword',
-            database: 'thedatabase'
-          },
           table:    'thetable',
-          encoding: 'theencoding'
+          req1: 'a',
+          req2: 'b'
         }
         options = {
           pg:   @pg_options,
@@ -196,13 +189,15 @@ describe CartoDB::Importer2::ConnectorRunner do
           user: @user
         }
         @providers.each do |provider|
-          config = { provider => { 'enabled' => true } }
-          Cartodb.with_config connectors: config do
-            connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
-            connector.run
-            connector.success?.should be false
-            connector.provider_name.should eq provider
-            @fake_log.to_s.should match /SQL EXECUTION ERROR/m
+          Carto::Connector.provider_class(provider).failing_with('COPY ERROR') do
+            config = { provider => { 'enabled' => true } }
+            Cartodb.with_config connectors: config do
+              connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
+              connector.run
+              connector.success?.should be false
+              connector.provider_name.should eq provider
+              @fake_log.to_s.should match /COPY ERROR/m
+            end
           end
         end
       end
@@ -210,24 +205,14 @@ describe CartoDB::Importer2::ConnectorRunner do
   end
 
   describe 'with invalid provider' do
-    Carto::Connector::Context.any_instance.stubs(:execute_as_superuser).returns(nil)
-    Carto::Connector::Context.any_instance.stubs(:execute).returns(nil)
-    Carto::Connector::Context.any_instance.stubs(:execute_as_superuser_with_timeout).returns(nil)
-    Carto::Connector::Context.any_instance.stubs(:execute_with_timeout).returns(nil)
-
 
     it "Fails at creation" do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
           provider: 'invalid_provider',
-          connection: {
-            server:   'theserver',
-            username: 'theuser',
-            password: 'thepassword',
-            database: 'thedatabase'
-          },
           table:    'thetable',
-          encoding: 'theencoding'
+          req1: 'a',
+          req2: 'b'
         }
         options = {
           pg:   @pg_options,
@@ -254,15 +239,10 @@ describe CartoDB::Importer2::ConnectorRunner do
 
     with_feature_flag @user, 'carto-connectors', true do
       parameters = {
-        connection: {
-          server:   'theserver',
-          username: 'theuser',
-          password: 'thepassword',
-          database: 'thedatabase'
-        },
         table:    'thetable',
-        encoding: 'theencoding'
-      }
+        req1: 'a',
+        req2: 'b'
+    }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
@@ -283,5 +263,28 @@ describe CartoDB::Importer2::ConnectorRunner do
     Carto::ConnectorConfiguration.where(user_id: @user.id).destroy_all
   end
 
+  it "Passes global configuration limits to the provider" do
+    with_feature_flag @user, 'carto-connectors', true do
+      parameters = {
+        table:    'thetable',
+        req1: 'a',
+        req2: 'b',
+        opt1: 'c'
+      }
+      options = {
+        pg:   @pg_options,
+        log:  @fake_log,
+        user: @user
+      }
+      @providers.each do |provider|
+        config = { provider => { 'enabled' => true, 'max_rows' => 10 } }
+        Cartodb.with_config connectors: config do
+          connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
+          connector.run
+        end
+      end
+      DummyConnectorProvider.copies.map(&:last).uniq.should eq [{enabled: true, max_rows: 10}]
+    end
+  end
   # TODO: check Runner compatibility
 end

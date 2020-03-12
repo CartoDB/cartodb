@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+* DB Connectors removed from the main repository
 
 ### Features
 - BigQuery Connector endponits for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
@@ -10,7 +10,9 @@ Development
 - New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 
 ### Bug fixes / enhancements
-- Fix wording for feedback
+* Fix wording for feedback
+* Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394)
+* Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))
 
 4.36.0 (2020-03-09)
 -------------------

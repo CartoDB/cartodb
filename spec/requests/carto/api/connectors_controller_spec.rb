@@ -1,5 +1,6 @@
 require 'spec_helper_min'
 require 'support/helpers'
+require_relative '../../../../services/importer/spec/doubles/connector'
 
 describe Carto::Api::ConnectorsController do
   include HelperMethods
@@ -8,6 +9,17 @@ describe Carto::Api::ConnectorsController do
   before(:all) do
     FactoryGirl.create(:carto_feature_flag, name: 'carto-connectors', restricted: false)
     @user = FactoryGirl.create(:carto_user)
+    Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('postgres', 'PostgreSQL')
+    Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('hive', 'Hive')
+    Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('bigquery', 'BigQuery',
+      'sql_queries': false,
+      'list_databases': true,
+      'list_tables': true,
+      'preview_table': true,
+      'dry_run': true,
+      'list_projects': true
+    )
+
     @connector_provider_postgres = FactoryGirl.create(:connector_provider, name: 'postgres')
     @connector_provider_hive = FactoryGirl.create(:connector_provider, name: 'hive')
     @connector_config_user = FactoryGirl.create(:connector_configuration,
@@ -69,12 +81,13 @@ describe Carto::Api::ConnectorsController do
     it 'returns provider information for regular user' do
       get_json api_v1_connectors_show_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
         response.status.should be_success
-        response.body[:features][:sql_queries].should eq true
+        response.body[:features][:sql_queries].should eq false
         response.body[:features][:list_tables].should eq true
-        response.body[:parameters][:table][:required].should eq false
-        response.body[:parameters][:connection][:database][:required].should eq true
-        response.body[:parameters][:connection][:username][:required].should eq true
-        response.body[:parameters][:connection][:port][:required].should eq false
+        response.body[:parameters][:table][:required].should eq true
+        response.body[:parameters][:req1][:required].should eq true
+        response.body[:parameters][:req2][:required].should eq true
+        response.body[:parameters][:opt1][:required].should eq false
+        response.body[:parameters][:opt2][:required].should eq false
       end
     end
     it 'returns 422 if provider doesn\'t exists' do
@@ -85,13 +98,10 @@ describe Carto::Api::ConnectorsController do
   end
 
   describe '#tables' do
-    before(:each) do
-      pending "Provision odbc_fdw in CI server"
-    end
     it 'returns connector tables list' do
-      get_json api_v1_connectors_tables_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key, server: 'localhost', port: '5432', database: 'carto_db_test', username: 'postgres'), {}, @headers do |response|
+      get_json api_v1_connectors_tables_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
         response.status.should be_success
-        response.body[0]["schema"].should eq "public"
+        response.body[0]["schema"].should eq "s1"
         response.body[0]["name"].blank?.should eq false
       end
     end
@@ -103,11 +113,8 @@ describe Carto::Api::ConnectorsController do
   end
 
   describe '#connect' do
-    before(:each) do
-      pending "Provision odbc_fdw in CI server"
-    end
     it 'returns true if connection went ok' do
-      get_json api_v1_connectors_connect_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key, server: 'localhost', port: '5432', database: 'carto_db_test', username: 'postgres'), {}, @headers do |response|
+      get_json api_v1_connectors_connect_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
         response.status.should be_success
         response.body[:connected].should eq true
       end
@@ -117,50 +124,54 @@ describe Carto::Api::ConnectorsController do
         response.status.should eq 422
       end
     end
-    it 'returns 400 if connection went ko' do
-      get_json api_v1_connectors_connect_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key, server: 'localhost', port: '5432', database: 'unknown_db', username: 'postgres'), {}, @headers do |response|
-        response.status.should be 400
-        response.body[:errors].present?.should eq true
+    it 'returns false if connection went ko' do
+      Carto::Connector.provider_class('postgres').failing_with('CONNECTION PROBLEM') do
+        get_json api_v1_connectors_connect_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
+          response.body[:connected].should eq false
+        end
       end
     end
   end
 
   describe '#dryrun' do
     it 'returns 422 if not supported' do
-      params = {
-        connection: {
-          server: 'localhost', port: '5432', database: 'carto_db_test', username: 'postgres'
-        }
-      }
-      post_json api_v1_connectors_dryrun_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), params  do |response|
+      post_json api_v1_connectors_dryrun_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {}  do |response|
         response.status.should eq 422
       end
     end
 
     it 'returns dry-run information' do
-      pending "Provision odbc_fdw & OAuth in CI server"
-      params = {
-      }
-      post_json api_v1_connectors_dryrun_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key), params do |response|
+      post_json api_v1_connectors_dryrun_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key), {} do |response|
         response.status.should be_success
-        # response.body.keys.should include(:total_bytes_processed)
+        response.body.keys.should include(:dry_run_results)
+      end
+    end
+
+    it 'returns 400 in case of failure' do
+      Carto::Connector.provider_class('bigquery').failing_with('BIG PROBLEM') do
+        post_json api_v1_connectors_dryrun_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key), {} do |response|
+          response.status.should be 400
+          response.body[:errors].present?.should eq true
+          response.body[:errors].should match /BIG PROBLEM/m
+        end
       end
     end
   end
 
   describe '#projects' do
     it 'returns 422 if not supported' do
-      get_json api_v1_connectors_projects_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key, server: 'localhost', port: '5432', database: 'carto_db_test', username: 'postgres'), {}, @headers do |response|
+      get_json api_v1_connectors_projects_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
         response.status.should eq 422
       end
     end
 
     it 'returns connector projects list' do
-      pending "Provision odbc_fdw & OAuth in CI server"
       get_json api_v1_connectors_projects_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
         response.status.should be_success
-        # response.body[0]["id"].should eq "..."
-        # response.body[0]["friendly_nameme"].should eq "..."
+        response.body.should eq [
+          { 'id' => 'project-1', 'friendly_name' => "Project 1" },
+          { 'id' => 'project-2', 'friendly_name' => "Project 2" }
+        ]
       end
     end
 
@@ -178,12 +189,13 @@ describe Carto::Api::ConnectorsController do
       end
     end
 
-    it 'returns connector projects list' do
-      pending "Provision odbc_fdw & OAuth in CI server"
+    it 'returns connector project datasets list' do
       get_json api_v1_connectors_project_datasets_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key, project_id: 'my-project'), {}, @headers do |response|
         response.status.should be_success
-        # response.body[0]["id"].should eq "my-dataset"
-        # response.body[0]["qualified_name"].should eq "my-project.my-dataset"
+        response.body.should eq [
+          { 'id' => 'data-1', 'qualified_name' => "my-project.data-1" },
+          { 'id' => 'data-2', 'qualified_name' => "my-project.data-2" }
+        ]
       end
     end
 
@@ -201,12 +213,13 @@ describe Carto::Api::ConnectorsController do
       end
     end
 
-    it 'returns connector projects list' do
-      pending "Provision odbc_fdw & OAuth in CI server"
+    it 'returns connector project dataset tables list' do
       get_json api_v1_connectors_project_dataset_tables_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key, project_id: 'my-project', dataset_id: 'my-dataset'), {}, @headers do |response|
         response.status.should be_success
-        # response.body[0]["id"].should eq "my-table"
-        # response.body[0]["qualified_name"].should eq "my-project.my-dataset.my-table"
+        response.body.should eq [
+          { 'id' => 't-1', 'qualified_name' => "my-project.my-dataset.t-1" },
+          { 'id' => 't-2', 'qualified_name' => "my-project.my-dataset.t-2" }
+        ]
       end
     end
 

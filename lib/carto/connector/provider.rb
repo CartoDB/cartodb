@@ -16,12 +16,12 @@ module Carto
   class Connector
     class Provider
       # Provider identifier (internal name, used in APIs, etc)
-      def self.id
+      def self.provider_id
         must_be_defined_in_derived_class
       end
 
       # Human-readable name of the provider
-      def self.name
+      def self.friendly_name
         must_be_defined_in_derived_class
       end
 
@@ -34,9 +34,10 @@ module Carto
         true
       end
 
-      def initialize(connector_context, params = {})
-        @connector_context = connector_context
-        @params = Parameters.new(params, required: required_parameters + [:provider], optional: optional_parameters)
+      def initialize(parameters: {}, user: nil, logger: nil)
+        @params = Parameters.new(parameters, required: required_parameters + [:provider], optional: optional_parameters)
+        @user = user
+        @logger = logger
       end
 
       def errors(only_for: nil)
@@ -108,7 +109,7 @@ module Carto
         # For convenience we'll use instance methods to provide the information
         # en each class. Otherwise all the information needed by such methods
         # would have to be defined in class methods too.
-        test_provider = new(nil, {})
+        test_provider = new(parameters: {})
         {
           features: test_provider.features_information,
           parameters: test_provider.parameters_information
@@ -138,13 +139,20 @@ module Carto
       end
 
       def provider_id
-        self.class.id
+        self.class.provider_id
       end
 
+      METADATA_KEYS = {
+        id: :provider_id,
+        name: :friendly_name,
+        public: :public?
+      }
       class <<self
         def metadata(options)
           options.each do |key, value|
-            define_singleton_method(key) { value.freeze }
+            method = METADATA_KEYS[key]
+            raise "Invalid Provider metadata key: #{key.inspect}" unless method
+            define_singleton_method(method) { value.freeze }
           end
         end
         def optional_parameters(params)
@@ -155,6 +163,10 @@ module Carto
         end
       end
 
+      def log(message, truncate = true)
+        @logger.append message, truncate if @logger
+      end
+
       private
 
       def must_be_defined_in_derived_class(*_)
@@ -163,32 +175,6 @@ module Carto
 
       def self.must_be_defined_in_derived_class(*_)
         raise NotImplementedError, "Class method \"#{caller_locations(1, 1)[0].label}\" must be defined in derived class"
-      end
-
-      def log(message, truncate = true)
-        @connector_context.log message, truncate
-      end
-
-      def execute(sql)
-        @connector_context.execute(sql)
-      end
-
-      def execute_as_superuser(sql)
-        @connector_context.execute_as_superuser(sql)
-      end
-
-      def execute_with_timeout(command, timeout=nil)
-        timeout ||= default_timeout
-        @connector_context.execute_with_timeout command, timeout
-      end
-
-      def execute_as_superuser_with_timeout(command, timeout=nil)
-        timeout ||= default_timeout
-        @connector_context.execute_as_superuser_with_timeout command, timeout
-      end
-
-      def default_timeout
-        @connector_context.user.connector_configuration(provider_id)&.timeout
       end
     end
 

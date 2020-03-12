@@ -122,7 +122,7 @@ module Carto
       end
 
       def dup
-        Parameters.new(@params, required: @required_attributes, optional: @optional_attributes)
+        Parameters.new(@params, required: @required_parameters, optional: @optional_parameters)
       end
 
       def merge(params)

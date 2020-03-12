@@ -2,10 +2,12 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+* DB Connectors removed from the main repository
 
 ### Features
-- None yet
+* Use Dataservices API client 0.29.0
+* Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
+* Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
 
 ### Bug fixes / enhancements
 - Org. PG role deleted on org. deletion ([#12642](https://github.com/CartoDB/cartodb/issues/12642))

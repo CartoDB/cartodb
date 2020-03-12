@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-* None yet
+* DB Connectors removed from the main repository
 
 ### Features
 * Use Dataservices API client 0.29.0

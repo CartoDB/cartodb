@@ -1,21 +1,6 @@
-require_relative 'providers/fdw/odbc/generic_odbc'
-require_relative 'providers/fdw/odbc/mysql'
-require_relative 'providers/fdw/odbc/postgresql'
-require_relative 'providers/fdw/odbc/sqlserver'
-require_relative 'providers/fdw/odbc/hive'
-require_relative 'providers/fdw/odbc/bigquery'
-require_relative 'providers/fdw/pg_fdw'
-
 module Carto
   class Connector
-    PROVIDERS = [
-      GenericOdbcProvider,
-      PostgreSQLProvider,
-      MySqlProvider,
-      SqlServerProvider,
-      HiveProvider,
-      BigQueryProvider
-    ]
+    PROVIDERS = []
 
     DEFAULT_PROVIDER = nil # No default provider
 
@@ -29,18 +14,18 @@ module Carto
       end
 
       def provider_name(provider_id)
-        provider_item provider_id, :name
+        provider_item provider_id, :friendly_name
       end
 
       def provider_ids
-        PROVIDERS.map &:id
+        PROVIDERS.map &:provider_id
       end
 
       private
 
       def provider_data(provider_id)
         provider_id ||= DEFAULT_PROVIDER
-        PROVIDERS.find{|p| p.id == provider_id}
+        PROVIDERS.find{|p| p.provider_id == provider_id}
       end
 
       def provider_item(provider_id, item)

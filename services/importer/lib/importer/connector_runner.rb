@@ -33,7 +33,7 @@ module CartoDB
         @unique_suffix = @id.delete('-')
         @json_params = JSON.parse(connector_source)
         extract_params
-        @connector = Carto::Connector.new(@params, user: @user, logger: @log)
+        @connector = Carto::Connector.new(parameters: @params, user: @user, logger: @log)
         @results = []
         @tracker = nil
         @stats = {}

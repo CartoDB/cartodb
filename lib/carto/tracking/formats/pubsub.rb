@@ -3,12 +3,11 @@ module Carto
     module Formats
       class PubSub
 
-        EVENT_VERSION = 1
-
-        def initialize(user: nil, visualization: nil, widget: nil, hash: {})
+        def initialize(user: nil, visualization: nil, widget: nil, event_version: nil, hash: {})
           @user = user
           @visualization = visualization
           @widget = widget
+          @event_version = event_version
           @connection = hash[:connection]
           @origin = hash[:origin]
           @page = hash[:page]
@@ -34,7 +33,7 @@ module Carto
 
           properties.merge!(user_properties) if @user
           properties.merge!(visualization_properties) if @visualization
-          properties.merge!(connection_properties) if @connection
+          properties.merge!(connector_properties) if @connection
           properties.merge!(trending_map_properties) if @mapviews
           properties.merge!(analysis_properties) if @analysis
           properties.merge!(widget_properties) if @widget
@@ -65,7 +64,6 @@ module Carto
         end
 
         def user_properties
-
           {
             user_id: @user.id,
             event_source: @user.builder_enabled? ? 'builder' : 'editor',
@@ -75,12 +73,15 @@ module Carto
           }
         end
 
-        def connection_properties
+        def connector_properties
           {
             data_from: @connection[:data_from],
             imported_from: @connection[:imported_from],
             sync: @connection[:sync] || false,
-            file_type: @connection[:file_type]
+            file_type: @connection[:file_type],
+            connector_provider: @connection[:provider],
+            import_time: @connection[:import_time],
+            data_size: @connection[:total_size]
           }
         end
 
@@ -110,7 +111,7 @@ module Carto
           {
             event_time: now,
             source_domain: domain,
-            event_version: EVENT_VERSION
+            event_version: @event_version
           }
         end
 

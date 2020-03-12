@@ -12,11 +12,15 @@ require_dependency 'carto/tracking/validators/widget'
 #  IMPORTANT: Events must be kept in sync with frontend!
 #  See `/lib/assets/javascripts/builder/components/metrics/metrics-types.js`
 
+DEFAULT_EVENT_VERSION = 1
+
 module Carto
   module Tracking
     module Events
       class Event
         def initialize(reporter_id, properties)
+          properties.merge!({event_version: event_version})
+
           @format = Carto::Tracking::Formats::Internal.new(properties)
           @reporter = Carto::User.find(reporter_id)
         end
@@ -25,9 +29,14 @@ module Carto
           self.class.name.demodulize.underscore.humanize.capitalize
         end
 
+        def event_version
+          DEFAULT_EVENT_VERSION
+        end
+
         def self.required_properties(*required_properties)
           @required_properties ||= []
           @required_properties += required_properties
+          @required_properties += [:event_version]
         end
 
         def required_properties
@@ -140,6 +149,10 @@ module Carto
         def pubsub_name
           'map_created'
         end
+
+        def event_version
+          2
+        end
       end
 
       class DeletedMap < MapEvent
@@ -231,6 +244,10 @@ module Carto
 
         def pubsub_name
           'dataset_created'
+        end
+
+        def event_version
+          2
         end
       end
 

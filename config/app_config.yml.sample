@@ -751,7 +751,7 @@ defaults: &defaults
     mysql:
       enabled: true
       max_rows: 500000
-    postgresql:
+    postgres:
       enabled: true
       max_rows: 500000
     hive:

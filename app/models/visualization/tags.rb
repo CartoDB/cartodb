@@ -11,35 +11,37 @@ module CartoDB
         @exclude_shared = options[:exclude_shared].present? && options[:exclude_shared] == true
       end
 
-      def names(params={})
+      def names(params = {})
         if only_shared?(params)
           filter = shared_entities_sql_filter(params)
           if filter.empty?
             return []
           else
-            Tag.fetch(%Q{
-              SELECT DISTINCT (unnest(tags)) as name
-              FROM visualizations
-              WHERE #{shared_entities_sql_filter(params)}
-              AND type IN ?
-              AND privacy IN ?
-              #{locked_from(params)}
-              LIMIT ?
-            }, types_from(params), privacy_from(params), limit_from(params)
-            ).map{ |tag| tag.name}
+            Carto::Tag.find_by_sql(
+              [%{
+                SELECT DISTINCT (unnest(tags)) as name
+                FROM visualizations
+                WHERE #{shared_entities_sql_filter(params)}
+                AND type IN (?)
+                AND privacy IN (?)
+                #{locked_from(params)}
+                LIMIT ?
+              }, types_from(params), privacy_from(params), limit_from(params)]
+            ).map(&:name)
           end
         else
-          Tag.fetch(%Q{
-            SELECT DISTINCT (unnest(tags)) as name
-            FROM visualizations
-            WHERE user_id = ?
-            AND type IN ?
-            AND privacy IN ?
-            #{locked_from(params)}
-            #{shared_entities_sql_filter(params)}
-            LIMIT ?
-          }, user.id, types_from(params), privacy_from(params), limit_from(params)
-            ).map{ |tag| tag.name}
+          Carto::Tag.find_by_sql(
+            [%{
+              SELECT DISTINCT (unnest(tags)) as name
+              FROM visualizations
+              WHERE user_id = ?
+              AND type IN (?)
+              AND privacy IN (?)
+              #{locked_from(params)}
+              #{shared_entities_sql_filter(params)}
+              LIMIT ?
+            }, user.id, types_from(params), privacy_from(params), limit_from(params)]
+          ).map(&:name)
         end
       end
 
@@ -49,44 +51,46 @@ module CartoDB
           if filter.empty?
             return []
           else
-            Tag.fetch(%Q{
-            WITH tags as (
-              SELECT unnest(tags) as name
-              FROM visualizations
-              WHERE #{shared_entities_sql_filter(params)}
-              AND type IN ?
-              #{locked_from(params)}
-              LIMIT ?
-            )
-            SELECT name, count(*) as count
-            FROM tags
-            GROUP BY name
-            ORDER BY count(*)
-          }, types_from(params), limit_from(params)
+            Carto::Tag.find_by_sql(
+              [%{
+                WITH tags as (
+                  SELECT unnest(tags) as name
+                  FROM visualizations
+                  WHERE #{shared_entities_sql_filter(params)}
+                  AND type IN (?)
+                  #{locked_from(params)}
+                  LIMIT ?
+                )
+                SELECT name, count(*) as count
+                FROM tags
+                GROUP BY name
+                ORDER BY count(*)
+              }, types_from(params), limit_from(params)]
             ).all.map(&:values)
           end
         else
-          Tag.fetch(%Q{
-            WITH tags as (
-              SELECT unnest(tags) as name
-              FROM visualizations
-              WHERE user_id = ?
-              AND type IN ?
-              #{locked_from(params)}
-              #{shared_entities_sql_filter(params)}
-              LIMIT ?
-            )
-            SELECT name, count(*) as count
-            FROM tags
-            GROUP BY name
-            ORDER BY count(*)
-          }, user.id, types_from(params), limit_from(params)
+          Carto::Tag.find_by_sql(
+            [%{
+              WITH tags as (
+                SELECT unnest(tags) as name
+                FROM visualizations
+                WHERE user_id = ?
+                AND type IN (?)
+                #{locked_from(params)}
+                #{shared_entities_sql_filter(params)}
+                LIMIT ?
+              )
+              SELECT name, count(*) as count
+              FROM tags
+              GROUP BY name
+              ORDER BY count(*)
+            }, user.id, types_from(params), limit_from(params)]
           ).all.map(&:values)
         end
       end
 
       private
-      
+
       attr_reader :user
 
       def shared_entities_sql_filter(params)

@@ -151,7 +151,7 @@ module CartoDB
       private
 
       def likes_search
-        Like.where(subject: @id)
+        Carto::Like.where(subject: @id)
       end
 
       def get_related_canonical_visualizations

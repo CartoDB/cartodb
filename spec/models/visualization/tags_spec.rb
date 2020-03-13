@@ -38,7 +38,7 @@ describe Visualization::Tags do
 
       tags = Visualization::Tags.new(@user_mock)
 
-      records = tags.names()
+      records = tags.names
       records.length.should eq 2
 
       records = tags.names(locked: false)

@@ -794,26 +794,6 @@ class User < Sequel::Model
     end)))
   end
 
-  # List all public visualization tags of the user
-  def tags(exclude_shared = false, type = Carto::Visualization::TYPE_DERIVED)
-    require_relative './visualization/tags'
-    options = {}
-    options[:exclude_shared] = true if exclude_shared
-    CartoDB::Visualization::Tags.new(self, options).names({
-      type: type,
-      privacy: Carto::Visualization::PRIVACY_PUBLIC
-    })
-  end #tags
-
-  # List all public map tags of the user
-  def map_tags
-    require_relative './visualization/tags'
-    CartoDB::Visualization::Tags.new(self).names({
-      type: Carto::Visualization::TYPE_CANONICAL,
-      privacy: Carto::Visualization::PRIVACY_PUBLIC
-    })
-  end #map_tags
-
   def tables
     ::UserTable.filter(:user_id => self.id).order(:id).reverse
   end

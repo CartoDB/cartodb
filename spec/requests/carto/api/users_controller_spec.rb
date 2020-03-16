@@ -16,18 +16,17 @@ describe Carto::Api::UsersController do
   before(:each) do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
-    user = @organization.owner
-    carto_user = Carto::User.where(id: user.id).first
-    FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_PUBLIC)
-    FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_PRIVATE)
-    FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_LINK)
-    FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_LINK)
-    FactoryGirl.create(:carto_visualization, user: carto_user,
-                       privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
-    FactoryGirl.create(:carto_visualization, user: carto_user,
-                       privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
-    FactoryGirl.create(:carto_visualization, user: carto_user,
-                       privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
+    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner,
+                                             privacy: Carto::Visualization::PRIVACY_PRIVATE)
+    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_LINK)
+    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_LINK)
+    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner,
+                                             privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
+    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner,
+                                             privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
+    FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner,
+                                             privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
   end
 
   describe 'me' do
@@ -45,31 +44,32 @@ describe Carto::Api::UsersController do
     end
 
     it 'returns the user info even when locked' do
-      user = @organization.owner
-      user.update(state: 'locked')
+      @org_user_1.update(state: 'locked')
+      params = { user_domain: @org_user_1.username, api_key: @org_user_1.api_key }
 
-      get_json api_v3_users_me_url(user_domain: user.username, api_key: user.api_key), @headers do |response|
+      get_json api_v3_users_me_url(params), @headers do |response|
         expect(response.status).to eq(200)
 
-        expect(response.body[:user_data][:username]).to eq(user.username)
+        expect(response.body[:user_data][:username]).to eq(@org_user_1.username)
       end
+
+      @org_user_1.update(state: 'active')
     end
 
     it 'returns a hash with current user info' do
-      user = @organization.owner
-      carto_user = Carto::User.where(id: user.id).first
+      params = { user_domain: @org_user_1.username, api_key: @org_user_1.api_key }
 
-      get_json api_v3_users_me_url(user_domain: user.username, api_key: user.api_key), @headers do |response|
+      get_json api_v3_users_me_url(params), @headers do |response|
         expect(response.status).to eq(200)
 
-        expect(response.body[:default_fallback_basemap].with_indifferent_access).to eq(user.default_basemap)
+        expect(response.body[:default_fallback_basemap].with_indifferent_access).to eq(@org_user_1.default_basemap)
 
-        dashboard_notifications = carto_user.notifications_for_category(:dashboard)
+        dashboard_notifications = @carto_org_user_1.notifications_for_category(:dashboard)
 
         expect(response.body[:dashboard_notifications]).to eq(dashboard_notifications)
         expect(response.body[:organization_notifications].count).to eq(1)
         expect(response.body[:organization_notifications].first[:icon]).to eq(
-          carto_user.received_notifications.unread.first.icon
+          @carto_org_user_1.received_notifications.unread.first.icon
         )
         expect(response.body[:can_change_email]).to eq(user.can_change_email?)
         expect(response.body[:auth_username_password_enabled]).to eq(true)

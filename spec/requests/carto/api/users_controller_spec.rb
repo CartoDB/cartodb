@@ -57,26 +57,26 @@ describe Carto::Api::UsersController do
     end
 
     it 'returns a hash with current user info' do
-      params = { user_domain: @org_user_1.username, api_key: @org_user_1.api_key }
+      params = { user_domain: @carto_org_user_owner.username, api_key: @carto_org_user_owner.api_key }
 
       get_json api_v3_users_me_url(params), @headers do |response|
         expect(response.status).to eq(200)
 
-        expect(response.body[:default_fallback_basemap].with_indifferent_access).to eq(@org_user_1.default_basemap)
+        expect(response.body[:default_fallback_basemap].with_indifferent_access).to eq(@carto_org_user_owner.default_basemap)
 
-        dashboard_notifications = @carto_org_user_1.notifications_for_category(:dashboard)
+        dashboard_notifications = @carto_org_user_owner.notifications_for_category(:dashboard)
 
         expect(response.body[:dashboard_notifications]).to eq(dashboard_notifications)
         expect(response.body[:organization_notifications].count).to eq(1)
         expect(response.body[:organization_notifications].first[:icon]).to eq(
-          @carto_org_user_1.received_notifications.unread.first.icon
+          @carto_org_user_owner.received_notifications.unread.first.icon
         )
-        expect(response.body[:can_change_email]).to eq(user.can_change_email?)
+        expect(response.body[:can_change_email]).to eq(@carto_org_user_owner.can_change_email?)
         expect(response.body[:auth_username_password_enabled]).to eq(true)
         expect(response.body[:can_change_password]).to eq(true)
         expect(response.body[:plan_name]).to eq('ORGANIZATION USER')
-        expect(response.body[:services]).to eq(user.get_oauth_services.map(&:symbolize_keys))
-        expect(response.body[:google_sign_in]).to eq(user.google_sign_in)
+        expect(response.body[:services]).to eq(@carto_org_user_owner.get_oauth_services.map(&:symbolize_keys))
+        expect(response.body[:google_sign_in]).to eq(@carto_org_user_owner.google_sign_in)
         expect(response.body[:user_data][:public_privacy_map_count]).to eq 1
         expect(response.body[:user_data][:link_privacy_map_count]).to eq 2
         expect(response.body[:user_data][:password_privacy_map_count]).to eq 3

@@ -442,7 +442,7 @@ class Table
   end
 
   def after_destroy
-    Tag.filter(user_id: user_id, table_id: id).delete
+    Carto::Tag.where(user_id: user_id, table_id: id).each(&:destroy)
     remove_table_from_stats
 
     cache.del geometry_types_key
@@ -1469,10 +1469,10 @@ class Table
 
   def manage_tags
     if @user_table[:tags].blank?
-      Tag.filter(:user_id => user_id, :table_id => id).delete
+      Carto::Tag.where(user_id: user_id, table_id: id).each(&:destroy)
     else
       tag_names = @user_table.tags.split(',')
-      table_tags = Tag.filter(:user_id => user_id, :table_id => id).all
+      table_tags = Carto::Tag.where(user_id: user_id, table_id: id).all
       unless table_tags.empty?
         # Remove tags that are not in the new names list
         table_tags.each do |tag|
@@ -1485,7 +1485,7 @@ class Table
       end
       # Create the new tags in the this table
       tag_names.each do |new_tag_name|
-        new_tag = Tag.new :name => new_tag_name
+        new_tag = Carto::Tag.new(name: new_tag_name)
         new_tag.user_id = user_id
         new_tag.table_id = id
         new_tag.save

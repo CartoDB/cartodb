@@ -28,7 +28,7 @@ module Carto
           provider_id = params[:provider_id]
           parameters = build_connection_parameters(provider_id, params)
           error_code = nil
-          connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+          connector = Carto::Connector.new(parameters: parameters, user: current_user, logger: nil)
           connection_res[:connected] = connector.check_connection
           error_code = 200
         rescue Carto::Connector::InvalidParametersError => e
@@ -50,7 +50,7 @@ module Carto
           provider_id = params[:provider_id]
           parameters = build_connection_parameters(provider_id, params)
           if Carto::Connector.list_tables?(provider_id)
-            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            connector = Carto::Connector.new(parameters: parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_tables(MAX_LISTED_TABLES))
           else
             render_jsonp({ errors: "Provider #{provider_id} doesn't support list tables" }, 422)
@@ -67,7 +67,7 @@ module Carto
           provider_id = params[:provider_id]
           parameters = build_connection_parameters(provider_id, params)
           if Carto::Connector.list_projects?(provider_id)
-            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            connector = Carto::Connector.new(parameters: parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_projects)
           else
             render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects" }, 422)
@@ -87,7 +87,7 @@ module Carto
           project_id = params[:project_id]
           parameters = build_connection_parameters(provider_id, params.except(:project_id))
           if Carto::Connector.list_projects?(provider_id)
-            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            connector = Carto::Connector.new(parameters: parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_project_datasets(project_id))
           else
             render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects/datasets" }, 422)
@@ -108,7 +108,7 @@ module Carto
           dataset_id = params[:dataset_id]
           parameters = build_connection_parameters(provider_id, params.except(:project_id, :dataset_id))
           if Carto::Connector.list_projects?(provider_id)
-            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            connector = Carto::Connector.new(parameters: parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_project_dataset_tables(project_id, dataset_id))
           else
             render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects/datasets/tables" }, 422)
@@ -127,7 +127,7 @@ module Carto
           provider_id = params[:provider_id]
           parameters = build_connector_parameters(provider_id, params)
           if Carto::Connector.dry_run?(provider_id)
-            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            connector = Carto::Connector.new(parameters: parameters, user: current_user, logger: nil)
             result = connector.dry_run
             if result[:error]
               result = { errors: result.message }

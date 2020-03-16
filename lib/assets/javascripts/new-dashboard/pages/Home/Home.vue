@@ -34,8 +34,6 @@ export default {
     Page
   },
   beforeMount () {
-    this.$store.dispatch('recentContent/fetch');
-
     this.$store.dispatch('maps/resetFilters');
     this.$store.dispatch('externalMaps/resetFilters');
     this.$store.dispatch('datasets/resetFilters');
@@ -50,12 +48,13 @@ export default {
       this.$store.dispatch('datasets/filter', 'shared');
     }
 
-    this.$store.dispatch('maps/fetch');
     this.$store.dispatch('externalMaps/init')
       .then(() => {
+        this.$store.dispatch('recentContent/fetch');
         this.$store.dispatch('externalMaps/fetch');
         this.$store.dispatch('datasets/fetch');
       });
+    this.$store.dispatch('maps/fetch');
   },
   data () {
     return {

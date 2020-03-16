@@ -1,4 +1,4 @@
 FactoryGirl.define do
-  factory :like, class: CartoDB::Like do
+  factory :like, class: Carto::Like do
   end
 end

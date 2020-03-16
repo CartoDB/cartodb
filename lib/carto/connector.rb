@@ -1,25 +1,23 @@
-require_relative 'connector/fdw_support'
 require_relative 'connector/errors'
 require_relative 'connector/providers'
 require_relative 'connector/parameters'
-require_relative 'connector/context'
 
 module Carto
-  # This class provides remote database connection services based on FDW
+  # This class provides remote database connection services
   class Connector
 
     attr_reader :provider_name
 
-    def initialize(parameters, context)
+    def initialize(parameters:, user:, **args)
       @params = Parameters.new(parameters)
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
 
-      @connector_context = Context.cast(context)
+      @user = user
 
       raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
-      @provider = Connector.provider_class(@provider_name).try :new, @connector_context, @params
+      @provider = Connector.provider_class(@provider_name).try :new, parameters: @params, user: @user, **args
       raise InvalidParametersError.new(message: "Invalid provider", provider: @provider_name) if @provider.blank?
     end
 
@@ -101,12 +99,12 @@ module Carto
 
     # Check availability for a user and provider
     def check_availability!
-      Connector.check_availability!(@connector_context.user, @provider_name)
+      Connector.check_availability!(@user, @provider_name)
     end
 
     # Limits for the user/provider
     def limits
-      Connector.limits provider_name: @provider_name, user: @connector_context.user
+      Connector.limits provider_name: @provider_name, user: @user
     end
 
     # Availability for the user/provider
@@ -197,7 +195,7 @@ module Carto
     end
 
     def log(message, truncate = true)
-      @connector_context.log message, truncate
+      @provider.log message, truncate
     end
   end
 end

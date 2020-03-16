@@ -475,7 +475,7 @@ module CartoDB
       end
 
       def user_liked_vis(user_id)
-        Like.where(actor: user_id).all.map{ |like| like.subject }
+        Carto::Like.where(actor: user_id).all.map{ |like| like.subject }
       end
 
       def tags_from(filters={})

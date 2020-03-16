@@ -61,6 +61,7 @@ module Carto
           can_change_password: carto_viewer.try(:can_change_password?),
           plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
           plan_url: carto_viewer.try(:plan_url, request.protocol),
+          is_enterprise: carto_viewer&.enterprise?,
           can_be_deleted: can_be_deleted,
           cant_be_deleted_reason: cant_be_deleted_reason,
           services: carto_viewer.try(:get_oauth_services),

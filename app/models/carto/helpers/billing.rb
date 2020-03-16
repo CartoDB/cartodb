@@ -50,4 +50,8 @@ module Carto::Billing
       return nil
     end
   end
+
+  def enterprise?
+    Carto::AccountType::ENTERPRISE_PLANS.include?(account_type)
+  end
 end

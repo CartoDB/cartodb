@@ -132,6 +132,34 @@ describe Carto::Api::UsersController do
         end
       end
     end
+
+    context 'is_enterprise field' do
+      before(:all) do
+        @params = { user_domain: @org_user_1.username, api_key: @org_user_1.api_key }
+      end
+
+      after(:each) do
+        User.any_instance.unstub(:account_type)
+      end
+
+      it 'returns false for Individual plan' do
+        Carto::User.any_instance.stubs(account_type: 'Individual')
+
+        get_json api_v3_users_me_url(@params), @headers do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:is_enterprise]).to eq(false)
+        end
+      end
+
+      it 'returns true for an enterprise plan' do
+        Carto::User.any_instance.stubs(account_type: 'ENTERPRISE LUMP-SUM')
+
+        get_json api_v3_users_me_url(@params), @headers do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:is_enterprise]).to eq(true)
+        end
+      end
+    end
   end
 
   describe 'update_me' do

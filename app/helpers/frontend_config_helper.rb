@@ -29,7 +29,7 @@ module FrontendConfigHelper
       oauth_mailchimp:            Cartodb.get_config(:oauth, 'mailchimp', 'app_key'),
       oauth_bigquery:             Cartodb.get_config(:oauth, 'bigquery', 'client_id'),
       bigquery_enabled:           Carto::Connector.provider_available?('bigquery', user),
-      bigquery_available:         Carto::Connector::BigQueryProvider.public?,
+      bigquery_available:         Carto::Connector.provider_public?('bigquery'),
       oauth_mechanism_bigquery:   Cartodb.get_config(:oauth, 'bigquery', 'oauth_mechanism'),
       arcgis_enabled:             Cartodb.get_config(:datasources, 'arcgis_enabled'),
       salesforce_enabled:         Cartodb.get_config(:datasources, 'salesforce_enabled'),

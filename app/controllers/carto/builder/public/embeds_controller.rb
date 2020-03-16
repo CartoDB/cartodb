@@ -18,7 +18,7 @@ module Carto
         before_filter :ensure_viewable, only: [:show]
         before_filter :ensure_protected_viewable,
                       :load_auth_tokens,
-                      :load_google_maps_qs, only: [:show, :show_protected]
+                      :load_google_maps_query_string, only: [:show, :show_protected]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
         skip_before_filter :verify_authenticity_token, only: [:show_protected]
@@ -66,8 +66,8 @@ module Carto
                          end
         end
 
-        def load_google_maps_qs
-          @google_maps_qs = @visualization.user.google_maps_query_string
+        def load_google_maps_query_string
+          @google_maps_query_string = @visualization.user.google_maps_query_string
         end
 
         def load_vizjson

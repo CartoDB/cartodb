@@ -135,6 +135,8 @@ module Carto
       end
 
       class CreatedMap < MapEvent
+        include Carto::Tracking::Services::Hubspot
+
         required_properties :origin
 
         def pubsub_name
@@ -227,6 +229,8 @@ module Carto
       end
 
       class CreatedDataset < DatasetEvent
+        include Carto::Tracking::Services::Hubspot
+        
         required_properties :origin
 
         def pubsub_name

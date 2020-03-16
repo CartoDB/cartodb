@@ -139,7 +139,7 @@ export default {
         return 'DatasetQuickActions';
       }
 
-      if (visualizationType === 'derived' || visualizationType === 'kuviz') {
+      if (visualizationType === 'derived' || visualizationType === 'kuviz' || visualizationType === 'keplergl') {
         return 'MapQuickActions';
       }
     },
@@ -172,7 +172,7 @@ export default {
       var title = this.$el.querySelector('.card-title');
       this.multilineTitle = title.offsetHeight > 30;
       this.titleOverflow = title.scrollHeight > title.clientHeight;
-      this.isStarInNewLine = isStarUnderText(this.$el.querySelector('.card-title'), this.$el.querySelector('.card-favorite'));
+      this.isStarInNewLine = !this.isKeplergl && isStarUnderText(this.$el.querySelector('.card-title'), this.$el.querySelector('.card-favorite'));
     });
   }
 };

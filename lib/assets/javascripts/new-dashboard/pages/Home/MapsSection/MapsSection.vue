@@ -1,6 +1,7 @@
 <template>
   <section class="maps-section">
-    <MapsList v-if="cartoMapsVisible"
+    <MapsList
+      v-if="cartoMapsVisible"
       :hasBulkActions="false"
       :isCondensedDefault="true"
       :canChangeViewMode="false"
@@ -12,11 +13,16 @@
       @applyOrder="applyOrder"
       @contentChanged="onContentChanged">
       <template slot="navigation">
-        <MapsTabs v-if="!isFirst" :cartoMapsVisible="cartoMapsVisible" :keplerMapsVisible="keplerMapsVisible" @showKeplerMaps="showKeplerMaps"/>
+        <MapsTabs
+          v-if="!isFirst"
+          :cartoMapsVisible="cartoMapsVisible"
+          :keplerMapsVisible="keplerMapsVisible"
+          @showKeplerMaps="showKeplerMaps"/>
       </template>
     </MapsList>
 
-    <ExternalMapsList v-if="keplerMapsVisible"
+    <ExternalMapsList
+      v-if="keplerMapsVisible"
       ref="mapsList"
       class="grid__content"
       :hasBulkActions="true"
@@ -29,7 +35,11 @@
       @applyOrder="applyOrder"
       @selectionChange="onContentChanged">
       <template slot="navigation">
-         <MapsTabs v-if="!isFirst" :cartoMapsVisible="cartoMapsVisible" :keplerMapsVisible="keplerMapsVisible" @showCartoMaps="showCartoMaps"/>
+         <MapsTabs
+           v-if="!isFirst"
+           :cartoMapsVisible="cartoMapsVisible"
+           :keplerMapsVisible="keplerMapsVisible"
+           @showCartoMaps="showCartoMaps"/>
       </template>
     </ExternalMapsList>
 

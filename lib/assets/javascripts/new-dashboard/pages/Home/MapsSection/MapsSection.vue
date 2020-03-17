@@ -1,32 +1,60 @@
 <template>
   <section class="maps-section">
-    <MapsList
-    :hasBulkActions="false"
-    :isCondensedDefault="true"
-    :canChangeViewMode="false"
-    :canHoverCard="false"
-    :maxVisibleMaps="maxVisibleMaps"
-    :isInitialOrEmpty="showViewAllLink"
-    @applyFilter="applyFilter"
-    @applyOrder="applyOrder"
-    @contentChanged="onContentChanged"/>
+    <MapsList v-if="cartoMapsVisible"
+      :hasBulkActions="false"
+      :isCondensedDefault="true"
+      :canChangeViewMode="false"
+      :canHoverCard="false"
+      :maxVisibleMaps="maxVisibleMaps"
+      :isInitialOrEmpty="showViewAllLink"
+      :showToolbar="false"
+      @applyFilter="applyFilter"
+      @applyOrder="applyOrder"
+      @contentChanged="onContentChanged">
+      <template slot="navigation">
+        <MapsTabs :cartoMapsVisible="cartoMapsVisible" :keplerMapsVisible="keplerMapsVisible" @showKeplerMaps="showKeplerMaps"/>
+      </template>
+    </MapsList>
 
-    <router-link :to="{ name: 'maps' }" class="title is-small viewall-link" v-if="showViewAllLink">{{ mapsLinkText }}</router-link>
+    <ExternalMapsList v-if="keplerMapsVisible"
+      ref="mapsList"
+      class="grid__content"
+      :hasBulkActions="true"
+      :isCondensedDefault="true"
+      :canChangeViewMode="true"
+      :canHoverCard="true"
+      :maxVisibleMaps="maxVisibleMaps"
+      :showToolbar="false"
+      @applyFilter="applyFilter"
+      @applyOrder="applyOrder"
+      @selectionChange="onContentChanged">
+      <template slot="navigation">
+         <MapsTabs :cartoMapsVisible="cartoMapsVisible" :keplerMapsVisible="keplerMapsVisible" @showCartoMaps="showCartoMaps"/>
+      </template>
+    </ExternalMapsList>
+
+    <router-link :to="{ name: cartoMapsVisible ? 'maps' : 'external' }" class="title is-small viewall-link" v-if="showViewAllLink">{{ mapsLinkText }}</router-link>
   </section>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import MapsList from 'new-dashboard/components/MapsList.vue';
+import ExternalMapsList from 'new-dashboard/components/ExternalMapsList.vue';
+import MapsTabs from 'new-dashboard/pages/Home/MapsSection/MapsTabs.vue';
 
 export default {
   name: 'MapsSection',
   components: {
-    MapsList
+    MapsList,
+    ExternalMapsList,
+    MapsTabs
   },
   data () {
     return {
-      maxVisibleMaps: 6
+      maxVisibleMaps: 6,
+      cartoMapsVisible: true,
+      keplerMapsVisible: false
     };
   },
   computed: {
@@ -60,6 +88,14 @@ export default {
     },
     onContentChanged (type) {
       this.$emit('contentChanged', type);
+    },
+    showCartoMaps () {
+      this.cartoMapsVisible = true;
+      this.keplerMapsVisible = false;
+    },
+    showKeplerMaps () {
+      this.cartoMapsVisible = false;
+      this.keplerMapsVisible = true;
     }
   }
 };

@@ -33,7 +33,7 @@
       </template>
     </ExternalMapsList>
 
-    <router-link :to="{ name: cartoMapsVisible ? 'maps' : 'external' }" class="title is-small viewall-link" v-if="showViewAllLink">{{ mapsLinkText }}</router-link>
+    <router-link :to="{ name: mapsLink }" class="title is-small viewall-link" v-if="showViewAllLink">{{ mapsLinkText }}</router-link>
   </section>
 </template>
 
@@ -67,8 +67,11 @@ export default {
       totalShared: state => state.maps.metadata.total_shared,
       isFirst: state => state.config.isFirstTimeViewingDashboard
     }),
+    mapsLink () {
+      return this.cartoMapsVisible ? 'maps' : 'external';
+    },
     mapsLinkText () {
-      return this.$t('HomePage.MapsSection.viewAll');
+      return this.cartoMapsVisible ? this.$t('HomePage.MapsSection.viewAllCarto') : this.$t('HomePage.MapsSection.viewAllKeplergl');
     },
     showViewAllLink () {
       return !this.isFetchingMaps && this.totalUserEntries;

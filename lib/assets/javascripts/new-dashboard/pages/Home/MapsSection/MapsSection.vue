@@ -12,7 +12,7 @@
       @applyOrder="applyOrder"
       @contentChanged="onContentChanged">
       <template slot="navigation">
-        <MapsTabs :cartoMapsVisible="cartoMapsVisible" :keplerMapsVisible="keplerMapsVisible" @showKeplerMaps="showKeplerMaps"/>
+        <MapsTabs v-if="!isFirst" :cartoMapsVisible="cartoMapsVisible" :keplerMapsVisible="keplerMapsVisible" @showKeplerMaps="showKeplerMaps"/>
       </template>
     </MapsList>
 
@@ -29,7 +29,7 @@
       @applyOrder="applyOrder"
       @selectionChange="onContentChanged">
       <template slot="navigation">
-         <MapsTabs :cartoMapsVisible="cartoMapsVisible" :keplerMapsVisible="keplerMapsVisible" @showCartoMaps="showCartoMaps"/>
+         <MapsTabs v-if="!isFirst" :cartoMapsVisible="cartoMapsVisible" :keplerMapsVisible="keplerMapsVisible" @showCartoMaps="showCartoMaps"/>
       </template>
     </ExternalMapsList>
 

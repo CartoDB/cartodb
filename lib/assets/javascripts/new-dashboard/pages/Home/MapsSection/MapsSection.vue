@@ -23,8 +23,6 @@
 
     <ExternalMapsList
       v-if="keplerMapsVisible"
-      ref="mapsList"
-      class="grid__content"
       :hasBulkActions="true"
       :isCondensedDefault="true"
       :canChangeViewMode="true"

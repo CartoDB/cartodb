@@ -12,6 +12,7 @@ module Carto
     FULLSTORY_SUPPORTED_PLANS = [FREE, PERSONAL30, INDIVIDUAL, FREE_2020].freeze
     ENTERPRISE_PLANS = [
       'Cloud Engine & Enterprise Builder - Annual',
+      'ENTERPRISE',
       'ENTERPRISE LUMP-SUM',
       'ENTERPRISE LUMP-SUM ACADEMIC',
       'ENTERPRISE SMALL LS AWS',
@@ -26,7 +27,8 @@ module Carto
       'Enterprise Small + Lumpsum GCS',
       'Enterprise Small LS GCS',
       'Internal use engine - Cloud - Annual',
-      'OEM engine - Cloud - Annual'
+      'OEM engine - Cloud - Annual',
+      'ORGANIZATION USER'
     ].freeze
 
     belongs_to :rate_limit, dependent: :destroy

@@ -995,7 +995,6 @@ class DataImport < Sequel::Model
   end
 
   def notify(results, import_id=nil)
-    binding.pry
     owner = ::User.where(:id => self.user_id).first
     imported_tables = results.select {|r| r.success }.length
     failed_tables = results.length - imported_tables
@@ -1176,7 +1175,6 @@ class DataImport < Sequel::Model
   end
 
   def track_results(results, import_id, import_properties)
-    binding.pry
     current_user_id = current_user.id
     return unless current_user_id
 

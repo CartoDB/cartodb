@@ -77,10 +77,11 @@ module Carto
           {
             data_from: @import[:data_from],
             imported_from: @import[:imported_from],
-            sync: @import[:sync] || false,
-            connector_provider: @import[:provider],
+            sync: @import[:sync],
+            connector: @import[:provider],
             import_time: @import[:import_time],
-            data_size: @import[:data_size]
+            data_size: @import[:data_size],
+            error_code: @import[:error_code]
           }
         end
 

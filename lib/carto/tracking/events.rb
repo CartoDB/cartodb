@@ -202,6 +202,16 @@ module Carto
         end
       end
 
+      class FailedSync < Event
+        include Carto::Tracking::Services::PubSub
+
+        required_properties :user_id, :connection
+
+        def pubsub_name
+          'sync_failed'
+        end
+      end
+
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
         include Carto::Tracking::Services::PubSub

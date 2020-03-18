@@ -10,6 +10,6 @@
   <p class="CDB-Text CDB-Size-medium is-semibold u-mb--4"><%= cdb.core.sanitize.html(title || name) %></p>
   <p class="CDB-Text CDB-Size-medium u-mb--12"><%- _t('components.modals.add-layer.imports.request.upgrade.desc') %></p>
   <a class="ImportButton__link CDB-Button CDB-Button--primary CDB-Button--wide u-iblock" href="<%- upgradeUrl %>">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-layer.imports.request.upgrade.cta') %><</span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-layer.imports.request.upgrade.cta') %></span>
   </a>
 <% } %>

@@ -246,13 +246,14 @@ module CartoDB
 
         def dry_run(billing_project_id, sql)
           resp = run(billing_project_id, sql, true)
-          if resp.error
+          if resp[:error]
             resp
           else
+            result = resp[:result]
             {
               error: false,
-              total_bytes_processed: resp.total_bytes_processed,
-              cache_hit: resp.cache_hit
+              total_bytes_processed: result.total_bytes_processed,
+              cache_hit: result.cache_hit
             }
           end
         end
@@ -263,7 +264,10 @@ module CartoDB
           query.dry_run = dry_run
           query.use_legacy_sql = false
           begin
-            @bigquery_api.query_job(billing_project_id, query)
+            {
+              error: false,
+              result: @bigquery_api.query_job(billing_project_id, query)
+            }
           rescue Google::Apis::ClientError => err
             {
               error: true,

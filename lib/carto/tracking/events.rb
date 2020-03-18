@@ -145,6 +145,7 @@ module Carto
 
       class CreatedMap < MapEvent
         required_properties :origin
+        optional_properties :connection
 
         def pubsub_name
           'map_created'
@@ -192,7 +193,14 @@ module Carto
       end
 
       class CompletedConnection < ConnectionEvent; end
-      class FailedConnection < ConnectionEvent; end
+
+      class FailedConnection < ConnectionEvent
+        include Carto::Tracking::Services::PubSub
+
+        def pubsub_name
+          'import_failed'
+        end
+      end
 
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
@@ -241,6 +249,7 @@ module Carto
 
       class CreatedDataset < DatasetEvent
         required_properties :origin
+        optional_properties :connection
 
         def pubsub_name
           'dataset_created'

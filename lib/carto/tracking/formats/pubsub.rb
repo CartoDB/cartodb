@@ -8,7 +8,7 @@ module Carto
           @visualization = visualization
           @widget = widget
           @event_version = event_version
-          @connection = hash[:connection]
+          @import = hash[:connection]
           @origin = hash[:origin]
           @page = hash[:page]
           @quota_overage = hash[:quota_overage]
@@ -33,7 +33,7 @@ module Carto
 
           properties.merge!(user_properties) if @user
           properties.merge!(visualization_properties) if @visualization
-          properties.merge!(connector_properties) if @connection
+          properties.merge!(import_properties) if @import
           properties.merge!(trending_map_properties) if @mapviews
           properties.merge!(analysis_properties) if @analysis
           properties.merge!(widget_properties) if @widget
@@ -73,15 +73,14 @@ module Carto
           }
         end
 
-        def connector_properties
+        def import_properties
           {
-            data_from: @connection[:data_from],
-            imported_from: @connection[:imported_from],
-            sync: @connection[:sync] || false,
-            file_type: @connection[:file_type],
-            connector_provider: @connection[:provider],
-            import_time: @connection[:import_time],
-            data_size: @connection[:total_size]
+            data_from: @import[:data_from],
+            imported_from: @import[:imported_from],
+            sync: @import[:sync] || false,
+            connector_provider: @import[:provider],
+            import_time: @import[:import_time],
+            data_size: @import[:data_size]
           }
         end
 

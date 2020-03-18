@@ -338,8 +338,7 @@ class DataImport < Sequel::Model
       CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
-    notify(results)
-    track_results(results, id)
+    notify(results, id)
 
     self
   end
@@ -995,7 +994,8 @@ class DataImport < Sequel::Model
     @current_user ||= ::User[user_id]
   end
 
-  def notify(results)
+  def notify(results, import_id=nil)
+    binding.pry
     owner = ::User.where(:id => self.user_id).first
     imported_tables = results.select {|r| r.success }.length
     failed_tables = results.length - imported_tables
@@ -1019,7 +1019,7 @@ class DataImport < Sequel::Model
                   'database_host'          => owner.database_host,
                   'service_name'           => self.service_name,
                   'data_type'              => self.data_type,
-                  'is_sync_import'         => !self.synchronization_id.nil?,
+                  'is_sync_import'         => sync?,
                   'import_time'            => import_time,
                   'file_stats'             => ::JSON.parse(self.stats),
                   'resque_ppid'            => self.resque_ppid,
@@ -1045,9 +1045,16 @@ class DataImport < Sequel::Model
       connection: {
         imported_from: service_name,
         data_from: data_type,
-        sync: sync?
+        sync: sync?,
+        import_time: import_time,
+        data_size: total_size
       }
     }
+
+    if service_name == 'connector'
+      connector_params = JSON.parse(service_item_id)
+      properties[:connection][:provider] = connector_params['provider']
+    end
 
     if results.any?
       results.each do |result|
@@ -1064,6 +1071,8 @@ class DataImport < Sequel::Model
     elsif state == STATE_FAILURE
       Carto::Tracking::Events::FailedConnection.new(user_id, properties).report
     end
+
+    track_results(results, import_id, properties) unless import_id.nil?
   end
 
   def importer_stats_aggregator
@@ -1166,15 +1175,16 @@ class DataImport < Sequel::Model
     end
   end
 
-  def track_results(results, import_id)
+  def track_results(results, import_id, import_properties)
+    binding.pry
     current_user_id = current_user.id
     return unless current_user_id
 
     if visualization_id
-      Carto::Tracking::Events::CreatedMap.new(current_user_id,
+      Carto::Tracking::Events::CreatedMap.new(current_user_id, import_properties.merge(
                                               user_id: current_user_id,
                                               visualization_id: visualization_id,
-                                              origin: 'import').report
+                                              origin: 'import')).report
     end
 
     results.select(&:success?).each do |result|
@@ -1190,10 +1200,10 @@ class DataImport < Sequel::Model
       if map
         vis = Carto::Visualization.where(map_id: map.id).first
 
-        Carto::Tracking::Events::CreatedDataset.new(current_user_id,
+        Carto::Tracking::Events::CreatedDataset.new(current_user_id, import_properties.merge(
                                                     user_id: current_user_id,
                                                     visualization_id: vis.id,
-                                                    origin: origin).report
+                                                    origin: origin)).report
       end
     end
   rescue => exception

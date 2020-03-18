@@ -2,19 +2,21 @@ Development
 -----------
 
 ### NOTICES
-* DB Connectors removed from the main repository
+- DB Connectors removed from the main repository
 
 ### Features
-* Use Dataservices API client 0.29.0
-* Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
-* Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
-* Add Kepler.gl maps to the Maps section in the Dashboar's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
+- Use Dataservices API client 0.29.0
+- Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
+- Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
+- Add Kepler.gl maps to the Maps section in the Dashboar's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
 
 ### Bug fixes / enhancements
+
 * Fix wording for feedback
 * Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394)
 * Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))
 * Fix lockout page due to wrong CustomStorage initialization ([#2444](https://github.com/CartoDB/support/issues/2444))
+* Add is_enterprise field to /me ([#15551](https://github.com/CartoDB/cartodb/pull/15551))
 
 4.36.0 (2020-03-09)
 -------------------

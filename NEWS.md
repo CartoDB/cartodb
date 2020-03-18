@@ -21,6 +21,7 @@ Development
 - Add BigQuery execution capability
 - Remove code related to deprecated plans ([#15563](https://github.com/CartoDB/cartodb/pull/15563))
 - Fix ie11 bug due to non babelified toolkit packages ([#2456](https://github.com/CartoDB/support/issues/2456))
+- Fix wrong link in footer for location-data-streams
 
 4.36.0 (2020-03-09)
 -------------------

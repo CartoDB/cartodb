@@ -126,11 +126,15 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Readable
         include Carto::Tracking::Validators::User
 
+        required_properties :user_id, :visualization_id
+
         def pubsub_name
           'map_exported'
         end
 
-        required_properties :user_id, :visualization_id
+        def event_version
+          2
+        end
       end
 
       class MapEvent < Event
@@ -152,7 +156,7 @@ module Carto
         end
 
         def event_version
-          2
+          3
         end
       end
 
@@ -160,11 +164,19 @@ module Carto
         def pubsub_name
           'map_deleted'
         end
+
+        def event_version
+          2
+        end
       end
 
       class ModifiedMap < MapEvent
         def pubsub_name
           'map_updated'
+        end
+
+        def event_version
+          2
         end
       end
 
@@ -180,6 +192,10 @@ module Carto
 
         def pubsub_name
           'map_published'
+        end
+
+        def event_version
+          2
         end
       end
 
@@ -266,13 +282,17 @@ module Carto
         end
 
         def event_version
-          2
+          3
         end
       end
 
       class DeletedDataset < DatasetEvent
         def pubsub_name
           'dataset_deleted'
+        end
+
+        def event_version
+          2
         end
       end
 

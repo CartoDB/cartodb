@@ -10,6 +10,7 @@ Development
 * Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
 
 ### Bug fixes / enhancements
+* Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564)
 * Fix wording for feedback
 * Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394)
 * Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))

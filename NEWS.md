@@ -16,6 +16,7 @@ Development
 * Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))
 * Fix lockout page due to wrong CustomStorage initialization ([#2444](https://github.com/CartoDB/support/issues/2444))
 * Add is_enterprise field to /me ([#15551](https://github.com/CartoDB/cartodb/pull/15551))
+* Add BigQuery execution capability
 
 4.36.0 (2020-03-09)
 -------------------

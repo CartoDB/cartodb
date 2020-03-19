@@ -54,7 +54,7 @@ module Carto
 
       def check_connection
         ok = false
-        if @params[:credentials_file].present
+        if @params[:credentials_file].present?
           ok = true # TODO check
         else
           oauth_client = @sync_oauth&.get_service_datasource
@@ -154,12 +154,14 @@ module Carto
         # a connection such as obtaining metadata (list_tables?, features_information, etc.)
         return if !context || !context.user
 
-        if @oauth_config.nil? || @oauth_config['client_id'].nil? || @oauth_config['client_secret'].nil?
-          raise "Missing OAuth configuration for BigQuery: Client ID & Secret must be defined"
-        end
+        unless @params[:credentials_file].present?
+          if @oauth_config.nil? || @oauth_config['client_id'].nil? || @oauth_config['client_secret'].nil?
+            raise "Missing OAuth configuration for BigQuery: Client ID & Secret must be defined"
+          end
 
-        if @sync_oauth.blank?
-          raise "Missing OAuth credentials for BigQuery: user must authorize"
+          if @sync_oauth.blank?
+            raise "Missing OAuth credentials for BigQuery: user must authorize"
+          end
         end
       end
 

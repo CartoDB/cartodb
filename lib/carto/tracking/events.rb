@@ -216,6 +216,10 @@ module Carto
         def pubsub_name
           'import_failed'
         end
+
+        def event_version
+          3
+        end
       end
 
       class FailedSync < Event

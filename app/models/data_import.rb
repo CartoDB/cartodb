@@ -1046,7 +1046,8 @@ class DataImport < Sequel::Model
         data_from: data_type,
         sync: sync?,
         import_time: import_time,
-        data_size: total_size
+        data_size: total_size,
+        error_code: self.error_code
       }
     }
 

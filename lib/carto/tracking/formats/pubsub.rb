@@ -74,13 +74,14 @@ module Carto
         end
 
         def import_properties
+          connector = @import[:provider] || @import[:imported_from]
+
           {
             data_from: @import[:data_from],
-            imported_from: @import[:imported_from],
-            sync: @import[:sync],
-            connector: @import[:provider],
-            import_time: @import[:import_time],
+            connector: connector,
+            import_duration: @import[:import_time],
             data_size: @import[:data_size],
+            sync_enabled: @import[:sync],
             error_code: @import[:error_code]
           }
         end

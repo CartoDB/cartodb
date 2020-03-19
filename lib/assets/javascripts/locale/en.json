@@ -1441,7 +1441,7 @@
                             "cta": "Request access"
                         },
                         "upgrade": {
-                            "desc": "Needs to be activated",
+                            "desc": "Only for Enterprise",
                             "cta": "View plans"
                         }
                     }

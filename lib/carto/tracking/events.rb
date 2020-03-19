@@ -148,6 +148,8 @@ module Carto
       end
 
       class CreatedMap < MapEvent
+        include Carto::Tracking::Services::Hubspot
+
         required_properties :origin
         optional_properties :connection
 
@@ -278,6 +280,8 @@ module Carto
       end
 
       class CreatedDataset < DatasetEvent
+        include Carto::Tracking::Services::Hubspot
+        
         required_properties :origin
         optional_properties :connection
 

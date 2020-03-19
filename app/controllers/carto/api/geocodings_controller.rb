@@ -46,7 +46,7 @@ module Carto
         used_credits     = (used_credits > 0 ? used_credits : 0)
         render json: {
           rows:       total_rows,
-          estimation: (uri_user.geocoding_block_price.to_i * used_credits) / Carto::User::GEOCODING_BLOCK_SIZE.to_f
+          estimation: (uri_user.geocoding_block_price.to_i * used_credits) / Carto::Geocoding::GEOCODING_BLOCK_SIZE
         }
       rescue => e
         CartoDB.notify_exception(e, params: params)

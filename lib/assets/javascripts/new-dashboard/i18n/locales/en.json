@@ -279,7 +279,8 @@
     },
     "MapsSection": {
       "title": "Your Maps",
-      "viewAll" : "VIEW ALL MAPS"
+      "viewAllCarto": "VIEW ALL CARTO MAPS",
+      "viewAllKeplergl": "VIEW ALL KEPLER.GL MAPS"
     },
     "DatasetsSection": {
       "title": "Your Datasets",

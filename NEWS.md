@@ -8,6 +8,7 @@ Development
 - Use Dataservices API client 0.29.0
 - Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
 - Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
+- Add Kepler.gl maps to the Maps section in the Dashboar's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
 
 ### Bug fixes / enhancements
 

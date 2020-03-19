@@ -1416,7 +1416,7 @@
                     },
                     "request": {
                         "other": "Request connector",
-                        "type": "Type the one you look for",
+                        "type": "What you're looking for",
                         "sending": "Sending request",
                         "submit": "Submit",
                         "success": {

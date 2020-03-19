@@ -275,6 +275,14 @@ $import-button-width: 174px;
       display: block;
     }
   }
+
+  .title--success {
+    color: $cHighlight-positive;
+  }
+
+  .title--error {
+    color: $cHighlight-negative;
+  }
 }
 
 .is-disabled {
@@ -385,6 +393,10 @@ $import-button-width: 174px;
   color: $cLocationBlue;
 }
 
+.ImportOther__step4.is-active {
+  align-items: flex-start;
+}
+
 .ImportOther__step2,
 .ImportOther__step3,
 .ImportOther__step4 {
@@ -457,39 +469,25 @@ $import-button-width: 174px;
 }
 
 .ImportOther__step4 {
-  .ImportOther_requestText {
-    margin: 0 20px;
+  box-sizing: border-box;
+  width: calc(#{$import-button-width} - 32px);
+  height: 80px;
+  padding: 12px 16px;
+
+  .ImportOther_requestTitle {
+    margin-bottom: 4px;
+    color: $cHighlight-positive;
+    font-weight: 600;
   }
 
   .ImportOther__requestButton {
-    box-sizing: content-box;
+    width: 100px;
     margin-top: 12px;
   }
 
-  .ImportOther__requestButton {
-    width: 60px;
-
-    &Text {
-      display: block;
-      margin-right: -20px;
-      margin-left: -8px;
-      background-image: url($assetsDir + '/images/layout/connectors/request-success.svg');
-      background-repeat: no-repeat;
-      background-position: left center;
-      background-size: 12px;
-    }
-  }
-
   &.hasError {
-    border-color: $cHighlight-caution;
-
-    .ImportOther__requestButton {
-      width: auto;
-
-      &Text {
-        margin: auto;
-        background: none;
-      }
+    .ImportOther_requestTitle {
+      color: $cHighlight-negative;
     }
   }
 }

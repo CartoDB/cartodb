@@ -15,7 +15,14 @@ module Carto
   class BigQueryProvider < OdbcProvider
       metadata id: 'bigquery', name: 'Google BigQuery', public?: true
 
-      odbc_attributes billing_project: :Catalog, storage_api: :EnableHTAPI, project: :AdditionalProjects, dataset: { DefaultDataset: nil }
+      odbc_attributes(
+        billing_project: :Catalog,
+        storage_api: :EnableHTAPI,
+        project: :AdditionalProjects,
+        dataset: { DefaultDataset: nil },
+        credentials_file: { KeyFilePath: nil },
+        credentials_email: { Email: nil }
+      )
 
       def errors(only_for: nil)
         parameters_to_validate = @params.normalize_parameter_names(only_for)
@@ -24,6 +31,17 @@ module Carto
           # dataset is not optional if not using a query
           if !@params.normalized_names.include?(:dataset) && !@params.normalized_names.include?(:sql_query)
             dataset_errors << "The dataset parameter is needed for tables"
+          end
+        end
+        if parameters_to_validate.blank? || parameters_to_validate.include?(:credentials_file) || parameters_to_validate.include?(:credentials_email)
+          if (@params.normalized_names.include?(:credentials_file) && !@params.normalized_names.include?(:credentials_email)) ||
+             (!@params.normalized_names.include?(:credentials_file) && @params.normalized_names.include?(:credentials_email))
+            dataset_errors << "both credentials_email and credentials_file are needed to use service accounts"
+          end
+          if @params.normalized_names.include?(:credentials_file) || @params.normalized_names.include?(:credentials_email)
+            if @params.normalized_names.include?(:location)
+              dataset_errors << "location is not compatible with service accounts"
+            end
           end
         end
         super + dataset_errors
@@ -36,9 +54,13 @@ module Carto
 
       def check_connection
         ok = false
-        oauth_client = @sync_oauth&.get_service_datasource
-        if oauth_client
-          ok = oauth_client.token_valid?
+        if @params[:credentials_file].present
+          ok = true # TODO check
+        else
+          oauth_client = @sync_oauth&.get_service_datasource
+          if oauth_client
+            ok = oauth_client.token_valid?
+          end
         end
         ok
       end
@@ -99,10 +121,10 @@ module Carto
         LargeResultsTempTableExpirationTime
         AdditionalProjects
       )
-      user_attributes %I(RefreshToken)
+      user_attributes %I(RefreshToken Email KeyFilePath)
 
       required_parameters %I(billing_project)
-      optional_parameters %I(project location import_as dataset table sql_query storage_api)
+      optional_parameters %I(project location import_as dataset table sql_query storage_api credentials_file credentials_email)
 
       # Class constants
       DATASOURCE_NAME              = id
@@ -110,7 +132,8 @@ module Carto
       # Driver constants
       DRIVER_NAME                  = 'Simba ODBC Driver for Google BigQuery 64-bit'
       SQL_DIALECT                  = 1
-      OAUTH_MECHANISM              = 1
+      OAUTH_MECHANISM_USER         = 1
+      OAUTH_MECHANISM_SERVICE      = 0
       ALLOW_LRESULTS               = 0
       ENABLE_STORAGE_API           = 0
       QUERY_CACHE                  = 1
@@ -118,7 +141,6 @@ module Carto
       HTAPI_MIN_RESULTS_SIZE       = 100
       HTAPI_TEMP_DATASET           = '_cartoimport_temp'
       HTAPI_TEMP_TABLE_EXP         = 3600000
-
       def initialize(context, params)
         super
         @oauth_config = Cartodb.get_config(:oauth, DATASOURCE_NAME)
@@ -154,13 +176,25 @@ module Carto
 
         proxy_conf = create_proxy_conf
 
+        if @params[:credentials_file].present?
+          oauth_mechanism = OAUTH_MECHANISM_SERVICE
+          refresh_token = nil
+          client_id = nil
+          client_secret = nil
+        else
+          oauth_mechanism = OAUTH_MECHANISM_USER
+          refresh_token = token
+          client_id = @oauth_config['client_id']
+          client_secret = @oauth_config['client_secret']
+        end
+
         @server_conf = {
           Driver:         DRIVER_NAME,
           SQLDialect:     SQL_DIALECT,
-          OAuthMechanism: OAUTH_MECHANISM,
-          RefreshToken:   token,
-          ClientId: @oauth_config['client_id'],
-          ClientSecret: @oauth_config['client_secret'],
+          OAuthMechanism: oauth_mechanism,
+          RefreshToken:   refresh_token,
+          ClientId: client_id,
+          ClientSecret: client_secret,
           AllowLargeResults: ALLOW_LRESULTS,
           HTAPI_MinActivationRatio: HTAPI_MIN_ACTIVATION_RATIO,
           EnableHTAPI: ENABLE_STORAGE_API,

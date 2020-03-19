@@ -463,6 +463,16 @@ module Carto
         end
       end
 
+      class UpdatedFeatureFlag < Event
+        include Carto::Tracking::Services::PubSub
+
+        required_properties :user_id, :feature_flag
+
+        def pubsub_name
+          'feature_flag_updated'
+        end
+      end
+
       # Models a generic event for segment.
       class SegmentEvent < Event
         include Carto::Tracking::Services::Segment

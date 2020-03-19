@@ -9,6 +9,7 @@ Development
 - Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
 - Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
 - Add Kepler.gl maps to the Maps section in the Dashboar's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
+- Request connector flow with all the states on the same screen ([#15515](https://github.com/CartoDB/cartodb/issues/15515))
 
 ### Bug fixes / enhancements
 

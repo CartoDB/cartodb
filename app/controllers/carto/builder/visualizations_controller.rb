@@ -47,7 +47,6 @@ module Carto
 
         @builder_notifications = notifications(:builder)
         @dashboard_notifications = notifications(:dashboard)
-        @isEnterprise = current_user.enterprise?;
       end
 
       private

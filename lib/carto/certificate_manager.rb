@@ -17,6 +17,8 @@ ensure
   end
 end
 
+SEP = '-----END CERTIFICATE-----'.freeze
+
 # TODO: this uses aws cli at the moment.
 # if having it installed in the hosts is not convenient we could
 # switch to use some aws-sdk-* gem
@@ -81,8 +83,8 @@ module Carto::CertificateManager
 
       certificate_chain = cmd.output
 
-      # Remove CA chain
-      certificate =
+      # Remove CA chain: extract first certificate
+      certificate = certificate_chain.split(SEP).first + SEP
 
       certificates = {
         client_key: key,

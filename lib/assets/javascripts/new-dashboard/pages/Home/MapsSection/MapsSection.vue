@@ -31,7 +31,7 @@
       :showToolbar="false"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
-      @selectionChange="onContentChanged">
+      @contentChanged="onContentChanged">
       <template slot="navigation">
          <MapsTabs
            v-if="!isFirst"

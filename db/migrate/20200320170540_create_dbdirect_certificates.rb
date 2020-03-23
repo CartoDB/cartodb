@@ -4,7 +4,7 @@ include Carto::Db::MigrationHelper
 
 migration(
   Proc.new do
-    create_table :directdb_certificates do
+    create_table :dbdirect_certificates do
       Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :user_id, :users, type: :uuid, null: false, index: true, on_delete: :cascade
       String      :name, null: false
@@ -15,6 +15,6 @@ migration(
     end
   end,
   Proc.new do
-    drop_table :directdb_certificates
+    drop_table :dbdirect_certificates
   end
 )

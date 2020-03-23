@@ -241,7 +241,7 @@ module CartoDB
             log.append ex.backtrace
           end
         end
-        notify(exception)
+        notify
         self
       ensure
         CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new(
@@ -297,7 +297,7 @@ module CartoDB
         )
       end
 
-      def notify()
+      def notify
         sync_log = {
           'name'              => self.name,
           'sync_time'         => self.updated_at - self.created_at,

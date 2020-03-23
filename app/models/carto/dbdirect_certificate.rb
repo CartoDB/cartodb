@@ -42,7 +42,7 @@ module Carto
 
     def revoke
       config = DbdirectCertificate.config
-      Carto::Dbdirect::CertificateManager.revoke_certificate(config, arn)
+      Carto::Dbdirect::CertificateManager.revoke_certificate(config: config, arn: arn)
     end
 
     class <<self

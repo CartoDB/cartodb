@@ -1,19 +1,16 @@
 module Carto
   class DbdirectCertificate < ActiveRecord::Base
-    STATE_ACTIVE = 'active'.freeze
-    STATE_REVOKED = 'revoked'.freeze
-
     belongs_to :user, inverse_of: :dbdirect_certificates, foreign_key: :user_id
     validates_uniqueness_of :name, scope: :user_id
     # TODO: validate ips
 
-    scope :active, -> { where(state: STATE_ACTIVE) }
-    scope :revoked, -> { where(state: STATE_REVOKED) }
+    scope :expired, -> { where('expiration <=', Date.today) }
+    scope :valid, -> { where('expiration >', Date.today) }
 
     def revoke!
       config = DbdirectCertificate.config
-      Carto::CertificateManager.generate_certificate(config, arn)
-      update! state: STATE_REVOKED
+      Carto::CertificateManager.revoke_certificate(config, arn)
+      destroy!
     end
 
     def self.config
@@ -37,8 +34,7 @@ module Carto
         name: name,
         arn: arn,
         ips: ips,
-        expiration: Date.today + validity_days,  # TODO: extract from cert.?
-        state: STATE_ACTIVE
+        expiration: Date.today + validity_days  # TODO: extract from cert.?
       )
 
       return certificates, new_record

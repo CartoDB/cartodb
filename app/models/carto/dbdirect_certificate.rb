@@ -7,11 +7,7 @@ module Carto
     scope :expired, -> { where('expiration <=', Date.today) }
     scope :valid, -> { where('expiration >', Date.today) }
 
-    def revoke!
-      config = DbdirectCertificate.config
-      Carto::Dbdirect::CertificateManager.revoke_certificate(config, arn)
-      destroy!
-    end
+    before_destroy :revoke
 
     def self.config
       Cartodb.get_config(:dbdirect, 'certificates')
@@ -38,6 +34,13 @@ module Carto
       )
 
       return certificates, new_record
+    end
+
+    private
+
+    def revoke
+      config = DbdirectCertificate.config
+      Carto::Dbdirect::CertificateManager.revoke_certificate(config, arn)
     end
   end
 end

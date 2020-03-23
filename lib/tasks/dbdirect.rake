@@ -28,8 +28,6 @@ namespace :carto do
       user = Carto::User.find_by_username(args.username)
       raise "User #{args.username} not found" unless user
 
-      certificate_name = name
-
       data, cert = Carto::DbdirectCertificate.generate(
         user: user,
         name: args.name,

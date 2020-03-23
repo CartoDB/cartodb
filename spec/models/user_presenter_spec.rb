@@ -112,7 +112,8 @@ describe Carto::Api::UserPresenter do
         company: "test",
         phone: "123",
         industry: "Academic and Education",
-        period_end_date: Time.parse('2018-01-01')
+        period_end_date: Time.parse('2018-01-01'),
+        account_type: 'ENTERPRISE LUMP-SUM'
       })
 
     organization = ::Organization.new(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5).save

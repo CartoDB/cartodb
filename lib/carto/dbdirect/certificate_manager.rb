@@ -34,7 +34,11 @@ module Carto
       def generate_certificate(config:, username:, passphrase:, ips:, validity_days:, server_ca:)
         certificates = nil
         arn = nil
-        with_env(AWS_ACCESS_KEY_ID: config[:aws_access_key_id], AWS_SECRET_ACCESS_KEY: config[:aws_secret_key]) do
+        with_env(
+          AWS_ACCESS_KEY_ID:     config['aws_access_key_id'],
+          AWS_SECRET_ACCESS_KEY: config['aws_secret_key'],
+          AWS_DEFAULT_REGION:    config['aws_region']
+        ) do
           # Generate secret key
           cmd = SysCmd.command 'openssl genrsa' do
             if passphrase.present?
@@ -43,8 +47,7 @@ module Carto
             end
             argument '2048'
           end
-          result = cmd.run direct: true, error_output: :separate
-          # TODO: raise if !result || cmd.status_value!= 0 || cmd.error; should we check cmd.error_output?
+          run cmd
           key = cmd.output
 
           # Generate csr
@@ -59,48 +62,49 @@ module Carto
             input key
             option '-subj', subj
           end
-          # TODO: raise if !result || cmd.status_value!= 0 || cmd.error; should we check cmd.error_output?
+          run cmd
           csr = cmd.output
 
           # Encode csr in base64
           csr = Base64.encode64(csr)
 
           # Issue certificate
-          cmd = SysCmd.command 'aws acp-pca issue-certificate' do
-            option '--certificate-authority-arn', confg[:ca_arn]
+          cmd = SysCmd.command 'aws acm-pca issue-certificate' do
+            option '--certificate-authority-arn', config['ca_arn']
             option '--csr', csr
-            option '--signing-algorithm', '"SHA256WITHRSA"'
+            option '--signing-algorithm', 'SHA256WITHRSA'
             option '--validity', %{Value=#{validity_days},Type="DAYS"}
             option '--template-arn', "arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1"
           end
-          # TODO: raise if !result || cmd.status_value!= 0 || cmd.error; should we check cmd.error_output?
+          run cmd
           arn = JSON.parse(cmd.output)['CertificateArn']
+          puts ">ARN #{arn}" if $DEBUG
 
           # Get certificate
-          cmd = SysCmd.command 'aws acp-pca get-certificate' do
+          cmd = SysCmd.command 'aws acm-pca get-certificate' do
             option '--certificate-arn', arn
-            option '--certificate-authority-arn', confg[:ca_arn]
+            option '--certificate-authority-arn', config['ca_arn']
             option '--output', 'text'
           end
-          # TODO: raise if !result || cmd.status_value!= 0 || cmd.error; should we check cmd.error_output?
-
+          run cmd
           certificate_chain = cmd.output
 
           # Remove CA chain: extract first certificate
           certificate = certificate_chain.split(SEP).first + SEP
+          puts ">USER CRT #{certificate}" if $DEBUG
 
           certificates = {
             client_key: key,
-            client_cert: certificate
+            client_crt: certificate
           }
 
           if server_ca
             # Get CA chain
-            cmd = SysCmd.command 'aws acp-pca get-certificate-authority-certificate' do
-              option '--certificate-authority-arn', confg[:ca_arn]
+            cmd = SysCmd.command 'aws acm-pca get-certificate-authority-certificate' do
+              option '--certificate-authority-arn', config['ca_arn']
               option '--output', 'text'
             end
-            # TODO: raise if !result || cmd.status_value!= 0 || cmd.error; should we check cmd.error_output?
+            run cmd
             certificates[:server_ca] = cmd.output
           end
         end
@@ -109,6 +113,29 @@ module Carto
 
       def revoke_certificate(config:, arn:)
         # TODO: implement!
+      end
+
+      private
+
+      class <<self
+        private
+        def run(cmd)
+          puts ">RUNNING #{cmd}" if $DEBUG
+          result = cmd.run direct: true, error_output: :separate
+          if $DEBUG
+            puts "  result: #{result.inspect}"
+            puts "  status: #{cmd.status}"
+            puts "  error: #{cmd.error}" if cmd.error.present?
+            if cmd.error_output.present?
+              puts "  STDERR:"
+              puts cmd.error_output
+            end
+            puts "  OUTPUT:"
+            puts cmd.output
+          end
+          # TODO: raise if cmd.status_value!= 0 || cmd.error; should we check cmd.error_output?
+          result
+        end
       end
     end
   end

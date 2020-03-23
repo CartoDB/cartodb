@@ -23,10 +23,10 @@
 
     <ExternalMapsList
       v-if="keplerMapsVisible"
-      :hasBulkActions="true"
+      :hasBulkActions="false"
       :isCondensedDefault="true"
-      :canChangeViewMode="true"
-      :canHoverCard="true"
+      :canChangeViewMode="false"
+      :canHoverCard="false"
       :maxVisibleMaps="maxVisibleMaps"
       :showToolbar="false"
       @applyFilter="applyFilter"

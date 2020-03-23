@@ -27,7 +27,7 @@ module Carto
     # switch to use some aws-sdk-* gem
 
     # Private CA certificate manager for dbdirect
-    # requirements: openssl, aws cli installed in the system
+    # requirements: openssl, aws cli v2 installed in the system
     module CertificateManager
       module_function
 

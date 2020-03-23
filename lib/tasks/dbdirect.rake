@@ -18,7 +18,7 @@ namespace :carto do
     end
 
     def ok_to_revoke?(cert)
-      STDOUT.puts "About to revoke certificate #{cert.name} for user #{user.username}. Are you sure? (y/n)"
+      STDOUT.puts "About to revoke certificate #{cert.name} for user #{cert.user.username}. Are you sure? (y/n)"
       input = STDIN.gets.strip
       return input == 'y'
     end
@@ -53,6 +53,5 @@ namespace :carto do
         puts "DESTROYED!!"
       end
     end
-
   end
 end

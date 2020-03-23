@@ -14,7 +14,9 @@ module Carto
     end
 
     def self.generate(user:, name:, passphrase: nil, ips: nil, validity_days: nil, server_ca: true)
+      # TODO: check user authorization to generate certificate
       validity_days ||= config[:maximum_validity_days]
+      name = valid_name(user, name)
 
       certificates, arn = Carto::Dbdirect::CertificateManager.generate_certificate(
         config: config,
@@ -38,9 +40,27 @@ module Carto
 
     private
 
+    def certificate_names(user)
+      Carto::User.find(user.id).dbdirect_certificates.map &:name
+    end
+
     def revoke
       config = DbdirectCertificate.config
       Carto::Dbdirect::CertificateManager.revoke_certificate(config, arn)
+    end
+
+    def valid_name(user, name)
+      name = user.username if name.blank?
+      names = certificates_names(user)
+      if name.in?(user.certificates_names)
+        max_suffix = names.map do |existing_name|
+          match = /\A#{Regexp.escape name}_(\d+)\Z/.match(existing_name)
+          match ? match[1].to_i : 0
+        end.max
+        "#{name}_#{max_suffix + 1}"
+      else
+        name
+      end
     end
   end
 end

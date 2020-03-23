@@ -12,7 +12,6 @@ Development
 - Request connector flow with all the states on the same screen ([#15515](https://github.com/CartoDB/cartodb/issues/15515))
 
 ### Bug fixes / enhancements
-
 - Fix wording for feedback
 - Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394)
 - Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))
@@ -22,6 +21,7 @@ Development
 - Remove code related to deprecated plans ([#15563](https://github.com/CartoDB/cartodb/pull/15563))
 - Fix ie11 bug due to non babelified toolkit packages ([#2456](https://github.com/CartoDB/support/issues/2456))
 - Fix wrong link in footer for location-data-streams
+- Fix Kepler maps configuration at Maps section that was causing endless reloads ([#15568](https://github.com/CartoDB/cartodb/pull/15568))
 
 4.36.0 (2020-03-09)
 -------------------

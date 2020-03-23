@@ -778,6 +778,7 @@ defaults: &defaults
       maximum_validity_days: 365
       aws_access_key_id: XXXXXXXXXXXX
       aws_secret_key: YYYYYYYYYYY
+      aws_region: us-east-1
 
 development:
   <<: *defaults

@@ -147,7 +147,7 @@ describe Carto::Api::UsersController do
 
         get_json api_v3_users_me_url(@params), @headers do |response|
           expect(response.status).to eq(200)
-          expect(response.body[:is_enterprise]).to eq(false)
+          expect(response.body[:user_data][:is_enterprise]).to eq(false)
         end
       end
 
@@ -156,7 +156,7 @@ describe Carto::Api::UsersController do
 
         get_json api_v3_users_me_url(@params), @headers do |response|
           expect(response.status).to eq(200)
-          expect(response.body[:is_enterprise]).to eq(true)
+          expect(response.body[:user_data][:is_enterprise]).to eq(true)
         end
       end
     end

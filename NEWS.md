@@ -9,6 +9,7 @@ Development
 - Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
 - Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
 - Add Kepler.gl maps to the Maps section in the Dashboar's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
+- Request connector flow with all the states on the same screen ([#15515](https://github.com/CartoDB/cartodb/issues/15515))
 
 ### Bug fixes / enhancements
 
@@ -17,6 +18,7 @@ Development
 * Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))
 * Fix lockout page due to wrong CustomStorage initialization ([#2444](https://github.com/CartoDB/support/issues/2444))
 * Add is_enterprise field to /me ([#15551](https://github.com/CartoDB/cartodb/pull/15551))
+* Add BigQuery execution capability
 * Remove code related to deprecated plans ([#15563](https://github.com/CartoDB/cartodb/pull/15563))
 
 4.36.0 (2020-03-09)

@@ -90,7 +90,7 @@ gem 'test-unit'
 gem 'rotp', '~> 3.3', '>= 3.3.1'
 gem 'rqrcode', '~> 0.10.1'
 
-gem 'sys_cmd'
+gem 'sys_cmd', '>= 1.1.3'
 
 group :test do
   gem 'simplecov', '0.13.0', require: false

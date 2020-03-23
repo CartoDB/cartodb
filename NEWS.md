@@ -19,6 +19,7 @@ Development
 * Fix lockout page due to wrong CustomStorage initialization ([#2444](https://github.com/CartoDB/support/issues/2444))
 * Add is_enterprise field to /me ([#15551](https://github.com/CartoDB/cartodb/pull/15551))
 * Add BigQuery execution capability
+* Remove code related to deprecated plans ([#15563](https://github.com/CartoDB/cartodb/pull/15563))
 
 4.36.0 (2020-03-09)
 -------------------

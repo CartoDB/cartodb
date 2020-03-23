@@ -1049,7 +1049,7 @@ shared_examples_for "user models" do
     end
 
     it 'returns nil if the account does not have a trial' do
-      @user.account_type = 'CORONELLI'
+      @user.account_type = 'ENTERPRISE'
 
       expect(@user.trial_ends_at).to be_nil
     end

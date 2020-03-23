@@ -55,7 +55,8 @@ describe Carto::Api::UserPresenter do
         company: "test",
         phone: "123",
         industry: "Academic and Education",
-        period_end_date: Time.parse('2018-01-01')
+        period_end_date: Time.parse('2018-01-01'),
+        account_type: 'ENTERPRISE LUMP-SUM'
       })
 
     # Some sample data

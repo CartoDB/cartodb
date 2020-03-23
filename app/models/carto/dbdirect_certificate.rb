@@ -9,7 +9,7 @@ module Carto
 
     def revoke!
       config = DbdirectCertificate.config
-      Carto::CertificateManager.revoke_certificate(config, arn)
+      Carto::Dbdirect::CertificateManager.revoke_certificate(config, arn)
       destroy!
     end
 
@@ -20,7 +20,7 @@ module Carto
     def self.generate(user:, name:, passphrase: nil, ips: nil, validity_days: nil, server_ca: true)
       validity_days ||= config[:maximum_validity_days]
 
-      certificates, arn = Carto::CertificateManager.generate_certificate(
+      certificates, arn = Carto::Dbdirect::CertificateManager.generate_certificate(
         config: config,
         username: user.username,
         passphrase: passphrase,

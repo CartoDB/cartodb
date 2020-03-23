@@ -34,11 +34,7 @@ module Carto
       def generate_certificate(config:, username:, passphrase:, ips:, validity_days:, server_ca:)
         certificates = nil
         arn = nil
-        with_env(
-          AWS_ACCESS_KEY_ID:     config['aws_access_key_id'],
-          AWS_SECRET_ACCESS_KEY: config['aws_secret_key'],
-          AWS_DEFAULT_REGION:    config['aws_region']
-        ) do
+        with_aws_credentials(config) do
           # Generate secret key
           cmd = SysCmd.command 'openssl genrsa' do
             if passphrase.present?
@@ -111,14 +107,28 @@ module Carto
         [certificates, arn]
       end
 
-      def revoke_certificate(config:, arn:)
-        # TODO: implement!
+      def revoke_certificate(config:, arn:, reason: 'UNSPECIFIED')
+        serial = serial_from_arn(arn)
+        with_aws_credentials(config) do
+          cmd = SysCmd.command 'aws acm-pca revoke-certificate' do
+            option '--certificate-serial', serial
+            option '--certificate-authority-arn', config['ca_arn']
+            option '--revocation-reason', reason
+          end
+          run cmd
+          if cmd.status_value != 0
+            msg = "Could not revoke certificate"
+            msg += ": " + cmd.error_output if cmd.error_output.present?
+            raise msg
+          end
+        end
       end
 
       private
 
       class <<self
         private
+
         def run(cmd)
           puts ">RUNNING #{cmd}" if $DEBUG
           result = cmd.run direct: true, error_output: :separate
@@ -135,6 +145,21 @@ module Carto
           end
           # TODO: raise if cmd.status_value!= 0 || cmd.error; should we check cmd.error_output?
           result
+        end
+
+        def serial_from_arn(arn)
+          match = /\/certificate\/(.{32})\Z/.match(arn)
+          raise "Invalid arn format #{arn}" unless match
+          match[1].scan(/../).join(':')
+        end
+
+        def with_aws_credentials(config, &blk)
+          with_env(
+            AWS_ACCESS_KEY_ID:     config['aws_access_key_id'],
+            AWS_SECRET_ACCESS_KEY: config['aws_secret_key'],
+            AWS_DEFAULT_REGION:    config['aws_region'],
+            &blk
+          )
         end
       end
     end

@@ -37,7 +37,7 @@ module Carto
         with_env(AWS_ACCESS_KEY_ID: config[:aws_access_key_id], AWS_SECRET_ACCESS_KEY: config[:aws_secret_key]) do
           # Generate secret key
           cmd = SysCmd.command 'openssl genrsa' do
-            if passphrase
+            if passphrase.present?
               option '-passout', 'stdin'
               input passphrase
             end
@@ -53,7 +53,7 @@ module Carto
             option '-new'
             option '-sha256'
             option '-key', '/dev/stdin'
-            if passphrase
+            if passphrase.present?
               option '-passin', "pass:#{passphrase}"
             end
             input key

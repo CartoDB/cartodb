@@ -36,7 +36,6 @@ module Carto
         def self.required_properties(*required_properties)
           @required_properties ||= []
           @required_properties += required_properties
-          @required_properties += [:event_version]
         end
 
         def required_properties
@@ -48,6 +47,7 @@ module Carto
         def self.optional_properties(*optional_properties)
           @optional_properties ||= []
           @optional_properties += optional_properties
+          @optional_properties += [:event_version]
         end
 
         def optional_properties

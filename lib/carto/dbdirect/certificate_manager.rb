@@ -1,7 +1,7 @@
 require 'openssl'
 require 'aws-sdk-acmpca'
-require 'base64'
 require 'json'
+require 'securerandom'
 
 def with_env(vars)
   old = {}
@@ -50,6 +50,9 @@ module Carto
 
       private
 
+      GET_CERTIFICATE_MAX_ATTEMPTS = 8
+      GET_CERTIFICATE_DELAY_S = 1
+
       class <<self
         private
 
@@ -90,24 +93,31 @@ module Carto
             validity: {
               value: validity_days,
               type: "DAYS"
-            }
+            },
+            idempotency_token: SecureRandom.uuid
           )
           resp.certificate_arn
         end
 
         def aws_get_certificate(config, arn)
-          resp = aws_acmpca_client.get_certificate({
-            certificate_authority_arn: config['ca_arn'],
-            certificate_arn: arn
-          })
-          run cmd
+          resp = aws_acmpca_client.wait_until(
+            :certificate_issued,
+            {
+              certificate_authority_arn: config['ca_arn'],
+              certificate_arn: arn
+            },
+            {
+              max_attempts: GET_CERTIFICATE_MAX_ATTEMPTS,
+              delay: GET_CERTIFICATE_DELAY_S
+            }
+          )
           resp.certificate
         end
 
         def aws_get_ca_certificate_chain(config)
           # TODO: we could cache this
           resp = aws_acmpca_client.get_certificate_authority_certificate({
-            certificate_authority_arn: "Arn", # required
+            certificate_authority_arn: config['ca_arn']
           })
           resp.certificate_chain
         end

@@ -37,7 +37,6 @@ module Carto
         with_aws_credentials(config) do
           key = openssl_generate_key(passphrase)
           csr = openssl_generate_csr(username, key, passphrase)
-          csr = Base64.encode64(csr)
           arn = aws_issue_certificate(config, csr, validity_days)
           puts ">ARN #{arn}" if $DEBUG
           certificate_chain = aws_get_certificate(config, arn)
@@ -56,9 +55,8 @@ module Carto
       end
 
       def revoke_certificate(config:, arn:, reason: 'UNSPECIFIED')
-        serial = serial_from_arn(arn)
         with_aws_credentials(config) do
-          aws_revoke_certificate(config, serial, reason)
+          aws_revoke_certificate(config, arn, reason)
         end
       end
 
@@ -94,6 +92,7 @@ module Carto
         end
 
         def aws_issue_certificate(config, csr, validity_days)
+          csr = Base64.encode64(csr)
           cmd = SysCmd.command 'aws acm-pca issue-certificate' do
             option '--certificate-authority-arn', config['ca_arn']
             option '--csr', csr
@@ -125,7 +124,8 @@ module Carto
           cmd.output
         end
 
-        def aws_revoke_certificate(config, serial, reason)
+        def aws_revoke_certificate(config, arn, reason)
+          serial = serial_from_arn(arn)
           cmd = SysCmd.command 'aws acm-pca revoke-certificate' do
             option '--certificate-serial', serial
             option '--certificate-authority-arn', config['ca_arn']

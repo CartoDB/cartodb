@@ -35,7 +35,39 @@ module Carto
         certificates = nil
         arn = nil
         with_aws_credentials(config) do
-          # Generate secret key
+          key = openssl_generate_key(passphrase)
+          csr = openssl_generate_csr(username, key, passphrase)
+          csr = Base64.encode64(csr)
+          arn = aws_issue_certificate(config, csr, validity_days)
+          puts ">ARN #{arn}" if $DEBUG
+          certificate_chain = aws_get_certificate(config, arn)
+
+          # Remove CA chain: extract first certificate
+          certificate = certificate_chain.split(SEP).first + SEP
+          puts ">USER CRT #{certificate}" if $DEBUG
+
+          certificates = {
+            client_key: key,
+            client_crt: certificate
+          }
+          certificates[:server_ca] = aws_get_ca_certificate(config) if server_ca
+        end
+        [certificates, arn]
+      end
+
+      def revoke_certificate(config:, arn:, reason: 'UNSPECIFIED')
+        serial = serial_from_arn(arn)
+        with_aws_credentials(config) do
+          aws_revoke_certificate(config, serial, reason)
+        end
+      end
+
+      private
+
+      class <<self
+        private
+
+        def openssl_generate_key(passphrase)
           cmd = SysCmd.command 'openssl genrsa' do
             if passphrase.present?
               option '-passout', 'stdin'
@@ -44,9 +76,10 @@ module Carto
             argument '2048'
           end
           run cmd
-          key = cmd.output
+          cmd.output
+        end
 
-          # Generate csr
+        def openssl_generate_csr(username, key, passphrase)
           subj = "/C=US/ST=New York/L=New York/O=CARTO/OU=Customer/CN=#{username}"
           cmd = SysCmd.command 'openssl req' do
             option '-new'
@@ -57,12 +90,10 @@ module Carto
             option '-subj', subj
           end
           run cmd
-          csr = cmd.output
+          cmd.output
+        end
 
-          # Encode csr in base64
-          csr = Base64.encode64(csr)
-
-          # Issue certificate
+        def aws_issue_certificate(config, csr, validity_days)
           cmd = SysCmd.command 'aws acm-pca issue-certificate' do
             option '--certificate-authority-arn', config['ca_arn']
             option '--csr', csr
@@ -71,44 +102,30 @@ module Carto
             option '--template-arn', "arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1"
           end
           run cmd
-          arn = JSON.parse(cmd.output)['CertificateArn']
-          puts ">ARN #{arn}" if $DEBUG
+          JSON.parse(cmd.output)['CertificateArn']
+        end
 
-          # Get certificate
+        def aws_get_certificate(config, arn)
           cmd = SysCmd.command 'aws acm-pca get-certificate' do
             option '--certificate-arn', arn
             option '--certificate-authority-arn', config['ca_arn']
             option '--output', 'text'
           end
           run cmd
-          certificate_chain = cmd.output
-
-          # Remove CA chain: extract first certificate
-          certificate = certificate_chain.split(SEP).first + SEP
-          puts ">USER CRT #{certificate}" if $DEBUG
-
-          certificates = {
-            client_key: key,
-            client_crt: certificate
-          }
-
-          if server_ca
-            # Get CA chain
-            # TODO: we could cache this
-            cmd = SysCmd.command 'aws acm-pca get-certificate-authority-certificate' do
-              option '--certificate-authority-arn', config['ca_arn']
-              option '--output', 'text'
-            end
-            run cmd
-            certificates[:server_ca] = cmd.output
-          end
+          cmd.output
         end
-        [certificates, arn]
-      end
 
-      def revoke_certificate(config:, arn:, reason: 'UNSPECIFIED')
-        serial = serial_from_arn(arn)
-        with_aws_credentials(config) do
+        def aws_get_ca_certificate(config)
+          # TODO: we could cache this
+          cmd = SysCmd.command 'aws acm-pca get-certificate-authority-certificate' do
+            option '--certificate-authority-arn', config['ca_arn']
+            option '--output', 'text'
+          end
+          run cmd
+          cmd.output
+        end
+
+        def aws_revoke_certificate(config, serial, reason)
           cmd = SysCmd.command 'aws acm-pca revoke-certificate' do
             option '--certificate-serial', serial
             option '--certificate-authority-arn', config['ca_arn']
@@ -116,12 +133,6 @@ module Carto
           end
           run cmd, error_message: "Could not revoke certificate"
         end
-      end
-
-      private
-
-      class <<self
-        private
 
         def run(cmd, error_message: 'Error')
           puts ">RUNNING #{cmd}" if $DEBUG

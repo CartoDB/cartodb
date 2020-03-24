@@ -34,9 +34,9 @@ module Carto
       def generate_certificate(config:, username:, passphrase:, ips:, validity_days:, server_ca:)
         certificates = nil
         arn = nil
+        key = openssl_generate_key(passphrase)
+        csr = openssl_generate_csr(username, key, passphrase)
         with_aws_credentials(config) do
-          key = openssl_generate_key(passphrase)
-          csr = openssl_generate_csr(username, key, passphrase)
           arn = aws_issue_certificate(config, csr, validity_days)
           puts ">ARN #{arn}" if $DEBUG
           certificate_chain = aws_get_certificate(config, arn)

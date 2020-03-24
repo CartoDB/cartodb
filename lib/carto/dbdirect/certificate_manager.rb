@@ -44,7 +44,7 @@ module Carto
             client_key: key,
             client_crt: certificate
           }
-          certificates[:server_ca] = aws_get_ca_certificate(config) if server_ca
+          certificates[:server_ca] = aws_get_ca_certificate_chain(config) if server_ca
         end
         [certificates, arn]
       end
@@ -113,7 +113,7 @@ module Carto
           certificate
         end
 
-        def aws_get_ca_certificate(config)
+        def aws_get_ca_certificate_chain(config)
           # TODO: we could cache this
           cmd = SysCmd.command 'aws acm-pca get-certificate-authority-certificate' do
             option '--certificate-authority-arn', config['ca_arn']

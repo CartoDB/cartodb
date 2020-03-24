@@ -31,7 +31,6 @@ module Carto
         csr = openssl_generate_csr(username, key, passphrase)
         with_aws_credentials(config) do
           arn = aws_issue_certificate(config, csr, validity_days)
-          puts ">ARN #{arn}" if $DEBUG
           certificate = aws_get_certificate(config, arn)
           certificates = {
             client_key: key,

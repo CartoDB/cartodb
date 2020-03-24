@@ -52,9 +52,7 @@ module Carto
             option '-new'
             option '-sha256'
             option '-key', '/dev/stdin'
-            if passphrase.present?
-              option '-passin', "pass:#{passphrase}"
-            end
+            option '-passin', "pass:#{passphrase}" if passphrase.present?
             input key
             option '-subj', subj
           end
@@ -96,6 +94,7 @@ module Carto
 
           if server_ca
             # Get CA chain
+            # TODO: we could cache this
             cmd = SysCmd.command 'aws acm-pca get-certificate-authority-certificate' do
               option '--certificate-authority-arn', config['ca_arn']
               option '--output', 'text'
@@ -115,12 +114,7 @@ module Carto
             option '--certificate-authority-arn', config['ca_arn']
             option '--revocation-reason', reason
           end
-          run cmd
-          if cmd.status_value != 0
-            msg = "Could not revoke certificate"
-            msg += ": " + cmd.error_output if cmd.error_output.present?
-            raise msg
-          end
+          run cmd, error_message: "Could not revoke certificate"
         end
       end
 
@@ -129,7 +123,7 @@ module Carto
       class <<self
         private
 
-        def run(cmd)
+        def run(cmd, error_message: 'Error')
           puts ">RUNNING #{cmd}" if $DEBUG
           result = cmd.run direct: true, error_output: :separate
           if $DEBUG
@@ -143,7 +137,13 @@ module Carto
             puts "  OUTPUT:"
             puts cmd.output
           end
-          # TODO: raise if cmd.status_value!= 0 || cmd.error; should we check cmd.error_output?
+          if cmd.error
+            raise cmd.error
+          elsif cmd.status_value != 0
+            msg = error_message
+            msg += ": " + cmd.error_output if cmd.error_output.present?
+            raise msg
+          end
           result
         end
 

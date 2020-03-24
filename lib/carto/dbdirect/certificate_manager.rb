@@ -39,12 +39,7 @@ module Carto
         with_aws_credentials(config) do
           arn = aws_issue_certificate(config, csr, validity_days)
           puts ">ARN #{arn}" if $DEBUG
-          certificate_chain = aws_get_certificate(config, arn)
-
-          # Remove CA chain: extract first certificate
-          certificate = certificate_chain.split(SEP).first + SEP
-          puts ">USER CRT #{certificate}" if $DEBUG
-
+          certificate = aws_get_certificate(config, arn)
           certificates = {
             client_key: key,
             client_crt: certificate
@@ -111,7 +106,11 @@ module Carto
             option '--output', 'text'
           end
           run cmd
-          cmd.output
+          certificate_chain = cmd.output
+          # Remove CA chain: extract first certificate
+          certificate = certificate_chain.split(SEP).first + SEP
+          puts ">USER CRT #{certificate}" if $DEBUG
+          certificate
         end
 
         def aws_get_ca_certificate(config)

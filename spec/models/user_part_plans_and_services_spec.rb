@@ -385,8 +385,8 @@ describe User do
       @user.hard_geocoding_limit.should be_false
     end
 
-    it 'returns true when for enterprise accounts unless it has been manually set to false' do
-      ['ENTERPRISE', 'ENTERPRISE LUMP-SUM', 'Enterprise Medium Lumpsum AWS'].each do |account_type|
+    it 'returns true for enterprise accounts unless it has been manually set to false' do
+      Carto::AccountType::ENTERPRISE_PLANS.each do |account_type|
         @user.stubs(:account_type).returns(account_type)
 
         @user.soft_geocoding_limit = nil
@@ -405,16 +405,12 @@ describe User do
       end
     end
 
-    it 'returns false when the plan is CORONELLI or MERCATOR unless it has been manually set to true' do
-      @user.stubs(:account_type).returns('CORONELLI')
-      @user.hard_geocoding_limit?.should be_false
+    it 'returns false when the plan is MERCATOR unless it has been manually set to true' do
       @user.stubs(:account_type).returns('MERCATOR')
       @user.hard_geocoding_limit?.should be_false
 
       @user.hard_geocoding_limit = true
 
-      @user.stubs(:account_type).returns('CORONELLI')
-      @user.hard_geocoding_limit?.should be_true
       @user.stubs(:account_type).returns('MERCATOR')
       @user.hard_geocoding_limit?.should be_true
     end

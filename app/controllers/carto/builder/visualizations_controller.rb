@@ -3,7 +3,7 @@ require 'carto/api/layer_presenter'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/visualization_migrator'
-require_dependency 'carto/helpers/frame_options_helper'    
+require_dependency 'carto/helpers/frame_options_helper'
 
 module Carto
   module Builder

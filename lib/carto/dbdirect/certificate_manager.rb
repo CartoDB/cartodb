@@ -20,15 +20,7 @@ end
 
 module Carto
   module Dbdirect
-
-    SEP = '-----END CERTIFICATE-----'.freeze
-
-    # TODO: this uses aws cli at the moment.
-    # if having it installed in the hosts is not convenient we could
-    # switch to use some aws-sdk-* gem
-
     # Private CA certificate manager for dbdirect
-    # requirements: openssl, aws cli v2 installed in the system
     module CertificateManager
       module_function
 

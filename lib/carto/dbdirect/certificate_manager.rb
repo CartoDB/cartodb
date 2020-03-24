@@ -94,6 +94,7 @@ module Carto
             certificate_authority_arn: config['ca_arn'],
             csr: csr,
             signing_algorithm: "SHA256WITHRSA",
+            template_arn: "arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1",
             validity: {
               value: validity_days,
               type: "DAYS"

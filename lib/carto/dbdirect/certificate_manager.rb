@@ -3,21 +3,6 @@ require 'aws-sdk-acmpca'
 require 'json'
 require 'securerandom'
 
-def with_env(vars)
-  old = {}
-  vars.each do |key, value|
-    key = key.to_s
-    old[key] = ENV[key]
-    ENV[key] = value
-  end
-  yield
-ensure
-  vars.each do |key, value|
-    key = key.to_s
-    ENV[key] = old[key]
-  end
-end
-
 module Carto
   module Dbdirect
     # Private CA certificate manager for dbdirect
@@ -143,6 +128,21 @@ module Carto
             AWS_DEFAULT_REGION:    config['aws_region'],
             &blk
           )
+        end
+
+        def with_env(vars)
+          old = {}
+          vars.each do |key, value|
+            key = key.to_s
+            old[key] = ENV[key]
+            ENV[key] = value
+          end
+          yield
+        ensure
+          vars.each do |key, value|
+            key = key.to_s
+            ENV[key] = old[key]
+          end
         end
       end
     end

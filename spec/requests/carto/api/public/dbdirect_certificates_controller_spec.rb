@@ -368,4 +368,73 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       end
     end
   end
+
+  describe '#show' do
+    before(:each) do
+      @params = { api_key: @user1.api_key }
+      Carto::DbdirectCertificate.stubs(:certificate_manager).returns(TestCertificateManager)
+      @certificate_data, @dbdirect_certificate = Carto::DbdirectCertificate.generate(
+        user: @user1,
+        name:'cert_name',
+        validity_days: 365
+      )
+    end
+
+    after(:each) do
+      Carto::DbdirectCertificate.delete_all
+    end
+
+    it 'needs authentication to show a certificate' do
+      params = {
+        id: @dbdirect_certificate.id,
+      }
+      get_json api_v4_dbdirect_certificates_show_url(params) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'needs the feature flag to show a certificate' do
+      params = {
+        id: @dbdirect_certificate.id,
+        api_key: @user1.api_key
+      }
+      with_feature_flag @user1, 'dbdirect', false do
+        get_json api_v4_dbdirect_certificates_show_url(params) do |response|
+          expect(response.status).to eq(403)
+        end
+      end
+    end
+
+    it 'cannot show certificates owned by other users' do
+      host! "#{@user2.username}.localhost.lan"
+      params = {
+        id: @dbdirect_certificate.id,
+        api_key: @user2.api_key
+      }
+      with_feature_flag @user2, 'dbdirect', false do
+        get_json api_v4_dbdirect_certificates_show_url(params) do |response|
+          expect(response.status).to eq(401)
+        end
+      end
+      host! "#{@user1.username}.localhost.lan"
+    end
+
+    it 'shows certificates' do
+      params = {
+        id: @dbdirect_certificate.id,
+        api_key: @user1.api_key
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          get_json api_v4_dbdirect_certificates_show_url(params) do |response|
+            expect(response.status).to eq(200)
+            expect(response.body[:id]).to eq @dbdirect_certificate.id
+            expect(response.body[:name]).to eq @dbdirect_certificate.name
+            expect(response.body[:ips]).to eq @dbdirect_certificate.ips
+            expect(response.body[:expiration]).to eq @dbdirect_certificate.expiration.to_datetime.rfc3339
+          end
+        end
+      end
+    end
+  end
 end

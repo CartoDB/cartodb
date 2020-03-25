@@ -9,7 +9,7 @@ module Carto
     module CertificateManager
       module_function
 
-      def generate_certificate(config:, username:, passphrase:, ips:, validity_days:, server_ca:)
+      def generate_certificate(config:, username:, passphrase:, validity_days:, server_ca:)
         certificates = nil
         arn = nil
         key = openssl_generate_key(passphrase)

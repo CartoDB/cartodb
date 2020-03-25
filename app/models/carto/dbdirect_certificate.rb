@@ -22,7 +22,6 @@ module Carto
         config: config,
         username: user.username,
         passphrase: passphrase,
-        ips: ips,
         validity_days: validity_days,
         server_ca: server_ca
       )

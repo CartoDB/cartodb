@@ -43,6 +43,15 @@ describe Carto::Api::Public::DbdirectCertificatesController do
   before(:all) do
     host! "#{@user1.username}.localhost.lan"
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'dbdirect', restricted: true)
+    @config = {
+      certificates: {
+        ca_arn: "the-ca-arn",
+        maximum_validity_days: 300,
+        aws_access_key_id: 'the_aws_key',
+        aws_secret_key: 'the_aws_secret',
+        aws_region: 'the_aws_region'
+      }
+    }.with_indifferent_access
   end
 
   after(:all) do
@@ -53,15 +62,6 @@ describe Carto::Api::Public::DbdirectCertificatesController do
     before(:each) do
       @params = { api_key: @user1.api_key }
       Carto::DbdirectCertificate.stubs(:certificate_manager).returns(TestCertificateManager)
-      @config = {
-        certificates: {
-          ca_arn: "the-ca-arn",
-          maximum_validity_days: 300,
-          aws_access_key_id: 'the_aws_key',
-          aws_secret_key: 'the_aws_secret',
-          aws_region: 'the_aws_region'
-        }
-      }.with_indifferent_access
     end
 
     after(:each) do
@@ -77,8 +77,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       end
     end
 
-
-    it 'need the feature flag for certificate creation' do
+    it 'needs the feature flag for certificate creation' do
         params = {
           name: 'cert_name',
           api_key: @user1.api_key
@@ -89,7 +88,6 @@ describe Carto::Api::Public::DbdirectCertificatesController do
           end
         end
     end
-
 
     it 'creates certificates without password ips or validity' do
       params = {
@@ -221,6 +219,84 @@ describe Carto::Api::Public::DbdirectCertificatesController do
             expect(cert.user.id).to eq @user1.id
             expect(cert.name).to eq 'cert_name'
             expect(cert.arn).to eq %{arn for user00000001_200_#{@config['certificates']}}
+          end
+        end
+      end
+    end
+  end
+  describe '#destroy' do
+    before(:each) do
+      @params = { api_key: @user1.api_key }
+      Carto::DbdirectCertificate.stubs(:certificate_manager).returns(TestCertificateManager)
+      @certificate_data, @dbdirect_certificate = Carto::DbdirectCertificate.generate(
+        user: @user1,
+        name:'cert_name',
+        validity_days: 365
+      )
+    end
+
+    after(:each) do
+      Carto::DbdirectCertificate.delete_all
+    end
+
+    it 'needs authentication for certificate revocation' do
+      params = {
+        id: @dbdirect_certificate.id,
+      }
+      arn = @dbdirect_certificate.arn
+      delete_json api_v4_dbdirect_certificates_destroy_url(params) do |response|
+        expect(response.status).to eq(401)
+        expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
+        expect(TestCertificateManager._crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+      end
+    end
+
+    it 'needs the feature flag for certificate revocation' do
+      params = {
+        id: @dbdirect_certificate.id,
+        api_key: @user1.api_key
+      }
+      arn = @dbdirect_certificate.arn
+      with_feature_flag @user1, 'dbdirect', false do
+        delete_json api_v4_dbdirect_certificates_destroy_url(params) do |response|
+          expect(response.status).to eq(403)
+          expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
+          expect(TestCertificateManager._crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+        end
+      end
+    end
+
+    it 'cannot revoke certificates owned by other users' do
+      host! "#{@user2.username}.localhost.lan"
+      params = {
+        id: @dbdirect_certificate.id,
+        api_key: @user2.api_key
+      }
+      arn = @dbdirect_certificate.arn
+      with_feature_flag @user2, 'dbdirect', false do
+        delete_json api_v4_dbdirect_certificates_destroy_url(params) do |response|
+          expect(response.status).to eq(401)
+          expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
+          expect(TestCertificateManager._crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+        end
+      end
+      host! "#{@user1.username}.localhost.lan"
+    end
+
+    it 'revokes certificates' do
+      params = {
+        id: @dbdirect_certificate.id,
+        api_key: @user1.api_key
+      }
+      arn = @dbdirect_certificate.arn
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          delete_json api_v4_dbdirect_certificates_destroy_url(params) do |response|
+            expect(response.status).to eq(200)
+            expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).to be_nil
+            expect(TestCertificateManager._crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+            expect(response.body[:name]).to eq 'cert_name'
+            expect(response.body[:id]).to eq @dbdirect_certificate.id
           end
         end
       end

@@ -174,7 +174,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       params = {
         name: 'cert_name',
         pass: 'the_password',
-        ips: '100.200.300.400',
+        ips: '100.200.30.40',
         validity: 150,
         api_key: @user1.api_key
       }
@@ -200,7 +200,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
     it 'creates certificates and downloads server ca' do
       params = {
         name: 'cert_name',
-        ips: '100.200.300.400',
+        ips: '100.200.30.40',
         validity: 200,
         api_key: @user1.api_key,
         server_ca: true
@@ -224,6 +224,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       end
     end
   end
+
   describe '#destroy' do
     before(:each) do
       @params = { api_key: @user1.api_key }
@@ -297,6 +298,71 @@ describe Carto::Api::Public::DbdirectCertificatesController do
             expect(TestCertificateManager._crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
             expect(response.body[:name]).to eq 'cert_name'
             expect(response.body[:id]).to eq @dbdirect_certificate.id
+          end
+        end
+      end
+    end
+  end
+
+  describe '#list' do
+    before(:each) do
+      @params = { api_key: @user1.api_key }
+      Carto::DbdirectCertificate.stubs(:certificate_manager).returns(TestCertificateManager)
+      @certificate_data1, @dbdirect_certificate1 = Carto::DbdirectCertificate.generate(
+        user: @user1,
+        name:'cert_1',
+        validity_days: 365
+      )
+      @certificate_data2, @dbdirect_certificate2 = Carto::DbdirectCertificate.generate(
+        user: @user1,
+        name:'cert_2',
+        validity_days: 300,
+        ips: '100.200.30.40'
+      )
+    end
+
+    after(:each) do
+      Carto::DbdirectCertificate.delete_all
+    end
+
+    it 'needs authentication for listing certificates' do
+      params = {
+      }
+      get_json api_v4_dbdirect_certificates_list_url(params) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'needs the feature flag for listing certificates' do
+      params = {
+        api_key: @user1.api_key
+      }
+      with_feature_flag @user1, 'dbdirect', false do
+        get_json api_v4_dbdirect_certificates_list_url(params) do |response|
+          expect(response.status).to eq(403)
+        end
+      end
+    end
+
+    it 'lists certificates' do
+      params = {
+        api_key: @user1.api_key
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          get_json api_v4_dbdirect_certificates_list_url(params) do |response|
+            expect(response.status).to eq(200)
+            expect(response.body.size).to eq 2
+            cert1_info = response.body.find { |c| c['id'] == @dbdirect_certificate1.id }
+            cert2_info = response.body.find { |c| c['id'] == @dbdirect_certificate2.id }
+            expect(cert1_info).not_to be_nil
+            expect(cert2_info).not_to be_nil
+            expect(cert1_info['name']).to eq @dbdirect_certificate1.name
+            expect(cert1_info['ips']).to eq @dbdirect_certificate1.ips
+            expect(cert1_info['expiration']).to eq @dbdirect_certificate1.expiration.to_datetime.rfc3339
+            expect(cert2_info['name']).to eq @dbdirect_certificate2.name
+            expect(cert2_info['ips']).to eq @dbdirect_certificate2.ips
+            expect(cert2_info['expiration']).to eq @dbdirect_certificate2.expiration.to_datetime.rfc3339
           end
         end
       end

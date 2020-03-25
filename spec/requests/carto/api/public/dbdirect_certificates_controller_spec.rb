@@ -13,14 +13,14 @@ module TestCertificateManager
       {
         client_key: mocked('key', username, passphrase),
         client_crt: mocked('crt', username, validity_days, config),
-        server_ca: server_ca ? mocked('crt', config) : nil
+        server_ca: server_ca ? mocked('cacrt', config) : nil
       },
       mocked('arn', username, validity_days, config)
     ]
   end
 
   def revoke_certificate(config:, arn:, reason: 'UNSPECIFIED')
-    @crl << mocked('crt', arn, rason, config)
+    @crl << mocked('crt', arn, reason, config)
   end
 
   def _crl
@@ -167,6 +167,60 @@ describe Carto::Api::Public::DbdirectCertificatesController do
             cert = Carto::DbdirectCertificate.find(cert_id)
             expect(cert.user.id).to eq @user1.id
             expect(cert.name).to eq 'cert_name_2'
+          end
+        end
+      end
+    end
+
+    it 'creates certificates with password, ips and validity' do
+      params = {
+        name: 'cert_name',
+        pass: 'the_password',
+        ips: '100.200.300.400',
+        validity: 150,
+        api_key: @user1.api_key
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+            expect(response.status).to eq(201)
+            expect(response.body[:client_crt]).to eq %{crt for user00000001_150_#{@config['certificates']}}
+            expect(response.body[:client_key]).to eq %{key for user00000001_the_password}
+            expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:name]).to eq 'cert_name'
+            cert_id = response.body[:id]
+            expect(cert_id).not_to be_empty
+            cert = Carto::DbdirectCertificate.find(cert_id)
+            expect(cert.user.id).to eq @user1.id
+            expect(cert.name).to eq 'cert_name'
+            expect(cert.arn).to eq %{arn for user00000001_150_#{@config['certificates']}}
+          end
+        end
+      end
+    end
+
+    it 'creates certificates and downloads server ca' do
+      params = {
+        name: 'cert_name',
+        ips: '100.200.300.400',
+        validity: 200,
+        api_key: @user1.api_key,
+        server_ca: true
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+            expect(response.status).to eq(201)
+            expect(response.body[:client_crt]).to eq %{crt for user00000001_200_#{@config['certificates']}}
+            expect(response.body[:client_key]).to eq %{key for user00000001_}
+            expect(response.body[:server_ca]).to eq %{cacrt for #{@config['certificates']}}
+            expect(response.body[:name]).to eq 'cert_name'
+            cert_id = response.body[:id]
+            expect(cert_id).not_to be_empty
+            cert = Carto::DbdirectCertificate.find(cert_id)
+            expect(cert.user.id).to eq @user1.id
+            expect(cert.name).to eq 'cert_name'
+            expect(cert.arn).to eq %{arn for user00000001_200_#{@config['certificates']}}
           end
         end
       end

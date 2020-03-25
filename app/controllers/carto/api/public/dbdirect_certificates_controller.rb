@@ -17,11 +17,8 @@ module Carto
 
         def show
           @dbdirect_certificate = Carto::DbdirectCertificate.find(params[:id])
-          if @dbdirect_certificate.user != @user
-            render status: 403, json: {}
-          else
-            render_jsonp(Carto::Api::DbdirectCertificate.new(@dbdirect_certificate).to_poro, 200)
-          end
+          check_permissions_for_certificate(@dbdirect_certificate)
+          render_jsonp(Carto::Api::DbdirectCertificatePresenter.new(@dbdirect_certificate).to_poro, 200)
         end
 
         def create
@@ -46,8 +43,10 @@ module Carto
         end
 
         def destroy
-          @dbdirect_certificate = Cart::DbdirectCertificate.find(params[:id])
+          @dbdirect_certificate = Carto::DbdirectCertificate.find(params[:id])
+          check_permissions_for_certificate(@dbdirect_certificate)
           @dbdirect_certificate.destroy!
+          render_jsonp(Carto::Api::DbdirectCertificatePresenter.new(@dbdirect_certificate).to_poro, 200)
         end
 
         private
@@ -63,6 +62,10 @@ module Carto
           unless @user.has_feature_flag?('dbdirect')
             raise UnauthorizedError.new('DBDirect not enabled for user #{@user.username}')
           end
+        end
+
+        def check_permissions_for_certificate(dbdirect_certificate)
+          raise UnauthorizedError unless dbdirect_certificate.user_id == @user.id
         end
       end
     end

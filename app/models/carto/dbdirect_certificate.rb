@@ -30,7 +30,7 @@ module Carto
         name: name,
         arn: arn,
         ips: ips,
-        expiration: Date.today + validity_days  # TODO: extract from cert.?
+        expiration: DateTime.now + validity_days  # TODO: extract from cert.?
       )
 
       return certificates, new_record
@@ -38,6 +38,10 @@ module Carto
 
     def self.default_validity
       config[:maximum_validity_days]
+    end
+
+    def self.certificate_manager
+      Carto::Dbdirect::CertificateManager
     end
 
     private
@@ -49,10 +53,6 @@ module Carto
 
     class <<self
       private
-
-      def certificate_manager
-        Carto::Dbdirect::CertificateManager
-      end
 
       def certificate_names(user)
         Carto::User.find(user.id).dbdirect_certificates.map &:name

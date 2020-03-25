@@ -201,13 +201,13 @@ describe Carto::Analysis do
       analysis.analysis_node.params[:query].should eq 'SELECT * FROM wadus'
     end
 
-    it 'copies the layer table_name' do
+    it 'copies the layer table_name prepending "public"' do
       @layer.options[:table_name] = 'tt11'
       analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
       analysis.analysis_node.options[:table_name].should eq 'public.tt11'
     end
 
-    it 'copies only the table_name for non-org users' do
+    it 'prepends "public" to table_name for non-org users' do
       @layer.options.merge!(table_name: 'tt11', user_name: 'juan')
       analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
       analysis.analysis_node.options[:table_name].should eq 'public.tt11'

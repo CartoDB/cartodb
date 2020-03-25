@@ -22,6 +22,7 @@ Development
 - Fix ie11 bug due to non babelified toolkit packages ([#2456](https://github.com/CartoDB/support/issues/2456))
 - Fix wrong link in footer for location-data-streams
 - Fix Kepler maps configuration at Maps section that was causing endless reloads ([#15568](https://github.com/CartoDB/cartodb/pull/15568))
+- Fix dataset not found in geocoding request for non-org users ([#2426](https://github.com/CartoDB/support/issues/2426))
 
 4.36.0 (2020-03-09)
 -------------------

@@ -18,7 +18,7 @@ module Carto
       validity_days ||= config['maximum_validity_days']
       name = valid_name(user, name)
 
-      certificates, arn = Carto::Dbdirect::CertificateManager.generate_certificate(
+      certificates, arn = certificate_manager.generate_certificate(
         config: config,
         username: user.username,
         passphrase: passphrase,
@@ -37,15 +37,23 @@ module Carto
       return certificates, new_record
     end
 
+    def self.default_validity
+      config[:maximum_validity_days]
+    end
+
     private
 
     def revoke
       config = DbdirectCertificate.config
-      Carto::Dbdirect::CertificateManager.revoke_certificate(config: config, arn: arn)
+      self.class.certificate_manager.revoke_certificate(config: config, arn: arn)
     end
 
     class <<self
       private
+
+      def certificate_manager
+        Carto::Dbdirect::CertificateManager
+      end
 
       def certificate_names(user)
         Carto::User.find(user.id).dbdirect_certificates.map &:name

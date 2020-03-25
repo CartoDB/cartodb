@@ -11,14 +11,17 @@ module Carto
         setup_default_rescues
 
         def list
-          @dbdirect_certificates = @user.dbdirect_certificates
-          render_jsonp(@dbdirect_certificates, 200)
+          dbdirect_certificates = @user.dbdirect_certificates
+          certificates_info = dbdirect_certificates.map do |certificate|
+            Carto::Api::DbdirectCertificatePresenter.new(certificate).to_poro
+          end
+          render_jsonp(certificates_info, 200)
         end
 
         def show
-          @dbdirect_certificate = Carto::DbdirectCertificate.find(params[:id])
-          check_permissions_for_certificate(@dbdirect_certificate)
-          render_jsonp(Carto::Api::DbdirectCertificatePresenter.new(@dbdirect_certificate).to_poro, 200)
+          dbdirect_certificate = Carto::DbdirectCertificate.find(params[:id])
+          check_permissions_for_certificate(dbdirect_certificate)
+          render_jsonp(Carto::Api::DbdirectCertificatePresenter.new(dbdirect_certificate).to_poro, 200)
         end
 
         def create
@@ -43,10 +46,10 @@ module Carto
         end
 
         def destroy
-          @dbdirect_certificate = Carto::DbdirectCertificate.find(params[:id])
-          check_permissions_for_certificate(@dbdirect_certificate)
-          @dbdirect_certificate.destroy!
-          render_jsonp(Carto::Api::DbdirectCertificatePresenter.new(@dbdirect_certificate).to_poro, 200)
+          dbdirect_certificate = Carto::DbdirectCertificate.find(params[:id])
+          check_permissions_for_certificate(dbdirect_certificate)
+          dbdirect_certificate.destroy!
+          render_jsonp(Carto::Api::DbdirectCertificatePresenter.new(dbdirect_certificate).to_poro, 200)
         end
 
         private
@@ -56,9 +59,9 @@ module Carto
         end
 
         def check_permissions
-          @api_key = Carto::ApiKey.find_by_token(params["api_key"])
-          raise UnauthorizedError unless @api_key&.master?
-          raise UnauthorizedError unless @api_key.user_id === @user.id
+          api_key = Carto::ApiKey.find_by_token(params["api_key"])
+          raise UnauthorizedError unless api_key&.master?
+          raise UnauthorizedError unless api_key.user_id === @user.id
           unless @user.has_feature_flag?('dbdirect')
             raise UnauthorizedError.new('DBDirect not enabled for user #{@user.username}')
           end

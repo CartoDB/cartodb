@@ -45,7 +45,11 @@ class Carto::Analysis < ActiveRecord::Base
     qualified_table_name = if layer.user.organization_user?
                              safe_schema_and_table_quoting(username, table_name)
                            else
-                             safe_schema_and_table_quoting('public', table_name)
+                             if table_name.present?
+                               safe_schema_and_table_quoting('public', table_name)
+                             else
+                               table_name
+                             end
                            end
 
     analysis_definition = {

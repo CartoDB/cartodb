@@ -26,6 +26,7 @@ gem 'redis',                   '~> 3.3.5'
 
 gem 'nokogiri',                '~> 1.10'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
+gem 'aws-sdk-acmpca',          '~> 1'
 gem 'aws-sdk-s3',              '~> 1'
 gem 'ruby-prof',               '0.15.1'
 gem 'request_store',           '1.1.0'
@@ -89,8 +90,6 @@ gem 'test-unit'
 # Multifactor Authentication
 gem 'rotp', '~> 3.3', '>= 3.3.1'
 gem 'rqrcode', '~> 0.10.1'
-
-gem 'sys_cmd', '>= 1.1.3'
 
 group :test do
   gem 'simplecov', '0.13.0', require: false

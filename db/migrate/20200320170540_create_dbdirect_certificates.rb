@@ -11,6 +11,7 @@ migration(
       String      :arn, null: false
       DateTime    :expiration, null: false
       String      :ips, null: true
+      DateTime    :created_at, null: false
     end
   end,
   Proc.new do

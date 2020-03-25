@@ -614,6 +614,12 @@ CartoDB::Application.routes.draw do
       get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#show_remote_table', as: :api_v4_federated_servers_get_table
       put 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#update_remote_table', as: :api_v4_federated_servers_update_table
       delete 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#unregister_remote_table', as: :api_v4_federated_servers_unregister_table
+
+      ## dbdirect certificates
+      get 'dbdirect/certificates', to: 'dbdirect_certificates#list', as: :api_v4_dbdirect_certificates_list
+      get 'dbdirect/certificates/:id', to: 'dbdirect_certificates#show', as: :api_v4_dbdirect_certificates_show
+      post 'dbdirect/certificates' => 'dbdirect_certificates#create', as: :api_v4_dbdirect_certificates_create
+      delete 'dbdirect/certificates/:id' => 'dbdirect_certificates#destroy', as: :api_v4_dbdirect_certificates_destroy
     end
 
     scope 'v3/' do

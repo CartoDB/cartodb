@@ -14,7 +14,6 @@ module Carto
     end
 
     def self.generate(user:, name:, passphrase: nil, ips: nil, validity_days: nil, server_ca: true)
-      # TODO: check user authorization to generate certificate
       validity_days ||= config['maximum_validity_days']
       name = valid_name(user, name)
 

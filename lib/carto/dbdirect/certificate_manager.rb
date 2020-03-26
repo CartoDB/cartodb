@@ -103,7 +103,7 @@ module Carto
           resp = aws_acmpca_client.get_certificate_authority_certificate({
             certificate_authority_arn: config['ca_arn']
           })
-          resp.certificate_chain
+          [resp.certificate, resp.certificate_chain].join("\n")
         end
 
         def aws_revoke_certificate(config, arn, reason)

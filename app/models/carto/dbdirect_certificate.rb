@@ -1,3 +1,5 @@
+require 'carto/dbdirect/certificate_manager'
+
 module Carto
   class DbdirectCertificate < ActiveRecord::Base
     belongs_to :user, inverse_of: :dbdirect_certificates, foreign_key: :user_id

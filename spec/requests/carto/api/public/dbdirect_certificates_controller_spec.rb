@@ -1,7 +1,6 @@
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/feature_flag_helper'
-require 'carto/dbdirect/certificate_manager'
 
 module TestCertificateManager
   module_function

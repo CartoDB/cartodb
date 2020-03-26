@@ -180,13 +180,13 @@ describe Carto::Analysis do
     end
   end
 
-  describe '#source_analysis_for_layer non-org user' do
+  describe '#source_analysis_for_layer' do
     include Carto::Factories::Visualizations
 
     context 'with regular user' do
-      include_context 'user helper'
+      include_context 'users helper'
 
-      before(:all) do
+      before(:each) do
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user1)
         @layer = @visualization.data_layers.first
       end
@@ -213,7 +213,7 @@ describe Carto::Analysis do
     context 'with organization user' do
       include_context 'organization with users helper'
 
-      before(:all) do
+      before(:each) do
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
         @layer = @visualization.data_layers.first
       end

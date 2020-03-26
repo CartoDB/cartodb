@@ -42,7 +42,11 @@ class Carto::Analysis < ActiveRecord::Base
     username = layer_options[:user_name] || layer.user.username
     table_name = layer_options[:table_name]
 
-    qualified_table_name = safe_schema_and_table_quoting(layer.user.database_schema, table_name)
+    qualified_table_name = if layer.user.organization_user?
+                             safe_schema_and_table_quoting(username, table_name)
+                           else
+                             safe_schema_and_table_quoting(layer.user.database_schema, table_name)
+                           end
 
     analysis_definition = {
       id: 'abcdefghijklmnopqrstuvwxyz'[index] + '0',

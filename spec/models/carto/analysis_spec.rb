@@ -187,7 +187,6 @@ describe Carto::Analysis do
       @user = FactoryGirl.create(:carto_user)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
       @layer = @visualization.data_layers.first
-      @layer.user.database_schema = @user.username
     end
 
     after(:all) do
@@ -230,6 +229,7 @@ describe Carto::Analysis do
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
       @layer = @visualization.data_layers.first
       @layer.user.stubs(:organization_user?).returns(true)
+      @layer.user.database_schema = @user.username
     end
 
     after(:all) do

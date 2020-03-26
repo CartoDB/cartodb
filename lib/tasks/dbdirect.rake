@@ -20,11 +20,11 @@ namespace :carto do
     def ok_to_revoke?(cert)
       STDOUT.puts "About to revoke certificate #{cert.name} for user #{cert.user.username}. Are you sure? (y/n)"
       input = STDIN.gets.strip
-      return input == 'y'
+      input == 'y'
     end
 
     desc "Generate DB direct certificate"
-    task :generate_certificate, [:username, :name, :password, :ips, :validity] => :environment do |t, args|
+    task :generate_certificate, [:username, :name, :password, :ips, :validity] => :environment do |_t, args|
       user = Carto::User.find_by_username(args.username)
       raise "User #{args.username} not found" unless user
 
@@ -41,9 +41,10 @@ namespace :carto do
     end
 
     desc "Revoke DB direct certificate"
-    task :revoke_certificate, [:id] => :environment do |t, args|
+    task :revoke_certificate, [:id] => :environment do |_t, args|
       cert = Carto::DbdirectCertificate.find(args.id)
       raise "Certificate #{args.id} not found" unless cert
+
       if ok_to_revoke?(cert)
         puts "Revoking certificate #{cert.name} for user #{cert.user.username}"
         puts "  ARN: #{cert.arn}"

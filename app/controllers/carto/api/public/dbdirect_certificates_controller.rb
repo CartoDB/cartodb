@@ -63,7 +63,7 @@ module Carto
           raise UnauthorizedError unless api_key&.master?
           raise UnauthorizedError unless api_key.user_id === @user.id
           unless @user.has_feature_flag?('dbdirect')
-            raise UnauthorizedError.new('DBDirect not enabled for user #{@user.username}')
+            raise UnauthorizedError.new("DBDirect not enabled for user #{@user.username}")
           end
         end
 

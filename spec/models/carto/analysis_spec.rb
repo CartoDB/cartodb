@@ -214,6 +214,7 @@ describe Carto::Analysis do
     end
 
     it 'always qualifies table_name in organizations' do
+      @layer.user.database_schema = @user.username
       @layer.options.merge!(table_name: 'tt33', user_name: @user.username)
       @layer.user.stubs(:organization_user?).returns(true)
       analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)

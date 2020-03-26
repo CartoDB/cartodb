@@ -180,13 +180,14 @@ describe Carto::Analysis do
     end
   end
 
-  describe '#source_analysis_for_layer' do
+  describe '#source_analysis_for_layer non-org user' do
     include Carto::Factories::Visualizations
 
     before(:all) do
       @user = FactoryGirl.create(:carto_user)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
       @layer = @visualization.data_layers.first
+      @layer.user.database_schema = @user.username
     end
 
     after(:all) do
@@ -207,16 +208,44 @@ describe Carto::Analysis do
       analysis.analysis_node.options[:table_name].should eq 'public.tt11'
     end
 
-    it 'prepends "public" to table_name for non-org users' do
+    it 'prepends "public" to table_name' do
       @layer.options.merge!(table_name: 'tt11', user_name: 'juan')
       analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
       analysis.analysis_node.options[:table_name].should eq 'public.tt11'
     end
 
-    it 'always qualifies table_name in organizations' do
-      @layer.user.database_schema = @user.username
-      @layer.options.merge!(table_name: 'tt33', user_name: @user.username)
+    it 'uses default SQL query if missing' do
+      @layer.options.merge!(table_name: 'tt33', user_name: @user.username, query: '')
+      Carto::User.any_instance.stubs(:organization_user?).returns(true)
+      analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
+      analysis.analysis_node.params[:query].should eq "SELECT * FROM #{@user.username}.tt33"
+    end
+  end
+
+  describe '#source_analysis_for_layer org user' do
+  include Carto::Factories::Visualizations
+
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+      @layer = @visualization.data_layers.first
       @layer.user.stubs(:organization_user?).returns(true)
+    end
+
+    after(:all) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      # This avoids connection leaking.
+      ::User[@user.id].destroy
+    end
+
+    it 'copies the layer query' do
+      @layer.options[:query] = 'SELECT * FROM wadus'
+      analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
+      analysis.analysis_node.params[:query].should eq 'SELECT * FROM wadus'
+    end
+
+    it 'always qualifies table_name in organizations' do
+      @layer.options.merge!(table_name: 'tt33', user_name: @user.username)
       analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
       analysis.analysis_node.options[:table_name].should eq "#{@user.username}.tt33"
     end

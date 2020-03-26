@@ -23,15 +23,15 @@
 
     <ExternalMapsList
       v-if="keplerMapsVisible"
-      :hasBulkActions="true"
+      :hasBulkActions="false"
       :isCondensedDefault="true"
-      :canChangeViewMode="true"
-      :canHoverCard="true"
+      :canChangeViewMode="false"
+      :canHoverCard="false"
       :maxVisibleMaps="maxVisibleMaps"
       :showToolbar="false"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
-      @selectionChange="onContentChanged">
+      @contentChanged="onContentChanged">
       <template slot="navigation">
          <MapsTabs
            v-if="!isFirst"

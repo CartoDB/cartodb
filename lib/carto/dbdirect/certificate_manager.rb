@@ -44,9 +44,10 @@ module Carto
           key = OpenSSL::PKey::RSA.new 2048
           if passphrase.present?
             cipher = OpenSSL::Cipher.new 'AES-128-CBC'
-            key = key.export cipher, passphrase
+            key.export cipher, passphrase
+          else
+            key.to_pem
           end
-          key.to_pem
         end
 
         def openssl_generate_csr(username, key, passphrase)

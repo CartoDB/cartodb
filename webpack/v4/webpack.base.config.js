@@ -192,7 +192,9 @@ module.exports = {
           rootDir('lib/assets/javascripts/builder'),
           rootDir('lib/assets/javascripts/dashboard'),
           rootDir('lib/assets/javascripts/new-dashboard'),
-          rootDir('node_modules/internal-carto.js')
+          rootDir('node_modules/internal-carto.js'),
+          rootDir('node_modules/@carto/toolkit-core'),
+          rootDir('node_modules/@carto/toolkit-custom-storage')
         ],
         exclude: [
           rootDir('node_modules/internal-carto.js/node_modules'),

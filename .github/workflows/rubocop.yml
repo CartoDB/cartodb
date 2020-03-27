@@ -9,5 +9,5 @@ jobs:
         uses: actions/checkout@v1
       - name: Rubocop checks
         uses: reviewdog/action-rubocop@v1
-	with:
+        with:
           github_token: ${{ secrets.github_token }}

@@ -47,7 +47,7 @@ class Carto::Analysis < ActiveRecord::Base
     analysis_definition = {
       id: 'abcdefghijklmnopqrstuvwxyz'[index] + '0',
       type: 'source',
-      params: { query: layer.default_query(user) },
+      params: { query: layer.default_query(user, layer.user.database_schema) },
       options: { table_name: qualified_table_name }
     }
 

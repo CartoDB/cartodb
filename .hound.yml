@@ -3,8 +3,7 @@ scss:
 jshint:
   enabled: false
 rubocop:
-  config_file: .rubocop.yml
-  version: 0.71.0
+  enable: false
 eslint:
   enabled: true
   config_file: .eslintrc.json

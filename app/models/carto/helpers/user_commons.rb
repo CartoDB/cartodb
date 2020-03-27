@@ -232,4 +232,8 @@ module Carto::UserCommons
   def make_token
     Carto::Common::EncryptionService.make_token
   end
+
+  def role_display
+    viewer ? 'viewer' : 'builder'
+  end
 end

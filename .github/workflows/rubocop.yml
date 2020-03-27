@@ -11,3 +11,4 @@ jobs:
         uses: reviewdog/action-rubocop@v1
         with:
           github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review # optional, default: github-pr-check

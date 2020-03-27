@@ -15,7 +15,8 @@
     "tags": "tags",
     "type": {
       "derived": "BUILDER",
-      "kuviz": "CARTOFRAMES"
+      "kuviz": "CARTOFRAMES",
+      "keplergl": "KEPLER.GL"
     }
   },
   "MapListHeader": {
@@ -94,7 +95,7 @@
   "MapsPage": {
     "header": {
       "title": {
-        "mine": "Your Maps",
+        "mine": "Your CARTO Maps",
         "shared": "Shared with you",
         "favorited": "Your Favorited Maps",
         "locked": "Your Locked Maps",
@@ -103,7 +104,8 @@
         "password": "Your Password-protected Maps",
         "private": "Your Private Maps",
         "builder": "Your Builder Maps",
-        "cartoframes": "Your CARTOframes Maps"
+        "cartoframes": "Your CARTOframes Maps",
+        "external": "Your Kepler.gl Maps"
       },
       "warning": {
         "counter": "{counter} {type} maps used.&nbsp",
@@ -120,6 +122,28 @@
     "emptyCase": {
       "default": "There are no maps here.",
       "onlyShared": "No maps here. Go to the <a href='{path}'>maps shared with you</a>."
+    },
+    "tabs": {
+      "carto": "CARTO",
+      "external": "Kepler.gl"
+    }
+  },
+  "ExternalMapsPage": {
+    "header": {
+      "title": {
+        "mine": "Your Kepler.gl Maps",
+        "link": "Your Link-shared Maps",
+        "private": "Your Private Maps"
+      }
+    },
+    "deleteModal": {
+      "confirm": "Ok, delete",
+      "cancel": "Cancel",
+      "desc": "The deleted map cannot be recovered, be sure before proceeding. | The deleted maps cannot be recovered, be sure before proceeding.",
+      "title": "You are about to delete the {name} map | You are about to delete {name} maps",
+      "error": "Error deleting map {name}: {error}",
+      "loading": "Removing the map {name}...",
+      "success": "Map {name} deleted"
     }
   },
   "NotificationsPage": {
@@ -255,7 +279,8 @@
     },
     "MapsSection": {
       "title": "Your Maps",
-      "viewAll" : "VIEW ALL MAPS"
+      "viewAllCarto": "VIEW ALL CARTO MAPS",
+      "viewAllKeplergl": "VIEW ALL KEPLER.GL MAPS"
     },
     "DatasetsSection": {
       "title": "Your Datasets",
@@ -348,8 +373,8 @@
     "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
   },
   "FeedbackMessage": {
-    "title": "Share your feedback with us.",
-    "message": "Do you miss something? Should we be doing something differently?"
+    "title": "Let us know what you think.",
+    "message": "Missing something? Should we be doing something differently?"
   },
   "SharedBrief": {
     "sharedWith": "Shared with",

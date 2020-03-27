@@ -6,20 +6,22 @@ const Package = require('./../../package.json');
 const VERSION = Package.version;
 
 module.exports = {
-  entry: './lib/assets/javascripts/dashboard/statics/static.js',
+  entry: Object.assign({
+    main: './lib/assets/javascripts/dashboard/statics/static.js'
+  }, webpackFiles.gearEntryPoints),
   output: {
     filename: `${VERSION}/javascripts/[name].js`,
     path: path.resolve(__dirname, '../../public/assets'),
     publicPath: '/assets/'
   },
   devtool: 'source-map',
-  plugins: Object.keys(webpackFiles).map((entryName) => {
+  plugins: Object.keys(webpackFiles.htmlFiles).map((entryName) => {
     return new HtmlWebpackPlugin({
       inject: false,
       cache: false,
-      filename: path.resolve(__dirname, `../../public/static/${entryName}/index.html`),
+      filename: webpackFiles.htmlFiles[entryName].filename || path.resolve(__dirname, `../../public/static/${entryName}/index.html`),
       template: path.resolve(__dirname, '../../lib/assets/javascripts/dashboard/statics/index.jst.ejs'),
-      config: webpackFiles[entryName]
+      config: webpackFiles.htmlFiles[entryName]
     });
   })
 };

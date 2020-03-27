@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
@@ -10,9 +9,10 @@ const entryPoints = require('./entryPoints');
 const vueLoaderConfig = require('../new-dashboard/vue-loader.conf');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-const rootDir = file => resolve(__dirname, '../../', file);
 const isVendor = name => name.indexOf('node_modules') >= 0;
 const isJavascript = name => name.endsWith('.js');
+
+const { rootDir, GearResolverPlugin } = require('./gearAwareResolver');
 
 module.exports = {
   entry: entryPoints,
@@ -38,7 +38,8 @@ module.exports = {
       __IN_DEV__: JSON.stringify(false),
       __ENV__: JSON.stringify('prod'),
       __ASSETS_VERSION__: JSON.stringify(version),
-      __ASSETS_PATH__: JSON.stringify(`${http_path_prefix}/assets/${version}`)
+      __ASSETS_PATH__: JSON.stringify(`${http_path_prefix}/assets/${version}`),
+      __KEPLERGL_BASE_URL__: JSON.stringify('https://kepler.gl')
     }),
 
     new MiniCssExtractPlugin({
@@ -94,7 +95,8 @@ module.exports = {
       ]
     }),
 
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new GearResolverPlugin()
   ],
   optimization: {
     splitChunks: {
@@ -190,7 +192,9 @@ module.exports = {
           rootDir('lib/assets/javascripts/builder'),
           rootDir('lib/assets/javascripts/dashboard'),
           rootDir('lib/assets/javascripts/new-dashboard'),
-          rootDir('node_modules/internal-carto.js')
+          rootDir('node_modules/internal-carto.js'),
+          rootDir('node_modules/@carto/toolkit-core'),
+          rootDir('node_modules/@carto/toolkit-custom-storage')
         ],
         exclude: [
           rootDir('node_modules/internal-carto.js/node_modules'),

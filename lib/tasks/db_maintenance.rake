@@ -917,14 +917,15 @@ namespace :cartodb do
       org_name = organization.name
 
       (first_index..last_index).each { |i|
-        username = "#{org_name}-#{i}"
+        # See Carto::StandardPasswordStrategy
+        username = "user-#{org_name}-#{i}"
         print "Creating user #{username}... "
         user = create_user(username, organization, bytes_per_user)
         puts "Done."
       }
     end
 
-    desc "Create an organization with an arbitrary number of users for test purposes. Owner user: <org-name>-admin. Users: <org-name>-<i>. You might need to set conn_validator_timeout to -1 in config/database.yml (development)"
+    desc "Create an organization with an arbitrary number of users for test purposes. Owner user: <org-name>-admin. Users: user-<org-name>-<i>. You might need to set conn_validator_timeout to -1 in config/database.yml (development)"
     task :create_test_organization, [:org_name, :n_users] => [:environment] do |t, args|
       org_name = args[:org_name]
       n_users = args[:n_users].to_i

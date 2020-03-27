@@ -43,9 +43,7 @@ class PubSubTracker
 
     result = topic.publish(event, attributes)
 
-    if result
-      CartoDB::Logger.info(message: "PubSubTracker: event #{event} published to #{topic.name}")
-    else
+    unless result
       CartoDB::Logger.error(message: "PubSubTracker: error publishing to topic #{topic.name} for event #{event}")
     end
 

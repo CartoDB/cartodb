@@ -2,18 +2,46 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- DB Connectors removed from the main repository
 
 ### Features
-- New Free 2020 Plan, Dashboard and Builder changes ([#15497](https://github.com/CartoDB/cartodb/pull/15497))
-- Metadata API integration in license workflow ([#15483](https://github.com/CartoDB/cartodb/issues/15483))
+- Use Dataservices API client 0.29.0
+- Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
+- Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
+- Add Kepler.gl maps to the Maps section in the Dashboard's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
+- Request connector flow with all the states on the same screen ([#15515](https://github.com/CartoDB/cartodb/issues/15515))
+- Hooks to override org settings for gear plugin ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
 
 ### Bug fixes / enhancements
-- Hide DataCatalog to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
-- Hide Create oAuth Apps section in Connected Apps page to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
-- Update footer links based on account types ([#15502](https://github.com/CartoDB/cartodb/pull/15502))
-- Improve welcome copy font ([#15503](https://github.com/CartoDB/cartodb/pull/15503))
-- Fix dataset creation without map quotas ([#15504](https://github.com/CartoDB/cartodb/pull/15504))
+- Fix wording for feedback
+- Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394))
+- Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))
+- Fix lockout page due to wrong CustomStorage initialization ([#2444](https://github.com/CartoDB/support/issues/2444))
+- Add is_enterprise field to /me ([#15551](https://github.com/CartoDB/cartodb/pull/15551))
+- Add BigQuery execution capability
+- Remove code related to deprecated plans ([#15563](https://github.com/CartoDB/cartodb/pull/15563))
+- Fix ie11 bug due to non babelified toolkit packages ([#2456](https://github.com/CartoDB/support/issues/2456))
+- Fix wrong link in footer for location-data-streams
+- Fix Kepler maps configuration at Maps section that was causing endless reloads ([#15568](https://github.com/CartoDB/cartodb/pull/15568))
+- Fix issue that caused data request form to don't include the company name for organization users ([#15554](https://github.com/CartoDB/cartodb/pull/15554))
+- Fix "dataset not found" error in geocoding request for non-org users ([#2426](https://github.com/CartoDB/support/issues/2426))
+
+4.36.0 (2020-03-09)
+-------------------
+
+### Features
+* New Free 2020 Plan, Dashboard and Builder changes ([#15497](https://github.com/CartoDB/cartodb/pull/15497))
+* Metadata API integration in license workflow ([#15483](https://github.com/CartoDB/cartodb/issues/15483))
+* Kepler.gl visualizations (Dashboard): Integrate Kepler.gl visualizations saved to CARTO into Dashboard ([#15484](https://github.com/CartoDB/cartodb/issues/15484))
+
+### Bug fixes / enhancements
+* Hide DataCatalog to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
+* Hide Create oAuth Apps section in Connected Apps page to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
+* Update footer links based on account types ([#15502](https://github.com/CartoDB/cartodb/pull/15502))
+* Improve welcome copy font ([#15503](https://github.com/CartoDB/cartodb/pull/15503))
+* Fix dataset creation without map quotas ([#15504](https://github.com/CartoDB/cartodb/pull/15504))
+* Fix imports when user quota cannot be calculated ([#15512](https://github.com/CartoDB/cartodb/pull/15512))
+* Update Connectors UI styling ([#15514](https://github.com/CartoDB/cartodb/pull/15514))
 
 4.35.0 (2020-02-21)
 -------------------

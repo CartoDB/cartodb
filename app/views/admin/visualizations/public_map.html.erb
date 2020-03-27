@@ -302,7 +302,7 @@
   <%= insert_trackjs('embeds', Cartodb.get_config(:trackjs, 'frequency')) %>
 
   <% if @visualization.map.provider == 'googlemaps' %>
-    <%= insert_google_maps(@google_maps_query_string) %>
+    <%= insert_google_maps(@visualization.user.google_maps_query_string) %>
   <% end %>
 
   <script>

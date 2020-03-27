@@ -11,6 +11,8 @@ module Carto
     end
 
     def safe_schema_and_table_quoting(schema_name, table_name)
+      return nil if table_name.nil?
+
       safe_schema = safe_schema_name_quoting(schema_name)
       safe_table_name = safe_table_name_quoting(table_name)
       "#{safe_schema}.#{safe_table_name}"

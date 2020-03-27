@@ -299,7 +299,7 @@ class Carto::User < ActiveRecord::Base
     update_column(:dashboard_viewed_at, Time.now)
   end
 
-  def send_password_reset!
+  def send_password_reset!(test = nil)
     generate_token(:password_reset_token)
     self.password_reset_sent_at = Time.zone.now
     save!
@@ -309,7 +309,7 @@ class Carto::User < ActiveRecord::Base
 
   private
 
-  def set_database_host(test = nil)
+  def set_database_host
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
   end
 

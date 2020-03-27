@@ -90,10 +90,6 @@ def expect_executed_commands(executed_commands, *expected_commands)
   end
 end
 
-# Multiple hashes are passed to `expect_executed_commands`
-# and omiting the braces of the last one is would be inconvenient, so:
-# rubocop:disable Style/BracesAroundHashParameters
-
 describe Carto::Connector do
   before(:all) do
     @user = create_user
@@ -2488,5 +2484,3 @@ describe Carto::Connector do
     end
   end
 end
-
-# rubocop:enable Style/BracesAroundHashParameters

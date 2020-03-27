@@ -821,7 +821,7 @@ class Carto::User < ActiveRecord::Base
     [date_from, date_to, orgwise]
   end
 
-  def make_token
+  def make_token(test = nil)
     Carto::Common::EncryptionService.make_token
   end
 end

@@ -847,7 +847,7 @@ class Carto::Visualization < ActiveRecord::Base
 
     private
 
-    def current_timestamp(useless_param = nil)
+    def current_timestamp
       Time.now.getutc.to_i
     end
   end

@@ -8,6 +8,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
       - name: Rubocop checks
-        uses: gimenete/rubocop-action@1.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: reviewdog/action-rubocop@v1
+	      env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.github_token }}

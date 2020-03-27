@@ -185,9 +185,6 @@ Layout/SpaceBeforeSemicolon:
 Layout/SpaceAroundOperators:
   Enabled: true
 
-Layout/SpaceInsideBrackets:
-  Enabled: true
-
 Layout/SpaceInsideParens:
   Enabled: true
 
@@ -455,42 +452,6 @@ Lint/EnsureReturn:
   Enabled: true
 
 
-
-
-#
-# Rails cops
-#
-
-Rails/HasAndBelongsToMany:
-  Enabled: true
-  Include:
-  - app/models/**/*.rb
-
-Rails/Output:
-  Enabled: true
-  Include:
-  - app/**/*.rb
-  - config/**/*.rb
-  - db/**/*.rb
-  - lib/**/*.rb
-
-Rails/ReadWriteAttribute:
-  Enabled: true
-  Include:
-  - app/models/**/*.rb
-
-Rails/ScopeArgs:
-  Enabled: true
-  Include:
-  - app/models/**/*.rb
-
-Rails/Validation:
-  Enabled: true
-  Include:
-  - app/models/**/*.rb
-
-
-
 #
 # Security cops
 #
@@ -655,8 +616,6 @@ Lint/ElseLayout:
   Enabled: false
 Lint/SuppressedException:
   Enabled: false
-Lint/LiteralInCondition:
-  Enabled: false
 Lint/LiteralInInterpolation:
   Enabled: false
 Lint/Loop:
@@ -668,8 +627,4 @@ Lint/RequireParentheses:
 Lint/UnderscorePrefixedVariableName:
   Enabled: false
 Lint/Void:
-  Enabled: false
-Rails/ActionFilter:
-  Enabled: false
-Rails/Delegate:
   Enabled: false

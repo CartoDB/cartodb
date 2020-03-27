@@ -25,6 +25,7 @@ Development
 - Fix Kepler maps configuration at Maps section that was causing endless reloads ([#15568](https://github.com/CartoDB/cartodb/pull/15568))
 - Fix issue that caused data request form to don't include the company name for organization users ([#15554](https://github.com/CartoDB/cartodb/pull/15554))
 - Fix "dataset not found" error in geocoding request for non-org users ([#2426](https://github.com/CartoDB/support/issues/2426))
+- Consider unlimited quotas when counting remaining maps ([#2163](https://github.com/CartoDB/support/issues/2163))
 
 4.36.0 (2020-03-09)
 -------------------

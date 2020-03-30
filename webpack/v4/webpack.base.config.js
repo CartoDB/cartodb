@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
@@ -10,9 +9,10 @@ const entryPoints = require('./entryPoints');
 const vueLoaderConfig = require('../new-dashboard/vue-loader.conf');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-const rootDir = file => resolve(__dirname, '../../', file);
 const isVendor = name => name.indexOf('node_modules') >= 0;
 const isJavascript = name => name.endsWith('.js');
+
+const { rootDir, GearResolverPlugin } = require('./gearAwareResolver');
 
 module.exports = {
   entry: entryPoints,
@@ -95,7 +95,8 @@ module.exports = {
       ]
     }),
 
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new GearResolverPlugin()
   ],
   optimization: {
     splitChunks: {

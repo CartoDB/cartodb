@@ -1,10 +1,11 @@
 const glob = require('glob');
-const { resolve } = require('path');
+const path = require('path');
 
-const rootDir = file => resolve(__dirname, '../../', file);
+const { rootDir } = require('./gearAwareResolver');
+const fs = require('fs');
 const removeDuplicated = array => Array.from(new Set(array));
 
-module.exports = {
+const entries = {
   common_new: removeDuplicated([
     rootDir('assets/stylesheets/common/utilities/utilities.scss'),
     rootDir('assets/stylesheets/common/icon-font-specials.scss'),
@@ -168,7 +169,7 @@ module.exports = {
 
   builder_embed: [
     'whatwg-fetch',
-    resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js'),
+    path.resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js'),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
     rootDir('assets/stylesheets/deep-insights/entry.scss'),
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss'),
@@ -180,11 +181,37 @@ module.exports = {
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
 
-  dataset: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/dataset.js'),
+  dataset: path.resolve(__dirname, '../../', 'lib/assets/javascripts/builder/dataset.js'),
 
-  builder: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/editor.js'),
+  builder: path.resolve(__dirname, '../../', 'lib/assets/javascripts/builder/editor.js'),
 
   oauth: [
     rootDir('assets/stylesheets/oauth/oauth.scss')
   ]
 };
+
+// Try to locate /<gear_name>/webpack/v4/entryPoints.js to complete or
+// extend the list of entries
+[
+  path.join(__dirname, '../../gears'),
+  path.join(__dirname, '../../private_gears')
+].forEach((gearsDir) => {
+  if (fs.existsSync(gearsDir)) {
+    fs.readdirSync(gearsDir).forEach((gearName) => {
+      // Find HtmlWebpackPlugin extensions and overrides
+      let gearWebpackFilesPath = path.join(gearsDir, gearName, 'webpack/v4/entryPoints.js');
+      if (fs.existsSync(gearWebpackFilesPath)) {
+        let gearWebpackFiles = require(gearWebpackFilesPath);
+        Object.entries(gearWebpackFiles).forEach(([entryName, entry]) => {
+          if (entries[entryName] !== undefined) {
+            entries[entryName].concat(entry);
+          } else {
+            entries[entryName] = entry;
+          }
+        });
+      }
+    });
+  }
+});
+
+module.exports = entries;

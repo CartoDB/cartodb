@@ -131,7 +131,7 @@ module ApplicationHelper
              frontend_version
            end
 
-    raise_on_asset_absence sources
+    # raise_on_asset_absence sources
 
     sources_with_prefix("/#{path}/#{asset_type}/", sources)
   end

@@ -313,11 +313,11 @@ class Carto::User < ActiveRecord::Base
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
   end
 
-  def generate_api_key
+  def generate_api_key(test = nil)
     self.api_key ||= make_token
   end
 
-  def generate_session_salt(test = nil)
+  def generate_session_salt
     self.session_salt ||= SecureRandom.hex
   end
 

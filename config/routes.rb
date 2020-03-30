@@ -614,12 +614,6 @@ CartoDB::Application.routes.draw do
       get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#show_remote_table', as: :api_v4_federated_servers_get_table
       put 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#update_remote_table', as: :api_v4_federated_servers_update_table
       delete 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#unregister_remote_table', as: :api_v4_federated_servers_unregister_table
-
-      ## dbdirect certificates
-      get 'dbdirect/certificates', to: 'dbdirect_certificates#list', as: :api_v4_dbdirect_certificates_list
-      get 'dbdirect/certificates/:id', to: 'dbdirect_certificates#show', as: :api_v4_dbdirect_certificates_show
-      post 'dbdirect/certificates' => 'dbdirect_certificates#create', as: :api_v4_dbdirect_certificates_create
-      delete 'dbdirect/certificates/:id' => 'dbdirect_certificates#destroy', as: :api_v4_dbdirect_certificates_destroy
     end
 
     scope 'v3/' do
@@ -738,6 +732,12 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id/:project_id/datasets' => 'connectors#project_datasets', as: :api_v1_connectors_project_datasets
       get 'connectors/:provider_id/:project_id/:dataset_id/tables' => 'connectors#project_dataset_tables', as: :api_v1_connectors_project_dataset_tables
       post 'connectors/:provider_id/dryrun' => 'connectors#dryrun', as: :api_v1_connectors_dryrun
+
+      ## dbdirect certificates
+      get 'dbdirect/certificates', to: 'dbdirect_certificates#list', as: :api_v1_dbdirect_certificates_list
+      get 'dbdirect/certificates/:id', to: 'dbdirect_certificates#show', as: :api_v1_dbdirect_certificates_show
+      post 'dbdirect/certificates' => 'dbdirect_certificates#create', as: :api_v1_dbdirect_certificates_create
+      delete 'dbdirect/certificates/:id' => 'dbdirect_certificates#destroy', as: :api_v1_dbdirect_certificates_destroy
     end
   end
 

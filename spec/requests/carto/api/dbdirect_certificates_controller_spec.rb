@@ -34,7 +34,7 @@ module TestCertificateManager
   end
 end
 
-describe Carto::Api::Public::DbdirectCertificatesController do
+describe Carto::Api::DbdirectCertificatesController do
   include_context 'users helper'
   include HelperMethods
   include FeatureFlagHelper
@@ -57,6 +57,10 @@ describe Carto::Api::Public::DbdirectCertificatesController do
     @feature_flag.destroy
   end
 
+  after(:each) do
+    logout
+  end
+
   describe '#create' do
     before(:each) do
       @params = { api_key: @user1.api_key }
@@ -71,7 +75,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       params = {
         name: 'cert_name'
       }
-      post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+      post_json api_v1_dbdirect_certificates_create_url(params) do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -82,20 +86,44 @@ describe Carto::Api::Public::DbdirectCertificatesController do
           api_key: @user1.api_key
         }
         with_feature_flag @user1, 'dbdirect', false do
-          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+          post_json api_v1_dbdirect_certificates_create_url(params) do |response|
             expect(response.status).to eq(403)
           end
         end
     end
 
-    it 'creates certificates without password ips or validity' do
+    it 'creates certificates with api_key authentication without password ips or validity' do
       params = {
         name: 'cert_name',
         api_key: @user1.api_key
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+          post_json api_v1_dbdirect_certificates_create_url(params) do |response|
+            expect(response.status).to eq(201)
+            expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
+            expect(response.body[:client_key]).to eq %{key for user00000001_}
+            expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:name]).to eq 'cert_name'
+            cert_id = response.body[:id]
+            expect(cert_id).not_to be_empty
+            cert = Carto::DbdirectCertificate.find(cert_id)
+            expect(cert.user.id).to eq @user1.id
+            expect(cert.name).to eq 'cert_name'
+            expect(cert.arn).to eq %{arn for user00000001_300_#{@config['certificates']}}
+          end
+        end
+      end
+    end
+
+    it 'creates certificates with login authentication without password ips or validity' do
+      params = {
+        name: 'cert_name'
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          login_as(@user1, scope: @user1.username)
+          post_json api_v1_dbdirect_certificates_create_url(params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
@@ -118,7 +146,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+          post_json api_v1_dbdirect_certificates_create_url(params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
@@ -141,7 +169,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+          post_json api_v1_dbdirect_certificates_create_url(params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
@@ -149,7 +177,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
             expect(cert.user.id).to eq @user1.id
             expect(cert.name).to eq 'cert_name'
           end
-          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+          post_json api_v1_dbdirect_certificates_create_url(params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:name]).to eq 'cert_name_1'
             cert_id = response.body[:id]
@@ -157,7 +185,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
             expect(cert.user.id).to eq @user1.id
             expect(cert.name).to eq 'cert_name_1'
           end
-          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+          post_json api_v1_dbdirect_certificates_create_url(params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:name]).to eq 'cert_name_2'
             cert_id = response.body[:id]
@@ -179,7 +207,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+          post_json api_v1_dbdirect_certificates_create_url(params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_150_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_the_password}
@@ -206,7 +234,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json api_v4_dbdirect_certificates_create_url(params) do |response|
+          post_json api_v1_dbdirect_certificates_create_url(params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_200_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
@@ -244,7 +272,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
         id: @dbdirect_certificate.id,
       }
       arn = @dbdirect_certificate.arn
-      delete_json api_v4_dbdirect_certificates_destroy_url(params) do |response|
+      delete_json api_v1_dbdirect_certificates_destroy_url(params) do |response|
         expect(response.status).to eq(401)
         expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
         expect(TestCertificateManager._crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
@@ -258,7 +286,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       }
       arn = @dbdirect_certificate.arn
       with_feature_flag @user1, 'dbdirect', false do
-        delete_json api_v4_dbdirect_certificates_destroy_url(params) do |response|
+        delete_json api_v1_dbdirect_certificates_destroy_url(params) do |response|
           expect(response.status).to eq(403)
           expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
           expect(TestCertificateManager._crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
@@ -274,7 +302,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       }
       arn = @dbdirect_certificate.arn
       with_feature_flag @user2, 'dbdirect', false do
-        delete_json api_v4_dbdirect_certificates_destroy_url(params) do |response|
+        delete_json api_v1_dbdirect_certificates_destroy_url(params) do |response|
           expect(response.status).to eq(401)
           expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
           expect(TestCertificateManager._crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
@@ -283,7 +311,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       host! "#{@user1.username}.localhost.lan"
     end
 
-    it 'revokes certificates' do
+    it 'revokes certificates with api_key authentication' do
       params = {
         id: @dbdirect_certificate.id,
         api_key: @user1.api_key
@@ -291,7 +319,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       arn = @dbdirect_certificate.arn
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          delete_json api_v4_dbdirect_certificates_destroy_url(params) do |response|
+          delete_json api_v1_dbdirect_certificates_destroy_url(params) do |response|
             expect(response.status).to eq(200)
             expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).to be_nil
             expect(TestCertificateManager._crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
@@ -301,6 +329,26 @@ describe Carto::Api::Public::DbdirectCertificatesController do
         end
       end
     end
+
+    it 'revokes certificates with login authentication' do
+      params = {
+        id: @dbdirect_certificate.id
+      }
+      arn = @dbdirect_certificate.arn
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          login_as(@user1, scope: @user1.username)
+          delete_json api_v1_dbdirect_certificates_destroy_url(params) do |response|
+            expect(response.status).to eq(200)
+            expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).to be_nil
+            expect(TestCertificateManager._crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+            expect(response.body[:name]).to eq 'cert_name'
+            expect(response.body[:id]).to eq @dbdirect_certificate.id
+          end
+        end
+      end
+    end
+
   end
 
   describe '#list' do
@@ -327,7 +375,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
     it 'needs authentication for listing certificates' do
       params = {
       }
-      get_json api_v4_dbdirect_certificates_list_url(params) do |response|
+      get_json api_v1_dbdirect_certificates_list_url(params) do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -337,8 +385,56 @@ describe Carto::Api::Public::DbdirectCertificatesController do
         api_key: @user1.api_key
       }
       with_feature_flag @user1, 'dbdirect', false do
-        get_json api_v4_dbdirect_certificates_list_url(params) do |response|
+        get_json api_v1_dbdirect_certificates_list_url(params) do |response|
           expect(response.status).to eq(403)
+        end
+      end
+    end
+
+    it 'lists certificates with api key authentication' do
+      params = {
+        api_key: @user1.api_key
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          get_json api_v1_dbdirect_certificates_list_url(params) do |response|
+            expect(response.status).to eq(200)
+            expect(response.body.size).to eq 2
+            cert1_info = response.body.find { |c| c['id'] == @dbdirect_certificate1.id }
+            cert2_info = response.body.find { |c| c['id'] == @dbdirect_certificate2.id }
+            expect(cert1_info).not_to be_nil
+            expect(cert2_info).not_to be_nil
+            expect(cert1_info['name']).to eq @dbdirect_certificate1.name
+            expect(cert1_info['ips']).to eq @dbdirect_certificate1.ips
+            expect(cert1_info['expiration']).to eq @dbdirect_certificate1.expiration.to_datetime.rfc3339
+            expect(cert2_info['name']).to eq @dbdirect_certificate2.name
+            expect(cert2_info['ips']).to eq @dbdirect_certificate2.ips
+            expect(cert2_info['expiration']).to eq @dbdirect_certificate2.expiration.to_datetime.rfc3339
+          end
+        end
+      end
+    end
+
+    it 'lists certificates with login authentication' do
+      params = {
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          login_as(@user1, scope: @user1.username)
+          get_json api_v1_dbdirect_certificates_list_url(params) do |response|
+            expect(response.status).to eq(200)
+            expect(response.body.size).to eq 2
+            cert1_info = response.body.find { |c| c['id'] == @dbdirect_certificate1.id }
+            cert2_info = response.body.find { |c| c['id'] == @dbdirect_certificate2.id }
+            expect(cert1_info).not_to be_nil
+            expect(cert2_info).not_to be_nil
+            expect(cert1_info['name']).to eq @dbdirect_certificate1.name
+            expect(cert1_info['ips']).to eq @dbdirect_certificate1.ips
+            expect(cert1_info['expiration']).to eq @dbdirect_certificate1.expiration.to_datetime.rfc3339
+            expect(cert2_info['name']).to eq @dbdirect_certificate2.name
+            expect(cert2_info['ips']).to eq @dbdirect_certificate2.ips
+            expect(cert2_info['expiration']).to eq @dbdirect_certificate2.expiration.to_datetime.rfc3339
+          end
         end
       end
     end
@@ -349,7 +445,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          get_json api_v4_dbdirect_certificates_list_url(params) do |response|
+          get_json api_v1_dbdirect_certificates_list_url(params) do |response|
             expect(response.status).to eq(200)
             expect(response.body.size).to eq 2
             cert1_info = response.body.find { |c| c['id'] == @dbdirect_certificate1.id }
@@ -387,7 +483,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
       params = {
         id: @dbdirect_certificate.id,
       }
-      get_json api_v4_dbdirect_certificates_show_url(params) do |response|
+      get_json api_v1_dbdirect_certificates_show_url(params) do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -398,7 +494,7 @@ describe Carto::Api::Public::DbdirectCertificatesController do
         api_key: @user1.api_key
       }
       with_feature_flag @user1, 'dbdirect', false do
-        get_json api_v4_dbdirect_certificates_show_url(params) do |response|
+        get_json api_v1_dbdirect_certificates_show_url(params) do |response|
           expect(response.status).to eq(403)
         end
       end
@@ -411,21 +507,21 @@ describe Carto::Api::Public::DbdirectCertificatesController do
         api_key: @user2.api_key
       }
       with_feature_flag @user2, 'dbdirect', false do
-        get_json api_v4_dbdirect_certificates_show_url(params) do |response|
+        get_json api_v1_dbdirect_certificates_show_url(params) do |response|
           expect(response.status).to eq(401)
         end
       end
       host! "#{@user1.username}.localhost.lan"
     end
 
-    it 'shows certificates' do
+    it 'shows certificates with login authentication' do
       params = {
-        id: @dbdirect_certificate.id,
-        api_key: @user1.api_key
+        id: @dbdirect_certificate.id
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          get_json api_v4_dbdirect_certificates_show_url(params) do |response|
+          login_as(@user1, scope: @user1.username)
+          get_json api_v1_dbdirect_certificates_show_url(params) do |response|
             expect(response.status).to eq(200)
             expect(response.body[:id]).to eq @dbdirect_certificate.id
             expect(response.body[:name]).to eq @dbdirect_certificate.name

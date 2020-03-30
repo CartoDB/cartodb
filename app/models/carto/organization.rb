@@ -169,7 +169,7 @@ module Carto
       self.auth_saml_configuration ||= Hash.new
     end
 
-    def destroy_groups_with_extension
+    def destroy_groups_with_extension(test = nil)
       return unless groups
 
       groups.map { |g| g.destroy_group_with_extension }

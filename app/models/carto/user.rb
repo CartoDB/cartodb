@@ -317,7 +317,7 @@ class Carto::User < ActiveRecord::Base
     self.api_key ||= make_token
   end
 
-  def generate_session_salt(test = nil)
+  def generate_session_salt
     self.session_salt ||= SecureRandom.hex
   end
 

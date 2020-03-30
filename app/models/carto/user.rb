@@ -295,11 +295,11 @@ class Carto::User < ActiveRecord::Base
     static_notifications.notifications[category] || {}
   end
 
-  def view_dashboard
+  def view_dashboard(test = nil)
     update_column(:dashboard_viewed_at, Time.now)
   end
 
-  def send_password_reset!(test = nil)
+  def send_password_reset!
     generate_token(:password_reset_token)
     self.password_reset_sent_at = Time.zone.now
     save!

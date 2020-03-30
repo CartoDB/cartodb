@@ -13,8 +13,7 @@ module Carto
         {
           id: @dbdirect_certificate.id,
           name: @dbdirect_certificate.name,
-          expiration: @dbdirect_certificate.expiration.to_datetime.rfc3339,
-          ips: @dbdirect_certificate.ips
+          expiration: @dbdirect_certificate.expiration.to_datetime.rfc3339
         }
       end
     end

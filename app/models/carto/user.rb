@@ -60,7 +60,8 @@ class Carto::User < ActiveRecord::Base
 
   has_many :api_keys, inverse_of: :user
   has_many :user_multifactor_auths, inverse_of: :user, class_name: Carto::UserMultifactorAuth
-  has_many :dbdirect_certificates, inverse_of: :user, class_name: Carto::DbdirectCertificate
+  has_many :dbdirect_certificates, inverse_of: :user, class_name: Carto::DbdirectCertificate, dependent: :destroy
+  has_one  :dbdirect_ip, inverse_of: :user, class_name: Carto::DbdirectIp, dependent: :destroy
 
   has_many :oauth_apps, inverse_of: :user, dependent: :destroy
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
@@ -306,6 +307,25 @@ class Carto::User < ActiveRecord::Base
     save!
 
     Resque.enqueue(::Resque::UserJobs::Mail::PasswordReset, id)
+  end
+
+  def dbdirect_effective_ips
+    if dbdirect_ip.present?
+      dbdirect_ip.ips
+    else
+      organization&.dbdirect_effective_ips
+    end
+  end
+
+  def dbdirect_effective_ips=(ips)
+    if organization.present? && organization.owner != self
+      organization.owner.dbdirect_effective_ips = ips
+    else
+      dbdirect_ip&.destroy
+      if ips.present?
+        create_dbdirect_ip(ips: ips)
+      end
+    end
   end
 
   private

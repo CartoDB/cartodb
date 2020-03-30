@@ -92,7 +92,7 @@ describe Carto::Api::DbdirectCertificatesController do
         end
     end
 
-    it 'creates certificates with api_key authentication without password ips or validity' do
+    it 'creates certificates with api_key authentication without password or validity' do
       params = {
         name: 'cert_name',
         api_key: @user1.api_key
@@ -116,7 +116,7 @@ describe Carto::Api::DbdirectCertificatesController do
       end
     end
 
-    it 'creates certificates with login authentication without password ips or validity' do
+    it 'creates certificates with login authentication without password or validity' do
       params = {
         name: 'cert_name'
       }
@@ -197,11 +197,10 @@ describe Carto::Api::DbdirectCertificatesController do
       end
     end
 
-    it 'creates certificates with password, ips and validity' do
+    it 'creates certificates with password and validity' do
       params = {
         name: 'cert_name',
         pass: 'the_password',
-        ips: '100.200.30.40',
         validity: 150,
         api_key: @user1.api_key
       }
@@ -227,7 +226,6 @@ describe Carto::Api::DbdirectCertificatesController do
     it 'creates certificates and downloads server ca' do
       params = {
         name: 'cert_name',
-        ips: '100.200.30.40',
         validity: 200,
         api_key: @user1.api_key,
         server_ca: true
@@ -363,8 +361,7 @@ describe Carto::Api::DbdirectCertificatesController do
       @certificate_data2, @dbdirect_certificate2 = Carto::DbdirectCertificate.generate(
         user: @user1,
         name:'cert_2',
-        validity_days: 300,
-        ips: '100.200.30.40'
+        validity_days: 300
       )
     end
 
@@ -405,10 +402,8 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(cert1_info).not_to be_nil
             expect(cert2_info).not_to be_nil
             expect(cert1_info['name']).to eq @dbdirect_certificate1.name
-            expect(cert1_info['ips']).to eq @dbdirect_certificate1.ips
             expect(cert1_info['expiration']).to eq @dbdirect_certificate1.expiration.to_datetime.rfc3339
             expect(cert2_info['name']).to eq @dbdirect_certificate2.name
-            expect(cert2_info['ips']).to eq @dbdirect_certificate2.ips
             expect(cert2_info['expiration']).to eq @dbdirect_certificate2.expiration.to_datetime.rfc3339
           end
         end
@@ -429,10 +424,8 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(cert1_info).not_to be_nil
             expect(cert2_info).not_to be_nil
             expect(cert1_info['name']).to eq @dbdirect_certificate1.name
-            expect(cert1_info['ips']).to eq @dbdirect_certificate1.ips
             expect(cert1_info['expiration']).to eq @dbdirect_certificate1.expiration.to_datetime.rfc3339
             expect(cert2_info['name']).to eq @dbdirect_certificate2.name
-            expect(cert2_info['ips']).to eq @dbdirect_certificate2.ips
             expect(cert2_info['expiration']).to eq @dbdirect_certificate2.expiration.to_datetime.rfc3339
           end
         end
@@ -453,10 +446,8 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(cert1_info).not_to be_nil
             expect(cert2_info).not_to be_nil
             expect(cert1_info['name']).to eq @dbdirect_certificate1.name
-            expect(cert1_info['ips']).to eq @dbdirect_certificate1.ips
             expect(cert1_info['expiration']).to eq @dbdirect_certificate1.expiration.to_datetime.rfc3339
             expect(cert2_info['name']).to eq @dbdirect_certificate2.name
-            expect(cert2_info['ips']).to eq @dbdirect_certificate2.ips
             expect(cert2_info['expiration']).to eq @dbdirect_certificate2.expiration.to_datetime.rfc3339
           end
         end
@@ -525,7 +516,6 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.status).to eq(200)
             expect(response.body[:id]).to eq @dbdirect_certificate.id
             expect(response.body[:name]).to eq @dbdirect_certificate.name
-            expect(response.body[:ips]).to eq @dbdirect_certificate.ips
             expect(response.body[:expiration]).to eq @dbdirect_certificate.expiration.to_datetime.rfc3339
           end
         end

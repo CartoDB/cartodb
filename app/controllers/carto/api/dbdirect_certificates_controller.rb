@@ -32,7 +32,6 @@ module Carto
           user: @user,
           name: params[:name],
           passphrase: params[:pass],
-          ips: params[:ips],
           validity_days: validity_days,
           server_ca: params[:server_ca]
         )
@@ -61,6 +60,7 @@ module Carto
       end
 
       def check_permissions
+        # TODO: should the user be an organization owner?
         api_key = Carto::ApiKey.find_by_token(params["api_key"])
         if api_key.present?
           raise UnauthorizedError unless api_key&.master?

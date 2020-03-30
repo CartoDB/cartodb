@@ -24,7 +24,7 @@ namespace :carto do
     end
 
     desc "Generate DB direct certificate"
-    task :generate_certificate, [:username, :name, :password, :ips, :validity] => :environment do |_t, args|
+    task :generate_certificate, [:username, :name, :password, :validity] => :environment do |_t, args|
       user = Carto::User.find_by_username(args.username)
       raise "User #{args.username} not found" unless user
 
@@ -32,7 +32,6 @@ namespace :carto do
         user: user,
         name: args.name,
         passphrase: args.password,
-        ips: args.ips,
         validity_days: args.validity.blank? ? 365 : args.validity.to_i,
         server_ca: true
       )
@@ -49,9 +48,66 @@ namespace :carto do
         puts "Revoking certificate #{cert.name} for user #{cert.user.username}"
         puts "  ARN: #{cert.arn}"
         puts "  Expiration was #{cert.expiration}"
-        puts "  IPs was #{cert.ips}"
         cert.destroy!
         puts "DESTROYED!!"
+      end
+    end
+
+    desc "Show organization ips"
+    task :get_organization_ips, [:org] => :environment do |_t, args|
+      organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
+      unless organization.present?
+        raise "Couldn't find organization #{args.org.inspect}"
+      end
+      ips = organization.dbdirect_effective_ips
+      org_id = "#{organization.name} (#{organization.id})"
+      if ips.present?
+        puts "DBDirect IPs for organization #{org_id}:"
+        puts ips
+      else
+        puts "No IPs defined for organization #{org_id}"
+      end
+    end
+
+    desc "Show user ips"
+    task :get_organization_ips, [:user_spec] => :environment do |_t, args|
+      user = Carto::User.find_by_id(args.user_spec) || Carto::User.find_by_username(args.user_spec)
+      unless user.present?
+        raise "Couldn't find user #{args.user_spec.inspect}"
+      end
+      ips = user.dbdirect_effective_ips
+      user_id = "#{user.name} (#{user.id})"
+      if ips.present?
+        puts "DBDirect IPs for user #{user_id}:"
+        puts ips
+      else
+        puts "No IPs defined for user #{user_id}"
+      end
+    end
+
+    desc "Save orgnization ips"
+    task :set_organization_ips, [:org,:ips] => :environment do |_t, args|
+      organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
+      unless organization.present?
+        raise "Couldn't find organization #{args.org.inspect}"
+      end
+      org_id = "#{organization.name} (#{organization.id})"
+      old_ips = organization.dbdirect_effective_ips
+      delete = args.ips.present?
+      organization.owner.dbdirect_effective_ips = args.ips
+      if old_ips.present?
+        puts "Previous DBDirect IPs for organization #{org_id}:"
+        puts old_ips
+      end
+      if delete
+        if old_ips.present?
+          puts "IPs deleted for organization #{org_id}:"
+        else
+          puts "No changes"
+        end
+      else
+        puts "New IPs for organization #{org_id}:"
+        puts args.ips
       end
     end
   end

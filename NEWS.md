@@ -26,6 +26,7 @@ Development
 - Fix issue that caused data request form to don't include the company name for organization users ([#15554](https://github.com/CartoDB/cartodb/pull/15554))
 - Fix "dataset not found" error in geocoding request for non-org users ([#2426](https://github.com/CartoDB/support/issues/2426))
 - Consider unlimited quotas when counting remaining maps ([#2163](https://github.com/CartoDB/support/issues/2163))
+- Validate email only on change ([#15575](https://github.com/CartoDB/cartodb/pull/15575))
 
 4.36.0 (2020-03-09)
 -------------------

@@ -295,7 +295,7 @@ class Carto::User < ActiveRecord::Base
     static_notifications.notifications[category] || {}
   end
 
-  def view_dashboard(test = nil)
+  def view_dashboard
     update_column(:dashboard_viewed_at, Time.now)
   end
 
@@ -317,7 +317,7 @@ class Carto::User < ActiveRecord::Base
     self.api_key ||= make_token
   end
 
-  def generate_session_salt
+  def generate_session_salt(test = nil)
     self.session_salt ||= SecureRandom.hex
   end
 

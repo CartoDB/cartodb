@@ -27,6 +27,7 @@ Development
 - Fix "dataset not found" error in geocoding request for non-org users ([#2426](https://github.com/CartoDB/support/issues/2426))
 - Consider unlimited quotas when counting remaining maps ([#2163](https://github.com/CartoDB/support/issues/2163))
 - Validate email only on change ([#15575](https://github.com/CartoDB/cartodb/pull/15575))
+- Fix viewer user creation from UI ([#15580](https://github.com/CartoDB/cartodb/pull/15580))
 
 4.36.0 (2020-03-09)
 -------------------

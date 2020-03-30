@@ -3,6 +3,7 @@
     "semistandard",
     "plugin:vue/essential"
   ],
+  "parser": "babel-eslint",
   "env": {
     "es6": true,
     "browser": true,

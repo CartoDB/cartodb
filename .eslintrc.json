@@ -19,7 +19,7 @@
     "CartoNode": true
   },
   "rules": {
-    "camelcase": "error",
+    "camelcase": "off",
     "no-mixed-operators": "off",
     "no-useless-escape": "off",
     "prefer-promise-reject-errors": "off"

@@ -3,7 +3,9 @@
     "semistandard",
     "plugin:vue/essential"
   ],
-  "parser": "babel-eslint",
+  "parserOptions": {
+    "parser": "babel-eslint"
+  },
   "env": {
     "es6": true,
     "browser": true,
@@ -17,7 +19,7 @@
     "CartoNode": true
   },
   "rules": {
-    "camelcase": "off",
+    "camelcase": "error",
     "no-mixed-operators": "off",
     "no-useless-escape": "off",
     "prefer-promise-reject-errors": "off"

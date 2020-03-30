@@ -18,7 +18,8 @@ module.exports = {
   entry: entryPoints,
   output: {
     filename: `${version}/javascripts/[name].js`,
-    path: rootDir('public/assets')
+    path: rootDir('public/assets'),
+    publicPath: http_path_prefix + '/assets/'
   },
   resolve: {
     extensions: ['.js', '.vue', '.json', '.scss'],
@@ -28,6 +29,8 @@ module.exports = {
   },
   devtool: 'source-map',
   plugins: [
+    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
+
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',

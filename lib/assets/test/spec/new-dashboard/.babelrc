@@ -1,18 +1,49 @@
 {
   "presets": [
-    ["env", {
-      "modules": false,
-      "targets": {
-        "browsers": ["> 1%", "last 2 versions", "not ie < 11"]
+    [
+      "@babel/env",
+      {
+        "modules": false,
+        "targets": {
+          "browsers": [
+            "> 1%",
+            "last 2 versions",
+            "not ie < 11"
+          ]
+        },
+        "useBuiltIns": "usage",
+        "corejs": 3
       }
-    }],
-    "stage-2"
+    ]
   ],
-  "plugins": ["transform-vue-jsx", "transform-runtime"],
+  "plugins": [
+    "@vue/babel-plugin-transform-vue-jsx",
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-proposal-object-rest-spread"
+  ],
   "env": {
     "test": {
-      "presets": ["env", "stage-2"],
-      "plugins": ["transform-vue-jsx", "transform-es2015-modules-commonjs", "dynamic-import-node"]
+      "presets": [
+        [
+          "@babel/env",
+          {
+            "modules": false,
+            "targets": {
+              "browsers": [
+                "> 1%",
+                "last 2 versions",
+                "not ie < 11"
+              ]
+            },
+            "useBuiltIns": "usage",
+            "corejs": 3
+          }
+        ]
+      ],
+      "plugins": [
+        "@vue/babel-plugin-transform-vue-jsx",
+        "transform-es2015-modules-commonjs"
+      ]
     }
   }
 }

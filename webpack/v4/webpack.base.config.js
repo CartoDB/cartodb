@@ -204,8 +204,7 @@ module.exports = {
           rootDir('node_modules/internal-carto.js/vendor')
         ],
         options: {
-          presets: ['env'],
-          plugins: ['transform-object-rest-spread']
+          babelrc: true
         }
       },
       {

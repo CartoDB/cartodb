@@ -100,12 +100,10 @@ const entries = {
   lockout: rootDir('lib/assets/javascripts/dashboard/lockout.js'),
 
   new_lockout: [
-    '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/bundles/lockout/lockout.js')
   ],
 
   maintenance: [
-    '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/bundles/maintenance/maintenance.js')
   ],
 

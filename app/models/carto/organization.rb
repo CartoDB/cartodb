@@ -164,7 +164,7 @@ module Carto
     end
 
     def dbdirect_effective_ips
-      owner&.direct_ip&.ips
+      owner&.dbdirect_ip&.ips
     end
 
     private

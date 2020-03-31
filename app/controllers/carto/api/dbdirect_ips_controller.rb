@@ -20,13 +20,14 @@ module Carto
         ips = params[:ips]
         @user.dbdirect_effective_ips = params[:ips]
         @user.save!
-        render_jsonp({}, 201)
+        render_jsonp({ips: ips}, 201)
       end
 
       def destroy
+        previous_ips = @user.dbdirect_effective_ips
         @user.dbdirect_effective_ips = nil
         @user.save!
-        render_jsonp({}, 200)
+        render_jsonp({ips: previous_ips}, 200)
       end
 
       private

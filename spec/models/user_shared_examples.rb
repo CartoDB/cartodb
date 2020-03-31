@@ -1150,4 +1150,14 @@ shared_examples_for "user models" do
       expect(@user.show_trial_reminder?).to be_false
     end
   end
+
+  describe '#organization_owner?' do
+    it 'returns false if the user does not have organization nor id' do
+      user = build_user
+      user.organization = nil
+      user.id = nil
+
+      expect(user.organization_owner?).to be_false
+    end
+  end
 end

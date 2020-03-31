@@ -76,7 +76,7 @@ namespace :carto do
         raise "Couldn't find user #{args.user_spec.inspect}"
       end
       ips = user.dbdirect_effective_ips
-      user_id = "#{user.name} (#{user.id})"
+      user_id = "#{user.username} (#{user.id})"
       if ips.present?
         puts "DBDirect IPs for user #{user_id}:"
         puts ips

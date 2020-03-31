@@ -229,7 +229,7 @@ class SessionsController < ApplicationController
     redirect_to login_url + "?error=#{MULTIFACTOR_AUTHENTICATION_INACTIVITY}"
   end
 
-  def create_user(username, organization_id, email, created_via)
+  def create_user(username, organization_id, email, created_via, &config_account_creator_block)
     @organization = ::Organization.where(id: organization_id).first
 
     account_creator = CartoDB::UserAccountCreator.new(created_via)
@@ -237,6 +237,10 @@ class SessionsController < ApplicationController
     account_creator.with_organization(@organization)
                    .with_username(username)
     account_creator.with_email(email) unless email.nil?
+
+    # Allows externals gears to override this method and add further configuration to the
+    # account creator
+    config_account_creator_block.call(account_creator) if config_account_creator_block.present?
 
     if account_creator.valid?
       creation_data = account_creator.enqueue_creation(self)

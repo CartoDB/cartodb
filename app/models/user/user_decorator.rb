@@ -155,6 +155,7 @@ module CartoDB
         website: website,
         twitter_username: twitter_username,
         disqus_shortname: disqus_shortname,
+        role_display: role_display,
         available_for_hire: available_for_hire,
         location: location,
         industry: industry,

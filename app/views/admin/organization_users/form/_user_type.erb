@@ -1,0 +1,38 @@
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">User type</label>
+    </div>
+
+    <div class="FormAccount-rowData">
+      <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
+        <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="false" <%= @user.builder? ? 'checked' : '' %> <%= @organization.remaining_seats > 0 || @user.builder? ? '' : 'disabled' %> required>
+        <span class="u-iBlock CDB-Radio-face"></span>
+        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold">Builder (<%= @organization.assigned_seats %>/<%= @organization.seats %>)</label>
+      </div>
+    </div>
+    <div class="FormAccount-rowInfo u-lspace-23 u-bSpace--xl">
+      <p class="FormAccount-rowInfoText">Build and read</p>
+    </div>
+
+    <% admin_editing_admin = @user.organization_admin? && !current_user.organization_owner? %>
+    <div class="FormAccount-rowData">
+      <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
+        <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="true" <%= @user.viewer? ? 'checked' : '' %> <%= (@organization.remaining_viewer_seats == 0 && !@user.viewer?) || @user.organization_owner? || admin_editing_admin ? 'disabled' : '' %> required>
+        <span class="u-iBlock CDB-Radio-face"></span>
+        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold">Viewer (<%= @organization.assigned_viewer_seats %>/<%= @organization.viewer_seats %>)</label>
+      </div>
+    </div>
+    <div class="FormAccount-rowInfo u-lspace-23">
+      <p class="FormAccount-rowInfoText">
+        <% if @user.organization_owner? %>
+          The organization owner cannot be a viewer user.
+        <% elsif admin_editing_admin %>
+          Organization admins can only be builder users.
+        <% elsif @organization.viewer_seats == 0 %>
+          You don't have viewer seats activated. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.
+        <% else %>
+          Only read
+        <% end %>
+      </p>
+    </div>
+  </div>

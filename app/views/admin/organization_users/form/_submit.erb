@@ -1,0 +1,34 @@
+  <% if @user.new? -%>
+    <% if @organization.remaining_seats > 0 || @organization.remaining_viewer_seats > 0 %>
+      <div class="FormAccount-footer u-justifyEnd">
+        <button type="submit" class="CDB-Button CDB-Button--primary js-save">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
+        </button>
+      </div>
+    <% else %>
+      <div class="FormAccount-footer">
+        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--maxWidth">You can't create new users because you've run out of seats. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.</p>
+        <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-save">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
+        </button>
+      </div>
+    <% end %>
+  <% elsif @user.editable_by?(current_user) %>
+    <% if @user != current_user %>
+      <div class="FormAccount-footer">
+        <button href="<%= CartoDB.url(self, 'delete_organization_user', params: { id: @user.username }, user: current_user) %>" type="button" class="CDB-Button CDB-Button--error js-deleteAccount">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Delete user</span>
+        </button>
+
+        <button type="submit" class="CDB-Button CDB-Button--primary js-save">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+        </button>
+      </div>
+    <% else %>
+      <div class="FormAccount-footer u-justifyEnd">
+        <button class="CDB-Button CDB-Button--primary js-save">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+        </button>
+      </div>
+    <% end %>
+  <% end %>

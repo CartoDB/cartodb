@@ -11,6 +11,7 @@ Development
 - Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
 - Add Kepler.gl maps to the Maps section in the Dashboard's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
 - Request connector flow with all the states on the same screen ([#15515](https://github.com/CartoDB/cartodb/issues/15515))
+- Hooks to override org settings for gear plugin ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
 
 ### Bug fixes / enhancements
 - Fix wording for feedback
@@ -24,6 +25,11 @@ Development
 - Fix wrong link in footer for location-data-streams
 - Fix Kepler maps configuration at Maps section that was causing endless reloads ([#15568](https://github.com/CartoDB/cartodb/pull/15568))
 - Fix issue that caused data request form to don't include the company name for organization users ([#15554](https://github.com/CartoDB/cartodb/pull/15554))
+- Fix "dataset not found" error in geocoding request for non-org users ([#2426](https://github.com/CartoDB/support/issues/2426))
+- Consider unlimited quotas when counting remaining maps ([#2163](https://github.com/CartoDB/support/issues/2163))
+- Validate email only on change ([#15575](https://github.com/CartoDB/cartodb/pull/15575))
+- Fix viewer user creation from UI ([#15580](https://github.com/CartoDB/cartodb/pull/15580))
+- Set node 10.15.1 as default and only for building assets, removing 6.9.2 ([#15530](https://github.com/CartoDB/cartodb/issues/15530))
 
 4.36.0 (2020-03-09)
 -------------------

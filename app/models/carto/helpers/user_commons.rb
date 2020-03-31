@@ -144,7 +144,7 @@ module Carto::UserCommons
   alias_method :has_organization?, :organization_user?
 
   def organization_owner?
-    organization&.owner_id == id
+    organization_user? && organization.owner_id == id
   end
 
   def organization_admin?
@@ -231,5 +231,9 @@ module Carto::UserCommons
 
   def make_token
     Carto::Common::EncryptionService.make_token
+  end
+
+  def role_display
+    viewer ? 'viewer' : 'builder'
   end
 end

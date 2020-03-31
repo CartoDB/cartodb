@@ -738,6 +738,10 @@ CartoDB::Application.routes.draw do
       get 'dbdirect/certificates/:id', to: 'dbdirect_certificates#show', as: :api_v1_dbdirect_certificates_show
       post 'dbdirect/certificates' => 'dbdirect_certificates#create', as: :api_v1_dbdirect_certificates_create
       delete 'dbdirect/certificates/:id' => 'dbdirect_certificates#destroy', as: :api_v1_dbdirect_certificates_destroy
+      ## dbdirect ips
+      get 'dbdirect/ips', to: 'dbdirect_ips#show', as: :api_v1_dbdirect_ips_show
+      post 'dbdirect/ips' => 'dbdirect_ips#update', as: :api_v1_dbdirect_ips_update
+      delete 'dbdirect/ips' => 'dbdirect_ips#destroy', as: :api_v1_dbdirect_ips_destroy
     end
   end
 

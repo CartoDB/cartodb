@@ -4,7 +4,6 @@ module Carto
   class DbdirectCertificate < ActiveRecord::Base
     belongs_to :user, inverse_of: :dbdirect_certificates, foreign_key: :user_id
     validates_uniqueness_of :name, scope: :user_id
-    # TODO: validate ips
 
     scope :expired, -> { where('expiration <=', Date.today) }
     scope :valid, -> { where('expiration >', Date.today) }
@@ -15,7 +14,7 @@ module Carto
       Cartodb.get_config(:dbdirect, 'certificates')
     end
 
-    def self.generate(user:, name:, passphrase: nil, ips: nil, validity_days: nil, server_ca: true)
+    def self.generate(user:, name:, passphrase: nil, validity_days: nil, server_ca: true)
       validity_days ||= config['maximum_validity_days']
       name = valid_name(user, name)
 
@@ -31,7 +30,6 @@ module Carto
         user_id: user.id,
         name: name,
         arn: arn,
-        ips: ips,
         expiration: DateTime.now + validity_days  # TODO: extract from cert.?
       )
 

@@ -70,7 +70,7 @@ namespace :carto do
     end
 
     desc "Show user ips"
-    task :get_organization_ips, [:user_spec] => :environment do |_t, args|
+    task :get_user_ips, [:user_spec] => :environment do |_t, args|
       user = Carto::User.find_by_id(args.user_spec) || Carto::User.find_by_username(args.user_spec)
       unless user.present?
         raise "Couldn't find user #{args.user_spec.inspect}"

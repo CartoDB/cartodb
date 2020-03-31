@@ -93,7 +93,7 @@ namespace :carto do
       end
       org_id = "#{organization.name} (#{organization.id})"
       old_ips = organization.dbdirect_effective_ips
-      delete = args.ips.present?
+      delete = args.ips.blank?
       organization.owner.dbdirect_effective_ips = args.ips
       if old_ips.present?
         puts "Previous DBDirect IPs for organization #{org_id}:"

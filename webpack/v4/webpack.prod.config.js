@@ -18,6 +18,7 @@ module.exports = merge(baseConfig, {
     })
   ],
   optimization: {
+    nodeEnv: 'production',
     minimizer: [
       new UglifyJsPlugin({
         cache: false,

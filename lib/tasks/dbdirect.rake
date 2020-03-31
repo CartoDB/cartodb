@@ -56,9 +56,8 @@ namespace :carto do
     desc "Show organization ips"
     task :get_organization_ips, [:org] => :environment do |_t, args|
       organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
-      unless organization.present?
-        raise "Couldn't find organization #{args.org.inspect}"
-      end
+      raise "Couldn't find organization #{args.org.inspect}" unless organization.present?
+
       ips = organization.dbdirect_effective_ips
       org_id = "#{organization.name} (#{organization.id})"
       if ips.present?
@@ -72,9 +71,8 @@ namespace :carto do
     desc "Show user ips"
     task :get_user_ips, [:user_spec] => :environment do |_t, args|
       user = Carto::User.find_by_id(args.user_spec) || Carto::User.find_by_username(args.user_spec)
-      unless user.present?
-        raise "Couldn't find user #{args.user_spec.inspect}"
-      end
+      raise "Couldn't find user #{args.user_spec.inspect}" unless user.present?
+
       ips = user.dbdirect_effective_ips
       user_id = "#{user.username} (#{user.id})"
       if ips.present?
@@ -86,11 +84,10 @@ namespace :carto do
     end
 
     desc "Save orgnization ips"
-    task :set_organization_ips, [:org,:ips] => :environment do |_t, args|
+    task :set_organization_ips, [:org, :ips] => :environment do |_t, args|
       organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
-      unless organization.present?
-        raise "Couldn't find organization #{args.org.inspect}"
-      end
+      raise "Couldn't find organization #{args.org.inspect}" unless organization.present?
+
       org_id = "#{organization.name} (#{organization.id})"
       old_ips = organization.dbdirect_effective_ips
       delete = args.ips.blank?

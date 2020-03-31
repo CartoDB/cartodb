@@ -752,5 +752,14 @@
       "headerText": "Share current map via URL",
       "close": "close"
     }
+  },
+  "InputList": {
+    "add": "Add",
+    "delete": "Delete"
+  },
+  "DBConnectionPage": {
+    "errors": {
+      "ipNotValid": "IP is not valid"
+    }
   }
 }

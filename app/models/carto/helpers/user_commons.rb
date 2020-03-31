@@ -144,7 +144,7 @@ module Carto::UserCommons
   alias_method :has_organization?, :organization_user?
 
   def organization_owner?
-    organization&.owner_id == id
+    organization_user? && organization.owner_id == id
   end
 
   def organization_admin?

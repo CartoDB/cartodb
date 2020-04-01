@@ -5,7 +5,7 @@ Development
 - DB Connectors removed from the main repository
 
 ### Features
-- New API for managing DB-Direct certificates ([#15567](https://github.com/CartoDB/cartodb/pull/15567))
+- New internal API for managing DB-Direct certificates & IPs ([#15567](https://github.com/CartoDB/cartodb/pull/15567))
 - Use Dataservices API client 0.29.0
 - Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
 - Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))

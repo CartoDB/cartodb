@@ -45,6 +45,15 @@
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
+          <img svg-inline src="../../assets/icons/navbar/dropdown/notifications.svg"/>
+        </div>
+        <router-link :to="{ name: 'database_connection' }" class="text is-semibold is-caption is-txtGrey" @click.native="linkClicked" :staticRoute="'/dashboard/notifications'">
+          {{ $t('UserDropdown.directDBConnection') }}
+        </router-link>
+        <span v-if="notificationsCount > 0" class="notification-number text is-semibold is-small is-txtGrey">{{notificationsCount}}</span>
+      </li>
+      <li class="navbar-dropdown-iconLink">
+        <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/feedback.svg"/>
         </div>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" class="text is-semibold is-caption is-txtGrey" target="_blank" rel="noopener noreferrer" @click="linkClicked">

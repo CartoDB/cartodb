@@ -199,6 +199,7 @@
     "apiKeys": "API Keys",
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
+    "directDBConnection": "Direct DB Connection",
     "feedback": "Share feedback",
     "logout": "LOG OUT"
   },

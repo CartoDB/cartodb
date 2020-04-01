@@ -1,26 +1,44 @@
 require 'ipaddr'
 
-# Utility method to check if a string is a valid IP
+# Utility module to check and validate IPs
 module IpChecker
   module_function
 
+  # Returns true if a string is a valid IP
   def is_ip?(str)
     str && (IPAddr.new(str) && true) rescue false
   end
 
+  # Validate an IP address or range string.
+  #
+  # It returns `nil` if the address is valid, or an error message text otherwise.
+  #
+  # For syntactic valid IPs, the following optional parameters can be used to reject some special cases:
+  #
+  # * exclude_0: when true will reject 0.0.0.0 or :: addresses
+  # * exclude_private: will exclude private addresses (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fc00::/7)
+  # * exclude_local: will exclude link local addresses (169.254.0.0/16, fe80::/10)
+  # * exclude_loopback: will exclude loopback (e.g. 127.0.0.1, ::1)
+  # * min_ipv4prefix and min_ipv4prefix can be used to limit IP ranges by defining a minimum
+  #    number of bits for the prefix
+  # * max_host_bits is an alternative way of limiting ranges, by defining the number of bits
+  #   that can vary. This can be convenient two define same-size ranges for both IPv4 and IPv6
+  #
   def validate(str,
-    max_host_bits: 0,
+    max_host_bits: nil,
     min_ipv4prefix: nil,
     min_ipv6prefix: nil,
-    exclude_0: true,
-    exclude_private: true,
-    exclude_local: true,
-    exclude_loopback: true
+    exclude_0: false,
+    exclude_private: false,
+    exclude_local: false,
+    exclude_loopback: false
   )
-    if max_host_bits
+    if max_host_bits.present?
       min_ipv4prefix ||= 32 - max_host_bits
       min_ipv6prefix ||= 128 - max_host_bits
     end
+    min_ipv4prefix ||= 0
+    min_ipv6prefix ||= 0
     ip = IPAddr.new(str)
     if min_ipv4prefix > 0 && ip.ipv4? && ip.prefix < min_ipv4prefix
       return "prefix is too short (#{ip.prefix}); minimum allowed is #{min_ipv4prefix}"

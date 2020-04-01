@@ -12,7 +12,6 @@ module Carto
     MAX_IP_MASK_HOST_BITS = 8
 
     def validate_ips
-      support_legacy_ips_format
       # Check type
       unless ips.nil? || ips.kind_of?(Array) || ips.any? { |ip| !is.kind_of?(String) }
         errors.add(:ips, "IPs must be either be nil or an array of strings ")
@@ -20,6 +19,7 @@ module Carto
       end
       ok = true
       if ips.present?
+        # Validate each IP
         ips.each do |ip|
           error = IpChecker.validate(
             ip,
@@ -36,12 +36,6 @@ module Carto
         end
       end
       ok
-    end
-
-    def support_legacy_ips_format
-      if ips.present? && ips.kind_of?(String)
-        self.ips = ips.split(',')
-      end
     end
   end
 end

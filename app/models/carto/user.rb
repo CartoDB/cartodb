@@ -323,7 +323,7 @@ class Carto::User < ActiveRecord::Base
     else
       dbdirect_ip&.destroy
       if ips.present?
-        create_dbdirect_ip(ips: ips)
+        create_dbdirect_ip!(ips: ips)
       end
     end
   end

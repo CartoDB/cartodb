@@ -761,5 +761,11 @@
     "errors": {
       "ipNotValid": "IP is not valid"
     }
+  },
+  "CertificateCreation": {
+    "createAction": "Create Certificate",
+    "errors": {
+      "passwordsDoNotMatch": "Create Certificate"
+    }
   }
 }

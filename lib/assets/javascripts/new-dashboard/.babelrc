@@ -1,33 +1,26 @@
 {
   "presets": [
-    ["@babel/env", {
-      "modules": false,
-      "targets": {
-        "browsers": ["> 1%", "last 2 versions", "not ie < 11"]
-      },
-      "useBuiltIns": "usage",
-      "corejs": 3
-    }]
+    [
+      "@babel/env",
+      {
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ]
   ],
   "plugins": [
     "@vue/babel-plugin-transform-vue-jsx",
     ["@babel/plugin-transform-runtime", { "corejs": 3 }],
-    "@babel/plugin-proposal-object-rest-spread"
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-transform-classes"
   ],
+
   "env": {
     "test": {
       "presets": [
         [
           "@babel/env",
           {
-            "modules": false,
-            "targets": {
-              "browsers": [
-                "> 1%",
-                "last 2 versions",
-                "not ie < 11"
-              ]
-            },
             "useBuiltIns": "usage",
             "corejs": 3
           }
@@ -35,7 +28,10 @@
       ],
       "plugins": [
         "@vue/babel-plugin-transform-vue-jsx",
-        "transform-es2015-modules-commonjs"
+        ["@babel/plugin-transform-runtime", { "corejs": 3 }],
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-modules-commonjs",
+        "@babel/plugin-transform-classes"
       ]
     }
   }

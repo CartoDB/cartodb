@@ -60,6 +60,10 @@ export default {
     fieldValidator: {
       type: Function,
       default: () => ({ isValid: true })
+    },
+    addElementToState: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
@@ -69,16 +73,24 @@ export default {
   },
   methods: {
     addNewElement (elementValue) {
-      const {isValid, errorText} = this.fieldValidator(elementValue);
+      const validationCheck = this.fieldValidator(elementValue);
+      const validationResult = validationCheck.then ? validationCheck : Promise.resolve(validationCheck);
 
-      if (!isValid) {
-        return this.setError(errorText);
-      }
+      validationResult.then(
+        ({ isValid, errorText }) => {
+          if (!isValid) {
+            return this.setError(errorText);
+          }
 
-      this.valuesInArray.push(elementValue);
-      this.newValueForInput = '';
-      this.resetError();
-      this.onElementAdded();
+          if (this.addElementToState) {
+            this.valuesInArray.push(elementValue);
+          }
+
+          this.newValueForInput = '';
+          this.resetError();
+          this.onElementAdded();
+        }
+      );
     },
 
     deleteElement (index) {

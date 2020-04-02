@@ -60,7 +60,7 @@ module AccountTypeHelper
     'Enterprise LDS - Annual' => 'Enterprise',
     'CARTO Trial Account - Annual' => 'Trial',
     'Free 2020' => 'Free',
-    'Grant Subscription' => 'Grant Subscription'
+    'Grant' => 'Grant'
   }.freeze
 
   PLAN_NAME_BY_ACCOUNT_TYPE_DOWN = Hash[PLAN_NAME_BY_ACCOUNT_TYPE.map { |k, v| [k.downcase, v] }]

@@ -3,7 +3,7 @@
     <InputList
       :values="ipList"
       :fieldValidator="checkIfIPIsValid"
-      @addElement="onIPsChanged"
+      :addElementToState="false"
       @removeElement="onIPsChanged"></InputList>
 
     <CertificateCreation @create="onCertificateCreated"></CertificateCreation>
@@ -27,7 +27,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import isIP from 'is-ip';
 
 // Components
 import Page from 'new-dashboard/components/Page';
@@ -71,18 +70,21 @@ export default {
     },
 
     checkIfIPIsValid (value) {
-      const isValid = isIP(value);
-      let errorText = '';
+      // This validation is a hack to
+      // add a new IP and validate it
+      // in one step
+      const ipListWithNewIp = [
+        ...this.ipList,
+        value
+      ];
 
-      if (!isValid) {
-        errorText = this.$t('DBConnectionPage.errors.ipNotValid');
-      }
-
-      return { isValid, errorText };
+      return this.$store.dispatch('directDBConnection/ip/set', ipListWithNewIp)
+        .then(() => ({ isValid: true }))
+        .catch(errorData => ({ isValid: false, errorText: errorData.errors.ips.join('. ') }));
     },
 
     onIPsChanged (IPs) {
-      this.$store.dispatch('directDBConnection/ip/set', IPs.join(','));
+      this.$store.dispatch('directDBConnection/ip/set', IPs);
     },
 
     onCertificateCreated (certificate) {

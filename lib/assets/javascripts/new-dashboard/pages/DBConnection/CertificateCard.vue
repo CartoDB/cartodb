@@ -27,7 +27,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import ConfirmActionDialog from 'new-dashboard/components/Dialogs/DestructiveActionDialog.vue';
+import ConfirmActionDialog from 'new-dashboard/components/Dialogs/ConfirmActionDialog';
 
 export default {
   name: 'CertificateCard',

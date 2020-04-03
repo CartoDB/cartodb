@@ -32,8 +32,10 @@
       <p class="footer__text">
         You can download the file and copy the code once the certificate is generated.
       </p>
-      <button class="button button--primary">
-        {{ $t('CertificateCreation.createAction') }}
+      <button class="button button--primary" :disabled="isCreatingCertificate">
+        {{ this.isCreatingCertificate
+           ? $t('CertificateCreation.creatingAction')
+           : $t('CertificateCreation.createAction') }}
       </button>
     </div>
   </form>
@@ -59,6 +61,7 @@ export default {
         password: '',
         passwordCheck: ''
       },
+      isCreatingCertificate: false,
       passwordProtected: false,
       hasPasswordError: false,
       passwordError: ''
@@ -71,6 +74,7 @@ export default {
 
   methods: {
     createCertificate (certificate) {
+      this.isCreatingCertificate = true;
       const passwordIsValid = this.checkIfPasswordsMatch();
 
       if (!passwordIsValid) {
@@ -89,7 +93,10 @@ export default {
         .directDBConnection()
         .createCertificate(
           certificateData,
-          (_, _1, certificateMetadata) => this.onCertificateCreated(certificateMetadata)
+          (_, _1, certificateMetadata) => {
+            this.onCertificateCreated(certificateMetadata);
+            this.isCreatingCertificate = false;
+          }
         );
     },
 

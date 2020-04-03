@@ -8,6 +8,7 @@
     <input
       class="input__field"
       v-model="inputValueState"
+      autocomplete="off"
       :type="type"
       :id="title"
       :name="title"

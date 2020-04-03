@@ -767,6 +767,7 @@
   },
   "CertificateCreation": {
     "createAction": "Generate Certificate",
+    "creatingAction": "Generating...",
     "errors": {
       "passwordsDoNotMatch": "Create Certificate"
     }

@@ -38,13 +38,6 @@
           You have not generated any certificates yet.
         </p>
       </section>
-
-      <modal name="certificateDownload">
-        <div>Name: {{ newCertificate.name }}</div>
-        <div>Client Key: {{ newCertificate.client_key }}</div>
-        <div>Client CRT: {{ newCertificate.client_crt }}</div>
-        <div>Server CA: {{ newCertificate.server_ca }}</div>
-      </modal>
     </section>
 
     <section class="dbconnection-creation" v-if="!firstStepEnabled">
@@ -57,6 +50,13 @@
       </SettingsTitle>
       <CertificateCreation class="creation__component" @create="onCertificateCreated"></CertificateCreation>
     </section>
+
+    <modal name="certificateDownload">
+      <div>Name: {{ newCertificate.name }}</div>
+      <div>Client Key: {{ newCertificate.client_key }}</div>
+      <div>Client CRT: {{ newCertificate.client_crt }}</div>
+      <div>Server CA: {{ newCertificate.server_ca }}</div>
+    </modal>
   </section>
 </template>
 
@@ -98,7 +98,8 @@ export default {
       certificatesLength: state => Object.keys(state.directDBConnection.certificates.list).length
     }),
     canCreateCertificates () {
-      return this.certificatesLength < this.certificateLimit;
+      return (this.certificatesLength < this.certificateLimit) &&
+             (this.ipList && this.ipList.length);
     }
   },
 

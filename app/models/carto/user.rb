@@ -310,25 +310,24 @@ class Carto::User < ActiveRecord::Base
   end
 
   def dbdirect_effective_ips
-    if dbdirect_ip.present?
-      dbdirect_ip.ips
-    else
-      organization&.dbdirect_effective_ips
-    end
+    dbdirect_bearer.dbdirect_ip&.ips || []
   end
 
   def dbdirect_effective_ips=(ips)
-    if organization.present? && organization.owner != self
-      organization.owner.dbdirect_effective_ips = ips
-    else
-      dbdirect_ip&.destroy
-      if ips.present?
-        create_dbdirect_ip!(ips: ips)
-      end
-    end
+    bearer = dbdirect_bearer
+    bearer.dbdirect_ip&.destroy
+    bearer.create_dbdirect_ip!(ips: ips) if ips.present?
   end
 
   private
+
+  def dbdirect_bearer
+    if organization.present? && organization.owner != self
+      organization.owner
+    else
+      self
+    end
+  end
 
   def set_database_host
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']

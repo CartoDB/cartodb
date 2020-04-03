@@ -453,10 +453,13 @@ Lint/EmptyEnsure:
 Lint/EmptyInterpolation:
   Enabled: true
 
-Style/EndBlock:
+Lint/EnsureReturn:
   Enabled: true
 
-Lint/EnsureReturn:
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
   Enabled: true
 
 

@@ -13,10 +13,10 @@
 
     <ConfirmActionDialog
       ref="confirmActionDialog"
-      :title="`Quieres borrar ${certificate.id}?`"
+      title="You are about to revoke your certificate"
       :modalId="certificate.id"
-      description="Lorem ipsum"
-      confirmText="Ok, boomer"
+      description="You need to create a new certificate to connect"
+      confirmText="Ok, revoke"
       cancelText="Cancel"
       @confirm="onRevokeActionCalled">
     </ConfirmActionDialog>

@@ -88,6 +88,8 @@ export default {
 
       validationResult.then(
         ({ isValid, errorText }) => {
+          this.isAddingElement = false;
+
           if (!isValid) {
             return this.setError(errorText);
           }
@@ -99,7 +101,6 @@ export default {
           this.newValueForInput = '';
           this.resetError();
           this.onElementAdded();
-          this.isAddingElement = false;
         }
       );
     },

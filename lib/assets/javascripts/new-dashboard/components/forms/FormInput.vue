@@ -6,15 +6,17 @@
       :for="title">{{ title }}</label>
 
     <input
-      type="text"
       class="input__field"
       v-model="inputValueState"
+      :type="type"
       :id="title"
       :name="title"
       :placeholder="placeholder"
       @input="onInputChange" />
 
     <div class="input__description" v-if="description">{{ description }}</div>
+
+    <div class="input__slot"><slot/></div>
   </div>
 </template>
 
@@ -41,6 +43,10 @@ export default {
     optional: {
       type: Boolean,
       value: false
+    },
+    type: {
+      type: String,
+      default: 'text'
     }
   },
   methods: {
@@ -70,8 +76,6 @@ export default {
   }
 
   &--optional {
-    font-weight: 400;
-
     &::after {
       content: ''
     }

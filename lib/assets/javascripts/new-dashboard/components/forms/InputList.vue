@@ -1,8 +1,11 @@
 <template>
   <div class="inputList">
+    <label class="inputList__label">
+      {{ title }}
+    </label>
     <ul>
       <!-- List of current elements -->
-      <li v-for="(value, index) in valuesInArray" :key="index">
+      <li class="inputList__block" v-for="(value, index) in valuesInArray" :key="index">
         <input
           type="text"
           :name="`ipValue-${value}`"
@@ -16,7 +19,7 @@
       </li>
 
       <!-- New element to add -->
-      <li>
+      <li class="inputList__block">
         <input
           type="text"
           name="ipValue-new"
@@ -27,8 +30,9 @@
 
         <button
           class="inputList__action"
+          :disabled="isAddingElement"
           @click="addNewElement(newValueForInput)">
-          {{ $t('InputList.add') }}
+          {{ isAddingElement ? $t('InputList.addOnGoing') : $t('InputList.add') }}
         </button>
       </li>
 
@@ -37,6 +41,8 @@
     <div class="inputList__error" v-if="hasError">
       {{ errorText }}
     </div>
+
+    <div class="inputList__description" v-if="description">{{ description }}</div>
   </div>
 </template>
 
@@ -45,6 +51,7 @@ export default {
   name: 'InputList',
   data () {
     return {
+      isAddingElement: false,
       valuesInArray: this.$props.values,
       newValueForInput: '',
       hasError: false,
@@ -52,6 +59,8 @@ export default {
     };
   },
   props: {
+    title: String,
+    description: String,
     placeholder: String,
     values: {
       type: Array,
@@ -73,6 +82,7 @@ export default {
   },
   methods: {
     addNewElement (elementValue) {
+      this.isAddingElement = true;
       const validationCheck = this.fieldValidator(elementValue);
       const validationResult = validationCheck.then ? validationCheck : Promise.resolve(validationCheck);
 
@@ -89,6 +99,7 @@ export default {
           this.newValueForInput = '';
           this.resetError();
           this.onElementAdded();
+          this.isAddingElement = false;
         }
       );
     },
@@ -126,7 +137,21 @@ export default {
   font-family: 'Open Sans', sans-serif;
 }
 
+.inputList__label {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.inputList__block {
+  display: flex;
+  align-items: baseline;
+}
+
 .inputList__element {
+  flex: 1 0 auto;
   margin-bottom: 6px;
   border: 1px solid $neutral--400;
   border-radius: 4px;
@@ -145,13 +170,19 @@ export default {
   &:focus {
     border: 1px solid $neutral--400;
   }
+
+  &[readonly='readonly'] {
+    background-color: rgba(0,0,0,0.05);
+  }
 }
 
 .inputList__action {
+  width: 60px;
   padding-left: 16px;
   color: $color-primary;
   font-size: 12px;
   line-height: 22px;
+  text-align: left;
 
   &:hover {
     text-decoration: underline;
@@ -160,10 +191,11 @@ export default {
   &.inputList__delete {
     color: $danger__color;
   }
+}
 
-  &[disabled] {
-    opacity: 0.5;
-    pointer-events: none;
-  }
+.inputList__description {
+  font-size: 10px;
+  line-height: 16px;
+  color: $neutral--600;
 }
 </style>

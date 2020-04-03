@@ -118,6 +118,10 @@ $card__shadow-color: rgba($neutral--400, 0.8);
 $card__shadow: 0 8px 20px 0 $card__shadow-color;
 $thumbnail__bg-color: $neutral--200;
 
+/* settings */
+$settings_border-color: rgba(0, 0, 0, 0.1);
+$settings_tab_border-color: #333;
+
 /* badges */
 // default
 $badge__color: $text__color--secondary;

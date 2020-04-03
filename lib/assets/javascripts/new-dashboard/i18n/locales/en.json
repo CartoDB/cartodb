@@ -705,7 +705,8 @@
       "connectedApps": "Connected Apps",
       "billing": "Billing",
       "organizationSettings": "Organization Settings",
-      "developerSettings": "Developer Settings"
+      "developerSettings": "Developer Settings",
+      "connections": "Connections"
     },
     "tabs": {
       "apiKeys": "API Keys",
@@ -756,7 +757,8 @@
   },
   "InputList": {
     "add": "Add",
-    "delete": "Delete"
+    "delete": "Delete",
+    "addOnGoing": "Adding..."
   },
   "DBConnectionPage": {
     "errors": {
@@ -764,7 +766,7 @@
     }
   },
   "CertificateCreation": {
-    "createAction": "Create Certificate",
+    "createAction": "Generate Certificate",
     "errors": {
       "passwordsDoNotMatch": "Create Certificate"
     }

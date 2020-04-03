@@ -7,7 +7,7 @@
         <a :href="`${ baseUrl }/account`" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.account`) }}</a>
       </li>
       <li class="settingssidebar-item">
-        <router-link :to="{ name: 'connected_apps' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isConnectedAppsPage()}">{{ $t(`SettingsPages.sidebar.connectedApps`) }} </router-link>
+        <router-link :to="{ name: 'connected_apps' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isConnectedAppsPage()}">{{ $t(`SettingsPages.sidebar.connectedApps`) }}</router-link>
       </li>
       <li v-if="!isLocallyHosted && (isOrgAdmin || !isInsideOrg)" class="settingssidebar-item">
         <a :href="planUrl" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.billing`) }}</a>
@@ -16,6 +16,9 @@
         <a :href="`${ baseUrl }/organization`" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.organizationSettings`) }}</a>
       </li>
       <span class="settingssidebar-separator"></span>
+      <li class="settingssidebar-item">
+        <router-link :to="{ name: 'connections' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isConnectionsPage()}">{{ $t(`SettingsPages.sidebar.connections`) }}</router-link>
+      </li>
       <li class="settingssidebar-item">
         <a :href="`${ baseUrl }/your_apps`" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isDevelopersSettingsPage()}">{{ $t(`SettingsPages.sidebar.developerSettings`) }}</a>
       </li>
@@ -54,6 +57,9 @@ export default {
   methods: {
     isConnectedAppsPage () {
       return (this.$route || {}).name === 'connected_apps';
+    },
+    isConnectionsPage () {
+      return (this.$route || {}).name === 'connections';
     },
     isDevelopersSettingsPage () {
       return this.developerSettingsPages.includes((this.$route || {}).name);

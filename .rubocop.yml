@@ -453,7 +453,7 @@ Lint/EmptyEnsure:
 Lint/EmptyInterpolation:
   Enabled: true
 
-Lint/EndInMethod:
+Style/EndBlock:
   Enabled: true
 
 Lint/EnsureReturn:

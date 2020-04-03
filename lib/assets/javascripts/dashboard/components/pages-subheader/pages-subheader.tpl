@@ -12,6 +12,7 @@
 
     <span class="SideMenu-separator"></span>
 
+    <li class="SideMenu-typeItem"><a href="<%= connectionsUrl %>" class="SideMenu-typeLink <% if (path === connectionsUrl) { %>is-selected<% } %>">Connections</a></li>
     <li class="SideMenu-typeItem"><a href="<%= apiKeysUrl %>" class="SideMenu-typeLink <% if (path === apiKeysUrl) { %>is-selected<% } %>">Developer Settings</a></li>
   </ul>
 </div>

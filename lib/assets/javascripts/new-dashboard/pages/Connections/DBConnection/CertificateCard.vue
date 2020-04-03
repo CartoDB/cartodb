@@ -1,17 +1,15 @@
 <template>
-  <article class="card-certificate">
+  <article class="certificate-card">
     <div class="certificate__info">
-      <div class="certificate__icon">icon</div>
-      <div class="certificate__name">{{ certificate.id }} · {{ certificate.name }}</div>
+      <div class="certificate__name">{{ certificate.name }}</div>
       <div class="certificate__actions">
-        <!-- Cambiar estas clases -->
-        <button type="button" class="button button--outline button--delete u-mr--48" @click="revoke">
+        <button type="button" class="button button--ghost button--small button--revoke" @click="revoke">
           Revoke
         </button>
       </div>
     </div>
     <!-- Cuidado con el null -->
-    <div class="certificate__expiration">Expiring {{ certificate.expiration }}</div>
+    <div class="certificate__expiration">Expires {{ expirationDate }}</div>
 
     <ConfirmActionDialog
       ref="confirmActionDialog"
@@ -27,6 +25,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import format from 'date-fns/format';
 import ConfirmActionDialog from 'new-dashboard/components/Dialogs/ConfirmActionDialog';
 
 export default {
@@ -44,9 +43,14 @@ export default {
     }
   },
 
-  computed: mapState({
-    client: state => state.client
-  }),
+  computed: {
+    expirationDate () {
+      return format(this.$props.certificate.expiration, 'MMMM DD, YYYY, HH:mm a');
+    },
+    ...mapState({
+      client: state => state.client
+    })
+  },
 
   methods: {
     revoke () {
@@ -62,11 +66,43 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'new-dashboard/styles/variables';
+
+.certificate-card {
+  border-bottom: 1px solid $settings_border-color;
+  padding: 24px 0;
+}
+
 .certificate__info {
   display: flex;
+  align-items: center;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .certificate__name {
   flex: 1 0 auto;
+}
+
+.certificate__name,
+.certificate__expiration {
+  font-size: 12px;
+}
+
+.certificate__name {
+  font-weight: 600;
+}
+
+.certificate__expiration {
+  margin-top: 8px;
+  color: $neutral--600;
+}
+
+.button--revoke {
+  padding: 0;
+  font-size: 12px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  text-transform: initial;
+  color: $red--700;
 }
 </style>

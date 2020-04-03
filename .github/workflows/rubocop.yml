@@ -1,3 +1,4 @@
+# https://github.com/reviewdog/action-rubocop
 name: Rubocop
 on: [pull_request]
 jobs:
@@ -11,4 +12,4 @@ jobs:
         uses: reviewdog/action-rubocop@v1
         with:
           github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Optional. Default: github-pr-check
+          reporter: github-pr-check # Optional. Default: github-pr-check

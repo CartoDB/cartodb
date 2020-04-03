@@ -1540,7 +1540,7 @@ class User < Sequel::Model
     master_key.update_attributes(token: api_key)
   end
 
-  def sync_default_public_key
+  def sync_default_public_key(test = nil)
     default_key = api_keys.default_public.first
     return unless default_key
 
@@ -1549,7 +1549,7 @@ class User < Sequel::Model
     default_key.update_attributes(db_role: database_public_username)
   end
 
-  def sync_enabled_api_keys(test = nil)
+  def sync_enabled_api_keys
     api_keys.each(&:set_enabled_for_engine)
   end
 end

@@ -51,12 +51,7 @@
       <CertificateCreation class="creation__component" @create="onCertificateCreated"></CertificateCreation>
     </section>
 
-    <modal name="certificateDownload">
-      <div>Name: {{ newCertificate.name }}</div>
-      <div>Client Key: {{ newCertificate.client_key }}</div>
-      <div>Client CRT: {{ newCertificate.client_crt }}</div>
-      <div>Server CA: {{ newCertificate.server_ca }}</div>
-    </modal>
+    <CertificateDownloadModal certificate="newCertificate" ref="certificateDownload"></CertificateDownloadModal>
   </section>
 </template>
 
@@ -66,6 +61,7 @@ import { mapState } from 'vuex';
 // Components
 import CertificateCreation from './CertificateCreation';
 import CertificateCard from './CertificateCard';
+import CertificateDownloadModal from './CertificateDownloadModal';
 import InputList from 'new-dashboard/components/forms/InputList';
 import SettingsTabs from 'new-dashboard/components/Tabs/SettingsTabs.vue';
 import SettingsTab from 'new-dashboard/components/Tabs/SettingsTab.vue';
@@ -76,6 +72,7 @@ export default {
   components: {
     CertificateCreation,
     CertificateCard,
+    CertificateDownloadModal,
     InputList,
     SettingsTabs,
     SettingsTab,
@@ -147,7 +144,7 @@ export default {
       this.newCertificate = certificate;
       this.goToCertificateList();
       this.getCertificates();
-      this.$modal.show('certificateDownload');
+      this.$refs.certificateDownload.open();
     },
 
     onCertificateRevoked () {

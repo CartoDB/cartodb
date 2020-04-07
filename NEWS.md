@@ -13,6 +13,7 @@ Development
 - Hooks to override org settings for gear plugin ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
 
 ### Bug fixes / enhancements
+- Fix invalid connector IPs information
 - Fix wording for feedback
 - Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394))
 - Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))

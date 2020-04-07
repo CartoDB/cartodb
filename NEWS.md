@@ -30,6 +30,7 @@ Development
 - Validate email only on change ([#15575](https://github.com/CartoDB/cartodb/pull/15575))
 - Fix viewer user creation from UI ([#15580](https://github.com/CartoDB/cartodb/pull/15580))
 - Set node 10.15.1 as default and only for building assets, removing 6.9.2 ([#15530](https://github.com/CartoDB/cartodb/issues/15530))
+- Update toolkit libraries to fix case sensitive field iss ([#15569](https://github.com/CartoDB/cartodb/pull/15569))
 
 4.36.0 (2020-03-09)
 -------------------

@@ -208,7 +208,7 @@ spec/models/carto/snapshot_spec.rb
 spec/models/carto/legend_spec.rb
 spec/lib/tasks/data_observatory_rake_spec.rb
 spec/lib/carto/mapcapped_visualization_updater_spec.rb
-spec/lib/carto/assets/kuviz_assets_service_spec.rb
+spec/lib/carto/assets/html_assets_service_spec.rb
 services/importer/spec/unit/runner_spec.rb
 services/importer/spec/unit/georeferencer_spec.rb
 services/importer/spec/unit/connector_spec.rb

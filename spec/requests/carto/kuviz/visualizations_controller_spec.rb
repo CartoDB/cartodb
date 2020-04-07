@@ -6,7 +6,7 @@ describe Carto::Kuviz::VisualizationsController do
   include Warden::Test::Helpers
 
   after(:all) do
-    FileUtils.rmtree(Carto::Conf.new.public_uploads_path + '/kuviz_assets')
+    FileUtils.rmtree(Carto::Conf.new.public_uploads_path + '/html_assets')
   end
 
   describe '#show' do

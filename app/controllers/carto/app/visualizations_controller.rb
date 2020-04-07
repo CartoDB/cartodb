@@ -15,7 +15,7 @@ module Carto
       def show
         return app_password_protected if show_password?
 
-        @source = KuvizAssetsService.instance.read_source_data(@app.asset)
+        @source = HTMLAssetsService.instance.read_source_data(@app.asset)
         add_cache_headers
         render layout: false
       rescue StandardError => e
@@ -33,7 +33,7 @@ module Carto
           return app_password_protected
         end
 
-        @source = KuvizAssetsService.instance.read_source_data(@app.asset)
+        @source = HTMLAssetsService.instance.read_source_data(@app.asset)
         add_cache_headers
 
         render 'show', layout: false

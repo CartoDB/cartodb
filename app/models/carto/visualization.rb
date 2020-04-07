@@ -39,8 +39,9 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
   TYPE_KUVIZ = 'kuviz'.freeze
+  TYPE_APP = 'app'.freeze
 
-  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ].freeze
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ, TYPE_APP].freeze
   MAP_TYPES = [TYPE_DERIVED, TYPE_KUVIZ].freeze
 
   KIND_GEOM   = 'geom'.freeze
@@ -96,7 +97,7 @@ class Carto::Visualization < ActiveRecord::Base
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }
   validates :type, inclusion: { in: VALID_TYPES }
-  validates :name, uniqueness: { scope: [:user_id, :type] }, if: :kuviz?
+  validates :name, uniqueness: { scope: [:user_id, :type] }, if: :kuviz? || :app?
   validate :validate_password_presence
   validate :validate_privacy_changes
   validate :validate_user_not_viewer, on: :create
@@ -306,7 +307,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def map?
-    kuviz? || derived?
+    kuviz? || derived? || app?
   end
 
   def derived?
@@ -319,6 +320,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def kuviz?
     type == TYPE_KUVIZ
+  end
+
+  def app?
+    type == TYPE_APP
   end
 
   def layers

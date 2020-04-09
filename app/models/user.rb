@@ -708,7 +708,7 @@ class User < Sequel::Model
     avatar_base_url = Cartodb.get_config(:avatars, 'base_url')
     kinds = Cartodb.get_config(:avatars, 'kinds')
     colors = Cartodb.get_config(:avatars, 'colors')
-    if base_url && kinds && colors
+    if avatar_base_url && kinds && colors
       avatar_kind = kinds.sample
       avatar_color = colors.sample
       return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"

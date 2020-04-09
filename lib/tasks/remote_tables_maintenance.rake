@@ -138,7 +138,7 @@ namespace :cartodb do
       puts "#{updated_rows} users invalidated"
 
       # Now we try to add the new common-data request to the cache using the common_data user
-      common_data_user = ::User.where(username: Cartodb.get_config(:common_data, 'username').first
+      common_data_user = ::User.where(username: Cartodb.get_config(:common_data, 'username')).first
       if !common_data_user.nil?
         vis_api_url = get_visualizations_api_url
         CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(common_data_user, vis_api_url)

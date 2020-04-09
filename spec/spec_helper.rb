@@ -87,13 +87,13 @@ RSpec.configure do |config|
 end
 
 def superadmin_headers
-  http_json_authorization_headers(Cartodb.config[:superadmin]["username"],
-                                  Cartodb.config[:superadmin]["password"])
+  http_json_authorization_headers(Cartodb.get_config(:superadmin, 'username'),
+                                  Cartodb.get_config(:superadmin, 'password'))
 end
 
 def org_metadata_api_headers
-  http_json_authorization_headers(Cartodb.config[:org_metadata_api]["username"],
-                                  Cartodb.config[:org_metadata_api]["password"])
+  http_json_authorization_headers(Cartodb.get_config(:org_metadata_api, 'username'),
+                                  Cartodb.get_config(:org_metadata_api, 'password'))
 end
 
 def http_json_authorization_headers(user, password)

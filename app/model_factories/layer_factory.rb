@@ -23,7 +23,7 @@ module ModelFactories
     end
 
     def self.get_default_data_layer(table_name, user, geometry_type)
-      data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'].deep_dup)
+      data_layer = ::Layer.new(Cartodb.get_config(:layer_opts, 'data').deep_dup)
       data_layer.options['table_name'] = table_name
       data_layer.options['user_name'] = user.username
       data_layer.options['tile_style'] = tile_style(user, geometry_type)
@@ -68,7 +68,7 @@ module ModelFactories
     end
 
     def self.legacy_tile_style(geometry_type)
-      "#layer #{Cartodb.config[:layer_opts]['default_tile_styles'][geometry_type]}"
+      "#layer #{Cartodb.get_config(:layer_opts, 'default_tile_styles', geometry_type)}"
     end
   end
 end

@@ -39,12 +39,12 @@ module Cartodb
       # AuthSMTP
       CartoDB::Application.config.action_mailer.delivery_method = :smtp
       CartoDB::Application.config.action_mailer.smtp_settings = {
-        :address              => Cartodb.config[:mailer]['address'],
-        :port                 => Cartodb.config[:mailer]['port'],
-        :user_name            => Cartodb.config[:mailer]['user_name'],
-        :password             => Cartodb.config[:mailer]['password'],
-        :authentication       => Cartodb.config[:mailer]['authentication'],
-        :enable_starttls_auto => Cartodb.config[:mailer]['enable_starttls_auto'] }
+        :address              => Cartodb.get_config(:mailer, 'address'),
+        :port                 => Cartodb.get_config(:mailer, 'port'),
+        :user_name            => Cartodb.get_config(:mailer, 'user_name'),
+        :password             => Cartodb.get_config(:mailer, 'password'),
+        :authentication       => Cartodb.get_config(:mailer, 'authentication'),
+        :enable_starttls_auto => Cartodb.get_config(:mailer, 'enable_starttls_auto')] }
     end
 
     if !@config[:basemaps].present? || @config[:basemaps].count == 0
@@ -60,11 +60,8 @@ module Cartodb
 
   def self.asset_path
     return @asset_path if @asset_path
-    if Cartodb.config[:app_assets]
-      @asset_path = Cartodb.config[:app_assets]['asset_host']
-    else
-      @asset_path = nil
-    end
+
+    @asset_path = Cartodb.get_config(:app_assets, 'asset_host')
   end
 
   def self.default_basemap(basemaps = Cartodb.config[:basemaps])

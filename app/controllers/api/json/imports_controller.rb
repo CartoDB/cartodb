@@ -24,7 +24,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     @stats_aggregator.timing('imports.create') do
 
       begin
-        file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+        file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:importer, 'uploads_path'))
 
         external_source = nil
         concurrent_import_limit =
@@ -51,7 +51,8 @@ class Api::Json::ImportsController < Api::ApplicationController
               filename_param: params[:filename],
               file_param: params[:file],
               request_body: request.body,
-              s3_config: Cartodb.config[:importer]['s3'])
+              s3_config: Cartodb.get_config(:importer, 's3')
+            )
 
             # In Rack < 1.6 / Rails < 4, tempfiles are not inmediately cleaned (https://github.com/rack/rack/pull/671).
             # Instead they stay around until a GC cycle which can take a while in instances with low traffic.

@@ -705,13 +705,12 @@ class User < Sequel::Model
   end
 
   def cartodb_avatar
-    if !Cartodb.config[:avatars].nil? &&
-       !Cartodb.config[:avatars]['base_url'].nil? && !Cartodb.config[:avatars]['base_url'].empty? &&
-       !Cartodb.config[:avatars]['kinds'].nil? && !Cartodb.config[:avatars]['kinds'].empty? &&
-       !Cartodb.config[:avatars]['colors'].nil? && !Cartodb.config[:avatars]['colors'].empty?
-      avatar_base_url = Cartodb.config[:avatars]['base_url']
-      avatar_kind = Cartodb.config[:avatars]['kinds'][Random.new.rand(0..Cartodb.config[:avatars]['kinds'].length - 1)]
-      avatar_color = Cartodb.config[:avatars]['colors'][Random.new.rand(0..Cartodb.config[:avatars]['colors'].length - 1)]
+    avatar_base_url = Cartodb.get_config(:avatars, 'base_url')
+    kinds = Cartodb.get_config(:avatars, 'kinds')
+    colors = Cartodb.get_config(:avatars, 'colors')
+    if base_url && kinds && colors
+      avatar_kind = kinds.sample
+      avatar_color = colors.sample
       return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
       CartoDB::Logger.info(message: "Attribute avatars_base_url not found in config. Using default avatar")
@@ -725,7 +724,7 @@ class User < Sequel::Model
 
   def gravatar_enabled?
     # Enabled by default, only disabled if specified in the config
-    value = Cartodb.config[:avatars] && Cartodb.config[:avatars]['gravatar_enabled']
+    value = Cartodb.get_config(:avatars, 'gravatar_enabled')
     value.to_s != 'false'
   end
 
@@ -993,8 +992,8 @@ class User < Sequel::Model
     yesterday = Date.today - 1
     from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
     to_date = DateTime.now.strftime("%Q")
-    request_body = Cartodb.config[:api_requests_es_service]['body'].dup
-    request_url = Cartodb.config[:api_requests_es_service]['url'].dup
+    request_body = Cartodb.get_config(:api_requests_es_service, 'body').dup
+    request_url = Cartodb.get_config(:api_requests_es_service, 'url').dup
     request_body.gsub!("$CDB_SUBDOMAIN$", self.username)
     request_body.gsub!("\"$FROM$\"", from_date)
     request_body.gsub!("\"$TO$\"", to_date)

@@ -163,7 +163,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     if @is_data_library
       @name = "Data Library"
-      @user_url = Cartodb.get_config(:data_library, 'path') ? "#{request.protocol}#{CartoDB.account_host}#{Cartodb.config[:data_library]['path']}" : @user_url
+      @user_url = Cartodb.get_config(:data_library, 'path') ? "#{request.protocol}#{CartoDB.account_host}#{Cartodb.get_config(:data_library, 'path')}" : @user_url
     end
 
     @avatar_url             = @visualization.user.avatar
@@ -623,7 +623,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def sql_api_url(query, user)
-    "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{ Cartodb.config[:sql_api]['public']['endpoint'] }?q=#{ URI::encode query }"
+    "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{Cartodb.get_config(:sql_api, 'public', 'endpoint')}?q=#{ URI::encode query }"
   end
 
   def embed_map_actual

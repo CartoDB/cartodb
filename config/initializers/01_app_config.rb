@@ -44,7 +44,7 @@ module Cartodb
         :user_name            => Cartodb.get_config(:mailer, 'user_name'),
         :password             => Cartodb.get_config(:mailer, 'password'),
         :authentication       => Cartodb.get_config(:mailer, 'authentication'),
-        :enable_starttls_auto => Cartodb.get_config(:mailer, 'enable_starttls_auto')] }
+        :enable_starttls_auto => Cartodb.get_config(:mailer, 'enable_starttls_auto') }
     end
 
     if !@config[:basemaps].present? || @config[:basemaps].count == 0

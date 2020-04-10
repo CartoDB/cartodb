@@ -1,4 +1,3 @@
-# https://github.com/reviewdog/action-rubocop
 name: Rubocop
 on: [pull_request]
 jobs:
@@ -9,8 +8,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
       - name: Rubocop checks
-        uses: reviewdog/action-rubocop@v1
+        uses: gimenete/rubocop-action@1.0
         with:
           github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review # Optional. Default: github-pr-check
-          level: warning # Optional. Default: error

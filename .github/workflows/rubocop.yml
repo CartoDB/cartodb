@@ -8,6 +8,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
       - name: Rubocop checks
-        uses: gimenete/rubocop-action@1.0
+        uses: andrewmcodes/rubocop-linter-action@v3.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}

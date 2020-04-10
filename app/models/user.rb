@@ -1541,7 +1541,7 @@ class User < Sequel::Model
   end
 
   def sync_default_public_key
-default_key = api_keys.default_public.first
+    default_key = api_keys.default_public.first
     return unless default_key
 
     # Workaround: User save is not yet commited, so AR doesn't see the new database_schema

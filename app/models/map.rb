@@ -245,7 +245,7 @@ class Map < Sequel::Model
     layer.order >= layers.last.order && user_layers.length >= 1
   end
 
-  def table_name
+  def table_name(test = nil)
     tables.first.nil? ? nil : tables.first.name
   end
 end

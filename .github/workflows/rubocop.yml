@@ -1,3 +1,4 @@
+# https://github.com/reviewdog/action-rubocop
 name: Rubocop
 on: [pull_request]
 jobs:
@@ -7,7 +8,9 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v1
-      - name: Rubocop checks
-        uses: andrewmcodes/rubocop-linter-action@v3.1.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+      - name: Rubocop linter
+        uses: reviewdog/action-rubocop@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-check # Optional. Default: github-pr-check
+          level: warning # Optional. Default: error

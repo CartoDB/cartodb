@@ -11,6 +11,8 @@ jobs:
       - name: Rubocop linter
         uses: reviewdog/action-rubocop@v1
         with:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.github_token }}
           reporter: github-pr-review # Optional. Default: github-pr-check
           level: error # Optional. Default: error
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}

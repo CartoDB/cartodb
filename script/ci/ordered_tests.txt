@@ -15,6 +15,7 @@ spec/requests/carto/api/visualizations_controller_spec_part_1.rb
 spec/models/organization_spec.rb
 spec/services/carto/visualizations_export_service_2_spec.rb
 spec/requests/carto/api/custom_visualizations_controller_spec.rb
+spec/requests/carto/api/apps_controller_spec.rb
 spec/models/carto/user_migration_base_spec.rb
 spec/models/table_spec.rb
 spec/models/carto/oauth_app_user_spec.rb
@@ -31,6 +32,7 @@ spec/requests/carto/api/layers_controller_spec.rb
 spec/models/user_part_validation_and_authentication_spec.rb
 spec/requests/superadmin/organizations_spec.rb
 spec/requests/carto/kuviz/visualizations_controller_spec.rb
+spec/requests/carto/app/visualizations_controller_spec.rb
 spec/requests/carto/api/visualizations_controller_vizjson_spec.rb
 spec/models/carto/layer_spec.rb
 spec/requests/carto/api/organization_users_controller_spec.rb
@@ -343,4 +345,3 @@ services/datasources/spec/integration/csv_file_dumper_spec.rb
 services/datasources/spec/acceptance/gdrive_spec.rb
 services/datasources/spec/acceptance/dropbox_spec.rb
 services/dataservices-metrics/spec/unit/service_usage_metrics_spec.rb
-spec/requests/api/json/imports_controller_spec.rb

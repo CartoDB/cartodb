@@ -42,7 +42,7 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_APP = 'app'.freeze
 
   VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ, TYPE_APP].freeze
-  MAP_TYPES = [TYPE_DERIVED, TYPE_KUVIZ].freeze
+  MAP_TYPES = [TYPE_DERIVED, TYPE_KUVIZ, TYPE_APP].freeze
 
   KIND_GEOM   = 'geom'.freeze
   KIND_RASTER = 'raster'.freeze

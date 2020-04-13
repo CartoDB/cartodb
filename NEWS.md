@@ -11,6 +11,7 @@ Development
 - Add Kepler.gl maps to the Maps section in the Dashboard's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
 - Request connector flow with all the states on the same screen ([#15515](https://github.com/CartoDB/cartodb/issues/15515))
 - Hooks to override org settings for gear plugin ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
+- New app visualization type and endpoints for deploying apps [#15595](https://github.com/CartoDB/cartodb/pull/15595)
 
 ### Bug fixes / enhancements
 - Fixes bug in CartoDB Central communication ([#15606](https://github.com/CartoDB/cartodb/pull/15606))

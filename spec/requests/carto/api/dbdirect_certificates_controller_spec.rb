@@ -49,6 +49,10 @@ describe Carto::Api::DbdirectCertificatesController do
         aws_access_key_id: 'the_aws_key',
         aws_secret_key: 'the_aws_secret',
         aws_region: 'the_aws_region'
+      },
+      pgproxy: {
+        host: 'the-pgproxy-host',
+        port: 9876
       }
     }.with_indifferent_access
   end
@@ -244,6 +248,23 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(cert.user.id).to eq @user1.id
             expect(cert.name).to eq 'cert_name'
             expect(cert.arn).to eq %{arn for user00000001_200_#{@config['certificates']}}
+          end
+        end
+      end
+    end
+
+    it 'downloads zipped certificates' do
+      params = {
+        name: 'cert_name',
+        api_key: @user1.api_key
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json_with_zip_response api_v1_dbdirect_certificates_create_url(params.merge(format: 'zip')) do |response|
+            expect(response.status).to eq(201)
+            # TODO:
+            # response.body contains expected zip payload
+            # response.headers["Content-Disposition"] matches: "attachment; filename=#{EXPECTED_FILENAME}"
           end
         end
       end

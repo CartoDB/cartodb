@@ -42,8 +42,18 @@ module Carto
           client_crt: data[:client_crt],
           server_ca: data[:server_ca]
         }
-        # render json: result, 201
-        render_jsonp(result, 201)
+        # render_jsonp(result, 201)
+
+        respond_to do |format|
+          format.json do
+            render_jsonp(result, 201)
+          end
+          format.zip do
+            # TODO: generate zip from result; add generated README as well
+            send_data(*zip_certificates(result, 201))
+          end
+        end
+
       end
 
       def destroy
@@ -54,6 +64,29 @@ module Carto
       end
 
       private
+
+      def zip_certificates(result, status)
+        # TODO: this shouldn't live here, should it?
+        username = @user.username
+        dbproxy_host = Cartodb.get_config(:dbdirect, 'pgproxy', 'host')
+        dbproxy_port = Cartodb.get_config(:dbdirect, 'pgproxy', 'port')
+        certificate_id = result[:id]
+        certificate_name = result[:name]
+        client_key = result[:client_key]
+        client_crt = result[:client_crt]
+        server_ca = result[:server_ca]
+        # TODO: fetch README template, substitute variables
+        readme = "Here are your files for certificate #{certificate_name} , blablabla, connecto to #{dbproxy_host}:#{dbproxy_port}"
+        filename = "#{certificate_name}.zip" # TODO: include certificate_id too?
+        # TODO: zip readme, client_key, client;crt, server_ca (if present)
+        zip_data = readme
+        [
+          zip_data,
+          type: "application/zip; charset=binary; header=present",
+          disposition: "attachment; filename=#{filename}",
+          status: status
+        ]
+      end
 
       def load_user
         @user = Carto::User.find(current_viewer.id)

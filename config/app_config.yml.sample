@@ -779,6 +779,9 @@ defaults: &defaults
       aws_access_key_id: XXXXXXXXXXXX
       aws_secret_key: YYYYYYYYYYY
       aws_region: us-east-1
+    pgproxy:
+      host: 'dbconn.carto.com'
+      port: 5432
 
 development:
   <<: *defaults

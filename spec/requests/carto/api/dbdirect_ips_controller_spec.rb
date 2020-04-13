@@ -1,19 +1,27 @@
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/feature_flag_helper'
+require 'spec_helper'
 
 describe Carto::Api::DbdirectIpsController do
   include_context 'users helper'
   include HelperMethods
   include FeatureFlagHelper
+  include Rack::Test::Methods
 
   before(:all) do
-    host! "#{@user1.username}.localhost.lan"
+    host! "#{@carto_user1.username}.localhost.lan"
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'dbdirect', restricted: true)
+
+    @sequel_organization = FactoryGirl.create(:organization_with_users)
+    @organization = Carto::Organization.find(@sequel_organization.id)
+    @org_owner = @organization.owner
+    @org_user = @organization.users.reject { |u| u.id == @organization.owner_id }.first
   end
 
   after(:all) do
     @feature_flag.destroy
+    @organization.destroy
   end
 
   after(:each) do
@@ -28,9 +36,6 @@ describe Carto::Api::DbdirectIpsController do
     after(:each) do
       Carto::DbdirectIp.delete_all
     end
-
-    # TODO: check valid/invalid ips list syntax
-    # TODO: organization tests
 
     it 'needs authentication for ips creation' do
       params = {
@@ -129,6 +134,24 @@ describe Carto::Api::DbdirectIpsController do
           end
         end
 
+      end
+    end
+
+    it 'IP changes affect all the organization members' do
+      ips = ['100.20.30.40']
+      params = {
+        ips: ips,
+        api_key: @org_user.api_key
+      }
+      with_host "#{@org_user.username}.localhost.lan" do
+        with_feature_flag @org_user, 'dbdirect', true do
+          post_json api_v1_dbdirect_ips_update_url(params.merge(host: host)) do |response|
+            expect(response.status).to eq(201)
+            expect(response.body[:ips]).to eq ips
+            expect(@org_user.reload.dbdirect_effective_ips).to eq ips
+            expect(@org_owner.reload.dbdirect_effective_ips).to eq ips
+          end
+        end
       end
     end
   end

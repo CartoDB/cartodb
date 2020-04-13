@@ -674,7 +674,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def redirect_to_app_if_needed
-    redirect_to(CartoDB.url(self, 'apps_show', params: { id: @visualization.id })) if @visualization&.app?
+    redirect_to(CartoDB.url(self, 'app_show', params: { id: @visualization.id })) if @visualization&.app?
   end
 
   def redirect_to_builder_embed_if_v3

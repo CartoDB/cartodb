@@ -8,15 +8,30 @@ Development
 - Use Dataservices API client 0.29.0
 - Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
 - Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
-- Add Kepler.gl maps to the Maps section in the Dashboar's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
+- Add Kepler.gl maps to the Maps section in the Dashboard's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
+- Request connector flow with all the states on the same screen ([#15515](https://github.com/CartoDB/cartodb/issues/15515))
+- Hooks to override org settings for gear plugin ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
 
 ### Bug fixes / enhancements
 - Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564)
+- Fix invalid connector IPs information
 - Fix wording for feedback
-- Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394)
+- Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394))
 - Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))
 - Fix lockout page due to wrong CustomStorage initialization ([#2444](https://github.com/CartoDB/support/issues/2444))
 - Add is_enterprise field to /me ([#15551](https://github.com/CartoDB/cartodb/pull/15551))
+- Add BigQuery execution capability
+- Remove code related to deprecated plans ([#15563](https://github.com/CartoDB/cartodb/pull/15563))
+- Fix ie11 bug due to non babelified toolkit packages ([#2456](https://github.com/CartoDB/support/issues/2456))
+- Fix wrong link in footer for location-data-streams
+- Fix Kepler maps configuration at Maps section that was causing endless reloads ([#15568](https://github.com/CartoDB/cartodb/pull/15568))
+- Fix issue that caused data request form to don't include the company name for organization users ([#15554](https://github.com/CartoDB/cartodb/pull/15554))
+- Fix "dataset not found" error in geocoding request for non-org users ([#2426](https://github.com/CartoDB/support/issues/2426))
+- Consider unlimited quotas when counting remaining maps ([#2163](https://github.com/CartoDB/support/issues/2163))
+- Validate email only on change ([#15575](https://github.com/CartoDB/cartodb/pull/15575))
+- Fix viewer user creation from UI ([#15580](https://github.com/CartoDB/cartodb/pull/15580))
+- Set node 10.15.1 as default and only for building assets, removing 6.9.2 ([#15530](https://github.com/CartoDB/cartodb/issues/15530))
+- Update toolkit libraries to fix case sensitive field iss ([#15569](https://github.com/CartoDB/cartodb/pull/15569))
 
 4.36.0 (2020-03-09)
 -------------------

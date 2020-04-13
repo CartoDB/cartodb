@@ -57,6 +57,25 @@ describe User do
         user.errors.should include :email
       end
     end
+
+    it 'disallows a wrong domain if the email changes' do
+      EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
+      user = create_user
+      EmailAddress::Config.configure(local_format: :conventional, host_validation: :mx)
+
+      user.email = 'email@wrongdomain.fake'
+      user.valid?.should be_false
+      user.errors.should include :email
+    end
+
+    it 'allows wrong domain if the email does not change' do
+      EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
+      user = create_user
+      EmailAddress::Config.configure(local_format: :conventional, host_validation: :mx)
+
+      user.name = 'new name'
+      user.valid?.should be_true
+    end
   end
 
   it "should validate that password is present if record is new and crypted_password is blank" do

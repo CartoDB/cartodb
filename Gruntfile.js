@@ -7,8 +7,8 @@ var lockedDependencies = require('./lib/build/tasks/locked-dependencies.js');
 var webpackTask = null;
 var EDITOR_ASSETS_VERSION = require('./config/editor_assets_version.json').version;
 
-var REQUIRED_NODE_VERSIONS = ['10.x', '6.9.2'];
-var REQUIRED_NPM_VERSIONS = ['6.x', '3.10.9'];
+var REQUIRED_NODE_VERSIONS = ['10.x'];
+var REQUIRED_NPM_VERSIONS = ['6.x'];
 
 var DEVELOPMENT = 'development';
 

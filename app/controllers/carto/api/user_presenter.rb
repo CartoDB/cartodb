@@ -41,6 +41,7 @@ module Carto
           quota_in_bytes:             @user.quota_in_bytes,
           table_count:                @user.table_count,
           viewer:                     @user.viewer?,
+          role_display:               @user.role_display,
           org_admin:                  @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count:    @user.all_visualization_count,
@@ -128,6 +129,7 @@ module Carto
           regular_api_key_quota: @user.regular_api_key_quota,
           table_count: @user.table_count,
           viewer: @user.viewer?,
+          role_display: @user.role_display,
           industry: @user.industry,
           company_employees: @user.company_employees,
           use_case: @user.use_case,
@@ -242,7 +244,8 @@ module Carto
           disqus_shortname: @user.disqus_shortname,
           available_for_hire: @user.available_for_hire,
           location: @user.location,
-          mfa_configured: @user.multifactor_authentication_configured?
+          mfa_configured: @user.multifactor_authentication_configured?,
+          is_enterprise: @user.enterprise?
         }
 
         if @user.google_maps_geocoder_enabled? && (!@user.organization.present? || @user.organization_owner?)

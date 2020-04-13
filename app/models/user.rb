@@ -127,6 +127,8 @@ class User < Sequel::Model
   end
 
   def validate_email
+    return unless new? || column_changed?(:email)
+
     validates_presence :email
     validates_unique   :email, message: 'is already taken'
     errors.add(:email, EmailAddress.error(email)) unless EmailAddress.valid?(email)

@@ -37,6 +37,10 @@ module Carto
       GET_CERTIFICATE_MAX_ATTEMPTS = 8
       GET_CERTIFICATE_DELAY_S = 1
 
+      SIGNING_ALGORITHM = "SHA256WITHRSA".freeze
+      TEMPLATE_ARN = "arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1".freeze
+      VALIDITY_TYPE_DAYS = "DAYS".freeze
+
       class <<self
         private
 
@@ -44,7 +48,7 @@ module Carto
           key = OpenSSL::PKey::RSA.new 2048
           if passphrase.present?
             cipher = OpenSSL::Cipher.new 'AES-128-CBC'
-            key.export cipher, passphrase
+            key.export(cipher, passphrase)
           else
             key.to_pem
           end
@@ -73,11 +77,11 @@ module Carto
           resp = aws_acmpca_client.issue_certificate(
             certificate_authority_arn: config['ca_arn'],
             csr: csr,
-            signing_algorithm: "SHA256WITHRSA",
-            template_arn: "arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1",
+            signing_algorithm: SIGNING_ALGORITHM,
+            template_arn: TEMPLATE_ARN,
             validity: {
               value: validity_days,
-              type: "DAYS"
+              type: VALIDITY_TYPE_DAYS
             },
             idempotency_token: SecureRandom.uuid
           )

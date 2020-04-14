@@ -61,15 +61,13 @@ module Carto
       def valid_name(user, name)
         name = user.username if name.blank?
         names = certificate_names(user)
-        if name.in?(names)
-          max_suffix = names.map do |existing_name|
-            match = /\A#{Regexp.escape name}_(\d+)\Z/.match(existing_name)
-            match ? match[1].to_i : 0
-          end.max
-          "#{name}_#{max_suffix + 1}"
-        else
-          name
-        end
+        return name unless name.in?(names)
+
+        max_suffix = names.map do |existing_name|
+          match = /\A#{Regexp.escape name}_(\d+)\Z/.match(existing_name)
+          match ? match[1].to_i : 0
+        end.max
+        "#{name}_#{max_suffix + 1}"
       end
     end
   end

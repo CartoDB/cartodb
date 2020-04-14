@@ -13,6 +13,7 @@ Development
 - Hooks to override org settings for gear plugin ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
 
 ### Bug fixes / enhancements
+- Fixes bug in CartoDB Central communication ([#15606](https://github.com/CartoDB/cartodb/pull/15606))
 - Fix invalid connector IPs information
 - Fix wording for feedback
 - Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394))

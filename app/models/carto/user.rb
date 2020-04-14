@@ -60,8 +60,8 @@ class Carto::User < ActiveRecord::Base
 
   has_many :api_keys, inverse_of: :user
   has_many :user_multifactor_auths, inverse_of: :user, class_name: Carto::UserMultifactorAuth
-  has_many :dbdirect_certificates, inverse_of: :user, class_name: Carto::DbdirectCertificate, dependent: :destroy
-  has_one  :dbdirect_ip, inverse_of: :user, class_name: Carto::DbdirectIp, dependent: :destroy
+  has_many :dbdirect_certificates, inverse_of: :user, dependent: :destroy
+  has_one  :dbdirect_ip, inverse_of: :user, dependent: :destroy
 
   has_many :oauth_apps, inverse_of: :user, dependent: :destroy
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy

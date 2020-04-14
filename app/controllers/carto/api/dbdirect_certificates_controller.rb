@@ -42,7 +42,6 @@ module Carto
           client_crt: data[:client_crt],
           server_ca: data[:server_ca]
         }
-        # render json: result, 201
         render_jsonp(result, 201)
       end
 

@@ -5,8 +5,8 @@ module Carto
     belongs_to :user, inverse_of: :dbdirect_certificates, foreign_key: :user_id
     validates_uniqueness_of :name, scope: :user_id
 
-    scope :expired, -> { where('expiration <=', Date.today) }
-    scope :valid, -> { where('expiration >', Date.today) }
+    scope :expired, -> { where('expiration <=', Time.current) }
+    scope :valid, -> { where('expiration >', Time.current) }
 
     before_destroy :revoke
 

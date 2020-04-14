@@ -2,35 +2,35 @@ require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/feature_flag_helper'
 
-module TestCertificateManager
-  module_function
-
+class TestCertificateManager
   @crl = []
+  class <<self
+    attr_reader :crl
+  end
 
-  def generate_certificate(config:, username:, passphrase:, validity_days:, server_ca:)
+  def initialize(config)
+    @config = config
+  end
+
+  def generate_certificate(username:, passphrase:, validity_days:, server_ca:)
     [
       {
         client_key: mocked('key', username, passphrase),
-        client_crt: mocked('crt', username, validity_days, config),
-        server_ca: server_ca ? mocked('cacrt', config) : nil
+        client_crt: mocked('crt', username, validity_days, @config),
+        server_ca: server_ca ? mocked('cacrt', @config) : nil
       },
-      mocked('arn', username, validity_days, config)
+      mocked('arn', username, validity_days, @config)
     ]
   end
 
-  def revoke_certificate(config:, arn:, reason: 'UNSPECIFIED')
-    @crl << mocked('crt', arn, reason, config)
+  def revoke_certificate(arn:, reason: 'UNSPECIFIED')
+    TestCertificateManager.crl << mocked('crt', arn, reason, @config)
   end
 
-  def _crl
-    @crl
-  end
+  private
 
-  class <<self
-    private
-    def mocked(name, *args)
-      "#{name} for #{args.join('_')}"
-    end
+  def mocked(name, *args)
+    "#{name} for #{args.join('_')}"
   end
 end
 
@@ -64,7 +64,7 @@ describe Carto::Api::DbdirectCertificatesController do
   describe '#create' do
     before(:each) do
       @params = { api_key: @user1.api_key }
-      Carto::DbdirectCertificate.stubs(:certificate_manager).returns(TestCertificateManager)
+      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestCertificateManager)
     end
 
     after(:each) do
@@ -253,7 +253,7 @@ describe Carto::Api::DbdirectCertificatesController do
   describe '#destroy' do
     before(:each) do
       @params = { api_key: @user1.api_key }
-      Carto::DbdirectCertificate.stubs(:certificate_manager).returns(TestCertificateManager)
+      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestCertificateManager)
       @certificate_data, @dbdirect_certificate = Carto::DbdirectCertificate.generate(
         user: @user1,
         name:'cert_name',
@@ -273,7 +273,7 @@ describe Carto::Api::DbdirectCertificatesController do
       delete_json dbdirect_certificate_url(params) do |response|
         expect(response.status).to eq(401)
         expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
-        expect(TestCertificateManager._crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+        expect(TestCertificateManager.crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
       end
     end
 
@@ -287,7 +287,7 @@ describe Carto::Api::DbdirectCertificatesController do
         delete_json dbdirect_certificate_url(params) do |response|
           expect(response.status).to eq(403)
           expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
-          expect(TestCertificateManager._crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+          expect(TestCertificateManager.crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
         end
       end
     end
@@ -303,7 +303,7 @@ describe Carto::Api::DbdirectCertificatesController do
         delete_json dbdirect_certificate_url(params) do |response|
           expect(response.status).to eq(401)
           expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
-          expect(TestCertificateManager._crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+          expect(TestCertificateManager.crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
         end
       end
       host! "#{@user1.username}.localhost.lan"
@@ -320,7 +320,7 @@ describe Carto::Api::DbdirectCertificatesController do
           delete_json dbdirect_certificate_url(params) do |response|
             expect(response.status).to eq(204)
             expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).to be_nil
-            expect(TestCertificateManager._crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+            expect(TestCertificateManager.crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
           end
         end
       end
@@ -337,7 +337,7 @@ describe Carto::Api::DbdirectCertificatesController do
           delete_json dbdirect_certificate_url(params) do |response|
             expect(response.status).to eq(204)
             expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).to be_nil
-            expect(TestCertificateManager._crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+            expect(TestCertificateManager.crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
           end
         end
       end
@@ -348,7 +348,7 @@ describe Carto::Api::DbdirectCertificatesController do
   describe '#index' do
     before(:each) do
       @params = { api_key: @user1.api_key }
-      Carto::DbdirectCertificate.stubs(:certificate_manager).returns(TestCertificateManager)
+      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestCertificateManager)
       @certificate_data1, @dbdirect_certificate1 = Carto::DbdirectCertificate.generate(
         user: @user1,
         name:'cert_1',
@@ -454,7 +454,7 @@ describe Carto::Api::DbdirectCertificatesController do
   describe '#show' do
     before(:each) do
       @params = { api_key: @user1.api_key }
-      Carto::DbdirectCertificate.stubs(:certificate_manager).returns(TestCertificateManager)
+      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestCertificateManager)
       @certificate_data, @dbdirect_certificate = Carto::DbdirectCertificate.generate(
         user: @user1,
         name:'cert_name',

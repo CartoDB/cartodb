@@ -10,16 +10,11 @@ module Carto
 
     before_destroy :revoke
 
-    def self.config
-      Cartodb.get_config(:dbdirect, 'certificates')
-    end
-
     def self.generate(user:, name:, passphrase: nil, validity_days: nil, server_ca: true)
       validity_days ||= config['maximum_validity_days']
       name = valid_name(user, name)
 
       certificates, arn = certificate_manager.generate_certificate(
-        config: config,
         username: user.username,
         passphrase: passphrase,
         validity_days: validity_days,
@@ -41,18 +36,25 @@ module Carto
     end
 
     def self.certificate_manager
+      certificate_manager_class.new(config)
+    end
+
+    def self.certificate_manager_class
       Carto::Dbdirect::CertificateManager
     end
 
     private
 
     def revoke
-      config = DbdirectCertificate.config
-      self.class.certificate_manager.revoke_certificate(config: config, arn: arn)
+      self.class.certificate_manager.revoke_certificate(arn: arn)
     end
 
     class <<self
       private
+
+      def config
+        Cartodb.get_config(:dbdirect, 'certificates')
+      end
 
       def certificate_names(user)
         Carto::User.find(user.id).dbdirect_certificates.map(&:name)

@@ -49,7 +49,7 @@ module Carto
         dbdirect_certificate = Carto::DbdirectCertificate.find(params[:id])
         check_permissions_for_certificate(dbdirect_certificate)
         dbdirect_certificate.destroy!
-        render_jsonp(Carto::Api::DbdirectCertificatePresenter.new(dbdirect_certificate).to_poro, 200)
+        head :no_content
       end
 
       private

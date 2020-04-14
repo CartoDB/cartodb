@@ -680,6 +680,9 @@ CartoDB::Application.routes.draw do
 
       get 'tags' => 'tags#index', as: :api_v3_users_tags
       get 'search_preview/:q' => 'search_preview#index', as: :api_v3_search_preview
+
+      resources :dbdirect_certificates, only: [:index, :show, :create, :destroy]
+      resource :dbdirect_ip, only: [:show, :update, :destroy], controller: 'dbdirect_ips'
     end
 
     scope 'v2/' do
@@ -732,16 +735,6 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id/:project_id/datasets' => 'connectors#project_datasets', as: :api_v1_connectors_project_datasets
       get 'connectors/:provider_id/:project_id/:dataset_id/tables' => 'connectors#project_dataset_tables', as: :api_v1_connectors_project_dataset_tables
       post 'connectors/:provider_id/dryrun' => 'connectors#dryrun', as: :api_v1_connectors_dryrun
-
-      ## dbdirect certificates
-      get 'dbdirect/certificates', to: 'dbdirect_certificates#list', as: :api_v1_dbdirect_certificates_list
-      get 'dbdirect/certificates/:id', to: 'dbdirect_certificates#show', as: :api_v1_dbdirect_certificates_show
-      post 'dbdirect/certificates' => 'dbdirect_certificates#create', as: :api_v1_dbdirect_certificates_create
-      delete 'dbdirect/certificates/:id' => 'dbdirect_certificates#destroy', as: :api_v1_dbdirect_certificates_destroy
-      ## dbdirect ips
-      get 'dbdirect/ips', to: 'dbdirect_ips#show', as: :api_v1_dbdirect_ips_show
-      post 'dbdirect/ips' => 'dbdirect_ips#update', as: :api_v1_dbdirect_ips_update
-      delete 'dbdirect/ips' => 'dbdirect_ips#destroy', as: :api_v1_dbdirect_ips_destroy
     end
   end
 

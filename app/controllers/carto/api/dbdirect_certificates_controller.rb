@@ -12,7 +12,7 @@ module Carto
 
       setup_default_rescues
 
-      def list
+      def index
         dbdirect_certificates = @user.dbdirect_certificates
         certificates_info = dbdirect_certificates.map do |certificate|
           Carto::Api::DbdirectCertificatePresenter.new(certificate).to_poro

@@ -682,7 +682,7 @@ CartoDB::Application.routes.draw do
       get 'search_preview/:q' => 'search_preview#index', as: :api_v3_search_preview
 
       resources :dbdirect_certificates, only: [:index, :show, :create, :destroy]
-      resource :dbdirect_ip, only: [:show, :update, :destroy], controller: 'dbdirect_ips'
+      resource :dbdirect_ip, only: [:show, :update, :destroy]
     end
 
     scope 'v2/' do

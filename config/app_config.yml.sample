@@ -776,8 +776,8 @@ defaults: &defaults
     certificates:
       ca_arn: "arn:aws:acm-pca:zzzzzz:XXXXXXXXXXX:certificate-authority/XXXXXXXXXXXXXXXX"
       maximum_validity_days: 365
-      aws_access_key_id: XXXXXXXXXXXX
-      aws_secret_key: YYYYYYYYYYY
+      aws_access_key_id: ''
+      aws_secret_key: ''
       aws_region: us-east-1
 
 development:

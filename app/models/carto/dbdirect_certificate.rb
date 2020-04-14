@@ -55,7 +55,7 @@ module Carto
       private
 
       def certificate_names(user)
-        Carto::User.find(user.id).dbdirect_certificates.map &:name
+        Carto::User.find(user.id).dbdirect_certificates.map(&:name)
       end
 
       def valid_name(user, name)

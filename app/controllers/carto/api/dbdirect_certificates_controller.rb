@@ -6,13 +6,12 @@ module Carto
 
       ssl_required :list, :show, :create, :destroy
 
-
       before_action :load_user
       before_action :check_permissions
 
       setup_default_rescues
 
-      def list
+      def index
         dbdirect_certificates = @user.dbdirect_certificates
         certificates_info = dbdirect_certificates.map do |certificate|
           Carto::Api::DbdirectCertificatePresenter.new(certificate).to_poro
@@ -42,7 +41,6 @@ module Carto
           client_crt: data[:client_crt],
           server_ca: data[:server_ca]
         }
-        # render_jsonp(result, 201)
 
         respond_to do |format|
           format.json do
@@ -53,14 +51,13 @@ module Carto
             send_data(*zip_certificates(result, 201))
           end
         end
-
       end
 
       def destroy
         dbdirect_certificate = Carto::DbdirectCertificate.find(params[:id])
         check_permissions_for_certificate(dbdirect_certificate)
         dbdirect_certificate.destroy!
-        render_jsonp(Carto::Api::DbdirectCertificatePresenter.new(dbdirect_certificate).to_poro, 200)
+        head :no_content
       end
 
       private
@@ -96,8 +93,8 @@ module Carto
         # TODO: should the user be an organization owner?
         api_key = Carto::ApiKey.find_by_token(params["api_key"])
         if api_key.present?
-          raise UnauthorizedError unless api_key&.master?
-          raise UnauthorizedError unless api_key.user_id === @user.id
+          raise UnauthorizedError unless api_key.master?
+          raise UnauthorizedError unless api_key.user_id == @user.id
         end
         unless @user.has_feature_flag?('dbdirect')
           raise UnauthorizedError.new("DBDirect not enabled for user #{@user.username}")

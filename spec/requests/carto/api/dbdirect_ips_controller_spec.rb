@@ -168,8 +168,7 @@ describe Carto::Api::DbdirectIpsController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         delete_json api_v1_dbdirect_ips_destroy_url(params) do |response|
-          expect(response.status).to eq(200)
-          expect(response.body[:ips]).to eq @existing_ips
+          expect(response.status).to eq(204)
           expect(Carto::User.find_by_id(@user1.id).dbdirect_effective_ips).to be_nil
         end
       end
@@ -181,8 +180,7 @@ describe Carto::Api::DbdirectIpsController do
       with_feature_flag @user1, 'dbdirect', true do
         login_as(@user1, scope: @user1.username)
         delete_json api_v1_dbdirect_ips_destroy_url(params) do |response|
-          expect(response.status).to eq(200)
-          expect(response.body[:ips]).to eq @existing_ips
+          expect(response.status).to eq(204)
           expect(Carto::User.find_by_id(@user1.id).dbdirect_effective_ips).to be_nil
         end
       end

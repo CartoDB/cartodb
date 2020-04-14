@@ -318,11 +318,9 @@ describe Carto::Api::DbdirectCertificatesController do
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
           delete_json api_v1_dbdirect_certificates_destroy_url(params) do |response|
-            expect(response.status).to eq(200)
+            expect(response.status).to eq(204)
             expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).to be_nil
             expect(TestCertificateManager._crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
-            expect(response.body[:name]).to eq 'cert_name'
-            expect(response.body[:id]).to eq @dbdirect_certificate.id
           end
         end
       end
@@ -337,11 +335,9 @@ describe Carto::Api::DbdirectCertificatesController do
         Cartodb.with_config dbdirect: @config do
           login_as(@user1, scope: @user1.username)
           delete_json api_v1_dbdirect_certificates_destroy_url(params) do |response|
-            expect(response.status).to eq(200)
+            expect(response.status).to eq(204)
             expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).to be_nil
             expect(TestCertificateManager._crl).to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
-            expect(response.body[:name]).to eq 'cert_name'
-            expect(response.body[:id]).to eq @dbdirect_certificate.id
           end
         end
       end

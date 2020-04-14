@@ -62,8 +62,8 @@ module Carto
         # TODO: should the user be an organization owner?
         api_key = Carto::ApiKey.find_by_token(params["api_key"])
         if api_key.present?
-          raise UnauthorizedError unless api_key&.master?
-          raise UnauthorizedError unless api_key.user_id === @user.id
+          raise UnauthorizedError unless api_key.master?
+          raise UnauthorizedError unless api_key.user_id == @user.id
         end
         unless @user.has_feature_flag?('dbdirect')
           raise UnauthorizedError.new("DBDirect not enabled for user #{@user.username}")

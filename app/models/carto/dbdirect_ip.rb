@@ -4,7 +4,12 @@ module Carto
   class DbdirectIp < ActiveRecord::Base
     belongs_to :user, inverse_of: :dbdirect_ip, foreign_key: :user_id
 
-    serialize :ips, JSON
+    # Note about the `ips` attribute:
+    # The corresponding column is of type json, so there's no need for an explicit serializer
+    # But there's a subtle difference here from having a text field and defining `serialize :ips JSON`
+    # If a string is assigned to `ips` it is interpreted and parsed and JSON, and the result is nil
+    # if not valid JSON. With the serializer version, the string would be preserved as string.
+
     validate :validate_ips
 
     private
@@ -13,8 +18,8 @@ module Carto
 
     def validate_ips
       # Check type
-      unless ips.nil? || (ips.kind_of?(Array) && ips.all? { |ip| ip.kind_of?(String) })
-        errors.add(:ips, "IPs must be either be nil or an array of strings ")
+      unless ips.kind_of?(Array) && ips.all? { |ip| ip.kind_of?(String) }
+        errors.add(:ips, "IPs must be an array of strings ")
         return false
       end
       ok = true

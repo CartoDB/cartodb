@@ -42,7 +42,10 @@
       {{ errorText }}
     </div>
 
-    <div class="inputList__description" v-if="description">{{ description }}</div>
+    <div class="inputList__description">
+      <template v-if="description">{{ description }}</template>
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -126,6 +129,10 @@ export default {
     resetError () {
       this.hasError = false;
       this.errorText = '';
+    },
+
+    fillInputValue (newValue) {
+      this.newValueForInput = newValue;
     }
   }
 };

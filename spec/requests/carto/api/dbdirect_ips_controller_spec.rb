@@ -111,11 +111,14 @@ describe Carto::Api::DbdirectIpsController do
 
     it 'rejects invalid IPs' do
       invalid_ips = [
-        '0.0.0.0', '10.20.30.40', '127.0.0.1', '192.168.1.1', '120.120.120.120/20', '100.100.100.300', 'not-an-ip'
+        ['0.0.0.0'], ['10.20.30.40'], ['127.0.0.1'], ['192.168.1.1'],
+        ['120.120.120.120/20'], ['100.100.100.300'], ['not-an-ip'],
+        [11223344],
+        '100.20.30.40'
       ]
-      invalid_ips.each do |ip|
+      invalid_ips.each do |ips|
         params = {
-          ips: [ip],
+          ips: ips,
           api_key: @user1.api_key
         }
         with_feature_flag @user1, 'dbdirect', true do

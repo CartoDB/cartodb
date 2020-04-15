@@ -5,15 +5,25 @@
 
       <section class="dbconnection__ips">
         <SettingsTitle title="1. Your IPs"></SettingsTitle>
+
+        <Toggle
+          :disabled="true"
+          class="dbconnection__formsection"
+          label="Allow connections from any IP addresses">
+        </Toggle>
+
         <InputList
-          class="dbconnection__iplist"
-          title="IP addresses"
-          description="IP address of your computer or device"
+          ref="ipInputList"
+          class="dbconnection__formsection"
+          title="Allowed IP addresses"
           placeholder="12.12.12.12"
           :values="ipList"
           :fieldValidator="checkIfIPIsValid"
           :addElementToState="false"
-          @removeElement="onIPsChanged"></InputList>
+          @removeElement="onIPsChanged">
+          Computer or device IP address.
+          <a href="javascript:void(0)" @click="fillDeviceIPAddress">Get your IP address</a>.
+        </InputList>
       </section>
 
       <SettingsTitle :title="`2. Your certificates (${certificatesLength} of ${certificateLimit})`">
@@ -63,7 +73,9 @@ import CertificateCreation from './CertificateCreation';
 import CertificateCard from './CertificateCard';
 import CertificateDownloadModal from './CertificateDownloadModal';
 import InputList from 'new-dashboard/components/forms/InputList';
+import Toggle from 'new-dashboard/components/SettingsUI/Toggle';
 import SettingsTitle from 'new-dashboard/components/SettingsUI/SettingsTitle.vue';
+import { getCurrentIPAddress } from 'new-dashboard/utils/ip-address';
 
 export default {
   name: 'DBConnectionPage',
@@ -72,6 +84,7 @@ export default {
     CertificateCard,
     CertificateDownloadModal,
     InputList,
+    Toggle,
     SettingsTitle
   },
 
@@ -145,6 +158,13 @@ export default {
 
     onCertificateRevoked () {
       this.getCertificates();
+    },
+
+    fillDeviceIPAddress () {
+      return getCurrentIPAddress()
+        .then(ipAddress => {
+          this.$refs.ipInputList.fillInputValue(ipAddress);
+        });
     }
   }
 };
@@ -178,7 +198,7 @@ export default {
   margin-bottom: 40px;
 }
 
-.dbconnection__iplist {
+.dbconnection__formsection {
   margin-top: 26px;
   width: 60%
 }

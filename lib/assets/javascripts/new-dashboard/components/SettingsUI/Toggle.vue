@@ -1,6 +1,6 @@
 <template>
-  <section class="toggle">
-    <div class="toggle__field" :class="{ 'is-disabled': disabled }">
+  <section class="toggle" :class="{ 'is-disabled': disabled }">
+    <div class="toggle__field">
       <input
         id="toggle"
         type="checkbox"
@@ -56,19 +56,18 @@ export default {
 $sWidth: 36px;
 $sHeight: 20px;
 
+.toggle{
+  &.is-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}
+
 .toggle__field {
   display: inline-block;
   position: relative;
   width: $sWidth;
   height: $sHeight;
-}
-
-.toggle__field.is-disabled {
-  opacity: 0.4;
-
-  label {
-    cursor: default;
-  }
 }
 
 .toggle__field input {

@@ -76,10 +76,10 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'shows all the visualizations' do
+    it 'shows all the apps' do
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key) do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:visualizations].size).to eq(2)
+        expect(response.body[:apps].size).to eq(2)
         expect(response.body[:total_entries]).to eq(2)
       end
     end
@@ -87,7 +87,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'should return one visualization but total should be two' do
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key), per_page: 1 do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:visualizations].size).to eq(1)
+        expect(response.body[:apps].size).to eq(1)
         expect(response.body[:total_entries]).to eq(2)
       end
     end
@@ -102,44 +102,44 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key), per_page: 1, order: 'name' do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:visualizations].size).to eq(1)
+        expect(response.body[:apps].size).to eq(1)
         expect(response.body[:total_entries]).to eq(2)
-        expect(response.body[:visualizations][0][:name]).to eq('2')
+        expect(response.body[:apps][0][:name]).to eq('2')
       end
 
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key), per_page: 1, order: 'name', order_direction: 'asc' do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:visualizations].size).to eq(1)
+        expect(response.body[:apps].size).to eq(1)
         expect(response.body[:total_entries]).to eq(2)
-        expect(response.body[:visualizations][0][:name]).to eq('1')
+        expect(response.body[:apps][0][:name]).to eq('1')
       end
 
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key), per_page: 1, order: 'updated_at' do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:visualizations].size).to eq(1)
+        expect(response.body[:apps].size).to eq(1)
         expect(response.body[:total_entries]).to eq(2)
-        expect(response.body[:visualizations][0][:updated_at]).to eq('2019-12-31T23:59:59.999Z')
+        expect(response.body[:apps][0][:updated_at]).to eq('2019-12-31T23:59:59.999Z')
       end
 
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key), per_page: 1, order: 'name', order_direction: 'asc' do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:visualizations].size).to eq(1)
+        expect(response.body[:apps].size).to eq(1)
         expect(response.body[:total_entries]).to eq(2)
-        expect(response.body[:visualizations][0][:updated_at]).to eq('2019-01-01T00:00:00.000Z')
+        expect(response.body[:apps][0][:updated_at]).to eq('2019-01-01T00:00:00.000Z')
       end
 
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key), per_page: 1, order: 'privacy' do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:visualizations].size).to eq(1)
+        expect(response.body[:apps].size).to eq(1)
         expect(response.body[:total_entries]).to eq(2)
-        expect(response.body[:visualizations][0][:privacy]).to eq('public')
+        expect(response.body[:apps][0][:privacy]).to eq('public')
       end
 
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key), per_page: 1, order: 'privacy', order_direction: 'asc' do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:visualizations].size).to eq(1)
+        expect(response.body[:apps].size).to eq(1)
         expect(response.body[:total_entries]).to eq(2)
-        expect(response.body[:visualizations][0][:privacy]).to eq('password')
+        expect(response.body[:apps][0][:privacy]).to eq('password')
       end
 
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key), per_page: 1, order: 'non_valid' do |response|
@@ -148,11 +148,11 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'should return only password visualizations' do
+    it 'should return only password apps' do
       get_json api_v4_app_list_vizs_url(api_key: @user.api_key), privacy: 'password' do |response|
         expect(response.status).to eq(200)
         expect(response.body[:total_entries]).to eq(1)
-        expect(response.body[:visualizations][0][:privacy]).to eq('password')
+        expect(response.body[:apps][0][:privacy]).to eq('password')
       end
     end
   end
@@ -238,19 +238,12 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'stores html content' do
       post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:visualizations]).present?.should be true
+        expect(response.body[:apps]).present?.should be true
         expect(response.body[:url]).present?.should be true
       end
     end
 
-    it 'rejects if if_exists parameter is not a valid one' do
-      post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name, if_exists: 'wrong-option' do |response|
-        expect(response.status).to eq(400)
-        expect(response.body[:errors]).to eq("Wrong 'if_exists' parameter value. Valid values are one of fail, replace")
-      end
-    end
-
-    it 'fails if if_exists is fail and exists a app with the same name' do
+    it 'fails if exists an app with the same name' do
       post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
@@ -259,13 +252,9 @@ describe Carto::Api::Public::CustomVisualizationsController do
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
       end
-      post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name, if_exists: 'fail' do |response|
-        expect(response.status).to eq(400)
-        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
-      end
     end
 
-    it 'works if if_exists is fail and does not exists a app with the same name' do
+    it 'works if it does not exists an app with the same name' do
       post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
@@ -276,45 +265,11 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'works if if_exists is replace and exists a app with the same name' do
-      app1 = nil
-
-      post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:url].present?).to be true
-
-        apps = Carto::Visualization.where(user: @user, name: @app_name)
-        expect(apps.length).to be 1
-        app1 = apps.first
-      end
-      post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name, if_exists: 'replace' do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:url].present?).to be true
-
-        apps = Carto::Visualization.where(user: @user, name: @app_name)
-        expect(apps.length).to be 1
-        app2 = apps.first
-        expect(app1.id).to eq(app2.id)
-      end
-    end
-
-    it 'works if if_exists is fail and exists a visualization with the same name' do
+    it 'works if it exists a visualization with the same name' do
       visualization = FactoryGirl.create(:carto_visualization, user: @user, name: @app_name)
       visualization.save!
 
       post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:url].present?).to be true
-      end
-
-      visualization.destroy!
-    end
-
-    it 'works if if_exists is replace and exists a visualization with the same name' do
-      visualization = FactoryGirl.create(:carto_visualization, user: @user, name: @app_name)
-      visualization.save!
-
-      post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name, if_exists: 'replace' do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
       end
@@ -436,51 +391,16 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'rejects if if_exists parameter is not a valid one' do
-      put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: 'test', if_exists: 'wrong-option' do |response|
-        expect(response.status).to eq(400)
-        expect(response.body[:errors]).to eq("Wrong 'if_exists' parameter value. Valid values are one of fail, replace")
-      end
-    end
-
-    it 'works if name already exists and if_exists is replace by default' do
+    it 'rejects if name already exists' do
       put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: @app2.name do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:url].present?).to be true
-
-        apps = Carto::Visualization.where(user: @user)
-        expect(apps.length).to be [@app].length
-
-        app_updated = Carto::Visualization.find(@app.id)
-        expect(app_updated.id).to eq @app.id
-        expect(app_updated.name).to eq @app2.name
-      end
-    end
-
-    it 'works if name already exists and if_exists is replace' do
-        put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: @app2.name, if_exists: 'replace' do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:url].present?).to be true
-
-        apps = Carto::Visualization.where(user: @user)
-        expect(apps.length).to be [@app].length
-
-        app_updated = Carto::Visualization.find(@app.id)
-        expect(app_updated.id).to eq @app.id
-        expect(app_updated.name).to eq @app2.name
-      end
-    end
-
-    it 'rejects if name already exists and if_exists is fail' do
-      put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: @app2.name, if_exists: 'fail' do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
       end
     end
 
-    it 'works if if_exists is fail and name does not exists' do
+    it 'works if name does not exists' do
       new_name = 'other_name'
-      put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: new_name, if_exists: 'fail' do |response|
+      put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: new_name do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
 
@@ -500,12 +420,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
       visualization = FactoryGirl.create(:carto_visualization, user: @user, name: new_name)
       visualization.save!
 
-      put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: new_name, if_exists: 'fail' do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:url].present?).to be true
-      end
-
-      put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: new_name, if_exists: 'replace' do |response|
+      put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: new_name do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
       end

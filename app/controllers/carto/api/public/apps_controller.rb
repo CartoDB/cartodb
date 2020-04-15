@@ -38,6 +38,9 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
       total_entries: vqb.build.size
     }
     render_jsonp(response)
+  rescue Carto::ParamInvalidError => e
+    CartoDB::Logger.error(exception: e)
+    render_jsonp({ error: e.message }, 400)
   rescue StandardError => e
     CartoDB::Logger.error(exception: e)
     render_jsonp({ error: e.message }, 500)

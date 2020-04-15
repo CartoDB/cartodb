@@ -125,6 +125,8 @@ export default {
 
     goToCertificateCreation () {
       this.firstStepEnabled = false;
+
+      this.$nextTick(() => window.scrollTo({ top: 0, left: 0 }));
     },
 
     goToCertificateList () {

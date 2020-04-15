@@ -13,10 +13,6 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
     Carto::Visualization::PRIVACY_PROTECTED
   ].freeze
 
-  IF_EXISTS_FAIL = 'fail'.freeze
-  IF_EXISTS_REPLACE = 'replace'.freeze
-  VALID_IF_EXISTS = [IF_EXISTS_FAIL, IF_EXISTS_REPLACE].freeze
-
   ssl_required
 
   before_action :check_master_api_key
@@ -25,12 +21,8 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
   before_action :get_app, only: [:update, :delete]
   before_action :get_user, only: [:create, :update, :delete]
   before_action :check_edition_permission, only: [:update, :delete]
-  before_action :validate_if_exists, only: [:create, :update]
-  before_action :get_last_one, only: [:create]
-  before_action :remove_duplicates, only: [:create, :update]
 
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
-  rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -38,30 +30,25 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
     params[:type] = Carto::Visualization::TYPE_APP
     vqb = query_builder_with_filter_from_hash(params)
 
-    visualizations = vqb.with_order(order, order_direction)
-                        .build_paged(page, per_page).map do |v|
+    apps = vqb.with_order(order, order_direction).build_paged(page, per_page).map do |v|
       Carto::Api::Public::AppPresenter.new(self, v.user, v).to_hash
     end
     response = {
-      visualizations: visualizations,
+      apps: apps,
       total_entries: vqb.build.size
     }
     render_jsonp(response)
-  rescue Carto::ParamInvalidError, Carto::ParamCombinationInvalidError => e
-    render_jsonp({ error: e.message }, e.status)
   rescue StandardError => e
     CartoDB::Logger.error(exception: e)
     render_jsonp({ error: e.message }, 500)
   end
 
   def create
-    return update if @app
-
     app = create_visualization_metadata(@logged_user)
     asset = Carto::Asset.for_visualization(visualization: app,
                                            resource: StringIO.new(Base64.decode64(params[:data])))
     asset.save
-    Carto::Tracking::Events::CreatedMap.new(@logged_user.id, event_properties(app).merge(origin: 'custom')).report
+    # Carto::Tracking::Events::CreatedMap.new(@logged_user.id, event_properties(app).merge(origin: 'custom')).report
 
     render_jsonp(Carto::Api::Public::AppPresenter.new(self, @logged_user, app).to_hash, 200)
   rescue ActiveRecord::RecordInvalid => e
@@ -80,7 +67,7 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
       # In case we only update the asset we need to invalidate the visualization
       @app.save
     end
-    Carto::Tracking::Events::ModifiedMap.new(@logged_user.id, event_properties(@app)).report
+    # Carto::Tracking::Events::ModifiedMap.new(@logged_user.id, event_properties(@app)).report
 
     render_jsonp(Carto::Api::Public::AppPresenter.new(self, @logged_user, @app).to_hash, 200)
   rescue ActiveRecord::RecordInvalid => e
@@ -88,7 +75,7 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
   end
 
   def delete
-    Carto::Tracking::Events::DeletedMap.new(@logged_user.id, event_properties(@app)).report
+    # Carto::Tracking::Events::DeletedMap.new(@logged_user.id, event_properties(@app)).report
     @app.destroy
     head 204
   rescue StandardError => e
@@ -109,12 +96,12 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
     app
   end
 
-  def event_properties(app)
-    {
-      user_id: @logged_user.id,
-      visualization_id: app.id
-    }
-  end
+  # def event_properties(app)
+  #   {
+  #     user_id: @logged_user.id,
+  #     app_id: app.id
+  #   }
+  # end
 
   def get_user
     @logged_user = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
@@ -173,31 +160,5 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
     if @app.nil?
       raise Carto::LoadError.new('App doesn\'t exist', 404)
     end
-  end
-
-  def validate_if_exists
-    @if_exists = params[:if_exists]
-    if @if_exists.nil?
-      @if_exists = @app.present? ? IF_EXISTS_REPLACE : IF_EXISTS_FAIL
-    end
-
-    raise Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', ')) unless VALID_IF_EXISTS.include?(@if_exists)
-  end
-
-  def get_last_one
-    if @if_exists == IF_EXISTS_REPLACE
-      @app = apps_by_name.order(updated_at: :desc).first
-    end
-  end
-
-  def remove_duplicates
-    if @if_exists == IF_EXISTS_REPLACE
-      existing_apps = apps_by_name - [@app]
-      existing_apps.each(&:destroy!)
-    end
-  end
-
-  def apps_by_name
-    Carto::Visualization.where(user: @logged_user, name: params[:name], type: Carto::Visualization::TYPE_APP)
   end
 end

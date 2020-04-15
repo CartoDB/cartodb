@@ -13,7 +13,7 @@ module Carto
 
     def validate_ips
       # Check type
-      unless ips.nil? || ips.kind_of?(Array) || ips.any? { |ip| !is.kind_of?(String) }
+      unless ips.nil? || (ips.kind_of?(Array) && ips.all? { |ip| ip.kind_of?(String) })
         errors.add(:ips, "IPs must be either be nil or an array of strings ")
         return false
       end

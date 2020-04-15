@@ -7,7 +7,7 @@
       v-model="certificate.name"></FormInput>
 
     <div class="certificate-creation__passwordprotected">
-      <Toggle label="Password protected" v-model="passwordProtected"></Toggle>
+      <Toggle label="Password Protect" v-model="passwordProtected"></Toggle>
 
       <div class="certificate-creation__passwordfields" v-if="passwordProtected">
         <FormInput
@@ -30,9 +30,9 @@
 
     <div class="certificate-creation__footer">
       <p class="footer__text">
-        You can download the file and copy the code once the certificate is generated.
+        Click on Generate Certificate to download your certificate
       </p>
-      <button class="button button--primary" :disabled="isCreatingCertificate">
+      <button class="button button--primary" :disabled="!certificate.name || isCreatingCertificate">
         {{ this.isCreatingCertificate
            ? $t('CertificateCreation.creatingAction')
            : $t('CertificateCreation.createAction') }}
@@ -77,7 +77,8 @@ export default {
       this.isCreatingCertificate = true;
       const passwordIsValid = this.checkIfPasswordsMatch();
 
-      if (!passwordIsValid) {
+      if (this.passwordProtected && !passwordIsValid) {
+        this.isCreatingCertificate = false;
         return this.setError(this.$t('CertificateCreation.errors.passwordsDoNotMatch'));
       }
 
@@ -85,15 +86,20 @@ export default {
 
       const certificateData = {
         name: certificate.name,
-        pass: certificate.password,
-        server_ca: true
+        server_ca: true,
+        ...this.passwordProtected ? { pass: certificate.password } : {}
       };
 
       this.client
         .directDBConnection()
         .createCertificate(
           certificateData,
-          (_, _1, certificateMetadata) => {
+          (error, _, certificateMetadata) => {
+            if (error) {
+              this.isCreatingCertificate = false;
+              return this.setError(error);
+            }
+
             this.onCertificateCreated(certificateMetadata);
             this.isCreatingCertificate = false;
           }

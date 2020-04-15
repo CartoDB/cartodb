@@ -206,10 +206,6 @@ export default {
   color: $blue--500;
 }
 
-.button--uppercase {
-  text-transform: uppercase;
-}
-
 .connectedapps__modal {
   display: flex;
   flex-direction: column;

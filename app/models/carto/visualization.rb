@@ -308,7 +308,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def map?
-    kuviz? || derived? || app?
+    kuviz? || derived?
   end
 
   def derived?

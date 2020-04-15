@@ -63,8 +63,6 @@ import CertificateCreation from './CertificateCreation';
 import CertificateCard from './CertificateCard';
 import CertificateDownloadModal from './CertificateDownloadModal';
 import InputList from 'new-dashboard/components/forms/InputList';
-import SettingsTabs from 'new-dashboard/components/Tabs/SettingsTabs.vue';
-import SettingsTab from 'new-dashboard/components/Tabs/SettingsTab.vue';
 import SettingsTitle from 'new-dashboard/components/SettingsUI/SettingsTitle.vue';
 
 export default {
@@ -74,8 +72,6 @@ export default {
     CertificateCard,
     CertificateDownloadModal,
     InputList,
-    SettingsTabs,
-    SettingsTab,
     SettingsTitle
   },
 

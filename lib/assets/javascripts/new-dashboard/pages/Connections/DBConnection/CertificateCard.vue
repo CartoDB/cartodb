@@ -15,7 +15,7 @@
       ref="confirmActionDialog"
       title="You are about to revoke your certificate"
       :modalId="certificate.id"
-      description="You need to create a new certificate to connect"
+      description="You won't be able to connect to your CARTO database again using this certificate"
       confirmText="Ok, revoke"
       cancelText="Cancel"
       @confirm="onRevokeActionCalled">

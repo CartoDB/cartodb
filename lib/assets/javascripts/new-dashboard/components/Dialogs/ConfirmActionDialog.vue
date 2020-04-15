@@ -3,8 +3,8 @@
     <div class="confirmActionDialog">
       <div class="confirmActionDialog__content">
         <div class="confirmActionDialog__icon u-mb--24">
-          <img class="confirmActionDialog__svg" svg-inline src="new-dashboard/assets/icons/apps/default.svg">
-          <img class="confirmActionDialog__badge" svg-inline src="new-dashboard/assets/icons/apps/key.svg">
+          <img class="confirmActionDialog__svg" svg-inline src="new-dashboard/assets/icons/certificates/lock.svg">
+          <img class="confirmActionDialog__badge" svg-inline src="new-dashboard/assets/icons/apps/trash.svg">
         </div>
 
         <p class="text is-caption u-mb--8">
@@ -16,11 +16,11 @@
         </p>
 
         <div class="confirmActionDialog__actions">
-          <button class="button u-mr--12" @click="close">
+          <button class="button button--outline button--uppercase u-mr--12" @click="close">
             {{ cancelText }}
           </button>
 
-          <button class="button button--alert" @click="confirm">
+          <button class="button button--alert button--uppercase" @click="confirm">
             {{ confirmText }}
           </button>
         </div>
@@ -99,6 +99,7 @@ export default {
 
   .confirmActionDialog__svg {
     margin: auto;
+    width: 36px;
   }
 
   .confirmActionDialog__badge {
@@ -111,43 +112,9 @@ export default {
 .confirmActionDialog__actions {
   display: flex;
   justify-content: center;
-  width: 100%;
-  margin-top: 54px;
+  width: 90%;
+  margin: 54px;
   padding-top: 38px;
   border-top: 1px solid $neutral--300;
 }
-
-// .oauthapps__modal-button {
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   padding: 12px 18px;
-//   border: 1px solid $color-primary;
-//   border-radius: 4px;
-//   background-color: transparent;
-//   color: $color-primary;
-//   font-family: 'Open Sans', sans-serif;
-//   font-size: 12px;
-//   font-weight: 600;
-//   letter-spacing: 0;
-//   text-transform: uppercase;
-//   cursor: pointer;
-
-//   &:hover {
-//     background-color: transparent;
-//     text-decoration: underline;
-//   }
-
-//   &--regenerate,
-//   &--delete {
-//     border: none;
-//     background-color: $button-alert__bg-color;
-//     color: $white;
-
-//     &:hover {
-//       background-color: $button-alert__bg-color--hover;
-//       text-decoration: none;
-//     }
-//   }
-// }
 </style>

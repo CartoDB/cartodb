@@ -51,7 +51,7 @@
       <CertificateCreation class="creation__component" @create="onCertificateCreated"></CertificateCreation>
     </section>
 
-    <CertificateDownloadModal certificate="newCertificate" ref="certificateDownload"></CertificateDownloadModal>
+    <CertificateDownloadModal :certificate="newCertificate" ref="certificateDownload"></CertificateDownloadModal>
   </section>
 </template>
 

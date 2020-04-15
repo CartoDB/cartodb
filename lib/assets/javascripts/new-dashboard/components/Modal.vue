@@ -1,6 +1,12 @@
 <template>
-  <modal :name="name" width="100%" height="100%" @closed="close">
-    <button class="modal__button modal__button--close" @click="close" aria-label="Close"></button>
+  <modal :name="name" width="100%" height="100%" :clickToClose="canCloseWithClickOrEsc" @closed="close">
+    <button
+      v-if="canCloseWithClickOrEsc"
+      class="modal__button modal__button--close"
+      aria-label="Close"
+      @click="close">
+    </button>
+
     <slot />
   </modal>
 </template>
@@ -23,6 +29,10 @@ export default {
     name: {
       type: String,
       default: 'modal'
+    },
+    canCloseWithClickOrEsc: {
+      type: Boolean,
+      default: true
     },
     isOpen: {
       type: Boolean,

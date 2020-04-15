@@ -16,16 +16,12 @@ import { mapState } from 'vuex';
 import Page from 'new-dashboard/components/Page';
 import DBConnection from './DBConnection/DBConnection.vue';
 import SettingsSidebar from 'new-dashboard/components/Apps/SettingsSidebar';
-import SettingsTabs from 'new-dashboard/components/Tabs/SettingsTabs.vue';
-import SettingsTab from 'new-dashboard/components/Tabs/SettingsTab.vue';
 
 export default {
   name: 'ConnectionsPage',
   components: {
     Page,
     DBConnection,
-    SettingsTabs,
-    SettingsTab,
     SettingsSidebar
   },
   computed: {

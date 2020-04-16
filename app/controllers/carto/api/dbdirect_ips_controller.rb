@@ -17,10 +17,9 @@ module Carto
       end
 
       def update
-        ips = params[:ips]
         @user.dbdirect_effective_ips = params[:ips]
         @user.save!
-        render_jsonp({ips: ips}, 201)
+        render_jsonp({ ips: @user.reload.dbdirect_effective_ips }, 201)
       end
 
       def destroy

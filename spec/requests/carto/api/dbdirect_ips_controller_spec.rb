@@ -41,7 +41,7 @@ describe Carto::Api::DbdirectIpsController do
       params = {
         ips: ['100.20.30.40']
       }
-      put_json dbdirect_ip_url(params) do |response|
+      put_json(dbdirect_ip_url, params) do |response|
         expect(response.status).to eq(401)
         expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
       end
@@ -53,7 +53,7 @@ describe Carto::Api::DbdirectIpsController do
           api_key: @carto_user1.api_key
         }
         with_feature_flag @carto_user1, 'dbdirect', false do
-          put_json dbdirect_ip_url(params) do |response|
+          put_json(dbdirect_ip_url, params) do |response|
             expect(response.status).to eq(403)
             expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
           end
@@ -67,7 +67,7 @@ describe Carto::Api::DbdirectIpsController do
         api_key: @carto_user1.api_key
       }
       with_feature_flag @carto_user1, 'dbdirect', true do
-        put_json dbdirect_ip_url(params) do |response|
+        put_json(dbdirect_ip_url, params) do |response|
           expect(response.status).to eq(201)
           expect(response.body[:ips]).to eq ips
           expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips
@@ -83,7 +83,7 @@ describe Carto::Api::DbdirectIpsController do
       with_feature_flag @carto_user1, 'dbdirect', true do
         login_as(@carto_user1, scope: @carto_user1.username)
         login_as(@user1, scope: @user1.username)
-        put_json dbdirect_ip_url(params) do |response|
+        put_json(dbdirect_ip_url, params) do |response|
           expect(response.status).to eq(201)
           expect(response.body[:ips]).to eq ips
           expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips
@@ -99,7 +99,7 @@ describe Carto::Api::DbdirectIpsController do
           ips: ips1,
           api_key: @carto_user1.api_key
         }
-        put_json dbdirect_ip_url(params) do |response|
+        put_json(dbdirect_ip_url, params) do |response|
           expect(response.status).to eq(201)
           expect(response.body[:ips]).to eq ips1
           expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips1
@@ -109,7 +109,7 @@ describe Carto::Api::DbdirectIpsController do
           ips: ips2,
           api_key: @carto_user1.api_key
         }
-        put_json dbdirect_ip_url(params) do |response|
+        put_json(dbdirect_ip_url, params) do |response|
           expect(response.status).to eq(201)
           expect(response.body[:ips]).to eq ips2
           expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips2
@@ -119,16 +119,19 @@ describe Carto::Api::DbdirectIpsController do
 
     it 'rejects invalid IPs' do
       invalid_ips = [
-        '0.0.0.0', '10.20.30.40', '127.0.0.1', '192.168.1.1', '120.120.120.120/20', '100.100.100.300', 'not-an-ip'
+        ['0.0.0.0'], ['10.20.30.40'], ['127.0.0.1'], ['192.168.1.1'],
+        ['120.120.120.120/20'], ['100.100.100.300'], ['not-an-ip'],
+        [11223344],
+        '100.20.30.40'
       ]
-      invalid_ips.each do |ip|
+      invalid_ips.each do |ips|
         params = {
-          ips: [ip],
+          ips: ips,
           api_key: @carto_user1.api_key
         }
 
         with_feature_flag @carto_user1, 'dbdirect', true do
-          put_json dbdirect_ip_url(params) do |response|
+          put_json(dbdirect_ip_url, params) do |response|
             expect(response.status).to eq(422)
             expect(response.body[:errors]).not_to be_nil
             expect(response.body[:errors][:ips]).not_to be_nil

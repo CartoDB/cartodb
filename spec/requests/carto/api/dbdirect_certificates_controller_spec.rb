@@ -79,7 +79,7 @@ describe Carto::Api::DbdirectCertificatesController do
       params = {
         name: 'cert_name'
       }
-      post_json dbdirect_certificates_url(params) do |response|
+      post_json(dbdirect_certificates_url, params) do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -90,7 +90,7 @@ describe Carto::Api::DbdirectCertificatesController do
           api_key: @user1.api_key
         }
         with_feature_flag @user1, 'dbdirect', false do
-          post_json dbdirect_certificates_url(params) do |response|
+          post_json(dbdirect_certificates_url, params) do |response|
             expect(response.status).to eq(403)
           end
         end
@@ -103,7 +103,7 @@ describe Carto::Api::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json dbdirect_certificates_url(params) do |response|
+          post_json(dbdirect_certificates_url, params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
@@ -127,7 +127,7 @@ describe Carto::Api::DbdirectCertificatesController do
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
           login_as(@user1, scope: @user1.username)
-          post_json dbdirect_certificates_url(params) do |response|
+          post_json(dbdirect_certificates_url, params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
@@ -150,7 +150,7 @@ describe Carto::Api::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json dbdirect_certificates_url(params) do |response|
+          post_json(dbdirect_certificates_url, params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
@@ -173,7 +173,7 @@ describe Carto::Api::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json dbdirect_certificates_url(params) do |response|
+          post_json(dbdirect_certificates_url, params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
@@ -181,7 +181,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(cert.user.id).to eq @user1.id
             expect(cert.name).to eq 'cert_name'
           end
-          post_json dbdirect_certificates_url(params) do |response|
+          post_json(dbdirect_certificates_url, params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:name]).to eq 'cert_name_1'
             cert_id = response.body[:id]
@@ -189,7 +189,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(cert.user.id).to eq @user1.id
             expect(cert.name).to eq 'cert_name_1'
           end
-          post_json dbdirect_certificates_url(params) do |response|
+          post_json(dbdirect_certificates_url, params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:name]).to eq 'cert_name_2'
             cert_id = response.body[:id]
@@ -210,7 +210,7 @@ describe Carto::Api::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json dbdirect_certificates_url(params) do |response|
+          post_json(dbdirect_certificates_url, params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_150_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_the_password}
@@ -236,7 +236,7 @@ describe Carto::Api::DbdirectCertificatesController do
       }
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json dbdirect_certificates_url(params) do |response|
+          post_json(dbdirect_certificates_url, params) do |response|
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_200_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}

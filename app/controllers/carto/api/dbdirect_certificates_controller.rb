@@ -1,3 +1,5 @@
+require 'zip'
+
 module Carto
   module Api
     class DbdirectCertificatesController < ::Api::ApplicationController
@@ -47,7 +49,6 @@ module Carto
             render_jsonp(result, 201)
           end
           format.zip do
-            # TODO: generate zip from result; add generated README as well
             send_data(*zip_certificates(result, 201))
           end
         end
@@ -72,11 +73,40 @@ module Carto
         client_key = result[:client_key]
         client_crt = result[:client_crt]
         server_ca = result[:server_ca]
-        # TODO: fetch README template, substitute variables
-        readme = "Here are your files for certificate #{certificate_name} , blablabla, connecto to #{dbproxy_host}:#{dbproxy_port}"
-        filename = "#{certificate_name}.zip" # TODO: include certificate_id too?
-        # TODO: zip readme, client_key, client;crt, server_ca (if present)
+
+        readme_params = {
+          certificate_id: certificate_id,
+          certificate_name: certificate_name,
+          username: username,
+          dbproxy_host: dbproxy_host,
+          dbproxy_port: dbproxy_port
+        }
+        if params[:readme].present?
+          readme = view_context.render(inline: params[:readme], :locals => readme_params)
+        else
+          readme = view_context.render(template: 'carto/api/dbdirect_certificates/README.txt.erb', :locals => readme_params)
+        end
+
+        filename = "#{certificate_name}.zip"
+
         zip_data = readme
+        zipstream = Zip::OutputStream.write_buffer do |zio|
+          zio.put_next_entry('README.txt')
+          zio.write readme
+
+          zio.put_next_entry('client.key')
+          zio.write client_key
+
+          zio.put_next_entry('client.crt')
+          zio.write client_crt
+
+          if server_ca.present?
+            zio.put_next_entry('server_pa.pem')
+            zio.write server_ca
+          end
+        end
+        zip_data = zipstream.string
+
         [
           zip_data,
           type: "application/zip; charset=binary; header=present",

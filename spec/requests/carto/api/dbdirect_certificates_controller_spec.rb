@@ -256,15 +256,20 @@ describe Carto::Api::DbdirectCertificatesController do
     it 'downloads zipped certificates' do
       params = {
         name: 'cert_name',
-        api_key: @user1.api_key
+        api_key: @user1.api_key,
+        readme: "This is <%= certificate_name %>"
       }
+
+      expected_zipname = 'cert_name.zip'
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
-          post_json_with_zip_response dbdirect_certificates_url(params.merge(format: 'zip')) do |response|
+          post_json_with_zip_response(dbdirect_certificates_url(format: 'zip'), params) do |response|
             expect(response.status).to eq(201)
-            # TODO:
-            # response.body contains expected zip payload
-            # response.headers["Content-Disposition"] matches: "attachment; filename=#{EXPECTED_FILENAME}"
+            data = unzip_data(response.body)
+            expect(data['README.txt']).to eq(%{This is cert_name})
+            expect(data['client.key']).to eq(%{key for user00000001_})
+            expect(data['client.crt']).to eq(%{crt for user00000001_300_#{@config['certificates']}})
+            expect(response.headers["Content-Disposition"]).to eq("attachment; filename=#{expected_zipname}")
           end
         end
       end

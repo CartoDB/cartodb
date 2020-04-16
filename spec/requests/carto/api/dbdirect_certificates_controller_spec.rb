@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/feature_flag_helper'
+require 'in_mem_zipper'
 
 class TestCertificateManager
   @crl = []
@@ -265,7 +266,7 @@ describe Carto::Api::DbdirectCertificatesController do
         Cartodb.with_config dbdirect: @config do
           post_json_with_zip_response(dbdirect_certificates_url(format: 'zip'), params) do |response|
             expect(response.status).to eq(201)
-            data = unzip_data(response.body)
+            data = InMemZipper.unzip(response.body)
             expect(data['README.txt']).to eq(%{This is cert_name})
             expect(data['client.key']).to eq(%{key for user00000001_})
             expect(data['client.crt']).to eq(%{crt for user00000001_300_#{@config['certificates']}})

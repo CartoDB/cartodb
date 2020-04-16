@@ -131,15 +131,4 @@ module HelperMethods
       locked:             attributes.fetch(:locked, false)
     }
   end
-
-  def unzip_data(data)
-    fin = StringIO.new(data.force_encoding(Encoding::ASCII_8BIT))
-    entries = {}
-    Zip::InputStream.open(fin) do |fzip|
-      while entry = fzip.get_next_entry
-        entries[entry.name] = fzip.read
-      end
-    end
-    entries
-  end
 end

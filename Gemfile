@@ -24,7 +24,7 @@ gem 'oauth-plugin',            git: 'https://github.com/CartoDB/oauth-plugin.git
 gem 'hiredis',                 '~> 0.6.1'
 gem 'redis',                   '~> 3.3.5'
 
-gem 'nokogiri',                '~> 1.8.2'
+gem 'nokogiri',                '~> 1.10'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk-s3',              '~> 1'
 gem 'ruby-prof',               '0.15.1'
@@ -55,7 +55,7 @@ end
 # Importer & sync tables
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
-gem 'typhoeus',                '0.7.2'
+gem 'typhoeus',                '1.3.1'
 gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
 gem 'google-api-client',       '0.34.1'

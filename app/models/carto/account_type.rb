@@ -6,10 +6,25 @@ module Carto
     INDIVIDUAL = 'Individual'.freeze
     FREE_2020 = 'Free 2020'.freeze
 
-    TRIAL_PLANS = [INDIVIDUAL, FREE_2020].freeze
-    TRIAL_DURATION = { INDIVIDUAL => 14.days, FREE_2020 => 1.year }.freeze
+    TRIAL_PLANS = [FREE_2020].freeze
+    TRIAL_DURATION = { FREE_2020 => 1.year }.freeze
 
     FULLSTORY_SUPPORTED_PLANS = [FREE, PERSONAL30, INDIVIDUAL, FREE_2020].freeze
+    ENTERPRISE_PLANS = [
+      'Cloud Engine & Enterprise Builder - Annual',
+      'ENTERPRISE',
+      'ENTERPRISE LUMP-SUM',
+      'ENTERPRISE SMALL LS AWS',
+      'Enterprise Builder - Annual',
+      'Enterprise Large Lumpsum AWS',
+      'Enterprise Large Lumpsum GCS',
+      'Enterprise Small + Lumpsum AWS',
+      'Enterprise Small + Lumpsum GCS',
+      'Enterprise Small LS GCS',
+      'Internal use engine - Cloud - Annual',
+      'OEM engine - Cloud - Annual',
+      'ORGANIZATION USER'
+    ].freeze
 
     belongs_to :rate_limit, dependent: :destroy
 

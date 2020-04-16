@@ -20,7 +20,7 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.29.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.30.0'.freeze
       ODBC_FDW_VERSION = '0.4.0'.freeze
 
       def initialize(user)
@@ -615,8 +615,7 @@ module CartoDB
       def install_geocoder_api_extension
         @user.in_database(as: :superuser) do |db|
           db.transaction do
-            db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
-            db.run("CREATE EXTENSION IF NOT EXISTS cdb_dataservices_client VERSION '#{CDB_DATASERVICES_CLIENT_VERSION}'")
+            db.run("CREATE EXTENSION IF NOT EXISTS cdb_dataservices_client VERSION '#{CDB_DATASERVICES_CLIENT_VERSION}' CASCADE")
             db.run("ALTER EXTENSION cdb_dataservices_client UPDATE TO '#{CDB_DATASERVICES_CLIENT_VERSION}'")
           end
         end

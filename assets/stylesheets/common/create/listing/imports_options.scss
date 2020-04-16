@@ -75,6 +75,11 @@ $w: $sLayout-width;
       background-color: rgb(43, 60, 67);
       line-height: 13px;
 
+      // Hack so users know they need to scroll down
+      @media screen and (min-height: 700px) and (max-height: 800px) {
+        height: 200px;
+      }
+
       pre {
         padding-left: 14px;
 
@@ -152,11 +157,7 @@ div[class^="gtm-connectors"] {
 $import-button-width: 174px;
 
 .ImportButton {
-  display: flex;
   position: relative;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   width: $import-button-width;
   height: 102px;
   margin-right: 16px;
@@ -176,8 +177,49 @@ $import-button-width: 174px;
     background-color: transparent;
   }
 
-  &:not(.is-enterprise) .ImportButton__tag--beta {
+  &:not(.is-enterprise) .ImportButton__tag--beta,
+  &:not(.is-enterprise) .ImportButton__tag--soon {
     @extend .ImportButton__tag:first-of-type;
+  }
+
+  &__overlay {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: calc(100% - 32px);
+    height: calc(100% - 24px);
+    padding: 12px 16px;
+    border-radius: 4px;
+    background: #FFF;
+    text-align: left;
+  }
+
+  &__link {
+    box-sizing: border-box !important;
+    text-align: center;
+
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
+  }
+
+  &__spinner {
+    &.Spinner {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
   }
 
   &__taglist {
@@ -192,7 +234,7 @@ $import-button-width: 174px;
     top: 0;
     left: 0;
     height: 16px;
-    margin-right: 4px;
+    margin-right: 2px;
     padding: 1px 6px 2px;
     border: 1px solid $cStructure-mainLine;
     border-top: 0;
@@ -220,6 +262,27 @@ $import-button-width: 174px;
       border-bottom-left-radius: 0;
     }
   }
+
+  &__step {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    &.is-active {
+      display: block;
+    }
+  }
+
+  .title--success {
+    color: $cHighlight-positive;
+  }
+
+  .title--error {
+    color: $cHighlight-negative;
+  }
 }
 
 .is-disabled {
@@ -230,8 +293,15 @@ $import-button-width: 174px;
 }
 
 .is-beta .ImportButton__tag--beta,
+.is-soon .ImportButton__tag--soon,
 .is-enterprise .ImportButton__tag--enterprise {
   display: inline-block;
+}
+
+.is-disabled:hover .ImportButton__overlay,
+.is-disabled:focus .ImportButton__overlay,
+.is-disabled .ImportButton__overlay.is-active {
+  display: block;
 }
 
 @mixin importIcon($name) {
@@ -323,6 +393,10 @@ $import-button-width: 174px;
   color: $cLocationBlue;
 }
 
+.ImportOther__step4.is-active {
+  align-items: flex-start;
+}
+
 .ImportOther__step2,
 .ImportOther__step3,
 .ImportOther__step4 {
@@ -395,39 +469,40 @@ $import-button-width: 174px;
 }
 
 .ImportOther__step4 {
-  .ImportOther_requestText {
-    margin: 0 20px;
+  box-sizing: border-box;
+  width: calc(#{$import-button-width} - 32px);
+  height: 80px;
+  padding: 12px 16px;
+
+  .ImportOther_requestTitle {
+    margin-bottom: 4px;
+    color: $cHighlight-positive;
+    font-weight: 600;
   }
 
   .ImportOther__requestButton {
-    box-sizing: content-box;
+    width: 100px;
     margin-top: 12px;
   }
 
-  .ImportOther__requestButton {
-    width: 60px;
-
-    &Text {
-      display: block;
-      margin-right: -20px;
-      margin-left: -8px;
-      background-image: url($assetsDir + '/images/layout/connectors/request-success.svg');
-      background-repeat: no-repeat;
-      background-position: left center;
-      background-size: 12px;
+  &.hasError {
+    .ImportOther_requestTitle {
+      color: $cHighlight-negative;
     }
   }
+}
 
-  &.hasError {
-    border-color: $cHighlight-caution;
-
-    .ImportOther__requestButton {
-      width: auto;
-
-      &Text {
-        margin: auto;
-        background: none;
-      }
-    }
+.success-icon {
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 16px;
+    margin-right: 6px;
+    background-image: url($assetsDir + '/images/layout/connectors/request-success.svg');
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 12px;
+    vertical-align: bottom;
   }
 }

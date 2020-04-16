@@ -215,7 +215,7 @@ module Carto
       @user ||= map.nil? ? nil : map.user
     end
 
-    def default_query(user = nil)
+    def default_query(user = nil, database_schema = nil)
       sym_options = options.symbolize_keys
       query = sym_options[:query]
 
@@ -229,6 +229,8 @@ module Carto
 
         if table_name.present? && !table_name.include?('.') && user_name.present? && qualify
           "SELECT * FROM #{safe_table_name_quoting(user_name)}.#{safe_table_name_quoting(table_name)}"
+        elsif database_schema.present?
+          "SELECT * FROM #{safe_table_name_quoting(database_schema)}.#{safe_table_name_quoting(table_name)}"
         else
           "SELECT * FROM #{qualified_table_name}"
         end

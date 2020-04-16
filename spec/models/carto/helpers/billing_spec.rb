@@ -1,11 +1,11 @@
-require_relative '../../../../app/models/carto/helpers/billing_cycle'
+require_relative '../../../../app/models/carto/helpers/billing'
 require 'ostruct'
 require 'delorean'
 
-describe Carto::BillingCycle do
+describe Carto::Billing do
   describe "#last_billing_cycle" do
     class MyDummyUser < OpenStruct
-      include Carto::BillingCycle
+      include Carto::Billing
     end
 
     before(:each) do
@@ -71,7 +71,7 @@ describe Carto::BillingCycle do
 
   describe "#next_billing_cycle" do
     class MyDummyUser < OpenStruct
-      include Carto::BillingCycle
+      include Carto::Billing
     end
 
     before(:each) do

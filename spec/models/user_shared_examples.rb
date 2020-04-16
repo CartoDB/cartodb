@@ -1049,15 +1049,15 @@ shared_examples_for "user models" do
     end
 
     it 'returns nil if the account does not have a trial' do
-      @user.account_type = 'CORONELLI'
+      @user.account_type = 'ENTERPRISE'
 
       expect(@user.trial_ends_at).to be_nil
     end
 
     it 'returns the expected date for trial accounts' do
-      @user.account_type = 'Individual'
+      @user.account_type = 'Free 2020'
       @user.created_at = Time.parse('2020-02-01 10:00:00')
-      expected_date = Time.parse('2020-02-15 10:00:00')
+      expected_date = Time.parse('2021-02-01 10:00:00')
 
       expect(@user.trial_ends_at).to eql expected_date
     end
@@ -1075,24 +1075,28 @@ shared_examples_for "user models" do
     end
 
     it 'returns 0 the trial has ended' do
-      @user.account_type = 'Individual'
-      @user.created_at = Time.now - 2.months
+      @user.account_type = 'Free 2020'
+      @user.created_at = Time.now - 2.years
 
       expect(@user.remaining_trial_days).to eq 0
     end
 
     it 'returns the remaining number of trial days of the plan' do
-      @user.account_type = 'Individual'
-      @user.created_at = Time.now - 4.days
+      Delorean.time_travel_to('2019-01-15') do
+        @user.account_type = 'Free 2020'
+        @user.created_at = Time.now - 4.days
 
-      expect(@user.remaining_trial_days).to eq 10
+        expect(@user.remaining_trial_days).to eq 361
+      end
     end
 
     it 'rounds up the remaining days' do
-      @user.account_type = 'Individual'
-      @user.created_at = Time.now - 28.hours
+      Delorean.time_travel_to('2019-01-15') do
+        @user.account_type = 'Free 2020'
+        @user.created_at = Time.now - 28.hours
 
-      expect(@user.remaining_trial_days).to eq 13
+        expect(@user.remaining_trial_days).to eq 364
+      end
     end
 
     it 'starts with 365 days for Free accounts in regular years' do
@@ -1126,15 +1130,15 @@ shared_examples_for "user models" do
     end
 
     it 'returns false if the account has an expired trial' do
-      @user.account_type = 'Individual'
-      @user.created_at = Time.now - 2.months
+      @user.account_type = 'Free 2020'
+      @user.created_at = Time.now - 2.years
 
       expect(@user.show_trial_reminder?).to be_false
     end
 
     it 'returns true if the account has an active trial with less than 30 remaining days' do
-      @user.account_type = 'Individual'
-      @user.created_at = Time.now - 1.day
+      @user.account_type = 'Free 2020'
+      @user.created_at = Time.now - 360.days
 
       expect(@user.show_trial_reminder?).to be_true
     end
@@ -1144,6 +1148,16 @@ shared_examples_for "user models" do
       @user.created_at = Time.now - 1.day
 
       expect(@user.show_trial_reminder?).to be_false
+    end
+  end
+
+  describe '#organization_owner?' do
+    it 'returns false if the user does not have organization nor id' do
+      user = build_user
+      user.organization = nil
+      user.id = nil
+
+      expect(user.organization_owner?).to be_false
     end
   end
 end

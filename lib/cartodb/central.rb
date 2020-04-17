@@ -36,7 +36,7 @@ module Cartodb
       http_client.request(
         "#{@host}/#{path}",
         method: method,
-        body: body.to_json,
+        body: body.nil? ? nil: body.to_json,
         userpwd: "#{@auth[:username]}:#{@auth[:password]}",
         headers: { "Content-Type" => "application/json" },
         ssl_verifypeer: Rails.env.production?,

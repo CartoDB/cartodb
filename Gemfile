@@ -55,7 +55,7 @@ end
 # Importer & sync tables
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
-gem 'typhoeus',                '0.7.2'
+gem 'typhoeus',                '1.3.1'
 gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
 gem 'google-api-client',       '0.34.1'

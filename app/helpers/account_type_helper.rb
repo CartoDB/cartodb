@@ -42,11 +42,9 @@ module AccountTypeHelper
     'BASIC LUMP-SUM ACADEMIC' => 'Professional Non-Profit',
     'BASIC LUMP-SUM NON-PROFIT' => 'Professional Non-Profit',
     'Enterprise Builder - Annual' => 'Enterprise',
-    'Enterprise Builder - On-premises - Annual' => 'Enterprise',
     'Cloud Engine & Enterprise Builder - Annual' => 'Enterprise',
     'Internal use engine - Cloud - Annual' => 'Enterprise Engine',
     'Internal use engine - On-premises - Annual' => 'Enterprise Engine',
-    'Internal use engine - On-premises Lite - Annual' => 'Enterprise Engine',
     'OEM engine - Cloud - Annual' => 'Enterprise',
     'OEM engine - On-premises - Annual' => 'Enterprise',
     'PARTNERS' => 'Partner',
@@ -59,7 +57,8 @@ module AccountTypeHelper
     'Free Basemap LDS - Annual' => 'Free',
     'Enterprise LDS - Annual' => 'Enterprise',
     'CARTO Trial Account - Annual' => 'Trial',
-    'Free 2020' => 'Free'
+    'Free 2020' => 'Free',
+    'Grant' => 'Grant'
   }.freeze
 
   PLAN_NAME_BY_ACCOUNT_TYPE_DOWN = Hash[PLAN_NAME_BY_ACCOUNT_TYPE.map { |k, v| [k.downcase, v] }]

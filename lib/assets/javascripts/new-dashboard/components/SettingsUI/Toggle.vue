@@ -1,5 +1,5 @@
 <template>
-  <section class="toggle" :class="{ 'is-disabled': disabled }">
+  <section class="toggle" :class="{ 'toggle--disabled': disabled }">
     <div class="toggle__field">
       <input
         id="toggle"
@@ -57,7 +57,7 @@ $sWidth: 36px;
 $sHeight: 20px;
 
 .toggle{
-  &.is-disabled {
+  &.toggle--disabled {
     opacity: 0.4;
     pointer-events: none;
   }

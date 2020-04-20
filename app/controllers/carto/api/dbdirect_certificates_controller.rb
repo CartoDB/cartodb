@@ -6,6 +6,8 @@ module Carto
       include Carto::ControllerHelper
       extend Carto::DefaultRescueFroms
 
+      skip_before_filter :verify_authenticity_token, only: [:create], if: :zip_formatted_request?
+
       ssl_required :list, :show, :create, :destroy
 
       before_action :load_user

@@ -681,7 +681,7 @@ CartoDB::Application.routes.draw do
       get 'tags' => 'tags#index', as: :api_v3_users_tags
       get 'search_preview/:q' => 'search_preview#index', as: :api_v3_search_preview
 
-      scope 'dbirect' do
+      scope 'dbdirect' do
         resources :certificates, only: [:index, :show, :create, :destroy], controller: 'dbdirect_certificates', as: :dbdirect_certificates
         resource :ip, only: [:show, :update, :destroy], controller: 'dbdirect_ips', as: :dbdirect_ip
       end

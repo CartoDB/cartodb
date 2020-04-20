@@ -128,6 +128,7 @@ describe Carto::Api::DbdirectIpsController do
           ips: ips,
           api_key: @carto_user1.api_key
         }
+
         with_feature_flag @carto_user1, 'dbdirect', true do
           put_json(dbdirect_ip_url, params) do |response|
             expect(response.status).to eq(422)

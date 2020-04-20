@@ -1,3 +1,5 @@
+require 'in_mem_zipper'
+
 module Carto
   module Api
     class DbdirectCertificatesController < ::Api::ApplicationController
@@ -5,7 +7,6 @@ module Carto
       extend Carto::DefaultRescueFroms
 
       ssl_required :list, :show, :create, :destroy
-
 
       before_action :load_user
       before_action :check_permissions
@@ -42,7 +43,21 @@ module Carto
           client_crt: data[:client_crt],
           server_ca: data[:server_ca]
         }
-        render_jsonp(result, 201)
+
+        respond_to do |format|
+          format.json do
+            render_jsonp(result, 201)
+          end
+          format.zip do
+            zip_filename, zip_data = zip_certificates(result)
+            send_data(
+              zip_data,
+              type: "application/zip; charset=binary; header=present",
+              disposition: "attachment; filename=#{zip_filename}",
+              status: 201
+            )
+          end
+        end
       end
 
       def destroy
@@ -53,6 +68,42 @@ module Carto
       end
 
       private
+
+      def zip_certificates(result)
+        username = @user.username
+        dbproxy_host = Cartodb.get_config(:dbdirect, 'pgproxy', 'host')
+        dbproxy_port = Cartodb.get_config(:dbdirect, 'pgproxy', 'port')
+        certificate_id = result[:id]
+        certificate_name = result[:name]
+        client_key = result[:client_key]
+        client_crt = result[:client_crt]
+        server_ca = result[:server_ca]
+
+        readme = generate_readme(
+          certificate_id: certificate_id,
+          certificate_name: certificate_name,
+          username: username,
+          dbproxy_host: dbproxy_host,
+          dbproxy_port: dbproxy_port
+        )
+        filename = "#{certificate_name}.zip"
+
+        zip_data = InMemZipper.zip(
+          'README.txt' => readme,
+          'client.key' => client_key,
+          'client.crt' => client_crt,
+          'server_pa.pem' => server_ca
+        )
+        [ filename, zip_data ]
+      end
+
+      def generate_readme(readme_params)
+        if params[:readme].present?
+          readme = view_context.render(inline: params[:readme], :locals => readme_params)
+        else
+          readme = view_context.render(template: 'carto/api/dbdirect_certificates/README.txt.erb', :locals => readme_params)
+        end
+      end
 
       def load_user
         @user = Carto::User.find(current_viewer.id)

@@ -65,6 +65,17 @@ module HelperMethods
     ) if block_given?
   end
 
+  def post_json_with_zip_response(path, params = {}, headers = http_json_headers)
+    headers = headers.merge("CONTENT_TYPE" => "application/json", 'HTTP_ACCEPT' => 'application/zip')
+    post path, JSON.dump(params), headers
+    the_response = response || get_last_response
+    yield OpenStruct.new(
+      body: the_response.body,
+      status: the_response.status,
+      headers: the_response.headers
+    ) if block_given?
+  end
+
   def delete_json(path, params = {}, headers = http_json_headers)
     headers = headers.merge("CONTENT_TYPE" => "application/json", 'HTTP_ACCEPT' => 'application/json')
     delete path, JSON.dump(params), headers

@@ -1,0 +1,27 @@
+{
+  "presets": [
+    ["@babel/env",
+      {
+        "useBuiltIns": "usage",
+        "corejs": 3,
+        "debug": true
+      }
+    ]
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-transform-classes",
+    "@babel/plugin-transform-object-assign",
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "absoluteRuntime": false,
+        "corejs": 3,
+        "helpers": true,
+        "regenerator": true,
+        "useESModules": true
+      }
+    ]
+  ],
+  "sourceType": "unambiguous"
+}

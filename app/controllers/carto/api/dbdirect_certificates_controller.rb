@@ -49,7 +49,13 @@ module Carto
             render_jsonp(result, 201)
           end
           format.zip do
-            send_data(*zip_certificates(result, 201))
+            zip_filename, zip_data = zip_certificates(result)
+            send_data(
+              zip_data,
+              type: "application/zip; charset=binary; header=present",
+              disposition: "attachment; filename=#{zip_filename}",
+              status: 201
+            )
           end
         end
       end
@@ -63,7 +69,7 @@ module Carto
 
       private
 
-      def zip_certificates(result, status)
+      def zip_certificates(result)
         username = @user.username
         dbproxy_host = Cartodb.get_config(:dbdirect, 'pgproxy', 'host')
         dbproxy_port = Cartodb.get_config(:dbdirect, 'pgproxy', 'port')
@@ -88,13 +94,7 @@ module Carto
           'client.crt' => client_crt,
           'server_pa.pem' => server_ca
         )
-
-        [
-          zip_data,
-          type: "application/zip; charset=binary; header=present",
-          disposition: "attachment; filename=#{filename}",
-          status: status
-        ]
+        [ filename, zip_data ]
       end
 
       def generate_readme(readme_params)

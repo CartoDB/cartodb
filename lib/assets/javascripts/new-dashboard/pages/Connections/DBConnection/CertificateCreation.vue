@@ -6,7 +6,9 @@
       placeholder="My certificate"
       v-model="certificate.name"></FormInput>
 
-    <div class="certificate-creation__passwordprotected">
+    <!-- Disabled because certificates created with password are not compatible
+         with all platforms that we want to support -->
+    <!--<div class="certificate-creation__passwordprotected">
       <Toggle label="Password Protect" v-model="passwordProtected"></Toggle>
 
       <div class="certificate-creation__passwordfields" v-if="passwordProtected">
@@ -26,7 +28,7 @@
           v-model="certificate.passwordCheck"
           :optional="true"></FormInput>
       </div>
-    </div>
+    </div>-->
 
     <div class="certificate-creation__footer">
       <p class="footer__text">

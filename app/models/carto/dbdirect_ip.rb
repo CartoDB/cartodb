@@ -1,4 +1,5 @@
 require 'ip_checker'
+require 'carto/dbdirect/firewall_manager'
 
 module Carto
   class DbdirectIp < ActiveRecord::Base
@@ -12,7 +13,30 @@ module Carto
 
     validate :validate_ips
 
+    before_save do
+
+    after_save do
+      update_firewall(*changes[:ips])
+    end
+
+    after_destroy do
+      update_firewall(ips, nil)
+    end
+
+
+    def self.firewall_manager
+      firewall_manager_class.new(config)
+    end
+
+    def self.firewall_manager_class
+      Carto::Dbdirect::FirewallManager
+    end
+
     private
+
+    def config
+      Cartodb.get_config(:dbdirect, 'firewall')
+    end
 
     MAX_IP_MASK_HOST_BITS = 8
 
@@ -45,6 +69,15 @@ module Carto
         exclude_local: true,
         exclude_loopback: true
       )
+    end
+
+    def update_firewall(old_ips, new_ips)
+      old_ips ||= []
+      new_ips ||= []
+      if old_ips.sort != new_ips.sort
+        rule_id = dbdirect_bearer.organization&.name || dbdirect_bearer.username
+        firewall_manager.replace_rule(rule_id, new_ips)
+      end
     end
   end
 end

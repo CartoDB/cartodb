@@ -319,8 +319,6 @@ class Carto::User < ActiveRecord::Base
     bearer.create_dbdirect_ip!(ips: ips) if ips.present?
   end
 
-  private
-
   def dbdirect_bearer
     if organization.present? && organization.owner != self
       organization.owner
@@ -328,6 +326,8 @@ class Carto::User < ActiveRecord::Base
       self
     end
   end
+
+  private
 
   def set_database_host
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']

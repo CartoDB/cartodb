@@ -539,7 +539,7 @@ describe Carto::VisualizationQueryBuilder do
     it 'returns the public maps of a user' do
       result = Carto::VisualizationQueryBuilder.user_public_privacy_visualizations(@user).build
 
-      expect(result.count).to eq 3
+      expect(result.count).to eq 2
       expect(result.all.map(&:privacy).uniq).to eq [Carto::Visualization::PRIVACY_PUBLIC]
     end
 
@@ -560,7 +560,7 @@ describe Carto::VisualizationQueryBuilder do
     it 'returns all the user maps' do
       result = Carto::VisualizationQueryBuilder.user_all_visualizations(@user).build
 
-      expect(result.count).to eq 6
+      expect(result.count).to eq 5
     end
   end
 end

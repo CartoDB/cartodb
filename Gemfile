@@ -83,6 +83,7 @@ gem 'resque-metrics',        '0.1.1'
 
 gem 'net-telnet'
 
+gem 'rubyzip',               '>= 2.0.0'
 
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'

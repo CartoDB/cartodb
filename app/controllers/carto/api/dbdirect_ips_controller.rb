@@ -17,17 +17,15 @@ module Carto
       end
 
       def update
-        ips = params[:ips]
         @user.dbdirect_effective_ips = params[:ips]
         @user.save!
-        render_jsonp({ips: ips}, 201)
+        render_jsonp({ ips: @user.reload.dbdirect_effective_ips }, 201)
       end
 
       def destroy
-        previous_ips = @user.dbdirect_effective_ips
         @user.dbdirect_effective_ips = nil
         @user.save!
-        render_jsonp({ips: previous_ips}, 200)
+        head :no_content
       end
 
       private
@@ -40,8 +38,8 @@ module Carto
         # TODO: should the user be an organization owner?
         api_key = Carto::ApiKey.find_by_token(params["api_key"])
         if api_key.present?
-          raise UnauthorizedError unless api_key&.master?
-          raise UnauthorizedError unless api_key.user_id === @user.id
+          raise UnauthorizedError unless api_key.master?
+          raise UnauthorizedError unless api_key.user_id == @user.id
         end
         unless @user.has_feature_flag?('dbdirect')
           raise UnauthorizedError.new("DBDirect not enabled for user #{@user.username}")

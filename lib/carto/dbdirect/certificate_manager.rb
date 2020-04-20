@@ -13,7 +13,7 @@ module Carto
 
       attr_reader :config
 
-      def generate_certificateusername(passphrase:, validity_days:, server_ca:)
+      def generate_certificate(username:, passphrase:, validity_days:, server_ca:)
         certificates = nil
         arn = nil
         key = openssl_generate_key(passphrase)

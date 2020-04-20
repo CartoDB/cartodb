@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/feature_flag_helper'
+require 'in_mem_zipper'
 
 class TestCertificateManager
   @crl = []
@@ -49,6 +50,10 @@ describe Carto::Api::DbdirectCertificatesController do
         aws_access_key_id: 'the_aws_key',
         aws_secret_key: 'the_aws_secret',
         aws_region: 'the_aws_region'
+      },
+      pgproxy: {
+        host: 'the-pgproxy-host',
+        port: 9876
       }
     }.with_indifferent_access
   end
@@ -244,6 +249,28 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(cert.user.id).to eq @user1.id
             expect(cert.name).to eq 'cert_name'
             expect(cert.arn).to eq %{arn for user00000001_200_#{@config['certificates']}}
+          end
+        end
+      end
+    end
+
+    it 'downloads zipped certificates' do
+      params = {
+        name: 'cert_name',
+        api_key: @user1.api_key,
+        readme: "This is <%= certificate_name %>"
+      }
+
+      expected_zipname = 'cert_name.zip'
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json_with_zip_response(dbdirect_certificates_url(format: 'zip'), params) do |response|
+            expect(response.status).to eq(201)
+            data = InMemZipper.unzip(response.body)
+            expect(data['README.txt']).to eq(%{This is cert_name})
+            expect(data['client.key']).to eq(%{key for user00000001_})
+            expect(data['client.crt']).to eq(%{crt for user00000001_300_#{@config['certificates']}})
+            expect(response.headers["Content-Disposition"]).to eq("attachment; filename=#{expected_zipname}")
           end
         end
       end

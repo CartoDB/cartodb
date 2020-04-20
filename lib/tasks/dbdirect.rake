@@ -83,20 +83,23 @@ namespace :carto do
       end
     end
 
-    desc "Save orgnization ips"
+    desc "Save orgnization ips (use ; to separate ips)"
     task :set_organization_ips, [:org, :ips] => :environment do |_t, args|
       organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
       raise "Couldn't find organization #{args.org.inspect}" unless organization.present?
 
+      set_ips = args.ips.present? ? args.ips.split(';') : []
+
       org_id = "#{organization.name} (#{organization.id})"
       old_ips = organization.dbdirect_effective_ips
-      delete = args.ips.blank?
-      organization.owner.dbdirect_effective_ips = args.ips
+      organization.dbdirect_effective_ips = set_ips
+      organization.reload
+      new_ips = organization.dbdirect_effective_ips
       if old_ips.present?
         puts "Previous DBDirect IPs for organization #{org_id}:"
         puts old_ips
       end
-      if delete
+      if new_ips.blank?
         if old_ips.present?
           puts "IPs deleted for organization #{org_id}:"
         else
@@ -104,7 +107,7 @@ namespace :carto do
         end
       else
         puts "New IPs for organization #{org_id}:"
-        puts args.ips
+        puts new_ips
       end
     end
   end

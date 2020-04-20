@@ -539,6 +539,7 @@ DEPENDENCIES
   rspec-rails (= 2.12.0)
   ruby-prof (= 0.15.1)
   ruby-saml (= 1.4.1)
+  rubyzip (>= 2.0.0)
   selenium-webdriver (>= 2.5.0)
   sequel (~> 4.45.0)
   sequel-rails (~> 1.0.1)

@@ -55,6 +55,7 @@ export default {
     onClick () {
       if (this.currentState === 'ready') {
         this.$emit('ready');
+        return;
       }
 
       this.currentState = 'waiting';

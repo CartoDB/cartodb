@@ -4,22 +4,22 @@
       <div class="certificate__name">{{ certificate.name }}</div>
       <div class="certificate__actions">
         <button type="button" class="button button--ghost button--small button--revoke" @click="revoke">
-          $t('CertificateCard.revoke')
+          {{ $t('CertificateCard.revoke') }}
         </button>
       </div>
     </div>
 
     <div class="certificate__expiration" v-if="certificate.expiration">
-      $t('CertificateCard.expiration', { expirationDate })
+      {{ $t('CertificateCard.expiration', { expirationDate }) }}
     </div>
 
     <ConfirmActionDialog
       ref="confirmActionDialog"
       :modalId="certificate.id"
       :title="$t('CertificateCard.revocation.title')"
-      :description="t('CertificateCard.revocation.description')"
-      :confirmText="t('CertificateCard.revocation.confirm')"
-      :cancelText="t('CertificateCard.revocation.cancel')"
+      :description="$t('CertificateCard.revocation.description')"
+      :confirmText="$t('CertificateCard.revocation.confirm')"
+      :cancelText="$t('CertificateCard.revocation.cancel')"
       @confirm="onRevokeActionCalled">
     </ConfirmActionDialog>
   </article>

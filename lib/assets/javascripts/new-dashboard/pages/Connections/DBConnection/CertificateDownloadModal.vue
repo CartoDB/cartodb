@@ -36,6 +36,7 @@
 <script>
 import Modal from 'new-dashboard/components/Modal';
 import ActionButton from 'new-dashboard/components/forms/ActionButton';
+import { downloadAsZip } from 'new-dashboard/utils/zip';
 
 export default {
   name: 'CertificateDownloadModal',
@@ -64,7 +65,8 @@ export default {
     },
     onDownloadClick () {
       return new Promise(resolve => {
-        setTimeout(() => { resolve(); }, 2000);
+        downloadAsZip(this.$props.certificate.fileName, this.$props.certificate.file);
+        setTimeout(() => { resolve(); }, 1000);
       });
     },
     onDownloadFinish () {

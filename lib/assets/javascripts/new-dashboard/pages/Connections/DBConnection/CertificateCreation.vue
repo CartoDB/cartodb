@@ -92,20 +92,22 @@ export default {
         ...this.passwordProtected ? { pass: certificate.password } : {}
       };
 
-      this.client
+      return this.client
         .directDBConnection()
-        .createCertificate(
-          certificateData,
-          (error, _, certificateMetadata) => {
-            if (error) {
-              this.isCreatingCertificate = false;
-              return this.setError(error);
-            }
+        .createCertificate(certificateData, 'zip')
+        .then(async (certificateContents) => {
+          this.onCertificateCreated({
+            ...certificateData,
+            ...certificateContents
+          });
 
-            this.onCertificateCreated(certificateMetadata);
-            this.isCreatingCertificate = false;
-          }
-        );
+          this.isCreatingCertificate = false;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.isCreatingCertificate = false;
+          return this.setError(error);
+        });
     },
 
     onCertificateCreated (certificateMetadata) {

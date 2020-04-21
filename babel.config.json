@@ -1,10 +1,10 @@
 {
   "presets": [
-    ["@babel/env",
+    [
+      "@babel/env",
       {
         "useBuiltIns": "usage",
-        "corejs": 3,
-        "debug": true
+        "corejs": 3
       }
     ]
   ],
@@ -15,13 +15,22 @@
     [
       "@babel/plugin-transform-runtime",
       {
-        "absoluteRuntime": false,
-        "corejs": 3,
-        "helpers": true,
-        "regenerator": true,
-        "useESModules": true
+        "corejs": 3
       }
     ]
   ],
-  "sourceType": "unambiguous"
+  "sourceType": "unambiguous",
+  "env": {
+    "test": {
+      "presets": [
+        ["@babel/env"]
+      ],
+      "plugins": [
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-classes",
+        "@babel/plugin-transform-object-assign",
+        "@babel/plugin-transform-modules-commonjs"
+      ]
+    }
+  }
 }

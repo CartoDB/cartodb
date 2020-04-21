@@ -13,8 +13,6 @@ module Carto
 
     validate :validate_ips
 
-    before_save do
-
     after_save do
       update_firewall(*changes[:ips])
     end
@@ -34,8 +32,12 @@ module Carto
 
     private
 
-    def config
-      Cartodb.get_config(:dbdirect, 'firewall')
+    class <<self
+      private
+
+      def config
+        Cartodb.get_config(:dbdirect, 'firewall')
+      end
     end
 
     MAX_IP_MASK_HOST_BITS = 8
@@ -75,8 +77,8 @@ module Carto
       old_ips ||= []
       new_ips ||= []
       if old_ips.sort != new_ips.sort
-        rule_id = dbdirect_bearer.organization&.name || dbdirect_bearer.username
-        firewall_manager.replace_rule(rule_id, new_ips)
+        rule_id = user.dbdirect_bearer.organization&.name || user.dbdirect_bearer.username
+        self.class.firewall_manager.replace_rule(rule_id, new_ips)
       end
     end
   end

@@ -783,6 +783,7 @@ defaults: &defaults
       host: 'dbconn.carto.com'
       port: 5432
     firewall:
+      enabled: false
       project_id: ''
       rule_name: ''
       network: ''

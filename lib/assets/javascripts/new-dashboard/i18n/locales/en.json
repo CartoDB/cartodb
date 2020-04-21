@@ -766,10 +766,62 @@
     }
   },
   "CertificateCreation": {
-    "createAction": "Generate Certificate",
-    "creatingAction": "Generating...",
     "errors": {
-      "passwordsDoNotMatch": "Create Certificate"
+      "passwordsDoNotMatch": "Passwords do not match"
+    },
+    "form": {
+      "name": {
+        "title": "Name",
+        "placeholder": "My certificate"
+      },
+      "submit": {
+        "description": "Click on Generate Certificate to download your certificate",
+        "action": "Generate Certificate",
+        "performingAction": "Generating..."
+      }
+    }
+  },
+  "CertificateCard": {
+    "expiration": "Expires {expirationDate}",
+    "revoke": "Revoke",
+    "revocation": {
+      "title": "You are about to revoke your certificate",
+      "description": "You won't be able to connect to your CARTO database again using this certificate",
+      "confirm": "Ok, revoke",
+      "cancel": "Cancel"
+    }
+  },
+  "CertificateDownloadModal": {
+    "title": "Your <span class='is-bold'>new certificate</span> has been created",
+    "description": "The ZIP file contains the certificate files along with information about the parameters for setting up your connection.",
+    "warning": "⚠️ Before you can close this dialog, you must download your certificate. The file will not be accessible after this dialog is closed.",
+    "download": {
+      "download": "DOWNLOAD .ZIP",
+      "waiting": "DOWNLOADING",
+      "ready": "CLOSE WINDOW"
+    }
+  },
+  "DBConnection": {
+    "description": "To allow connection to the CARTO database from your desktop GIS applications such as <span class='strong'>QGIS</span>, <span class='strong'>Tableau</span>, or <span class='strong'>Power BI</span>, among others, you'll need to add at least one IP. You can read more in our <a href='#'>developer documentation</a>.",
+    "ipsSection": {
+      "title": "1. Your IPs",
+      "allowAllIPs": "Allow connections from any IP addresses (Coming Soon)",
+      "ipList": {
+        "title": "Allowed IP addresses",
+        "placeholder": "12.12.12.12",
+        "description": "Computer or device IP address.",
+        "getCurrentIP": "Get your IP address"
+      }
+    },
+    "certificatesSection": {
+      "title": "2. Your certificates ({certificatesLength} of {certificateLimit})",
+      "createNewCertificate": "New Certificate",
+      "noCertificates": "You have not generated any certificates yet."
+    }
+  },
+  "Connections": {
+    "sections": {
+      "ipAndCertificates": "IPs and Certificates"
     }
   }
 }

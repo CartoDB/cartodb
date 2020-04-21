@@ -2,8 +2,8 @@
   <form class="certificate-creation" @submit.prevent="createCertificate(certificate)">
     <FormInput
       class="field__name"
-      title="Name"
-      placeholder="My certificate"
+      :title="$t('CertificateCreation.form.name.title')"
+      :placeholder="$t('CertificateCreation.form.name.placeholder')"
       v-model="certificate.name"></FormInput>
 
     <!-- Disabled because certificates created with password are not compatible
@@ -32,12 +32,12 @@
 
     <div class="certificate-creation__footer">
       <p class="footer__text">
-        Click on Generate Certificate to download your certificate
+        $t('CertificateCreation.submit.description')
       </p>
       <button class="button button--primary" :disabled="!certificate.name || isCreatingCertificate">
         {{ this.isCreatingCertificate
-           ? $t('CertificateCreation.creatingAction')
-           : $t('CertificateCreation.createAction') }}
+           ? $t('CertificateCreation.submit.action')
+           : $t('CertificateCreation.submit.performingAction') }}
       </button>
     </div>
   </form>

@@ -33,7 +33,7 @@
 import Modal from '../Modal';
 
 export default {
-  name: 'DestructiveActionDialog',
+  name: 'ConfirmActionDialog',
   components: { Modal },
   props: {
     modalId: String,

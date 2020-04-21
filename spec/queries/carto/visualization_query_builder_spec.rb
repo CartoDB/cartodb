@@ -513,6 +513,8 @@ describe Carto::VisualizationQueryBuilder do
                                                privacy: Carto::Visualization::PRIVACY_PUBLIC)
       FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_KUVIZ,
                                                privacy: Carto::Visualization::PRIVACY_PUBLIC)
+      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_APP,
+                                               privacy: Carto::Visualization::PRIVACY_PUBLIC)
       FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_CANONICAL,
                                                privacy: Carto::Visualization::PRIVACY_PRIVATE)
       FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,

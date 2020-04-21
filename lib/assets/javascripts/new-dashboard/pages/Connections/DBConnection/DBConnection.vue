@@ -1,37 +1,39 @@
 <template>
   <section class="dbconnection">
     <section class="dbconnection-list" v-if="firstStepEnabled">
-      <p class="dbconnection__description">To allow connection to the CARTO database from your desktop GIS applications such as <span class="strong">QGIS</span>, <span class="strong">Tableau</span>, or <span class="strong">Power BI</span>, among others, you'll need to add at least one IP. You can read more in our <a href="#">developer documentation</a>.</p>
+      <p class="dbconnection__description" v-html="$t('DBConnection.description')"></p>
 
       <section class="dbconnection__ips">
-        <SettingsTitle title="1. Your IPs"></SettingsTitle>
+        <SettingsTitle :title="$t('DBConnection.ipsSection.title')"></SettingsTitle>
 
         <Toggle
-          :disabled="true"
           class="dbconnection__formsection"
-          label="Allow connections from any IP addresses">
+          :disabled="true"
+          :label="$t('DBConnection.ipsSection.allowAllIPs')">
         </Toggle>
 
         <InputList
           ref="ipInputList"
           class="dbconnection__formsection"
-          title="Allowed IP addresses"
-          placeholder="12.12.12.12"
+          :title="$t('DBConnection.ipsSection.ipList.title')"
+          :placeholder="$t('DBConnection.ipsSection.ipList.placeholder')"
           :values="ipList"
           :fieldValidator="checkIfIPIsValid"
           :addElementToState="false"
           @removeElement="onIPsChanged">
-          Computer or device IP address.
-          <a href="javascript:void(0)" @click="fillDeviceIPAddress">Get your IP address</a>.
+          {{ $t('DBConnection.ipsSection.ipList.description') }}
+          <a href="javascript:void(0)" @click="fillDeviceIPAddress">{{ $t('DBConnection.ipsSection.ipList.getCurrentIP') }}</a>.
         </InputList>
       </section>
 
-      <SettingsTitle :title="`2. Your certificates (${certificatesLength} of ${certificateLimit})`">
+      <SettingsTitle :title="$t('DBConnection.certificatesSection.title', {certificatesLength, certificateLimit})">
         <div slot="actions">
           <button
             class="button button--small"
             :disabled="!canCreateCertificates"
-            @click="goToCertificateCreation">New Certificate</button>
+            @click="goToCertificateCreation">
+            {{ $t('DBConnection.certificatesSection.createNewCertificate') }}
+          </button>
         </div>
       </SettingsTitle>
 
@@ -45,7 +47,7 @@
         </template>
 
         <p class="dbconnection__empty" v-else>
-          You have not generated any certificates yet.
+          {{ $t('DBConnection.certificatesSection.noCertificates') }}
         </p>
       </section>
     </section>

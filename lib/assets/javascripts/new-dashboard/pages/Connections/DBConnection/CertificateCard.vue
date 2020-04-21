@@ -4,20 +4,22 @@
       <div class="certificate__name">{{ certificate.name }}</div>
       <div class="certificate__actions">
         <button type="button" class="button button--ghost button--small button--revoke" @click="revoke">
-          Revoke
+          $t('CertificateCard.revoke')
         </button>
       </div>
     </div>
-    <!-- Cuidado con el null -->
-    <div class="certificate__expiration">Expires {{ expirationDate }}</div>
+
+    <div class="certificate__expiration" v-if="certificate.expiration">
+      $t('CertificateCard.expiration', { expirationDate })
+    </div>
 
     <ConfirmActionDialog
       ref="confirmActionDialog"
-      title="You are about to revoke your certificate"
       :modalId="certificate.id"
-      description="You won't be able to connect to your CARTO database again using this certificate"
-      confirmText="Ok, revoke"
-      cancelText="Cancel"
+      :title="$t('CertificateCard.revocation.title')"
+      :description="t('CertificateCard.revocation.description')"
+      :confirmText="t('CertificateCard.revocation.confirm')"
+      :cancelText="t('CertificateCard.revocation.cancel')"
       @confirm="onRevokeActionCalled">
     </ConfirmActionDialog>
   </article>

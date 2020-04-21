@@ -7,25 +7,22 @@
           <img class="certificateDownloadDialog__badge" svg-inline src="new-dashboard/assets/icons/common/check-bubble.svg">
         </div>
 
-        <p class="text is-caption u-mb--8">
-          Your <span class="is-bold">new certificate</span> has been created
-        </p>
+        <p class="text is-caption u-mb--8" v-html="$t('CertificateDownloadModal.title')"></p>
 
         <p class="text is-small is-txtSoftGrey certificateDownloadDialog__description">
-          The ZIP file contains the certificate files along with information about the parameters for setting up your connection.
+          {{ $t('CertificateDownloadModal.description') }}
         </p>
 
         <p class="text is-small is-txtGrey">
-          ⚠️ Before you can close this dialog, you must download your certificate. The file will not be accessible after this dialog is closed.
+          {{ $t('CertificateDownloadModal.description') }}
         </p>
       </div>
 
       <div class="certificateDownloadDialog__footer">
-        <!-- resetear status de downloadState -->
         <ActionButton
-          activeText="DOWNLOAD .ZIP"
-          waitingText="DOWNLOADING"
-          readyText="CLOSE WINDOW"
+          :activeText="$t('CertificateDownloadModal.download.download')"
+          :waitingText="$t('CertificateDownloadModal.download.waiting')"
+          :readyText="$t('CertificateDownloadModal.download.ready')"
           :action="onDownloadClick"
           @ready="onDownloadFinish"></ActionButton>
       </div>

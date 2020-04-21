@@ -14,7 +14,7 @@
 
     <% if (isEnterprise) { %>
       <li class="SideMenu-typeItem">
-        <a href="<%= connectionsUrl %>" class="SideMenu-typeLink <% if (path === connectionsUrl) { %>is-selected<% } %>">
+        <a href="<%= connectionsUrl %>" class="SideMenu-typeLink">
           Connections
         </a>
       </li>

@@ -931,34 +931,39 @@ describe User do
   end
 
   describe 'ghost tables event trigger' do
+    before(:all) do
+      CartoDB::UserModule::DBService.any_instance.unstub(:create_ghost_tables_event_trigger)
+      @ghost_tables_user = create_user
+    end
+
+    after(:all) do
+      @ghost_tables_user.destroy
+      CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
+    end
+
     it 'creates the cdb_ddl_execution table with the user' do
-      table_name = @user.in_database(as: :superuser)
-                     .fetch("SELECT to_regclass('cartodb.cdb_ddl_execution');")
-                     .first[:to_regclass]
+      table_name = @ghost_tables_user.in_database(as: :superuser)
+                                     .fetch("SELECT to_regclass('cartodb.cdb_ddl_execution');")
+                                     .first[:to_regclass]
       table_name.should eql 'cdb_ddl_execution'
     end
 
     it 'removes the cdb_ddl_execution table when calling drop_ghost_tables_event_trigger' do
-      @user.db_service.drop_ghost_tables_event_trigger
+      @ghost_tables_user.db_service.drop_ghost_tables_event_trigger
 
-      table_name = @user.in_database(as: :superuser)
-                     .fetch("SELECT to_regclass('cartodb.cdb_ddl_execution');")
-                     .first[:to_regclass]
+      table_name = @ghost_tables_user.in_database(as: :superuser)
+                                     .fetch("SELECT to_regclass('cartodb.cdb_ddl_execution');")
+                                     .first[:to_regclass]
       table_name.should be_nil
 
-      @user.db_service.create_ghost_tables_event_trigger
+      @ghost_tables_user.db_service.create_ghost_tables_event_trigger
     end
 
     it 'saves the TIS config from app_config.yml to cdb_conf' do
-      CartoDB::UserModule::DBService.any_instance.unstub(:configure_ghost_table_event_trigger)
-      user = create_user
-
-      cdb_conf = user.in_database(as: :superuser)
-                   .fetch("SELECT cartodb.CDB_Conf_GetConf('invalidation_service')").first[:cdb_conf_getconf]
+      cdb_conf = @ghost_tables_user.in_database(as: :superuser)
+                                   .fetch("SELECT cartodb.CDB_Conf_GetConf('invalidation_service')")
+                                   .first[:cdb_conf_getconf]
       cdb_conf.should be
-
-      user.destroy
-      CartoDB::UserModule::DBService.any_instance.stubs(:configure_ghost_table_event_trigger).returns(true)
     end
   end
 end

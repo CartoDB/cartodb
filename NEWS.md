@@ -5,14 +5,17 @@ Development
 - DB Connectors removed from the main repository
 
 ### Features
-- Use Dataservices API client 0.29.0
+- Use Dataservices API client 0.30.0
 - Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
 - Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))
 - Add Kepler.gl maps to the Maps section in the Dashboard's Home page ([#15487](https://github.com/CartoDB/cartodb/issues/15487))
 - Request connector flow with all the states on the same screen ([#15515](https://github.com/CartoDB/cartodb/issues/15515))
 - Hooks to override org settings for gear plugin ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
+- New app visualization type and endpoints for deploying apps [#15595](https://github.com/CartoDB/cartodb/pull/15595)
 
 ### Bug fixes / enhancements
+- Fixes bug in CartoDB Central communication ([#15606](https://github.com/CartoDB/cartodb/pull/15606))
+- Fix invalid connector IPs information
 - Fix wording for feedback
 - Use visualization user google api key when present ([#2394](https://github.com/CartoDB/support/issues/2394))
 - Public privacy options for maps & datasets can be disabled in UI with quotas ([#524](https://github.com/CartoDB/product/issues/524))
@@ -29,6 +32,8 @@ Development
 - Validate email only on change ([#15575](https://github.com/CartoDB/cartodb/pull/15575))
 - Fix viewer user creation from UI ([#15580](https://github.com/CartoDB/cartodb/pull/15580))
 - Set node 10.15.1 as default and only for building assets, removing 6.9.2 ([#15530](https://github.com/CartoDB/cartodb/issues/15530))
+- Update toolkit libraries to fix case sensitive fields ([#15569](https://github.com/CartoDB/cartodb/pull/15569))
+- Fix to avoid locks when sorting rows in dataset table ([#2399](https://github.com/CartoDB/support/issues/2399))
 - Lazy loading of Dashboard routes ([#15581](https://github.com/CartoDB/cartodb/pull/15581))
 
 4.36.0 (2020-03-09)

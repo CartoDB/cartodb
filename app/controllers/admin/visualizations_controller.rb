@@ -39,6 +39,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
   before_filter :redirect_to_kuviz_if_needed, only: [:embed_map]
+  before_filter :redirect_to_app_if_needed, only: [:embed_map]
   before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
                                                          :show_organization_embed_map, :show_protected_public_map,
                                                          :show_protected_embed_map,
@@ -670,6 +671,10 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def redirect_to_kuviz_if_needed
     redirect_to(CartoDB.url(self, 'kuviz_show', params: { id: @visualization.id })) if @visualization&.kuviz?
+  end
+
+  def redirect_to_app_if_needed
+    redirect_to(CartoDB.url(self, 'app_show', params: { id: @visualization.id })) if @visualization&.app?
   end
 
   def redirect_to_builder_embed_if_v3

@@ -167,6 +167,7 @@ module Carto
         return unless organization
 
         return kuviz_url(@visualization) if @visualization.kuviz?
+        return app_url(@visualization) if @visualization.app?
 
         # When a visualization is private, checks of permissions need not only the Id but also the vis owner database schema
         # Logic on public_map route will handle permissions so here we only "namespace the id" when proceeds
@@ -192,6 +193,13 @@ module Carto
         org_name = visualization.user.organization.name
         username = visualization.user.username
         path = CartoDB.path(@context, 'kuviz_show', id: visualization.id)
+        "#{CartoDB.base_url(org_name, username)}#{path}"
+      end
+
+      def app_url(visualization)
+        org_name = visualization.user.organization.name
+        username = visualization.user.username
+        path = CartoDB.path(@context, 'app_show', id: visualization.id)
         "#{CartoDB.base_url(org_name, username)}#{path}"
       end
 
@@ -269,6 +277,10 @@ module Carto
                       user: @current_viewer)
         elsif @visualization.kuviz?
           CartoDB.url(@context, 'kuviz_show',
+                      params: { id: @visualization.id },
+                      user: @current_viewer)
+        elsif @visualization.app?
+          CartoDB.url(@context, 'app_show',
                       params: { id: @visualization.id },
                       user: @current_viewer)
         else

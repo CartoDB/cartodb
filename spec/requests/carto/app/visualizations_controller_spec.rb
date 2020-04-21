@@ -2,7 +2,7 @@
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
 
-describe Carto::Kuviz::VisualizationsController do
+describe Carto::App::VisualizationsController do
   include Warden::Test::Helpers
 
   after(:all) do
@@ -11,37 +11,37 @@ describe Carto::Kuviz::VisualizationsController do
 
   describe '#show' do
     before(:each) do
-      @kuviz = FactoryGirl.create(:kuviz_visualization)
-      @kuviz.save
-      @asset = Carto::Asset.for_visualization(visualization: @kuviz,
+      @app = FactoryGirl.create(:app_visualization)
+      @app.save
+      @asset = Carto::Asset.for_visualization(visualization: @app,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
-      login(@kuviz.user)
+      login(@app.user)
     end
 
-    it 'shows public kuviz' do
-      get kuviz_show_url(id: @kuviz.id)
+    it 'shows public app' do
+      get app_show_url(id: @app.id)
 
       response.status.should eq 200
       response.body.scan(/test/).present?.should == true
       response.headers.include?('X-Frame-Options').should == false
     end
 
-    it 'shows 404 on non-existent kuviz' do
-      get kuviz_show_url(id: 'fake-uuid')
+    it 'shows 404 on non-existent app' do
+      get app_show_url(id: 'fake-uuid')
 
       response.status.should eq 404
     end
 
-    context 'with password protected kuviz' do
+    context 'with password protected app' do
       before(:each) do
-        @kuviz.privacy = Carto::Visualization::PRIVACY_PROTECTED
-        @kuviz.password = 'test'
-        @kuviz.save
+        @app.privacy = Carto::Visualization::PRIVACY_PROTECTED
+        @app.password = 'test'
+        @app.save
       end
 
       it 'does not require password for the owner' do
-        get kuviz_show_url(id: @kuviz.id)
+        get app_show_url(id: @app.id)
 
         response.status.should eq 200
         response.body.scan(/test/).present?.should == true
@@ -49,18 +49,18 @@ describe Carto::Kuviz::VisualizationsController do
 
       it 'does not require password when it is shared' do
         user2 = FactoryGirl.create(:carto_user)
-        @kuviz.permission.acl = [
+        @app.permission.acl = [
           {
             type: Permission::TYPE_USER,
             entity: { id: user2.id, username: user2.username },
             access: Permission::ACCESS_READONLY
           }
         ]
-        @kuviz.permission.save
+        @app.permission.save
         logout
         login(user2)
 
-        get kuviz_show_url(id: @kuviz.id)
+        get app_show_url(id: @app.id)
 
         response.status.should eq 200
         response.body.scan(/test/).present?.should == true
@@ -71,7 +71,7 @@ describe Carto::Kuviz::VisualizationsController do
         logout
         login(user2)
 
-        get kuviz_show_url(id: @kuviz.id)
+        get app_show_url(id: @app.id)
 
         response.status.should eq 200
         response.body.scan(/Insert your password/).present?.should == true
@@ -80,7 +80,7 @@ describe Carto::Kuviz::VisualizationsController do
       it 'requires password without session' do
         logout
 
-        get kuviz_show_url(id: @kuviz.id)
+        get app_show_url(id: @app.id)
 
         response.status.should eq 200
         response.body.scan(/Insert your password/).present?.should == true
@@ -90,32 +90,32 @@ describe Carto::Kuviz::VisualizationsController do
 
   describe '#show_protected' do
     before(:each) do
-      @kuviz = FactoryGirl.create(:kuviz_protected_visualization)
-      @kuviz.save
-      @asset = Carto::Asset.for_visualization(visualization: @kuviz,
+      @app = FactoryGirl.create(:app_protected_visualization)
+      @app.save
+      @asset = Carto::Asset.for_visualization(visualization: @app,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
-      login(@kuviz.user)
+      login(@app.user)
     end
 
     it 'shows password error message is the password is incorrect' do
-      post kuviz_password_protected_url(id: @kuviz.id), password: 'wrong_password'
+      post app_password_protected_url(id: @app.id), password: 'wrong_password'
 
       response.status.should eq 200
       response.body.scan(/Invalid password/).present?.should == true
     end
 
-    it 'shows 404 if the kuviz is not password protected' do
-      @kuviz.password = ''
-      @kuviz.privacy = Carto::Visualization::PRIVACY_PUBLIC
-      @kuviz.save
-      post kuviz_password_protected_url(id: @kuviz.id), password: 'wrong_password'
+    it 'shows 404 if the app is not password protected' do
+      @app.password = ''
+      @app.privacy = Carto::Visualization::PRIVACY_PUBLIC
+      @app.save
+      post app_password_protected_url(id: @app.id), password: 'wrong_password'
 
       response.status.should eq 404
     end
 
-    it 'shows password protected kuviz' do
-      post kuviz_password_protected_url(id: @kuviz.id), password: 'test'
+    it 'shows password protected app' do
+      post app_password_protected_url(id: @app.id), password: 'test'
 
       response.status.should eq 200
       response.body.scan(/<body>test<\/body>/).present?.should == true

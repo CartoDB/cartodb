@@ -145,7 +145,8 @@ module Carto
         raise "missing org_metadata_api configuration" unless Cartodb.config[:org_metadata_api]
 
         authenticate_or_request_with_http_basic do |username, password|
-          username == Cartodb.config[:org_metadata_api]["username"] && password == Cartodb.config[:org_metadata_api]["password"]
+          username == Cartodb.get_config(:org_metadata_api, 'username') &&
+            password == Cartodb.get_config(:org_metadata_api, 'password')
         end
       end
 

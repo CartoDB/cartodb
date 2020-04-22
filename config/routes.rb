@@ -92,6 +92,13 @@ CartoDB::Application.routes.draw do
       match '/kuviz/:id/protected', to: 'visualizations#show_protected', via: :post, as: :password_protected
       match '/kuviz/:id/protected', to: 'visualizations#show', via: :get
     end
+
+    namespace :app, path: '/' do
+      # Custom Visualizations
+      match '/app/:id', to: 'visualizations#show', via: :get, as: :show
+      match '/app/:id/protected', to: 'visualizations#show_protected', via: :post, as: :password_protected
+      match '/app/:id/protected', to: 'visualizations#show', via: :get
+    end
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -580,6 +587,12 @@ CartoDB::Application.routes.draw do
       delete 'kuviz/:id', to: 'custom_visualizations#delete', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_delete_viz
       put 'kuviz/:id', to: 'custom_visualizations#update', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_update_viz
       get 'kuviz', to: 'custom_visualizations#index', as: :api_v4_kuviz_list_vizs
+
+      # apps
+      post 'app', to: 'apps#create', as: :api_v4_app_create_viz
+      delete 'app/:id', to: 'apps#delete', constraints: { id: UUID_REGEXP }, as: :api_v4_app_delete_viz
+      put 'app/:id', to: 'apps#update', constraints: { id: UUID_REGEXP }, as: :api_v4_app_update_viz
+      get 'app', to: 'apps#index', as: :api_v4_app_list_vizs
 
       # OAuth apps
       resources :oauth_apps, only: [:index, :show, :create, :update, :destroy], constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps

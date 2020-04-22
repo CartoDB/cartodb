@@ -421,6 +421,19 @@ describe Admin::VisualizationsController do
       uri.host.should == "#{@user.username}.localhost.lan"
       uri.path.should == "/kuviz/#{kuviz.id}"
     end
+
+    it 'redirects to app when needed' do
+      app = FactoryGirl.create(:app_visualization, user_id: @user.id)
+
+      get public_tables_embed_map_url(id: app.id), {}, @headers
+      last_response.status.should eq 302
+
+      follow_redirect!
+
+      uri = URI.parse(last_request.url)
+      uri.host.should == "#{@user.username}.localhost.lan"
+      uri.path.should == "/app/#{app.id}"
+    end
   end
 
   describe 'GET /viz/:id/embed_map' do

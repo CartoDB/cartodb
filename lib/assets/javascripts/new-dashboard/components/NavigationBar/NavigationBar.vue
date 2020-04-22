@@ -37,7 +37,20 @@
       <div class="navbar-user">
         <div class="navbar-avatar" :class="{'has-notification': notificationsCount}" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
-        <FeedbackPopup class="feedback-popup" v-if="shouldShowFeedbackPopup" @feedbackClick="onFeedbackClicked"/>
+
+        <NotificationPopup
+          v-if="!popupWasShown('feedback.popupWasShown') && twoWeeksSinceRelease"
+          class="notification-popup"
+          :title="$t('FeedbackMessage.title')"
+          :message="$t('FeedbackMessage.message')"
+          @click.native.stop.prevent="onFeedbackClicked"/>
+
+        <NotificationPopup
+          v-if="!popupWasShown('popups.directDBConnection') && !twoWeeksSinceRelease"
+          class="notification-popup"
+          title="New Connection Feature"
+          :message="`Now you can connect your external GIS apps with our new feature managing your certificates at CARTO. <a href='${this.$router.resolve({name: 'connections'}).href}'>Discover it!</a>`"
+          :messageHasHTML="true"/>
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/close.svg" />
@@ -47,9 +60,10 @@
 </template>
 
 <script>
+import isAfter from 'date-fns/is_after';
 import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
-import FeedbackPopup from '../FeedbackPopup';
+import NotificationPopup from '../Popups/NotificationPopup';
 import storageAvailable from 'new-dashboard/utils/is-storage-available';
 
 export default {
@@ -57,7 +71,7 @@ export default {
   components: {
     Search,
     UserDropdown,
-    FeedbackPopup
+    NotificationPopup
   },
   props: {
     user: Object,
@@ -80,22 +94,22 @@ export default {
       hasDropdownOpenedForFirstTime: false
     };
   },
+  mounted () {
+    this.markPopupAsRead('feedback.popupWasShown');
+    this.markPopupAsRead('popups.directDBConnection');
+  },
   computed: {
     isDashboardBundle () {
       return this.$props.bundleType === 'dashboard';
-    },
-    popupWasShown () {
-      if (!storageAvailable('localStorage')) {
-        return true;
-      }
-
-      return JSON.parse(window.localStorage.getItem('carto.feedback.popupWasShown'));
     },
     shouldShowFeedbackPopup () {
       return this.isDashboardBundle &&
         !this.isFirstTimeInDashboard &&
         !this.hasDropdownOpenedForFirstTime &&
         !this.popupWasShown;
+    },
+    twoWeeksSinceRelease () {
+      return isAfter(new Date(), new Date(2020, 5, 11));
     }
   },
   methods: {
@@ -114,6 +128,20 @@ export default {
     },
     onFeedbackClicked () {
       this.toggleDropdown();
+    },
+    popupWasShown (type) {
+      if (!storageAvailable('localStorage')) {
+        return true;
+      }
+
+      return JSON.parse(window.localStorage.getItem(`carto.${type}`));
+    },
+    markPopupAsRead (type) {
+      if (!storageAvailable('localStorage')) {
+        return;
+      }
+
+      window.localStorage.setItem(`carto.${type}`, JSON.stringify(true));
     }
   }
 };
@@ -277,7 +305,7 @@ export default {
   top: $notification-warning__height;
 }
 
-.feedback-popup {
+.notification-popup {
   position: absolute;
   top: calc(100% + 18px);
   right: 0;

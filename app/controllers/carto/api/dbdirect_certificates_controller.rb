@@ -94,7 +94,7 @@ module Carto
           'README.txt' => readme,
           'client.key' => client_key,
           'client.crt' => client_crt,
-          'server_pa.pem' => server_ca
+          'server_ca.pem' => server_ca
         )
         [ filename, zip_data ]
       end

@@ -802,7 +802,8 @@
     }
   },
   "DBConnection": {
-    "description": "To allow connection to the CARTO database from your desktop GIS applications such as <span class='strong'>QGIS</span>, <span class='strong'>Tableau</span>, or <span class='strong'>Power BI</span>, among others, you'll need to add at least one IP. You can read more in our <a href='#'>developer documentation</a>.",
+    "description_fl": "To connect to the CARTO database from other tools you need to add the IP address you are connecting from and generate a certificate to protect your connection.",
+    "description_sl": "You can read more in our <a href='#'>help center</a>.",
     "ipsSection": {
       "title": "1. Your IPs",
       "allowAllIPs": "Allow connections from any IP addresses (Coming Soon)",

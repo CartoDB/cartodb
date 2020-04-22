@@ -197,7 +197,8 @@ module.exports = {
           rootDir('lib/assets/javascripts/new-dashboard'),
           rootDir('node_modules/internal-carto.js'),
           rootDir('node_modules/@carto/toolkit-core'),
-          rootDir('node_modules/@carto/toolkit-custom-storage')
+          rootDir('node_modules/@carto/toolkit-custom-storage'),
+          rootDir('node_modules/vue-i18n/')
         ],
         exclude: [
           rootDir('node_modules/internal-carto.js/node_modules'),

@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
+const webpack = require('webpack');
 const webpackFiles = require('../../lib/build/files/webpack_files');
 const Package = require('./../../package.json');
 
@@ -13,11 +14,19 @@ module.exports = {
     publicPath: '/assets/'
   },
   devtool: 'source-map',
-  plugins: Object.keys(webpackFiles).map((entryName) => {
-    return new HtmlWebpackPlugin({
-      filename: path.resolve(__dirname, `../../public/static/${entryName}/index.html`),
-      template: path.resolve(__dirname, '../../lib/assets/javascripts/dashboard/statics/index.jst.ejs'),
-      config: webpackFiles[entryName]
-    });
-  })
+  plugins: [
+    new webpack.DefinePlugin({
+      __ASSETS_VERSION__: `'${VERSION}'`
+    }),
+
+    ...Object.keys(webpackFiles.htmlFiles).map((entryName) => {
+      return new HtmlWebpackPlugin({
+        inject: false,
+        cache: false,
+        filename: webpackFiles.htmlFiles[entryName].filename || path.resolve(__dirname, `../../public/static/${entryName}/index.html`),
+        template: path.resolve(__dirname, '../../lib/assets/javascripts/dashboard/statics/index.jst.ejs'),
+        config: webpackFiles.htmlFiles[entryName]
+      });
+    })
+  ]
 };

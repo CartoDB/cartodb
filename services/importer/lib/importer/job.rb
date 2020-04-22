@@ -1,6 +1,5 @@
 require 'pg'
 require 'sequel'
-require 'uuidtools'
 
 module CartoDB
   module Importer2

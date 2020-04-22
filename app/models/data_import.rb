@@ -1,6 +1,5 @@
 require 'sequel'
 require 'fileutils'
-require 'uuidtools'
 require_relative './user'
 require_relative './table'
 require_relative './log'

@@ -1,4 +1,3 @@
-require 'uuidtools'
 require_relative 'backend/detector'
 require_relative 'backend/memory'
 
@@ -38,7 +37,7 @@ module DataRepository
     end
 
     def next_id
-      SecureRandom.uuid     
+      SecureRandom.uuid
     end
 
     private

@@ -1,5 +1,4 @@
 require 'ostruct'
-require 'uuidtools'
 require_relative '../../spec_helper'
 require_relative '../../../lib/carto/http_header_authentication'
 require_relative '../../requests/http_authentication_helper'

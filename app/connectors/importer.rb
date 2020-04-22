@@ -1,4 +1,3 @@
-require 'uuidtools'
 require 'carto/importer/table_setup'
 
 require_relative '../models/visualization/support_tables'

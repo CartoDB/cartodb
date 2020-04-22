@@ -1,5 +1,4 @@
 require 'sequel'
-require 'uuidtools'
 
 module DataRepository
   module Backend

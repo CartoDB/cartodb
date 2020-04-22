@@ -1,3 +1,38 @@
-Here's your certificate <%= certificate_name %>
-blablabla
-psql -H <%= dbproxy_host %>%:<%= dbproxy_port %> -U <%= username %>
+Here's your certificate "<%= certificate_name %>" to use the CARTO Direct SQL BETA service.
+
+You can use it with any application that supports TSL/SSL connections to PostgreSQL
+to directly access and modify your CARTO datasets.
+
+Contents:
+
+* client.key This file contains your private key that is needed to encrypt the connections.
+  You must keep this file safely, as any one that gets access to this file may impersonate
+  you and access your data. On UNIX-like systems (Linux, Mac OS, ...) this file should be
+  protected with: `chmod 0600 client.key`.
+* client.crt This is the certificate matching private key which will identify you
+  when you connect to your CARTO database. Keep this also safely.
+* server_ca.pem This is optional and allows you to check the identity of CARTO's database server.
+
+You'll need to configure your application to use TSL with client.key and client.crt
+(and optionally server_ca.pem) when connecting to your database.
+
+Your database address (host server) is: <%= dbproxy_host %>
+And the TCP port is: <%= dbproxy_port %>
+
+You should use your CARTO account user name (<%= username %>) as your database user (role),
+and an API Key as your password. You can generate API Keys from CARTO dashboard. The API Key you use
+will determine which operations can be performed and which tables are accessible. We advise you
+to generate specific keys and not use your master key, since the master key should be exposed as
+little as possible, and it allows unrestricted access to your database.
+
+Example: connect using psql:
+
+  psql "sslmode=verify-ca sslrootcert=server_ca.pem \
+      sslcert=client.crt sslkey=client.key \
+      hostaddr=<%= dbproxy_host %> \
+      port=<%= dbproxy_port %> \
+      user=<%= username %>
+
+This feature is in BETA. We'll provide more detailed information and guidelines very soon.
+
+Please contact CARTO support for further information.

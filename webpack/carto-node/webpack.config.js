@@ -34,8 +34,7 @@ const config = {
         path.resolve(__dirname, '../../lib/assets/javascripts/carto-node')
       ],
       options: {
-        presets: ['env'],
-        plugins: ['transform-object-assign']
+        babelrc: true
       }
     }]
   },

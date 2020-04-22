@@ -40,6 +40,7 @@ sudo make install
 - Update toolkit libraries to fix case sensitive fields ([#15569](https://github.com/CartoDB/cartodb/pull/15569))
 - Fix to avoid locks when sorting rows in dataset table ([#2399](https://github.com/CartoDB/support/issues/2399))
 - Fix whitelisted domains for OAuth signup ([#2495]https://github.com/CartoDB/support/issues/2495))
+- Lazy loading of Dashboard routes ([#15581](https://github.com/CartoDB/cartodb/pull/15581))
 
 4.36.0 (2020-03-09)
 -------------------

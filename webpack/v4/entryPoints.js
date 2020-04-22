@@ -22,7 +22,6 @@ const entries = {
   public_map_new: glob.sync(rootDir('assets/stylesheets/public_map/**/*.scss')),
 
   new_dashboard: [
-    '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/main.js'),
     rootDir('lib/assets/javascripts/new-dashboard/styles/main.scss'),
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
@@ -101,12 +100,10 @@ const entries = {
   lockout: rootDir('lib/assets/javascripts/dashboard/lockout.js'),
 
   new_lockout: [
-    '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/bundles/lockout/lockout.js')
   ],
 
   maintenance: [
-    '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/bundles/maintenance/maintenance.js')
   ],
 

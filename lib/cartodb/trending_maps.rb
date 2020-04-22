@@ -18,7 +18,7 @@ module CartoDB
         key_parts = key.split(':')
         username = key_parts[1]
         visualization_id = key_parts[4]
-        next unless is_uuid?(visualization_id)
+        next unless uuid?(visualization_id)
         yesterday_mapviews = stats_manager.get_api_calls_from_redis(
           username,
           from: date,

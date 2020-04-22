@@ -457,7 +457,7 @@ class DataImport < Sequel::Model
   def instantiate_log
     uuid = logger
 
-    if is_uuid?(uuid)
+    if uuid?(uuid)
       self.log = CartoDB::Log.where(id: uuid.to_s).first
     else
       self.log = CartoDB::Log.new(

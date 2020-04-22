@@ -50,7 +50,7 @@ module CartoDB
       end
 
       def get_by_id(uuid, filters)
-        return nil unless is_uuid?(uuid)
+        return nil unless uuid?(uuid)
 
         params = {
           id: uuid

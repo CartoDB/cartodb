@@ -613,7 +613,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def get_visualization_and_table_from_table_id(table_id)
-    return nil, nil if !is_uuid?(table_id)
+    return nil, nil if !uuid?(table_id)
     user_table = Carto::UserTable.where({ id: table_id }).first
     return nil, nil if user_table.nil?
     visualization = user_table.visualization

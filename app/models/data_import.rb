@@ -140,16 +140,15 @@ class DataImport < Sequel::Model
   end
 
   def from_common_data?
-    if Cartodb.config[:common_data] &&
-       !Cartodb.config[:common_data]['username'].blank? &&
-       !Cartodb.config[:common_data]['host'].blank?
-      if !self.extra_options.has_key?('common_data') &&
-         self.data_source &&
-         self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
-        return true
-      end
+    username = Cartodb.get_config(:common_data, 'username')
+    host = Cartodb.get_config(:common_data, 'host')
+    if username && host &&
+       !extra_options.has_key?('common_data') &&
+       data_source && data_source.include?("#{username}.#{host}")
+      return true
     end
-    return false
+
+    false
   end
 
   def extra_options
@@ -311,7 +310,7 @@ class DataImport < Sequel::Model
   def remove_uploaded_resources
     return nil unless uploaded_file
 
-    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+    file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:importer, 'uploads_path'))
     path = file_upload_helper.get_uploads_path.join(uploaded_file[1])
     FileUtils.rm_rf(path) if Dir.exists?(path)
   end

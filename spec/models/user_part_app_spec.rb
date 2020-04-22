@@ -53,31 +53,31 @@ describe User do
     end
 
     it "should load a cartodb avatar url if no gravatar associated" do
-      avatar_kind = Cartodb.config[:avatars]['kinds'][0]
-      avatar_color = Cartodb.config[:avatars]['colors'][0]
-      avatar_base_url = Cartodb.config[:avatars]['base_url']
-      Random.any_instance.stubs(:rand).returns(0)
       gravatar_url = %r{gravatar.com}
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 404))
       user1.stubs(:gravatar_enabled?).returns(true)
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
+      kind_regex = "(#{Cartodb.config[:avatars]['kinds'].join('|')})"
+      color_regex = "(#{Cartodb.config[:avatars]['colors'].join('|')})"
+      expected_url = /#{Cartodb.config[:avatars]['base_url']}\/avatar_#{kind_regex}_#{color_regex}\.png/
+
+      expect(user1.avatar_url).to match(expected_url)
     end
 
     it "should load a cartodb avatar url if gravatar disabled" do
-      avatar_kind = Cartodb.config[:avatars]['kinds'][0]
-      avatar_color = Cartodb.config[:avatars]['colors'][0]
-      avatar_base_url = Cartodb.config[:avatars]['base_url']
-      Random.any_instance.stubs(:rand).returns(0)
       gravatar_url = %r{gravatar.com}
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
       user1.stubs(:gravatar_enabled?).returns(false)
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
+      kind_regex = "(#{Cartodb.config[:avatars]['kinds'].join('|')})"
+      color_regex = "(#{Cartodb.config[:avatars]['colors'].join('|')})"
+      expected_url = /#{Cartodb.config[:avatars]['base_url']}\/avatar_#{kind_regex}_#{color_regex}\.png/
+
+      expect(user1.avatar_url).to match(expected_url)
     end
 
     it "should load a the user gravatar url" do

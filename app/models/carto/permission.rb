@@ -143,7 +143,7 @@ class Carto::Permission < ActiveRecord::Base
           # be applied to a type of object. But with an array this is open
           # to more than one permission change at a time
           perm.each do |p|
-            if visualization.derived? || visualization.kuviz?
+            if visualization.derived? || visualization.kuviz? || visualization.app?
               if p['action'] == 'grant'
                 # At this moment just inform as read grant
                 if p['type'].include?('r')

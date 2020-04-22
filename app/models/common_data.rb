@@ -98,12 +98,8 @@ class CommonData
     }).url(query, format, filename)
   end
 
-  def config(key, default=nil)
-    if Cartodb.config[:common_data].present?
-      Cartodb.config[:common_data][key].present? ? Cartodb.config[:common_data][key] : default
-    else
-      default
-    end
+  def config(key, default = nil)
+    Cartodb.get_config(:common_data, key) || default
   end
 
   def redis_cache

@@ -1,7 +1,30 @@
 <template>
   <section class="dbconnection">
     <section class="dbconnection-list" v-if="firstStepEnabled">
-      <p class="dbconnection__description" v-html="$t('DBConnection.description')"></p>
+      <p class="dbconnection__description">
+        {{ $t('DBConnection.description_fl') }}
+      </p>
+
+      <ul class="dbconnection__tools">
+        <li class="dbconnection__tool is-small is-bold">
+          <img class="dbconnection__toolimage" src="../../../assets/images/tools/qgis.png" />
+          QGIS
+        </li>
+        <li class="dbconnection__tool is-small is-bold">
+          <img class="dbconnection__toolimage" src="../../../assets/images/tools/tableau.png" />
+          Tableau
+        </li>
+        <li class="dbconnection__tool is-small is-bold">
+          <img class="dbconnection__toolimage" src="../../../assets/images/tools/qlik.png" />
+          Qlik
+        </li>
+        <li class="dbconnection__tool is-small is-bold">
+          <img class="dbconnection__toolimage" src="../../../assets/images/tools/powerBI.png" />
+          Power BI
+        </li>
+      </ul>
+
+      <p class="dbconnection__description" v-html="$t('DBConnection.description_sl')"></p>
 
       <section class="dbconnection__ips">
         <SettingsTitle :title="$t('DBConnection.ipsSection.title')"></SettingsTitle>
@@ -186,7 +209,7 @@ export default {
 }
 
 .dbconnection__description {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   font-size: 12px;
   line-height: 16px;
 }
@@ -217,5 +240,26 @@ export default {
 
 .dbconnection-creationform {
   padding-top: 0;
+}
+
+.dbconnection__tools {
+  margin-bottom: 12px;
+}
+
+.dbconnection__tool {
+  position: relative;
+  display: inline-block;
+  font-size: 12px;
+  line-height: 16px;
+
+  & + & {
+    margin-left: 36px;
+  }
+
+  .dbconnection__toolimage {
+    margin-right: 12px;
+    height: 24px;
+    vertical-align: middle;
+  }
 }
 </style>

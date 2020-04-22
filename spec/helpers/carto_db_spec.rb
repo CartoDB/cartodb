@@ -6,9 +6,9 @@ require_relative '../../config/initializers/carto_db'
 
 # Just "open" the modules so that we make sure they are defined,
 #  but do not overwrite anything so that it doesn't affect other tests.
-module CartoDB
-  module Cartodb; end
-end
+# module CartoDB
+#   module Cartodb; end
+# end
 
 describe 'CartoDB' do
 

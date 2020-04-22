@@ -4,7 +4,7 @@ module SqlApiHelper
   end
 
   def sql_api_url(username, privacy = 'private')
-    sql_api = Cartodb.config[:sql_api][privacy]
+    sql_api = Cartodb.get_config(:sql_api, privacy)
     if CartoDB.subdomainless_urls?
       sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/user/#{username}"
     else

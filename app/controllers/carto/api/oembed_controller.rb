@@ -151,8 +151,7 @@ module Carto
       end
 
       def extract_uuid_from_string(str)
-        # TODO: move this method to  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
-        # UUIDTools::UUID_REGEXP cannot be reused because of /^ $/
+        # Carto::UUIDHelper::UUID_REGEXP cannot be reused because of /^ $/
         matches = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/.match(str)
         if matches
           matches[0]

@@ -10,10 +10,12 @@ require_dependency 'resque/user_jobs'
 require_dependency 'static_maps_url_helper'
 require_dependency 'carto/helpers/frame_options_helper'
 require_dependency 'carto/visualization'
+require_dependency 'carto/uuidhelper'
 
 class Admin::VisualizationsController < Admin::AdminController
   include CartoDB, VisualizationsControllerHelper
   include Carto::FrameOptionsHelper
+  include Carto::UUIDHelper
 
   MAX_MORE_VISUALIZATIONS = 3
   DEFAULT_PLACEHOLDER_CHARS = 4
@@ -616,11 +618,6 @@ class Admin::VisualizationsController < Admin::AdminController
     return nil, nil if user_table.nil?
     visualization = user_table.visualization
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
-  end
-
-  # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
-  def is_uuid?(text)
-    !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
   end
 
   def sql_api_url(query, user)

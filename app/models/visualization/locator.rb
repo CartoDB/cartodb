@@ -2,11 +2,13 @@ require_relative '../visualization'
 require_relative './member'
 require_relative '../user'
 require_relative '../table'
-require 'uuidtools'
+
+require_dependency 'carto/uuidhelper'
 
 module CartoDB
   module Visualization
     class Locator
+      include Carto::UUIDHelper
 
       def initialize(user_model=nil)
         @user_model   = user_model  || ::User
@@ -46,13 +48,9 @@ module CartoDB
       rescue
         false
       end
-        
+
       def get_by_id(uuid, filters)
-        begin
-          ::UUIDTools::UUID.parse(uuid)
-        rescue ArgumentError
-          return nil
-        end
+        return nil unless is_uuid?(uuid)
 
         params = {
           id: uuid

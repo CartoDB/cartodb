@@ -1,7 +1,8 @@
-require 'uuidtools'
+require_dependency 'carto/uuidhelper'
 
 module CartoDB
   class TrendingMaps
+    include Carto::UUIDHelper
 
     # The ratio for this sequence is 2
     GEOMETRIC_SEQUENCE_BASE = 500
@@ -17,7 +18,7 @@ module CartoDB
         key_parts = key.split(':')
         username = key_parts[1]
         visualization_id = key_parts[4]
-        next unless valid_uuid?(visualization_id)
+        next unless is_uuid?(visualization_id)
         yesterday_mapviews = stats_manager.get_api_calls_from_redis(
           username,
           from: date,
@@ -31,13 +32,6 @@ module CartoDB
         end
       end
       trending_maps
-    end
-
-    def valid_uuid?(visualization_id)
-      UUIDTools::UUID.parse(visualization_id)
-      true
-    rescue ArgumentError
-      false
     end
 
     def build_trending_map(visualization_id, username, total_mapviews)

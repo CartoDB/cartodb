@@ -271,7 +271,7 @@ module CartoDB
       def rename_the_geom_index_if_exists(current_name, new_name, schema)
         database.execute(%Q{
           ALTER INDEX IF EXISTS "#{schema}"."#{current_name}_geom_idx"
-          RENAME TO "the_geom_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
+          RENAME TO "the_geom_#{SecureRandom.uuid.gsub('-', '_')}"
         })
       rescue => exception
         log("Silently failed rename_the_geom_index_if_exists from " +

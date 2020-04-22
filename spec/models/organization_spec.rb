@@ -679,7 +679,7 @@ describe Organization do
       privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
       tags:         attributes.fetch(:tags, ['tag 1']),
       type:         attributes.fetch(:type, Visualization::Member::TYPE_DERIVED),
-      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s)
+      user_id:      attributes.fetch(:user_id, SecureRandom.uuid)
     }
   end # random_attributes
 

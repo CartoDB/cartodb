@@ -1,15 +1,13 @@
-require 'uuidtools'
-
 module Carto
   module UUIDHelper
+    UUID_REGEXP = Regexp.new("^([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})$")
 
     def is_uuid?(text)
-      !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
+      !(Regexp.new(%r{\A#{UUID_REGEXP}\Z}) =~ text).nil?
     end
 
     def random_uuid
-      UUIDTools::UUID.random_create.to_s
+      SecureRandom.uuid
     end
-
   end
 end

@@ -108,7 +108,7 @@ describe Visualization::Member do
   def create_table(user)
     table = Table.new
     table.user_id = user.id
-    table.name = 'wadus_table_' + UUIDTools::UUID.timestamp_create.to_s
+    table.name = 'wadus_table_' + SecureRandom.uuid
     table.save
     table.reload
 

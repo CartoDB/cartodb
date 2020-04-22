@@ -57,7 +57,7 @@ describe SynchronizationOauth do
       oauth_entry.service = service_name
 
       expect {
-        oauth_entry.user_id = UUIDTools::UUID.timestamp_create
+        oauth_entry.user_id = SecureRandom.uuid
         oauth_entry.save
       }.to raise_exception Sequel::ValidationFailed
 
@@ -65,7 +65,7 @@ describe SynchronizationOauth do
         SynchronizationOauth.create(
             user_id: @user.id,
             service: service_name,
-            token: UUIDTools::UUID.timestamp_create
+            token: SecureRandom.uuid
         )
       }.to raise_exception Sequel::ValidationFailed
 
@@ -89,7 +89,7 @@ describe SynchronizationOauth do
 
   context '#deletion' do
     it 'tests deletion of items' do
-      another_uuid = UUIDTools::UUID.timestamp_create.to_s
+      another_uuid = SecureRandom.uuid
       service_name = 'testtest'
       service_name_2 = '123456'
       token_value = 'qv2345q235erfaweerfdsdfsds'

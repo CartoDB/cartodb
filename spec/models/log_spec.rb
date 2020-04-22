@@ -6,7 +6,7 @@ describe CartoDB::Log do
 
   describe '#basic' do
     it 'checks basic operations' do
-      user_id = UUIDTools::UUID.timestamp_create.to_s
+      user_id = SecureRandom.uuid
       type = Log::TYPE_DATA_IMPORT
       text1 = 'test'
       text2 = 'anothertest'

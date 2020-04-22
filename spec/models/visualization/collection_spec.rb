@@ -465,7 +465,7 @@ describe Visualization::Collection do
       privacy:        attributes.fetch(:privacy, 'public'),
       tags:           attributes.fetch(:tags, ['tag 1']),
       type:           attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
-      user_id:        attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
+      user_id:        attributes.fetch(:user_id, SecureRandom.uuid),
       locked:         attributes.fetch(:locked, false),
       title:          attributes.fetch(:title, ''),
       source:         attributes.fetch(:source, ''),

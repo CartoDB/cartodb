@@ -28,9 +28,9 @@ describe Visualization::Locator do
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    @user_id = UUIDTools::UUID.timestamp_create.to_s
+    @user_id = SecureRandom.uuid
 
-    @map_id = UUIDTools::UUID.timestamp_create.to_s
+    @map_id = SecureRandom.uuid
 
     # For relator->permission
     @user_mock = create_mocked_user

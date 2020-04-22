@@ -37,7 +37,7 @@ module DataRepository
       end
 
       def next_id
-        UUIDTools::UUID.timestamp_create
+        SecureRandom.uuid
       end
 
       def apply_filters(dataset, filters={}, available_filters=[])

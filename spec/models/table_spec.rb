@@ -1862,7 +1862,7 @@ describe Table do
 
     describe '#validation_for_link_privacy' do
       it 'checks that only users with private tables enabled can set LINK privacy' do
-        table_id = UUIDTools::UUID.timestamp_create.to_s
+        table_id = SecureRandom.uuid
 
         user_mock = mock
         user_mock.stubs(:private_tables_enabled).returns(true)
@@ -1887,7 +1887,7 @@ describe Table do
         user_table.stubs(:user).returns(user_mock)
         user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PRIVATE
 
-        user_table.user_id = UUIDTools::UUID.timestamp_create.to_s
+        user_table.user_id = SecureRandom.uuid
         user_table.privacy = UserTable::PRIVACY_PUBLIC
         user_table.name = 'test'
         user_table.validate

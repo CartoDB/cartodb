@@ -9,7 +9,7 @@ module CartoDB
       DEFAULT_IMPORT_SCHEMA = 'cdb_importer'
 
       def initialize(attributes={})
-        @id         = attributes.fetch(:id, UUIDTools::UUID.timestamp_create.to_s)
+        @id         = attributes.fetch(:id, SecureRandom.uuid)
         @logger     = attributes.fetch(:logger, nil)
         # Avoid calling new_logger (and thus, requiring CartoDB::Log) if param comes
         @logger     = new_logger if @logger.nil?

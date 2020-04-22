@@ -38,7 +38,7 @@ module DataRepository
     end
 
     def next_id
-      UUIDTools::UUID.timestamp_create     
+      SecureRandom.uuid     
     end
 
     private

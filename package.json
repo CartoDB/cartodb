@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.171-lazyloading-5",
+  "version": "1.0.0-assets.171-dbconnectionpages-1",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

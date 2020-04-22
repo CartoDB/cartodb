@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Carto
   module UUIDHelper
     module_function

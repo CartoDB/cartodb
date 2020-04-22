@@ -19,7 +19,7 @@ describe Carto::Api::UserCreationsController do
     end
 
     it 'returns 404 for unknown user creations' do
-      get_json api_v1_user_creations_show_url(id: SecureRandom.uuid), @headers do |response|
+      get_json api_v1_user_creations_show_url(id: Carto::UUIDHelper.random_uuid), @headers do |response|
         response.status.should == 404
       end
     end

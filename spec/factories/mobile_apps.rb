@@ -7,7 +7,7 @@ include UniqueNamesHelper
 FactoryGirl.define do
 
   factory :mobile_app, class: Carto::MobileApp do
-    id SecureRandom.uuid
+    id Carto::UUIDHelper.random_uuid
     name 'MyApp'
     description 'My app description'
     icon_url 'example.com/icon_url'

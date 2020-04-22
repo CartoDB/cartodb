@@ -4,7 +4,7 @@ require_relative '../../../app/models/layer'
 
 describe CartoDB::Map::Copier do
   before do
-    @user_id  = SecureRandom.uuid
+    @user_id  = Carto::UUIDHelper.random_uuid
     @map      = Map.new(user_id: @user_id)
     @map.stubs(:layers).returns((1..5).map { Layer.new(kind: 'carto') })
     @copier = CartoDB::Map::Copier.new

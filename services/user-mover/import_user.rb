@@ -37,7 +37,7 @@ module CartoDB
 
         @path = File.expand_path(File.dirname(@options[:file])) + "/"
 
-        job_uuid = @options[:job_uuid] || SecureRandom.uuid
+        job_uuid = @options[:job_uuid] || Carto::UUIDHelper.random_uuid
         @import_log = { job_uuid:     job_uuid,
                         id:           nil,
                         type:         'import',

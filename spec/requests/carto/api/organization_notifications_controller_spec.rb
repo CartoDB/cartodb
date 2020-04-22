@@ -104,7 +104,7 @@ module Carto
       end
 
       it 'returns 404 if notification is not found' do
-        destroy_notification_request(@organization.id, @owner, SecureRandom.uuid) do |response|
+        destroy_notification_request(@organization.id, @owner, Carto::UUIDHelper.random_uuid) do |response|
           expect(response.status).to eq 404
           expect(Notification.exists?(@notification.id)).to be_true
         end

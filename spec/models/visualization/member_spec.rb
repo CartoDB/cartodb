@@ -27,7 +27,7 @@ describe Visualization::Member do
     bypass_named_maps
 
     # For relator->permission
-    user_id = SecureRandom.uuid
+    user_id = Carto::UUIDHelper.random_uuid
     user_name = 'whatever'
     user_apikey = '123'
     @user_mock = mock
@@ -350,19 +350,19 @@ describe Visualization::Member do
 
   describe '#permissions' do
     it 'checks is_owner? permissions' do
-      user_id  = SecureRandom.uuid
+      user_id  = Carto::UUIDHelper.random_uuid
       member  = Visualization::Member.new(name: 'foo', user_id: user_id)
 
       user    = OpenStruct.new(id: user_id)
       member.is_owner?(user).should == true
 
-      user    = OpenStruct.new(id: SecureRandom.uuid)
+      user    = OpenStruct.new(id: Carto::UUIDHelper.random_uuid)
       member.is_owner?(user).should == false
     end
 
     def mock_user(username, viewer: false)
       user_mock = mock
-      user_mock.stubs(:id).returns(SecureRandom.uuid)
+      user_mock.stubs(:id).returns(Carto::UUIDHelper.random_uuid)
       user_mock.stubs(:username).returns(username)
       user_mock.stubs(:organization).returns(nil)
       user_mock.stubs(:viewer).returns(viewer)
@@ -538,7 +538,7 @@ describe Visualization::Member do
 
   describe '#privacy_and_exceptions' do
     it 'checks different privacy options to make sure exceptions are raised when they should' do
-      user_id = SecureRandom.uuid
+      user_id = Carto::UUIDHelper.random_uuid
 
       visualization = Visualization::Member.new(type: Visualization::Member::TYPE_DERIVED)
       visualization.name = 'test'
@@ -586,7 +586,7 @@ describe Visualization::Member do
 
   describe '#validation_for_link_privacy' do
     it 'checks that only users with private tables enabled can set LINK privacy' do
-      user_id = SecureRandom.uuid
+      user_id = Carto::UUIDHelper.random_uuid
       Visualization::Member.any_instance.stubs(:named_maps)
 
       visualization = Visualization::Member.new(
@@ -641,7 +641,7 @@ describe Visualization::Member do
 
   describe '#default_privacy_values' do
     it 'Checks deault privacies for visualizations' do
-      user_id = SecureRandom.uuid
+      user_id = Carto::UUIDHelper.random_uuid
       user_mock = mock
       user_mock.stubs(:id).returns(user_id)
 
@@ -668,7 +668,7 @@ describe Visualization::Member do
     member.store
     member = Visualization::Member.new(id: member.id).fetch
     member.permission.should_not be nil
-    member.permission_id = SecureRandom.uuid
+    member.permission_id = Carto::UUIDHelper.random_uuid
     member.valid?.should eq false
     delete_user_data(@user)
   end
@@ -730,7 +730,7 @@ describe Visualization::Member do
       random_attributes_for_vis_member({
                                           user_id: @user_mock.id,
                                           type:       Visualization::Member::TYPE_SLIDE,
-                                          parent_id:  SecureRandom.uuid
+                                          parent_id:  Carto::UUIDHelper.random_uuid
                                         }))
     expect {
       child_member.store

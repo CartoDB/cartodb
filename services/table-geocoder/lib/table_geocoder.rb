@@ -188,7 +188,7 @@ module CartoDB
     end
 
     def temp_table_name
-      @temp_table_name ||= "#{@schema}.geo_#{SecureRandom.uuid.gsub('-', '')}"
+      @temp_table_name ||= "#{@schema}.geo_#{Carto::UUIDHelper.random_uuid.gsub('-', '')}"
     end
 
     def deflated_results_path

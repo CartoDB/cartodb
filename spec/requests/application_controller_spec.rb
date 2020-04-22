@@ -104,7 +104,7 @@ describe ApplicationController do
       end
 
       it 'does not load the dashboard for an unknown user id' do
-        get dashboard_url, {}, authentication_headers(SecureRandom.uuid)
+        get dashboard_url, {}, authentication_headers(Carto::UUIDHelper.random_uuid)
         response.status.should == 302
       end
 
@@ -147,7 +147,7 @@ describe ApplicationController do
       end
 
       it 'does not load the dashboard for an unknown user id' do
-        get dashboard_url, {}, authentication_headers(SecureRandom.uuid)
+        get dashboard_url, {}, authentication_headers(Carto::UUIDHelper.random_uuid)
         response.status.should == 302
       end
 

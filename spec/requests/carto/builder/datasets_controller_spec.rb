@@ -36,7 +36,7 @@ describe Carto::Builder::DatasetsController do
     end
 
     it 'returns 404 for non-existent visualizations' do
-      get builder_dataset_url(id: SecureRandom.uuid)
+      get builder_dataset_url(id: Carto::UUIDHelper.random_uuid)
 
       response.status.should == 404
     end

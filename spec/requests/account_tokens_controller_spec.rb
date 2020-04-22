@@ -5,7 +5,7 @@ describe AccountTokensController do
   describe 'token validation' do
 
     it 'returns 404 for nonexisting tokens' do
-      get enable_account_token_show_url(id: SecureRandom.uuid)
+      get enable_account_token_show_url(id: Carto::UUIDHelper.random_uuid)
       response.status.should == 404
     end
 
@@ -36,7 +36,7 @@ describe AccountTokensController do
     describe 'resend validation mail' do
 
       it 'returns 404 for nonexisting users' do
-        get resend_validation_mail_url(user_id: SecureRandom.uuid)
+        get resend_validation_mail_url(user_id: Carto::UUIDHelper.random_uuid)
         response.status.should == 404
       end
 

@@ -8,7 +8,7 @@ describe Carto::HttpHeaderAuthentication do
 
   EMAIL = "user@carto.com"
   USERNAME = "user"
-  ID = SecureRandom.uuid
+  ID = Carto::UUIDHelper.random_uuid
 
   let(:mock_unauthenticated_request) do
     OpenStruct.new(headers: {})

@@ -36,7 +36,7 @@ module DataRepository
       end
 
       def next_id
-        SecureRandom.uuid
+        Carto::UUIDHelper.random_uuid
       end
 
       def apply_filters(dataset, filters={}, available_filters=[])

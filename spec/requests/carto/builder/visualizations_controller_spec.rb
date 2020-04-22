@@ -114,7 +114,7 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'returns 404 for non-existent visualizations' do
-      get builder_visualization_url(id: SecureRandom.uuid)
+      get builder_visualization_url(id: Carto::UUIDHelper.random_uuid)
 
       response.status.should == 404
     end
@@ -122,7 +122,7 @@ describe Carto::Builder::VisualizationsController do
     it 'returns 404 for non-derived visualizations' do
       @visualization.type = Carto::Visualization::TYPE_CANONICAL
       @visualization.save
-      get builder_visualization_url(id: SecureRandom.uuid)
+      get builder_visualization_url(id: Carto::UUIDHelper.random_uuid)
 
       response.status.should == 404
     end

@@ -39,7 +39,7 @@ describe CartoDB::Connector::Importer do
     runner.stubs(:log).returns(log)
     log.expects(:append).at_least(0)
     quota_checker = mock
-    id = SecureRandom.uuid
+    id = Carto::UUIDHelper.random_uuid
     destination_schema = 'public'
 
     database = mock
@@ -54,7 +54,7 @@ describe CartoDB::Connector::Importer do
     table_registrar = mock
     table_registrar.stubs(:user).returns(@user)
 
-    importer_table_name = "table_#{SecureRandom.uuid}"
+    importer_table_name = "table_#{Carto::UUIDHelper.random_uuid}"
     desired_table_name = 'european_countries'
 
     result_mock = CartoDB::Doubles::Importer2::Result.new({table_name: importer_table_name, name: desired_table_name})

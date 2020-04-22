@@ -17,23 +17,23 @@ describe 'UUIDHelper' do
   end
 
   it 'validates a random UUID' do
-    @uuid_helper.is_uuid?(SecureRandom.uuid).should be(true)
+    @uuid_helper.is_uuid?(Carto::UUIDHelper.random_uuid).should be(true)
   end
 
   it 'fails if content prepended' do
-    @uuid_helper.is_uuid?("hi" + SecureRandom.uuid).should be(false)
+    @uuid_helper.is_uuid?("hi" + Carto::UUIDHelper.random_uuid).should be(false)
   end
 
   it 'fails if content appended' do
-    @uuid_helper.is_uuid?(SecureRandom.uuid + "hola").should be(false)
+    @uuid_helper.is_uuid?(Carto::UUIDHelper.random_uuid + "hola").should be(false)
   end
 
   it 'fails if content prepended with newlines' do
-    @uuid_helper.is_uuid?("hi\n" + SecureRandom.uuid).should be(false)
+    @uuid_helper.is_uuid?("hi\n" + Carto::UUIDHelper.random_uuid).should be(false)
   end
 
   it 'fails if content appended with newlines' do
-    @uuid_helper.is_uuid?(SecureRandom.uuid + "\nhola").should be(false)
+    @uuid_helper.is_uuid?(Carto::UUIDHelper.random_uuid + "\nhola").should be(false)
   end
 
 end

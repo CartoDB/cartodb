@@ -510,7 +510,7 @@ module CartoDB
         @logger = options[:logger] || default_logger
         @@exportjob_logger = options[:export_job_logger]
 
-        job_uuid = @options[:job_uuid] || SecureRandom.uuid
+        job_uuid = @options[:job_uuid] || Carto::UUIDHelper.random_uuid
         export_log = { job_uuid:     job_uuid,
                        id:           @options[:id] || @options[:organization_name] || nil,
                        type:         'export',

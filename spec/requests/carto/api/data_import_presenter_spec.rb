@@ -18,7 +18,7 @@ describe Carto::Api::DataImportPresenter do
       success: true,
       created_at: Time.now,
       updated_at: Time.now,
-      id: SecureRandom.uuid,
+      id: Carto::UUIDHelper.random_uuid,
       stats: '{}',
       type_guessing: false,
       quoted_fields_guessing: false,

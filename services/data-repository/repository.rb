@@ -37,7 +37,7 @@ module DataRepository
     end
 
     def next_id
-      SecureRandom.uuid
+      Carto::UUIDHelper.random_uuid
     end
 
     private

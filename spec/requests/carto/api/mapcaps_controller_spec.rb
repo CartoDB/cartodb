@@ -9,7 +9,7 @@ describe Carto::Api::MapcapsController do
 
   let(:dummy_mapcap) do
     dummy = mock
-    dummy.stubs(:id).returns(SecureRandom.uuid)
+    dummy.stubs(:id).returns(Carto::UUIDHelper.random_uuid)
     dummy
   end
 

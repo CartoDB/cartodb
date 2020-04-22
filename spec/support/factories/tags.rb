@@ -7,7 +7,7 @@ module CartoDB
       attributes = attributes.dup
       attributes[:name] ||= unique_name('tag')
       user_id = if attributes[:user_id].nil?
-        SecureRandom.uuid
+        Carto::UUIDHelper.random_uuid
         #user = create_user
         #user.id
       else

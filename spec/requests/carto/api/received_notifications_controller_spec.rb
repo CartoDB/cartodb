@@ -51,14 +51,14 @@ module Carto
       end
 
       it 'returns 404 if notification not found' do
-        invalid_options = url_options.merge(id: SecureRandom.uuid)
+        invalid_options = url_options.merge(id: Carto::UUIDHelper.random_uuid)
         put_json(user_notification_url(invalid_options), notification: { read_at: 'wadus ' }) do |response|
           expect(response.status).to eq 404
         end
       end
 
       it 'returns 403 if not not logged in as user' do
-        invalid_options = url_options.merge(user_id: SecureRandom.uuid)
+        invalid_options = url_options.merge(user_id: Carto::UUIDHelper.random_uuid)
         put_json(user_notification_url(invalid_options), notification: { read_at: 'wadus ' }) do |response|
           expect(response.status).to eq 403
         end

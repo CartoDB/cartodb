@@ -28,9 +28,9 @@ describe Visualization::Locator do
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    @user_id = SecureRandom.uuid
+    @user_id = Carto::UUIDHelper.random_uuid
 
-    @map_id = SecureRandom.uuid
+    @map_id = Carto::UUIDHelper.random_uuid
 
     # For relator->permission
     @user_mock = create_mocked_user

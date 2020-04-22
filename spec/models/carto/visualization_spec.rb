@@ -498,7 +498,7 @@ describe Carto::Visualization do
       end
 
       it 'fail if a user try to favorite a visualization without permissions' do
-        user_id = SecureRandom.uuid
+        user_id = Carto::UUIDHelper.random_uuid
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
         expect(@visualization.likes.count).to eq(0)
@@ -509,7 +509,7 @@ describe Carto::Visualization do
       end
 
       it 'raises an error if same user tries to like again the same content' do
-        user_id  = SecureRandom.uuid
+        user_id  = Carto::UUIDHelper.random_uuid
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
 
@@ -563,7 +563,7 @@ describe Carto::Visualization do
       end
 
       it 'raises an error if you try to remove a favorite in a visualization you dont have permission' do
-        user_id = SecureRandom.uuid
+        user_id = Carto::UUIDHelper.random_uuid
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
 
@@ -612,7 +612,7 @@ describe Carto::Visualization do
       end
 
       it 'returns false when checking a user without likes on the visualization' do
-        user_id = SecureRandom.uuid
+        user_id = Carto::UUIDHelper.random_uuid
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
 

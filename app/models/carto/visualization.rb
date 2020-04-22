@@ -828,7 +828,7 @@ class Carto::Visualization < ActiveRecord::Base
       @user = user
       @visualization = visualization
 
-      default_ttl = Cartodb.config[:watcher].present? ? Cartodb.config[:watcher].try("fetch", 'ttl', 60) : 60
+      default_ttl = Cartodb.get_config(:watcher, 'ttl') || 60
       @notification_ttl = notification_ttl.nil? ? default_ttl : notification_ttl
     end
 

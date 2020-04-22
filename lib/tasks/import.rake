@@ -30,7 +30,7 @@ namespace :cartodb do
                                  .order(:created_at)
                                  .first
 
-    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+    file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:importer, 'uploads_path'))
 
     unless data_import_item.nil?
       # be 100% safe in rescue blocks when trying to log the failed id
@@ -50,7 +50,7 @@ namespace :cartodb do
         # Files are temp stored in "/%{uploads_path}/token/basename.ext"
         token = File.basename File.dirname filepath
 
-        file_uri = file_upload_helper.upload_file_to_s3(filepath, filename, token, Cartodb.config[:importer]['s3'])
+        file_uri = file_upload_helper.upload_file_to_s3(filepath, filename, token, Cartodb.get_config(:importer, 's3'))
         begin
           File.delete(filepath)
           folder = filepath.slice(0, filepath.rindex('/')).gsub('..', '')

@@ -134,21 +134,21 @@ module Carto
       def domain(username)
         return @domain if @domain
 
-        config_domain = Cartodb.config[:tiler]['internal']['domain']
+        config_domain = Cartodb.get_config(:tiler, 'internal', 'domain')
 
         CartoDB.subdomainless_urls? ? config_domain : "#{username}.#{config_domain}"
       end
 
       def port
-        @port ||= Cartodb.config[:tiler]['internal']['port']
+        @port ||= Cartodb.get_config(:tiler, 'internal', 'port')
       end
 
       def protocol
-        @protocol ||= Cartodb.config[:tiler]['internal']['protocol']
+        @protocol ||= Cartodb.get_config(:tiler, 'internal', 'protocol')
       end
 
       def ssl_verifypeer
-        @verifycert ||= Cartodb.config[:tiler]['internal']['verifycert']
+        @verifycert ||= Cartodb.get_config(:tiler, 'internal', 'verifycert')
       end
 
       def ssl_verifyhost
@@ -158,7 +158,7 @@ module Carto
       def host(username)
         return @host if @host
 
-        config_host = Cartodb.config[:tiler]['internal']['host']
+        config_host = Cartodb.get_config(:tiler, 'internal', 'host')
 
         @host ||= config_host.blank? ? domain(username) : config_host
       end

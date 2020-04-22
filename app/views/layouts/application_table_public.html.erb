@@ -15,11 +15,11 @@
     <meta property="og:type" content="article" />
     <meta property="og:url" content="<%= request.original_url %>" />
     <meta property="og:image" content="<%= yield :facebook_card %>">
-    <% if Cartodb.config[:facebook].present? && Cartodb.config[:facebook]['app_id'].present? %>
-      <meta property="fb:app_id" content="<%= Cartodb.config[:facebook]['app_id'] %>" />
+    <% if Cartodb.get_config(:facebook, 'app_id') %>
+      <meta property="fb:app_id" content="<%= Cartodb.get_config(:facebook, 'app_id') %>" />
     <% end %>
-    <% if Cartodb.config[:facebook].present? && Cartodb.config[:facebook]['admins'].present? %>
-      <meta property="fb:admins" content="<%= Cartodb.config[:facebook]['admins'] %>" />
+    <% if Cartodb.get_config(:facebook, 'admins') %>
+      <meta property="fb:admins" content="<%= Cartodb.get_config(:facebook, 'admins') %>" />
     <% end %>
     <meta property="article:publisher" content="https://www.facebook.com/cartodb" />
     <meta name="twitter:card" content="summary_large_image">

@@ -17,7 +17,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
   after(:all) do
     @user.destroy
-    FileUtils.rmtree(Carto::Conf.new.public_uploads_path + '/kuviz_assets')
+    FileUtils.rmtree(Carto::Conf.new.public_uploads_path + '/html_assets')
   end
 
   describe '#index' do

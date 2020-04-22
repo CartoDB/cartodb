@@ -89,13 +89,13 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def dump
-    if Cartodb.config[:users_dumps].nil? || Cartodb.config[:users_dumps]["service"].nil? || Cartodb.config[:users_dumps]["service"]["port"].nil?
-      raise "There is not a dump method configured"
-    end
+    database_port = Cartodb.get_config(:users_dumps, 'service', 'port')
+    raise "There is not a dump method configured" unless database_port
+
     json_data = {database: @user.database_name, username: @user.username}
     http_client = Carto::Http::Client.get(self.class.name, log_requests: true)
     response = http_client.request(
-      "#{@user.database_host}:#{Cartodb.config[:users_dumps]["service"]["port"]}/scripts/db_dump",
+      "#{@user.database_host}:#{database_port}/scripts/db_dump",
       method: :post,
       headers: { "Content-Type" => "application/json" },
       body: json_data.to_json

@@ -13,9 +13,8 @@ module Carto
         @enabled
       end
 
-      def replace_rule(rule_id, ips)
+      def replace_rule(name, ips)
         return unless enabled?
-        name = rule_name(rule_id)
 
         delete_rule(
           project_id: config['project_id'],
@@ -35,10 +34,6 @@ module Carto
       end
 
       private
-
-      def rule_name(rule_id)
-        config['rule_name'].gsub('{{id}}', rule_id)
-      end
 
       def delete_rule(project_id:, name:)
         # `gcloud compute firewall-rules delete "#{name}"`

@@ -30,15 +30,16 @@ module Carto
       Carto::Dbdirect::FirewallManager
     end
 
-    private
-
-    class <<self
-      private
-
-      def config
-        Cartodb.get_config(:dbdirect, 'firewall')
-      end
+    def firewall_rule_name
+      rule_id = user.dbdirect_bearer.organization&.name || user.dbdirect_bearer.username
+      self.class.config['rule_name'].gsub('{{id}}', rule_id)
     end
+
+    def self.config
+      Cartodb.get_config(:dbdirect, 'firewall')
+    end
+
+    private
 
     MAX_IP_MASK_HOST_BITS = 8
 
@@ -78,7 +79,7 @@ module Carto
       new_ips ||= []
       if old_ips.sort != new_ips.sort
         rule_id = user.dbdirect_bearer.organization&.name || user.dbdirect_bearer.username
-        self.class.firewall_manager.replace_rule(rule_id, new_ips)
+        self.class.firewall_manager.replace_rule(firewall_rule_name, new_ips)
       end
     end
   end

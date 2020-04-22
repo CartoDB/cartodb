@@ -310,13 +310,17 @@ class Carto::User < ActiveRecord::Base
   end
 
   def dbdirect_effective_ips
-    dbdirect_bearer.dbdirect_ip&.ips || []
+    dbdirect_effective_ip&.ips || []
   end
 
   def dbdirect_effective_ips=(ips)
     bearer = dbdirect_bearer
     bearer.dbdirect_ip&.destroy
     bearer.create_dbdirect_ip!(ips: ips) if ips.present?
+  end
+
+  def dbdirect_effective_ip
+    dbdirect_bearer.dbdirect_ip
   end
 
   def dbdirect_bearer

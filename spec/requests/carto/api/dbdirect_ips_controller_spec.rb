@@ -18,15 +18,15 @@ class TestFirewallManager
 
   attr_reader :config
 
-  def replace_rule(rule_id, ips)
-    TestFirewallManager.rules[rule_id] = ips
+  def replace_rule(rule_name, ips)
+    TestFirewallManager.rules[rule_name] = ips
   end
 end
 
 class TestErrorFirewallManager
   def initialize(config)
   end
-  def replace_rule(rule_id, ips)
+  def replace_rule(rule_name, ips)
     raise "FIREWALL ERROR"
   end
 end
@@ -37,11 +37,17 @@ describe Carto::Api::DbdirectIpsController do
   include FeatureFlagHelper
   include Rack::Test::Methods
 
+  def rule(id)
+    "<<#{id}>>"
+  end
+
   before(:all) do
     host! "#{@carto_user1.username}.localhost.lan"
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'dbdirect', restricted: true)
     @config = {
-      firewall: 'the-config'
+      firewall: {
+        rule_name: '<<{{id}}>>'
+      }
     }.with_indifferent_access
 
     @sequel_organization = FactoryGirl.create(:organization_with_users)
@@ -79,7 +85,7 @@ describe Carto::Api::DbdirectIpsController do
         put_json(dbdirect_ip_url, params) do |response|
           expect(response.status).to eq(401)
           expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
-          expect(TestFirewallManager.rules[@carto_user1.username]).to be_nil
+          expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to be_nil
         end
       end
     end
@@ -94,7 +100,7 @@ describe Carto::Api::DbdirectIpsController do
             put_json(dbdirect_ip_url, params) do |response|
               expect(response.status).to eq(403)
               expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
-              expect(TestFirewallManager.rules[@carto_user1.username]).to be_nil
+              expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to be_nil
             end
           end
         end
@@ -112,8 +118,9 @@ describe Carto::Api::DbdirectIpsController do
             expect(response.status).to eq(201)
             expect(response.body[:ips]).to eq ips
             expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips
-            expect(TestFirewallManager.rules[@carto_user1.username]).to eq ips
-            expect(TestFirewallManager.config).to eq 'the-config'
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq ips
+            expect(TestFirewallManager.config).to eq @config[:firewall]
+            expect(@carto_user1.dbdirect_effective_ip.firewall_rule_name).to eq rule(@carto_user1.username)
           end
         end
       end
@@ -131,8 +138,9 @@ describe Carto::Api::DbdirectIpsController do
             expect(response.status).to eq(201)
             expect(response.body[:ips]).to eq ips
             expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips
-            expect(TestFirewallManager.rules[@carto_user1.username]).to eq ips
-            expect(TestFirewallManager.config).to eq 'the-config'
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq ips
+            expect(TestFirewallManager.config).to eq @config[:firewall]
+            expect(@carto_user1.dbdirect_effective_ip.firewall_rule_name).to eq rule(@carto_user1.username)
           end
         end
       end
@@ -151,8 +159,9 @@ describe Carto::Api::DbdirectIpsController do
             expect(response.status).to eq(201)
             expect(response.body[:ips]).to eq ips1
             expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips1
-            expect(TestFirewallManager.rules[@carto_user1.username]).to eq ips1
-            expect(TestFirewallManager.config).to eq 'the-config'
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq ips1
+            expect(TestFirewallManager.config).to eq @config[:firewall]
+            expect(@carto_user1.dbdirect_effective_ip.firewall_rule_name).to eq rule(@carto_user1.username)
           end
 
           params = {
@@ -163,8 +172,9 @@ describe Carto::Api::DbdirectIpsController do
             expect(response.status).to eq(201)
             expect(response.body[:ips]).to eq ips2
             expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips2
-            expect(TestFirewallManager.rules[@carto_user1.username]).to eq ips2
-            expect(TestFirewallManager.config).to eq 'the-config'
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq ips2
+            expect(TestFirewallManager.config).to eq @config[:firewall]
+            expect(@carto_user1.dbdirect_effective_ip.firewall_rule_name).to eq rule(@carto_user1.username)
           end
         end
       end
@@ -190,7 +200,7 @@ describe Carto::Api::DbdirectIpsController do
               expect(response.body[:errors]).not_to be_nil
               expect(response.body[:errors][:ips]).not_to be_nil
               expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
-              expect(TestFirewallManager.rules[@carto_user1.username]).to be_nil
+              expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to be_nil
             end
           end
         end
@@ -212,10 +222,12 @@ describe Carto::Api::DbdirectIpsController do
               expect(response.body[:ips]).to eq ips
               expect(@org_user.reload.dbdirect_effective_ips).to eq ips
               expect(@org_owner.reload.dbdirect_effective_ips).to eq ips
-              expect(TestFirewallManager.rules[@organization.name]).to eq ips
-              expect(TestFirewallManager.rules[@org_user.username]).to be_nil
-              expect(TestFirewallManager.rules[@org_owner.username]).to be_nil
-              expect(TestFirewallManager.config).to eq 'the-config'
+              expect(TestFirewallManager.rules[rule(@organization.name)]).to eq ips
+              expect(TestFirewallManager.rules[rule(@org_user.username)]).to be_nil
+              expect(TestFirewallManager.rules[rule(@org_owner.username)]).to be_nil
+              expect(TestFirewallManager.config).to eq @config[:firewall]
+              expect(@org_user.dbdirect_effective_ip.firewall_rule_name).to eq rule(@organization.name)
+              expect(@org_owner.dbdirect_effective_ip.firewall_rule_name).to eq rule(@organization.name)
             end
           end
         end
@@ -235,7 +247,7 @@ describe Carto::Api::DbdirectIpsController do
             expect(response.status).to eq(500)
             expect(response.body[:errors]).to match(/FIREWALL ERROR/)
             expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
-            expect(TestFirewallManager.rules[@carto_user1.username]).to be_nil
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to be_nil
           end
         end
       end
@@ -247,8 +259,10 @@ describe Carto::Api::DbdirectIpsController do
       @params = { api_key: @carto_user1.api_key }
       @existing_ips = ['100.20.30.40']
       Carto::DbdirectIp.stubs(:firewall_manager_class).returns(TestFirewallManager)
-      @carto_user1.dbdirect_effective_ips = @existing_ips
-      TestFirewallManager.rules[@carto_user1.username] = @existing_ips
+      Cartodb.with_config dbdirect: @config do
+        @carto_user1.dbdirect_effective_ips = @existing_ips
+        TestFirewallManager.rules[rule(@carto_user1.username)] = @existing_ips
+      end
     end
 
     after(:each) do
@@ -263,7 +277,7 @@ describe Carto::Api::DbdirectIpsController do
         delete_json dbdirect_ip_url(params) do |response|
           expect(response.status).to eq(401)
           expect(@carto_user1.reload.dbdirect_effective_ips).to eq @existing_ips
-          expect(TestFirewallManager.rules[@carto_user1.username]).to eq @existing_ips
+          expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq @existing_ips
         end
       end
     end
@@ -277,7 +291,7 @@ describe Carto::Api::DbdirectIpsController do
           delete_json dbdirect_ip_url(params) do |response|
             expect(response.status).to eq(403)
             expect(@carto_user1.reload.dbdirect_effective_ips).to eq @existing_ips
-            expect(TestFirewallManager.rules[@carto_user1.username]).to eq @existing_ips
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq @existing_ips
           end
         end
       end
@@ -292,8 +306,8 @@ describe Carto::Api::DbdirectIpsController do
           delete_json dbdirect_ip_url(params) do |response|
             expect(response.status).to eq(204)
             expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
-            expect(TestFirewallManager.rules[@carto_user1.username]).to be_empty
-            expect(TestFirewallManager.config).to eq 'the-config'
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to be_empty
+            expect(TestFirewallManager.config).to eq @config[:firewall]
           end
         end
       end
@@ -308,8 +322,8 @@ describe Carto::Api::DbdirectIpsController do
           delete_json dbdirect_ip_url(params) do |response|
             expect(response.status).to eq(204)
             expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
-            expect(TestFirewallManager.rules[@carto_user1.username]).to be_empty
-            expect(TestFirewallManager.config).to eq 'the-config'
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to be_empty
+            expect(TestFirewallManager.config).to eq @config[:firewall]
           end
         end
       end
@@ -326,7 +340,7 @@ describe Carto::Api::DbdirectIpsController do
             expect(response.status).to eq(500)
             expect(response.body[:errors]).to match(/FIREWALL ERROR/)
             expect(@carto_user1.reload.dbdirect_effective_ips).to eq @existing_ips
-            expect(TestFirewallManager.rules[@carto_user1.username]).to eq @existing_ips
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq @existing_ips
           end
         end
       end
@@ -337,7 +351,9 @@ describe Carto::Api::DbdirectIpsController do
     before(:each) do
       @ips = ['100.20.30.40']
       Carto::DbdirectIp.stubs(:firewall_manager_class).returns(TestFirewallManager)
-      @carto_user1.dbdirect_effective_ips = @ips
+      Cartodb.with_config dbdirect: @config do
+        @carto_user1.dbdirect_effective_ips = @ips
+      end
     end
 
     after(:each) do
@@ -401,7 +417,9 @@ describe Carto::Api::DbdirectIpsController do
       params = {
         api_key: @carto_user1.api_key
       }
-      @carto_user1.reload.dbdirect_effective_ips = nil
+      Cartodb.with_config dbdirect: @config do
+        @carto_user1.reload.dbdirect_effective_ips = nil
+      end
       with_feature_flag @carto_user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
           get_json dbdirect_ip_url(params) do |response|

@@ -39,6 +39,7 @@ sudo make install
 - Set node 10.15.1 as default and only for building assets, removing 6.9.2 ([#15530](https://github.com/CartoDB/cartodb/issues/15530))
 - Update toolkit libraries to fix case sensitive fields ([#15569](https://github.com/CartoDB/cartodb/pull/15569))
 - Fix to avoid locks when sorting rows in dataset table ([#2399](https://github.com/CartoDB/support/issues/2399))
+- Fix whitelisted domains for OAuth signup ([#2495]https://github.com/CartoDB/support/issues/2495))
 
 4.36.0 (2020-03-09)
 -------------------

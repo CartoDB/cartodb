@@ -3,6 +3,11 @@ Development
 
 ### NOTICES
 - DB Connectors removed from the main repository
+- This release upgrades the CartoDB PostgreSQL extension to `0.36.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
 - Use Dataservices API client 0.30.0

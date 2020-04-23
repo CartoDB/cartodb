@@ -16,7 +16,7 @@
         <a :href="`${ baseUrl }/organization`" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.organizationSettings`) }}</a>
       </li>
       <span class="settingssidebar-separator"></span>
-      <li class="settingssidebar-item" v-if="isEnterprise">
+      <li class="settingssidebar-item" v-if="isEnterprise || hasDirectDBConnection">
         <router-link :to="{ name: 'connections' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isConnectionsPage()}">{{ $t(`SettingsPages.sidebar.connections`) }}</router-link>
       </li>
       <li class="settingssidebar-item">
@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import { hasFeatureEnabled } from 'new-dashboard/core/models/user';
 import { mapState } from 'vuex';
 
 export default {
@@ -45,7 +46,8 @@ export default {
       baseUrl: state => state.user.base_url,
       user: state => state.user,
       planUrl: state => state.config.plan_url,
-      isLocallyHosted: state => state.config.cartodb_com_hosted
+      isLocallyHosted: state => state.config.cartodb_com_hosted,
+      hasDirectDBConnection: state => hasFeatureEnabled(state.user, 'dbdirect')
     }),
     isInsideOrg () {
       return this.$store.getters['user/isOrganizationUser'];

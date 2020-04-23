@@ -59,7 +59,7 @@ class Carto::VisualizationQueryBuilder
   def with_id_or_name(id_or_name)
     raise 'VisualizationQueryBuilder: id or name supplied is nil' if id_or_name.nil?
 
-    if is_uuid?(id_or_name)
+    if uuid?(id_or_name)
       with_id(id_or_name)
     else
       with_name(id_or_name)

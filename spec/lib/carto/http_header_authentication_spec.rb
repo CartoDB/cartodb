@@ -1,5 +1,4 @@
 require 'ostruct'
-require 'uuidtools'
 require_relative '../../spec_helper'
 require_relative '../../../lib/carto/http_header_authentication'
 require_relative '../../requests/http_authentication_helper'
@@ -9,7 +8,7 @@ describe Carto::HttpHeaderAuthentication do
 
   EMAIL = "user@carto.com"
   USERNAME = "user"
-  ID = UUIDTools::UUID.timestamp_create.to_s
+  ID = Carto::UUIDHelper.random_uuid
 
   let(:mock_unauthenticated_request) do
     OpenStruct.new(headers: {})

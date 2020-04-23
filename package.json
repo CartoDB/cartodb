@@ -94,7 +94,7 @@
     "babel-jest": "^25.2.6",
     "babel-loader": "^8.1.0",
     "babel-plugin-dynamic-import-node": "^2.2.0",
-    "babelify": "^8.0.0",
+    "babelify": "^10.0.0",
     "bluebird": "3.5.0",
     "brfs": "^1.4.3",
     "browserify-resolutions": "1.1.0",

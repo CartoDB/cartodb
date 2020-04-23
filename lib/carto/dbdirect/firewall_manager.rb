@@ -1,3 +1,5 @@
+require 'google/apis/compute_v1'
+
 module Carto
   module Dbdirect
     # Firewall Rule Manager
@@ -5,6 +7,10 @@ module Carto
       def initialize(config)
         @config = config
         @enabled = config['enabled'] == true
+        if enabled?
+          @service = Google::Apis::ComputeV1::ComputeService.new
+          @service.authorization = Google::Auth.get_application_default([AUTH_URL])
+        end
       end
 
       attr_reader :config
@@ -37,6 +43,13 @@ module Carto
 
       def delete_rule(project_id:, name:)
         # `gcloud compute firewall-rules delete "#{name}"`
+
+        # we could check existence with @service.list_firewalls(project_id).find {|r| r.name == name}
+        # but since there could be race conditions anyway we'll just rescue errors
+        @service.delete_firewall(config['project_id'], name)
+
+      rescue Google::Apis::ClientError => error
+        # error.message =~ /^notFound:/
       end
 
       def create_rule(project_id:, name:, network:, ips:, target_tag:, ports:)
@@ -50,19 +63,28 @@ module Carto
         #     --no-enable-logging  \
         #     --project "#{project_id}"`
 
-        # run SysCmd.command 'cloud compute firewall-rules create' do
-        #   option '-q'
-        #   value name
-        #   option '--network', network
-        #   option '--direction', 'ingress'
-        #   option '--action', 'allow'
-        #   option '--source-ranges', ips.join(',')
-        #   option '--target-tags', target_tag
-        #   option '--rules', ports
-        #   option '--no-enable-logging'
-        #   option '--project', project_id
-        # end
+        protocol, port = config['ports'].split(':')
+        allowed = Google::Apis::ComputeV1::Firewall::Allowed.new(
+          ip_protocol: protocol,
+          ports: [port.split(',')]
+        )
+        rule = Google::Apis::ComputeV1::Firewall.new(
+          name: name,
+          allowed: [allowed],
+          network: network_url(config['project_id'], config['network']),
+          source_ranges: ips,
+          target_tags: [config['target_tag']]
+        )
+
+        @service.insert_firewall(config['project_id'], rule)
       end
+    end
+
+    AUTH_URL = 'https://www.googleapis.com/auth/cloud-platform'.freeze
+    PROJECTS_URL = 'https://www.googleapis.com/compute/v1/projects'.freeze
+
+    def network_url(project_id, network)
+      "#{PROJECTS_URL}/#{project_id}/global/networks/#{network}"
     end
   end
 end

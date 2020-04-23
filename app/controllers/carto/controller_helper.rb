@@ -53,6 +53,7 @@ module Carto
       respond_to do |format|
         format.html { render text: message, status: 500 }
         format.json { render json: { errors: message }, status: 500 }
+        format.zip { render text: message, status: 500 }
       end
     end
 

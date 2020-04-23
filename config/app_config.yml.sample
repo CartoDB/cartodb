@@ -772,6 +772,16 @@ defaults: &defaults
         routing: false
         data_observatory: false
   disable_email_mx_check: false # Disables MX DNS record check and just performs syntax validation.
+  dbdirect:
+    certificates:
+      ca_arn: "arn:aws:acm-pca:zzzzzz:XXXXXXXXXXX:certificate-authority/XXXXXXXXXXXXXXXX"
+      maximum_validity_days: 365
+      aws_access_key_id: ''
+      aws_secret_key: ''
+      aws_region: us-east-1
+    pgproxy:
+      host: 'dbconn.carto.com'
+      port: 5432
 
 development:
   <<: *defaults

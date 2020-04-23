@@ -14,7 +14,7 @@
         </p>
 
         <p class="text is-small is-txtGrey">
-          {{ $t('CertificateDownloadModal.description') }}
+          {{ $t('CertificateDownloadModal.warning') }}
         </p>
       </div>
 
@@ -55,6 +55,7 @@ export default {
   },
   methods: {
     open () {
+      this.isCertificateDownloaded = false;
       this.$refs.certificateDownloadDialog.open();
     },
     close () {

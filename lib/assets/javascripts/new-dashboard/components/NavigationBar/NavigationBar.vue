@@ -49,7 +49,7 @@
           v-if="!popupWasShown('popups.directDBConnection') && !twoWeeksSinceRelease"
           class="notification-popup"
           title="New Connection Feature"
-          :message="`Now you can connect your external GIS apps with our new feature managing your certificates at CARTO. <a href='${this.$router.resolve({name: 'connections'}).href}'>Discover it!</a>`"
+          :message="`Bring your CARTO data to the tools you already use. You can now connect to your CARTO account from other GIS or BI tools and database clients. <a href='${this.$router.resolve({name: 'connections'}).href}'>Discover it!</a>`"
           :messageHasHTML="true"/>
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">

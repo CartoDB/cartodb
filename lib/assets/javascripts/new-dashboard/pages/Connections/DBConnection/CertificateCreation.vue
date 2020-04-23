@@ -32,12 +32,12 @@
 
     <div class="certificate-creation__footer">
       <p class="footer__text">
-        $t('CertificateCreation.submit.description')
+        {{ $t('CertificateCreation.form.submit.description') }}
       </p>
       <button class="button button--primary" :disabled="!certificate.name || isCreatingCertificate">
         {{ this.isCreatingCertificate
-           ? $t('CertificateCreation.submit.action')
-           : $t('CertificateCreation.submit.performingAction') }}
+           ? $t('CertificateCreation.form.submit.performingAction')
+           : $t('CertificateCreation.form.submit.action') }}
       </button>
     </div>
   </form>

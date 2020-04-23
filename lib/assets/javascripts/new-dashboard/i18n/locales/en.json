@@ -689,7 +689,7 @@
     "emptyDescription": "No apps connected. You haven't allowed any applications to access your CARTO account.",
     "emptyTipTitle": "Are you looking to create an OAuth application?",
     "emptyTipDescription": "You can do it from your <a href='{url}'>developer settings</a>.",
-    "listTitle": "Connected Apps",
+    "listTitle": "App permissions",
     "removeAccessButton": "Remove Access",
     "removeModal": {
       "title": "You are about to remove access <span class='is-bold'>{name}</span> app to your account data.",
@@ -702,7 +702,7 @@
     "sidebar": {
       "profile": "Profile",
       "account": "Account",
-      "connectedApps": "Connected Apps",
+      "connectedApps": "App permissions",
       "billing": "Billing",
       "organizationSettings": "Organization Settings",
       "developerSettings": "Developer Settings",
@@ -793,8 +793,8 @@
   },
   "CertificateDownloadModal": {
     "title": "Your <span class='is-bold'>new certificate</span> has been created",
-    "description": "The ZIP file contains the certificate files along with information about the parameters for setting up your connection.",
-    "warning": "⚠️ Before you can close this dialog, you must download your certificate. The file will not be accessible after this dialog is closed.",
+    "description": "The ZIP file contains the certificate files along with information about the parameters to set up your connection.",
+    "warning": "⚠️ Before closing this dialog, please make sure you download your certificate. You will not be able to access the file after the dialog box is closed.",
     "download": {
       "download": "DOWNLOAD .ZIP",
       "waiting": "DOWNLOADING",
@@ -802,8 +802,8 @@
     }
   },
   "DBConnection": {
-    "description_fl": "To connect to the CARTO database from other tools you need to add the IP address you are connecting from and generate a certificate to protect your connection.",
-    "description_sl": "You can read more in our <a href='#'>help center</a>.",
+    "description_fl": "To connect to CARTO's database from third-party tools, you first need to add the IP address you are connecting from and then generate a certificate to secure your connection.",
+    "description_sl": "You can read more about this in our <a href='#'>help center</a>.",
     "ipsSection": {
       "title": "1. Your IPs",
       "allowAllIPs": "Allow connections from any IP addresses (Coming Soon)",

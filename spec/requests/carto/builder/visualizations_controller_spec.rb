@@ -13,8 +13,8 @@ describe Carto::Builder::VisualizationsController do
 
   describe '#show' do
     before(:each) do
-      map = FactoryGirl.create(:map, user_id: @user1.id)
-      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: map.id)
+      @map = FactoryGirl.create(:map, user_id: @user1.id)
+      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: @map.id)
       login(@user1)
     end
 
@@ -114,7 +114,7 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'returns 404 for non-existent visualizations' do
-      get builder_visualization_url(id: UUIDTools::UUID.timestamp_create.to_s)
+      get builder_visualization_url(id: Carto::UUIDHelper.random_uuid)
 
       response.status.should == 404
     end
@@ -122,7 +122,7 @@ describe Carto::Builder::VisualizationsController do
     it 'returns 404 for non-derived visualizations' do
       @visualization.type = Carto::Visualization::TYPE_CANONICAL
       @visualization.save
-      get builder_visualization_url(id: UUIDTools::UUID.timestamp_create.to_s)
+      get builder_visualization_url(id: Carto::UUIDHelper.random_uuid)
 
       response.status.should == 404
     end
@@ -207,8 +207,11 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'includes the google maps client id if configured' do
+      @map.provider = 'googlemaps'
+      @map.save
       @user1.google_maps_key = 'client=wadus_cid'
       @user1.save
+      @visualization
       get builder_visualization_url(id: @visualization.id)
 
       response.status.should == 200

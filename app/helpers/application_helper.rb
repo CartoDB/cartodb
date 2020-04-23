@@ -73,35 +73,35 @@ module ApplicationHelper
     config = {
       maps_api_template:   maps_api_template(api_type),
       user_name:           CartoDB.extract_subdomain(request),
-      cartodb_com_hosted:  Cartodb.config[:cartodb_com_hosted],
+      cartodb_com_hosted:  Cartodb.get_config(:cartodb_com_hosted),
       account_host:        CartoDB.account_host,
-      max_asset_file_size: Cartodb.config[:assets]["max_file_size"],
+      max_asset_file_size: Cartodb.get_config(:assets, 'max_file_size'),
       api_key:             ''
     }
 
     # Assumption: it is safe to expose private SQL API endpoint (or it is the same just using HTTPS)
-    config[:sql_api_template] =  sql_api_template(api_type)
+    config[:sql_api_template] = sql_api_template(api_type)
 
-    if Cartodb.config[:graphite_public].present?
-      config[:statsd_host] = Cartodb.config[:graphite_public]['host']
-      config[:statsd_port] = Cartodb.config[:graphite_public]['port']
+    if Cartodb.get_config(:graphite_public)
+      config[:statsd_host] = Cartodb.get_config(:graphite_public, 'host')
+      config[:statsd_port] = Cartodb.get_config(:graphite_public, 'port')
     end
 
-    if Cartodb.config[:error_track].present?
-      config[:error_track_url] = Cartodb.config[:error_track]["url"]
-      config[:error_track_percent_users] = Cartodb.config[:error_track]["percent_users"]
+    if Cartodb.get_config(:error_track)
+      config[:error_track_url] = Cartodb.get_config(:error_track, 'url')
+      config[:error_track_percent_users] = Cartodb.get_config(:error_track, 'percent_users')
     end
 
-    if Cartodb.config[:cdn_url].present?
-      config[:cdn_url] = Cartodb.config[:cdn_url]
+    if Cartodb.get_config(:cdn_url)
+      config[:cdn_url] = Cartodb.get_config(:cdn_url)
     end
 
-    if Cartodb.config[:explore_api].present?
-      config[:explore_user] = Cartodb.config[:explore_api]['username']
+    if Cartodb.get_config(:explore_api)
+      config[:explore_user] = Cartodb.get_config(:explore_api, 'username')
     end
 
-    if Cartodb.config[:common_data].present?
-      config[:common_data_user] = Cartodb.config[:common_data]['username']
+    if Cartodb.get_config(:common_data)
+      config[:common_data_user] = Cartodb.get_config(:common_data, 'username')
     end
 
     config.to_json
@@ -131,7 +131,7 @@ module ApplicationHelper
              frontend_version
            end
 
-    raise_on_asset_absence sources
+    # raise_on_asset_absence sources
 
     sources_with_prefix("/#{path}/#{asset_type}/", sources)
   end

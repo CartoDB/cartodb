@@ -1,0 +1,13 @@
+  <% if !@user.new? && current_user.organization_owner? && @user.engine_enabled? -%>
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">User master API key</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <%= f.text_field :api_key, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med is-disabled", :readonly => true %>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <button class="CDB-Text CDB-Size-medium Button--link js-regenerateOrgUserApiKey" data-username="<%= @user.username %>" data-current_username="<%= current_user.username %>" type="button">Regenerate all API keys</button>
+        </div>
+      </div>
+    </div>
+  <% end %>

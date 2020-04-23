@@ -19,7 +19,7 @@ describe Visualization::Tags do
     bypass_named_maps
 
     # For relator->permission
-    user_id = UUIDTools::UUID.timestamp_create.to_s
+    user_id = Carto::UUIDHelper.random_uuid
     user_name = 'whatever'
     user_apikey = '123'
     @user_mock = create_mocked_user(user_id: user_id, user_name: user_name, user_apikey: user_apikey)
@@ -38,7 +38,7 @@ describe Visualization::Tags do
 
       tags = Visualization::Tags.new(@user_mock)
 
-      records = tags.names()
+      records = tags.names
       records.length.should eq 2
 
       records = tags.names(locked: false)
@@ -90,7 +90,7 @@ describe Visualization::Tags do
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),
       type:         attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
-      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s),
+      user_id:      attributes.fetch(:user_id, Carto::UUIDHelper.random_uuid),
       locked:       attributes.fetch(:locked, false)
     }
   end

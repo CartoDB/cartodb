@@ -30,7 +30,7 @@ describe 'legacy behaviour tests' do
 
       it 'returns every geocoding belonging to current_user' do
         FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user, state: 'wadus')
-        FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user_id: UUIDTools::UUID.timestamp_create.to_s)
+        FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user_id: Carto::UUIDHelper.random_uuid)
         get_json api_v1_geocodings_index_url(params) do |response|
           response.status.should be_success
           response.body[:geocodings].size.should == 1
@@ -47,7 +47,7 @@ describe 'legacy behaviour tests' do
         user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, _orgname = nil, _redis = redis_mock)
         CartoDB::GeocoderUsageMetrics.stubs(:new).returns(user_geocoder_metrics)
         user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
-        geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
+        geocoding = FactoryGirl.create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
 
         get_json api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|
           response.status.should be_success
@@ -59,7 +59,7 @@ describe 'legacy behaviour tests' do
       end
 
       it 'does not return a geocoding owned by another user' do
-        geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user_id: UUIDTools::UUID.timestamp_create.to_s)
+        geocoding = FactoryGirl.create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user_id: Carto::UUIDHelper.random_uuid)
 
         get_json api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|
           response.status.should eq 404
@@ -108,14 +108,14 @@ describe 'legacy behaviour tests' do
         table.insert_row!(cartodb_georef_status: false)
 
         expected_rows = 2
-        expected_estimation = expected_rows * @user.geocoding_block_price / ::User::GEOCODING_BLOCK_SIZE.to_f
+        expected_estimation = expected_rows * @user.geocoding_block_price / Carto::Geocoding::GEOCODING_BLOCK_SIZE
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: false)) do |response|
           response.status.should be_success
           response.body.should == {rows: expected_rows, estimation: expected_estimation}
         end
 
         expected_rows = 3
-        expected_estimation = expected_rows * @user.geocoding_block_price / ::User::GEOCODING_BLOCK_SIZE.to_f
+        expected_estimation = expected_rows * @user.geocoding_block_price / Carto::Geocoding::GEOCODING_BLOCK_SIZE
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: true)) do |response|
           response.status.should be_success
           response.body.should == {rows: expected_rows, estimation: expected_estimation}

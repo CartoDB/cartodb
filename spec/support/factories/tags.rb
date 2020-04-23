@@ -7,7 +7,7 @@ module CartoDB
       attributes = attributes.dup
       attributes[:name] ||= unique_name('tag')
       user_id = if attributes[:user_id].nil?
-        UUIDTools::UUID.timestamp_create.to_s
+        Carto::UUIDHelper.random_uuid
         #user = create_user
         #user.id
       else
@@ -18,7 +18,7 @@ module CartoDB
       else
         attributes.delete(:table_id)
       end
-      Tag.new(attributes)
+      Carto::Tag.new(attributes)
       tag.user_id = user_id
       tag.table_id = table_id
       tag

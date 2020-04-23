@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
@@ -10,15 +9,17 @@ const entryPoints = require('./entryPoints');
 const vueLoaderConfig = require('../new-dashboard/vue-loader.conf');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-const rootDir = file => resolve(__dirname, '../../', file);
 const isVendor = name => name.indexOf('node_modules') >= 0;
 const isJavascript = name => name.endsWith('.js');
+
+const { rootDir, GearResolverPlugin } = require('./gearAwareResolver');
 
 module.exports = {
   entry: entryPoints,
   output: {
     filename: `${version}/javascripts/[name].js`,
-    path: rootDir('public/assets')
+    path: rootDir('public/assets'),
+    publicPath: http_path_prefix + '/assets/'
   },
   resolve: {
     extensions: ['.js', '.vue', '.json', '.scss'],
@@ -28,6 +29,8 @@ module.exports = {
   },
   devtool: 'source-map',
   plugins: [
+    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
+
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
@@ -95,7 +98,8 @@ module.exports = {
       ]
     }),
 
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new GearResolverPlugin()
   ],
   optimization: {
     splitChunks: {
@@ -191,15 +195,17 @@ module.exports = {
           rootDir('lib/assets/javascripts/builder'),
           rootDir('lib/assets/javascripts/dashboard'),
           rootDir('lib/assets/javascripts/new-dashboard'),
-          rootDir('node_modules/internal-carto.js')
+          rootDir('node_modules/internal-carto.js'),
+          rootDir('node_modules/@carto/toolkit-core'),
+          rootDir('node_modules/@carto/toolkit-custom-storage'),
+          rootDir('node_modules/vue-i18n/')
         ],
         exclude: [
           rootDir('node_modules/internal-carto.js/node_modules'),
           rootDir('node_modules/internal-carto.js/vendor')
         ],
         options: {
-          presets: ['env'],
-          plugins: ['transform-object-rest-spread']
+          babelrc: true
         }
       },
       {

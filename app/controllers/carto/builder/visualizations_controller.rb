@@ -3,7 +3,7 @@ require 'carto/api/layer_presenter'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/visualization_migrator'
-require_dependency 'carto/helpers/frame_options_helper'    
+require_dependency 'carto/helpers/frame_options_helper'
 
 module Carto
   module Builder
@@ -43,7 +43,7 @@ module Carto
         end
         latest_mapcap = @visualization.latest_mapcap
         @mapcaps_data = latest_mapcap ? [Carto::Api::MapcapPresenter.new(latest_mapcap).to_poro] : []
-        @google_maps_qs = @visualization.user.google_maps_query_string
+        @google_maps_query_string = @visualization.user.google_maps_query_string
 
         @builder_notifications = notifications(:builder)
         @dashboard_notifications = notifications(:dashboard)

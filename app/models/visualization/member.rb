@@ -7,7 +7,6 @@ require_relative './presenter'
 require_relative './name_checker'
 require_relative '../permission'
 require_relative './relator'
-require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../helpers/embed_redis_cache'
@@ -36,8 +35,9 @@ module CartoDB
       TYPE_SLIDE      = 'slide'.freeze
       TYPE_REMOTE = 'remote'.freeze
       TYPE_KUVIZ = 'kuviz'.freeze
+      TYPE_APP = 'app'.freeze
 
-      VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
+      VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ, TYPE_APP].freeze
 
       KIND_GEOM   = 'geom'.freeze
       KIND_RASTER = 'raster'.freeze
@@ -418,6 +418,10 @@ module CartoDB
 
       def kuviz?
         type == TYPE_KUVIZ
+      end
+
+      def app?
+        type == TYPE_APP
       end
 
       def invalidate_cache

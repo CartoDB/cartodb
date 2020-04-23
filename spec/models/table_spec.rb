@@ -707,7 +707,7 @@ describe Table do
 
       it "should update denormalized counters" do
         @user.reload
-        Tag.count.should == 0
+        Carto::Tag.count.should == 0
         UserTable.count == 0
       end
 
@@ -732,31 +732,31 @@ describe Table do
         delete_user_data @user
         table = create_table :user_id => @user.id, :tags => "tag 1, tag 2,tag 3, tag 3"
 
-        Tag.count.should == 3
+        Carto::Tag.count.should == 3
 
-        tag1 = Tag[:name => 'tag 1']
+        tag1 = Carto::Tag.where(name: 'tag 1').first
         tag1.user_id.should  == @user.id
         tag1.table_id.should == table.id
 
-        tag2 = Tag[:name => 'tag 2']
+        tag2 = Carto::Tag.where(name: 'tag 2').first
         tag2.user_id.should  == @user.id
         tag2.table_id.should == table.id
 
-        tag3 = Tag[:name => 'tag 3']
+        tag3 = Carto::Tag.where(name: 'tag 3').first
         tag3.user_id.should  == @user.id
         tag3.table_id.should == table.id
 
         table.tags = "tag 1"
         table.save_changes
 
-        Tag.count.should == 1
-        tag1 = Tag[:name => 'tag 1']
+        Carto::Tag.count.should == 1
+        tag1 = Carto::Tag.where(name: 'tag 1').first
         tag1.user_id.should  == @user.id
         tag1.table_id.should == table.id
 
         table.tags = "    "
         table.save_changes
-        Tag.count.should == 0
+        Carto::Tag.count.should == 0
       end
 
       it "can add a column of a CartoDB::TYPE type" do
@@ -1862,7 +1862,7 @@ describe Table do
 
     describe '#validation_for_link_privacy' do
       it 'checks that only users with private tables enabled can set LINK privacy' do
-        table_id = UUIDTools::UUID.timestamp_create.to_s
+        table_id = Carto::UUIDHelper.random_uuid
 
         user_mock = mock
         user_mock.stubs(:private_tables_enabled).returns(true)
@@ -1887,7 +1887,7 @@ describe Table do
         user_table.stubs(:user).returns(user_mock)
         user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PRIVATE
 
-        user_table.user_id = UUIDTools::UUID.timestamp_create.to_s
+        user_table.user_id = Carto::UUIDHelper.random_uuid
         user_table.privacy = UserTable::PRIVACY_PUBLIC
         user_table.name = 'test'
         user_table.validate

@@ -148,10 +148,10 @@ class Asset < Sequel::Model
   end
 
   def s3_bucket
-    s3_config = Cartodb.config[:aws]["s3"].symbolize_keys
+    s3_config = Cartodb.get_config(:aws, 's3').symbolize_keys
     Aws.config = s3_config
     s3 = Aws::S3::Resource.new
-    @s3_bucket ||= s3.bucket(Cartodb.config[:assets]["s3_bucket_name"])
+    @s3_bucket ||= s3.bucket(Cartodb.get_config(:assets, 's3_bucket_name'))
   end
 
   ASSET_SUBFOLDER = 'uploads'.freeze

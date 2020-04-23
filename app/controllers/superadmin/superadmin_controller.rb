@@ -18,7 +18,7 @@ class Superadmin::SuperadminController < ActionController::Base
   def authenticate
     return true if Rails.env.development? || authenticated?(CartoDB.extract_subdomain(request)) && current_user.admin
     authenticate_or_request_with_http_basic do |username, password|
-      username == Cartodb.config[:superadmin]["username"] && password == Cartodb.config[:superadmin]["password"]
+      username == Cartodb.get_config(:superadmin, 'username') && password == Cartodb.get_config(:superadmin, 'password')
     end
   end
 

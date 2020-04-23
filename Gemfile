@@ -24,8 +24,9 @@ gem 'oauth-plugin',            git: 'https://github.com/CartoDB/oauth-plugin.git
 gem 'hiredis',                 '~> 0.6.1'
 gem 'redis',                   '~> 3.3.5'
 
-gem 'nokogiri',                '~> 1.8.2'
+gem 'nokogiri',                '~> 1.10'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
+gem 'aws-sdk-acmpca',          '~> 1'
 gem 'aws-sdk-s3',              '~> 1'
 gem 'ruby-prof',               '0.15.1'
 gem 'request_store',           '1.1.0'
@@ -55,7 +56,7 @@ end
 # Importer & sync tables
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
-gem 'typhoeus',                '0.7.2'
+gem 'typhoeus',                '1.3.1'
 gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
 gem 'google-api-client',       '0.34.1'
@@ -68,7 +69,6 @@ gem 'google-cloud-pubsub', '1.2.0'
 
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
-gem 'uuidtools',                '2.1.5'
 gem 'cartodb-common',           git: 'https://github.com/cartodb/cartodb-common.git', branch: 'master'
 gem 'email_address',            '~> 0.1.11'
 
@@ -82,6 +82,7 @@ gem 'resque-metrics',        '0.1.1'
 
 gem 'net-telnet'
 
+gem 'rubyzip',               '>= 2.0.0'
 
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'

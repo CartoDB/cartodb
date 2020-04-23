@@ -10,7 +10,7 @@ module FrontendConfigHelper
       maps_api_template:          maps_api_template,
       sql_api_template:           sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),
-      cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted].present?,
+      cartodb_com_hosted:         Cartodb.get_config(:cartodb_com_hosted),
       account_host:               CartoDB.account_host,
       trackjs_customer:           Cartodb.get_config(:trackjs, 'customer'),
       trackjs_enabled:            Cartodb.get_config(:trackjs, 'enabled'),
@@ -29,7 +29,7 @@ module FrontendConfigHelper
       oauth_mailchimp:            Cartodb.get_config(:oauth, 'mailchimp', 'app_key'),
       oauth_bigquery:             Cartodb.get_config(:oauth, 'bigquery', 'client_id'),
       bigquery_enabled:           Carto::Connector.provider_available?('bigquery', user),
-      bigquery_available:         Carto::Connector::BigQueryProvider.public?,
+      bigquery_available:         Carto::Connector.provider_public?('bigquery'),
       oauth_mechanism_bigquery:   Cartodb.get_config(:oauth, 'bigquery', 'oauth_mechanism'),
       arcgis_enabled:             Cartodb.get_config(:datasources, 'arcgis_enabled'),
       salesforce_enabled:         Cartodb.get_config(:datasources, 'salesforce_enabled'),
@@ -38,8 +38,8 @@ module FrontendConfigHelper
       sqlserver_enabled:          Cartodb.get_config(:connectors, 'sqlserver', 'enabled'),
       hive_enabled:               Cartodb.get_config(:connectors, 'hive', 'enabled'),
       datasource_search_twitter:  nil,
-      max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
-      watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
+      max_asset_file_size:        Cartodb.get_config(:assets, 'max_file_size'),
+      watcher_ttl:                Cartodb.get_config(:watcher, 'ttl') || 60,
       upgrade_url:                cartodb_com_hosted? ? false : user.try(:upgrade_url, request.protocol).to_s,
       licenses:                   Carto::License.all,
       data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?,
@@ -53,27 +53,27 @@ module FrontendConfigHelper
       config[:hubspot_form_ids] = CartoDB::Hubspot::instance.form_ids
     end
 
-    if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
-      && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?
-      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
+    if Cartodb.get_config(:datasource_search, 'twitter_search', 'standard')
+      search_url = Cartodb.get_config(:datasource_search, 'twitter_search', 'standard', 'search_url')
+      config[:datasource_search_twitter] = search_url
     end
 
-    if Cartodb.config[:graphite_public].present?
-      config[:statsd_host] = Cartodb.config[:graphite_public]['host']
-      config[:statsd_port] = Cartodb.config[:graphite_public]['port']
+    if Cartodb.get_config(:graphite_public)
+      config[:statsd_host] = Cartodb.get_config(:graphite_public, 'host')
+      config[:statsd_port] = Cartodb.get_config(:graphite_public, 'port')
     end
 
-    if Cartodb.config[:error_track].present?
-      config[:error_track_url] = Cartodb.config[:error_track]["url"]
-      config[:error_track_percent_users] = Cartodb.config[:error_track]["percent_users"]
+    if Cartodb.get_config(:error_track)
+      config[:error_track_url] = Cartodb.get_config(:error_track, 'url')
+      config[:error_track_percent_users] = Cartodb.get_config(:error_track, 'percent_users')
     end
 
-    if Cartodb.config[:static_image_upload_endpoint].present?
-      config[:static_image_upload_endpoint] = Cartodb.config[:static_image_upload_endpoint]
+    if Cartodb.get_config(:static_image_upload_endpoint)
+      config[:static_image_upload_endpoint] = Cartodb.get_config(:static_image_upload_endpoint)
     end
 
-    if Cartodb.config[:cdn_url].present?
-      config[:cdn_url] = Cartodb.config[:cdn_url]
+    if Cartodb.get_config(:cdn_url)
+      config[:cdn_url] = Cartodb.get_config(:cdn_url)
     end
 
     if !Cartodb.get_config(:dataservices, 'enabled').nil?

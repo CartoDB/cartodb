@@ -27,7 +27,7 @@ module Carto
       user = user_table.user
       geometry_type = user_table.geometry_type
 
-      data_layer = Carto::Layer.new(Cartodb.config[:layer_opts]['data'].deep_dup)
+      data_layer = Carto::Layer.new(Cartodb.get_config(:layer_opts, 'data').deep_dup)
       layer_options = data_layer.options
       layer_options['table_name'] = user_table.name
       layer_options['user_name'] = user.username
@@ -67,7 +67,7 @@ module Carto
     private_class_method :builder_tile_style
 
     def self.legacy_tile_style(geometry_type)
-      "#layer #{Cartodb.config[:layer_opts]['default_tile_styles'][geometry_type]}"
+      "#layer #{Cartodb.get_config(:layer_opts, 'default_tile_styles', geometry_type)}"
     end
     private_class_method :legacy_tile_style
   end

@@ -49,7 +49,7 @@ module Carto
         @service.delete_firewall(config['project_id'], name)
 
       rescue Google::Apis::ClientError => error
-        # error.message =~ /^notFound:/
+        raise unless error.message =~ /^notFound:/
       end
 
       def create_rule(project_id:, name:, network:, ips:, target_tag:, ports:)

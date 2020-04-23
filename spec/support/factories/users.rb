@@ -149,7 +149,7 @@ module CartoDB
       user
     end
 
-    def create_mocked_user(user_id: UUIDTools::UUID.timestamp_create.to_s,
+    def create_mocked_user(user_id: Carto::UUIDHelper.random_uuid,
                            user_name: 'whatever',
                            user_apikey: '123',
                            groups: [],

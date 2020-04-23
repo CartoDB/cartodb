@@ -7,7 +7,7 @@ module Carto
 
     def uuid_parameter(parameter)
       param = params[parameter]
-      if is_uuid?(param)
+      if uuid?(param)
         param
       else
         raise Carto::UUIDParameterFormatError.new(parameter: parameter, value: param)

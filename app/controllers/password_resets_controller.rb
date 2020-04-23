@@ -5,6 +5,8 @@ class PasswordResetsController < ApplicationController
   before_action :load_organization_from_request, only: [:new, :create, :sent, :changed]
   before_action :load_user_and_organization, only: [:edit, :update]
 
+  after_action :set_referrer_policy
+
   def new; end
 
   def create
@@ -80,4 +82,7 @@ class PasswordResetsController < ApplicationController
     "#{base_url}#{path}"
   end
 
+  def set_referrer_policy
+    headers['Referrer-Policy'] = 'origin'
+  end
 end

@@ -1,6 +1,5 @@
 require 'sequel'
 require 'fileutils'
-require 'uuidtools'
 require_relative './user'
 require_relative './table'
 require_relative './log'
@@ -30,12 +29,14 @@ require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
 require_dependency 'carto/configuration'
 require_dependency 'carto/db/user_schema'
+require_dependency 'carto/uuidhelper'
 
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
   include Carto::DataImportConstants
   include Carto::Configuration
+  include Carto::UUIDHelper
 
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
   DIRECT_STATEMENT_TIMEOUT = 1.hour * 1000
@@ -449,14 +450,6 @@ class DataImport < Sequel::Model
     "https://#{current_user.username}.carto.com/#{uploaded_file[0]}"
   end
 
-  def valid_uuid?(text)
-    !!UUIDTools::UUID.parse(text)
-  rescue TypeError
-    false
-  rescue ArgumentError
-    false
-  end
-
   def before_destroy
     self.remove_uploaded_resources
   end
@@ -464,7 +457,7 @@ class DataImport < Sequel::Model
   def instantiate_log
     uuid = logger
 
-    if valid_uuid?(uuid)
+    if uuid?(uuid)
       self.log = CartoDB::Log.where(id: uuid.to_s).first
     else
       self.log = CartoDB::Log.new(

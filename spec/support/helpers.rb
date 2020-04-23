@@ -108,7 +108,7 @@ module HelperMethods
   end
 
   def random_attributes_for_vis_member(attributes={})
-    random = UUIDTools::UUID.timestamp_create.to_s
+    random = Carto::UUIDHelper.random_uuid
     {
       name:               attributes.fetch(:name, "name #{random}"),
       display_name:       attributes.fetch(:display_name, "display name #{random}"),

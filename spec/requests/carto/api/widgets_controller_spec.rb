@@ -89,9 +89,9 @@ end
 describe Carto::Api::WidgetsController do
   include_context 'layer hierarchy'
 
-  let(:random_map_id) { UUIDTools::UUID.timestamp_create.to_s }
-  let(:random_layer_id) { UUIDTools::UUID.timestamp_create.to_s }
-  let(:random_widget_id) { UUIDTools::UUID.timestamp_create.to_s }
+  let(:random_map_id) { Carto::UUIDHelper.random_uuid }
+  let(:random_layer_id) { Carto::UUIDHelper.random_uuid }
+  let(:random_widget_id) { Carto::UUIDHelper.random_uuid }
 
   describe '#show' do
     it 'returns 401 for non-authenticated requests' do

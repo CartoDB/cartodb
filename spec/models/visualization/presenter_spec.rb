@@ -56,10 +56,10 @@ describe Visualization::Member do
       perm_mock = FactoryGirl.build(:carto_permission)
 
       vis_mock = mock
-      vis_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_mock.stubs(:id).returns(Carto::UUIDHelper.random_uuid)
       vis_mock.stubs(:name).returns('vis1')
       vis_mock.stubs(:display_name).returns('vis1')
-      vis_mock.stubs(:map_id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_mock.stubs(:map_id).returns(Carto::UUIDHelper.random_uuid)
       vis_mock.stubs(:active_layer_id).returns(1)
       vis_mock.stubs(:type).returns(Visualization::Member::TYPE_CANONICAL)
       vis_mock.stubs(:tags).returns(['tag1'])

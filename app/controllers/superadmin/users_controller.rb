@@ -204,7 +204,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def get_user
     id = params[:id]
 
-    @user = if is_uuid?(id)
+    @user = if uuid?(id)
               ::User[params[:id]]
             else
               ::User.where(username: id).first

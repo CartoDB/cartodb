@@ -14,7 +14,7 @@ module VisualizationsControllerHelper
     def initialize(visualization_locator_string, force_name: false)
       table_id_or_name, @schema = visualization_locator_string.split('.').reverse
 
-      if !force_name && is_uuid?(table_id_or_name)
+      if !force_name && uuid?(table_id_or_name)
         @id = table_id_or_name
       else
         @name = table_id_or_name

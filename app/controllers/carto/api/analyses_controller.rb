@@ -141,7 +141,7 @@ module Carto
         end
 
         unless params[:id].nil?
-          @analysis = Carto::Analysis.where(id: params[:id]).first if is_uuid?(params[:id])
+          @analysis = Carto::Analysis.where(id: params[:id]).first if uuid?(params[:id])
 
           if @analysis.nil?
             @analysis = Carto::Analysis.find_by_natural_id(@visualization.id, params[:id])

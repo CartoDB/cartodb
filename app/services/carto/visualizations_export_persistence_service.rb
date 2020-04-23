@@ -1,4 +1,3 @@
-require 'uuidtools'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/query_rewriter'
 

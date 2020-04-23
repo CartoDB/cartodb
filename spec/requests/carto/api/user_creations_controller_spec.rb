@@ -1,4 +1,3 @@
-require 'uuidtools'
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/user_creations_controller'
 require 'helpers/account_types_helper'
@@ -20,7 +19,7 @@ describe Carto::Api::UserCreationsController do
     end
 
     it 'returns 404 for unknown user creations' do
-      get_json api_v1_user_creations_show_url(id: UUIDTools::UUID.timestamp_create.to_s), @headers do |response|
+      get_json api_v1_user_creations_show_url(id: Carto::UUIDHelper.random_uuid), @headers do |response|
         response.status.should == 404
       end
     end

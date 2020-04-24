@@ -31,12 +31,18 @@ module Carto
     end
 
     def firewall_rule_name
+      return nil unless self.class.firewall_enabled?
+
       rule_id = user.dbdirect_bearer.organization&.name || user.dbdirect_bearer.username
       self.class.config['rule_name'].gsub('{{id}}', rule_id)
     end
 
     def self.config
-      Cartodb.get_config(:dbdirect, 'firewall')
+      Cartodb.get_config(:dbdirect, 'firewall') || {}
+    end
+
+    def self.firewall_enabled?
+      !!config['enabled']
     end
 
     private
@@ -75,6 +81,8 @@ module Carto
     end
 
     def update_firewall(old_ips, new_ips)
+      return unless self.class.firewall_enabled?
+
       old_ips ||= []
       new_ips ||= []
       if old_ips.sort != new_ips.sort

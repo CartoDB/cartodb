@@ -46,6 +46,7 @@ describe Carto::Api::DbdirectIpsController do
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'dbdirect', restricted: true)
     @config = {
       firewall: {
+        enabled: true,
         rule_name: '<<{{id}}>>'
       }
     }.with_indifferent_access
@@ -252,6 +253,50 @@ describe Carto::Api::DbdirectIpsController do
         end
       end
     end
+
+    it 'omits firewall management if not enabled' do
+      ips = ['100.20.30.40']
+      params = {
+        ips: ips,
+        api_key: @carto_user1.api_key
+      }
+      config = {
+        firewall: {
+          enabled: false,
+          rule_name: '<<{{id}}>>'
+        }
+      }
+      with_feature_flag @carto_user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: config do
+          put_json(dbdirect_ip_url, params) do |response|
+            expect(response.status).to eq(201)
+            expect(response.body[:ips]).to eq ips
+            expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips
+            expect(TestFirewallManager.rules).to be_empty
+            expect(TestFirewallManager.config).to be_nil
+          end
+        end
+      end
+    end
+
+    it 'omits firewall management by default' do
+      ips = ['100.20.30.40']
+      params = {
+        ips: ips,
+        api_key: @carto_user1.api_key
+      }
+      with_feature_flag @carto_user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: {} do
+          put_json(dbdirect_ip_url, params) do |response|
+            expect(response.status).to eq(201)
+            expect(response.body[:ips]).to eq ips
+            expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips
+            expect(TestFirewallManager.rules).to be_empty
+            expect(TestFirewallManager.config).to be_nil
+          end
+        end
+      end
+    end
   end
 
   describe '#destroy' do
@@ -340,6 +385,42 @@ describe Carto::Api::DbdirectIpsController do
             expect(response.status).to eq(500)
             expect(response.body[:errors]).to match(/FIREWALL ERROR/)
             expect(@carto_user1.reload.dbdirect_effective_ips).to eq @existing_ips
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq @existing_ips
+          end
+        end
+      end
+    end
+
+    it 'omits firewall management if not enabled' do
+      config = {
+        firewall: {
+          enabled: false,
+          rule_name: '<<{{id}}>>'
+        }
+      }
+      params = {
+        api_key: @carto_user1.api_key
+      }
+      with_feature_flag @carto_user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: config do
+          delete_json dbdirect_ip_url(params) do |response|
+            expect(response.status).to eq(204)
+            expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq @existing_ips
+          end
+        end
+      end
+    end
+
+    it 'omits firewall management by default' do
+      params = {
+        api_key: @carto_user1.api_key
+      }
+      with_feature_flag @carto_user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: {} do
+          delete_json dbdirect_ip_url(params) do |response|
+            expect(response.status).to eq(204)
+            expect(@carto_user1.reload.dbdirect_effective_ips).to be_empty
             expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq @existing_ips
           end
         end

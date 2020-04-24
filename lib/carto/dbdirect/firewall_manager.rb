@@ -6,22 +6,13 @@ module Carto
     class FirewallManager
       def initialize(config)
         @config = config
-        @enabled = config['enabled'] == true
-        if enabled?
-          @service = Google::Apis::ComputeV1::ComputeService.new
-          @service.authorization = Google::Auth.get_application_default([AUTH_URL])
-        end
+        @service = Google::Apis::ComputeV1::ComputeService.new
+        @service.authorization = Google::Auth.get_application_default([AUTH_URL])
       end
 
       attr_reader :config
 
-      def enabled?
-        @enabled
-      end
-
       def replace_rule(name, ips)
-        return unless enabled?
-
         delete_rule(
           project_id: config['project_id'],
           name: name

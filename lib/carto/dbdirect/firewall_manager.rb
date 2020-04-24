@@ -69,13 +69,13 @@ module Carto
 
         @service.insert_firewall(config['project_id'], rule)
       end
-    end
 
-    AUTH_URL = 'https://www.googleapis.com/auth/cloud-platform'.freeze
-    PROJECTS_URL = 'https://www.googleapis.com/compute/v1/projects'.freeze
+      AUTH_URL = 'https://www.googleapis.com/auth/cloud-platform'.freeze
+      PROJECTS_URL = 'https://www.googleapis.com/compute/v1/projects'.freeze
 
-    def network_url(project_id, network)
-      "#{PROJECTS_URL}/#{project_id}/global/networks/#{network}"
+      def network_url(project_id, network)
+        "#{PROJECTS_URL}/#{project_id}/global/networks/#{network}"
+      end
     end
   end
 end

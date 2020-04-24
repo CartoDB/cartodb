@@ -11,7 +11,8 @@ sudo make install
 
 ### Features
 - New internal API for managing DB-Direct certificates & IPs ([#15567](https://github.com/CartoDB/cartodb/pull/15567))
-  And managing the firewall: ([#15610](https://github.com/CartoDB/cartodb/pull/15610))
+  with support PKCS#8 keys ([#15622](https://github.com/CartoDB/cartodb/pull/15622))
+  and GCP firewall management: ([#15610](https://github.com/CartoDB/cartodb/pull/15610))
 - Use Dataservices API client 0.30.0
 - Enable deleting Kepler.gl maps ([#15485](https://github.com/CartoDB/cartodb/issues/15485))
 - Add Kepler.gl maps to Recent content section in the Dashboard ([#15486](https://github.com/CartoDB/cartodb/issues/15486))

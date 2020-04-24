@@ -201,6 +201,12 @@ export default {
   }
 }
 
+.inputList__error {
+  text-transform: capitalize;
+  color: #e20703;
+  font-size: 10px;
+}
+
 .inputList__description {
   font-size: 10px;
   line-height: 16px;

@@ -50,7 +50,11 @@ module Carto
 
         respond_to do |format|
           format.json do
-            render_jsonp(result, 201)
+            if result[:client_key_pk8].present?
+              render_jsonp({error: "binary DER in PKCS8 format not supported in JSON; use zip format"}, 422)
+            else
+              render_jsonp(result, 201)
+            end
           end
           format.zip do
             zip_filename, zip_data = zip_certificates(result)

@@ -260,7 +260,7 @@ describe Carto::Api::DbdirectCertificatesController do
       end
     end
 
-    it 'creates certificates with pk8 key and downloads server ca' do
+    it 'does not support pk8 keys in JSON response' do
       params = {
         name: 'cert_name',
         pass: 'the_password',
@@ -272,18 +272,7 @@ describe Carto::Api::DbdirectCertificatesController do
       with_feature_flag @user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
           post_json(dbdirect_certificates_url, params) do |response|
-            expect(response.status).to eq(201)
-            expect(response.body[:client_crt]).to eq %{crt for user00000001_200_#{@config['certificates']}}
-            expect(response.body[:client_key]).to eq %{key for user00000001_the_password}
-            expect(response.body[:client_key_pk8]).to eq %{keypk8 for user00000001_the_password}
-            expect(response.body[:server_ca]).to eq %{cacrt for #{@config['certificates']}}
-            expect(response.body[:name]).to eq 'cert_name'
-            cert_id = response.body[:id]
-            expect(cert_id).not_to be_empty
-            cert = Carto::DbdirectCertificate.find(cert_id)
-            expect(cert.user.id).to eq @user1.id
-            expect(cert.name).to eq 'cert_name'
-            expect(cert.arn).to eq %{arn for user00000001_200_#{@config['certificates']}}
+            expect(response.status).to eq(422)
           end
         end
       end

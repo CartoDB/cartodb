@@ -69,7 +69,7 @@ module Carto
           option '-nocrypt' unless passphrase.present?
         end
         run cmd
-        cmd.output
+        cmd.output.force_encoding(Encoding::ASCII_8BIT)
       end
 
       def openssl_generate_csr(username, key, passphrase)

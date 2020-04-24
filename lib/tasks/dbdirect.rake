@@ -12,12 +12,12 @@ namespace :carto do
       puts "  arn: #{arn}"
       files = [
         [:client_key, key_filename],
-        [:client_key_pk8, pk8_filename],
+        [:client_key_pk8, pk8_filename, 'b'],
         [:client_crt, crt_filename],
         [:server_ca, ca_filename]
       ]
-      files.each do |datum, filename|
-        File.open(filename, 'w') do |file|
+      files.each do |datum, filename, binary|
+        File.open(filename, "w#{binary}") do |file|
           file.write data[datum]
         end
         puts "#{datum} written to #{filename}"

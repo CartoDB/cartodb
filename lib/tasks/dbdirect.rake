@@ -39,6 +39,35 @@ namespace :carto do
       save_certs user.username, cert.name, cert.id, cert.arn, data, '.'
     end
 
+    desc "Show DB direct user certificates"
+    task :user_certificates, [:username] => :environment do |_t, args|
+      user = Carto::User.find_by_username(args.username)
+      raise "User #{args.username} not found" unless user
+
+      user.dbdirect_certificates.each do |certificate|
+        puts "#{certificate.name}:"
+        puts "  id: #{certificate.id}"
+        puts "  expires: #{certificate.expiration}"
+        puts "  arn: #{certificate.arn}"
+      end
+    end
+
+    desc "Show DB direct organization certificates"
+    task :organization_certificates, [:org] => :environment do |_t, args|
+      organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
+      raise "Couldn't find organization #{args.org.inspect}" unless organization.present?
+
+      organization.users.each do |user|
+        user.dbdirect_certificates.each do |certificate|
+          puts "#{certificate.name}:"
+          puts "  username: #{user.username}"
+          puts "  id: #{certificate.id}"
+          puts "  expires: #{certificate.expiration}"
+          puts "  arn: #{certificate.arn}"
+        end
+      end
+    end
+
     desc "Revoke DB direct certificate"
     task :revoke_certificate, [:id] => :environment do |_t, args|
       cert = Carto::DbdirectCertificate.find(args.id)

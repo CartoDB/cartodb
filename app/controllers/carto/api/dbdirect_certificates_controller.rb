@@ -36,12 +36,14 @@ module Carto
           name: params[:name],
           passphrase: params[:pass],
           validity_days: validity_days,
-          server_ca: params[:server_ca]
+          server_ca: params[:server_ca],
+          pk8: params[:pk8],
         )
         result = {
           id: cert.id,
           name: cert.name, # must include name since we may have changed or generated it
           client_key: data[:client_key],
+          client_key_pk8: data[:client_key_pk8],
           client_crt: data[:client_crt],
           server_ca: data[:server_ca]
         }
@@ -78,6 +80,7 @@ module Carto
         certificate_id = result[:id]
         certificate_name = result[:name]
         client_key = result[:client_key]
+        client_key_pk8 = result[:client_key_pk8]
         client_crt = result[:client_crt]
         server_ca = result[:server_ca]
 
@@ -93,6 +96,7 @@ module Carto
         zip_data = InMemZipper.zip(
           'README.txt' => readme,
           'client.key' => client_key,
+          'client.key.pk8' => client_key_pk8,
           'client.crt' => client_crt,
           'server_ca.pem' => server_ca
         )

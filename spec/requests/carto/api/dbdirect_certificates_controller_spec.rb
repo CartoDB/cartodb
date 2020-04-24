@@ -13,11 +13,12 @@ class TestCertificateManager
     @config = config
   end
 
-  def generate_certificate(username:, passphrase:, validity_days:, server_ca:)
+  def generate_certificate(username:, passphrase:, validity_days:, server_ca:, pk8:)
     [
       {
         client_key: mocked('key', username, passphrase),
         client_crt: mocked('crt', username, validity_days, @config),
+        client_key_pk8: pk8 ? mocked('keypk8', username, passphrase) : nil,
         server_ca: server_ca ? mocked('cacrt', @config) : nil
       },
       mocked('arn', username, validity_days, @config)
@@ -109,6 +110,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
             expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:client_key_pk8]).to be_nil
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
             expect(cert_id).not_to be_empty
@@ -133,6 +135,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
             expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:client_key_pk8]).to be_nil
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
             expect(cert_id).not_to be_empty
@@ -156,6 +159,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
             expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:client_key_pk8]).to be_nil
             expect(response.body[:name]).to eq @user1.username
             cert_id = response.body[:id]
             expect(cert_id).not_to be_empty
@@ -216,6 +220,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.body[:client_crt]).to eq %{crt for user00000001_150_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_the_password}
             expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:client_key_pk8]).to be_nil
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
             expect(cert_id).not_to be_empty
@@ -241,6 +246,36 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.status).to eq(201)
             expect(response.body[:client_crt]).to eq %{crt for user00000001_200_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
+            expect(response.body[:server_ca]).to eq %{cacrt for #{@config['certificates']}}
+            expect(response.body[:client_key_pk8]).to be_nil
+            expect(response.body[:name]).to eq 'cert_name'
+            cert_id = response.body[:id]
+            expect(cert_id).not_to be_empty
+            cert = Carto::DbdirectCertificate.find(cert_id)
+            expect(cert.user.id).to eq @user1.id
+            expect(cert.name).to eq 'cert_name'
+            expect(cert.arn).to eq %{arn for user00000001_200_#{@config['certificates']}}
+          end
+        end
+      end
+    end
+
+    it 'creates certificates with pk8 key and downloads server ca' do
+      params = {
+        name: 'cert_name',
+        pass: 'the_password',
+        validity: 200,
+        api_key: @user1.api_key,
+        server_ca: true,
+        pk8: true
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json(dbdirect_certificates_url, params) do |response|
+            expect(response.status).to eq(201)
+            expect(response.body[:client_crt]).to eq %{crt for user00000001_200_#{@config['certificates']}}
+            expect(response.body[:client_key]).to eq %{key for user00000001_the_password}
+            expect(response.body[:client_key_pk8]).to eq %{keypk8 for user00000001_the_password}
             expect(response.body[:server_ca]).to eq %{cacrt for #{@config['certificates']}}
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
@@ -270,6 +305,32 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(data['README.txt']).to eq(%{This is cert_name})
             expect(data['client.key']).to eq(%{key for user00000001_})
             expect(data['client.crt']).to eq(%{crt for user00000001_300_#{@config['certificates']}})
+            expect(response.headers["Content-Disposition"]).to eq("attachment; filename=#{expected_zipname}")
+          end
+        end
+      end
+    end
+
+    it 'downloads zipped certificates with pk8 and server_ca' do
+      params = {
+        name: 'cert_name',
+        api_key: @user1.api_key,
+        readme: "This is <%= certificate_name %>",
+        server_ca: true,
+        pk8: true
+      }
+
+      expected_zipname = 'cert_name.zip'
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json_with_zip_response(dbdirect_certificates_url(format: 'zip'), params) do |response|
+            expect(response.status).to eq(201)
+            data = InMemZipper.unzip(response.body)
+            expect(data['README.txt']).to eq(%{This is cert_name})
+            expect(data['client.key']).to eq(%{key for user00000001_})
+            expect(data['client.key.pk8']).to eq(%{keypk8 for user00000001_})
+            expect(data['client.crt']).to eq(%{crt for user00000001_300_#{@config['certificates']}})
+            expect(data['server_ca.pem']).to eq %{cacrt for #{@config['certificates']}}
             expect(response.headers["Content-Disposition"]).to eq("attachment; filename=#{expected_zipname}")
           end
         end

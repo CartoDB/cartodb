@@ -286,7 +286,7 @@ describe Carto::Superadmin::UsersController do
     end
 
     it 'returns an error for unknown user' do
-      get_json(usage_superadmin_user_url(UUIDTools::UUID.random_create.to_s), {}, superadmin_headers) do |response|
+      get_json(usage_superadmin_user_url(Carto::UUIDHelper.random_uuid), {}, superadmin_headers) do |response|
         response.status.should eq 404
       end
     end

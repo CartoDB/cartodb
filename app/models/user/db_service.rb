@@ -20,7 +20,7 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.29.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.30.0'.freeze
       ODBC_FDW_VERSION = '0.4.0'.freeze
 
       def initialize(user)
@@ -609,8 +609,7 @@ module CartoDB
       def install_geocoder_api_extension
         @user.in_database(as: :superuser) do |db|
           db.transaction do
-            db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
-            db.run("CREATE EXTENSION IF NOT EXISTS cdb_dataservices_client VERSION '#{CDB_DATASERVICES_CLIENT_VERSION}'")
+            db.run("CREATE EXTENSION IF NOT EXISTS cdb_dataservices_client VERSION '#{CDB_DATASERVICES_CLIENT_VERSION}' CASCADE")
             db.run("ALTER EXTENSION cdb_dataservices_client UPDATE TO '#{CDB_DATASERVICES_CLIENT_VERSION}'")
           end
         end
@@ -1076,9 +1075,9 @@ module CartoDB
       # depending on CartoDB configuration at time of function definition.
       #
       def create_function_invalidate_varnish
-        if Cartodb.config[:invalidation_service] && Cartodb.config[:invalidation_service].fetch('enabled', false)
+        if Cartodb.get_config(:invalidation_service, 'enabled')
           create_function_invalidate_varnish_invalidation_service
-        elsif Cartodb.config[:varnish_management].fetch('http_port', false)
+        elsif Cartodb.get_config(:varnish_management, 'http_port')
           create_function_invalidate_varnish_http
         else
           create_function_invalidate_varnish_telnet
@@ -1154,15 +1153,12 @@ module CartoDB
 
       def monitor_user_notification
         FileUtils.touch(log_file_path('users_modifications'))
-        if !Cartodb.config[:signups].nil? && !Cartodb.config[:signups]["service"].nil? &&
-           !Cartodb.config[:signups]["service"]["port"].nil?
-          enable_remote_db_user
-        end
+        enable_remote_db_user if Cartodb.get_config(:signups, 'service', 'port')
       end
 
       def enable_remote_db_user
         request = http_client.request(
-          "#{@user.database_host}:#{Cartodb.config[:signups]['service']['port']}/scripts/activate_db_user",
+          "#{@user.database_host}:#{Cartodb.get_config(:signups, 'service', 'port')}/scripts/activate_db_user",
           method: :post,
           headers: { "Content-Type" => "application/json" }
         )
@@ -1449,13 +1445,13 @@ module CartoDB
       def create_function_invalidate_varnish_telnet
         add_python
 
-        varnish_host = Cartodb.config[:varnish_management].try(:[], 'host') || '127.0.0.1'
-        varnish_port = Cartodb.config[:varnish_management].try(:[], 'port') || 6082
-        varnish_timeout = Cartodb.config[:varnish_management].try(:[], 'timeout') || 5
-        varnish_critical = Cartodb.config[:varnish_management].try(:[], 'critical') == true ? 1 : 0
-        varnish_retry = Cartodb.config[:varnish_management].try(:[], 'retry') || 5
-        purge_command = Cartodb::config[:varnish_management]["purge_command"]
-        varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
+        varnish_host = Cartodb.get_config(:varnish_management, 'host') || '127.0.0.1'
+        varnish_port = Cartodb.get_config(:varnish_management, 'port') || 6082
+        varnish_timeout = Cartodb.get_config(:varnish_management, 'timeout') || 5
+        varnish_critical = Cartodb.get_config(:varnish_management, 'critical') == true ? 1 : 0
+        varnish_retry = Cartodb.get_config(:varnish_management, 'retry') || 5
+        purge_command = Cartodb.get_config(:varnish_management, 'purge_command')
+        varnish_trigger_verbose = Cartodb.get_config(:varnish_management).fetch('trigger_verbose', true) == true ? 1 : 0
 
         @user.in_database(as: :superuser).run(
           <<-TRIGGER
@@ -1509,12 +1505,12 @@ module CartoDB
       def create_function_invalidate_varnish_http
         add_python
 
-        varnish_host = Cartodb.config[:varnish_management].try(:[], 'host') || '127.0.0.1'
-        varnish_port = Cartodb.config[:varnish_management].try(:[], 'http_port') || 6081
-        varnish_timeout = Cartodb.config[:varnish_management].try(:[], 'timeout') || 5
-        varnish_critical = Cartodb.config[:varnish_management].try(:[], 'critical') == true ? 1 : 0
-        varnish_retry = Cartodb.config[:varnish_management].try(:[], 'retry') || 5
-        varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
+        varnish_host = Cartodb.get_config(:varnish_management, 'host') || '127.0.0.1'
+        varnish_port = Cartodb.get_config(:varnish_management, 'http_port') || 6081
+        varnish_timeout = Cartodb.get_config(:varnish_management, 'timeout') || 5
+        varnish_critical = Cartodb.get_config(:varnish_management, 'critical') == true ? 1 : 0
+        varnish_retry = Cartodb.get_config(:varnish_management, 'retry') || 5
+        varnish_trigger_verbose = Cartodb.get_config(:varnish_management).fetch('trigger_verbose', true) == true ? 1 : 0
 
         # PG12_DEPRECATED remove support for python 2
         @user.in_database(as: :superuser).run(
@@ -1576,13 +1572,13 @@ module CartoDB
       def create_function_invalidate_varnish_invalidation_service
         add_python
 
-        invalidation_host = Cartodb.config[:invalidation_service].try(:[], 'host') || '127.0.0.1'
-        invalidation_port = Cartodb.config[:invalidation_service].try(:[], 'port') || 3142
-        invalidation_timeout = Cartodb.config[:invalidation_service].try(:[], 'timeout') || 5
-        invalidation_critical = Cartodb.config[:invalidation_service].try(:[], 'critical') ? 1 : 0
-        invalidation_retry = Cartodb.config[:invalidation_service].try(:[], 'retry') || 5
-        invalidation_trigger_verbose =
-          Cartodb.config[:invalidation_service].fetch('trigger_verbose', true) == true ? 1 : 0
+        invalidation_host = Cartodb.get_config(:invalidation_service, 'host') || '127.0.0.1'
+        invalidation_port = Cartodb.get_config(:invalidation_service, 'port') || 3142
+        invalidation_timeout = Cartodb.get_config(:invalidation_service, 'timeout') || 5
+        invalidation_critical = Cartodb.get_config(:invalidation_service, 'critical') ? 1 : 0
+        invalidation_retry = Cartodb.get_config(:invalidation_service, 'retry') || 5
+        invalidation_trigger_verbose = 
+          Cartodb.get_config(:invalidation_service).fetch('trigger_verbose', true) == true ? 1 : 0
 
         @user.in_database(as: :superuser).run(
           <<-TRIGGER

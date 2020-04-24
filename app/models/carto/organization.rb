@@ -163,6 +163,14 @@ module Carto
       inherit_owner_ffs ? owner.feature_flags_user : []
     end
 
+    def dbdirect_effective_ips
+      owner.dbdirect_effective_ips
+    end
+
+    def dbdirect_effective_ips=(ips)
+      owner.dbdirect_effective_ips = ips
+    end
+
     private
 
     def ensure_auth_saml_configuration

@@ -65,7 +65,7 @@ module Carto
 
       if value.include?('@')
         'email'
-      elsif is_uuid?(value)
+      elsif uuid?(value)
         'id'
       else
         'username'

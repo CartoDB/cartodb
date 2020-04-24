@@ -6,7 +6,7 @@ module OrganizationUsersHelper
   def load_organization
     id_or_name = params[:id_or_name]
 
-    @organization = ::Organization.where(is_uuid?(id_or_name) ? { id: id_or_name } : { name: id_or_name }).first
+    @organization = ::Organization.where(uuid?(id_or_name) ? { id: id_or_name } : { name: id_or_name }).first
 
     unless @organization
       render_jsonp({}, 401) # Not giving clues to guessers via 404

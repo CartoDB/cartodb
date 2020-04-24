@@ -1,5 +1,3 @@
-require 'uuidtools'
-
 namespace :cartodb do
   namespace :acceptance do
 

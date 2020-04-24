@@ -60,6 +60,8 @@ class Carto::User < ActiveRecord::Base
 
   has_many :api_keys, inverse_of: :user
   has_many :user_multifactor_auths, inverse_of: :user, class_name: Carto::UserMultifactorAuth
+  has_many :dbdirect_certificates, inverse_of: :user, dependent: :destroy
+  has_one  :dbdirect_ip, inverse_of: :user, dependent: :destroy
 
   has_many :oauth_apps, inverse_of: :user, dependent: :destroy
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
@@ -307,7 +309,25 @@ class Carto::User < ActiveRecord::Base
     Resque.enqueue(::Resque::UserJobs::Mail::PasswordReset, id)
   end
 
+  def dbdirect_effective_ips
+    dbdirect_bearer.dbdirect_ip&.ips || []
+  end
+
+  def dbdirect_effective_ips=(ips)
+    bearer = dbdirect_bearer
+    bearer.dbdirect_ip&.destroy
+    bearer.create_dbdirect_ip!(ips: ips) if ips.present?
+  end
+
   private
+
+  def dbdirect_bearer
+    if organization.present? && organization.owner != self
+      organization.owner
+    else
+      self
+    end
+  end
 
   def set_database_host
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']

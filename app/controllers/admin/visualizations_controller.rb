@@ -10,10 +10,12 @@ require_dependency 'resque/user_jobs'
 require_dependency 'static_maps_url_helper'
 require_dependency 'carto/helpers/frame_options_helper'
 require_dependency 'carto/visualization'
+require_dependency 'carto/uuidhelper'
 
 class Admin::VisualizationsController < Admin::AdminController
   include CartoDB, VisualizationsControllerHelper
   include Carto::FrameOptionsHelper
+  include Carto::UUIDHelper
 
   MAX_MORE_VISUALIZATIONS = 3
   DEFAULT_PLACEHOLDER_CHARS = 4
@@ -39,6 +41,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
   before_filter :redirect_to_kuviz_if_needed, only: [:embed_map]
+  before_filter :redirect_to_app_if_needed, only: [:embed_map]
   before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
                                                          :show_organization_embed_map, :show_protected_public_map,
                                                          :show_protected_embed_map,
@@ -163,7 +166,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     if @is_data_library
       @name = "Data Library"
-      @user_url = Cartodb.get_config(:data_library, 'path') ? "#{request.protocol}#{CartoDB.account_host}#{Cartodb.config[:data_library]['path']}" : @user_url
+      @user_url = Cartodb.get_config(:data_library, 'path') ? "#{request.protocol}#{CartoDB.account_host}#{Cartodb.get_config(:data_library, 'path')}" : @user_url
     end
 
     @avatar_url             = @visualization.user.avatar
@@ -610,20 +613,15 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def get_visualization_and_table_from_table_id(table_id)
-    return nil, nil if !is_uuid?(table_id)
+    return nil, nil if !uuid?(table_id)
     user_table = Carto::UserTable.where({ id: table_id }).first
     return nil, nil if user_table.nil?
     visualization = user_table.visualization
     return Carto::Admin::VisualizationPublicMapAdapter.new(visualization, current_user, self), visualization.table_service
   end
 
-  # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
-  def is_uuid?(text)
-    !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
-  end
-
   def sql_api_url(query, user)
-    "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{ Cartodb.config[:sql_api]['public']['endpoint'] }?q=#{ URI::encode query }"
+    "#{ ApplicationHelper.sql_api_template("public").gsub! '{user}', user.username }#{Cartodb.get_config(:sql_api, 'public', 'endpoint')}?q=#{ URI::encode query }"
   end
 
   def embed_map_actual
@@ -670,6 +668,10 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def redirect_to_kuviz_if_needed
     redirect_to(CartoDB.url(self, 'kuviz_show', params: { id: @visualization.id })) if @visualization&.kuviz?
+  end
+
+  def redirect_to_app_if_needed
+    redirect_to(CartoDB.url(self, 'app_show', params: { id: @visualization.id })) if @visualization&.app?
   end
 
   def redirect_to_builder_embed_if_v3

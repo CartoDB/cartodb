@@ -32,6 +32,11 @@ FactoryGirl.define do
       auth_username_password_enabled true
     end
 
+    factory :organization_google_whitelist_empty do
+      whitelisted_email_domains []
+      auth_google_enabled true
+    end
+
     factory :organization_with_users do
       after(:create) do |org|
         create_account_type_fg('ORGANIZATION USER')

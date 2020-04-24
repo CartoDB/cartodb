@@ -1,4 +1,3 @@
-require 'uuidtools'
 require_relative '../../geocoder/lib/hires_geocoder_factory'
 require_relative '../../geocoder/lib/geocoder_config'
 require_relative 'geocoder_cache'
@@ -189,7 +188,7 @@ module CartoDB
     end
 
     def temp_table_name
-      @temp_table_name ||= "#{@schema}.geo_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '')}"
+      @temp_table_name ||= "#{@schema}.geo_#{Carto::UUIDHelper.random_uuid.gsub('-', '')}"
     end
 
     def deflated_results_path

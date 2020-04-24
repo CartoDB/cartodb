@@ -38,9 +38,11 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/user_creations_controller_spec.rb \
 	spec/requests/carto/api/widgets_controller_spec.rb \
 	spec/requests/carto/api/custom_visualizations_controller_spec.rb \
+	spec/requests/carto/api/apps_controller_spec.rb \
 	spec/requests/carto/builder/public/embeds_controller_spec.rb \
 	spec/requests/carto/builder/visualizations_controller_spec.rb \
 	spec/requests/carto/kuviz/visualizations_controller_spec.rb \
+	spec/requests/carto/app/visualizations_controller_spec.rb \
 	spec/requests/visualizations_controller_helper_spec.rb \
 	spec/requests/warden_spec.rb \
 	spec/models/map_spec.rb \
@@ -294,6 +296,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
 	spec/requests/carto/superadmin/user_migration_exports_spec.rb \
 	spec/requests/carto/saml_controller_spec.rb \
+	spec/requests/carto/oauth_login_controller_spec.rb \
 	spec/services/carto/user_table_index_service_spec.rb \
 	spec/services/carto/user_metadata_export_service_spec.rb \
 	spec/services/carto/organization_metadata_export_service_spec.rb \
@@ -336,7 +339,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
 	spec/lib/carto/assets/image_assets_service_spec.rb \
 	spec/lib/carto/assets/organization_image_assets_service_spec.rb \
-	spec/lib/carto/assets/kuviz_assets_service_spec.rb \
+	spec/lib/carto/assets/html_assets_service_spec.rb \
 	spec/lib/carto/storage_options/local_spec.rb \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
 	spec/lib/tasks/layers_rake_spec.rb \

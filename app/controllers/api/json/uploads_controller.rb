@@ -22,7 +22,7 @@ class Api::Json::UploadsController < Api::ApplicationController
 
         random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
 
-        file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+        file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:importer, 'uploads_path'))
         file_upload_helper.get_uploads_path
 
         @stats_aggregator.timing('save') do

@@ -1,6 +1,5 @@
 require 'sequel'
 require 'fileutils'
-require 'uuidtools'
 require_relative './user'
 require_relative './table'
 require_relative './log'
@@ -30,12 +29,14 @@ require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
 require_dependency 'carto/configuration'
 require_dependency 'carto/db/user_schema'
+require_dependency 'carto/uuidhelper'
 
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
   include Carto::DataImportConstants
   include Carto::Configuration
+  include Carto::UUIDHelper
 
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
   DIRECT_STATEMENT_TIMEOUT = 1.hour * 1000
@@ -140,16 +141,15 @@ class DataImport < Sequel::Model
   end
 
   def from_common_data?
-    if Cartodb.config[:common_data] &&
-       !Cartodb.config[:common_data]['username'].blank? &&
-       !Cartodb.config[:common_data]['host'].blank?
-      if !self.extra_options.has_key?('common_data') &&
-         self.data_source &&
-         self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
-        return true
-      end
+    username = Cartodb.get_config(:common_data, 'username')
+    host = Cartodb.get_config(:common_data, 'host')
+    if username && host &&
+       !extra_options.has_key?('common_data') &&
+       data_source && data_source.include?("#{username}.#{host}")
+      return true
     end
-    return false
+
+    false
   end
 
   def extra_options
@@ -311,7 +311,7 @@ class DataImport < Sequel::Model
   def remove_uploaded_resources
     return nil unless uploaded_file
 
-    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+    file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:importer, 'uploads_path'))
     path = file_upload_helper.get_uploads_path.join(uploaded_file[1])
     FileUtils.rm_rf(path) if Dir.exists?(path)
   end
@@ -450,14 +450,6 @@ class DataImport < Sequel::Model
     "https://#{current_user.username}.carto.com/#{uploaded_file[0]}"
   end
 
-  def valid_uuid?(text)
-    !!UUIDTools::UUID.parse(text)
-  rescue TypeError
-    false
-  rescue ArgumentError
-    false
-  end
-
   def before_destroy
     self.remove_uploaded_resources
   end
@@ -465,7 +457,7 @@ class DataImport < Sequel::Model
   def instantiate_log
     uuid = logger
 
-    if valid_uuid?(uuid)
+    if uuid?(uuid)
       self.log = CartoDB::Log.where(id: uuid.to_s).first
     else
       self.log = CartoDB::Log.new(

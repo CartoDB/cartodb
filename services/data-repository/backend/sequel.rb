@@ -1,5 +1,4 @@
 require 'sequel'
-require 'uuidtools'
 
 module DataRepository
   module Backend
@@ -37,7 +36,7 @@ module DataRepository
       end
 
       def next_id
-        UUIDTools::UUID.timestamp_create
+        Carto::UUIDHelper.random_uuid
       end
 
       def apply_filters(dataset, filters={}, available_filters=[])

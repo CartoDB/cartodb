@@ -63,6 +63,7 @@ namespace :carto do
       if ips.present?
         puts "DBDirect IPs for organization #{org_id}:"
         puts ips
+        puts "GCP Firewall Rule name: #{organization.owner.dbdirect_effective_ip.firewall_rule_name}"
       else
         puts "No IPs defined for organization #{org_id}"
       end

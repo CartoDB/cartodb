@@ -22,6 +22,10 @@
           <img class="dbconnection__toolimage" src="../../../assets/images/tools/powerBI.png" />
           Power BI
         </li>
+        <li class="dbconnection__tool is-small is-bold">
+          <img class="dbconnection__toolimage" src="../../../assets/images/tools/databricks.png" />
+          Databricks
+        </li>
       </ul>
 
       <p class="dbconnection__description" v-html="$t('DBConnection.description_sl')"></p>

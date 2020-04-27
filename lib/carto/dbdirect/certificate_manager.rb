@@ -2,6 +2,7 @@ require 'openssl'
 require 'aws-sdk-acmpca'
 require 'json'
 require 'securerandom'
+require 'sys_cmd'
 
 module Carto
   module Dbdirect
@@ -13,10 +14,11 @@ module Carto
 
       attr_reader :config
 
-      def generate_certificate(username:, passphrase:, validity_days:, server_ca:)
+      def generate_certificate(username:, passphrase:, validity_days:, server_ca:, pk8:)
         certificates = nil
         arn = nil
         key = openssl_generate_key(passphrase)
+        key_pk8 = openssl_converty_key_to_pkcs8(key, passphrase) if pk8
         csr = openssl_generate_csr(username, key, passphrase)
         with_aws_credentials do
           arn = aws_issue_certificate(csr, validity_days)
@@ -26,6 +28,7 @@ module Carto
             client_crt: certificate
           }
           certificates[:server_ca] = aws_get_ca_certificate_chain if server_ca
+          certificates[:client_key_pk8] = key_pk8 if pk8
         end
         [certificates, arn]
       end
@@ -53,6 +56,20 @@ module Carto
         else
           key.to_pem
         end
+      end
+
+      def openssl_converty_key_to_pkcs8(key, passphrase)
+        cmd = SysCmd.command 'openssl pkcs8' do
+          option '-topk8'
+          option '-inform', 'PEM'
+          option '-passin', "pass:#{passphrase}" if passphrase.present?
+          input key
+          option '-outform', 'DER'
+          option '-passout', "pass:#{passphrase}" if passphrase.present?
+          option '-nocrypt' unless passphrase.present?
+        end
+        run cmd
+        cmd.output.force_encoding(Encoding::ASCII_8BIT)
       end
 
       def openssl_generate_csr(username, key, passphrase)
@@ -149,6 +166,18 @@ module Carto
           key = key.to_s
           ENV[key] = old[key]
         end
+      end
+
+      def run(cmd, error_message: 'Error')
+        result = cmd.run direct: true, error_output: :separate
+        if cmd.error
+          raise cmd.error
+        elsif cmd.status_value != 0
+          msg = error_message
+          msg += ": " + cmd.error_output if cmd.error_output.present?
+          raise msg
+        end
+        result
       end
     end
   end

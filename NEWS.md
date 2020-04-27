@@ -10,7 +10,7 @@ Development
 - PKCS#8 keys support for DB-Direct certificates ([#15622](https://github.com/CartoDB/cartodb/pull/15622))
 
 ### Bug fixes / enhancements
-- None yet
+- Improve performance of dataset view with many maps
 
 4.37.0 (2020-04-24)
 -------------------

@@ -46,14 +46,12 @@
 <script>
 import { mapState } from 'vuex';
 import FormInput from 'new-dashboard/components/forms/FormInput';
-import Toggle from 'new-dashboard/components/SettingsUI/Toggle';
 
 export default {
   name: 'CertificateCreation',
 
   components: {
-    FormInput,
-    Toggle
+    FormInput
   },
 
   data () {

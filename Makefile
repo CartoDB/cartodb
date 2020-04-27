@@ -376,6 +376,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/public/federated_tables_controller_spec.rb \
 	spec/services/carto/federated_tables_service_spec.rb \
 	spec/mailers/data_observatory_mailer_spec.rb \
+	spec/requests/carto/api/user_table_presenter_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

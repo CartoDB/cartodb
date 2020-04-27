@@ -36,6 +36,20 @@ class TestCertificateManager
   end
 end
 
+class TestFailCertificateManager
+  def initialize(config)
+    @config = config
+  end
+
+  def generate_certificate(username:, passphrase:, validity_days:, server_ca:, pk8:)
+    raise "CERTIFICATE ERROR"
+  end
+
+  def revoke_certificate(arn:, reason: 'UNSPECIFIED')
+    raise "CERTIFICATE ERROR"
+  end
+end
+
 describe Carto::Api::DbdirectCertificatesController do
   include_context 'users helper'
   include HelperMethods
@@ -325,6 +339,22 @@ describe Carto::Api::DbdirectCertificatesController do
         end
       end
     end
+
+    it 'returns error response if certificates manager fails' do
+      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestFailCertificateManager)
+      params = {
+        name: 'cert_name',
+        api_key: @user1.api_key
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json(dbdirect_certificates_url, params) do |response|
+            expect(response.status).to eq(500)
+            expect(response.body[:errors]).to match(/CERTIFICATE ERROR/)
+          end
+        end
+      end
+    end
   end
 
   describe '#destroy' do
@@ -340,6 +370,7 @@ describe Carto::Api::DbdirectCertificatesController do
 
     after(:each) do
       Carto::DbdirectCertificate.delete_all
+      TestCertificateManager.crl.clear
     end
 
     it 'needs authentication for certificate revocation' do
@@ -420,6 +451,24 @@ describe Carto::Api::DbdirectCertificatesController do
       end
     end
 
+    it 'returns error response if certificates manager fails' do
+      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestFailCertificateManager)
+      params = {
+        id: @dbdirect_certificate.id,
+        api_key: @user1.api_key
+      }
+      arn = @dbdirect_certificate.arn
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          delete_json dbdirect_certificate_url(params) do |response|
+            expect(response.status).to eq(500)
+            expect(response.body[:errors]).to match(/CERTIFICATE ERROR/)
+            expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
+            expect(TestCertificateManager.crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+          end
+        end
+      end
+    end
   end
 
   describe '#index' do

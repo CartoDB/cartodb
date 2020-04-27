@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Rake tasks to list DB Direct certificates ([#15625](https://github.com/CartoDB/cartodb/pull/15625))
 
 ### Bug fixes / enhancements
 - None yet

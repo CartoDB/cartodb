@@ -1,38 +1,42 @@
-Here's your certificate "<%= certificate_name %>" to use the CARTO Direct SQL BETA service.
+Here's your certificate "<%= certificate_name %>" to use CARTO’s Direct SQL Connection beta version.
 
-You can use it with any application that supports TSL/SSL connections to PostgreSQL
-to directly access and modify your CARTO datasets.
+You can use it with any application that supports SSL connections to PostgreSQL
+with client identity verification to directly access and modify datasets stored in your CARTO account.
+
+Two versions of the private key are provided:
+* RSA PEM format (client.key)
+* DER PKCS #8 format (client.key.pk8)
+Depending on the connection method used by your application you should use one or another.
+For example, connections with the PostgreSQL ODBC driver should use the RSA PEM format and
+connections with the PostgreSQL JDBC driver should use the DER PKCS #8 format.
 
 Contents:
+* client.crt. Client certificate.
+* client.key. Matching private key file in RSA PEM format. On UNIX-like systems (Linux, Mac OS, ...)
+ this file should be protected with: `chmod 0600 client.key`.
+* client.key.pk8. Matching private key file in DER PKCS #8 format.
+* server_ca.pem. This certificate allows you to check the identity of CARTO's database server.
 
-* client.key This file contains your private key that is needed to encrypt the connections.
-  You must keep this file safely, as any one that gets access to this file may impersonate
-  you and access your data. On UNIX-like systems (Linux, Mac OS, ...) this file should be
-  protected with: `chmod 0600 client.key`.
-* client.crt This is the certificate matching private key which will identify you
-  when you connect to your CARTO database. Keep this also safely.
-* server_ca.pem This is optional and allows you to check the identity of CARTO's database server.
-
-You'll need to configure your application to use TSL with client.key and client.crt
+You'll need to configure your application to use TLS with client.key and client.crt
 (and optionally server_ca.pem) when connecting to your database.
 
 Your database address (host server) is: <%= dbproxy_host %>
 And the TCP port is: <%= dbproxy_port %>
 
 You should use your CARTO account user name (<%= username %>) as your database user (role),
-and an API Key as your password. You can generate API Keys from CARTO dashboard. The API Key you use
-will determine which operations can be performed and which tables are accessible. We advise you
-to generate specific keys and not use your master key, since the master key should be exposed as
-little as possible, and it allows unrestricted access to your database.
+and an API Key as your password. You can generate API Keys from your CARTO account dashboard
+(‘API Keys’ section under your user profile on the top right of the screen).
+The API key you use will determine which operations can be performed and which tables are accessible.
+We advise you to generate specific keys and not to use your master API key.
+We advise against exposing your Master API Key since it allows unrestricted access to your database.
 
 Example: connect using psql:
+ psql "sslmode=verify-full sslrootcert=server_ca.pem \
+     sslcert=client.crt sslkey=client.key \
+     hostaddr=<%= dbproxy_host %> \
+     port=<%= dbproxy_port %> \
+     user=<%= username %>"
 
-  psql "sslmode=verify-ca sslrootcert=server_ca.pem \
-      sslcert=client.crt sslkey=client.key \
-      hostaddr=<%= dbproxy_host %> \
-      port=<%= dbproxy_port %> \
-      user=<%= username %>
+Please note that this feature is a beta version still undergoing testing before an official release.
 
-This feature is in BETA. We'll provide more detailed information and guidelines very soon.
-
-Please contact CARTO support for further information.
+Please contact CARTO support (support@carto.com) for further information or any questions you may have.

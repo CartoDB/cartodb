@@ -6,11 +6,18 @@ namespace :carto do
       key_filename = File.join(output_directory, "#{base_filename}.key")
       crt_filename = File.join(output_directory, "#{base_filename}.crt")
       ca_filename = File.join(output_directory, "server_ca.crt")
+      pk8_filename = File.join(output_directory, "#{base_filename}.key.pk8")
       puts "Certificate #{name} generated for #{username}"
       puts "  id: #{id}"
       puts "  arn: #{arn}"
-      [[:client_key, key_filename], [:client_crt, crt_filename], [:server_ca, ca_filename]].each do |datum, filename|
-        File.open(filename, 'w') do |file|
+      files = [
+        [:client_key, key_filename],
+        [:client_key_pk8, pk8_filename, 'b'],
+        [:client_crt, crt_filename],
+        [:server_ca, ca_filename]
+      ]
+      files.each do |datum, filename, binary|
+        File.open(filename, "w#{binary}") do |file|
           file.write data[datum]
         end
         puts "#{datum} written to #{filename}"
@@ -33,10 +40,40 @@ namespace :carto do
         name: args.name,
         passphrase: args.password,
         validity_days: args.validity.blank? ? 365 : args.validity.to_i,
-        server_ca: true
+        server_ca: true,
+        pk8: true
       )
 
       save_certs user.username, cert.name, cert.id, cert.arn, data, '.'
+    end
+
+    desc "Show DB direct user certificates"
+    task :user_certificates, [:username] => :environment do |_t, args|
+      user = Carto::User.find_by_username(args.username)
+      raise "User #{args.username} not found" unless user
+
+      user.dbdirect_certificates.each do |certificate|
+        puts "#{certificate.name}:"
+        puts "  id: #{certificate.id}"
+        puts "  expires: #{certificate.expiration}"
+        puts "  arn: #{certificate.arn}"
+      end
+    end
+
+    desc "Show DB direct organization certificates"
+    task :organization_certificates, [:org] => :environment do |_t, args|
+      organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
+      raise "Couldn't find organization #{args.org.inspect}" unless organization.present?
+
+      organization.users.each do |user|
+        user.dbdirect_certificates.each do |certificate|
+          puts "#{certificate.name}:"
+          puts "  username: #{user.username}"
+          puts "  id: #{certificate.id}"
+          puts "  expires: #{certificate.expiration}"
+          puts "  arn: #{certificate.arn}"
+        end
+      end
     end
 
     desc "Revoke DB direct certificate"
@@ -63,6 +100,7 @@ namespace :carto do
       if ips.present?
         puts "DBDirect IPs for organization #{org_id}:"
         puts ips
+        puts "GCP Firewall Rule name: #{organization.owner.dbdirect_effective_ip.firewall_rule_name}"
       else
         puts "No IPs defined for organization #{org_id}"
       end
@@ -78,6 +116,7 @@ namespace :carto do
       if ips.present?
         puts "DBDirect IPs for user #{user_id}:"
         puts ips
+        puts "GCP Firewall Rule name: #{user.dbdirect_effective_ip.firewall_rule_name}"
       else
         puts "No IPs defined for user #{user_id}"
       end

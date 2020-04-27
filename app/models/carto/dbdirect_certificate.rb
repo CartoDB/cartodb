@@ -10,7 +10,7 @@ module Carto
 
     before_destroy :revoke
 
-    def self.generate(user:, name:, passphrase: nil, validity_days: nil, server_ca: true)
+    def self.generate(user:, name:, passphrase: nil, validity_days: nil, server_ca: true, pk8: true)
       validity_days ||= config['maximum_validity_days']
       name = valid_name(user, name)
 
@@ -18,7 +18,8 @@ module Carto
         username: user.username,
         passphrase: passphrase,
         validity_days: validity_days,
-        server_ca: server_ca
+        server_ca: server_ca,
+        pk8: pk8
       )
 
       new_record = create(

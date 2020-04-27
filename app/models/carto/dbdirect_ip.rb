@@ -1,4 +1,5 @@
 require 'ip_checker'
+require 'carto/dbdirect/firewall_manager'
 
 module Carto
   class DbdirectIp < ActiveRecord::Base
@@ -11,6 +12,38 @@ module Carto
     # if not valid JSON. With the serializer version, the string would be preserved as string.
 
     validate :validate_ips
+
+    after_save do
+      update_firewall(*changes[:ips])
+    end
+
+    after_destroy do
+      update_firewall(ips, nil)
+    end
+
+
+    def self.firewall_manager
+      firewall_manager_class.new(config)
+    end
+
+    def self.firewall_manager_class
+      Carto::Dbdirect::FirewallManager
+    end
+
+    def firewall_rule_name
+      return nil unless self.class.firewall_enabled?
+
+      rule_id = user.dbdirect_bearer.organization&.name || user.dbdirect_bearer.username
+      self.class.config['rule_name'].gsub('{{id}}', rule_id)
+    end
+
+    def self.config
+      Cartodb.get_config(:dbdirect, 'firewall') || {}
+    end
+
+    def self.firewall_enabled?
+      !!config['enabled']
+    end
 
     private
 
@@ -45,6 +78,16 @@ module Carto
         exclude_local: true,
         exclude_loopback: true
       )
+    end
+
+    def update_firewall(old_ips, new_ips)
+      return unless self.class.firewall_enabled?
+
+      old_ips ||= []
+      new_ips ||= []
+      return if old_ips.sort == new_ips.sort
+
+      self.class.firewall_manager.replace_rule(firewall_rule_name, new_ips)
     end
   end
 end

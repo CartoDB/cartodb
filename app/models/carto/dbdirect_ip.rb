@@ -85,10 +85,9 @@ module Carto
 
       old_ips ||= []
       new_ips ||= []
-      if old_ips.sort != new_ips.sort
-        rule_id = user.dbdirect_bearer.organization&.name || user.dbdirect_bearer.username
-        self.class.firewall_manager.replace_rule(firewall_rule_name, new_ips)
-      end
+      return if old_ips.sort == new_ips.sort
+
+      self.class.firewall_manager.replace_rule(firewall_rule_name, new_ips)
     end
   end
 end

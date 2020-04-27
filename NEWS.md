@@ -18,6 +18,7 @@ sudo make install
 - Request connector flow with all the states on the same screen ([#15515](https://github.com/CartoDB/cartodb/issues/15515))
 - Hooks to override org settings for gear plugin ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
 - New app visualization type and endpoints for deploying apps [#15595](https://github.com/CartoDB/cartodb/pull/15595)
+- UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
 
 ### Bug fixes / enhancements
 - Fixes bug in CartoDB Central communication ([#15606](https://github.com/CartoDB/cartodb/pull/15606))

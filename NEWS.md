@@ -5,8 +5,7 @@ Development
 - None yet
 
 ### Features
-- New internal API for managing DB-Direct certificates & IPs ([#15567](https://github.com/CartoDB/cartodb/pull/15567))
-  And managing the firewall: ([#15610](https://github.com/CartoDB/cartodb/pull/15610))
+- GCP Firewall managemente for DB Direct IPs ([#15610](https://github.com/CartoDB/cartodb/pull/15610))
 
 ### Bug fixes / enhancements
 - None yet

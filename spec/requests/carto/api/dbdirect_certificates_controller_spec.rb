@@ -13,11 +13,12 @@ class TestCertificateManager
     @config = config
   end
 
-  def generate_certificate(username:, passphrase:, validity_days:, server_ca:)
+  def generate_certificate(username:, passphrase:, validity_days:, server_ca:, pk8:)
     [
       {
         client_key: mocked('key', username, passphrase),
         client_crt: mocked('crt', username, validity_days, @config),
+        client_key_pk8: pk8 ? mocked('keypk8', username, passphrase) : nil,
         server_ca: server_ca ? mocked('cacrt', @config) : nil
       },
       mocked('arn', username, validity_days, @config)
@@ -32,6 +33,20 @@ class TestCertificateManager
 
   def mocked(name, *args)
     "#{name} for #{args.join('_')}"
+  end
+end
+
+class TestFailCertificateManager
+  def initialize(config)
+    @config = config
+  end
+
+  def generate_certificate(username:, passphrase:, validity_days:, server_ca:, pk8:)
+    raise "CERTIFICATE ERROR"
+  end
+
+  def revoke_certificate(arn:, reason: 'UNSPECIFIED')
+    raise "CERTIFICATE ERROR"
   end
 end
 
@@ -109,6 +124,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
             expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:client_key_pk8]).to be_nil
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
             expect(cert_id).not_to be_empty
@@ -133,6 +149,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
             expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:client_key_pk8]).to be_nil
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
             expect(cert_id).not_to be_empty
@@ -156,6 +173,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.body[:client_crt]).to eq %{crt for user00000001_300_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
             expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:client_key_pk8]).to be_nil
             expect(response.body[:name]).to eq @user1.username
             cert_id = response.body[:id]
             expect(cert_id).not_to be_empty
@@ -216,6 +234,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.body[:client_crt]).to eq %{crt for user00000001_150_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_the_password}
             expect(response.body[:server_ca]).to be_nil
+            expect(response.body[:client_key_pk8]).to be_nil
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
             expect(cert_id).not_to be_empty
@@ -242,6 +261,7 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(response.body[:client_crt]).to eq %{crt for user00000001_200_#{@config['certificates']}}
             expect(response.body[:client_key]).to eq %{key for user00000001_}
             expect(response.body[:server_ca]).to eq %{cacrt for #{@config['certificates']}}
+            expect(response.body[:client_key_pk8]).to be_nil
             expect(response.body[:name]).to eq 'cert_name'
             cert_id = response.body[:id]
             expect(cert_id).not_to be_empty
@@ -249,6 +269,24 @@ describe Carto::Api::DbdirectCertificatesController do
             expect(cert.user.id).to eq @user1.id
             expect(cert.name).to eq 'cert_name'
             expect(cert.arn).to eq %{arn for user00000001_200_#{@config['certificates']}}
+          end
+        end
+      end
+    end
+
+    it 'does not support pk8 keys in JSON response' do
+      params = {
+        name: 'cert_name',
+        pass: 'the_password',
+        validity: 200,
+        api_key: @user1.api_key,
+        server_ca: true,
+        pk8: true
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json(dbdirect_certificates_url, params) do |response|
+            expect(response.status).to eq(422)
           end
         end
       end
@@ -275,6 +313,48 @@ describe Carto::Api::DbdirectCertificatesController do
         end
       end
     end
+
+    it 'downloads zipped certificates with pk8 and server_ca' do
+      params = {
+        name: 'cert_name',
+        api_key: @user1.api_key,
+        readme: "This is <%= certificate_name %>",
+        server_ca: true,
+        pk8: true
+      }
+
+      expected_zipname = 'cert_name.zip'
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json_with_zip_response(dbdirect_certificates_url(format: 'zip'), params) do |response|
+            expect(response.status).to eq(201)
+            data = InMemZipper.unzip(response.body)
+            expect(data['README.txt']).to eq(%{This is cert_name})
+            expect(data['client.key']).to eq(%{key for user00000001_})
+            expect(data['client.key.pk8']).to eq(%{keypk8 for user00000001_})
+            expect(data['client.crt']).to eq(%{crt for user00000001_300_#{@config['certificates']}})
+            expect(data['server_ca.pem']).to eq %{cacrt for #{@config['certificates']}}
+            expect(response.headers["Content-Disposition"]).to eq("attachment; filename=#{expected_zipname}")
+          end
+        end
+      end
+    end
+
+    it 'returns error response if certificates manager fails' do
+      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestFailCertificateManager)
+      params = {
+        name: 'cert_name',
+        api_key: @user1.api_key
+      }
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          post_json(dbdirect_certificates_url, params) do |response|
+            expect(response.status).to eq(500)
+            expect(response.body[:errors]).to match(/CERTIFICATE ERROR/)
+          end
+        end
+      end
+    end
   end
 
   describe '#destroy' do
@@ -290,6 +370,7 @@ describe Carto::Api::DbdirectCertificatesController do
 
     after(:each) do
       Carto::DbdirectCertificate.delete_all
+      TestCertificateManager.crl.clear
     end
 
     it 'needs authentication for certificate revocation' do
@@ -370,6 +451,24 @@ describe Carto::Api::DbdirectCertificatesController do
       end
     end
 
+    it 'returns error response if certificates manager fails' do
+      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestFailCertificateManager)
+      params = {
+        id: @dbdirect_certificate.id,
+        api_key: @user1.api_key
+      }
+      arn = @dbdirect_certificate.arn
+      with_feature_flag @user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          delete_json dbdirect_certificate_url(params) do |response|
+            expect(response.status).to eq(500)
+            expect(response.body[:errors]).to match(/CERTIFICATE ERROR/)
+            expect(Carto::DbdirectCertificate.find_by_id(@dbdirect_certificate.id)).not_to be_nil
+            expect(TestCertificateManager.crl).not_to include %{crt for #{arn}_UNSPECIFIED_#{@config['certificates']}}
+          end
+        end
+      end
+    end
   end
 
   describe '#index' do

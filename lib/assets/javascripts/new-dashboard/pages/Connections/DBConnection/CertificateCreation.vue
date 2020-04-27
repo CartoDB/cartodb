@@ -87,6 +87,7 @@ export default {
       const certificateData = {
         name: certificate.name,
         server_ca: true,
+        pk8: true,
         ...this.passwordProtected ? { pass: certificate.password } : {}
       };
 

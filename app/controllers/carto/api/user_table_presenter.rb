@@ -15,6 +15,8 @@ module Carto
         PRIVACY_LINK => 'link'
       }
 
+      MAX_DERIVED_MAPS_SHOWN = 3
+
       def initialize(user_table, current_viewer, show_size_and_row_count: true, show_permission: true)
         @user_table = user_table
         @current_viewer = current_viewer
@@ -51,6 +53,7 @@ module Carto
 
         if accessible_dependent_derived_maps && context
           poro[:accessible_dependent_derived_maps] = derived_maps_to_presenter(context)
+          poro[:accessible_dependent_derived_maps_count] = @user_table.accessible_dependent_derived_maps.count
         end
 
         if show_permission
@@ -70,7 +73,7 @@ module Carto
       attr_reader :show_size_and_row_count, :show_permission
 
       def derived_maps_to_presenter(context)
-        visualizations = @user_table.accessible_dependent_derived_maps
+        visualizations = @user_table.accessible_dependent_derived_maps.first(MAX_DERIVED_MAPS_SHOWN)
         visualizations.map { |v| Carto::Api::VisualizationPresenter.new(v, @current_viewer, context).to_poro }
       end
 

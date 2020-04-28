@@ -117,7 +117,7 @@ module Carto
     end
 
     def accessible_dependent_derived_maps
-      affected_visualizations.select { |v| (v.has_read_permission?(user) && v.derived?) ? v : nil }
+      affected_visualizations.select { |v| v.has_read_permission?(user) && v.derived? ? v : nil }
     end
 
     def partially_dependent_visualizations

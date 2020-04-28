@@ -113,3 +113,25 @@ end
 def login_page_response?(response)
   response.status == 200 && response.body.include?("title=\"Email or username\"")
 end
+
+def post_session(params = {})
+  host! "#{params[:user].username}.localhost.lan"
+
+  request_params = { email: params[:user].email, password: params[:password] }
+  request_params[:user_domain] = params[:organization].name if params[:organization]
+
+  post(create_session_url(request_params))
+end
+
+def parse_set_cookie_header(header)
+  kv_pairs = header.split(/\s*;\s*/).map do |attr|
+    k, v = attr.split '='
+    [ k, v || nil ]
+  end
+  Hash[ kv_pairs ]
+end
+
+def set_cookies_for_next_request(previous_response)
+  received_cookies = parse_set_cookie_header(previous_response.headers["Set-Cookie"])
+  received_cookies.each { |key, value| cookies[key] = value }
+end

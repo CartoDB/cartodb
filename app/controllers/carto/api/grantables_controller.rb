@@ -46,5 +46,3 @@ module Carto
 
   end
 end
-
-

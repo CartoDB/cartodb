@@ -1,6 +1,9 @@
 require_relative '../../../lib/cartodb/stats/editor_apis'
 
 class Api::ApplicationController < ApplicationController
+
+  include Carto::ControllerHelper
+
   protect_from_forgery with: :null_session
 
   # Don't force org urls

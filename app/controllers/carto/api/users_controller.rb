@@ -28,9 +28,8 @@ module Carto
       ssl_required
 
       before_action :optional_api_authorization, only: [:me]
-      before_action :any_api_authorization_required, only: [:me_public]
       before_action :recalculate_user_db_size, only: [:me]
-      skip_before_action :api_authorization_required, only: [:me, :me_public, :get_authenticated_users]
+      skip_before_action :api_authorization_required, only: [:me, :get_authenticated_users]
       skip_before_action :check_user_state, only: [:me, :delete_me]
 
       rescue_from StandardError, with: :rescue_from_standard_error

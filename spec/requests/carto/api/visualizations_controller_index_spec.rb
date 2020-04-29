@@ -75,15 +75,14 @@ describe Carto::Api::VisualizationsController do
 
     context 'with_dependent_visualizations' do
       before(:each) do
-        table_a = create_random_table(@user)
-        @visualization_a = table_a.table_visualization
+        table = FactoryGirl.create(:table, user_id: @user.id)
+
         Delorean.time_travel_to "2018/01/01 00:00:00" do
           @dependencies = Array.new(3) do
             Delorean.jump(1.day)
-            FactoryGirl.create(:carto_visualization, user_id: @user.id)
+            FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: table.map_id)
           end
         end
-        Carto::Visualization.any_instance.stubs(:dependent_visualizations).returns(@dependencies)
       end
 
       it 'does not return the dependent visualizations by default' do

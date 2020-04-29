@@ -643,7 +643,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def dependent_visualizations_count
-    user_table&.dependent_visualizations_count
+    user_table&.dependent_visualizations_count.to_i
   end
 
   def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)

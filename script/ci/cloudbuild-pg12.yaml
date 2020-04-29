@@ -74,7 +74,6 @@ steps:
          "trap '/cartodb/script/ci/send_slack_notification.sh' ERR && /cartodb/runParallelTests.sh 24" ]
   timeout: 2700s
 
-
 options:
     machineType: 'N1_HIGHCPU_32'
 timeout: 3600s

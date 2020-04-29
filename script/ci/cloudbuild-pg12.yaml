@@ -57,9 +57,7 @@ steps:
 
 # Checkout ci-tools
 - name: 'gcr.io/cloud-builders/git'
-  args:
-  - clone
-  - git@github.com:CartoDB/ci-tools.git
+  args: ['clone', '-b', 'test-ci-ruby-2.5', 'git@github.com:CartoDB/ci-tools.git']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
@@ -75,6 +73,7 @@ steps:
   args: ['exec', '-e', 'SLACK_TOKEN=$_SLACK_TOKEN', '-e', 'BUILD_ID=$BUILD_ID', '-e', 'BRANCH_NAME=$BRANCH_NAME', '-i', 'builder_1', 'bash', '-c',
          "trap '/cartodb/script/ci/send_slack_notification.sh' ERR && /cartodb/runParallelTests.sh 24" ]
   timeout: 2700s
+
 
 options:
     machineType: 'N1_HIGHCPU_32'

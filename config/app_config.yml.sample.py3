@@ -268,7 +268,9 @@ defaults: &defaults
       s3_endpoint: ''
       region: ''
     uploads_path: 'public/uploads' # including 'uploads' assumes public path. Absolute path example: /tmp/exports/downloads
+    python_bin_path: '/usr/bin/python3'
   importer:
+    python_bin_path: '/usr/bin/python3'
     blacklisted_ip_addr: []
     content_guessing:        # Depends on geocoding
       enabled:         false # Disabled if false or not present

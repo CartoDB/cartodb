@@ -12,7 +12,7 @@ Development
 ### Bug fixes / enhancements
 - Improve performance of dataset view with many maps ([#15627](https://github.com/CartoDB/cartodb/pull/15627))
 - Clarify message at Organization's Auth settings
-
+- Improve performance of dependent visualizations ([#15632](https://github.com/CartoDB/cartodb/pull/15632))
 
 4.37.0 (2020-04-24)
 -------------------

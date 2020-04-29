@@ -638,8 +638,12 @@ class Carto::Visualization < ActiveRecord::Base
     synchronization.present?
   end
 
-  def dependent_visualizations
-    user_table.try(:dependent_visualizations) || []
+  def dependent_visualizations(limit: nil)
+    user_table&.dependent_visualizations(limit: limit) || []
+  end
+
+  def dependent_visualizations_count
+    user_table&.dependent_visualizations_count
   end
 
   def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)

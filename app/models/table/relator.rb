@@ -14,14 +14,27 @@ module CartoDB
       @table  = table
     end
 
-    def dependent_visualizations
-      affected_visualizations.select { |v| v.dependent_on?(table) }
+    def dependent_visualizations(limit: nil)
+      affected_map_records(limit).to_a
+                                 .map { |attributes| Visualization::Member.new(attributes) }
+    end
+
+    def dependent_visualizations_count
+      query = %{
+        SELECT count(visualizations.*)
+        FROM layers_user_tables, layers_maps, visualizations
+        WHERE layers_user_tables.user_table_id = '#{table.id}'
+        AND layers_user_tables.layer_id = layers_maps.layer_id
+        AND layers_maps.map_id = visualizations.map_id
+        AND visualizations.type = 'derived'
+      }.squish
+
+      db[:visualizations].with_sql(query).first[:count]
     end
 
     def affected_visualizations
       affected_visualization_records.to_a
-        .uniq { |attributes| attributes.fetch(:id) }
-        .map  { |attributes| Visualization::Member.new(attributes) }
+                                    .map { |attributes| Visualization::Member.new(attributes) }
     end
 
     def preview_for(visualization)
@@ -63,13 +76,27 @@ module CartoDB
     attr_reader :db, :table
 
     def affected_visualization_records
-      db[:visualizations].with_sql(%Q{
-        SELECT  *
+      db[:visualizations].with_sql(%{
+        SELECT DISTINCT ON (visualizations.id) *
         FROM    layers_user_tables, layers_maps, visualizations
         WHERE   layers_user_tables.user_table_id = '#{table.id}'
         AND     layers_user_tables.layer_id = layers_maps.layer_id
         AND     layers_maps.map_id = visualizations.map_id
       })
+    end
+
+    def affected_map_records(limit)
+      query = %{
+        SELECT visualizations.*
+        FROM layers_user_tables, layers_maps, visualizations
+        WHERE layers_user_tables.user_table_id = '#{table.id}'
+        AND layers_user_tables.layer_id = layers_maps.layer_id
+        AND layers_maps.map_id = visualizations.map_id
+        AND visualizations.type = 'derived'
+        ORDER BY visualizations.updated_at DESC
+      }.squish
+      query = query + " LIMIT(#{limit}" if limit
+      db[:visualizations].with_sql(query)
     end
 
     def synchronization_record

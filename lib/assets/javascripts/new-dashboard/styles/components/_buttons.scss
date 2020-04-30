@@ -18,6 +18,12 @@
   &:focus {
     background: $button__bg-color--hover;
   }
+
+  &:disabled,
+  &[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 a {
@@ -86,6 +92,9 @@ a {
   padding-right: 0;
 }
 
+.button--uppercase {
+  text-transform: uppercase;
+}
 
 .buttonLink {
   display: inline-block;

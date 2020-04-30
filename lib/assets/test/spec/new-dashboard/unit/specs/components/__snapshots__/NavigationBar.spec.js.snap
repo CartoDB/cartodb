@@ -14,6 +14,7 @@ exports[`NavigationBar.vue should have is-user-notification class when the user 
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
       <!---->
+      <!---->
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>
 </nav>
@@ -32,6 +33,7 @@ exports[`NavigationBar.vue should render regular navbar with search input open 1
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
+      <!---->
       <!---->
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>
@@ -52,6 +54,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
       <!---->
+      <!---->
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>
 </nav>
@@ -71,6 +74,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
       <!---->
+      <notificationpopup-stub title="New Connection Feature" message="Bring your CARTO data to the tools you already use. You can now connect to your CARTO account from other GIS or BI tools and database clients. <a href='undefined'>Discover it!</a>" messagehashtml="true" class="notification-popup"></notificationpopup-stub>
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>
 </nav>
@@ -89,6 +93,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown open 
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]" open="true"></userdropdown-stub>
+      <!---->
       <!---->
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>

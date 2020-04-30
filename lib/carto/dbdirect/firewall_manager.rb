@@ -42,8 +42,7 @@ module Carto
         # but since there could be race conditions anyway we'll just rescue errors
         @service.delete_firewall(config['project_id'], name)
 
-      rescue Google::Apis::ClientError => error
-        raise unless error.message =~ /^notFound:/
+      rescue Google::Apis::ClientError
       end
 
       def create_rule(project_id:, name:, network:, ips:, target_tag:, ports:)

@@ -19,15 +19,15 @@ module Carto
         @service.delete_firewall(config['project_id'], name)
       end
 
-      def create_rule(name:, ips:)
+      def create_rule(name, ips)
         @service.insert_firewall(config['project_id'], firewall_rule(name))
       end
 
-      def update_rule(name:, ips:)
+      def update_rule(name, ips)
         @service.update_firewall(config['project_id'], name, firewall_rule(name))
       end
 
-      def get_rule(name:)
+      def get_rule(name)
         @service.get_firewall(config['project_id'], name).to_h
       end
 

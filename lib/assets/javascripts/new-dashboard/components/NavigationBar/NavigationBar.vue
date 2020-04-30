@@ -101,7 +101,7 @@ export default {
   },
   computed: {
     hasDBFFActive () {
-      return hasFeatureEnabled(this.$store.state.user, 'dbdirect');
+      return hasFeatureEnabled(this.$props.user, 'dbdirect');
     },
     isDashboardBundle () {
       return this.$props.bundleType === 'dashboard';

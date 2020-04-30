@@ -11,6 +11,7 @@ Development
 - UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
 
 ### Bug fixes / enhancements
+- Fix Db Direct IPs Firewall management problem ([#15638](https://github.com/CartoDB/cartodb/pull/15638))
 - DO user settings are now stored under `do_settings:{@username}` ([#15630](https://github.com/CartoDB/cartodb/pull/15630))
 - Improve performance of dataset view with many maps ([#15627](https://github.com/CartoDB/cartodb/pull/15627))
 - Clarify message at Organization's Auth settings

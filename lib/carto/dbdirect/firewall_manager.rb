@@ -20,11 +20,11 @@ module Carto
       end
 
       def create_rule(name, ips)
-        @service.insert_firewall(config['project_id'], firewall_rule(name))
+        @service.insert_firewall(config['project_id'], firewall_rule(name, ips))
       end
 
       def update_rule(name, ips)
-        @service.update_firewall(config['project_id'], name, firewall_rule(name))
+        @service.update_firewall(config['project_id'], name, firewall_rule(name, ips))
       end
 
       def get_rule(name)
@@ -41,7 +41,7 @@ module Carto
         )
       end
 
-      def firewall_rule(name)
+      def firewall_rule(name, ips)
         Google::Apis::ComputeV1::Firewall.new(
           name: name,
           allowed: [firewall_allowed],

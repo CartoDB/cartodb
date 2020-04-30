@@ -46,7 +46,7 @@
           @click.native.stop.prevent="onFeedbackClicked"/>
 
         <NotificationPopup
-          v-if="!popupWasShown('popups.directDBConnection') && !twoWeeksSinceRelease"
+          v-if="!popupWasShown('popups.directDBConnection') && !twoWeeksSinceRelease && hasDBFFActive"
           class="notification-popup"
           title="New Connection Feature"
           :message="`Bring your CARTO data to the tools you already use. You can now connect to your CARTO account from other GIS or BI tools and database clients. <a href='${this.$router.resolve({name: 'connections'}).href}'>Discover it!</a>`"
@@ -65,6 +65,7 @@ import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
 import NotificationPopup from '../Popups/NotificationPopup';
 import storageAvailable from 'new-dashboard/utils/is-storage-available';
+import { hasFeatureEnabled } from 'new-dashboard/core/models/user';
 
 export default {
   name: 'NavigationBar',
@@ -99,6 +100,9 @@ export default {
     this.markPopupAsRead('popups.directDBConnection');
   },
   computed: {
+    hasDBFFActive () {
+      return hasFeatureEnabled(this.$store.state.user, 'dbdirect');
+    },
     isDashboardBundle () {
       return this.$props.bundleType === 'dashboard';
     },

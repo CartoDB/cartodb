@@ -771,8 +771,8 @@
     },
     "form": {
       "name": {
-        "title": "Name",
-        "placeholder": "My certificate"
+        "title": "Friendly name",
+        "placeholder": "A name to help you identify your certificate"
       },
       "submit": {
         "description": "Click on Generate Certificate to download your certificate",
@@ -803,7 +803,7 @@
   },
   "DBConnection": {
     "description_fl": "To connect to CARTO's database from third-party tools, you first need to add the IP address you are connecting from and then generate a certificate to secure your connection.",
-    "description_sl": "You can read more about this in our <a href='#'>help center</a>.",
+    "description_sl": "You can read more about this in our <a href='https://carto.com/help/working-with-data/direct-sql-connection/' target='_blank' rel='noopener noreferrer'>help center</a>.",
     "ipsSection": {
       "title": "1. Your IPs",
       "allowAllIPs": "Allow connections from any IP addresses (Coming Soon)",
@@ -822,7 +822,7 @@
   },
   "Connections": {
     "sections": {
-      "ipAndCertificates": "IPs and Certificates"
+      "directSQLConnection": "Direct SQL Connection (beta)"
     }
   }
 }

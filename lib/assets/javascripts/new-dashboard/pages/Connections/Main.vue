@@ -4,7 +4,7 @@
       <SettingsSidebar class="grid-cell--col4" :userModel="user" :baseUrl="baseUrl" />
 
       <div class="grid-cell--col8">
-        <h1 class="page__title">{{ $t('Connections.sections.ipAndCertificates') }}</h1>
+        <h1 class="page__title">{{ $t('Connections.sections.directSQLConnection') }}</h1>
         <DBConnection />
       </div>
     </section>

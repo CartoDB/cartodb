@@ -84,7 +84,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 960px;
+  width: $modal__width;
   margin: 0 auto;
   padding: 0;
 }

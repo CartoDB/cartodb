@@ -128,6 +128,33 @@ module Carto
       affected_visualizations.select { |v| v.dependent_on?(self) }
     end
 
+    def faster_dependent_visualizations(limit: nil)
+      query = %{
+        SELECT visualizations.*
+        FROM layers_user_tables, layers_maps, visualizations
+        WHERE layers_user_tables.user_table_id = '#{id}'
+        AND layers_user_tables.layer_id = layers_maps.layer_id
+        AND layers_maps.map_id = visualizations.map_id
+        AND visualizations.type = 'derived'
+        ORDER BY visualizations.updated_at DESC
+      }
+      query = query + " LIMIT(#{limit})" if limit
+      Carto::Visualization.find_by_sql(query)
+    end
+
+    def dependent_visualizations_count
+      query = %{
+        SELECT count(visualizations.*)
+        FROM layers_user_tables, layers_maps, visualizations
+        WHERE layers_user_tables.user_table_id = '#{id}'
+        AND layers_user_tables.layer_id = layers_maps.layer_id
+        AND layers_maps.map_id = visualizations.map_id
+        AND visualizations.type = 'derived'
+      }
+      result = ActiveRecord::Base.connection.execute(query)
+      result.first['count'].to_i
+    end
+
     def affected_visualizations
       layers.map(&:visualization).uniq.compact
     end

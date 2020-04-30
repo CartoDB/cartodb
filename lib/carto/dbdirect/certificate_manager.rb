@@ -1,8 +1,6 @@
 require 'openssl'
-require 'aws-sdk-acmpca'
 require 'json'
 require 'securerandom'
-require 'sys_cmd'
 
 module Carto
   module Dbdirect

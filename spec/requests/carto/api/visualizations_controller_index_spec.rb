@@ -75,19 +75,19 @@ describe Carto::Api::VisualizationsController do
 
     context 'with_dependent_visualizations' do
       before(:each) do
-        table = FactoryGirl.create(:table, user_id: @user.id)
-
         Delorean.time_travel_to "2018/01/01 00:00:00" do
-          @dependencies = Array.new(3) do
+          _, table = create_full_visualization(@user)
+
+          @dependencies = Array.new(2) do
             Delorean.jump(1.day)
-            FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: table.map_id)
+            _, _, _, visualization = create_full_visualization(@user, table: table)
+            visualization
           end
         end
       end
 
       it 'does not return the dependent visualizations by default' do
-        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
-                                            order: 'dependent_visualizations'), {}, @headers
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations'), {}, @headers
 
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
@@ -119,10 +119,66 @@ describe Carto::Api::VisualizationsController do
         collection.length.should eq 1
         collection[0]['dependent_visualizations_count'].should eql 3
         collection[0]['dependent_visualizations'].length.should eq 2
-        collection[0]['dependent_visualizations'].first['id'].should eql @dependencies[2].id
+        collection[0]['dependent_visualizations'].first['id'].should eql @dependencies[1].id
         collection[0]['dependent_visualizations'].first['name'].should_not be_nil
-        collection[0]['dependent_visualizations'].second['id'].should eql @dependencies[1].id
+        collection[0]['dependent_visualizations'].second['id'].should eql @dependencies[0].id
         collection[0]['dependent_visualizations'].second['name'].should_not be_nil
+      end
+
+      context 'with faster dependencies' do
+        before(:all) do
+          @feature_flag = FactoryGirl.create(:feature_flag, name: 'faster-dependencies', restricted: true)
+        end
+
+        after(:all) do
+          @feature_flag.destroy
+        end
+
+        it 'does not return the dependent visualizations by default' do
+          with_feature_flag(@user, 'faster-dependencies', true) do
+            get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
+                                                order: 'dependent_visualizations'), {}, @headers
+          end
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 1
+          collection[0]['dependent_visualizations_count'].should be_nil
+          collection[0]['dependent_visualizations'].should be_nil
+        end
+
+        it 'does not return the dependent visualizations if with_dependent_visualizations = 0' do
+          with_feature_flag(@user, 'faster-dependencies', true) do          
+            get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
+                                                with_dependent_visualizations: 0), {}, @headers
+          end
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 1
+          collection[0]['dependent_visualizations_count'].should be_nil
+          collection[0]['dependent_visualizations'].should be_nil
+        end
+
+        it 'returns the 2 most recent dependent visualizations when with_dependent_visualizations = 2' do
+          with_feature_flag(@user, 'faster-dependencies', true) do
+            get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
+                                                with_dependent_visualizations: 2), {}, @headers
+          end
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 1
+          collection[0]['dependent_visualizations_count'].should eql 3
+          collection[0]['dependent_visualizations'].length.should eq 2
+          collection[0]['dependent_visualizations'].first['id'].should eql @dependencies[1].id
+          collection[0]['dependent_visualizations'].first['name'].should_not be_nil
+          collection[0]['dependent_visualizations'].second['id'].should eql @dependencies[0].id
+          collection[0]['dependent_visualizations'].second['name'].should_not be_nil
+        end
       end
     end
 

@@ -643,7 +643,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def faster_dependent_visualizations(limit: nil)
-    @faster_dependent_visualizations ||= @user_table&.faster_dependent_visualizations(limit: limit)
+    @faster_dependent_visualizations ||= user_table&.faster_dependent_visualizations(limit: limit)
   end
 
   def dependent_visualizations_count

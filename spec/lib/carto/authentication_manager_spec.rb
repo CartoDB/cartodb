@@ -45,18 +45,6 @@ module Carto
 
         it { should be_false }
       end
-
-      context "when security token does not match but using multifactor authentication" do
-        let(:session) { { sec_token: 'old-security-token' } }
-
-        before do
-          create(:totp, :active, user_id: user.id)
-          request.expects(:reset_session)
-          warden_context.expects(:session).returns(session)
-        end
-
-        it { should be_false }
-      end
     end
 
   end

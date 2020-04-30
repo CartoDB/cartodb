@@ -859,6 +859,7 @@ describe SessionsController do
           response.status.should eq 302
           response.headers['Location'].should include '/login?error=password_locked'
 
+          @user.reload
           sleep(4)
 
           login

@@ -15,37 +15,13 @@ module Carto
 
       attr_reader :config
 
-      def replace_rule(name, ips)
-        delete_rule(
-          project_id: config['project_id'],
-          name: name
-        )
-
-        if ips.present?
-          create_rule(
-            project_id: config['project_id'],
-            name: name,
-            network: config['network'],
-            ips: ips,
-            target_tag: config['target_tag'],
-            ports: config['ports']
-          )
-        end
-      end
-
-      private
-
-      def delete_rule(project_id:, name:)
+      def delete_rule(name)
         # `gcloud compute firewall-rules delete "#{name}"`
 
-        # we could check existence with @service.list_firewalls(project_id).find {|r| r.name == name}
-        # but since there could be race conditions anyway we'll just rescue errors
         @service.delete_firewall(config['project_id'], name)
-
-      rescue Google::Apis::ClientError
       end
 
-      def create_rule(project_id:, name:, network:, ips:, target_tag:, ports:)
+      def create_rule(name:, ips:)
         #   `gcloud -q compute firewall-rules create "#{name}" \
         #     --network "#{network}" \
         #     --direction ingress \
@@ -71,6 +47,23 @@ module Carto
 
         @service.insert_firewall(config['project_id'], rule)
       end
+
+      def update_rule(name:, ips:)
+        protocol, port = config['ports'].split(':')
+        allowed = Google::Apis::ComputeV1::Firewall::Allowed.new(
+          ip_protocol: protocol,
+          ports: [port.split(',')]
+        )
+        rule = @service.get_firewall(config['project_id'], name)
+        rule.allowed = [allowed]
+        rule.network = network_url(config['project_id'], config['network'])
+        rule.souce_ranges = ips
+        rule.target_tags = config['target_tag']
+
+        service.update_firewall(project, name, rule)
+      end
+
+      private
 
       def network_url(project_id, network)
         "#{PROJECTS_URL}/#{project_id}/global/networks/#{network}"

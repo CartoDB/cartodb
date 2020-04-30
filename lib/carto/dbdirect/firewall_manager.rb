@@ -16,54 +16,40 @@ module Carto
       attr_reader :config
 
       def delete_rule(name)
-        # `gcloud compute firewall-rules delete "#{name}"`
-
         @service.delete_firewall(config['project_id'], name)
       end
 
       def create_rule(name:, ips:)
-        #   `gcloud -q compute firewall-rules create "#{name}" \
-        #     --network "#{network}" \
-        #     --direction ingress \
-        #     --action allow \
-        #     --source-ranges "#{ips.join(',')}" \
-        #     --target-tags "#{target_tag}" \
-        #     --rules "#{ports}" \
-        #     --no-enable-logging  \
-        #     --project "#{project_id}"`
+        @service.insert_firewall(config['project_id'], firewall_rule(name))
+      end
 
+      def update_rule(name:, ips:)
+        @service.update_firewall(config['project_id'], name, firewall_rule(name))
+      end
+
+      def get_rule(name:)
+        @service.get_firewall(config['project_id'], name).to_h
+      end
+
+      private
+
+      def firewall_allowed
         protocol, port = config['ports'].split(':')
-        allowed = Google::Apis::ComputeV1::Firewall::Allowed.new(
+        Google::Apis::ComputeV1::Firewall::Allowed.new(
           ip_protocol: protocol,
           ports: [port.split(',')]
         )
-        rule = Google::Apis::ComputeV1::Firewall.new(
+      end
+
+      def firewall_rule(name)
+        Google::Apis::ComputeV1::Firewall.new(
           name: name,
-          allowed: [allowed],
+          allowed: [firewall_allowed],
           network: network_url(config['project_id'], config['network']),
           source_ranges: ips,
           target_tags: [config['target_tag']]
         )
-
-        @service.insert_firewall(config['project_id'], rule)
       end
-
-      def update_rule(name:, ips:)
-        protocol, port = config['ports'].split(':')
-        allowed = Google::Apis::ComputeV1::Firewall::Allowed.new(
-          ip_protocol: protocol,
-          ports: [port.split(',')]
-        )
-        rule = @service.get_firewall(config['project_id'], name)
-        rule.allowed = [allowed]
-        rule.network = network_url(config['project_id'], config['network'])
-        rule.souce_ranges = ips
-        rule.target_tags = config['target_tag']
-
-        @service.update_firewall(config['project_id'], name, rule)
-      end
-
-      private
 
       def network_url(project_id, network)
         "#{PROJECTS_URL}/#{project_id}/global/networks/#{network}"

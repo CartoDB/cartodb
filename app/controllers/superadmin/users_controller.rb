@@ -6,7 +6,6 @@ require_dependency 'carto/api/paged_searcher'
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper
   include Carto::Api::PagedSearcher
-  include Carto::ControllerHelper
 
   respond_to :json
 

@@ -12,7 +12,6 @@ module Carto
       include FrontendConfigHelper
       include AccountTypeHelper
       include AvatarHelper
-      include Carto::ControllerHelper
       begin
         include OnpremisesLicensingGear::ApplicationHelper
       rescue NameError

@@ -5,7 +5,6 @@ require_dependency 'carto/tracking/events'
 module Carto
   module Api
     class MapcapsController < ::Api::ApplicationController
-      include Carto::ControllerHelper
       include Carto::Builder::BuilderUsersModule
 
       ssl_required :show, :create, :destroy, :index

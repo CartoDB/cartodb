@@ -12,7 +12,7 @@
 
     <span class="SideMenu-separator"></span>
 
-    <% if (isEnterprise || hasDirectDBConnection) { %>
+    <% if (hasDirectDBConnection) { %>
       <li class="SideMenu-typeItem">
         <a href="<%= connectionsUrl %>" class="SideMenu-typeLink">
           Connections

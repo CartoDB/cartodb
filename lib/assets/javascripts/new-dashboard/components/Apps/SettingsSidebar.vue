@@ -16,7 +16,7 @@
         <a :href="`${ baseUrl }/organization`" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.organizationSettings`) }}</a>
       </li>
       <span class="settingssidebar-separator"></span>
-      <li class="settingssidebar-item" v-if="isEnterprise || hasDirectDBConnection">
+      <li class="settingssidebar-item" v-if="hasDirectDBConnection">
         <router-link :to="{ name: 'connections' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isConnectionsPage()}">{{ $t(`SettingsPages.sidebar.connections`) }}</router-link>
       </li>
       <li class="settingssidebar-item">
@@ -54,9 +54,6 @@ export default {
     },
     isOrgAdmin () {
       return this.user.org_admin;
-    },
-    isEnterprise () {
-      return this.user.is_enterprise;
     }
   },
   methods: {

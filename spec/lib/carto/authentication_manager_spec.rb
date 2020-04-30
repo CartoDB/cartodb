@@ -7,7 +7,7 @@ module Carto
     describe '::validate_session' do
       subject { described_class.validate_session(warden_context, request, user) }
 
-      let!(:user) { FactoryGirl.create(:user) }
+      let!(:user) { create(:user) }
       let(:valid_session) { { sec_token: user.security_token } }
       let(:warden_context) { mock }
       let(:request) { mock }
@@ -50,7 +50,7 @@ module Carto
         let(:session) { { sec_token: 'old-security-token' } }
 
         before do
-          FactoryGirl.create(:totp, :active, user_id: user.id)
+          create(:totp, :active, user_id: user.id)
           request.expects(:reset_session)
           warden_context.expects(:session).returns(session)
         end

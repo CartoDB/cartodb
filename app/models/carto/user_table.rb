@@ -124,7 +124,11 @@ module Carto
       affected_visualizations.select { |v| v.partially_dependent_on?(self) }
     end
 
-    def dependent_visualizations(limit: nil)
+    def dependent_visualizations
+      affected_visualizations.select { |v| v.dependent_on?(self) }
+    end
+
+    def faster_dependent_visualizations(limit: nil)
       query = %{
         SELECT visualizations.*
         FROM layers_user_tables, layers_maps, visualizations

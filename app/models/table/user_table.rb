@@ -85,7 +85,7 @@ class UserTable < Sequel::Model
                                     automatic_geocoding:  :destroy
   plugin :dirty
 
-  def_delegators :relator, :affected_visualizations, :dependent_visualizations, :dependent_visualizations_count, :synchronization
+  def_delegators :relator, :affected_visualizations, :synchronization
 
   # Ignore mass-asigment on not allowed columns
   self.strict_param_setting = false
@@ -326,6 +326,10 @@ class UserTable < Sequel::Model
 
   def partially_dependent_visualizations
     affected_visualizations.select { |v| v.partially_dependent_on?(self) }
+  end
+
+  def dependent_visualizations
+    affected_visualizations.select { |v| v.dependent_on?(self) }
   end
 
   def is_owner?(user)

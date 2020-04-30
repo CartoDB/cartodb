@@ -806,7 +806,7 @@
     "description_sl": "You can read more about this in our <a href='https://carto.com/help/working-with-data/direct-sql-connection/' target='_blank' rel='noopener noreferrer'>help center</a>.",
     "ipsSection": {
       "title": "1. Your IPs",
-      "allowAllIPs": "Allow connections from any IP addresses (Coming Soon)",
+      "allowAllIPs": "Allow connections from any IP address (Coming Soon)",
       "ipList": {
         "title": "Allowed IP addresses",
         "placeholder": "12.12.12.12",

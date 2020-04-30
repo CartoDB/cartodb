@@ -60,7 +60,7 @@ module Carto
         rule.souce_ranges = ips
         rule.target_tags = config['target_tag']
 
-        @service.update_firewall(project, name, rule)
+        @service.update_firewall(config['project_id'], name, rule)
       end
 
       private

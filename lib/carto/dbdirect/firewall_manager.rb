@@ -15,61 +15,40 @@ module Carto
 
       attr_reader :config
 
-      def replace_rule(name, ips)
-        delete_rule(
-          project_id: config['project_id'],
-          name: name
-        )
+      def delete_rule(name)
+        @service.delete_firewall(config['project_id'], name)
+      end
 
-        if ips.present?
-          create_rule(
-            project_id: config['project_id'],
-            name: name,
-            network: config['network'],
-            ips: ips,
-            target_tag: config['target_tag'],
-            ports: config['ports']
-          )
-        end
+      def create_rule(name, ips)
+        @service.insert_firewall(config['project_id'], firewall_rule(name, ips))
+      end
+
+      def update_rule(name, ips)
+        @service.update_firewall(config['project_id'], name, firewall_rule(name, ips))
+      end
+
+      def get_rule(name)
+        @service.get_firewall(config['project_id'], name).to_h
       end
 
       private
 
-      def delete_rule(project_id:, name:)
-        # `gcloud compute firewall-rules delete "#{name}"`
-
-        # we could check existence with @service.list_firewalls(project_id).find {|r| r.name == name}
-        # but since there could be race conditions anyway we'll just rescue errors
-        @service.delete_firewall(config['project_id'], name)
-
-      rescue Google::Apis::ClientError
-      end
-
-      def create_rule(project_id:, name:, network:, ips:, target_tag:, ports:)
-        #   `gcloud -q compute firewall-rules create "#{name}" \
-        #     --network "#{network}" \
-        #     --direction ingress \
-        #     --action allow \
-        #     --source-ranges "#{ips.join(',')}" \
-        #     --target-tags "#{target_tag}" \
-        #     --rules "#{ports}" \
-        #     --no-enable-logging  \
-        #     --project "#{project_id}"`
-
+      def firewall_allowed
         protocol, port = config['ports'].split(':')
-        allowed = Google::Apis::ComputeV1::Firewall::Allowed.new(
+        Google::Apis::ComputeV1::Firewall::Allowed.new(
           ip_protocol: protocol,
           ports: [port.split(',')]
         )
-        rule = Google::Apis::ComputeV1::Firewall.new(
+      end
+
+      def firewall_rule(name, ips)
+        Google::Apis::ComputeV1::Firewall.new(
           name: name,
-          allowed: [allowed],
+          allowed: [firewall_allowed],
           network: network_url(config['project_id'], config['network']),
           source_ranges: ips,
           target_tags: [config['target_tag']]
         )
-
-        @service.insert_firewall(config['project_id'], rule)
       end
 
       def network_url(project_id, network)

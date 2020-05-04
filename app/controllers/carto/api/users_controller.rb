@@ -41,7 +41,6 @@ module Carto
       def me
         carto_viewer = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
 
-
         config = {
           user_frontend_version: CartoDB::Application.frontend_version
         }

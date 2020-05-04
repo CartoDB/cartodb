@@ -575,10 +575,14 @@ class User < Sequel::Model
 
   def invalidate_all_sessions!
     self.session_salt = SecureRandom.hex
-    update_in_central
-    save
-  rescue CartoDB::CentralCommunicationFailure => e
-    CartoDB::Logger.info(exception: e, message: "Cannot invalidate session")
+
+    if update_in_central
+      save(raise_on_failure: true)
+    else
+      CartoDB::Logger.error(message: "Cannot invalidate session")
+    end
+  rescue CartoDB::CentralCommunicationFailure, Sequel::ValidationFailed => e
+    CartoDB::Logger.error(exception: e, message: "Cannot invalidate session")
   end
 
   # Database configuration setup

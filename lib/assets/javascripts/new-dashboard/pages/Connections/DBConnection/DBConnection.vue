@@ -145,11 +145,11 @@ export default {
 
   methods: {
     getCertificates () {
-      this.$store.dispatch('directDBConnection/certificates/fetch');
+      return this.$store.dispatch('directDBConnection/certificates/fetch');
     },
 
     getCurrentIPs () {
-      this.$store.dispatch('directDBConnection/ip/fetch');
+      return this.$store.dispatch('directDBConnection/ip/fetch');
     },
 
     goToCertificateCreation () {
@@ -166,18 +166,23 @@ export default {
       // This validation is a hack to
       // add a new IP and validate it
       // in one step
-      const ipListWithNewIp = [
-        ...this.ipList,
-        value
-      ];
-
-      return this.$store.dispatch('directDBConnection/ip/set', ipListWithNewIp)
+      return this.getCurrentIPs()
+        .then(() => {
+          const ipListWithNewIp = [...this.ipList, value];
+          return this.$store.dispatch('directDBConnection/ip/set', ipListWithNewIp);
+        })
         .then(() => ({ isValid: true }))
         .catch(errorData => ({ isValid: false, errorText: errorData.errors.ips.join('. ') }));
     },
 
-    onIPsChanged (IPs) {
-      this.$store.dispatch('directDBConnection/ip/set', IPs);
+    onIPsChanged ({ removedElement }) {
+      this.getCurrentIPs()
+        .then(() => {
+          const newIPList = new Set(this.ipList);
+          newIPList.delete(removedElement);
+
+          this.$store.dispatch('directDBConnection/ip/set', Array.from(newIPList));
+        });
     },
 
     onCertificateCreated (certificate) {

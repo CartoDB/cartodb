@@ -109,16 +109,22 @@ export default {
     },
 
     deleteElement (index) {
-      this.valuesInArray.splice(index, 1);
-      this.onElementRemoved();
+      const removedElement = this.valuesInArray.splice(index, 1);
+      this.onElementRemoved(removedElement[0]);
     },
 
-    onElementAdded () {
-      this.$emit('addElement', this.valuesInArray);
+    onElementAdded (addedElement) {
+      this.$emit('addElement', {
+        addedElement,
+        allElements: this.valuesInArray
+      });
     },
 
-    onElementRemoved () {
-      this.$emit('removeElement', this.valuesInArray);
+    onElementRemoved (removedElement) {
+      this.$emit('removeElement', {
+        removedElement,
+        allElements: this.valuesInArray
+      });
     },
 
     setError (errorText) {

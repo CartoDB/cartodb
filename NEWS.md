@@ -6,13 +6,12 @@ Development
 
 ### Features
 - GCP Firewall managemente for DB Direct IPs ([#15610](https://github.com/CartoDB/cartodb/pull/15610))
-  ([15641](https://github.com/CartoDB/cartodb/pull/15641))
 - Rake tasks to list DB Direct certificates ([#15625](https://github.com/CartoDB/cartodb/pull/15625))
 - PKCS#8 keys support for DB-Direct certificates ([#15622](https://github.com/CartoDB/cartodb/pull/15622))
 - UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
 
 ### Bug fixes / enhancements
-- Fix Db Direct IPs Firewall management problem ([#15638](https://github.com/CartoDB/cartodb/pull/15638))
+- Fix Db Direct IPs Firewall management problem ([15641](https://github.com/CartoDB/cartodb/pull/15641))
 - Fix Db Direct Firewall management credentials problem ([#15640](https://github.com/CartoDB/cartodb/pull/15640))
 - DO user settings are now stored under `do_settings:{@username}` ([#15630](https://github.com/CartoDB/cartodb/pull/15630))
 - Improve performance of dataset view with many maps ([#15627](https://github.com/CartoDB/cartodb/pull/15627))

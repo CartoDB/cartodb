@@ -22,7 +22,7 @@ module FrontendConfigHelper
       upgrade_url:                cartodb_com_hosted? || user.nil? ? false : user.try(:upgrade_url, request.protocol).to_s,
     }
 
-    if user
+    if user.present?
       config[:dropbox_api_key] = Cartodb.get_config(:dropbox_api_key).present?
       config[:oauth_dropbox] = Cartodb.get_config(:oauth, 'dropbox', 'app_key')
       config[:oauth_box] = Cartodb.get_config(:oauth, 'box', 'client_id')
@@ -69,12 +69,12 @@ module FrontendConfigHelper
       if !Cartodb.get_config(:dataservices, 'enabled').nil?
         config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
       end
-    end
 
-    if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
-      config[:hubspot_token] = CartoDB::Hubspot::instance.token
-      config[:hubspot_ids] = CartoDB::Hubspot::instance.event_ids.to_json.html_safe
-      config[:hubspot_form_ids] = CartoDB::Hubspot::instance.form_ids
+      if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
+        config[:hubspot_token] = CartoDB::Hubspot::instance.token
+        config[:hubspot_ids] = CartoDB::Hubspot::instance.event_ids.to_json.html_safe
+        config[:hubspot_form_ids] = CartoDB::Hubspot::instance.form_ids
+      end
     end
 
     if Cartodb.get_config(:cdn_url)

@@ -168,7 +168,7 @@ describe Carto::Api::DbdirectIpsController do
     end
 
     it 'retains only latest ips assigned' do
-      ips1 = ['100.20.30.40', '200.20.30.40/24']
+      ips1 = ['100.20.30.40', '200.20.31.0/24']
       ips2 = ['11.21.31.41']
       with_feature_flag @carto_user1, 'dbdirect', true do
         Cartodb.with_config dbdirect: @config do
@@ -226,6 +226,27 @@ describe Carto::Api::DbdirectIpsController do
           end
         end
 
+      end
+    end
+
+    it 'IP ranges in firewall are normalized' do
+      ips = ['100.20.30.40', '12.12.12.12/24']
+      normalized_ips = ['100.20.30.40', '12.12.12.0/24']
+      params = {
+        ips: ips
+      }
+      with_feature_flag @carto_user1, 'dbdirect', true do
+        Cartodb.with_config dbdirect: @config do
+          login_as(@carto_user1, scope: @carto_user1.username)
+          put_json(dbdirect_ip_url, params) do |response|
+            expect(response.status).to eq(201)
+            expect(response.body[:ips]).to eq ips
+            expect(@carto_user1.reload.dbdirect_effective_ips).to eq ips
+            expect(TestFirewallManager.rules[rule(@carto_user1.username)]).to eq normalized_ips
+            expect(TestFirewallManager.config).to eq @config[:firewall]
+            expect(@carto_user1.dbdirect_effective_ip.firewall_rule_name).to eq rule(@carto_user1.username)
+          end
+        end
       end
     end
 

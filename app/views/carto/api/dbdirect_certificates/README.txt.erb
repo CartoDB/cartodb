@@ -33,7 +33,7 @@ We advise against exposing your Master API Key since it allows unrestricted acce
 Example: connect using psql:
  psql "sslmode=verify-full sslrootcert=server_ca.pem \
      sslcert=client.crt sslkey=client.key \
-     hostaddr=<%= dbproxy_host %> \
+     host=<%= dbproxy_host %> \
      port=<%= dbproxy_port %> \
      user=<%= username %>"
 

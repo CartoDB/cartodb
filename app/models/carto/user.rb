@@ -314,9 +314,13 @@ class Carto::User < ActiveRecord::Base
   end
 
   def dbdirect_effective_ips=(ips)
+    ips ||= []
     bearer = dbdirect_bearer
-    bearer.dbdirect_ip&.destroy
-    bearer.create_dbdirect_ip!(ips: ips) if ips.present?
+    if bearer.dbdirect_ip
+      bearer.dbdirect_ip.update!(ips: ips)
+    else
+      bearer.create_dbdirect_ip!(ips: ips)
+    end
   end
 
   def dbdirect_effective_ip
@@ -325,9 +329,9 @@ class Carto::User < ActiveRecord::Base
 
   def dbdirect_bearer
     if organization.present? && organization.owner != self
-      organization.owner
+      organization.owner.reload
     else
-      self
+      reload
     end
   end
 

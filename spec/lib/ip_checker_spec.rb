@@ -179,4 +179,27 @@ describe IpChecker do
       IpChecker.validate('0:0:0:0:0:0:0:1', exclude_loopback: false).should be_nil
     end
   end
+
+  describe "#normalize" do
+    it "doesn't change single IPs" do
+      IpChecker.normalize('234.111.7.200').should eq '234.111.7.200'
+      IpChecker.normalize('0.0.0.0').should eq '0.0.0.0'
+      IpChecker.normalize('2001:db8:3333:4444:5555:6666:7777:8888').should eq '2001:db8:3333:4444:5555:6666:7777:8888'
+    end
+
+    it "removes unnecessary mask/prefix" do
+      IpChecker.normalize('234.111.7.200/32').should eq '234.111.7.200'
+      IpChecker.normalize('234.111.7.200/255.255.255.255').should eq '234.111.7.200'
+      IpChecker.normalize('2001:db8:3333:4444:5555:6666:7777:8888/128').should eq '2001:db8:3333:4444:5555:6666:7777:8888'
+    end
+
+    it "zeros out bits outside the range mask" do
+      IpChecker.normalize('234.111.7.200/24').should eq '234.111.7.0/24'
+      IpChecker.normalize('234.111.7.200/255.255.255.0').should eq '234.111.7.0/24'
+      IpChecker.normalize('234.111.7.200/28').should eq '234.111.7.192/28'
+      IpChecker.normalize('234.111.7.200/255.255.255.240').should eq '234.111.7.192/28'
+      IpChecker.normalize('2001:db8:3333:4444:5555:6666:7777:8888/120').should eq '2001:db8:3333:4444:5555:6666:7777:8800/120'
+      IpChecker.normalize('2001:db8:3333:4444:5555:6666:7777:8888/124').should eq '2001:db8:3333:4444:5555:6666:7777:8880/124'
+    end
+  end
 end

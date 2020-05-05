@@ -145,12 +145,15 @@ module Carto
       end
 
       def with_aws_credentials(&blk)
-        with_env(
-          AWS_ACCESS_KEY_ID:     config['aws_access_key_id'],
-          AWS_SECRET_ACCESS_KEY: config['aws_secret_key'],
-          AWS_DEFAULT_REGION:    config['aws_region'],
-          &blk
-        )
+        prev_config = Aws.config
+        Aws.config = {
+          access_key_id: config['aws_access_key_id'],
+          secret_access_key: config['aws_secret_key'],
+          region: config['aws_region']
+        }
+        blk.call
+      ensure
+        Aws.config = prev_config
       end
 
       def with_env(vars)

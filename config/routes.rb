@@ -1,4 +1,4 @@
-# rubocop:disable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
+# rubocop:disable Layout/LineLength, Layout/ExtraSpacing, Layout/SpaceBeforeFirstArg
 
 # NOTES:
 # (/u/:user_domain)     -> This allows support of org-urls (support != enforcement)
@@ -760,4 +760,4 @@ CartoDB::Application.routes.draw do
   end
 end
 
-# rubocop:enable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
+# rubocop:enable Layout/LineLength, Layout/ExtraSpacing, Layout/SpaceBeforeFirstArg

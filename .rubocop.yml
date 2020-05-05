@@ -43,13 +43,13 @@ Layout/AccessModifierIndentation:
   Enabled: true
   EnforcedStyle: indent
 
-Layout/AlignHash:
+Layout/HashAlignment:
   Enabled: true
   EnforcedHashRocketStyle: key
   EnforcedColonStyle: key
   EnforcedLastArgumentHashStyle: always_inspect
 
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   Enabled: true
   EnforcedStyle: with_first_parameter
 
@@ -69,7 +69,7 @@ Layout/EmptyLinesAroundModuleBody:
 Layout/ExtraSpacing:
   Enabled: true
 
-Layout/IndentFirstArgument:
+Layout/FirstArgumentIndentation:
   Enabled: true
   EnforcedStyle: special_for_inner_method_call_in_parentheses
 
@@ -77,7 +77,7 @@ Layout/IndentationWidth:
   Enabled: true
   Width: 2
 
-Layout/IndentFirstHashElement:
+Layout/FirstHashElementIndentation:
   Description: Checks the indentation of the first key in a hash literal.
   Enabled: true
   EnforcedStyle: special_inside_parentheses
@@ -112,11 +112,11 @@ Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: space
   EnforcedStyleForEmptyBraces: no_space
 
-Layout/TrailingBlankLines:
+Layout/TrailingEmptyLines:
   Enabled: true
   EnforcedStyle: final_newline
 
-Layout/AlignArray:
+Layout/ArrayAlignment:
   Enabled: true
 
 Layout/BlockEndNewline:
@@ -143,7 +143,7 @@ Layout/EndOfLine:
 Layout/IndentationConsistency:
   Enabled: true
 
-Layout/IndentFirstArrayElement:
+Layout/FirstArrayElementIndentation:
   Enabled: true
 
 Layout/LeadingCommentSpace:
@@ -185,9 +185,6 @@ Layout/SpaceBeforeSemicolon:
 Layout/SpaceAroundOperators:
   Enabled: true
 
-Layout/SpaceInsideBrackets:
-  Enabled: true
-
 Layout/SpaceInsideParens:
   Enabled: true
 
@@ -198,9 +195,6 @@ Layout/Tab:
   Enabled: true
 
 Layout/TrailingWhitespace:
-  Enabled: true
-
-Layout/SpaceBeforeFirstArg:
   Enabled: true
 
 
@@ -216,10 +210,6 @@ Style/AndOr:
 Style/BarePercentLiterals:
   Enabled: true
   EnforcedStyle: bare_percent
-
-Style/BracesAroundHashParameters:
-  Enabled: true
-  EnforcedStyle: no_braces
 
 Style/ClassCheck:
   Enabled: true
@@ -362,15 +352,23 @@ Style/StructInheritance:
 Style/UnlessElse:
   Enabled: true
 
-Style/UnneededCapitalW:
+Style/RedundantCapitalW:
   Enabled: true
 
-Style/UnneededPercentQ:
+Style/RedundantPercentQ:
   Enabled: true
 
 Style/WhileUntilDo:
   Enabled: true
 
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
 
 
 #
@@ -381,7 +379,7 @@ Metrics/AbcSize:
   Enabled: true
   Max: 35
 
-Metrics/LineLength:
+Layout/LineLength:
   Enabled: true
   Max: 120
   AllowURI: true
@@ -413,7 +411,7 @@ Lint/RescueException:
 Lint/ShadowingOuterLocalVariable:
   Enabled: true
 
-Lint/StringConversionInInterpolation:
+Lint/RedundantStringCoercion:
   Enabled: true
 
 Lint/UnusedBlockArgument:
@@ -455,47 +453,14 @@ Lint/EmptyEnsure:
 Lint/EmptyInterpolation:
   Enabled: true
 
-Lint/EndInMethod:
-  Enabled: true
-
 Lint/EnsureReturn:
   Enabled: true
 
-
-
-
-#
-# Rails cops
-#
-
-Rails/HasAndBelongsToMany:
+Lint/RaiseException:
   Enabled: true
-  Include:
-  - app/models/**/*.rb
 
-Rails/Output:
+Lint/StructNewOverride:
   Enabled: true
-  Include:
-  - app/**/*.rb
-  - config/**/*.rb
-  - db/**/*.rb
-  - lib/**/*.rb
-
-Rails/ReadWriteAttribute:
-  Enabled: true
-  Include:
-  - app/models/**/*.rb
-
-Rails/ScopeArgs:
-  Enabled: true
-  Include:
-  - app/models/**/*.rb
-
-Rails/Validation:
-  Enabled: true
-  Include:
-  - app/models/**/*.rb
-
 
 
 #
@@ -598,7 +563,7 @@ Style/EmptyLiteral:
   Enabled: false
 Style/EvenOdd:
   Enabled: false
-Style/FlipFlop:
+Lint/FlipFlop:
   Enabled: false
 Style/IfWithSemicolon:
   Enabled: false
@@ -660,9 +625,7 @@ Lint/DeprecatedClassMethods:
   Enabled: false
 Lint/ElseLayout:
   Enabled: false
-Lint/HandleExceptions:
-  Enabled: false
-Lint/LiteralInCondition:
+Lint/SuppressedException:
   Enabled: false
 Lint/LiteralInInterpolation:
   Enabled: false
@@ -675,8 +638,4 @@ Lint/RequireParentheses:
 Lint/UnderscorePrefixedVariableName:
   Enabled: false
 Lint/Void:
-  Enabled: false
-Rails/ActionFilter:
-  Enabled: false
-Rails/Delegate:
   Enabled: false

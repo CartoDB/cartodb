@@ -1,12 +1,13 @@
 module Carto
   class CartoError < StandardError
-    attr_reader :message, :status, :user_message, :errors_cause
+    attr_reader :message, :status, :user_message, :errors_cause, :headers
 
-    def initialize(message, status, user_message: message, errors_cause: nil)
+    def initialize(message, status, user_message: message, errors_cause: nil, headers: nil)
       @message = message
       @status = status
       @user_message = user_message
       @errors_cause = errors_cause
+      @headers = headers
     end
 
     def self.with_full_messages(active_record_exception)
@@ -94,6 +95,12 @@ module Carto
   class QuotaExceededError < PaymentRequiredError
     def initialize(message = "Your quota has been exceeded")
       super(message)
+    end
+  end
+
+  class FirewallNotReadyError < CartoError
+    def initialize(message = "The IP changes couldn't be applied. Please try again.")
+      super(message, 429, headers: { 'Retry-After' => '5' })
     end
   end
 end

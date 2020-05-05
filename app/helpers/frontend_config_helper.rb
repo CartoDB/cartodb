@@ -17,12 +17,12 @@ module FrontendConfigHelper
       trackjs_app_key:            Cartodb.get_config(:trackjs, 'app_keys', 'editor'),
       google_tag_manager_id:      Cartodb.get_config(:google_tag_manager, 'primary'),
       intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
-      fullstory_enabled:          fullstory_enabled?(user),
-      fullstory_org:              Cartodb.get_config(:fullstory, 'org'),
       upgrade_url:                cartodb_com_hosted? || user.nil? ? false : user.try(:upgrade_url, request.protocol).to_s,
     }
 
     if user.present?
+      config[:fullstory_enabled] = fullstory_enabled?(user)
+      config[:fullstory_org] = Cartodb.get_config(:fullstory, 'org')
       config[:dropbox_api_key] = Cartodb.get_config(:dropbox_api_key).present?
       config[:oauth_dropbox] = Cartodb.get_config(:oauth, 'dropbox', 'app_key')
       config[:oauth_box] = Cartodb.get_config(:oauth, 'box', 'client_id')

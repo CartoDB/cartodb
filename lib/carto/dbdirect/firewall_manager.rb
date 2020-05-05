@@ -16,19 +16,27 @@ module Carto
       attr_reader :config
 
       def delete_rule(name)
-        @service.delete_firewall(config['project_id'], name)
+        with_error_mapping do
+          @service.delete_firewall(config['project_id'], name)
+        end
       end
 
       def create_rule(name, ips)
-        @service.insert_firewall(config['project_id'], firewall_rule(name, ips))
+        with_error_mapping do
+          @service.insert_firewall(config['project_id'], firewall_rule(name, ips))
+        end
       end
 
       def update_rule(name, ips)
-        @service.update_firewall(config['project_id'], name, firewall_rule(name, ips))
+        with_error_mapping do
+          @service.update_firewall(config['project_id'], name, firewall_rule(name, ips))
+        end
       end
 
       def get_rule(name)
-        @service.get_firewall(config['project_id'], name).to_h
+        with_error_mapping do
+          @service.get_firewall(config['project_id'], name).to_h
+        end
       end
 
       private
@@ -53,6 +61,13 @@ module Carto
 
       def network_url(project_id, network)
         "#{PROJECTS_URL}/#{project_id}/global/networks/#{network}"
+      end
+
+      def with_error_mapping
+        yield
+      rescue Google::Apis::ClientError => error
+        raise Carto::FirewallNotReadyError.new if error.message =~ /resourceNotReady/
+        raise
       end
     end
   end

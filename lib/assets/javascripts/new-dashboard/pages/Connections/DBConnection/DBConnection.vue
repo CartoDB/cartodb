@@ -172,7 +172,7 @@ export default {
           return this.$store.dispatch('directDBConnection/ip/set', ipListWithNewIp);
         })
         .then(() => ({ isValid: true }))
-        .catch(errorData => ({ isValid: false, errorText: errorData.errors.ips.join('. ') }));
+        .catch(errorText => ({ isValid: false, errorText }));
     },
 
     onIPsChanged ({ removedElement }) {

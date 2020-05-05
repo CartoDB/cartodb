@@ -11,6 +11,7 @@ Development
 - UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
 
 ### Bug fixes / enhancements
+- More clear DB Direct Firewall error messages ([15652](https://github.com/CartoDB/cartodb/pull/15652))
 - Fix DB Direct instructions in certificate README ([15647]https://github.com/CartoDB/cartodb/pull/15647)
 - Fix Db Direct IPs Firewall management problem ([15641](https://github.com/CartoDB/cartodb/pull/15641))
 - Fix Db Direct Firewall management credentials problem ([#15640](https://github.com/CartoDB/cartodb/pull/15640))

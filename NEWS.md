@@ -12,6 +12,7 @@ Development
 
 ### Bug fixes / enhancements
 - Make DB Direct server_ca configurable ([15650](https://github.com/CartoDB/cartodb/pull/15650))
+- More clear DB Direct Firewall error messages ([15652](https://github.com/CartoDB/cartodb/pull/15652))
 - Normalize IP ranges applied to Firewall rules ([15649](https://github.com/CartoDB/cartodb/pull/15649))
 - Fix DB Direct instructions in certificate README ([15647]https://github.com/CartoDB/cartodb/pull/15647)
 - Fix Db Direct IPs Firewall management problem ([15641](https://github.com/CartoDB/cartodb/pull/15641))
@@ -21,6 +22,7 @@ Development
 - Clarify message at Organization's Auth settings
 - Improve performance of dependent visualizations ([#15632](https://github.com/CartoDB/cartodb/pull/15632))
 - Fix kepler.gl link in Maps section ([#15644](https://github.com/CartoDB/cartodb/issues/15644))
+- /api/v3/me endpoint returns less public data ([#5627](https://github.com/CartoDB/cartodb-platform/issues/5627))
 
 4.37.0 (2020-04-24)
 -------------------

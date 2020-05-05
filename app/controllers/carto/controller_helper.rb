@@ -19,6 +19,12 @@ module Carto
       status = error.status
       errors_cause = error.errors_cause
 
+      if error.headers.present?
+        error.headers.each do |header, value|
+          response.headers[header] = value
+        end
+      end
+
       respond_to do |format|
         format.html { render text: message, status: status }
         format.json { render json: { errors: message, errors_cause: errors_cause }, status: status }

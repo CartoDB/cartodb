@@ -49,7 +49,7 @@ module Carto
       VALIDITY_TYPE_DAYS = "DAYS".freeze
 
       def get_server_ca
-        # If not configured, the CA used to sign client certifivates will be used (handy for development)
+        # If not configured, the CA used to sign client certificates will be used (handy for development)
         return aws_get_ca_certificate_chain unless config['server_ca'].present? || config['server_ca'] == 'client_ca'
 
         # No server_ca file will be generated (it shouldn't be needed) if special value 'disabled' is used

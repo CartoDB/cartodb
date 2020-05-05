@@ -3,11 +3,14 @@ require 'aws-sdk-acmpca'
 require 'json'
 require 'securerandom'
 require 'sys_cmd'
+require 'google/apis/storage_v1'
 
 module Carto
   module Dbdirect
     # Private CA certificate manager for dbdirect
     class CertificateManager
+      GCP_AUTH_URL = 'https://www.googleapis.com/auth/cloud-platform'.freeze
+
       def initialize(config)
         @config = config
       end
@@ -57,7 +60,7 @@ module Carto
 
         # Otherwise the certificate chain should be stored and accessible through a url
         # TODO: cache based on URL (config['server_ca']) with TTL=?
-        open(config['server_ca']) { |io| io.read }
+        fetch config['server_ca']
       end
 
       def openssl_generate_key(passphrase)
@@ -193,6 +196,19 @@ module Carto
           raise msg
         end
         result
+      end
+
+      def fetch(url)
+        match = /\Ags:\/\/([^\/]+)\/(.+)\Z/.match(url)
+        if match
+          bucket = match[1]
+          path = match[2]
+          service = Google::Apis::StorageV1::StorageService.new
+          service.authorization = Google::Auth.get_application_default([GCP_AUTH_URL])
+          service.get_object(bucket, path, download_dest: StringIO.new).string
+        else
+          open(url) { |io| io.read }
+        end
       end
     end
   end

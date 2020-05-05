@@ -100,7 +100,7 @@ module Carto
 
   class FirewallNotReadyError < CartoError
     def initialize(message = "The IP changes couldn't be applied. Please try again.")
-      super(message, 500) # 504?
+      super(message, 429, headers: { 'Retry-After' => '5' })
     end
   end
 end

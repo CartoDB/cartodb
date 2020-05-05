@@ -12,6 +12,7 @@ Development
 
 ### Bug fixes / enhancements
 - More clear DB Direct Firewall error messages ([15652](https://github.com/CartoDB/cartodb/pull/15652))
+- Normalize IP ranges applied to Firewall rules ([15649](https://github.com/CartoDB/cartodb/pull/15649))
 - Fix DB Direct instructions in certificate README ([15647]https://github.com/CartoDB/cartodb/pull/15647)
 - Fix Db Direct IPs Firewall management problem ([15641](https://github.com/CartoDB/cartodb/pull/15641))
 - Fix Db Direct Firewall management credentials problem ([#15640](https://github.com/CartoDB/cartodb/pull/15640))

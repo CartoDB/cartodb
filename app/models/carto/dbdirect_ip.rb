@@ -80,12 +80,18 @@ module Carto
       )
     end
 
+    def normalize_ip(ip)
+      IpChecker.normalize(ip)
+    end
+
     def update_firewall(old_ips=nil, new_ips=nil)
       return unless self.class.firewall_enabled?
 
       old_ips ||= []
       new_ips ||= []
       return if old_ips.sort == new_ips.sort
+
+      new_ips = new_ips.map { |ip| normalize_ip(ip) }
 
       if new_ips.blank?
         self.class.firewall_manager.delete_rule(firewall_rule_name)

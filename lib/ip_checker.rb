@@ -62,6 +62,15 @@ module IpChecker
   rescue IPAddr::AddressFamilyError, IPAddr::InvalidAddressError => error
     error.message
   end
+
+  # Normalized IP ranges, so that IP bits outside the mask range are 0
+  # (some routers/firewalls may not accept it of not normalied)
+  def normalize(str)
+    ip = IPAddr.new(str)
+    norm_ip = ip.to_s
+    norm_ip += "/#{ip.prefix}" if ip.prefix < IPAddr.new(norm_ip).prefix
+    norm_ip
+  end
 end
 
 # Backport some IPAddr methods from Ruby 2.5

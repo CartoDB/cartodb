@@ -47,7 +47,7 @@
           :values="ipList"
           :fieldValidator="checkIfIPIsValid"
           :addElementToState="false"
-          @removeElement="onIPsChanged">
+          @removeElement="onIPRemoved">
           {{ $t('DBConnection.ipsSection.ipList.description') }}
           <a href="javascript:void(0)" @click="fillDeviceIPAddress">{{ $t('DBConnection.ipsSection.ipList.getCurrentIP') }}</a>.
         </InputList>
@@ -175,7 +175,7 @@ export default {
         .catch(errorText => ({ isValid: false, errorText }));
     },
 
-    onIPsChanged ({ removedElement }) {
+    onIPRemoved ({ removedElement }) {
       this.getCurrentIPs()
         .then(() => {
           const newIPList = new Set(this.ipList);

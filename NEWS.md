@@ -20,6 +20,7 @@ Development
 - Clarify message at Organization's Auth settings
 - Improve performance of dependent visualizations ([#15632](https://github.com/CartoDB/cartodb/pull/15632))
 - Fix kepler.gl link in Maps section ([#15644](https://github.com/CartoDB/cartodb/issues/15644))
+- /api/v3/me endpoint returns less public data ([#5627](https://github.com/CartoDB/cartodb-platform/issues/5627))
 
 4.37.0 (2020-04-24)
 -------------------

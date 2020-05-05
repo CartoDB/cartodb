@@ -27,7 +27,7 @@ module Carto
             client_key: key,
             client_crt: certificate
           }
-          certificates[:server_ca] = aws_get_ca_certificate_chain if server_ca
+          certificates[:server_ca] = get_server_ca if server_ca
           certificates[:client_key_pk8] = key_pk8 if pk8
         end
         [certificates, arn]
@@ -47,6 +47,18 @@ module Carto
       SIGNING_ALGORITHM = "SHA256WITHRSA".freeze
       TEMPLATE_ARN = "arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1".freeze
       VALIDITY_TYPE_DAYS = "DAYS".freeze
+
+      def get_server_ca
+        # If not configured, the CA used to sign client certifivates will be used (handy for development)
+        return aws_get_ca_certificate_chain unless config['server_ca'].present? || config['server_ca'] == 'client_ca'
+
+        # No server_ca file will be generated (it shouldn't be needed) if special value 'disabled' is used
+        return if config['server_ca'] == 'disabled'
+
+        # Otherwise the certificate chain should be stored and accessible through a url
+        # TODO: cache based on URL (config['server_ca']) with TTL=?
+        open(config['server_ca']) { |io| io.read }
+      end
 
       def openssl_generate_key(passphrase)
         key = OpenSSL::PKey::RSA.new 2048

@@ -15,10 +15,12 @@ Contents:
 * client.key. Matching private key file in RSA PEM format. On UNIX-like systems (Linux, Mac OS, ...)
  this file should be protected with: `chmod 0600 client.key`.
 * client.key.pk8. Matching private key file in DER PKCS #8 format.
+<% if server_ca_present %>
 * server_ca.pem. This certificate allows you to check the identity of CARTO's database server.
+<% end %>
 
 You'll need to configure your application to use TLS with client.key and client.crt
-(and optionally server_ca.pem) when connecting to your database.
+<% if server_ca_present %>(and optionally server_ca.pem)<% end %> when connecting to your database.
 
 Your database address (host server) is: <%= dbproxy_host %>
 And the TCP port is: <%= dbproxy_port %>
@@ -31,11 +33,19 @@ We advise you to generate specific keys and not to use your master API key.
 We advise against exposing your Master API Key since it allows unrestricted access to your database.
 
 Example: connect using psql:
+<% if server_ca_present %>
  psql "sslmode=verify-full sslrootcert=server_ca.pem \
      sslcert=client.crt sslkey=client.key \
      host=<%= dbproxy_host %> \
      port=<%= dbproxy_port %> \
      user=<%= username %>"
+<% else %>
+ psql "sslmode=require \
+     sslcert=client.crt sslkey=client.key \
+     host=<%= dbproxy_host %> \
+     port=<%= dbproxy_port %> \
+     user=<%= username %>"
+<% end %>
 
 Please note that this feature is a beta version still undergoing testing before an official release.
 

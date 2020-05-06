@@ -341,7 +341,7 @@ class ApplicationController < ActionController::Base
         return
       end
       format.json do
-        head :unauthorized
+        head :unauthorized and return
       end
     end
   end

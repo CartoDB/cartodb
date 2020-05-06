@@ -23,6 +23,7 @@ Development
 - Improve performance of dependent visualizations ([#15632](https://github.com/CartoDB/cartodb/pull/15632))
 - Fix kepler.gl link in Maps section ([#15644](https://github.com/CartoDB/cartodb/issues/15644))
 - /api/v3/me endpoint returns less public data ([#5627](https://github.com/CartoDB/cartodb-platform/issues/5627))
+- Retrieve IPs before adding or removing to avoid inconsistencies ([#15643](https://github.com/CartoDB/cartodb/pull/15643))
 
 4.37.0 (2020-04-24)
 -------------------

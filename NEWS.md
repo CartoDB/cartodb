@@ -11,6 +11,7 @@ Development
 
 ### Bug fixes / enhancements
 - Improve performance of dataset view with many maps ([#15627](https://github.com/CartoDB/cartodb/pull/15627))
+- Return error for requests whose authentication was succeeding with an expired session ([#15637](https://github.com/CartoDB/cartodb/pull/15637))
 
 4.37.0 (2020-04-24)
 -------------------

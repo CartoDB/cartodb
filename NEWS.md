@@ -24,6 +24,7 @@ Development
 - Fix kepler.gl link in Maps section ([#15644](https://github.com/CartoDB/cartodb/issues/15644))
 - /api/v3/me endpoint returns less public data ([#5627](https://github.com/CartoDB/cartodb-platform/issues/5627))
 - Retrieve IPs before adding or removing to avoid inconsistencies ([#15643](https://github.com/CartoDB/cartodb/pull/15643))
+- Faster geometry types calculation for big datasets ([#15654](https://github.com/CartoDB/cartodb/pull/15654))
 
 4.37.0 (2020-04-24)
 -------------------

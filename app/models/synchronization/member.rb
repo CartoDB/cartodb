@@ -558,14 +558,6 @@ module CartoDB
         @log = CartoDB::Log.where(log_attributes).first
       end
 
-      def valid_uuid?(text)
-        !!UUIDTools::UUID.parse(text)
-      rescue TypeError
-        false
-      rescue ArgumentError
-        false
-      end
-
       def get_datasource(datasource_name)
         begin
           datasource = DatasourcesFactory.get_datasource(datasource_name, user, {

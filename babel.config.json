@@ -1,0 +1,36 @@
+{
+  "presets": [
+    [
+      "@babel/env",
+      {
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ]
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-transform-classes",
+    "@babel/plugin-transform-object-assign",
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "corejs": 3
+      }
+    ]
+  ],
+  "sourceType": "unambiguous",
+  "env": {
+    "test": {
+      "presets": [
+        ["@babel/env"]
+      ],
+      "plugins": [
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-classes",
+        "@babel/plugin-transform-object-assign",
+        "@babel/plugin-transform-modules-commonjs"
+      ]
+    }
+  }
+}

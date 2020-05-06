@@ -34,7 +34,9 @@ describe Carto::Api::UsersController do
       CartoDB::Hubspot.any_instance.stubs(:enabled?).returns(true)
       CartoDB::Hubspot.any_instance.stubs(:token).returns('something')
 
-      get_json api_v3_users_me_url, @headers do |response|
+      params = { user_domain: @org_user_1.username, api_key: @org_user_1.api_key }
+
+      get_json api_v3_users_me_url(params), @headers do |response|
         expect(response.status).to eq(200)
         expect(response.body).to have_key(:config)
         expect(response.body[:config]).to have_key(:hubspot_form_ids)
@@ -124,8 +126,10 @@ describe Carto::Api::UsersController do
       it 'gets the date from the license' do
         Carto::Api::UsersController.any_instance.stubs(:license_expiration_date).returns(@expiration_date)
 
+        params = { user_domain: @org_user_1.username, api_key: @org_user_1.api_key }
+
         Cartodb.with_config(cartodb_com_hosted: true) do
-          get_json api_v3_users_me_url, @headers do |response|
+          get_json api_v3_users_me_url(params), @headers do |response|
             expect(response.status).to eq(200)
             expect(response.body[:license_expiration]).to eq "2020-11-05T00:00:00.000+00:00"
           end
@@ -147,7 +151,7 @@ describe Carto::Api::UsersController do
 
         get_json api_v3_users_me_url(@params), @headers do |response|
           expect(response.status).to eq(200)
-          expect(response.body[:is_enterprise]).to eq(false)
+          expect(response.body[:user_data][:is_enterprise]).to eq(false)
         end
       end
 
@@ -156,7 +160,7 @@ describe Carto::Api::UsersController do
 
         get_json api_v3_users_me_url(@params), @headers do |response|
           expect(response.status).to eq(200)
-          expect(response.body[:is_enterprise]).to eq(true)
+          expect(response.body[:user_data][:is_enterprise]).to eq(true)
         end
       end
     end

@@ -1,4 +1,4 @@
-# rubocop:disable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
+# rubocop:disable Layout/LineLength, Layout/ExtraSpacing, Layout/SpaceBeforeFirstArg
 
 # NOTES:
 # (/u/:user_domain)     -> This allows support of org-urls (support != enforcement)
@@ -92,6 +92,13 @@ CartoDB::Application.routes.draw do
       match '/kuviz/:id/protected', to: 'visualizations#show_protected', via: :post, as: :password_protected
       match '/kuviz/:id/protected', to: 'visualizations#show', via: :get
     end
+
+    namespace :app, path: '/' do
+      # Custom Visualizations
+      match '/app/:id', to: 'visualizations#show', via: :get, as: :show
+      match '/app/:id/protected', to: 'visualizations#show_protected', via: :post, as: :password_protected
+      match '/app/:id/protected', to: 'visualizations#show', via: :get
+    end
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -128,7 +135,8 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps' => 'visualizations#index', as: :oauth_apps_user
     get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/new' => 'visualizations#index', as: :oauth_apps_user_new
     get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/edit/:id' => 'visualizations#index', as: :oauth_apps_user_edit
-    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connected_apps' => 'visualizations#index', as: :connected_apps_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/app_permissions' => 'visualizations#index', as: :app_permissions_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connections' => 'visualizations#index', as: :connections_user
 
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
@@ -580,6 +588,12 @@ CartoDB::Application.routes.draw do
       put 'kuviz/:id', to: 'custom_visualizations#update', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_update_viz
       get 'kuviz', to: 'custom_visualizations#index', as: :api_v4_kuviz_list_vizs
 
+      # apps
+      post 'app', to: 'apps#create', as: :api_v4_app_create_viz
+      delete 'app/:id', to: 'apps#delete', constraints: { id: UUID_REGEXP }, as: :api_v4_app_delete_viz
+      put 'app/:id', to: 'apps#update', constraints: { id: UUID_REGEXP }, as: :api_v4_app_update_viz
+      get 'app', to: 'apps#index', as: :api_v4_app_list_vizs
+
       # OAuth apps
       resources :oauth_apps, only: [:index, :show, :create, :update, :destroy], constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps
       post 'oauth_apps/:id/regenerate_secret', to: 'oauth_apps#regenerate_secret', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_regenerate_secret
@@ -680,6 +694,11 @@ CartoDB::Application.routes.draw do
 
       get 'tags' => 'tags#index', as: :api_v3_users_tags
       get 'search_preview/:q' => 'search_preview#index', as: :api_v3_search_preview
+
+      scope 'dbdirect' do
+        resources :certificates, only: [:index, :show, :create, :destroy], controller: 'dbdirect_certificates', as: :dbdirect_certificates
+        resource :ip, only: [:show, :update, :destroy], controller: 'dbdirect_ips', as: :dbdirect_ip
+      end
     end
 
     scope 'v2/' do
@@ -741,4 +760,4 @@ CartoDB::Application.routes.draw do
   end
 end
 
-# rubocop:enable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
+# rubocop:enable Layout/LineLength, Layout/ExtraSpacing, Layout/SpaceBeforeFirstArg

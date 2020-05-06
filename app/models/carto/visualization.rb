@@ -39,8 +39,9 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
   TYPE_KUVIZ = 'kuviz'.freeze
+  TYPE_APP = 'app'.freeze
 
-  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ].freeze
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ, TYPE_APP].freeze
   MAP_TYPES = [TYPE_DERIVED, TYPE_KUVIZ].freeze
 
   KIND_GEOM   = 'geom'.freeze
@@ -96,7 +97,7 @@ class Carto::Visualization < ActiveRecord::Base
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }
   validates :type, inclusion: { in: VALID_TYPES }
-  validates :name, uniqueness: { scope: [:user_id, :type] }, if: :kuviz?
+  validates :name, uniqueness: { scope: [:user_id, :type] }, if: -> { kuviz? || app? }
   validate :validate_password_presence
   validate :validate_privacy_changes
   validate :validate_user_not_viewer, on: :create
@@ -319,6 +320,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def kuviz?
     type == TYPE_KUVIZ
+  end
+
+  def app?
+    type == TYPE_APP
   end
 
   def layers
@@ -634,7 +639,15 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def dependent_visualizations
-    user_table.try(:dependent_visualizations) || []
+    user_table&.dependent_visualizations || []
+  end
+
+  def faster_dependent_visualizations(limit: nil)
+    @faster_dependent_visualizations ||= user_table&.faster_dependent_visualizations(limit: limit)
+  end
+
+  def dependent_visualizations_count
+    user_table&.dependent_visualizations_count.to_i
   end
 
   def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)
@@ -823,7 +836,7 @@ class Carto::Visualization < ActiveRecord::Base
       @user = user
       @visualization = visualization
 
-      default_ttl = Cartodb.config[:watcher].present? ? Cartodb.config[:watcher].try("fetch", 'ttl', 60) : 60
+      default_ttl = Cartodb.get_config(:watcher, 'ttl') || 60
       @notification_ttl = notification_ttl.nil? ? default_ttl : notification_ttl
     end
 

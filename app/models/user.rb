@@ -127,6 +127,8 @@ class User < Sequel::Model
   end
 
   def validate_email
+    return unless new? || column_changed?(:email)
+
     validates_presence :email
     validates_unique   :email, message: 'is already taken'
     errors.add(:email, EmailAddress.error(email)) unless EmailAddress.valid?(email)
@@ -703,13 +705,12 @@ class User < Sequel::Model
   end
 
   def cartodb_avatar
-    if !Cartodb.config[:avatars].nil? &&
-       !Cartodb.config[:avatars]['base_url'].nil? && !Cartodb.config[:avatars]['base_url'].empty? &&
-       !Cartodb.config[:avatars]['kinds'].nil? && !Cartodb.config[:avatars]['kinds'].empty? &&
-       !Cartodb.config[:avatars]['colors'].nil? && !Cartodb.config[:avatars]['colors'].empty?
-      avatar_base_url = Cartodb.config[:avatars]['base_url']
-      avatar_kind = Cartodb.config[:avatars]['kinds'][Random.new.rand(0..Cartodb.config[:avatars]['kinds'].length - 1)]
-      avatar_color = Cartodb.config[:avatars]['colors'][Random.new.rand(0..Cartodb.config[:avatars]['colors'].length - 1)]
+    avatar_base_url = Cartodb.get_config(:avatars, 'base_url')
+    kinds = Cartodb.get_config(:avatars, 'kinds')
+    colors = Cartodb.get_config(:avatars, 'colors')
+    if avatar_base_url && kinds && colors
+      avatar_kind = kinds.sample
+      avatar_color = colors.sample
       return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
       CartoDB::Logger.info(message: "Attribute avatars_base_url not found in config. Using default avatar")

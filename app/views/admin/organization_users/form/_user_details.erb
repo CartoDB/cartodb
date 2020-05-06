@@ -1,0 +1,60 @@
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Username</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_field :username, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.new? } #{ 'has-error' if @user.errors[:username].present? }", :readonly => !@user.new? %>
+      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+        <% if (@user.errors[:username].present?) %>
+          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace">Username not valid</p>
+        <% elsif @user.new? %>
+          <p class="CDB-Text CDB-Size-small u-altTextColor">Once you choose the username, you won't be able to change it</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Email</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_field :email, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_email? } #{ 'has-error' if @user.errors[:email].present? }", readonly: !@user.can_change_email? %>
+      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+        <% if (@user.errors[:email].present?) %>
+          <p class="CDB-Text CDB-Size-small u-altTextColor FormAccount-rowInfoText--error">Email not valid</p>
+        <% elsif @user.new? %>
+          <p class="CDB-Text CDB-Size-small u-altTextColor">We encourage you to choose an email from your organization</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% if @organization.auth_username_password_enabled %>
+
+    <div class="VerticalAligned--FormRow">
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">New password</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= password_field_tag 'user[password]', nil, autocomplete: "off", :placeholder => "New password", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <% if (@user.errors[:password].present?) %>
+            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= @user.errors[:password].first%></p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Confirm password</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= password_field_tag 'user[password_confirmation]', nil, autocomplete: "off", :placeholder => "Confirm new password", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
+        </div>
+      </div>
+    </div>
+
+  <% end %>

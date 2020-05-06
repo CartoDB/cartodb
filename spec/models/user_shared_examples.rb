@@ -1049,7 +1049,7 @@ shared_examples_for "user models" do
     end
 
     it 'returns nil if the account does not have a trial' do
-      @user.account_type = 'CORONELLI'
+      @user.account_type = 'ENTERPRISE'
 
       expect(@user.trial_ends_at).to be_nil
     end
@@ -1148,6 +1148,16 @@ shared_examples_for "user models" do
       @user.created_at = Time.now - 1.day
 
       expect(@user.show_trial_reminder?).to be_false
+    end
+  end
+
+  describe '#organization_owner?' do
+    it 'returns false if the user does not have organization nor id' do
+      user = build_user
+      user.organization = nil
+      user.id = nil
+
+      expect(user.organization_owner?).to be_false
     end
   end
 end

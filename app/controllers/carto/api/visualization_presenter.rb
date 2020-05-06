@@ -58,11 +58,21 @@ module Carto
           poro[:related_canonical_visualizations_count] = @visualization.related_canonical_visualizations.count
         end
 
-        if with_dependent_visualizations > 0
-          dependencies = @visualization.dependent_visualizations
-          poro[:dependent_visualizations_count] = dependencies.count
-          limited_dependencies = most_recent_dependencies(dependencies, with_dependent_visualizations)
-          poro[:dependent_visualizations] = limited_dependencies.map do |dependent_visualization|
+        if with_dependent_visualizations.positive?
+          dependencies = []
+          dependencies_count = 0
+
+          if @current_viewer.has_feature_flag?('faster-dependencies')
+            dependencies = @visualization.faster_dependent_visualizations(limit: with_dependent_visualizations)
+            dependencies_count = @visualization.dependent_visualizations_count
+          else
+            dependencies = @visualization.dependent_visualizations
+            dependencies_count = dependencies.count
+            dependencies = most_recent_dependencies(dependencies, with_dependent_visualizations)
+          end
+
+          poro[:dependent_visualizations_count] = dependencies_count
+          poro[:dependent_visualizations] = dependencies.map do |dependent_visualization|
             VisualizationPresenter.new(dependent_visualization, @current_viewer, @context).to_summarized_poro
           end
         end
@@ -167,6 +177,7 @@ module Carto
         return unless organization
 
         return kuviz_url(@visualization) if @visualization.kuviz?
+        return app_url(@visualization) if @visualization.app?
 
         # When a visualization is private, checks of permissions need not only the Id but also the vis owner database schema
         # Logic on public_map route will handle permissions so here we only "namespace the id" when proceeds
@@ -192,6 +203,13 @@ module Carto
         org_name = visualization.user.organization.name
         username = visualization.user.username
         path = CartoDB.path(@context, 'kuviz_show', id: visualization.id)
+        "#{CartoDB.base_url(org_name, username)}#{path}"
+      end
+
+      def app_url(visualization)
+        org_name = visualization.user.organization.name
+        username = visualization.user.username
+        path = CartoDB.path(@context, 'app_show', id: visualization.id)
         "#{CartoDB.base_url(org_name, username)}#{path}"
       end
 
@@ -269,6 +287,10 @@ module Carto
                       user: @current_viewer)
         elsif @visualization.kuviz?
           CartoDB.url(@context, 'kuviz_show',
+                      params: { id: @visualization.id },
+                      user: @current_viewer)
+        elsif @visualization.app?
+          CartoDB.url(@context, 'app_show',
                       params: { id: @visualization.id },
                       user: @current_viewer)
         else

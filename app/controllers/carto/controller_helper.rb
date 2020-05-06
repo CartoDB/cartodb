@@ -7,7 +7,7 @@ module Carto
 
     def uuid_parameter(parameter)
       param = params[parameter]
-      if is_uuid?(param)
+      if uuid?(param)
         param
       else
         raise Carto::UUIDParameterFormatError.new(parameter: parameter, value: param)
@@ -18,6 +18,12 @@ module Carto
       message = error.message
       status = error.status
       errors_cause = error.errors_cause
+
+      if error.headers.present?
+        error.headers.each do |header, value|
+          response.headers[header] = value
+        end
+      end
 
       respond_to do |format|
         format.html { render text: message, status: status }
@@ -53,6 +59,7 @@ module Carto
       respond_to do |format|
         format.html { render text: message, status: 500 }
         format.json { render json: { errors: message }, status: 500 }
+        format.zip { render text: message, status: 500 }
       end
     end
 

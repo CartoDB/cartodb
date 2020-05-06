@@ -9,7 +9,7 @@
           </a>
         </li>
         <li class="Filters-typeItem">
-          <div class="FormAccount-title">
+          <div>
             <p class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%- title %></p>
           </div>
         </li>

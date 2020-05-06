@@ -16,10 +16,6 @@ class CommonDataSingleton
   end
 
   def cache_ttl
-    ttl = 0
-    if Cartodb.config[:common_data].present?
-      ttl = Cartodb.config[:common_data]['cache_ttl'] || ttl
-    end
-    ttl
+    Cartodb.get_config(:common_data, 'cache_ttl') || 0
   end
 end

@@ -18,7 +18,7 @@ FactoryGirl.define do
     password_confirmation  { email.split('@').first }
     table_quota            5
     quota_in_bytes         5000000
-    id                     { UUIDTools::UUID.timestamp_create.to_s }
+    id                     { Carto::UUIDHelper.random_uuid }
     builder_enabled        nil # Most tests still assume editor
 
     trait :admin_privileges do
@@ -84,7 +84,7 @@ FactoryGirl.define do
     api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
     table_quota nil
     quota_in_bytes 5000000
-    id { UUIDTools::UUID.timestamp_create.to_s }
+    id { Carto::UUIDHelper.random_uuid }
     builder_enabled nil # Most tests still assume editor
 
     before(:build) do |carto_user|

@@ -75,9 +75,9 @@ class ApplicationController < ActionController::Base
       end
     end
     @current_viewer
-  rescue Carto::ExpiredSessionError
+  rescue Carto::ExpiredSessionError => e
     request.reset_session
-    not_authorized
+    not_authorized(e)
   end
 
   protected
@@ -333,7 +333,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def not_authorized
+  def not_authorized(exception = nil)
     respond_to do |format|
       format.html do
         session[:return_to] = request.url
@@ -341,7 +341,8 @@ class ApplicationController < ActionController::Base
         return
       end
       format.json do
-        head :unauthorized and return
+        render(json: { errors: exception&.message }, status: :unauthorized)
+        return
       end
     end
   end

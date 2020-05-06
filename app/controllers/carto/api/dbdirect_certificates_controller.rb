@@ -92,7 +92,8 @@ module Carto
           certificate_name: certificate_name,
           username: username,
           dbproxy_host: dbproxy_host,
-          dbproxy_port: dbproxy_port
+          dbproxy_port: dbproxy_port,
+          server_ca_present: server_ca.present?
         )
         filename = "#{certificate_name}.zip"
 

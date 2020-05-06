@@ -602,7 +602,7 @@ feature "Superadmin's users API" do
       end
 
       after(:each) do
-        $users_metadata.del("do_settings:#{@user.username}:#{@user.api_key}")
+        $users_metadata.del("do_settings:#{@user.username}")
       end
 
       it 'gcloud settings are updated in redis' do
@@ -628,7 +628,7 @@ feature "Superadmin's users API" do
           response.status.should == 204
         end
 
-        redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}:#{@user.api_key}").symbolize_keys
+        redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}").symbolize_keys
 
         redis_gcloud_settings[:service_account].should == expected_gcloud_settings[:service_account]
         redis_gcloud_settings[:bq_public_project].should == expected_gcloud_settings[:bq_public_project]
@@ -640,7 +640,7 @@ feature "Superadmin's users API" do
 
       it 'gclouds settings are set to blank when receiving empty hash' do
         dummy_settings = { bq_project: 'dummy_project' }
-        $users_metadata.hmset("do_settings:#{@user.username}:#{@user.api_key}", *dummy_settings.to_a)
+        $users_metadata.hmset("do_settings:#{@user.username}", *dummy_settings.to_a)
 
         payload = {
           user: {
@@ -651,13 +651,13 @@ feature "Superadmin's users API" do
           response.status.should == 204
         end
 
-        redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}:#{@user.api_key}")
+        redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}")
         redis_gcloud_settings.should == {}
       end
 
       it 'An update without gcloud settings do not affect them' do
         expected_settings = { bq_project: 'dummy_project' }
-        $users_metadata.hmset("do_settings:#{@user.username}:#{@user.api_key}", *expected_settings.to_a)
+        $users_metadata.hmset("do_settings:#{@user.username}", *expected_settings.to_a)
 
         payload = {
           user: {
@@ -668,7 +668,7 @@ feature "Superadmin's users API" do
           response.status.should == 204
         end
 
-        redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}:#{@user.api_key}").symbolize_keys
+        redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}").symbolize_keys
         redis_gcloud_settings.should == expected_settings
       end
 
@@ -682,7 +682,7 @@ feature "Superadmin's users API" do
           response.status.should == 204
         end
 
-        keys = $users_metadata.keys("do_settings:#{@user.username}:*")
+        keys = $users_metadata.keys("do_settings:*")
         keys.should be_empty
       end
     end

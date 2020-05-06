@@ -274,6 +274,7 @@ class Carto::VisualizationQueryBuilder
   def with_dependent_visualization_count(query)
     return query unless @order && @order.include?("dependent_visualizations")
 
+    with_prefetch_dependent_visualizations
     Carto::VisualizationQueryIncluder.new(query).include_dependent_visualization_count(@filtering_params)
   end
 

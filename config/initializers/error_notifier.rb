@@ -11,8 +11,12 @@ Rollbar.configure do |config|
   # via the rollbar interface.
   # Valid levels: 'critical', 'error', 'warning', 'info', 'debug', 'ignore'
   # 'ignore' will cause the exception to not be reported at all.
+  info_errors = ['error creating usertable']
   config.exception_level_filters.merge!(
-    'ActionController::RoutingError' => 'ignore'
+    'ActionController::RoutingError' => 'ignore',
+    'ActiveRecord::RecordInvalid' => lambda do
+      |error| info_errors.any? { |message| error.to_s.downcase.include?(message) ? 'info' : 'error' }
+    end
   )
 end
 

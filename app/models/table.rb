@@ -1288,17 +1288,34 @@ class Table
 
   def query_geometry_types
     # We do not query the DB, if the_geom does not exist we just recover
-    begin
-      owner.in_database[ %Q{
-        SELECT DISTINCT ST_GeometryType(the_geom) FROM (
-          SELECT the_geom
+    query = owner.has_feature_flag?('faster-geometry-types') ? faster_distinct_geometry_sql : old_distinct_geometry_sql
+    owner.in_database[query].all.map { |r| r[:st_geometrytype] }
+  rescue StandardError
+    []
+  end
+
+  def old_distinct_geometry_sql
+    %{
+      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+        SELECT the_geom
         FROM #{qualified_table_name}
-          WHERE (the_geom is not null) LIMIT 10
-        ) as foo
-      }].all.map {|r| r[:st_geometrytype] }
-    rescue
-      []
-    end
+        WHERE (the_geom is not null) LIMIT 10
+      ) as foo
+    }
+  end
+
+  def faster_distinct_geometry_sql
+    %{
+      SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+        SELECT the_geom
+        FROM (
+          SELECT the_geom
+          FROM #{qualified_table_name}
+          LIMIT 10000
+        )
+        WHERE (the_geom is not null) LIMIT 10
+      ) as foo
+    }
   end
 
   def cache

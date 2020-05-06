@@ -75,6 +75,9 @@ class ApplicationController < ActionController::Base
       end
     end
     @current_viewer
+  rescue Carto::ExpiredSessionError
+    request.reset_session
+    not_authorized
   end
 
   protected

@@ -3,11 +3,14 @@ require 'aws-sdk-acmpca'
 require 'json'
 require 'securerandom'
 require 'sys_cmd'
+require 'google/apis/storage_v1'
 
 module Carto
   module Dbdirect
     # Private CA certificate manager for dbdirect
     class CertificateManager
+      GCP_AUTH_URL = 'https://www.googleapis.com/auth/cloud-platform'.freeze
+
       def initialize(config)
         @config = config
       end
@@ -27,7 +30,7 @@ module Carto
             client_key: key,
             client_crt: certificate
           }
-          certificates[:server_ca] = aws_get_ca_certificate_chain if server_ca
+          certificates[:server_ca] = get_server_ca if server_ca
           certificates[:client_key_pk8] = key_pk8 if pk8
         end
         [certificates, arn]
@@ -47,6 +50,18 @@ module Carto
       SIGNING_ALGORITHM = "SHA256WITHRSA".freeze
       TEMPLATE_ARN = "arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1".freeze
       VALIDITY_TYPE_DAYS = "DAYS".freeze
+
+      def get_server_ca
+        # If not configured, the CA used to sign client certificates will be used (handy for development)
+        return aws_get_ca_certificate_chain unless config['server_ca'].present? || config['server_ca'] == 'client_ca'
+
+        # No server_ca file will be generated (it shouldn't be needed) if special value 'disabled' is used
+        return if config['server_ca'] == 'disabled'
+
+        # Otherwise the certificate chain should be stored and accessible through a url
+        # TODO: cache based on URL (config['server_ca']) with TTL=?
+        fetch config['server_ca']
+      end
 
       def openssl_generate_key(passphrase)
         key = OpenSSL::PKey::RSA.new 2048
@@ -145,12 +160,15 @@ module Carto
       end
 
       def with_aws_credentials(&blk)
-        with_env(
-          AWS_ACCESS_KEY_ID:     config['aws_access_key_id'],
-          AWS_SECRET_ACCESS_KEY: config['aws_secret_key'],
-          AWS_DEFAULT_REGION:    config['aws_region'],
-          &blk
-        )
+        prev_config = Aws.config
+        Aws.config = {
+          access_key_id: config['aws_access_key_id'],
+          secret_access_key: config['aws_secret_key'],
+          region: config['aws_region']
+        }
+        blk.call
+      ensure
+        Aws.config = prev_config
       end
 
       def with_env(vars)
@@ -178,6 +196,19 @@ module Carto
           raise msg
         end
         result
+      end
+
+      def fetch(url)
+        match = /\Ags:\/\/([^\/]+)\/(.+)\Z/.match(url)
+        if match
+          bucket = match[1]
+          path = match[2]
+          service = Google::Apis::StorageV1::StorageService.new
+          service.authorization = Google::Auth.get_application_default([GCP_AUTH_URL])
+          service.get_object(bucket, path, download_dest: StringIO.new).string
+        else
+          open(url) { |io| io.read }
+        end
       end
     end
   end

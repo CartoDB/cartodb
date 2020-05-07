@@ -80,8 +80,9 @@ module Carto
 
           vqb.with_privacy(privacy) unless privacy.nil?
 
-          vqb.with_prefetch_dependent_visualizations if with_dependent_visualizations > 0
-
+          if with_dependent_visualizations.positive? && !current_user.has_feature_flag?('faster-dependencies')
+            vqb.with_prefetch_dependent_visualizations
+          end
         else
           user = Carto::User.where(username: CartoDB.extract_subdomain(request)).first
           raise Carto::ParamInvalidError.new(:username) unless user.present?

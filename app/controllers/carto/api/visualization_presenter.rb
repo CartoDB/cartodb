@@ -58,11 +58,21 @@ module Carto
           poro[:related_canonical_visualizations_count] = @visualization.related_canonical_visualizations.count
         end
 
-        if with_dependent_visualizations > 0
-          dependencies = @visualization.dependent_visualizations
-          poro[:dependent_visualizations_count] = dependencies.count
-          limited_dependencies = most_recent_dependencies(dependencies, with_dependent_visualizations)
-          poro[:dependent_visualizations] = limited_dependencies.map do |dependent_visualization|
+        if with_dependent_visualizations.positive?
+          dependencies = []
+          dependencies_count = 0
+
+          if @current_viewer.has_feature_flag?('faster-dependencies')
+            dependencies = @visualization.faster_dependent_visualizations(limit: with_dependent_visualizations)
+            dependencies_count = @visualization.dependent_visualizations_count
+          else
+            dependencies = @visualization.dependent_visualizations
+            dependencies_count = dependencies.count
+            dependencies = most_recent_dependencies(dependencies, with_dependent_visualizations)
+          end
+
+          poro[:dependent_visualizations_count] = dependencies_count
+          poro[:dependent_visualizations] = dependencies.map do |dependent_visualization|
             VisualizationPresenter.new(dependent_visualization, @current_viewer, @context).to_summarized_poro
           end
         end

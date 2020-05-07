@@ -1,4 +1,4 @@
-# rubocop:disable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
+# rubocop:disable Layout/LineLength, Layout/ExtraSpacing, Layout/SpaceBeforeFirstArg
 
 # NOTES:
 # (/u/:user_domain)     -> This allows support of org-urls (support != enforcement)
@@ -135,7 +135,8 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps' => 'visualizations#index', as: :oauth_apps_user
     get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/new' => 'visualizations#index', as: :oauth_apps_user_new
     get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/edit/:id' => 'visualizations#index', as: :oauth_apps_user_edit
-    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connected_apps' => 'visualizations#index', as: :connected_apps_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/app_permissions' => 'visualizations#index', as: :app_permissions_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connections' => 'visualizations#index', as: :connections_user
 
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
@@ -759,4 +760,4 @@ CartoDB::Application.routes.draw do
   end
 end
 
-# rubocop:enable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
+# rubocop:enable Layout/LineLength, Layout/ExtraSpacing, Layout/SpaceBeforeFirstArg

@@ -9,7 +9,6 @@ module Carto
 
     def initialize(user, attributes)
       @username = user.username
-      @api_key = user.api_key
       @attributes = attributes
     end
 
@@ -37,7 +36,7 @@ module Carto
     end
 
     def key
-      "#{REDIS_PREFIX}:#{@username}:#{@api_key}"
+      "#{REDIS_PREFIX}:#{@username}"
     end
   end
 end

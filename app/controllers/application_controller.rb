@@ -68,7 +68,7 @@ class ApplicationController < ActionController::Base
         if current_user_present.nil?
           unless authenticated_usernames.first.nil?
             user = ::User.where(username: authenticated_usernames.first).first
-            Carto::AuthenticationManager.validate_session(warden, request, user, false) unless user.nil?
+            Carto::AuthenticationManager.validate_session(warden, request, user) unless user.nil?
             @current_viewer = user
           end
         end

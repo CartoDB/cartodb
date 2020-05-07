@@ -1,10 +1,10 @@
 module Carto
   class AuthenticationManager
 
-    def self.validate_session(warden_context, request, user, reset_session_on_error = true)
+    def self.validate_session(warden_context, request, user)
       return true if session_security_token_valid?(warden_context, user)
 
-      request.reset_session if reset_session_on_error
+      request.reset_session
       false
     end
 

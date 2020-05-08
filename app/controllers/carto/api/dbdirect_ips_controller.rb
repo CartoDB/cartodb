@@ -1,7 +1,6 @@
 module Carto
   module Api
     class DbdirectIpsController < ::Api::ApplicationController
-      include Carto::ControllerHelper
       extend Carto::DefaultRescueFroms
 
       ssl_required :show, :update, :destroy

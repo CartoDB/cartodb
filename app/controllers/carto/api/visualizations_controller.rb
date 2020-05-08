@@ -18,7 +18,6 @@ module Carto
       include VisualizationSearcher
       include PagedSearcher
       include Carto::UUIDHelper
-      include Carto::ControllerHelper
       include VisualizationsControllerHelper
       include Carto::VisualizationMigrator
 

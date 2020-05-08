@@ -2,7 +2,6 @@ module Carto
   module Api
     module Public
       class DataObservatoryController < Carto::Api::Public::ApplicationController
-        include Carto::ControllerHelper
         include Carto::Api::PagedSearcher
         extend Carto::DefaultRescueFroms
 

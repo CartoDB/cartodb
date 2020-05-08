@@ -405,6 +405,8 @@ class Organization < Sequel::Model
   end
 
   def admin?(user)
+    return false unless user
+
     user.belongs_to_organization?(self) && user.organization_admin?
   end
 

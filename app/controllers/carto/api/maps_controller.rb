@@ -1,8 +1,6 @@
 module Carto
   module Api
     class MapsController < ::Api::ApplicationController
-      include Carto::ControllerHelper
-
       ssl_required :show, :update
 
       before_filter :load_map, :owners_only

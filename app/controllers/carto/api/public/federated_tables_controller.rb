@@ -3,7 +3,6 @@ module Carto
     module Public
       class FederatedTablesController < Carto::Api::Public::ApplicationController
         include Carto::Api::PagedSearcher
-        include Carto::ControllerHelper
         extend Carto::DefaultRescueFroms
 
         VALID_ORDER_PARAMS_FEDERATED_SERVER = %i(federated_server_name).freeze

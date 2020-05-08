@@ -1,8 +1,6 @@
 module Carto
   module Api
     class OrganizationAssetsController < ::Api::ApplicationController
-      include Carto::ControllerHelper
-
       ssl_required :index, :show, :create, :destroy
 
       before_filter :load_organization,

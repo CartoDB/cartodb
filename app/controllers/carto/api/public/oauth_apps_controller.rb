@@ -6,7 +6,6 @@ module Carto
     module Public
       class OauthAppsController < Carto::Api::Public::ApplicationController
         include Carto::Api::PagedSearcher
-        include Carto::ControllerHelper
         extend Carto::DefaultRescueFroms
 
         ssl_required

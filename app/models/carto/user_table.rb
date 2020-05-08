@@ -117,7 +117,7 @@ module Carto
     end
 
     def accessible_dependent_derived_maps
-      affected_visualizations.select { |v| (v.has_read_permission?(user) && v.derived?) ? v : nil }
+      affected_visualizations.select { |v| v.has_read_permission?(user) && v.derived? ? v : nil }
     end
 
     def partially_dependent_visualizations
@@ -126,6 +126,35 @@ module Carto
 
     def dependent_visualizations
       affected_visualizations.select { |v| v.dependent_on?(self) }
+    end
+
+    def faster_dependent_visualizations(limit: nil)
+      query = %{
+        SELECT * FROM (
+          SELECT DISTINCT ON (visualizations.id) *
+          FROM layers_user_tables, layers_maps, visualizations
+          WHERE layers_user_tables.user_table_id = '#{id}'
+          AND layers_user_tables.layer_id = layers_maps.layer_id
+          AND layers_maps.map_id = visualizations.map_id
+          AND visualizations.type = 'derived'
+        ) v
+        ORDER BY v.updated_at DESC
+      }
+      query = query + " LIMIT(#{limit})" if limit
+      Carto::Visualization.find_by_sql(query)
+    end
+
+    def dependent_visualizations_count
+      query = %{
+        SELECT count(distinct(visualizations.id))
+        FROM layers_user_tables, layers_maps, visualizations
+        WHERE layers_user_tables.user_table_id = '#{id}'
+        AND layers_user_tables.layer_id = layers_maps.layer_id
+        AND layers_maps.map_id = visualizations.map_id
+        AND visualizations.type = 'derived'
+      }
+      result = ActiveRecord::Base.connection.execute(query)
+      result.first['count'].to_i
     end
 
     def affected_visualizations

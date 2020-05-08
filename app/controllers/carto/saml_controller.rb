@@ -2,7 +2,6 @@ require_dependency 'carto/controller_helper'
 
 module Carto
   class SamlController < ApplicationController
-    include Carto::ControllerHelper
 
     ssl_required  :metadata
     before_filter :load_organization, :ensure_saml_enabled

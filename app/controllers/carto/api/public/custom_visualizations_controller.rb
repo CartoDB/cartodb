@@ -2,7 +2,6 @@ require_relative '../visualization_searcher'
 require_relative '../paged_searcher'
 
 class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::ApplicationController
-  include Carto::ControllerHelper
   include Carto::Api::VisualizationSearcher
   include Carto::Api::PagedSearcher
 

@@ -1,8 +1,6 @@
 require_dependency 'carto/controller_helper'
 
 class Carto::Api::SearchPreviewController < ::Api::ApplicationController
-  include Carto::ControllerHelper
-
   ssl_required
 
   before_filter :login_required

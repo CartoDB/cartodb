@@ -176,9 +176,9 @@ export default {
     },
 
     onIPRemoved ({ removedElement }) {
-      this.getCurrentIPs()
-        .then(() => {
-          const newIPList = new Set(this.ipList);
+      return this.$store.state.client.directDBConnection().getIPs(
+        (_1, _2, data) => {
+          const newIPList = new Set(data.ips);
           newIPList.delete(removedElement);
 
           this.$store.dispatch('directDBConnection/ip/set', Array.from(newIPList));

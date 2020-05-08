@@ -3,7 +3,6 @@ require 'in_mem_zipper'
 module Carto
   module Api
     class DbdirectCertificatesController < ::Api::ApplicationController
-      include Carto::ControllerHelper
       extend Carto::DefaultRescueFroms
 
       skip_before_filter :verify_authenticity_token, only: [:create], if: :zip_formatted_request?

@@ -1,8 +1,6 @@
 module Carto
   module Api
     class WidgetsController < ::Api::ApplicationController
-      include Carto::ControllerHelper
-
       ssl_required :show, :create, :update, :destroy, :update_many
 
       before_filter :load_map

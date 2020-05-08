@@ -100,6 +100,7 @@ describe Carto::Api::OrganizationUsersController do
 
   before(:each) do
     @old_soft_limits = soft_limits(@organization.owner)
+
     @old_whitelisted_email_domains = @organization.whitelisted_email_domains
   end
 
@@ -951,6 +952,24 @@ describe Carto::Api::OrganizationUsersController do
       login(@org_user_1)
 
       get api_v2_organization_users_index_url(id_or_name: @organization.name)
+      last_response.status.should == 401
+    end
+
+    it 'returns 401 when session is not valid' do
+      organization = create_organization_with_owner
+      user = FactoryGirl.create(:valid_user, organization: organization, org_admin: true)
+
+      login_response = post_session(user: user, password: 'kkkkkkkkk', organization: organization)
+      set_cookies_for_next_request(login_response)
+
+      get api_v2_organization_users_index_url(id_or_name: organization.name)
+      last_response.status.should == 200
+
+      user.invalidate_all_sessions!
+
+      set_cookies_for_next_request(login_response)
+
+      get api_v2_organization_users_index_url(id_or_name: organization.name)
       last_response.status.should == 401
     end
 

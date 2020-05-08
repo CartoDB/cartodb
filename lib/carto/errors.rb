@@ -34,6 +34,12 @@ module Carto
     end
   end
 
+  class ExpiredSessionError < CartoError
+    def initialize(message = "Your session has expired.", status = 401)
+      super(message, status)
+    end
+  end
+
   class UnauthorizedError < CartoError
     def initialize(message = "You don't have permission to access that resource", status = 403)
       super(message, status)

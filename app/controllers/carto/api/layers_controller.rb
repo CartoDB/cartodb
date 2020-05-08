@@ -4,8 +4,6 @@ require_dependency 'carto/uuidhelper'
 module Carto
   module Api
     class LayersController < ::Api::ApplicationController
-      include Carto::ControllerHelper
-
       ssl_required :show, :layers_by_map, :custom_layers_by_user, :map_index, :user_index, :map_show, :user_show,
                    :map_create, :user_create, :map_update, :user_update, :map_destroy, :user_destroy
 

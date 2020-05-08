@@ -5,7 +5,6 @@ module Carto
 
     class GrantablesController < ::Api::ApplicationController
       include PagedSearcher
-      include Carto::ControllerHelper
 
       respond_to :json
 
@@ -46,5 +45,3 @@ module Carto
 
   end
 end
-
-

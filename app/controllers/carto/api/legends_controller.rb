@@ -1,8 +1,6 @@
 module Carto
   module Api
     class LegendsController < ::Api::ApplicationController
-      include Carto::ControllerHelper
-
       ssl_required :index, :show, :create, :update, :destroy
 
       before_filter :load_layer,

@@ -3,7 +3,6 @@ require_dependency 'cartodb/central'
 require_dependency 'helpers/organization_notifications_helper'
 
 class Carto::Admin::MobileAppsController < Admin::AdminController
-  include Carto::ControllerHelper
   include MobileAppsHelper
   include AvatarHelper
   include OrganizationNotificationsHelper

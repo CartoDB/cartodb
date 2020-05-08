@@ -191,7 +191,7 @@ Layout/SpaceInsideParens:
 Layout/SpaceInsideRangeLiteral:
   Enabled: true
 
-Layout/Tab:
+Layout/IndentationStyle:
   Enabled: true
 
 Layout/TrailingWhitespace:

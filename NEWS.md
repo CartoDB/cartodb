@@ -28,6 +28,7 @@ Development
 - Faster geometry types calculation for big datasets ([#15654](https://github.com/CartoDB/cartodb/pull/15654))
 - Return error for requests whose authentication was succeeding with an expired session ([#15637](https://github.com/CartoDB/cartodb/pull/15637))
 - Fix signup with multiple active invitations ([#15629](https://github.com/CartoDB/cartodb/pull/15629))
+- Restore twitter connector for those having their own credentials ([#15656](https://github.com/CartoDB/cartodb/pull/15656))
 
 4.37.0 (2020-04-24)
 -------------------

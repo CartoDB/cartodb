@@ -129,6 +129,70 @@ describe Carto::UserCreation do
       saved_user.enable_account_token.should be_nil
     end
 
+    it 'does create an account if user had and invitation' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService
+        .any_instance.stubs(:enable_remote_db_user)
+        .returns(true)
+
+      user_data = FactoryGirl.build(
+        :valid_user,
+        organization: @organization,
+        google_sign_in: false
+      )
+
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner,
+                                                [user_data.email],
+                                                'Welcome!',
+                                                false)
+      invitation.save
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.with_invitation_token(invitation.token(user_data.email))
+      user_creation.save
+
+      user_creation = Carto::UserCreation.find(user_creation.id)
+      user_creation.next_creation_step! until user_creation.finished?
+      user_creation.reload
+
+      user_creation.state.should eq('success')
+    end
+
+    it 'does create an account if user had multiple invitations' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService
+        .any_instance.stubs(:enable_remote_db_user)
+        .returns(true)
+
+      user_data = FactoryGirl.build(
+        :valid_user,
+        organization: @organization,
+        google_sign_in: false
+      )
+
+      # Dismissed invitations
+      4.times do
+        Carto::Invitation.create_new(
+          @carto_org_user_owner, [user_data.email], 'Welcome!', false
+        ).save
+      end
+
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner,
+                                                [user_data.email], 'Welcome!',
+                                                false)
+      invitation.save
+
+      user_creation = Carto::UserCreation.new_user_signup(user_data)
+      user_creation.with_invitation_token(invitation.token(user_data.email))
+      user_creation.save
+
+      user_creation = Carto::UserCreation.find(user_creation.id)
+      user_creation.next_creation_step! until user_creation.finished?
+      user_creation.reload
+
+      user_creation.state.should eq('success')
+    end
+
     it 'with viewer invitations creates viewer users' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)

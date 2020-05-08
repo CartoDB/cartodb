@@ -62,7 +62,7 @@ module Carto
           dependencies = []
           dependencies_count = 0
 
-          if @current_viewer.has_feature_flag?('faster-dependencies')
+          if @current_viewer&.has_feature_flag?('faster-dependencies')
             dependencies = @visualization.faster_dependent_visualizations(limit: with_dependent_visualizations)
             dependencies_count = @visualization.dependent_visualizations_count
           else

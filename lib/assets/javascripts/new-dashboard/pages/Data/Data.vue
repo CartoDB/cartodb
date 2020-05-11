@@ -1,13 +1,14 @@
 <template>
   <Page class="page--data">
     <SecondaryNavigation v-if="showDataCatalog">
-      <div class="tabs">
+      <div class="tabs" :style="{ width: '100%' }">
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
           <span>{{ $t('DataPage.tabs.yourDatasets') }}</span>
         </router-link>
         <router-link :to="{ name: 'catalog' }" class="tabs__item title is-small" active-class="is-active">
           <span>{{ $t('DataPage.tabs.catalog') }}</span>
         </router-link>
+        <router-link :to="{ name: 'do-catalog' }" class="tabs__item title is-small" active-class="is-active" :style="{ marginLeft: 'auto' }">DO Catalog</router-link>
       </div>
     </SecondaryNavigation>
     <router-view></router-view>
@@ -35,7 +36,8 @@ export default {
       return isAllowed(this.$route.params.filter);
     },
     showDataCatalog () {
-      return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+      //return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+      return true;
     }
   }
 };

@@ -99,6 +99,7 @@
     "browserify-resolutions": "1.1.0",
     "cartoassets": "CartoDB/CartoAssets#master",
     "colors": "1.1.2",
+    "common-ui": "git+ssh://git@github.com/CartoDB/common-ui.git#feature/ch69082/environment",
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
     "csswring": "^3.0.5",

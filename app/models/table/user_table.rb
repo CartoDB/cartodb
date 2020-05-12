@@ -75,14 +75,12 @@ class UserTable < Sequel::Model
                         left_key:   :user_table_id,
                         right_key:  :layer_id,
                         reciprocal: :user_tables
-  one_to_one   :automatic_geocoding, key: :table_id
   one_to_many  :geocodings, key: :table_id
   many_to_one  :data_import, key: :data_import_id
   many_to_one  :user
 
   plugin :association_dependencies, map:                  :destroy,
-                                    layers:               :nullify,
-                                    automatic_geocoding:  :destroy
+                                    layers:               :nullify
   plugin :dirty
 
   def_delegators :relator, :affected_visualizations, :synchronization
@@ -215,6 +213,8 @@ class UserTable < Sequel::Model
     @fully_dependent_visualizations_cache = fully_dependent_visualizations.to_a
     @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
 
+    automatic_geocoding&.destroy
+
     super
   end
 
@@ -335,6 +335,10 @@ class UserTable < Sequel::Model
   def is_owner?(user)
     return false unless user
     user_id == user.id
+  end
+
+  def automatic_geocoding
+    Carto::AutomaticGeocoding.find_by_table_id(id)
   end
 
   private

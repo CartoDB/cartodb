@@ -296,6 +296,8 @@ class ApplicationController < ActionController::Base
   def optional_api_authorization
     got_auth = authenticate(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
     Carto::AuthenticationManager.validate_session(warden, request, current_user) if got_auth
+  rescue Carto::ExpiredSessionError => e
+    not_authorized(e)
   end
 
   def redirect_or_forbidden(path, error)

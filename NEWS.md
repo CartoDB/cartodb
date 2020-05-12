@@ -11,6 +11,7 @@ Development
 - UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
 
 ### Bug fixes / enhancements
+- Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564))
 - Make DB Direct server_ca configurable ([15650](https://github.com/CartoDB/cartodb/pull/15650))
 - More clear DB Direct Firewall error messages ([15652](https://github.com/CartoDB/cartodb/pull/15652))
 - Normalize IP ranges applied to Firewall rules ([15649](https://github.com/CartoDB/cartodb/pull/15649))
@@ -142,7 +143,7 @@ sudo make install
 ```
 
 ### Features
-- Add pubsub connection to publish metrics events ([#15389](hhttps://github.com/CartoDB/cartodb/pull/15389))
+- Add pubsub connection to publish metrics events ([#15389](https://github.com/CartoDB/cartodb/pull/15389))
 - Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
 
 ### Bug fixes / enhancements

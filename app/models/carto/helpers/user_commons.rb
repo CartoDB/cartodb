@@ -25,6 +25,8 @@ module Carto::UserCommons
 
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
+  REJECT_LOGGING_ATTRIBUTES = %i[crypted_password email database_name api_key company phone industry job_role
+                                 password_reset_token company_employees use_case session_salt]
 
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
@@ -235,5 +237,17 @@ module Carto::UserCommons
 
   def role_display
     viewer ? 'viewer' : 'builder'
+  end
+
+  def logging_attrs
+    if self.respond_to?(:attributes)
+      # AR
+      attrs = attributes.symbolize_keys
+    else
+      # Sequel
+      attrs = to_hash
+    end
+
+    attrs.except(*REJECT_LOGGING_ATTRIBUTES)
   end
 end

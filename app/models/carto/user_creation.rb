@@ -166,14 +166,14 @@ class Carto::UserCreation < ActiveRecord::Base
     @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
   end
 
+  def valid_invitation
+    @valid_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_valid_email(email).all)
+  end
+
   private
 
   def enabled?
     cartodb_user.enable_account_token.nil? && cartodb_user.enabled
-  end
-
-  def valid_invitation
-    select_valid_invitation_token(Carto::Invitation.query_with_valid_email(email).all)
   end
 
   # Returns the first matching token invitation, and raises error if none is found
@@ -236,8 +236,8 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.org_admin = org_admin if org_admin
     @cartodb_user.last_password_change_date = last_password_change_date unless last_password_change_date.nil?
 
-    if pertinent_invitation
-      @cartodb_user.viewer = pertinent_invitation.viewer
+    if valid_invitation
+      @cartodb_user.viewer = valid_invitation.viewer
     end
 
     @cartodb_user

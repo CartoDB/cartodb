@@ -12,6 +12,7 @@ namespace :cartodb do
       ::User.all.each do |user|
         if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
             FeatureFlagsUser.new(feature_flag_id: ff.id, user_id: user.id).save
+            track_feature_flag_state(user.id, args[:feature], 'enabled')
         end
       end
     end
@@ -29,6 +30,7 @@ namespace :cartodb do
 
       if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
         FeatureFlagsUser.new(feature_flag_id: ff.id, user_id: user.id).save
+        track_feature_flag_state(user.id, args[:feature], 'enabled')
       else
         puts "[INFO]  Feature '#{args[:feature]}' was already enabled for user '#{args[:username]}'"
       end
@@ -48,6 +50,7 @@ namespace :cartodb do
       organization.users.each do |user|
         if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
             FeatureFlagsUser.new(feature_flag_id: ff.id, user_id: user.id).save
+            track_feature_flag_state(user.id, args[:feature], 'enabled')
         end
       end
     end
@@ -83,6 +86,7 @@ namespace :cartodb do
         puts "[INFO]  Feature '#{args[:feature]}' was already disabled for user '#{args[:username]}'"
       else
         FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].destroy
+        track_feature_flag_state(user.id, args[:feature], 'disabled')
       end
     end
 
@@ -102,8 +106,21 @@ namespace :cartodb do
           puts "[INFO]  Feature '#{args[:feature]}' was already disabled for user '#{args[:username]}'"
         else
           FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].destroy
+          track_feature_flag_state(user.id, args[:feature], 'disabled')
         end
       end
+    end
+
+    def track_feature_flag_state(user_id, feature, state)
+      properties = {
+        user_id: user_id,
+        feature_flag: {
+          feature: feature,
+          state: state
+        }
+      }
+
+      Carto::Tracking::Events::UpdatedFeatureFlag.new(user_id, properties).report
     end
 
     # WARNING: For use only at development, opensource and custom installs.

@@ -12,17 +12,25 @@ require_dependency 'carto/tracking/validators/widget'
 #  IMPORTANT: Events must be kept in sync with frontend!
 #  See `/lib/assets/javascripts/builder/components/metrics/metrics-types.js`
 
+DEFAULT_EVENT_VERSION = 1
+
 module Carto
   module Tracking
     module Events
       class Event
         def initialize(reporter_id, properties)
+          properties.merge!({event_version: event_version})
+
           @format = Carto::Tracking::Formats::Internal.new(properties)
           @reporter = Carto::User.find(reporter_id)
         end
 
         def name
           self.class.name.demodulize.underscore.humanize.capitalize
+        end
+
+        def event_version
+          DEFAULT_EVENT_VERSION
         end
 
         def self.required_properties(*required_properties)
@@ -39,6 +47,7 @@ module Carto
         def self.optional_properties(*optional_properties)
           @optional_properties ||= []
           @optional_properties += optional_properties
+          @optional_properties += [:event_version]
         end
 
         def optional_properties
@@ -117,11 +126,15 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Readable
         include Carto::Tracking::Validators::User
 
+        required_properties :user_id, :visualization_id
+
         def pubsub_name
           'map_exported'
         end
 
-        required_properties :user_id, :visualization_id
+        def event_version
+          2
+        end
       end
 
       class MapEvent < Event
@@ -138,9 +151,14 @@ module Carto
         include Carto::Tracking::Services::Hubspot
 
         required_properties :origin
+        optional_properties :connection
 
         def pubsub_name
           'map_created'
+        end
+
+        def event_version
+          3
         end
       end
 
@@ -148,11 +166,19 @@ module Carto
         def pubsub_name
           'map_deleted'
         end
+
+        def event_version
+          2
+        end
       end
 
       class ModifiedMap < MapEvent
         def pubsub_name
           'map_updated'
+        end
+
+        def event_version
+          2
         end
       end
 
@@ -169,6 +195,10 @@ module Carto
         def pubsub_name
           'map_published'
         end
+
+        def event_version
+          2
+        end
       end
 
       class ConnectionEvent < Event
@@ -181,7 +211,28 @@ module Carto
       end
 
       class CompletedConnection < ConnectionEvent; end
-      class FailedConnection < ConnectionEvent; end
+
+      class FailedConnection < ConnectionEvent
+        include Carto::Tracking::Services::PubSub
+
+        def pubsub_name
+          'import_failed'
+        end
+
+        def event_version
+          3
+        end
+      end
+
+      class FailedSync < Event
+        include Carto::Tracking::Services::PubSub
+
+        required_properties :user_id, :connection
+
+        def pubsub_name
+          'sync_failed'
+        end
+      end
 
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
@@ -232,15 +283,24 @@ module Carto
         include Carto::Tracking::Services::Hubspot
         
         required_properties :origin
+        optional_properties :connection
 
         def pubsub_name
           'dataset_created'
+        end
+
+        def event_version
+          3
         end
       end
 
       class DeletedDataset < DatasetEvent
         def pubsub_name
           'dataset_deleted'
+        end
+
+        def event_version
+          2
         end
       end
 
@@ -404,6 +464,16 @@ module Carto
       class DeletedOauthAppUser < OauthAppEvent
         def pubsub_name
           'oauth_app_user_deleted'
+        end
+      end
+
+      class UpdatedFeatureFlag < Event
+        include Carto::Tracking::Services::PubSub
+
+        required_properties :user_id, :feature_flag
+
+        def pubsub_name
+          'feature_flag_updated'
         end
       end
 

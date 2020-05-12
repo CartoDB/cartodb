@@ -53,6 +53,10 @@ $w: 780px;
   display: block;
   position: relative;
   width: 100%;
+
+  &.bodyExpanded {
+    margin-top: 300px;
+  }
 }
 
 .ImportPanel-bodyWrapper {
@@ -92,5 +96,3 @@ $w: 780px;
     line-height: 15px;
   }
 }
-
-

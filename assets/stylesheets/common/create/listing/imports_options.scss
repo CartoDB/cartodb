@@ -326,6 +326,7 @@ $import-button-width: 174px;
 @include importIcon(mysql);
 @include importIcon(postgresql);
 @include importIcon(arcgis);
+@include importIcon(twitter);
 
 .SelectedImport {
   &__header {

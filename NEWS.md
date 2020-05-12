@@ -11,6 +11,7 @@ Development
 - UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
 
 ### Bug fixes / enhancements
+- Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564))
 - Make DB Direct server_ca configurable ([15650](https://github.com/CartoDB/cartodb/pull/15650))
 - More clear DB Direct Firewall error messages ([15652](https://github.com/CartoDB/cartodb/pull/15652))
 - Normalize IP ranges applied to Firewall rules ([15649](https://github.com/CartoDB/cartodb/pull/15649))
@@ -27,6 +28,7 @@ Development
 - Faster geometry types calculation for big datasets ([#15654](https://github.com/CartoDB/cartodb/pull/15654))
 - Return error for requests whose authentication was succeeding with an expired session ([#15637](https://github.com/CartoDB/cartodb/pull/15637))
 - Fix signup with multiple active invitations ([#15629](https://github.com/CartoDB/cartodb/pull/15629))
+- Restore twitter connector for those having their own credentials ([#15656](https://github.com/CartoDB/cartodb/pull/15656))
 
 4.37.0 (2020-04-24)
 -------------------
@@ -141,7 +143,7 @@ sudo make install
 ```
 
 ### Features
-- Add pubsub connection to publish metrics events ([#15389](hhttps://github.com/CartoDB/cartodb/pull/15389))
+- Add pubsub connection to publish metrics events ([#15389](https://github.com/CartoDB/cartodb/pull/15389))
 - Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
 
 ### Bug fixes / enhancements

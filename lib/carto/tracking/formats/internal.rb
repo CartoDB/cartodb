@@ -44,10 +44,12 @@ module Carto
           user = @hash['user_id'].present? ? fetch_record!(:user) : nil
           visualization = fetch_record!(:visualization)
           widget = fetch_record!(:widget)
+          event_version = fetch_record!(:event_version)
 
           Carto::Tracking::Formats::PubSub.new(user: user,
                                                 visualization: visualization,
                                                 widget: widget,
+                                                event_version: event_version,
                                                 hash: @hash).to_hash
         end
 

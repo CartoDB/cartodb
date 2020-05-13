@@ -265,7 +265,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_favorited(query)
-    return query unless @order && @order.include?("favorited") && @current_user_id
+    return query unless @order&.include?("favorited") && @current_user_id
 
     Carto::VisualizationQueryIncluder.new(query).include_favorited(@current_user_id)
   end

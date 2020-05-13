@@ -42,6 +42,11 @@ module CartoStrategy
     # after login (see #11946), so marking that event on authentication is more accurate with the
     # meaning (although not with the name).
     user.view_dashboard
+    begin
+      user.update_in_central
+    rescue StandardError => e
+      CartoDB::Logger.warning(message: "Error updating lastlogin_date in central", exception: e)
+    end
   end
 end
 

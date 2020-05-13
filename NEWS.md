@@ -30,6 +30,7 @@ Development
 - Fix signup with multiple active invitations ([#15629](https://github.com/CartoDB/cartodb/pull/15629))
 - Restore twitter connector for those having their own credentials ([#15656](https://github.com/CartoDB/cartodb/pull/15656))
 - Scrub Rollbar data ([#2244](https://github.com/CartoDB/cartodb-central/issues/2244))
+- Avoid order by favorited if no user privided ([#15666](https://github.com/CartoDB/cartodb/issues/15666))
 
 4.37.0 (2020-04-24)
 -------------------

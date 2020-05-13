@@ -14,7 +14,7 @@ module Carto
       return false unless session.key?(:sec_token)
       return true if session[:sec_token] == user.security_token
 
-      raise Carto::ExpiredSessionError
+      raise Carto::ExpiredSessionError.new
     rescue Warden::NotAuthenticated
       false
     end

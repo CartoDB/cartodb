@@ -1,6 +1,7 @@
 class DataObservatoryMailer < ActionMailer::Base
 
   CARTO_REQUEST_RECIPIENT = 'dataobservatory@carto.com'.freeze
+  TEAM_ORG = 'team'.freeze
 
   default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
@@ -21,6 +22,8 @@ class DataObservatoryMailer < ActionMailer::Base
     @dataset_id = dataset_id
     @delivery_days = delivery_days
 
-    mail to: CARTO_REQUEST_RECIPIENT, subject: subject
+    unless user.organization&.name == TEAM_ORG
+      mail to: CARTO_REQUEST_RECIPIENT, subject: subject
+    end
   end
 end

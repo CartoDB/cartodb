@@ -23,6 +23,7 @@ Development
 - Improve performance of dataset view with many maps ([#15627](https://github.com/CartoDB/cartodb/pull/15627))
 - Clarify message at Organization's Auth settings
 - Improve performance of dependent visualizations ([#15632](https://github.com/CartoDB/cartodb/pull/15632))
+- Do not send DO subscription request mails when requested by team organization user (`ch70618`)
 - Fix kepler.gl link in Maps section ([#15644](https://github.com/CartoDB/cartodb/issues/15644))
 - /api/v3/me endpoint returns less public data ([#5627](https://github.com/CartoDB/cartodb-platform/issues/5627))
 - Retrieve IPs before adding or removing to avoid inconsistencies ([#15643](https://github.com/CartoDB/cartodb/pull/15643))

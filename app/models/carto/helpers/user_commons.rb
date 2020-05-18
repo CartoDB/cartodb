@@ -30,11 +30,11 @@ module Carto::UserCommons
                           max_layers database_timeout user_timeout upgraded_at map_view_block_price
                           geocoding_quota dashboard_viewed_at sync_tables_enabled database_host
                           geocoding_block_price notification organization_id created_at updated_atid
-                          soft_geocoding_limit auth_token twitter_datasource_enabled
+                          soft_geocoding_limit twitter_datasource_enabled
                           twitter_datasource_block_price twitter_datasource_block_size twitter_datasource_quota
                           soft_twitter_datasource_limit private_maps_enabled google_sign_in
-                          last_password_change_date max_import_file_size max_import_table_row_count
-                          max_concurrent_import_count last_common_data_update_date enable_account_token
+                          max_import_file_size max_import_table_row_count
+                          max_concurrent_import_count last_common_data_update_date
                           here_isolines_quota here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota
                           obs_snapshot_block_price soft_obs_snapshot_limit mobile_xamarin mobile_custom_watermark
                           mobile_offline_maps mobile_gis_extension mobile_max_open_users mobile_max_private_users
@@ -43,7 +43,7 @@ module Carto::UserCommons
                           routing_provider engine_enabled mapzen_routing_quota
                           mapzen_routing_block_price soft_mapzen_routing_limit no_map_logo org_admin
                           user_render_timeout database_render_timeout frontend_version asset_host
-                          state rate_limit_id password_reset_sent_at public_map_quota regular_api_key_quota
+                          state rate_limit_id public_map_quota regular_api_key_quota
                           maintenance_mode private_map_quota public_dataset_quota]
 
   # Make sure the following date is after Jan 29, 2015,

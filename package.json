@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.179",
+  "version": "1.0.0-assets.179-docatalog-3",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "cartodb-pecan": "0.2.x",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
-    "common-ui": "git://github.com/CartoDB/common-ui.git#feature/ch69082/environment",
+    "common-ui": "git+ssh://git@github.com/CartoDB/common-ui.git#feature/ch69082/environment",
     "confetti-js": "0.0.14",
     "core-js": "^3.6.4",
     "d3-interpolate": "^1.1.6",

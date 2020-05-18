@@ -188,21 +188,35 @@ module Carto
     # Find raster tables which won't appear as cartodbfied but MUST be linked
     def fetch_raster_tables
       sql = %{
-        WITH cartodbfied_tables as (
-          SELECT c.table_name,
-                 tg.tgrelid reloid,
-                 count(column_name::text) cdb_columns_count
-          FROM information_schema.columns c, pg_tables t, pg_trigger tg
-          WHERE
-            t.tablename = c.table_name AND
-            t.schemaname = c.table_schema AND
-            c.table_schema = '#{user.database_schema}' AND
-            t.tableowner in ('#{user.get_database_roles.join('\',\'')}') AND
-            column_name IN ('cartodb_id', 'the_raster_webmercator') AND
-            tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
-            tg.tgname = 'test_quota_per_row'
-            GROUP BY reloid, 1)
-        SELECT table_name, reloid FROM cartodbfied_tables WHERE cdb_columns_count = 2;
+        WITH tables_with_proper_owner_and_schema AS
+        (
+            SELECT c.oid, c.relname
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE   c.relowner IN (#{user.get_database_roles.map{ |r| "to_regrole(\'#{r}\')" }.join(',')})
+                AND c.relkind = 'r'
+                AND n.nspname = '#{user.database_schema}'
+        ),
+        raster_tables AS
+        (
+            SELECT attrelid
+            FROM pg_attribute
+            WHERE   attname IN ('cartodb_id', 'the_raster_webmercator')
+                AND attnum > 0
+                AND NOT attisdropped
+            GROUP BY attrelid
+            HAVING count(*) = 2
+        ),
+        tables_with_trigger AS
+        (
+            SELECT tgrelid
+            FROM pg_trigger
+            WHERE tgname = 'test_quota_per_row'
+        )
+        SELECT t1.relname as table_name, t1.oid as reloid
+        FROM tables_with_proper_owner_and_schema t1
+        INNER JOIN raster_tables t2 ON (t1.oid = t2.attrelid)
+        INNER JOIN tables_with_trigger t3 ON (t1.oid = t3.tgrelid)
       }
 
       user.in_database(as: :superuser)[sql].all.map do |record|

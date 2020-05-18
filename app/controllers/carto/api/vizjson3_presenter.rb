@@ -420,7 +420,7 @@ module Carto
 
       def sql_from(layer)
         query = layer.options.fetch('query', '')
-        query.present? ? query : layer.default_query(layer.visualization.user)
+        query.present? ? query : layer.default_query(layer.visualization.user, layer.visualization.user.database_schema)
       end
 
       def css_from(options)

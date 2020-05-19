@@ -12,11 +12,11 @@ Development
 
 ### Bug fixes / enhancements
 - Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564))
-- Make DB Direct server_ca configurable ([15650](https://github.com/CartoDB/cartodb/pull/15650))
-- More clear DB Direct Firewall error messages ([15652](https://github.com/CartoDB/cartodb/pull/15652))
-- Normalize IP ranges applied to Firewall rules ([15649](https://github.com/CartoDB/cartodb/pull/15649))
-- Fix DB Direct instructions in certificate README ([15647]https://github.com/CartoDB/cartodb/pull/15647)
-- Fix Db Direct IPs Firewall management problem ([15641](https://github.com/CartoDB/cartodb/pull/15641))
+- Make DB Direct server_ca configurable ([#15650](https://github.com/CartoDB/cartodb/pull/15650))
+- More clear DB Direct Firewall error messages ([#15652](https://github.com/CartoDB/cartodb/pull/15652))
+- Normalize IP ranges applied to Firewall rules ([#15649](https://github.com/CartoDB/cartodb/pull/15649))
+- Fix DB Direct instructions in certificate README ([#15647]https://github.com/CartoDB/cartodb/pull/15647)
+- Fix Db Direct IPs Firewall management problem ([#15641](https://github.com/CartoDB/cartodb/pull/15641))
 - Fix Db Direct Firewall management credentials problem ([#15640](https://github.com/CartoDB/cartodb/pull/15640))
 - DO user settings are now stored under `do_settings:{@username}` ([#15630](https://github.com/CartoDB/cartodb/pull/15630))
 - Improve performance of dataset view with many maps ([#15627](https://github.com/CartoDB/cartodb/pull/15627))

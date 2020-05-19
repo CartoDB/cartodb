@@ -90,7 +90,7 @@ module CartoDB
       end
 
       def get_pg_restore_bin_path(conn, dump_name = nil)
-        bin_version = dump_name ? get_dump_database_version(conn, dump_name) : get_database_version_for_binaries(conn)
+        bin_version = get_database_version_for_binaries(conn)
         Cartodb.get_config(:user_migrator, 'pg_restore_bin_path', bin_version) || 'pg_restore'
       end
 
@@ -103,17 +103,6 @@ module CartoDB
         version = conn.query("SELECT version()").first['version']
         version_match = version.match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
         version_match[2] if version_match
-      end
-
-      def get_dump_database_version(conn, dump_name)
-        pg_restore_bin_path = get_pg_restore_bin_path(conn)
-
-        stdout, stderr, status = Open3.capture3(pg_restore_bin_path, '-l', dump_name)
-        raise stderr unless status.success?
-        version_match = stdout.match(/(pg_dump version: (([0-9]+\.?){2,3})).*/)
-
-        pg_dump_version = version_match[2] if version_match
-        shorten_version(pg_dump_version)
       end
 
       def shorten_version(version)

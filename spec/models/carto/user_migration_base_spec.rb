@@ -424,10 +424,10 @@ describe 'UserMigration' do
 
   context "when user has custom plpython2 functions defined" do
     before do
+      pending unless user.db_service.execute_in_user_database("select version()").first["version"].include?("PostgreSQL 11")
       create_mock_plpython_function(user)
       export.run_export
     end
-    after { teardown_mock_plpython_function(user) }
 
     context "for organizations" do
       include_context "organization with users helper"
@@ -438,6 +438,8 @@ describe 'UserMigration' do
       it "fails" do
         expect(export.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
         expect(export.log.entries).to include("Can't migrate custom plpython2 functions")
+
+        teardown_mock_plpython_function(user)
       end
     end
 
@@ -448,6 +450,8 @@ describe 'UserMigration' do
       it "fails" do
         expect(export.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
         expect(export.log.entries).to include("Can't migrate custom plpython2 functions")
+
+        teardown_mock_plpython_function(user)
       end
     end
   end

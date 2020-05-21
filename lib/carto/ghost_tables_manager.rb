@@ -139,15 +139,6 @@ module Carto
 
     # Fetches all linkable tables: non raster cartodbfied + raster
     def fetch_cartodbfied_tables
-      (fetch_non_raster_cartodbfied_tables + fetch_raster_tables).uniq
-    end
-
-    # this method searchs for tables with all the columns needed in a cartodb table.
-    # it does not check column types, and only the latest cartodbfication trigger attached (test_quota_per_row)
-    def fetch_non_raster_cartodbfied_tables
-      cartodb_columns = (Table::CARTODB_REQUIRED_COLUMNS + [Table::THE_GEOM_WEBMERCATOR]).map { |col| "'#{col}'" }
-                                                                                         .join(',')
-
       sql = %{
         WITH tables_with_proper_owner_and_schema AS
         (
@@ -160,13 +151,22 @@ module Carto
         ),
         tables_with_columns AS
         (
-            SELECT attrelid
-            FROM pg_attribute
-            WHERE   attname IN (#{cartodb_columns})
-                AND attnum > 0
-                AND NOT attisdropped
-            GROUP BY attrelid
-            HAVING count(*) = #{cartodb_columns.split(',').length}
+            SELECT attrelid FROM
+            (
+                SELECT attrelid,
+                    SUM(
+                            CASE WHEN attname = 'cartodb_id' THEN 100
+                                WHEN attname = 'the_geom' THEN 1
+                                WHEN attname = 'the_geom_webmercator' THEN 1
+                                WHEN attname = 'the_raster_webmercator' THEN 10
+                                ELSE 0
+                            END) as ncolumns
+                FROM pg_attribute
+                WHERE   attname IN ('cartodb_id','the_geom','the_geom_webmercator', 'the_raster_webmercator')
+                        AND    attnum > 0
+                        AND    NOT attisdropped
+                GROUP BY attrelid
+            ) all_tables WHERE ncolumns = 102 OR ncolumns >= 110
         ),
         tables_with_trigger AS
         (
@@ -177,45 +177,6 @@ module Carto
         SELECT t1.relname as table_name, t1.oid as reloid
         FROM tables_with_proper_owner_and_schema t1
         INNER JOIN tables_with_columns t2 ON (t1.oid = t2.attrelid)
-        INNER JOIN tables_with_trigger t3 ON (t1.oid = t3.tgrelid)
-      }
-
-      user.in_database(as: :superuser)[sql].all.map do |record|
-        Carto::TableFacade.new(record[:reloid], record[:table_name], @user_id)
-      end
-    end
-
-    # Find raster tables which won't appear as cartodbfied but MUST be linked
-    def fetch_raster_tables
-      sql = %{
-        WITH tables_with_proper_owner_and_schema AS
-        (
-            SELECT c.oid, c.relname
-            FROM pg_catalog.pg_class c
-            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-            WHERE   c.relowner IN (#{user.get_database_roles.map{ |r| "to_regrole(\'#{r}\')" }.join(',')})
-                AND c.relkind = 'r'
-                AND n.nspname = '#{user.database_schema}'
-        ),
-        raster_tables AS
-        (
-            SELECT attrelid
-            FROM pg_attribute
-            WHERE   attname IN ('cartodb_id', 'the_raster_webmercator')
-                AND attnum > 0
-                AND NOT attisdropped
-            GROUP BY attrelid
-            HAVING count(*) = 2
-        ),
-        tables_with_trigger AS
-        (
-            SELECT tgrelid
-            FROM pg_trigger
-            WHERE tgname = 'test_quota_per_row'
-        )
-        SELECT t1.relname as table_name, t1.oid as reloid
-        FROM tables_with_proper_owner_and_schema t1
-        INNER JOIN raster_tables t2 ON (t1.oid = t2.attrelid)
         INNER JOIN tables_with_trigger t3 ON (t1.oid = t3.tgrelid)
       }
 

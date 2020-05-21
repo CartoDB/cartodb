@@ -82,19 +82,59 @@ module Carto
     end
 
     def sync
-      cartodbfied_tables = fetch_cartodbfied_tables
+      cartodbfied_tables = fetch_cartodbfied_tables.sort_by(&:id)
+      user_tables = fetch_user_tables.sort_by(&:id)
+
+      ci = 0
+      ui = 0
+      new_cartodbfied_ids = []
+      missing_user_tables_ids = []
+      renamed_tables = []
+
+      # Find which ids are new, which existed but have changed names, and which one have dissapeared
+      while (ci < cartodbfied_tables.size && ui < user_tables.size)
+        cdb_table = cartodbfied_tables[ci]
+        user_table = user_tables[ui]
+        if (cdb_table.id < user_table.id)
+          new_cartodbfied_ids << cdb_table
+          ci += 1
+        elsif (cdb_table.id == user_table.id)
+          if (cdb_table.name != user_table.name)
+            renamed_tables << cdb_table
+          end
+          ci += 1
+          ui += 1
+        else
+          missing_user_tables_ids << user_table
+          ui += 1
+        end
+      end
+
+      new_cartodbfied_ids += cartodbfied_tables[ci, cartodbfied_tables.size - ci] if ci < cartodbfied_tables.size
+      missing_user_tables_ids += user_tables[ui, user_tables.size - ui] if ui < user_tables.size
+
+      # Out of the extracted ids we need to know which one are truly new tables, which ones are
+      # regenerated tables (the underlying ids have changed, but the name remains) and which ones
+      # have been completely deleted
+      regenerated_tables = new_cartodbfied_ids.select do |cartodbfied_table|
+            missing_user_tables_ids.any?{|t| t.name == cartodbfied_table.name}
+        end
+      new_tables = new_cartodbfied_ids - regenerated_tables
+      dropped_tables = missing_user_tables_ids.reject do |dropped_table|
+            regenerated_tables.any?{|t| t.name == dropped_table.name}
+        end
 
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
-      find_regenerated_tables(cartodbfied_tables).each(&:regenerate_user_table)
+      regenerated_tables.each(&:regenerate_user_table)
 
       # Relink tables that have been renamed through the SQL API
-      find_renamed_tables(cartodbfied_tables).each(&:rename_user_table_vis)
+      renamed_tables.each(&:rename_user_table_vis)
 
       # Create UserTables for non linked Tables
-      find_new_tables(cartodbfied_tables).each(&:create_user_table)
+      new_tables.each(&:create_user_table)
 
       # Unlink tables that have been created through the SQL API. Should go last.
-      find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
+      dropped_tables.each(&:drop_user_table)
     end
 
     # Any UserTable that has been renamed or regenerated.

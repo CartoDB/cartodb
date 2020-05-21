@@ -7,6 +7,21 @@ require_relative './helpers/user_migration_helper'
 require 'helpers/database_connection_helper'
 require 'factories/carto_visualizations'
 
+def create_mock_plpython_function(user)
+  user.in_database(as: :superuser).execute(%{
+    CREATE OR REPLACE FUNCTION public.hello_world()
+      RETURNS void
+      LANGUAGE plpythonu
+    AS $function$
+      plpy.info('Hello world!')
+    $function$
+  })
+end
+
+def teardown_mock_plpython_function(user)
+  user.in_database(as: :superuser).execute("DROP FUNCTION hello_world()")
+end
+
 describe 'UserMigration' do
   include Carto::Factories::Visualizations
   include CartoDB::Factories
@@ -54,11 +69,7 @@ describe 'UserMigration' do
 
       source_visualizations = carto_user.visualizations.map(&:name).sort
 
-      export = Carto::UserMigrationExport.create(
-        user: carto_user,
-        export_metadata: true,
-        export_data: false
-      )
+      export = create(:user_migration_export, user_id: carto_user.id, export_data: false)
       export.run_export
 
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
@@ -99,11 +110,7 @@ describe 'UserMigration' do
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
 
-      export = Carto::UserMigrationExport.create(
-        user: carto_user,
-        export_metadata: true,
-        export_data: false
-      )
+      export = create(:user_migration_export, user_id: carto_user.id, export_data: false)
       export.run_export
 
       import = Carto::UserMigrationImport.create!(
@@ -130,11 +137,7 @@ describe 'UserMigration' do
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
 
-      export = Carto::UserMigrationExport.create(
-        user: carto_user,
-        export_metadata: true,
-        export_data: false
-      )
+      export = create(:user_migration_export, user_id: carto_user.id, export_data: false)
       export.run_export
 
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
@@ -168,11 +171,7 @@ describe 'UserMigration' do
       include_context 'organization with users helper'
       it 'exports and imports org with users with viz' do
         CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-        export = Carto::UserMigrationExport.create(
-          organization: @carto_organization,
-          export_metadata: true,
-          export_data: false
-        )
+        export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
         export.run_export
 
         puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
@@ -205,11 +204,7 @@ describe 'UserMigration' do
 
       it 'does not drop database if visualizations import fails' do
         CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-        export = Carto::UserMigrationExport.create(
-          organization: @carto_organization,
-          export_metadata: true,
-          export_data: false
-        )
+        export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
         export.run_export
 
         puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
@@ -248,26 +243,23 @@ describe 'UserMigration' do
 
     it 'exports and imports a user with a data import with two tables' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-  
+
       user = create_user_with_visualizations
-  
+
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
-  
+
       source_visualizations = carto_user.visualizations.map(&:name).sort
-  
-      export = Carto::UserMigrationExport.create(
-        user: carto_user,
-        export_metadata: true
-      )
+
+      export = create(:user_migration_export, user_id: carto_user.id)
       export.run_export
-  
+
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
-  
+
       carto_user.client_applications.each(&:destroy)
       user.destroy
-  
+
       import = Carto::UserMigrationImport.create(
         exported_file: export.exported_file,
         database_host: user_attributes['database_host'],
@@ -279,20 +271,20 @@ describe 'UserMigration' do
       import.stubs(:assert_organization_does_not_exist)
       import.stubs(:assert_user_does_not_exist)
       import.run_import
-  
+
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
       expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
-  
+
       carto_user = Carto::User.find(user_attributes['id'])
-  
+
       attributes_to_test(user_attributes).each do |attribute|
         expect(carto_user.attributes[attribute]).to eq(user_attributes[attribute])
       end
       expect(carto_user.visualizations.map(&:name).sort).to eq(source_visualizations)
-  
+
       user.destroy_cascade
     end
-  
+
     it 'does not export duplicated vizs' do
       user = create_user_with_visualizations
       carto_user = Carto::User.find(user.id)
@@ -305,20 +297,17 @@ describe 'UserMigration' do
       table_visualization.update_column(:updated_at, source_vis.updated_at - 1.minute)
       map.destroy
       visualization.destroy
-  
+
       carto_user.visualizations.count.should eq 4
-  
-      export = Carto::UserMigrationExport.create(
-        user: carto_user,
-        export_metadata: true
-      )
+
+      export = create(:user_migration_export, user_id: carto_user.id)
       export.run_export
-  
+
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
-  
+
       user.destroy_cascade
-  
+
       import = Carto::UserMigrationImport.create(
         exported_file: export.exported_file,
         database_host: user_attributes['database_host'],
@@ -330,29 +319,29 @@ describe 'UserMigration' do
       import.stubs(:assert_organization_does_not_exist)
       import.stubs(:assert_user_does_not_exist)
       import.run_import
-  
+
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
       imported_user = Carto::User.find(user_attributes['id'])
       imported_user.visualizations.count.should eq 3
       expect { imported_user.visualizations.find(table_visualization.id) }.to raise_error(ActiveRecord::RecordNotFound)
-  
+
       user.destroy_cascade
     end
-  
+
     it 'exporting and then importing to the same DB host fails but DB is not deleted (#c1945)' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-  
+
       user = create_user_with_visualizations
-  
+
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
-  
-      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: false)
+
+      export = create(:user_migration_export, user_id: carto_user.id, export_metadata: false)
       export.run_export
-  
+
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
-  
+
       import = Carto::UserMigrationImport.create(
         exported_file: export.exported_file,
         database_host: user_attributes['database_host'],
@@ -362,60 +351,60 @@ describe 'UserMigration' do
         dry: false
       )
       import.run_import
-  
+
       expect(import.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
       expect(import.log.entries).to include('DB already exists at DB host')
-  
+
       # DB exists, otherwise this would fail
       user.in_database.run("select 1;")
-  
+
       user.destroy_cascade
     end
-  
+
     it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-  
+
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
-  
+
       @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
-  
+
       carto_user.tables.exists?(name: @table.name).should be
       user.in_database.execute("DROP TABLE #{@table.name}")
       # The table is still registered after the deletion
       carto_user.reload
-  
+
       carto_user.tables.exists?(name: @table.name).should be
-  
-      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+
+      export = create(:user_migration_export, user_id: carto_user.id)
       export.run_export
-  
+
       export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
       export.destroy
-  
+
       user.destroy
     end
-  
+
     it 'does export users with a canonical viz without user table if metadata export is requested (see #12588)' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-  
+
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
-  
+
       @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
-  
+
       @table.delete
       user.in_database.execute("DROP TABLE #{@table.name}")
       # The canonical visualization is still registered after the deletion
       @table_visualization.reload
       @table_visualization.should be
-  
-      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+
+      export = create(:user_migration_export, user_id: carto_user.id)
       export.run_export
-  
+
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
-  
+
       user.destroy
     end
 
@@ -430,6 +419,36 @@ describe 'UserMigration' do
       ::User[carto_user.id].client_application.oauth_tokens.each(&:destroy)
       ::User[carto_user.id].client_application.destroy
       carto_user.delete
+    end
+  end
+
+  context "when user has custom plpython2 functions defined" do
+    before do
+      create_mock_plpython_function(user)
+      export.run_export
+    end
+    after { teardown_mock_plpython_function(user) }
+
+    context "for organizations" do
+      include_context "organization with users helper"
+
+      let(:user) { @carto_organization.owner }
+      let(:export) { create(:user_migration_export, organization_id: @carto_organization.id) }
+
+      it "fails" do
+        expect(export.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
+        expect(export.log.entries).to include("Can't migrate custom plpython2 functions")
+      end
+    end
+
+    context "for individuals" do
+      let(:user) { create(:valid_user) }
+      let(:export) { create(:user_migration_export, user_id: user.id) }
+
+      it "fails" do
+        expect(export.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
+        expect(export.log.entries).to include("Can't migrate custom plpython2 functions")
+      end
     end
   end
 end

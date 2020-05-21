@@ -34,6 +34,7 @@ Development
 - Avoid order by favorited if no user privided ([#15666](https://github.com/CartoDB/cartodb/issues/15666))
 - Sync last login date ([#2788](https://github.com/CartoDB/cartodb-central/issues/2788))
 - Speed up Ghost Tables Manager checks.
+- Make user mover fail when custom plpython functions exist ([#15677](https://github.com/CartoDB/cartodb/pull/15677))
 
 4.37.0 (2020-04-24)
 -------------------

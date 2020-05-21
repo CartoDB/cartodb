@@ -28,6 +28,26 @@ module Carto
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
     end
 
+    it 'should not run sync when the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables' do
+      # We simulate the deletion of 2 tables, which would trigger a sync run in a small user
+      @ghost_tables_manager.stubs(:fetch_user_tables)
+                           .returns([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK + 2].map do |id|
+                                        Carto::TableFacade.new(id, "name #{id}", @user.id)
+                                    end
+                                   )
+
+      @ghost_tables_manager.stubs(:fetch_cartodbfied_tables)
+                           .returns([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK].map do |id|
+                                        Carto::TableFacade.new(id, "name #{id}", @user.id)
+                                    end
+                                   )
+      @ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
+      # In big databases, `:should_run_synchronously?` is expensive so we want to ensure it isn't called at all
+      @ghost_tables_manager.expects(:should_run_synchronously?).never
+
+      @ghost_tables_manager.send(:link_ghost_tables)
+    end
+
     it 'should not run sync when more than MAX_TABLES_FOR_SYNC_RUN need to be linked' do
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
 

@@ -5,6 +5,7 @@ module Carto
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
     MUTEX_TTL_MS = 600000
     MAX_TABLES_FOR_SYNC_RUN = 8
+    MAX_USERTABLES_FOR_SYNC_CHECK = 128
 
     def initialize(user_id)
       @user_id = user_id
@@ -15,12 +16,20 @@ module Carto
     end
 
     def link_ghost_tables
-      return if user_tables_synced_with_db?
-
-      if should_run_synchronously?
-        link_ghost_tables_synchronously
-      else
+      user_tables = fetch_user_tables
+      if (user_tables.length > MAX_USERTABLES_FOR_SYNC_CHECK)
+        # When the user has a big amount of tables, we don't even attempt to check if we
+        # need to run ghost tables, and instead we request an async link.
+        # We do this because checking user_tables_synced_with_db? or any other comparison
+        # with the arrays scales really badly
         link_ghost_tables_asynchronously
+      else
+        return if user_tables_synced_with_db?
+        if should_run_synchronously?
+          link_ghost_tables_synchronously
+        else
+          link_ghost_tables_asynchronously
+        end
       end
     end
 
@@ -73,7 +82,6 @@ module Carto
 
       dropped_and_stale_tables = find_dropped_tables(cartodbfied_tables) + find_stale_tables(cartodbfied_tables)
       total_tables_to_be_linked = dropped_and_stale_tables + find_new_tables(cartodbfied_tables)
-
       dropped_and_stale_tables.count != 0 && total_tables_to_be_linked.count < MAX_TABLES_FOR_SYNC_RUN
     end
 
@@ -112,6 +120,8 @@ module Carto
 
       new_cartodbfied_ids += cartodbfied_tables[ci, cartodbfied_tables.size - ci] if ci < cartodbfied_tables.size
       missing_user_tables_ids += user_tables[ui, user_tables.size - ui] if ui < user_tables.size
+
+      return if new_cartodbfied_ids.empty? && missing_user_tables_ids.empty? && renamed_tables.empty?
 
       # Out of the extracted ids we need to know which one are truly new tables, which ones are
       # regenerated tables (the underlying ids have changed, but the name remains) and which ones

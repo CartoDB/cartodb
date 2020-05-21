@@ -38,8 +38,8 @@ module Carto
     end
 
     def link_ghost_tables_asynchronously
-      ::Resque.dequeue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username)
-      ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username)
+      ::Resque.dequeue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username)
+      ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username)
     end
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run

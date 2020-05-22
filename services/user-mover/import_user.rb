@@ -191,21 +191,23 @@ module CartoDB
           end
           begin
             if @target_org_id && @target_is_owner && File.exists?("#{@path}org_#{@target_org_id}.dump")
-              create_db(@target_dbname, true)
+              dump = "org_#{@target_org_id}.dump"
+              create_db(dump)
               create_org_oauth_app_user_roles(@target_org_id)
               create_org_api_key_roles(@target_org_id)
               import_pgdump("org_#{@target_org_id}.dump")
               grant_org_oauth_app_user_roles(@target_org_id)
               grant_org_api_key_roles(@target_org_id)
             elsif File.exists? "#{@path}user_#{@target_userid}.dump"
-              create_db(@target_dbname, true)
+              dump = "user_#{@target_userid}.dump"
+              create_db(dump)
               create_user_oauth_app_user_roles(@target_userid)
               create_user_api_key_roles(@target_userid)
-              import_pgdump("user_#{@target_userid}.dump")
+              import_pgdump(dump)
               grant_user_oauth_app_user_roles(@target_userid)
               grant_user_api_key_roles(@target_userid)
             elsif File.exists? "#{@path}#{@target_username}.schema.sql"
-              create_db(@target_dbname, false)
+              create_db
               run_file_restore_schema("#{@target_username}.schema.sql")
             end
           rescue => e
@@ -596,21 +598,21 @@ module CartoDB
         superuser_pg_conn.query("ALTER USER \"#{user}\" SET search_path= #{search_path}")
       end
 
-      def create_db(dbname, blank)
-        # Blank is when the database should be created empty (will receive a pg_dump).
-        # blank = false: it should have postgis, cartodb/cdb_importer/cdb schemas
+      def create_db(dump = nil)
+        # When a dump file is provided, the database should be created empty (will receive a pg_dump).
+        # dump = nil: it should have postgis, cartodb/cdb_importer/cdb schemas
         # connect as superuser (postgres)
-        @logger.info "Creating user DB #{dbname}..."
+        @logger.info "Creating user DB #{@target_dbname}..."
         begin
-          if blank
-            superuser_pg_conn.query("CREATE DATABASE \"#{dbname}\"")
+          if dump
+            superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\"")
           else
-            superuser_pg_conn.query("CREATE DATABASE \"#{dbname}\" WITH TEMPLATE template_postgis")
+            superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\" WITH TEMPLATE template_postgis")
           end
         # This rescue can be improved a little bit. The way it is it assumes that the error
         # will always be that the db already exists
         rescue PG::Error => e
-          if blank
+          if dump
             @logger.error "Error: Database already exists"
             raise e
           else
@@ -618,10 +620,10 @@ module CartoDB
           end
         end
 
-        setup_db(dbname) unless blank
+        dump ? setup_db_for_migration(dump) : setup_db
       end
 
-      def setup_db(_dbname)
+      def setup_db
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis")
         cartodb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cartodb'")
         superuser_user_pg_conn.query("CREATE SCHEMA cartodb") if cartodb_schema.count == 0
@@ -632,6 +634,19 @@ module CartoDB
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb CASCADE")
       rescue PG::Error => e
         @logger.error "Error: Cannot setup DB"
+        raise e
+      end
+
+      def setup_db_for_migration(dump)
+        source_db_version = get_dump_database_version(superuser_pg_conn, dump).split('.').first
+        destination_db_version = get_database_version_for_binaries(superuser_pg_conn).split('.').first
+        return unless source_db_version == '11' && destination_db_version == '12'
+
+        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis")
+        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis_raster")
+        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS plpython3u")
+      rescue PG::Error => e
+        @logger.error "Error: Cannot setup DB for migration"
         raise e
       end
 

@@ -11,6 +11,7 @@ Development
 - UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
 
 ### Bug fixes / enhancements
+- Add maxRetries for aws s3 operation to improve reliability ([#15679](https://github.com/CartoDB/cartodb/pull/15679))
 - Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564))
 - Make DB Direct server_ca configurable ([#15650](https://github.com/CartoDB/cartodb/pull/15650))
 - More clear DB Direct Firewall error messages ([#15652](https://github.com/CartoDB/cartodb/pull/15652))

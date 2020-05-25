@@ -44,11 +44,8 @@ module Carto
     end
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run
-    def user_tables_synced_with_db?(regenerated_tables, renamed_tables, new_tables, dropped_tables)
-      (!regenerated_tables || regenerated_tables.empty?) &&
-      (!renamed_tables || renamed_tables.empty?) &&
-      (!new_tables || new_tables.empty?) &&
-      (!dropped_tables || dropped_tables.empty?)
+    def user_tables_synced_with_db?(*tables)
+      tables.all?(&:blank?)
     end
 
     # Helper for tests that will fetch the tables and do the checks
@@ -122,8 +119,6 @@ module Carto
       new_cartodbfied_ids += cartodbfied_tables[cartodb_table_it, cartodbfied_tables.size - cartodb_table_it] if cartodb_table_it < cartodbfied_tables.size
       missing_user_tables_ids += user_tables[user_tables_it, user_tables.size - user_tables_it] if user_tables_it < user_tables.size
 
-      return if new_cartodbfied_ids.empty? && missing_user_tables_ids.empty? && renamed_tables.empty?
-
       # Out of the extracted ids we need to know which one are truly new tables, which ones are
       # regenerated tables (the underlying ids have changed, but the name remains) and which ones
       # have been completely deleted
@@ -142,16 +137,16 @@ module Carto
       regenerated_tables, renamed_tables, new_tables, dropped_tables = fetch_altered_tables
 
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
-      regenerated_tables.each(&:regenerate_user_table) if regenerated_tables
+      regenerated_tables.each(&:regenerate_user_table)
 
       # Relink tables that have been renamed through the SQL API
-      renamed_tables.each(&:rename_user_table_vis) if renamed_tables
+      renamed_tables.each(&:rename_user_table_vis)
 
       # Create UserTables for non linked Tables
-      new_tables.each(&:create_user_table) if new_tables
+      new_tables.each(&:create_user_table)
 
       # Unlink tables that have been created through the SQL API. Should go last.
-      dropped_tables.each(&:drop_user_table) if dropped_tables
+      dropped_tables.each(&:drop_user_table)
     end
 
     # Fetches all currently linked user tables

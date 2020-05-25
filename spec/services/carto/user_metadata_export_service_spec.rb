@@ -190,6 +190,13 @@ describe Carto::UserMetadataExportService do
       user = test_import_user_from_export(full_export)
     end
 
+    it 'imports 1.0.16 (without email_verification)' do
+      user = test_import_user_from_export(full_export_one_zero_sixteen)
+
+      expect(user.email_veritification_token).to be_nil
+      expect(user.email_veritification_sent_at).to be_nil
+    end
+
     it 'imports 1.0.15 (without public_dataset_quota)' do
       user = test_import_user_from_export(full_export_one_zero_fifteen)
 
@@ -818,6 +825,8 @@ describe Carto::UserMetadataExportService do
         dashboard_viewed_at: nil,
         sync_tables_enabled: false,
         database_host: "localhost",
+        email_veritification_token: "aaa",
+        email_veritification_sent_at: Time.zone.now,
         geocoding_block_price: nil,
         api_key: "21ee521b8a107ea55d61fd7b485dd93d54c0b9d2",
         notification: nil,
@@ -1160,6 +1169,13 @@ describe Carto::UserMetadataExportService do
         }]
       }
     }
+  end
+
+  let(:full_export_one_zero_sixteen) do
+    user_hash = full_export[:user].except!(:email_veritification_token, :email_veritification_sent_at)
+
+    full_export[:user] = user_hash
+    full_export
   end
 
   let(:full_export_one_zero_fifteen) do

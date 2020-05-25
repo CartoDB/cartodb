@@ -101,6 +101,10 @@ module Carto::UserCommons
     end
   end
 
+  def unverified?
+    (active? || locked?) && email_verification_token.present?
+  end
+
   def remove_logo?
     has_organization? ? organization.no_map_logo : no_map_logo
   end

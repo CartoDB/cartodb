@@ -4,11 +4,12 @@ module Carto
   module Api
     class PermissionPresenter
 
-      def initialize(permission, current_viewer: nil, fetch_user_groups: false)
+      def initialize(permission, current_viewer: nil, fetch_user_groups: false, fetch_db_size: true)
         @permission = permission
         @presenter_cache = Carto::Api::PresenterCache.new
         @current_viewer = current_viewer
         @fetch_user_groups = fetch_user_groups
+        @fetch_db_size = fetch_db_size
       end
 
       def with_presenter_cache(presenter_cache)
@@ -23,7 +24,9 @@ module Carto
           Carto::Api::UserPresenter.new(@permission.owner,
                                         fetch_groups: fetch_user_groups,
                                         current_viewer: current_viewer,
-                                        fetch_profile: false)
+                                        fetch_profile: false,
+                                        fetch_db_size: @fetch_db_size
+                                        )
         end
 
         {
@@ -53,7 +56,7 @@ module Carto
       def to_public_poro
         owner = @presenter_cache.get_poro(@permission.owner) do
           Carto::Api::UserPresenter.new(@permission.owner,
-                                        fetch_groups: fetch_user_groups, current_viewer: current_viewer)
+                                        fetch_groups: fetch_user_groups, current_viewer: current_viewer, fetch_db_size: @fetch_db_size)
         end
 
         {

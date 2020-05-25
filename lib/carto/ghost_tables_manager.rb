@@ -20,12 +20,13 @@ module Carto
       if (user_tables.length > MAX_USERTABLES_FOR_SYNC_CHECK)
         # When the user has a big amount of tables, we don't even attempt to check if we
         # need to run ghost tables, and instead we request an async link.
-        # We do this because checking user_tables_synced_with_db? or any other comparison
-        # with the arrays scales really badly
+        # We do this because doing comparisons with the arrays scales pretty badly
         link_ghost_tables_asynchronously
       else
-        return if user_tables_synced_with_db?
-        if should_run_synchronously?
+        regenerated_tables, renamed_tables, new_tables, dropped_tables = fetch_altered_tables
+        return if user_tables_synced_with_db?(regenerated_tables, renamed_tables, new_tables, dropped_tables)
+
+        if should_run_synchronously?(regenerated_tables, renamed_tables, new_tables, dropped_tables)
           link_ghost_tables_synchronously
         else
           link_ghost_tables_asynchronously
@@ -34,7 +35,7 @@ module Carto
     end
 
     def link_ghost_tables_synchronously
-      sync_user_tables_with_db unless user_tables_synced_with_db?
+      sync_user_tables_with_db
     end
 
     def link_ghost_tables_asynchronously
@@ -43,13 +44,17 @@ module Carto
     end
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run
-    def user_tables_synced_with_db?
-      user_tables = fetch_user_tables
-      cartodbfied_tables = fetch_cartodbfied_tables
+    def user_tables_synced_with_db?(regenerated_tables, renamed_tables, new_tables, dropped_tables)
+      (!regenerated_tables || regenerated_tables.empty?) &&
+      (!renamed_tables || renamed_tables.empty?) &&
+      (!new_tables || new_tables.empty?) &&
+      (!dropped_tables || dropped_tables.empty?)
+    end
 
-      user_tables.length == cartodbfied_tables.length &&
-        (user_tables - cartodbfied_tables).empty? &&
-        (cartodbfied_tables - user_tables).empty?
+    # Helper for tests that will fetch the tables and do the checks
+    def fetch_user_tables_synced_with_db?
+      regenerated_tables, renamed_tables, new_tables, dropped_tables = fetch_altered_tables
+      user_tables_synced_with_db?(regenerated_tables, renamed_tables, new_tables, dropped_tables)
     end
 
     def get_bolt
@@ -77,49 +82,45 @@ module Carto
 
     # It's nice to run sync if any unsafe stale (dropped or renamed) tables will be shown to the user but we can't block
     # the workers for more that 180 seconds
-    def should_run_synchronously?
-      cartodbfied_tables = fetch_cartodbfied_tables
-
-      dropped_and_stale_tables = find_dropped_tables(cartodbfied_tables) + find_stale_tables(cartodbfied_tables)
-      total_tables_to_be_linked = dropped_and_stale_tables + find_new_tables(cartodbfied_tables)
-      dropped_and_stale_tables.count != 0 && total_tables_to_be_linked.count < MAX_TABLES_FOR_SYNC_RUN
+    def should_run_synchronously?(regenerated_tables, renamed_tables, new_tables, dropped_tables)
+      (regenerated_tables.count + renamed_tables.count + new_tables.count + dropped_tables.count) < MAX_TABLES_FOR_SYNC_RUN
     end
 
     def sync_user_tables_with_db
       got_locked = get_bolt.run_locked(fail_function: lambda { link_ghost_tables_asynchronously }) { sync }
     end
 
-    def sync
+    def fetch_altered_tables
       cartodbfied_tables = fetch_cartodbfied_tables.sort_by(&:id)
       user_tables = fetch_user_tables.sort_by(&:id)
 
-      ci = 0
-      ui = 0
+      cartodb_table_it = 0
+      user_tables_it = 0
       new_cartodbfied_ids = []
       missing_user_tables_ids = []
       renamed_tables = []
 
       # Find which ids are new, which existed but have changed names, and which one have dissapeared
-      while (ci < cartodbfied_tables.size && ui < user_tables.size)
-        cdb_table = cartodbfied_tables[ci]
-        user_table = user_tables[ui]
+      while (cartodb_table_it < cartodbfied_tables.size && user_tables_it < user_tables.size)
+        cdb_table = cartodbfied_tables[cartodb_table_it]
+        user_table = user_tables[user_tables_it]
         if (cdb_table.id < user_table.id)
           new_cartodbfied_ids << cdb_table
-          ci += 1
+          cartodb_table_it += 1
         elsif (cdb_table.id == user_table.id)
           if (cdb_table.name != user_table.name)
             renamed_tables << cdb_table
           end
-          ci += 1
-          ui += 1
+          cartodb_table_it += 1
+          user_tables_it += 1
         else
           missing_user_tables_ids << user_table
-          ui += 1
+          user_tables_it += 1
         end
       end
 
-      new_cartodbfied_ids += cartodbfied_tables[ci, cartodbfied_tables.size - ci] if ci < cartodbfied_tables.size
-      missing_user_tables_ids += user_tables[ui, user_tables.size - ui] if ui < user_tables.size
+      new_cartodbfied_ids += cartodbfied_tables[cartodb_table_it, cartodbfied_tables.size - cartodb_table_it] if cartodb_table_it < cartodbfied_tables.size
+      missing_user_tables_ids += user_tables[user_tables_it, user_tables.size - user_tables_it] if user_tables_it < user_tables.size
 
       return if new_cartodbfied_ids.empty? && missing_user_tables_ids.empty? && renamed_tables.empty?
 
@@ -134,50 +135,23 @@ module Carto
             regenerated_tables.any?{|t| t.name == dropped_table.name}
         end
 
+      return regenerated_tables, renamed_tables, new_tables, dropped_tables
+    end
+
+    def sync
+      regenerated_tables, renamed_tables, new_tables, dropped_tables = fetch_altered_tables
+
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
-      regenerated_tables.each(&:regenerate_user_table)
+      regenerated_tables.each(&:regenerate_user_table) if regenerated_tables
 
       # Relink tables that have been renamed through the SQL API
-      renamed_tables.each(&:rename_user_table_vis)
+      renamed_tables.each(&:rename_user_table_vis) if renamed_tables
 
       # Create UserTables for non linked Tables
-      new_tables.each(&:create_user_table)
+      new_tables.each(&:create_user_table) if new_tables
 
       # Unlink tables that have been created through the SQL API. Should go last.
-      dropped_tables.each(&:drop_user_table)
-    end
-
-    # Any UserTable that has been renamed or regenerated.
-    def find_stale_tables(cartodbfied_tables)
-      find_regenerated_tables(cartodbfied_tables) | find_renamed_tables(cartodbfied_tables)
-    end
-
-    # UserTables that coincide with a cartodbfied table in name but not id
-    def find_renamed_tables(cartodbfied_tables)
-      user_tables = fetch_user_tables
-
-      cartodbfied_tables.select do |cartodbfied_table|
-        user_tables.any?{|t| t.name != cartodbfied_table.name && t.id == cartodbfied_table.id}
-      end
-    end
-
-    # UserTables that coincide with a cartodbfied table in id but not in name
-    def find_regenerated_tables(cartodbfied_tables)
-      user_tables = fetch_user_tables
-
-      cartodbfied_tables.select do |cartodbfied_table|
-        user_tables.any?{|t| t.name == cartodbfied_table.name && t.id != cartodbfied_table.id}
-      end
-    end
-
-    # Cartodbfied tables that are not stale and are not linked as UserTables yet
-    def find_new_tables(cartodbfied_tables)
-      cartodbfied_tables - fetch_user_tables - find_stale_tables(cartodbfied_tables)
-    end
-
-    # UserTables that are not stale and have no cartodbfied table associated to it
-    def find_dropped_tables(cartodbfied_tables)
-      fetch_user_tables - cartodbfied_tables - find_stale_tables(cartodbfied_tables)
+      dropped_tables.each(&:drop_user_table) if dropped_tables
     end
 
     # Fetches all currently linked user tables

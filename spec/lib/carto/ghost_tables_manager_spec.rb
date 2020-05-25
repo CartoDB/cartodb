@@ -25,7 +25,9 @@ module Carto
     end
 
     it 'should be consistent when no new/renamed/dropped tables' do
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
+      @ghost_tables_manager.expects(:link_ghost_tables_asynchronously).never
+      @ghost_tables_manager.send(:link_ghost_tables)
     end
 
     it 'should not run sync when the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables' do
@@ -49,43 +51,55 @@ module Carto
     end
 
     it 'should not run sync when more than MAX_TABLES_FOR_SYNC_RUN need to be linked' do
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      regenerated_tables = []
+      renamed_tables = []
+      new_tables = []
+      dropped_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN]
+      @ghost_tables_manager.stubs(:fetch_altered_tables)
+                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
-      @ghost_tables_manager.stubs(:find_dropped_tables)
-                           .returns([*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN])
-
-      @ghost_tables_manager.send(:should_run_synchronously?).should be_false
+      @ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
+      @ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
+      @ghost_tables_manager.send(:link_ghost_tables)
     end
 
     it 'should not run sync when more than MAX_TABLES_FOR_SYNC_RUN need to be linked including new tables' do
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      regenerated_tables = []
+      renamed_tables = []
+      new_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN - 2]
+      dropped_tables = ['manolo', 'pepito']
+      @ghost_tables_manager.stubs(:fetch_altered_tables)
+                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
-      @ghost_tables_manager.stubs(:find_dropped_tables)
-                           .returns(['manolo'])
-      @ghost_tables_manager.stubs(:find_dropped_tables)
-                           .returns([*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN])
-
-      @ghost_tables_manager.send(:should_run_synchronously?).should be_false
+      @ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
+      @ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
+      @ghost_tables_manager.send(:link_ghost_tables)
     end
 
     it 'should run sync when more than 0 but less than MAX_TABLES_FOR_SYNC_RUN need to be linked' do
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      regenerated_tables = []
+      renamed_tables = []
+      new_tables = []
+      dropped_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN - 1]
+      @ghost_tables_manager.stubs(:fetch_altered_tables)
+                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
-      @ghost_tables_manager.stubs(:find_dropped_tables)
-                           .returns([*1..(Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN - 1)])
-
-      @ghost_tables_manager.send(:should_run_synchronously?).should be_true
+      @ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
+      @ghost_tables_manager.expects(:link_ghost_tables_asynchronously).never
+      @ghost_tables_manager.send(:link_ghost_tables)
     end
 
     it 'should not run sync when no tables are stale or dropped' do
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      regenerated_tables = []
+      renamed_tables = []
+      new_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN]
+      dropped_tables = []
+      @ghost_tables_manager.stubs(:fetch_altered_tables)
+                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
-      @ghost_tables_manager.stubs(:find_dropped_tables)
-                           .returns([])
-      @ghost_tables_manager.stubs(:find_new_tables)
-                           .returns([*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN])
-
-      @ghost_tables_manager.send(:should_run_synchronously?).should be_false
+      @ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
+      @ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
+      @ghost_tables_manager.send(:link_ghost_tables)
     end
 
     it 'should link sql created table, relink sql renamed tables and unlink sql dropped tables' do
@@ -95,12 +109,12 @@ module Carto
       })
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
       ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       @user.tables.count.should eq 1
       @user.tables.first.name.should == 'manoloescobar'
@@ -110,10 +124,10 @@ module Carto
       })
 
       @user.tables.count.should eq 1
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
       @ghost_tables_manager.link_ghost_tables_synchronously
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       @user.tables.count.should eq 1
       @user.tables.first.name.should == 'escobar'
@@ -123,11 +137,11 @@ module Carto
       })
 
       @user.tables.count.should eq 1
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
       @ghost_tables_manager.link_ghost_tables_synchronously
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
     end
 
     it 'should link sql created table using regular api key with create permissions' do
@@ -156,12 +170,12 @@ module Carto
       end
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
       ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       @user.tables.count.should eq 1
       @user.tables.first.name.should == 'test_table'
@@ -171,11 +185,11 @@ module Carto
       end
 
       @user.tables.count.should eq 1
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
       @ghost_tables_manager.link_ghost_tables_synchronously
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       api_key.destroy
     end
@@ -196,12 +210,12 @@ module Carto
       end
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
       ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       @user.tables.count.should eq 1
       @user.tables.first.name.should == 'test_table'
@@ -211,11 +225,11 @@ module Carto
       end
 
       @user.tables.count.should eq 1
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
       @ghost_tables_manager.link_ghost_tables_synchronously
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       oau.destroy
       app.destroy
@@ -227,7 +241,7 @@ module Carto
       })
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       @ghost_tables_manager.link_ghost_tables_synchronously
 
@@ -236,7 +250,7 @@ module Carto
       })
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
     end
 
     it 'should link raster tables' do
@@ -251,7 +265,7 @@ module Carto
       })
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
       @ghost_tables_manager.link_ghost_tables_synchronously
 
@@ -263,11 +277,11 @@ module Carto
       })
 
       @user.tables.count.should eq 1
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
       @ghost_tables_manager.link_ghost_tables_synchronously
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
     end
 
     it 'should regenerate user tables with bad table_ids' do
@@ -277,12 +291,12 @@ module Carto
       })
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
       ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       @user.tables.count.should eq 1
       @user.tables.first.name.should == 'manoloescobar'
@@ -293,10 +307,10 @@ module Carto
       user_table.table_id = original_oid + 1
       user_table.save
 
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
       @ghost_tables_manager.link_ghost_tables_synchronously
 
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       @user.tables.count.should eq 1
       @user.tables.first.name.should == 'manoloescobar'
@@ -308,11 +322,11 @@ module Carto
       })
 
       @user.tables.count.should eq 1
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
       @ghost_tables_manager.link_ghost_tables_synchronously
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
     end
 
     it 'should preseve maps in drop create scenarios' do
@@ -322,12 +336,12 @@ module Carto
       })
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
       ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       @user.tables.count.should eq 1
 
@@ -344,10 +358,10 @@ module Carto
       })
 
       @user.tables.count.should eq 1
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
       @ghost_tables_manager.link_ghost_tables_synchronously
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
 
       @user.tables.count.should eq 1
 
@@ -359,11 +373,11 @@ module Carto
       })
 
       @user.tables.count.should eq 1
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
       @ghost_tables_manager.link_ghost_tables_synchronously
 
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
     end
 
     it 'perform a successfully ghost tables execution when is called from LinkGhostTablesByUsername' do
@@ -380,7 +394,7 @@ module Carto
 
     it 'should call the fail_function and execute sync twice because other worker tried to get the lock' do
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
       main = Thread.new do
         run_in_user_database(%{
           CREATE TABLE manoloescobar ("description" text);
@@ -404,7 +418,7 @@ module Carto
       end
       thr.join
       main.join
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
       @user.tables.count.should eq 2
 
       run_in_user_database(%{
@@ -412,10 +426,10 @@ module Carto
         DROP TABLE manoloescobar2;
       })
 
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
       @ghost_tables_manager.link_ghost_tables_synchronously
       @user.tables.count.should eq 0
-      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
     end
   end
 end

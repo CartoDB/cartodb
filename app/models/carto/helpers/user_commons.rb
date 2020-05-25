@@ -102,7 +102,7 @@ module Carto::UserCommons
   end
 
   def unverified?
-    (active? || locked?) && email_verification_token.present?
+    (active? || locked?) && email_verification_token.present? && !oauth_signin?
   end
 
   def remove_logo?

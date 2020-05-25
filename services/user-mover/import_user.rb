@@ -190,20 +190,18 @@ module CartoDB
             roles.each { |role| grant_user_role(user, role) }
           end
           begin
-            if @target_org_id && @target_is_owner && File.exists?("#{@path}org_#{@target_org_id}.dump")
-              dump = "org_#{@target_org_id}.dump"
-              create_db(dump)
+            if @target_org_id && @target_is_owner && File.exists?(org_dump_path)
+              create_db(org_dump_path)
               create_org_oauth_app_user_roles(@target_org_id)
               create_org_api_key_roles(@target_org_id)
               import_pgdump("org_#{@target_org_id}.dump")
               grant_org_oauth_app_user_roles(@target_org_id)
               grant_org_api_key_roles(@target_org_id)
-            elsif File.exists? "#{@path}user_#{@target_userid}.dump"
-              dump = "user_#{@target_userid}.dump"
-              create_db(dump)
+            elsif File.exists?(user_dump_path)
+              create_db(user_dump_path)
               create_user_oauth_app_user_roles(@target_userid)
               create_user_api_key_roles(@target_userid)
-              import_pgdump(dump)
+              import_pgdump("user_#{@target_userid}.dump")
               grant_user_oauth_app_user_roles(@target_userid)
               grant_user_api_key_roles(@target_userid)
             elsif File.exists? "#{@path}#{@target_username}.schema.sql"
@@ -598,13 +596,13 @@ module CartoDB
         superuser_pg_conn.query("ALTER USER \"#{user}\" SET search_path= #{search_path}")
       end
 
-      def create_db(dump = nil)
+      def create_db(dump_path = nil)
         # When a dump file is provided, the database should be created empty (will receive a pg_dump).
         # dump = nil: it should have postgis, cartodb/cdb_importer/cdb schemas
         # connect as superuser (postgres)
         @logger.info "Creating user DB #{@target_dbname}..."
         begin
-          if dump
+          if dump_path
             superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\"")
           else
             superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\" WITH TEMPLATE template_postgis")
@@ -612,7 +610,7 @@ module CartoDB
         # This rescue can be improved a little bit. The way it is it assumes that the error
         # will always be that the db already exists
         rescue PG::Error => e
-          if dump
+          if dump_path
             @logger.error "Error: Database already exists"
             raise e
           else
@@ -620,7 +618,7 @@ module CartoDB
           end
         end
 
-        dump ? setup_db_for_migration(dump) : setup_db
+        dump_path ? setup_db_for_migration(dump_path) : setup_db
       end
 
       def setup_db
@@ -637,8 +635,8 @@ module CartoDB
         raise e
       end
 
-      def setup_db_for_migration(dump)
-        source_db_version = get_dump_database_version(superuser_pg_conn, dump).split('.').first
+      def setup_db_for_migration(dump_path)
+        source_db_version = get_dump_database_version(superuser_pg_conn, dump_path).split('.').first
         destination_db_version = get_database_version_for_binaries(superuser_pg_conn).split('.').first
         return unless source_db_version == '11' && destination_db_version == '12'
 
@@ -787,6 +785,14 @@ module CartoDB
 
       def organization_import?
         @pack_config['organization'] != nil
+      end
+
+      def org_dump_path
+        "#{@path}org_#{@target_org_id}.dump"
+      end
+
+      def user_dump_path
+        "#{@path}user_#{@target_userid}.dump"
       end
     end
   end

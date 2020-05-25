@@ -43,7 +43,7 @@ module Carto
       ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username)
     end
 
-    # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run
+    # determine linked tables vs cartodbfied tables consistency; that is, check whether it needs to run
     def user_tables_synced_with_db?(*tables)
       tables.all?(&:blank?)
     end

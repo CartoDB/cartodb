@@ -36,7 +36,7 @@ Development
 - Sync last login date ([#2788](https://github.com/CartoDB/cartodb-central/issues/2788))
 - Speed up Ghost Tables Manager checks ([#15674](https://github.com/CartoDB/cartodb/pull/15674))
 - v1/viz: Stop returning the db_size_in_bytes value ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
-- Ghost Tables Manager: Unify both raster and non raster table checks into a single query ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
+- Ghost Tables Manager: Unify all table checks into a single query ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
 - Ghost Tables Manager: Don't do any synchronous check if the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables. ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
 
 4.37.0 (2020-04-24)

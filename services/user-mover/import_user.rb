@@ -596,7 +596,7 @@ module CartoDB
         superuser_pg_conn.query("ALTER USER \"#{user}\" SET search_path= #{search_path}")
       end
 
-      def create_db(from_dump: true)
+      def create_db(params = {})
         # When a dump file is provided, the database should be created empty (will receive a pg_dump).
         # dump = nil: it should have postgis, cartodb/cdb_importer/cdb schemas
         # connect as superuser (postgres)

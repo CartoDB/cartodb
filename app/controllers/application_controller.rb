@@ -207,7 +207,7 @@ class ApplicationController < ActionController::Base
       render_locked_user
       return
     elsif current_user.unverified?
-      redirect_to CartoDB.url(self, 'unverified', keep_base_url: true)
+      render_unverified_user
       return
     end
 
@@ -317,6 +317,10 @@ class ApplicationController < ActionController::Base
   def render_multifactor_authentication
     session[:return_to] = request.original_url
     redirect_or_forbidden('multifactor_authentication_session', 'mfa_required')
+  end
+
+  def render_unverified_user
+    redirect_or_forbidden('unverified', 'unverified')
   end
 
   def render_locked_user

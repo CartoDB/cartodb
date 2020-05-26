@@ -636,9 +636,8 @@ module CartoDB
       end
 
       def setup_db_for_migration(dump_path)
-        source_db_version = get_dump_database_version(superuser_pg_conn, dump_path).split('.').first
         destination_db_version = get_database_version_for_binaries(superuser_pg_conn).split('.').first
-        return unless source_db_version == '11' && destination_db_version == '12'
+        return if destination_db_version != '12'
 
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis")
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis_raster")

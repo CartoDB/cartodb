@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
-  rescue_from(Carto::ExpiredSessionError) { |e| rescue_from_carto_error(e) }
+  rescue_from Carto::ExpiredSessionError, with: :rescue_from_carto_error
 
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
   IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(maintenance_mode lockout login logout unauthenticated multifactor_authentication).freeze

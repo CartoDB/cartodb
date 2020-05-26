@@ -61,7 +61,8 @@ module CartoDB
 
     # Creates a Rollbar scope that replaces the auto-detected person with the user passed as parameter
     def self.rollbar_scope(user)
-      scope = user.respond_to?(:id) ? { person: user } : nil
+      attributes = user&.logging_attrs
+      scope = attributes ? { person: attributes } : nil
       Rollbar.scope(scope)
     end
     private_class_method :rollbar_scope

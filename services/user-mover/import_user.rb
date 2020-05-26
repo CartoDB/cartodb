@@ -189,32 +189,24 @@ module CartoDB
           @pack_config['roles'].each do |user, roles|
             roles.each { |role| grant_user_role(user, role) }
           end
-          begin
-            if @target_org_id && @target_is_owner && File.exists?(org_dump_path)
-              create_db(from_dump: true)
-              create_org_oauth_app_user_roles(@target_org_id)
-              create_org_api_key_roles(@target_org_id)
-              import_pgdump("org_#{@target_org_id}.dump")
-              grant_org_oauth_app_user_roles(@target_org_id)
-              grant_org_api_key_roles(@target_org_id)
-            elsif File.exists?(user_dump_path)
-              create_db(from_dump: true)
-              create_user_oauth_app_user_roles(@target_userid)
-              create_user_api_key_roles(@target_userid)
-              import_pgdump("user_#{@target_userid}.dump")
-              grant_user_oauth_app_user_roles(@target_userid)
-              grant_user_api_key_roles(@target_userid)
-            elsif File.exists? "#{@path}#{@target_username}.schema.sql"
-              create_db
-              run_file_restore_schema("#{@target_username}.schema.sql")
-            end
-          rescue => e
-            begin
-              remove_user_mover_banner(@pack_config['user']['id'])
-            ensure
-              log_error(e)
-              raise
-            end
+
+          if @target_org_id && @target_is_owner && File.exists?(org_dump_path)
+            setup_db_for_dump_load
+            create_org_oauth_app_user_roles(@target_org_id)
+            create_org_api_key_roles(@target_org_id)
+            import_pgdump("org_#{@target_org_id}.dump")
+            grant_org_oauth_app_user_roles(@target_org_id)
+            grant_org_api_key_roles(@target_org_id)
+          elsif File.exists?(user_dump_path)
+            setup_db_for_dump_load
+            create_user_oauth_app_user_roles(@target_userid)
+            create_user_api_key_roles(@target_userid)
+            import_pgdump("user_#{@target_userid}.dump")
+            grant_user_oauth_app_user_roles(@target_userid)
+            grant_user_api_key_roles(@target_userid)
+          elsif File.exists? "#{@path}#{@target_username}.schema.sql"
+            setup_db
+            run_file_restore_schema("#{@target_username}.schema.sql")
           end
         end
 
@@ -241,6 +233,10 @@ module CartoDB
 
         log_success
         remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
+      rescue StandardError => e
+        log_error(e)
+        remove_user_mover_banner(@pack_config['user']['id'])
+        raise
       end
 
       def import_org
@@ -594,18 +590,6 @@ module CartoDB
       def set_user_search_path(user, search_path_prefix)
         search_path = CartoDB::UserModule::DBService.build_search_path(search_path_prefix)
         superuser_pg_conn.query("ALTER USER \"#{user}\" SET search_path= #{search_path}")
-      end
-
-      def create_db(params = {})
-        # When a dump file is provided, the database should be created empty (will receive a pg_dump).
-        # dump = nil: it should have postgis, cartodb/cdb_importer/cdb schemas
-        # connect as superuser (postgres)
-        @logger.info "Creating user DB #{@target_dbname}..."
-
-        params[:from_dump] ? setup_db_for_dump_load : setup_db
-      rescue PG::Error => e
-        @logger.error(e.message)
-        raise e
       end
 
       def setup_db

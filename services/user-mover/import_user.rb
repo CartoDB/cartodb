@@ -98,7 +98,7 @@ module CartoDB
         if e.message =~ /already exists/
           @logger.warn "Warning: Oauth app user role already exists"
         else
-          throw e
+          raise
         end
       end
 
@@ -169,7 +169,7 @@ module CartoDB
           @logger.error "Error in sanity checks: #{e}"
           log_error(e)
           remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
-          throw e
+          raise
         end
 
         if @options[:data]
@@ -213,7 +213,7 @@ module CartoDB
               remove_user_mover_banner(@pack_config['user']['id'])
             ensure
               log_error(e)
-              throw e
+              raise
             end
           end
         end
@@ -227,7 +227,7 @@ module CartoDB
             rollback_redis("user_#{@target_userid}_metadata_undo.redis")
             log_error(e)
             remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
-            throw e
+            raise
           end
         end
 
@@ -497,7 +497,7 @@ module CartoDB
             k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
           rescue PG::Error => e
             # Ignore role already exists errors
-            throw e unless e.message =~ /already exists/
+            raise unless e.message =~ /already exists/
           end
         end
       end
@@ -602,19 +602,18 @@ module CartoDB
         # connect as superuser (postgres)
         @logger.info "Creating user DB #{@target_dbname}..."
 
-        if params[:from_dump]
-          superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\"")
-          setup_db_extensions_for_migration
-        else
-          superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\" WITH TEMPLATE template_postgis")
-          setup_db_extensions
-        end
+        params[:from_dump] ? setup_db_for_dump_load : setup_db
       rescue PG::Error => e
         @logger.error(e.message)
         raise e
       end
 
-      def setup_db_extensions
+      def setup_db
+        begin
+          superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\" WITH TEMPLATE template_postgis")
+        rescue PG::DuplicateDatabase
+          @logger.warn "Warning: Database already exists"
+        end
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis")
         cartodb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cartodb'")
         superuser_user_pg_conn.query("CREATE SCHEMA cartodb") if cartodb_schema.count == 0
@@ -625,7 +624,9 @@ module CartoDB
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb CASCADE")
       end
 
-      def setup_db_extensions_for_migration
+      def setup_db_for_dump_load
+        superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\"")
+
         destination_db_version = get_database_version_for_binaries(superuser_pg_conn).split('.').first
         return if destination_db_version != '12'
 
@@ -643,7 +644,7 @@ module CartoDB
           update_database_retries(userid, username, db_host, db_name, retries - 1)
         else
           @logger.info "No more retries"
-          throw e
+          raise
         end
       end
 
@@ -716,7 +717,7 @@ module CartoDB
           end
           log_error(e)
           remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
-          throw e
+          raise
         end
       end
 

@@ -76,7 +76,7 @@ describe 'UserMigration' do
       end
       expect(carto_user.visualizations.map(&:name).sort).to eq(source_visualizations)
 
-      Carto::GhostTablesManager.new(user.id).user_tables_synced_with_db?.should eq true
+      Carto::GhostTablesManager.new(user.id).fetch_user_tables_synced_with_db?.should eq true
 
       user.destroy_cascade
     end
@@ -187,7 +187,7 @@ describe 'UserMigration' do
         expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
 
         @carto_organization.users.each do |u|
-          Carto::GhostTablesManager.new(u.id).user_tables_synced_with_db?.should eq true
+          Carto::GhostTablesManager.new(u.id).fetch_user_tables_synced_with_db?.should eq true
         end
       end
 

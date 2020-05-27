@@ -404,7 +404,7 @@ module CartoDB
 
       def run_file_restore_postgres(file, sections = nil)
         file_path = "#{@path}#{file}"
-        command = "#{pg_restore_bin_path(file_path)} -e --verbose -j4 --disable-triggers -Fc #{file_path} #{conn_string(
+        command = "#{pg_restore_bin_path} -e --verbose -j4 --disable-triggers -Fc #{file_path} #{conn_string(
           @config[:dbuser],
           @target_dbhost,
           @config[:user_dbport],
@@ -456,7 +456,7 @@ module CartoDB
 
       def toc_file(file)
         toc_file = "#{@path}user_#{@target_username}.list"
-        command = "#{pg_restore_bin_path(file)} -l #{file} --file='#{toc_file}'"
+        command = "#{pg_restore_bin_path} -l #{file} --file='#{toc_file}'"
         run_command(command)
         clean_toc_file(toc_file)
         toc_file
@@ -741,8 +741,8 @@ module CartoDB
         importjob_logger.info(@import_log.to_json)
       end
 
-      def pg_restore_bin_path(dump)
-        get_pg_restore_bin_path(superuser_pg_conn, dump)
+      def pg_restore_bin_path
+        get_pg_restore_bin_path(superuser_pg_conn)
       end
 
       def target_dbname

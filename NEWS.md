@@ -34,6 +34,7 @@ Development
 - Scrub Rollbar data ([#2244](https://github.com/CartoDB/cartodb-central/issues/2244))
 - Avoid order by favorited if no user privided ([#15666](https://github.com/CartoDB/cartodb/issues/15666))
 - Sync last login date ([#2788](https://github.com/CartoDB/cartodb-central/issues/2788))
+- Use pg_restore version matching target DB server ([#15676](https://github.com/CartoDB/cartodb/pull/15676))
 - Speed up Ghost Tables Manager checks ([#15674](https://github.com/CartoDB/cartodb/pull/15674))
 - v1/viz: Stop returning the db_size_in_bytes value ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
 - Ghost Tables Manager: Unify all table checks into a single query ([#15678](https://github.com/CartoDB/cartodb/pull/15678))

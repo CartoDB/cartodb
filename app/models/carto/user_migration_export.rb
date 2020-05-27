@@ -72,7 +72,7 @@ module Carto
 
     # TODO: delete this once migration to plpython3 is completed
     def check_custom_plpython2_functions
-      target_user = user ? user : organization.owner
+      target_user = user || organization.owner
 
       pg_result = target_user.in_database(as: :superuser).execute(%{
         select

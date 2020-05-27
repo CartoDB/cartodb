@@ -197,7 +197,6 @@ module CartoDB
             import_pgdump("org_#{@target_org_id}.dump")
             grant_org_oauth_app_user_roles(@target_org_id)
             grant_org_api_key_roles(@target_org_id)
-            drop_deprecated_extensions
           elsif File.exists?(user_dump_path)
             setup_db_for_dump_load
             create_user_oauth_app_user_roles(@target_userid)
@@ -205,7 +204,6 @@ module CartoDB
             import_pgdump("user_#{@target_userid}.dump")
             grant_user_oauth_app_user_roles(@target_userid)
             grant_user_api_key_roles(@target_userid)
-            drop_deprecated_extensions
           elsif File.exists? "#{@path}#{@target_username}.schema.sql"
             setup_db_for_schema_load
             run_file_restore_schema("#{@target_username}.schema.sql")
@@ -232,6 +230,8 @@ module CartoDB
         if @options[:update_metadata]
           update_metadata_user(@target_dbhost)
         end
+
+        drop_deprecated_extensions
 
         log_success
         remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]

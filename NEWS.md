@@ -9,6 +9,7 @@ Development
 - Rake tasks to list DB Direct certificates ([#15625](https://github.com/CartoDB/cartodb/pull/15625))
 - PKCS#8 keys support for DB-Direct certificates ([#15622](https://github.com/CartoDB/cartodb/pull/15622))
 - UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
+- Add support for Node.js 12
 
 ### Bug fixes / enhancements
 - Add maxRetries for aws s3 operation to improve reliability ([#15679](https://github.com/CartoDB/cartodb/pull/15679))

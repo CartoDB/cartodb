@@ -18,3 +18,12 @@ jobs:
         - npm ci # clean install
       script:
         - npm run ci # run tests
+    - node_js:
+        - "12"
+      before_install:
+        - git submodule update --init --recursive
+        - git fetch origin master:refs/remotes/origin/master --depth=1
+      install:
+        - npm ci # clean install
+      script:
+        - npm run ci # run tests

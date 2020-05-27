@@ -197,6 +197,7 @@ module CartoDB
             import_pgdump("org_#{@target_org_id}.dump")
             grant_org_oauth_app_user_roles(@target_org_id)
             grant_org_api_key_roles(@target_org_id)
+            drop_deprecated_extensions
           elsif File.exists?(user_dump_path)
             setup_db_for_dump_load
             create_user_oauth_app_user_roles(@target_userid)
@@ -204,8 +205,9 @@ module CartoDB
             import_pgdump("user_#{@target_userid}.dump")
             grant_user_oauth_app_user_roles(@target_userid)
             grant_user_api_key_roles(@target_userid)
+            drop_deprecated_extensions
           elsif File.exists? "#{@path}#{@target_username}.schema.sql"
-            setup_db
+            setup_db_for_schema_load
             run_file_restore_schema("#{@target_username}.schema.sql")
           end
         end
@@ -592,7 +594,7 @@ module CartoDB
         superuser_pg_conn.query("ALTER USER \"#{user}\" SET search_path= #{search_path}")
       end
 
-      def setup_db
+      def setup_db_for_schema_load
         begin
           superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\" WITH TEMPLATE template_postgis")
         rescue PG::DuplicateDatabase
@@ -611,8 +613,7 @@ module CartoDB
       def setup_db_for_dump_load
         superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\"")
 
-        destination_db_version = get_database_version_for_binaries(superuser_pg_conn).split('.').first
-        return if destination_db_version != '12'
+        return if destination_db_major_version != 12
 
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis")
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis_raster")
@@ -764,6 +765,17 @@ module CartoDB
 
       def user_dump_path
         "#{@path}user_#{@target_userid}.dump"
+      end
+
+      def drop_deprecated_extensions
+        return if destination_db_major_version != 12
+
+        superuser_user_pg_conn.query("DROP EXTENSION IF EXISTS plpythonu")
+        superuser_user_pg_conn.query("DROP EXTENSION IF EXISTS plpython2u")
+      end
+
+      def destination_db_major_version
+        get_database_version_for_binaries(superuser_pg_conn).split('.').first.to_i
       end
     end
   end

@@ -87,7 +87,6 @@ describe Carto::OauthProviderController do
 
       it 'redirects with an error if requesting unknown scopes' do
         request_endpoint(valid_payload.merge(scope: 'invalid wadus'))
-                
         expect(response.status).to(eq(302))
         expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
         expect(response.location).to(include(valid_payload[:state]))

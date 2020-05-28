@@ -234,11 +234,11 @@ module CartoDB
         drop_deprecated_extensions
 
         log_success
-        remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
       rescue StandardError => e
         log_error(e)
-        remove_user_mover_banner(@pack_config['user']['id'])
         raise
+      ensure
+        remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
       end
 
       def import_org

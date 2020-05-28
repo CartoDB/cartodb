@@ -268,9 +268,7 @@ defaults: &defaults
       s3_endpoint: ''
       region: ''
     uploads_path: 'public/uploads' # including 'uploads' assumes public path. Absolute path example: /tmp/exports/downloads
-    python_bin_path: '/usr/bin/python3'
   importer:
-    python_bin_path: '/usr/bin/python3'
     blacklisted_ip_addr: []
     content_guessing:        # Depends on geocoding
       enabled:         false # Disabled if false or not present
@@ -781,6 +779,7 @@ defaults: &defaults
       aws_access_key_id: ''
       aws_secret_key: ''
       aws_region: us-east-1
+      server_ca: disabled
     pgproxy:
       host: 'dbconn.carto.com'
       port: 5432

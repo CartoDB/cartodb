@@ -67,7 +67,7 @@ describe "UserState" do
           get endpoint, {}, @headers
 
           response.status.should == 302
-          follow_redirects
+          follow_redirect!
 
           request.path.should include "unverified"
         end
@@ -206,6 +206,14 @@ describe "UserState" do
         end
 
         it_behaves_like 'locked user'
+        it_behaves_like 'unverified user'
+      end
+
+      context 'unverified regular user' do
+        before(:each) do
+          stub_domainful(@unverified_user.username)
+        end
+
         it_behaves_like 'unverified user'
       end
 

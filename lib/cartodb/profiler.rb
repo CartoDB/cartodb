@@ -8,11 +8,11 @@ module CartoDB
   class Profiler
     include Carto::Configuration
 
-    def initialize(options = {})
-      @printer = options[:printer] || ::RubyProf::CallTreePrinter
-      @exclusions = options[:exclude]
+    def initialize(printer: nil, exclude: nil, path: nil)
+      @printer = printer || ::RubyProf::CallTreePrinter
+      @exclusions = exclude
 
-      @path = options[:path]
+      @path = path
       @path ||= log_dir_path + '/tmp/performance' if defined?(Rails)
       @path ||= ::File.join((ENV["TMPDIR"] || "/tmp"), 'performance')
       @path = Pathname(@path)

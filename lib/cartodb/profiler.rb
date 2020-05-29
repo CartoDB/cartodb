@@ -13,7 +13,7 @@ module CartoDB
       @exclusions = options[:exclude]
 
       @path = options[:path]
-      @path ||= log_dir_path + 'tmp/performance' if defined?(Rails)
+      @path ||= log_dir_path + '/tmp/performance' if defined?(Rails)
       @path ||= ::File.join((ENV["TMPDIR"] || "/tmp"), 'performance')
       @path = Pathname(@path)
     end

@@ -118,7 +118,7 @@ module Carto
         rescue Carto::Connector::InvalidParametersError => e
           render_jsonp({ errors: e.message }, 422)
         rescue => e
-          render_jsonp({ errors: "Error connecting to provider #{provider_id}, #{e}" }, 400)
+          render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e}" }, 400)
         end
       end
 

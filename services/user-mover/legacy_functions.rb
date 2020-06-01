@@ -1534,6 +1534,7 @@ module CartoDB
         'FUNCTION pgis_abs_in(cstring)',
         'FUNCTION pgis_abs_out(pgis_abs)',
         'FUNCTION pgis_geometry_accum_finalfn(pgis_abs)',
+        'FUNCTION pgis_geometry_accum_finalfn(internal)',
         'FUNCTION pgis_geometry_accum_transfn(pgis_abs,geometry)',
         'FUNCTION pgis_geometry_accum_transfn(pgis_abs,geometry,double precision)',
         'FUNCTION pgis_geometry_accum_transfn(pgis_abs,geometry,double precision,integer)',
@@ -1838,9 +1839,11 @@ module CartoDB
         'FUNCTION st_asgeojson(geography)',
         'FUNCTION st_asgeojson(geography,integer)',
         'FUNCTION st_asgeojson(geography,integer,integer)',
+        'FUNCTION _st_asgeojson(geography,integer,integer)',
         'FUNCTION st_asgeojson(geometry)',
         'FUNCTION st_asgeojson(geometry,integer)',
         'FUNCTION st_asgeojson(geometry,integer,integer)',
+        'FUNCTION _st_asgeojson(geometry,integer,integer)',
         'FUNCTION st_asgeojson(integer,geography)',
         'FUNCTION st_asgeojson(integer,geography,integer)',
         'FUNCTION _st_asgeojson(integer,geography,integer,integer)',
@@ -1850,6 +1853,7 @@ module CartoDB
         'FUNCTION _st_asgeojson(integer,geometry,integer,integer)',
         'FUNCTION st_asgeojson(integer,geometry,integer,integer)',
         'FUNCTION st_asgeojson(text)',
+        'FUNCTION _st_asgeojson(text)',
         'FUNCTION st_asgml(geography)',
         'FUNCTION st_asgml(geography,integer)',
         'FUNCTION st_asgml(geography,integer,integer)',
@@ -1869,6 +1873,8 @@ module CartoDB
         'FUNCTION st_asgml(integer,geometry,integer,integer)',
         'FUNCTION _st_asgml(integer,geometry,integer,integer,text)',
         'FUNCTION st_asgml(integer,geometry,integer,integer,text)',
+        'FUNCTION st_asgml(integer,geography,integer,integer,text,text)',
+        'FUNCTION _st_asgml(integer,geography,integer,integer,text,text)',
         'FUNCTION st_asgml(text)',
         'FUNCTION st_ashexewkb(geometry)',
         'FUNCTION st_ashexewkb(geometry,text)',
@@ -3049,6 +3055,7 @@ module CartoDB
         'FUNCTION zmin(box3d)',
         'FUNCTION st_astext(bytea)',
         'FUNCTION st_length_spheroid3d(geometry,spheroid)',
+        'FUNCTION st_generatepoints(geometry,numeric)',
         'OPERATOR CLASS btree_geography_ops',
         'OPERATOR CLASS btree_geometry_ops',
         'OPERATOR CLASS gist_geography_ops',
@@ -3202,9 +3209,9 @@ module CartoDB
         return false unless stripped =~ SIGNATURE_RE
         match = stripped.match(SIGNATURE_RE)
         type = match[:type].strip.gsub(/\s+/, ' ')
-        name = match[:name].split(' ').last.strip
+        name = match[:name].split(/[\s.]/).last
         arguments = match[:arguments]
-        arguments = arguments ? arguments.split(',').map { |arg| arg.split('.').last.strip } : nil
+        arguments = arguments ? arguments.split(',').map { |arg| arg.split(/[\s.]/).last } : nil
         [arguments, name, type]
       end
     end

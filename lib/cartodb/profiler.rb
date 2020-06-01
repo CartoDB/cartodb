@@ -9,14 +9,9 @@ module CartoDB
   class Profiler
     include Carto::Configuration
 
-    def initialize(printer: nil, exclude: nil, path: nil)
+    def initialize(printer: nil, exclude: nil)
       @printer = printer || ::RubyProf::CallTreePrinter
       @exclusions = exclude
-
-      @path = path
-      @path ||= log_dir_path + '/tmp/performance' if defined?(Rails)
-      @path ||= ::File.join((ENV["TMPDIR"] || "/tmp"), 'performance')
-      @path = Pathname(@path)
     end
 
     def call(request, response)
@@ -76,7 +71,6 @@ module CartoDB
     def write_result(result, request, response)
       result.eliminate_methods!(@exclusions) if @exclusions
       printer = @printer.new(result)
-      Dir.mkdir(@path) unless ::File.exists?(@path)
       url = request.fullpath.gsub(/[?\/]/, '-')
       filename = "#{prefix(printer)}#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}-#{url.slice(0, 50)}.#{format(printer)}"
 

@@ -42,6 +42,7 @@ Development
 - Ghost Tables Manager: Unify all table checks into a single query ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
 - Ghost Tables Manager: Don't do any synchronous check if the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables. ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
 - Verify user email. ([#15683](https://github.com/CartoDB/cartodb/pull/15683))
+- Modernize profiler code a little ([#15691](https://github.com/CartoDB/cartodb/pull/15691))
 - OAuth: Keep state on errors ([#15684](https://github.com/CartoDB/cartodb/pull/15684))
 
 4.37.0 (2020-04-24)

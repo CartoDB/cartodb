@@ -882,8 +882,6 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      # This is a contrast to the anonymous use case. A public endpoint shouldn't hit the user DB to avoid
-      # workers locks if user DB is under heavy load. Nevertheless, the private one can (and needs).
       describe 'user db connectivity issues' do
         before(:each) do
           @actual_database_name = @visualization.user.database_name
@@ -894,10 +892,9 @@ describe Carto::Api::VisualizationsController do
           @visualization.user.update_attribute(:database_name, @actual_database_name)
         end
 
-        it 'needs connection to the user db if the viewer is the owner' do
-          CartoDB::Logger.expects(:error).once.with do |e|
-            e[:exception].message.should eq "FATAL:  database \"#{@visualization.user.database_name}\" does not exist\n"
-          end
+        it 'does not need connection to the user db if the viewer is the owner' do
+          CartoDB::Logger.expects(:warning).never
+          CartoDB::Logger.expects(:error).never
 
           get_json api_v1_visualizations_show_url(id: @visualization.id),
                    api_key: @visualization.user.api_key,
@@ -907,8 +904,7 @@ describe Carto::Api::VisualizationsController do
                    show_permission: true,
                    show_auth_tokens: true,
                    show_stats: true do |response|
-            # We currently log 404 on errors. Maybe something that we should change in the future...
-            response.status.should == 404
+            response.status.should == 200
           end
         end
       end

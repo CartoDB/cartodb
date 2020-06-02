@@ -46,18 +46,6 @@ describe 'UserMigration' do
       get_pg_dump_bin_path(@conn_mock).should include 'pg_dump'
       get_pg_restore_bin_path(@conn_mock).should include 'pg_restore'
     end
-
-    it 'raises exception if cannot get dump database version' do
-      expect { get_dump_database_version(@conn_mock, '123') }.to raise_error
-    end
-
-    it 'retrieves dump database version from stubbed dump file name' do
-      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 10.1 on x86_64-pc-linux-gnu...'])
-      status_mock = Object.new
-      status_mock.stubs(:success?).returns(true)
-      Open3.stubs(:capture3).returns([';     Dumped by pg_dump version: 9.5.2', '', status_mock])
-      get_dump_database_version(@conn_mock, '/tmp/test.dump').should eq '9.5'
-    end
   end
 
   describe 'export_data being false' do
@@ -99,7 +87,7 @@ describe 'UserMigration' do
       end
       expect(carto_user.visualizations.map(&:name).sort).to eq(source_visualizations)
 
-      Carto::GhostTablesManager.new(user.id).user_tables_synced_with_db?.should eq true
+      Carto::GhostTablesManager.new(user.id).fetch_user_tables_synced_with_db?.should eq true
 
       user.destroy_cascade
     end
@@ -198,7 +186,7 @@ describe 'UserMigration' do
         expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
 
         @carto_organization.users.each do |u|
-          Carto::GhostTablesManager.new(u.id).user_tables_synced_with_db?.should eq true
+          Carto::GhostTablesManager.new(u.id).fetch_user_tables_synced_with_db?.should eq true
         end
       end
 
@@ -251,7 +239,7 @@ describe 'UserMigration' do
 
       source_visualizations = carto_user.visualizations.map(&:name).sort
 
-      export = create(:user_migration_export, user_id: carto_user.id)
+      export = create(:user_migration_export, user_id: carto_user.id, export_metadata: true)
       export.run_export
 
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
@@ -300,7 +288,7 @@ describe 'UserMigration' do
 
       carto_user.visualizations.count.should eq 4
 
-      export = create(:user_migration_export, user_id: carto_user.id)
+      export = create(:user_migration_export, user_id: carto_user.id, export_metadata: true)
       export.run_export
 
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
@@ -376,7 +364,7 @@ describe 'UserMigration' do
 
       carto_user.tables.exists?(name: @table.name).should be
 
-      export = create(:user_migration_export, user_id: carto_user.id)
+      export = create(:user_migration_export, user_id: carto_user.id, export_metadata: true)
       export.run_export
 
       export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
@@ -400,7 +388,7 @@ describe 'UserMigration' do
       @table_visualization.reload
       @table_visualization.should be
 
-      export = create(:user_migration_export, user_id: carto_user.id)
+      export = create(:user_migration_export, user_id: carto_user.id, export_metadata: true)
       export.run_export
 
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)

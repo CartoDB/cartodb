@@ -224,7 +224,8 @@ module Carto
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
                                            show_size_and_row_count: show_table_size_and_row_count,
-                                           show_permission: show_permission)
+                                           show_permission: show_permission,
+                                           fetch_db_size: false)
                                       .with_presenter_cache(@presenter_cache).to_poro
       end
 
@@ -234,7 +235,7 @@ module Carto
 
       def permission
         unless @visualization.permission.nil?
-          Carto::Api::PermissionPresenter.new(@visualization.permission, current_viewer: @current_viewer)
+          Carto::Api::PermissionPresenter.new(@visualization.permission, current_viewer: @current_viewer, fetch_db_size: false)
                                          .with_presenter_cache(@presenter_cache).to_poro
         end
       end
@@ -257,7 +258,7 @@ module Carto
                   end
 
         related.map do |table|
-          Carto::Api::UserTablePresenter.new(table, @current_viewer).with_presenter_cache(@presenter_cache).to_poro
+          Carto::Api::UserTablePresenter.new(table, @current_viewer, fetch_db_size: false).with_presenter_cache(@presenter_cache).to_poro
         end
       end
 

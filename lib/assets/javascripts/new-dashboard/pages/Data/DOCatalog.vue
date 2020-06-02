@@ -1,19 +1,6 @@
 <template>
   <section class="catalog">
     <div class="container grid">
-      <div class="full-width">
-        <SectionTitle class="grid-cell" :description="$t('CatalogPage.description')">
-          <template slot="icon">
-            <img src="../../assets/icons/section-title/catalog.svg" width="18" height="20" />
-          </template>
-          <template slot="title">
-              <span>{{ $t('CatalogPage.header') }}</span>
-          </template>
-        </SectionTitle>
-      </div>
-    </div>
-
-    <div class="container grid">
       <div class="grid-cell grid-cell--col12">
         <router-view></router-view>
       </div>
@@ -38,7 +25,6 @@ export default {
 
 .catalog {
   min-height: 640px;
-  margin-top: 64px;
 
   &__filter {
     justify-content: space-between;

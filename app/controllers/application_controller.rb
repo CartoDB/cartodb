@@ -143,7 +143,7 @@ class ApplicationController < ActionController::Base
 
   def wrap_in_profiler
     if params[:profile_request].present? && current_user.present? && current_user.has_feature_flag?('profiler')
-      CartoDB::Profiler.new().call(request) { yield }
+      CartoDB::Profiler.new().call(request, response) { yield }
     else
       yield
     end

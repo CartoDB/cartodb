@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.180-docatalog-7",
+  "version": "1.0.0-assets.180-docatalog-10",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
     "@babel/runtime": "^7.9.2",
     "@babel/runtime-corejs3": "^7.9.2",
     "@carto/carto.js": "^4.1.10",
+    "@carto/common-ui": "git://github.com/CartoDB/common-ui.git#feature/ch74251/search-view",
     "@carto/toolkit-core": "0.0.1-rc.18",
     "@carto/toolkit-custom-storage": "0.0.1-rc.18",
     "@carto/zera": "1.0.7",
@@ -37,7 +38,6 @@
     "cartodb-pecan": "0.2.x",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
-    "common-ui": "git://github.com/CartoDB/common-ui.git",
     "confetti-js": "0.0.14",
     "core-js": "^3.6.4",
     "d3-interpolate": "^1.1.6",
@@ -124,7 +124,7 @@
     "grunt-cli": "~0.1.13",
     "grunt-contrib-clean": "0.7.0",
     "grunt-contrib-compass": "1.0.4",
-    "grunt-contrib-compress": "1.4.3",
+    "grunt-contrib-compress": "^1.6.0",
     "grunt-contrib-concat": "1.0.1",
     "grunt-contrib-connect": "0.11.2",
     "grunt-contrib-copy": "0.8.1",

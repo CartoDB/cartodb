@@ -2180,6 +2180,19 @@ describe Table do
         table.geometry_types.should eq(any_types), "cache hit failure"
         $tables_metadata.get(table.geometry_types_key).should eq(any_types.to_s), "it should be actually cached"
       end
+
+      it "returns an empty array and does not cache if there's no id" do
+        table = create_table(user_id: @user.id)
+
+        cache = mock()
+        cache.expects(:get).once
+        cache.expects(:setex).never  # shouldn't be called...
+
+        table.stubs(:cache).returns(cache)
+        table.stubs(:id).returns(nil)
+
+        table.geometry_types
+      end
     end
 
     describe 'self.table_and_schema' do

@@ -114,7 +114,7 @@ class Table
       # cache miss, query and store
       types = query_geometry_types
       timeout = types.empty? ? NO_GEOMETRY_TYPES_CACHING_TIMEOUT : GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT
-      cache.setex(geometry_types_key, timeout, types)
+      cache.setex(geometry_types_key, timeout, types) if id.present?
     end
 
     types

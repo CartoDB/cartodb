@@ -120,7 +120,7 @@ export default {
   data () {
     return {
       firstStepEnabled: true,
-      certificateLimit: 3,
+      certificateLimit: 5,
       newCertificate: {}
     };
   },

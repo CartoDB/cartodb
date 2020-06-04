@@ -1,4 +1,5 @@
 require 'ruby-prof'
+require 'stringio'
 
 require 'carto/configuration'
 
@@ -8,17 +9,12 @@ module CartoDB
   class Profiler
     include Carto::Configuration
 
-    def initialize(options = {})
-      @printer = options[:printer] || ::RubyProf::CallTreePrinter
-      @exclusions = options[:exclude]
-
-      @path = options[:path]
-      @path ||= log_dir_path + 'tmp/performance' if defined?(Rails)
-      @path ||= ::File.join((ENV["TMPDIR"] || "/tmp"), 'performance')
-      @path = Pathname(@path)
+    def initialize(printer: nil, exclude: nil)
+      @printer = printer || ::RubyProf::CallTreePrinter
+      @exclusions = exclude
     end
 
-    def call(request)
+    def call(request, response)
       mode = profile_mode(request)
 
       ::RubyProf.measure_mode = mode
@@ -27,7 +23,7 @@ module CartoDB
         yield
       ensure
         result = ::RubyProf.stop
-        write_result(result, request)
+        write_result(result, request, response)
       end
     end
 
@@ -72,15 +68,21 @@ module CartoDB
       end
     end
 
-    def write_result(result, request)
+    def write_result(result, request, response)
       result.eliminate_methods!(@exclusions) if @exclusions
       printer = @printer.new(result)
-      Dir.mkdir(@path) unless ::File.exists?(@path)
       url = request.fullpath.gsub(/[?\/]/, '-')
       filename = "#{prefix(printer)}#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}-#{url.slice(0, 50)}.#{format(printer)}"
-      ::File.open(@path + filename, 'w+') do |f|
+
+      in_mem_file = ""
+      ::StringIO.open(in_mem_file, 'w+') do |f|
         printer.print(f)
       end
+
+      response.body = in_mem_file
+      response.status = 200
+      response.content_type = 'text/plain'
+      response.headers['Content-Disposition'] = "attachment; filename=\"#{filename}\""
     end
 
   end

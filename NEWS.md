@@ -10,6 +10,8 @@ Development
 - PKCS#8 keys support for DB-Direct certificates ([#15622](https://github.com/CartoDB/cartodb/pull/15622))
 - UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
 - Add support for Node.js 12
+- Add user mover support for PG12 (first step, only enabled in Central staging) ([#15686](https://github.com/CartoDB/cartodb/pull/15686))
+- Increase limit of certificates for SQL direct from 3 to 5 ([#2536](https://github.com/CartoDB/support/issues/2536))
 
 ### Bug fixes / enhancements
 - Fix missing connector metadata error information ([#15690](https://github.com/CartoDB/cartodb/pull/15690))
@@ -36,11 +38,13 @@ Development
 - Scrub Rollbar data ([#2244](https://github.com/CartoDB/cartodb-central/issues/2244))
 - Avoid order by favorited if no user privided ([#15666](https://github.com/CartoDB/cartodb/issues/15666))
 - Sync last login date ([#2788](https://github.com/CartoDB/cartodb-central/issues/2788))
+- Make user mover fail when custom plpython functions exist ([#15677](https://github.com/CartoDB/cartodb/pull/15677))
 - Use pg_restore version matching target DB server ([#15676](https://github.com/CartoDB/cartodb/pull/15676))
 - Speed up Ghost Tables Manager checks ([#15674](https://github.com/CartoDB/cartodb/pull/15674))
 - v1/viz: Stop returning the db_size_in_bytes value ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
 - Ghost Tables Manager: Unify all table checks into a single query ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
 - Ghost Tables Manager: Don't do any synchronous check if the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables. ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
+- Modernize profiler code a little ([#15691](https://github.com/CartoDB/cartodb/pull/15691))
 - OAuth: Keep state on errors ([#15684](https://github.com/CartoDB/cartodb/pull/15684))
 
 4.37.0 (2020-04-24)

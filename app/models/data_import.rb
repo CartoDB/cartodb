@@ -718,7 +718,8 @@ class DataImport < Sequel::Model
         error_code: ex.error_code,
         log_info: CartoDB::IMPORTER_ERROR_CODES[ex.error_code]
       }
-    rescue => ex
+    rescue StandardError => ex
+      CartoDB::Logger.error(message: ex.message, exception: ex)
       had_errors = true
       manual_fields = {
         error_code: 99999,

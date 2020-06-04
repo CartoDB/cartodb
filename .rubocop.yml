@@ -33,6 +33,7 @@ AllCops:
   - "vendor"
   DisplayCopNames: false
   StyleGuideCopsOnly: false
+  NewCops: enable
 
 #
 # Layout config

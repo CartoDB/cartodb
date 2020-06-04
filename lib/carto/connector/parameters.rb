@@ -102,6 +102,7 @@ module Carto
       end
 
       def normalize_parameter_names(names)
+        names ||= @accepted_parameters
         normalized_array(Array(names))
       end
 
@@ -110,10 +111,7 @@ module Carto
         if @accepted_parameters.present?
           invalid_params = normalized_names - @accepted_parameters
           missing_parameters = @required_parameters - normalized_names
-          if only_for.present?
-            only_for = normalize_parameter_names(only_for)
-            missing_parameters &= only_for
-          end
+          missing_parameters &= normalize_parameter_names(only_for)
           if missing_parameters.present?
             errors << "Missing required #{parameters_term} #{missing_parameters * ','}"
           end

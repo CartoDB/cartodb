@@ -29,6 +29,11 @@ module Carto
         v
       end
 
+      def delete(name)
+        k, _v = fetch(name)
+        @params.delete(k)
+      end
+
       def blank?
         @params.blank?
       end

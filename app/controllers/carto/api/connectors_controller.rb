@@ -163,8 +163,6 @@ module Carto
               parameters[:connection][key.to_sym] = request_params[key.to_sym]
             end
           end
-        else
-          parameters.merge! request_params.except(:provider_id, :format, :controller, :action)
         end
         parameters
       end

@@ -9,7 +9,7 @@ namespace :cartodb do
           Carto::ConnectorProvider.create! name: provider_name
         end
       end
-      providers = Carto::Connector.providers(all: true).keys.map { |name| "'#{name}'" }
+      providers = Carto::Connector.providers(all: true).keys
       Carto::ConnectorProvider.where.not(name: providers).each do |provider|
         puts "Provider #{provider.name} is not configured in the code!"
       end

@@ -14,6 +14,7 @@ Development
 - Increase limit of certificates for SQL direct from 3 to 5 ([#2536](https://github.com/CartoDB/support/issues/2536))
 
 ### Bug fixes / enhancements
+- Fix missing connector metadata error information ([#15690](https://github.com/CartoDB/cartodb/pull/15690))
 - Add maxRetries for aws s3 operation to improve reliability ([#15679](https://github.com/CartoDB/cartodb/pull/15679))
 - Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564))
 - Make DB Direct server_ca configurable ([#15650](https://github.com/CartoDB/cartodb/pull/15650))

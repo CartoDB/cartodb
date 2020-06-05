@@ -46,6 +46,7 @@ Development
 - Ghost Tables Manager: Don't do any synchronous check if the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables. ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
 - Modernize profiler code a little ([#15691](https://github.com/CartoDB/cartodb/pull/15691))
 - OAuth: Keep state on errors ([#15684](https://github.com/CartoDB/cartodb/pull/15684))
+- Avoid a collateral effect with "shared" geometry types of tables coming from cartoframes.to_carto method ([#2423](https://github.com/CartoDB/support/issues/2423))
 
 4.37.0 (2020-04-24)
 -------------------

@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Set right referrer header for password reset page ([#15699](https://github.com/CartoDB/cartodb/pull/15699))
 
 4.38.0 (2020-06-05)
 -------------------

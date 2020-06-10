@@ -1,5 +1,5 @@
 <template>
-  <div class="u-flex u-pl--24 u-pb--24 u-pt--24">
+  <div class="subscription-card-container u-flex u-pl--24 u-pb--24 u-pt--24">
     <div class="colum_1 u-flex__grow--1">
       <h4 class="is-small is-semibold is-txtGrey"><span class="uppercase">United States</span> · Demographics</h4>
       <h3 class="is-body is-semibold u-mt--8">5-yr ACS data at Counties level (2006 - 2010)</h3>
@@ -45,34 +45,40 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-.colum_1 {
-  min-width: 0;
-  p {
-    font-size: 14px;
-    line-height: 1.43;
+.subscription-card-container {
+  transition: background-color 0.25s ease;
+  &:hover {
+    background-color: $blue--100;
   }
-  .data-info {
-    div {
-      white-space: nowrap;
-      &.ellipsis {
+  .colum_1 {
+    min-width: 0;
+    p {
+      font-size: 14px;
+      line-height: 1.43;
+    }
+    .data-info {
+      div {
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      & + div {
-        margin-left: 24px;
+        &.ellipsis {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        & + div {
+          margin-left: 24px;
+        }
       }
     }
   }
-}
-.colum_2 {
-  flex: 0 0 36px;
-  margin: 0 48px;
-}
-.colum_3 {
-  flex: 0 0 282px;
-}
-.uppercase {
-  text-transform: uppercase;
+  .colum_2 {
+    flex: 0 0 36px;
+    margin: 0 48px;
+  }
+  .colum_3 {
+    flex: 0 0 282px;
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
 }
 </style>

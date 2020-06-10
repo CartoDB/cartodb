@@ -2,35 +2,40 @@
   <section class="subscriptions-section">
     <div class="container grid">
       <div class="u-width--100">
-        <!-- <div class="grid-cell grid-cell--col12">
+        <div v-if="subscriptions.length === 0" class="grid-cell grid-cell--col12">
           <EmptyState
             :text="$t('Subscriptions.emptyCase')"
             :subtitle="$t('Subscriptions.exploreDescription')"
           >
             <img svg-inline src="../../assets/icons/subscriptions/subscriptions-icon.svg">
           </EmptyState>
-          <button class="button is-primary goDo">{{$t('Subscriptions.goDo')}}</button>
-        </div> -->
-        <SectionTitle class="grid-cell" :showActionButton="true">
-          <template slot="icon">
-            <img src="../../assets/icons/subscriptions/subscriptions_tick-icon.svg" width="18" height="20" />
-          </template>
+          <router-link :to="{ name: 'do-catalog' }">
+            <button class="button is-primary goDo">{{$t('Subscriptions.goDo')}}</button>
+          </router-link>
+        </div>
+        <template v-else>
+          <SectionTitle class="grid-cell" :showActionButton="true">
+            <template slot="icon">
+              <img src="../../assets/icons/subscriptions/subscriptions_tick-icon.svg" width="18" height="20" />
+            </template>
 
-          <template slot="title">
-            <VisualizationsTitle :defaultTitle="$t(`DataPage.tabs.yourSubscriptions`)"/>
-          </template>
+            <template slot="title">
+              <VisualizationsTitle :defaultTitle="$t(`DataPage.tabs.yourSubscriptions`)"/>
+            </template>
 
-          <template slot="dropdownButton">
-            <SettingsDropdown>
-              <img svg-inline src="../../assets/icons/common/filter.svg">
-            </SettingsDropdown>
-          </template>
+            <template slot="dropdownButton">
+              <SettingsDropdown>
+                <img svg-inline src="../../assets/icons/common/filter.svg">
+              </SettingsDropdown>
+            </template>
 
-          <template slot="actionButton">
-            <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
-          </template>
-        </SectionTitle>
-        <SubscriptionCard></SubscriptionCard>
+            <template slot="actionButton">
+              <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
+            </template>
+          </SectionTitle>
+          <SubscriptionCard></SubscriptionCard>
+          <SubscriptionCard></SubscriptionCard>
+        </template>
       </div>
     </div>
   </section>
@@ -54,20 +59,16 @@ export default {
     SubscriptionCard
   },
   data () {
-    return {};
+    return {
+      subscriptions: ['aaaa']
+    };
   },
-  beforeMount () {
-  },
-  mounted () {
-  },
-  beforeDestroy () {
-  },
-  beforeRouteUpdate (to, from, next) {
-  },
-  computed: {
-  },
-  methods: {
-  }
+  beforeMount () {},
+  mounted () {},
+  beforeDestroy () {},
+  beforeRouteUpdate (to, from, next) {},
+  computed: {},
+  methods: {}
 };
 </script>
 
@@ -85,6 +86,11 @@ export default {
   }
   .goDo {
     margin: 0 auto 20vh auto;
+  }
+  .subscription-card-container {
+    +.subscription-card-container {
+      border-top: 1px solid $neutral--300;
+    }
   }
 }
 

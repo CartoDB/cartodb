@@ -1,19 +1,18 @@
 module Carto
-  class GCloudUserSettings
 
+  class GCloudUserSettings
     REDIS_PREFIX = 'do_settings'
 
     REDIS_KEYS = %i(service_account bq_public_project
                     gcp_execution_project bq_project bq_dataset
                     gcs_bucket).freeze
 
-    def initialize(user, attributes)
+    def initialize(user)
       @username = user.username
-      @attributes = attributes
     end
 
-    def update
-      if @attributes.present?
+    def update(attributes)
+      if attributes.present?
         store
       else
         remove
@@ -26,13 +25,12 @@ module Carto
 
     private
 
-    def store
-      $users_metadata.hmset(key, *values.to_a)
+    def store(attributes)
+      $users_metadata.hmset(key, *values(attributes).to_a)
     end
 
-    def values
-      attributes = @attributes.symbolize_keys
-      redis_values = attributes.slice(*REDIS_KEYS)
+    def values(attributes)
+      attributes.symbolize_keys.slice(*REDIS_KEYS)
     end
 
     def remove

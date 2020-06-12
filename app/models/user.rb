@@ -868,12 +868,12 @@ class User < Sequel::Model
 
   def update_gcloud_settings(attributes)
     return if attributes.nil?
-    settings = Carto::GCloudUserSettings.new(self, attributes)
-    settings.update
+    settings = Carto::GCloudUserSettings.new(self)
+    settings.update attributes
   end
 
   def gcloud_settings
-    Carto::GCloudUserSettings.new(self, {}).read&.with_indifferent_access
+    Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
   end
 
   def do_subscription(storage, dataset_id)

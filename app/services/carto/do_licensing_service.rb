@@ -42,7 +42,7 @@ module Carto
           expires_at: subscription['expires_at']
         }
       end
-      subscription
+      subscription.with_indifferent_access
     end
 
     def add_to_redis(datasets)

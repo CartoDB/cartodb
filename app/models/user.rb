@@ -872,6 +872,16 @@ class User < Sequel::Model
     settings.update
   end
 
+  def gcloud_settings
+    Carto::GCloudUserSettings.new(self, {}).read&.with_indifferent_access
+  end
+
+  def do_subscription(storage, dataset_id)
+    subscriptions = Carto::DoLicensingService.new(username).subscriptions(storage)
+    available_subscriptions = subscriptions.select { |dataset| Time.parse(dataset['expires_at']) > Time.now }
+    available_subscriptions.find { |subscription| subscription['id'] == dataset_id }&.with_indifferent_access
+  end
+
   def carto_account_type
     Carto::AccountType.find(account_type)
   end

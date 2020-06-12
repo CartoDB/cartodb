@@ -12,8 +12,10 @@ Development
 - New DO Catalog integration (WIP)
 - Add support for Node.js 12
 - Add user mover support for PG12 (first step, only enabled in Central staging) ([#15686](https://github.com/CartoDB/cartodb/pull/15686))
+- Increase limit of certificates for SQL direct from 3 to 5 ([#2536](https://github.com/CartoDB/support/issues/2536))
 
 ### Bug fixes / enhancements
+- Fix missing connector metadata error information ([#15690](https://github.com/CartoDB/cartodb/pull/15690))
 - Add maxRetries for aws s3 operation to improve reliability ([#15679](https://github.com/CartoDB/cartodb/pull/15679))
 - Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564))
 - Make DB Direct server_ca configurable ([#15650](https://github.com/CartoDB/cartodb/pull/15650))
@@ -37,6 +39,7 @@ Development
 - Scrub Rollbar data ([#2244](https://github.com/CartoDB/cartodb-central/issues/2244))
 - Avoid order by favorited if no user privided ([#15666](https://github.com/CartoDB/cartodb/issues/15666))
 - Sync last login date ([#2788](https://github.com/CartoDB/cartodb-central/issues/2788))
+- Make user mover fail when custom plpython functions exist ([#15677](https://github.com/CartoDB/cartodb/pull/15677))
 - Use pg_restore version matching target DB server ([#15676](https://github.com/CartoDB/cartodb/pull/15676))
 - Speed up Ghost Tables Manager checks ([#15674](https://github.com/CartoDB/cartodb/pull/15674))
 - v1/viz: Stop returning the db_size_in_bytes value ([#15678](https://github.com/CartoDB/cartodb/pull/15678))

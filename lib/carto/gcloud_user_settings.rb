@@ -20,6 +20,10 @@ module Carto
       end
     end
 
+    def read
+      $users_metadata.hmget(key, *REDIS_KEYS)
+    end
+
     private
 
     def store

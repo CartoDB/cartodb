@@ -20,7 +20,7 @@ module Carto
     end
 
     def read
-      Hash[$users_metadata.hmget(key, *REDIS_KEYS)]
+      Hash[REDIS_KEYS.zip($users_metadata.hmget(key, *REDIS_KEYS))]
     end
 
     private

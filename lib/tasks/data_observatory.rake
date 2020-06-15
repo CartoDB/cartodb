@@ -14,9 +14,9 @@ namespace :cartodb do
       CSV.foreach(args[:datasets_csv], :headers => true) do |row|
         available_in = row['available_in'].split(';')
         dataset = { 
-          dataset_id: row['dataset_id'], 
-          available_in: available_in, 
-          price: row['price'].to_f, 
+          dataset_id: row['dataset_id'],
+          available_in: available_in,
+          price: row['price'].to_f,
           expires_at: Time.parse(row['expires_at']),
           view_def: row['view_def']
         }

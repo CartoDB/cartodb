@@ -1,7 +1,7 @@
 <template>
   <Page class="page--data">
     <SecondaryNavigation v-if="showDataCatalog">
-      <div class="tabs" :style="{ width: '100%' }">
+      <div class="tabs">
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
           <span>{{ $t('DataPage.tabs.yourDatasets') }}</span>
         </router-link>

@@ -11,9 +11,15 @@ namespace :cartodb do
       raise usage unless username.present? && datasets_csv.present?
 
       datasets = []
-      CSV.foreach(args[:datasets_csv]) do |row|
-        available_in = row[1].split(';')
-        dataset = { dataset_id: row[0], available_in: available_in, price: row[2].to_f, expires_at: Time.parse(row[3]) }
+      CSV.foreach(args[:datasets_csv], :headers => true) do |row|
+        available_in = row['available_in'].split(';')
+        dataset = { 
+          dataset_id: row['dataset_id'], 
+          available_in: available_in, 
+          price: row['price'].to_f, 
+          expires_at: Time.parse(row['expires_at']),
+          view_def: row['view_def']
+        }
         datasets << dataset
       end
 

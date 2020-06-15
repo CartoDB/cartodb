@@ -1,8 +1,8 @@
 <template>
   <Page class="page--data">
     <SecondaryNavigation v-if="showDataCatalog">
-      <div class="tabs">
-        <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active">
+      <div class="tabs" :style="{ width: '100%' }">
+        <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
           <span>{{ $t('DataPage.tabs.yourDatasets') }}</span>
         </router-link>
         <router-link :to="{ name: 'subscriptions' }" class="tabs__item title is-small" exact active-class="is-active">
@@ -41,7 +41,8 @@ export default {
       return isAllowed(this.$route.params.filter);
     },
     showDataCatalog () {
-      return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+      //return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+      return true;
     }
   }
 };

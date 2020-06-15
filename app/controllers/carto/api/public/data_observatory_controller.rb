@@ -126,7 +126,12 @@ module Carto
             project, dataset, table = qualified_id.split('.')
             # FIXME: better save the type in Redis or look for it in the metadata tables
             type = table.starts_with?('geography') ? 'geography' : 'dataset'
-            { project: project, dataset: dataset, table: table, id: qualified_id, type: type }
+            { project: project, dataset: dataset, table: table, id: qualified_id, type: type,
+              created_at: subscription['created_at'],
+              expires_at: subscription['expires_at'],
+              status: 'active',
+              sync_status: 'connected',
+              sync_table: 'my_do_table' }
           end
           enriched_subscriptions.select! { |subscription| subscription[:type] == @type } if @type
           ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }

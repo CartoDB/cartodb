@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+* Fix navigation bar tests
 
 4.38.0 (2020-06-05)
 -------------------

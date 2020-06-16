@@ -1,4 +1,5 @@
 # Datasets CSV example:
+# dataset_id,available_in,price,expires_at,view_def
 # carto-do-public-data.open_data.geography_usa_state_2015,bq;bigtable,999,2020-09-27T08:00:00
 # carto-do-public-data.open_data.demographics_acs_usa_cbsaclipped_2015_yearly_2015,bq,2000,2020-09-27T08:00:00
 namespace :cartodb do

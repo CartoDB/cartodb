@@ -131,7 +131,7 @@ module Carto
               expires_at: subscription['expires_at'],
               status: 'active',
               sync_status: 'connected',
-              sync_table: 'my_do_table' }
+              sync_table: 'my_do_subscription' }
           end
           enriched_subscriptions.select! { |subscription| subscription[:type] == @type } if @type
           ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }

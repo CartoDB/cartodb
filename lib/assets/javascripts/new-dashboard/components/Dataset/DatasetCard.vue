@@ -35,7 +35,8 @@
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </div>
-        <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
+        <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues || isDataObservatory">
+          <p class="tag-squared title is-xsmall letter-spacing" v-if="isDataObservatory">Data Observatory</p>
           <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img class="icon-metadata" src="../../assets/icons/common/tag.svg" width="14" height="14">
             <ul v-if="tagsChars <= maxTagChars" class="tag-list">
@@ -205,6 +206,9 @@ export default {
     },
     isSharedWithColleagues () {
       return this.$props.dataset.permission.acl.length > 0;
+    },
+    isDataObservatory () {
+      return this.$props.dataset.subscription && this.$props.dataset.subscription === 'do-v2';
     }
   },
   methods: {
@@ -361,6 +365,15 @@ export default {
   &:hover {
     color: $primary-color;
   }
+}
+
+.tag-squared {
+  padding: 2px 4px;
+  margin-right: 12px;
+  border-radius: 2px;
+  color: $blue--900;
+  background-color: $blue--100;
+  text-transform: uppercase;
 }
 
 .row-dataType {

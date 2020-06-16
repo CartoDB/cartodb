@@ -26,6 +26,7 @@ module CartoDB
         @log        = options[:log] || new_logger
         @job        = options[:job] || new_job(@log, @pg_options)
         @user       = options[:user]
+        @previous_modified_at = options[:modified_at]
         @collision_strategy = options[:collision_strategy]
         @georeferencer      = options[:georeferencer] || new_georeferencer(@job)
 
@@ -33,7 +34,7 @@ module CartoDB
         @unique_suffix = @id.delete('-')
         @json_params = JSON.parse(connector_source)
         extract_params
-        @connector = Carto::Connector.new(parameters: @params, user: @user, logger: @log)
+        @connector = Carto::Connector.new(parameters: @params, user: @user, logger: @log, modified_at: modified_at)
         @results = []
         @tracker = nil
         @stats = {}
@@ -103,6 +104,7 @@ module CartoDB
       def last_modified
         # This method is needed to make the interface of ConnectorRunner compatible with Runner,
         # but we have no meaningful data to return here.
+        @connector.last_modified
       end
 
       def provider_name

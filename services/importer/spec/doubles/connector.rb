@@ -86,6 +86,18 @@ class DummyConnectorProvider < Carto::Connector::Provider
   end
 end
 
+class DummyConnectorProviderWithModifiedDate < DummyConnectorProvider
+  metadata id: 'dummy_with_modified_date', name: 'DummyWithModifiedDate'
+  LAST_MODIFIED = Time.new(2020, 6, 16)
+  def remote_data_updated?
+    @modified_at.blank? || last_modified > @modified_at
+  end
+
+  def last_modified
+    LAST_MODIFIED
+  end
+end
+
 def dummy_connector_provider_with_id(id, name=nil, features=DummyConnectorProvider::DEFAULT_FEATURES)
   Class.new(DummyConnectorProvider) do
     metadata id: id, name: name || id

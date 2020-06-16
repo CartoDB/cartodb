@@ -34,10 +34,12 @@ module Carto
         true
       end
 
-      def initialize(parameters: {}, user: nil, logger: nil)
+      def initialize(parameters: {}, user: nil, logger: nil, modified_at: nil)
         @params = Parameters.new(parameters, required: required_parameters + [:provider], optional: optional_parameters)
         @user = user
         @logger = logger
+        # modified_at is the time at which previous synchronization data was modified
+        @modified_at = modified_at
       end
 
       def errors(only_for: nil)
@@ -82,7 +84,13 @@ module Carto
       end
 
       def remote_data_updated?
-        must_be_defined_in_derived_class
+        # By default connectors don't check for updated data
+        true
+      end
+
+      def last_modified
+        # By default connectors don't support last modified time
+        nil
       end
 
       # Name of the table to be imported

@@ -21,7 +21,6 @@ Development
 * Add support for Node.js 12
 * Add user mover support for PG12 (first step, only enabled in Central staging) ([#15686](https://github.com/CartoDB/cartodb/pull/15686))
 * Increase limit of certificates for SQL direct from 3 to 5 ([#2536](https://github.com/CartoDB/support/issues/2536))
-* Empty subscriptions layout
 
 ### Bug fixes / enhancements
 * Fix missing connector metadata error information ([#15690](https://github.com/CartoDB/cartodb/pull/15690))

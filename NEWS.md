@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Improve OAuth error for expired sessions ([#15707](https://github.com/CartoDB/cartodb/pull/15707))
 
 4.38.0 (2020-06-05)
 -------------------

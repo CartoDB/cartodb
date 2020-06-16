@@ -3179,7 +3179,7 @@ module CartoDB
         'TYPE valid_detail',
         'TYPE valuecount',
         'TYPE wktgeomval',
-        'FUNCTION update_timestamp()',
+        'FUNCTION update_timestamp()'
       ].freeze
 
       def remove_line?(line)

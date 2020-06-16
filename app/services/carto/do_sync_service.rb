@@ -24,7 +24,7 @@ module Carto
           'error'
         end
         {
-          table_name: data_import.table_name,
+          table_name: data_import.table_name, # empty while connecting
           state: state,
           synchronization_id: data_import.synchronization_id,
           table_id: data_import.table_id
@@ -34,6 +34,7 @@ module Carto
 
     # table_name --> subscription_id; returns nil for non-subscription-sync table
     def subscription_from_table_name(table_name)
+      # This will not work untill the initial data import has finished
       table = Carto::UserTable.where(user_id: @user.id, name: table_name).first
       if table
         data_import = table.data_import
@@ -61,7 +62,6 @@ module Carto
     def create_new_sync_for_subscription!(subscription_id)
       table_name = temptative_table_name(subscription_id)
       member_attributes = {
-        name: table_name,
         user_id: @user.id,
         state: CartoDB::Synchronization::Member::STATE_CREATED,
         service_name: 'connector',
@@ -71,8 +71,8 @@ module Carto
       member.store
 
       options = member_attributes.slice(:user_id, :service_name, :service_item_id).merge(
-        table_name: table_name.presence,
-        synchronization_id: member.id
+        synchronization_id: member.id,
+        import_as: table_name
       )
       data_import = ::DataImport.create(options)
 

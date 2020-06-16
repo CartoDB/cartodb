@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Filter support when license DO datasets ([15705](https://github.com/CartoDB/cartodb/pull/15705]))
 
 ### Bug fixes / enhancements
 

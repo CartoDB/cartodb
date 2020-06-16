@@ -38,9 +38,9 @@ describe 'data_observatory.rake' do
       File.stubs(:open).returns(csv_example)
       expected_datasets = [
         { dataset_id: 'dataset1', available_in: ['bq', 'bigtable'], price: 100.0,
-          expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
+          expires_at: Time.new(2020, 9, 27, 8, 0, 0), view_def: "where do_date='1986-11-12'" },
         { dataset_id: 'dataset2', available_in: ['bigtable'], price: 200.0,
-          expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
+          expires_at: Time.new(2020, 12, 31, 12, 0, 0), view_def: nil }
       ]
       service_mock = mock
       service_mock.expects(:subscribe).once.with(expected_datasets)
@@ -78,8 +78,9 @@ describe 'data_observatory.rake' do
 
   def csv_example
     CSV.generate do |csv|
-      csv << ["dataset1", "bq;bigtable", "100", "2020-09-27T08:00:00"]
-      csv << ["dataset2", "bigtable", "200", "2020-12-31T12:00:00"]
+      csv << ["dataset_id", "available_in", "price", "expires_at", "view_def"]
+      csv << ["dataset1", "bq;bigtable", "100", "2020-09-27T08:00:00", "where do_date='1986-11-12'"]
+      csv << ["dataset2", "bigtable", "200", "2020-12-31T12:00:00", nil]
     end
   end
 

@@ -8,7 +8,7 @@ Development
 - Filter support when license DO datasets ([15705](https://github.com/CartoDB/cartodb/pull/15705]))
 
 ### Bug fixes / enhancements
-- None yet
+* Fix navigation bar tests
 
 4.38.0 (2020-06-05)
 -------------------

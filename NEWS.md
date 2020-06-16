@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- New DO Catalog integration (WIP)
+- None yet
 
 ### Bug fixes / enhancements
 - None yet

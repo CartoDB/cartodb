@@ -89,6 +89,7 @@
     },
     "tabs": {
       "yourDatasets": "Your Datasets",
+      "yourSubscriptions": "Your Subscriptions",
       "catalog": "Catalog"
     }
   },
@@ -747,6 +748,13 @@
     "variableGroups": "Variable Groups",
     "category": "Category",
     "country": "Country"
+  },
+  "Subscriptions": {
+    "emptyCase": "No subscriptions yet",
+    "exploreDescription": "Explore the Data Catalog and subscribe to one of our Public or Premium datasets; then you will find it here.",
+    "goDo": "Go to Data Observatory",
+    "do": "Data Observatory Catalog",
+    "new": "New subscriptions"
   },
   "Dialogs": {
     "ShareViaURL": {

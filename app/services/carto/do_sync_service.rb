@@ -58,6 +58,17 @@ module Carto
       sync_data
     end
 
+    # stop sync'ing a subscription
+    def remove_sync(subscription_id)
+      sync_data = sync(subscription_id)
+      if sync_data.present? && sync_data[:sync_status] != 'error' && sync_data[:synchronization_id].present?
+        raise "Cannot remove sync while connecting" if sync_data[:sync_status] == 'connecting'
+        # FIXME: should we also check the state of the synchronization?
+        synchronization = Synchronization::Member.new(id: sync_data[:synchronization_id]).fetch
+        synchronization.delete
+      end
+    end
+
     private
 
     def create_new_sync_for_subscription!(subscription_id)

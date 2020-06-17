@@ -49,9 +49,9 @@ module Carto
     end
 
     # create sync for subscription if it does not exist, or return existing sync
-    def create_sync(subscription_id)
+    def create_sync(subscription_id, force=false)
       sync_data = sync(subscription_id)
-      unless sync_data.present?
+      unless sync_data.present? || (force && sync_data[:sync_status] == 'error')
         create_new_sync_for_subscription! subscription_id
         sync_data = sync(subscription_id)
       end

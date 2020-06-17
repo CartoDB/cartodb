@@ -47,7 +47,13 @@ module CartoDB
         @job.log "ConnectorRunner #{@json_params.except('connection').to_json}"
         # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
-        if should_import?(@connector.table_name)
+        updated = false
+        if !should_import?(@connector.table_name)
+          @job.log "Table #{table_name} won't be imported"
+        elsif !remote_data_updated?
+          @job.log "Table #{table_name} needs not be updated"
+        else
+          updated = true
           @job.log "Copy connected table"
           warnings = @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
           @job.log 'Georeference geometry column'
@@ -60,7 +66,7 @@ module CartoDB
         @job.log "ConnectorRunner Error #{error}"
         @results.push result_for(@job.schema, table_name, error)
       else
-        if should_import?(@connector.table_name)
+        if updated
           @job.log "ConnectorRunner created table #{table_name}"
           @job.log "job schema: #{@job.schema}"
           @results.push result_for(@job.schema, table_name)

@@ -26,7 +26,7 @@ module CartoDB
         @log        = options[:log] || new_logger
         @job        = options[:job] || new_job(@log, @pg_options)
         @user       = options[:user]
-        @previous_modified_at = options[:modified_at]
+        modified_at = options[:modified_at]
         @collision_strategy = options[:collision_strategy]
         @georeferencer      = options[:georeferencer] || new_georeferencer(@job)
 

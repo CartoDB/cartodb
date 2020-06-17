@@ -25,16 +25,16 @@ module Carto
           'error'
         end
         {
-          table_name: data_import.table_name, # empty while connecting
-          state: state,
+          sync_table: data_import.table_name, # empty while connecting
+          sync_status: state,
           synchronization_id: data_import.synchronization_id,
-          table_id: data_import.table_id
+          sync_table_id: data_import.table_id
         }
       end
     end
 
-    # table_name --> subscription_id; returns nil for non-subscription-sync table
-    def subscription_from_table_name(table_name)
+    # sync table name --> subscription_id; returns nil for non-subscription-sync table
+    def subscription_from_sync_table(table_name)
       # This will not work untill the initial data import has finished
       table = Carto::UserTable.where(user_id: @user.id, name: table_name).first
       if table

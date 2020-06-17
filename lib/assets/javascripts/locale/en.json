@@ -1710,6 +1710,9 @@
             "add-column": "Add column",
             "export": "Export"
         },
+        "subscriptions": {
+            "view-subscription": "View subscription"
+        },
         "preview-map": {
             "preview": "preview",
             "back": "back"

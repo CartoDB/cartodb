@@ -1,6 +1,8 @@
 @import '~cartoassets/src/scss/cdb-variables/colors';
 @import '~cartoassets/src/scss/cdb-variables/sizes';
 
+$title__font-family: 'Montserrat', 'Helvetica Neue', Helvetica, sans-serif;
+
 .Tag {
   display: inline-block;
   box-sizing: border-box;
@@ -32,6 +34,18 @@
 
   &--Builder {
     color: $cMainText;
+  }
+
+  &--Subscription {
+    padding: 2px 4px;
+    font-family: $title__font-family;
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 16px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #003267;
+    background-color: #ffffff;
   }
 }
 

@@ -13,7 +13,7 @@ module Carto
 
     def update(attributes)
       if attributes.present?
-        store
+        store attributes
       else
         remove
       end

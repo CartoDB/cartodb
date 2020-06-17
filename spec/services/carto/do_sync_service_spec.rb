@@ -42,8 +42,8 @@ describe Carto::DoSyncService do
         Carto::Synchronization.find(sync[:synchronization_id]).state.should eq Carto::Synchronization::STATE_QUEUED
       }.to change { Carto::Synchronization.count }.by 1
       @service.sync(@dataset_id)[:synchronization_id].should eq sync[:synchronization_id]
-      # TODO: testing subscription_from_table_name requires imported table to be created/registered
-      # @service.subscription_from_table_name(sync[:table_name]).should eq @dataset_id
+      # TODO: testing subscription_from_sync_table requires imported table to be created/registered
+      # @service.subscription_from_sync_table(sync[:sync_table]).should eq @dataset_id
     end
     # TODO: should not create synchronization for non-existing subscription
   end

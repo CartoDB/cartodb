@@ -1,6 +1,7 @@
 module Carto
   class DoSyncService
     DO_SYNC_PROVIDER = 'do'.freeze
+    DO_SYNC_INTERVAL = 86400
 
     def initialize(user)
       @user = user
@@ -24,16 +25,16 @@ module Carto
           'error'
         end
         {
-          table_name: data_import.table_name, # empty while connecting
-          state: state,
+          sync_table: data_import.table_name, # empty while connecting
+          sync_status: state,
           synchronization_id: data_import.synchronization_id,
-          table_id: data_import.table_id
+          sync_table_id: data_import.table_id
         }
       end
     end
 
-    # table_name --> subscription_id; returns nil for non-subscription-sync table
-    def subscription_from_table_name(table_name)
+    # sync table name --> subscription_id; returns nil for non-subscription-sync table
+    def subscription_from_sync_table(table_name)
       # This will not work untill the initial data import has finished
       table = Carto::UserTable.where(user_id: @user.id, name: table_name).first
       if table
@@ -61,18 +62,23 @@ module Carto
 
     def create_new_sync_for_subscription!(subscription_id)
       table_name = temptative_table_name(subscription_id)
+      connector_attributes = {
+        provider: DO_SYNC_PROVIDER,
+        subscription_id: subscription_id,
+        import_as: table_name
+      }
       member_attributes = {
         user_id: @user.id,
         state: CartoDB::Synchronization::Member::STATE_CREATED,
         service_name: 'connector',
-        service_item_id: { provider: DO_SYNC_PROVIDER, subscription_id: subscription_id }.to_json
+        service_item_id: connector_attributes.to_json,
+        interval: DO_SYNC_INTERVAL
       }
       member = CartoDB::Synchronization::Member.new(member_attributes)
       member.store
 
       options = member_attributes.slice(:user_id, :service_name, :service_item_id).merge(
-        synchronization_id: member.id,
-        import_as: table_name
+        synchronization_id: member.id
       )
       data_import = ::DataImport.create(options)
 

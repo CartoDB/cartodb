@@ -59,8 +59,6 @@ module CartoDB
           @job.log 'Georeference geometry column'
           georeference
           @warnings.merge! warnings if warnings.present?
-        else
-          @job.log "Table #{table_name} won't be imported"
         end
       rescue => error
         @job.log "ConnectorRunner Error #{error}"

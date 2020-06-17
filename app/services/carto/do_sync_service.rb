@@ -64,7 +64,7 @@ module Carto
       if sync_data.present? && sync_data[:sync_status] != 'error' && sync_data[:synchronization_id].present?
         raise "Cannot remove sync while connecting" if sync_data[:sync_status] == 'connecting'
         # FIXME: should we also check the state of the synchronization?
-        synchronization = Synchronization::Member.new(id: sync_data[:synchronization_id]).fetch
+        synchronization = CartoDB::Synchronization::Member.new(id: sync_data[:synchronization_id]).fetch
         synchronization.delete
       end
     end

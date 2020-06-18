@@ -36,7 +36,7 @@
           </span>
         </div>
         <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues || isDataObservatory">
-          <p class="tag-squared title is-xsmall letter-spacing" v-if="isDataObservatory">Data Observatory</p>
+          <span class="tag-squared title is-xsmall letter-spacing" v-if="isDataObservatory">Data Observatory</span>
           <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img class="icon-metadata" src="../../assets/icons/common/tag.svg" width="14" height="14">
             <ul v-if="tagsChars <= maxTagChars" class="tag-list">

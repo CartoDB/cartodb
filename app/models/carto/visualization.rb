@@ -204,6 +204,16 @@ class Carto::Visualization < ActiveRecord::Base
     ordered
   end
 
+  def updated_at
+    return user_table.updated_at unless map?
+    # If it's a map, then returns last updated_at from its related objects
+    updated_at_dates = [map.updated_at] \
+                      + analyses.map { |a| a.updated_at } \
+                      + layers.map { |l| l.updated_at} \
+                      + widgets.map { |w| w.updated_at}
+    return updated_at_dates.max
+  end
+
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
   def liked_by?(user)
     likes_by_user(user).any?

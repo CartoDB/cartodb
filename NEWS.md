@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Data Observatory v2 integration
 
 ### Bug fixes / enhancements
 - None yet

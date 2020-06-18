@@ -88,6 +88,7 @@ end
 
 class DummyConnectorProviderWithModifiedDate < DummyConnectorProvider
   metadata id: 'dummy_with_modified_date', name: 'DummyWithModifiedDate'
+  @copies = []
   LAST_MODIFIED = Time.new(2020, 6, 16)
   def remote_data_updated?
     @modified_at.blank? || last_modified > @modified_at

@@ -499,7 +499,8 @@ module Carto
                                                  .with_user_id_not(current_user.id)
                                                  .with_locked(false)
                                                  .with_prefetch_table
-                                                 .build.size
+                                                 .build.size,
+          total_subscriptions: 1
         }
       end
     end

@@ -205,13 +205,15 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def updated_at
-    return user_table.updated_at unless map?
+    return self.updated_at unless table? || derived?
+    return [self.updated_at, user_table&.updated_at].compact.max if table?
+
     # If it's a map, then returns last updated_at from its related objects
-    updated_at_dates = [map.updated_at] \
-                      + analyses.map { |a| a.updated_at } \
-                      + layers.map { |l| l.updated_at} \
-                      + widgets.map { |w| w.updated_at}
-    return updated_at_dates.max
+    updated_at_dates = [self.updated_at, map.updated_at] +
+      analyses.map(&:updated_at) +
+      layers.map(&:updated_at) +
+      widgets.map(&:updated_at)
+    return updated_at_dates.compact.max
   end
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id

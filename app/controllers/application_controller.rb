@@ -35,7 +35,7 @@ class ApplicationController < ActionController::Base
   IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(maintenance_mode lockout login logout unauthenticated multifactor_authentication).freeze
 
   def self.ssl_required(*splat)
-    if Rails.env.production? || Rails.env.staging?
+    if Cartodb.config[:ssl_required].nil? || Cartodb.config[:ssl_required]
       if splat.any?
         force_ssl only: splat
       else

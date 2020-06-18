@@ -241,7 +241,7 @@ module CartoDB
   end
 
   def self.use_https?
-    Rails.env.production? || Rails.env.staging?
+    Cartodb.config[:ssl_required].nil? || Cartodb.config[:ssl_required]
   end
 
   def self.get_session_domain

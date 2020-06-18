@@ -28,6 +28,8 @@ CartoDB::Application.configure do
 
   config.log_level = :info
 
+  # Setting this to false will disable ActiveController's enforcement of SSL.
+  config.ssl_required = true
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new
 

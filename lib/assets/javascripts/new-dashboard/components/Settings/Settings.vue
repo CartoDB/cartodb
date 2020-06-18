@@ -24,7 +24,10 @@ export default {
     metadata: {
       type: Object,
       default () {
-        return { total_shared: 0 };
+        return {
+          total_shared: 0,
+          total_subscriptions: 0
+        };
       }
     }
   },

@@ -39,6 +39,7 @@ module FrontendConfigHelper
       config[:postgres_enabled] = Cartodb.get_config(:connectors, 'postgres', 'enabled')
       config[:sqlserver_enabled] = Cartodb.get_config(:connectors, 'sqlserver', 'enabled')
       config[:hive_enabled] = Cartodb.get_config(:connectors, 'hive', 'enabled')
+      config[:dataobservatory_enabled] = Cartodb.get_config(:connectors, 'dataobservatory', 'enabled')
       config[:max_asset_file_size] = Cartodb.get_config(:assets, 'max_file_size')
       config[:watcher_ttl] = Cartodb.get_config(:watcher, 'ttl') || 60
       config[:licenses] = Carto::License.all

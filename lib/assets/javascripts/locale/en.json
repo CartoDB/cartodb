@@ -1412,7 +1412,8 @@
                     "tags": {
                         "enterprise": "Enterprise",
                         "beta": "Beta",
-                        "soon": "Soon"
+                        "soon": "Soon",
+                        "new": "New"
                     },
                     "request": {
                         "other": "Request connector",
@@ -1709,6 +1710,9 @@
             "add-row": "Add row",
             "add-column": "Add column",
             "export": "Export"
+        },
+        "subscriptions": {
+            "view-subscription": "View subscription"
         },
         "preview-map": {
             "preview": "preview",

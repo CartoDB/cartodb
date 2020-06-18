@@ -10,5 +10,8 @@ module.exports = merge(configBase, {
       __ENV__: JSON.stringify('dev'),
       __KEPLERGL_BASE_URL__: JSON.stringify('http://localhost:8081')
     })
-  ]
+  ],
+  optimization: {
+    usedExports: true
+  }
 });

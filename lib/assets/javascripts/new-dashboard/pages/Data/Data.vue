@@ -1,15 +1,20 @@
 <template>
   <Page class="page--data">
     <SecondaryNavigation v-if="showDataCatalog">
-      <div class="tabs" :style="{ width: '100%' }">
+      <div class="tabs">
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
           <span>{{ $t('DataPage.tabs.yourDatasets') }}</span>
         </router-link>
-        <router-link :to="{ name: 'catalog' }" class="tabs__item title is-small" active-class="is-active">
-          <span>{{ $t('DataPage.tabs.catalog') }}</span>
+        <router-link :to="{ name: 'subscriptions' }" class="tabs__item title is-small" exact active-class="is-active">
+          <span>{{ $t('DataPage.tabs.yourSubscriptions') }}</span>
         </router-link>
-        <router-link :to="{ name: 'do-catalog' }" class="tabs__item title is-small" active-class="is-active" :style="{ marginLeft: 'auto' }">DO Catalog</router-link>
+        <!-- <router-link :to="{ name: 'catalog' }" class="tabs__item title is-small" active-class="is-active">
+          <span>{{ $t('DataPage.tabs.catalog') }}_deprecated</span>
+        </router-link> -->
       </div>
+      <router-link :to="{ name: 'do-catalog' }" class="tabs__item title is-small" exact active-class="is-active" style="margin-left: auto;">
+        <span>{{ $t('Subscriptions.do') }}</span>
+      </router-link>
     </SecondaryNavigation>
     <router-view></router-view>
   </Page>

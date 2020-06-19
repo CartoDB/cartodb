@@ -3181,8 +3181,31 @@ module CartoDB
         'TYPE wktgeomval',
         'FUNCTION update_timestamp()'
       ].freeze
+      FAULTY_ACLS = %w(
+        17959052
+        22347862
+        112581766
+        118494091
+        54463653
+        20075927
+        19359455
+        17770034
+        45517997
+        19692853
+        114742427
+        127522471
+      )
+
+      # Remove grants given to unexistent all-numeric roles (remove after PG12 migration)
+      # https://app.clubhouse.io/cartoteam/story/86031/fix-migration-failures-due-to-missing-roles
+      # https://github.com/CartoDB/cartodb-platform/issues/5293#issuecomment-494883117
+      def faulty_acl_line?(line)
+        line.match?(/GRANT .* ON TABLE \".*\".\".*\" TO \"#{FAULTY_ACLS.join('|')}\"/)
+      end
 
       def remove_line?(line)
+        return true if faulty_acl_line?(line)
+
         arguments, name, type = matches(line)
         return true if type == 'ACL' && legacy_functions.flat_map { |_, v| v[name] }.compact.include?(arguments)
         return false unless legacy_functions[type]

@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Adds `ssl_required` config parameter to govern ActionController's redirects. Defaults to `false` (no redirects to HTTPS attempted unless explicitly set to `true`). ([15716](https://github.com/CartoDB/cartodb/pull/15716]))
 
 ### Features
 - Filter support when license DO datasets ([15705](https://github.com/CartoDB/cartodb/pull/15705]))

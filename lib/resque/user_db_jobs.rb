@@ -48,7 +48,9 @@ module Resque
 
         def self.perform(user_id, visualizations_api_url)
           user = ::User.where(id: user_id).first
-          user.load_common_data(visualizations_api_url) if user.should_load_common_data?
+          bolt = Carto::Bolt.new("user_common_data:#{user.id}:auto_index")
+
+          bolt.run_locked { user.load_common_data(visualizations_api_url) if user.should_load_common_data? }
         end
       end
     end

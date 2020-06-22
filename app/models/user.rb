@@ -882,7 +882,7 @@ class User < Sequel::Model
     elsif attributes[:action] == 'add'
       license_srv.add_to_redis(attributes[:do_dataset])
     else
-      message = 'Unknown action received'
+      message = 'Error updating a DO subscription: unknown action'
       CartoDB::Logger.error(message: message)
       raise message
     end

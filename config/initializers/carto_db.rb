@@ -241,7 +241,7 @@ module CartoDB
   end
 
   def self.use_https?
-    Cartodb.config[:ssl_required].nil? || Cartodb.config[:ssl_required]
+    Cartodb.config[:ssl_required] == true
   end
 
   def self.get_session_domain

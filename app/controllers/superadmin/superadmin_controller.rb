@@ -6,7 +6,7 @@ class Superadmin::SuperadminController < ActionController::Base
   rescue_from StandardError, with: :rescue_from_superadmin_error
 
   def self.ssl_required(*splat)
-    if Cartodb.config[:ssl_required].nil? || Cartodb.config[:ssl_required]
+    if Cartodb.config[:ssl_required] == true
       force_ssl only: splat
     end
   end

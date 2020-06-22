@@ -40,7 +40,7 @@ CartoDB::Application.configure do
   # In production, Apache or nginx will already do this
   config.serve_static_files = true
 
-  # Setting this to false will disable ActiveController's enforcement of SSL.
+  # Setting this to true will enable ActiveController's enforcement of SSL.
   config.ssl_required = false
 
   # Enable serving of images, stylesheets, and javascripts from an asset server

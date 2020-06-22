@@ -121,17 +121,33 @@ module Carto
         end
 
         def present_subscriptions(subscriptions)
+          central_subscriptions = Cartodb::Central.new.get_do_datasets(username: @user.username)
+
           enriched_subscriptions = subscriptions.map do |subscription|
             qualified_id = subscription['dataset_id']
+            created_at, expires_at, status = nil
+
+            central_subscriptions.each do |central_subscription|
+              if central_subscription['dataset_id'] == qualified_id
+                created_at = central_subscription['created_at']
+                expires_at = central_subscription['expires_at']
+                status = central_subscription['status']
+              end
+            end
+
             project, dataset, table = qualified_id.split('.')
             # FIXME: better save the type in Redis or look for it in the metadata tables
             type = table.starts_with?('geography') ? 'geography' : 'dataset'
+
+            sync_service = DoSyncService.new(@user)
+            sync_info = sync_service.sync(qualified_id) || {}
+
             { project: project, dataset: dataset, table: table, id: qualified_id, type: type,
-              created_at: subscription['created_at'],
-              expires_at: subscription['expires_at'],
-              status: 'active',
-              sync_status: 'connected',
-              sync_table: 'my_do_subscription' }
+              created_at: created_at,
+              expires_at: expires_at,
+              status: status,
+              sync_status: sync_info[:state],
+              sync_table: sync_info[:table_name] }
           end
           enriched_subscriptions.select! { |subscription| subscription[:type] == @type } if @type
           ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }

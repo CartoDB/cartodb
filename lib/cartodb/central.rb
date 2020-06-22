@@ -103,6 +103,10 @@ module Cartodb
       send_request("api/users/#{username}/do/datasets", body, :post, [201])
     end
 
+    def get_do_datasets(username:)
+      send_request("api/users/#{username}/do/datasets", nil, :get, [200])
+    end
+
     def remove_do_dataset(username:, id:)
       send_request("api/users/#{username}/do/datasets/#{id}", nil, :delete, [204])
     end

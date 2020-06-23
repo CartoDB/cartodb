@@ -7,12 +7,12 @@ describe Carto::DoLicensingService do
     @redis_key = "do:fulano:datasets"
     @service = Carto::DoLicensingService.new('fulano')
     @dataset_id = 'carto.abc.dataset1'
-    @dataset = { 
-      dataset_id: @dataset_id, 
-      available_in: ['bq', 'bigtable'], 
+    @dataset = {
+      dataset_id: @dataset_id,
+      available_in: ['bq', 'bigtable'],
       price: 100,
-      expires_at: Time.new(2020, 9, 27, 8, 0, 0) 
-    }       
+      expires_at: Time.new(2020, 9, 27, 8, 0, 0)
+    }
   end
 
   after(:all) do

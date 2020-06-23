@@ -464,7 +464,6 @@ describe Carto::Api::Public::DataObservatoryController do
       DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 3.0).once.returns(mailer_mock)
       Carto::DoLicensingService.expects(:new).never
 
-      Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
 
       post_json endpoint_url(api_key: @master), id: 'carto.abc.geography1', type: 'geography' do |response|
         expect(response.status).to eq(200)

@@ -23,7 +23,6 @@ namespace :cartodb do
         }
         Carto::DoLicensingService.new(username).subscribe(dataset)
         puts "#{row['dataset_id']} licensed succesfully"
-        
       end
 
       puts 'Task finished succesfully!'

@@ -872,23 +872,6 @@ class User < Sequel::Model
     settings.update
   end
 
-  def update_do_subscription(attributes)
-    return if attributes.nil?
-    
-    license_srv = Carto::DoLicensingService.new(self.username)
-
-    if attributes[:action] == 'rm'
-      license_srv.remove_from_redis(attributes[:do_dataset][:dataset_id])
-    elsif attributes[:action] == 'add'
-      license_srv.add_to_redis(attributes[:do_dataset])
-    else
-      message = 'Error updating a DO subscription: unknown action'
-      CartoDB::Logger.error(message: message)
-      raise message
-    end
-
-  end
-
   def carto_account_type
     Carto::AccountType.find(account_type)
   end

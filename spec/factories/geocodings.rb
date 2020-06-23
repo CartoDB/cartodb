@@ -1,7 +1,7 @@
 FactoryGirl.define do
   # TODO: refactor tests that depend on default geocoding factory
   factory :geocoding, class: Geocoding do
-    to_create(&:save)
+    to_create(&:save!)
 
     kind 'namedplace'
     formatter 'foo'

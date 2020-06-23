@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :layer, class: Layer do
-    to_create(&:save)
+    to_create(&:save!)
 
     order 1
     kind 'carto'

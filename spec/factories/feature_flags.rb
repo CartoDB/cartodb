@@ -4,7 +4,7 @@ include UniqueNamesHelper
 
 FactoryGirl.define do
   factory :feature_flag, class: ::FeatureFlag do
-    to_create(&:save)
+    to_create(&:save!)
 
     id { unique_integer }
     name { unique_name('ff') }

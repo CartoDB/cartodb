@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :asset do
-    to_create(&:save)
+    to_create(&:save!)
 
     public_url 'https://manolo.es/es/co/bar.png'
   end

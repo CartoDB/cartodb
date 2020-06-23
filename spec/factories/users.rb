@@ -10,7 +10,7 @@ include UniqueNamesHelper
 
 FactoryGirl.define do
   factory :user, class: ::User do
-    to_create(&:save)
+    to_create(&:save!)
 
     username               { unique_name('user') }
     email                  { unique_email }

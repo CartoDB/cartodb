@@ -7,12 +7,12 @@ describe Carto::DoLicensingService do
     @redis_key = "do:fulano:datasets"
     @service = Carto::DoLicensingService.new('fulano')
     @dataset_id = 'carto.abc.dataset1'
-    @datasets = [
-      { dataset_id: @dataset_id, available_in: ['bq', 'bigtable'], price: 100,
-        expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
-      { dataset_id: 'carto.abc.dataset2', available_in: ['bigtable'], price: 200,
-        expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
-    ]
+    @dataset = {
+      dataset_id: @dataset_id,
+      available_in: ['bq', 'bigtable'],
+      price: 100,
+      expires_at: Time.new(2020, 9, 27, 8, 0, 0)
+    }
   end
 
   after(:all) do
@@ -35,43 +35,39 @@ describe Carto::DoLicensingService do
     end
 
     it 'calls create_do_datasets from Central with the expected parameters' do
-      @central_mock.expects(:create_do_datasets).once.with(username: 'fulano', datasets: @datasets)
-
-      @service.subscribe(@datasets)
+      @central_mock.expects(:create_do_datasets).once.with(username: 'fulano', datasets: [@dataset])
+      @service.subscribe(@dataset)
     end
 
     it 'stores the metadata in Redis' do
       @central_mock.stubs(:create_do_datasets)
 
-      bq_datasets = [
+      bq_redis = [
         { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000' }
       ].to_json
-      bigtable_datasets = [
-        { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000' },
-        { dataset_id: 'carto.abc.dataset2', expires_at: '2020-12-31 12:00:00 +0000' }
+      
+      bigtable_redis = [
+        { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000' }
       ].to_json
 
-      @service.subscribe(@datasets)
-
-      $users_metadata.hget(@redis_key, 'bq').should eq bq_datasets
-      $users_metadata.hget(@redis_key, 'bigtable').should eq bigtable_datasets
+      @service.subscribe(@dataset)
+      $users_metadata.hget(@redis_key, 'bq').should eq bq_redis
+      $users_metadata.hget(@redis_key, 'bigtable').should eq bigtable_redis
     end
 
     it 'allows to add more data in the same Redis key' do
       @central_mock.stubs(:create_do_datasets)
 
-      more_datasets = [
-        { dataset_id: 'carto.abc.dataset3', available_in: ['bq'], price: 300,
+      new_dataset = { dataset_id: 'carto.abc.dataset3', available_in: ['bq'], price: 300,
           expires_at: '2020-09-27 08:00:00 +0000' }
-      ]
 
-      @service.subscribe(@datasets)
-      @service.subscribe(more_datasets)
+      @service.subscribe(@dataset)
+      @service.subscribe(new_dataset)
 
       bq_datasets = JSON.parse($users_metadata.hget(@redis_key, 'bq'))
       bigtable_datasets = JSON.parse($users_metadata.hget(@redis_key, 'bigtable'))
       bq_datasets.count.should eq 2
-      bigtable_datasets.count.should eq 2
+      bigtable_datasets.count.should eq 1
     end
   end
 
@@ -96,15 +92,11 @@ describe Carto::DoLicensingService do
       @central_mock.stubs(:remove_do_dataset)
 
       bq_datasets = [].to_json
-      bigtable_datasets = [
-        { dataset_id: 'carto.abc.dataset2', expires_at: '2020-12-31 12:00:00 +0000' }
-      ].to_json
 
-      @service.subscribe(@datasets)
+      @service.subscribe(@dataset)
       @service.unsubscribe(@dataset_id)
 
       $users_metadata.hget(@redis_key, 'bq').should eq bq_datasets
-      $users_metadata.hget(@redis_key, 'bigtable').should eq bigtable_datasets
     end
   end
 

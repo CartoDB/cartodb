@@ -21,10 +21,9 @@ namespace :cartodb do
           expires_at: Time.parse(row['expires_at']),
           view_def: row['view_def']
         }
-        datasets << dataset
+        Carto::DoLicensingService.new(username).subscribe(dataset)
+        puts "#{row['dataset_id']} licensed succesfully"
       end
-
-      Carto::DoLicensingService.new(username).subscribe(datasets)
 
       puts 'Task finished succesfully!'
     end

@@ -7,6 +7,7 @@ Development
 ### Features
 - Filter support when license DO datasets ([15705](https://github.com/CartoDB/cartodb/pull/15705]))
 - Synchronize REDIS when licensing from superadmin ([15719](https://github.com/CartoDB/cartodb/pull/15719]))
+- Allow service account credentials on Big Query import UI ([15722](https://github.com/CartoDB/cartodb/pull/15722))
 
 ### Bug fixes / enhancements
 - Verify user email. ([#15683](https://github.com/CartoDB/cartodb/pull/15683))

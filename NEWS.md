@@ -2,50 +2,63 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Adds `ssl_required` config parameter to govern ActionController's redirects. Defaults to `false` (no redirects to HTTPS attempted unless explicitly set to `true`). ([15716](https://github.com/CartoDB/cartodb/pull/15716]))
 
 ### Features
-- GCP Firewall managemente for DB Direct IPs ([#15610](https://github.com/CartoDB/cartodb/pull/15610))
-- Rake tasks to list DB Direct certificates ([#15625](https://github.com/CartoDB/cartodb/pull/15625))
-- PKCS#8 keys support for DB-Direct certificates ([#15622](https://github.com/CartoDB/cartodb/pull/15622))
-- UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
-- Add support for Node.js 12
-- Add user mover support for PG12 (first step, only enabled in Central staging) ([#15686](https://github.com/CartoDB/cartodb/pull/15686))
-- Increase limit of certificates for SQL direct from 3 to 5 ([#2536](https://github.com/CartoDB/support/issues/2536))
+- Filter support when license DO datasets ([15705](https://github.com/CartoDB/cartodb/pull/15705]))
+- Synchronize REDIS when licensing from superadmin ([15719](https://github.com/CartoDB/cartodb/pull/15719]))
 
 ### Bug fixes / enhancements
-- Add maxRetries for aws s3 operation to improve reliability ([#15679](https://github.com/CartoDB/cartodb/pull/15679))
-- Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564))
-- Make DB Direct server_ca configurable ([#15650](https://github.com/CartoDB/cartodb/pull/15650))
-- More clear DB Direct Firewall error messages ([#15652](https://github.com/CartoDB/cartodb/pull/15652))
-- Normalize IP ranges applied to Firewall rules ([#15649](https://github.com/CartoDB/cartodb/pull/15649))
-- Fix DB Direct instructions in certificate README ([#15647]https://github.com/CartoDB/cartodb/pull/15647)
-- Fix Db Direct IPs Firewall management problem ([#15641](https://github.com/CartoDB/cartodb/pull/15641))
-- Fix Db Direct Firewall management credentials problem ([#15640](https://github.com/CartoDB/cartodb/pull/15640))
-- DO user settings are now stored under `do_settings:{@username}` ([#15630](https://github.com/CartoDB/cartodb/pull/15630))
-- Improve performance of dataset view with many maps ([#15627](https://github.com/CartoDB/cartodb/pull/15627))
-- Clarify message at Organization's Auth settings
-- Improve performance of dependent visualizations ([#15632](https://github.com/CartoDB/cartodb/pull/15632))
-- Do not send DO subscription request mails when requested by team organization user (`ch70618`)
-- Fix kepler.gl link in Maps section ([#15644](https://github.com/CartoDB/cartodb/issues/15644))
-- /api/v3/me endpoint returns less public data ([#5627](https://github.com/CartoDB/cartodb-platform/issues/5627))
-- Retrieve IPs before adding or removing to avoid inconsistencies ([#15643](https://github.com/CartoDB/cartodb/pull/15643))
-- Faster geometry types calculation for big datasets ([#15654](https://github.com/CartoDB/cartodb/pull/15654))
-- Return error for requests whose authentication was succeeding with an expired session ([#15637](https://github.com/CartoDB/cartodb/pull/15637))
-- Fix signup with multiple active invitations ([#15629](https://github.com/CartoDB/cartodb/pull/15629))
-- Restore twitter connector for those having their own credentials ([#15656](https://github.com/CartoDB/cartodb/pull/15656))
-- Scrub Rollbar data ([#2244](https://github.com/CartoDB/cartodb-central/issues/2244))
-- Avoid order by favorited if no user privided ([#15666](https://github.com/CartoDB/cartodb/issues/15666))
-- Sync last login date ([#2788](https://github.com/CartoDB/cartodb-central/issues/2788))
-- Make user mover fail when custom plpython functions exist ([#15677](https://github.com/CartoDB/cartodb/pull/15677))
-- Use pg_restore version matching target DB server ([#15676](https://github.com/CartoDB/cartodb/pull/15676))
-- Speed up Ghost Tables Manager checks ([#15674](https://github.com/CartoDB/cartodb/pull/15674))
-- v1/viz: Stop returning the db_size_in_bytes value ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
-- Ghost Tables Manager: Unify all table checks into a single query ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
-- Ghost Tables Manager: Don't do any synchronous check if the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables. ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
 - Verify user email. ([#15683](https://github.com/CartoDB/cartodb/pull/15683))
-- Modernize profiler code a little ([#15691](https://github.com/CartoDB/cartodb/pull/15691))
-- OAuth: Keep state on errors ([#15684](https://github.com/CartoDB/cartodb/pull/15684))
+- Set right referrer header for password reset page ([#15699](https://github.com/CartoDB/cartodb/pull/15699))
+- Fix navigation bar tests
+- Ignore update_timestamp function on migrations ([#15710](https://github.com/CartoDB/cartodb/pull/15710))
+
+4.38.0 (2020-06-05)
+-------------------
+
+### Features
+* GCP Firewall managemente for DB Direct IPs ([#15610](https://github.com/CartoDB/cartodb/pull/15610))
+* Rake tasks to list DB Direct certificates ([#15625](https://github.com/CartoDB/cartodb/pull/15625))
+* PKCS#8 keys support for DB-Direct certificates ([#15622](https://github.com/CartoDB/cartodb/pull/15622))
+* UI for managing IPs and Certificates for DB Direct connections ([#15589](https://github.com/CartoDB/cartodb/pull/15589))
+* Add support for Node.js 12
+* Add user mover support for PG12 (first step, only enabled in Central staging) ([#15686](https://github.com/CartoDB/cartodb/pull/15686))
+* Increase limit of certificates for SQL direct from 3 to 5 ([#2536](https://github.com/CartoDB/support/issues/2536))
+
+### Bug fixes / enhancements
+* Fix missing connector metadata error information ([#15690](https://github.com/CartoDB/cartodb/pull/15690))
+* Add maxRetries for aws s3 operation to improve reliability ([#15679](https://github.com/CartoDB/cartodb/pull/15679))
+* Add metrics for connectors actions ([#155564](https://github.com/CartoDB/cartodb/pull/15564))
+* Make DB Direct server_ca configurable ([#15650](https://github.com/CartoDB/cartodb/pull/15650))
+* More clear DB Direct Firewall error messages ([#15652](https://github.com/CartoDB/cartodb/pull/15652))
+* Normalize IP ranges applied to Firewall rules ([#15649](https://github.com/CartoDB/cartodb/pull/15649))
+* Fix DB Direct instructions in certificate README ([#15647]https://github.com/CartoDB/cartodb/pull/15647)
+* Fix Db Direct IPs Firewall management problem ([#15641](https://github.com/CartoDB/cartodb/pull/15641))
+* Fix Db Direct Firewall management credentials problem ([#15640](https://github.com/CartoDB/cartodb/pull/15640))
+* DO user settings are now stored under `do_settings:{@username}` ([#15630](https://github.com/CartoDB/cartodb/pull/15630))
+* Improve performance of dataset view with many maps ([#15627](https://github.com/CartoDB/cartodb/pull/15627))
+* Clarify message at Organization's Auth settings
+* Improve performance of dependent visualizations ([#15632](https://github.com/CartoDB/cartodb/pull/15632))
+* Do not send DO subscription request mails when requested by team organization user (`ch70618`)
+* Fix kepler.gl link in Maps section ([#15644](https://github.com/CartoDB/cartodb/issues/15644))
+* /api/v3/me endpoint returns less public data ([#5627](https://github.com/CartoDB/cartodb-platform/issues/5627))
+* Retrieve IPs before adding or removing to avoid inconsistencies ([#15643](https://github.com/CartoDB/cartodb/pull/15643))
+* Faster geometry types calculation for big datasets ([#15654](https://github.com/CartoDB/cartodb/pull/15654))
+* Return error for requests whose authentication was succeeding with an expired session ([#15637](https://github.com/CartoDB/cartodb/pull/15637))
+* Fix signup with multiple active invitations ([#15629](https://github.com/CartoDB/cartodb/pull/15629))
+* Restore twitter connector for those having their own credentials ([#15656](https://github.com/CartoDB/cartodb/pull/15656))
+* Scrub Rollbar data ([#2244](https://github.com/CartoDB/cartodb-central/issues/2244))
+* Avoid order by favorited if no user privided ([#15666](https://github.com/CartoDB/cartodb/issues/15666))
+* Sync last login date ([#2788](https://github.com/CartoDB/cartodb-central/issues/2788))
+* Make user mover fail when custom plpython functions exist ([#15677](https://github.com/CartoDB/cartodb/pull/15677))
+* Use pg_restore version matching target DB server ([#15676](https://github.com/CartoDB/cartodb/pull/15676))
+* Speed up Ghost Tables Manager checks ([#15674](https://github.com/CartoDB/cartodb/pull/15674))
+* v1/viz: Stop returning the db_size_in_bytes value ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
+* Ghost Tables Manager: Unify all table checks into a single query ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
+* Ghost Tables Manager: Don't do any synchronous check if the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables. ([#15678](https://github.com/CartoDB/cartodb/pull/15678))
+* Modernize profiler code a little ([#15691](https://github.com/CartoDB/cartodb/pull/15691))
+* OAuth: Keep state on errors ([#15684](https://github.com/CartoDB/cartodb/pull/15684))
 
 4.37.0 (2020-04-24)
 -------------------

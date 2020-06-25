@@ -50,7 +50,7 @@ FactoryGirl.define do
 
     trait :unverified do
       email_verification_token   'aaa'
-      email_verification_sent_at Time.now
+      email_verification_sent_at Time.current - 2.hours
     end
 
     trait :valid do

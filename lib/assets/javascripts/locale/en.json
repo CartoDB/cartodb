@@ -1383,6 +1383,7 @@
                         "import-as-field": "CARTO Dataset",
                         "import-as-hint": "Name of the new Dataset that will be created in your CARTO Dashboard with the imported data.",
                         "run": "Run SQL query",
+                        "run-bq-go-to-connect": "Connect to BQ",
                         "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM table",
                         "sidebar-connect": {
                             "title": "Getting connected",

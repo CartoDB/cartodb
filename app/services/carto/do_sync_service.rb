@@ -72,7 +72,7 @@ module Carto
     private
 
     def create_new_sync_for_subscription!(subscription_id)
-      table_name = temptative_table_name(subscription_id)
+      table_name = tentative_table_name(subscription_id)
       connector_attributes = {
         provider: DO_SYNC_PROVIDER,
         subscription_id: subscription_id,
@@ -105,7 +105,7 @@ module Carto
       member.store
     end
 
-    def temptative_table_name(subscription_id)
+    def tentative_table_name(subscription_id)
       project, dataset, table = subscription_id.split('.')
       'do_sync_' + [dataset, table].join('_')
     end

@@ -9,6 +9,7 @@ Development
 - Synchronize REDIS when licensing from superadmin ([15719](https://github.com/CartoDB/cartodb/pull/15719]))
 
 ### Bug fixes / enhancements
+- Verify user email. ([#15683](https://github.com/CartoDB/cartodb/pull/15683))
 - Set right referrer header for password reset page ([#15699](https://github.com/CartoDB/cartodb/pull/15699))
 - Fix navigation bar tests
 - Ignore update_timestamp function on migrations ([#15710](https://github.com/CartoDB/cartodb/pull/15710))

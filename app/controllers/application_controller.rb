@@ -32,7 +32,7 @@ class ApplicationController < ActionController::Base
   rescue_from Carto::ExpiredSessionError, with: :rescue_from_carto_error
 
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
-  IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(maintenance_mode lockout login logout unauthenticated multifactor_authentication).freeze
+  IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(unverified maintenance_mode lockout login logout unauthenticated multifactor_authentication).freeze
 
   def self.ssl_required(*splat)
     if Cartodb.config[:ssl_required] == true
@@ -206,6 +206,9 @@ class ApplicationController < ActionController::Base
     elsif current_user.locked?
       render_locked_user
       return
+    elsif current_user.unverified?
+      render_unverified_user
+      return
     end
 
     render_multifactor_authentication if multifactor_authentication_required?
@@ -314,6 +317,10 @@ class ApplicationController < ActionController::Base
   def render_multifactor_authentication
     session[:return_to] = request.original_url
     redirect_or_forbidden('multifactor_authentication_session', 'mfa_required')
+  end
+
+  def render_unverified_user
+    redirect_or_forbidden('unverified', 'unverified')
   end
 
   def render_locked_user

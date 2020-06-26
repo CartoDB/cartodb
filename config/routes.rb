@@ -141,6 +141,9 @@ CartoDB::Application.routes.draw do
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
 
+    # Unverified
+    get '(/user/:user_domain)(/u/:user_domain)/unverified' => 'users#unverified', as: :unverified
+
     # Maintenance Mode
     get '(/user/:user_domain)(/u/:user_domain)/maintenance_mode' => 'users#maintenance', as: :maintenance_mode
 

@@ -1,4 +1,5 @@
 # Datasets CSV example:
+# dataset_id,available_in,price,expires_at,view_def
 # carto-do-public-data.open_data.geography_usa_state_2015,bq;bigtable,999,2020-09-27T08:00:00
 # carto-do-public-data.open_data.demographics_acs_usa_cbsaclipped_2015_yearly_2015,bq,2000,2020-09-27T08:00:00
 namespace :cartodb do
@@ -11,13 +12,18 @@ namespace :cartodb do
       raise usage unless username.present? && datasets_csv.present?
 
       datasets = []
-      CSV.foreach(args[:datasets_csv]) do |row|
-        available_in = row[1].split(';')
-        dataset = { dataset_id: row[0], available_in: available_in, price: row[2].to_f, expires_at: Time.parse(row[3]) }
-        datasets << dataset
+      CSV.foreach(args[:datasets_csv], headers: true) do |row|
+        available_in = row['available_in'].split(';')
+        dataset = {
+          dataset_id: row['dataset_id'],
+          available_in: available_in,
+          price: row['price'].to_f,
+          expires_at: Time.parse(row['expires_at']),
+          view_def: row['view_def']
+        }
+        Carto::DoLicensingService.new(username).subscribe(dataset)
+        puts "#{row['dataset_id']} licensed succesfully"
       end
-
-      Carto::DoLicensingService.new(username).subscribe(datasets)
 
       puts 'Task finished succesfully!'
     end

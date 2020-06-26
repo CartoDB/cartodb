@@ -122,7 +122,7 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     return(redirect_to protocol: 'https://') if @visualization.is_privacy_private? \
-                                                && !(request.ssl? || request.local? || Rails.env.development?)
+                                                && Cartodb.get_config(:ssl_required) == true
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)

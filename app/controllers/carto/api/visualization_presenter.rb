@@ -121,6 +121,7 @@ module Carto
           next_id: @visualization.next_id,
           parent_id: @visualization.parent_id,
           transition_options: @visualization.transition_options,
+          subscription: @visualization.subscription,
           active_child: nil,
           children: []
         }

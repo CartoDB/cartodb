@@ -658,6 +658,14 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def subscription=(value)
+    @subscription = value
+  end
+
+  def subscription
+    @subscription
+  end
+
   private
 
   def remove_password

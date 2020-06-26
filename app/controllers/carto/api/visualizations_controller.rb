@@ -91,14 +91,22 @@ module Carto
         presenter_cache = Carto::Api::PresenterCache.new
         presenter_options = presenter_options_from_hash(params).merge(related: false)
 
+        total_subscriptions = 0
+
         visualizations = vqb.with_order(order, order_direction)
                             .build_paged(page, per_page).map do |v|
+          # TODO: Unmock this
+          v.subscription = 'do-v2'
+          total_subscriptions += 1
+
           VisualizationPresenter.new(v, current_viewer, self, presenter_options)
                                 .with_presenter_cache(presenter_cache).to_poro
         end
+
         response = {
           visualizations: visualizations,
-          total_entries: vqb.build.size
+          total_entries: vqb.build.size,
+          total_subscriptions: total_subscriptions
         }
         if current_user && (params[:load_totals].to_s != 'false')
           response.merge!(calculate_totals(types))

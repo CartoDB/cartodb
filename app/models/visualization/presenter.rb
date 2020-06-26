@@ -41,7 +41,8 @@ module CartoDB
           prev_id: visualization.prev_id,
           next_id: visualization.next_id,
           transition_options: visualization.transition_options,
-          active_child: visualization.active_child
+          active_child: visualization.active_child,
+          subscription: visualization.subscription
         }
         poro.merge!(table: table_data_for(table, permission))
         poro.merge!(external_source: external_source_data_for(visualization))

@@ -5,7 +5,13 @@ describe Carto::DoSyncService do
   before(:all) do
     @user = FactoryGirl.create(:valid_user, username: 'fulano')
     @service = Carto::DoSyncService.new(@user)
+  end
 
+  after(:all) do
+    @user.destroy
+  end
+
+  before(:each) do
     future = Time.now + 1.year
     past = Time.now - 1.day
 
@@ -89,60 +95,157 @@ describe Carto::DoSyncService do
     )
   end
 
-  after(:all) do
-    @user.destroy
+  after(:each) do
+    $users_metadata.del(@redis_key)
     @error_import.destroy
     @error_sync.destroy
+    @syncing_table.destroy
+    @syncing_import.destroy
+    @syncing_sync.destroy
     @synced_table.destroy
     @synced_import.destroy
     @synced_sync.destroy
   end
 
-  after(:each) do
-    $users_metadata.del(@redis_key)
+  # describe '#sync' do
+  #   it 'returns unsyced for inexistent subscription' do
+  #     @service.sync(@non_subscribed_dataset_id)['sync_status'].should eq 'unsynced'
+  #     # TODO:
+  #     # @service.sync(@non_subscribed_dataset_id)['sync_status'].should eq 'unsyncable'
+  #     # @service.sync(@non_subscribed_dataset_id)['unsyncable_reason'].should eq 'Subscription not found'
+  #   end
+
+  #   it 'returns unsyced for expired subscription' do
+  #     @service.sync(@subscribed_expired_dataset_id)['sync_status'].should eq 'unsynced'
+  #     # TODO:
+  #     # @service.sync(@subscribed_expired_dataset_id)['sync_status'].should eq 'unsyncable'
+  #     # @service.sync(@subscribed_expired_dataset_id)['unsyncable_reason'].should eq 'Subscription has expired'
+  #   end
+
+  #   it 'returns synced for valid subscription imported' do
+  #     @service.sync(@subscribed_synced_dataset_id)['sync_status'].should eq 'synced'
+  #     @service.sync(@subscribed_synced_dataset_id)['sync_table'].should eq @synced_table.name
+  #     @service.sync(@subscribed_synced_dataset_id)['sync_table_id'].should eq @synced_table.id
+  #     @service.sync(@subscribed_synced_dataset_id)['synchronization_id'].should eq @synced_sync.id
+  #     @service.subscription_from_sync_table(@synced_table.name).should eq @subscribed_synced_dataset_id
+  #   end
+
+  #   it 'returns syncing for valid subscription being imported' do
+  #     @service.sync(@subscribed_syncing_dataset_id)['sync_status'].should eq 'syncing'
+  #   end
+
+  #   it 'returns unsynced for valid subscription failed importing' do
+  #     @service.sync(@subscribed_sync_error_dataset_id)['sync_status'].should eq 'unsynced'
+  #     @service.sync(@subscribed_sync_error_dataset_id)['unsynced_errors'].should eq [@import_error_code]
+  #   end
+  # end
+
+  # describe '#subscription_from_sync_table' do
+  #   it 'returns the subscription id given a sync table' do
+  #     @service.subscription_from_sync_table('synced_table').should eq @subscribed_synced_dataset_id
+  #   end
+
+  #   it 'returns nil for an invalid sync table' do
+  #     @service.subscription_from_sync_table('xyz').should be_nil
+  #     @service.subscription_from_sync_table('error_table').should be_nil
+  #   end
+  # end
+
+  describe '#remove_sync' do
+    it 'removes syncs' do
+      expect{
+        @service.remove_sync(@subscribed_synced_dataset_id)
+      }.to change { Carto::Synchronization.count }.by(-1)
+      @service.sync(@subscribed_synced_dataset_id)['sync_status'].should eq 'unsynced'
+    end
+
+    it 'does nothing for unsynced subscription' do
+      expect{
+        @service.remove_sync(@subscribed_dataset_id)
+      }.to change { Carto::Synchronization.count }.by(0)
+    end
+
+    it 'raises error for syncinc subscription' do
+      # TODO: should unsync in this case too?
+      expect {
+        @service.remove_sync(@subscribed_syncing_dataset_id)
+      }.to raise_exception StandardError
+    end
+
+    it 'does nothing for invalid subscription' do
+      # TODO: should raise exception?
+      expect{
+        @service.remove_sync(@non_subscribed_dataset_id)
+      }.to change { Carto::Synchronization.count }.by(0)
+    end
   end
 
-  describe '#sync' do
-    it 'returns unsyced for inexistent subscription' do
-      @service.sync(@non_subscribed_dataset_id)['sync_status'].should eq 'unsynced'
-      # TODO:
-      # @service.sync(@non_subscribed_dataset_id)['sync_status'].should eq 'unsyncable'
-      # @service.sync(@non_subscribed_dataset_id)['unsyncable_reason'].should eq 'Subscription not found'
+  describe '#create_sync' do
+    it 'creates a synchronization and enqueues a import job' do
+      Resque::ImporterJobs.expects(:perform).once
+      sync = nil
+      expect{
+        expect {
+          sync = @service.create_sync(@subscribed_dataset_id)
+        }.to change { Carto::Synchronization.count }.by(1)
+      }.to change { Carto::DataImport.count }.by(1)
+      sync['sync_status'].should eq 'syncing'
+
+      data_import = Carto::DataImport.where(user_id: @user.id).find do |data_import|
+        data_import.service_name == 'connector' &&
+          JSON.load(data_import.service_item_id)['subscription_id'] == @subscribed_dataset_id
+      end
+      data_import.should_not be_nil
+      synchronization = Carto::Synchronization.find(data_import.synchronization_id)
+      synchronization.state.should eq Carto::Synchronization::STATE_QUEUED
+
+      synchronization.update! state: 'success', name: 'xyz'
+      data_import.update! state: 'complete', table_name: 'xyz'
+      @service.sync(@subscribed_dataset_id)['sync_status'].should eq 'synced'
+      @service.sync(@subscribed_dataset_id)['sync_table'].should eq 'xyz'
+      @service.sync(@subscribed_dataset_id)['synchronization_id'].should eq synchronization.id
+
+      data_import.destroy
+      synchronization.destroy
     end
 
-    it 'returns unsyced for expired subscription' do
-      @service.sync(@subscribed_expired_dataset_id)['sync_status'].should eq 'unsynced'
-      # TODO:
-      # @service.sync(@subscribed_expired_dataset_id)['sync_status'].should eq 'unsyncable'
-      # @service.sync(@subscribed_expired_dataset_id)['unsyncable_reason'].should eq 'Subscription has expired'
+    it 'does nothing for synced subscriptions' do
+      sync = nil
+      expect{
+        expect {
+          sync = @service.create_sync(@subscribed_synced_dataset_id)
+        }.to change { Carto::Synchronization.count }.by(0)
+      }.to change { Carto::DataImport.count }.by(0)
+      sync['sync_status'].should eq 'synced'
     end
 
-    it 'returns synced for valid subscription imported' do
-      @service.sync(@subscribed_synced_dataset_id)['sync_status'].should eq 'synced'
-      @service.sync(@subscribed_synced_dataset_id)['sync_table'].should eq @synced_table.name
-      @service.sync(@subscribed_synced_dataset_id)['sync_table_id'].should eq @synced_table.id
-      @service.sync(@subscribed_synced_dataset_id)['synchronization_id'].should eq @synced_sync.id
-      @service.subscription_from_sync_table(@synced_table.name).should eq @subscribed_synced_dataset_id
+    it 'does nothing for syncing subscriptions' do
+      sync = nil
+      expect{
+        expect {
+          sync = @service.create_sync(@subscribed_syncing_dataset_id)
+        }.to change { Carto::Synchronization.count }.by(0)
+      }.to change { Carto::DataImport.count }.by(0)
+      sync['sync_status'].should eq 'syncing'
     end
 
-    it 'returns syncing for valid subscription being imported' do
-      @service.sync(@subscribed_syncing_dataset_id)['sync_status'].should eq 'syncing'
-    end
+    # it 'does nothing for expired subscriptions' do
+    #   # TODO: should raise exception?
+    #   expect{
+    #     expect {
+    #       sync = @service.create_sync(@subscribed_expired_dataset_id)
+    #     }.to change { Carto::Synchronization.count }.by(0)
+    #   }.to change { Carto::DataImport.count }.by(0)
+    # end
 
-    it 'returns unsynced for valid subscription failed importing' do
-      @service.sync(@subscribed_sync_error_dataset_id)['sync_status'].should eq 'unsynced'
-      @service.sync(@subscribed_sync_error_dataset_id)['unsynced_errors'].should eq [@import_error_code]
-    end
+    # it 'does nothing for invalid subscriptions' do
+    #   # TODO: should raise exception?
+    #   expect{
+    #     expect {
+    #       sync = @service.create_sync(@non_subscribed_dataset_id)
+    #     }.to change { Carto::Synchronization.count }.by(0)
+    #   }.to change { Carto::DataImport.count }.by(0)
+    # end
   end
 
-  describe '#subscription_from_sync_table' do
-    it 'returns the subscription id given a sync table' do
-      @service.subscription_from_sync_table('synced_table').should eq @subscribed_synced_dataset_id
-    end
-
-    it 'returns nil for an invalid sync table' do
-      @service.subscription_from_sync_table('xyz').should be_nil
-      @service.subscription_from_sync_table('error_table').should be_nil
-    end
-  end
 end

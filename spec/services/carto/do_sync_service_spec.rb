@@ -131,6 +131,16 @@ describe Carto::DoSyncService do
       @service.subscription_from_sync_table(@synced_table.name).should eq @subscribed_synced_dataset_id
     end
 
+    it 'returns synced even if synchronization is stopped' do
+      CartoDB::Synchronization::Member.new(id: @synced_sync.id).fetch.delete
+      @service.sync(@subscribed_synced_dataset_id)['sync_status'].should eq 'synced'
+      @service.sync(@subscribed_synced_dataset_id)['sync_table'].should eq @synced_table.name
+      @service.sync(@subscribed_synced_dataset_id)['sync_table_id'].should eq @synced_table.id
+      # Note that we don't embrace here the DataImport anomaly of not nullifying the synchronization foreign key
+      @service.sync(@subscribed_synced_dataset_id)['synchronization_id'].should be_nil
+      @service.subscription_from_sync_table(@synced_table.name).should eq @subscribed_synced_dataset_id
+    end
+
     it 'returns syncing for valid subscription being imported' do
       @service.sync(@subscribed_syncing_dataset_id)['sync_status'].should eq 'syncing'
     end

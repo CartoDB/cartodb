@@ -35,7 +35,13 @@ module Carto
       condition = %{
           service_name = 'connector'
           AND service_item_id::jsonb @> '{"provider":"#{DO_SYNC_PROVIDER}","subscription_id":"#{subscription_id}"}'::jsonb
-          AND EXISTS (SELECT id FROM synchronizations WHERE synchronizations.id = data_imports.synchronization_id)
+          AND (
+            -- either the table exists... (the synchronization might not exist if it's been stopped by user)
+            EXISTS (SELECT id FROM user_tables WHERE user_tables.id = data_imports.table_id)
+            OR
+            -- ... or a synchronization exists (table may not exist if initial import hasn't finished)
+            EXISTS (SELECT id FROM synchronizations WHERE synchronizations.id = data_imports.synchronization_id)
+          )
       }
       data_import = Carto::DataImport.where(user_id: @user.id).where(condition).order('created_at desc').first
       if data_import
@@ -47,7 +53,9 @@ module Carto
           sync_info[DO_SYNC_STATUS] = DO_SYNC_STATUS_SYNCED
           sync_info[DO_SYNC_TABLE] = data_import.table_name
           sync_info[DO_SYNC_TABLE_ID] = data_import.table_id
-          sync_info[DO_SYNC_SYNCHRONIZATION_ID] = data_import.synchronization_id
+          if Carto::Synchronization.find_by_id(data_import.synchronization_id)
+            sync_info[DO_SYNC_SYNCHRONIZATION_ID] = data_import.synchronization_id
+          end
           # TODO: data_import.id too?
           # TODO: we could add DO_SYNC_SYNCED_WARNINGS if synchronization has failed
         else

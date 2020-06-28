@@ -98,9 +98,8 @@ module Carto
       # FIXME: should we also check the state of the synchronization? what if it's being synchronized?
 
       if sync_data[DO_SYNC_STATUS] == DO_SYNC_STATUS_SYNCED
-        # Stop the synchronization
-        synchronization = CartoDB::Synchronization::Member.new(id: sync_data[DO_SYNC_SYNCHRONIZATION_ID]).fetch
-        synchronization.delete
+        # Stop the synchronization and remove the table
+        Carto::UserTable.find(sync_data[DO_SYNC_TABLE_ID]).visualization.destroy
       end
     end
 

@@ -53,6 +53,7 @@ describe Carto::DoSyncService do
       name: 'synced_table',
       data_import_id: @synced_import.id
     )
+    @synced_sync.update_attributes! visualization_id: Carto::UserTable.find(@synced_table.id).visualization.id
 
     @syncing_sync = FactoryGirl.create(
       :carto_synchronization,
@@ -102,9 +103,9 @@ describe Carto::DoSyncService do
     @syncing_table.destroy
     @syncing_import.destroy
     @syncing_sync.destroy
-    @synced_table.destroy
+    Carto::UserTable.find_by_id(@synced_table.id)&.destroy
     @synced_import.destroy
-    @synced_sync.destroy
+    Carto::Synchronization.find_by_id(@synced_sync.id)&.destroy
   end
 
   describe '#sync' do
@@ -154,7 +155,9 @@ describe Carto::DoSyncService do
   describe '#remove_sync' do
     it 'removes syncs' do
       expect{
-        @service.remove_sync(@subscribed_synced_dataset_id)
+        expect {
+          @service.remove_sync(@subscribed_synced_dataset_id)
+        }.to change { Carto::UserTable.count }.by(-1)
       }.to change { Carto::Synchronization.count }.by(-1)
       @service.sync(@subscribed_synced_dataset_id)['sync_status'].should eq 'unsynced'
     end

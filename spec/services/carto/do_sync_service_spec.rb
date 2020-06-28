@@ -107,49 +107,49 @@ describe Carto::DoSyncService do
     @synced_sync.destroy
   end
 
-  # describe '#sync' do
-  #   it 'returns unsyced for inexistent subscription' do
-  #     @service.sync(@non_subscribed_dataset_id)['sync_status'].should eq 'unsynced'
-  #     # TODO:
-  #     # @service.sync(@non_subscribed_dataset_id)['sync_status'].should eq 'unsyncable'
-  #     # @service.sync(@non_subscribed_dataset_id)['unsyncable_reason'].should eq 'Subscription not found'
-  #   end
+  describe '#sync' do
+    it 'returns unsyced for inexistent subscription' do
+      @service.sync(@non_subscribed_dataset_id)['sync_status'].should eq 'unsynced'
+      # TODO:
+      # @service.sync(@non_subscribed_dataset_id)['sync_status'].should eq 'unsyncable'
+      # @service.sync(@non_subscribed_dataset_id)['unsyncable_reason'].should eq 'Subscription not found'
+    end
 
-  #   it 'returns unsyced for expired subscription' do
-  #     @service.sync(@subscribed_expired_dataset_id)['sync_status'].should eq 'unsynced'
-  #     # TODO:
-  #     # @service.sync(@subscribed_expired_dataset_id)['sync_status'].should eq 'unsyncable'
-  #     # @service.sync(@subscribed_expired_dataset_id)['unsyncable_reason'].should eq 'Subscription has expired'
-  #   end
+    it 'returns unsyced for expired subscription' do
+      @service.sync(@subscribed_expired_dataset_id)['sync_status'].should eq 'unsynced'
+      # TODO:
+      # @service.sync(@subscribed_expired_dataset_id)['sync_status'].should eq 'unsyncable'
+      # @service.sync(@subscribed_expired_dataset_id)['unsyncable_reason'].should eq 'Subscription has expired'
+    end
 
-  #   it 'returns synced for valid subscription imported' do
-  #     @service.sync(@subscribed_synced_dataset_id)['sync_status'].should eq 'synced'
-  #     @service.sync(@subscribed_synced_dataset_id)['sync_table'].should eq @synced_table.name
-  #     @service.sync(@subscribed_synced_dataset_id)['sync_table_id'].should eq @synced_table.id
-  #     @service.sync(@subscribed_synced_dataset_id)['synchronization_id'].should eq @synced_sync.id
-  #     @service.subscription_from_sync_table(@synced_table.name).should eq @subscribed_synced_dataset_id
-  #   end
+    it 'returns synced for valid subscription imported' do
+      @service.sync(@subscribed_synced_dataset_id)['sync_status'].should eq 'synced'
+      @service.sync(@subscribed_synced_dataset_id)['sync_table'].should eq @synced_table.name
+      @service.sync(@subscribed_synced_dataset_id)['sync_table_id'].should eq @synced_table.id
+      @service.sync(@subscribed_synced_dataset_id)['synchronization_id'].should eq @synced_sync.id
+      @service.subscription_from_sync_table(@synced_table.name).should eq @subscribed_synced_dataset_id
+    end
 
-  #   it 'returns syncing for valid subscription being imported' do
-  #     @service.sync(@subscribed_syncing_dataset_id)['sync_status'].should eq 'syncing'
-  #   end
+    it 'returns syncing for valid subscription being imported' do
+      @service.sync(@subscribed_syncing_dataset_id)['sync_status'].should eq 'syncing'
+    end
 
-  #   it 'returns unsynced for valid subscription failed importing' do
-  #     @service.sync(@subscribed_sync_error_dataset_id)['sync_status'].should eq 'unsynced'
-  #     @service.sync(@subscribed_sync_error_dataset_id)['unsynced_errors'].should eq [@import_error_code]
-  #   end
-  # end
+    it 'returns unsynced for valid subscription failed importing' do
+      @service.sync(@subscribed_sync_error_dataset_id)['sync_status'].should eq 'unsynced'
+      @service.sync(@subscribed_sync_error_dataset_id)['unsynced_errors'].should eq [@import_error_code]
+    end
+  end
 
-  # describe '#subscription_from_sync_table' do
-  #   it 'returns the subscription id given a sync table' do
-  #     @service.subscription_from_sync_table('synced_table').should eq @subscribed_synced_dataset_id
-  #   end
+  describe '#subscription_from_sync_table' do
+    it 'returns the subscription id given a sync table' do
+      @service.subscription_from_sync_table('synced_table').should eq @subscribed_synced_dataset_id
+    end
 
-  #   it 'returns nil for an invalid sync table' do
-  #     @service.subscription_from_sync_table('xyz').should be_nil
-  #     @service.subscription_from_sync_table('error_table').should be_nil
-  #   end
-  # end
+    it 'returns nil for an invalid sync table' do
+      @service.subscription_from_sync_table('xyz').should be_nil
+      @service.subscription_from_sync_table('error_table').should be_nil
+    end
+  end
 
   describe '#remove_sync' do
     it 'removes syncs' do

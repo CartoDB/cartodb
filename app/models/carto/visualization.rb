@@ -658,12 +658,12 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
-  def subscription=(value)
-    @subscription = value
-  end
-
   def subscription
-    @subscription
+    if user_table
+      doss = DoSyncService.new(user)
+      subscription_id = doss.subscription_from_sync_table(user_table.name)
+      { type: 'do-v2', id: subscription_id } if subscription_id.present?
+    end
   end
 
   private

@@ -121,11 +121,11 @@ module Carto
           next_id: @visualization.next_id,
           parent_id: @visualization.parent_id,
           transition_options: @visualization.transition_options,
-          subscription: @visualization.subscription,
           active_child: nil,
           children: []
         }
 
+        poro[:subscription] = @visualization.subscription if @visualization.subscription
         poro[:related_tables] = related_tables if related
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features

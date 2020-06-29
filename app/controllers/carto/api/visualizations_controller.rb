@@ -96,7 +96,6 @@ module Carto
         visualizations = vqb.with_order(order, order_direction)
                             .build_paged(page, per_page).map do |v|
           # TODO: Unmock this
-          v.subscription = 'do-v2'
           total_subscriptions += 1
 
           VisualizationPresenter.new(v, current_viewer, self, presenter_options)

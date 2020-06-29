@@ -227,33 +227,27 @@ class Carto::VisualizationQueryBuilder
   end
 
   def build_paged(page = 1, per_page = 20)
-    if offdatabase_order?
-      build_regular.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
-    else
-      paged_subquery = subquery.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
-      query = Carto::Visualization.from(paged_subquery, 'visualizations')
-      with_associations(query)
-    end
+    offdatabase_order? ? build_regular(page, per_page) : build_subquery(page, per_page)
   end
 
   private
 
-  def build_regular
-    query = Carto::Visualization.all
-    query = Carto::VisualizationQueryFilterer.new(query).filter(@filtering_params)
+  def build_regular(page = nil, per_page = nil)
+    query = filtered_query
     query = with_associations(query)
-    order_query(query)
+    query = order_query(query)
+    query = query.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i) if page && per_page
+    query
   end
 
-  def build_subquery
+  def build_subquery(page = nil, per_page = nil)
+    subquery = with_ordering_associations(filtered_query)
+    subquery = order_query(subquery)
+    subquery = subquery.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i) if page && per_page
+
     # Fetching related tables after filtering the results for better performance
     query = Carto::Visualization.from(subquery, 'visualizations')
     with_associations(query)
-  end
-
-  def subquery
-    subquery = with_ordering_associations(filtered_query)
-    order_query(subquery)
   end
 
   def filtered_query

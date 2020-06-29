@@ -101,6 +101,13 @@ module Carto::UserCommons
     end
   end
 
+  def unverified?
+    (active? || locked?) &&
+    email_verification_token.present? &&
+    email_verification_sent_at.present? &&
+    email_verification_sent_at < 1.hour.ago && !oauth_signin?
+  end
+
   def remove_logo?
     has_organization? ? organization.no_map_logo : no_map_logo
   end
@@ -268,4 +275,21 @@ module Carto::UserCommons
 
     attrs.slice(*LOGGING_ATTRIBUTES)
   end
+
+  def update_do_subscription(attributes)
+    return if attributes.nil?
+    
+    license_srv = Carto::DoLicensingService.new(self.username)
+
+    if attributes[:action] == 'rm'
+      license_srv.remove_from_redis(attributes[:do_dataset][:dataset_id])
+    elsif attributes[:action] == 'add'
+      license_srv.add_to_redis(attributes[:do_dataset])
+    else
+      message = 'Error updating a DO subscription: unknown action'
+      CartoDB::Logger.error(message: message)
+      raise message
+    end
+  end
+
 end

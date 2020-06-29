@@ -225,13 +225,12 @@ module CartoDB
 
         if @options[:data]
           configure_database(@target_dbhost)
+          drop_deprecated_extensions
         end
 
         if @options[:update_metadata]
           update_metadata_user(@target_dbhost)
         end
-
-        drop_deprecated_extensions
 
         log_success
       rescue StandardError => e
@@ -770,8 +769,11 @@ module CartoDB
       def drop_deprecated_extensions
         return if destination_db_major_version != 12
 
-        superuser_user_pg_conn.query("DROP EXTENSION IF EXISTS plpythonu")
-        superuser_user_pg_conn.query("DROP EXTENSION IF EXISTS plpython2u")
+        %w(plpythonu plpython2u).each do |deprecated_extension|
+          sql_command = "DROP EXTENSION IF EXISTS #{deprecated_extension}"
+          logger.info(sql_command)
+          superuser_user_pg_conn.query(sql_command)
+        end
       end
 
       def destination_db_major_version

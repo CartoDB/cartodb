@@ -8,9 +8,9 @@ module Carto
       @redis_key = "do:#{@username}:datasets"
     end
 
-    def subscribe(datasets)
-      Cartodb::Central.new.create_do_datasets(username: @username, datasets: datasets)
-      add_to_redis(datasets)
+    def subscribe(dataset)
+      Cartodb::Central.new.create_do_datasets(username: @username, datasets: [dataset])
+      add_to_redis(dataset)
     end
 
     def unsubscribe(dataset_id)
@@ -45,8 +45,8 @@ module Carto
       subscription.with_indifferent_access
     end
 
-    def add_to_redis(datasets)
-      value = AVAILABLE_STORAGES.map { |storage| [storage, insert_redis_value(datasets, storage)] }.flatten
+    def add_to_redis(dataset)
+      value = AVAILABLE_STORAGES.map { |storage| [storage, insert_redis_value(dataset, storage)] }.flatten
       $users_metadata.hmset(@redis_key, value)
     end
 
@@ -55,22 +55,26 @@ module Carto
       $users_metadata.hmset(@redis_key, value)
     end
 
-    def insert_redis_value(datasets, storage)
+    private
+
+    def insert_redis_value(dataset, storage)
       redis_value = JSON.parse($users_metadata.hget(@redis_key, storage) || '[]')
-      new_datasets = filter_datasets(datasets, storage)
-      (redis_value + new_datasets).uniq.to_json
+
+      if dataset[:available_in].include?(storage)
+        # Remove a previous dataset if exists
+        redis_value = redis_value.reject { |d| d[:dataset_id] == dataset[:dataset_id] }
+        # Create the new entry
+        new_value = [{ "dataset_id" => dataset[:dataset_id], "expires_at" => dataset[:expires_at].to_s }]
+        # Append to the current one
+        redis_value = redis_value + new_value
+      end
+
+      redis_value.to_json
     end
 
     def remove_redis_value(dataset_id, storage)
       redis_value = JSON.parse($users_metadata.hget(@redis_key, storage) || '[]')
       redis_value.reject { |dataset| dataset["dataset_id"] == dataset_id }.to_json
-    end
-
-    def filter_datasets(datasets, storage)
-      filtered_datasets = datasets.select { |dataset| dataset[:available_in].include?(storage) }
-      filtered_datasets.map do |dataset|
-        { "dataset_id" => dataset[:dataset_id], "expires_at" => dataset[:expires_at].to_s }
-      end
     end
 
   end

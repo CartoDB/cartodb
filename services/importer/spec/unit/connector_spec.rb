@@ -131,9 +131,9 @@ describe Carto::Connector do
     past = Time.new(0)
     connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log)
     connector.remote_data_updated?.should eq true
-    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, modified_at: future)
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: future)
     connector.remote_data_updated?.should eq true
-    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, modified_at: past)
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: past)
     connector.remote_data_updated?.should eq true
   end
 
@@ -150,11 +150,11 @@ describe Carto::Connector do
     posterior_date = same_date + 1
     connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log)
     connector.remote_data_updated?.should eq true
-    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, modified_at: prior_date)
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: prior_date)
     connector.remote_data_updated?.should eq true
-    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, modified_at: posterior_date)
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: posterior_date)
     connector.remote_data_updated?.should eq false
-    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, modified_at: same_date)
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: same_date)
     connector.remote_data_updated?.should eq false
   end
 end

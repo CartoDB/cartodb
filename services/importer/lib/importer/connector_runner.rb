@@ -26,7 +26,7 @@ module CartoDB
         @log        = options[:log] || new_logger
         @job        = options[:job] || new_job(@log, @pg_options)
         @user       = options[:user]
-        modified_at = options[:modified_at]
+        previous_last_modified = options[:previous_last_modified]
         @collision_strategy = options[:collision_strategy]
         @georeferencer      = options[:georeferencer] || new_georeferencer(@job)
 
@@ -34,7 +34,7 @@ module CartoDB
         @unique_suffix = @id.delete('-')
         @json_params = JSON.parse(connector_source)
         extract_params
-        @connector = Carto::Connector.new(parameters: @params, user: @user, logger: @log, modified_at: modified_at)
+        @connector = Carto::Connector.new(parameters: @params, user: @user, logger: @log, previous_last_modified: previous_last_modified)
         @results = []
         @tracker = nil
         @stats = {}

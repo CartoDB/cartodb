@@ -34,12 +34,12 @@ module Carto
         true
       end
 
-      def initialize(parameters: {}, user: nil, logger: nil, modified_at: nil)
+      def initialize(parameters: {}, user: nil, logger: nil, previous_last_modified: nil)
         @params = Parameters.new(parameters, required: required_parameters + [:provider], optional: optional_parameters)
         @user = user
         @logger = logger
-        # modified_at is the time at which previous synchronization data was modified
-        @modified_at = modified_at
+        # previous_last_modified is the time at which external data had been modified at the previous synchronization
+        @previous_last_modified = previous_last_modified
       end
 
       def errors(only_for: nil)

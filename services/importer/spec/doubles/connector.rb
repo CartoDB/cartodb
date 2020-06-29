@@ -91,7 +91,7 @@ class DummyConnectorProviderWithModifiedDate < DummyConnectorProvider
   @copies = []
   LAST_MODIFIED = Time.new(2020, 6, 16)
   def remote_data_updated?
-    @modified_at.blank? || last_modified > @modified_at
+    @previous_last_modified.blank? || last_modified > @previous_last_modified
   end
 
   def last_modified

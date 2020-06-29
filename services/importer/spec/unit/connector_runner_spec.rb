@@ -304,7 +304,7 @@ describe CartoDB::Importer2::ConnectorRunner do
         pg:   @pg_options,
         log:  @fake_log,
         user: @user,
-        modified_at: date_the_data_was_last_copied
+        previous_last_modified: date_the_data_was_last_copied
       }
       config = { provider => { 'enabled' => true } }
       Cartodb.with_config connectors: config do
@@ -333,7 +333,7 @@ describe CartoDB::Importer2::ConnectorRunner do
       provider = DummyConnectorProviderWithModifiedDate.provider_id
       date_the_data_was_modified = DummyConnectorProviderWithModifiedDate::LAST_MODIFIED
       date_the_data_was_last_copied = date_the_data_was_modified - 1
-      config = { provider => { 'enabled' => true }, modified_at: date_the_data_was_last_copied }
+      config = { provider => { 'enabled' => true }, previous_last_modified: date_the_data_was_last_copied }
       Cartodb.with_config connectors: config do
         connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
         connector.run

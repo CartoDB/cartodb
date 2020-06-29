@@ -307,8 +307,8 @@ class Carto::VisualizationQueryBuilder
   end
 
   def offdatabase_order?
-    Carto::VisualizationQueryOrderer.SUPPORTED_OFFDATABASE_ORDERS.any do |offdatabase_order|
-      @order.include?(offdatabase_order)
+    Carto::VisualizationQueryOrderer::SUPPORTED_OFFDATABASE_ORDERS.any? do |offdatabase_order|
+      @order&.include?(offdatabase_order)
     end
   end
 

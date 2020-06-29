@@ -1424,6 +1424,18 @@ describe Table do
         }.should raise_error(CartoDB::InvalidColumnName)
       end
 
+      it 'renames columns that contain international characters' do
+        table = create_table(user_id: @user.id)
+
+        expect(
+          table.modify_column!(name: 'name', new_name: 'Τοπικές')
+        ).to eq(name: 'topikes', type: 'text', cartodb_type: 'string')
+
+        expect(
+          table.modify_column!(name: 'topikes', new_name: 'Родина')
+        ).to eq(name: 'rodin', type: 'text', cartodb_type: 'string')
+      end
+
       it "should not raise an error when renaming a column with reserved name" do
         table = create_table(:user_id => @user.id)
         resp = table.modify_column!(:name => "name", :new_name => "xmin")

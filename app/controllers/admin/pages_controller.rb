@@ -371,7 +371,7 @@ class Admin::PagesController < Admin::AdminController
     @user               = optional.fetch(:user, nil)
     @is_org             = model.is_a? Organization
     @tables_num = (@is_org ? org_datasets_public_builder(model) : user_datasets_public_builder(model)).count
-    @maps_count = (@is_org ? org_maps_public_builder(model) : user_maps_public_builder(model)).build
+    @maps_count = (@is_org ? org_maps_public_builder(model) : user_maps_public_builder(model)).count
 
     @needs_gmaps_lib = @most_viewed_vis_map.try(:map).try(:provider) == 'googlemaps'
     @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'

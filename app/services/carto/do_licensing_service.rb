@@ -2,6 +2,7 @@ module Carto
   class DoLicensingService
 
     AVAILABLE_STORAGES = %w(bq bigtable carto).freeze
+    PRESELECTED_STORAGE = 'bq'.freeze
 
     def initialize(username)
       @username = username
@@ -18,30 +19,27 @@ module Carto
       remove_from_redis(dataset_id)
     end
 
-    def subscriptions(storage)
-      all_subcriptions = JSON.parse($users_metadata.hget(@redis_key, storage) || '[]')
+    def subscriptions
+      all_subcriptions = JSON.parse($users_metadata.hget(@redis_key, PRESELECTED_STORAGE) || '[]')
       available_subscriptions = all_subcriptions.select { |dataset| Time.parse(dataset['expires_at']) > Time.now }
-      available_subscriptions.map { |s| present_subscription(storage, s) }
+      available_subscriptions.map { |s| present_subscription(s) }
     end
 
     private
 
-    def present_subscription(storage, subscription)
-      case storage
-      when 'bq'
-        qualified_id = subscription['dataset_id']
-        project, dataset, table = qualified_id.split('.')
-        # FIXME: better save the type in Redis or look for it in the metadata tables
-        type = table.starts_with?('geography') ? 'geography' : 'dataset'
-        subscription = {
-          project: project,
-          dataset: dataset,
-          table: table,
-          id: qualified_id,
-          type: type,
-          expires_at: subscription['expires_at']
-        }
-      end
+    def present_subscription(subscription)
+      qualified_id = subscription['dataset_id']
+      project, dataset, table = qualified_id.split('.')
+      # FIXME: better save the type in Redis or look for it in the metadata tables
+      type = table.starts_with?('geography') ? 'geography' : 'dataset'
+      subscription = {
+        project: project,
+        dataset: dataset,
+        table: table,
+        id: qualified_id,
+        type: type,
+        expires_at: subscription['expires_at']
+      }
       subscription.with_indifferent_access
     end
 

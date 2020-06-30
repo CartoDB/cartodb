@@ -876,8 +876,8 @@ class User < Sequel::Model
     Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
   end
 
-  def do_subscription(storage, dataset_id)
-    subscriptions = Carto::DoLicensingService.new(username).subscriptions(storage)
+  def do_subscription(dataset_id)
+    subscriptions = Carto::DoLicensingService.new(username).subscriptions
     available_subscriptions = subscriptions.select { |dataset| Time.parse(dataset['expires_at']) > Time.now }
     available_subscriptions.find { |subscription| subscription['id'] == dataset_id }&.with_indifferent_access
   end

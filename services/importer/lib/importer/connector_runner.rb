@@ -106,8 +106,7 @@ module CartoDB
       end
 
       def last_modified
-        # This method is needed to make the interface of ConnectorRunner compatible with Runner,
-        # but we have no meaningful data to return here.
+        # see https://github.com/CartoDB/cartodb/pull/15711#issuecomment-651245994
         @connector.last_modified
       end
 

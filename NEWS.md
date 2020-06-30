@@ -11,6 +11,7 @@ Development
 - Allow the use of service account credentials on Big Query import UI ([15722](https://github.com/CartoDB/cartodb/pull/15722))
 
 ### Bug fixes / enhancements
+- Fix last modified check for db connectors ([#15711](https://github.com/CartoDB/cartodb/pull/15711))
 - Improve OAuth error for expired sessions ([#15707](https://github.com/CartoDB/cartodb/pull/15707))
 - Verify user email. ([#15683](https://github.com/CartoDB/cartodb/pull/15683))
 - Set right referrer header for password reset page ([#15699](https://github.com/CartoDB/cartodb/pull/15699))

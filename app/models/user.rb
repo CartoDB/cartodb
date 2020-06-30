@@ -873,7 +873,7 @@ class User < Sequel::Model
   end
 
   def gcloud_settings
-    Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
+    @gcloud_settings ||= Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
   end
 
   def do_subscription(dataset_id)

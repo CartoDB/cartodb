@@ -1,7 +1,7 @@
 class Admin::UsersController < Admin::AdminController
   include LoginHelper
 
-  ssl_required  :account, :profile, :lockout, :maintenance
+  ssl_required  :account, :profile, :lockout, :maintenance, :unverified
 
   before_filter :invalidate_browser_cache
   before_filter :login_required
@@ -22,6 +22,15 @@ class Admin::UsersController < Admin::AdminController
       @expiration_days = @user.remaining_days_deletion
       @payments_url = @user.plan_url(request.protocol)
       render locals: { breadcrumb: false }
+    else
+      render_404
+    end
+  end
+
+  def unverified
+    if current_user.unverified?
+      url = Cartodb::Central.new.unverified_url
+      redirect_to url
     else
       render_404
     end

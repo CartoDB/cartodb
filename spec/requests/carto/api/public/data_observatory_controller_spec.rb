@@ -108,10 +108,10 @@ describe Carto::Api::Public::DataObservatoryController do
     before(:all) do
       @url_helper = 'api_v4_do_subscriptions_show_url'
 
-      next_year = Time.now + 1.year
-      dataset1 = { dataset_id: 'carto.zzz.table1', expires_at: next_year }
-      dataset2 = { dataset_id: 'carto.abc.table2', expires_at: next_year }
-      dataset3 = { dataset_id: 'opendata.tal.table3', expires_at: next_year }
+      @next_year = Time.now + 1.year
+      dataset1 = { dataset_id: 'carto.zzz.table1', expires_at: @next_year }
+      dataset2 = { dataset_id: 'carto.abc.table2', expires_at: @next_year }
+      dataset3 = { dataset_id: 'opendata.tal.table3', expires_at: @next_year }
       dataset4 = { dataset_id: 'carto.abc.expired', expires_at: Time.now - 1.day }
       bq_datasets = [dataset1, dataset2, dataset3, dataset4]
       @redis_key = "do:#{@user1.username}:datasets"
@@ -141,7 +141,10 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'returns 200 with the non expired subscriptions' do
-      expected_dataset = { project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2', type: 'dataset' }
+      expected_dataset = {
+        project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2', type: 'dataset',
+        expires_at: @next_year
+      }
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(200)
         datasets = response.body[:subscriptions]
@@ -510,7 +513,7 @@ describe Carto::Api::Public::DataObservatoryController do
         }
         expect(response.body).to eq expected_response
       end
-      
+
     end
   end
 

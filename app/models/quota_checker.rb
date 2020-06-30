@@ -51,7 +51,7 @@ module CartoDB
     end
 
     def private_map_count
-      Carto::VisualizationQueryBuilder.user_private_privacy_visualizations(@user).build.count
+      Carto::VisualizationQueryBuilder.user_private_privacy_visualizations(@user).count
     end
 
     def regular_api_key_count
@@ -63,7 +63,7 @@ module CartoDB
                       with_user_id(@user.id).
                       with_types(types).
                       with_privacy(not_private)
-      query_builder.build.count
+      query_builder.count
     end
 
     def not_private
@@ -73,7 +73,6 @@ module CartoDB
         Carto::Visualization::PRIVACY_PROTECTED
       ]
     end
-      
 
     attr_reader :user
   end

@@ -41,7 +41,7 @@ module Carto
             end
           rescue => e
             CartoDB::Logger.warning(message: 'Error updating record', exception: e)
-            render_jsonp({ errors: [translate_error(e.message.split("\n").first)] }, 400)
+            render_jsonp({ errors: [e.message] }, 400)
           end
         else
           render_jsonp({ errors: ["cartodb_id can't be blank"] }, 404)

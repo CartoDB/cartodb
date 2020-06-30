@@ -100,6 +100,7 @@ module Carto
                                 .with_presenter_cache(presenter_cache).to_poro \
             unless params[:subscribed] == 'true' and not v.subscription.present?
         end
+
         response = {
           visualizations: visualizations,
           total_entries: vqb.count,

@@ -28,7 +28,7 @@ class Carto::DashboardPreviewSearcher
     if @visualization_types.any?
       visualization_query_builder = initialize_builder(Carto::VisualizationQueryBuilder)
       result.visualizations = visualization_query_builder.build_paged(1, @limit).to_a
-      result.total_count += visualization_query_builder.build.count
+      result.total_count += visualization_query_builder.count
     end
 
     result

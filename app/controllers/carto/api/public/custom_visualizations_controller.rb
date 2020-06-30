@@ -45,7 +45,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     end
     response = {
       visualizations: visualizations,
-      total_entries: vqb.build.size
+      total_entries: vqb.count
     }
     render_jsonp(response)
   rescue Carto::ParamInvalidError, Carto::ParamCombinationInvalidError => e

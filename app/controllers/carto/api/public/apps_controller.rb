@@ -34,7 +34,7 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
     end
     response = {
       apps: apps,
-      total_entries: vqb.build.size
+      total_entries: vqb.count
     }
     render_jsonp(response)
   rescue Carto::ParamInvalidError => e

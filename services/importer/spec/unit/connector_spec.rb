@@ -15,6 +15,7 @@ describe Carto::Connector do
     Carto::Connector::PROVIDERS << DummyConnectorProvider
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('another_dummy')
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('third_dummy')
+    Carto::Connector::PROVIDERS << DummyConnectorProviderWithModifiedDate
     Carto::Connector.providers.keys.each do |provider_name|
       Carto::ConnectorProvider.create! name: provider_name
     end
@@ -41,6 +42,7 @@ describe Carto::Connector do
       Carto::Connector.providers(user: @user).should == {
         "dummy"         => { name: "Dummy",         enabled: true,  description: nil },
         "another_dummy" => { name: "another_dummy", enabled: false, description: nil },
+        "dummy_with_modified_date" => { name: "DummyWithModifiedDate", enabled: false, description: nil },
         "third_dummy"   => { name: "third_dummy",   enabled: false, description: nil }
       }
     end
@@ -58,6 +60,7 @@ describe Carto::Connector do
       Carto::Connector.providers(user: @user).should == {
         "dummy"         => { name: "Dummy",         enabled: true,  description: nil },
         "another_dummy" => { name: "another_dummy", enabled: false, description: nil },
+        "dummy_with_modified_date" => { name: "DummyWithModifiedDate", enabled: false, description: nil },
         "third_dummy" => { name: "third_dummy",     enabled: false, description: nil }
       }
     end
@@ -114,5 +117,44 @@ describe Carto::Connector do
     expect {
       Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log)
     }.to raise_error(Carto::Connector::InvalidParametersError)
+  end
+
+  it 'By default providers consider data modified' do
+    parameters = {
+      provider: 'dummy',
+      table:    'thetable',
+      req1: 'a',
+      req2: 'b',
+      opt1: 'c'
+    }
+    future = Time.now + 1
+    past = Time.new(0)
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log)
+    connector.remote_data_updated?.should eq true
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: future)
+    connector.remote_data_updated?.should eq true
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: past)
+    connector.remote_data_updated?.should eq true
+  end
+
+  it 'Providers can detect data modifications' do
+    parameters = {
+      provider: DummyConnectorProviderWithModifiedDate.provider_id,
+      table:    'thetable',
+      req1: 'a',
+      req2: 'b',
+      opt1: 'c'
+    }
+    same_date = DummyConnectorProviderWithModifiedDate::LAST_MODIFIED
+    prior_date = same_date - 1
+    posterior_date = same_date + 1
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log)
+    connector.remote_data_updated?.should eq true
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: prior_date)
+    connector.remote_data_updated?.should eq true
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: posterior_date)
+    connector.remote_data_updated?.should eq false
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log, previous_last_modified: same_date)
+    connector.remote_data_updated?.should eq false
   end
 end

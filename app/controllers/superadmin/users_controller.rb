@@ -69,9 +69,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.set_fields_from_central(user_param, :update)
     @user.set_relationships_from_central(user_param)
     @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
-
     @user.update_rate_limits(user_param[:rate_limit])
     @user.update_gcloud_settings(user_param[:gcloud_settings])
+    @user.update_do_subscription(user_param[:do_subscription])
     @user.save
     respond_with(:superadmin, @user)
   end

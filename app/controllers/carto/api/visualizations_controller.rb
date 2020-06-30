@@ -92,19 +92,17 @@ module Carto
         presenter_options = presenter_options_from_hash(params).merge(related: false)
 
         total_subscriptions = 0
-
         visualizations = vqb.with_order(order, order_direction)
                             .build_paged(page, per_page).map do |v|
-          # TODO: Unmock this
-          total_subscriptions += 1
+          total_subscriptions += 1 if v.subscription.present?
 
           VisualizationPresenter.new(v, current_viewer, self, presenter_options)
-                                .with_presenter_cache(presenter_cache).to_poro
+                                .with_presenter_cache(presenter_cache).to_poro \
+            unless params[:subscribed] == 'true' and not v.subscription.present?
         end
-
         response = {
           visualizations: visualizations,
-          total_entries: vqb.build.size,
+          total_entries: visualizations.length(),
           total_subscriptions: total_subscriptions
         }
         if current_user && (params[:load_totals].to_s != 'false')

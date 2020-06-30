@@ -1,5 +1,5 @@
 <template>
-  <section class="catalog">
+  <section class="catalog do-catalog">
     <div class="container grid">
       <div class="grid-cell grid-cell--col12">
         <router-view></router-view>

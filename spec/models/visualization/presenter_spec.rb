@@ -86,6 +86,7 @@ describe Visualization::Member do
       vis_mock.stubs(:likes).returns([])
 
       vis_mock.stubs(:synchronization).returns(nil)
+      vis_mock.stubs(:subscription).returns(nil)
 
       presenter = Visualization::Presenter.new(vis_mock)
       data = presenter.to_poro

@@ -143,7 +143,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'returns 200 with the non expired subscriptions' do
       expected_dataset = {
         project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2', type: 'dataset',
-        expires_at: @next_year
+        expires_at: @next_year.to_json
       }
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(200)

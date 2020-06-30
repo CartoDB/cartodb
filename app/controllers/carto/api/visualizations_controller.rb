@@ -102,7 +102,7 @@ module Carto
         end
         response = {
           visualizations: visualizations,
-          total_entries: visualizations.length(),
+          total_entries: vqb.count,
           total_subscriptions: total_subscriptions
         }
         if current_user && (params[:load_totals].to_s != 'false')

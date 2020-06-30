@@ -219,17 +219,41 @@ class Carto::VisualizationQueryBuilder
   end
 
   def build
-    query = Carto::Visualization.all
-    query = Carto::VisualizationQueryFilterer.new(query).filter(@filtering_params)
-    query = with_associations(query)
-    order_query(query)
+    offdatabase_order? ? build_regular : build_subquery
+  end
+
+  def count
+    filtered_query.count
   end
 
   def build_paged(page = 1, per_page = 20)
-    build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
+    offdatabase_order? ? build_regular(page, per_page) : build_subquery(page, per_page)
   end
 
   private
+
+  def build_regular(page = nil, per_page = nil)
+    query = filtered_query
+    query = with_associations(query)
+    query = order_query(query)
+    query = query.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i) if page && per_page
+    query
+  end
+
+  def build_subquery(page = nil, per_page = nil)
+    subquery = with_ordering_associations(filtered_query)
+    subquery = order_query(subquery)
+    subquery = subquery.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i) if page && per_page
+
+    # Fetching related tables after filtering the results for better performance
+    query = Carto::Visualization.from(subquery, 'visualizations')
+    with_associations(query)
+  end
+
+  def filtered_query
+    query = Carto::Visualization.all
+    Carto::VisualizationQueryFilterer.new(query).filter(@filtering_params)
+  end
 
   def order_query(query)
     # Search has its own ordering criteria
@@ -252,6 +276,16 @@ class Carto::VisualizationQueryBuilder
   def with_associations(query)
     query = query.includes(@include_associations) unless @include_associations.empty?
     query = query.eager_load(@eager_load_associations) unless @eager_load_associations.empty?
+    query
+  end
+
+  def with_ordering_associations(query)
+    query = with_favorited(query) unless @filtering_params[:liked_by_user_id]
+    query = with_dependent_visualization_count(query)
+    query
+  end
+
+  def with_favorited(query)
     # We have to include favorites if we're not filtering by them
     # Why? Both of them include a join with the likes table: favorited uses
     # a left-join one and the filter will use an inner-join.
@@ -260,21 +294,22 @@ class Carto::VisualizationQueryBuilder
     # And what is the difference?
     #  - Filtering leaves only the favorited/liked visualizations by the user
     #  - With favorited we add the like/favorite data to the visualization information
-    query = with_favorited(query) unless @filtering_params[:liked_by_user_id]
-    with_dependent_visualization_count(query)
-  end
-
-  def with_favorited(query)
-    return query unless @order&.include?("favorited") && @current_user_id
+    return query unless @order&.include?('favorited') && @current_user_id
 
     Carto::VisualizationQueryIncluder.new(query).include_favorited(@current_user_id)
   end
 
   def with_dependent_visualization_count(query)
-    return query unless @order && @order.include?("dependent_visualizations")
+    return query unless @order&.include?('dependent_visualizations')
 
     with_prefetch_dependent_visualizations
     Carto::VisualizationQueryIncluder.new(query).include_dependent_visualization_count(@filtering_params)
+  end
+
+  def offdatabase_order?
+    Carto::VisualizationQueryOrderer::SUPPORTED_OFFDATABASE_ORDERS.any? do |offdatabase_order|
+      @order&.include?(offdatabase_order)
+    end
   end
 
 end

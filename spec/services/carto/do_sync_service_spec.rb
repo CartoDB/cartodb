@@ -241,24 +241,5 @@ describe Carto::DoSyncService do
       }.to change { Carto::DataImport.count }.by(0)
       sync['sync_status'].should eq 'syncing'
     end
-
-    # it 'does nothing for expired subscriptions' do
-    #   # TODO: should raise exception?
-    #   expect{
-    #     expect {
-    #       sync = @service.create_sync(@subscribed_expired_dataset_id)
-    #     }.to change { Carto::Synchronization.count }.by(0)
-    #   }.to change { Carto::DataImport.count }.by(0)
-    # end
-
-    # it 'does nothing for invalid subscriptions' do
-    #   # TODO: should raise exception?
-    #   expect{
-    #     expect {
-    #       sync = @service.create_sync(@non_subscribed_dataset_id)
-    #     }.to change { Carto::Synchronization.count }.by(0)
-    #   }.to change { Carto::DataImport.count }.by(0)
-    # end
   end
-
 end

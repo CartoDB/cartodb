@@ -634,31 +634,31 @@ class Table
           message = e.message.split("\n")[0]
 
           invalid_value = (m = message.match(/"([^"]+)"$/)) ? m[1] : nil
-          if invalid_value
-            invalid_column = attributes.invert[invalid_value] # which is the column of the name that raises error
-            new_column_type = get_new_column_type(invalid_column)
-            if new_column_type
-              user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
-              # INFO: There's a complex logic for retrying and need to know how often it is actually done
-              CartoDB::Logger.debug(message: 'Retrying update_row!',
-                                    user_id: user_id,
-                                    qualified_table_name: qualified_table_name,
-                                    row_id: row_id,
-                                    raw_attributes: raw_attributes,
-                                    exception: e)
-              if (retries += 1) > MAX_UPDATE_ROW_RETRIES
-                CartoDB::Logger.error(message: 'Max update_row! retries reached',
-                                      user_id: user_id,
-                                      qualified_table_name: qualified_table_name,
-                                      row_id: row_id,
-                                      raw_attributes: raw_attributes,
-                                      exception: e)
-              else
-                retry
-              end
-            end
+          raise e if invalid_value.blank?
+
+          invalid_column = attributes.invert[invalid_value]
+          raise e if invalid_column.blank?
+
+          new_column_type = get_new_column_type(invalid_column)
+          raise e if new_column_type.blank?
+
+          user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
+          # INFO: There's a complex logic for retrying and need to know how often it is actually done
+          CartoDB::Logger.debug(message: 'Retrying update_row!',
+                                user_id: user_id,
+                                qualified_table_name: qualified_table_name,
+                                row_id: row_id,
+                                raw_attributes: raw_attributes,
+                                exception: e)
+          if (retries += 1) > MAX_UPDATE_ROW_RETRIES
+            CartoDB::Logger.error(message: 'Max update_row! retries reached',
+                                  user_id: user_id,
+                                  qualified_table_name: qualified_table_name,
+                                  row_id: row_id,
+                                  raw_attributes: raw_attributes,
+                                  exception: e)
           else
-            raise e
+            retry
           end
         end
       end

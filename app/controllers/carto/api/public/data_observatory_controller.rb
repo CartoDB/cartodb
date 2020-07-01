@@ -34,7 +34,7 @@ module Carto
 
         def subscriptions
           bq_subscriptions = Carto::DoLicensingService.new(@user.username).subscriptions
-          available_subscriptions = bq_subscriptions.select { |dataset| Time.parse(dataset['expires_at']) > Time.now }
+          available_subscriptions = bq_subscriptions.select { |dataset| dataset['expires_at'] > Time.now }
           response = present_subscriptions(available_subscriptions)
           render(json: { subscriptions: response })
         end

@@ -20,9 +20,7 @@ module Carto
     end
 
     def subscriptions
-      all_subcriptions = JSON.parse($users_metadata.hget(@redis_key, PRESELECTED_STORAGE) || '[]')
-      available_subscriptions = all_subcriptions.select { |dataset| Time.parse(dataset['expires_at']) > Time.now }
-      available_subscriptions.map { |s| present_subscription(s) }
+      JSON.parse($users_metadata.hget(@redis_key, PRESELECTED_STORAGE) || '[]').map { |s| present_subscription(s) }
     end
 
     private
@@ -38,7 +36,7 @@ module Carto
         table: table,
         id: qualified_id,
         type: type,
-        expires_at: subscription['expires_at']
+        expires_at: Time.parse(subscription['expires_at'])
       }
       subscription.with_indifferent_access
     end

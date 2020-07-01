@@ -26,12 +26,48 @@ module Carto
 
     # subscription -> existing sync; returns nil for invalid subscription or sync not created
     def sync(subscription_id)
+      subscription = @user.do_subscription(subscription_id)
+
+      if subscription.blank?
+        return {
+          DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCABLE,
+          DO_SYNC_UNSYNCABLE_REASON => "Invalid subscription #{subscription_id}"
+        }.with_indifferent_access
+      end
+
+      if subscription['expires_at'] > Time.now
+        return {
+          DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCABLE,
+          DO_SYNC_UNSYNCABLE_REASON => "Subscription #{subscription_id} expired at #{subscription['expires_at']}"
+        }.with_indifferent_access
+      end
+
+      views = _subscription_views(subscription)
+      bq = Carto::BqClient.new(@user.gcloud_settings[:service_account])
+
+      num_bytes = 0
+      num_rows = nil
+      if views[:data]
+        table = bq.table(views[:data])
+        num_bytes += table.num_bytes # FIXME: num_physical_bytes ? num_long_term_bytes ?
+        num_rows = table.num_rows
+      end
+      if views[:geography]
+        num_bytes += bq.table(views[:geography]).num_bytes # FIXME: num_physical_bytes ? num_long_term_bytes ?
+        num_rows ||= table.num_rows
+      end
+      num_columns = table.schema.fields
+
+      # TODO: check DO limits (num_bytes, num_rows, num_columns)
+      # => { DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCABLE, DO_SYNC_UNSYNCABLE_REASON => '...' }
+      # note that account quota limits may provoke a fail during import, unless we take them into
+      # account here too.
+
       sync_info = {
-        DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCED
+        DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCED,
+        DO_SYNC_ESTIMATED_SIZE => num_bytes,
+        DO_SYNC_ESTIMATED_ROW_COUNT => num_rows
       }
-      # TODO: define result for non-existing/expired subscription: nil? {}? {sync_status: 'unsyncable',...}
-      # TODO: obtain estimated_size, estimated_row_count
-      # TODO: check size, rows & columns limits, set state to DO_SYNC_STATUS_UNSYNCABLE and DO_SYNC_UNSYNCABLE_REASON properly
       condition = %{
           service_name = 'connector'
           AND service_item_id::jsonb @> '{"provider":"#{DO_SYNC_PROVIDER}","subscription_id":"#{subscription_id}"}'::jsonb
@@ -65,6 +101,7 @@ module Carto
           # but note that data_import.get_error_text is intended for UI imports and not approriate here
         end
       end
+
       sync_info.with_indifferent_access
     end
 
@@ -84,7 +121,7 @@ module Carto
     end
 
     # create sync for subscription if it does not exist, or return existing sync
-    def create_sync(subscription_id, force=false)
+    def create_sync!(subscription_id, force=false)
       # TODO: tracking
 
       sync_data = sync(subscription_id)
@@ -98,7 +135,7 @@ module Carto
     end
 
     # stop sync'ing a subscription
-    def remove_sync(subscription_id)
+    def remove_sync!(subscription_id)
       # TODO: tracking, e.g. Carto::Tracking::Events::DeletedDataset.new(@user.id, ...).report
 
       sync_data = sync(subscription_id)
@@ -111,7 +148,40 @@ module Carto
       end
     end
 
+    def subscription_views(subscription_id)
+      _subscription_views @user.do_subscription(subscription_id)
+    end
+
     private
+
+    def _subscription_view(subscription)
+      gcloud_settings = @user.gcloud_settings
+      subscriptions_project = gcloud_settings[:bq_project]
+      subscriptions_dataset = gcloud_settings[:bq_dataset]
+      subscribed_project, subscribed_dataset, subscribed_table = subscription.values_at(:project, :dataset, :table)
+      subscription_table = 'view_' + [subscribed_dataset, subscribed_table].join('_')
+      [subscriptions_project, subscriptions_dataset, subscription_table].join('.')
+    end
+
+    def _subscription_views(subscription)
+      return nil if subscription.blank?
+
+      case subscription[:type]
+      when 'dataset'
+        data_view = _subscription_view(subscription)
+        do_api = Carto::DoApiClient.new(@user)
+        geography_id = do_api.dataset(@subscription_id)['geography_id']
+        if geography_id
+          geography_view = _subscription_view(geography_id)
+        end
+      when 'geography'
+        geography_view = _subscription_view(subscription_id)
+      end
+      {
+        data: data_view,
+        geography: geography_view
+      }
+    end
 
     def create_new_sync_for_subscription!(subscription_id)
       table_name = tentative_table_name(subscription_id)

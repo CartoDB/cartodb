@@ -91,15 +91,15 @@ module Carto
         presenter_cache = Carto::Api::PresenterCache.new
         presenter_options = presenter_options_from_hash(params).merge(related: false)
 
-        total_subscriptions = 0
         visualizations = vqb.with_order(order, order_direction)
                             .build_paged(page, per_page).map do |v|
-          total_subscriptions += 1 if v.subscription.present?
-
           VisualizationPresenter.new(v, current_viewer, self, presenter_options)
                                 .with_presenter_cache(presenter_cache).to_poro \
             unless params[:subscribed] == 'true' and not v.subscription.present?
-        end
+        end.compact
+
+        total_subscriptions = 0
+        vqb.filtered_query.find_each{|v| total_subscriptions += 1 if v.subscription.present?}
 
         response = {
           visualizations: visualizations,

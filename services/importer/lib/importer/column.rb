@@ -25,7 +25,7 @@ module CartoDB
 
       NO_COLUMN_SANITIZATION_VERSION = 0
       INITIAL_COLUMN_SANITIZATION_VERSION = 1
-      CURRENT_COLUMN_SANITIZATION_VERSION = 2
+      CURRENT_COLUMN_SANITIZATION_VERSION = 4
 
       def initialize(db, table_name, column_name, user, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
         @job          = job || Job.new({logger: logger})
@@ -274,10 +274,13 @@ module CartoDB
         reserved?(name) || unsupported?(name)
       end
 
-      def self.sanitize_name(column_name)
-        name = StringSanitizer.sanitize(column_name.to_s, transliterate_cyrillic: true)
-        return name unless reserved_or_unsupported?(name)
-        "_#{name}"
+      def self.sanitize_name(column_name, column_sanitization_version = 4)
+        name = StringSanitizer.sanitize(column_name.to_s, {
+          transliterate_cyrillic: true,
+          transliterate_greek: column_sanitization_version >= 4
+        })
+
+        reserved_or_unsupported?(name) ? "_#{name}" : name
       end
 
       def self.rejected?(name)
@@ -295,6 +298,8 @@ module CartoDB
           get_valid_column_name_v2(candidate_column_name, existing_names)
         elsif column_sanitization_version == 3
           get_valid_column_name_v3(candidate_column_name, existing_names)
+        elsif column_sanitization_version == 4
+          get_valid_column_name_v4(candidate_column_name, existing_names)
         else
           raise "Invalid column sanitization version #{column_sanitization_version.inspect}"
         end
@@ -320,7 +325,7 @@ module CartoDB
       end
 
       def self.get_valid_column_name_v2(candidate_column_name, existing_names)
-        new_column_name = sanitize_name(candidate_column_name).gsub(/_{2,}/, '_')
+        new_column_name = sanitize_name(candidate_column_name, 2).gsub(/_{2,}/, '_')
         new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
         avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
       end
@@ -338,6 +343,12 @@ module CartoDB
           new_column_name = candidate_column_name.parameterize.tr('-','_')
           new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
           avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
+      end
+
+      def self.get_valid_column_name_v4(candidate_column_name, existing_names)
+        new_column_name = sanitize_name(candidate_column_name, 4).gsub(/_{2,}/, '_')
+        new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
+        avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
       end
 
       def self.avoid_collisions(name, existing_names, reserved_words, max_length=PG_IDENTIFIER_MAX_LENGTH)
@@ -359,4 +370,3 @@ module CartoDB
     end
   end
 end
-

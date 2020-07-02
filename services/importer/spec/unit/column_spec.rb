@@ -491,7 +491,59 @@ describe Column do
         end
       end
     end
+
+    context 'v4 sanitization' do
+      let(:sanitization_version) { 4 }
+      let(:sanitization_examples) do
+        VERSION_2_SANITIZATION_EXAMPLES.merge('Τοπικές Κοινότητες' => 'topikes_koinothtes', 'Δημοτικές' => 'dhmotikes')
+      end
+      let(:sanitization_columns) do
+        VERSION_2_SANITIZATION_COLS.merge(['Τοπικές Κοινότητες', 'Δημοτικές'] => ['topikes_koinothtes', 'dhmotikes'])
+      end
+
+      it 'can be applied to single columns' do
+        sanitization_examples.each do |input_name, output_name|
+          name = Column::get_valid_column_name(input_name, sanitization_version, [])
+          expect(name).to eq(output_name)
+        end
+      end
+
+      it 'can be applied to multiple columns' do
+        sanitization_columns.each do |input_columns, output_columns|
+          columns = []
+          input_columns.zip(output_columns).each do |input_column, output_column|
+            column = Column::get_valid_column_name(input_column, sanitization_version, columns)
+            columns << column
+            expect(column).to eq(output_column)
+          end
+        end
+      end
+
+      it 'is idempotent' do
+        sanitization_examples.each_key do |input_name|
+          first_name = Column::get_valid_column_name(input_name, sanitization_version, [])
+          second_name = Column::get_valid_column_name(first_name, sanitization_version, [])
+
+          expect(second_name).to eq(first_name)
+        end
+      end
+
+      it 'multiple columns sanitization is idempotent' do
+        sanitization_columns.each_key do |input_columns|
+          columns1 = []
+          input_columns.each do |input_column|
+            column1 = Column::get_valid_column_name(input_column, sanitization_version, columns1)
+            columns1 << column1
+          end
+          columns2 = []
+          columns1.each do |input_column|
+            column2 = Column::get_valid_column_name(input_column, sanitization_version, columns2)
+            columns2 << column2
+            column2.should eq input_column
+          end
+        end
+      end
+    end
   end # .get_valid_column_name
 
 end # Column
-

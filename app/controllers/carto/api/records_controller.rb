@@ -16,36 +16,33 @@ module Carto
       # This endpoint is not used by the editor but by users. Do not remove
       def show
         render_jsonp(@user_table.service.record(params[:id]))
-      rescue => e
+      rescue StandardError => e
         CartoDB::Logger.error(message: 'Error loading record', exception: e,
                               record_id: params[:id], user_table: @user_table)
-        render_jsonp({ errors: ["Record #{params[:id]} not found"] }, 404)
+        render_jsonp({ errors: ["Record #{params[:id]} not found"] }, :not_found)
       end
 
       def create
         primary_key = @user_table.service.insert_row!(filtered_row)
         render_jsonp(@user_table.service.record(primary_key))
-      rescue => e
-        render_jsonp({ errors: [e.message] }, 400)
+      rescue StandardError => e
+        render_jsonp({ errors: [e.message] }, :bad_request)
       end
 
       def update
         if params[:cartodb_id].present?
-          begin
-            resp = @user_table.service.update_row!(params[:cartodb_id], filtered_row)
+          updated_count = @user_table.service.update_row!(params[:cartodb_id], filtered_row)
 
-            if resp > 0
-              render_jsonp(@user_table.service.record(params[:cartodb_id]))
-            else
-              render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
-            end
-          rescue => e
-            CartoDB::Logger.warning(message: 'Error updating record', exception: e)
-            render_jsonp({ errors: [translate_error(e.message.split("\n").first)] }, 400)
+          if updated_count.positive?
+            render_jsonp(@user_table.service.record(params[:cartodb_id]))
+          else
+            render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, :not_found)
           end
         else
-          render_jsonp({ errors: ["cartodb_id can't be blank"] }, 404)
+          render_jsonp({ errors: ["cartodb_id can't be blank"] }, :not_found)
         end
+      rescue StandardError => e
+        render_jsonp({ errors: [e.message] }, :bad_request)
       end
 
       def destroy
@@ -63,7 +60,7 @@ module Carto
 
         head :no_content
       rescue
-        render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
+        render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, :not_found)
       end
 
       protected

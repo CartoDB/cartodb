@@ -18,6 +18,7 @@ Development
 - Fix navigation bar tests
 - Ignore update_timestamp function on migrations ([#15710](https://github.com/CartoDB/cartodb/pull/15710))
 - Improve query builder performance ([#15725](https://github.com/CartoDB/cartodb/pull/15725))
+- Transliterate Greek column names([#15726](https://github.com/CartoDB/cartodb/pull/15726))
 
 4.38.0 (2020-06-05)
 -------------------

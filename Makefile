@@ -92,6 +92,7 @@ WORKING_SPECS_1 = \
 	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
 	spec/services/carto/visualization_backup_service_spec.rb \
+	spec/services/importer/lib/importer/string_sanitizer_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_2 = \

@@ -208,7 +208,7 @@ export default {
       return this.$props.dataset.permission.acl.length > 0;
     },
     isDataObservatory () {
-      return this.$props.dataset.subscription && this.$props.dataset.subscription === 'do-v2';
+      return this.$props.dataset.subscription && this.$props.dataset.subscription.type === 'do-v2';
     }
   },
   methods: {

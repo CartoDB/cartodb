@@ -21,6 +21,7 @@ describe CartoDB::Importer2::ConnectorRunner do
     @providers = %w(dummy)
     @fake_log.clear
     Carto::Connector::PROVIDERS << DummyConnectorProvider
+    Carto::Connector::PROVIDERS << DummyConnectorProviderWithModifiedDate
     Carto::Connector.providers(all: true).keys.each do |provider_name|
       Carto::ConnectorProvider.create! name: provider_name
     end
@@ -42,6 +43,7 @@ describe CartoDB::Importer2::ConnectorRunner do
 
   after(:each) do
     DummyConnectorProvider.copies.clear
+    DummyConnectorProviderWithModifiedDate.copies.clear
   end
 
   include FeatureFlagHelper
@@ -286,5 +288,61 @@ describe CartoDB::Importer2::ConnectorRunner do
       DummyConnectorProvider.copies.map(&:last).uniq.should eq [{enabled: true, max_rows: 10}]
     end
   end
-  # TODO: check Runner compatibility
+
+  it "Avoids copying data that hasn't changed" do
+    with_feature_flag @user, 'carto-connectors', true do
+      parameters = {
+        table:    'thetable',
+        req1: 'a',
+        req2: 'b',
+        opt1: 'c'
+      }
+      provider = DummyConnectorProviderWithModifiedDate.provider_id
+      date_the_data_was_modified = DummyConnectorProviderWithModifiedDate::LAST_MODIFIED
+      date_the_data_was_last_copied = date_the_data_was_modified
+      options = {
+        pg:   @pg_options,
+        log:  @fake_log,
+        user: @user,
+        previous_last_modified: date_the_data_was_last_copied
+      }
+      config = { provider => { 'enabled' => true } }
+      Cartodb.with_config connectors: config do
+        connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
+        connector.run
+        connector.success?.should be true
+        connector.provider_name.should eq provider
+      end
+      DummyConnectorProviderWithModifiedDate.copies.size.should eq 0
+    end
+  end
+
+  it "Copies data that has changed" do
+    with_feature_flag @user, 'carto-connectors', true do
+      parameters = {
+        table:    'thetable',
+        req1: 'a',
+        req2: 'b',
+        opt1: 'c'
+      }
+      options = {
+        pg:   @pg_options,
+        log:  @fake_log,
+        user: @user
+      }
+      provider = DummyConnectorProviderWithModifiedDate.provider_id
+      date_the_data_was_modified = DummyConnectorProviderWithModifiedDate::LAST_MODIFIED
+      date_the_data_was_last_copied = date_the_data_was_modified - 1
+      config = { provider => { 'enabled' => true }, previous_last_modified: date_the_data_was_last_copied }
+      Cartodb.with_config connectors: config do
+        connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
+        connector.run
+        connector.success?.should be true
+        connector.provider_name.should eq provider
+      end
+      DummyConnectorProviderWithModifiedDate.copies.size.should eq 1
+      DummyConnectorProviderWithModifiedDate.copies[0][0].should eq 'cdb_importer'
+      DummyConnectorProviderWithModifiedDate.copies[0][1].should match /\Aimporter_/
+    end
+  end
 end

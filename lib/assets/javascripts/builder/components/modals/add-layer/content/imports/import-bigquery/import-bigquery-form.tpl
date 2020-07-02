@@ -39,7 +39,7 @@
     <div class="Form-rowLabel ImportOptions__label"></div>
     <div class="Form-row ImportOptions__input--long u-flex__justify--end">
       <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-submit">
-        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('components.modals.add-layer.imports.database.run') %></span>
+        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('components.modals.add-layer.imports.database.run-bq-go-to-connect') %></span>
       </button>
     </div>
   </div>

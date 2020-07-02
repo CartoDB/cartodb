@@ -48,6 +48,11 @@ FactoryGirl.define do
       state 'locked'
     end
 
+    trait :unverified do
+      email_verification_token   'aaa'
+      email_verification_sent_at Time.current - 2.hours
+    end
+
     trait :valid do
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
@@ -59,6 +64,7 @@ FactoryGirl.define do
     factory :user_with_private_tables, traits: [:enabled, :private_tables]
     factory :admin, traits: [:admin]
     factory :valid_user, traits: [:valid]
+    factory :unverified_user, traits: [:valid, :unverified]
     factory :locked_user, traits: [:valid, :locked]
 
     after(:build) do |user|

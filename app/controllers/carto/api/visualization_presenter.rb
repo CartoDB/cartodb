@@ -125,10 +125,10 @@ module Carto
           children: []
         }
 
+        poro[:subscription] = @visualization.subscription if @visualization.subscription
         poro[:related_tables] = related_tables if related
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features
-        poro[:subscription] = 'do-v2' if @visualization.name == 'my_do_subscription'
 
         poro
       end

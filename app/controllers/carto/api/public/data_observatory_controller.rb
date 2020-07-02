@@ -62,7 +62,7 @@ module Carto
 
         def instant_license(metadata)
           licensing_service = Carto::DoLicensingService.new(@user.username)
-          licensing_service.subscribe([license_info(metadata)])
+          licensing_service.subscribe(license_info(metadata))
         end
 
         def regular_license(metadata)

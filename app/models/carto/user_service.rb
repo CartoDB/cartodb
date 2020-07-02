@@ -18,7 +18,6 @@ module Carto
       Carto::VisualizationQueryBuilder.new
                                       .with_user_id(@user.id)
                                       .with_type(Carto::Visualization::TYPE_CANONICAL)
-                                      .build
                                       .count
     end
 
@@ -28,7 +27,6 @@ module Carto
       Carto::VisualizationQueryBuilder.new
                                       .with_user_id(@user.id)
                                       .with_type(Carto::Visualization::TYPE_DERIVED)
-                                      .build
                                       .count
     end
 
@@ -37,7 +35,6 @@ module Carto
 
       Carto::VisualizationQueryBuilder.new
                                       .with_owned_by_or_shared_with_user_id(@user.id)
-                                      .build
                                       .count
     end
 
@@ -45,7 +42,6 @@ module Carto
       return 0 unless @user.id
 
       Carto::VisualizationQueryBuilder.user_public_visualizations(@user)
-                                      .build
                                       .count
     end
 
@@ -53,7 +49,6 @@ module Carto
       return 0 unless @user.id
 
       Carto::VisualizationQueryBuilder.user_public_privacy_visualizations(@user)
-                                      .build
                                       .count
     end
 
@@ -61,7 +56,6 @@ module Carto
       return 0 unless @user.id
 
       Carto::VisualizationQueryBuilder.user_public_privacy_visualizations(@user)
-                                      .build
                                       .count
     end
 
@@ -69,7 +63,6 @@ module Carto
       return 0 unless @user.id
 
       Carto::VisualizationQueryBuilder.user_link_privacy_visualizations(@user)
-                                      .build
                                       .count
     end
 
@@ -77,7 +70,6 @@ module Carto
       return 0 unless @user.id
 
       Carto::VisualizationQueryBuilder.user_password_privacy_visualizations(@user)
-                                      .build
                                       .count
     end
 
@@ -85,7 +77,6 @@ module Carto
       return 0 unless @user.id
 
       Carto::VisualizationQueryBuilder.user_private_privacy_visualizations(@user)
-                                      .build
                                       .count
     end
 
@@ -93,7 +84,6 @@ module Carto
       return 0 unless @user.id
 
       Carto::VisualizationQueryBuilder.user_all_visualizations(@user)
-                                      .build
                                       .count
     end
 

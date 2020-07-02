@@ -31,6 +31,10 @@ module Cartodb
       URI.join(host, 'login').to_s
     end
 
+    def unverified_url
+      URI.join(host, 'unverified').to_s
+    end
+
     def build_request(path, body, method, timeout = 200)
       http_client = Carto::Http::Client.get('central', log_requests: true)
       http_client.request(

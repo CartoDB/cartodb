@@ -2,13 +2,13 @@ Development
 -----------
 
 ### NOTICES
-- Adds `ssl_required` config parameter to govern ActionController's redirects. Defaults to `false` (no redirects to HTTPS attempted unless explicitly set to `true`). ([15716](https://github.com/CartoDB/cartodb/pull/15716]))
+- Adds `ssl_required` config parameter to govern ActionController's redirects. Defaults to `false` (no redirects to HTTPS attempted unless explicitly set to `true`). ([#15716](https://github.com/CartoDB/cartodb/pull/15716]))
 
 ### Features
-- DOv2 Sync Service ([15706](https://github.com/CartoDB/cartodb/pull/15706))
-- Filter support when license DO datasets ([15705](https://github.com/CartoDB/cartodb/pull/15705]))
-- Synchronize REDIS when licensing from superadmin ([15719](https://github.com/CartoDB/cartodb/pull/15719]))
-- Allow the use of service account credentials on Big Query import UI ([15722](https://github.com/CartoDB/cartodb/pull/15722))
+- DOv2 Sync Service ([#15706](https://github.com/CartoDB/cartodb/pull/15706)) ([#15728](https://github.com/CartoDB/cartodb/pull/15728))
+- Filter support when license DO datasets ([#15705](https://github.com/CartoDB/cartodb/pull/15705]))
+- Synchronize REDIS when licensing from superadmin ([#15719](https://github.com/CartoDB/cartodb/pull/15719]))
+- Allow the use of service account credentials on Big Query import UI ([#15722](https://github.com/CartoDB/cartodb/pull/15722))
 
 ### Bug fixes / enhancements
 - Fix last modified check for db connectors ([#15711](https://github.com/CartoDB/cartodb/pull/15711))

@@ -19,7 +19,7 @@ module CartoDB
         [/Γ/, 'g'], [/γ/, 'g'], [/Β/, 'v'], [/β/, 'v'], [/Ά/, 'a'], [/Α/, 'a'], [/ά/, 'a'], [/Ι/, 'I']
       ]
 
-      def normalize(string, transliterate_cyrillic: false)
+      def normalize(string, transliterate_cyrillic: false, transliterate_greek: false)
         return '' if string.nil? || string.empty?
 
         n = string.force_encoding("UTF-8")
@@ -135,14 +135,17 @@ module CartoDB
           n.gsub!(/Я/, 'Ya')
           n.gsub!(/я/, 'ya')
         end
-        GREEK_TRANSLITERATION_RULES.each { |rule| n.gsub!(rule[0], rule[1]) }
+        GREEK_TRANSLITERATION_RULES.each { |rule| n.gsub!(rule[0], rule[1]) } if transliterate_greek
         n
       end
 
-      def sanitize(string, transliterate_cyrillic: false)
+      def sanitize(string, transliterate_cyrillic: false, transliterate_greek: false)
        return '' if string.nil? || string.empty?
-       normalize(string.gsub(/<[^>]+>/m,''), transliterate_cyrillic: transliterate_cyrillic)
-        .downcase
+       normalize(
+         string.gsub(/<[^>]+>/m,''),
+         transliterate_cyrillic: transliterate_cyrillic,
+         transliterate_greek: transliterate_greek
+       ).downcase
         .gsub(/&.+?;/,'-')
         .gsub(/[^a-z0-9 _-]/,'-').strip
         .gsub(/\s+/,'-')

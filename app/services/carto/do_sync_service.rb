@@ -42,7 +42,7 @@ module Carto
         }.with_indifferent_access
       end
 
-      views = _subscription_views(subscription)
+      views = subscription_views(subscription)
       bq = Carto::BqClient.new(@user.gcloud_settings[:service_account])
 
       num_bytes = 0
@@ -148,39 +148,35 @@ module Carto
       end
     end
 
-    def subscription_views(subscription_id)
-      _subscription_views @user.do_subscription(subscription_id)
+    def subscription_views(subscription)
+      return { data: nil, geography: nil } if subscription.blank? || subscription['expires_at'] <= Time.now
+
+      case subscription[:type]
+      when 'dataset'
+        data_view = subscription_view(subscription)
+        do_api = Carto::DoApiClient.new(@user)
+        geography_id = do_api.dataset(subscription[:id])['geography_id']
+        if geography_id
+          geography_view = subscription_view(@user.do_subscription(geography_id))
+        end
+      when 'geography'
+        geography_view = subscription_view(subscription)
+      end
+      {
+        data: data_view,
+        geography: geography_view
+      }
     end
 
     private
 
-    def _subscription_view(subscription)
+    def subscription_view(subscription)
       gcloud_settings = @user.gcloud_settings
       subscriptions_project = gcloud_settings[:bq_project]
       subscriptions_dataset = gcloud_settings[:bq_dataset]
       subscribed_project, subscribed_dataset, subscribed_table = subscription.values_at(:project, :dataset, :table)
       subscription_table = 'view_' + [subscribed_dataset, subscribed_table].join('_')
       [subscriptions_project, subscriptions_dataset, subscription_table].join('.')
-    end
-
-    def _subscription_views(subscription)
-      return nil if subscription.blank?
-
-      case subscription[:type]
-      when 'dataset'
-        data_view = _subscription_view(subscription)
-        do_api = Carto::DoApiClient.new(@user)
-        geography_id = do_api.dataset(@subscription_id)['geography_id']
-        if geography_id
-          geography_view = _subscription_view(geography_id)
-        end
-      when 'geography'
-        geography_view = _subscription_view(subscription_id)
-      end
-      {
-        data: data_view,
-        geography: geography_view
-      }
     end
 
     def create_new_sync_for_subscription!(subscription_id)

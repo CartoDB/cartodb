@@ -56,7 +56,7 @@ module Carto
         num_bytes += bq.table(views[:geography]).num_bytes # FIXME: num_physical_bytes ? num_long_term_bytes ?
         num_rows ||= table.num_rows
       end
-      num_columns = table.schema.fields
+      num_columns = table.schema.fields.size
 
       # TODO: check DO limits (num_bytes, num_rows, num_columns)
       # => { DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCABLE, DO_SYNC_UNSYNCABLE_REASON => '...' }

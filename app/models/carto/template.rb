@@ -61,7 +61,6 @@ module Carto
             Carto::VisualizationQueryBuilder.new
                                             .with_name(table_name)
                                             .with_user_id(user.id)
-                                            .build
                                             .count == 0
           rescue
             true

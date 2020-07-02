@@ -288,12 +288,17 @@ module CartoDB
       end
 
       def get_connector
+        # get_runner passes the synchronization `modified_at` time (which corresponds to the
+        # last-modified time of the external data at the last synchronization) through the
+        # downloader provided to the runner.
+        # For connectors we need to pass it directly to the connector runner.
         CartoDB::Importer2::ConnectorRunner.check_availability!(user)
         CartoDB::Importer2::ConnectorRunner.new(
           service_item_id,
           user: user,
           pg: pg_options,
-          log: log
+          log: log,
+          previous_last_modified: modified_at
         )
       end
 

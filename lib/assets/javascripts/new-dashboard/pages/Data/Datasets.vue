@@ -5,6 +5,7 @@
         {{ $t('BulkActions.selected', {count: selectedDatasets.length}) }}
       </h2>
       <DatasetBulkActions
+        ref="datasetsActions"
         :selectedDatasets="selectedDatasets"
         :areAllDatasetsSelected="areAllDatasetsSelected"
         @selectAll="selectAll"
@@ -41,12 +42,22 @@ export default {
     Pagination,
     DatasetsList
   },
+  props: {
+    datasetId: String,
+    createVis: Boolean
+  },
   data () {
     return {
       isScrollPastHeader: false,
       maxVisibleDatasets: 12,
       selectedDatasets: []
     };
+  },
+  created () {
+    if (this.datasetId) {
+      const selectedDataset = Object.values(this.datasets).find(elem => elem.name === this.datasetId);
+      this.updateSelected([selectedDataset]);
+    }
   },
   beforeMount () {
     if (this.$store.getters['user/isViewer']) {
@@ -58,6 +69,10 @@ export default {
     this.stickyScrollPosition = this.getHeaderBottomPageOffset();
     this.$onScrollChange = this.onScrollChange.bind(this);
     document.addEventListener('scroll', this.$onScrollChange, { passive: true });
+
+    if (this.createVis) {
+      this.$refs.datasetsActions.createMap();
+    }
   },
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });

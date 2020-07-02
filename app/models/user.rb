@@ -1252,7 +1252,7 @@ class User < Sequel::Model
       vqb.with_owned_by_or_shared_with_user_id(id)
     end
     vqb.without_raster if filters[:exclude_raster] == true
-    vqb.build.count
+    vqb.count
   end
 
   def last_visualization_created_at

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="28px" viewBox="0 0 26 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>dataobservatory.6b9db5ec</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="5.91133005" height="3.26808511"></rect>
+        <polygon id="path-3" points="0.0785846037 1.20885251 10.1935271 0.0416792608 10.1935271 5.87754552 0.0785846037 4.71037227"></polygon>
+        <polygon id="path-5" points="0.019032125 1.50011938 13.2948942 0.243163569 13.2948942 11.5557659 0.019032125 10.2988101"></polygon>
+    </defs>
+    <g id="Catalog" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Data-&gt;-Connect" transform="translate(-325.000000, -119.000000)">
+            <g id="data-observatory" transform="translate(316.000000, 108.000000)">
+                <g id="dataobservatory.6b9db5ec" transform="translate(9.000000, 10.000000)">
+                    <rect id="Rectangle-2" fill="#FFFFFF" fill-rule="nonzero" x="13" y="25" width="1" height="3"></rect>
+                    <polygon id="Rectangle-2" fill="#FFFFFF" fill-rule="nonzero" points="10.5669873 23.1519238 11.4330127 23.5975579 8.4330127 28.228723 7.5669873 27.783089"></polygon>
+                    <polygon id="Rectangle-2" fill="#FFFFFF" fill-rule="nonzero" points="15.5669873 23.5975579 16.4330127 23.1519238 19.4330127 27.783089 18.5669873 28.228723"></polygon>
+                    <rect id="Rectangle-2" fill="#FFFFFF" fill-rule="nonzero" x="13" y="15" width="2" height="6"></rect>
+                    <g id="Rectangle-3" transform="translate(11.000000, 22.000000)">
+                        <g id="path-1-Clipped">
+                            <g>
+                                <mask id="mask-2" fill="white">
+                                    <use xlink:href="#path-1"></use>
+                                </mask>
+                                <g id="path-1"></g>
+                                <rect id="path-1" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-2)" x="0" y="0" width="5.91133005" height="2.26808511"></rect>
+                            </g>
+                        </g>
+                    </g>
+                    <g id="Rectangle-6" transform="translate(6.500000, 15.000000) rotate(-25.000000) translate(-6.500000, -15.000000) translate(1.000000, 12.000000)">
+                        <g id="path-5-Clipped">
+                            <g>
+                                <mask id="mask-4" fill="white">
+                                    <use xlink:href="#path-3"></use>
+                                </mask>
+                                <g id="path-5"></g>
+                                <polygon id="path-5" stroke="#2E51E8" stroke-width="2" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-4)" points="0.501202865 0.302544726 9.42261826 -0.864628526 9.42261826 4.97123774 0.501202865 3.80406448"></polygon>
+                            </g>
+                        </g>
+                    </g>
+                    <g id="Rectangle-6" transform="translate(21.788691, 7.046846) rotate(-25.000000) translate(-21.788691, -7.046846) translate(19.788691, 1.046846)" fill="#FFFFFF" fill-rule="nonzero">
+                        <g id="path-3-Clipped">
+                            <g id="path-3">
+                                <rect x="0.224679945" y="5.20472554e-13" width="2.77532006" height="12"></rect>
+                            </g>
+                        </g>
+                    </g>
+                    <g id="Rectangle-6" transform="translate(16.000000, 10.000000) rotate(-25.000000) translate(-16.000000, -10.000000) translate(9.000000, 4.000000)">
+                        <g id="path-7-Clipped">
+                            <g>
+                                <mask id="mask-6" fill="white">
+                                    <use xlink:href="#path-5"></use>
+                                </mask>
+                                <g id="path-7"></g>
+                                <polygon id="path-7" stroke="#2E51E8" stroke-width="2" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-6)" points="0.019032125 1.50011938 11 0.243163569 11 11.5557659 0.019032125 10.2988101"></polygon>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

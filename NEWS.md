@@ -9,13 +9,16 @@ Development
 - Filter support when license DO datasets ([15705](https://github.com/CartoDB/cartodb/pull/15705]))
 - Synchronize REDIS when licensing from superadmin ([15719](https://github.com/CartoDB/cartodb/pull/15719]))
 - Allow the use of service account credentials on Big Query import UI ([15722](https://github.com/CartoDB/cartodb/pull/15722))
+- Added subscriptions info to the visualizations ([15723](https://github.com/CartoDB/cartodb/pull/15723))
 
 ### Bug fixes / enhancements
+- Fix last modified check for db connectors ([#15711](https://github.com/CartoDB/cartodb/pull/15711))
 - Improve OAuth error for expired sessions ([#15707](https://github.com/CartoDB/cartodb/pull/15707))
 - Verify user email. ([#15683](https://github.com/CartoDB/cartodb/pull/15683))
 - Set right referrer header for password reset page ([#15699](https://github.com/CartoDB/cartodb/pull/15699))
 - Fix navigation bar tests
 - Ignore update_timestamp function on migrations ([#15710](https://github.com/CartoDB/cartodb/pull/15710))
+- Improve query builder performance ([#15725](https://github.com/CartoDB/cartodb/pull/15725))
 
 4.38.0 (2020-06-05)
 -------------------

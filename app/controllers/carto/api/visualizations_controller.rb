@@ -94,11 +94,17 @@ module Carto
         visualizations = vqb.with_order(order, order_direction)
                             .build_paged(page, per_page).map do |v|
           VisualizationPresenter.new(v, current_viewer, self, presenter_options)
-                                .with_presenter_cache(presenter_cache).to_poro
-        end
+                                .with_presenter_cache(presenter_cache).to_poro \
+            unless params[:subscribed] == 'true' and not v.subscription.present?
+        end.compact
+
+        total_subscriptions = 0
+        vqb.filtered_query.find_each{|v| total_subscriptions += 1 if v.subscription.present?}
+
         response = {
           visualizations: visualizations,
-          total_entries: vqb.build.size
+          total_entries: vqb.count,
+          total_subscriptions: total_subscriptions
         }
         if current_user && (params[:load_totals].to_s != 'false')
           response.merge!(calculate_totals(types))
@@ -482,24 +488,23 @@ module Carto
           total_user_entries: VisualizationQueryBuilder.new
                                                        .with_types(total_types)
                                                        .with_user_id(current_user.id)
-                                                       .build.size,
+                                                       .count,
           total_locked: VisualizationQueryBuilder.new
                                                  .with_types(total_types)
                                                  .with_user_id(current_user.id)
                                                  .with_locked(true)
-                                                 .build.size,
+                                                 .count,
           total_likes: VisualizationQueryBuilder.new
                                                 .with_types(total_types)
                                                 .with_liked_by_user_id(current_user.id)
                                                 .with_locked(false)
-                                                .build.size,
+                                                .count,
           total_shared: VisualizationQueryBuilder.new
                                                  .with_types(total_types)
                                                  .with_shared_with_user_id(current_user.id)
                                                  .with_user_id_not(current_user.id)
                                                  .with_locked(false)
-                                                 .with_prefetch_table
-                                                 .build.size
+                                                 .count
         }
       end
     end

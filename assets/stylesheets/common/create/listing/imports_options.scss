@@ -178,7 +178,8 @@ $import-button-width: 174px;
   }
 
   &:not(.is-enterprise) .ImportButton__tag--beta,
-  &:not(.is-enterprise) .ImportButton__tag--soon {
+  &:not(.is-enterprise) .ImportButton__tag--soon,
+  &:not(.is-enterprise) .ImportButton__tag--new {
     @extend .ImportButton__tag:first-of-type;
   }
 
@@ -292,8 +293,20 @@ $import-button-width: 174px;
   }
 }
 
+.is-highlighted {
+  background-color: $cNavyBlue;
+  color: $cStructure-grayBkg;
+  border-color: transparent;
+
+  .ImportButton__tag {
+    background-color: rgba(255, 255, 255, 0.16);
+    border-color: transparent;
+  }
+}
+
 .is-beta .ImportButton__tag--beta,
 .is-soon .ImportButton__tag--soon,
+.is-new .ImportButton__tag--new,
 .is-enterprise .ImportButton__tag--enterprise {
   display: inline-block;
 }
@@ -327,6 +340,7 @@ $import-button-width: 174px;
 @include importIcon(postgresql);
 @include importIcon(arcgis);
 @include importIcon(twitter);
+@include importIcon(dataobservatory);
 
 .SelectedImport {
   &__header {

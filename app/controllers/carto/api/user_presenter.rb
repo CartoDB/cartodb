@@ -154,6 +154,7 @@ module Carto
           db_size_in_megabytes: db_size_in_bytes.present? ? (db_size_in_bytes / (1024.0 * 1024.0)).round(2) : nil,
           remaining_table_quota: @user.remaining_table_quota,
           remaining_byte_quota: @user.remaining_quota(db_size_in_bytes).to_f,
+          unverified: @user.unverified?,
           api_calls: calls,
           api_calls_quota: @user.organization_user? ? @user.organization.map_view_quota : @user.map_view_quota,
           api_calls_block_price: @user.organization_user? ? @user.organization.map_view_block_price : @user.map_view_block_price,

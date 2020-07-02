@@ -464,54 +464,53 @@ describe Carto::Api::Public::DataObservatoryController do
       DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 3.0).once.returns(mailer_mock)
       Carto::DoLicensingService.expects(:new).never
 
-      Delorean.time_travel_to '2018/01/01 00:00:00' do
-        post_json endpoint_url(api_key: @master), id: 'carto.abc.geography1', type: 'geography' do |response|
-          expect(response.status).to eq(200)
-          expected_response = {
-            estimated_delivery_days: 3.0,
-            id: 'carto.abc.geography1',
-            licenses: 'licenses',
-            licenses_link: 'licenses_link',
-            rights: 'rights',
-            subscription_list_price: 90.0,
-            tos: 'tos',
-            tos_link: 'tos_link',
-            type: 'geography'
-          }
-          expect(response.body).to eq expected_response
-        end
+
+      post_json endpoint_url(api_key: @master), id: 'carto.abc.geography1', type: 'geography' do |response|
+        expect(response.status).to eq(200)
+        expected_response = {
+          estimated_delivery_days: 3.0,
+          id: 'carto.abc.geography1',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          subscription_list_price: 90.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          type: 'geography'
+        }
+        expect(response.body).to eq expected_response
       end
     end
 
     it 'returns 200 with the dataset metadata and calls the DoLicensingService with the expected params' do
-      expected_params = [{
+      expected_params = {
         dataset_id: 'carto.abc.dataset1',
         available_in: ['bq'],
         price: 100.0,
         expires_at: Time.parse('2019/01/01 00:00:00')
-      }]
+      }
 
       mock_service = mock
       mock_service.expects(:subscribe).with(expected_params).once
       Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
+      Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
 
-      Delorean.time_travel_to '2018/01/01 00:00:00' do
-        post_json endpoint_url(api_key: @master), @payload do |response|
-          expect(response.status).to eq(200)
-          expected_response = {
-            estimated_delivery_days: 0.0,
-            id: 'carto.abc.dataset1',
-            licenses: 'licenses',
-            licenses_link: 'licenses_link',
-            rights: 'rights',
-            subscription_list_price: 100.0,
-            tos: 'tos',
-            tos_link: 'tos_link',
-            type: 'dataset'
-          }
-          expect(response.body).to eq expected_response
-        end
+      post_json endpoint_url(api_key: @master), @payload do |response|
+        expect(response.status).to eq(200)
+        expected_response = {
+          estimated_delivery_days: 0.0,
+          id: 'carto.abc.dataset1',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          subscription_list_price: 100.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          type: 'dataset'
+        }
+        expect(response.body).to eq expected_response
       end
+      
     end
   end
 
@@ -542,6 +541,7 @@ describe Carto::Api::Public::DataObservatoryController do
   def populate_do_metadata
     with_do_connection() do |connection|
       queries = %{
+
         CREATE TABLE datasets(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                               tos_link text, licenses text, licenses_link text, rights text, available_in text[],
                               name text);

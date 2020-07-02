@@ -80,8 +80,9 @@ module Carto
       render(json: OauthProvider::TokenPresenter.new(access_token, refresh_token: refresh_token).to_hash)
     end
 
-    def not_authorized
+    def not_authorized(exception = nil)
       raise OauthProvider::Errors::LoginRequired.new if silent_flow?
+
       super
     end
 

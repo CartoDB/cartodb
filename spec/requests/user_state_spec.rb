@@ -25,6 +25,7 @@ describe "UserState" do
     @map, @table, @table_visualization, @visualization = create_full_builder_vis(@locked_user)
     @visualization.create_mapcap!
     @non_locked_user = FactoryGirl.create(:valid_user)
+    @unverified_user = FactoryGirl.create(:unverified_user)
     @public_user_endpoints = ['/me'].freeze
     @user_endpoints = ['/account', '/profile'].freeze
     @dashboard_endpoints = ['/dashboard', '/dashboard/tables', '/dashboard/datasets', '/dashboard/visualizations',
@@ -53,6 +54,58 @@ describe "UserState" do
     @locked_user.destroy
     @non_locked_user.destroy
     @maintenance_mode_user.destroy
+    @unverified_user.destroy
+  end
+
+  context 'unverified user' do
+    shared_examples 'unverified user' do
+      it 'redirects to unverified for admin endpoints' do
+        @admin_endpoints.each do |endpoint|
+          login(@unverified_user)
+          endpoint = "/user/#{@unverified_user.username}/#{endpoint}" unless host.include?(@unverified_user.username)
+
+          get endpoint, {}, @headers
+
+          response.status.should == 302
+          follow_redirect!
+
+          request.path.should include "unverified"
+        end
+      end
+
+      it 'returns 403 for private api endpoints' do
+        @private_api_endpoints.each do |endpoint|
+          login(@unverified_user)
+          endpoint = "/user/#{@unverified_user.username}/#{endpoint}" unless host.include?(@unverified_user.username)
+
+          get "#{endpoint}?api_key=#{@unverified_user.api_key}", {}, @api_headers
+
+          response.status.should == 403
+        end
+      end
+
+      it 'returns 403 for public api viz endpoints' do
+        @public_api_viz_endpoints.each do |endpoint|
+          login(@unverified_user)
+          endpoint = "/user/#{@unverified_user.username}/#{endpoint}" unless host.include?(@unverified_user.username)
+
+          get endpoint, {}, @api_headers
+
+          response.status.should == 403
+        end
+      end
+
+      it 'returns 200 for public api me endpoint' do
+        @public_api_me_endpoint.each do |endpoint|
+          login(@unverified_user)
+
+          get endpoint, {}, @api_headers
+
+          request.path.should == endpoint
+          response.status.should == 200
+        end
+      end
+    end
   end
 
   context 'locked state' do
@@ -125,10 +178,12 @@ describe "UserState" do
         end
 
         it_behaves_like 'locked user'
+        it_behaves_like 'unverified user'
       end
 
       context 'regular user' do
         it_behaves_like 'locked user'
+        it_behaves_like 'unverified user'
       end
     end
 
@@ -151,6 +206,15 @@ describe "UserState" do
         end
 
         it_behaves_like 'locked user'
+        it_behaves_like 'unverified user'
+      end
+
+      context 'unverified regular user' do
+        before(:each) do
+          stub_domainful(@unverified_user.username)
+        end
+
+        it_behaves_like 'unverified user'
       end
 
       context 'regular user' do
@@ -159,6 +223,7 @@ describe "UserState" do
         end
 
         it_behaves_like 'locked user'
+        it_behaves_like 'unverified user'
 
         it 'user accessing a locked user resources' do
           login(@non_locked_user)

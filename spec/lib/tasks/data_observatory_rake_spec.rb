@@ -36,16 +36,9 @@ describe 'data_observatory.rake' do
 
     it 'calls subscribe from Carto::DoLicensingService with the expected parameters' do
       File.stubs(:open).returns(csv_example)
-      expected_datasets = [
-        { dataset_id: 'dataset1', available_in: ['bq', 'bigtable'], price: 100.0,
-          expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
-        { dataset_id: 'dataset2', available_in: ['bigtable'], price: 200.0,
-          expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
-      ]
       service_mock = mock
-      service_mock.expects(:subscribe).once.with(expected_datasets)
-      Carto::DoLicensingService.expects(:new).once.with('fulano').returns(service_mock)
-
+      service_mock.expects(:subscribe).twice
+      Carto::DoLicensingService.expects(:new).twice.with('fulano').returns(service_mock)
       Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke('fulano', 'datasets.csv')
     end
   end
@@ -78,8 +71,9 @@ describe 'data_observatory.rake' do
 
   def csv_example
     CSV.generate do |csv|
-      csv << ["dataset1", "bq;bigtable", "100", "2020-09-27T08:00:00"]
-      csv << ["dataset2", "bigtable", "200", "2020-12-31T12:00:00"]
+      csv << ["dataset_id", "available_in", "price", "expires_at", "view_def"]
+      csv << ["dataset1", "bq;bigtable", "100", "2020-09-27T08:00:00", "where do_date='1986-11-12'"]
+      csv << ["dataset2", "bigtable", "200", "2020-12-31T12:00:00", nil]
     end
   end
 

@@ -214,6 +214,7 @@ describe Carto::Api::UserPresenter do
     new_data[:routing_provider].should == old_data[:routing_provider]
     new_data[:mfa_configured].should == old_data[:mfa_configured]
     new_data[:is_enterprise].should == old_data[:is_enterprise]
+    new_data[:unverified].should == old_data[:unverified]
 
     if org_user
       new_data[:organization].keys.sort.should == old_data[:organization].keys.sort

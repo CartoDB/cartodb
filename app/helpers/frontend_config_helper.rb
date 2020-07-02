@@ -33,6 +33,7 @@ module FrontendConfigHelper
       config[:bigquery_enabled] = Carto::Connector.provider_available?('bigquery', user)
       config[:bigquery_available] = Carto::Connector.provider_public?('bigquery')
       config[:oauth_mechanism_bigquery] = Cartodb.get_config(:oauth, 'bigquery', 'oauth_mechanism')
+      config[:bigquery_uses_service_auth] = Cartodb.get_config(:connectors, 'bigquery', 'credentials_project').present?
       config[:arcgis_enabled] = Cartodb.get_config(:datasources, 'arcgis_enabled')
       config[:salesforce_enabled] = Cartodb.get_config(:datasources, 'salesforce_enabled')
       config[:mysql_enabled] = Cartodb.get_config(:connectors, 'mysql', 'enabled')

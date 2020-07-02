@@ -141,7 +141,11 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'returns 200 with the non expired subscriptions' do
-      expected_dataset = { project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2', type: 'dataset' }
+      expected_dataset = { project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2',
+        type: 'dataset', created_at: nil, expires_at: nil, status: nil,
+        sync_status: 'unsynced', unsyncable_reason: nil, unsynced_errors: nil,
+        synced_warnings: nil, sync_table: nil, sync_table_id: nil, synchronization_id: nil,
+        estimated_size: nil, estimated_row_count: nil }
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(200)
         datasets = response.body[:subscriptions]

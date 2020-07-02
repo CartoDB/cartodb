@@ -1,7 +1,7 @@
 <template>
   <section class="subscriptions-section">
     <div class="container grid">
-      <div class="u-width--100">
+      <div class="u-width--100" v-if="!loading">
         <div v-if="subscriptions.length === 0" class="grid-cell grid-cell--col12">
           <EmptyState
             :text="$t('Subscriptions.emptyCase')"
@@ -33,8 +33,12 @@
               <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
             </template>
           </SectionTitle>
-          <SubscriptionCard></SubscriptionCard>
-          <SubscriptionCard></SubscriptionCard>
+          <ul>
+            <div class="subscription-item u-flex" v-for="subscription in subscriptions" :key="subscription.slug">
+              <DatasetListItem :dataset="subscription"></DatasetListItem>
+              <DatasetListItemExtra></DatasetListItemExtra>
+            </div>
+          </ul>
         </template>
       </div>
     </div>
@@ -43,11 +47,13 @@
 
 <script>
 
+import { mapState } from 'vuex';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
-import SubscriptionCard from 'new-dashboard/components/Subscriptions/SubscriptionCard';
+import DatasetListItem from '@carto/common-ui/do-catalog/src/components/catalogSearch/DatasetListItem';
+import DatasetListItemExtra from 'new-dashboard/components/Subscriptions/DatasetListItemExtra';
 
 export default {
   name: 'SubscriptionsPage',
@@ -56,18 +62,25 @@ export default {
     SectionTitle,
     VisualizationsTitle,
     SettingsDropdown,
-    SubscriptionCard
+    DatasetListItem,
+    DatasetListItemExtra
   },
   data () {
     return {
-      subscriptions: []
+      loading: true
     };
   },
-  beforeMount () {},
-  mounted () {},
+  computed: {
+    ...mapState({
+      subscriptions: state => state.doCatalog.subscriptionsList
+    })
+  },
+  async mounted () {
+    await this.$store.dispatch('doCatalog/fetchSubscriptionsList', true);
+    this.loading = false;
+  },
   beforeDestroy () {},
   beforeRouteUpdate (to, from, next) {},
-  computed: {},
   methods: {}
 };
 </script>
@@ -87,9 +100,20 @@ export default {
   .goDo {
     margin: 0 auto 20vh auto;
   }
-  .subscription-card-container {
-    +.subscription-card-container {
-      border-top: 1px solid $neutral--300;
+  ul {
+    border-top: 1px solid $neutral--300;
+  }
+  .subscription-item {
+    &:hover {
+      background-color: transparentize($color: $blue--100, $amount: 0.52);
+    }
+    .dataset-listItem-extra-container {
+      border-bottom: 1px solid $neutral--300;
+    }
+    .list-item {
+      &:hover {
+        background-color: transparent;
+      }
     }
   }
 }

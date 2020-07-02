@@ -26,6 +26,7 @@ module CartoDB
         @log        = options[:log] || new_logger
         @job        = options[:job] || new_job(@log, @pg_options)
         @user       = options[:user]
+        previous_last_modified = options[:previous_last_modified]
         @collision_strategy = options[:collision_strategy]
         @georeferencer      = options[:georeferencer] || new_georeferencer(@job)
 
@@ -33,7 +34,7 @@ module CartoDB
         @unique_suffix = @id.delete('-')
         @json_params = JSON.parse(connector_source)
         extract_params
-        @connector = Carto::Connector.new(parameters: @params, user: @user, logger: @log)
+        @connector = Carto::Connector.new(parameters: @params, user: @user, logger: @log, previous_last_modified: previous_last_modified)
         @results = []
         @tracker = nil
         @stats = {}
@@ -46,20 +47,24 @@ module CartoDB
         @job.log "ConnectorRunner #{@json_params.except('connection').to_json}"
         # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
-        if should_import?(@connector.table_name)
+        updated = false
+        if !should_import?(@connector.table_name)
+          @job.log "Table #{table_name} won't be imported"
+        elsif !remote_data_updated?
+          @job.log "Table #{table_name} needs not be updated"
+        else
+          updated = true
           @job.log "Copy connected table"
           warnings = @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
           @job.log 'Georeference geometry column'
           georeference
           @warnings.merge! warnings if warnings.present?
-        else
-          @job.log "Table #{table_name} won't be imported"
         end
       rescue => error
         @job.log "ConnectorRunner Error #{error}"
         @results.push result_for(@job.schema, table_name, error)
       else
-        if should_import?(@connector.table_name)
+        if updated
           @job.log "ConnectorRunner created table #{table_name}"
           @job.log "job schema: #{@job.schema}"
           @results.push result_for(@job.schema, table_name)
@@ -101,8 +106,8 @@ module CartoDB
       end
 
       def last_modified
-        # This method is needed to make the interface of ConnectorRunner compatible with Runner,
-        # but we have no meaningful data to return here.
+        # see https://github.com/CartoDB/cartodb/pull/15711#issuecomment-651245994
+        @connector.last_modified
       end
 
       def provider_name

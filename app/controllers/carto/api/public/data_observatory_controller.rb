@@ -121,7 +121,11 @@ module Carto
         end
 
         def present_subscriptions(subscriptions)
-          central_subscriptions = Cartodb::Central.new.get_do_datasets(username: @user.username)
+          begin
+            central_subscriptions = Cartodb::Central.new.get_do_datasets(username: @user.username)
+          rescue
+            central_subscriptions = []
+          end
 
           enriched_subscriptions = subscriptions.map do |subscription|
             qualified_id = subscription['dataset_id']

@@ -23,21 +23,6 @@ module Carto
       @service.authorization = authorizer
     end
 
-    def query(billing_project_id, sql, dry_run=false)
-      query = Google::Apis::BigqueryV2::QueryRequest.new
-      query.query = sql
-      query.dry_run = dry_run
-      query.use_legacy_sql = false
-      # job = @service.query_job(billing_project_id, query)
-      # job.wait_until_done!
-      # data = job.query_results
-      data = @service.query_job(billing_project_id, query).rows
-      data.each do |row|
-        yield row
-      end
-      # data = data.next if data.next?
-    end
-
     def table(dataset_id)
       project, dataset, table = dataset_id.split('.')
       @service.get_table(project, dataset, table)

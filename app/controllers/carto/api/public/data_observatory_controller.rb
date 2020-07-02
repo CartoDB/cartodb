@@ -146,8 +146,15 @@ module Carto
               created_at: created_at,
               expires_at: expires_at,
               status: status,
-              sync_status: sync_info[:state],
-              sync_table: sync_info[:table_name] }
+              sync_status: sync_info[:sync_status],
+              unsyncable_reason: sync_info[:unsyncable_reason],
+              unsynced_errors: sync_info[:unsynced_errors],
+              synced_warnings: sync_info[:synced_warnings],
+              sync_table: sync_info[:sync_table],
+              sync_table_id: sync_info[:sync_table_id],
+              synchronization_id: sync_info[:synchronization_id],
+              estimated_size: sync_info[:estimated_size],
+              estimated_row_count: sync_info[:estimated_row_count] }
           end
           enriched_subscriptions.select! { |subscription| subscription[:type] == @type } if @type
           ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }

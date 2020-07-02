@@ -2,6 +2,11 @@ module Carto
   class DoSyncService
     DO_SYNC_PROVIDER = 'do-v2'.freeze
     DO_SYNC_INTERVAL = 86400
+    DOC_SYNC_MAX_BYTES = 1000000000 # TODO: this may need to be configurable per user
+    DOC_SYNC_MAX_ROWS  = 10000000
+    # PostgreSQL limits the number of columns per table to 1600 (https://www.postgresql.org/docs/12/limits.html)
+    # We're leaving room here for a few columns added in joining to geography/cartodbfication
+    DOC_SYNC_MAX_COLS  = 1596
 
     # Sync Attributes
     DO_SYNC_STATUS              = 'sync_status'.freeze
@@ -58,10 +63,24 @@ module Carto
       end
       num_columns = table.schema.fields.size
 
-      # TODO: check DO limits (num_bytes, num_rows, num_columns)
-      # => { DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCABLE, DO_SYNC_UNSYNCABLE_REASON => '...' }
-      # note that account quota limits may provoke a fail during import, unless we take them into
-      # account here too.
+      limits_exceeded = []
+      if num_columns > DOC_SYNC_MAX_COLS
+        limits_exceeded << "Number of columns (#{num_columns}) exceeded the maximum (#{DOC_SYNC_MAX_COLS})"
+      end
+      if num_bytes > DOC_SYNC_MAX_BYTES
+        limits_exceeded << "Number of bytes (#{num_bytes}) exceeded the maximum (#{DOC_SYNC_MAX_BYTES})"
+      end
+      if num_rows > DOC_SYNC_MAX_ROWS
+        limits_exceeded << "Number of rows (#{num_rows}) exceeded the maximum (#{DOC_SYNC_MAX_ROWS})"
+      end
+      # TODO: take into consideration account quota limits too
+
+      if limits_exceeded.present?
+        return {
+          DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCABLE,
+          DO_SYNC_UNSYNCABLE_REASON => limits_exceeded.join("\n")
+        }.with_indifferent_access
+      end
 
       sync_info = {
         DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCED,

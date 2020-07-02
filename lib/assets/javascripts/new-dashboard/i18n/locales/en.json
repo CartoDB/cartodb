@@ -60,7 +60,8 @@
       "duplicate": "Duplicate",
       "unlock": "Unlock",
       "lock": "Lock",
-      "delete": "Delete"
+      "delete": "Delete",
+      "viewDataset": "View dataset"
     }
   },
   "DataPage": {
@@ -756,7 +757,9 @@
     "exploreDescription": "Explore the Data Catalog and subscribe to one of our Public or Premium datasets; then you will find it here.",
     "goDo": "Go to Data Observatory",
     "do": "Data Observatory Catalog",
-    "new": "New subscriptions"
+    "new": "New subscriptions",
+    "exploreNotebook": "Explore Notebook",
+    "datasetSize": "Dataset size"
   },
   "Dialogs": {
     "ShareViaURL": {

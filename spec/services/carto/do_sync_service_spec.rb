@@ -34,6 +34,17 @@ describe Carto::DoSyncService do
     @redis_key = "do:#{@user.username}:datasets"
     $users_metadata.hset(@redis_key, 'bq', bq_datasets.to_json)
 
+    gcloud_settings = {
+      service_account: 'the-service-account',
+      bq_public_project: 'bq-public-project',
+      gcp_execution_project: 'bq-run-project',
+      bq_project: 'bq-project',
+      bq_dataset: 'bq-dataset',
+      bq_bucket: 'bq-bucket'
+    }
+    @settings_redis_key = "do_settings:#{@user.username}"
+    $users_metadata.hmset(@settings_redis_key, *gcloud_settings.to_a)
+
     @synced_sync = FactoryGirl.create(
       :carto_synchronization,
       user_id: @user.id,
@@ -100,6 +111,7 @@ describe Carto::DoSyncService do
 
   after(:each) do
     $users_metadata.del(@redis_key)
+    $users_metadata.del(@settings_redis_key)
     @error_import.destroy
     @error_sync.destroy
     @syncing_table.destroy
@@ -114,13 +126,6 @@ describe Carto::DoSyncService do
     it 'returns data view for subscribed dataset' do
       dataset_metadata = {}
       Carto::DoApiClient.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
@@ -135,13 +140,6 @@ describe Carto::DoSyncService do
         geography_id: @subscribed_geography_id
       }.with_indifferent_access
       Carto::DoApiClient.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
@@ -152,14 +150,6 @@ describe Carto::DoSyncService do
     end
 
     it 'returns geography view for subscribed geography' do
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
-
       subscription = @user.do_subscription(@subscribed_geography_id)
       expected_views = {
         data: nil,
@@ -169,14 +159,6 @@ describe Carto::DoSyncService do
     end
 
     it 'returns nil views for expired dataset' do
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
-
       subscription = @user.do_subscription(@subscribed_expired_dataset_id)
       expected_views = {
         data: nil,
@@ -186,14 +168,6 @@ describe Carto::DoSyncService do
     end
 
     it 'returns nil views for invalid dataset' do
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
-
       subscription = @user.do_subscription(@non_subscribed_dataset_id)
       expected_views = {
         data: nil,
@@ -217,13 +191,6 @@ describe Carto::DoSyncService do
 
     it 'returns unsyncable for dataset too big' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000000000000,
@@ -243,13 +210,6 @@ describe Carto::DoSyncService do
 
     it 'returns unsyncable for dataset with too many rows' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -269,13 +229,6 @@ describe Carto::DoSyncService do
 
     it 'returns unsyncable for dataset with too many columns' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -295,13 +248,6 @@ describe Carto::DoSyncService do
 
     it 'reports all limits exceeded' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000000000000,
@@ -323,13 +269,6 @@ describe Carto::DoSyncService do
 
     it 'returns unsynced for valid subscription' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -350,13 +289,6 @@ describe Carto::DoSyncService do
 
     it 'returns synced for valid subscription imported' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -381,13 +313,6 @@ describe Carto::DoSyncService do
 
     it 'returns synced even if synchronization is stopped' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -414,13 +339,6 @@ describe Carto::DoSyncService do
 
     it 'returns syncing for valid subscription being imported' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -438,13 +356,6 @@ describe Carto::DoSyncService do
 
     it 'returns unsynced for valid subscription failed importing' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_sync_error_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -479,13 +390,6 @@ describe Carto::DoSyncService do
   describe '#remove_sync!' do
     it 'removes syncs' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -508,13 +412,6 @@ describe Carto::DoSyncService do
 
     it 'does nothing for unsynced subscription' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -550,13 +447,6 @@ describe Carto::DoSyncService do
   describe '#create_sync!' do
     it 'creates a synchronization and enqueues a import job' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -598,13 +488,6 @@ describe Carto::DoSyncService do
 
     it 'does nothing for synced subscriptions' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -628,13 +511,6 @@ describe Carto::DoSyncService do
 
     it 'does nothing for syncing subscriptions' do
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -678,13 +554,6 @@ describe Carto::DoSyncService do
       # TODO: should raise exception?
 
       Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
-      gcloud_settings = {
-        service_account: 'the-service-account',
-        gcp_execution_project: 'bq-run-project',
-        bq_project: 'bq-project',
-        bq_dataset: 'bq-dataset'
-      }
-      @user.stubs(:gcloud_settings).returns(gcloud_settings)
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000000000000,

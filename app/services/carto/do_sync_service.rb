@@ -40,7 +40,7 @@ module Carto
         }.with_indifferent_access
       end
 
-      if subscription['expires_at'] <= Time.now
+      if Time.now >= subscription['expires_at']
         return {
           DO_SYNC_STATUS => DO_SYNC_STATUS_UNSYNCABLE,
           DO_SYNC_UNSYNCABLE_REASON => "Subscription #{subscription_id} expired at #{subscription['expires_at']}"

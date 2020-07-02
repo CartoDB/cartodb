@@ -124,10 +124,12 @@ describe Carto::Api::Public::DataObservatoryController do
 
     before(:each) do
       Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+      Cartodb::Central.any_instance.stubs(:get_do_datasets).returns([])
     end
 
     after(:each) do
       Cartodb::Central.any_instance.unstub(:check_do_enabled)
+      Cartodb::Central.any_instance.unstub(:get_do_datasets)
     end
 
     it_behaves_like 'an endpoint validating a DO API key'

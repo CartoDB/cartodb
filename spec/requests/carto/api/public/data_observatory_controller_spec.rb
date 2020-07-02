@@ -138,6 +138,7 @@ describe Carto::Api::Public::DataObservatoryController do
       central_mock = mock
       Cartodb::Central.stubs(:new).returns(central_mock)
       central_mock.expects(:check_do_enabled).once.returns(true)
+      central_mock.expects(:get_do_datasets).once.returns([])
 
       get_json endpoint_url(api_key: @master), @headers
     end

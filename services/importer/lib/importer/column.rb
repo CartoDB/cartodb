@@ -345,7 +345,7 @@ module CartoDB
         new_name = name
         while existing_names.include?(new_name) || reserved_words.include?(new_name.downcase)
           suffix = "_#{count}"
-          new_name = name[0..max_length-suffix.length] + suffix
+          new_name = name[0...max_length-suffix.length] + suffix
           count += 1
         end
         new_name

@@ -492,5 +492,15 @@ describe Column do
     end
   end # .get_valid_column_name
 
+  it 'sanitization v2 never produces column names too long for PostgreSQL' do
+    long_name_invalid = 'x'*62 + 'á'
+    long_name_valid   = 'x'*62 + 'a'
+    long_name_suffixed = 'x'*61 + '_1'
+    name = Column::get_valid_column_name(long_name_invalid, 2, [long_name_valid, long_name_suffixed])
+    name.size.should be <= 63
+    name.should_not eq long_name_valid
+    name.should_not eq long_name_suffixed
+  end
+
 end # Column
 

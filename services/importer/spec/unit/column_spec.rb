@@ -474,7 +474,8 @@ describe Column do
       end
     end
 
-    it 'multiple column sanitization is idempotent' do
+    it 'multiple column sanitization is almost idempotent' do
+      # Note that with columns [' ', '  '] this test would not pass
       VERSION_2_SANITIZATION_COLS.each_key do |input_columns|
         columns1 = input_columns.dup
         input_columns.each_with_index do |input_column, i|

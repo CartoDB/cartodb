@@ -7,11 +7,11 @@
         {{ $t(`SettingsDropdown.types.${section}`) }}
       </a>
     </li>
-    <li v-if="isDatasetSection" class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('subscribed') }">
+    <!-- <li v-if="isDatasetSection" class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('subscribed') }">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('subscribed') }" @click="setFilter('subscribed')">
         {{ $t('SettingsDropdown.types.subscribed', { count: metadata.total_subscriptions }) }}
       </a>
-    </li>
+    </li> -->
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('favorited') }">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('favorited') }" @click="setFilter('favorited')">
         {{ $t('SettingsDropdown.types.favorited', { count: metadata.total_likes }) }}

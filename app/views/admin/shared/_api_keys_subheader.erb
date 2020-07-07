@@ -1,4 +1,4 @@
-<%- if Cartodb::Central.sync_data_with_cartodb_central? && current_user.mobile_sdk_enabled? %>
+<%- if Cartodb::Central.sync_data_with_cartodb_central? %>
 
     <div class="Filters is-relative js-org-subheader Filters__margin-fix">
     <div class="Filters-inner">
@@ -10,16 +10,20 @@
               API Keys
             </a>
           </li>
+
           <li class="Filters-typeItem">
             <a href="<%= CartoDB.base_url_from_user(current_user) %>/dashboard/oauth_apps" class="CDB-Text CDB-Size-medium Filters-typeLink">
               Oauth apps
             </a>
           </li>
-          <li class="Filters-typeItem">
-            <a href="<%= CartoDB.url(self, 'mobile_apps', user: current_user) %>" class="CDB-Text CDB-Size-medium Filters-typeLink <%= 'is-selected' if "#{params[:controller]}" == "carto/admin/mobile_apps" %>">
-              Mobile apps
-            </a>
-          </li>
+
+          <% if current_user.mobile_sdk_enabled? %>
+            <li class="Filters-typeItem">
+              <a href="<%= CartoDB.url(self, 'mobile_apps', user: current_user) %>" class="CDB-Text CDB-Size-medium Filters-typeLink <%= 'is-selected' if "#{params[:controller]}" == "carto/admin/mobile_apps" %>">
+                Mobile apps
+              </a>
+            </li>
+          <% end %>
         </ul>
 
         <% if "#{params[:controller]}_#{params[:action]}" == "carto/admin/mobile_apps_index" %>

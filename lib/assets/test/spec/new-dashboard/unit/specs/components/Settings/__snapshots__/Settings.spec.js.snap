@@ -13,7 +13,6 @@ exports[`Settings.vue should open dropdown when clicking toggle 1`] = `
         <li class="type text is-caption is-txtGrey type--selected"><a href="javascript:void(0)" class="element element--selected">
             SettingsDropdown.types.maps
           </a></li>
-        <!---->
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             SettingsDropdown.types.favorited
           </a></li>
@@ -65,9 +64,6 @@ exports[`Settings.vue should render correct contents based on filter and order i
             SettingsDropdown.types.datasets
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
-            SettingsDropdown.types.subscribed
-          </a></li>
-        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             SettingsDropdown.types.favorited
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
@@ -110,7 +106,6 @@ exports[`Settings.vue should render correct contents based on filter and order i
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             SettingsDropdown.types.maps
           </a></li>
-        <!---->
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             SettingsDropdown.types.favorited
           </a></li>

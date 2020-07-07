@@ -38,8 +38,8 @@ export default {
       return isAllowed(this.$route.params.filter);
     },
     showDataCatalog () {
-      //return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
       return true;
+      // return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
     }
   }
 };

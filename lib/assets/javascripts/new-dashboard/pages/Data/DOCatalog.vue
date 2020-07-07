@@ -8,13 +8,10 @@
   </section>
 </template>
 <script>
-import SectionTitle from 'new-dashboard/components/SectionTitle';
 
 export default {
   name: 'CatalogPage',
-  components: {
-    SectionTitle
-  },
+  components: {},
   computed: {},
   methods: {}
 };

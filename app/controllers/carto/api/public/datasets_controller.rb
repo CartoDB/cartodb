@@ -19,7 +19,7 @@ module Carto
         rescue_from Carto::OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
 
         VALID_ORDER_PARAMS = %i(name).freeze
-
+        
         def index
           @master_role = @user.api_keys.find_by(type: 'master').db_role
           tables = @user.in_database[select_tables_query].all
@@ -52,7 +52,7 @@ module Carto
           visualizations = table_visualizations(table_names)
           tables.map do |table|
             table[:shared] = true unless table[:table_schema]==@user.username
-            viz = visualizations.find { |visualization| visualization[:name] == table[:name] } || {}
+            viz = visualizations.find { |visualization| visualization[:name] == table[:name] } || { cartodbfied: false}
             viz.merge(table)
           end
         end
@@ -90,20 +90,17 @@ module Carto
 
         def query
           %{
-            WITH user_tables as (
-              SELECT table_schema, table_name,
-              CASE privilege_type WHEN 'SELECT' THEN 'r'
-                ELSE 'w'
-              END as mode
-              FROM information_schema.role_table_grants
-              WHERE grantee='#{@master_role}' 
-                AND table_schema not in ('public','cartodb', 'aggregation')  
-                AND privilege_type in ('SELECT','UPDATE')
-            )
-            SELECT table_schema, table_name as name, array_to_string(array_agg(mode),'') as mode
-            FROM user_tables
-            GROUP BY table_schema, table_name
-        }.squish
+            SELECT table_schema, table_name as name,   
+              string_agg(CASE privilege_type WHEN 'SELECT' THEN 'r' ELSE 'w' END, 
+                        '' order by privilege_type) as mode
+            FROM information_schema.role_table_grants
+            WHERE grantee='#{@master_role}' 
+              AND table_schema not in ('cartodb', 'aggregation')  
+              AND grantor!='postgres'
+              AND privilege_type in ('SELECT', 'UPDATE')
+            GROUP BY table_schema,  table_name
+          }.squish
+
         end
 
         def render_paged(result, total)

@@ -3,12 +3,14 @@
     <li class="app-tabs-item">
       <a :href="`${ baseUrl }/your_apps`" class="text is-small is-txtPrimary app-tabs-link">{{ $t(`SettingsPages.tabs.apiKeys`) }}</a>
     </li>
+
     <li class="app-tabs-item is-active">
       <router-link :to="{ name: 'oauth_apps_list' }" class="text is-small is-txtPrimary app-tabs-link">
         {{ $t(`SettingsPages.tabs.oAuthApps`) }}
       </router-link>
     </li>
-    <li class="app-tabs-item">
+
+    <li class="app-tabs-item" v-if="state.user.mobileAppsEnabled">
       <a :href="`${ baseUrl }/your_apps/mobile`" class="text is-small is-txtPrimary app-tabs-link">{{ $t(`SettingsPages.tabs.mobileApps`) }}</a>
     </li>
   </ul>

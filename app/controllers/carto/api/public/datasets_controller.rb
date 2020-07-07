@@ -18,10 +18,10 @@ module Carto
         setup_default_rescues
         rescue_from Carto::OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
 
-        VALID_ORDER_PARAMS = %i(name type).freeze
-        VALID_TYPE_PARAMS = %w(table view matview).freeze
+        VALID_ORDER_PARAMS = %i(name).freeze
 
         def index
+          @master_role = @user.api_keys.find_by(type: 'master').db_role
           tables = @user.in_database[select_tables_query].all
           result = enrich_tables(tables)
           total = @user.in_database[count_tables_query].first[:count]
@@ -40,14 +40,6 @@ module Carto
             VALID_ORDER_PARAMS, default_order: 'name', default_order_direction: 'asc'
           )
           @offset = (@page - 1) * @per_page
-          @types = load_type
-        end
-
-        def load_type
-          types = params[:type]&.split(',').to_a
-          raise Carto::ParamInvalidError.new(:type, VALID_TYPE_PARAMS) if (types - VALID_TYPE_PARAMS).any?
-
-          types.empty? ? VALID_TYPE_PARAMS : types
         end
 
         def check_permissions
@@ -59,22 +51,23 @@ module Carto
           table_names = tables.map { |table| table[:name] }
           visualizations = table_visualizations(table_names)
           tables.map do |table|
-            visualizations.find { |visualization| visualization[:name] == table[:name] } || table
+            table[:shared] = true unless table[:table_schema]==@user.username
+            viz = visualizations.find { |visualization| visualization[:name] == table[:name] } || {}
+            viz.merge(table)
           end
         end
 
         def table_visualizations(names)
           visualizations = Carto::VisualizationQueryBuilder.new
-                                                           .with_user_id(@user.id)
+                                                           .with_owned_by_or_shared_with_user_id(@user.id)
                                                            .with_name(names)
                                                            .with_type(Carto::Visualization::TYPE_CANONICAL)
                                                            .build.all
           visualizations.map do |visualization|
             {
               name: visualization.name,
-              cartodbfied: true,
-              type: 'table',
               privacy: visualization.privacy,
+              cartodbfied: true,
               updated_at: visualization.updated_at
             }
           end
@@ -82,7 +75,7 @@ module Carto
 
         def select_tables_query
           %{
-            SELECT * FROM (#{tables_and_views_query}) AS tables_and_views
+            SELECT * FROM (#{query}) AS q
             ORDER BY #{@order} #{@direction}
             LIMIT #{@per_page}
             OFFSET #{@offset}
@@ -90,18 +83,27 @@ module Carto
         end
 
         def count_tables_query
-          "SELECT COUNT(*) FROM (#{tables_and_views_query}) AS tables_and_views"
+          %{
+            SELECT COUNT(*) FROM (#{query}) AS q
+          }.squish
         end
 
-        def tables_and_views_query
-          @types.map { |type|
-            %{
-              SELECT #{type}name AS name, '#{type}' AS type, false AS cartodbfied, NULL AS privacy, NULL AS updated_at
-              FROM pg_#{type}s
-              WHERE schemaname = '#{@user.database_schema}'
-              AND #{type}owner <> 'postgres'
-            }
-          }.join(' UNION ').squish
+        def query
+          %{
+            WITH user_tables as (
+              SELECT table_schema, table_name,
+              CASE privilege_type WHEN 'SELECT' THEN 'r'
+                ELSE 'w'
+              END as mode
+              FROM information_schema.role_table_grants
+              WHERE grantee='#{@master_role}' 
+                AND table_schema not in ('public','cartodb', 'aggregation')  
+                AND privilege_type in ('SELECT','UPDATE')
+            )
+            SELECT table_schema, table_name as name, array_to_string(array_agg(mode),'') as mode
+            FROM user_tables
+            GROUP BY table_schema, table_name
+        }.squish
         end
 
         def render_paged(result, total)

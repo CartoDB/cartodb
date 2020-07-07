@@ -36,7 +36,7 @@
           <ul>
             <div class="subscription-item u-flex" v-for="subscription in subscriptions" :key="subscription.slug">
               <DatasetListItem :dataset="subscription"></DatasetListItem>
-              <DatasetListItemExtra></DatasetListItemExtra>
+              <DatasetListItemExtra :dataset="subscription"></DatasetListItemExtra>
             </div>
           </ul>
         </template>

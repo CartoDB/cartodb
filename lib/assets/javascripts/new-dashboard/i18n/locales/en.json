@@ -759,7 +759,8 @@
     "do": "Data Observatory Catalog",
     "new": "New subscriptions",
     "exploreNotebook": "Explore Notebook",
-    "datasetSize": "Dataset size"
+    "datasetSize": "Dataset size",
+    "slugId": "Slug-ID"
   },
   "Dialogs": {
     "ShareViaURL": {

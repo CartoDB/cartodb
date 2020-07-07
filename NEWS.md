@@ -9,6 +9,8 @@ Development
 - Filter support when license DO datasets ([15705](https://github.com/CartoDB/cartodb/pull/15705]))
 - Synchronize REDIS when licensing from superadmin ([15719](https://github.com/CartoDB/cartodb/pull/15719]))
 - Allow the use of service account credentials on Big Query import UI ([15722](https://github.com/CartoDB/cartodb/pull/15722))
+- Added subscriptions info to the visualizations ([15723](https://github.com/CartoDB/cartodb/pull/15723))
+- Add new DO catalog ([15733](https://github.com/CartoDB/cartodb/pull/15733))
 - api/v4/datasets returns shared dataset and access mode(read, write) [15735](https://github.com/CartoDB/cartodb/pull/15735)
 
 ### Bug fixes / enhancements

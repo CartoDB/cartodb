@@ -230,6 +230,11 @@ class Carto::VisualizationQueryBuilder
     offdatabase_order? ? build_regular(page, per_page) : build_subquery(page, per_page)
   end
 
+  def filtered_query
+    query = Carto::Visualization.all
+    Carto::VisualizationQueryFilterer.new(query).filter(@filtering_params)
+  end
+
   private
 
   def build_regular(page = nil, per_page = nil)
@@ -248,11 +253,6 @@ class Carto::VisualizationQueryBuilder
     # Fetching related tables after filtering the results for better performance
     query = Carto::Visualization.from(subquery, 'visualizations')
     with_associations(query)
-  end
-
-  def filtered_query
-    query = Carto::Visualization.all
-    Carto::VisualizationQueryFilterer.new(query).filter(@filtering_params)
   end
 
   def order_query(query)

@@ -278,7 +278,7 @@ module Carto::UserCommons
 
   def update_do_subscription(attributes)
     return if attributes.nil?
-    
+
     license_srv = Carto::DoLicensingService.new(self.username)
 
     if attributes[:action] == 'rm'

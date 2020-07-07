@@ -124,10 +124,12 @@ describe Carto::Api::Public::DataObservatoryController do
 
     before(:each) do
       Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+      Cartodb::Central.any_instance.stubs(:get_do_datasets).returns([])
     end
 
     after(:each) do
       Cartodb::Central.any_instance.unstub(:check_do_enabled)
+      Cartodb::Central.any_instance.unstub(:get_do_datasets)
     end
 
     it_behaves_like 'an endpoint validating a DO API key'
@@ -136,12 +138,17 @@ describe Carto::Api::Public::DataObservatoryController do
       central_mock = mock
       Cartodb::Central.stubs(:new).returns(central_mock)
       central_mock.expects(:check_do_enabled).once.returns(true)
+      central_mock.expects(:get_do_datasets).once.returns([])
 
       get_json endpoint_url(api_key: @master), @headers
     end
 
     it 'returns 200 with the non expired subscriptions' do
-      expected_dataset = { project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2', type: 'dataset' }
+      expected_dataset = { project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2',
+        type: 'dataset', created_at: nil, expires_at: nil, status: nil,
+        sync_status: 'unsynced', unsyncable_reason: nil, unsynced_errors: nil,
+        synced_warnings: nil, sync_table: nil, sync_table_id: nil, synchronization_id: nil,
+        estimated_size: nil, estimated_row_count: nil }
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(200)
         datasets = response.body[:subscriptions]

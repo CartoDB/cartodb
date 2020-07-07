@@ -198,11 +198,13 @@ module.exports = {
           rootDir('node_modules/internal-carto.js'),
           rootDir('node_modules/@carto/toolkit-core'),
           rootDir('node_modules/@carto/toolkit-custom-storage'),
+          rootDir('node_modules/@carto/common-ui'),
           rootDir('node_modules/vue-i18n/')
         ],
         exclude: [
           rootDir('node_modules/internal-carto.js/node_modules'),
-          rootDir('node_modules/internal-carto.js/vendor')
+          rootDir('node_modules/internal-carto.js/vendor'),
+          /core-js/
         ],
         options: {
           babelrc: true
@@ -246,7 +248,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(png|gif|svg)$/,
+        test: /\.(png|gif|svg|jpg)$/,
         use: {
           loader: 'file-loader',
           options: {

@@ -21,7 +21,7 @@ module Carto
         VALID_ORDER_PARAMS = %i(name).freeze
         
         def index
-          @master_role = @user.api_keys.master.db_role
+          @master_role = @user.api_keys.master.first.db_role
           tables = @user.in_database[select_tables_query].all
           result = enrich_tables(tables)
           total = @user.in_database[count_tables_query].first[:count]
@@ -77,7 +77,8 @@ module Carto
               name: visualization.name,
               privacy: visualization.privacy,
               cartodbfied: true,
-              updated_at: visualization.updated_at
+              updated_at: visualization.updated_at,
+              shared: !visualization.is_owner?(@user)
             }
           end
         end

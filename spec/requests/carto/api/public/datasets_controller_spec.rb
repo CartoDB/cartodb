@@ -30,6 +30,9 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.body[:result][0][:privacy]).to eq 'private'
         expect(response.body[:result][0][:cartodbfied]).to eq true
         expect(response.body[:result][0][:updated_at]).to_not be_nil
+        expect(response.body[:result][0][:table_schema]).to eq @user1.database_schema
+        expect(response.body[:result][0][:shared]).to eq false
+
       end
     end
 
@@ -39,11 +42,16 @@ describe Carto::Api::Public::DatasetsController do
       get_json api_v4_datasets_url(@params) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:total]).to eq 4
-        expect(response.body[:result][0][:name]).to eq 'non_cartodbfied_table'
-        expect(response.body[:result][0][:mode]).to eq 'rw'
-        expect(response.body[:result][0][:privacy]).to be_nil
-        expect(response.body[:result][0][:cartodbfied]).to eq false
-        expect(response.body[:result][0][:updated_at]).to be_nil
+        expected_dataset = {
+          name: 'non_cartodbfied_table',
+          mode: 'rw',
+          privacy: nil,
+          cartodbfied: false,
+          updated_at: nil,
+          table_schema: @user1.database_schema,
+          shared: false
+        }
+        expect(response.body[:result][0]).to eq expected_dataset
       end
 
       @user1.in_database.execute('DROP TABLE non_cartodbfied_table')
@@ -60,6 +68,8 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.body[:result][0][:privacy]).to be_nil
         expect(response.body[:result][0][:cartodbfied]).to eq false
         expect(response.body[:result][0][:updated_at]).to be_nil
+        expect(response.body[:result][0][:table_schema]).to eq @user1.database_schema
+        expect(response.body[:result][0][:shared]).to eq false
       end
 
       @user1.in_database.execute('DROP VIEW my_view')
@@ -84,6 +94,8 @@ describe Carto::Api::Public::DatasetsController do
           expect(response.body[:result][0][:mode]).to eq 'r'
           expect(response.body[:result][0][:privacy]).to eq 'private'
           expect(response.body[:result][0][:cartodbfied]).to eq true
+          expect(response.body[:result][0][:table_schema]).to eq @org_user_1.database_schema
+          expect(response.body[:result][0][:shared]).to eq true
         end
       end
 
@@ -97,6 +109,8 @@ describe Carto::Api::Public::DatasetsController do
           expect(response.body[:result][0][:mode]).to eq 'rw'
           expect(response.body[:result][0][:privacy]).to eq 'private'
           expect(response.body[:result][0][:cartodbfied]).to eq true
+          expect(response.body[:result][0][:table_schema]).to eq @org_user_1.database_schema
+          expect(response.body[:result][0][:shared]).to eq true
         end
       end
     end

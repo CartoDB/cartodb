@@ -51,11 +51,20 @@ module Carto
           table_names = tables.map { |table| table[:name] }
           visualizations = table_visualizations(table_names)
           tables.map do |table|
-            table[:shared] = true unless table[:table_schema]==@user.username
-            viz = visualizations.find { |visualization| visualization[:name] == table[:name] } || { cartodbfied: false}
-            viz.merge(table)
+            viz = visualizations.find { |visualization| visualization[:name] == table[:name] }
+            extra_fields = viz || default_extra_fields
+            table.merge(extra_fields)
           end
         end
+
+        def default_extra_fields
+          {
+            cartodbfied: false,
+            shared: false,
+            privacy: nil,
+            updated_at: nil
+          }
+        end        
 
         def table_visualizations(names)
           visualizations = Carto::VisualizationQueryBuilder.new

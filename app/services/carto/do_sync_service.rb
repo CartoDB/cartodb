@@ -48,7 +48,7 @@ module Carto
       end
 
       views = subscription_views(subscription)
-      bq = Carto::BqClient.new(@user.gcloud_settings[:service_account])
+      bq = Carto::BqClient.new(billing_project: @user.gcloud_settings[:gcp_execution_project], key: @user.gcloud_settings[:service_account])
 
       num_bytes = 0
       num_rows = nil

@@ -201,7 +201,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -220,7 +220,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -239,7 +239,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -258,7 +258,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -279,7 +279,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsynced'
@@ -299,7 +299,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table4"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_synced_dataset_id)
       sync_info['sync_status'].should eq 'synced'
@@ -323,7 +323,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table4"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       CartoDB::Synchronization::Member.new(id: @synced_sync.id).fetch.delete
       sync_info = @service.sync(@subscribed_synced_dataset_id)
@@ -349,7 +349,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table5"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       @service.sync(@subscribed_syncing_dataset_id)['sync_status'].should eq 'syncing'
     end
@@ -366,7 +366,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table6"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_sync_error_dataset_id)
       sync_info['sync_status'].should eq 'unsynced'
@@ -400,7 +400,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table4"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       expect{
         expect {
@@ -422,7 +422,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       expect{
         @service.remove_sync!(@subscribed_dataset_id)
@@ -457,7 +457,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       Resque::ImporterJobs.expects(:perform).once
       sync = nil
@@ -498,7 +498,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table4"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync = nil
       expect{
@@ -521,7 +521,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table5"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync = nil
       expect{
@@ -564,7 +564,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with('the-service-account').returns(bq_mock)
+      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync = nil
       expect{

@@ -12,7 +12,8 @@ module Carto
     QUERY_TIMEOUT_MS = 3600000
     WAIT_JOB_SLEEP = 0.1
 
-    def initialize(key)
+    def initialize(billing_project:, key:)
+      @billing_project_id = billing_project
       authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
         json_key_io: StringIO.new(key),
         scope: SCOPES)
@@ -30,11 +31,11 @@ module Carto
     def table(dataset_id)
       project, dataset, table = dataset_id.split('.')
       metadata = @service.get_table(project, dataset, table)
-      estimate_missing_metadata billing_project_id, dataset_id, metadata
+      estimate_missing_metadata dataset_id, metadata
       metadata
     end
 
-    def query(billing_project_id, sql, dry_run=false)
+    def query(sql, dry_run=false)
       job_config_query = Google::Apis::BigqueryV2::JobConfigurationQuery.new
       job_config_query.allow_large_results = true
       # job_config_query.destination_table = ... name of destination table must be defined for large results (>10 GB compressed)
@@ -52,12 +53,12 @@ module Carto
 
       job = Google::Apis::BigqueryV2::Job.new(configuration: job_config)
 
-      job = @service.insert_job(billing_project_id, job)
+      job = @service.insert_job(@billing_project_id, job)
       job_id = job.id.split(':').last.split('.').last
       while job.status.state != 'DONE' # RUNNING
         # TODO: timeout here too?
         sleep WAIT_JOB_SLEEP
-        job = @service.get_job(billing_project_id, job_id)
+        job = @service.get_job(@billing_project_id, job_id)
       end
 
       if job.status.error_result.present?
@@ -87,7 +88,7 @@ module Carto
       finished = false
       until finished
         result = @service.get_job_query_results(
-          billing_project_id, job_id,
+          @billing_project_id, job_id,
           max_results: ROWS_PER_PAGE,
           page_token: page_token,
           timeout_ms: REQUEST_TIMEOUT_MS
@@ -125,10 +126,10 @@ module Carto
       'ARRAY' => 1024
     }
 
-    def estimate_missing_metadata(billing_project_id, dataset_id, metadata)
+    def estimate_missing_metadata(dataset_id, metadata)
       if metadata.type == 'VIEW' && metadata.num_rows == 0 && metadata.num_bytes == 0
         # It seems num of rows & bytes is not available for views, let's count the rows
-        count_result = query_result(billing_project_id, "SELECT count(*) FROM `#{dataset_id}`")
+        count_result = query_result("SELECT count(*) FROM `#{dataset_id}`")
         metadata.num_rows = count_result.rows[0].f[0].v.to_i
         # Now let's (very roughly estimate the size)
         # TODO: better estimation
@@ -137,12 +138,12 @@ module Carto
       end
     end
 
-    def query_result(billing_project_id, sql, dry_run=false)
+    def query_result(sql, dry_run=false)
       query = Google::Apis::BigqueryV2::QueryRequest.new
       query.query = sql
       query.dry_run = dry_run
       query.use_legacy_sql = false
-      @service.query_job(billing_project_id, query)
+      @service.query_job(@billing_project_id, query)
     end
   end
 end

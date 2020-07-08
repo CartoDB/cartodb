@@ -29,7 +29,9 @@ module Carto
 
     def table(dataset_id)
       project, dataset, table = dataset_id.split('.')
-      @service.get_table(project, dataset, table)
+      metadata = @service.get_table(project, dataset, table)
+      estimate_missing_metadata billing_project_id, dataset_id, metadata
+      metadata
     end
 
     def query(billing_project_id, sql, dry_run=false)
@@ -103,6 +105,44 @@ module Carto
         page_token = result.page_token
         finished = page_token.nil?
       end
+    end
+
+    private
+
+    ESTIMATED_SIZES = {
+      'STRING' => 256,
+      'INTEGER' => 8,
+      'FLOAT64' => 8,
+      'INT64' => 8,
+      'GEOGRAPHY' => 32,
+      'NUMERIC' => 48,
+      'BOOL' => 1,
+      'BYTES' => 1024,
+      'DATE' => 8,
+      'DATETIME' => 8,
+      'TIME' => 8,
+      'TIMESTAMP' => 8,
+      'ARRAY' => 1024
+    }
+
+    def estimate_missing_metadata(billing_project_id, dataset_id, metadata)
+      if metadata.type == 'VIEW' && metadata.num_rows == 0 && metadata.num_bytes == 0
+        # It seems num of rows & bytes is not available for views, let's count the rows
+        count_result = query_result(billing_project_id, "SELECT count(*) FROM `#{dataset_id}`")
+        metadata.num_rows = count_result.rows[0].f[0].v.to_i
+        # Now let's (very roughly estimate the size)
+        # TODO: better estimation
+        row_size_estimation = metadata.schema.fields.map(&:type).sum { |t| ESTIMATED_SIZES[t.upcase] || 0 }
+        metadata.num_bytes = metadata.num_rows * row_size_estimation
+      end
+    end
+
+    def query_result(billing_project_id, sql, dry_run=false)
+      query = Google::Apis::BigqueryV2::QueryRequest.new
+      query.query = sql
+      query.dry_run = dry_run
+      query.use_legacy_sql = false
+      @service.query_job(billing_project_id, query)
     end
   end
 end

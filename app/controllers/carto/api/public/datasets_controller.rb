@@ -21,7 +21,7 @@ module Carto
         VALID_ORDER_PARAMS = %i(name).freeze
         
         def index
-          @master_role = @user.api_keys.find_by(type: 'master').db_role
+          @master_role = @user.api_keys.master.db_role
           tables = @user.in_database[select_tables_query].all
           result = enrich_tables(tables)
           total = @user.in_database[count_tables_query].first[:count]

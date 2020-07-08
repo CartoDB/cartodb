@@ -101,21 +101,6 @@ describe Carto::Api::Public::DatasetsController do
       end
     end
 
-    # 
-    # it 'includes materialized views' do
-    #   @user1.in_database.execute('CREATE MATERIALIZED VIEW my_mat_view AS SELECT 5')
-    #   get_json api_v4_datasets_url(@params) do |response|
-    #     expect(response.status).to eq(200)
-    #     expect(response.body[:total]).to eq 4
-    #     expect(response.body[:result][0][:name]).to eq 'my_mat_view'
-    #     expect(response.body[:result][0][:privacy]).to be_nil
-    #     expect(response.body[:result][0][:cartodbfied]).to eq false
-    #     expect(response.body[:result][0][:updated_at]).to be_nil
-    #   end
-
-    #   @user1.in_database.execute('DROP MATERIALIZED VIEW my_mat_view')
-    # end
-
     it 'returns 200 with an empty array if the current user does not have datasets' do
       @user3 = FactoryGirl.create(:valid_user)
       host! "#{@user3.username}.localhost.lan"

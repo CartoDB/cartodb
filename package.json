@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.182",
+  "version": "1.0.0-assets.186",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
     "@babel/runtime": "^7.9.2",
     "@babel/runtime-corejs3": "^7.9.2",
     "@carto/carto.js": "^4.1.10",
+    "@carto/common-ui": "git://github.com/CartoDB/common-ui.git#v0.1.2",
     "@carto/toolkit-core": "0.0.1-rc.18",
     "@carto/toolkit-custom-storage": "0.0.1-rc.18",
     "@carto/zera": "1.0.7",
@@ -38,7 +39,7 @@
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "confetti-js": "0.0.14",
-    "core-js": "^3.6.4",
+    "core-js": "^3.6.5",
     "d3-interpolate": "^1.1.6",
     "d3-queue": "^3.0.7",
     "date-fns": "^1.29.0",

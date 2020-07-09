@@ -7,7 +7,7 @@ class DataLibraryController < ApplicationController
   def index
     render_404 and return if @viewed_user.nil? || (Cartodb.get_config(:data_library, 'username') && (Cartodb.get_config(:data_library, 'username') != @viewed_user.username))
 
-    @dataset_base_url = (Rails.env.production? || Rails.env.staging?) ? "#{request.protocol}#{CartoDB.account_host}/dataset/" : "#{@viewed_user.public_url(nil, request.protocol == "https://" ? "https" : "http")}/tables/"
+    @dataset_base_url = Cartodb.get_config(:ssl_required) == true ? "#{request.protocol}#{CartoDB.account_host}/dataset/" : "#{@viewed_user.public_url(nil, request.protocol == "https://" ? "https" : "http")}/tables/"
 
     respond_to do |format|
       format.html { render 'index' }

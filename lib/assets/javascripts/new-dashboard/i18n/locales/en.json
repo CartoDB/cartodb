@@ -757,10 +757,7 @@
     "exploreDescription": "Explore the Data Catalog and subscribe to one of our Public or Premium datasets; then you will find it here.",
     "goDo": "Go to Data Observatory",
     "do": "Data Observatory Catalog",
-    "new": "New subscriptions",
-    "exploreNotebook": "Explore Notebook",
-    "datasetSize": "Dataset size",
-    "slugId": "Slug-ID"
+    "new": "New subscriptions"
   },
   "Dialogs": {
     "ShareViaURL": {

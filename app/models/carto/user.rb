@@ -278,14 +278,6 @@ class Carto::User < ActiveRecord::Base
   alias_method :should_display_old_password?, :needs_password_confirmation?
   alias_method :password_set?, :needs_password_confirmation?
 
-  def oauth_signin?
-    google_sign_in || github_user_id.present?
-  end
-
-  def created_with_http_authentication?
-    Carto::UserCreation.http_authentication.find_by_user_id(id).present?
-  end
-
   def get_auth_token
     # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
     auth_token = Carto::User.select(:auth_token).find(id).auth_token

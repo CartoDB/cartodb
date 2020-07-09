@@ -1383,6 +1383,7 @@
                         "import-as-field": "CARTO Dataset",
                         "import-as-hint": "Name of the new Dataset that will be created in your CARTO Dashboard with the imported data.",
                         "run": "Run SQL query",
+                        "run-bq-go-to-connect": "Connect to BQ",
                         "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM table",
                         "sidebar-connect": {
                             "title": "Getting connected",
@@ -1412,7 +1413,8 @@
                     "tags": {
                         "enterprise": "Enterprise",
                         "beta": "Beta",
-                        "soon": "Soon"
+                        "soon": "Soon",
+                        "new": "New"
                     },
                     "request": {
                         "other": "Request connector",
@@ -1709,6 +1711,9 @@
             "add-row": "Add row",
             "add-column": "Add column",
             "export": "Export"
+        },
+        "subscriptions": {
+            "view-subscription": "View subscription"
         },
         "preview-map": {
             "preview": "preview",

@@ -11,9 +11,7 @@ module Carto
         def grant_section(grants)
           section = grants.find { |i| i[:type] == @type }
           section = section || { type: @type, @grant_key => [] }
-          if not section.key?(@grant_key)
-            section[@grant_key] = []
-          end
+          section[@grant_key] ||= []
           section
         end
 

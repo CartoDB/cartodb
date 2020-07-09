@@ -6,7 +6,6 @@ module Carto
 
     class GroupsController < ::Api::ApplicationController
       include PagedSearcher
-      include Carto::ControllerHelper
 
       ssl_required :index, :show, :create, :update, :destroy, :add_users, :remove_users
 

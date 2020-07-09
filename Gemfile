@@ -91,6 +91,9 @@ gem 'test-unit'
 gem 'rotp', '~> 3.3', '>= 3.3.1'
 gem 'rqrcode', '~> 0.10.1'
 
+# keys in PKCS#8 format require external command openssl
+gem 'sys_cmd', '>= 1.1.3'
+
 group :test do
   gem 'simplecov', '0.13.0', require: false
   gem 'simplecov-json'

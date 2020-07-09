@@ -111,7 +111,7 @@ module Concerns
            mapzen_routing_quota mapzen_routing_block_price soft_mapzen_routing_limit no_map_logo
            user_render_timeout database_render_timeout state industry company phone job_role
            password_reset_token password_reset_sent_at maintenance_mode company_employees use_case private_map_quota
-           session_salt public_dataset_quota)
+           session_salt public_dataset_quota dashboard_viewed_at email_verification_token email_verification_sent_at)
       end
     end
 
@@ -140,6 +140,7 @@ module Concerns
           geocoder_provider isolines_provider routing_provider builder_enabled engine_enabled mapzen_routing_quota
           mapzen_routing_block_price soft_mapzen_routing_limit industry company phone job_role password_reset_token
           password_reset_sent_at company_employees use_case private_map_quota session_salt public_dataset_quota
+          dashboard_viewed_at email_verification_token email_verification_sent_at
         )
         attrs = values.slice(*allowed_attributes)
         attrs[:multifactor_authentication_status] = multifactor_authentication_status

@@ -1,34 +1,35 @@
 <template>
-  <a class="feedback" href="javascript:void(0)" @click.stop.prevent="handleClick">
-    <div class="feedback__icon"></div>
+  <a class="notification" href="javascript:void(0)" @click="handleClick">
+    <div class="notification__icon"><slot /></div>
 
-    <div class="feedback__message">
-      <p class="feedback__paragraph text is-small is-semibold">
-        {{ $t('FeedbackMessage.title') }}
+    <div class="notification__message">
+      <p class="notification__paragraph text is-small is-semibold">
+        {{ title }}
       </p>
-      <p class="feedback__paragraph text is-small">
-        {{ $t('FeedbackMessage.message') }}
+
+      <p class="notification__paragraph text is-small" v-if="messageHasHTML" v-html="message"></p>
+
+      <p class="notification__paragraph text is-small" v-if="!messageHasHTML">
+        {{ message }}
       </p>
     </div>
   </a>
 </template>
 
 <script>
-import storageAvailable from 'new-dashboard/utils/is-storage-available';
-
 export default {
-  name: 'FeedbackPopup',
-  mounted () {
-    if (storageAvailable('localStorage')) {
-      this.markFeedbackPopupAsOpened();
+  name: 'NotificationPopup',
+  props: {
+    title: String,
+    message: String,
+    messageHasHTML: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
-    markFeedbackPopupAsOpened () {
-      window.localStorage.setItem('carto.feedback.popupWasShown', JSON.stringify(true));
-    },
     handleClick () {
-      this.$emit('feedbackClick');
+      this.$emit('click');
     }
   }
 };
@@ -37,7 +38,7 @@ export default {
 <style lang="scss" scoped>
 @import 'new-dashboard/styles/variables';
 
-.feedback {
+.notification {
   display: flex;
   width: 320px;
   padding: 16px;
@@ -63,7 +64,7 @@ export default {
   }
 }
 
-.feedback__icon {
+.notification__icon {
   position: relative;
   width: 48px;
   margin-right: 16px;
@@ -86,18 +87,18 @@ export default {
     left: 0;
     width: 48px;
     height: 48px;
-    background-image: url('../assets/icons/common/chat-bubble.svg');
+    background-image: url('../../assets/icons/common/chat-bubble.svg');
     background-repeat: no-repeat;
     background-position: center;
   }
 }
 
-.feedback__message {
+.notification__message {
   flex: 1;
   color: $text__color;
 }
 
-.feedback__paragraph {
+.notification__paragraph {
   margin-bottom: 8px;
 
   &:last-child {

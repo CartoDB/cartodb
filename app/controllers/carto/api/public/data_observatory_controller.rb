@@ -2,7 +2,6 @@ module Carto
   module Api
     module Public
       class DataObservatoryController < Carto::Api::Public::ApplicationController
-        include Carto::ControllerHelper
         include Carto::Api::PagedSearcher
         extend Carto::DefaultRescueFroms
 
@@ -63,7 +62,7 @@ module Carto
 
         def instant_license(metadata)
           licensing_service = Carto::DoLicensingService.new(@user.username)
-          licensing_service.subscribe([license_info(metadata)])
+          licensing_service.subscribe(license_info(metadata))
         end
 
         def regular_license(metadata)
@@ -127,7 +126,12 @@ module Carto
             project, dataset, table = qualified_id.split('.')
             # FIXME: better save the type in Redis or look for it in the metadata tables
             type = table.starts_with?('geography') ? 'geography' : 'dataset'
-            { project: project, dataset: dataset, table: table, id: qualified_id, type: type }
+            { project: project, dataset: dataset, table: table, id: qualified_id, type: type,
+              created_at: subscription['created_at'],
+              expires_at: subscription['expires_at'],
+              status: 'active',
+              sync_status: 'connected',
+              sync_table: 'my_do_subscription' }
           end
           enriched_subscriptions.select! { |subscription| subscription[:type] == @type } if @type
           ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }

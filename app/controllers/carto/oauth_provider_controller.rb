@@ -32,14 +32,14 @@ module Carto
     skip_before_action :verify_authenticity_token, only: [:token]
 
     before_action :x_frame_options_allow, only: :consent, if: :silent_flow?
-    before_action :set_redirection_error_handling, only: [:consent, :authorize]
+    before_action :set_redirection_error_handling, :set_state, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
     before_action :login_required_any_user, only: [:consent, :authorize]
     before_action :validate_prompt_request, only: [:consent]
     before_action :reject_client_secret, only: [:consent, :authorize]
     before_action :ensure_required_authorize_params, only: [:consent, :authorize]
-    before_action :validate_response_type, :validate_scopes, :set_state, only: [:consent, :authorize]
+    before_action :validate_response_type, :validate_scopes, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
 
@@ -80,8 +80,9 @@ module Carto
       render(json: OauthProvider::TokenPresenter.new(access_token, refresh_token: refresh_token).to_hash)
     end
 
-    def not_authorized
+    def not_authorized(exception = nil)
       raise OauthProvider::Errors::LoginRequired.new if silent_flow?
+
       super
     end
 

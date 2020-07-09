@@ -859,10 +859,12 @@ describe SessionsController do
           response.status.should eq 302
           response.headers['Location'].should include '/login?error=password_locked'
 
+          @user.reload
           sleep(4)
 
           login
           get multifactor_authentication_session_url
+          cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
           expect_login
         end

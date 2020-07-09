@@ -294,7 +294,8 @@ describe Carto::Api::VisualizationsController do
         'total_likes' => 0,
         'total_user_entries' => 0,
         'total_shared' => 0,
-        'total_locked' => 0
+        'total_locked' => 0,
+        'total_subscriptions' => 0
       }
       response_body.should == expected_response
     end

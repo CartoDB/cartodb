@@ -15,12 +15,15 @@ module Carto
         PRIVACY_LINK => 'link'
       }
 
-      def initialize(user_table, current_viewer, show_size_and_row_count: true, show_permission: true)
+      MAX_DERIVED_MAPS_SHOWN = 3
+
+      def initialize(user_table, current_viewer, show_size_and_row_count: true, show_permission: true, fetch_db_size: true)
         @user_table = user_table
         @current_viewer = current_viewer
         @presenter_cache = Carto::Api::PresenterCache.new
         @show_size_and_row_count = show_size_and_row_count
         @show_permission = show_permission
+        @fetch_db_size = fetch_db_size
       end
 
       def with_presenter_cache(presenter_cache)
@@ -51,6 +54,7 @@ module Carto
 
         if accessible_dependent_derived_maps && context
           poro[:accessible_dependent_derived_maps] = derived_maps_to_presenter(context)
+          poro[:accessible_dependent_derived_maps_count] = @user_table.accessible_dependent_derived_maps.count
         end
 
         if show_permission
@@ -70,7 +74,7 @@ module Carto
       attr_reader :show_size_and_row_count, :show_permission
 
       def derived_maps_to_presenter(context)
-        visualizations = @user_table.accessible_dependent_derived_maps
+        visualizations = @user_table.accessible_dependent_derived_maps.first(MAX_DERIVED_MAPS_SHOWN)
         visualizations.map { |v| Carto::Api::VisualizationPresenter.new(v, @current_viewer, context).to_poro }
       end
 
@@ -78,7 +82,7 @@ module Carto
         permission = @user_table.permission
         return unless permission
 
-        Carto::Api::PermissionPresenter.new(permission, current_viewer: @current_viewer)
+        Carto::Api::PermissionPresenter.new(permission, current_viewer: @current_viewer, fetch_db_size: @fetch_db_size)
                                        .with_presenter_cache(@presenter_cache)
                                        .to_poro
       end

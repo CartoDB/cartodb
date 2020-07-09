@@ -4,7 +4,6 @@ require_relative '../builder/builder_users_module'
 module Carto
   module Api
     class AnalysesController < ::Api::ApplicationController
-      include Carto::ControllerHelper
       include Carto::UUIDHelper
       include Carto::Builder::BuilderUsersModule
 

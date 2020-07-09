@@ -247,6 +247,7 @@ module CartoDB
         CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new(
           user: user, redis: { db: $users_metadata }
         ).decrement!
+
       end
 
       def get_runner
@@ -287,12 +288,17 @@ module CartoDB
       end
 
       def get_connector
+        # get_runner passes the synchronization `modified_at` time (which corresponds to the
+        # last-modified time of the external data at the last synchronization) through the
+        # downloader provided to the runner.
+        # For connectors we need to pass it directly to the connector runner.
         CartoDB::Importer2::ConnectorRunner.check_availability!(user)
         CartoDB::Importer2::ConnectorRunner.new(
           service_item_id,
           user: user,
           pg: pg_options,
-          log: log
+          log: log,
+          previous_last_modified: modified_at
         )
       end
 
@@ -413,6 +419,8 @@ module CartoDB
           ::Resque.enqueue(::Resque::UserJobs::Mail::Sync::MaxRetriesReached, self.user_id,
                            self.visualization_id, self.name, self.error_code, self.error_message)
         end
+
+        track_failure
       end
 
       def set_general_failure_state_from(exception, error_code = 99999, error_message = 'Unknown error, please try again')
@@ -428,6 +436,8 @@ module CartoDB
           ::Resque.enqueue(::Resque::UserJobs::Mail::Sync::MaxRetriesReached, self.user_id,
                            self.visualization_id, self.name, self.error_code, self.error_message)
         end
+
+        track_failure
       rescue => e
         CartoDB.notify_exception(e,
           {
@@ -436,6 +446,23 @@ module CartoDB
             retried_times: self.retried_times
           }
         )
+      end
+
+      def track_failure
+        properties = {
+          user_id: self.user_id,
+          connection: {
+            imported_from: service_name,
+            error_code: self.error_code
+          }
+        }
+
+        if service_name == 'connector'
+          connector_params = JSON.parse(service_item_id)
+          properties[:connection][:provider] = connector_params['provider']
+        end
+
+        Carto::Tracking::Events::FailedSync.new(self.user_id, properties).report
       end
 
       # Tries to run automatic geocoding if present

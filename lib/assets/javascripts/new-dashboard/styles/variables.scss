@@ -32,8 +32,11 @@ $red--700: #E20703;
 
 $green--500: #74FFA8;
 $green--700: #72EEA8;
+$green--800: #74C86B;
 
 $purple--500: #3D33CC;
+
+$navy-blue: #162945;
 
 /* Theme */
 $color-primary--soft: $blue--100;
@@ -118,6 +121,10 @@ $card__shadow-color: rgba($neutral--400, 0.8);
 $card__shadow: 0 8px 20px 0 $card__shadow-color;
 $thumbnail__bg-color: $neutral--200;
 
+/* settings */
+$settings_border-color: rgba(0, 0, 0, 0.1);
+$settings_tab_border-color: #333;
+
 /* badges */
 // default
 $badge__color: $text__color--secondary;
@@ -133,6 +140,9 @@ $badge-cf__color: $purple--500;
 /* notification warning */
 
 $notification-warning__height: 60px;
+
+/* modal */
+$modal__width: 960px;
 
 /* === PAGES === */
 

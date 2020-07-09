@@ -76,6 +76,7 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/visualization_migrator_spec.rb \
 	spec/lib/carto/http/client_spec.rb \
 	spec/lib/carto/table_utils_spec.rb \
+	spec/lib/carto/authentication_manager_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/data_import_spec.rb \
@@ -376,6 +377,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/public/federated_tables_controller_spec.rb \
 	spec/services/carto/federated_tables_service_spec.rb \
 	spec/mailers/data_observatory_mailer_spec.rb \
+	spec/requests/carto/api/user_table_presenter_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

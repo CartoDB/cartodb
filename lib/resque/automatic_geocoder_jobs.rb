@@ -5,7 +5,7 @@ module Resque
     @queue = :automatic_geocodings
 
     def self.perform(options = {})
-      run_action(options, @queue, lambda { |options| AutomaticGeocoding[options.symbolize_keys[:job_id]].run })
+      run_action(options, @queue, lambda { |opts| Carto::AutomaticGeocoding[opts.symbolize_keys[:job_id]].run })
     end
   end
 end

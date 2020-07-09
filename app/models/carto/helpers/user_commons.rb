@@ -25,6 +25,26 @@ module Carto::UserCommons
 
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
+  LOGGING_ATTRIBUTES = %i[username admin enabled map_enabled quota_in_bytes
+                          table_quota account_type private_tables_enabled period_end_date map_view_quota
+                          max_layers database_timeout user_timeout upgraded_at map_view_block_price
+                          geocoding_quota dashboard_viewed_at sync_tables_enabled database_host
+                          geocoding_block_price notification organization_id created_at updated_atid
+                          soft_geocoding_limit twitter_datasource_enabled
+                          twitter_datasource_block_price twitter_datasource_block_size twitter_datasource_quota
+                          soft_twitter_datasource_limit private_maps_enabled google_sign_in
+                          max_import_file_size max_import_table_row_count
+                          max_concurrent_import_count last_common_data_update_date
+                          here_isolines_quota here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota
+                          obs_snapshot_block_price soft_obs_snapshot_limit mobile_xamarin mobile_custom_watermark
+                          mobile_offline_maps mobile_gis_extension mobile_max_open_users mobile_max_private_users
+                          obs_general_quota obs_general_block_price soft_obs_general_limit viewer
+                          salesforce_datasource_enabled builder_enabled geocoder_provider isolines_provider
+                          routing_provider engine_enabled mapzen_routing_quota
+                          mapzen_routing_block_price soft_mapzen_routing_limit no_map_logo org_admin
+                          user_render_timeout database_render_timeout frontend_version asset_host
+                          state rate_limit_id public_map_quota regular_api_key_quota
+                          maintenance_mode private_map_quota public_dataset_quota]
 
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
@@ -79,6 +99,13 @@ module Carto::UserCommons
       CartoDB::Logger.warning(exception: e, message: message)
       return nil
     end
+  end
+
+  def unverified?
+    (active? || locked?) &&
+    email_verification_token.present? &&
+    email_verification_sent_at.present? &&
+    email_verification_sent_at < 1.hour.ago && !oauth_signin?
   end
 
   def remove_logo?
@@ -236,4 +263,33 @@ module Carto::UserCommons
   def role_display
     viewer ? 'viewer' : 'builder'
   end
+
+  def logging_attrs
+    if self.respond_to?(:attributes)
+      # AR
+      attrs = attributes.symbolize_keys
+    else
+      # Sequel
+      attrs = to_hash
+    end
+
+    attrs.slice(*LOGGING_ATTRIBUTES)
+  end
+
+  def update_do_subscription(attributes)
+    return if attributes.nil?
+
+    license_srv = Carto::DoLicensingService.new(self.username)
+
+    if attributes[:action] == 'rm'
+      license_srv.remove_from_redis(attributes[:do_dataset][:dataset_id])
+    elsif attributes[:action] == 'add'
+      license_srv.add_to_redis(attributes[:do_dataset])
+    else
+      message = 'Error updating a DO subscription: unknown action'
+      CartoDB::Logger.error(message: message)
+      raise message
+    end
+  end
+
 end

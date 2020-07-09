@@ -1,4 +1,4 @@
-# rubocop:disable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
+# rubocop:disable Layout/LineLength, Layout/ExtraSpacing, Layout/SpaceBeforeFirstArg
 
 # NOTES:
 # (/u/:user_domain)     -> This allows support of org-urls (support != enforcement)
@@ -135,10 +135,14 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps' => 'visualizations#index', as: :oauth_apps_user
     get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/new' => 'visualizations#index', as: :oauth_apps_user_new
     get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/edit/:id' => 'visualizations#index', as: :oauth_apps_user_edit
-    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connected_apps' => 'visualizations#index', as: :connected_apps_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/app_permissions' => 'visualizations#index', as: :app_permissions_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connections' => 'visualizations#index', as: :connections_user
 
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
+
+    # Unverified
+    get '(/user/:user_domain)(/u/:user_domain)/unverified' => 'users#unverified', as: :unverified
 
     # Maintenance Mode
     get '(/user/:user_domain)(/u/:user_domain)/maintenance_mode' => 'users#maintenance', as: :maintenance_mode
@@ -174,8 +178,12 @@ CartoDB::Application.routes.draw do
 
     # Datasets for new dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets'                              => 'visualizations#index', as: :datasets_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/subscriptions'                => 'visualizations#index', as: :datasets_subscriptions_index
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog'                      => 'visualizations#index', as: :datasets_catalog_index
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog/:id'                  => 'visualizations#index', as: :ddatasets_catalog_show
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/do-catalog'                   => 'visualizations#index', as: :datasets_docatalog_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/do-catalog/:type/:id'         => 'visualizations#index', as: :datasets_docatalog_dataset_summary
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/do-catalog/:type/:id/data'    => 'visualizations#index', as: :datasets_docatalog_dataset_data
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/:page'                        => 'visualizations#index', as: :datasets_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag'                     => 'visualizations#index', as: :datasets_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag/:page'               => 'visualizations#index', as: :datasets_tag_page
@@ -759,4 +767,4 @@ CartoDB::Application.routes.draw do
   end
 end
 
-# rubocop:enable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
+# rubocop:enable Layout/LineLength, Layout/ExtraSpacing, Layout/SpaceBeforeFirstArg

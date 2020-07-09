@@ -107,7 +107,7 @@ export default {
         .dispatch('connectedApps/revoke', selectedApp)
         .then(() => {
           this.closeModal();
-          this.$router.push({ name: 'connected_apps' });
+          this.$router.push({ name: 'app_permissions' });
         });
     }
   }
@@ -204,10 +204,6 @@ export default {
   border: 1px solid $blue--500;
   background: none;
   color: $blue--500;
-}
-
-.button--uppercase {
-  text-transform: uppercase;
 }
 
 .connectedapps__modal {

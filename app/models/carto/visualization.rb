@@ -639,7 +639,15 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def dependent_visualizations
-    user_table.try(:dependent_visualizations) || []
+    user_table&.dependent_visualizations || []
+  end
+
+  def faster_dependent_visualizations(limit: nil)
+    @faster_dependent_visualizations ||= user_table&.faster_dependent_visualizations(limit: limit)
+  end
+
+  def dependent_visualizations_count
+    user_table&.dependent_visualizations_count.to_i
   end
 
   def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)
@@ -648,6 +656,17 @@ class Carto::Visualization < ActiveRecord::Base
     if map && !destroyed?
       create_visualization_backup(visualization: self, category: category)
     end
+  end
+
+  def subscription
+    false
+    # if user_table
+    #   # TEMP MOCK
+    #   { type: 'do-v2', id: 'ags_businesscou_8dc7d1e0' } if user_table.name == 'my_do_subscription'
+    #   # doss = Carto::DoSyncService.new(user)
+    #   # subscription_id = doss.subscription_from_sync_table(user_table.name)
+    #   # { type: 'do-v2', id: subscription_id } if subscription_id.present?
+    # end
   end
 
   private

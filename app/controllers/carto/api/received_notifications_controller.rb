@@ -1,7 +1,6 @@
 module Carto
   module Api
     class ReceivedNotificationsController < ::Api::ApplicationController
-      include Carto::ControllerHelper
       extend Carto::DefaultRescueFroms
 
       ssl_required :update

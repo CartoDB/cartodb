@@ -25,6 +25,7 @@ RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include NamedMapsHelper
   config.include Capybara::DSL
+  config.include FactoryGirl::Syntax::Methods
 
   config.after(:each) do
     Delorean.back_to_the_present

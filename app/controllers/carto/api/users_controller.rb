@@ -12,7 +12,6 @@ module Carto
       include FrontendConfigHelper
       include AccountTypeHelper
       include AvatarHelper
-      include Carto::ControllerHelper
       begin
         include OnpremisesLicensingGear::ApplicationHelper
       rescue NameError
@@ -28,9 +27,8 @@ module Carto
       ssl_required
 
       before_action :optional_api_authorization, only: [:me]
-      before_action :any_api_authorization_required, only: [:me_public]
       before_action :recalculate_user_db_size, only: [:me]
-      skip_before_action :api_authorization_required, only: [:me, :me_public, :get_authenticated_users]
+      skip_before_action :api_authorization_required, only: [:me, :get_authenticated_users]
       skip_before_action :check_user_state, only: [:me, :delete_me]
 
       rescue_from StandardError, with: :rescue_from_standard_error
@@ -42,34 +40,40 @@ module Carto
       def me
         carto_viewer = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
 
-        cant_be_deleted_reason = carto_viewer.try(:cant_be_deleted_reason)
-        can_be_deleted = carto_viewer.present? ? cant_be_deleted_reason.nil? : nil
-        viewer_organization_notifications = carto_viewer ? organization_notifications(carto_viewer) : []
-        viewer_unfiltered_notifications = carto_viewer ? unfiltered_organization_notifications(carto_viewer) : []
-
-        render json: {
-          user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
-          default_fallback_basemap: carto_viewer.try(:default_basemap),
-          config: frontend_config_hash(current_viewer),
-          dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
-          organization_notifications: viewer_organization_notifications,
-          unfiltered_organization_notifications: viewer_unfiltered_notifications,
-          is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
-          is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
-          can_change_email: carto_viewer.try(:can_change_email?),
-          auth_username_password_enabled: carto_viewer.try(:organization).try(:auth_username_password_enabled),
-          can_change_password: carto_viewer.try(:can_change_password?),
-          plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
-          plan_url: carto_viewer.try(:plan_url, request.protocol),
-          can_be_deleted: can_be_deleted,
-          cant_be_deleted_reason: cant_be_deleted_reason,
-          services: carto_viewer.try(:get_oauth_services),
-          user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
-          asset_host: carto_viewer.try(:asset_host),
-          google_sign_in: carto_viewer.try(:google_sign_in),
-          mfa_required: multifactor_authentication_required?,
-          license_expiration: license_expiration
+        config = {
+          user_frontend_version: CartoDB::Application.frontend_version
         }
+
+        if carto_viewer.present?
+          cant_be_deleted_reason = carto_viewer.cant_be_deleted_reason
+
+          config = {
+            user_data: Carto::Api::UserPresenter.new(carto_viewer).data,
+            default_fallback_basemap: carto_viewer.default_basemap,
+            dashboard_notifications: carto_viewer.notifications_for_category(:dashboard),
+            organization_notifications: organization_notifications(carto_viewer),
+            unfiltered_organization_notifications: unfiltered_organization_notifications(carto_viewer),
+            is_just_logged_in: !!flash['logged'],
+            is_first_time_viewing_dashboard: !carto_viewer.dashboard_viewed_at,
+            can_change_email: carto_viewer.can_change_email?,
+            auth_username_password_enabled: carto_viewer.organization.try(:auth_username_password_enabled),
+            can_change_password: carto_viewer.can_change_password?,
+            plan_name: plan_name(carto_viewer.account_type),
+            plan_url: carto_viewer.plan_url(request.protocol),
+            can_be_deleted: cant_be_deleted_reason.nil?,
+            cant_be_deleted_reason: cant_be_deleted_reason,
+            services: carto_viewer.get_oauth_services,
+            user_frontend_version: carto_viewer.relevant_frontend_version,
+            asset_host: carto_viewer.asset_host,
+            google_sign_in: carto_viewer.google_sign_in,
+            mfa_required: multifactor_authentication_required?,
+            license_expiration: license_expiration
+          }
+        end
+
+        config[:config] = frontend_config_hash(current_viewer)
+
+        render json: config
       end
 
       def update_me

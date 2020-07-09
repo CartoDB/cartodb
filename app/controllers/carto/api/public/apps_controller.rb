@@ -2,7 +2,6 @@ require_relative '../visualization_searcher'
 require_relative '../paged_searcher'
 
 class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationController
-  include Carto::ControllerHelper
   include Carto::Api::VisualizationSearcher
   include Carto::Api::PagedSearcher
 
@@ -35,7 +34,7 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
     end
     response = {
       apps: apps,
-      total_entries: vqb.build.size
+      total_entries: vqb.count
     }
     render_jsonp(response)
   rescue Carto::ParamInvalidError => e

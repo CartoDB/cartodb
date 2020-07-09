@@ -61,10 +61,10 @@ module CartoDB
       }
 
       if options[:extended]
-        dataset_count = visualizations_builder.with_type(Carto::Visualization::TYPE_CANONICAL).build.count
+        dataset_count = visualizations_builder.with_type(Carto::Visualization::TYPE_CANONICAL).count
         org_presentation[:table_count] = dataset_count
 
-        map_count = visualizations_builder.with_type(Carto::Visualization::TYPE_DERIVED).build.count
+        map_count = visualizations_builder.with_type(Carto::Visualization::TYPE_DERIVED).count
         org_presentation[:map_count] = map_count
       end
 

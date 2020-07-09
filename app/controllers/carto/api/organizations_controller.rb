@@ -5,7 +5,6 @@ module Carto
     class OrganizationsController < ::Api::ApplicationController
       include OrganizationsHelper
       include PagedSearcher
-      include Carto::ControllerHelper
 
       ssl_required :users
 

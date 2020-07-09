@@ -62,8 +62,7 @@ module Carto
       end
 
       if job.status.error_result.present?
-        @logger.append "BQ job #{job.job_reference} error #{job.status.error_result.reason}:\n#{job.status.error_result.message}"
-        raise "BQ eror #{job.status.error_result.reason}"
+        raise "BQ job #{job.job_reference} error #{job.status.error_result.reason}:\n#{job.status.error_result.message}"
       end
 
       #<Google::Apis::BigqueryV2::JobStatus:0x00007fe910fc2258 @state="DONE", @error_result=#<Google::Apis::BigqueryV2::ErrorProto:0x00007fe91265edb8 @message="Response too large to return. Consider setting allowLargeResults to true in your job configuration. For more information, see https://cloud.google.com/bigquery/troubleshooting-errors", @reason="responseTooLarge">, @errors=[#<Google::Apis::BigqueryV2::ErrorProto:0x00007fe91265c2e8 @message="Response too large to return. Consider setting allowLargeResults to true in your job configuration. For more information, see https://cloud.google.com/bigquery/troubleshooting-errors", @reason="responseTooLarge">]>

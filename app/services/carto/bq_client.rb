@@ -7,7 +7,7 @@ module Carto
       https://www.googleapis.com/auth/bigquery).freeze
     MAX_CLIENT_RETRIES = 3
     MAX_TIMEOUT = 3600
-    ROWS_PER_PAGE = 10
+    ROWS_PER_PAGE = 1000
     REQUEST_TIMEOUT_MS = 10000
     QUERY_TIMEOUT_MS = 3600000
     WAIT_JOB_SLEEP = 0.1

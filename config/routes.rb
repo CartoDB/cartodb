@@ -615,6 +615,10 @@ CartoDB::Application.routes.draw do
         post 'subscriptions' => 'data_observatory#subscribe', as: :api_v4_do_subscriptions_create
         delete 'subscriptions' => 'data_observatory#unsubscribe', as: :api_v4_do_subscriptions_destroy
         get 'subscription_info' => 'data_observatory#subscription_info', as: :api_v4_do_subscription_info
+
+        get 'subscriptions/:subscription_id/sync' => 'data_observatory#sync_info', as: :api_v4_do_subscription_sync_info
+        post 'subscriptions/:subscription_id/sync' => 'data_observatory#create_sync', as: :api_v4_do_subscription_create_sync
+        delete 'subscriptions/:subscription_id/sync' => 'data_observatory#destroy_sync', as: :api_v4_do_subscription_destroy_sync
       end
 
       # Federated Tables

@@ -76,6 +76,18 @@ module Carto
           head :no_content
         end
 
+        def sync_info
+          render json: Carto::DoSyncService.new(@user).sync(params[:subscription_id])
+        end
+
+        def create_sync
+          render json: Carto::DoSyncService.new(@user).create_sync!(params[:subscription_id], true)
+        end
+
+        def destroy_sync
+          render json: Carto::DoSyncService.new(@user).remove_sync!(params[:subscription_id])
+        end
+
         private
 
         def load_user

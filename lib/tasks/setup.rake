@@ -22,10 +22,14 @@ namespace :cartodb do
         rescue Sequel::DatabaseConnectionError
           puts "Not dropping DB (did not exist)"
         end
-        Rake::Task['db:create'].invoke &&
-        Rake::Task['db:migrate'].invoke &&
-        Rake::Task['cartodb:db:create_publicuser'].invoke &&
-        Rake::Task['cartodb:db:create_federated_server'].invoke
+        begin
+          Rake::Task['db:create'].invoke &&
+          Rake::Task['db:migrate'].invoke &&
+          Rake::Task['cartodb:db:create_publicuser'].invoke &&
+          Rake::Task['cartodb:db:create_federated_server'].invoke
+        rescue StandardError => e
+          puts "Error: #{e}"
+        end
       else
         system("rake cartodb:test:prepare RAILS_ENV=test") || raise("Something went wrong")
       end

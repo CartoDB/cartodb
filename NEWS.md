@@ -12,6 +12,7 @@ Development
 - Added subscriptions info to the visualizations ([15723](https://github.com/CartoDB/cartodb/pull/15723))
 - Add new DO catalog ([15733](https://github.com/CartoDB/cartodb/pull/15733))
 - Fix server error at OAuth when authorize for datasets:metadata + any other datasets scope ([15738](https://github.com/CartoDB/cartodb/pull/15738))
+- api/v4/datasets returns shared dataset and access mode(read, write) [15735](https://github.com/CartoDB/cartodb/pull/15735)
 
 ### Bug fixes / enhancements
 - Fix last modified check for db connectors ([#15711](https://github.com/CartoDB/cartodb/pull/15711))
@@ -21,6 +22,7 @@ Development
 - Fix navigation bar tests
 - Ignore update_timestamp function on migrations ([#15710](https://github.com/CartoDB/cartodb/pull/15710))
 - Improve query builder performance ([#15725](https://github.com/CartoDB/cartodb/pull/15725))
+- Avoid duplicates on data library loading ([#15720](https://github.com/CartoDB/cartodb/pull/15720))
 
 4.38.0 (2020-06-05)
 -------------------

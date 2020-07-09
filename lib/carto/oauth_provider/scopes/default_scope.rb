@@ -10,7 +10,11 @@ module Carto
 
         def grant_section(grants)
           section = grants.find { |i| i[:type] == @type }
-          section || { type: @type, @grant_key => [] }
+          section = section || { type: @type, @grant_key => [] }
+          if not section.key?(@grant_key)
+            section[@grant_key] = []
+          end
+          section
         end
 
         def add_to_api_key_grants(grants, _user = nil)

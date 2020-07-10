@@ -23,6 +23,7 @@ Development
 - Ignore update_timestamp function on migrations ([#15710](https://github.com/CartoDB/cartodb/pull/15710))
 - Improve query builder performance ([#15725](https://github.com/CartoDB/cartodb/pull/15725))
 - Avoid duplicates on data library loading ([#15720](https://github.com/CartoDB/cartodb/pull/15720))
+- Update DO catalog route
 
 4.38.0 (2020-06-05)
 -------------------

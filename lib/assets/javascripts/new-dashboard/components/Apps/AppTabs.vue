@@ -10,21 +10,20 @@
       </router-link>
     </li>
 
-    <li class="app-tabs-item" v-if="state.user.mobileAppsEnabled">
+    <li class="app-tabs-item" v-if="state.user.isMobileSDKEnabled">
       <a :href="`${ baseUrl }/your_apps/mobile`" class="text is-small is-txtPrimary app-tabs-link">{{ $t(`SettingsPages.tabs.mobileApps`) }}</a>
     </li>
   </ul>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
   name: 'AppTabs',
   computed: {
-    ...mapState({
-      baseUrl: state => state.user.base_url
-    })
+    ...mapState({ baseUrl: state => state.user.base_url }),
+    ...mapGetters({ isMobileSDKEnabled: 'user/isMobileSDKEnabled' })
   }
 };
 </script>

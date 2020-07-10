@@ -88,8 +88,15 @@ module Carto
         DO_SYNC_ESTIMATED_ROW_COUNT => num_rows
       }
       condition = %{
-          service_name = 'connector'
-          AND service_item_id::jsonb @> '{"provider":"#{DO_SYNC_PROVIDER}","subscription_id":"#{subscription_id}"}'::jsonb
+          id IN (
+            -- only the most recent data import corresponding to this subscription is considered
+            SELECT id FROM data_imports WHERE
+              user_id = '#{@user.id}'
+              AND service_name = 'connector'
+              AND service_item_id::jsonb @> '{"provider":"#{DO_SYNC_PROVIDER}","subscription_id":"#{subscription_id}"}'::jsonb
+            ORDER BY created_at DESC
+            LIMIT 1
+          )
           AND (
             -- either the table exists... (the synchronization might not exist if it's been stopped by user)
             EXISTS (SELECT id FROM user_tables WHERE user_tables.id = data_imports.table_id)

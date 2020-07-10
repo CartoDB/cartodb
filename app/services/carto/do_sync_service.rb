@@ -52,16 +52,19 @@ module Carto
 
       num_bytes = 0
       num_rows = nil
-      if views[:data]
+      num_columns = nil
+      if views[:data].present?
         table = bq.table(views[:data])
-        num_bytes += table.num_bytes # FIXME: num_physical_bytes ? num_long_term_bytes ?
+        num_bytes += table.num_bytes
         num_rows = table.num_rows
+        num_columns += table.schema.fields.size
       end
-      if views[:geography]
-        num_bytes += bq.table(views[:geography]).num_bytes # FIXME: num_physical_bytes ? num_long_term_bytes ?
+      if views[:geography].present?
+        table = bq.table(views[:geography])
+        num_bytes += table.num_bytes
         num_rows ||= table.num_rows
+        num_columns ||= table.schema.fields.size
       end
-      num_columns = table.schema.fields.size
 
       limits_exceeded = []
       if num_columns > DOC_SYNC_MAX_COLS

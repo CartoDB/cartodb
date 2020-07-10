@@ -57,7 +57,7 @@ module Carto
         table = bq.table(views[:data])
         num_bytes += table.num_bytes
         num_rows = table.num_rows
-        num_columns += table.schema.fields.size
+        num_columns = table.schema.fields.size
       end
       if views[:geography].present?
         table = bq.table(views[:geography])

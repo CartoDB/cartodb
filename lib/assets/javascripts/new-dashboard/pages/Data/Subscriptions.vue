@@ -117,6 +117,7 @@ export default {
       border-bottom: 1px solid $neutral--300;
     }
     .list-item {
+      flex: 1 1 100%;
       &:hover {
         background-color: transparent;
       }

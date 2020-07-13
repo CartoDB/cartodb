@@ -23,14 +23,12 @@
               <VisualizationsTitle :defaultTitle="$t(`DataPage.tabs.yourSubscriptions`)"/>
             </template>
 
-            <template slot="dropdownButton">
-              <SettingsDropdown>
-                <img svg-inline src="../../assets/icons/common/filter.svg">
-              </SettingsDropdown>
-            </template>
+            <template slot="dropdownButton"></template>
 
             <template slot="actionButton">
-              <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
+              <router-link :to="{ name: 'do-catalog' }"  exact>
+                <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
+              </router-link>
             </template>
           </SectionTitle>
           <ul>

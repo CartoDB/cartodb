@@ -552,7 +552,7 @@ describe Carto::Api::Public::DataObservatoryController do
   describe 'sync_info' do
     before(:each) do
       @doss = mock
-      Carto::DoSyncService.stubs(:new).returns(@doss)
+      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
       @doss.stubs(:sync).returns({sync_status: 'unsynced'})
       # @doss.stubs(:create_sync!).returns({sync_status: 'syncing'})
     end

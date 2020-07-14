@@ -65,7 +65,7 @@ namespace :carto do
             attribution.gsub!('cartodb.com', 'carto.com')
             attribution.gsub!('http://carto', 'https://carto')
             attribution.gsub!(
-              'OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>',
+              'OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/about-carto/\">CARTO</a>',
               'OpenStreetMap</a> contributors')
           end
           category = layer.options['category']

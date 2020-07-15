@@ -16,7 +16,7 @@ FactoryGirl.define do
         "subdomains": "abcd",
         "minZoom": "0",
         "maxZoom": "18",
-        "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://carto.com/attributions\">CARTO</a>",
+        "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://carto.com/about-carto/\">CARTO</a>",
         "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         "type": "Tiled",
         "className": "positron_rainbow",

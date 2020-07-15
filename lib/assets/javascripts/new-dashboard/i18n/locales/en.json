@@ -92,7 +92,7 @@
     "tabs": {
       "yourDatasets": "Your Datasets",
       "yourSubscriptions": "Your Subscriptions",
-      "catalog": "Catalog"
+      "spatialDataCatalog": "Spatial Data Catalog"
     }
   },
   "MapsPage": {
@@ -756,8 +756,9 @@
     "emptyCase": "No subscriptions yet",
     "exploreDescription": "Explore the Data Catalog and subscribe to one of our Public or Premium datasets; then you will find it here.",
     "goDo": "Go to Data Observatory",
-    "do": "Data Observatory Catalog",
-    "new": "New subscriptions"
+    "new": "New subscriptions",
+    "exploreNotebook": "Explore Notebook",
+    "datasetSize": "Dataset size"
   },
   "Dialogs": {
     "ShareViaURL": {

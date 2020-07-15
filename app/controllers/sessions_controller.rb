@@ -90,6 +90,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    CartoDB::Logger.info(message: 'Session destroy: ' + caller.pretty_inspect)
     saml_authentication? && saml_service.try(:logout_url_configured?) ? saml_logout : do_logout
   end
 

@@ -82,7 +82,7 @@ module Carto
         def ensure_viewable
           if @visualization.password_protected?
             if @visualization.published?
-              render 'show_protected'
+              render 'show_protected' and return
             else
               render_embed_error(status: :not_found)
             end

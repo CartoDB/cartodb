@@ -22,9 +22,10 @@ Development
 - Fix navigation bar tests
 - Ignore update_timestamp function on migrations ([#15710](https://github.com/CartoDB/cartodb/pull/15710))
 - Improve query builder performance ([#15725](https://github.com/CartoDB/cartodb/pull/15725))
-- Upgrade rails to 4.2.11.3 ([#15737](https://github.com/CartoDB/cartodb/pull/15737)) 
+- Upgrade rails to 4.2.11.3 ([#15737](https://github.com/CartoDB/cartodb/pull/15737))
 - Avoid duplicates on data library loading ([#15720](https://github.com/CartoDB/cartodb/pull/15720))
 - Fixes CARTO attributions link
+- Update CARTO.js to v4.2.1 ([#15748](https://github.com/CartoDB/cartodb/pull/15748))
 
 4.38.0 (2020-06-05)
 -------------------

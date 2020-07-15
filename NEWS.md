@@ -24,7 +24,8 @@ Development
 - Improve query builder performance ([#15725](https://github.com/CartoDB/cartodb/pull/15725))
 - Upgrade rails to 4.2.11.3 ([#15737](https://github.com/CartoDB/cartodb/pull/15737)) 
 - Avoid duplicates on data library loading ([#15720](https://github.com/CartoDB/cartodb/pull/15720))
-- Update DO catalog route
+- Update DO catalog route ([#15742](https://github.com/CartoDB/cartodb/pull/15742))
+- Fixes CARTO attributions link
 
 4.38.0 (2020-06-05)
 -------------------

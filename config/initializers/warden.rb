@@ -23,6 +23,7 @@ module CartoStrategy
   end
 
   def check_password_expired(user)
+    CartoDB::Logger.info(message: '*** warden check_password_expired: ' + caller.pretty_inspect)
     if affected_by_password_expiration? && user.password_expired?
       throw(:warden, action: :password_change, username: user.username)
     end
@@ -75,6 +76,7 @@ Warden::Strategies.add(:password) do
   end
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden authenticate: ' + caller.pretty_inspect)
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)

@@ -10,7 +10,7 @@
       </router-link>
     </li>
 
-    <li class="app-tabs-item" v-if="state.user.isMobileSDKEnabled">
+    <li class="app-tabs-item" v-if="isMobileSDKEnabled">
       <a :href="`${ baseUrl }/your_apps/mobile`" class="text is-small is-txtPrimary app-tabs-link">{{ $t(`SettingsPages.tabs.mobileApps`) }}</a>
     </li>
   </ul>

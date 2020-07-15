@@ -216,7 +216,7 @@ describe Table do
                 "maxZoom" => "18",
                 "name" => "Waduson",
                 "className" => "waduson",
-                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>"
               }
             }
           }
@@ -245,7 +245,7 @@ describe Table do
           map.layers[0].options["maxZoom"].should == "18"
           map.layers[0].options["name"].should == "Waduson"
           map.layers[0].options["className"].should == "waduson"
-          map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+          map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>"
           map.layers[0].order.should == 0
 
           map.visualization.overlays.count.should eq 5
@@ -265,7 +265,7 @@ describe Table do
                 "maxZoom" => "18",
                 "name" => "Waduson",
                 "className" => "waduson",
-                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>",
+                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>",
                 "labels" => {
                   "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
                   "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png"
@@ -289,7 +289,7 @@ describe Table do
           table.map.layers[0].options["maxZoom"].should == "18"
           table.map.layers[0].options["name"].should == "Waduson"
           table.map.layers[0].options["className"].should == "waduson"
-          table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+          table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>"
           table.map.layers[0].order.should == 0
 
           table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
@@ -299,7 +299,7 @@ describe Table do
           table.map.layers[2].options["maxZoom"].should == "18"
           table.map.layers[2].options["name"].should == "Waduson Labels"
           table.map.layers[2].options["className"].should be_nil
-          table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+          table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>"
           table.map.layers[2].options["type"].should == "Tiled"
           table.map.layers[2].options["labels"].should be_nil
           table.map.layers[2].order.should == 2

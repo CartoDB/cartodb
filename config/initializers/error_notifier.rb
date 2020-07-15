@@ -16,7 +16,7 @@ Rollbar.configure do |config|
     'ActionController::RoutingError' => 'ignore',
     'Sequel::DatabaseConnectionError' => 'warning',
     'ActiveRecord::RecordInvalid' => lambda do
-      |error| info_errors.any? { |message| error.to_s.downcase.include?(message) ? 'info' : 'error' }
+      |error| info_errors.any? { |message| error.to_s.downcase.include?(message) } ? 'info' : 'error'
     end
   )
 end

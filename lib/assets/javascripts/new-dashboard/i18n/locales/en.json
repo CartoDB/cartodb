@@ -60,7 +60,8 @@
       "duplicate": "Duplicate",
       "unlock": "Unlock",
       "lock": "Lock",
-      "delete": "Delete"
+      "delete": "Delete",
+      "viewDataset": "View dataset"
     }
   },
   "DataPage": {
@@ -73,7 +74,8 @@
         "public": "Your Public Datasets",
         "link": "Your Link-shared Datasets",
         "password": "Your Password-protected Datasets",
-        "private": "Your Private Datasets"
+        "private": "Your Private Datasets",
+        "subscribed": "Your Subscribed Datasets"
       },
       "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}' class='is-bold'>Upgrade now</a> to get more datasets."
     },
@@ -89,7 +91,8 @@
     },
     "tabs": {
       "yourDatasets": "Your Datasets",
-      "catalog": "Catalog"
+      "yourSubscriptions": "Your Subscriptions",
+      "spatialDataCatalog": "Spatial Data Catalog"
     }
   },
   "MapsPage": {
@@ -167,7 +170,8 @@
       "linkPrivacy": "Link",
       "passwordPrivacy": "Password",
       "builderType": "Builder",
-      "kuvizType": "CARTOframes"
+      "kuvizType": "CARTOframes",
+      "subscribed": "Subscriptions ({count})"
     }
   },
   "DatasetCard": {
@@ -747,6 +751,14 @@
     "variableGroups": "Variable Groups",
     "category": "Category",
     "country": "Country"
+  },
+  "Subscriptions": {
+    "emptyCase": "No subscriptions yet",
+    "exploreDescription": "Explore the Data Catalog and subscribe to one of our Public or Premium datasets; then you will find it here.",
+    "goDo": "Go to Data Observatory",
+    "new": "New subscriptions",
+    "exploreNotebook": "Explore Notebook",
+    "datasetSize": "Dataset size"
   },
   "Dialogs": {
     "ShareViaURL": {

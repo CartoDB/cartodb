@@ -1,9 +1,13 @@
 require 'spec_helper_min'
 require 'support/helpers'
+require 'factories/organizations_contexts'
 
 describe Carto::Api::Public::DatasetsController do
   include_context 'users helper'
+  include_context 'organization with users helper'
+
   include HelperMethods
+  include TableSharing
 
   describe 'index' do
     before(:each) do
@@ -22,10 +26,13 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.body[:total]).to eq 3
         expect(response.body[:count]).to eq 3
         expect(response.body[:result][0][:name]).to eq 'table_a'
-        expect(response.body[:result][0][:type]).to eq 'table'
+        expect(response.body[:result][0][:mode]).to eq 'rw'
         expect(response.body[:result][0][:privacy]).to eq 'private'
         expect(response.body[:result][0][:cartodbfied]).to eq true
         expect(response.body[:result][0][:updated_at]).to_not be_nil
+        expect(response.body[:result][0][:table_schema]).to eq @user1.database_schema
+        expect(response.body[:result][0][:shared]).to eq false
+
       end
     end
 
@@ -35,11 +42,16 @@ describe Carto::Api::Public::DatasetsController do
       get_json api_v4_datasets_url(@params) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:total]).to eq 4
-        expect(response.body[:result][0][:name]).to eq 'non_cartodbfied_table'
-        expect(response.body[:result][0][:type]).to eq 'table'
-        expect(response.body[:result][0][:privacy]).to be_nil
-        expect(response.body[:result][0][:cartodbfied]).to eq false
-        expect(response.body[:result][0][:updated_at]).to be_nil
+        expected_dataset = {
+          name: 'non_cartodbfied_table',
+          mode: 'rw',
+          privacy: nil,
+          cartodbfied: false,
+          updated_at: nil,
+          table_schema: @user1.database_schema,
+          shared: false
+        }
+        expect(response.body[:result][0]).to eq expected_dataset
       end
 
       @user1.in_database.execute('DROP TABLE non_cartodbfied_table')
@@ -52,29 +64,55 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.status).to eq(200)
         expect(response.body[:total]).to eq 4
         expect(response.body[:result][0][:name]).to eq 'my_view'
-        expect(response.body[:result][0][:type]).to eq 'view'
+        expect(response.body[:result][0][:mode]).to eq 'rw'
         expect(response.body[:result][0][:privacy]).to be_nil
         expect(response.body[:result][0][:cartodbfied]).to eq false
         expect(response.body[:result][0][:updated_at]).to be_nil
+        expect(response.body[:result][0][:table_schema]).to eq @user1.database_schema
+        expect(response.body[:result][0][:shared]).to eq false
       end
 
       @user1.in_database.execute('DROP VIEW my_view')
     end
 
-    it 'includes materialized views' do
-      @user1.in_database.execute('CREATE MATERIALIZED VIEW my_mat_view AS SELECT 5')
+    context 'shared datasets' do
 
-      get_json api_v4_datasets_url(@params) do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:total]).to eq 4
-        expect(response.body[:result][0][:name]).to eq 'my_mat_view'
-        expect(response.body[:result][0][:type]).to eq 'matview'
-        expect(response.body[:result][0][:privacy]).to be_nil
-        expect(response.body[:result][0][:cartodbfied]).to eq false
-        expect(response.body[:result][0][:updated_at]).to be_nil
+      before(:each) do
+        host! "#{@org_user_2.username}.localhost.lan"
+        @table_name = 'shared_table'
+        @params = { api_key: @org_user_2.api_key, page: 1, per_page: 10 }
+        @shared_table = FactoryGirl.create(:table, user_id: @org_user_1.id, name: @table_name )
       end
 
-      @user1.in_database.execute('DROP MATERIALIZED VIEW my_mat_view')
+      it 'includes shared datasets read only' do
+        share_table_with_user(@shared_table, @org_user_2, access: CartoDB::Permission::ACCESS_READONLY)
+
+        get_json api_v4_datasets_url(@params) do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:total]).to eq 1
+          expect(response.body[:result][0][:name]).to eq @table_name
+          expect(response.body[:result][0][:mode]).to eq 'r'
+          expect(response.body[:result][0][:privacy]).to eq 'private'
+          expect(response.body[:result][0][:cartodbfied]).to eq true
+          expect(response.body[:result][0][:table_schema]).to eq @org_user_1.database_schema
+          expect(response.body[:result][0][:shared]).to eq true
+        end
+      end
+
+      it 'includes shared datasets read and write' do
+        share_table_with_user(@shared_table, @org_user_2, access: CartoDB::Permission::ACCESS_READWRITE)
+
+        get_json api_v4_datasets_url(@params) do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:total]).to eq 1
+          expect(response.body[:result][0][:name]).to eq @table_name
+          expect(response.body[:result][0][:mode]).to eq 'rw'
+          expect(response.body[:result][0][:privacy]).to eq 'private'
+          expect(response.body[:result][0][:cartodbfied]).to eq true
+          expect(response.body[:result][0][:table_schema]).to eq @org_user_1.database_schema
+          expect(response.body[:result][0][:shared]).to eq true
+        end
+      end
     end
 
     it 'returns 200 with an empty array if the current user does not have datasets' do
@@ -152,51 +190,6 @@ describe Carto::Api::Public::DatasetsController do
       end
     end
 
-    context 'filtering by type' do
-      before(:all) do
-        @user1.in_database.execute('CREATE VIEW my_view AS SELECT 5')
-      end
-
-      after(:all) do
-        @user1.in_database.execute('DROP VIEW my_view')
-      end
-
-      it 'filters results by table type' do
-        get_json api_v4_datasets_url(@params.merge(type: 'table')) do |response|
-          expect(response.status).to eq(200)
-          expect(response.body[:total]).to eq 3
-        end
-      end
-
-      it 'filters results by view type' do
-        get_json api_v4_datasets_url(@params.merge(type: 'view')) do |response|
-          expect(response.status).to eq(200)
-          expect(response.body[:total]).to eq 1
-        end
-      end
-
-      it 'filters results by table + view type' do
-        get_json api_v4_datasets_url(@params.merge(type: 'table,view')) do |response|
-          expect(response.status).to eq(200)
-          expect(response.body[:total]).to eq 4
-        end
-      end
-
-      it 'returns all the types by default' do
-        get_json api_v4_datasets_url(@params) do |response|
-          expect(response.status).to eq(200)
-          expect(response.body[:total]).to eq 4
-        end
-      end
-
-      it 'raises an error when type is not valid' do
-        get_json api_v4_datasets_url(@params.merge(type: 'wadus')) do |response|
-          expect(response.status).to eq(400)
-          expect(response.body[:errors]).to include("Wrong 'type' parameter")
-        end
-      end
-    end
-
     context 'ordering' do
       it 'orders results by name ascending by default' do
         get_json api_v4_datasets_url(@params) do |response|
@@ -216,20 +209,6 @@ describe Carto::Api::Public::DatasetsController do
           expect(response.body[:result][0][:name]).to eq 'table_c'
           expect(response.body[:result][1][:name]).to eq 'table_b'
         end
-      end
-
-      it 'orders results by type descending' do
-        @user1.in_database.execute('CREATE VIEW my_view AS SELECT 5')
-
-        get_json api_v4_datasets_url(@params.merge(order: 'type', order_direction: 'desc')) do |response|
-          expect(response.status).to eq(200)
-          expect(response.body[:total]).to eq 4
-          expect(response.body[:count]).to eq 4
-          expect(response.body[:result][0][:type]).to eq 'view'
-          expect(response.body[:result][1][:type]).to eq 'table'
-        end
-
-        @user1.in_database.execute('DROP VIEW my_view')
       end
 
       it 'returns 400 if the ordering param is invalid' do

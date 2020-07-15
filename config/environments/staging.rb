@@ -26,7 +26,7 @@ CartoDB::Application.configure do
     ActiveSupport::Logger.new(Carto::Conf.new.log_file_path('staging.log'))
   )
 
-  config.log_level = :info
+  config.log_level = :debug
 
   # Setting this to true will enable ActiveController's enforcement of SSL.
   config.ssl_required = true

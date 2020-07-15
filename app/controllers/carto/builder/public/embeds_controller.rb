@@ -80,6 +80,7 @@ module Carto
         end
 
         def ensure_viewable
+          CartoDB::Logger.info(message: '*** ensure_viewable: ' + caller.pretty_inspect)
           if @visualization.password_protected?
             if @visualization.published?
               render 'show_protected' and return

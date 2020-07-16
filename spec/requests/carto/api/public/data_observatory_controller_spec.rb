@@ -549,6 +549,24 @@ describe Carto::Api::Public::DataObservatoryController do
     end
   end
 
+  describe 'sync_info' do
+    before(:each) do
+      @doss = mock
+      Carto::DoSyncService.stubs(:new).returns(@doss)
+      @doss.stubs(:sync).returns({sync_status: 'unsynced'})
+      # @doss.stubs(:create_sync!).returns({sync_status: 'syncing'})
+    end
+
+    # FIXME: proper tests
+    it 'returns 200 if the subscription_id is valid' do
+      @url_helper = 'api_v4_do_subscription_sync_info_url'
+      get_json endpoint_url(api_key: @master, subscription_id: 'wrong'), @headers do |response|
+        expect(response.status).to eq(200)
+        expect(response.body).to eq(sync_status: 'unsynced')
+      end
+    end
+  end
+
   def populate_do_metadata
     with_do_connection() do |connection|
       queries = %{

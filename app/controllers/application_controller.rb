@@ -93,7 +93,6 @@ class ApplicationController < ActionController::Base
   end
 
   Warden::Manager.before_logout do |user, auth, opts|
-    byebug
     if user.present?
       user.invalidate_all_sessions!
     elsif opts[:scope]
@@ -109,7 +108,6 @@ class ApplicationController < ActionController::Base
 
   # @see Warden::Manager.after_set_user
   def update_session_security_token(user)
-    byebug
     warden.session(user.username)[:sec_token] = user.security_token
   end
 
@@ -118,7 +116,6 @@ class ApplicationController < ActionController::Base
   end
 
   def http_header_authentication
-    byebug
     authenticate(:http_header_authentication, scope: CartoDB.extract_subdomain(request))
     if current_user
       Carto::AuthenticationManager.validate_session(warden, request, current_user)
@@ -464,7 +461,11 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    super(CartoDB.extract_subdomain(request))
+    cu = super(CartoDB.extract_subdomain(request))
+    if !cu.present?
+      CartoDB::Logger.info(message: '+++ app_controller / current_user: ' + cu.pretty_inspect)
+    end
+    cu
   end
 
   def update_user_last_activity

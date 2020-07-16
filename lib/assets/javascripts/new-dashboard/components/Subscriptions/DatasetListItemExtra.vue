@@ -1,31 +1,36 @@
 <template>
   <div class="dataset-listItem-extra-container u-flex u-flex__direction--column u-pt--12 u-pl--24 u-pb--24">
-    <SubscriptionStatus></SubscriptionStatus>
-    <div class="is-caption u-mt--12"><span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span> <span>123.5 MB</span></div>
-    <div class="u-flex u-flex__direction--column u-mt--28">
-      <div class="u-flex u-flex__align--center">
-        <a class="is-caption" href="#">{{$t('BulkActions.datasets.createMap')}}</a>  <span class="u-ml--8 u-mr--8">|</span>
-        <a class="is-caption" href="#">{{$t('BulkActions.datasets.viewDataset')}}</a>
-      </div>
-      <a class="is-caption u-mt--12" href="#">{{$t('Subscriptions.exploreNotebook')}}</a>
+    <SubscriptionStatus :status="dataset.status" :expiresDate="dataset.expires_at" class="u-width--100"></SubscriptionStatus>
+    <div class="u-ml--16">
+       <div class="is-caption u-mt--12 is-small"><span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span> <span>{{dataset.estimated_size}} MB</span></div>
+       <SubscriptionActions :dataset="dataset" class="u-mt--28"></SubscriptionActions>
+      <SlugCopy :slug="dataset.slug" class="u-mt--24"></SlugCopy>
     </div>
   </div>
 </template>
 
 <script>
 
-import SubscriptionStatus from './SubscriptionStatus';
+import SubscriptionStatus from '@carto/common-ui/do-catalog/src/components/subscriptions/SubscriptionStatus';
+import SubscriptionActions from '@carto/common-ui/do-catalog/src/components/subscriptions/SubscriptionActions';
+import SlugCopy from '@carto/common-ui/do-catalog/src/components/subscriptions/SlugCopy';
 
 export default {
   name: 'DatasetListItemExtra',
   components: {
-    SubscriptionStatus
+    SubscriptionStatus,
+    SubscriptionActions,
+    SlugCopy
   },
-  props: {},
+  props: {
+    dataset: {
+      type: Object,
+      required: true
+    }
+  },
   data: function () {
     return {};
   },
-  computed: {},
   methods: {}
 };
 </script>
@@ -33,6 +38,6 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 .dataset-listItem-extra-container {
-  flex: 0 0 282px;
+  flex: 0 0 306px;
 }
 </style>

@@ -44,6 +44,7 @@ class SessionsController < ApplicationController
   PLEASE_LOGIN = 'Please, log in to continue using CARTO.'.freeze
 
   def new
+    CartoDB::Logger.info(message: '*** session new: ' + caller.pretty_inspect)
     if current_viewer
       redirect_to(CartoDB.url(self, 'dashboard', params: { trailing_slash: true }, user: current_viewer))
     elsif saml_authentication? && !user
@@ -69,6 +70,7 @@ class SessionsController < ApplicationController
   end
 
   def create
+    CartoDB::Logger.info(message: '*** session create: ' + caller.pretty_inspect)
     strategies, username = saml_strategy_username || ldap_strategy_username || credentials_strategy_username
 
     unless strategies
@@ -203,11 +205,13 @@ class SessionsController < ApplicationController
   end
 
   def password_locked(retry_after = warden.env['warden.options'][:retry_after])
+    CartoDB::Logger.info(message: '*** session password_locked: ' + caller.pretty_inspect)
     warden.custom_failure!
     redirect_to login_url + "?error=#{PASSWORD_LOCKED}&retry_after=#{retry_after}"
   end
 
   def password_expired
+    CartoDB::Logger.info(message: '*** session password_expired: ' + caller.pretty_inspect)
     warden.custom_failure!
     cdb_logout
     session[:return_to] = request.original_url

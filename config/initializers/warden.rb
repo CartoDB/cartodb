@@ -30,10 +30,12 @@ module CartoStrategy
   end
 
   def reset_password_rate_limit(user)
+    CartoDB::Logger.info(message: '*** warden reset_password_rate_limit: ' + caller.pretty_inspect)
     user.reset_password_rate_limit if affected_by_reset_password_locked?
   end
 
   def trigger_login_event(user)
+    CartoDB::Logger.info(message: '*** warden trigger_login_event: ' + caller.pretty_inspect)
     check_password_expired(user)
     reset_password_rate_limit(user)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
@@ -76,7 +78,7 @@ Warden::Strategies.add(:password) do
   end
 
   def authenticate!
-    CartoDB::Logger.info(message: '*** warden authenticate: ' + caller.pretty_inspect)
+    CartoDB::Logger.info(message: '*** warden password authenticate: ' + caller.pretty_inspect)
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
@@ -102,6 +104,7 @@ Warden::Strategies.add(:enable_account_token) do
   include CartoStrategy
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden enable_account_token authenticate: ' + caller.pretty_inspect)
     if params[:id]
       user = ::User.where(enable_account_token: params[:id]).first
       if user
@@ -128,6 +131,7 @@ Warden::Strategies.add(:oauth) do
   end
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden oauth authenticate: ' + caller.pretty_inspect)
     fail! unless env[:oauth_api]
     oauth_api = env[:oauth_api]
     user = oauth_api.user
@@ -149,6 +153,7 @@ Warden::Strategies.add(:ldap) do
   end
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden ldap authenticate: ' + caller.pretty_inspect)
     (fail! and return) if (params[:email].blank? || params[:password].blank?)
 
     user = nil
@@ -177,6 +182,7 @@ Warden::Strategies.add(:api_authentication) do
   end
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden api_authentication authenticate: ' + caller.pretty_inspect)
     # WARNING: The following code is a modified copy of the oauth10_token method from
     # oauth-plugin-0.4.0.pre4/lib/oauth/controllers/application_controller_methods.rb
     # It also checks token class like does the oauth10_access_token method of that same file
@@ -214,6 +220,7 @@ Warden::Strategies.add(:http_header_authentication) do
   end
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden http_header_authentication authenticate: ' + caller.pretty_inspect)
     user = Carto::HttpHeaderAuthentication.new.get_user(request)
     return fail! unless user.present?
 
@@ -248,6 +255,7 @@ Warden::Strategies.add(:saml) do
   end
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden saml authenticate: ' + caller.pretty_inspect)
     organization = organization_from_request
     saml_service = Carto::SamlService.new(organization)
 
@@ -277,6 +285,7 @@ end
 
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
+  CartoDB::Logger.info(message: '*** warden after_set_user: ' + caller.pretty_inspect)
   auth.session(opts[:scope])[:skip_multifactor_authentication] = auth.winning_strategy && !auth.winning_strategy.store?
 
   auth.session(opts[:scope])[:sec_token] = user.security_token
@@ -298,6 +307,7 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
 end
 
 Warden::Manager.after_set_user do |user, auth, opts|
+  CartoDB::Logger.info(message: '*** warden after_set_user II: ' + caller.pretty_inspect)
   # Without winning strategy (loading cookie from session) assume we want to respect expired passwords
   should_check_expiration = !auth.winning_strategy || auth.winning_strategy.affected_by_password_expiration?
   throw(:warden, action: :password_expired) if should_check_expiration && user.password_expired?
@@ -307,6 +317,7 @@ Warden::Strategies.add(:user_creation) do
   include CartoStrategy
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden user_creation authenticate: ' + caller.pretty_inspect)
     username = params[:username]
     user = ::User.where(username: username).first
     return fail! unless user
@@ -345,6 +356,7 @@ module Carto::Api::AuthApiAuthentication
   end
 
   def authenticate_user(require_master_key)
+    CartoDB::Logger.info(message: '*** warden authenticate_user: ' + caller.pretty_inspect)
     user, token = user_and_token_from_request
     return fail! unless user && token
 
@@ -358,6 +370,7 @@ module Carto::Api::AuthApiAuthentication
   end
 
   def request_api_key
+    CartoDB::Logger.info(message: '*** warden request_api_key: ' + caller.pretty_inspect)
     return @request_api_key if @request_api_key
 
     user, token = user_and_token_from_request
@@ -374,6 +387,7 @@ module Carto::Api::AuthApiAuthentication
   AUTH_HEADER_RE = /basic\s(?<auth>\w+)/i
 
   def user_and_token_from_request
+    CartoDB::Logger.info(message: '*** warden user_and_token_from_request: ' + caller.pretty_inspect)
     return unless valid?
 
     if base64_auth.present?
@@ -396,6 +410,7 @@ Warden::Strategies.add(:auth_api) do
   include Carto::Api::AuthApiAuthentication
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden auth_api authenticate: ' + caller.pretty_inspect)
     authenticate_user(true)
   end
 end
@@ -404,6 +419,7 @@ Warden::Strategies.add(:any_auth_api) do
   include Carto::Api::AuthApiAuthentication
 
   def authenticate!
+    CartoDB::Logger.info(message: '*** warden any_auth_api authenticate: ' + caller.pretty_inspect)
     authenticate_user(false)
   end
 end

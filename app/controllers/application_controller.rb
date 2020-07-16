@@ -93,6 +93,7 @@ class ApplicationController < ActionController::Base
   end
 
   Warden::Manager.before_logout do |user, auth, opts|
+    byebug
     if user.present?
       user.invalidate_all_sessions!
     elsif opts[:scope]
@@ -108,6 +109,7 @@ class ApplicationController < ActionController::Base
 
   # @see Warden::Manager.after_set_user
   def update_session_security_token(user)
+    byebug
     warden.session(user.username)[:sec_token] = user.security_token
   end
 
@@ -116,6 +118,7 @@ class ApplicationController < ActionController::Base
   end
 
   def http_header_authentication
+    byebug
     authenticate(:http_header_authentication, scope: CartoDB.extract_subdomain(request))
     if current_user
       Carto::AuthenticationManager.validate_session(warden, request, current_user)
@@ -315,6 +318,7 @@ class ApplicationController < ActionController::Base
   end
 
   def render_multifactor_authentication
+    CartoDB::Logger.info(message: '*** application_controller render_multifactor_authentication: ' + caller.pretty_inspect)
     session[:return_to] = request.original_url
     redirect_or_forbidden('multifactor_authentication_session', 'mfa_required')
   end
@@ -343,6 +347,7 @@ class ApplicationController < ActionController::Base
   end
 
   def not_authorized(exception = nil)
+    CartoDB::Logger.info(message: '*** application_controller not_authorized: ' + caller.pretty_inspect)
     respond_to do |format|
       format.html do
         session[:return_to] = request.url

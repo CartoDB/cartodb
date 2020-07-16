@@ -9,15 +9,15 @@ namespace :cartodb do
           Carto::ConnectorProvider.create! name: provider_name
         end
       end
-      providers = Carto::Connector.providers(all: true).keys.map { |name| "'#{name}'" }
-      Carto::ConnectorProvider.where("name NOT IN (#{providers.join(',')})").each do |provider|
+      providers = Carto::Connector.providers(all: true).keys
+      Carto::ConnectorProvider.where.not(name: providers).each do |provider|
         puts "Provider #{provider.name} is not configured in the code!"
       end
     end
 
     def find_by_uuid_or_name(id_or_name, klass, name_attribute = :name)
       include Carto::UUIDHelper
-      if is_uuid?(id_or_name)
+      if uuid?(id_or_name)
         klass.find(id_or_name)
       else
         klass.where(name_attribute => id_or_name).first

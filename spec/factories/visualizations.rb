@@ -1,4 +1,3 @@
-require 'uuidtools'
 require_dependency 'carto/uuidhelper'
 
 include Carto::UUIDHelper
@@ -51,7 +50,21 @@ FactoryGirl.define do
       privacy Carto::Visualization::PRIVACY_PROTECTED
       password 'test'
     end
+  end
 
+  factory :app_visualization, class: Carto::Visualization do
+    id { random_uuid }
+    type 'app'
+    name 'factory app'
+    privacy 'public'
+
+    association :user, factory: :carto_user
+    permission { FactoryGirl.create :carto_permission, owner: user }
+
+    factory :app_protected_visualization do
+      privacy Carto::Visualization::PRIVACY_PROTECTED
+      password 'test'
+    end
   end
 
 end

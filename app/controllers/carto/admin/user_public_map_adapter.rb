@@ -16,15 +16,15 @@ module Carto
       end
 
       def public_table_count
-        @public_table_count ||= Carto::VisualizationQueryBuilder.user_public_tables(@user).build.count
+        @public_table_count ||= Carto::VisualizationQueryBuilder.user_public_tables(@user).count
       end
 
       def public_visualization_count
-        @public_visualization_count ||= Carto::VisualizationQueryBuilder.user_public_visualizations(@user).build.count
+        @public_visualization_count ||= Carto::VisualizationQueryBuilder.user_public_visualizations(@user).count
       end
 
       def all_visualization_count
-        @all_visualization_count ||= Carto::VisualizationQueryBuilder.user_all_visualizations(@user).build.count
+        @all_visualization_count ||= Carto::VisualizationQueryBuilder.user_all_visualizations(@user).count
       end
 
     end

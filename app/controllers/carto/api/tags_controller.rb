@@ -3,7 +3,6 @@ require_dependency 'carto/controller_helper'
 module Carto
   module Api
     class TagsController < ::Api::ApplicationController
-      include Carto::ControllerHelper
       include PagedSearcher
 
       ssl_required

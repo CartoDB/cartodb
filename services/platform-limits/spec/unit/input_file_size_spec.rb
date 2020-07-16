@@ -1,7 +1,5 @@
 require_relative '../../platform_limits'
-
 require_relative '../doubles/user'
-require 'uuidtools'
 
 include CartoDB::PlatformLimits
 

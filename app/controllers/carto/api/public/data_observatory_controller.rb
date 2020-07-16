@@ -2,7 +2,6 @@ module Carto
   module Api
     module Public
       class DataObservatoryController < Carto::Api::Public::ApplicationController
-        include Carto::ControllerHelper
         include Carto::Api::PagedSearcher
         extend Carto::DefaultRescueFroms
 
@@ -19,7 +18,6 @@ module Carto
 
         respond_to :json
 
-        BIGQUERY_KEY = 'bq'.freeze
         VALID_TYPES = %w(dataset geography).freeze
         DATASET_REGEX = /[\w\-]+\.[\w\-]+\.[\w\-]+/.freeze
         VALID_ORDER_PARAMS = %i(id table dataset project type).freeze
@@ -35,7 +33,8 @@ module Carto
         end
 
         def subscriptions
-          available_subscriptions = bq_subscriptions.select { |dataset| Time.parse(dataset['expires_at']) > Time.now }
+          bq_subscriptions = Carto::DoLicensingService.new(@user.username).subscriptions
+          available_subscriptions = bq_subscriptions.select { |dataset| Time.now < dataset['expires_at'] }
           response = present_subscriptions(available_subscriptions)
           render(json: { subscriptions: response })
         end
@@ -63,7 +62,7 @@ module Carto
 
         def instant_license(metadata)
           licensing_service = Carto::DoLicensingService.new(@user.username)
-          licensing_service.subscribe([license_info(metadata)])
+          licensing_service.subscribe(license_info(metadata))
         end
 
         def regular_license(metadata)
@@ -115,21 +114,18 @@ module Carto
           render_jsonp({ errors: exception.errors }, 500)
         end
 
-        def bq_subscriptions
-          redis_key = "do:#{@user.username}:datasets"
-          redis_value = $users_metadata.hget(redis_key, BIGQUERY_KEY) || '[]'
-          JSON.parse(redis_value)
-        end
-
         def present_subscriptions(subscriptions)
-          enriched_subscriptions = subscriptions.map do |subscription|
-            qualified_id = subscription['dataset_id']
-            project, dataset, table = qualified_id.split('.')
-            # FIXME: better save the type in Redis or look for it in the metadata tables
-            type = table.starts_with?('geography') ? 'geography' : 'dataset'
-            { project: project, dataset: dataset, table: table, id: qualified_id, type: type }
+          if @type.present?
+            subscriptions = subscriptions.select { |subscription| subscription[:type] == @type }
           end
-          enriched_subscriptions.select! { |subscription| subscription[:type] == @type } if @type
+          enriched_subscriptions = subscriptions.map do |subscription|
+            subscription.merge(
+              status: 'active',
+              # TODO: compute using DoSyncService
+              sync_status: 'connected',
+              sync_table: 'my_do_subscription'
+            )
+          end
           ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }
           @direction == :asc ? ordered_subscriptions : ordered_subscriptions.reverse
         end

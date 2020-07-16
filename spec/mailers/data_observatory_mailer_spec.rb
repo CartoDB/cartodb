@@ -94,4 +94,27 @@ describe DataObservatoryMailer do
       expect(mail.body).to include('carto.open-data.demographics')
     end
   end
+
+  describe '.carto_request from team org member' do
+    before(:all) do
+      org = FactoryGirl.create(:organization)
+      @team_org = Carto::Organization.find(org.id)
+      @team_org.name = 'team'
+      @team_org.save
+      @team_user = FactoryGirl.create(:carto_user)
+      @team_user.organization = @team_org
+      @team_user.save
+    end
+
+    after(:all) do
+      @team_user.destroy
+      @team_org.destroy
+    end
+
+    it 'does not deliver to CARTO recipient if requested from team org member' do
+      mailer = DataObservatoryMailer.carto_request(@team_user, 'carto.open-data.demographics', 3)
+      mailer.deliver_now
+      expect(ActionMailer::Base.deliveries).to be_empty
+    end
+  end
 end

@@ -1,0 +1,16 @@
+# https://github.com/reviewdog/action-rubocop
+name: Rubocop
+on: [pull_request]
+jobs:
+  rubocop:
+    name: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: Rubocop linter
+        uses: reviewdog/action-rubocop@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review # Optional. Default: github-pr-check
+          level: error # Optional. Default: error

@@ -1,10 +1,12 @@
 class Superadmin::SuperadminController < ActionController::Base
+  include Carto::ControllerHelper
+
   before_filter :authenticate
 
   rescue_from StandardError, with: :rescue_from_superadmin_error
 
   def self.ssl_required(*splat)
-    if Rails.env.production? || Rails.env.staging?
+    if Cartodb.config[:ssl_required] == true
       force_ssl only: splat
     end
   end
@@ -18,7 +20,7 @@ class Superadmin::SuperadminController < ActionController::Base
   def authenticate
     return true if Rails.env.development? || authenticated?(CartoDB.extract_subdomain(request)) && current_user.admin
     authenticate_or_request_with_http_basic do |username, password|
-      username == Cartodb.config[:superadmin]["username"] && password == Cartodb.config[:superadmin]["password"]
+      username == Cartodb.get_config(:superadmin, 'username') && password == Cartodb.get_config(:superadmin, 'password')
     end
   end
 

@@ -1,189 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`NavigationBar.vue should have is-user-notification class when the user has a notification 1`] = `
-Object {
-  "$_vueTestUtils_original": [Circular],
-  "_Ctor": Object {},
-  "components": Object {
-    "FeedbackPopup": Object {
-      "methods": Object {
-        "handleClick": [Function],
-        "markFeedbackPopupAsOpened": [Function],
-      },
-      "mounted": [Function],
-      "name": "FeedbackPopup",
-      "render": [Function],
-      "staticRenderFns": Array [],
-    },
-    "Search": Object {
-      "_Ctor": Object {
-        "10": [Function],
-        "18": [Function],
-        "2": [Function],
-        "26": [Function],
-        "34": [Function],
-        "42": [Function],
-      },
-      "components": Object {
-        "SearchSuggestions": Object {
-          "components": Object {
-            "SearchSuggestionsItem": Object {
-              "computed": Object {
-                "isTagType": [Function],
-                "visualizationURL": [Function],
-              },
-              "methods": Object {
-                "onItemClicked": [Function],
-              },
-              "name": "SearchSuggestionsItem",
-              "props": Object {
-                "item": [Function],
-              },
-              "render": [Function],
-              "staticRenderFns": Array [],
-            },
-          },
-          "computed": Object {
-            "searchRoute": [Function],
-            "searchRouteParameters": [Function],
-          },
-          "created": [Function],
-          "data": [Function],
-          "methods": Object {
-            "fetchSuggestions": [Function],
-            "getActiveSuggestionElement": [Function],
-            "keydownDown": [Function],
-            "keydownUp": [Function],
-            "onPageChange": [Function],
-            "resetActiveSuggestion": [Function],
-            "updateActiveSuggestion": [Function],
-          },
-          "name": "SearchSuggestions",
-          "props": Object {
-            "isOpen": Object {
-              "default": false,
-              "type": [Function],
-            },
-            "query": [Function],
-          },
-          "render": [Function],
-          "staticRenderFns": Array [],
-          "watch": Object {
-            "query": [Function],
-          },
-        },
-      },
-      "computed": Object {
-        "isFilled": [Function],
-        "placeholder": [Function],
-      },
-      "data": [Function],
-      "methods": Object {
-        "blurInput": [Function],
-        "goToSearchTermPage": [Function],
-        "onFormSubmit": [Function],
-        "onInputBlur": [Function],
-        "onInputFocus": [Function],
-        "onKeydownDown": [Function],
-        "onKeydownEnter": [Function],
-        "onKeydownUp": [Function],
-        "resetInput": [Function],
-      },
-      "name": "Search",
-      "props": Object {
-        "isSearchOpen": Object {
-          "default": false,
-          "type": [Function],
-        },
-      },
-      "render": [Function],
-      "staticRenderFns": Array [],
-    },
-    "UserDropdown": Object {
-      "_Ctor": Object {
-        "10": [Function],
-        "18": [Function],
-        "2": [Function],
-        "26": [Function],
-        "34": [Function],
-        "42": [Function],
-      },
-      "computed": Object {
-        "isOrganizationAdmin": [Function],
-      },
-      "methods": Object {
-        "linkClicked": [Function],
-      },
-      "name": "UserDropdown",
-      "props": Object {
-        "baseUrl": Object {
-          "default": "",
-          "type": [Function],
-        },
-        "notificationsCount": Object {
-          "type": [Function],
-        },
-        "open": Object {
-          "default": false,
-          "type": [Function],
-        },
-        "userModel": Object {
-          "type": [Function],
-        },
-      },
-      "render": [Function],
-      "staticRenderFns": Array [
-        [Function],
-        [Function],
-        [Function],
-        [Function],
-        [Function],
-        [Function],
-        [Function],
-      ],
-    },
-  },
-  "computed": Object {
-    "isDashboardBundle": [Function],
-    "popupWasShown": [Function],
-    "shouldShowFeedbackPopup": [Function],
-  },
-  "data": [Function],
-  "methods": Object {
-    "closeDropdown": [Function],
-    "isHomePage": [Function],
-    "onFeedbackClicked": [Function],
-    "toggleDropdown": [Function],
-    "toggleSearch": [Function],
-  },
-  "name": "NavigationBar",
-  "props": Object {
-    "baseUrl": Object {
-      "type": [Function],
-    },
-    "bundleType": Object {
-      "default": "other",
-      "type": [Function],
-    },
-    "isFirstTimeInDashboard": Object {
-      "type": [Function],
-    },
-    "isNotificationVisible": Object {
-      "default": false,
-      "type": [Function],
-    },
-    "notificationsCount": Object {
-      "type": [Function],
-    },
-    "user": Object {
-      "type": [Function],
-    },
-  },
-  "render": [Function],
-  "staticRenderFns": Array [
-    [Function],
-  ],
-}
+<nav class="navbar has-user-notification">
+  <ul class="navbar-elementsContainer">
+    <router-link to="[object Object]" staticroute="/dashboard" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/home.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Home</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" staticroute="/dashboard/maps" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/maps.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Maps</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" staticroute="/dashboard/datasets" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/data.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Data</span></router-link> <span class="navbar-elementItem navbar-icon navbar-searchIcon u-showMobile"><img svg-inline="" src="../../assets/icons/navbar/loupe_white.svg"></span>
+  </ul>
+  <div class="navbar-imagotype u-hideMobile"><img src="../../assets/icons/navbar/imagotype.svg"></div>
+  <div class="navbar-elementsContainer navbar-searchContainer">
+    <search-stub></search-stub>
+    <div class="navbar-user">
+      <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
+      <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
+      <!---->
+      <!---->
+    </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
+  </div>
+</nav>
 `;
 
 exports[`NavigationBar.vue should render regular navbar with search input open 1`] = `
@@ -199,6 +33,7 @@ exports[`NavigationBar.vue should render regular navbar with search input open 1
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
+      <!---->
       <!---->
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>
@@ -219,6 +54,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
       <!---->
+      <!---->
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>
 </nav>
@@ -237,6 +73,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
+      <notificationpopup-stub title="FeedbackMessage.title" message="FeedbackMessage.message" class="notification-popup"></notificationpopup-stub>
       <!---->
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>
@@ -256,6 +93,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown open 
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]" open="true"></userdropdown-stub>
+      <!---->
       <!---->
     </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>

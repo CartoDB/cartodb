@@ -27,7 +27,7 @@ module Carto
     end
 
     def process_by_id(id)
-      return nil if !is_uuid?(id)
+      return nil if !uuid?(id)
 
       import = Carto::DataImport.where(id: id).first
 

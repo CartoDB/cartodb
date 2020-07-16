@@ -1,7 +1,6 @@
 module Carto
   module Api
     class MultifactorAuthenticationController < ::Api::ApplicationController
-      include Carto::ControllerHelper
       extend  Carto::DefaultRescueFroms
       include OrganizationUsersHelper
 

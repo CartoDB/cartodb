@@ -44,6 +44,13 @@ describe 'UserMigration' do
   end
 
   describe 'legacy functions' do
+    before(:all) do
+      class DummyTester
+        include CartoDB::DataMover::LegacyFunctions
+      end
+      @dummy_tester = DummyTester.new
+    end
+
     before :each do
       @legacy_functions = CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS
     end
@@ -53,27 +60,31 @@ describe 'UserMigration' do
     end
 
     it 'loads legacy functions' do
-      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2503
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2511
     end
 
     it 'matches functions with attributes qualified with namespace' do
-      class DummyTester
-        include CartoDB::DataMover::LegacyFunctions
-      end
       line = '1880; 1255 5950507 FUNCTION asbinary("geometry", "pg_catalog"."text") postgres'
-      DummyTester.new.remove_line?(line).should be true
+      @dummy_tester.remove_line?(line).should be true
       line2 = '8506; 2753 18284 OPERATOR FAMILY public btree_geography_ops postgres'
-      DummyTester.new.remove_line?(line2).should be true
+      @dummy_tester.remove_line?(line2).should be true
       line3 = '18305; 0 0 ACL public st_wkbtosql("bytea") postgres'
-      DummyTester.new.remove_line?(line3).should be true
+      @dummy_tester.remove_line?(line3).should be true
       line4 = '18333; 0 0 ACL public st_countagg("raster", integer, boolean, double precision) postgres'
-      DummyTester.new.remove_line?(line4).should be false
+      @dummy_tester.remove_line?(line4).should be false
       line5 = '541; 1259 735510 FOREIGN TABLE aggregation agg_admin1 postgres'
-      DummyTester.new.remove_line?(line5).should be false
+      @dummy_tester.remove_line?(line5).should be false
       line6 = '242; 1255 148122 FUNCTION org00000001-admin st_text(boolean)'
-      DummyTester.new.remove_line?(line6).should be true
+      @dummy_tester.remove_line?(line6).should be true
       line7 = '5003; 0 0 ACL org000001-admin FUNCTION "st_text"(boolean)'
-      DummyTester.new.remove_line?(line7).should be true
+      @dummy_tester.remove_line?(line7).should be true
+    end
+
+    it 'matches functions with attributes qualified with namespace and name' do
+      line = '5785; 0 0 ACL public FUNCTION "st_asgeojson"'\
+        '("geog" "public"."geography", "maxdecimaldigits" integer, "options" integer) postgres'
+
+      expect(@dummy_tester.remove_line?(line)).to be_true
     end
 
     it 'skips importing legacy functions using fixture' do

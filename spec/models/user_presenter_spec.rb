@@ -55,7 +55,8 @@ describe Carto::Api::UserPresenter do
         company: "test",
         phone: "123",
         industry: "Academic and Education",
-        period_end_date: Time.parse('2018-01-01')
+        period_end_date: Time.parse('2018-01-01'),
+        account_type: 'ENTERPRISE LUMP-SUM'
       })
 
     # Some sample data
@@ -112,7 +113,8 @@ describe Carto::Api::UserPresenter do
         company: "test",
         phone: "123",
         industry: "Academic and Education",
-        period_end_date: Time.parse('2018-01-01')
+        period_end_date: Time.parse('2018-01-01'),
+        account_type: 'ENTERPRISE LUMP-SUM'
       })
 
     organization = ::Organization.new(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5).save
@@ -211,6 +213,8 @@ describe Carto::Api::UserPresenter do
     new_data[:isolines_provider].should == old_data[:isolines_provider]
     new_data[:routing_provider].should == old_data[:routing_provider]
     new_data[:mfa_configured].should == old_data[:mfa_configured]
+    new_data[:is_enterprise].should == old_data[:is_enterprise]
+    new_data[:unverified].should == old_data[:unverified]
 
     if org_user
       new_data[:organization].keys.sort.should == old_data[:organization].keys.sort
@@ -278,6 +282,7 @@ describe Carto::Api::UserPresenter do
     new_poro[:organization] = user_poro[:organization].deep_merge(viewer_seats: 0) if user_poro[:organization].present?
     new_poro[:mfa_configured] = false
     new_poro[:next_billing_period] = Time.parse('2018-02-01')
+    new_poro[:is_enterprise] = true
     new_poro
   end
 

@@ -1,0 +1,52 @@
+Here's your certificate "<%= certificate_name %>" to use CARTO’s Direct SQL Connection beta version.
+
+You can use it with any application that supports SSL connections to PostgreSQL
+with client identity verification to directly access and modify datasets stored in your CARTO account.
+
+Two versions of the private key are provided:
+* RSA PEM format (client.key)
+* DER PKCS #8 format (client.key.pk8)
+Depending on the connection method used by your application you should use one or another.
+For example, connections with the PostgreSQL ODBC driver should use the RSA PEM format and
+connections with the PostgreSQL JDBC driver should use the DER PKCS #8 format.
+
+Contents:
+* client.crt. Client certificate.
+* client.key. Matching private key file in RSA PEM format. On UNIX-like systems (Linux, Mac OS, ...)
+ this file should be protected with: `chmod 0600 client.key`.
+* client.key.pk8. Matching private key file in DER PKCS #8 format.
+<% if server_ca_present %>
+* server_ca.pem. This certificate allows you to check the identity of CARTO's database server.
+<% end %>
+
+You'll need to configure your application to use TLS with client.key and client.crt
+<% if server_ca_present %>(and optionally server_ca.pem)<% end %> when connecting to your database.
+
+Your database address (host server) is: <%= dbproxy_host %>
+And the TCP port is: <%= dbproxy_port %>
+
+You should use your CARTO account user name (<%= username %>) as your database user (role),
+and an API Key as your password. You can generate API Keys from your CARTO account dashboard
+(‘API Keys’ section under your user profile on the top right of the screen).
+The API key you use will determine which operations can be performed and which tables are accessible.
+We advise you to generate specific keys and not to use your master API key.
+We advise against exposing your Master API Key since it allows unrestricted access to your database.
+
+Example: connect using psql:
+<% if server_ca_present %>
+ psql "sslmode=verify-full sslrootcert=server_ca.pem \
+     sslcert=client.crt sslkey=client.key \
+     host=<%= dbproxy_host %> \
+     port=<%= dbproxy_port %> \
+     user=<%= username %>"
+<% else %>
+ psql "sslmode=require \
+     sslcert=client.crt sslkey=client.key \
+     host=<%= dbproxy_host %> \
+     port=<%= dbproxy_port %> \
+     user=<%= username %>"
+<% end %>
+
+Please note that this feature is a beta version still undergoing testing before an official release.
+
+Please contact CARTO support (support@carto.com) for further information or any questions you may have.

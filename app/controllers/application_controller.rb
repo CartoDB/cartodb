@@ -1,8 +1,11 @@
 require_relative '../../lib/cartodb/profiler.rb'
+require_dependency 'carto/authentication_manager'
 require_dependency 'carto/http_header_authentication'
 
 class ApplicationController < ActionController::Base
   include UrlHelper
+  include Carto::ControllerHelper
+
   protect_from_forgery
 
   helper :all
@@ -26,12 +29,13 @@ class ApplicationController < ActionController::Base
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
+  rescue_from Carto::ExpiredSessionError, with: :rescue_from_carto_error
 
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
-  IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(maintenance_mode lockout login logout unauthenticated multifactor_authentication).freeze
+  IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(unverified maintenance_mode lockout login logout unauthenticated multifactor_authentication).freeze
 
   def self.ssl_required(*splat)
-    if Rails.env.production? || Rails.env.staging?
+    if Cartodb.config[:ssl_required] == true
       if splat.any?
         force_ssl only: splat
       else
@@ -50,7 +54,7 @@ class ApplicationController < ActionController::Base
   def current_viewer
     if @current_viewer.nil?
       if current_user && env["warden"].authenticated?(current_user.username)
-        @current_viewer = current_user if validate_session(current_user)
+        @current_viewer = current_user if Carto::AuthenticationManager.validate_session(warden, request, current_user)
       else
         authenticated_usernames = request.session.to_hash.select { |k, _|
           k.start_with?("warden.user") && !k.end_with?(".session")
@@ -64,13 +68,16 @@ class ApplicationController < ActionController::Base
         if current_user_present.nil?
           unless authenticated_usernames.first.nil?
             user = ::User.where(username: authenticated_usernames.first).first
-            validate_session(user, false) unless user.nil?
+            Carto::AuthenticationManager.validate_session(warden, request, user) unless user.nil?
             @current_viewer = user
           end
         end
       end
     end
     @current_viewer
+  rescue Carto::ExpiredSessionError => e
+    request.reset_session
+    not_authorized(e)
   end
 
   protected
@@ -104,22 +111,6 @@ class ApplicationController < ActionController::Base
     warden.session(user.username)[:sec_token] = user.security_token
   end
 
-  def session_security_token_valid?(user)
-    warden.session(user.username).key?(:sec_token) &&
-      warden.session(user.username)[:sec_token] == user.security_token
-  rescue Warden::NotAuthenticated
-    false
-  end
-
-  def validate_session(user = current_user, reset_session_on_error = true)
-    if session_security_token_valid?(user)
-      true
-    else
-      reset_session if reset_session_on_error
-      false
-    end
-  end
-
   def is_https?
     request.protocol == 'https://'
   end
@@ -127,7 +118,7 @@ class ApplicationController < ActionController::Base
   def http_header_authentication
     authenticate(:http_header_authentication, scope: CartoDB.extract_subdomain(request))
     if current_user
-      validate_session(current_user)
+      Carto::AuthenticationManager.validate_session(warden, request, current_user)
     else
       authenticator = Carto::HttpHeaderAuthentication.new
       if authenticator.autocreation_enabled?
@@ -152,7 +143,7 @@ class ApplicationController < ActionController::Base
 
   def wrap_in_profiler
     if params[:profile_request].present? && current_user.present? && current_user.has_feature_flag?('profiler')
-      CartoDB::Profiler.new().call(request) { yield }
+      CartoDB::Profiler.new().call(request, response) { yield }
     else
       yield
     end
@@ -214,6 +205,9 @@ class ApplicationController < ActionController::Base
       end
     elsif current_user.locked?
       render_locked_user
+      return
+    elsif current_user.unverified?
+      render_unverified_user
       return
     end
 
@@ -279,21 +273,21 @@ class ApplicationController < ActionController::Base
 
   def login_required
     is_auth = authenticated?(CartoDB.extract_subdomain(request))
-    is_auth ? validate_session(current_user) : not_authorized
+    is_auth ? Carto::AuthenticationManager.validate_session(warden, request, current_user) : not_authorized
   end
 
   def login_required_any_user
-    current_viewer ? validate_session(current_viewer) : not_authorized
+    current_viewer ? Carto::AuthenticationManager.validate_session(warden, request, current_viewer) : not_authorized
   end
 
   def api_authorization_required
     authenticate!(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
-    validate_session(current_user)
+    Carto::AuthenticationManager.validate_session(warden, request, current_user)
   end
 
   def any_api_authorization_required
     authenticate!(:any_auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
-    validate_session(current_user)
+    Carto::AuthenticationManager.validate_session(warden, request, current_user)
   end
 
   def engine_required
@@ -304,7 +298,9 @@ class ApplicationController < ActionController::Base
   # but doesn't break the request if can't authenticate
   def optional_api_authorization
     got_auth = authenticate(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
-    validate_session(current_user) if got_auth
+    Carto::AuthenticationManager.validate_session(warden, request, current_user) if got_auth
+  rescue Carto::ExpiredSessionError => e
+    not_authorized(e)
   end
 
   def redirect_or_forbidden(path, error)
@@ -321,6 +317,10 @@ class ApplicationController < ActionController::Base
   def render_multifactor_authentication
     session[:return_to] = request.original_url
     redirect_or_forbidden('multifactor_authentication_session', 'mfa_required')
+  end
+
+  def render_unverified_user
+    redirect_or_forbidden('unverified', 'unverified')
   end
 
   def render_locked_user
@@ -342,7 +342,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def not_authorized
+  def not_authorized(exception = nil)
     respond_to do |format|
       format.html do
         session[:return_to] = request.url
@@ -350,7 +350,8 @@ class ApplicationController < ActionController::Base
         return
       end
       format.json do
-        head :unauthorized
+        render(json: { errors: exception&.message }, status: :unauthorized)
+        return
       end
     end
   end

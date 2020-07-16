@@ -127,6 +127,8 @@ class User < Sequel::Model
   end
 
   def validate_email
+    return unless new? || column_changed?(:email)
+
     validates_presence :email
     validates_unique   :email, message: 'is already taken'
     errors.add(:email, EmailAddress.error(email)) unless EmailAddress.valid?(email)
@@ -573,10 +575,14 @@ class User < Sequel::Model
 
   def invalidate_all_sessions!
     self.session_salt = SecureRandom.hex
-    update_in_central
-    save
-  rescue CartoDB::CentralCommunicationFailure => e
-    CartoDB::Logger.info(exception: e, message: "Cannot invalidate session")
+
+    if update_in_central
+      save(raise_on_failure: true)
+    else
+      CartoDB::Logger.error(message: "Cannot invalidate session")
+    end
+  rescue CartoDB::CentralCommunicationFailure, Sequel::ValidationFailed => e
+    CartoDB::Logger.error(exception: e, message: "Cannot invalidate session")
   end
 
   # Database configuration setup
@@ -703,13 +709,12 @@ class User < Sequel::Model
   end
 
   def cartodb_avatar
-    if !Cartodb.config[:avatars].nil? &&
-       !Cartodb.config[:avatars]['base_url'].nil? && !Cartodb.config[:avatars]['base_url'].empty? &&
-       !Cartodb.config[:avatars]['kinds'].nil? && !Cartodb.config[:avatars]['kinds'].empty? &&
-       !Cartodb.config[:avatars]['colors'].nil? && !Cartodb.config[:avatars]['colors'].empty?
-      avatar_base_url = Cartodb.config[:avatars]['base_url']
-      avatar_kind = Cartodb.config[:avatars]['kinds'][Random.new.rand(0..Cartodb.config[:avatars]['kinds'].length - 1)]
-      avatar_color = Cartodb.config[:avatars]['colors'][Random.new.rand(0..Cartodb.config[:avatars]['colors'].length - 1)]
+    avatar_base_url = Cartodb.get_config(:avatars, 'base_url')
+    kinds = Cartodb.get_config(:avatars, 'kinds')
+    colors = Cartodb.get_config(:avatars, 'colors')
+    if avatar_base_url && kinds && colors
+      avatar_kind = kinds.sample
+      avatar_color = colors.sample
       return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
       CartoDB::Logger.info(message: "Attribute avatars_base_url not found in config. Using default avatar")
@@ -863,8 +868,17 @@ class User < Sequel::Model
 
   def update_gcloud_settings(attributes)
     return if attributes.nil?
-    settings = Carto::GCloudUserSettings.new(self, attributes)
-    settings.update
+    settings = Carto::GCloudUserSettings.new(self)
+    settings.update attributes
+  end
+
+  def gcloud_settings
+    @gcloud_settings ||= Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
+  end
+
+  def do_subscription(dataset_id)
+    subscriptions = Carto::DoLicensingService.new(username).subscriptions
+    subscriptions.find { |subscription| subscription['id'] == dataset_id }&.with_indifferent_access
   end
 
   def carto_account_type
@@ -1247,7 +1261,7 @@ class User < Sequel::Model
       vqb.with_owned_by_or_shared_with_user_id(id)
     end
     vqb.without_raster if filters[:exclude_raster] == true
-    vqb.build.count
+    vqb.count
   end
 
   def last_visualization_created_at

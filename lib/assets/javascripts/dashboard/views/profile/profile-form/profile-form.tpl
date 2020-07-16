@@ -20,7 +20,7 @@
         <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.user_type') %></label>
       </div>
       <div class="FormAccount-rowData FormAccount-userRole">
-        <% if (isViewer) { %>
+        <% if (role === 'viewer') { %>
           <div>
             <span class="UserRoleIndicator Viewer CDB-Text CDB-Size-small is-semibold u-altTextColor"><%= _t('profile.views.form.viewer') %></span>
             <% if (hasOrganization) { %>
@@ -28,9 +28,19 @@
             <% } %>
           </div>
           <p class="CDB-Text CDB-Size-small u-altTextColor u-tSpace"><%= _t('profile.views.form.read_only') %></p>
-        <% } else { %>
+        <% } else if (role === 'builder') { %>
           <span class="UserRoleIndicator Builder CDB-Text CDB-Size-small is-semibold u-altTextColor"><%= _t('profile.views.form.builder') %></span>
           <p class="CDB-Text CDB-Size-small u-altTextColor u-tSpace"><%= _t('profile.views.form.write_access') %></p>
+        <% } else { %>
+          <!-- for custom role names (via gears) -->
+          <span class="UserRoleIndicator Builder CDB-Text CDB-Size-small is-semibold u-altTextColor"><%= role %></span>
+          <p class="CDB-Text CDB-Size-small u-altTextColor u-tSpace">
+          <% if (isViewer) { %>
+            <%= _t('profile.views.form.read_only') %>
+          <% } else { %>
+            <%= _t('profile.views.form.write_access') %>
+          <% } %>
+          </p>
         <% } %>
       </div>
     </div>

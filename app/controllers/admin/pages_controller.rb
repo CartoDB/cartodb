@@ -133,8 +133,8 @@ class Admin::PagesController < Admin::AdminController
 
       @name                = @viewed_user.name_or_username
       @avatar_url          = @viewed_user.avatar
-      @tables_num          = dataset_builder.build.count
-      @maps_count          = maps_builder.build.count
+      @tables_num          = dataset_builder.count
+      @maps_count          = maps_builder.count
       @website             = website_url(@viewed_user.website)
       @website_clean       = @website ? @website.gsub(/https?:\/\//, "") : ""
 
@@ -208,7 +208,7 @@ class Admin::PagesController < Admin::AdminController
 
   def render_datasets(vis_query_builder, user = nil)
     home = CartoDB.url(self, 'public_datasets_home', params: { page: PAGE_NUMBER_PLACEHOLDER }, user: user)
-    set_pagination_vars(total_count: vis_query_builder.build.count,
+    set_pagination_vars(total_count: vis_query_builder.count,
                         per_page: DATASETS_PER_PAGE,
                         first_page_url: CartoDB.url(self, 'public_datasets_home', user: user),
                         numbered_page_url: home)
@@ -245,7 +245,7 @@ class Admin::PagesController < Admin::AdminController
 
   def render_maps(vis_query_builder, user=nil)
     set_pagination_vars(
-      total_count: vis_query_builder.build.count,
+      total_count: vis_query_builder.count,
       per_page:    MAPS_PER_PAGE,
       first_page_url: CartoDB.url(self, 'public_maps_home', user: user),
       numbered_page_url: CartoDB.url(self, 'public_maps_home', params: { page: PAGE_NUMBER_PLACEHOLDER }, user: user)
@@ -370,8 +370,8 @@ class Admin::PagesController < Admin::AdminController
     @available_for_hire = optional.fetch(:available_for_hire, false)
     @user               = optional.fetch(:user, nil)
     @is_org             = model.is_a? Organization
-    @tables_num = (@is_org ? org_datasets_public_builder(model) : user_datasets_public_builder(model)).build.count
-    @maps_count = (@is_org ? org_maps_public_builder(model) : user_maps_public_builder(model)).build.count
+    @tables_num = (@is_org ? org_datasets_public_builder(model) : user_datasets_public_builder(model)).count
+    @maps_count = (@is_org ? org_maps_public_builder(model) : user_maps_public_builder(model)).count
 
     @needs_gmaps_lib = @most_viewed_vis_map.try(:map).try(:provider) == 'googlemaps'
     @needs_gmaps_lib ||= @default_fallback_basemap['className'] == 'googlemaps'

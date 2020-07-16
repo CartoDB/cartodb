@@ -3,7 +3,6 @@ require_dependency 'carto/tracking/events'
 module Carto
   module Api
     class VisualizationExportsController < ::Api::ApplicationController
-      include Carto::ControllerHelper
       include VisualizationsControllerHelper
 
       ssl_required :create, :show, :download

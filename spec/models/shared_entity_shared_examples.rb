@@ -13,8 +13,8 @@ shared_examples_for 'shared entity models' do
 
   describe '#create' do
     it 'tests basic creation and validation' do
-      recipient_id   = UUIDTools::UUID.timestamp_create.to_s
-      entity_id      = UUIDTools::UUID.timestamp_create.to_s
+      recipient_id   = Carto::UUIDHelper.random_uuid
+      entity_id      = Carto::UUIDHelper.random_uuid
 
       shared_entity_class.where(entity_id: entity_id).count.should eq 0
 

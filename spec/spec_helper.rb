@@ -31,6 +31,7 @@ RSpec.configure do |config|
   config.include HelperMethods
   config.include NamedMapsHelper
   config.include Capybara::DSL
+  config.include FactoryGirl::Syntax::Methods
 
   config.after(:each) do
     Delorean.back_to_the_present
@@ -50,7 +51,7 @@ RSpec.configure do |config|
       drop_leaked_test_user_databases
     end
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:configure_ghost_table_event_trigger).returns(true)
+    CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
   end
 
   config.after(:all) do
@@ -87,13 +88,13 @@ RSpec.configure do |config|
 end
 
 def superadmin_headers
-  http_json_authorization_headers(Cartodb.config[:superadmin]["username"],
-                                  Cartodb.config[:superadmin]["password"])
+  http_json_authorization_headers(Cartodb.get_config(:superadmin, 'username'),
+                                  Cartodb.get_config(:superadmin, 'password'))
 end
 
 def org_metadata_api_headers
-  http_json_authorization_headers(Cartodb.config[:org_metadata_api]["username"],
-                                  Cartodb.config[:org_metadata_api]["password"])
+  http_json_authorization_headers(Cartodb.get_config(:org_metadata_api, 'username'),
+                                  Cartodb.get_config(:org_metadata_api, 'password'))
 end
 
 def http_json_authorization_headers(user, password)
@@ -112,4 +113,26 @@ end
 
 def login_page_response?(response)
   response.status == 200 && response.body.include?("title=\"Email or username\"")
+end
+
+def post_session(params = {})
+  host! "#{params[:user].username}.localhost.lan"
+
+  request_params = { email: params[:user].email, password: params[:password] }
+  request_params[:user_domain] = params[:organization].name if params[:organization]
+
+  post(create_session_url(request_params))
+end
+
+def parse_set_cookie_header(header)
+  kv_pairs = header.split(/\s*;\s*/).map do |attr|
+    k, v = attr.split '='
+    [ k, v || nil ]
+  end
+  Hash[ kv_pairs ]
+end
+
+def set_cookies_for_next_request(previous_response)
+  received_cookies = parse_set_cookie_header(previous_response.headers["Set-Cookie"])
+  received_cookies.each { |key, value| cookies[key] = value }
 end

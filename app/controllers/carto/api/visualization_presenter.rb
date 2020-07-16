@@ -58,11 +58,21 @@ module Carto
           poro[:related_canonical_visualizations_count] = @visualization.related_canonical_visualizations.count
         end
 
-        if with_dependent_visualizations > 0
-          dependencies = @visualization.dependent_visualizations
-          poro[:dependent_visualizations_count] = dependencies.count
-          limited_dependencies = most_recent_dependencies(dependencies, with_dependent_visualizations)
-          poro[:dependent_visualizations] = limited_dependencies.map do |dependent_visualization|
+        if with_dependent_visualizations.positive?
+          dependencies = []
+          dependencies_count = 0
+
+          if @current_viewer&.has_feature_flag?('faster-dependencies')
+            dependencies = @visualization.faster_dependent_visualizations(limit: with_dependent_visualizations)
+            dependencies_count = @visualization.dependent_visualizations_count
+          else
+            dependencies = @visualization.dependent_visualizations
+            dependencies_count = dependencies.count
+            dependencies = most_recent_dependencies(dependencies, with_dependent_visualizations)
+          end
+
+          poro[:dependent_visualizations_count] = dependencies_count
+          poro[:dependent_visualizations] = dependencies.map do |dependent_visualization|
             VisualizationPresenter.new(dependent_visualization, @current_viewer, @context).to_summarized_poro
           end
         end
@@ -115,6 +125,7 @@ module Carto
           children: []
         }
 
+        poro[:subscription] = @visualization.subscription if @visualization.subscription
         poro[:related_tables] = related_tables if related
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features
@@ -167,6 +178,7 @@ module Carto
         return unless organization
 
         return kuviz_url(@visualization) if @visualization.kuviz?
+        return app_url(@visualization) if @visualization.app?
 
         # When a visualization is private, checks of permissions need not only the Id but also the vis owner database schema
         # Logic on public_map route will handle permissions so here we only "namespace the id" when proceeds
@@ -195,6 +207,13 @@ module Carto
         "#{CartoDB.base_url(org_name, username)}#{path}"
       end
 
+      def app_url(visualization)
+        org_name = visualization.user.organization.name
+        username = visualization.user.username
+        path = CartoDB.path(@context, 'app_show', id: visualization.id)
+        "#{CartoDB.base_url(org_name, username)}#{path}"
+      end
+
       private
 
       attr_reader :related, :load_related_canonical_visualizations, :show_user,
@@ -206,7 +225,8 @@ module Carto
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
                                            show_size_and_row_count: show_table_size_and_row_count,
-                                           show_permission: show_permission)
+                                           show_permission: show_permission,
+                                           fetch_db_size: false)
                                       .with_presenter_cache(@presenter_cache).to_poro
       end
 
@@ -216,7 +236,7 @@ module Carto
 
       def permission
         unless @visualization.permission.nil?
-          Carto::Api::PermissionPresenter.new(@visualization.permission, current_viewer: @current_viewer)
+          Carto::Api::PermissionPresenter.new(@visualization.permission, current_viewer: @current_viewer, fetch_db_size: false)
                                          .with_presenter_cache(@presenter_cache).to_poro
         end
       end
@@ -239,7 +259,7 @@ module Carto
                   end
 
         related.map do |table|
-          Carto::Api::UserTablePresenter.new(table, @current_viewer).with_presenter_cache(@presenter_cache).to_poro
+          Carto::Api::UserTablePresenter.new(table, @current_viewer, fetch_db_size: false).with_presenter_cache(@presenter_cache).to_poro
         end
       end
 
@@ -269,6 +289,10 @@ module Carto
                       user: @current_viewer)
         elsif @visualization.kuviz?
           CartoDB.url(@context, 'kuviz_show',
+                      params: { id: @visualization.id },
+                      user: @current_viewer)
+        elsif @visualization.app?
+          CartoDB.url(@context, 'app_show',
                       params: { id: @visualization.id },
                       user: @current_viewer)
         else

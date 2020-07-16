@@ -1,0 +1,120 @@
+  <div class="user-quotas" style="display: none">
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">User quotas</p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row">
+      <div class="OrganizationUser-quota js-userQuota">
+        <div class="FormAccount-rowData FormAccount-rowData--med OrganizationUser-quotaProgress js-userQuotaSlider">
+          <div class="UISlider UserQuotaDropdown-slider js-slider progress-bar overflow-visible">
+          <% available_quota_for_user = @organization.unassigned_quota + @user.quota_in_bytes %>
+            <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / available_quota_for_user) %>
+            <% if !@user.new? %>
+              <% usedPer = ((@user.db_size_in_bytes.to_f * 100) / available_quota_for_user) %>
+              <span class="js-usedUserQuota bar-3" style="width:<%= usedPer %>%"></span>
+            <% end %>
+          </div>
+          <ul class="OrganizationUser-quotaLegend">
+            <% if !@user.new? %>
+              <li class="OrganizationUser-quotaLegendItem CDB-Size-small">
+                <i class="OrganizationUser-quotaLegendIcon OrganizationUser-quotaLegendIcon--used"></i>
+                Used by user
+              </li>
+            <% end %>
+            <li class="OrganizationUser-quotaLegendItem CDB-Size-small">
+              <i class="OrganizationUser-quotaLegendIcon OrganizationUser-quotaLegendIcon--assigned"></i>
+              Assigned to user
+            </li>
+            <li class="OrganizationUser-quotaLegendItem CDB-Size-small">
+              <i class="OrganizationUser-quotaLegendIcon"></i>
+              Total
+            </li>
+          </ul>
+        </div>
+        <div class="FormAccount-rowInfo u-lSpace--xl OrganizationUser-quotaInfo js-userQuotaSliderInput CDB-Text CDB-Size-medium u-altTextColor">
+          <span><%= text_field_tag nil, nil, :class => "CDB-InputText CDB-Text FormAccount-input OrganizationUser-quotaInfoInput js-assignedSize" %> MB<% unless cartodb_com_hosted? %>, <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a> if needed.<% end %></span>
+        </div>
+        <%= f.hidden_field :quota_in_bytes, :id => "user_quota" %>
+      </div>
+    </div>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra geocoding</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <div class="Toggler">
+          <%= f.check_box :soft_geocoding_limit, id: "soft_geocoding_limit", disabled: !@organization.soft_geocoding_limit? %>
+          <%= label_tag(:soft_geocoding_limit, '') %>
+        </div>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <% if @organization.soft_geocoding_limit? %>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's geocoding quota</p>
+          <% else %>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra Here Isolines</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <div class="Toggler">
+          <%= f.check_box :soft_here_isolines_limit, id: "soft_here_isolines_limit", disabled: !@organization.soft_here_isolines_limit? %>
+          <%= label_tag(:soft_here_isolines_limit, '') %>
+        </div>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <% if @organization.soft_here_isolines_limit? %>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's isolines quota from Here provider</p>
+          <% else %>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra Routing API calls</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <div class="Toggler">
+          <%= f.check_box :soft_mapzen_routing_limit, id: "soft_mapzen_routing_limit", disabled: !@organization.soft_mapzen_routing_limit? %>
+          <%= label_tag(:soft_mapzen_routing_limit, '') %>
+        </div>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <% if @organization.soft_mapzen_routing_limit? %>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's routing quota from Mapzen provider</p>
+          <% else %>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <% if @organization.twitter_datasource_enabled %>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra tweets</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <div class="Toggler">
+            <%= f.check_box :soft_twitter_datasource_limit, id: "soft_twitter_datasource_limit", disabled: !@organization.soft_twitter_datasource_limit? %>
+            <%= label_tag(:soft_twitter_datasource_limit, '') %>
+          </div>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <% if @organization.soft_twitter_datasource_limit? %>
+              <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's Twitter credits</p>
+            <% else %>
+              <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>

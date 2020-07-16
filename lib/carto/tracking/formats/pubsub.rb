@@ -3,18 +3,18 @@ module Carto
     module Formats
       class PubSub
 
-        EVENT_VERSION = 1
-
-        def initialize(user: nil, visualization: nil, widget: nil, hash: {})
+        def initialize(user: nil, visualization: nil, widget: nil, event_version: nil, hash: {})
           @user = user
           @visualization = visualization
           @widget = widget
-          @connection = hash[:connection]
+          @event_version = event_version
+          @import = hash[:connection]
           @origin = hash[:origin]
           @page = hash[:page]
           @quota_overage = hash[:quota_overage]
           @mapviews = hash[:mapviews]
           @analysis = hash[:analysis]
+          @feature_flag = hash[:feature_flag]
 
           # add anything else as it arrives
           # add new properties in required_properties in events.rb for validation
@@ -26,7 +26,8 @@ module Carto
                                                :page,
                                                :quota_overage,
                                                :mapviews,
-                                               :analysis)
+                                               :analysis,
+                                               :feature_flag)
         end
 
         def to_hash
@@ -34,10 +35,11 @@ module Carto
 
           properties.merge!(user_properties) if @user
           properties.merge!(visualization_properties) if @visualization
-          properties.merge!(connection_properties) if @connection
+          properties.merge!(import_properties) if @import
           properties.merge!(trending_map_properties) if @mapviews
           properties.merge!(analysis_properties) if @analysis
           properties.merge!(widget_properties) if @widget
+          properties.merge!(feature_flag_properties) if @feature_flag
           properties.merge!(@others) if @others
 
           properties[:page] = @page if @page
@@ -65,7 +67,6 @@ module Carto
         end
 
         def user_properties
-
           {
             user_id: @user.id,
             event_source: @user.builder_enabled? ? 'builder' : 'editor',
@@ -75,12 +76,16 @@ module Carto
           }
         end
 
-        def connection_properties
+        def import_properties
+          connector = @import[:provider] || @import[:imported_from]
+
           {
-            data_from: @connection[:data_from],
-            imported_from: @connection[:imported_from],
-            sync: @connection[:sync] || false,
-            file_type: @connection[:file_type]
+            data_from: @import[:data_from],
+            connector: connector,
+            import_duration: @import[:import_time],
+            data_size: @import[:data_size],
+            sync_enabled: @import[:sync],
+            error_code: @import[:error_code]
           }
         end
 
@@ -104,13 +109,20 @@ module Carto
           { widget_type: @widget.type }
         end
 
+        def feature_flag_properties
+          {
+            feature: @feature_flag[:feature],
+            state: @feature_flag[:state]
+          }
+        end
+
         def event_properties
           domain = Cartodb.get_config(:session_domain)
 
           {
             event_time: now,
             source_domain: domain,
-            event_version: EVENT_VERSION
+            event_version: @event_version
           }
         end
 

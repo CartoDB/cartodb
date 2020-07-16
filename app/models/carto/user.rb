@@ -60,6 +60,8 @@ class Carto::User < ActiveRecord::Base
 
   has_many :api_keys, inverse_of: :user
   has_many :user_multifactor_auths, inverse_of: :user, class_name: Carto::UserMultifactorAuth
+  has_many :dbdirect_certificates, inverse_of: :user, dependent: :destroy
+  has_one  :dbdirect_ip, inverse_of: :user, dependent: :destroy
 
   has_many :oauth_apps, inverse_of: :user, dependent: :destroy
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
@@ -276,14 +278,6 @@ class Carto::User < ActiveRecord::Base
   alias_method :should_display_old_password?, :needs_password_confirmation?
   alias_method :password_set?, :needs_password_confirmation?
 
-  def oauth_signin?
-    google_sign_in || github_user_id.present?
-  end
-
-  def created_with_http_authentication?
-    Carto::UserCreation.http_authentication.find_by_user_id(id).present?
-  end
-
   def get_auth_token
     # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
     auth_token = Carto::User.select(:auth_token).find(id).auth_token
@@ -305,6 +299,32 @@ class Carto::User < ActiveRecord::Base
     save!
 
     Resque.enqueue(::Resque::UserJobs::Mail::PasswordReset, id)
+  end
+
+  def dbdirect_effective_ips
+    dbdirect_effective_ip&.ips || []
+  end
+
+  def dbdirect_effective_ips=(ips)
+    ips ||= []
+    bearer = dbdirect_bearer
+    if bearer.dbdirect_ip
+      bearer.dbdirect_ip.update!(ips: ips)
+    else
+      bearer.create_dbdirect_ip!(ips: ips)
+    end
+  end
+
+  def dbdirect_effective_ip
+    dbdirect_bearer.dbdirect_ip
+  end
+
+  def dbdirect_bearer
+    if organization.present? && organization.owner != self
+      organization.owner.reload
+    else
+      reload
+    end
   end
 
   private

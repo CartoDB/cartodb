@@ -53,31 +53,31 @@ describe User do
     end
 
     it "should load a cartodb avatar url if no gravatar associated" do
-      avatar_kind = Cartodb.config[:avatars]['kinds'][0]
-      avatar_color = Cartodb.config[:avatars]['colors'][0]
-      avatar_base_url = Cartodb.config[:avatars]['base_url']
-      Random.any_instance.stubs(:rand).returns(0)
       gravatar_url = %r{gravatar.com}
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 404))
       user1.stubs(:gravatar_enabled?).returns(true)
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
+      kind_regex = "(#{Cartodb.config[:avatars]['kinds'].join('|')})"
+      color_regex = "(#{Cartodb.config[:avatars]['colors'].join('|')})"
+      expected_url = /#{Cartodb.config[:avatars]['base_url']}\/avatar_#{kind_regex}_#{color_regex}\.png/
+
+      expect(user1.avatar_url).to match(expected_url)
     end
 
     it "should load a cartodb avatar url if gravatar disabled" do
-      avatar_kind = Cartodb.config[:avatars]['kinds'][0]
-      avatar_color = Cartodb.config[:avatars]['colors'][0]
-      avatar_base_url = Cartodb.config[:avatars]['base_url']
-      Random.any_instance.stubs(:rand).returns(0)
       gravatar_url = %r{gravatar.com}
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
       user1.stubs(:gravatar_enabled?).returns(false)
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
-      user1.avatar_url.should == "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
+      kind_regex = "(#{Cartodb.config[:avatars]['kinds'].join('|')})"
+      color_regex = "(#{Cartodb.config[:avatars]['colors'].join('|')})"
+      expected_url = /#{Cartodb.config[:avatars]['base_url']}\/avatar_#{kind_regex}_#{color_regex}\.png/
+
+      expect(user1.avatar_url).to match(expected_url)
     end
 
     it "should load a the user gravatar url" do
@@ -335,18 +335,55 @@ describe User do
         Cartodb::Central.any_instance.unstub(:send_request)
       end
 
-      it 'updates the session_salt' do
-        initial_session_salt = @user.session_salt
+      context 'when everything succeeds' do
+        it 'updates the session_salt' do
+          initial_session_salt = @user.session_salt
 
-        @user.invalidate_all_sessions!
+          @user.invalidate_all_sessions!
 
-        initial_session_salt.should_not == @user.reload.session_salt
+          initial_session_salt.should_not == @user.reload.session_salt
+        end
+
+        it 'updates the user in Central' do
+          Cartodb::Central.any_instance.expects(:send_request).once
+
+          @user.invalidate_all_sessions!
+        end
       end
 
-      it 'updates the user in Central' do
-        Cartodb::Central.any_instance.expects(:send_request).once
+      context 'when syncing to Central fails' do
+        context 'due to a newtork error' do
+          before do
+            User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure, 'Error')
+          end
 
-        @user.invalidate_all_sessions!
+          it 'logs an error' do
+            CartoDB::Logger.expects(:error).once
+
+            @user.invalidate_all_sessions!
+          end
+        end
+
+        context 'due to anything else' do
+          before do
+            User.any_instance.stubs(:update_in_central).returns(false)
+          end
+
+          it 'logs an error' do
+            CartoDB::Logger.expects(:error).once
+
+            @user.invalidate_all_sessions!
+          end
+        end
+      end
+
+      context 'when saving in local fails' do
+        it 'logs an error' do
+          @user.email = nil
+          CartoDB::Logger.expects(:error).once
+
+          @user.invalidate_all_sessions!
+        end
       end
     end
   end

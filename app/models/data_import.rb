@@ -1,6 +1,5 @@
 require 'sequel'
 require 'fileutils'
-require 'uuidtools'
 require_relative './user'
 require_relative './table'
 require_relative './log'
@@ -30,12 +29,14 @@ require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
 require_dependency 'carto/configuration'
 require_dependency 'carto/db/user_schema'
+require_dependency 'carto/uuidhelper'
 
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
   include Carto::DataImportConstants
   include Carto::Configuration
+  include Carto::UUIDHelper
 
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
   DIRECT_STATEMENT_TIMEOUT = 1.hour * 1000
@@ -140,16 +141,15 @@ class DataImport < Sequel::Model
   end
 
   def from_common_data?
-    if Cartodb.config[:common_data] &&
-       !Cartodb.config[:common_data]['username'].blank? &&
-       !Cartodb.config[:common_data]['host'].blank?
-      if !self.extra_options.has_key?('common_data') &&
-         self.data_source &&
-         self.data_source.include?("#{Cartodb.config[:common_data]['username']}.#{Cartodb.config[:common_data]['host']}")
-        return true
-      end
+    username = Cartodb.get_config(:common_data, 'username')
+    host = Cartodb.get_config(:common_data, 'host')
+    if username && host &&
+       !extra_options.has_key?('common_data') &&
+       data_source && data_source.include?("#{username}.#{host}")
+      return true
     end
-    return false
+
+    false
   end
 
   def extra_options
@@ -311,7 +311,7 @@ class DataImport < Sequel::Model
   def remove_uploaded_resources
     return nil unless uploaded_file
 
-    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+    file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:importer, 'uploads_path'))
     path = file_upload_helper.get_uploads_path.join(uploaded_file[1])
     FileUtils.rm_rf(path) if Dir.exists?(path)
   end
@@ -338,8 +338,7 @@ class DataImport < Sequel::Model
       CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
-    notify(results)
-    track_results(results, id)
+    notify(results, id)
 
     self
   end
@@ -450,14 +449,6 @@ class DataImport < Sequel::Model
     "https://#{current_user.username}.carto.com/#{uploaded_file[0]}"
   end
 
-  def valid_uuid?(text)
-    !!UUIDTools::UUID.parse(text)
-  rescue TypeError
-    false
-  rescue ArgumentError
-    false
-  end
-
   def before_destroy
     self.remove_uploaded_resources
   end
@@ -465,7 +456,7 @@ class DataImport < Sequel::Model
   def instantiate_log
     uuid = logger
 
-    if valid_uuid?(uuid)
+    if uuid?(uuid)
       self.log = CartoDB::Log.where(id: uuid.to_s).first
     else
       self.log = CartoDB::Log.new(
@@ -995,7 +986,7 @@ class DataImport < Sequel::Model
     @current_user ||= ::User[user_id]
   end
 
-  def notify(results)
+  def notify(results, import_id=nil)
     owner = ::User.where(:id => self.user_id).first
     imported_tables = results.select {|r| r.success }.length
     failed_tables = results.length - imported_tables
@@ -1019,7 +1010,7 @@ class DataImport < Sequel::Model
                   'database_host'          => owner.database_host,
                   'service_name'           => self.service_name,
                   'data_type'              => self.data_type,
-                  'is_sync_import'         => !self.synchronization_id.nil?,
+                  'is_sync_import'         => sync?,
                   'import_time'            => import_time,
                   'file_stats'             => ::JSON.parse(self.stats),
                   'resque_ppid'            => self.resque_ppid,
@@ -1045,9 +1036,17 @@ class DataImport < Sequel::Model
       connection: {
         imported_from: service_name,
         data_from: data_type,
-        sync: sync?
+        sync: sync?,
+        import_time: import_time,
+        data_size: total_size,
+        error_code: self.error_code
       }
     }
+
+    if service_name == 'connector'
+      connector_params = JSON.parse(service_item_id)
+      properties[:connection][:provider] = connector_params['provider']
+    end
 
     if results.any?
       results.each do |result|
@@ -1064,6 +1063,8 @@ class DataImport < Sequel::Model
     elsif state == STATE_FAILURE
       Carto::Tracking::Events::FailedConnection.new(user_id, properties).report
     end
+
+    track_results(results, import_id, properties) unless import_id.nil?
   end
 
   def importer_stats_aggregator
@@ -1166,15 +1167,15 @@ class DataImport < Sequel::Model
     end
   end
 
-  def track_results(results, import_id)
+  def track_results(results, import_id, import_properties)
     current_user_id = current_user.id
     return unless current_user_id
 
     if visualization_id
-      Carto::Tracking::Events::CreatedMap.new(current_user_id,
+      Carto::Tracking::Events::CreatedMap.new(current_user_id, import_properties.merge(
                                               user_id: current_user_id,
                                               visualization_id: visualization_id,
-                                              origin: 'import').report
+                                              origin: 'import')).report
     end
 
     results.select(&:success?).each do |result|
@@ -1190,10 +1191,10 @@ class DataImport < Sequel::Model
       if map
         vis = Carto::Visualization.where(map_id: map.id).first
 
-        Carto::Tracking::Events::CreatedDataset.new(current_user_id,
+        Carto::Tracking::Events::CreatedDataset.new(current_user_id, import_properties.merge(
                                                     user_id: current_user_id,
                                                     visualization_id: vis.id,
-                                                    origin: origin).report
+                                                    origin: origin)).report
       end
     end
   rescue => exception

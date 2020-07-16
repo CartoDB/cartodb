@@ -38,6 +38,8 @@
         </template>
       </SectionTitle>
 
+      <slot name="navigation"></slot>
+
       <div
           v-if="shouldShowListHeader"
           class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"

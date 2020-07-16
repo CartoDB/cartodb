@@ -220,7 +220,7 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'returns 404 for inexistent visualizations' do
-      get builder_visualization_public_embed_url(visualization_id: UUIDTools::UUID.timestamp_create.to_s)
+      get builder_visualization_public_embed_url(visualization_id: Carto::UUIDHelper.random_uuid)
 
       response.status.should == 404
     end

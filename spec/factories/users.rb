@@ -18,7 +18,7 @@ FactoryGirl.define do
     password_confirmation  { email.split('@').first }
     table_quota            5
     quota_in_bytes         5000000
-    id                     { UUIDTools::UUID.timestamp_create.to_s }
+    id                     { Carto::UUIDHelper.random_uuid }
     builder_enabled        nil # Most tests still assume editor
 
     trait :admin_privileges do
@@ -48,6 +48,11 @@ FactoryGirl.define do
       state 'locked'
     end
 
+    trait :unverified do
+      email_verification_token   'aaa'
+      email_verification_sent_at Time.current - 2.hours
+    end
+
     trait :valid do
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
@@ -59,6 +64,7 @@ FactoryGirl.define do
     factory :user_with_private_tables, traits: [:enabled, :private_tables]
     factory :admin, traits: [:admin]
     factory :valid_user, traits: [:valid]
+    factory :unverified_user, traits: [:valid, :unverified]
     factory :locked_user, traits: [:valid, :locked]
 
     after(:build) do |user|
@@ -84,7 +90,7 @@ FactoryGirl.define do
     api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
     table_quota nil
     quota_in_bytes 5000000
-    id { UUIDTools::UUID.timestamp_create.to_s }
+    id { Carto::UUIDHelper.random_uuid }
     builder_enabled nil # Most tests still assume editor
 
     before(:build) do |carto_user|

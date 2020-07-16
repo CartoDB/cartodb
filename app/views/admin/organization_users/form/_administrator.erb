@@ -1,0 +1,22 @@
+  <% if !@user.organization_owner? %>
+    <div class="FormAccount-row js-org-admin-row" <%= @user.builder? ? 'style="display: none;"' : '' %>>
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Administrator</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <div class="Toggler">
+          <%= f.check_box :org_admin, id: "org_admin", disabled: !current_user.organization_owner? %>
+          <%= label_tag(:org_admin, '') %>
+        </div>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <p class="CDB-Text CDB-Size-small u-altTextColor">
+            <% if current_user.organization_owner? %>
+              User has permission to manage users and groups and send notifications
+            <% else %>
+              Only the organization owner can assign administrator rights
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>

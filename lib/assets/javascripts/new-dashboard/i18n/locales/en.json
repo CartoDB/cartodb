@@ -60,7 +60,8 @@
       "duplicate": "Duplicate",
       "unlock": "Unlock",
       "lock": "Lock",
-      "delete": "Delete"
+      "delete": "Delete",
+      "viewDataset": "View dataset"
     }
   },
   "DataPage": {
@@ -73,7 +74,8 @@
         "public": "Your Public Datasets",
         "link": "Your Link-shared Datasets",
         "password": "Your Password-protected Datasets",
-        "private": "Your Private Datasets"
+        "private": "Your Private Datasets",
+        "subscribed": "Your Subscribed Datasets"
       },
       "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}' class='is-bold'>Upgrade now</a> to get more datasets."
     },
@@ -89,7 +91,8 @@
     },
     "tabs": {
       "yourDatasets": "Your Datasets",
-      "catalog": "Catalog"
+      "yourSubscriptions": "Your Subscriptions",
+      "spatialDataCatalog": "Spatial Data Catalog"
     }
   },
   "MapsPage": {
@@ -167,7 +170,8 @@
       "linkPrivacy": "Link",
       "passwordPrivacy": "Password",
       "builderType": "Builder",
-      "kuvizType": "CARTOframes"
+      "kuvizType": "CARTOframes",
+      "subscribed": "Subscriptions ({count})"
     }
   },
   "DatasetCard": {
@@ -199,6 +203,7 @@
     "apiKeys": "API Keys",
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
+    "directDBConnection": "Direct DB Connection",
     "feedback": "Share feedback",
     "logout": "LOG OUT"
   },
@@ -279,7 +284,8 @@
     },
     "MapsSection": {
       "title": "Your Maps",
-      "viewAll" : "VIEW ALL MAPS"
+      "viewAllCarto": "VIEW ALL CARTO MAPS",
+      "viewAllKeplergl": "VIEW ALL KEPLER.GL MAPS"
     },
     "DatasetsSection": {
       "title": "Your Datasets",
@@ -687,7 +693,7 @@
     "emptyDescription": "No apps connected. You haven't allowed any applications to access your CARTO account.",
     "emptyTipTitle": "Are you looking to create an OAuth application?",
     "emptyTipDescription": "You can do it from your <a href='{url}'>developer settings</a>.",
-    "listTitle": "Connected Apps",
+    "listTitle": "App permissions",
     "removeAccessButton": "Remove Access",
     "removeModal": {
       "title": "You are about to remove access <span class='is-bold'>{name}</span> app to your account data.",
@@ -700,10 +706,11 @@
     "sidebar": {
       "profile": "Profile",
       "account": "Account",
-      "connectedApps": "Connected Apps",
+      "connectedApps": "App permissions",
       "billing": "Billing",
       "organizationSettings": "Organization Settings",
-      "developerSettings": "Developer Settings"
+      "developerSettings": "Developer Settings",
+      "connections": "Connections"
     },
     "tabs": {
       "apiKeys": "API Keys",
@@ -745,11 +752,89 @@
     "category": "Category",
     "country": "Country"
   },
+  "Subscriptions": {
+    "emptyCase": "No subscriptions yet",
+    "exploreDescription": "Explore the Data Catalog and subscribe to one of our Public or Premium datasets; then you will find it here.",
+    "goDo": "Go to Data Observatory",
+    "new": "New subscriptions",
+    "exploreNotebook": "Explore Notebook",
+    "datasetSize": "Dataset size"
+  },
   "Dialogs": {
     "ShareViaURL": {
       "map": "map",
       "headerText": "Share current map via URL",
       "close": "close"
+    }
+  },
+  "InputList": {
+    "add": "Add",
+    "delete": "Delete",
+    "addOnGoing": "Adding..."
+  },
+  "DBConnectionPage": {
+    "errors": {
+      "ipNotValid": "IP is not valid"
+    }
+  },
+  "CertificateCreation": {
+    "errors": {
+      "passwordsDoNotMatch": "Passwords do not match"
+    },
+    "form": {
+      "name": {
+        "title": "Friendly name",
+        "placeholder": "A name to help you identify your certificate"
+      },
+      "submit": {
+        "description": "Click on Generate Certificate to download your certificate",
+        "action": "Generate Certificate",
+        "performingAction": "Generating..."
+      }
+    }
+  },
+  "CertificateCard": {
+    "expiration": "Expires {expirationDate}",
+    "revoke": "Revoke",
+    "revocation": {
+      "title": "You are about to revoke your certificate",
+      "description": "You won't be able to connect to your CARTO database again using this certificate",
+      "confirm": "Ok, revoke",
+      "cancel": "Cancel"
+    }
+  },
+  "CertificateDownloadModal": {
+    "title": "Your <span class='is-bold'>new certificate</span> has been created",
+    "description": "The ZIP file contains the certificate files along with information about the parameters to set up your connection.",
+    "warning": "⚠️ Before closing this dialog, please make sure you download your certificate. You will not be able to access the file after the dialog box is closed.",
+    "download": {
+      "download": "DOWNLOAD .ZIP",
+      "waiting": "DOWNLOADING",
+      "ready": "CLOSE WINDOW"
+    }
+  },
+  "DBConnection": {
+    "description_fl": "To connect to CARTO's database from third-party tools, you first need to add the IP address you are connecting from and then generate a certificate to secure your connection.",
+    "description_sl": "You can read more about this in our <a href='https://carto.com/help/working-with-data/direct-sql-connection/' target='_blank' rel='noopener noreferrer'>help center</a>.",
+    "ipsSection": {
+      "title": "1. Your IPs",
+      "allowAllIPs": "Allow connections from any IP address (Coming Soon)",
+      "ipList": {
+        "title": "Allowed IP addresses",
+        "placeholder": "12.12.12.12",
+        "description": "Computer or device IP address.",
+        "getCurrentIP": "Get your IP address"
+      }
+    },
+    "certificatesSection": {
+      "title": "2. Your certificates ({certificatesLength} of {certificateLimit})",
+      "createNewCertificate": "New Certificate",
+      "noCertificates": "You have not generated any certificates yet."
+    }
+  },
+  "Connections": {
+    "sections": {
+      "directSQLConnection": "Direct SQL Connection (beta)"
     }
   }
 }

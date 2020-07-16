@@ -1,7 +1,6 @@
 require_relative 'paged_searcher'
 
 class Carto::Api::ApiKeysController < ::Api::ApplicationController
-  include Carto::ControllerHelper
   include Carto::UUIDHelper
   include Carto::Api::PagedSearcher
   include Carto::Api::AuthApiAuthentication

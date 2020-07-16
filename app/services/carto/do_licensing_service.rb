@@ -29,14 +29,15 @@ module Carto
       qualified_id = subscription['dataset_id']
       project, dataset, table = qualified_id.split('.')
       # FIXME: better save the type in Redis or look for it in the metadata tables
-      type = table.starts_with?('geography') ? 'geography' : 'dataset'
+      type = table&.starts_with?('geography') ? 'geography' : 'dataset'
       subscription = {
         project: project,
         dataset: dataset,
         table: table,
         id: qualified_id,
         type: type,
-        expires_at: Time.parse(subscription['expires_at'])
+        expires_at: subscription['expires_at'] && Time.parse(subscription['expires_at']),
+        created_at: subscription['created_at'] && Time.parse(subscription['created_at'])
       }
       subscription.with_indifferent_access
     end

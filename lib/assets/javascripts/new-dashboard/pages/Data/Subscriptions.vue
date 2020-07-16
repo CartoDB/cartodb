@@ -1,6 +1,14 @@
 <template>
   <section class="subscriptions-section">
     <div class="container grid">
+      <div v-if="loading" class="u-flex u-flex__direction--column u-flex__align--center u-width--100 u-mt--120">
+        <span class="loading u-mb--12">
+          <img svg-inline src="../../assets/icons/common/loading.svg" class="loading__svg"/>
+        </span>
+        <span class="text is-txtSoftGrey is-caption">
+          Loading your subscriptions…
+        </span>
+      </div>
       <div class="u-width--100" v-if="!loading">
         <div v-if="subscriptions.length === 0" class="grid-cell grid-cell--col12">
           <EmptyState
@@ -23,14 +31,12 @@
               <VisualizationsTitle :defaultTitle="$t(`DataPage.tabs.yourSubscriptions`)"/>
             </template>
 
-            <template slot="dropdownButton">
-              <SettingsDropdown>
-                <img svg-inline src="../../assets/icons/common/filter.svg">
-              </SettingsDropdown>
-            </template>
+            <template slot="dropdownButton"></template>
 
             <template slot="actionButton">
-              <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
+              <router-link :to="{ name: 'do-catalog' }"  exact>
+                <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
+              </router-link>
             </template>
           </SectionTitle>
           <ul>
@@ -111,8 +117,22 @@ export default {
       border-bottom: 1px solid $neutral--300;
     }
     .list-item {
+      flex: 1 1 100%;
       &:hover {
         background-color: transparent;
+      }
+    }
+  }
+  .loading {
+    &__svg {
+      width: 40px;
+      stroke: $blue--500;
+      g {
+        stroke-width: 2px;
+        circle {
+          stroke:#36434A;
+          stroke-opacity: 0.25;
+        }
       }
     }
   }

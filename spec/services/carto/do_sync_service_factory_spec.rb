@@ -1,10 +1,16 @@
 require 'spec_helper_min'
 
-describe Carto::DoSyncService do
+describe Carto::DoSyncServiceFactory do
 
   before(:all) do
     @user = FactoryGirl.create(:valid_user, username: 'fulano')
-    @service = Carto::DoSyncService.new(@user)
+    @service = Carto::DoSyncServiceFactory.get_for_user(@user)
+    if @service.present?
+      @do_api_class = @service.do_api_class
+      @bq_client_class = @service.bq_client_class
+    else
+      pending('requires db-connectors') unless @service.present?
+    end
   end
 
   after(:all) do
@@ -125,7 +131,7 @@ describe Carto::DoSyncService do
   describe '#subscription_views' do
     it 'returns data view for subscribed dataset' do
       dataset_metadata = {}
-      Carto::DoApiClient.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
+       @do_api_class.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
@@ -139,7 +145,7 @@ describe Carto::DoSyncService do
       dataset_metadata = {
         geography_id: @subscribed_geography_id
       }.with_indifferent_access
-      Carto::DoApiClient.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
+       @do_api_class.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
@@ -190,9 +196,10 @@ describe Carto::DoSyncService do
     end
 
     it 'returns unsyncable for dataset too big' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000000000000,
         num_rows: 100,
         schema: stub(
@@ -201,7 +208,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -209,9 +216,10 @@ describe Carto::DoSyncService do
     end
 
     it 'returns unsyncable for dataset with too many rows' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 1000000000000,
         schema: stub(
@@ -220,7 +228,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -228,9 +236,10 @@ describe Carto::DoSyncService do
     end
 
     it 'returns unsyncable for dataset with too many columns' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -239,7 +248,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -247,9 +256,10 @@ describe Carto::DoSyncService do
     end
 
     it 'reports all limits exceeded' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000000000000,
         num_rows: 1000000000000,
         schema: stub(
@@ -258,7 +268,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -268,9 +278,10 @@ describe Carto::DoSyncService do
     end
 
     it 'returns unsynced for valid subscription' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -279,7 +290,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsynced'
@@ -288,9 +299,10 @@ describe Carto::DoSyncService do
     end
 
     it 'returns synced for valid subscription imported' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -299,7 +311,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table4"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_synced_dataset_id)
       sync_info['sync_status'].should eq 'synced'
@@ -312,9 +324,10 @@ describe Carto::DoSyncService do
     end
 
     it 'returns synced even if synchronization is stopped' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -323,7 +336,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table4"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       CartoDB::Synchronization::Member.new(id: @synced_sync.id).fetch.delete
       sync_info = @service.sync(@subscribed_synced_dataset_id)
@@ -338,9 +351,10 @@ describe Carto::DoSyncService do
     end
 
     it 'returns syncing for valid subscription being imported' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -349,15 +363,16 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table5"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       @service.sync(@subscribed_syncing_dataset_id)['sync_status'].should eq 'syncing'
     end
 
     it 'returns unsynced for valid subscription failed importing' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_sync_error_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_sync_error_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -366,7 +381,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table6"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_sync_error_dataset_id)
       sync_info['sync_status'].should eq 'unsynced'
@@ -389,9 +404,10 @@ describe Carto::DoSyncService do
 
   describe '#remove_sync!' do
     it 'removes syncs' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -400,7 +416,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table4"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       expect{
         expect {
@@ -411,9 +427,10 @@ describe Carto::DoSyncService do
     end
 
     it 'does nothing for unsynced subscription' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -422,7 +439,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       expect{
         @service.remove_sync!(@subscribed_dataset_id)
@@ -446,9 +463,10 @@ describe Carto::DoSyncService do
 
   describe '#create_sync!' do
     it 'creates a synchronization and enqueues a import job' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -457,7 +475,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       Resque::ImporterJobs.expects(:perform).once
       sync = nil
@@ -487,9 +505,10 @@ describe Carto::DoSyncService do
     end
 
     it 'does nothing for synced subscriptions' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -498,7 +517,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table4"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync = nil
       expect{
@@ -510,9 +529,10 @@ describe Carto::DoSyncService do
     end
 
     it 'does nothing for syncing subscriptions' do
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
@@ -521,7 +541,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table5"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync = nil
       expect{
@@ -553,9 +573,10 @@ describe Carto::DoSyncService do
     it 'does nothing for subscriptions over limits' do
       # TODO: should raise exception?
 
-      Carto::DoApiClient.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
+        type: 'VIEW',
         num_bytes: 1000000000000,
         num_rows: 100,
         schema: stub(
@@ -564,7 +585,7 @@ describe Carto::DoSyncService do
       )
       view = "bq-project.bq-dataset.view_abc_table2"
       bq_mock.stubs(:table).with(view).returns(table_mock)
-      Carto::BqClient.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
 
       sync = nil
       expect{

@@ -315,7 +315,7 @@ class ApplicationController < ActionController::Base
   end
 
   def render_multifactor_authentication
-    CartoDB::Logger.info(message: '*** application_controller render_multifactor_authentication: ' + caller.pretty_inspect)
+    CartoDB::Logger.info(message: '*** application_controller render_multifactor_authentication')
     session[:return_to] = request.original_url
     redirect_or_forbidden('multifactor_authentication_session', 'mfa_required')
   end
@@ -344,7 +344,7 @@ class ApplicationController < ActionController::Base
   end
 
   def not_authorized(exception = nil)
-    CartoDB::Logger.info(message: '*** application_controller not_authorized: ' + caller.pretty_inspect)
+    CartoDB::Logger.info(message: '*** application_controller not_authorized')
     respond_to do |format|
       format.html do
         session[:return_to] = request.url

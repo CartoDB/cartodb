@@ -124,6 +124,9 @@ describe Carto::Api::Public::DataObservatoryController do
 
     before(:each) do
       Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+      @doss = mock
+      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
+      @doss.stubs(:sync).returns({sync_status: 'synced', sync_table: 'my_do_subscription'})
     end
 
     after(:each) do
@@ -140,7 +143,7 @@ describe Carto::Api::Public::DataObservatoryController do
       get_json endpoint_url(api_key: @master), @headers
     end
 
-    xit 'returns 200 with the non expired subscriptions' do
+    it 'returns 200 with the non expired subscriptions' do
       expected_dataset = {
         project: 'carto',
         dataset: 'abc',
@@ -148,9 +151,9 @@ describe Carto::Api::Public::DataObservatoryController do
         id: 'carto.abc.table2',
         type: 'dataset',
         created_at: nil,
-        expires_at: '2021-07-05T15:50:52.529+00:00',
+        expires_at: @next_year.as_json,
         status: 'active',
-        sync_status: 'connected',
+        sync_status: 'synced',
         sync_table: 'my_do_subscription'
       }
       get_json endpoint_url(api_key: @master), @headers do |response|

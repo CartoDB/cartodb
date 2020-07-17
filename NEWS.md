@@ -27,6 +27,7 @@ Development
 - Avoid duplicates on data library loading ([#15720](https://github.com/CartoDB/cartodb/pull/15720))
 - Update DO catalog route ([#15742](https://github.com/CartoDB/cartodb/pull/15742))
 - Fixes CARTO attributions link
+- Update CARTO.js to v4.2.1 ([#15748](https://github.com/CartoDB/cartodb/pull/15748))
 
 4.38.0 (2020-06-05)
 -------------------

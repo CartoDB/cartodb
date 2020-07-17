@@ -660,11 +660,9 @@ class Carto::Visualization < ActiveRecord::Base
 
   def subscription
     if user_table
-      # TEMP MOCK
-      { type: 'do-v2', id: 'ags_businesscou_8dc7d1e0' } if user_table.name == 'my_do_subscription'
-      # doss = Carto::DoSyncService.new(user)
-      # subscription_id = doss.subscription_from_sync_table(user_table.name)
-      # { type: 'do-v2', id: subscription_id } if subscription_id.present?
+      doss = Carto::DoSyncService.new(user)
+      subscription_id = doss.subscription_from_sync_table(user_table.name)
+      { type: 'do-v2', id: subscription_id } if subscription_id.present?
     end
   end
 

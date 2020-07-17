@@ -181,9 +181,9 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/subscriptions'                => 'visualizations#index', as: :datasets_subscriptions_index
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog'                      => 'visualizations#index', as: :datasets_catalog_index
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog/:id'                  => 'visualizations#index', as: :ddatasets_catalog_show
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/do-catalog'                   => 'visualizations#index', as: :datasets_docatalog_index
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/do-catalog/:type/:id'         => 'visualizations#index', as: :datasets_docatalog_dataset_summary
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/do-catalog/:type/:id/data'    => 'visualizations#index', as: :datasets_docatalog_dataset_data
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/spatial-data-catalog'         => 'visualizations#index', as: :datasets_docatalog_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/spatial-data-catalog/:type/:id'      => 'visualizations#index', as: :datasets_docatalog_dataset_summary
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/spatial-data-catalog/:type/:id/data' => 'visualizations#index', as: :datasets_docatalog_dataset_data
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/:page'                        => 'visualizations#index', as: :datasets_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag'                     => 'visualizations#index', as: :datasets_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag/:page'               => 'visualizations#index', as: :datasets_tag_page

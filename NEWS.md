@@ -2,17 +2,18 @@ Development
 -----------
 
 ### NOTICES
-- Adds `ssl_required` config parameter to govern ActionController's redirects. Defaults to `false` (no redirects to HTTPS attempted unless explicitly set to `true`). ([15716](https://github.com/CartoDB/cartodb/pull/15716]))
+- Adds `ssl_required` config parameter to govern ActionController's redirects. Defaults to `false` (no redirects to HTTPS attempted unless explicitly set to `true`). ([#15716](https://github.com/CartoDB/cartodb/pull/15716]))
 
 ### Features
-- DOv2 Sync Service ([15706](https://github.com/CartoDB/cartodb/pull/15706))
-- Filter support when license DO datasets ([15705](https://github.com/CartoDB/cartodb/pull/15705]))
-- Synchronize REDIS when licensing from superadmin ([15719](https://github.com/CartoDB/cartodb/pull/15719]))
-- Allow the use of service account credentials on Big Query import UI ([15722](https://github.com/CartoDB/cartodb/pull/15722))
-- Added subscriptions info to the visualizations ([15723](https://github.com/CartoDB/cartodb/pull/15723))
-- Add new DO catalog ([15733](https://github.com/CartoDB/cartodb/pull/15733))
-- Fix server error at OAuth when authorize for datasets:metadata + any other datasets scope ([15738](https://github.com/CartoDB/cartodb/pull/15738))
-- api/v4/datasets returns shared dataset and access mode(read, write) [15735](https://github.com/CartoDB/cartodb/pull/15735)
+- DOv2 Sync Service ([#15706](https://github.com/CartoDB/cartodb/pull/15706)) ([#15728](https://github.com/CartoDB/cartodb/pull/15728))
+- Filter support when license DO datasets ([#15705](https://github.com/CartoDB/cartodb/pull/15705]))
+- Synchronize REDIS when licensing from superadmin ([#15719](https://github.com/CartoDB/cartodb/pull/15719]))
+- Allow the use of service account credentials on Big Query import UI ([#15722](https://github.com/CartoDB/cartodb/pull/15722))
+- Added subscriptions info to the visualizations ([#15723](https://github.com/CartoDB/cartodb/pull/15723))
+- Add new DO catalog ([#15733](https://github.com/CartoDB/cartodb/pull/15733))
+- Fix server error at OAuth when authorize for datasets:metadata + any other datasets scope ([#15738](https://github.com/CartoDB/cartodb/pull/15738))
+- api/v4/datasets returns shared dataset and access mode(read, write) [#15735](https://github.com/CartoDB/cartodb/pull/15735)
+- Enable Oauth apps for all users [15749](https://github.com/CartoDB/cartodb/pull/15749)
 
 ### Bug fixes / enhancements
 - Fix last modified check for db connectors ([#15711](https://github.com/CartoDB/cartodb/pull/15711))
@@ -22,8 +23,10 @@ Development
 - Fix navigation bar tests
 - Ignore update_timestamp function on migrations ([#15710](https://github.com/CartoDB/cartodb/pull/15710))
 - Improve query builder performance ([#15725](https://github.com/CartoDB/cartodb/pull/15725))
-- Upgrade rails to 4.2.11.3 ([#15737](https://github.com/CartoDB/cartodb/pull/15737)) 
+- Upgrade rails to 4.2.11.3 ([#15737](https://github.com/CartoDB/cartodb/pull/15737))
 - Avoid duplicates on data library loading ([#15720](https://github.com/CartoDB/cartodb/pull/15720))
+- Update DO catalog route ([#15742](https://github.com/CartoDB/cartodb/pull/15742))
+- Fixes CARTO attributions link
 
 4.38.0 (2020-06-05)
 -------------------

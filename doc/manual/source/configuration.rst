@@ -36,7 +36,7 @@ Here is an example config.yml:
           maxZoom: '18'
           name: 'Positron'
           className: 'positron_rainbow'
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/attributions/">CARTO</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/about-carto/">CARTO</a>'
         dark_matter_rainbow:
           url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
           subdomains: 'abcd'
@@ -44,7 +44,7 @@ Here is an example config.yml:
           maxZoom: '18'
           name: 'Dark matter'
           className: 'dark_matter_rainbow'
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/about-carto/">CARTO</a>'
         positron_lite_rainbow:
           url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
           subdomains: 'abcd'
@@ -52,7 +52,7 @@ Here is an example config.yml:
           maxZoom: '18'
           name: 'Positron (lite)'
           className: 'positron_lite_rainbow'
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions/">CARTO</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/about-carto/">CARTO</a>'
 
       stamen:
         toner_stamen:
@@ -79,7 +79,7 @@ you should add the labels key to the basemap config, as follows:
     maxZoom: '18'
     name: 'Positron'
     className: 'positron_rainbow'
-    attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/attributions/">CARTO</a>'
+    attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/about-carto/">CARTO</a>'
     labels:
       url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
 

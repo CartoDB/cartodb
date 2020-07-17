@@ -13,6 +13,7 @@ Development
 - Add new DO catalog ([#15733](https://github.com/CartoDB/cartodb/pull/15733))
 - Fix server error at OAuth when authorize for datasets:metadata + any other datasets scope ([#15738](https://github.com/CartoDB/cartodb/pull/15738))
 - api/v4/datasets returns shared dataset and access mode(read, write) [#15735](https://github.com/CartoDB/cartodb/pull/15735)
+- Enable Oauth apps for all users [15749](https://github.com/CartoDB/cartodb/pull/15749)
 
 ### Bug fixes / enhancements
 - Fix last modified check for db connectors ([#15711](https://github.com/CartoDB/cartodb/pull/15711))

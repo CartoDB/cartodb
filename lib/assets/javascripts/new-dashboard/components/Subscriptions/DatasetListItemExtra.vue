@@ -2,7 +2,7 @@
   <div class="dataset-listItem-extra-container u-flex u-flex__direction--column u-pt--12 u-pl--24 u-pb--24">
     <SubscriptionStatus :status="dataset.status" :expiresDate="dataset.expires_at" class="u-width--100"></SubscriptionStatus>
     <div class="u-ml--16">
-       <div class="is-caption u-mt--12 is-small"><span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span> <span>{{dataset.estimated_size}} MB</span></div>
+       <div class="is-caption u-mt--12 is-small"><span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span> <span>{{dataset.estimated_size / 1000000}} MB</span></div>
        <SubscriptionActions :dataset="dataset" class="u-mt--28"></SubscriptionActions>
       <SlugCopy :slug="dataset.slug" class="u-mt--24"></SlugCopy>
     </div>

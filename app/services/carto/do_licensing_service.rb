@@ -23,6 +23,16 @@ module Carto
       JSON.parse($users_metadata.hget(@redis_key, PRESELECTED_STORAGE) || '[]').map { |s| present_subscription(s) }
     end
 
+    def add_to_redis(dataset)
+      value = AVAILABLE_STORAGES.map { |storage| [storage, insert_redis_value(dataset, storage)] }.flatten
+      $users_metadata.hmset(@redis_key, value)
+    end
+
+    def remove_from_redis(dataset_id)
+      value = AVAILABLE_STORAGES.map { |storage| [storage, remove_redis_value(dataset_id, storage)] }.flatten
+      $users_metadata.hmset(@redis_key, value)
+    end
+
     private
 
     def present_subscription(subscription)
@@ -41,18 +51,6 @@ module Carto
       }
       subscription.with_indifferent_access
     end
-
-    def add_to_redis(dataset)
-      value = AVAILABLE_STORAGES.map { |storage| [storage, insert_redis_value(dataset, storage)] }.flatten
-      $users_metadata.hmset(@redis_key, value)
-    end
-
-    def remove_from_redis(dataset_id)
-      value = AVAILABLE_STORAGES.map { |storage| [storage, remove_redis_value(dataset_id, storage)] }.flatten
-      $users_metadata.hmset(@redis_key, value)
-    end
-
-    private
 
     def insert_redis_value(dataset, storage)
       redis_value = JSON.parse($users_metadata.hget(@redis_key, storage) || '[]')

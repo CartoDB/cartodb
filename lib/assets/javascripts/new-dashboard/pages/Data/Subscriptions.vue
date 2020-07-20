@@ -128,7 +128,6 @@ export default {
         if (this.isAnySubscriptionSyncing) {
           this.id_interval = setInterval(async () => {
             await this.$store.dispatch('doCatalog/fetchSubscriptionsList', true);
-            // this.$store.dispatch('doCatalog/fetchSubscriptionsDetailsList', this.subscriptionsByPage.map(s => s.id));
           }, 5000);
         }
       }

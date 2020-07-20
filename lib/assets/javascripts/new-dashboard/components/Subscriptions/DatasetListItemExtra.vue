@@ -4,7 +4,7 @@
     <div class="u-ml--16">
        <div class="is-caption u-mt--12 is-small"><span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span> <span>{{dataset.estimated_size / 1000000}} MB</span></div>
        <SubscriptionActions :dataset="dataset" class="u-mt--28"></SubscriptionActions>
-      <SlugCopy :slug="dataset.slug" class="u-mt--24"></SlugCopy>
+      <SlugCopy v-if="dataset.slug" :slug="dataset.slug" class="u-mt--24"></SlugCopy>
     </div>
   </div>
 </template>

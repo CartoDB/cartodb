@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Downgrade bundler to 1.17.3 to avoid problems with Rails version
 
 4.39.0 (2020-07-20)
 -------------------

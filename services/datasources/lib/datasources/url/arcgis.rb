@@ -458,6 +458,7 @@ module CartoDB
               # HACK: JSON spec does not cover Infinity
               body = ::JSON.parse(response.body.gsub(':INF,', ':"Infinity",'))
             rescue JSON::ParserError
+              @logger.append_and_store("JSON parsing error: #{response.body}")
               raise ResponseError.new("JSON parsing error. URL: #{prepared_url} #{to_s}")
             end
           end

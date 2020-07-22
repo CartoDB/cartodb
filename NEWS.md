@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- Added a log trace to understand better some arcgis importing failures in the field 391fab042d
 - Downgrade bundler to 1.17.3 to avoid problems with Rails version
 - Fix to prevent removing datasets from api_keys when it is replaced using overwrite as collision_strategy ([80981](https://app.clubhouse.io/cartoteam/story/80981/joinzoe-change-on-custom-api-key-after-import-collision-strategy-overwrite))
 

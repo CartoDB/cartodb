@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Downgrade bundler to 1.17.3 to avoid problems with Rails version
+- Fix to prevent removing datasets from api_keys when it is replaced using overwrite as collision_strategy ([80981](https://app.clubhouse.io/cartoteam/story/80981/joinzoe-change-on-custom-api-key-after-import-collision-strategy-overwrite))
 
 4.39.0 (2020-07-20)
 -------------------

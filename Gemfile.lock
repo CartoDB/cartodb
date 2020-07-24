@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: e445c66023bfe83fcd62878ec0f3f37909156e01
-  branch: master
+  revision: 90e50effa1c49b5eb35aa27279bd7b74e7e0314c
+  tag: v0.2.0
   specs:
-    cartodb-common (0.1.0)
+    cartodb-common (0.2.1)
       argon2 (~> 2.0)
 
 GIT
@@ -563,4 +563,4 @@ DEPENDENCIES
   zeus
 
 BUNDLED WITH
-  1.17.3
+   1.17.3

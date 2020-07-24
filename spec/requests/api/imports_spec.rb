@@ -16,18 +16,8 @@ describe "Imports API" do
     @user.destroy
   end
 
-  def auth_user(u)
-    @auth_user = u
-    # host! "#{u.username}.localhost.lan"
-    # login_as(u, scope: u.username)
-  end
-
-  def auth_headers
-      http_json_headers
-    end
-
   def auth_params
-    { user_domain: @auth_user.username, api_key: @auth_user.api_key }
+    { user_domain: @user.username, api_key: @user.api_key }
   end
 
   let(:params) { { :api_key => @user.api_key } }
@@ -258,7 +248,7 @@ describe "Imports API" do
     @user.update max_import_table_row_count: old_max_import_row_count
   end
 
-  it 'keeps api_key for replaced tables' do
+  it 'keeps api_key grants for replaced tables' do
     # imports two files
     post api_v1_imports_create_url,
       params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
@@ -302,8 +292,7 @@ describe "Imports API" do
       name: name,
       grants: grants
     }
-    auth_user(@user)
-    post_json api_keys_url, auth_params.merge(payload), auth_headers
+    post_json api_keys_url, auth_params.merge(payload), http_json_headers
 
     # replace the file
     post api_v1_imports_create_url,
@@ -313,9 +302,9 @@ describe "Imports API" do
       )
 
     # gets the api_keys
-    get_json api_key_url(id: 'wadus'), auth_params, auth_headers do |response|
+    get_json api_key_url(id: 'wadus'), auth_params, http_json_headers do |response|
       response.status.should eq 200
-      response.body[:grants][1][:tables][1][:name] = 'csv_with_number_columns'
+      response.body[:grants][1][:tables][1][:name] = @table_from_import
     end
   end
 

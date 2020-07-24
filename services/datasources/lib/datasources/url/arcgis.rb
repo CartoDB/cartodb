@@ -24,7 +24,7 @@ module CartoDB
         # In seconds, for connecting
         HTTP_CONNECTION_TIMEOUT = 60
         # In seconds, for the full request
-        HTTP_TIMEOUT = 60
+        HTTP_TIMEOUT = 120
         # In seconds, for writting to logs
         LOG_TIMEOUT = 120
 
@@ -37,7 +37,7 @@ module CartoDB
         BLOCK_SLEEP_TIME = 0
 
         # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count). Set to 0 to disable retrying
-        MAX_RETRIES = 2
+        MAX_RETRIES = 5
         SLEEP_REQUEST_TIME = 5
         SKIP_FAILED_IDS = false
 

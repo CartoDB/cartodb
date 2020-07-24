@@ -452,7 +452,6 @@ module CartoDB
 
           begin
             body = ::JSON.parse(response.body)
-            success = true
           rescue JSON::ParserError
             begin
               # HACK: JSON spec does not cover Infinity

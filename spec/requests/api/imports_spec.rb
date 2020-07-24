@@ -16,6 +16,10 @@ describe "Imports API" do
     @user.destroy
   end
 
+  def auth_params
+    { user_domain: @user.username, api_key: @user.api_key }
+  end
+
   let(:params) { { :api_key => @user.api_key } }
 
   it 'performs asynchronous imports' do
@@ -242,6 +246,66 @@ describe "Imports API" do
     last_import.error_code.should be == 6668
 
     @user.update max_import_table_row_count: old_max_import_row_count
+  end
+
+  it 'keeps api_key grants for replaced tables' do
+    # imports two files
+    post api_v1_imports_create_url,
+      params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+    post api_v1_imports_create_url,
+      params.merge(:filename => upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'))
+
+    # get the last one
+    @table_from_import = UserTable.all.last.service
+
+    # creates an api_key for both files
+    grants = [
+      {
+        type: "apis",
+        apis: ["sql", "maps"]
+      },
+      {
+        type: "database",
+        tables: [
+          {
+            schema: @user.database_schema,
+            name: 'csv_with_lat_lon',
+            permissions: [
+              "insert",
+              "select",
+              "update",
+              "delete"
+            ]
+          },
+          {
+            schema: @user.database_schema,
+            name: 'csv_with_number_columns',
+            permissions: [
+              "select"
+            ]
+          }
+        ]
+      }
+    ]
+    name = 'wadus'
+    payload = {
+      name: name,
+      grants: grants
+    }
+    post_json api_keys_url, auth_params.merge(payload), http_json_headers
+
+    # replace the file
+    post api_v1_imports_create_url,
+      params.merge(
+        :filename => upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'),
+        :collision_strategy => 'overwrite'
+      )
+
+    # gets the api_keys
+    get_json api_key_url(id: 'wadus'), auth_params, http_json_headers do |response|
+      response.status.should eq 200
+      response.body[:grants][1][:tables][1][:name] = @table_from_import
+    end
   end
 
 end

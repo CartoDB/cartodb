@@ -234,6 +234,24 @@ module CartoDB
         raise e
       end
 
+      # Restore the permissions (roles) for the table.
+      # These roles were dropped after the original table was
+      # replaced by the importer.
+      def restore_permissions_for(table_name)
+        # get the api keys of the original table
+        api_keys_table = Carto::ApiKey.where(user_id: user.id).select do |api_key|
+          api_key.grants.any? do |grant|
+            tables = grant[:tables]
+            next unless tables
+            tables.any? do |table|
+              table[:name] == table_name
+            end
+          end
+        end
+
+        api_keys_table.each { |api_key| api_key.setup_table_permissions }
+      end
+
       # Renames table from current_name to new_name.
       # It doesn't check if `new_name` is valid. To get a valid name use `Carto::ValidTableNameProposer`
       def rename(result, current_name, new_name, schema)
@@ -324,6 +342,7 @@ module CartoDB
         @table_setup.run_index_statements(index_statements, @database)
         @table_setup.recreate_overviews(name)
         @table_setup.update_cdb_tablemetadata(name)
+        restore_permissions_for(name)
       end
 
       private

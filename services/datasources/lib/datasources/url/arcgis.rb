@@ -242,8 +242,8 @@ module CartoDB
           @http_client ||= Carto::Http::Client.get('arcgis')
         end
 
-        def append_and_store(str)
-          @logger.append_and_store(str) unless @logger.nil?
+        def append_and_store(str, truncate = true, timestamp = Time.now.utc)
+          @logger.append_and_store(str, truncate, timestamp) unless @logger.nil?
         end
 
         # @param id String
@@ -459,8 +459,8 @@ module CartoDB
               body = ::JSON.parse(response.body.gsub(':INF,', ':"Infinity",'))
             rescue JSON::ParserError => e
               # We cannot do much about it, log, skip and continue
-              append_and_store("#{prepared_url} (POST) Params:#{params_data}")
-              append_and_store("JSON::ParserError: #{e.to_s}")
+              append_and_store("get_by_ids: #{e.inspect}")
+              append_and_store("get_by_ids: #{prepared_url} (POST) Params: #{params_data}", _truncate=false)
               return []
             end
           end

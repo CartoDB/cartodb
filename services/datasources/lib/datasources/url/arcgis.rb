@@ -24,7 +24,7 @@ module CartoDB
         # In seconds, for connecting
         HTTP_CONNECTION_TIMEOUT = 60
         # In seconds, for the full request
-        HTTP_TIMEOUT = 60
+        HTTP_TIMEOUT = 120
         # In seconds, for writting to logs
         LOG_TIMEOUT = 120
 
@@ -37,7 +37,7 @@ module CartoDB
         BLOCK_SLEEP_TIME = 0
 
         # Each retry will be after SLEEP_REQUEST_TIME^(current_retries_count). Set to 0 to disable retrying
-        MAX_RETRIES = 2
+        MAX_RETRIES = 5
         SLEEP_REQUEST_TIME = 5
         SKIP_FAILED_IDS = false
 
@@ -118,7 +118,7 @@ module CartoDB
         def timed_log(s)
           t2 = Time.now
           if ((@log_timer == nil) || ((t2 - @log_timer) > LOG_TIMEOUT))
-            @logger.append_and_store(s) if @logger != nil
+            append_and_store(s)
             @log_timer = t2
           end
         end
@@ -166,7 +166,7 @@ module CartoDB
               if SKIP_FAILED_IDS
                 items = []
               else
-                @logger.append_and_store("Too many download failures. Giving up.") if @logger != nil
+                append_and_store("Too many download failures. Giving up.")
                 raise exception
               end
             else
@@ -240,6 +240,10 @@ module CartoDB
 
         def http_client
           @http_client ||= Carto::Http::Client.get('arcgis')
+        end
+
+        def append_and_store(str, truncate = true, timestamp = Time.now.utc)
+          @logger.append_and_store(str, truncate, timestamp) unless @logger.nil?
         end
 
         # @param id String
@@ -448,17 +452,15 @@ module CartoDB
 
           begin
             body = ::JSON.parse(response.body)
-            success = true
           rescue JSON::ParserError
-            success = false
-          end
-
-          unless success
             begin
               # HACK: JSON spec does not cover Infinity
               body = ::JSON.parse(response.body.gsub(':INF,', ':"Infinity",'))
-            rescue JSON::ParserError
-              raise ResponseError.new("JSON parsing error. URL: #{prepared_url} #{to_s}")
+            rescue JSON::ParserError => e
+              # We cannot do much about it, log, skip and continue
+              append_and_store("get_by_ids: #{e.inspect}")
+              append_and_store("get_by_ids: #{prepared_url} (POST) Params: #{params_data}", _truncate=false)
+              return []
             end
           end
 

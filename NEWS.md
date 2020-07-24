@@ -8,6 +8,8 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- ArcGIS imports: raise http timeout and max retry attempts for arcgis import service
+- ArcGIS imports: improve log traces to better diagnose json non-conformance errors
 - Downgrade bundler to 1.17.3 to avoid problems with Rails version
 - Fix to prevent removing datasets from api_keys when it is replaced using overwrite as collision_strategy ([80981](https://app.clubhouse.io/cartoteam/story/80981/joinzoe-change-on-custom-api-key-after-import-collision-strategy-overwrite))
 

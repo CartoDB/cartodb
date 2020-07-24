@@ -450,16 +450,14 @@ module CartoDB
             body = ::JSON.parse(response.body)
             success = true
           rescue JSON::ParserError
-            success = false
-          end
-
-          unless success
             begin
               # HACK: JSON spec does not cover Infinity
               body = ::JSON.parse(response.body.gsub(':INF,', ':"Infinity",'))
-            rescue JSON::ParserError
-              @logger.append_and_store("JSON parsing error: #{response.body}", _truncate=false)
-              raise ResponseError.new("JSON parsing error. URL: #{prepared_url} #{to_s}")
+            rescue JSON::ParserError => e
+              # We cannot do much about it, log, skip and continue
+              @logger.append_and_store("#{prepared_url} (POST) Params:#{params_data}")
+              @logger.append_and_store("JSON::ParserError: #{e.to_s}")
+              return []
             end
           end
 

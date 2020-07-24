@@ -118,7 +118,7 @@ module CartoDB
         def timed_log(s)
           t2 = Time.now
           if ((@log_timer == nil) || ((t2 - @log_timer) > LOG_TIMEOUT))
-            @logger.append_and_store(s) if @logger != nil
+            append_and_store(s)
             @log_timer = t2
           end
         end
@@ -166,7 +166,7 @@ module CartoDB
               if SKIP_FAILED_IDS
                 items = []
               else
-                @logger.append_and_store("Too many download failures. Giving up.") if @logger != nil
+                append_and_store("Too many download failures. Giving up.")
                 raise exception
               end
             else
@@ -240,6 +240,10 @@ module CartoDB
 
         def http_client
           @http_client ||= Carto::Http::Client.get('arcgis')
+        end
+
+        def append_and_store(str)
+          @logger.append_and_store(str) unless @logger.nil?
         end
 
         # @param id String
@@ -455,8 +459,8 @@ module CartoDB
               body = ::JSON.parse(response.body.gsub(':INF,', ':"Infinity",'))
             rescue JSON::ParserError => e
               # We cannot do much about it, log, skip and continue
-              @logger.append_and_store("#{prepared_url} (POST) Params:#{params_data}")
-              @logger.append_and_store("JSON::ParserError: #{e.to_s}")
+              append_and_store("#{prepared_url} (POST) Params:#{params_data}")
+              append_and_store("JSON::ParserError: #{e.to_s}")
               return []
             end
           end

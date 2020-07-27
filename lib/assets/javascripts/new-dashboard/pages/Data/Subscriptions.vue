@@ -79,7 +79,8 @@ export default {
   data () {
     return {
       loading: true,
-      currentPage: 0
+      currentPage: 0,
+      id_interval: null
     };
   },
   computed: {
@@ -97,6 +98,9 @@ export default {
         this.currentPage * this.pageSize,
         (this.currentPage + 1) * this.pageSize
       );
+    },
+    isAnySubscriptionSyncing () {
+      return this.subscriptions && this.subscriptions.find(s => s.sync_status === 'syncing');
     }
   },
   async mounted () {
@@ -115,6 +119,22 @@ export default {
       this.currentPage = pageNum;
       this.fetchSubscriptionsListDetail();
     }
+  },
+  watch: {
+    isAnySubscriptionSyncing: {
+      immediate: true,
+      handler () {
+        clearInterval(this.id_interval);
+        if (this.isAnySubscriptionSyncing) {
+          this.id_interval = setInterval(async () => {
+            await this.$store.dispatch('doCatalog/fetchSubscriptionsList', true);
+          }, 5000);
+        }
+      }
+    }
+  },
+  destroyed () {
+    clearInterval(this.id_interval);
   }
 };
 </script>

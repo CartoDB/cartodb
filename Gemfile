@@ -69,7 +69,7 @@ gem 'google-cloud-pubsub', '1.2.0'
 
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
-gem 'cartodb-common',           git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.2.0'
+gem 'cartodb-common',           git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.2.1'
 gem 'email_address',            '~> 0.1.11'
 
 # Markdown

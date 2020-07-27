@@ -16,7 +16,7 @@ gem 'protected_attributes'
 gem 'responders', '~> 2.0'
 
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
-gem 'ruby-saml',               '1.4.1'
+gem 'ruby-saml',               '1.7.0'
 gem 'oauth',                   '0.4.7'
 gem 'oauth-plugin',            git: 'https://github.com/CartoDB/oauth-plugin.git', :branch => 'cartodb'
 
@@ -69,7 +69,7 @@ gem 'google-cloud-pubsub', '1.2.0'
 
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
-gem 'cartodb-common',           git: 'https://github.com/cartodb/cartodb-common.git', branch: 'master'
+gem 'cartodb-common',           git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.2.1'
 gem 'email_address',            '~> 0.1.11'
 
 # Markdown

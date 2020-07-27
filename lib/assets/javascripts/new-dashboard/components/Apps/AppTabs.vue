@@ -3,26 +3,27 @@
     <li class="app-tabs-item">
       <a :href="`${ baseUrl }/your_apps`" class="text is-small is-txtPrimary app-tabs-link">{{ $t(`SettingsPages.tabs.apiKeys`) }}</a>
     </li>
+
     <li class="app-tabs-item is-active">
       <router-link :to="{ name: 'oauth_apps_list' }" class="text is-small is-txtPrimary app-tabs-link">
         {{ $t(`SettingsPages.tabs.oAuthApps`) }}
       </router-link>
     </li>
-    <li class="app-tabs-item">
+
+    <li class="app-tabs-item" v-if="isMobileSDKEnabled">
       <a :href="`${ baseUrl }/your_apps/mobile`" class="text is-small is-txtPrimary app-tabs-link">{{ $t(`SettingsPages.tabs.mobileApps`) }}</a>
     </li>
   </ul>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
   name: 'AppTabs',
   computed: {
-    ...mapState({
-      baseUrl: state => state.user.base_url
-    })
+    ...mapState({ baseUrl: state => state.user.base_url }),
+    ...mapGetters({ isMobileSDKEnabled: 'user/isMobileSDKEnabled' })
   }
 };
 </script>

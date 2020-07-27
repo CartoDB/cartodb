@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: e445c66023bfe83fcd62878ec0f3f37909156e01
-  branch: master
+  revision: 90e50effa1c49b5eb35aa27279bd7b74e7e0314c
+  tag: v0.2.1
   specs:
-    cartodb-common (0.1.0)
+    cartodb-common (0.2.1)
       argon2 (~> 2.0)
 
 GIT
@@ -374,7 +374,7 @@ GEM
       rspec-mocks (~> 2.12.0)
     ruby-ole (1.2.12)
     ruby-prof (0.15.1)
-    ruby-saml (1.4.1)
+    ruby-saml (1.7.0)
       nokogiri (>= 1.5.10)
     rubyzip (2.0.0)
     sass (3.4.21)
@@ -539,7 +539,7 @@ DEPENDENCIES
   rqrcode (~> 0.10.1)
   rspec-rails (= 2.12.0)
   ruby-prof (= 0.15.1)
-  ruby-saml (= 1.4.1)
+  ruby-saml (= 1.7.0)
   rubyzip (>= 2.0.0)
   selenium-webdriver (>= 2.5.0)
   sequel (~> 4.45.0)

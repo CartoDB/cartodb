@@ -362,6 +362,19 @@ module Carto
       db_run("GRANT \"#{effective_ownership_role_name}\" TO \"#{db_role}\"") if effective_ownership_role_name.present?
     end
 
+    def setup_table_permissions
+      setup_permissions(table_permissions) do |tp|
+        Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
+          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
+          sequences_for_table(schema, table_name).each do |seq|
+            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+          end
+        end
+      end
+
+      schemas_from_granted_tables.each { |s| grant_usage_privileges_for_schema(s) }
+    end
+
     private
 
     PASSWORD_LENGTH = 40
@@ -503,19 +516,6 @@ module Carto
       setup_table_permissions
       setup_schema_permissions
       grant_ownership_role_privileges
-    end
-
-    def setup_table_permissions
-      setup_permissions(table_permissions) do |tp|
-        Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
-          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
-          sequences_for_table(schema, table_name).each do |seq|
-            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
-          end
-        end
-      end
-
-      schemas_from_granted_tables.each { |s| grant_usage_privileges_for_schema(s) }
     end
 
     def setup_schema_permissions

@@ -292,7 +292,7 @@ class DataImport < Sequel::Model
     if data_source.nil?
       values[:data_type] = TYPE_DATASOURCE
       values[:data_source] = ''
-    elif self.data_type != TYPE_QUERY
+    elsif self.data_type != TYPE_QUERY
       path = uploaded_file_path(data_source)
       if File.exist?(path) && !File.directory?(path)
         values[:data_type] = TYPE_FILE

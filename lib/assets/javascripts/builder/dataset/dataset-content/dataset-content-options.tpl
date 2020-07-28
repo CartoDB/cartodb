@@ -2,7 +2,7 @@
   <div class="js-sync"></div>
   <div class="subscription">
     <% if (isSubscription) { %>
-      <span class="Tag Tag--Subscription"><%- subscriptionName %></span>
+      <span class="Tag Tag--Subscription u-ml--12 u-mr--8"><%- subscriptionName %></span>
       <a class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase" href="<%- baseUrl %>/dashboard/datasets/spatial-data-catalog/dataset/<%- subscriptionId %>" target="_blank"><%- _t('dataset.subscriptions.view-subscription') %></a>
     <% } %>
   </div>

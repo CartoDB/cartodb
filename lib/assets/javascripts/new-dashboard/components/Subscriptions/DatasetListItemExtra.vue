@@ -4,7 +4,7 @@
     <div class="u-ml--16">
        <div class="is-caption u-mt--12 is-small">
          <span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span>
-         <span>{{ Math.round(dataset.estimated_size / 1024 / 1024) }} MB</span>
+         <span class="u-ml--4">{{ getDatasetSize }}</span>
         </div>
        <SubscriptionActions :dataset="dataset" class="u-mt--28"></SubscriptionActions>
       <SlugCopy v-if="dataset.slug" :slug="dataset.slug" class="u-mt--24"></SlugCopy>
@@ -24,6 +24,19 @@ export default {
     SubscriptionStatus,
     SubscriptionActions,
     SlugCopy
+  },
+  computed: {
+    getDatasetSize () {
+      if (!this.dataset.estimated_size || this.dataset.estimated_size === 0) {
+        return '0 B';
+      }
+      const k = 1024;
+      const dm = 2;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+      const i = Math.floor(Math.log(this.dataset.estimated_size) / Math.log(k));
+
+      return parseFloat((this.dataset.estimated_size / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
   },
   props: {
     dataset: {

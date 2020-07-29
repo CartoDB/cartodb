@@ -51,6 +51,12 @@ describe Carto::DoSyncServiceFactory do
     @settings_redis_key = "do_settings:#{@user.username}"
     $users_metadata.hmset(@settings_redis_key, *gcloud_settings.to_a)
 
+    metadata_gcloud_settings = {
+      service_account: 'metadata-service-account'
+    }
+    @metadata_settings_redis_key = "do_settings:__metadata_reader"
+    $users_metadata.hmset(@metadata_settings_redis_key, *metadata_gcloud_settings.to_a)
+
     @synced_sync = FactoryGirl.create(
       :carto_synchronization,
       user_id: @user.id,
@@ -118,6 +124,7 @@ describe Carto::DoSyncServiceFactory do
   after(:each) do
     $users_metadata.del(@redis_key)
     $users_metadata.del(@settings_redis_key)
+    $users_metadata.del(@metadata_settings_redis_key)
     @error_import.destroy
     @error_sync.destroy
     @syncing_table.destroy
@@ -135,8 +142,10 @@ describe Carto::DoSyncServiceFactory do
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
-        data: "bq-project.bq-dataset.view_abc_table2",
-        geography: nil
+        data_view: "bq-project.bq-dataset.view_abc_table2",
+        data: @subscribed_dataset_id,
+        geography: nil,
+        geography_view: nil
       }
       @service.subscription_views(subscription).should eq expected_views
     end
@@ -149,8 +158,10 @@ describe Carto::DoSyncServiceFactory do
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
-        data: "bq-project.bq-dataset.view_abc_table2",
-        geography: "bq-project.bq-dataset.view_abc_geography_table"
+        data_view: "bq-project.bq-dataset.view_abc_table2",
+        data: @subscribed_dataset_id,
+        geography_view: "bq-project.bq-dataset.view_abc_geography_table",
+        geography: @subscribed_geography_id
       }
       @service.subscription_views(subscription).should eq expected_views
     end
@@ -158,8 +169,10 @@ describe Carto::DoSyncServiceFactory do
     it 'returns geography view for subscribed geography' do
       subscription = @user.do_subscription(@subscribed_geography_id)
       expected_views = {
+        data_view: nil,
         data: nil,
-        geography: "bq-project.bq-dataset.view_abc_geography_table"
+        geography_view: "bq-project.bq-dataset.view_abc_geography_table",
+        geography: @subscribed_geography_id
       }
       @service.subscription_views(subscription).should eq expected_views
     end
@@ -167,7 +180,9 @@ describe Carto::DoSyncServiceFactory do
     it 'returns nil views for expired dataset' do
       subscription = @user.do_subscription(@subscribed_expired_dataset_id)
       expected_views = {
+        data_view: nil,
         data: nil,
+        geography_view: nil,
         geography: nil
       }
       @service.subscription_views(subscription).should eq expected_views
@@ -176,7 +191,9 @@ describe Carto::DoSyncServiceFactory do
     it 'returns nil views for invalid dataset' do
       subscription = @user.do_subscription(@non_subscribed_dataset_id)
       expected_views = {
+        data_view: nil,
         data: nil,
+        geography_view: nil,
         geography: nil
       }
       @service.subscription_views(subscription).should eq expected_views
@@ -196,19 +213,17 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns unsyncable for dataset too big' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000000000000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table2"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -216,19 +231,17 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns unsyncable for dataset with too many rows' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 1000000000000,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table2"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -246,9 +259,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]*1600
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table2"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -266,9 +278,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]*1600
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table2"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
@@ -288,9 +299,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table2"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsynced'
@@ -309,9 +319,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table4"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_synced_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_synced_dataset_id)
       sync_info['sync_status'].should eq 'synced'
@@ -334,9 +343,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table4"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_synced_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       CartoDB::Synchronization::Member.new(id: @synced_sync.id).fetch.delete
       sync_info = @service.sync(@subscribed_synced_dataset_id)
@@ -361,9 +369,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table5"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_syncing_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       @service.sync(@subscribed_syncing_dataset_id)['sync_status'].should eq 'syncing'
     end
@@ -379,9 +386,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table6"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_sync_error_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_sync_error_dataset_id)
       sync_info['sync_status'].should eq 'unsynced'
@@ -414,9 +420,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table4"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_synced_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       expect{
         expect {
@@ -437,9 +442,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table2"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       expect{
         @service.remove_sync!(@subscribed_dataset_id)
@@ -473,9 +477,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table2"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       Resque::ImporterJobs.expects(:perform).once
       sync = nil
@@ -515,9 +518,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table4"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_synced_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync = nil
       expect{
@@ -539,9 +541,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table5"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_syncing_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync = nil
       expect{
@@ -583,9 +584,8 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
-      view = "bq-project.bq-dataset.view_abc_table2"
-      bq_mock.stubs(:table).with(view).returns(table_mock)
-      @bq_client_class.stubs(:new).with(billing_project: 'bq-run-project', key: 'the-service-account').returns(bq_mock)
+      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync = nil
       expect{

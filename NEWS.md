@@ -15,6 +15,7 @@ Development
 - Fix imports from query that contain `(sql_expression)::cast` ([#15765](https://github.com/CartoDB/cartodb/pull/15765))
 - Fix wrong popup position, via new internal carto.js version 4.2.2-1 ([CARTO.js#2254](https://github.com/CartoDB/carto.js/pull/2254))
 - Modify .gitignore
+- Return all shared datasets
 
 4.39.0 (2020-07-20)
 -------------------

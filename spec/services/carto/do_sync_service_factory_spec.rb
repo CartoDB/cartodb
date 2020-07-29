@@ -198,6 +198,40 @@ describe Carto::DoSyncServiceFactory do
       }
       @service.subscription_views(subscription).should eq expected_views
     end
+
+    it 'returns the geography dataset instead of a view if it is public and not subscribed' do
+      dataset_metadata = {
+        geography_id: @unsubscribed_geography_id,
+        is_public_data: true
+      }.with_indifferent_access
+      @do_api_class.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
+
+      subscription = @user.do_subscription(@subscribed_dataset_id)
+      expected_views = {
+        data_view: "bq-project.bq-dataset.view_abc_table2",
+        data: @subscribed_dataset_id,
+        geography_view: @unsubscribed_geography_id,
+        geography: @unsubscribed_geography_id
+      }
+      @service.subscription_views(subscription).should eq expected_views
+    end
+
+    it 'does not return any geography if it is not public and not subscribed' do
+      dataset_metadata = {
+        geography_id: @unsubscribed_geography_id,
+        is_public_data: false
+      }.with_indifferent_access
+      @do_api_class.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
+
+      subscription = @user.do_subscription(@subscribed_dataset_id)
+      expected_views = {
+        data_view: "bq-project.bq-dataset.view_abc_table2",
+        data: @subscribed_dataset_id,
+        geography_view: nil,
+        geography: nil
+      }
+      @service.subscription_views(subscription).should eq expected_views
+    end
   end
 
   describe '#sync' do

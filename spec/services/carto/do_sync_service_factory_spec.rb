@@ -352,7 +352,12 @@ describe Carto::DoSyncServiceFactory do
       sync_info['synchronization_id'].should eq @synced_sync.id
       sync_info['estimated_size'].should be_between 500, 1000
       sync_info['estimated_row_count'].should eq 100
-      @service.subscription_from_sync_table(@synced_table.name).should eq @subscribed_synced_dataset_id
+      expected_subscription_info = {
+        provider: 'do-v2',
+        id: @subscribed_synced_dataset_id,
+        type: 'dataset'
+      }
+      @service.subscription_from_sync_table(@synced_table.name).should eq expected_subscription_info
     end
 
     it 'returns synced even if synchronization is stopped' do
@@ -378,7 +383,12 @@ describe Carto::DoSyncServiceFactory do
       sync_info['estimated_row_count'].should eq 100
       # Note that we don't embrace here the DataImport anomaly of not nullifying the synchronization foreign key
       sync_info['synchronization_id'].should be_nil
-      @service.subscription_from_sync_table(@synced_table.name).should eq @subscribed_synced_dataset_id
+      expected_subscription_info = {
+        provider: 'do-v2',
+        id: @subscribed_synced_dataset_id,
+        type: 'dataset'
+      }
+      @service.subscription_from_sync_table(@synced_table.name).should eq expected_subscription_info
     end
 
     it 'returns syncing for valid subscription being imported' do
@@ -422,7 +432,12 @@ describe Carto::DoSyncServiceFactory do
 
   describe '#subscription_from_sync_table' do
     it 'returns the subscription id given a sync table' do
-      @service.subscription_from_sync_table('synced_table').should eq @subscribed_synced_dataset_id
+      expected_subscription_info = {
+        provider: 'do-v2',
+        id: @subscribed_synced_dataset_id,
+        type: 'dataset'
+      }
+      @service.subscription_from_sync_table('synced_table').should eq expected_subscription_info
     end
 
     it 'returns nil for an invalid sync table' do

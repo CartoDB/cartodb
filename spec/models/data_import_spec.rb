@@ -155,6 +155,15 @@ describe DataImport do
     data_import.log.entries.should match(/relation.*does not exist/)
   end
 
+  it 'should work with a query that contains a "non-valid URI scheme"' do
+    data_import = create_import_from_query(
+      overwrite: false,
+      from_query: 'SELECT (1)::numeric'
+    )
+    data_import.run_import!
+    data_import.state.should eq 'complete'
+  end
+
   it 'should raise an exception if overwriting with missing data' do
     carto_user = Carto::User.find(@user.id)
     carto_user.visualizations.count.should eq 1

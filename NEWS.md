@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- WMTS compatibility: Replace the var `tile_matrix_set` by a supported SRS of the WMTS provided.
 - ArcGIS imports: raise http timeout and max retry attempts for arcgis import service
 - ArcGIS imports: improve log traces to better diagnose json non-conformance errors
 - Downgrade bundler to 1.17.3 to avoid problems with Rails version

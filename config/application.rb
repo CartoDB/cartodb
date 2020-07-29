@@ -218,6 +218,10 @@ module CartoDB
 
     # Put sequel db tasks into its own namespace
     config.sequel.load_database_tasks = :sequel
+
+    ## Logging
+    config.log_level = :info
+    config.logger = Carto::Common::Logger.new("log/#{Rails.env}.log")
   end
 end
 

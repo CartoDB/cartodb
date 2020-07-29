@@ -7,6 +7,8 @@ module Resque
     module Mail
       module DiskQuotaLimitReached
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(organization_id)
@@ -15,6 +17,8 @@ module Resque
       end
 
       module Invitation
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(invitation_id)
@@ -27,6 +31,8 @@ module Resque
 
       module SeatLimitReached
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(organization_id)
@@ -39,6 +45,8 @@ module Resque
   module UserJobs
     module Signup
       module NewUser
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(user_creation_id, common_data_url = nil, organization_owner_promotion = false)
@@ -53,6 +61,8 @@ module Resque
     module RateLimitsJobs
       module SyncRedis
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :batch_updates
 
         def self.perform(account_type)
@@ -70,6 +80,8 @@ module Resque
     module Notifications
       module Send
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(user_ids, notification_id)
@@ -84,6 +96,8 @@ module Resque
     module Mail
       module NewOrganizationUser
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(user_id)
@@ -94,6 +108,8 @@ module Resque
 
       module ShareVisualization
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(visualization_id, user_id)
@@ -105,6 +121,8 @@ module Resque
 
       module ShareTable
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(table_id, user_id)
@@ -116,6 +134,8 @@ module Resque
 
       module UnshareVisualization
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(visualization_name, visualization_owner_name, user_id)
@@ -126,6 +146,8 @@ module Resque
 
       module UnshareTable
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(table_name, table_owner_name, user_id)
@@ -136,6 +158,8 @@ module Resque
 
       module MapLiked
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(visualization_id, viewer_user_id, vis_preview_image)
@@ -147,6 +171,8 @@ module Resque
 
       module TableLiked
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(visualization_id, viewer_user_id, vis_preview_image)
@@ -158,6 +184,8 @@ module Resque
 
       module DataImportFinished
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table, errors, filenames)
@@ -169,6 +197,8 @@ module Resque
 
       module GeocoderFinished
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(user_id, state, table_name, error_code, processable_rows, number_geocoded_rows)
@@ -181,6 +211,8 @@ module Resque
       module Sync
         module MaxRetriesReached
           extend ::Resque::Metrics
+          include Carto::Common::JobLogger
+
           @queue = :users
 
           def self.perform(user_id, visualization_id, dataset_name, error_code, error_message)
@@ -192,6 +224,8 @@ module Resque
 
       module TrendingMap
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(visualization_id, mapviews, vis_preview_image)
@@ -202,6 +236,8 @@ module Resque
 
       module PasswordReset
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(user_id)

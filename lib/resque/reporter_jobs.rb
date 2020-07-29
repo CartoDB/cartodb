@@ -4,6 +4,8 @@ module Resque
   module Reporter
     module Mail
       module TrendingMapsReport
+        include Carto::Common::JobLogger
+
         @queue = :users
 
         def self.perform(mail_to, trending_visualizations)

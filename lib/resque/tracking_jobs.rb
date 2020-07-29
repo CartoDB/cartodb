@@ -4,6 +4,8 @@ require 'carto/tracking/services/pubsub_tracker'
 module Resque
   module TrackingJobs
     module SendPubSubEvent
+      include Carto::Common::JobLogger
+
       @queue = :tracker
 
       def self.perform(user_id, name, properties)
@@ -12,6 +14,8 @@ module Resque
     end
 
     module SendSegmentEvent
+      include Carto::Common::JobLogger
+
       ANONYMOUS_SEGMENT_USER_ID = '00000000-0000-0000-0000-000000000000'.freeze
 
       @queue = :tracker
@@ -31,6 +35,8 @@ module Resque
     end
 
     module SendHubspotEvent
+      include Carto::Common::JobLogger
+
       @queue = :tracker
 
       def self.perform(id, params)

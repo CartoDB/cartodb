@@ -213,21 +213,24 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns unsyncable for dataset too big' do
+      max_bytes = 1000
       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      @service.stubs(:max_bytes).returns(max_bytes)
       bq_mock = mock
       table_mock = stub(
-        num_bytes: 1000000000000,
+        num_bytes: max_bytes + 1,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(max_bytes + 1)
       bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
-      sync_info['unsyncable_reason'].should match /Number of bytes \(1000000000000\) exceeded the maximum/im
+      sync_info['unsyncable_reason'].should match /Number of bytes \(#{max_bytes + 1}\) exceeds the maximum/im
     end
 
     it 'returns unsyncable for dataset with too many rows' do
@@ -240,71 +243,91 @@ describe Carto::DoSyncServiceFactory do
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
-      sync_info['unsyncable_reason'].should match /Number of rows \(1000000000000\) exceeded the maximum/im
+      sync_info['unsyncable_reason'].should match /Number of rows \(1000000000000\) exceeds the maximum/im
     end
 
     it 'returns unsyncable for dataset with too many columns' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]*1600
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
-      sync_info['unsyncable_reason'].should match /Number of columns \(1600\) exceeded the maximum/im
+      sync_info['unsyncable_reason'].should match /Number of columns \(1600\) exceeds the maximum/im
     end
+
+    it 'returns unsyncable if user quota is exceeded' do
+    @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+     bq_mock = mock
+     table_mock = stub(
+       num_bytes: 1000,
+       num_rows: 100,
+       schema: stub(
+         fields: [stub(name: 'colname', type: 'STRING')]*1600
+       )
+     )
+     @user.stubs(:remaining_quota).returns(999)
+     bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+     @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
+
+     sync_info = @service.sync(@subscribed_dataset_id)
+     sync_info['sync_status'].should eq 'unsyncable'
+     sync_info['unsyncable_reason'].should match /Number of columns \(1600\) exceeds the maximum/im
+   end
 
     it 'reports all limits exceeded' do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000000000000,
         num_rows: 1000000000000,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]*1600
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
-      sync_info['unsyncable_reason'].should match /Number of bytes \(1000000000000\) exceeded the maximum/im
-      sync_info['unsyncable_reason'].should match /Number of rows \(1000000000000\) exceeded the maximum/im
-      sync_info['unsyncable_reason'].should match /Number of columns \(1600\) exceeded the maximum/im
+      sync_info['unsyncable_reason'].should match /Number of bytes \(1000000000000\) exceeds the maximum/im
+      sync_info['unsyncable_reason'].should match /Number of rows \(1000000000000\) exceeds the maximum/im
+      sync_info['unsyncable_reason'].should match /Number of columns \(1600\) exceeds the maximum/im
     end
 
     it 'returns unsynced for valid subscription' do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsynced'
-      sync_info['estimated_size'].should eq 1000
+      sync_info['estimated_size'].should be_between 500, 1000
       sync_info['estimated_row_count'].should eq 100
     end
 
@@ -312,13 +335,13 @@ describe Carto::DoSyncServiceFactory do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_synced_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
@@ -327,7 +350,7 @@ describe Carto::DoSyncServiceFactory do
       sync_info['sync_table'].should eq @synced_table.name
       sync_info['sync_table_id'].should eq @synced_table.id
       sync_info['synchronization_id'].should eq @synced_sync.id
-      sync_info['estimated_size'].should eq 1000
+      sync_info['estimated_size'].should be_between 500, 1000
       sync_info['estimated_row_count'].should eq 100
       @service.subscription_from_sync_table(@synced_table.name).should eq @subscribed_synced_dataset_id
     end
@@ -336,13 +359,13 @@ describe Carto::DoSyncServiceFactory do
       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_synced_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
@@ -351,7 +374,7 @@ describe Carto::DoSyncServiceFactory do
       sync_info['sync_status'].should eq 'synced'
       sync_info['sync_table'].should eq @synced_table.name
       sync_info['sync_table_id'].should eq @synced_table.id
-      sync_info['estimated_size'].should eq 1000
+      sync_info['estimated_size'].should be_between 500, 1000
       sync_info['estimated_row_count'].should eq 100
       # Note that we don't embrace here the DataImport anomaly of not nullifying the synchronization foreign key
       sync_info['synchronization_id'].should be_nil
@@ -362,13 +385,13 @@ describe Carto::DoSyncServiceFactory do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_syncing_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
@@ -379,20 +402,20 @@ describe Carto::DoSyncServiceFactory do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_sync_error_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_sync_error_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync_info = @service.sync(@subscribed_sync_error_dataset_id)
       sync_info['sync_status'].should eq 'unsynced'
       sync_info['unsynced_errors'].should eq [@import_error_code]
-      sync_info['estimated_size'].should eq 1000
+      sync_info['estimated_size'].should be_between 500, 1000
       sync_info['estimated_row_count'].should eq 100
     end
   end
@@ -413,13 +436,13 @@ describe Carto::DoSyncServiceFactory do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_synced_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
@@ -435,13 +458,13 @@ describe Carto::DoSyncServiceFactory do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
@@ -470,13 +493,13 @@ describe Carto::DoSyncServiceFactory do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
@@ -511,13 +534,13 @@ describe Carto::DoSyncServiceFactory do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_synced_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
@@ -534,13 +557,13 @@ describe Carto::DoSyncServiceFactory do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_syncing_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
@@ -577,13 +600,13 @@ describe Carto::DoSyncServiceFactory do
        @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        type: 'VIEW',
         num_bytes: 1000000000000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
       )
+      @user.stubs(:remaining_quota).returns(1000)
       bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 

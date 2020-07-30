@@ -166,8 +166,19 @@ export default {
     }
     .list-item {
       flex: 1 1 100%;
+      display: flex;
+      flex-direction: column;
       &:hover {
         background-color: transparent;
+      }
+      /deep/ {
+        .extra {
+          flex: 1 1 100%;
+          >div {
+            display: flex;
+            align-items: flex-end;
+          }
+        }
       }
     }
   }

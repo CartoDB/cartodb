@@ -16,7 +16,7 @@
         <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
       </div>
 
-      <TypeBadge v-if="isBuilderMap || isKuviz || isKeplergl" class="card-badge" :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="false" />
+      <TypeBadge v-if="isBuilderMap || isKuviz || isKeplergl || isDataObservatory" class="card-badge" :visualizationType="badgeVisualizationType" :isKuviz="isKuviz" :inCondensedCard="false" />
       <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
     </div>
 
@@ -151,6 +151,12 @@ export default {
         allSections[section] = true;
         return allSections;
       }, {});
+    },
+    badgeVisualizationType () {
+      if (this.isDataObservatory) {
+        return 'data-observatory';
+      }
+      return this.$props.visualization.type;
     }
   },
   methods: {

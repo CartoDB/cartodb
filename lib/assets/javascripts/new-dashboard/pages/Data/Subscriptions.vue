@@ -40,7 +40,7 @@
             </template>
           </SectionTitle>
           <ul>
-            <div class="subscription-item u-flex" v-for="subscription in subscriptionsByPage" :key="subscription.slug">
+            <div class="subscription-item u-flex" v-for="subscription in subscriptionsByPage" v-show="subscription.slug" :key="subscription.slug">
               <DatasetListItem :dataset="subscription"></DatasetListItem>
               <DatasetListItemExtra :dataset="subscription"></DatasetListItemExtra>
             </div>

@@ -16,7 +16,8 @@
     "type": {
       "derived": "BUILDER",
       "kuviz": "CARTOFRAMES",
-      "keplergl": "KEPLER.GL"
+      "keplergl": "KEPLER.GL",
+      "data-observatory": "DATA OBSERVATORY"
     }
   },
   "MapListHeader": {

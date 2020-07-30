@@ -19,9 +19,8 @@ module Carto
         rescue_from Carto::OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
 
         VALID_ORDER_PARAMS = %i(name).freeze
-        
+ 
         def index
-          @master_role = @user.api_keys.master.first.db_role
           tables = @user.in_database[select_tables_query].all
           result = enrich_tables(tables)
           total = @user.in_database[count_tables_query].first[:count]
@@ -99,18 +98,18 @@ module Carto
         end
 
         def query
+          roles_in = @user.db_service.all_user_roles.join("','")
           %{
             SELECT table_schema, table_name as name,   
               string_agg(CASE privilege_type WHEN 'SELECT' THEN 'r' ELSE 'w' END, 
                         '' order by privilege_type) as mode
             FROM information_schema.role_table_grants
-            WHERE grantee='#{@master_role}' 
+            WHERE grantee IN ('#{roles_in}')
               AND table_schema not in ('cartodb', 'aggregation')  
               AND grantor!='postgres'
               AND privilege_type in ('SELECT', 'UPDATE')
             GROUP BY table_schema,  table_name
           }.squish
-
         end
 
         def render_paged(result, total)

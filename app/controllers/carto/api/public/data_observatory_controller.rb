@@ -34,8 +34,14 @@ module Carto
 
         def subscriptions
           bq_subscriptions = Carto::DoLicensingService.new(@user.username).subscriptions
-          available_subscriptions = bq_subscriptions.select { |dataset| Time.now < dataset['expires_at'] }
-          response = present_subscriptions(available_subscriptions)
+          bq_subscriptions.each do |subscription|
+            subscription[:status] = 'active'
+            if Time.now >= subscription['expires_at']
+              subscription[:status] = 'expired'
+            end
+          end
+
+          response = present_subscriptions(bq_subscriptions)
           render(json: { subscriptions: response })
         end
 
@@ -133,7 +139,7 @@ module Carto
           doss = Carto::DoSyncServiceFactory.get_for_user(@user)
           enriched_subscriptions = subscriptions.map do |subscription|
             sync_data = doss.sync(subscription[:id])
-            subscription.merge(sync_data).merge(status: 'active')
+            subscription.merge(sync_data)
           end
           ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }
           @direction == :asc ? ordered_subscriptions : ordered_subscriptions.reverse

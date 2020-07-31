@@ -241,6 +241,74 @@ describe Carto::Api::Public::DataObservatoryController do
         end
       end
     end
+
+    describe 'sync_info' do
+      before(:each) do
+        @doss = mock
+        Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
+        @doss.stubs(:sync).returns({sync_status: 'unsynced'})
+      end
+
+      it 'returns 404 if the subscription_id is not a valid user subscription' do
+        @url_helper = 'api_v4_do_subscription_sync_info_url'
+        get_json endpoint_url(api_key: @master, subscription_id: 'wrong'), @headers do |response|
+          expect(response.status).to eq(404)
+        end
+      end
+
+      it 'returns 200 with sync info if the subscription_id is valid' do
+        @url_helper = 'api_v4_do_subscription_sync_info_url'
+        get_json endpoint_url(api_key: @master, subscription_id: 'carto.zzz.table1'), @headers do |response|
+          expect(response.status).to eq(200)
+          expect(response.body).to eq(sync_status: 'unsynced')
+        end
+      end
+    end
+
+    describe 'create_sync' do
+      before(:each) do
+        @doss = mock
+        Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
+        @doss.stubs(:create_sync!).returns({sync_status: 'syncing'})
+      end
+
+      it 'returns 404 if the subscription_id is not a valid user subscription' do
+        @url_helper = 'api_v4_do_subscription_create_sync_url'
+        post_json endpoint_url(api_key: @master, subscription_id: 'wrong'), @headers do |response|
+          expect(response.status).to eq(404)
+        end
+      end
+
+      it 'returns 200 with sync info if the subscription_id is valid' do
+        @url_helper = 'api_v4_do_subscription_create_sync_url'
+        post_json endpoint_url(api_key: @master, subscription_id: 'carto.zzz.table1'), @headers do |response|
+          expect(response.status).to eq(200)
+          expect(response.body).to eq(sync_status: 'syncing')
+        end
+      end
+    end
+
+    describe 'destroy_sync' do
+      before(:each) do
+        @doss = mock
+        Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
+        @doss.stubs(:remove_sync!).returns(nil)
+      end
+
+      it 'returns 404 if the subscription_id is not a valid user subscription' do
+        @url_helper = 'api_v4_do_subscription_destroy_sync_url'
+        delete_json endpoint_url(api_key: @master, subscription_id: 'wrong'), @headers do |response|
+          expect(response.status).to eq(404)
+        end
+      end
+
+      it 'returns 204 if the subscription_id is valid' do
+        @url_helper = 'api_v4_do_subscription_destroy_sync_url'
+        delete_json endpoint_url(api_key: @master, subscription_id: 'carto.zzz.table1'), @headers do |response|
+          expect(response.status).to eq(204)
+        end
+      end
+    end
   end
 
   describe 'subscription_info' do
@@ -548,24 +616,6 @@ describe Carto::Api::Public::DataObservatoryController do
 
       delete_json endpoint_url(@params) do |response|
         expect(response.status).to eq(204)
-      end
-    end
-  end
-
-  describe 'sync_info' do
-    before(:each) do
-      @doss = mock
-      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-      @doss.stubs(:sync).returns({sync_status: 'unsynced'})
-      # @doss.stubs(:create_sync!).returns({sync_status: 'syncing'})
-    end
-
-    # FIXME: proper tests
-    it 'returns 200 if the subscription_id is valid' do
-      @url_helper = 'api_v4_do_subscription_sync_info_url'
-      get_json endpoint_url(api_key: @master, subscription_id: 'wrong'), @headers do |response|
-        expect(response.status).to eq(200)
-        expect(response.body).to eq(sync_status: 'unsynced')
       end
     end
   end

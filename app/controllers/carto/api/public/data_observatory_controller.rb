@@ -1,4 +1,10 @@
 module Carto
+  class SubscriptionNotFoundError < StandardError
+    def initialize(username, subscription_id)
+      super "Subscription not found with id #{subscription_id} for user #{username}"
+    end
+  end
+
   module Api
     module Public
       class DataObservatoryController < Carto::Api::Public::ApplicationController
@@ -15,6 +21,7 @@ module Carto
         before_action :check_do_enabled, only: [:subscription_info, :subscriptions]
 
         setup_default_rescues
+        rescue_from Carto::SubscriptionNotFoundError, with: :rescue_from_subscription_not_found
 
         respond_to :json
 
@@ -83,18 +90,32 @@ module Carto
         end
 
         def sync_info
+          check_subscription!
           render json: Carto::DoSyncServiceFactory.get_for_user(@user).sync(params[:subscription_id])
         end
 
         def create_sync
+          check_subscription!
           render json: Carto::DoSyncServiceFactory.get_for_user(@user).create_sync!(params[:subscription_id], true)
         end
 
         def destroy_sync
-          render json: Carto::DoSyncServiceFactory.get_for_user(@user).remove_sync!(params[:subscription_id])
+          check_subscription!
+          Carto::DoSyncServiceFactory.get_for_user(@user).remove_sync!(params[:subscription_id])
+          head :no_content
         end
 
         private
+
+        def check_subscription!
+          if @user.do_subscription(params[:subscription_id]).blank?
+            raise Carto::SubscriptionNotFoundError.new(@user.username, params[:subscription_id])
+          end
+        end
+
+        def rescue_from_subscription_not_found(exception)
+          render_jsonp({ errors: exception.message }, 404)
+        end
 
         def load_user
           @user = Carto::User.find(current_viewer.id)

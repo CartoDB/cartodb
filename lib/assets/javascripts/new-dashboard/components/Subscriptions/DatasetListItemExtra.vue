@@ -2,10 +2,10 @@
   <div class="dataset-listItem-extra-container u-flex u-flex__direction--column u-pt--12 u-pl--24 u-pb--24">
     <SubscriptionStatus :status="dataset.status" :expiresDate="dataset.expires_at" class="u-width--100"></SubscriptionStatus>
     <div class="u-ml--16">
-       <div class="is-caption u-mt--12 is-small">
+       <!-- <div class="is-caption u-mt--12 is-small">
          <span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span>
          <span class="u-ml--4">{{ getDatasetSize }}</span>
-        </div>
+        </div> -->
        <SubscriptionActions :dataset="dataset" class="u-mt--28"></SubscriptionActions>
       <SlugCopy v-if="dataset.slug" :slug="dataset.slug" class="u-mt--24"></SlugCopy>
     </div>

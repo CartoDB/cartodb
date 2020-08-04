@@ -20,19 +20,8 @@ CartoDB::Application.configure do
   # If you have no front-end server that supports something like X-Sendfile,
   # just comment this out and Rails will serve the files
 
-  # Note that we pass the desired log level to the logger's constructor;
-  # assigning to `config.log_level` would have no effect here, since we have set the logger explicitly.
-  config.logger = ActiveSupport::TaggedLogging.new(
-    ActiveSupport::Logger.new(Carto::Conf.new.log_file_path('staging.log'))
-  )
-
-  config.log_level = :info
-
   # Setting this to true will enable ActiveController's enforcement of SSL.
   config.ssl_required = true
-
-  # Use a different logger for distributed setups
-  # config.logger = SyslogLogger.new
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store

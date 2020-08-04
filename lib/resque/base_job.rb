@@ -4,6 +4,7 @@ require 'resque-metrics'
 module Resque
   class BaseJob
     extend ::Resque::Metrics
+    include Carto::Common::JobLogger
     MAX_RETRIES = 3
 
     @@queue = ''

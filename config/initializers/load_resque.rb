@@ -11,3 +11,10 @@ Resque.redis = RedisFactory.new_connection
 
 Resque::Failure::Multiple.classes = [Resque::Failure::Redis, CartoDB::Logger::RollbarLogger]
 Resque::Failure.backend = Resque::Failure::Multiple
+
+## Logging
+logger_stdout = STDOUT.dup
+logger_stdout.sync = Rails.env.development?
+
+Resque.logger.level = :info
+Resque.logger = Carto::Common::Logger.new(logger_stdout)

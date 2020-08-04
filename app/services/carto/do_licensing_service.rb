@@ -38,6 +38,9 @@ module Carto
     def present_subscription(subscription)
       qualified_id = subscription['dataset_id']
       project, dataset, table = qualified_id.split('.')
+      expires_at = subscription['expires_at']
+      created_at = subscription['created_at']
+      published_in_web = subscription['published_in_web']
       # FIXME: better save the type in Redis or look for it in the metadata tables
       type = table&.starts_with?('geography') ? 'geography' : 'dataset'
       subscription = {
@@ -46,9 +49,9 @@ module Carto
         table: table,
         id: qualified_id,
         type: type,
-        published_in_web: subscription['published_in_web'] && subscription['published_in_web'].to_b,
-        expires_at: subscription['expires_at'] && Time.parse(subscription['expires_at']),
-        created_at: subscription['created_at'] && Time.parse(subscription['created_at'])
+        expires_at: Time.parse(expires_at) if expires_at.present?,
+        created_at: Time.parse(created_at) if created_at.present?,
+        published_in_web: published_in_web.to_b if published_in_web.present?
       }
       subscription.with_indifferent_access
     end

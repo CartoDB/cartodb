@@ -45,10 +45,9 @@ module Carto
         dataset: dataset,
         table: table,
         id: qualified_id,
-        type: type,
-        expires_at: subscription['expires_at'] && Time.parse(subscription['expires_at']),
-        created_at: subscription['created_at'] && Time.parse(subscription['created_at'])
+        type: type
       }
+      subscription[:expires_at] = Time.parse(subscription['expires_at']) if subscription['expires_at'].present?
       subscription.with_indifferent_access
     end
 

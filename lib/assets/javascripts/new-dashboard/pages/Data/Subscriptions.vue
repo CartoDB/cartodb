@@ -40,7 +40,7 @@
             </template>
           </SectionTitle>
           <ul>
-            <div class="subscription-item u-flex" v-for="subscription in subscriptionsByPage" v-show="subscription.slug" :key="subscription.slug">
+            <div class="subscription-item u-flex" v-for="subscription in subscriptionsByPage" :key="subscription.slug">
               <DatasetListItem :dataset="subscription"></DatasetListItem>
               <DatasetListItemExtra :dataset="subscription"></DatasetListItemExtra>
             </div>
@@ -91,10 +91,10 @@ export default {
       return process.env.VUE_APP_PAGE_SIZE || 10;
     },
     count () {
-      return this.subscriptions.length;
+      return this.subscriptions.filter(s => s.slug).length;
     },
     subscriptionsByPage () {
-      return this.subscriptions.slice(
+      return this.subscriptions.filter(s => s.slug).slice(
         this.currentPage * this.pageSize,
         (this.currentPage + 1) * this.pageSize
       );
@@ -112,12 +112,12 @@ export default {
     async fetchSubscriptionsListDetail () {
       this.loading = true;
       window.scrollTo(0, 0);
-      await this.$store.dispatch('doCatalog/fetchSubscriptionsDetailsList', this.subscriptionsByPage.map(s => s.id));
+      await this.$store.dispatch('doCatalog/fetchSubscriptionsDetailsList', this.subscriptions.map(s => s.id));
       this.loading = false;
     },
     goToPage (pageNum) {
       this.currentPage = pageNum;
-      this.fetchSubscriptionsListDetail();
+      window.scrollTo(0, 0);
     }
   },
   watch: {

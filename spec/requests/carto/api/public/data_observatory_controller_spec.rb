@@ -468,6 +468,39 @@ describe Carto::Api::Public::DataObservatoryController do
     end
   end
 
+  describe 'dataset_info' do
+    before(:all) do
+      @url_helper = 'api_v4_do_dataset_info'
+      # @payload = { dataset_id: 'carto.abc.dataset1' }
+    end
+
+    before(:each) do
+      # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+      @doss = mock
+      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
+    end
+
+    after(:each) do
+      # Cartodb::Central.any_instance.unstub(:check_do_enabled)
+    end
+
+    it 'returns 200 with dataset info ' do
+      dataset_id = 'carto.zzz.table1'
+      dataset_info = { id: dataset_id, project: 'carto', dataset: 'zzz', table: 'table1' }
+      @doss.stubs(:dataset_info).with(dataset_id).returns(dataset_info)
+      dataset_estimates = { estimated_size: 10000, estimated_row_count: 1000, estimated_columns_count: 1000 }
+      @doss.stubs(:dataset_estimates).with(dataset_id).returns(dataset_estimates)
+      get_json endpoint_url(api_key: @master, dataset_id: dataset_id), @headers do |response|
+        expect(response.status).to eq(200)
+        expect(response.body).to eq(dataset_info.merge(dataset_estimates))
+      end
+    end
+
+    # it 'returns 404 if the dataset does not exist' do
+    # end
+
+  end
+
   describe 'subscribe' do
     before(:all) do
       @url_helper = 'api_v4_do_subscriptions_create_url'

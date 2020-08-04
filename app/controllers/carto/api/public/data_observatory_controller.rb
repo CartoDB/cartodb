@@ -91,6 +91,11 @@ module Carto
           head :no_content
         end
 
+        def dataset_info
+          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
+          render json: doss.dataset_info(params[:dataset_id]).merge(doss.dataset_estimates)
+        end
+
         def sync_info
           check_subscription!
           render json: Carto::DoSyncServiceFactory.get_for_user(@user).sync(params[:subscription_id])

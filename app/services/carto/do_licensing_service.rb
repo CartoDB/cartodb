@@ -46,7 +46,7 @@ module Carto
         table: table,
         id: qualified_id,
         type: type,
-        published_in_web: subscription['published_in_web'],
+        published_in_web: subscription['published_in_web'] && subscription['published_in_web'].to_b,
         expires_at: subscription['expires_at'] && Time.parse(subscription['expires_at']),
         created_at: subscription['created_at'] && Time.parse(subscription['created_at'])
       }
@@ -60,7 +60,12 @@ module Carto
         # Remove a previous dataset if exists
         redis_value = redis_value.reject { |d| d[:dataset_id] == dataset[:dataset_id] }
         # Create the new entry
-        new_value = [{ "dataset_id" => dataset[:dataset_id], "expires_at" => dataset[:expires_at].to_s }]
+        new_value = [{
+          "dataset_id" => dataset[:dataset_id],
+          "published_in_web" => dataset[:published_in_web].to_s,
+          "expires_at" => dataset[:expires_at].to_s,
+          "created_at" => dataset[:created_at].to_s
+        }]
         # Append to the current one
         redis_value = redis_value + new_value
       end

@@ -40,7 +40,7 @@
             </template>
           </SectionTitle>
           <ul>
-            <div class="subscription-item u-flex" v-for="subscription in subscriptionsByPage" v-show="subscription.slug" :key="subscription.slug">
+            <div class="subscription-item u-flex" v-for="subscription in subscriptionsByPage" :key="subscription.slug">
               <DatasetListItem :dataset="subscription"></DatasetListItem>
               <DatasetListItemExtra :dataset="subscription"></DatasetListItemExtra>
             </div>
@@ -85,7 +85,7 @@ export default {
   },
   computed: {
     ...mapState({
-      subscriptions: state => state.doCatalog.subscriptionsList
+      subscriptions: state => state.doCatalog.subscriptionsList //.filter(s => s.published_in_web)
     }),
     pageSize () {
       return process.env.VUE_APP_PAGE_SIZE || 10;

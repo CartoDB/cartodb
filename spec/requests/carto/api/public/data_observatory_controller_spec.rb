@@ -468,10 +468,9 @@ describe Carto::Api::Public::DataObservatoryController do
     end
   end
 
-  describe 'dataset_info' do
+  describe 'entity_info' do
     before(:all) do
-      @url_helper = 'api_v4_do_dataset_info'
-      # @payload = { dataset_id: 'carto.abc.dataset1' }
+      @url_helper = 'api_v4_do_entity_info'
     end
 
     before(:each) do
@@ -490,15 +489,11 @@ describe Carto::Api::Public::DataObservatoryController do
       @doss.stubs(:dataset_info).with(dataset_id).returns(dataset_info)
       dataset_estimates = { estimated_size: 10000, estimated_row_count: 1000, estimated_columns_count: 1000 }
       @doss.stubs(:dataset_estimates).with(dataset_id).returns(dataset_estimates)
-      get_json endpoint_url(api_key: @master, dataset_id: dataset_id), @headers do |response|
+      get_json endpoint_url(api_key: @master, entity_id: dataset_id), @headers do |response|
         expect(response.status).to eq(200)
         expect(response.body).to eq(dataset_info.merge(dataset_estimates))
       end
     end
-
-    # it 'returns 404 if the dataset does not exist' do
-    # end
-
   end
 
   describe 'subscribe' do

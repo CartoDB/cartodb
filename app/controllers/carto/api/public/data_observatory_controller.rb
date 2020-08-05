@@ -91,9 +91,9 @@ module Carto
           head :no_content
         end
 
-        def dataset_info
+        def entity_info
           doss = Carto::DoSyncServiceFactory.get_for_user(@user)
-          render json: doss.dataset_info(params[:dataset_id]).merge(doss.dataset_estimates)
+          render json: doss.dataset_info(params[:entity_id]).merge(doss.dataset_estimates)
         end
 
         def sync_info

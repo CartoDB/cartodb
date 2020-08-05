@@ -39,7 +39,7 @@ module Carto
       # FIXME: the subcription id split and type logic is now in the Sync connector,
       # so this could be implemented as: (requiring some adjustments/mocking in various tests)
       #   doss = Carto::DoSyncServiceFactory.get_for_user(Carto::User.find_by(username: @username))
-      #   doss.dataset_info(subscription[:id]).merge(
+      #   doss.parsed_entity_id(subscription[:id]).merge(
       #     expires_at: subscription['expires_at'] && Time.parse(subscription['expires_at']),
       #     created_at: subscription['created_at'] && Time.parse(subscription['created_at'])
       #   )

@@ -22,6 +22,7 @@ describe Carto::DoSyncServiceFactory do
     past = Time.now - 1.day
 
     @non_subscribed_dataset_id = 'carto.abc.table1'
+    @non_subscribed_geography_id = 'carto.abc.geography_table0'
     @subscribed_dataset_id = 'carto.abc.table2'
     @subscribed_geography_id = 'carto.abc.geography_table'
     @subscribed_expired_dataset_id = 'carto.abc.table3'
@@ -135,61 +136,107 @@ describe Carto::DoSyncServiceFactory do
     Carto::Synchronization.find_by_id(@synced_sync.id)&.destroy
   end
 
-  describe '#dataset_info' do
-    it 'returns dataset info for a dataset' do
-      expected_info = {
-        id: 'project.dataset.table',
-        project: 'project',
-        dataset: 'dataset',
-        table: 'table',
-        type: 'dataset'
-      }
-      @service.dataset_info('project.dataset.table').should eq expected_info.with_indifferent_access
-    end
-
-    it 'returns dataset info for a geography' do
-      expected_info = {
-        id: 'project.dataset.geography_table',
-        project: 'project',
-        dataset: 'dataset',
-        table: 'geography_table',
-        type: 'geography'
-      }
-      @service.dataset_info('project.dataset.geography_table').should eq expected_info.with_indifferent_access
-    end
-  end
-
-  describe '#dataset_estimates' do
-    it 'returns dataset estimates for dataset with geography' do
-      dataset_metadata = {
-        geography_id: @subscribed_geography_id
-      }.with_indifferent_access
-      @do_api_class.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
+  describe '#entity_info' do
+    it 'returns info for an non-subscribed dataset' do
+      do_metadata = {}
+      @do_api_class.any_instance.expects(:dataset).with(@non_subscribed_dataset_id).returns(do_metadata)
       bq_mock = mock
-      dataset_mock = stub(
+      bq_metadata = stub(
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname1', type: 'STRING'), stub(name: 'colname2', type: 'STRING'), ]
         )
       )
-      geography_mock = stub(
+      bq_mock = mock
+      bq_mock.stubs(:table).with(@non_subscribed_dataset_id).returns(bq_metadata)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
+
+      expected_info = {
+        id: @non_subscribed_dataset_id,
+        project: @non_subscribed_dataset_id.split('.')[0],
+        dataset: @non_subscribed_dataset_id.split('.')[1],
+        table: @non_subscribed_dataset_id.split('.')[2],
+        type: 'dataset',
+        num_bytes: 1000,
+        estimated_row_count: 100,
+        estimated_columns_count: 2
+      }
+      info = @service.entity_info(@non_subscribed_dataset_id)
+      info.except(:estimated_size).should eq expected_info.with_indifferent_access
+      info[:estimated_size].should be_between 500, 1000
+    end
+
+    it 'returns info for a non-subscribed geography' do
+      do_metadata = {}
+      @do_api_class.any_instance.expects(:geography).with(@non_subscribed_geography_id).returns(do_metadata)
+      bq_metadata = stub(
+        num_bytes: 1000,
+        num_rows: 100,
+        schema: stub(
+          fields: [stub(name: 'colname1', type: 'STRING'), stub(name: 'geom', type: 'GEOGRAPHY'), ]
+        )
+      )
+      bq_mock = mock
+      bq_mock.stubs(:table).with(@non_subscribed_geography_id).returns(bq_metadata)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
+
+      expected_info = {
+        id: @non_subscribed_geography_id,
+        project: @non_subscribed_geography_id.split('.')[0],
+        dataset: @non_subscribed_geography_id.split('.')[1],
+        table: @non_subscribed_geography_id.split('.')[2],
+        type: 'geography',
+        num_bytes: 1000,
+        estimated_row_count: 100,
+        estimated_columns_count: 2
+      }
+
+      info = @service.entity_info(@non_subscribed_geography_id)
+      info.except(:estimated_size).should eq expected_info.with_indifferent_access
+      info[:estimated_size].should be_between 500, 1000
+    end
+
+    it 'returns info for a dataset with geography' do
+      do_dataset_metadata = {
+        geography_id: @non_subscribed_geography_id
+      }.with_indifferent_access
+      do_geography_metadata = {}
+      @do_api_class.any_instance.expects(:dataset).with(@non_subscribed_dataset_id).returns(do_dataset_metadata)
+      bq_mock = mock
+      bq_dataset_metadata = stub(
+        num_bytes: 1000,
+        num_rows: 100,
+        schema: stub(
+          fields: [stub(name: 'colname1', type: 'STRING'), stub(name: 'colname2', type: 'STRING'), ]
+        )
+      )
+      bq_geography_metadata = stub(
         num_bytes: 2000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'geom', type: 'GEOGRAPHY')]
         )
       )
-      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(dataset_mock)
-      bq_mock.stubs(:table).with(@subscribed_geography_id).returns(geography_mock)
+      bq_mock.stubs(:table).with(@non_subscribed_dataset_id).returns(bq_dataset_metadata)
+      bq_mock.stubs(:table).with(@non_subscribed_geography_id).returns(bq_geography_metadata)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
-      estimates = @service.dataset_estimates(@subscribed_dataset_id)
-      estimates[:estimated_size].should be_between 1500, 3000
-      estimates[:estimated_row_count].should eq 100
-      estimates[:estimated_columns_count].should eq 2
+
+      expected_info = {
+        id: @non_subscribed_dataset_id,
+        project: @non_subscribed_dataset_id.split('.')[0],
+        dataset: @non_subscribed_dataset_id.split('.')[1],
+        table: @non_subscribed_dataset_id.split('.')[2],
+        type: 'dataset',
+        num_bytes: 3000,
+        estimated_row_count: 100,
+        estimated_columns_count: 2
+      }
+      info = @service.entity_info(@non_subscribed_dataset_id)
+      info.except(:estimated_size).should eq expected_info.with_indifferent_access
+      info[:estimated_size].should be_between 1500, 3000
     end
   end
-
 
   describe '#subscription_views' do
     it 'returns data view for subscribed dataset' do
@@ -211,6 +258,8 @@ describe Carto::DoSyncServiceFactory do
         geography_id: @subscribed_geography_id
       }.with_indifferent_access
       @do_api_class.any_instance.expects(:dataset).with(@subscribed_dataset_id).returns(dataset_metadata)
+      # geography_metadata = {}
+      # @do_api_class.any_instance.expects(:geography).with(@subscribed_geography_id).returns(geography_metadata)
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
@@ -223,6 +272,9 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns geography view for subscribed geography' do
+      geography_metadata = {}
+      @do_api_class.any_instance.expects(:geography).with(@subscribed_geography_id).returns(geography_metadata)
+
       subscription = @user.do_subscription(@subscribed_geography_id)
       expected_views = {
         data_view: nil,
@@ -233,26 +285,14 @@ describe Carto::DoSyncServiceFactory do
       @service.subscription_views(subscription).should eq expected_views
     end
 
-    it 'returns nil views for expired dataset' do
+    it 'returns error message for expired dataset' do
       subscription = @user.do_subscription(@subscribed_expired_dataset_id)
-      expected_views = {
-        data_view: nil,
-        data: nil,
-        geography_view: nil,
-        geography: nil
-      }
-      @service.subscription_views(subscription).should eq expected_views
+      @service.subscription_views(subscription)[:error].should match /expired/i
     end
 
-    it 'returns nil views for invalid dataset' do
+    it 'returns error message for invalid dataset' do
       subscription = @user.do_subscription(@non_subscribed_dataset_id)
-      expected_views = {
-        data_view: nil,
-        data: nil,
-        geography_view: nil,
-        geography: nil
-      }
-      @service.subscription_views(subscription).should eq expected_views
+      @service.subscription_views(subscription)[:error].should match /invalid/i
     end
 
     it 'returns the geography dataset instead of a view if it is public and not subscribed' do

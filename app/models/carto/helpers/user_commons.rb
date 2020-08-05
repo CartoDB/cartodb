@@ -307,4 +307,8 @@ module Carto::UserCommons
   def gcloud_settings
     @gcloud_settings ||= Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
   end
+
+  def do_enabled?
+    gcloud_settings[:service_account].present?
+  end
 end

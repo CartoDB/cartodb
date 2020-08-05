@@ -8,12 +8,22 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- ArcGIS imports: raise http timeout and max retry attempts for arcgis import service
-- ArcGIS imports: improve log traces to better diagnose json non-conformance errors
-- Downgrade bundler to 1.17.3 to avoid problems with Rails version
-- Fix to prevent removing datasets from api_keys when it is replaced using overwrite as collision_strategy ([80981](https://app.clubhouse.io/cartoteam/story/80981/joinzoe-change-on-custom-api-key-after-import-collision-strategy-overwrite))
-- Fix wrong popup position, via new internal carto.js version 4.2.2-1 ([CARTO.js#2254](https://github.com/CartoDB/carto.js/pull/2254))
 - Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
+
+4.40.0 (2020-07-31)
+-------------------
+
+### Bug fixes / enhancements
+* WMTS compatibility: Replace the var `tile_matrix_set` by a supported SRS of the WMTS provided.
+* ArcGIS imports: raise http timeout and max retry attempts for arcgis import service
+* ArcGIS imports: improve log traces to better diagnose json non-conformance errors
+* Downgrade bundler to 1.17.3 to avoid problems with Rails version
+* Fix to prevent removing datasets from api_keys when it is replaced using overwrite as collision_strategy ([80981](https://app.clubhouse.io/cartoteam/story/80981/joinzoe-change-on-custom-api-key-after-import-collision-strategy-overwrite))
+* Fix imports from query that contain `(sql_expression)::cast` ([#15765](https://github.com/CartoDB/cartodb/pull/15765))
+* Fix wrong popup position, via new internal carto.js version 4.2.2-1 ([CARTO.js#2254](https://github.com/CartoDB/carto.js/pull/2254))
+* Modify .gitignore
+* Install Carto::Common::Logger with JSON support ([#15762](https://github.com/CartoDB/cartodb/pull/15762))
+* Return all shared datasets ([#15767](https://github.com/CartoDB/cartodb/pull/15767))
 
 4.39.0 (2020-07-20)
 -------------------

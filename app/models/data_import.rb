@@ -292,14 +292,19 @@ class DataImport < Sequel::Model
     if data_source.nil?
       values[:data_type] = TYPE_DATASOURCE
       values[:data_source] = ''
-    else
-      path = uploaded_file_path(data_source)
-      if File.exist?(path) && !File.directory?(path)
-        values[:data_type] = TYPE_FILE
-        values[:data_source] = path
-      elsif Addressable::URI.parse(data_source).host.present?
-        values[:data_type] = TYPE_URL
-        values[:data_source] = data_source
+    elsif self.data_type != TYPE_QUERY
+      begin
+        path = uploaded_file_path(data_source)
+        if File.exist?(path) && !File.directory?(path)
+          values[:data_type] = TYPE_FILE
+          values[:data_source] = path
+        elsif Addressable::URI.parse(data_source).host.present?
+          values[:data_type] = TYPE_URL
+          values[:data_source] = data_source
+        end
+      rescue Addressable::URI::InvalidURIError
+        # this should only happen in testing, but just in case capture and log
+        CartoDB::Logger.warning(message: 'InvalidURIError when processing data_source', data_source: data_source)
       end
     end
 

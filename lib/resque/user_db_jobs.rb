@@ -7,6 +7,8 @@ module Resque
     module UserDBMaintenance
       module LinkGhostTables
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :user_dbs
 
         def self.perform(user_id)
@@ -19,6 +21,8 @@ module Resque
 
       module LinkGhostTablesByUsername
         extend ::Resque::Metrics
+        include Carto::Common::JobLogger
+
         @queue = :user_dbs
 
         def self.perform(username)
@@ -31,6 +35,8 @@ module Resque
       end
 
       module AutoIndexTable
+        include Carto::Common::JobLogger
+
         @queue = :user_dbs
 
         def self.perform(user_table_id)
@@ -44,6 +50,8 @@ module Resque
 
     module CommonData
       module LoadCommonData
+        include Carto::Common::JobLogger
+
         @queue = :user_dbs
 
         def self.perform(user_id, visualizations_api_url)

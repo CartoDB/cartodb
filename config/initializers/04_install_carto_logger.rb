@@ -1,0 +1,1 @@
+Carto::Common::Logger.install

@@ -26,6 +26,7 @@ module Carto
         respond_to :json
 
         VALID_TYPES = %w(dataset geography).freeze
+        VALID_STATUSES = %w(active requested).freeze
         DATASET_REGEX = /[\w\-]+\.[\w\-]+\.[\w\-]+/.freeze
         VALID_ORDER_PARAMS = %i(id table dataset project type).freeze
         METADATA_FIELDS = %i(id estimated_delivery_days subscription_list_price tos tos_link licenses licenses_link
@@ -41,12 +42,7 @@ module Carto
 
         def subscriptions
           bq_subscriptions = Carto::DoLicensingService.new(@user.username).subscriptions
-          bq_subscriptions.each do |subscription|
-            subscription[:status] = 'active'
-            if Time.now >= subscription['expires_at']
-              subscription[:status] = 'expired'
-            end
-          end
+          bq_subscriptions = bq_subscriptions.select { |sub| sub[:status] == @status } if @status.present?
 
           response = present_subscriptions(bq_subscriptions)
           render(json: { subscriptions: response })
@@ -61,7 +57,11 @@ module Carto
         def subscribe
           metadata = subscription_metadata
 
-          instant_licensing_available?(metadata) ? instant_license(metadata) : regular_license(metadata)
+          if metadata[:is_public_data] == true || instant_licensing_available?(metadata)
+            instant_license(metadata)
+          else
+            regular_license(metadata)
+          end
 
           response = present_metadata(metadata)
           render(json: response)
@@ -75,12 +75,14 @@ module Carto
 
         def instant_license(metadata)
           licensing_service = Carto::DoLicensingService.new(@user.username)
-          licensing_service.subscribe(license_info(metadata))
+          licensing_service.subscribe(license_info(metadata, 'active'))
         end
 
         def regular_license(metadata)
           DataObservatoryMailer.user_request(@user, metadata[:id], metadata[:name]).deliver_now
           DataObservatoryMailer.carto_request(@user, metadata[:id], metadata[:estimated_delivery_days]).deliver_now
+          licensing_service = Carto::DoLicensingService.new(@user.username)
+          licensing_service.subscribe(license_info(metadata, 'requested'))
         end
 
         def unsubscribe
@@ -125,7 +127,8 @@ module Carto
           _, _, @order, @direction = page_per_page_order_params(
             VALID_ORDER_PARAMS, default_order: 'id', default_order_direction: 'asc'
           )
-          load_type(required: false)
+          @status = VALID_STATUSES.include?(params[:status]) ? params[:status] : nil
+          load_type(required: false)  
         end
 
         def load_id
@@ -192,15 +195,17 @@ module Carto
           metadata[:subscription_list_price] = metadata[:subscription_list_price]&.to_f
           metadata[:estimated_delivery_days] = metadata[:estimated_delivery_days]&.to_f
           metadata[:available_in] = metadata[:available_in].delete('{}').split(',') unless metadata[:available_in].nil?
+          metadata[:is_public_data] = metadata[:is_public_data] == 't'
           metadata
         end
 
-        def license_info(metadata)
+        def license_info(metadata, status)
           {
             dataset_id: metadata[:id],
             available_in: metadata[:available_in],
             price: metadata[:subscription_list_price],
-            expires_at: Time.now.round + 1.year
+            expires_at: Time.now.round + 1.year,
+            status: status
           }
         end
       end

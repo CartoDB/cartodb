@@ -40,11 +40,13 @@ module Carto
       project, dataset, table = qualified_id.split('.')
       # FIXME: better save the type in Redis or look for it in the metadata tables
       type = table&.starts_with?('geography') ? 'geography' : 'dataset'
+      status = Time.now >= subscription['expires_at'] ? 'expired' : subscription['status']
       subscription = {
         project: project,
         dataset: dataset,
         table: table,
         id: qualified_id,
+        status: status,
         type: type,
         expires_at: subscription['expires_at'] && Time.parse(subscription['expires_at'])
       }
@@ -58,7 +60,11 @@ module Carto
         # Remove a previous dataset if exists
         redis_value = redis_value.reject { |d| d[:dataset_id] == dataset[:dataset_id] }
         # Create the new entry
-        new_value = [{ "dataset_id" => dataset[:dataset_id], "expires_at" => dataset[:expires_at].to_s }]
+        new_value = [{
+          "dataset_id" => dataset[:dataset_id],
+          "expires_at" => dataset[:expires_at].to_s,
+          "status" => dataset[:status]
+        }]
         # Append to the current one
         redis_value = redis_value + new_value
       end

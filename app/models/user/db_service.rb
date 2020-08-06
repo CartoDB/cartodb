@@ -622,9 +622,10 @@ module CartoDB
             db.run("ALTER EXTENSION odbc_fdw UPDATE TO '#{ODBC_FDW_VERSION}'")
           end
         end
-      rescue Sequel::DatabaseError
+      rescue Sequel::DatabaseError => error
         # For the time being we'll be resilient to the odbc_fdw not being available
         # and just proceed without installing it.
+        CartoDB::Logger.error(exception: error, message: "Could not install odbc_fdw", user: @user)
       end
 
       def setup_organization_owner

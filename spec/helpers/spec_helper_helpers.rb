@@ -15,9 +15,10 @@ module SpecHelperHelpers
         if !protected_tables.include?(t)
           begin
             SequelRails.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
-          rescue Sequel::DatabaseError => e
-            raise e unless e.message =~ /PG::Error: ERROR:  relation ".*" does not exist/
-          end
+          rescue StandardError => e # Sequel::DatabaseError => e
+            puts "Rescued exception: #{e.inspect}"
+            #raise e unless e.message =~ /PG::Error: ERROR:  relation ".*" does not exist/
+          end #
         end
       end
     end

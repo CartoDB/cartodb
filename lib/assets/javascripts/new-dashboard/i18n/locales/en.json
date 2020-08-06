@@ -727,6 +727,9 @@
     "exploreNotebook": "Explore Notebook",
     "datasetSize": "Dataset size"
   },
+  "Catalog": {
+    "back": "Back"
+  },
   "Dialogs": {
     "ShareViaURL": {
       "map": "map",

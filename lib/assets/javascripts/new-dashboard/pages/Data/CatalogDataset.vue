@@ -3,7 +3,7 @@
     <SecondaryNavigation>
       <a class="catalogDetail__back title is-small" href="javascript:history.back()">
         <img class="catalogDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
-        <span>{{ $t('CatalogDetailPage.back') }}</span>
+        <span>{{ $t('Catalog.back') }}</span>
       </a>
     </SecondaryNavigation>
 

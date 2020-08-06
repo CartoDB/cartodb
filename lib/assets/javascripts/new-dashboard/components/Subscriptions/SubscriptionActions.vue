@@ -17,16 +17,18 @@
       </SubscriptionButtonTooltip>
       <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsynced'">
         <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
-          <img src="../../assets/icons/catalog/information-circle.svg">
+          <img src="../../assets/icons/catalog/alert-triangle.svg">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey">
-            <p>{{dataset.unsynced_errors}}</p>
+            <h1>Unable to connect</h1>
+            <p>{{dataset.unsynced_errors ? `An error ocurred during the synchronization. Error code: ${dataset.unsynced_errors}.` : ''}}</p>
           </div>
         </button>
       </SubscriptionButtonTooltip>
       <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsyncable'">
         <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
-          <img src="../../assets/icons/catalog/alert-triangle.svg">
+          <img src="../../assets/icons/catalog/information-circle.svg">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey">
+            <h1>Insufficient storage</h1>
             <p>{{dataset.unsyncable_reason}}</p>
           </div>
         </button>

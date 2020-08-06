@@ -89,8 +89,7 @@
           v-else-if="currentMode === 'unsubscribe'"
           class="text is-caption is-txtNavyBlue u-mt--40"
         >
-          If you unsubcribe pellentesque diam nisi, faucibus varius enim mollis
-          sit amet. Cras nec varius magna, in dignissim diam:
+          If you unsubcribe this dataset the following content will be removed:
           <ul class="u-mt--20 u-ml--32" style="list-style: disc;">
             <li>
               If you imported the dataset, it will disappear from

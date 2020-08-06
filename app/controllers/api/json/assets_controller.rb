@@ -29,11 +29,13 @@ class Api::Json::AssetsController < Api::ApplicationController
 
   def destroy
     @stats_aggregator.timing('assets.destroy.delete') do
-      Asset[params[:id]].destroy
-      head :ok
-    rescue StandardError => e
-      log_error(exception: e, message: 'Error destroying asset')
-      render json: { error: [e.message] }, status: 400
+      begin
+        Asset[params[:id]].destroy
+        head :ok
+      rescue StandardError => e
+        log_error(exception: e, message: 'Error destroying asset')
+        render json: { error: [e.message] }, status: 400
+      end
     end
   end
 

@@ -1,7 +1,7 @@
 module Carto
   class DbPermissionService
 
-    include ::LoggerHelper
+    extend ::LoggerHelper
 
     TYPE_USER  = 'user'.freeze
     TYPE_ORG   = 'org'.freeze

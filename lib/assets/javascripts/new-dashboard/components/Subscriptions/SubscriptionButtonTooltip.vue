@@ -54,12 +54,15 @@ button {
       &::before {
         display: none;
       }
-      p {
-        text-align: left;
-        background-color: $white;
-        box-shadow: 0 2px 8px 0 rgba(44, 44, 44, 0.16);
-        border-radius: 4px;
-        padding: 16px;
+      flex-direction: column;
+      background-color: $white;
+      box-shadow: 0 2px 8px 0 rgba(44, 44, 44, 0.16);
+      border-radius: 4px;
+      padding: 16px;
+      text-align: left;
+      h1 {
+        font-weight: bold;
+        margin-bottom: 8px;
       }
     }
   }

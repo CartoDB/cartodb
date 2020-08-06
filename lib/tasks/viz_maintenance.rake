@@ -28,7 +28,7 @@ namespace :cartodb do
             puts "Deleting viz --> User: #{viz.user.username} | Viz id: #{viz.id}"
             viz.destroy!
           end
-        rescue => e
+        rescue StandardError => e
           puts "Error deleting viz #{viz.id}: #{e}"
         end
       end
@@ -95,7 +95,7 @@ namespace :cartodb do
           tokens = visualization.get_auth_tokens
           puts "  from #{visualization.auth_token} to #{tokens.first}"
           visualization.update_column(:auth_token, tokens.first)
-        rescue => e
+        rescue StandardError => e
           puts "ERROR #{e.inspect}"
         end
       end
@@ -113,7 +113,7 @@ namespace :cartodb do
             puts "Mapcapping #{visualization.id}"
             Carto::Mapcap.create!(visualization_id: visualization.id) unless dry
           end
-        rescue => e
+        rescue StandardError => e
           puts "ERROR mapcapping #{visualization}: #{e.inspect}"
         end
       end
@@ -134,7 +134,7 @@ namespace :cartodb do
         begin
           puts "Adding analyses to visualization #{visualization.id}"
           visualization.add_source_analyses unless dry
-        rescue => e
+        rescue StandardError => e
           puts "ERROR adding analyses to visualization #{visualization.id}: #{e.inspect}"
         end
       end
@@ -157,7 +157,7 @@ namespace :cartodb do
 
             mapcap.export_json = export_in_memory_visualization(rv, rv.user)
             mapcap.save
-          rescue => e
+          rescue StandardError => e
             puts "ERROR adding analyses to mapcap: #{mapcap.id}: #{e.inspect}"
           end
         end

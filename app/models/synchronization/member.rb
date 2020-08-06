@@ -441,7 +441,7 @@ module CartoDB
         end
 
         track_failure
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e,
           {
             error_code: error_code,
@@ -473,7 +473,7 @@ module CartoDB
         return unless table && table.automatic_geocoding
         log.append 'Running automatic geocoding...'
         table.automatic_geocoding.run
-      rescue => e
+      rescue StandardError => e
         log.append "Error while running automatic geocoding: #{e.message}"
       end # geocode_table
 

@@ -227,7 +227,7 @@ module CartoDB
           { schema: origin_schema, name: table }
         }
         @support_tables_helper.change_schema(destination_schema, table_name)
-      rescue => e
+      rescue StandardError => e
         drop("#{origin_schema}.#{table_name}")
         raise e
       end
@@ -323,7 +323,7 @@ module CartoDB
           begin
             # the logic inside the transaction may vary, so we let the caller to implement it
             yield(database, @destination_schema)
-          rescue => e
+          rescue StandardError => e
             log("Unable to replace #{name} with #{result.table_name}. Rollingback transaction and dropping #{result.table_name}: #{e}")
             drop("\"#{@destination_schema}\".\"#{result.table_name}\"")
             raise e
@@ -346,7 +346,7 @@ module CartoDB
           begin
             log("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
             move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
-          rescue => e
+          rescue StandardError => e
             log("Error replacing data in import: #{e}: #{e.backtrace}")
             raise e
           end

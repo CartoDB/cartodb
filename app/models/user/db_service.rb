@@ -310,7 +310,7 @@ module CartoDB
         if @user.organization_owner?
           begin
             roles << organization_member_group_role_member_name
-          rescue => e
+          rescue StandardError => e
             errors << "WARN: Error fetching org member role (does #{@user.organization.name} has that role?)"
           end
         end
@@ -325,7 +325,7 @@ module CartoDB
           @user.in_database(as: :superuser) do |database|
             begin
               database.run(query)
-            rescue => e
+            rescue StandardError => e
               # We can find organizations not yet upgraded for any reason or missing roles
               errors << e.message
             end
@@ -333,7 +333,7 @@ module CartoDB
         end
 
         errors
-      rescue => e
+      rescue StandardError => e
         # For broken organizations
         ["FATAL ERROR for #{name}: #{e.message}"]
       end
@@ -484,7 +484,7 @@ module CartoDB
 
         begin
           conn.run("DROP USER IF EXISTS \"#{username}\"")
-        rescue => e
+        rescue StandardError => e
           if !retried && e.message =~ /cannot be dropped because some objects depend on it/
             retried = true
             e.message =~ /object[s]? in database (.*)$/
@@ -598,7 +598,7 @@ module CartoDB
             end
           end
           return true
-        rescue => e
+        rescue StandardError => e
           CartoDB.notify_error(
             'Error installing and configuring geocoder api extension',
             error: e.inspect, user: @user
@@ -1191,7 +1191,7 @@ module CartoDB
           create_public_db_user
           set_database_search_path
         end
-      rescue => e
+      rescue StandardError => e
         # Undo metadata changes if process fails
         begin
           @user.this.update database_schema: old_database_schema_name
@@ -1243,7 +1243,7 @@ module CartoDB
           modified: pg_modified?(res),
           affected_rows: pg_size(res)
         }
-      rescue => e
+      rescue StandardError => e
         if e.is_a? PGError
           if e.message.include?("does not exist")
             if e.message.include?("column")
@@ -1266,7 +1266,7 @@ module CartoDB
             begin
               conn.run("CREATE USER \"#{@user.database_username}\" PASSWORD '#{@user.database_password}'")
               conn.run("GRANT publicuser to \"#{@user.database_username}\"")
-            rescue => e
+            rescue StandardError => e
               puts "#{Time.now} USER SETUP ERROR (#{@user.database_username}): #{$!}"
               raise e
             end
@@ -1282,7 +1282,7 @@ module CartoDB
           OWNER = #{::SequelRails.configuration.environment_for(Rails.env)['username']}
           ENCODING = 'UTF8'
           CONNECTION LIMIT=-1")
-        rescue => e
+        rescue StandardError => e
           puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{@user.database_name}: #{$!}"
           raise e
         end
@@ -1577,7 +1577,7 @@ module CartoDB
         invalidation_timeout = Cartodb.get_config(:invalidation_service, 'timeout') || 5
         invalidation_critical = Cartodb.get_config(:invalidation_service, 'critical') ? 1 : 0
         invalidation_retry = Cartodb.get_config(:invalidation_service, 'retry') || 5
-        invalidation_trigger_verbose = 
+        invalidation_trigger_verbose =
           Cartodb.get_config(:invalidation_service).fetch('trigger_verbose', true) == true ? 1 : 0
 
         @user.in_database(as: :superuser).run(

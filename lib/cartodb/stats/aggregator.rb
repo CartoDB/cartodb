@@ -43,7 +43,7 @@ module CartoDB
         Statsd.timing(timing_chain) do
           begin
             return_value = yield
-          rescue => e
+          rescue StandardError => e
             @timing_stack.pop
             raise e
           end

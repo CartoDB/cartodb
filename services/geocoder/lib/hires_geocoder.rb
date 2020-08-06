@@ -100,7 +100,7 @@ module CartoDB
       else
         @empty_processed_rows += 1
       end
-    rescue => e
+    rescue StandardError => e
       @log.append_and_store "Error processing row with search text #{input_row['searchtext']}: #{e.message}"
       CartoDB.notify_debug("Hires geocoding process row error",
                            error: e.backtrace.join("\n"),

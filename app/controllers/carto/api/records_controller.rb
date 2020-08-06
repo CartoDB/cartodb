@@ -25,7 +25,7 @@ module Carto
       def create
         primary_key = @user_table.service.insert_row!(filtered_row)
         render_jsonp(@user_table.service.record(primary_key))
-      rescue => e
+      rescue StandardError => e
         render_jsonp({ errors: [e.message] }, 400)
       end
 

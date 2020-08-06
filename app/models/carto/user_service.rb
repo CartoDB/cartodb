@@ -118,7 +118,7 @@ module Carto
             user_database.execute(%{SELECT cartodb.#{user_data_size_function}}).first['cdb_userdatasize'].to_i
           end
         end
-      rescue => e
+      rescue StandardError => e
         attempts += 1
         begin
           in_database(as: :superuser).execute("ANALYZE")

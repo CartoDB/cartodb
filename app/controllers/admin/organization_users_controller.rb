@@ -221,7 +221,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   rescue Carto::PasswordConfirmationError => e
     flash[:error] = e.message
     redirect_to organization_path(user_domain: params[:user_domain])
-  rescue => e
+  rescue StandardError => e
     log_error(message: 'Error deleting organizational user', exception: e, target_user: @user)
     flash[:error] = "User was not deleted. #{e.message}"
     redirect_to organization_path(user_domain: params[:user_domain])
@@ -236,7 +236,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   rescue Carto::PasswordConfirmationError => e
     flash[:error] = e.message
     render action: 'edit', status: e.status
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_exception(e, { user_id: @user.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API key. Please, try again and contact us if the problem persists"
     render 'edit'

@@ -257,7 +257,7 @@ class SessionsController < ApplicationController
       @signup_errors = errors
       render 'shared/signup_issue'
     end
-  rescue => e
+  rescue StandardError => e
     new_user = account_creator.nil? ? "account_creator nil" : account_creator.user.inspect
     CartoDB.report_exception(e, "Creating user", new_user: new_user)
     flash.now[:error] = e.message

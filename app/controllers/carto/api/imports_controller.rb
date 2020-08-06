@@ -32,7 +32,7 @@ module Carto
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
         CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 400)
       end
@@ -44,7 +44,7 @@ module Carto
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
         CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: { imports: e.message } }, 400)
       end
@@ -55,7 +55,7 @@ module Carto
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
         CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: { imports: e.message } }, 400)
       end
@@ -66,7 +66,7 @@ module Carto
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
         CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: { imports: e.message } }, 400)
       end

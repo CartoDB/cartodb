@@ -138,7 +138,7 @@ class Admin::OrganizationsController < Admin::AdminController
   rescue Carto::PasswordConfirmationError => e
     flash.now[:error] = e.message
     render action: 'settings', status: e.status
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_exception(e, { organization: @organization.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API keys. Please, try again and contact us if the problem persists"
     render action: 'settings'

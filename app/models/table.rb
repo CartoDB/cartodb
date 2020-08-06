@@ -354,7 +354,7 @@ class Table
 
     self.schema(reload:true)
     set_table_id
-  rescue => e
+  rescue StandardError => e
     self.handle_creation_error(e)
   end
 
@@ -392,7 +392,7 @@ class Table
 
     update_table_pg_stats
 
-  rescue => e
+  rescue StandardError => e
     handle_creation_error(e)
   end
 
@@ -423,7 +423,7 @@ class Table
         VACUUM ANALYZE #{qualified_table_name}
         })
     end
-  rescue => e
+  rescue StandardError => e
     CartoDB::notify_exception(e, { user: owner })
     false
   end
@@ -670,7 +670,7 @@ class Table
 
     update_cdb_tablemetadata
     return {:name => column_name, :type => type, :cartodb_type => cartodb_type}
-  rescue => e
+  rescue StandardError => e
     if e.message =~ /^(PG::Error|PGError|PG::UndefinedObject)/
       raise CartoDB::InvalidType, e.message
     else
@@ -1452,7 +1452,7 @@ class Table
       owner.in_database(:as => :superuser).run(%Q{UPDATE #{qualified_table_name} SET the_geom =
       ST_Transform(ST_GeomFromGeoJSON('#{geojson}'),4326) where cartodb_id =
       #{primary_key}})
-    rescue => e
+    rescue StandardError => e
       raise CartoDB::InvalidGeoJSONFormat, "Invalid geometry: #{e.message}"
     end
   end

@@ -86,7 +86,7 @@ module Carto
 
       begin
         do_import_data(import_job) if import_data?
-      rescue => e
+      rescue StandardError => e
         log.append('=== Error importing data. Rollback! ===')
         rollback_import_data(package)
         service.rollback_import_from_directory(package.meta_dir) if import_metadata?
@@ -106,7 +106,7 @@ module Carto
       rescue UserAlreadyExists, OrganizationAlreadyExists => e
         log.append('Organization already exists. Skipping!')
         raise e
-      rescue => e
+      rescue StandardError => e
         log.append('=== Error importing metadata. Rollback! ===')
         service.rollback_import_from_directory(package.meta_dir)
         raise e
@@ -152,7 +152,7 @@ module Carto
         ActiveRecord::Base.transaction do
           service.import_metadata_from_directory(imported, package.meta_dir)
         end
-      rescue => e
+      rescue StandardError => e
         log.append('=== Error importing visualizations and search tweets. Rollback! ===')
         rollback_import_data(package)
         service.rollback_import_from_directory(package.meta_dir)
@@ -174,7 +174,7 @@ module Carto
 
       import_job.run!
       import_job.terminate_connections
-    rescue => e
+    rescue StandardError => e
       log.append('There was an error while rolling back import data:' + e.to_s)
     end
 

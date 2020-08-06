@@ -298,7 +298,7 @@ class User < Sequel::Model
 
   def load_common_data(visualizations_api_url)
     CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_error(
       "Error loading common data for user",
       user: inspect,
@@ -309,7 +309,7 @@ class User < Sequel::Model
 
   def delete_common_data
     CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_error("Error deleting common data for user", user: self, error: e.inspect)
   end
 
@@ -479,13 +479,13 @@ class User < Sequel::Model
 
   def delete_external_data_imports
     Carto::ExternalDataImport.by_user_id(id).each(&:destroy)
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_error('Error deleting external data imports at user deletion', user: self, error: e.inspect)
   end
 
   def delete_external_sources
     delete_common_data
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_error('Error deleting external data imports at user deletion', user: self, error: e.inspect)
   end
 
@@ -1113,7 +1113,7 @@ class User < Sequel::Model
           user_database.fetch(%{SELECT cartodb.#{user_data_size_function}}).first[:cdb_userdatasize]
         end
       end
-    rescue => e
+    rescue StandardError => e
       attempts += 1
       begin
         in_database(:as => :superuser).fetch("ANALYZE")

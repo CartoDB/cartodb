@@ -119,7 +119,7 @@ module Carto
       rescue CartoDB::CentralCommunicationFailure => e
         log_error(exception: e, message: 'Central error deleting user at CartoDB', target_user: @user)
         render_jsonp({ errors: "Error deleting user: #{e.user_message}" }, 422)
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, user: user.inspect)
         render_jsonp({ message: "Error deleting user: #{e.message}", errors: user.errors }, 400)
       end

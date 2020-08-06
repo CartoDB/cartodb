@@ -117,7 +117,7 @@ module CartoDB
             job.log "Error fixing geometries during import, skipped (#{e.message})"
           end
         end
-      rescue => e
+      rescue StandardError => e
         raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError]) unless statement_timeout?(e.to_s)
         raise StatementTimeoutError.new(e.to_s, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
       end

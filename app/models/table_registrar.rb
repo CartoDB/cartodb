@@ -41,7 +41,7 @@ module CartoDB
           end
         end
       end
-    rescue => e
+    rescue StandardError => e
       CartoDB.notify_exception(e)
       raise e
     end

@@ -13,7 +13,7 @@ module Resque
 
         def self.perform(user_id)
           Carto::GhostTablesManager.new(user_id).link_ghost_tables_synchronously
-        rescue => e
+        rescue StandardError => e
           CartoDB.notify_exception(e)
           raise e
         end

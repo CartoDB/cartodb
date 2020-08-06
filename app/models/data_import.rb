@@ -853,7 +853,7 @@ class DataImport < Sequel::Model
 
     store_results(importer, runner, datasource_provider, manual_fields)
     importer.nil? ? false : importer.success?
-  rescue => e
+  rescue StandardError => e
     # Note: If this exception is not treated, results will not be defined
     # and the import will finish with a null error_code
     if manual_fields

@@ -25,7 +25,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
       uo.promote_user_to_admin
     end
     respond_with(:superadmin, @organization)
-  rescue => e
+  rescue StandardError => e
     begin
       @organization.delete if @organization && @organization.id
     rescue => ee

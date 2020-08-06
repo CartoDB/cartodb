@@ -66,7 +66,7 @@ class Asset < Sequel::Model
     errors.add(:file, "is too big, 1024x1024 max") if metadata.width > 1024 || metadata.height > 1024
     # If metadata reports no size, 99% sure not valid, so out
     errors.add(:file, "doesn't appear to be an image") if metadata.width == 0 || metadata.height == 0
-  rescue => e
+  rescue StandardError => e
     errors.add(:file, "error while uploading: #{e.message}")
   end
 

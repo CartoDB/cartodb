@@ -73,7 +73,7 @@ module CartoDB
         save
         @dirty = false
       end
-    rescue => e
+    rescue StandardError => e
       CartoDB.notify_error("Error appending log, likely an encoding issue",
         {
           error_info: "id: #{id}. #{self.inspect} --------- #{e.backtrace.join}"

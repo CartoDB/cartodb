@@ -24,7 +24,7 @@ module Carto
 
       def create
         render_jsonp(@user_table.service.add_column!(params.slice(:type, :name)))
-      rescue => e
+      rescue StandardError => e
         errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
         render_jsonp({ errors: errors }, 400)
       end
@@ -33,7 +33,7 @@ module Carto
         render_jsonp(@user_table.service.modify_column!(name: params[:id],
                                                         type: params[:type],
                                                         new_name: params[:new_name]))
-      rescue => e
+      rescue StandardError => e
         errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
         render_jsonp({ errors: errors }, 400)
       end
@@ -42,7 +42,7 @@ module Carto
         @user_table.service.drop_column!(name: params[:id])
 
         head :no_content
-      rescue => e
+      rescue StandardError => e
         errors = e.is_a?(CartoDB::InvalidType) ? [e.db_message] : [translate_error(e.message.split("\n").first)]
         render_jsonp({ errors: errors }, 400)
       end

@@ -121,7 +121,7 @@ module CartoDB
                   username: 'common-data'
                 )
               end
-            rescue => e
+            rescue StandardError => e
               CartoDB.notify_exception(e, {
                 name: dataset.fetch('name', 'ERR: name'),
                 source: dataset.fetch('source', 'ERR: source'),
@@ -150,7 +150,7 @@ module CartoDB
             # This happens for the organization quota validation in the user model so we bypass this
             user.save(:validate => false, raise_on_failure: true)
           end
-        rescue => e
+        rescue StandardError => e
           CartoDB.notify_exception(e, {user: user})
         end
       end

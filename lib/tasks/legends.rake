@@ -87,7 +87,7 @@ namespace :carto do
             end
 
             raise 'MapcappedVisualizationUpdater returned false' unless success
-          rescue => e
+          rescue StandardError => e
             errors += 1
             STDERR.puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
           end

@@ -35,7 +35,7 @@ module Resque
         else
           raise e
         end
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e)
         raise e
       end

@@ -1,6 +1,21 @@
 <template>
   <section class="subscriptions-section">
     <div class="container grid">
+      <div class="full-width">
+        <SectionTitle class="grid-cell" :showActionButton="true">
+          <template slot="icon">
+            <img src="../../assets/icons/subscriptions/subscriptions_tick-icon.svg" width="18" height="20" />
+          </template>
+          <template slot="title">
+            <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.subscriptions')"/>
+          </template>
+          <template slot="actionButton">
+            <router-link :to="{ name: 'spatial-data-catalog' }"  exact>
+              <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
+            </router-link>
+          </template>
+        </SectionTitle>
+      </div>
       <div v-if="loading" class="u-flex u-flex__direction--column u-flex__align--center u-width--100 u-mt--120">
         <span class="loading u-mb--12">
           <img svg-inline src="../../assets/icons/common/loading.svg" class="loading__svg"/>
@@ -22,23 +37,6 @@
           </router-link>
         </div>
         <template v-else>
-          <SectionTitle class="grid-cell" :showActionButton="true">
-            <template slot="icon">
-              <img src="../../assets/icons/subscriptions/subscriptions_tick-icon.svg" width="18" height="20" />
-            </template>
-
-            <template slot="title">
-              <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.yourSubscriptions')"/>
-            </template>
-
-            <template slot="dropdownButton"></template>
-
-            <template slot="actionButton">
-              <router-link :to="{ name: 'spatial-data-catalog' }"  exact>
-                <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
-              </router-link>
-            </template>
-          </SectionTitle>
           <ul>
             <div class="subscription-item u-flex" v-for="subscription in subscriptionsByPage" :key="subscription.slug">
               <DatasetListItem :dataset="subscription"></DatasetListItem>
@@ -142,8 +140,23 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
+.full-width {
+  width: 100%;
+}
+
 .subscriptions-section {
+  min-height: 640px;
   margin-top: 64px;
+
+  &__filter {
+    justify-content: space-between;
+    height: 168px;
+
+    &--dropdown {
+      position: relative;
+    }
+  }
+
   .empty-state {
     margin: 20vh 0 58px;
     /deep/ h6 {

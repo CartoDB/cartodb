@@ -7,7 +7,7 @@
             <img src="../../assets/icons/section-title/catalog.svg" width="18" height="20" />
           </template>
           <template slot="title">
-            <span>{{ $t('DataPage.tabs.catalog') }}</span>
+            <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.catalog')"/>
           </template>
         </SectionTitle>
       </div>
@@ -96,12 +96,14 @@ import SearchBox from 'new-dashboard/components/Catalog/browser/SearchBox';
 import { filtersMetadata } from 'new-dashboard/utils/catalog/constants';
 import { toTitleCase } from 'new-dashboard/utils/catalog/string-to-title-case';
 import icon_by_environment from 'new-dashboard/mixins/catalog/icon_by_environment';
+import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 
 export default {
   name: 'CatalogPage',
   mixins: [icon_by_environment],
   components: {
     SectionTitle,
+    VisualizationsTitle,
     Button,
     DatasetListItem,
     FilterBox,
@@ -185,7 +187,7 @@ export default {
 
 .catalog-section {
   min-height: 640px;
-  margin-top: 40px;
+  margin-top: 64px;
 
   &__filter {
     justify-content: space-between;
@@ -199,17 +201,6 @@ export default {
 
 .full-width {
   width: 100%;
-}
-
-@import 'new-dashboard/styles/variables';
-
-header {
-  padding-top: 24px;
-
-  h1 {
-    padding-bottom: 24px;
-    border-bottom: 1px solid $neutral--300;
-  }
 }
 
 .results-container {
@@ -270,24 +261,6 @@ header {
     text-align: right;
   }
 }
-
-// .catalog {
-//   min-height: 640px;
-//   margin-top: 64px;
-
-//   &__filter {
-//     justify-content: space-between;
-//     height: 168px;
-
-//     &--dropdown {
-//       position: relative;
-//     }
-//   }
-// }
-
-// .full-width {
-//   width: 100%;
-// }
 
 // CHECK do-catalog styles V
 

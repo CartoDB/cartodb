@@ -1,6 +1,7 @@
 require_relative 'request'
 require_relative 'response_logger'
 require_relative 'null_logger'
+require_relative '../current_request'
 
 module Carto
   module Http

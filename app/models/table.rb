@@ -24,6 +24,7 @@ require_dependency 'carto/valid_table_name_proposer'
 class Table
   extend Forwardable
   include Carto::TableUtils
+  include ::LoggerHelper
 
   # TODO Part of a service along with schema
   # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first

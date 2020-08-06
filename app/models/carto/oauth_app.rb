@@ -58,7 +58,7 @@ module Carto
     rescue StandardError => e
       log_warning(
         message: "Couldn't notify users about oauth_app deletion",
-        notification: notification.attributes.slice(:id, :name),
+        notification: notification&.attributes&.slice(:id, :name),
         exception: e
       )
       raise e

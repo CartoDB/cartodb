@@ -14,6 +14,9 @@ describe Carto::Http::Client do
     @client = Carto::Http::Client.get(http_client_tag, log_requests: true)
   end
 
+  after(:each) do
+    Typhoeus::Expectation.clear
+  end
 
   describe '#request' do
     it 'wraps creation of typhoeus request objects' do

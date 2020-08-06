@@ -23,6 +23,7 @@ module Carto
 
       # Returns a wrapper to a typhoeus request object
       def request(url, options = {})
+        options[:headers]['X-Request-ID'] = request_id if request_id
         Request.new(@logger, url, options)
       end
 

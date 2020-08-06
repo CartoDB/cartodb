@@ -4,6 +4,11 @@ module Carto
       super "Subscription not found with id #{subscription_id} for user #{username}"
     end
   end
+  class EntityNotFoundError < StandardError
+    def initialize(entity_id)
+      super "Entity not found with id #{entity_id}"
+    end
+  end
 
   module Api
     module Public
@@ -22,8 +27,13 @@ module Carto
 
         setup_default_rescues
         rescue_from Carto::SubscriptionNotFoundError, with: :rescue_from_subscription_not_found
+        rescue_from Carto::EntityNotFoundError, with: :rescue_from_entity_not_found
 
-        respond_to :json
+
+        rescue_from Carto::SubscriptionNotFoundError, with: :rescue_from_subscription_not_found
+        rescue_from Carto::EntityNotFoundError, with: :rescue_from_entity_not_found
+
+                respond_to :json
 
         VALID_TYPES = %w(dataset geography).freeze
         VALID_STATUSES = %w(active requested).freeze
@@ -91,6 +101,13 @@ module Carto
           head :no_content
         end
 
+        def entity_info
+          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
+          info = doss.entity_info(params[:entity_id])
+          raise Carto::EntityNotFoundError.new(params[:entity_id]) if info[:error].present?
+          render json: info
+        end
+
         def sync_info
           check_subscription!
           render json: Carto::DoSyncServiceFactory.get_for_user(@user).sync(params[:subscription_id])
@@ -116,6 +133,10 @@ module Carto
         end
 
         def rescue_from_subscription_not_found(exception)
+          render_jsonp({ errors: exception.message }, 404)
+        end
+
+        def rescue_from_entity_not_found(exception)
           render_jsonp({ errors: exception.message }, 404)
         end
 

@@ -468,6 +468,44 @@ describe Carto::Api::Public::DataObservatoryController do
     end
   end
 
+  describe 'entity_info' do
+    before(:all) do
+      @url_helper = 'api_v4_do_entity_info'
+    end
+
+    before(:each) do
+      # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+      @doss = mock
+      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
+    end
+
+    after(:each) do
+      # Cartodb::Central.any_instance.unstub(:check_do_enabled)
+    end
+
+    it 'returns 200 with dataset info ' do
+      dataset_id = 'carto.zzz.table1'
+      dataset_info = {
+        id: dataset_id, project: 'carto', dataset: 'zzz', table: 'table1',
+        estimated_size: 10000, estimated_row_count: 1000, estimated_columns_count: 1000
+      }
+      @doss.stubs(:entity_info).with(dataset_id).returns(dataset_info)
+      get_json endpoint_url(api_key: @master, entity_id: dataset_id), @headers do |response|
+        expect(response.status).to eq(200)
+        expect(response.body).to eq(dataset_info)
+      end
+    end
+
+    it 'returns 404 if the dataset does not exist ' do
+      dataset_id = 'carto.zzz.table1'
+      @doss.stubs(:entity_info).with(dataset_id).returns({ error: 'bad entity id'})
+      get_json endpoint_url(api_key: @master, entity_id: dataset_id), @headers do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
+  end
+
   describe 'subscribe' do
     before(:all) do
       @url_helper = 'api_v4_do_subscriptions_create_url'

@@ -56,11 +56,12 @@ module Carto
       notification = Carto::Notification.create!(body: notification_body, icon: Notification::ICON_ALERT)
       ::Resque.enqueue(::Resque::UserJobs::Notifications::Send, @user_ids, notification.id)
     rescue StandardError => e
-      CartoDB::Logger.warning(
-        message: "Couldn't notify users about oauth_app '#{name}' deletion",
-        notification_id: notification&.id,
-        exception: e)
-        raise e
+      log_warning(
+        message: "Couldn't notify users about oauth_app deletion",
+        notification: notification.attributes.slice(:id, :name),
+        exception: e
+      )
+      raise e
     end
 
     def notification_body

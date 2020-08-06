@@ -34,8 +34,8 @@ class Admin::OrganizationsController < Admin::AdminController
       @organization.destroy_cascade(delete_in_central: true)
       redirect_to logout_url
     end
-  rescue => e
-    CartoDB::Logger.error(message: "Error deleting organization", exception: e, organization: @organization)
+  rescue StandardError => e
+    log_error(message: 'Error deleting organization', exception: e, organization: @organization)
     flash.now[:error] = "Error deleting organization: #{e.message}"
     render 'show', status: 500
   end

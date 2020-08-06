@@ -78,11 +78,11 @@ module Carto
           format.all  { render text: '<script>window.close();</script>', content_type: 'text/html' }
         end
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
-        CartoDB::Logger.warning(message: "Expired oauth token", exception: e, user: uri_user, params: params)
+        log_warning(message: "Expired oauth token", exception: e, current_user: uri_user, params: params)
         render text: 'Expired token. Try reconnecting<script>setTimeout(function(){window.close()}, 1000);</script>',
                content_type: 'text/html', status: 401
-      rescue => e
-        CartoDB::Logger.warning(message: "Error in oauth callback", exception: e, user: uri_user, params: params)
+      rescue StandardError => e
+        log_warning(message: "Error in oauth callback", exception: e, current_user: uri_user, params: params)
         render text: 'Connection failed<script>setTimeout(function(){window.close()}, 1000);</script>',
                content_type: 'text/html', status: 400
       end

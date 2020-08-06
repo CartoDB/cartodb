@@ -5,6 +5,9 @@ require_dependency 'carto/named_maps/template'
 module Carto
   module NamedMaps
     class Api
+
+      include ::LoggerHelper
+
       HTTP_CONNECT_TIMEOUT_SECONDS = 45
       HTTP_REQUEST_TIMEOUT_SECONDS = 60
       RETRY_TIME_SECONDS = 2
@@ -168,13 +171,13 @@ module Carto
       end
 
       def log_response(response, action)
-        CartoDB::Logger.error(
-          message: 'Named Maps Api',
+        log_error(
+          message: 'Error in named maps API',
+          current_user: @user,
           action: action,
-          user: @user,
-          response_code: response.code,
-          url: response.request.url,
-          body: response.body
+          request_url: response.request.url,
+          status: response.code,
+          response_body: response.body
         )
       end
     end

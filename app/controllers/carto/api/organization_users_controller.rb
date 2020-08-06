@@ -139,7 +139,7 @@ module Carto
 
         render_jsonp 'User deleted', 200
       rescue CartoDB::CentralCommunicationFailure => e
-        CartoDB::Logger.error(exception: e, message: 'Central error deleting user from EUMAPI', user: @user)
+        log_error(exception: e, message: 'Central error deleting user from EUMAPI', target_user: @user)
         render_jsonp "User couldn't be deleted", 500
       rescue => e
         render_jsonp "User couldn't be deleted: #{e.message}", 500

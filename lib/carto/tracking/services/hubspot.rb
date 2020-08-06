@@ -4,6 +4,8 @@ module Carto
   module Tracking
     module Services
       module Hubspot
+        include ::LoggerHelper
+
         def report_to_hubspot
           return unless ::Hubspot::EventsAPI.instance.enabled?
 
@@ -15,7 +17,7 @@ module Carto
             Resque.enqueue(hubspot_job, id, @format.to_hubspot)
           else
             message = 'Carto::Tracking: Hubspot event id not configured'
-            CartoDB::Logger.error(message: message, event_name: event_name)
+            log_error(message: message, event: { name: event_name })
           end
         end
 

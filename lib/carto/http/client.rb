@@ -1,11 +1,14 @@
 require_relative 'request'
 require_relative 'response_logger'
 require_relative 'null_logger'
+require './app/helpers/logger_helper'
 
 module Carto
   module Http
 
     class Client
+      include ::LoggerHelper
+
       private_class_method :new
 
       def self.get(tag, extra_options = {})
@@ -67,12 +70,8 @@ module Carto
         request.run
 
         downloaded_file
-      rescue => e
-        CartoDB::Logger.error(
-          exception: e,
-          url: url,
-          file_path: file_path
-        )
+      rescue StandardError => e
+        log_error(exception: e, url: url, file_path: file_path)
         raise e
       end
 

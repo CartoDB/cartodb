@@ -73,8 +73,6 @@ class Table
     if @user_table.respond_to?(:save!)
       @user_table.save!
     else
-      # This should not happen with production code. Trace would lead the refactor
-      CartoDB::Logger.debug(message: "::Table#save invoked on Sequel", user_table: @user_table)
       @user_table.save
     end
 
@@ -592,11 +590,6 @@ class Table
         else
           new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
-          # INFO: There's a complex logic for retrying and need to know how often it is actually done
-          CartoDB::Logger.debug(message: 'Retrying insert_row!',
-                                user_id: user_id,
-                                qualified_table_name: qualified_table_name,
-                                raw_attributes: raw_attributes)
           retry
         end
       end
@@ -639,15 +632,8 @@ class Table
             new_column_type = get_new_column_type(invalid_column)
             if new_column_type
               user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
-              # INFO: There's a complex logic for retrying and need to know how often it is actually done
-              CartoDB::Logger.debug(message: 'Retrying update_row!',
-                                    user_id: user_id,
-                                    qualified_table_name: qualified_table_name,
-                                    row_id: row_id,
-                                    raw_attributes: raw_attributes,
-                                    exception: e)
               if (retries += 1) > MAX_UPDATE_ROW_RETRIES
-                CartoDB::Logger.error(message: 'Max update_row! retries reached',
+                log_error(message: 'Max update_row! retries reached',
                                       user_id: user_id,
                                       qualified_table_name: qualified_table_name,
                                       row_id: row_id,
@@ -986,7 +972,7 @@ class Table
     owner.in_database.execute(%{ANALYZE #{qualified_table_name};})
   rescue StandardError => exception
     if exception.message =~ /canceling statement due to statement timeout/i
-      CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
+      log_info(exception: exception, message: 'Analyze in import raised statement timeout')
     else
       raise exception
     end
@@ -996,9 +982,9 @@ class Table
     owner.in_database.execute(%{ANALYZE #{qualified_table_name}(the_geom);})
   rescue StandardError => exception
     if exception.message =~ /canceling statement due to statement timeout/i
-      CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
+      log_info(exception: exception, message: 'Analyze in import raised statement timeout')
     elsif exception.cause.is_a?(PG::UndefinedColumn)
-      CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised column does not exist')
+      log_info(exception: exception, message: 'Analyze in import raised column does not exist')
     else
       raise exception
     end
@@ -1080,12 +1066,11 @@ class Table
             layer.rename_table(@name_changed_from, name).save
           end
         end
-      rescue => exception
-        CartoDB::Logger.error(exception: exception,
-                              message: "Failed while renaming visualization",
-                              user: owner,
-                              from_name: @name_changed_from,
-                              to_name: name)
+      rescue StandardError => exception
+        log_error(
+          exception: exception, message: 'Error renaming visualization',
+          current_user: owner, error_detail: "Renaming from #{@name_changed_from} to #{name}"
+        )
         raise exception
       end
     end
@@ -1191,13 +1176,11 @@ class Table
 
   def update_cdb_tablemetadata
     owner.in_database(as: :superuser).run(%{ SELECT CDB_TableMetadataTouch(#{table_id}::oid::regclass) })
-  rescue => exception
-    CartoDB::Logger.error(message: 'update_cdb_tablemetadata failed',
-                          exception: exception,
-                          user: owner,
-                          table_id: table_id,
-                          oid: get_table_id,
-                          table_name: name)
+  rescue StandardError => e
+    log_error(
+      message: 'update_cdb_tablemetadata failed', exception: e, current_user: owner,
+      table: { id: table_id, name: name, oid: get_table_id }
+    )
   end
 
   def propagate_attribution_change(attributions)

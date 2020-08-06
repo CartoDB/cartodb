@@ -109,9 +109,7 @@ module Carto
         return nil unless map.view_bounds_sw && map.view_bounds_ne
 
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
-      rescue => e
-        CartoDB::Logger.debug(
-          message: "Error parsing map bounds: #{map.id}, #{map.view_bounds_sw}, #{map.view_bounds_ne}", exception: e)
+      rescue StandardError
         nil
       end
 

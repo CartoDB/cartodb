@@ -199,7 +199,7 @@ describe Carto::Mapcap do
       end
 
       it 'should work' do
-        CartoDB::Logger.expects(:warning).never
+        Rails.logger.expects(:warning).never
         User.any_instance.expects(:in_database).never
         @mapcap_nodb.regenerate_visualization
         User.any_instance.unstub(:in_database)
@@ -221,7 +221,7 @@ describe Carto::Mapcap do
       end
 
       it 'should contain same layers in same order' do
-        CartoDB::Logger.expects(:warning).never
+        Rails.logger.expects(:warning).never
         User.any_instance.stubs(:in_database).raises("Mapcap regeneration shouldn't touch user database")
         Carto::User.any_instance.stubs(:in_database).raises("Mapcap regeneration shouldn't touch user database")
         regenerated_visualization = @mapcap.regenerate_visualization

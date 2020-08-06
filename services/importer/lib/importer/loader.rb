@@ -16,6 +16,9 @@ require_relative '../../../../lib/cartodb/stats/importer'
 module CartoDB
   module Importer2
     class Loader
+
+      include ::LoggerHelper
+
       SCHEMA            = 'cdb_importer'
       TABLE_PREFIX      = 'importer'
       NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
@@ -110,7 +113,7 @@ module CartoDB
           rescue StandardError => e
             raise e unless statement_timeout?(e.to_s)
             # Ignore timeouts in query batcher
-            CartoDB::Logger.warning(exception: e, message: 'Could not fix geometries during import')
+            log_warning(exception: e, message: 'Could not fix geometries during import')
             job.log "Error fixing geometries during import, skipped (#{e.message})"
           end
         end

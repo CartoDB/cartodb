@@ -85,7 +85,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
     Carto::Ldap::Entry.new(valid_ldap_entry.first, self)
   rescue Net::LDAP::Error => e
-    CartoDB::Logger.error(exception: e, message: 'Error authenticating against LDAP', username: username)
+    log_error(exception: e, message: 'Error authenticating against LDAP', current_user: username)
   end
 
   # INFO: Resets connection if already made

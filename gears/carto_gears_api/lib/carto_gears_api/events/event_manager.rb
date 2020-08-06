@@ -4,6 +4,7 @@ module CartoGearsApi
   module Events
     class EventManager
       include Singleton
+      include ::LoggerHelper
 
       def initialize
         @event_listeners = {}
@@ -35,10 +36,10 @@ module CartoGearsApi
           begin
             listener.call(event)
           rescue => exception
-            CartoDB::Logger.error(
+            log_error(
               message: 'Error while running Gears event listeners',
               exception: exception,
-              event: event.class.name
+              event: { class: event.class.name }
             )
           end
         end

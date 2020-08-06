@@ -45,8 +45,8 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   def destroy
     @organization.destroy_cascade(delete_in_central: false)
     respond_with(:superadmin, @organization)
-  rescue => e
-    CartoDB::Logger.error(exception: e, message: 'Error deleting organization', organization: @organization)
+  rescue StandardError => e
+    log_error(exception: e, message: 'Error deleting organization', organization: @organization)
     render json: { errors: [e.inspect] }, status: 500
   end
 

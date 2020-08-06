@@ -89,7 +89,7 @@ describe Synchronization::Member do
     describe "synchronization" do
       it 'syncs' do
         # TODO: this is the minimum test valid to reproduce #11889, it's not a complete sync test
-        CartoDB::Logger.stubs(:error).never
+        Rails.logger.expects(:error).never
 
         url = 'https://wadus.com/guess_country.csv'
 
@@ -131,7 +131,7 @@ describe Synchronization::Member do
         @user1.state = Carto::User::STATE_LOCKED
         @user1.save
 
-        CartoDB::Logger.stubs(:error).once
+        Rails.logger.expects(:error).once
 
         member.fetch.run
 

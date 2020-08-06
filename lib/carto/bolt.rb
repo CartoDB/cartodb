@@ -1,5 +1,8 @@
 module Carto
   class Bolt
+
+    include ::LoggerHelper
+
     DEFAULT_REDIS_OBJECT = $users_metadata
     DEFAULT_TTL_MS = 10000
     DEFAULT_RETRY_ATTEMPTS = 1
@@ -55,7 +58,7 @@ module Carto
         end
         sleep((timeout / 1000.0).second)
       end
-      CartoDB::Logger.warning(message: "Couldn't acquire bolt after #{attempts} attempts with #{timeout} timeout")
+      log_warning(message: "Couldn't acquire bolt", attempts: attempts, timeout: timeout)
       false
     end
 

@@ -1,6 +1,7 @@
 require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/authentication_manager'
 require_dependency 'carto/http_header_authentication'
+require_dependency 'carto/current_request'
 
 class ApplicationController < ActionController::Base
   include UrlHelper

@@ -304,7 +304,7 @@ class DataImport < Sequel::Model
         end
       rescue Addressable::URI::InvalidURIError
         # this should only happen in testing, but just in case capture and log
-        CartoDB::Logger.warning(message: 'InvalidURIError when processing data_source', data_source: data_source)
+        log_warning(message: 'InvalidURIError when processing data_source', data_source: data_source)
       end
     end
 
@@ -1202,9 +1202,8 @@ class DataImport < Sequel::Model
                                                     origin: origin)).report
       end
     end
-  rescue => exception
-    CartoDB::Logger.warning(message: 'Carto::Tracking: Couldn\'t report event',
-                            exception: exception)
+  rescue StandardError => e
+    log_warning(message: "Carto::Tracking: Couldn't report event", exception: e)
   end
 
   def sync?

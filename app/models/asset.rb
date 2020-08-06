@@ -133,8 +133,8 @@ class Asset < Sequel::Model
       local_url = CGI.unescape(public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
       begin
         FileUtils.rm((public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/'))
-      rescue => e
-        CartoDB::Logger.error(message: "Error removing asset", asset: self, exception: e)
+      rescue StandardError => e
+        log_error(message: "Error removing asset", current_user: self, exception: e)
       end
       return
     end

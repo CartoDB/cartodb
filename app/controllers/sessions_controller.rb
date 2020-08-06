@@ -398,8 +398,8 @@ class SessionsController < ApplicationController
       # We've been given a response back from the IdP, process it
       begin
         saml_service.process_logout_response(params[:SAMLResponse])
-      rescue => e
-        CartoDB::Logger.warning(exception: e, message: 'Error proccessing SAML logout')
+      rescue StandardError => e
+        log_warning(exception: e, message: 'Error proccessing SAML logout')
       ensure
         cdb_logout
       end

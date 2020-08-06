@@ -2,6 +2,9 @@ require_relative 'bolt.rb'
 
 module Carto
   class GhostTablesManager
+
+    include ::LoggerHelper
+
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
     MUTEX_TTL_MS = 600000
     MAX_TABLES_FOR_SYNC_RUN = 8
@@ -70,7 +73,7 @@ module Carto
       end
       if !lock_acquired && warning_params.present?
         # run even if lock wasn't aquired
-        CartoDB::Logger.warning(warning_params)
+        log_warning(warning_params)
         yield
       end
     end
@@ -206,6 +209,8 @@ module Carto
   end
 
   class TableFacade
+    include ::LoggerHelper
+
     attr_reader :id, :name, :user_id
 
     def initialize(id, name, user_id)
@@ -238,11 +243,7 @@ module Carto
 
       new_table.save
     rescue StandardError => exception
-      CartoDB::Logger.error(message: 'Ghost tables: Error creating UserTable',
-                            exception: exception,
-                            user: user,
-                            table_name: name,
-                            table_id: id)
+      log_error(message: 'Ghost tables: Error creating UserTable', exception: exception)
     end
 
     def rename_user_table_vis
@@ -253,11 +254,7 @@ module Carto
 
       user_table_vis.store
     rescue StandardError => exception
-      CartoDB::Logger.error(message: 'Ghost tables: Error renaming Visualization',
-                            exception: exception,
-                            user: user,
-                            table_name: name,
-                            table_id: id)
+      log_error(message: 'Ghost tables: Error renaming Visualization', exception: exception)
     end
 
     def drop_user_table
@@ -268,11 +265,7 @@ module Carto
       table_to_drop.keep_user_database_table = true
       table_to_drop.destroy
     rescue StandardError => exception
-      CartoDB::Logger.error(message: 'Ghost tables: Error dropping Table',
-                            exception: exception,
-                            user: user,
-                            table_name: name,
-                            table_id: id)
+      log_error(message: 'Ghost tables: Error dropping Table', exception: exception)
     end
 
     def regenerate_user_table
@@ -281,11 +274,7 @@ module Carto
       user_table_to_regenerate.table_id = id
       user_table_to_regenerate.save
     rescue StandardError => exception
-      CartoDB::Logger.error(message: 'Ghost tables: Error syncing table_id for UserTable',
-                            exception: exception,
-                            user: user,
-                            table_name: name,
-                            table_id: id)
+      log_error(message: 'Ghost tables: Error syncing table_id for UserTable', exception: exception)
     end
 
     def eql?(other)
@@ -298,6 +287,12 @@ module Carto
 
     def hash
       [id, name, user_id].hash
+    end
+
+    private
+
+    def log_context
+      super.merge(target_user: user, table: { id: id, name: name })
     end
   end
 end

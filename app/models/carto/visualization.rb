@@ -503,7 +503,7 @@ class Carto::Visualization < ActiveRecord::Base
         layer.options[:letter] = analysis.natural_id.first
         layer.save
       else
-        CartoDB::Logger.warning(message: 'Couldn\'t add source analysis for layer', user: user, layer: layer)
+        log_warning(message: "Couldn't add source analysis for layer", current_user: user, layer: layer.attributes)
       end
     end
   end
@@ -678,13 +678,13 @@ class Carto::Visualization < ActiveRecord::Base
 
   def perform_invalidations
     invalidation_service.invalidate
-  rescue => e
+  rescue StandardError => e
     # This is called at an after_commit. If there's any error, we won't notice
     # but the after_commit chain stops.
     # This was discovered during #12844, because "Updates changes even if named maps communication fails" test
     # begun failing because Overlay#invalidate_cache invokes this method directly.
     # We chose to log and continue to keep coherence on calls to this outside the callback.
-    CartoDB::Logger.error(message: "Error on visualization invalidation", exception: e, visualization_id: id)
+    log_error(message: "Error on visualization invalidation", exception: e, visualization: { id: id })
   end
 
   def propagate_privacy_and_name_to

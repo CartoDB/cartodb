@@ -47,7 +47,7 @@ module Carto
     rescue StandardError => e
       puts "ERROR: #{e}"
       log.append_exception('Importing', exception: e)
-      CartoDB::Logger.error(exception: e, message: 'Error importing user data', job: inspect)
+      log_error(exception: e, message: 'Error importing user data', error_detail: inspect)
       update_attributes(state: STATE_FAILURE)
       false
     ensure
@@ -138,12 +138,11 @@ module Carto
       u = org_import? ? ::Organization[organization.id].owner : ::User[user.id]
       begin
         u.db_service.connect_to_aggregation_tables
-      rescue => e
-        CartoDB::Logger.error(message: "Error trying to refresh aggregation tables for user",
-                              exception: e,
-                              user: u,
-                              organization: (org_import? ? organization : nil),
-                              user_migration_import_id: id)
+      rescue StandardError => e
+        log_error(
+          message: 'Error refreshing aggregation tables', exception: e,
+          current_user: u, organization: u.organization, user_migration_import: self.attributes.slice(:id)
+        )
       end
     end
 

@@ -109,7 +109,7 @@ describe Carto::Builder::Public::EmbedsController do
         actual_database_name = visualization.user.database_name
         visualization.user.update_attribute(:database_name, 'wadus')
 
-        CartoDB::Logger.expects(:warning).never
+        Rails.logger.expects(:warning).never
         get builder_visualization_public_embed_url(visualization_id: visualization.id)
         response.status.should == 200
 

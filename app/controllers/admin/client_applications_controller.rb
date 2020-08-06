@@ -39,7 +39,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
         raise e
       end
     rescue CartoDB::CentralCommunicationFailure => e
-      CartoDB::Logger.warning(exception: e, message: 'Error updating API key in mobile apps')
+      log_warning(exception: e, message: 'Error updating API key in mobile apps')
       error_message = "Your API key has been successfully generated, " \
                       "but there was an error updating the license keys of mobile apps"
     rescue => e

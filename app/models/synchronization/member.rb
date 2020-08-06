@@ -24,6 +24,8 @@ module CartoDB
     end
 
     class Member
+
+      include ::LoggerHelper
       include Carto::Configuration
       include Virtus.model
 
@@ -207,11 +209,11 @@ module CartoDB
 
         notify
 
-      rescue => exception
+      rescue StandardError => exception
         if exception.is_a? CartoDB::Datasources::NotFoundDownloadError
-          CartoDB::Logger.debug(exception: exception, sync_id: id)
+          log_warning(exception: exception, synchronization_member: { id: id })
         else
-          CartoDB::Logger.error(exception: exception, sync_id: id)
+          log_error(exception: exception, synchronization_member: { id: id })
         end
         log.append_and_store exception.message, truncate = false
         log.append exception.backtrace.join("\n"), truncate = false
@@ -393,10 +395,11 @@ module CartoDB
         self.run_at         = Time.now + interval
         self.modified_at    = importer.last_modified
         geocode_table
-      rescue => exception
-        CartoDB::Logger.error(exception: exception,
-                                message: 'Error updating state for sync table',
-                                sync_id: self.id)
+      rescue StandardError => exception
+        log_error(
+          exception: exception, message: 'Error updating state for sync table',
+          synchronization_member: { id: id }
+        )
         self
       end
 

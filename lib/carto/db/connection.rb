@@ -12,6 +12,8 @@ module Carto
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
 
       class << self
+        include ::LoggerHelper
+
         def connect(db_host, db_name, options = {})
           validate_options(options)
           if options[:statement_timeout]
@@ -129,17 +131,21 @@ module Carto
 
         def validate_options(options)
           if !options[:user_schema] && options[:as] != :cluster_admin
-            CartoDB::Logger.error(message: 'Connection needs user schema if the user is not the cluster admin',
-                                  params: { user_type: options[:as],
-                                            username: options[:username],
-                                            schema: options[:user_schema] })
+            log_error(
+              message: 'Connection needs user schema if the user is not the cluster admin',
+              target_user: options[:username],
+              params: { user_type: options[:as], schema: options[:user_schema] }
+            )
             raise Carto::Db::InvalidConfiguration.new('Connection needs user schema if user is not the cluster admin')
           end
 
           ## If we don't pass user type we are using a regular user and username/password is mandatory
           if !options[:as] && (!options[:username] || !options[:password])
-            CartoDB::Logger.error(message: 'Db connection needs username/password for regular user',
-                                  params: { user_type: options[:as], username: options[:username] })
+            log_error(
+              message: 'Db connection needs username/password for regular user',
+              target_user: options[:username],
+              params: { user_type: options[:as] }
+            )
             raise Carto::Db::InvalidConfiguration.new('Db connection needs user username/password for regular user')
           end
         end

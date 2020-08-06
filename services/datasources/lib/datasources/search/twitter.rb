@@ -14,6 +14,8 @@ module CartoDB
       # as this datasource is not intended to be used in such.
       class Twitter < BaseFileStream
 
+        include ::LoggerHelper
+
         # Required for all datasources
         DATASOURCE_NAME = 'twitter_search'
 
@@ -287,7 +289,7 @@ module CartoDB
         # Signature must be like: .report_message('Import error', 'error', error_info: stacktrace)
         def report_error(message, additional_data)
           log("Error: #{message} Additional Info: #{additional_data}")
-          CartoDB::Logger.error(message: message, error_info: additional_data)
+          log_error(message: message, error_detail: additional_data)
         end
 
         # @param api_config Hash

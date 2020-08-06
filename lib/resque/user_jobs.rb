@@ -62,6 +62,7 @@ module Resque
       module SyncRedis
         extend ::Resque::Metrics
         include Carto::Common::JobLogger
+        include ::LoggerHelper
 
         @queue = :batch_updates
 
@@ -71,7 +72,7 @@ module Resque
             rate_limit.save_to_redis(user)
           end
         rescue StandardError => e
-          CartoDB::Logger.error(exception: e, message: 'Error syncing rate limits to redis', account_type: account_type)
+          log_error(exception: e, message: 'Error syncing rate limits to redis', account_type: account_type)
           raise e
         end
       end

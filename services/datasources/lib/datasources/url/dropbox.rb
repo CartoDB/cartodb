@@ -16,6 +16,8 @@ module CartoDB
       #    This obviously will work for a single user.
       class Dropbox < BaseOAuth
 
+        include ::LoggerHelper
+
         # Required for all datasources
         DATASOURCE_NAME = 'dropbox'
 
@@ -207,8 +209,7 @@ module CartoDB
           # Any call would do, we just want to see if communicates or refuses the token
           @client.get_current_account
           true
-        rescue DropboxApi::Errors::HttpError => ex
-          CartoDB::Logger.debug(message: 'Invalid Dropbox token', exception: ex, user: @user)
+        rescue DropboxApi::Errors::HttpError
           false
         end
 
@@ -217,7 +218,7 @@ module CartoDB
           @client.revoke
           true
         rescue DropboxApi::Errors::HttpError => ex
-          CartoDB::Logger.debug(message: 'Error revoking Dropbox token', exception: ex, user: @user)
+          log_info(message: 'Error revoking Dropbox token: already invalid', exception: ex, current_user: @user)
           true
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)

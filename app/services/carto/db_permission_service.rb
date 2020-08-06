@@ -1,5 +1,8 @@
 module Carto
   class DbPermissionService
+
+    include ::LoggerHelper
+
     TYPE_USER  = 'user'.freeze
     TYPE_ORG   = 'org'.freeze
     TYPE_GROUP = 'group'.freeze
@@ -56,7 +59,7 @@ module Carto
         Carto::Group.find(id).users.map(&:id)
       end
     rescue ActiveRecord::RecordNotFound => e
-      CartoDB::Logger.error(exception: e, entity_type: type, entity_id: id)
+      log_error(exception: e, entity: { type: type, id: id })
       []
     end
 

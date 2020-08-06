@@ -110,7 +110,7 @@ module Carto
           end
         rescue ActiveRecord::StatementInvalid => e
           invalid_scopes << scope
-          CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
+          log_error(message: 'Error granting permissions to dataset role', exception: e, current_user: user)
         end
       end
 
@@ -149,7 +149,7 @@ module Carto
       begin
         results = user.db_service.all_tables_granted(dataset_role_name)
       rescue ActiveRecord::StatementInvalid => e
-        CartoDB::Logger.error(message: 'Error getting scopes', exception: e)
+        log_error(message: 'Error getting scopes', exception: e, current_user: user)
         raise OauthProvider::Errors::ServerError.new
       end
 
@@ -187,22 +187,14 @@ module Carto
       return if user.organization_user? && oauth_users_in_organization > 1
       user.db_service.create_oauth_reassign_ownership_event_trigger
     rescue StandardError => e
-      CartoDB::Logger.error(
-        message:    "Error enabling schema trigger",
-        exception:  e,
-        user:       self
-      )
+      log_error(message: 'Error enabling schema trigger', exception: e, current_user: user)
     end
 
     def disable_schema_triggers
       return if user.organization_user? && oauth_users_in_organization >= 1
       user.db_service.drop_oauth_reassign_ownership_event_trigger
     rescue StandardError => e
-      CartoDB::Logger.error(
-        message:    "Error disabling schema trigger",
-        exception:  e,
-        user:       self
-      )
+      log_error(message: 'Error disabling schema trigger', exception: e, current_user: user)
     end
 
     def validate_scopes
@@ -235,8 +227,8 @@ module Carto
     def db_run(query, connection = db_connection, error_title: 'Error running SQL command')
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: error_title, exception: e)
-      return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped      
+      log_error(message: error_title, exception: e)
+      return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped
       raise OauthProvider::Errors::ServerError.new("#{error_title}: #{e.message}")
     end
 

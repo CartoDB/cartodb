@@ -20,7 +20,7 @@ describe CommonData do
 
   it 'should return empty datasets response and notify error for SQL API error response' do
     stub_api_response(503)
-    CartoDB::Logger.expects(:error).with(message: 'common-data empty',
+    Rails.logger.expects(:error).with(message: 'common-data empty',
                                          url: 'http://common-data.example.com/api/v1/viz?type=table&privacy=public')
 
     @common_data.datasets.should eq []
@@ -29,7 +29,7 @@ describe CommonData do
   it 'should return empty datasets and notify error for invalid json' do
     stub_api_response(200, INVALID_JSON_RESPONSE)
     count = 0
-    CartoDB::Logger.expects(:error).twice.with do |args|
+    Rails.logger.expects(:error).twice.with do |args|
       if args[:exception]
         args[:exception].should be_an_instance_of JSON::ParserError
         count += 1
@@ -46,7 +46,7 @@ describe CommonData do
 
   it 'should return correct datasets for default stub response' do
     stub_valid_api_response
-    CartoDB::Logger.expects(:error).times(0)
+    Rails.logger.expects(:error).never
 
     @common_data.datasets.select{ |d| d["name"] =~ /meta_/}.length.should eq 0
     @common_data.datasets.length.should eq 6
@@ -54,7 +54,7 @@ describe CommonData do
 
   it 'should use name if the display_name is null' do
     stub_valid_api_response
-    CartoDB::Logger.expects(:error).times(0)
+    Rails.logger.expects(:error).never
 
     @common_data.datasets.first['display_name'].should eq @common_data.datasets.first['name']
   end
@@ -67,7 +67,7 @@ describe CommonData do
 
   it 'categories should be an array' do
     stub_valid_api_response
-    CartoDB::Logger.expects(:error).times(0)
+    Rails.logger.expects(:error).never
 
     (@common_data.datasets.first['tags'].is_a? Array).should eq true
   end

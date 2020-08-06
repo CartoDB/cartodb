@@ -96,7 +96,7 @@ module Carto
 
         render_jsonp(Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro)
       rescue CartoDB::CentralCommunicationFailure => e
-        CartoDB::Logger.error(exception: e, user: user, params: params)
+        log_error(exception: e, target_user: user, params: params)
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
       rescue Sequel::ValidationFailed, ActiveRecord::RecordInvalid
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
@@ -117,7 +117,7 @@ module Carto
 
         render_jsonp({ logout_url: logout_url }, 200)
       rescue CartoDB::CentralCommunicationFailure => e
-        CartoDB::Logger.error(exception: e, message: 'Central error deleting user at CartoDB', user: @user)
+        log_error(exception: e, message: 'Central error deleting user at CartoDB', target_user: @user)
         render_jsonp({ errors: "Error deleting user: #{e.user_message}" }, 422)
       rescue => e
         CartoDB.notify_exception(e, user: user.inspect)

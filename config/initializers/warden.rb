@@ -14,6 +14,9 @@ end
 # - Include this module
 # - Override the methods as needed
 module CartoStrategy
+
+  include ::LoggerHelper
+
   def affected_by_password_expiration?
     true
   end
@@ -45,7 +48,7 @@ module CartoStrategy
     begin
       user.update_in_central
     rescue StandardError => e
-      CartoDB::Logger.warning(message: "Error updating lastlogin_date in central", exception: e)
+      log_warning(message: "Error updating lastlogin_date in central", exception: e)
     end
   end
 end
@@ -227,6 +230,7 @@ end
 Warden::Strategies.add(:saml) do
   include CartoStrategy
   include Carto::EmailCleaner
+  include ::LoggerHelper
 
   def affected_by_password_expiration?
     false
@@ -267,8 +271,8 @@ Warden::Strategies.add(:saml) do
             organization_id: organization.id,
             saml_email: email)
     end
-  rescue => e
-    CartoDB::Logger.error(message: "Authenticating with SAML", exception: e)
+  rescue StandardError => e
+    log_error(message: "Authenticating with SAML", exception: e)
     return fail!
   end
 end

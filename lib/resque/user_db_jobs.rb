@@ -36,14 +36,15 @@ module Resque
 
       module AutoIndexTable
         include Carto::Common::JobLogger
+        include ::LoggerHelper
 
         @queue = :user_dbs
 
         def self.perform(user_table_id)
-          user_table = Carto::UserTable.where(id: user_table_id).first
+          user_table = Carto::UserTable.find(user_table_id)
           Carto::UserTableIndexService.new(user_table).update_auto_indices if user_table
-        rescue => e
-          CartoDB::Logger.error(message: 'Error auto-indexing table', exception: e, user_table_id: user_table_id)
+        rescue StandardError => e
+          log_error(message: 'Error auto-indexing table', exception: e, table: user_table.attributes.slice(:id))
         end
       end
     end

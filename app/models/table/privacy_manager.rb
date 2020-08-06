@@ -27,17 +27,6 @@ module CartoDB
           notify_privacy_affected_entities(metadata_table) if privacy_changed
         end
       end
-    rescue NoMethodError => exception
-      CartoDB::Logger.debug(
-        exception: exception,
-        message: "#{exception.message} #{exception.backtrace}",
-        user: Carto::User.find(@table.user_id),
-        table_id: @table.id,
-        table_name: @table.name,
-        data_import_id: @table.data_import_id
-      )
-
-      raise exception
     end
 
     def set_from_visualization(visualization)

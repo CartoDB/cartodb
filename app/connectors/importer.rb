@@ -8,6 +8,8 @@ require_dependency 'visualization/derived_creator'
 module CartoDB
   module Connector
     class Importer
+      include ::LoggerHelper
+
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
@@ -100,8 +102,8 @@ module CartoDB
         Carto::GhostTablesManager.run_synchronized(
           user.id, attempts: 10, timeout: 3000,
           message: "Couldn't acquire bolt to register. Registering without bolt",
-          user: user,
-          import_id: @data_import_id
+          current_user: user,
+          data_import: { id: data_import.id }
         ) do
           results.select(&:success?).each do |result|
             register(result)
@@ -158,12 +160,8 @@ module CartoDB
         # need any clean up here. (Either all overviews were created
         # or nothing changed)
         log("Overviews creation failed: #{exception.message}")
-        CartoDB::Logger.error(
-          message:    "Overviews creation failed",
-          exception:  exception,
-          user:       Carto::User.find(data_import.user_id),
-          table_name: result.name
-        )
+        user = Carto::User.find(data_import.user_id)
+        log_error(message: 'Error creating overview', exception: exception, current_user: user, table_name: result.name)
       end
 
       def create_visualization
@@ -275,13 +273,8 @@ module CartoDB
         end
 
         new_name
-      rescue => exception
+      rescue StandardError => exception
         drop("#{schema}.#{current_name}")
-        CartoDB::Logger.debug(message: 'Error in table rename: dropping importer table',
-                              exception: exception,
-                              table_name: current_name,
-                              new_table_name: new_name,
-                              data_import: @data_import_id)
         raise exception
       end
 

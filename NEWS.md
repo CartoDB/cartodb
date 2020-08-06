@@ -24,6 +24,7 @@ Development
 * Modify .gitignore
 * Install Carto::Common::Logger with JSON support ([#15762](https://github.com/CartoDB/cartodb/pull/15762))
 * Return all shared datasets ([#15767](https://github.com/CartoDB/cartodb/pull/15767))
+* Migrate traces to new Carto::Common::Logger ([#15776](https://github.com/CartoDB/cartodb/pull/15776))
 
 4.39.0 (2020-07-20)
 -------------------

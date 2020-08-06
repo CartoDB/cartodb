@@ -91,9 +91,9 @@
       "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."
     },
     "tabs": {
-      "yourDatasets": "Your Datasets",
-      "yourSubscriptions": "Your Subscriptions",
-      "spatialDataCatalog": "Spatial Data Catalog"
+      "datasets": "Your Datasets",
+      "subscriptions": "Your Subscriptions",
+      "catalog": "Spatial Data Catalog"
     }
   },
   "MapsPage": {

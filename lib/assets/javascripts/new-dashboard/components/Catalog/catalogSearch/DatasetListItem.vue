@@ -14,7 +14,7 @@
       <h3 class="title is-body u-mb--8">
         <router-link
           :to="{
-            name: 'do-dataset-summary',
+            name: 'catalog-dataset-summary',
             params: {
               datasetId: dataset.slug,
               type: dataset.is_geography ? 'geography' : 'dataset'

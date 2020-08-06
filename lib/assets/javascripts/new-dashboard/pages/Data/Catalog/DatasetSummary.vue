@@ -8,7 +8,7 @@
         <div class="key-variables u-mt--32" v-if="keyVariables.length">
           <h5 class="title is-caption is-txtMainTextColor">
             Key variables
-            <router-link :to="{ name: 'do-dataset-data' }" class="is-small"
+            <router-link :to="{ name: 'catalog-dataset-data' }" class="is-small"
               >(View all)</router-link
             >
           </h5>
@@ -79,7 +79,7 @@
           <p class="text is-caption">
             <router-link
               :to="{
-                name: 'do-dataset-summary',
+                name: 'catalog-dataset-summary',
                 params: {
                   datasetId: (dataset.geography_slug || dataset.geography_id),
                   type: 'geography'

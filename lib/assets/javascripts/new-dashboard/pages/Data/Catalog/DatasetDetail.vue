@@ -1,55 +1,57 @@
 <template>
-  <div class="u-pb--72">
-    <div class="grid grid-cell u-flex__justify--center">
-      <div class="grid-cell--col12 navigation-header">
-        <router-link
-          class="title is-small is-txtNavyBlue back-link"
-          :to="{ name: 'do-catalog' }"
-        >
-          <img class="u-mr--12" src="../../../assets/icons/catalog/back-arrow.svg" alt="back" />
-          Datasets list
-        </router-link>
-      </div>
-    </div>
-    <div v-if="loading" class="u-flex u-flex__align--center u-flex__direction--column u-mt--120">
-      <span class="loading u-mr--12">
-        <svg viewBox="0 0 38 38">
-          <g transform="translate(1 1)" fill="none" fill-rule="evenodd">
-            <circle stroke-opacity=".5" cx="18" cy="18" r="18"/>
-            <path d="M36 18c0-9.94-8.06-18-18-18">
-              <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"/>
-            </path>
-          </g>
-        </svg>
-      </span>
-      <span class="text is-txtSoftGrey is-caption u-mt--12">
-        Loading dataset details…
-      </span>
-    </div>
-    <transition name="fade">
-      <div v-if="!loading">
-        <DatasetActionsBar
-          v-if="subscription"
-          :subscription="subscription"
-          :slug="dataset.slug"
-          class="u-mt--12"
-        ></DatasetActionsBar>
-        <DatasetHeader></DatasetHeader>
-        <div class="grid grid-cell u-flex__justify--center">
-          <NavigationTabs class="grid-cell--col12">
-            <router-link :to="{ name: 'do-dataset-summary' }">Summary</router-link>
-            <router-link :to="{ name: 'do-dataset-data' }">Data</router-link>
-          </NavigationTabs>
+  <Page class="page--data">
+    <SecondaryNavigation>
+      <a class="catalogDetail__back title is-small" href="javascript:history.back()">
+        <img class="catalogDetail__back--icon" svg-inline src="../../../assets/icons/common/back.svg"/>
+        <span>{{ $t('CatalogDetailPage.back') }}</span>
+      </a>
+    </SecondaryNavigation>
+
+    <section class="catalogDetail container grid">
+      <div class="grid-cell grid-cell--col12">
+        <div v-if="loading" class="u-flex u-flex__align--center u-flex__direction--column u-mt--120">
+          <span class="loading u-mr--12">
+            <svg viewBox="0 0 38 38">
+              <g transform="translate(1 1)" fill="none" fill-rule="evenodd">
+                <circle stroke-opacity=".5" cx="18" cy="18" r="18"/>
+                <path d="M36 18c0-9.94-8.06-18-18-18">
+                  <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"/>
+                </path>
+              </g>
+            </svg>
+          </span>
+          <span class="text is-txtSoftGrey is-caption u-mt--12">
+            Loading dataset details…
+          </span>
         </div>
-        <router-view :key="$route.fullPath"></router-view>
-        <GoUpButton></GoUpButton>
+        <transition name="fade">
+          <div v-if="!loading">
+            <DatasetActionsBar
+              v-if="subscription"
+              :subscription="subscription"
+              :slug="dataset.slug"
+              class="u-mt--12"
+            ></DatasetActionsBar>
+            <DatasetHeader></DatasetHeader>
+            <div class="grid grid-cell u-flex__justify--center">
+              <NavigationTabs class="grid-cell--col12">
+                <router-link :to="{ name: 'catalog-dataset-summary' }" replace>Summary</router-link>
+                <router-link :to="{ name: 'catalog-dataset-data' }" replace>Data</router-link>
+              </NavigationTabs>
+            </div>
+            <router-view></router-view>
+            <GoUpButton></GoUpButton>
+          </div>
+        </transition>
       </div>
-    </transition>
-  </div>
+    </section>
+  </Page>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import Page from 'new-dashboard/components/Page';
+import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import DatasetActionsBar from 'new-dashboard/components/Catalog/datasetDetail/DatasetActionsBar';
 import DatasetHeader from 'new-dashboard/components/Catalog/datasetDetail/DatasetHeader';
 import NavigationTabs from 'new-dashboard/components/Catalog/datasetDetail/NavigationTabs';
@@ -58,6 +60,8 @@ import GoUpButton from 'new-dashboard/components/Catalog/GoUpButton';
 export default {
   name: 'DatasetDetail',
   components: {
+    Page,
+    SecondaryNavigation,
     DatasetActionsBar,
     DatasetHeader,
     NavigationTabs,
@@ -97,9 +101,11 @@ export default {
         })
       ]).then(() => {
         this.loading = false;
-        this.$router.replace({
-          params: { datasetId: this.dataset.slug }
-        });
+        if (this.$route.params.datasetId !== this.dataset.slug) {
+          this.$router.replace({
+            params: { datasetId: this.dataset.slug }
+          });
+        }
       });
     }
   },
@@ -128,13 +134,43 @@ export default {
 <style lang="scss" scoped>
 @import 'new-dashboard/styles/catalog/variables';
 
-.navigation-header {
-  padding: 24px 0;
-  border-bottom: 1px solid $neutral--300;
+.catalogDetail {
 
-  .back-link {
+  &__back {
     display: flex;
+    align-items: center;
+    padding: 24px 0;
+
+    &--icon {
+      width: 7px;
+      height: 12px;
+      margin-right: 8px;
+    }
   }
+
+  &__description {
+    margin-bottom: 64px;
+  }
+
+  &__label {
+    margin-bottom: 24px;
+  }
+
+  &__list {
+    list-style-position: inside;
+    list-style-type: disc;
+
+    &--item {
+      margin-bottom: 16px;
+    }
+  }
+}
+
+.catalog__icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  background-size: contain;
 }
 
 .loading {
@@ -155,5 +191,15 @@ export default {
   z-index: 1;
   right: 24px;
   bottom: 64px;
+}
+
+input::-ms-clear {
+  display: none;
+}
+.fade-enter-active {
+  transition: opacity .5s;
+}
+.fade-enter {
+  opacity: 0;
 }
 </style>

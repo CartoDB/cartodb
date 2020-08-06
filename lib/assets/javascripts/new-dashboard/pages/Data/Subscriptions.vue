@@ -28,13 +28,13 @@
             </template>
 
             <template slot="title">
-              <VisualizationsTitle :defaultTitle="$t(`DataPage.tabs.yourSubscriptions`)"/>
+              <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.yourSubscriptions')"/>
             </template>
 
             <template slot="dropdownButton"></template>
 
             <template slot="actionButton">
-              <router-link :to="{ name: 'do-catalog' }"  exact>
+              <router-link :to="{ name: 'spatial-data-catalog' }"  exact>
                 <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
               </router-link>
             </template>

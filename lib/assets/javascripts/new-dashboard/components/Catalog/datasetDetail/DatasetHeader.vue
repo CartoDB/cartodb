@@ -219,4 +219,9 @@ export default {
     height: 68px;
   }
 }
+
+.is-sectiontitle {
+  font-size: 24px;
+  line-height: 36px;
+}
 </style>

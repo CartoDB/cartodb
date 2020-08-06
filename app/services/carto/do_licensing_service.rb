@@ -48,7 +48,8 @@ module Carto
       project, dataset, table = qualified_id.split('.')
       # FIXME: better save the type in Redis or look for it in the metadata tables
       type = table&.starts_with?('geography') ? 'geography' : 'dataset'
-      status = Time.now >= subscription['expires_at'] ? 'expired' : subscription['status']
+      expires_at = Time.parse(subscription['expires_at']) if subscription['expires_at'].present?
+      status = (expires_at && (Time.now >= expires_at)) ? 'expired' : subscription['status']
       subscription = {
         project: project,
         dataset: dataset,
@@ -56,7 +57,7 @@ module Carto
         id: qualified_id,
         status: status,
         type: type,
-        expires_at: subscription['expires_at'] && Time.parse(subscription['expires_at'])
+        expires_at: expires_at
       }
       subscription.with_indifferent_access
     end

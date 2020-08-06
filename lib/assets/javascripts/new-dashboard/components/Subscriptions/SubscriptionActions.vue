@@ -67,7 +67,7 @@ export default {
       required: true
     }
   },
-  data() {
+  data () {
     return {};
   },
   computed: {
@@ -76,15 +76,15 @@ export default {
     })
   },
   methods: {
-    downloadNotebook(e) {
+    downloadNotebook (e) {
       e.preventDefault();
       this.$store.dispatch('catalog/downloadNotebook', this.dataset.slug, this.dataset.type);
     },
-    async connect() {
+    async connect () {
       await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id);
       this.$store.dispatch('catalog/fetchSubscriptionsList', true);
     },
-    async unconnect() {
+    async unconnect () {
       await this.$store.dispatch('catalog/fetchSubscriptionUnSync', this.dataset.id);
       this.$store.dispatch('catalog/fetchSubscriptionsList');
     }

@@ -181,10 +181,10 @@ export default {
       variables: state => state.catalog.variables,
       isFetching: state => state.catalog.isFetching
     }),
-    isPublicWebsite() {
+    isPublicWebsite () {
       return !(this.$store.state.user && this.$store.state.user.id);
     },
-    tableKey() {
+    tableKey () {
       if (this.dataset && this.dataset.summary_json) {
         if (this.dataset.summary_json.ordered_glimpses) {
           return 'ordered_glimpses';
@@ -194,43 +194,43 @@ export default {
       }
       return null;
     },
-    source() {
+    source () {
       if (this.tableKey === 'default_ordered_glimpses') {
         return this.dataset.summary_json[this.tableKey].source;
       }
       return null;
     },
-    tableSample() {
+    tableSample () {
       if (this.tableKey) {
         return this.dataset.summary_json[this.tableKey].tail;
       }
       return [];
     },
-    columns() {
+    columns () {
       return this.tableSample ? this.tableSample.map(t => t.column_name) : [];
     },
-    numberRows() {
+    numberRows () {
       // return this.columns.length ? this.tableSample[this.columns[0]].length : 0;
       return this.tableSample && this.tableSample.length > 0 ? this.tableSample[0].values.length : 0;
     },
-    numberColumns() {
+    numberColumns () {
       return this.variables ? this.variables.length : this.columns.length;
     },
-    isGeography() {
+    isGeography () {
       return this.$route.params.type === 'geography';
     }
   },
   methods: {
-    fetchVariables() {
+    fetchVariables () {
       this.$store.dispatch('catalog/fetchVariables', {
         id: this.$route.params.datasetId,
         type: this.$route.params.type
       });
     },
-    findVariableInfo(variableName) {
-      return this.variables.find(e => e.column_name == variableName);
+    findVariableInfo (variableName) {
+      return this.variables.find(e => e.column_name === variableName);
     },
-    showTooltip(variableName, event) {
+    showTooltip (variableName, event) {
       let tooltipInfo = this.findVariableInfo(variableName);
       if (tooltipInfo) {
         let tableBoundingSize = this.$refs.tableWrapper.getBoundingClientRect();
@@ -256,15 +256,15 @@ export default {
         this.hideTooltip();
       }
     },
-    hideTooltip() {
+    hideTooltip () {
       this.tooltip.visible = false;
       this.tooltip.isFirst = false;
       this.tooltip.isLast = false;
     },
-    getFormURL() {
+    getFormURL () {
       return formURL(this.dataset);
     },
-    scrollToVariables() {
+    scrollToVariables () {
       window.scrollTo({
         top: this.$refs.variablesSection.offsetTop,
         left: 0,
@@ -272,7 +272,7 @@ export default {
       });
     }
   },
-  mounted() {
+  mounted () {
     this.fetchVariables();
   }
 };

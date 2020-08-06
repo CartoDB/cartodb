@@ -85,7 +85,7 @@ export default {
     FilterDetail,
     Button
   },
-  data() {
+  data () {
     return {
       showDetails: false,
       showFilterSuggestions: true
@@ -97,7 +97,7 @@ export default {
       filter: state => state.catalog.filter.categories,
       filtersAvailable: state => state.catalog.filtersAvailable
     }),
-    filtersApplied() {
+    filtersApplied () {
       const filterMap = new Map();
       for (let filterId in this.filtersAvailable) {
         const filterContent = this.filter[filterId].map(item => {
@@ -118,14 +118,14 @@ export default {
         })
       );
     },
-    filtersCount() {
+    filtersCount () {
       let filterCount = 0;
       for (let filterId in this.filtersAvailable) {
         filterCount += this.filter[filterId].length;
       }
       return filterCount;
     },
-    highlightedFilters() {
+    highlightedFilters () {
       const filterMap = {};
       for (let filterId in this.filtersAvailable) {
         filterMap[filterId] = new Map();
@@ -137,7 +137,7 @@ export default {
       }
       return filterMap;
     },
-    filterSuggestion() {
+    filterSuggestion () {
       for (let key of [...this.filtersApplied.keys()]) {
         if (this.highlightedFilters[key]) {
           const highlightedFilterKeys = [
@@ -162,29 +162,29 @@ export default {
     }
   },
   watch: {
-    filtersCount: function(newValue) {
+    filtersCount (newValue) {
       if (newValue === 0) {
         this.showDetails = false;
       }
     }
   },
   methods: {
-    toggleDetails() {
+    toggleDetails () {
       this.showDetails = !this.showDetails;
       this.$emit('toggle-filter-detail');
     },
-    clearFilters() {
+    clearFilters () {
       this.$store.dispatch('catalog/clearTagFilters');
     },
-    getFilterLabel(filterId) {
+    getFilterLabel (filterId) {
       return filtersMetadata[filterId]
         ? filtersMetadata[filterId].label
         : toTitleCase(filterId);
     },
-    closeFilterSuggestion() {
+    closeFilterSuggestion () {
       this.showFilterSuggestions = false;
     },
-    activeSuggestedFilter(suggestedFilter) {
+    activeSuggestedFilter (suggestedFilter) {
       const newFilter = {};
       const currentFilter = this.$store.state.catalog.filter.categories[
         suggestedFilter.category
@@ -197,7 +197,7 @@ export default {
     },
 
     // Vue transition to force precalculate height
-    enter(el) {
+    enter (el) {
       el.style.overflow = 'hidden';
       el.style.height = '0';
 
@@ -205,7 +205,7 @@ export default {
         el.style.height = `${el.scrollHeight}px`;
       });
     },
-    leave(el) {
+    leave (el) {
       el.style.overflow = 'hidden';
       el.style.height = `${el.scrollHeight}px`;
 
@@ -213,11 +213,11 @@ export default {
         el.style.height = '0';
       });
     },
-    afterEnter(el) {
+    afterEnter (el) {
       el.style.height = '';
       el.style.overflow = '';
     },
-    afterLeave(el) {
+    afterLeave (el) {
       el.style.height = '';
       el.style.overflow = '';
     }

@@ -93,7 +93,7 @@ export default {
     filter: String,
     placeholder: String
   },
-  data() {
+  data () {
     return {
       // model: new Set(),
       filterText: '',
@@ -104,14 +104,14 @@ export default {
     ...mapState({
       filtersAvailable: state => state.catalog.filtersAvailable,
       loading: state => state.catalog.isFetching,
-      currentFilter(state) {
+      currentFilter (state) {
         return state.catalog.filter.categories[this.filter] || [];
       }
     }),
-    options() {
+    options () {
       return this.filtersAvailable[this.filter] || new Map();
     },
-    filteredOptions() {
+    filteredOptions () {
       const lowercaseFilter = this.filterText.toLowerCase();
       return [...this.options.values()]
         .filter(opt => opt.entity_count > 0 && opt.name.toLowerCase().includes(lowercaseFilter))
@@ -135,7 +135,7 @@ export default {
     }
   },
   methods: {
-    filterChanged(event, option) {
+    filterChanged (event, option) {
       const newFilter = {};
       newFilter[this.filter] = [...this.currentFilter];
       if (newFilter[this.filter].find(f => f.id === option.id)) {
@@ -145,22 +145,22 @@ export default {
       }
       this.$store.commit('catalog/setFilter', newFilter);
     },
-    clearFilter() {
+    clearFilter () {
       const newFilter = {};
       newFilter[this.filter] = [];
       this.$store.commit('catalog/setFilter', newFilter);
     },
-    clearOptionsFilter() {
+    clearOptionsFilter () {
       this.filterText = '';
     },
-    toggleVisibility() {
+    toggleVisibility () {
       this.isCompressed = !this.isCompressed;
     }
   },
   watch: {
     filteredOptions: {
       immediate: true,
-      handler(newValue, oldValue) {
+      handler (newValue, oldValue) {
         if (!newValue.length && !this.loading) {
           this.isCompressed = true;
         } else if (oldValue && !oldValue.length && newValue.length && !this.loading) {

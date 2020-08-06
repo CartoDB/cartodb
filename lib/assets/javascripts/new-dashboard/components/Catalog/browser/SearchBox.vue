@@ -36,7 +36,7 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'SearchBox',
-  data() {
+  data () {
     return {
       filterText: ''
     };
@@ -45,16 +45,16 @@ export default {
     ...mapState({
       filter: state => state.catalog.filter,
     }),
-    searchText() {
+    searchText () {
       return this.filter.searchText
     }
   },
   methods: {
-    clearFilter() {
+    clearFilter () {
       this.filterText = '';
       this.updateFilter();
     },
-    updateFilter() {
+    updateFilter () {
       this.$store.dispatch('catalog/setSearchText', this.filterText);
     }
   },

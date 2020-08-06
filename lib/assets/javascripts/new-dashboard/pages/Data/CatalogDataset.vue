@@ -67,7 +67,7 @@ export default {
     NavigationTabs,
     GoUpButton
   },
-  data() {
+  data () {
     return {
       loading: false,
       id_interval: null
@@ -77,20 +77,20 @@ export default {
     ...mapState({
       dataset: state => state.catalog.dataset
     }),
-    subscription() {
+    subscription () {
       return this.$store.getters['catalog/getSubscriptionByDataset'](
         this.dataset.id
       );
     },
-    isGeography() {
+    isGeography () {
       return this.$route.params.type === 'geography';
     },
-    isSubscriptionSyncing() {
+    isSubscriptionSyncing () {
       return this.subscription && this.subscription.sync_status === 'syncing';
     }
   },
   methods: {},
-  mounted() {
+  mounted () {
     if (!this.dataset || this.dataset.slug !== this.$route.params.datasetId) {
       this.loading = true;
       Promise.all([
@@ -112,7 +112,7 @@ export default {
   watch: {
     isSubscriptionSyncing: {
       immediate: true,
-      handler() {
+      handler () {
         clearInterval(this.id_interval);
         if (this.isSubscriptionSyncing) {
           this.id_interval = setInterval(() => {
@@ -122,7 +122,7 @@ export default {
       }
     }
   },
-  destroyed() {
+  destroyed () {
     if (this.dataset.slug !== this.$route.params.datasetId) {
       this.$store.commit('catalog/resetDataset');
     }

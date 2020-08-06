@@ -34,12 +34,12 @@ export default {
         return state.catalog.filtersAvailable[this.filterId];
       }
     }),
-    filterName: function() {
+    filterName () {
       return filtersMetadata[this.filterId].label;
     }
   },
   methods: {
-    deleteFilter(filterValue) {
+    deleteFilter (filterValue) {
       this.$store.commit('catalog/removeFilter', {
         id: this.filterId,
         value: filterValue

@@ -10,7 +10,7 @@
 <script>
 export default {
   name: 'SubscriptionRequestSuccess',
-  mounted() {
+  mounted () {
     this.$nextTick(() => {
       if (this.$refs.subscriptionRequestSuccessText) {
         this.$refs.subscriptionRequestSuccessText.classList.add('animate');

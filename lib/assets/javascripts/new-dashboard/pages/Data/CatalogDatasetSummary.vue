@@ -124,28 +124,28 @@ export default {
       dataset: state => state.catalog.dataset,
       keyVariables: state => state.catalog.keyVariables
     }),
-    temporalAggregation() {
+    temporalAggregation () {
       return temporalAggregationName(this.dataset.temporal_aggregation);
     },
-    updateFrequency() {
+    updateFrequency () {
       return updateFrequencyName(this.dataset.update_frequency);
     },
-    isGeography() {
+    isGeography () {
       return this.$route.params.type === 'geography';
     },
-    geometryType() {
+    geometryType () {
       return geometryTypeName(this.dataset.geom_type);
     }
   },
   methods: {
-    fetchKeyVariables() {
+    fetchKeyVariables () {
       this.$store.dispatch('catalog/fetchKeyVariables', {
         id: this.$route.params.datasetId,
         type: this.$route.params.type
       });
     }
   },
-  mounted() {
+  mounted () {
     this.fetchKeyVariables();
   }
 };

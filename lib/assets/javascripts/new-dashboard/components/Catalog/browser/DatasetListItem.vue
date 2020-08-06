@@ -93,13 +93,13 @@ export default {
     dataset: Object
   },
   computed: {
-    temporalAggregation() {
+    temporalAggregation () {
       return temporalAggregationName(this.dataset.temporal_aggregation);
     },
-    providerLogo() {
+    providerLogo () {
       return `https://libs.cartocdn.com/data-observatory/assets/providers/${this.dataset.provider_id}.png`;
     },
-    geometryType() {
+    geometryType () {
       return geometryTypeName(this.dataset.geom_type);
     }
   }

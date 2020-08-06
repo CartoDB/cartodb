@@ -30,7 +30,7 @@ export default {
     slug: String
   },
   computed: {
-    subscriptionWithSlug() {
+    subscriptionWithSlug () {
       return { ...this.subscription, slug: this.slug };
     }
   }

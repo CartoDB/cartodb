@@ -211,7 +211,7 @@ export default {
       }
     }
   },
-  data() {
+  data () {
     return {
       currentMode: null,
       licenseStatus: false,
@@ -222,7 +222,7 @@ export default {
     ...mapState({
       user: state => state.user
     }),
-    getHeaderIcon() {
+    getHeaderIcon () {
       if (this.currentMode === 'subscribe') {
         return 'subsc-add-icon.svg';
       } else if (this.currentMode === 'unsubscribe') {
@@ -236,7 +236,7 @@ export default {
       }
       return null;
     },
-    getTitle() {
+    getTitle () {
       if (this.currentMode === 'subscribe') {
         return 'Confirm your subscription';
       } else if (this.currentMode === 'unsubscribe') {
@@ -250,7 +250,7 @@ export default {
       }
       return '';
     },
-    getSubTitle() {
+    getSubTitle () {
       if (this.currentMode === 'subscribe') {
         return 'You are going to subscribe to the following dataset:';
       } else if (this.currentMode === 'unsubscribe') {
@@ -264,7 +264,7 @@ export default {
       }
       return '';
     },
-    getCloseText() {
+    getCloseText () {
       if (
         this.currentMode === 'subscribed' ||
         this.currentMode === 'requested'
@@ -273,7 +273,7 @@ export default {
       }
       return 'Cancel';
     },
-    licenseAccepted() {
+    licenseAccepted () {
       return (
         !this.dataset.licenses ||
         this.dataset.licenses === '' ||
@@ -282,10 +282,10 @@ export default {
     }
   },
   methods: {
-    closeModal() {
+    closeModal () {
       this.$emit('closeModal');
     },
-    requestDataset() {
+    requestDataset () {
       // Check if requestDataset is defined or call Dashboard's requestDataset action as a fallback
       if (this.$root.requestDataset) {
         this.$root.requestDataset(this.user, this.dataset);
@@ -299,7 +299,7 @@ export default {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({ event: 'requestDataset' });
     },
-    async subscribe() {
+    async subscribe () {
       this.loading = true;
       if (
         await this.$store.dispatch('catalog/fetchSubscribe', {
@@ -313,7 +313,7 @@ export default {
         this.loading = false;
       }
     },
-    async unsubscribe() {
+    async unsubscribe () {
       this.loading = true;
       if (
         await this.$store.dispatch('catalog/fetchSubscriptionUnSync', this.dataset.id) &&
@@ -327,7 +327,7 @@ export default {
         this.closeModal();
       }
     },
-    async request() {
+    async request () {
       this.loading = true;
       if (
         await this.$store.dispatch('catalog/fetchSubscribe', {
@@ -342,7 +342,7 @@ export default {
     }
   },
   watch: {
-    mode() {
+    mode () {
       this.currentMode = this.mode;
     }
   }

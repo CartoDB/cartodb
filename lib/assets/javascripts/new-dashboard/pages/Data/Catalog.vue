@@ -111,7 +111,7 @@ export default {
     Pager,
     SearchBox
   },
-  data() {
+  data () {
     return {
       filterDetail: false
     };
@@ -119,12 +119,12 @@ export default {
   watch: {
     filter: {
       deep: true,
-      handler() {
+      handler () {
         this.fetchDatasetsList();
       }
     },
     currentPage: {
-      handler() {
+      handler () {
         window.scrollTo(0, 0);
       }
     }
@@ -138,7 +138,7 @@ export default {
       filter: state => state.catalog.filter,
       currentPage: state => state.catalog.filter.page
     }),
-    filterCategories() {
+    filterCategories () {
       return Object.keys(this.filtersAvailable).sort((a, b) => {
         const orderA = filtersMetadata[a] ? filtersMetadata[a].order : Number.MAX_VALUE;
         const orderB = filtersMetadata[b] ? filtersMetadata[b].order : Number.MAX_VALUE;
@@ -147,19 +147,19 @@ export default {
     }
   },
   methods: {
-    initFilters() {
+    initFilters () {
       const query = this.$route.query;
       if (Object.keys(query).length) {
         this.$store.dispatch('catalog/initFilter', this.$route.query);
       }
     },
-    fetchDatasetsList() {
+    fetchDatasetsList () {
       this.$store.dispatch('catalog/fetchDatasetsList');
     },
-    toggleFilterDetail() {
+    toggleFilterDetail () {
       this.filterDetail = !this.filterDetail;
     },
-    hideFilters() {
+    hideFilters () {
       this.filterDetail = false;
     },
     getFilterLabel(filterId) {
@@ -167,14 +167,14 @@ export default {
         ? filtersMetadata[filterId].label
         : toTitleCase(filterId);
     },
-    navigateToContact() {
+    navigateToContact () {
       window.open('https://carto.com/contact/', '_blank');
     },
     goToPage(pageNum) {
       this.$store.dispatch('catalog/setPage', pageNum);
     }
   },
-  mounted() {
+  mounted () {
     this.initFilters();
     this.fetchDatasetsList();
   }

@@ -40,13 +40,13 @@ export default {
     }
   },
   computed: {
-    pageSize() {
+    pageSize () {
       return process.env.VUE_APP_PAGE_SIZE || 10;
     },
-    totalPages() {
+    totalPages () {
       return Math.ceil(this.count / this.pageSize);
     },
-    middlePages() {
+    middlePages () {
       if (this.totalPages > 3) {
         if (this.currentPage < 2) {
           return [1, 2];
@@ -63,7 +63,7 @@ export default {
     }
   },
   methods: {
-    goToPage(pageNum) {
+    goToPage (pageNum) {
       this.$emit('goToPage', pageNum);
     }
   }

@@ -101,7 +101,7 @@ import { formURL } from 'new-dashboard/utils/catalog/form-url';
 
 export default {
   name: 'DatasetHeader',
-  data() {
+  data () {
     return {
       modalOpen: false,
       modalMode: null
@@ -117,18 +117,18 @@ export default {
       dataset: state => state.catalog.dataset,
       interestedSubscriptions: state => state.catalog.interestedSubscriptions
     }),
-    subscriptionInfo() {
+    subscriptionInfo () {
       return this.$store.getters['catalog/getSubscriptionByDataset'](
         this.dataset.id
       );
     },
-    isPublicWebsite() {
+    isPublicWebsite () {
       return !(this.$store.state.user && this.$store.state.user.id);
     },
-    isGeography() {
+    isGeography () {
       return this.$route.params.type === 'geography';
     },
-    getSubscriptionStatus() {
+    getSubscriptionStatus () {
       const possibleLicenceStates = ['requested', 'active', 'expired'];
       if (
         !this.isPublicWebsite &&
@@ -150,35 +150,35 @@ export default {
       }
       return null;
     },
-    interesedInSubscription() {
+    interesedInSubscription () {
       return this.interestedSubscriptions.indexOf(this.dataset.id) >= 0;
     },
-    isEnterprise() {
+    isEnterprise () {
       return this.$store.state.user.is_enterprise;
     }
   },
   methods: {
-    getFormURL() {
+    getFormURL () {
       return formURL(this.dataset);
     },
-    interesed() {
+    interesed () {
       if (this.isPublicWebsite) {
         window.location.replace(this.getFormURL());
       } else {
         this.$store.dispatch('catalog/requestDataset', { user: this.$store.state.user, dataset: this.dataset })
       }
     },
-    showModal(mode) {
+    showModal (mode) {
       this.modalMode = mode;
       this.modalOpen = true;
       document.body.classList.add('u-overflow-hidden');
     },
-    hideModal() {
+    hideModal () {
       this.modalMode = null;
       this.modalOpen = false;
       document.body.classList.remove('u-overflow-hidden');
     },
-    getDatasetType() {
+    getDatasetType () {
       return this.isGeography ? 'geography' : 'dataset';
     }
   }

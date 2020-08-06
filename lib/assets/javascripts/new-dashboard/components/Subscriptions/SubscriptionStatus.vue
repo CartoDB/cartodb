@@ -20,7 +20,7 @@ export default {
       type: String
     }
   },
-  data: function () {
+  data () {
     return {};
   },
   computed: {

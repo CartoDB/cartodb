@@ -13,27 +13,27 @@
 <script>
 export default {
   name: 'GoUpButton',
-  data() {
+  data () {
     return {
       active: false
     };
   },
-  mounted() {
+  mounted () {
     window.addEventListener('scroll', this.handleScroll);
   },
   methods: {
-    scrollUp() {
+    scrollUp () {
       window.scrollTo({
         top: 0,
         left: 0,
         behavior: 'smooth'
       });
     },
-    handleScroll() {
+    handleScroll () {
       this.active = window.pageYOffset > 100;
     }
   },
-  destroyed() {
+  destroyed () {
     window.removeEventListener('scroll', this.handleScroll);
   }
 };

@@ -14,9 +14,9 @@
 
 <script>
 
-import SubscriptionStatus from '@carto/common-ui/do-catalog/src/components/subscriptions/SubscriptionStatus';
-import SubscriptionActions from '@carto/common-ui/do-catalog/src/components/subscriptions/SubscriptionActions';
-import SlugCopy from '@carto/common-ui/do-catalog/src/components/subscriptions/SlugCopy';
+import SubscriptionStatus from 'new-dashboard/components/Catalog/subscriptions/SubscriptionStatus';
+import SubscriptionActions from 'new-dashboard/components/Catalog/subscriptions/SubscriptionActions';
+import SlugCopy from 'new-dashboard/components/Catalog/subscriptions/SlugCopy';
 
 export default {
   name: 'DatasetListItemExtra',

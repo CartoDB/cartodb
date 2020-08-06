@@ -20,7 +20,6 @@
     "@babel/runtime": "^7.9.2",
     "@babel/runtime-corejs3": "^7.9.2",
     "@carto/carto.js": "^4.2.1",
-    "@carto/common-ui": "git://github.com/CartoDB/common-ui.git#develop",
     "@carto/toolkit-core": "0.0.1-rc.18",
     "@carto/toolkit-custom-storage": "0.0.1-rc.18",
     "@carto/zera": "1.0.7",

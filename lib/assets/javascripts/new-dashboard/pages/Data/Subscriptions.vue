@@ -61,9 +61,9 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
-import DatasetListItem from '@carto/common-ui/do-catalog/src/components/catalogSearch/DatasetListItem';
+import DatasetListItem from 'new-dashboard/components/Catalog/catalogSearch/DatasetListItem';
 import DatasetListItemExtra from 'new-dashboard/components/Subscriptions/DatasetListItemExtra';
-import Pager from '@carto/common-ui/do-catalog/src/components/catalogSearch/Pager';
+import Pager from 'new-dashboard/components/Catalog/catalogSearch/Pager';
 
 export default {
   name: 'SubscriptionsPage',

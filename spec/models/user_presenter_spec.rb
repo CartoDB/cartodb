@@ -283,6 +283,7 @@ describe Carto::Api::UserPresenter do
     new_poro[:mfa_configured] = false
     new_poro[:next_billing_period] = Time.parse('2018-02-01')
     new_poro[:is_enterprise] = true
+    new_poro[:do_enabled] = false
     new_poro
   end
 

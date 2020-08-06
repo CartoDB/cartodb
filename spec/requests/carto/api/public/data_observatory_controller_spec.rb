@@ -16,8 +16,7 @@ describe Carto::Api::Public::DataObservatoryController do
     @granted_token = @user1.api_keys.create_regular_key!(name: 'do', grants: do_grants).token
     @headers = { 'CONTENT_TYPE' => 'application/json' }
     populate_do_metadata
-    @feature_flag = FactoryGirl.create(:feature_flag, name: 'do-instant-licensing', restricted: true)
-    Carto::FeatureFlagsUser.create(user_id: @user1.id, feature_flag_id: @feature_flag.id)
+    @feature_flag = FactoryGirl.create(:feature_flag, name: 'do-instant-licensing', restricted: true)    
   end
 
   after(:all) do
@@ -109,11 +108,12 @@ describe Carto::Api::Public::DataObservatoryController do
       @url_helper = 'api_v4_do_subscriptions_show_url'
 
       @next_year = Time.now + 1.year
-      dataset1 = { dataset_id: 'carto.zzz.table1', expires_at: @next_year }
-      dataset2 = { dataset_id: 'carto.abc.table2', expires_at: @next_year }
-      dataset3 = { dataset_id: 'opendata.tal.table3', expires_at: @next_year }
-      dataset4 = { dataset_id: 'carto.abc.expired', expires_at: Time.now - 1.day }
-      bq_datasets = [dataset1, dataset2, dataset3, dataset4]
+      dataset1 = { dataset_id: 'carto.zzz.table1', expires_at: @next_year, status: 'active' }
+      dataset2 = { dataset_id: 'carto.abc.table2', expires_at: @next_year, status: 'active' }
+      dataset3 = { dataset_id: 'opendata.tal.table3', expires_at: @next_year, status: 'active' }
+      dataset4 = { dataset_id: 'carto.abc.expired', expires_at: Time.now - 1.day, status: 'active' }
+      dataset5 = { dataset_id: 'carto.abc.requested', expires_at: @next_year, status: 'requested' }
+      bq_datasets = [dataset1, dataset2, dataset3, dataset4, dataset5]
       @redis_key = "do:#{@user1.username}:datasets"
       $users_metadata.hset(@redis_key, 'bq', bq_datasets.to_json)
     end
@@ -143,24 +143,14 @@ describe Carto::Api::Public::DataObservatoryController do
       get_json endpoint_url(api_key: @master), @headers
     end
 
-    it 'returns 200 with the non expired subscriptions' do
-      expected_dataset = {
-        project: 'carto',
-        dataset: 'abc',
-        table: 'table2',
-        id: 'carto.abc.table2',
-        type: 'dataset',
-        created_at: nil,
-        expires_at: @next_year.as_json,
-        status: 'active',
-        sync_status: 'synced',
-        sync_table: 'my_do_subscription'
-      }
+    it 'returns 200 with the right status' do
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(200)
         datasets = response.body[:subscriptions]
-        expect(datasets.count).to eq 3
-        expect(datasets.first).to eq expected_dataset
+        expect(datasets.count).to eq 5
+        expect(datasets[0][:status]).to eq 'expired'
+        expect(datasets[1][:status]).to eq 'requested'
+        expect(datasets[2][:status]).to eq 'active'
       end
     end
 
@@ -174,28 +164,16 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 500 if the stored metadata is wrong' do
-      host! "#{@user2.username}.localhost.lan"
-      redis_key = "do:#{@user2.username}:datasets"
-      wrong_datasets = [{ dataset_id: 'wrong', expires_at: 'wrong' }]
-      $users_metadata.hset(redis_key, 'bq', wrong_datasets.to_json)
-
-      get_json endpoint_url(api_key: @user2.api_key), @headers do |response|
-        expect(response.status).to eq(500)
-        expect(response.body).to eq(errors: "no time information in \"wrong\"")
-      end
-
-      $users_metadata.del(redis_key)
-    end
+    
 
     context 'ordering' do
       it 'orders by id ascending by default' do
         get_json endpoint_url(api_key: @master), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:subscriptions]
-          expect(datasets.count).to eq 3
-          expect(datasets[0][:id]).to eq 'carto.abc.table2'
-          expect(datasets[1][:id]).to eq 'carto.zzz.table1'
+          expect(datasets.count).to eq 5
+          expect(datasets[0][:id]).to eq 'carto.abc.expired'
+          expect(datasets[4][:id]).to eq 'opendata.tal.table3'
         end
       end
 
@@ -203,7 +181,7 @@ describe Carto::Api::Public::DataObservatoryController do
         get_json endpoint_url(api_key: @master, order_direction: 'desc'), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:subscriptions]
-          expect(datasets.count).to eq 3
+          expect(datasets.count).to eq 5
           expect(datasets[0][:id]).to eq 'opendata.tal.table3'
           expect(datasets[1][:id]).to eq 'carto.zzz.table1'
         end
@@ -214,7 +192,7 @@ describe Carto::Api::Public::DataObservatoryController do
         get_json endpoint_url(params), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:subscriptions]
-          expect(datasets.count).to eq 3
+          expect(datasets.count).to eq 5
           expect(datasets[0][:id]).to eq 'opendata.tal.table3'
         end
       end
@@ -224,9 +202,9 @@ describe Carto::Api::Public::DataObservatoryController do
         get_json endpoint_url(params), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:subscriptions]
-          expect(datasets.count).to eq 3
+          expect(datasets.count).to eq 5
           expect(datasets[0][:id]).to eq 'carto.abc.table2'
-          expect(datasets[1][:id]).to eq 'opendata.tal.table3'
+          expect(datasets[1][:id]).to eq 'carto.abc.expired'
         end
       end
 
@@ -235,9 +213,26 @@ describe Carto::Api::Public::DataObservatoryController do
         get_json endpoint_url(params), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:subscriptions]
-          expect(datasets.count).to eq 3
+          expect(datasets.count).to eq 5
           expect(datasets[0][:id]).to eq 'opendata.tal.table3'
           expect(datasets[1][:id]).to eq 'carto.abc.table2'
+        end
+      end
+    end
+
+    context 'filter by status' do
+      it 'returns only active datasets' do
+        get_json endpoint_url(api_key: @master, status: 'active'), @headers do |response|
+          expect(response.status).to eq(200)
+          datasets = response.body[:subscriptions]
+          expect(datasets.count).to eq 3
+        end
+      end
+      it 'returns only requested dataset' do
+        get_json endpoint_url(api_key: @master, status: 'requested'), @headers do |response|
+          expect(response.status).to eq(200)
+          datasets = response.body[:subscriptions]
+          expect(datasets.count).to eq 1
         end
       end
     end
@@ -366,7 +361,7 @@ describe Carto::Api::Public::DataObservatoryController do
       get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers do |response|
         expect(response.status).to eq(200)
         expected_response = {
-          estimated_delivery_days: 0.0,
+          estimated_delivery_days: 3.0,
           id: 'carto.abc.dataset1',
           licenses: 'licenses',
           licenses_link: 'licenses_link',
@@ -420,7 +415,7 @@ describe Carto::Api::Public::DataObservatoryController do
       get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetzero', type: 'dataset'), @headers do |response|
         expect(response.status).to eq(200)
         expected_response = {
-          estimated_delivery_days: 0.0,
+          estimated_delivery_days: 3.0,
           id: 'carto.abc.datasetzero',
           licenses: 'licenses',
           licenses_link: 'licenses_link',
@@ -470,7 +465,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
   describe 'entity_info' do
     before(:all) do
-      @url_helper = 'api_v4_do_entity_info'
+      @url_helper = 'api_v4_do_entity_info_url'
     end
 
     before(:each) do
@@ -548,42 +543,61 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'sends request emails if the dataset metadata is incomplete' do
-      mailer_mock = stub(:deliver_now)
-      dataset_id = 'carto.abc.incomplete'
-      dataset_name = 'Incomplete dataset'
-      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id, dataset_name).once
-                           .returns(mailer_mock)
-      DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 0.0).once.returns(mailer_mock)
+    it 'subscribes to public dataset' do
+      dataset_id = 'carto.abc.public_dataset'
+
+      DataObservatoryMailer.expects(:user_request).never
+      DataObservatoryMailer.expects(:carto_request).never
+
+      expected_params = {
+        dataset_id: dataset_id,
+        available_in: ['bq'],
+        price: 0.0,
+        expires_at: Time.parse('2019/01/01 00:00:00'),
+        status: 'active'
+      }
+
+      mock_service = mock
+      mock_service.expects(:subscribe).with(expected_params).once
+      Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
+      Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
 
       post_json endpoint_url(api_key: @master), id: dataset_id, type: 'dataset' do |response|
         expect(response.status).to eq(200)
+        expected_response = {
+          estimated_delivery_days: 3.0,
+          id: 'carto.abc.public_dataset',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          subscription_list_price: 0.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          type: 'dataset'
+        }
+        expect(response.body).to eq expected_response
       end
     end
 
-    it 'sends request emails if instant licensing is not enabled for the user' do
-      mailer_mock = stub(:deliver_now)
-      dataset_id = @payload[:id]
-      dataset_name = 'CARTO dataset 1'
-      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id, dataset_name).once
-                           .returns(mailer_mock)
-      DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 0.0).once.returns(mailer_mock)
-
-      with_feature_flag @user1, 'do-instant-licensing', false do
-        post_json endpoint_url(api_key: @master), @payload do |response|
-          expect(response.status).to eq(200)
-        end
-      end
-    end
-
-    it 'sends request emails if the delivery time is not 0' do
+    it 'creates a proper subscription request to premium data' do
       mailer_mock = stub(:deliver_now)
       dataset_id = 'carto.abc.geography1'
       dataset_name = 'CARTO geography 1'
       DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id, dataset_name).once.returns(mailer_mock)
       DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 3.0).once.returns(mailer_mock)
-      Carto::DoLicensingService.expects(:new).never
 
+      expected_params = {
+        dataset_id: 'carto.abc.geography1',
+        available_in: ['bq'],
+        price: 90.0,
+        expires_at: Time.parse('2019/01/01 00:00:00'),
+        status: 'requested'
+      }
+
+      mock_service = mock
+      mock_service.expects(:subscribe).with(expected_params).once
+      Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
+      Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
 
       post_json endpoint_url(api_key: @master), id: 'carto.abc.geography1', type: 'geography' do |response|
         expect(response.status).to eq(200)
@@ -600,38 +614,82 @@ describe Carto::Api::Public::DataObservatoryController do
         }
         expect(response.body).to eq expected_response
       end
+
     end
 
-    it 'returns 200 with the dataset metadata and calls the DoLicensingService with the expected params' do
-      expected_params = {
-        dataset_id: 'carto.abc.dataset1',
-        available_in: ['bq'],
-        price: 100.0,
-        expires_at: Time.parse('2019/01/01 00:00:00')
-      }
-
-      mock_service = mock
-      mock_service.expects(:subscribe).with(expected_params).once
-      Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
-      Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
-
-      post_json endpoint_url(api_key: @master), @payload do |response|
-        expect(response.status).to eq(200)
-        expected_response = {
-          estimated_delivery_days: 0.0,
-          id: 'carto.abc.dataset1',
-          licenses: 'licenses',
-          licenses_link: 'licenses_link',
-          rights: 'rights',
-          subscription_list_price: 100.0,
-          tos: 'tos',
-          tos_link: 'tos_link',
-          type: 'dataset'
+    it 'subscribes if instant licensing is enabled and delivery time is 0' do
+      with_feature_flag @user1, 'do-instant-licensing', true do
+        expected_params = {
+          dataset_id: 'carto.abc.dataset1',
+          available_in: ['bq'],
+          price: 100.0,
+          expires_at: Time.parse('2019/01/01 00:00:00'),
+          status: 'active'
         }
-        expect(response.body).to eq expected_response
-      end
 
+        mock_service = mock
+        mock_service.expects(:subscribe).with(expected_params).once
+        Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
+        Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
+
+        post_json endpoint_url(api_key: @master), @payload do |response|
+          expect(response.status).to eq(200)
+          expected_response = {
+            estimated_delivery_days: 0.0,
+            id: 'carto.abc.dataset1',
+            licenses: 'licenses',
+            licenses_link: 'licenses_link',
+            rights: 'rights',
+            subscription_list_price: 100.0,
+            tos: 'tos',
+            tos_link: 'tos_link',
+            type: 'dataset'
+          }
+          expect(response.body).to eq expected_response
+        end
+
+      end
     end
+
+    it 'creates a proper subscription request when instant licensing is enabled and delivery time is not 0' do
+      with_feature_flag @user1, 'do-instant-licensing', true do
+        mailer_mock = stub(:deliver_now)
+        dataset_id = 'carto.abc.deliver_1day'
+        dataset_name = 'CARTO dataset 1'
+        DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id, dataset_name).once.returns(mailer_mock)
+        DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 1.0).once.returns(mailer_mock)
+
+        expected_params = {
+          dataset_id: dataset_id,
+          available_in: ['bq'],
+          price: 100.0,
+          expires_at: Time.parse('2019/01/01 00:00:00'),
+          status: 'requested'
+        }
+
+        mock_service = mock
+        mock_service.expects(:subscribe).with(expected_params).once
+        Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
+        Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
+
+        post_json endpoint_url(api_key: @master), id: dataset_id, type: 'dataset' do |response|
+          expect(response.status).to eq(200)
+          expected_response = {
+            estimated_delivery_days: 1.0,
+            id: 'carto.abc.deliver_1day',
+            licenses: 'licenses',
+            licenses_link: 'licenses_link',
+            rights: 'rights',
+            subscription_list_price: 100.0,
+            tos: 'tos',
+            tos_link: 'tos_link',
+            type: 'dataset'
+          }
+          expect(response.body).to eq expected_response
+        end
+      end
+    end
+
   end
 
   describe 'unsubscribe' do
@@ -664,21 +722,26 @@ describe Carto::Api::Public::DataObservatoryController do
 
         CREATE TABLE datasets(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                               tos_link text, licenses text, licenses_link text, rights text, available_in text[],
-                              name text);
+                              name text,is_public_data boolean);
         INSERT INTO datasets VALUES ('carto.abc.dataset1', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq}', 'CARTO dataset 1');
+                                     'rights', '{bq}', 'CARTO dataset 1', false);
         INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', NULL, 'Incomplete dataset');
+                                     'rights', NULL, 'Incomplete dataset', false);
         INSERT INTO datasets VALUES ('carto.abc.datasetnull', NULL, NULL, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq}', 'CARTO dataset null');
+                                     'rights', '{bq}', 'CARTO dataset null', false);
         INSERT INTO datasets VALUES ('carto.abc.datasetzero', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq}', 'CARTO dataset zero');
+                                     'rights', '{bq}', 'CARTO dataset zero', false);
         INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearrayempty', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{}', 'CARTO dataset array empty');
+                                     'rights', '{}', 'CARTO dataset array empty', false);
         INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearraynil', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', NULL, 'CARTO dataset array nil');
+                                     'rights', NULL, 'CARTO dataset array nil', false);
         INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearrayseveraldata', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq,bigtable,carto}', 'CARTO dataset array several data');
+                                     'rights', '{bq,bigtable,carto}', 'CARTO dataset array several data', false);
+        INSERT INTO datasets VALUES ('carto.abc.deliver_1day', 1.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+          'rights', '{bq}', 'CARTO dataset 1', false);
+        INSERT INTO datasets VALUES ('carto.abc.public_dataset', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+            'rights', '{bq}', 'CARTO dataset 1', true);
+
         CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                                  tos_link text, licenses text, licenses_link text, rights text, available_in text[],
                                  name text);

@@ -50,9 +50,11 @@ module Carto
 
       def run_index_statements(statements, database)
         statements.each do |statement|
-          database.run(statement)
-        rescue StandardError => e
-          log_error(exception: e)
+          begin
+            database.run(statement)
+          rescue StandardError => e
+            log_error(exception: e)
+          end
         end
       end
 

@@ -14,9 +14,9 @@
 
 <script>
 
-import SubscriptionStatus from 'new-dashboard/components/Catalog/subscriptions/SubscriptionStatus';
-import SubscriptionActions from 'new-dashboard/components/Catalog/subscriptions/SubscriptionActions';
-import SlugCopy from 'new-dashboard/components/Catalog/subscriptions/SlugCopy';
+import SubscriptionStatus from './SubscriptionStatus';
+import SubscriptionActions from './SubscriptionActions';
+import SlugCopy from './SlugCopy';
 
 export default {
   name: 'DatasetListItemExtra',

@@ -1,0 +1,426 @@
+<template>
+  <div
+    v-if="isOpen"
+    class="modal u-flex u-flex__justify--center u-flex__align--center"
+  >
+    <div @click="closeModal()" class="close-modal">
+      <img src="../../assets/icons/catalog/modal/close.svg" alt="close" />
+    </div>
+
+    <div class="grid u-flex__justify--center">
+      <div class="grid-cell--col6">
+        <div class="u-align--center">
+          <img
+            v-if="getHeaderIcon"
+            :src="require('new-dashboard/assets/icons/catalog/modal/' + getHeaderIcon)"
+            alt="Request data"
+          />
+          <h2 class="title is-sectiontitle is-txtNavyBlue u-mt--24">
+            {{ getTitle }}
+          </h2>
+          <p class="text is-caption is-txtNavyBlue u-mt--12">
+            {{ getSubTitle }}
+          </p>
+        </div>
+        <ul>
+          <DatasetListItem
+            :key="dataset.slug"
+            :dataset="dataset"
+          ></DatasetListItem>
+        </ul>
+
+        <div
+          class="license u-mt--24"
+          v-if="currentMode !== 'unsubscribe' && dataset.licenses && dataset.licenses !== ''"
+        >
+
+          <p class="text is-small is-txtBaseGrey license-description">
+            {{dataset.licenses}}
+            <a v-if="dataset.licenses_link" class="text is-small" :href="dataset.licenses_link" target="_blank">More info.</a>
+          </p>
+
+          <p v-if="currentMode === 'subscribed' || currentMode === 'requested'"
+            class="text u-mt--16 is-caption-small is-txtNavyBlue u-flex"
+          >
+            <img class="u-mr--12" src="../../assets/icons/catalog/check.svg" alt="check" />
+            I accepted the License
+          </p>
+
+          <label v-else class="text u-flex u-flex__align--center u-mt--16">
+            <span class="checkbox u-mr--12">
+              <input
+                class="checkbox-input"
+                type="checkbox"
+                name="option.id"
+                v-model="licenseStatus"
+              />
+              <span class="checkbox-decoration">
+                <svg
+                  viewBox="0 0 12 12"
+                  svg-inline=""
+                  role="presentation"
+                  focusable="false"
+                  tabindex="-1"
+                  class="checkbox-decorationMedia"
+                >
+                  <path
+                    data-v-d1b5b660=""
+                    d="M1.65 3.803l2.84 3.169L10.38.717"
+                    fill="none"
+                    class="checkbox-check"
+                  ></path>
+                </svg>
+              </span>
+            </span>
+            <span class="is-txtNavyBlue is-caption-small"> I accept the License </span>
+          </label>
+        </div>
+
+        <p
+          v-if="currentMode === 'request'"
+          class="text is-caption is-txtNavyBlue u-mt--40 u-align--center"
+        >
+          Once you confirm your request, a
+          <span class="is-semibold">CARTO team member will get in touch</span>
+          to give you more information and go over any questions you may have.
+        </p>
+
+        <div
+          v-else-if="currentMode === 'unsubscribe'"
+          class="text is-caption is-txtNavyBlue u-mt--40"
+        >
+          If you unsubcribe pellentesque diam nisi, faucibus varius enim mollis
+          sit amet. Cras nec varius magna, in dignissim diam:
+          <ul class="u-mt--20 u-ml--32" style="list-style: disc;">
+            <li>
+              If you imported the dataset, it will disappear from
+              <span class="is-semibold">your datasets</span> list.
+            </li>
+            <li>
+              All <span class="is-semibold">maps</span> where you are using the
+              dataset will be removed.
+            </li>
+            <li>
+              The dataset will stop working in
+              <span class="is-semibold">apps</span> where it is being used
+              through API.
+            </li>
+          </ul>
+        </div>
+
+        <p
+          v-else-if="currentMode === 'requested'"
+          class="text is-caption is-txtNavyBlue u-mt--40 u-flex u-flex__justify--center u-flex__align-cen"
+        >
+          <img class="u-mr--12" src="../../assets/icons/catalog/check.svg" alt="check" />
+          Your subscription request has been added to your subscriptions.
+        </p>
+
+        <div class="grid u-flex__justify--center u-mt--36">
+          <Button
+            @click.native="closeModal()"
+            :isOutline="true"
+            :color="currentMode === 'unsubscribe' ? 'navy-blue' : ''"
+            class="noBorder"
+            >{{ getCloseText }}</Button
+          >
+          <!-- <Button class="u-ml--16" @click.native="requestDataset()"
+            >Confirm request</Button
+          > -->
+          <Button
+            v-if="currentMode === 'subscribe'"
+            @click.native="subscribe()"
+            class="u-ml--16"
+            :class="{ 'require-licence': !licenseAccepted, 'is-loading': loading }"
+          >
+          <span class="loading u-flex u-flex__align-center u-mr--12">
+            <img svg-inline src="../../assets/icons/catalog/loading_white.svg" class="loading__svg"/>
+          </span>
+            Confirm subscription
+          </Button>
+
+          <Button
+            v-else-if="currentMode === 'unsubscribe'"
+            @click.native="unsubscribe()"
+            class="u-ml--16"
+            :class="{ 'is-loading': loading }"
+            :color="'red'"
+          >
+          <span class="loading u-flex u-flex__align-center u-mr--12">
+            <img svg-inline src="../../assets/icons/catalog/loading_white.svg" class="loading__svg"/>
+          </span>
+            Confirm unsubscription
+          </Button>
+
+          <Button
+            v-else-if="currentMode === 'request'"
+            @click.native="request()"
+            class="u-ml--16"
+            :class="{ 'require-licence': !licenseAccepted, 'is-loading': loading  }"
+          >
+          <span class="loading u-flex u-flex__align-center u-mr--12">
+            <img svg-inline src="../../assets/icons/catalog/loading_white.svg" class="loading__svg"/>
+          </span>
+            Confirm request
+          </Button>
+
+          <router-link
+            v-else-if="currentMode === 'subscribed' || currentMode === 'requested'"
+            :to="{ name: 'subscriptions' }">
+              <Button
+                @click.native="closeModal()"
+                class="u-ml--16"
+                :color="'green'"
+              >
+                <img class="u-mr--12" src="../../assets/icons/catalog/check_white.svg" alt="check" />
+                Check your subscriptions
+              </Button>
+          </router-link>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex';
+import Button from '../Button.vue';
+import DatasetListItem from '../Catalog/browser/DatasetListItem';
+
+export default {
+  name: 'ModalSubscription',
+  components: {
+    Button,
+    DatasetListItem
+  },
+  props: {
+    isOpen: Boolean,
+    dataset: Object,
+    type: {
+      type: String,
+      required: true,
+      validator: value => {
+        return ['geography', 'dataset'].indexOf(value) !== -1;
+      }
+    },
+    mode: {
+      type: String,
+      required: false,
+      validator: value => {
+        return ['subscribe', 'unsubscribe', 'request'].indexOf(value) !== -1;
+      }
+    }
+  },
+  data() {
+    return {
+      currentMode: null,
+      licenseStatus: false,
+      loading: false
+    };
+  },
+  computed: {
+    ...mapState({
+      user: state => state.user
+    }),
+    getHeaderIcon() {
+      if (this.currentMode === 'subscribe') {
+        return 'subsc-add-icon.svg';
+      } else if (this.currentMode === 'unsubscribe') {
+        return 'subsc-unsubsc-icon.svg';
+      } else if (this.currentMode === 'request') {
+        return 'data-request.svg';
+      } else if (this.currentMode === 'subscribed') {
+        return 'subsc-subscribed-icon.svg';
+      } else if (this.currentMode === 'requested') {
+        return 'subsc-requested-icon.svg';
+      }
+      return null;
+    },
+    getTitle() {
+      if (this.currentMode === 'subscribe') {
+        return 'Confirm your subscription';
+      } else if (this.currentMode === 'unsubscribe') {
+        return 'Confirm your unsubscription';
+      } else if (this.currentMode === 'request') {
+        return 'Confirm your request';
+      } else if (this.currentMode === 'subscribed') {
+        return 'Subscription confirmed';
+      } else if (this.currentMode === 'requested') {
+        return 'Subscription request confirmed';
+      }
+      return '';
+    },
+    getSubTitle() {
+      if (this.currentMode === 'subscribe') {
+        return 'You are going to subscribe to the following dataset:';
+      } else if (this.currentMode === 'unsubscribe') {
+        return 'You are going to unsubscribe to the following dataset:';
+      } else if (this.currentMode === 'request') {
+        return 'You are going to request a subscription to the following dataset:';
+      } else if (this.currentMode === 'subscribed') {
+        return 'Your subscription has been activated successfully.';
+      } else if (this.currentMode === 'requested') {
+        return 'We have received your subscription request and we will contact you really soon about the following dataset:';
+      }
+      return '';
+    },
+    getCloseText() {
+      if (
+        this.currentMode === 'subscribed' ||
+        this.currentMode === 'requested'
+      ) {
+        return 'Close';
+      }
+      return 'Cancel';
+    },
+    licenseAccepted() {
+      return (
+        !this.dataset.licenses ||
+        this.dataset.licenses === '' ||
+        this.licenseStatus
+      );
+    }
+  },
+  methods: {
+    closeModal() {
+      this.$emit('closeModal');
+    },
+    requestDataset() {
+      // Check if requestDataset is defined or call Dashboard's requestDataset action as a fallback
+      if (this.$root.requestDataset) {
+        this.$root.requestDataset(this.user, this.dataset);
+      } else {
+        this.$store.dispatch('catalog/requestDataset', {
+          user: this.user,
+          dataset: this.dataset
+        });
+      }
+      //GTM event trigger
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'requestDataset' });
+    },
+    async subscribe() {
+      this.loading = true;
+      if (
+        await this.$store.dispatch('catalog/fetchSubscribe', {
+          id: this.dataset.id,
+          type: this.type
+        }) &&
+        await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id)
+      ) {
+        await this.$store.dispatch('catalog/fetchSubscriptionsList');
+        this.currentMode = 'subscribed';
+        this.loading = false;
+      }
+    },
+    async unsubscribe() {
+      this.loading = true;
+      if (
+        await this.$store.dispatch('catalog/fetchSubscriptionUnSync', this.dataset.id) &&
+        await this.$store.dispatch('catalog/fetchUnSubscribe', {
+          id: this.dataset.id,
+          type: this.type
+        })
+      ) {
+        await this.$store.dispatch('catalog/fetchSubscriptionsList');
+        this.loading = false;
+        this.closeModal();
+      }
+    },
+    async request() {
+      this.loading = true;
+      if (
+        await this.$store.dispatch('catalog/fetchSubscribe', {
+          id: this.dataset.id,
+          type: this.type
+        })
+      ) {
+        await this.$store.dispatch('catalog/fetchSubscriptionsList');
+        this.currentMode = 'requested';
+        this.loading = false;
+      }
+    }
+  },
+  watch: {
+    mode() {
+      this.currentMode = this.mode;
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+@import 'new-dashboard/styles/variables';
+
+.modal {
+  position: fixed;
+  z-index: 5; // Min value for Dashboard
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba($white, 0.96);
+  overflow-y: auto;
+}
+
+.close-modal {
+  position: absolute;
+  top: 32px;
+  right: 24px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.u-align--center {
+  text-align: center;
+}
+
+.list-item {
+  border: none;
+  margin-top: 42px;
+  background-color: $white;
+  box-shadow: 0 4px 16px 0 rgba(44, 44, 44, 0.16);
+  &:hover {
+    background-color: $white;
+  }
+}
+
+.is-caption-small {
+  font-size: 14px;
+  line-height: 1.43;
+}
+
+.license {
+  background-color: $neutral--100;
+  padding: 24px;
+}
+
+.require-licence {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.license-description {
+  max-height: 88px;
+  overflow-y: scroll;
+}
+
+.loading {
+  &__svg {
+    width: 16px;
+  }
+}
+
+.button {
+  &:not(.is-loading) {
+    .loading {
+      display: none;
+    }
+  }
+  &.is-loading {
+    pointer-events: none;
+  }
+}
+
+</style>

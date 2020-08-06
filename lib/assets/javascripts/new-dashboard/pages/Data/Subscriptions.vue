@@ -61,9 +61,9 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
-import DatasetListItem from 'new-dashboard/components/Catalog/catalogSearch/DatasetListItem';
+import DatasetListItem from 'new-dashboard/components/Catalog/browser/DatasetListItem';
 import DatasetListItemExtra from 'new-dashboard/components/Subscriptions/DatasetListItemExtra';
-import Pager from 'new-dashboard/components/Catalog/catalogSearch/Pager';
+import Pager from 'new-dashboard/components/Catalog/browser/Pager';
 
 export default {
   name: 'SubscriptionsPage',

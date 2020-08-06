@@ -40,7 +40,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'new-dashboard/styles/catalog/variables';
+@import 'new-dashboard/styles/variables';
   .go-up-button {
     cursor: pointer;
     outline: none;

@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import Button from './Button.vue';
+import Button from '../Button.vue';
 
 export default {
   name: 'NotAvailable',
@@ -71,7 +71,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'new-dashboard/styles/catalog/variables';
+@import 'new-dashboard/styles/variables';
 .empty-container {
   padding: 36px 0 48px;
   border-radius: 6px;

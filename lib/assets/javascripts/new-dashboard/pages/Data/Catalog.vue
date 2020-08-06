@@ -86,13 +86,13 @@
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 
 import { mapState } from 'vuex';
-import Button from  'new-dashboard/components/Catalog/Button';
-import DatasetListItem from  'new-dashboard/components/Catalog/catalogSearch/DatasetListItem';
-import FilterBox from  'new-dashboard/components/Catalog/catalogSearch/FilterBox';
-import FilterSummary from  'new-dashboard/components/Catalog/catalogSearch/FilterSummary';
-import LoadingBar from  'new-dashboard/components/Catalog/catalogSearch/LoadingBar';
-import Pager from  'new-dashboard/components/Catalog/catalogSearch/Pager';
-import SearchBox from  'new-dashboard/components/Catalog/catalogSearch/SearchBox';
+import Button from  'new-dashboard/components/Button';
+import DatasetListItem from  'new-dashboard/components/Catalog/browser/DatasetListItem';
+import FilterBox from  'new-dashboard/components/Catalog/browser/FilterBox';
+import FilterSummary from  'new-dashboard/components/Catalog/browser/FilterSummary';
+import LoadingBar from  'new-dashboard/components/Catalog/browser/LoadingBar';
+import Pager from  'new-dashboard/components/Catalog/browser/Pager';
+import SearchBox from  'new-dashboard/components/Catalog/browser/SearchBox';
 import { filtersMetadata } from 'new-dashboard/utils/catalog/constants';
 import { toTitleCase } from 'new-dashboard/utils/catalog/string-to-title-case';
 import icon_by_environment from 'new-dashboard/mixins/catalog/icon_by_environment';
@@ -202,7 +202,7 @@ export default {
   width: 100%;
 }
 
-@import 'new-dashboard/styles/catalog/variables';
+@import 'new-dashboard/styles/variables';
 
 header {
   padding-top: 24px;

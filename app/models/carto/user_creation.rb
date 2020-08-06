@@ -333,7 +333,7 @@ class Carto::UserCreation < ActiveRecord::Base
       CartoDB.notify_exception(e, action: 'safe user destruction', user: cartodb_user)
       begin
         cartodb_user.delete
-      rescue => ee
+      rescue StandardError => ee
         CartoDB.notify_exception(ee, action: 'safe user deletion', user: cartodb_user)
       end
 

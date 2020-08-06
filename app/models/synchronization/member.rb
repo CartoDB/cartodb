@@ -238,7 +238,7 @@ module CartoDB
         if exception.is_a?(TokenExpiredOrInvalidError)
           begin
             user.oauths.remove(exception.service_name)
-          rescue => ex
+          rescue StandardError => ex
             log.append "Exception removing OAuth: #{ex.message}"
             log.append ex.backtrace
           end
@@ -575,7 +575,7 @@ module CartoDB
             oauth = user.oauths.select(datasource_name)
             datasource.token = oauth.token unless oauth.nil?
           end
-        rescue => ex
+        rescue StandardError => ex
           log.append "Exception: #{ex.message}"
           log.append ex.backtrace
           datasource = nil

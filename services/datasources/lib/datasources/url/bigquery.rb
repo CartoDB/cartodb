@@ -200,7 +200,7 @@ module CartoDB
           if response.code == 200
             true
           end
-        rescue => ex
+        rescue StandardError => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
         end
 

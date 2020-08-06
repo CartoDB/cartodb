@@ -290,7 +290,7 @@ class Table
           owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
             user_database.run(%{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
           end
-        rescue
+        rescue StandardError
           already_had_cartodb_id = true
         end
         unless already_had_cartodb_id
@@ -961,7 +961,7 @@ class Table
     if @data_import
       CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
     end
-  rescue => exception
+  rescue StandardError => exception
     if !!(exception.message =~ /Error: invalid cartodb_id/)
       raise CartoDB::CartoDBfyInvalidID
     else
@@ -1004,7 +1004,7 @@ class Table
          .select(:updated_at)
          .from(Sequel.qualify(:cartodb, :cdb_tablemetadata))
          .where(tabname: Sequel.lit("'#{name}'::regclass")).first[:updated_at]
-  rescue
+  rescue StandardError
     nil
   end
 
@@ -1146,7 +1146,7 @@ class Table
         name,
         database_schema
       ).first
-    rescue => exception
+    rescue StandardError => exception
       data = nil
       # INFO: we don't want code to fail because of SQL error
       CartoDB.notify_exception(exception)

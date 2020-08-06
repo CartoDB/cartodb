@@ -51,7 +51,7 @@ module CartoDB
           end
         end
         self
-      rescue => exception
+      rescue StandardError => exception
         @failed = true
         puts '=================='
         puts exception.to_s
@@ -147,7 +147,7 @@ module CartoDB
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
         @table_setup.run_index_statements(index_statements, @database)
-      rescue => exception
+      rescue StandardError => exception
         @error_code = OVERWRITE_ERROR
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
 
@@ -313,7 +313,7 @@ module CartoDB
             begin
               already_had_cartodb_id = false
               user_database.run(%Q{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
-            rescue
+            rescue StandardError
               already_had_cartodb_id = true
             end
             unless already_had_cartodb_id

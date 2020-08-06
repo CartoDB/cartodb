@@ -28,7 +28,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   rescue StandardError => e
     begin
       @organization.delete if @organization && @organization.id
-    rescue => ee
+    rescue StandardError => ee
       # Avoid shadowing original error
       CartoDB.notify_error('Cleaning failed creation', error: ee.inspect, organization: @organization)
     end

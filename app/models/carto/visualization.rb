@@ -715,7 +715,7 @@ class Carto::Visualization < ActiveRecord::Base
       support_tables.rename(name_was, name, true, name_was)
     end
     self
-  rescue => exception
+  rescue StandardError => exception
     if name_changed? && !(exception.to_s =~ /relation.*does not exist/)
       revert_name_change(name_was)
     end
@@ -725,7 +725,7 @@ class Carto::Visualization < ActiveRecord::Base
   def revert_name_change(previous_name)
     self.name = previous_name
     store
-  rescue => exception
+  rescue StandardError => exception
     raise CartoDB::InvalidMember.new(exception.to_s)
   end
 

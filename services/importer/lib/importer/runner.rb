@@ -102,7 +102,7 @@ module CartoDB
         tracker.call('uploading')
         @downloader.multi_resource_import_supported? ? multi_resource_import : single_resource_import
         self
-      rescue => exception
+      rescue StandardError => exception
         # Delete job temporary table from cdb_importer schema
         delete_job_table
 

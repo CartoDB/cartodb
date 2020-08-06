@@ -87,7 +87,7 @@ module CartoDB
     def input_rows
       stdout, _stderr, _status = Open3.capture3('wc', '-l', input_file)
       stdout.to_i
-    rescue
+    rescue StandardError
       0
     end
 

@@ -122,7 +122,7 @@ module Carto
         attempts += 1
         begin
           in_database(as: :superuser).execute("ANALYZE")
-        rescue => ee
+        rescue StandardError => ee
           CartoDB.report_exception(ee, "Failed to get user db size, retrying...", user: @user)
           raise ee
         end

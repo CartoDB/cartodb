@@ -144,7 +144,7 @@ module CartoDB
       @response_code = response.code
       @errors = JSON.parse(response.body)['errors']
       @errors = [@errors] unless @errors.is_a?(Array)
-    rescue
+    rescue StandardError
       @errors = ['Couldn\'t parse response errors.']
     end
 

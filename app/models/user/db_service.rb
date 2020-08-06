@@ -1201,7 +1201,7 @@ module CartoDB
             drop_all_functions_from_schema(new_schema_name)
             @user.in_database.run(%{ DROP SCHEMA "#{new_schema_name}" })
           end
-        rescue => ee
+        rescue StandardError => ee
           # Avoid shadowing the actual error
           CartoDB.notify_exception(ee, user: @user)
         end

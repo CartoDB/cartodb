@@ -35,7 +35,7 @@ module CartoGearsApi
         listeners_for(event.class).each do |listener|
           begin
             listener.call(event)
-          rescue => exception
+          rescue StandardError => exception
             log_error(
               message: 'Error while running Gears event listeners',
               exception: exception,

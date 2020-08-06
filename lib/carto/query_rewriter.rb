@@ -17,7 +17,7 @@ module Carto
     def test_query(user, query)
       user.in_database.execute("EXPLAIN (#{query})")
       true
-    rescue
+    rescue StandardError
       false
     end
 

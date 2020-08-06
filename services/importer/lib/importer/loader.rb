@@ -71,7 +71,7 @@ module CartoDB
 
           self
         end
-      rescue => exception
+      rescue StandardError => exception
         begin
           job.delete_job_table
         ensure
@@ -365,7 +365,7 @@ module CartoDB
         #Maybe we could use a cheaper solution
         rows = @job.db.fetch(%Q{SELECT COUNT(1) as num_rows FROM #{SCHEMA}.#{@job.table_name}}).first
         return rows.nil? ? nil : rows.fetch(:num_rows, nil)
-      rescue
+      rescue StandardError
         # If there is an import error and try to get the imported rows
         return nil
       end

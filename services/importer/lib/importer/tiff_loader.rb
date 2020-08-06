@@ -36,7 +36,7 @@ module CartoDB
         })
 
         self
-      rescue => exception
+      rescue StandardError => exception
         begin
           clean_temporary_tables
         ensure

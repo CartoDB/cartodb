@@ -97,7 +97,7 @@ module CartoDB
             importer_stats.timing(TIMING_TEST_KEY_A) do
               raise 'error'
             end
-          rescue
+          rescue StandardError
             # INFO: keep going
           end
           importer_stats.timing(TIMING_TEST_KEY_B) do

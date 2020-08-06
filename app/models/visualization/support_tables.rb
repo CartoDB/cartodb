@@ -64,7 +64,7 @@ module CartoDB
             support_tables_new_names.push(new_support_table_name)
           }
           renamed = true
-        rescue
+        rescue StandardError
           renamed = false
         end
 

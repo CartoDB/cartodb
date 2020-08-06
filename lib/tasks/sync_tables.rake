@@ -37,7 +37,7 @@ namespace :cartodb do
           else
             table = table.service
           end
-        rescue => exception
+        rescue StandardError => exception
           table = nil
           puts "\nSync id '#{record[:id]}' errored: #{exception.inspect}"
         end
@@ -45,13 +45,13 @@ namespace :cartodb do
           if synchronization.visualization_id.nil?
             begin
               synchronization.visualization_id = table.table_visualization.id
-            rescue => exception
+            rescue StandardError => exception
               puts "\nSync id '#{record[:id]}' errored, canonical visualization not found"
             end
             begin
               synchronization.store
               printf '.'
-            rescue => exception
+            rescue StandardError => exception
               puts "\nSync id '#{record[:id]}' errored: #{exception.inspect}"
             end
           else

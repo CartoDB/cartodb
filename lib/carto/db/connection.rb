@@ -48,7 +48,7 @@ module Carto
           $pool.fetch(configuration) do
             get_database_without_search_path(configuration)
           end
-        rescue => exception
+        rescue StandardError => exception
           CartoDB::report_exception(exception, "Cannot connect to DO Metadata database")
           raise exception
         end

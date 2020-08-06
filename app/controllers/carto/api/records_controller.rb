@@ -62,7 +62,7 @@ module Carto
                     .delete
 
         head :no_content
-      rescue
+      rescue StandardError
         render_jsonp({ errors: ["row identified with #{params[:cartodb_id]} not found"] }, 404)
       end
 

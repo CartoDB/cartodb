@@ -351,7 +351,7 @@ module Carto
       def render_vizjson(vizjson)
         set_vizjson_response_headers_for(@visualization)
         render_jsonp(vizjson)
-      rescue => exception
+      rescue StandardError => exception
         CartoDB.notify_exception(exception)
         raise exception
       end

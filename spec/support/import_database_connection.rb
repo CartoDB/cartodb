@@ -9,7 +9,7 @@ module CartoDB
         begin
           c.test_connection
           @@connection = c
-        rescue
+        rescue StandardError
           c = ::Sequel.connect('postgres://postgres:@localhost:5432')
           c.run <<-SQL
 CREATE DATABASE cartodb_importer_test

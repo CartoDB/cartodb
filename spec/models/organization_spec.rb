@@ -42,7 +42,7 @@ describe Organization do
     bypass_named_maps
     begin
       @user.destroy
-    rescue
+    rescue StandardError
       # Silence error, can't do much more
     end
   end

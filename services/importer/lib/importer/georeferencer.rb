@@ -98,7 +98,7 @@ module CartoDB
 
         handle_multipoint(qualified_table_name) if multipoint?
         column_name
-      rescue => exception
+      rescue StandardError => exception
         job.log "Error creating the_geom: #{exception}. Trace: #{exception.backtrace}"
         if /statement timeout/.match(exception.message).nil?
           if column.empty?
@@ -339,7 +339,7 @@ module CartoDB
         job.log 'found MULTIPOINT geometry' if is_multipoint
 
         is_multipoint
-      rescue
+      rescue StandardError
         false
       end
 

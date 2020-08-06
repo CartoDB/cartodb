@@ -137,7 +137,7 @@ module CartoDB
         persist_metadata(name, data_import_id, overwrite)
 
         log("Table '#{name}' registered")
-      rescue => exception
+      rescue StandardError => exception
         if exception.message =~ /canceling statement due to statement timeout/i
           drop("#{ORIGIN_SCHEMA}.#{result.table_name}")
           raise CartoDB::Importer2::StatementTimeoutError.new(
@@ -152,7 +152,7 @@ module CartoDB
       def create_overviews(result)
         dataset = @overviews_creator.dataset(result.name)
         dataset.create_overviews!
-      rescue => exception
+      rescue StandardError => exception
         # In case of overview creation failure we'll just omit the
         # overviews creation and continue with the process.
         # Since the actual creation is handled by a single SQL
@@ -210,7 +210,7 @@ module CartoDB
       def drop(table_name)
         Carto::OverviewsService.new(database).delete_overviews table_name
         database.execute(%(DROP TABLE #{table_name}))
-      rescue => exception
+      rescue StandardError => exception
         log("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
         self
       end
@@ -283,7 +283,7 @@ module CartoDB
           ALTER INDEX IF EXISTS "#{schema}"."#{current_name}_geom_idx"
           RENAME TO "the_geom_#{Carto::UUIDHelper.random_uuid.gsub('-', '_')}"
         })
-      rescue => exception
+      rescue StandardError => exception
         log("Silently failed rename_the_geom_index_if_exists from " +
             "#{current_name} to #{new_name} with exception #{exception}. " +
             "Backtrace: #{exception.backtrace}. ")

@@ -37,7 +37,7 @@ class Carto::BoundingBoxService
     if e.message =~ /stats for (.*) do not exist/i
       begin
         current_bbox
-      rescue
+      rescue StandardError
         nil
       end
     end

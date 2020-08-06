@@ -32,7 +32,7 @@ namespace :carto do
           owner = l.maps.first.user
           affected_visualizations << "#{v.id} | #{v.name} | updated: #{v.updated_at} | user: #{owner.username} | type: #{v.type}"
           puts "id: #{l.id} | visualization: #{v.id} | vis_type: #{v.type} | updated_at: #{l.updated_at} | user: #{owner.username}"
-        rescue
+        rescue StandardError
           puts "Ignoring orphan layer #{l.id}"
         end
       end

@@ -96,7 +96,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     else
       { success: false, error: last_operation_result.to_hash }
     end
-  rescue => exception
+  rescue StandardError => exception
     { success: false, error: { message: exception.message } }
   end
 

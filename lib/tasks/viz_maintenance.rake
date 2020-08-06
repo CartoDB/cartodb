@@ -67,7 +67,7 @@ namespace :cartodb do
             puts "\n> #{Time.now} #{current}/#{count}"
           end
           vis = nil
-        rescue => ex
+        rescue StandardError => ex
           printf "E"
         end
       end

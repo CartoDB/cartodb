@@ -355,7 +355,7 @@ module Carto::Api::AuthApiAuthentication
 
     return fail! unless api_key.exists?
     success!(user)
-  rescue
+  rescue StandardError
     fail!
   end
 

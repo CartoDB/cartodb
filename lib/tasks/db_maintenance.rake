@@ -419,7 +419,7 @@ namespace :cartodb do
         begin
           puts "Setting user quota in db '#{user.database_name}' (#{user.id} #{user.username})"
           user.db_service.rebuild_quota_trigger
-        rescue => exception
+        rescue StandardError => exception
           puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
         end
 
@@ -653,7 +653,7 @@ namespace :cartodb do
                   SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
                 })
               end
-            rescue => exception
+            rescue StandardError => exception
               puts "ERROR:  #{user.username} / #{user.id} : #{table_name} #{exception}"
             end
           end
@@ -736,7 +736,7 @@ namespace :cartodb do
         begin
           user.db_service.create_public_db_user
           user.save_metadata
-        rescue
+        rescue StandardError
           puts "user #{user.username} already has the public user"
         end
       end

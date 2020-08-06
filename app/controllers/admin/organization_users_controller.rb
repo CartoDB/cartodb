@@ -106,7 +106,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     CartoDB.report_exception(e)
     begin
       @user.destroy
-    rescue => ee
+    rescue StandardError => ee
       CartoDB.report_exception(ee)
     end
     set_flash_flags

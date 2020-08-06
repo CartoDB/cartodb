@@ -120,7 +120,7 @@ module CartoDB
 
     def revertable_privacy_change(metadata_table, old_privacy = nil, entities = [])
       yield
-    rescue => exception
+    rescue StandardError => exception
       CartoDB.notify_exception(exception, user_id: metadata_table.user_id, table_id: metadata_table.id)
       revert_to_previous_privacy(metadata_table, old_privacy, entities)
       raise exception
@@ -135,7 +135,7 @@ module CartoDB
       additional_revert_targets.each do |visualization|
         begin
           propagate_to([visualization])
-        rescue => exception
+        rescue StandardError => exception
           # Can't do much more, just let remaining ones finish
           errors << exception
         end

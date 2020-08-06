@@ -93,7 +93,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
         end
 
         render_jsonp( { enqueued: enqueued, synchronization_id: member.id})
-      rescue => exception
+      rescue StandardError => exception
         CartoDB.notify_exception(exception)
         head(404)
       end

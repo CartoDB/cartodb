@@ -211,7 +211,7 @@ module CartoDB
             body = "client_id=#{@client_id}&client_secret=#{@client_secret}&token=#{token}"
 
             BoxAPI::auth_post(uri, body, false)
-          rescue => ex
+          rescue StandardError => ex
             raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
           end
 

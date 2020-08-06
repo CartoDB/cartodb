@@ -654,7 +654,7 @@ class User < Sequel::Model
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
       db
     end
-  rescue => exception
+  rescue StandardError => exception
     CartoDB::report_exception(exception, "Cannot connect to user database",
                               user: self, database: configuration['database'])
     raise exception
@@ -1117,7 +1117,7 @@ class User < Sequel::Model
       attempts += 1
       begin
         in_database(:as => :superuser).fetch("ANALYZE")
-      rescue => ee
+      rescue StandardError => ee
         log_error(exception: ee, current_user: self)
         raise ee
       end
@@ -1156,7 +1156,7 @@ class User < Sequel::Model
 
   def account_type_name
     self.account_type.gsub(' ', '_').downcase
-    rescue
+    rescue StandardError
     ''
   end
 

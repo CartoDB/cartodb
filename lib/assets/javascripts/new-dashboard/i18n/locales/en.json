@@ -719,40 +719,6 @@
       "mobileApps": "Mobile apps"
     }
   },
-  "CatalogPage": {
-    "header": "Catalog",
-    "description": "Broaden your analysis and augment your own data with our curated selection of location datasets."
-  },
-  "CatalogListHeader": {
-    "name": "Name",
-    "aggregation": "Aggregation",
-    "frequency": "Frequency",
-    "source": "Source"
-  },
-  "CatalogDropdown" : {
-    "placeholder": "Search...",
-    "select": "Select",
-    "category": {
-      "title": "Select a category",
-      "placeholderInactive": "Select",
-      "placeholderActive": "Select",
-      "extra": "Interested in a different data category? <a href='mailto:sdr@carto.com'>Contact Us</a>"
-    },
-    "country": {
-      "title": "Select a country",
-      "placeholderInactive": "Select a country",
-      "placeholderActive": "Search...",
-      "extra": "Interested in data from a non-listed country? <a href='mailto:sdr@carto.com'>Contact Us</a>"
-    }
-  },
-  "CatalogDetailPage": {
-    "back": "Back",
-    "requestDataset": "Request Dataset",
-    "requestSuccess": "We have received your request correctly, we will contact you shortly.",
-    "variableGroups": "Variable Groups",
-    "category": "Category",
-    "country": "Country"
-  },
   "Subscriptions": {
     "emptyCase": "No subscriptions yet",
     "exploreDescription": "Explore the Data Catalog and subscribe to one of our Public or Premium datasets; then you will find it here.",

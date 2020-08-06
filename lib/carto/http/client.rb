@@ -49,6 +49,7 @@ module Carto
       # `options` are Typhoeus options. Example: { ssl_verifypeer: false, ssl_verifyhost: 0 }
       def get_file(url, file_path, options = {})
         downloaded_file = File.open file_path, 'wb'
+        options[:headers]['X-Request-ID'] = request_id if request_id
         request = request(url, options)
         request.on_headers do |response|
           unless response.code == 200
@@ -82,9 +83,14 @@ module Carto
         @logger = logger
       end
 
-      def perform_request(method, url, options)
+      def perform_request(method, url, options = {})
+        options[:headers]['X-Request-ID'] = request_id if request_id
         request = Request.new(@logger, url, options.merge(method: method))
         request.run
+      end
+
+      def request_id
+        Carto::CurrentRequest.request_id
       end
 
     end

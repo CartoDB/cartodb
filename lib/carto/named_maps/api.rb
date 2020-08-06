@@ -129,8 +129,6 @@ module Carto
           'content-type': 'application/json',
           'host': domain(username)
         }
-        headers = request_id ? @headers.merge('X-Request-ID': request_id) : @headers
-        headers
       end
 
       def domain(username)
@@ -139,10 +137,6 @@ module Carto
         config_domain = Cartodb.get_config(:tiler, 'internal', 'domain')
 
         CartoDB.subdomainless_urls? ? config_domain : "#{username}.#{config_domain}"
-      end
-
-      def request_id
-        Carto::CurrentRequest.request_id
       end
 
       def port

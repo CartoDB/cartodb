@@ -165,7 +165,7 @@ export default {
       if (this.isPublicWebsite) {
         window.location.replace(this.getFormURL());
       } else {
-        this.$store.dispatch('catalog/requestDataset', { user: this.$store.state.user, dataset: this.dataset })
+        this.$store.dispatch('catalog/requestDataset', { user: this.$store.state.user, dataset: this.dataset });
       }
     },
     showModal (mode) {

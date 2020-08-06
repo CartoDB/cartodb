@@ -30,7 +30,7 @@ export default {
   },
   computed: {
     ...mapState({
-      filterMetadata: function(state) {
+      filterMetadata (state) {
         return state.catalog.filtersAvailable[this.filterId];
       }
     }),

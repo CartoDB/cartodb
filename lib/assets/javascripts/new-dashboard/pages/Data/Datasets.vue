@@ -136,7 +136,7 @@ export default {
   },
   watch: {
     datasets: {
-      handler: function () {
+      handler () {
         if (this.datasets && Object.values(this.datasets).length) {
           if (this.datasetId && this.createVis) {
             const selectedDataset = Object.values(this.datasets).find(elem => elem.name === this.datasetId);

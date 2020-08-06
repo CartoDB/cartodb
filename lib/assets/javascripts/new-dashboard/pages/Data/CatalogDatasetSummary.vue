@@ -106,7 +106,7 @@ export default {
   name: 'CatalogDatasetSummary',
   watch: {
     dataset: {
-      handler: function(value) {
+      handler (value) {
         if (value && value.category_name) {
           sendCustomDimensions(
             value.category_name,

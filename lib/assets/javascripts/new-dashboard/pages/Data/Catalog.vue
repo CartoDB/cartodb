@@ -86,17 +86,16 @@
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 
 import { mapState } from 'vuex';
-import Button from  'new-dashboard/components/Button';
-import DatasetListItem from  'new-dashboard/components/Catalog/browser/DatasetListItem';
-import FilterBox from  'new-dashboard/components/Catalog/browser/FilterBox';
-import FilterSummary from  'new-dashboard/components/Catalog/browser/FilterSummary';
-import LoadingBar from  'new-dashboard/components/Catalog/browser/LoadingBar';
-import Pager from  'new-dashboard/components/Catalog/browser/Pager';
-import SearchBox from  'new-dashboard/components/Catalog/browser/SearchBox';
+import Button from 'new-dashboard/components/Button';
+import DatasetListItem from 'new-dashboard/components/Catalog/browser/DatasetListItem';
+import FilterBox from 'new-dashboard/components/Catalog/browser/FilterBox';
+import FilterSummary from 'new-dashboard/components/Catalog/browser/FilterSummary';
+import LoadingBar from 'new-dashboard/components/Catalog/browser/LoadingBar';
+import Pager from 'new-dashboard/components/Catalog/browser/Pager';
+import SearchBox from 'new-dashboard/components/Catalog/browser/SearchBox';
 import { filtersMetadata } from 'new-dashboard/utils/catalog/constants';
 import { toTitleCase } from 'new-dashboard/utils/catalog/string-to-title-case';
 import icon_by_environment from 'new-dashboard/mixins/catalog/icon_by_environment';
-
 
 export default {
   name: 'CatalogPage',
@@ -162,7 +161,7 @@ export default {
     hideFilters () {
       this.filterDetail = false;
     },
-    getFilterLabel(filterId) {
+    getFilterLabel (filterId) {
       return filtersMetadata[filterId]
         ? filtersMetadata[filterId].label
         : toTitleCase(filterId);
@@ -170,7 +169,7 @@ export default {
     navigateToContact () {
       window.open('https://carto.com/contact/', '_blank');
     },
-    goToPage(pageNum) {
+    goToPage (pageNum) {
       this.$store.dispatch('catalog/setPage', pageNum);
     }
   },

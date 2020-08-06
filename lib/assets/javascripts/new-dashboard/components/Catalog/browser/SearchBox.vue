@@ -43,10 +43,10 @@ export default {
   },
   computed: {
     ...mapState({
-      filter: state => state.catalog.filter,
+      filter: state => state.catalog.filter
     }),
     searchText () {
-      return this.filter.searchText
+      return this.filter.searchText;
     }
   },
   methods: {
@@ -61,7 +61,7 @@ export default {
   watch: {
     searchText: {
       immediate: true,
-      handler(newValue) {
+      handler (newValue) {
         this.filterText = newValue;
       }
     }

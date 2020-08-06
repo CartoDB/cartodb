@@ -189,7 +189,10 @@ export default {
       const currentFilter = this.$store.state.catalog.filter.categories[suggestedFilter.category];
       newFilter[suggestedFilter.category] = [
         ...currentFilter,
-        {id: suggestedFilter.option.id, name: suggestedFilter.option.name}
+        {
+          id: suggestedFilter.option.id,
+          name: suggestedFilter.option.name
+        }
       ];
       this.$store.commit('catalog/setFilter', newFilter);
     },

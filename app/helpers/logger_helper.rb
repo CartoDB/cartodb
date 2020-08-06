@@ -1,3 +1,5 @@
+require 'active_support/concern'
+
 module LoggerHelper
 
   extend ActiveSupport::Concern

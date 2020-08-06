@@ -53,11 +53,13 @@
             Subscribed
             <img class="u-ml--12" src="../../assets/icons/catalog/check.svg" alt="check" />
           </Button>
-          <span v-if="dataset && dataset.is_public_data"
-            @click="showModal('unsubscribe')"
+          <a v-if="dataset && dataset.is_public_data && subscriptionInfo"
+            :title="subscriptionInfo.sync_status === 'syncing' ? 'Can not remove a subscription while connecting' : ''"
+            @click="subscriptionInfo.sync_status !== 'syncing' && showModal('unsubscribe')"
+            :class="{ 'disabled': subscriptionInfo.sync_status === 'syncing' }"
             class="text is-small is-txtSoftGrey u-mt--8 underline"
-            >Unsubscribe</span
-          >
+            >Unsubscribe
+          </a>
         </div>
         <Button
           v-else-if="getSubscriptionStatus === 'requested'"
@@ -195,9 +197,14 @@ export default {
   margin-left: auto;
 }
 
+a.disabled {
+  cursor: default;
+  text-decoration: none;
+}
+
 .underline {
-  text-decoration: underline;
   cursor: pointer;
+  text-decoration: underline;
 }
 
 @media (max-width: $layout-mobile) {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>interface-alert-triangle</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Catalog" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Data-&gt;-Subscriptions-view-1.1-Actions" transform="translate(-1149.000000, -1092.000000)">
+            <g id="Layout-/-dataset-list-Copy" transform="translate(202.000000, 961.000000)">
+                <g id="interface-alert-triangle" transform="translate(945.000000, 129.000000)">
+                    <polygon id="Frame_-_24px" points="0 0 24 0 24 24 0 24"></polygon>
+                    <g id="Line_Icons" transform="translate(2.000000, 2.000000)" fill="#FEB100" fill-rule="nonzero">
+                        <path d="M10.894,0.552 L19.894,18.552 C20.0475342,18.8621216 20.0303629,19.2294829 19.8485699,19.5239306 C19.6667769,19.8183783 19.3460424,19.9983186 19,20 L1,20 C0.653779524,19.9986622 0.33272871,19.8188598 0.150695703,19.5243528 C-0.0313373035,19.2298458 -0.0486110213,18.8622806 0.105,18.552 L9.105,0.552 C9.444,-0.125 10.555,-0.125 10.894,0.552 Z M10,3.237 L2.618,18 L17.382,18 L10,3.237 Z M10,14.75 C10.6903559,14.75 11.25,15.3096441 11.25,16 C11.25,16.6903559 10.6903559,17.25 10,17.25 C9.30964406,17.25 8.75,16.6903559 8.75,16 C8.75,15.3096441 9.30964406,14.75 10,14.75 Z M11,8 L11,14 L9,14 L9,8 L11,8 Z" id="Combined-Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

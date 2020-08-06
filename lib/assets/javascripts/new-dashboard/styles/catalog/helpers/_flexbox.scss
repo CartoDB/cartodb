@@ -1,0 +1,54 @@
+$direction: (
+  'row': row,
+  'column': column,
+);
+
+$justify: (
+  'start': flex-start,
+  'end': flex-end,
+  'between': space-between,
+  'around': space-around,
+  'center': center
+);
+
+$align: (
+  'start': flex-start,
+  'end': flex-end,
+  'center': center,
+  'baseline': baseline,
+  'stretch': stretch
+);
+
+.u-flex {
+  display: flex;
+}
+
+.u-inlineflex {
+  display: inline-flex;
+}
+
+@each $name, $property in $direction {
+  .u-flex__direction--#{$name} {
+    flex-direction: #{$property} !important;
+  }
+}
+
+@each $name, $property in $justify {
+  .u-flex__justify--#{$name} {
+    justify-content: #{$property} !important;
+  }
+}
+
+@each $name, $property in $align {
+  .u-flex__align--#{$name} {
+    align-items: #{$property} !important;
+  }
+
+  .u-flex__self--#{$name} {
+    align-items: #{$property} !important;
+  }
+}
+
+.u-flex__grow--1 {
+  flex-grow: 1;
+}

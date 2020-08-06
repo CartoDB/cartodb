@@ -1,0 +1,32 @@
+$colors: (
+  'Primary': $color-primary,
+  'White': $white,
+  'Grey': $text__color,
+  'SoftGrey': $text__color--secondary,
+  'LightGrey': $neutral--500,
+  'Alert': $danger__color,
+  'SoftBlue': $color-primary--soft,
+  'DarkBlue': $blue--900,
+  'NavyBlue': $navy-blue,
+  'MidGrey': $neutral--600,
+  'BaseGrey': $neutral--800,
+  'MainTextColor': $navy-blue
+);
+
+@each $name, $color in $colors {
+  .is-txt#{$name} {
+    color: #{$color};
+  }
+}
+
+$bgcolors: (
+  'White': $white,
+  'SoftBlue': $color-primary--soft,
+  'Alert': $danger__color,
+);
+
+@each $name, $color in $bgcolors {
+  .is-bg#{$name} {
+    background-color: #{$color};
+  }
+}

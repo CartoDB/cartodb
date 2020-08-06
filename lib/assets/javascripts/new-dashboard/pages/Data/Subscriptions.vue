@@ -85,7 +85,7 @@ export default {
   },
   computed: {
     ...mapState({
-      subscriptions: state => state.doCatalog.subscriptionsList
+      subscriptions: state => state.catalog.subscriptionsList
     }),
     pageSize () {
       return process.env.VUE_APP_PAGE_SIZE || 10;
@@ -105,14 +105,14 @@ export default {
   },
   async mounted () {
     this.loading = true;
-    await this.$store.dispatch('doCatalog/fetchSubscriptionsList');
+    await this.$store.dispatch('catalog/fetchSubscriptionsList');
     await this.fetchSubscriptionsListDetail();
   },
   methods: {
     async fetchSubscriptionsListDetail () {
       this.loading = true;
       window.scrollTo(0, 0);
-      await this.$store.dispatch('doCatalog/fetchSubscriptionsDetailsList', this.subscriptions.map(s => s.id));
+      await this.$store.dispatch('catalog/fetchSubscriptionsDetailsList', this.subscriptions.map(s => s.id));
       this.loading = false;
     },
     goToPage (pageNum) {
@@ -127,7 +127,7 @@ export default {
         clearInterval(this.id_interval);
         if (this.isAnySubscriptionSyncing) {
           this.id_interval = setInterval(async () => {
-            await this.$store.dispatch('doCatalog/fetchSubscriptionsList', true);
+            await this.$store.dispatch('catalog/fetchSubscriptionsList', true);
           }, 5000);
         }
       }

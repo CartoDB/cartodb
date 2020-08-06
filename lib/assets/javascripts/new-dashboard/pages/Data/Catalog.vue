@@ -261,27 +261,4 @@ export default {
     text-align: right;
   }
 }
-
-// CHECK do-catalog styles V
-
-// @import 'new-dashboard/styles/catalog/components/_scrollbar';
-
-.is-sectiontitle {
-  font-size: 24px;
-  line-height: 36px;
-}
-.is-title {
-  font-size: 36px;
-  line-height: 44px;
-}
-input::-ms-clear {
-  display: none;
-}
-.fade-enter-active {
-  transition: opacity .5s;
-}
-.fade-enter {
-  opacity: 0;
-}
-
 </style>

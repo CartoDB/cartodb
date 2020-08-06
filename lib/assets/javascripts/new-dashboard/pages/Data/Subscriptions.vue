@@ -28,13 +28,13 @@
             </template>
 
             <template slot="title">
-              <VisualizationsTitle :defaultTitle="$t(`DataPage.tabs.yourSubscriptions`)"/>
+              <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.yourSubscriptions')"/>
             </template>
 
             <template slot="dropdownButton"></template>
 
             <template slot="actionButton">
-              <router-link :to="{ name: 'do-catalog' }"  exact>
+              <router-link :to="{ name: 'spatial-data-catalog' }"  exact>
                 <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
               </router-link>
             </template>
@@ -61,9 +61,9 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
-import DatasetListItem from '@carto/common-ui/do-catalog/src/components/catalogSearch/DatasetListItem';
+import DatasetListItem from 'new-dashboard/components/Catalog/browser/DatasetListItem';
 import DatasetListItemExtra from 'new-dashboard/components/Subscriptions/DatasetListItemExtra';
-import Pager from '@carto/common-ui/do-catalog/src/components/catalogSearch/Pager';
+import Pager from 'new-dashboard/components/Catalog/browser/Pager';
 
 export default {
   name: 'SubscriptionsPage',
@@ -85,7 +85,7 @@ export default {
   },
   computed: {
     ...mapState({
-      subscriptions: state => state.doCatalog.subscriptionsList
+      subscriptions: state => state.catalog.subscriptionsList
     }),
     pageSize () {
       return process.env.VUE_APP_PAGE_SIZE || 10;
@@ -105,14 +105,14 @@ export default {
   },
   async mounted () {
     this.loading = true;
-    await this.$store.dispatch('doCatalog/fetchSubscriptionsList');
+    await this.$store.dispatch('catalog/fetchSubscriptionsList');
     await this.fetchSubscriptionsListDetail();
   },
   methods: {
     async fetchSubscriptionsListDetail () {
       this.loading = true;
       window.scrollTo(0, 0);
-      await this.$store.dispatch('doCatalog/fetchSubscriptionsDetailsList', this.subscriptions.map(s => s.id));
+      await this.$store.dispatch('catalog/fetchSubscriptionsDetailsList', this.subscriptions.map(s => s.id));
       this.loading = false;
     },
     goToPage (pageNum) {
@@ -127,7 +127,7 @@ export default {
         clearInterval(this.id_interval);
         if (this.isAnySubscriptionSyncing) {
           this.id_interval = setInterval(async () => {
-            await this.$store.dispatch('doCatalog/fetchSubscriptionsList', true);
+            await this.$store.dispatch('catalog/fetchSubscriptionsList', true);
           }, 5000);
         }
       }

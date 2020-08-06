@@ -198,7 +198,6 @@ module.exports = {
           rootDir('node_modules/internal-carto.js'),
           rootDir('node_modules/@carto/toolkit-core'),
           rootDir('node_modules/@carto/toolkit-custom-storage'),
-          rootDir('node_modules/@carto/common-ui'),
           rootDir('node_modules/vue-i18n/')
         ],
         exclude: [

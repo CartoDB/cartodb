@@ -1,5 +1,5 @@
 <template>
-  <span 
+  <span
   class="title is-xsmall is-semibold typeBadge"
   :class="{
     'is-kuviz': isKuviz && !inCondensedCard,

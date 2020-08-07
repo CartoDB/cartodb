@@ -14,6 +14,9 @@ describe Carto::Http::Client do
     @client = Carto::Http::Client.get(http_client_tag, log_requests: true)
   end
 
+  after(:each) do
+    Typhoeus::Expectation.clear
+  end
 
   describe '#request' do
     it 'wraps creation of typhoeus request objects' do
@@ -48,6 +51,45 @@ describe Carto::Http::Client do
                                params: { field1: "a field" },
                                headers: { Accept: "text/html", "User-Agent" => Carto::Http::Request::DEFAULT_USER_AGENT}
                                )
+      request.run.should eq expected_response
+    end
+  end
+
+  describe '#set_x_request_id!' do
+    after(:each) do
+      Carto::CurrentRequest.request_id = nil
+    end
+
+    it 'adds the X-Request-ID header from the CurrentRequest when present' do
+      Carto::CurrentRequest.request_id = 'expected_request_id'
+      expected_response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
+      Typhoeus.stub('www.example.com') do |request|
+        request.options[:headers]['X-Request-ID'].should eq 'expected_request_id'
+        expected_response
+      end
+      request = @client.request(
+        "www.example.com",
+        method: :post,
+        body: "this is a request body",
+        params: { field1: "a field" },
+        headers: { Accept: "text/html", "User-Agent" => Carto::Http::Request::DEFAULT_USER_AGENT}
+      )
+      request.run.should eq expected_response
+    end
+
+    it 'does not touch the headers when absent' do
+      expected_response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
+      Typhoeus.stub('www.example.com') do |request|
+        request.options[:headers]['X-Request-ID'].should be_nil
+        expected_response
+      end
+      request = @client.request(
+        "www.example.com",
+        method: :post,
+        body: "this is a request body",
+        params: { field1: "a field" },
+        headers: { Accept: "text/html", "User-Agent" => Carto::Http::Request::DEFAULT_USER_AGENT}
+      )
       request.run.should eq expected_response
     end
   end

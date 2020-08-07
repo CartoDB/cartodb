@@ -2,6 +2,7 @@ class Superadmin::SuperadminController < ActionController::Base
   include Carto::ControllerHelper
 
   before_filter :authenticate
+  around_filter :set_request_id
 
   rescue_from StandardError, with: :rescue_from_superadmin_error
 

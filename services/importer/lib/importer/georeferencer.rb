@@ -256,7 +256,7 @@ module CartoDB
       end
 
       def user
-        @user ||= Carto::User.find_by(id: user_id)
+        @user ||= ::User.where(id: user_id).first
       end
 
       def user_id

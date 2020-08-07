@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix Catalog "I'm interested" button ([#15785](https://github.com/CartoDB/cartodb/pull/15785))
 
 4.40.0 (2020-07-31)
 -------------------

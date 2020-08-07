@@ -305,11 +305,12 @@ module Carto
         it 'logs notification errors on destroy' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           @app_user = Carto::OauthAppUser.create!(user_id: @oauth_app.user.id, oauth_app: @oauth_app)
-          error_message = "Couldn't notify users about oauth_app '#{@oauth_app.name}' deletion"
+
           ::Resque.stubs(:enqueue).raises('unknown error')
-          Rails.logger.expects(:warning)
-                      .with(has_entry(message: error_message))
-                      .at_least_once
+          Rails.logger.expects(:warn).with(
+            has_entry('message' => "Couldn't notify users about oauth_app deletion")
+          )
+
           expect {
             @oauth_app.destroy!
           }.to raise_error(/unknown error/)

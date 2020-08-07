@@ -8,7 +8,8 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+
+* Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
 
 4.40.0 (2020-07-31)
 -------------------

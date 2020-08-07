@@ -1,6 +1,7 @@
 require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/authentication_manager'
 require_dependency 'carto/http_header_authentication'
+require_dependency 'carto/current_request'
 
 class ApplicationController < ActionController::Base
   include UrlHelper
@@ -10,6 +11,7 @@ class ApplicationController < ActionController::Base
 
   helper :all
 
+  around_filter :set_request_id
   around_filter :wrap_in_profiler
 
   before_filter :set_security_headers
@@ -138,6 +140,15 @@ class ApplicationController < ActionController::Base
     match = /([\w\-\.]+)(:[\d]+)?\/?/.match(request.host.to_s)
     unless match.nil?
       CartoDB.request_host = match[1]
+    end
+  end
+
+  def set_request_id
+    Carto::CurrentRequest.request_id = request.uuid
+    begin
+      yield
+    ensure
+      Carto::CurrentRequest.request_id = nil
     end
   end
 

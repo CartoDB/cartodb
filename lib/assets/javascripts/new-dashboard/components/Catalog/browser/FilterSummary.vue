@@ -100,15 +100,17 @@ export default {
     filtersApplied () {
       const filterMap = new Map();
       for (let filterId in this.filtersAvailable) {
-        const filterContent = this.filter[filterId].map(item => {
-          const filterAvailable = this.filtersAvailable[filterId].get(item.id);
-          return {
-            id: item.id,
-            name: item.name || filterAvailable && filterAvailable.name
-          };
-        });
-        if (filterContent.length) {
-          filterMap.set(filterId, filterContent);
+        if (this.filter[filterId]) {
+          const filterContent = this.filter[filterId].map(item => {
+            const filterAvailable = this.filtersAvailable[filterId].get(item.id);
+            return {
+              id: item.id,
+              name: item.name || filterAvailable && filterAvailable.name
+            };
+          });
+          if (filterContent.length) {
+            filterMap.set(filterId, filterContent);
+          }
         }
       }
       // Sort filters
@@ -121,7 +123,9 @@ export default {
     filtersCount () {
       let filterCount = 0;
       for (let filterId in this.filtersAvailable) {
-        filterCount += this.filter[filterId].length;
+        if (this.filter[filterId]) {
+          filterCount += this.filter[filterId].length;
+        }
       }
       return filterCount;
     },

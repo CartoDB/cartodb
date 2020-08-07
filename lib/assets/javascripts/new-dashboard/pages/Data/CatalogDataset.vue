@@ -1,7 +1,11 @@
 <template>
   <Page class="page--data">
     <SecondaryNavigation>
-      <a class="catalogDetail__back title is-small" href="javascript:history.back()">
+      <a
+        class="catalogDetail__back title is-small"
+        :class="{ 'disabled': loading }"
+        href="javascript:history.back()"
+      >
         <img class="catalogDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
         <span>{{ $t('Catalog.back') }}</span>
       </a>
@@ -21,7 +25,7 @@
             </svg>
           </span>
           <span class="text is-txtSoftGrey is-caption u-mt--12">
-            Loading dataset details…
+            Loading {{ type }} details…
           </span>
         </div>
         <transition name="fade">
@@ -75,7 +79,10 @@ export default {
   },
   computed: {
     ...mapState({
-      dataset: state => state.catalog.dataset
+      dataset: state => state.catalog.dataset,
+      type () {
+        return this.$route.params.type;
+      }
     }),
     subscription () {
       return this.$store.getters['catalog/getSubscriptionByDataset'](
@@ -89,25 +96,29 @@ export default {
       return this.subscription && this.subscription.sync_status === 'syncing';
     }
   },
-  methods: {},
-  mounted () {
-    if (!this.dataset || this.dataset.slug !== this.$route.params.datasetId) {
-      this.loading = true;
-      Promise.all([
-        this.$store.dispatch('catalog/fetchSubscriptionsList'),
-        this.$store.dispatch('catalog/fetchDataset', {
-          id: this.$route.params.datasetId,
-          type: this.$route.params.type
-        })
-      ]).then(() => {
-        this.loading = false;
-        if (this.$route.params.datasetId !== this.dataset.slug) {
-          this.$router.replace({
-            params: { datasetId: this.dataset.slug }
-          });
-        }
-      });
+  methods: {
+    initializeDataset () {
+      if (!this.dataset || this.dataset.slug !== this.$route.params.datasetId) {
+        this.loading = true;
+        Promise.all([
+          this.$store.dispatch('catalog/fetchSubscriptionsList'),
+          this.$store.dispatch('catalog/fetchDataset', {
+            id: this.$route.params.datasetId,
+            type: this.$route.params.type
+          })
+        ]).then(() => {
+          this.loading = false;
+          if (this.$route.params.datasetId !== this.dataset.slug) {
+            this.$router.replace({
+              params: { datasetId: this.dataset.slug }
+            });
+          }
+        });
+      }
     }
+  },
+  mounted () {
+    this.initializeDataset();
   },
   watch: {
     isSubscriptionSyncing: {
@@ -119,6 +130,12 @@ export default {
             this.$store.dispatch('catalog/fetchSubscriptionsList');
           }, 5000);
         }
+      }
+    },
+    type: {
+      immediate: true,
+      handler () {
+        this.initializeDataset();
       }
     }
   },
@@ -191,6 +208,12 @@ export default {
   z-index: 1;
   right: 24px;
   bottom: 64px;
+}
+
+a.disabled {
+  cursor: default;
+  pointer-events: none;
+  text-decoration: none;
 }
 
 input::-ms-clear {

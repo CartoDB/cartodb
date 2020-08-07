@@ -89,8 +89,6 @@ describe Synchronization::Member do
     describe "synchronization" do
       it 'syncs' do
         # TODO: this is the minimum test valid to reproduce #11889, it's not a complete sync test
-        Rails.logger.expects(:error).never
-
         url = 'https://wadus.com/guess_country.csv'
 
         path = fake_data_path('guess_country.csv')

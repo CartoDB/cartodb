@@ -1,5 +1,6 @@
 class Superadmin::SuperadminController < ActionController::Base
   include Carto::ControllerHelper
+  include ::LoggerControllerHelper
 
   before_filter :authenticate
 
@@ -31,6 +32,8 @@ class Superadmin::SuperadminController < ActionController::Base
   private
 
   def rescue_from_superadmin_error(error)
+    log_rescue_from(__method__, error)
+
     CartoDB::Logger.error(exception: error)
     render(json: { errors: { message: error.inspect, backtrace: error.backtrace.inspect } }, status: 500)
   end

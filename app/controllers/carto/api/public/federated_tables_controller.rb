@@ -245,6 +245,8 @@ module Carto
         end
 
         def rescue_from_service_error(exception)
+          log_rescue_from(__method__, exception)
+
           message = get_error_message(exception)
           case message
           when /(.*) does not exist/

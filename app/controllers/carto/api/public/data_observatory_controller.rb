@@ -76,6 +76,18 @@ module Carto
           head :no_content
         end
 
+        def sync_info
+          render json: Carto::DoSyncServiceFactory.get_for_user(@user).sync(params[:subscription_id])
+        end
+
+        def create_sync
+          render json: Carto::DoSyncServiceFactory.get_for_user(@user).create_sync!(params[:subscription_id], true)
+        end
+
+        def destroy_sync
+          render json: Carto::DoSyncServiceFactory.get_for_user(@user).remove_sync!(params[:subscription_id])
+        end
+
         private
 
         def load_user
@@ -118,13 +130,10 @@ module Carto
           if @type.present?
             subscriptions = subscriptions.select { |subscription| subscription[:type] == @type }
           end
+          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
           enriched_subscriptions = subscriptions.map do |subscription|
-            subscription.merge(
-              status: 'active',
-              # TODO: compute using DoSyncService
-              sync_status: 'connected',
-              sync_table: 'my_do_subscription'
-            )
+            sync_data = doss.sync(subscription[:id])
+            subscription.merge(sync_data).merge(status: 'active')
           end
           ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }
           @direction == :asc ? ordered_subscriptions : ordered_subscriptions.reverse

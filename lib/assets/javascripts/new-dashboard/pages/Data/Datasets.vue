@@ -53,12 +53,6 @@ export default {
       selectedDatasets: []
     };
   },
-  created () {
-    if (this.datasetId) {
-      const selectedDataset = Object.values(this.datasets).find(elem => elem.name === this.datasetId);
-      this.updateSelected([selectedDataset]);
-    }
-  },
   beforeMount () {
     if (this.$store.getters['user/isViewer']) {
       // Redirect to shared datasets page if user is viewer
@@ -69,10 +63,6 @@ export default {
     this.stickyScrollPosition = this.getHeaderBottomPageOffset();
     this.$onScrollChange = this.onScrollChange.bind(this);
     document.addEventListener('scroll', this.$onScrollChange, { passive: true });
-
-    if (this.createVis) {
-      this.$refs.datasetsActions.createMap();
-    }
   },
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
@@ -142,6 +132,24 @@ export default {
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
       const notificationHeight = this.isNotificationVisible ? 60 : 0;
       return headerBoundingClientRect.top - notificationHeight;
+    }
+  },
+  watch: {
+    datasets: {
+      handler: function () {
+        if (this.datasets && Object.values(this.datasets).length) {
+          if (this.datasetId && this.createVis) {
+            const selectedDataset = Object.values(this.datasets).find(elem => elem.name === this.datasetId);
+            this.updateSelected([selectedDataset]);
+            if (this.createVis) {
+              this.$nextTick(() => {
+                this.$refs.datasetsActions.createMap();
+              });
+            }
+          }
+        }
+      },
+      immediate: true
     }
   }
 };

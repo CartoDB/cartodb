@@ -278,4 +278,18 @@ module Carto::UserCommons
     end
   end
 
+  def do_subscription(dataset_id)
+    subscriptions = Carto::DoLicensingService.new(username).subscriptions
+    subscriptions.find { |subscription| subscription['id'] == dataset_id }&.with_indifferent_access
+  end
+
+  def update_gcloud_settings(attributes)
+    return if attributes.nil?
+    settings = Carto::GCloudUserSettings.new(self)
+    settings.update attributes
+  end
+
+  def gcloud_settings
+    @gcloud_settings ||= Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
+  end
 end

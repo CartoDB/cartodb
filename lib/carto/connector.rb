@@ -184,6 +184,14 @@ module Carto
       providers_info
     end
 
+    def get_service(service)
+      if @provider.respond_to?(service)
+        @provider.send(service)
+      else
+        raise Carto::Connector::InvalidParametersError.new("Invalid connector service: #{service}")
+      end
+    end
+
     private
 
     def self.has_feature?(provider, feature)

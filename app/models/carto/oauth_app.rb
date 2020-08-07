@@ -6,6 +6,8 @@ module Carto
     CLIENT_ID_RANDOM_BYTES = 9
     CLIENT_SECRET_RANDOM_BYTES = 18
 
+    include ::LoggerHelper
+
     belongs_to :user, inverse_of: :oauth_apps
     has_many :oauth_app_users, inverse_of: :oauth_app, dependent: :destroy
     has_many :oauth_app_organizations, inverse_of: :oauth_app, dependent: :destroy

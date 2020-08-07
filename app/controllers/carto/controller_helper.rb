@@ -25,6 +25,8 @@ module Carto
     end
 
     def rescue_from_carto_error(error)
+      log_rescue_from(__method__, error)
+
       message = error.message
       status = error.status
       errors_cause = error.errors_cause
@@ -42,6 +44,8 @@ module Carto
     end
 
     def rescue_from_protected_visualization_load_error(error)
+      log_rescue_from(__method__, error)
+
       message = error.message
       status = error.status
 
@@ -64,6 +68,8 @@ module Carto
     end
 
     def rescue_from_standard_error(error)
+      log_rescue_from(__method__, error)
+
       CartoDB::Logger.error(exception: error)
       message = error.message
       respond_to do |format|
@@ -74,6 +80,8 @@ module Carto
     end
 
     def rescue_from_validation_error(exception)
+      log_rescue_from(__method__, exception)
+
       render_jsonp({ errors: exception.record.errors.messages }, 422)
     end
 
@@ -82,6 +90,7 @@ module Carto
     end
 
     def rescue_from_central_error(error)
+      log_rescue_from(__method__, error)
       CartoDB::Logger.error(exception: error,
                             message: 'Error while updating data in Central',
                             user: @user)

@@ -1,7 +1,11 @@
 <template>
   <Page class="page--data">
     <SecondaryNavigation>
-      <a class="catalogDetail__back title is-small" href="javascript:history.back()">
+      <a
+        class="catalogDetail__back title is-small"
+        :class="{ 'disabled': loading }"
+        href="javascript:history.back()"
+      >
         <img class="catalogDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
         <span>{{ $t('Catalog.back') }}</span>
       </a>
@@ -204,6 +208,12 @@ export default {
   z-index: 1;
   right: 24px;
   bottom: 64px;
+}
+
+a.disabled {
+  cursor: default;
+  pointer-events: none;
+  text-decoration: none;
 }
 
 input::-ms-clear {

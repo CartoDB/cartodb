@@ -25,7 +25,7 @@
             </svg>
           </span>
           <span class="text is-txtSoftGrey is-caption u-mt--12">
-            Loading dataset details…
+            Loading {{ type }} details…
           </span>
         </div>
         <transition name="fade">

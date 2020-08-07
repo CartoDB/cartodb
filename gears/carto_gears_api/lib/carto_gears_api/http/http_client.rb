@@ -56,7 +56,7 @@ module CartoGearsApi
                                     url: request.url, body: body, method: method, timeout: timeout,
                                     request: request, response: response)
         end
-      rescue => e
+      rescue StandardError => e
         CartoGearsApi::Logger.new('api').error(exception: e, additional_data: e.inspect)
         raise e
       end
@@ -83,4 +83,3 @@ module CartoGearsApi
     end
   end
 end
-

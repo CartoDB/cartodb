@@ -43,7 +43,7 @@ module Carto::BoundingBoxUtils
     return false if Float(x) > LIMIT_BOUNDS[:maxx].to_f || Float(x) < LIMIT_BOUNDS[:minx].to_f
     return false if Float(y) > LIMIT_BOUNDS[:maxy].to_f || Float(y) < LIMIT_BOUNDS[:miny].to_f
     true
-  rescue
+  rescue StandardError
     # Reject coordinate values for which Float() conversion fails.
     # e.g. nil values or Strings that do not contain just a valid numeric representation.
     false

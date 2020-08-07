@@ -43,7 +43,7 @@ module CartoDB
         Statsd.timing(timing_chain) do
           begin
             return_value = yield
-          rescue => e
+          rescue StandardError => e
             @timing_stack.pop
             raise e
           end
@@ -77,7 +77,7 @@ module CartoDB
       def self.read_config
         config = Cartodb.config[:graphite]
         config.nil? ? {} : config
-      rescue => exception
+      rescue StandardError => exception
         CartoDB.notify_exception(exception)
         {}
       end

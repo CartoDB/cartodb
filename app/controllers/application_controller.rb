@@ -6,6 +6,7 @@ require_dependency 'carto/current_request'
 class ApplicationController < ActionController::Base
   include UrlHelper
   include Carto::ControllerHelper
+  include LoggerControllerHelper
 
   protect_from_forgery
 

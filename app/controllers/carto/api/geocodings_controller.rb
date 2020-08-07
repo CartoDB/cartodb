@@ -48,7 +48,7 @@ module Carto
           rows:       total_rows,
           estimation: (uri_user.geocoding_block_price.to_i * used_credits) / Carto::Geocoding::GEOCODING_BLOCK_SIZE
         }
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, params: params)
         render_jsonp( { description: e.message }, 500)
       end
@@ -82,7 +82,7 @@ module Carto
         geometries.append 'polygon' if polygons > 0 && polygons >= points
 
         render(json: geometries)
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, params: params)
       end
 

@@ -41,8 +41,8 @@ module CartoDB
     def run
       return if nothing_to_do
       user_database.transaction do straight_cast(@new_type.convert_to_db_type) end
-    rescue
-      # attempt various lossy conversions by regex nullifying 
+    rescue StandardError
+      # attempt various lossy conversions by regex nullifying
       # unmatching data and retrying conversion.
       #
       # conversions ok by default:

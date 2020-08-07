@@ -43,9 +43,9 @@ module DataRepository
         puts attributes.inspect
         member_class.new(attributes)
       end
-        
+
       self
-    rescue => exception
+    rescue StandardError => exception
       storage.clear
       self
     end #fetch
@@ -72,4 +72,3 @@ module DataRepository
     end #members
   end # Collection
 end # DataRepository
-

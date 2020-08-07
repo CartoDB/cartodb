@@ -359,7 +359,7 @@ class Admin::VisualizationsController < Admin::AdminController
       format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end
   rescue StandardError => e
-    CartoDB::Logger.error(exception: e)
+    log_error(exception: e)
     public_map_protected
   end
 
@@ -383,7 +383,7 @@ class Admin::VisualizationsController < Admin::AdminController
       format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
     end
   rescue StandardError => e
-    CartoDB::Logger.error(exception: e)
+    log_error(exception: e)
     embed_protected
   end
 
@@ -640,7 +640,7 @@ class Admin::VisualizationsController < Admin::AdminController
       format.html { render layout: 'application_public_visualization_layout' }
     end
   rescue StandardError => e
-    CartoDB::Logger.error(exception: e)
+    log_error(exception: e)
     embed_forbidden
   end
 

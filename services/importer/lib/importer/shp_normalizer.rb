@@ -102,7 +102,7 @@ module CartoDB
         return 'WIN1251' if File.open(filepath, 'rb') { |file|
           file.read =~ /WindowsCyrillic/
         }
-      rescue
+      rescue StandardError
         false
       end
 

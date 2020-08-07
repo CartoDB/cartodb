@@ -17,6 +17,7 @@ module CartoDB
     class Runner
       include CartoDB::Importer2::QuotaCheckHelpers
       include CartoDB::Importer2::RunnerHelper
+      include ::LoggerHelper
 
       # Legacy guessed average "final size" of an imported file
       # e.g. a Shapefile shrinks after import. This won't help in scenarios like CSVs (which tend to grow)
@@ -101,7 +102,7 @@ module CartoDB
         tracker.call('uploading')
         @downloader.multi_resource_import_supported? ? multi_resource_import : single_resource_import
         self
-      rescue => exception
+      rescue StandardError => exception
         # Delete job temporary table from cdb_importer schema
         delete_job_table
 
@@ -194,7 +195,7 @@ module CartoDB
 
         @job.success_status = true
         @results.push(result_for(@job, source_file, loader.valid_table_names, loader.additional_support_tables))
-      rescue => exception
+      rescue StandardError => exception
         if loader.nil?
           valid_table_names = []
           additional_support_tables = []
@@ -206,11 +207,10 @@ module CartoDB
         # Delete job temporary table from cdb_importer schema
         delete_job_table
 
-        CartoDB::Logger.warning(exception: exception,
-                                message: "Error importing data",
-                                table_name: @job.table_name,
-                                log: @job.logger.to_s,
-                                path: source_file.fullpath)
+        log_warning(
+          exception: exception, message: "Error importing data", table_name: @job.table_name,
+          error_detail: @job.logger.to_s, path: source_file.fullpath
+        )
 
         @job.log "Errored importing data from #{source_file.fullpath}:"
         @job.log "#{exception.class.to_s}: #{exception.to_s}", truncate=false

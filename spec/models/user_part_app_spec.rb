@@ -358,7 +358,7 @@ describe User do
           end
 
           it 'logs an error' do
-            CartoDB::Logger.expects(:error).once
+            Rails.logger.expects(:error).once
 
             @user.invalidate_all_sessions!
           end
@@ -370,7 +370,7 @@ describe User do
           end
 
           it 'logs an error' do
-            CartoDB::Logger.expects(:error).once
+            Rails.logger.expects(:error).once
 
             @user.invalidate_all_sessions!
           end
@@ -380,7 +380,7 @@ describe User do
       context 'when saving in local fails' do
         it 'logs an error' do
           @user.email = nil
-          CartoDB::Logger.expects(:error).once
+          Rails.logger.expects(:error).once
 
           @user.invalidate_all_sessions!
         end

@@ -47,7 +47,7 @@ module Carto
     rescue StandardError => e
       puts "ERROR: #{e}"
       log.append_exception('Importing', exception: e)
-      CartoDB::Logger.error(exception: e, message: 'Error importing user data', job: inspect)
+      log_error(exception: e, message: 'Error importing user data', error_detail: inspect)
       update_attributes(state: STATE_FAILURE)
       false
     ensure
@@ -86,7 +86,7 @@ module Carto
 
       begin
         do_import_data(import_job) if import_data?
-      rescue => e
+      rescue StandardError => e
         log.append('=== Error importing data. Rollback! ===')
         rollback_import_data(package)
         service.rollback_import_from_directory(package.meta_dir) if import_metadata?
@@ -106,7 +106,7 @@ module Carto
       rescue UserAlreadyExists, OrganizationAlreadyExists => e
         log.append('Organization already exists. Skipping!')
         raise e
-      rescue => e
+      rescue StandardError => e
         log.append('=== Error importing metadata. Rollback! ===')
         service.rollback_import_from_directory(package.meta_dir)
         raise e
@@ -138,12 +138,11 @@ module Carto
       u = org_import? ? ::Organization[organization.id].owner : ::User[user.id]
       begin
         u.db_service.connect_to_aggregation_tables
-      rescue => e
-        CartoDB::Logger.error(message: "Error trying to refresh aggregation tables for user",
-                              exception: e,
-                              user: u,
-                              organization: (org_import? ? organization : nil),
-                              user_migration_import_id: id)
+      rescue StandardError => e
+        log_error(
+          message: 'Error refreshing aggregation tables', exception: e,
+          current_user: u, organization: u.organization, user_migration_import: self.attributes.slice(:id)
+        )
       end
     end
 
@@ -153,7 +152,7 @@ module Carto
         ActiveRecord::Base.transaction do
           service.import_metadata_from_directory(imported, package.meta_dir)
         end
-      rescue => e
+      rescue StandardError => e
         log.append('=== Error importing visualizations and search tweets. Rollback! ===')
         rollback_import_data(package)
         service.rollback_import_from_directory(package.meta_dir)
@@ -175,7 +174,7 @@ module Carto
 
       import_job.run!
       import_job.terminate_connections
-    rescue => e
+    rescue StandardError => e
       log.append('There was an error while rolling back import data:' + e.to_s)
     end
 

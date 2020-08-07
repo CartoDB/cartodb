@@ -40,7 +40,7 @@ namespace :cartodb do
               failed_ids << v.id
             end
             sleep 0.2
-          rescue => e
+          rescue StandardError => e
             puts 'ERROR ' + e.message
             puts e.backtrace.join("\n")
             failed_ids << v.id
@@ -78,7 +78,7 @@ namespace :cartodb do
 
           i += 1
           puts "#{i} / #{total}" if (i % 100).zero?
-        rescue => e
+        rescue StandardError => e
           puts "Unable to update Permission: #{e}"
         end
       end

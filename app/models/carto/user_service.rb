@@ -118,11 +118,11 @@ module Carto
             user_database.execute(%{SELECT cartodb.#{user_data_size_function}}).first['cdb_userdatasize'].to_i
           end
         end
-      rescue => e
+      rescue StandardError => e
         attempts += 1
         begin
           in_database(as: :superuser).execute("ANALYZE")
-        rescue => ee
+        rescue StandardError => ee
           CartoDB.report_exception(ee, "Failed to get user db size, retrying...", user: @user)
           raise ee
         end

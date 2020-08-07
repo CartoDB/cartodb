@@ -18,7 +18,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
           geocoding.cancel
         end
         render_jsonp(geocoding.reload)
-      rescue => e
+      rescue StandardError => e
         render_jsonp({ errors: e.message }, 400)
       end
 
@@ -74,7 +74,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
       rescue Sequel::ValidationFailed => e
         CartoDB.notify_exception(e)
         render_jsonp( { description: e.message }, 422)
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e)
         render_jsonp( { description: e.message }, 500)
       end

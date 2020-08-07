@@ -3,23 +3,29 @@ require_relative './base_job'
 module Resque
   class UserMigrationJobs < BaseJob
     module Export
+      include ::LoggerHelper
+
       @queue = :user_migrations
 
       def self.perform(options = {})
-        Carto::UserMigrationExport.find(options['export_id']).run_export
-      rescue => e
-        CartoDB::Logger.error(exception: e, message: 'Error exporting user data', export_id: options['export_id'])
+        export = Carto::UserMigrationExport.find(options['export_id'])
+        export.run_export
+      rescue StandardError => e
+        log_error(exception: e, message: 'Error exporting user data', export: export.attributes)
         raise e
       end
     end
 
     module Import
+      include ::LoggerHelper
+
       @queue = :user_migrations
 
       def self.perform(options = {})
-        Carto::UserMigrationImport.find(options['import_id']).run_import
-      rescue => e
-        CartoDB::Logger.error(exception: e, message: 'Error importing user data', import_id: options['import_id'])
+        import = Carto::UserMigrationImport.find(options['import_id'])
+        import.run_import
+      rescue StandardError => e
+        log_error(exception: e, message: 'Error importing user data', import: import.attributes)
         raise e
       end
     end

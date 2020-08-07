@@ -3,6 +3,7 @@ require_dependency 'carto/bounding_box_utils'
 
 class Carto::BoundingBoxService
   include Carto::TableUtils
+  include ::LoggerHelper
 
   def initialize(user, table_name)
     @user = user
@@ -36,7 +37,7 @@ class Carto::BoundingBoxService
     if e.message =~ /stats for (.*) do not exist/i
       begin
         current_bbox
-      rescue
+      rescue StandardError
         nil
       end
     end
@@ -56,7 +57,7 @@ class Carto::BoundingBoxService
       }
     end
   rescue PG::Error => exception
-    CartoDB::Logger.error(exception: exception, table: @table_name)
+    log_error(exception: exception, table: @table_name)
     raise BoundingBoxError.new("Can't calculate the bounding box for table #{@table_name}. ERROR: #{exception}")
   end
 

@@ -307,9 +307,9 @@ module Carto
           @app_user = Carto::OauthAppUser.create!(user_id: @oauth_app.user.id, oauth_app: @oauth_app)
           error_message = "Couldn't notify users about oauth_app '#{@oauth_app.name}' deletion"
           ::Resque.stubs(:enqueue).raises('unknown error')
-          CartoDB::Logger.expects(:warning)
-                         .with(has_entry(message: error_message))
-                         .at_least_once
+          Rails.logger.expects(:warning)
+                      .with(has_entry(message: error_message))
+                      .at_least_once
           expect {
             @oauth_app.destroy!
           }.to raise_error(/unknown error/)

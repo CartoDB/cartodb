@@ -1,6 +1,7 @@
 require 'zlib'
 
 class EmbedRedisCache
+  include ::LoggerHelper
   # This needs to be changed whenever there're changes in the code that require invalidation of old keys
   VERSION = '4'
 
@@ -12,11 +13,11 @@ class EmbedRedisCache
     key = key(visualization_id, https_request)
     value = redis.get(key)
     value.present? ? JSON.parse(value, symbolize_names: true) : nil
-  rescue => exception
+  rescue StandardError => exception
     # Captures:
     # - Redis::BaseError if redis is down
     # - IO errors due to deploys changing physical path (see read_frontend_version / calculate_embed_template_hash)
-    CartoDB::Logger.error(exception: exception)
+    log_error(exception: exception)
     nil
   end
 
@@ -26,21 +27,21 @@ class EmbedRedisCache
                                body: response_body
                               )
     redis.setex(key(visualization_id, https_request), 24.hours.to_i, serialized)
-  rescue => exception
+  rescue StandardError => exception
     # Captures:
     # - Redis::BaseError if redis is down
     # - IO errors due to deploys changing physical path (see read_frontend_version / calculate_embed_template_hash)
-    CartoDB::Logger.error(exception: exception)
+    log_error(exception: exception)
     nil
   end
 
   def invalidate(visualization_id)
     redis.del [key(visualization_id, true), key(visualization_id, false)]
-  rescue => exception
+  rescue StandardError => exception
     # Captures:
     # - Redis::BaseError if redis is down
     # - IO errors due to deploys changing physical path (see read_frontend_version / calculate_embed_template_hash)
-    CartoDB::Logger.error(exception: exception)
+    log_error(exception: exception)
     nil
   end
 

@@ -44,7 +44,7 @@ module CartoDB
           saved_encoding = file.read
         }
         saved_encoding
-      rescue => e
+      rescue StandardError => e
         nil
       end
 

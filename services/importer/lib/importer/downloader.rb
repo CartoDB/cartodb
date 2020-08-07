@@ -121,7 +121,7 @@ module CartoDB
         @last_modified = if header_last_modified
                            begin
                              DateTime.httpdate(header_last_modified.delete('"').delete("'"))
-                           rescue
+                           rescue StandardError
                              nil
                            end
                          end

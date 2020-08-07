@@ -90,7 +90,7 @@ class Api::Json::ImportsController < Api::ApplicationController
         render_jsonp({
                        errors: { imports: "We're sorry but you're already using your allowed #{rl_value} import slots" }
                      }, 429)
-      rescue => ex
+      rescue StandardError => ex
         decrement_concurrent_imports_rate_limit
         CartoDB::StdoutLogger.info('Error: create', "#{ex.message} #{ex.backtrace.inspect}")
         render_jsonp({ errors: { imports: ex.message } }, 400)
@@ -125,7 +125,7 @@ class Api::Json::ImportsController < Api::ApplicationController
         end
 
         render_jsonp({ success: true })
-      rescue => ex
+      rescue StandardError => ex
         CartoDB::StdoutLogger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")
         render_jsonp({ errors: { imports: ex.message } }, 400)
       end
@@ -208,7 +208,7 @@ class Api::Json::ImportsController < Api::ApplicationController
       # It's ok to decrease always as if over limit, will get just at limit and next try again go overlimit
       concurrent_import_limit.decrement!
       concurrent_import_limit.peek  # return limit value
-    rescue => sub_exception
+    rescue StandardError => sub_exception
       CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{sub_exception.message} #{sub_exception.backtrace.inspect}")
       nil

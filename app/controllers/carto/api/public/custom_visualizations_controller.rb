@@ -51,7 +51,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   rescue Carto::ParamInvalidError, Carto::ParamCombinationInvalidError => e
     render_jsonp({ error: e.message }, e.status)
   rescue StandardError => e
-    CartoDB::Logger.error(exception: e)
+    log_error(exception: e)
     render_jsonp({ error: e.message }, 500)
   end
 
@@ -66,10 +66,10 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
     render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, kuviz).to_hash, 200)
   rescue ActiveRecord::RecordInvalid => e
-    CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
+    log_error(message: 'Error creating kuviz', params: params, exception: e)
     render_jsonp({ error: e.message }, 400)
   rescue StandardError => e
-    CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
+    log_error(message: 'Error creating kuviz', params: params, exception: e)
     render_jsonp({ error: 'The kuviz can not be created' }, 500)
   end
 
@@ -93,7 +93,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     @kuviz.destroy
     head 204
   rescue StandardError => e
-    CartoDB::Logger.error(message: 'Error deleting kuviz', exception: e, visualization: @kuviz)
+    log_error(message: 'Error deleting kuviz', exception: e, visualization: @kuviz)
     render_jsonp({ errors: [e.message] }, 400)
   end
 

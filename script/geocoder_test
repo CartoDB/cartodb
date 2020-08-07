@@ -16,7 +16,7 @@ usage unless environment
 def load_config(environment)
   config_file_hash = YAML.load_file(File.expand_path('../../config/app_config.yml',  __FILE__))
   config_file_hash[environment]["geocoder"]
-rescue => e
+rescue StandardError => e
   raise "Missing or inaccessible config for environment #{environment} in config/app_config.yml: #{e.message}"
 end
 

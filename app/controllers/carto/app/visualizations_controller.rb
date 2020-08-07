@@ -19,7 +19,7 @@ module Carto
         add_cache_headers
         render layout: false
       rescue StandardError => e
-        CartoDB::Logger.error(exception: e)
+        log_error(exception: e)
         render_404
       end
 
@@ -38,7 +38,7 @@ module Carto
 
         render 'show', layout: false
       rescue StandardError => e
-        CartoDB::Logger.error(exception: e)
+        log_error(exception: e)
         app_password_protected
       end
 

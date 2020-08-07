@@ -171,8 +171,8 @@ class Carto::Permission < ActiveRecord::Base
         end
       end
     end
-  rescue => e
-    CartoDB::Logger.error(message: "Problem sending notification mail", exception: e)
+  rescue StandardError => e
+    log_error(message: "Problem sending notification mail", exception: e)
   end
 
   def set_user_permission(subject, access)

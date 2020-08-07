@@ -40,7 +40,7 @@ describe Carto::Api::VisualizationsController do
   before(:each) do
     begin
       delete_user_data @user_1
-    rescue => exception
+    rescue StandardError => exception
       # Silence named maps problems only here upon data cleaning, not in specs
       raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
     end
@@ -529,7 +529,7 @@ describe Carto::Api::VisualizationsController do
       end
     end
   end
-  
+
   # Specific tests for vizjson 3. Common are at `vizjson_shared_examples`
   describe '#vizjson3' do
     include Fixtures::Layers::Infowindows

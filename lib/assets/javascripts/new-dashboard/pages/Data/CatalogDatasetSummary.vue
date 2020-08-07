@@ -1,8 +1,10 @@
 <template>
   <div class="grid grid-cell u-flex__justify--center wrap-reverse--tablet">
     <div class="grid-cell grid-cell--col9 grid-cell--col12--tablet main-column">
-      <p class="text is-caption is-txtMainTextColor u-mt--32 u-mt--12--tablet">
-        {{ dataset.description || 'No description available.' }}
+      <p
+        class="text is-caption is-txtMainTextColor u-mt--32 u-mt--12--tablet"
+        v-html="dataset.description || 'No description available.'"
+      >
       </p>
       <transition name="fade">
         <div class="key-variables u-mt--32" v-if="keyVariables.length">
@@ -71,7 +73,7 @@
         </li>
         <li
           class="u-mb--32 u-mb--12--tablet"
-          v-if="!isGeography && (dataset.geography_slug || dataset.geography_id)"
+          v-if="!isGeography && dataset.geography_published && (dataset.geography_slug || dataset.geography_id)"
         >
           <h4 class="text is-small is-txtSoftGrey u-mb--10">
             Associated Geography

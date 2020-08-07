@@ -75,7 +75,10 @@ export default {
   },
   computed: {
     ...mapState({
-      dataset: state => state.catalog.dataset
+      dataset: state => state.catalog.dataset,
+      type () {
+        return this.$route.params.type;
+      }
     }),
     subscription () {
       return this.$store.getters['catalog/getSubscriptionByDataset'](
@@ -89,25 +92,29 @@ export default {
       return this.subscription && this.subscription.sync_status === 'syncing';
     }
   },
-  methods: {},
-  mounted () {
-    if (!this.dataset || this.dataset.slug !== this.$route.params.datasetId) {
-      this.loading = true;
-      Promise.all([
-        this.$store.dispatch('catalog/fetchSubscriptionsList'),
-        this.$store.dispatch('catalog/fetchDataset', {
-          id: this.$route.params.datasetId,
-          type: this.$route.params.type
-        })
-      ]).then(() => {
-        this.loading = false;
-        if (this.$route.params.datasetId !== this.dataset.slug) {
-          this.$router.replace({
-            params: { datasetId: this.dataset.slug }
-          });
-        }
-      });
+  methods: {
+    initializeDataset () {
+      if (!this.dataset || this.dataset.slug !== this.$route.params.datasetId) {
+        this.loading = true;
+        Promise.all([
+          this.$store.dispatch('catalog/fetchSubscriptionsList'),
+          this.$store.dispatch('catalog/fetchDataset', {
+            id: this.$route.params.datasetId,
+            type: this.$route.params.type
+          })
+        ]).then(() => {
+          this.loading = false;
+          if (this.$route.params.datasetId !== this.dataset.slug) {
+            this.$router.replace({
+              params: { datasetId: this.dataset.slug }
+            });
+          }
+        });
+      }
     }
+  },
+  mounted () {
+    this.initializeDataset();
   },
   watch: {
     isSubscriptionSyncing: {
@@ -119,6 +126,12 @@ export default {
             this.$store.dispatch('catalog/fetchSubscriptionsList');
           }, 5000);
         }
+      }
+    },
+    type: {
+      immediate: true,
+      handler () {
+        this.initializeDataset();
       }
     }
   },

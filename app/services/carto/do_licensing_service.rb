@@ -36,18 +36,28 @@ module Carto
     private
 
     def present_subscription(subscription)
+      # FIXME: the subcription id split and type logic is now in the Sync connector,
+      # so this could be implemented as: (requiring some adjustments/mocking in various tests)
+      #   doss = Carto::DoSyncServiceFactory.get_for_user(Carto::User.find_by(username: @username))
+      #   doss.parsed_entity_id(subscription[:id]).merge(
+      #     expires_at: subscription['expires_at'] && Time.parse(subscription['expires_at']),
+      #     created_at: subscription['created_at'] && Time.parse(subscription['created_at'])
+      #   )
+
       qualified_id = subscription['dataset_id']
       project, dataset, table = qualified_id.split('.')
       # FIXME: better save the type in Redis or look for it in the metadata tables
       type = table&.starts_with?('geography') ? 'geography' : 'dataset'
+      expires_at = Time.parse(subscription['expires_at']) if subscription['expires_at'].present?
+      status = (expires_at && (Time.now >= expires_at)) ? 'expired' : subscription['status']
       subscription = {
         project: project,
         dataset: dataset,
         table: table,
         id: qualified_id,
+        status: status,
         type: type,
-        expires_at: subscription['expires_at'] && Time.parse(subscription['expires_at']),
-        created_at: subscription['created_at'] && Time.parse(subscription['created_at'])
+        expires_at: expires_at
       }
       subscription.with_indifferent_access
     end
@@ -59,7 +69,11 @@ module Carto
         # Remove a previous dataset if exists
         redis_value = redis_value.reject { |d| d[:dataset_id] == dataset[:dataset_id] }
         # Create the new entry
-        new_value = [{ "dataset_id" => dataset[:dataset_id], "expires_at" => dataset[:expires_at].to_s }]
+        new_value = [{
+          "dataset_id" => dataset[:dataset_id],
+          "expires_at" => dataset[:expires_at].to_s,
+          "status" => dataset[:status]
+        }]
         # Append to the current one
         redis_value = redis_value + new_value
       end

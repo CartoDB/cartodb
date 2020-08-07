@@ -11,7 +11,8 @@ describe Carto::DoLicensingService do
       dataset_id: @dataset_id,
       available_in: ['bq', 'bigtable'],
       price: 100,
-      expires_at: Time.new(2020, 9, 27, 8, 0, 0)
+      expires_at: Time.new(2020, 9, 27, 8, 0, 0),
+      status: 'active'
     }
   end
 
@@ -43,11 +44,11 @@ describe Carto::DoLicensingService do
       @central_mock.stubs(:create_do_datasets)
 
       bq_redis = [
-        { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000' }
+        { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000', status: 'active' }
       ].to_json
       
       bigtable_redis = [
-        { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000' }
+        { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000', status: 'active' }
       ].to_json
 
       @service.subscribe(@dataset)
@@ -58,8 +59,12 @@ describe Carto::DoLicensingService do
     it 'allows to add more data in the same Redis key' do
       @central_mock.stubs(:create_do_datasets)
 
-      new_dataset = { dataset_id: 'carto.abc.dataset3', available_in: ['bq'], price: 300,
-          expires_at: '2020-09-27 08:00:00 +0000' }
+      new_dataset = {
+        dataset_id: 'carto.abc.dataset3',
+        available_in: ['bq'], price: 300,
+        expires_at: '2020-09-27 08:00:00 +0000',
+        status: 'active'
+      }
 
       @service.subscribe(@dataset)
       @service.subscribe(new_dataset)

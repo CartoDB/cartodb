@@ -1,6 +1,21 @@
 <template>
   <section class="subscriptions-section">
     <div class="container grid">
+      <div class="full-width">
+        <SectionTitle class="grid-cell" :showActionButton="true">
+          <template slot="icon">
+            <img src="../../assets/icons/subscriptions/subscriptions_tick-icon.svg" width="18" height="20" />
+          </template>
+          <template slot="title">
+            <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.subscriptions')"/>
+          </template>
+          <template slot="actionButton">
+            <router-link :to="{ name: 'spatial-data-catalog' }"  exact>
+              <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
+            </router-link>
+          </template>
+        </SectionTitle>
+      </div>
       <div v-if="loading" class="u-flex u-flex__direction--column u-flex__align--center u-width--100 u-mt--120">
         <span class="loading u-mb--12">
           <img svg-inline src="../../assets/icons/common/loading.svg" class="loading__svg"/>
@@ -22,23 +37,6 @@
           </router-link>
         </div>
         <template v-else>
-          <SectionTitle class="grid-cell" :showActionButton="true">
-            <template slot="icon">
-              <img src="../../assets/icons/subscriptions/subscriptions_tick-icon.svg" width="18" height="20" />
-            </template>
-
-            <template slot="title">
-              <VisualizationsTitle :defaultTitle="$t(`DataPage.tabs.yourSubscriptions`)"/>
-            </template>
-
-            <template slot="dropdownButton"></template>
-
-            <template slot="actionButton">
-              <router-link :to="{ name: 'do-catalog' }"  exact>
-                <button class="button is-primary">{{$t('Subscriptions.new')}}</button>
-              </router-link>
-            </template>
-          </SectionTitle>
           <ul>
             <div class="subscription-item u-flex" v-for="subscription in subscriptionsByPage" :key="subscription.slug">
               <DatasetListItem :dataset="subscription"></DatasetListItem>
@@ -61,9 +59,9 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
-import DatasetListItem from '@carto/common-ui/do-catalog/src/components/catalogSearch/DatasetListItem';
+import DatasetListItem from 'new-dashboard/components/Catalog/browser/DatasetListItem';
 import DatasetListItemExtra from 'new-dashboard/components/Subscriptions/DatasetListItemExtra';
-import Pager from '@carto/common-ui/do-catalog/src/components/catalogSearch/Pager';
+import Pager from 'new-dashboard/components/Catalog/browser/Pager';
 
 export default {
   name: 'SubscriptionsPage',
@@ -85,16 +83,16 @@ export default {
   },
   computed: {
     ...mapState({
-      subscriptions: state => state.doCatalog.subscriptionsList
+      subscriptions: state => state.catalog.subscriptionsList
     }),
     pageSize () {
       return process.env.VUE_APP_PAGE_SIZE || 10;
     },
     count () {
-      return this.subscriptions.length;
+      return this.subscriptions.filter(s => s.slug).length;
     },
     subscriptionsByPage () {
-      return this.subscriptions.slice(
+      return this.subscriptions.filter(s => s.slug).slice(
         this.currentPage * this.pageSize,
         (this.currentPage + 1) * this.pageSize
       );
@@ -105,19 +103,19 @@ export default {
   },
   async mounted () {
     this.loading = true;
-    await this.$store.dispatch('doCatalog/fetchSubscriptionsList');
+    await this.$store.dispatch('catalog/fetchSubscriptionsList');
     await this.fetchSubscriptionsListDetail();
   },
   methods: {
     async fetchSubscriptionsListDetail () {
       this.loading = true;
       window.scrollTo(0, 0);
-      await this.$store.dispatch('doCatalog/fetchSubscriptionsDetailsList', this.subscriptionsByPage.map(s => s.id));
+      await this.$store.dispatch('catalog/fetchSubscriptionsDetailsList', this.subscriptions.map(s => s.id));
       this.loading = false;
     },
     goToPage (pageNum) {
       this.currentPage = pageNum;
-      this.fetchSubscriptionsListDetail();
+      window.scrollTo(0, 0);
     }
   },
   watch: {
@@ -127,7 +125,7 @@ export default {
         clearInterval(this.id_interval);
         if (this.isAnySubscriptionSyncing) {
           this.id_interval = setInterval(async () => {
-            await this.$store.dispatch('doCatalog/fetchSubscriptionsList', true);
+            await this.$store.dispatch('catalog/fetchSubscriptionsList', true);
           }, 5000);
         }
       }
@@ -142,8 +140,23 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
+.full-width {
+  width: 100%;
+}
+
 .subscriptions-section {
+  min-height: 640px;
   margin-top: 64px;
+
+  &__filter {
+    justify-content: space-between;
+    height: 168px;
+
+    &--dropdown {
+      position: relative;
+    }
+  }
+
   .empty-state {
     margin: 20vh 0 58px;
     /deep/ h6 {
@@ -166,8 +179,19 @@ export default {
     }
     .list-item {
       flex: 1 1 100%;
+      display: flex;
+      flex-direction: column;
       &:hover {
         background-color: transparent;
+      }
+      /deep/ {
+        .extra {
+          flex: 1 1 100%;
+          >div {
+            display: flex;
+            align-items: flex-end;
+          }
+        }
       }
     }
   }

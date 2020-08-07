@@ -661,8 +661,7 @@ class Carto::Visualization < ActiveRecord::Base
   def subscription
     if user_table
       doss = Carto::DoSyncServiceFactory.get_for_user(user)
-      subscription_id = doss.subscription_from_sync_table(user_table.name)
-      { type: 'do-v2', id: subscription_id } if subscription_id.present?
+      doss&.subscription_from_sync_table(user_table.name)
     end
   end
 

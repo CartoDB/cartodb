@@ -9,6 +9,7 @@ require_dependency 'carto/helpers/password'
 require_dependency 'carto/helpers/password_rate_limit'
 require_dependency 'carto/helpers/urls'
 require_dependency 'carto/helpers/varnish_cache_handler'
+require_dependency 'carto/gcloud_user_settings'
 
 module Carto::UserCommons
   include Carto::BatchQueriesStatementTimeout
@@ -291,5 +292,9 @@ module Carto::UserCommons
 
   def gcloud_settings
     @gcloud_settings ||= Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
+  end
+
+  def do_enabled?
+    gcloud_settings[:service_account].present?
   end
 end

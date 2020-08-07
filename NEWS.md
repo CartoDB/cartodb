@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - The `X-Request-ID` HTTP header is now propagated from incoming requests to outbound requests for better traceability [#15778](https://github.com/CartoDB/cartodb/pull/15778)
+- Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
 
 4.40.0 (2020-07-31)
 -------------------

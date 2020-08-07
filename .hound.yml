@@ -1,7 +1,5 @@
 scss:
   enabled: false
-jshint:
-  enabled: false
 rubocop:
   enabled: false
   config_file: .rubocop.yml

@@ -11,6 +11,7 @@ class ApplicationController < ActionController::Base
   helper :all
 
   around_filter :wrap_in_profiler
+  around_filter :set_request_id
 
   before_filter :set_security_headers
   before_filter :http_header_authentication, if: :http_header_authentication?

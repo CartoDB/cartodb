@@ -8,7 +8,10 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+
+- The `X-Request-ID` HTTP header is now propagated from incoming requests to outbound requests for better traceability [#15778](https://github.com/CartoDB/cartodb/pull/15778)
+- Fix Catalog "I'm interested" button ([#15785](https://github.com/CartoDB/cartodb/pull/15785))
+- Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
 
 4.40.0 (2020-07-31)
 -------------------

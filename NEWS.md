@@ -17,6 +17,7 @@ Development
 -------------------
 
 ### Bug fixes / enhancements
+* Fix error installing odbc_fdw ([#](https://github.com/CartoDB/cartodb/pull/15782))
 * WMTS compatibility: Replace the var `tile_matrix_set` by a supported SRS of the WMTS provided.
 * ArcGIS imports: raise http timeout and max retry attempts for arcgis import service
 * ArcGIS imports: improve log traces to better diagnose json non-conformance errors

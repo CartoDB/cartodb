@@ -94,6 +94,10 @@ gem 'rqrcode', '~> 0.10.1'
 # keys in PKCS#8 format require external command openssl
 gem 'sys_cmd', '>= 1.1.3'
 
+# db-connectors (DO Sync connector)
+gem 'google-cloud-bigquery-storage-v1', '~>0.2.3'
+gem 'avro', '~>1.10.0'
+
 group :test do
   gem 'simplecov', '0.13.0', require: false
   gem 'simplecov-json'

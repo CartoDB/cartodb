@@ -362,18 +362,7 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 200 with empty array in available_in' do
-      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayempty', type: 'dataset'), @headers do |response|
-        expect(response.status).to eq(200)
-      end
-
-      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearraynil', type: 'dataset'), @headers do |response|
-        expect(response.status).to eq(200)
-      end
-      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayseveraldata', type: 'dataset'), @headers do |response|
-        expect(response.status).to eq(200)
-      end
-    end
+  
   
     context 'with right metadata' do 
       before(:each) do
@@ -477,6 +466,19 @@ describe Carto::Api::Public::DataObservatoryController do
           end
         end
       end
+
+      it 'returns 200 with empty array in available_in' do
+        get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayempty', type: 'dataset'), @headers do |response|
+          expect(response.status).to eq(200)
+        end
+      end
+
+      it 'returns 200 with a nil in available_in' do
+        get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearraynil', type: 'dataset'), @headers do |response|
+          expect(response.status).to eq(200)
+        end
+      end
+
     end
   end
 
@@ -752,8 +754,6 @@ describe Carto::Api::Public::DataObservatoryController do
                                      'rights', '{}', 'CARTO dataset array empty', false);
         INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearraynil', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                      'rights', NULL, 'CARTO dataset array nil', false);
-        INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearrayseveraldata', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq,bigtable,carto}', 'CARTO dataset array several data', false);
         INSERT INTO datasets VALUES ('carto.abc.deliver_1day', 1.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
           'rights', '{bq}', 'CARTO dataset 1', false);
         INSERT INTO datasets VALUES ('carto.abc.public_dataset', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',

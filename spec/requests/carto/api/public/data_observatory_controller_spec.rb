@@ -327,8 +327,6 @@ describe Carto::Api::Public::DataObservatoryController do
       }
     end
 
-    it_behaves_like 'an endpoint validating a DO API key'
-
     it 'checks if DO is enabled' do
       central_mock = mock
       Cartodb::Central.stubs(:new).returns(central_mock)
@@ -375,7 +373,6 @@ describe Carto::Api::Public::DataObservatoryController do
       get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayseveraldata', type: 'dataset'), @headers do |response|
         expect(response.status).to eq(200)
       end
-
     end
   
     context 'with right metadata' do 

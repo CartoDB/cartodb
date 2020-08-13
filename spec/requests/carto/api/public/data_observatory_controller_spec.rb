@@ -365,7 +365,6 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'returns 200 with empty array in available_in' do
-      byebug
       get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayempty', type: 'dataset'), @headers do |response|
         expect(response.status).to eq(200)
       end

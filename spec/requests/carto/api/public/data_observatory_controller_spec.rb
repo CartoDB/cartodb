@@ -313,6 +313,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
     after(:each) do
       Cartodb::Central.any_instance.unstub(:check_do_enabled)
+      Carto::DoLicensingService.any_instance.unstub(:subscriptions)
     end
 
     before(:all) do
@@ -364,6 +365,7 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'returns 200 with empty array in available_in' do
+      byebug
       get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayempty', type: 'dataset'), @headers do |response|
         expect(response.status).to eq(200)
       end

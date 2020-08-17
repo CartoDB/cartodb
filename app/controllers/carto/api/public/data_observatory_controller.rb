@@ -29,11 +29,10 @@ module Carto
         rescue_from Carto::SubscriptionNotFoundError, with: :rescue_from_subscription_not_found
         rescue_from Carto::EntityNotFoundError, with: :rescue_from_entity_not_found
 
-
         rescue_from Carto::SubscriptionNotFoundError, with: :rescue_from_subscription_not_found
         rescue_from Carto::EntityNotFoundError, with: :rescue_from_entity_not_found
 
-                respond_to :json
+        respond_to :json
 
         VALID_TYPES = %w(dataset geography).freeze
         VALID_STATUSES = %w(active requested).freeze
@@ -60,6 +59,14 @@ module Carto
 
         def subscription_info
           response = present_metadata(subscription_metadata)
+
+          subscriptions = Carto::DoLicensingService.new(@user.username).subscriptions
+          sub = subscriptions.find { |s| s[:id] = @id }
+
+          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
+          sync_data = doss.sync(@id)
+
+          response = response.merge(sub).merge(sync_data)
 
           render(json: response)
         end

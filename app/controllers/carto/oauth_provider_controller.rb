@@ -104,6 +104,7 @@ module Carto
     end
 
     def rescue_oauth_errors(exception)
+      log_rescue_from(__method__, exception)
       log_warning(
         message: 'Oauth provider error', exception: exception,
         redirect_on_error: @redirect_on_error, oauth_app: @oauth_app&.attributes&.slice(:id, :name)
@@ -125,10 +126,13 @@ module Carto
       if exception.is_a?(Carto::RelationDoesNotExistError)
         return rescue_oauth_errors(OauthProvider::Errors::InvalidScope.new(nil, message: exception.user_message))
       end
+
       rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end
 
     def rescue_missing_params_error(exception)
+      log_rescue_from(__method__, exception)
+
       rescue_oauth_errors(OauthProvider::Errors::InvalidRequest.new(exception.message))
     end
 

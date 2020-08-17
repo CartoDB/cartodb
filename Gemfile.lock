@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 5fb23da8a3fe048b742e23b02362b25209e02e81
-  tag: v0.3.2
+  revision: 26094bd1cff81b80841e11e0e463d4f98193c2a9
+  tag: v0.3.3
   specs:
     cartodb-common (0.3.0)
       activesupport (~> 4.2.11.3)
@@ -95,7 +95,7 @@ GEM
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
     builder (3.2.4)
-    byebug (8.2.2)
+    byebug (11.1.3)
     capybara (2.18.0)
       addressable
       mini_mime (>= 0.1.3)
@@ -284,13 +284,13 @@ GEM
     power_assert (0.2.7)
     protected_attributes (1.1.3)
       activemodel (>= 4.0.1, < 5.0)
-    pry (0.11.0)
-      coderay (~> 1.1.0)
-      method_source (~> 0.8.1)
-    pry-byebug (3.3.0)
-      byebug (~> 8.0)
-      pry (~> 0.10)
     public_suffix (3.0.3)
+    pry (0.13.1)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+    pry-byebug (3.9.0)
+      byebug (~> 11.0)
+      pry (~> 0.13.0)
     rack (1.6.13)
     rack-protection (1.5.5)
       rack
@@ -519,7 +519,7 @@ DEPENDENCIES
   pg (= 0.20.0)
   poltergeist (= 1.18.1)
   protected_attributes
-  pry-byebug (= 3.3.0)
+  pry-byebug (= 3.9.0)
   rack
   rack-test (= 0.6.3)
   rails (= 4.2.11.3)

@@ -168,6 +168,8 @@ module Carto
       end
 
       def rescue_from_password_confirmation_error(error)
+        log_rescue_from(__method__, error)
+
         render_jsonp({ message: "Error modifying groups", errors: [error.message] }, 403)
       end
 

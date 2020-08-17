@@ -21,7 +21,6 @@ module CartoDB
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
       CDB_DATASERVICES_CLIENT_VERSION = '0.30.0'.freeze
-      ODBC_FDW_VERSION = '0.4.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user
@@ -617,14 +616,12 @@ module CartoDB
 
       def install_odbc_fdw
         @user.in_database(as: :superuser) do |db|
-          db.transaction do
-            db.run('CREATE EXTENSION IF NOT EXISTS odbc_fdw SCHEMA public')
-            db.run("ALTER EXTENSION odbc_fdw UPDATE TO '#{ODBC_FDW_VERSION}'")
-          end
+          db.run('CREATE EXTENSION IF NOT EXISTS odbc_fdw SCHEMA public')
         end
-      rescue Sequel::DatabaseError
+      rescue Sequel::DatabaseError => error
         # For the time being we'll be resilient to the odbc_fdw not being available
         # and just proceed without installing it.
+        CartoDB::Logger.error(exception: error, message: "Could not install odbc_fdw", user: @user)
       end
 
       def setup_organization_owner

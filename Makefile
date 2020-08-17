@@ -79,6 +79,7 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/authentication_manager_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
+	spec/helpers/logger_helper_spec.rb \
 	spec/models/carto/data_import_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/models/carto/visualization/watcher_spec.rb \
@@ -92,6 +93,7 @@ WORKING_SPECS_1 = \
 	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
 	spec/services/carto/visualization_backup_service_spec.rb \
+	spec/requests/carto_logger_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_2 = \

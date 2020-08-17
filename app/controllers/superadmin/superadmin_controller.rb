@@ -1,8 +1,9 @@
 class Superadmin::SuperadminController < ActionController::Base
   include Carto::ControllerHelper
-  include LoggerControllerHelper
+  include ::LoggerControllerHelper
 
   before_filter :authenticate
+  around_filter :set_request_id
 
   rescue_from StandardError, with: :rescue_from_superadmin_error
 
@@ -32,6 +33,7 @@ class Superadmin::SuperadminController < ActionController::Base
   private
 
   def rescue_from_superadmin_error(error)
+    log_rescue_from(__method__, error)
     log_error(exception: error)
     render(json: { errors: { message: error.inspect, backtrace: error.backtrace.inspect } }, status: 500)
   end

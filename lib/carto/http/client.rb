@@ -1,6 +1,7 @@
 require_relative 'request'
 require_relative 'response_logger'
 require_relative 'null_logger'
+require_relative '../current_request'
 require './app/helpers/logger_helper'
 
 module Carto
@@ -26,6 +27,7 @@ module Carto
 
       # Returns a wrapper to a typhoeus request object
       def request(url, options = {})
+        set_x_request_id!(options)
         Request.new(@logger, url, options)
       end
 
@@ -52,6 +54,7 @@ module Carto
       # `options` are Typhoeus options. Example: { ssl_verifypeer: false, ssl_verifyhost: 0 }
       def get_file(url, file_path, options = {})
         downloaded_file = File.open file_path, 'wb'
+        set_x_request_id!(options)
         request = request(url, options)
         request.on_headers do |response|
           unless response.code == 200
@@ -81,9 +84,22 @@ module Carto
         @logger = logger
       end
 
-      def perform_request(method, url, options)
+      def perform_request(method, url, options = {})
+        set_x_request_id!(options)
         request = Request.new(@logger, url, options.merge(method: method))
         request.run
+      end
+
+      def set_x_request_id!(options={})
+        if request_id
+          options[:headers] ||= {}
+          options[:headers]['X-Request-ID'] = request_id
+        end
+        options
+      end
+
+      def request_id
+        Carto::CurrentRequest.request_id
       end
 
     end

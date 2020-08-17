@@ -9,6 +9,7 @@ require_dependency 'carto/helpers/password'
 require_dependency 'carto/helpers/password_rate_limit'
 require_dependency 'carto/helpers/urls'
 require_dependency 'carto/helpers/varnish_cache_handler'
+require_dependency 'carto/gcloud_user_settings'
 
 module Carto::UserCommons
   include Carto::BatchQueriesStatementTimeout
@@ -292,4 +293,22 @@ module Carto::UserCommons
     end
   end
 
+  def do_subscription(dataset_id)
+    subscriptions = Carto::DoLicensingService.new(username).subscriptions
+    subscriptions.find { |subscription| subscription['id'] == dataset_id }&.with_indifferent_access
+  end
+
+  def update_gcloud_settings(attributes)
+    return if attributes.nil?
+    settings = Carto::GCloudUserSettings.new(self)
+    settings.update attributes
+  end
+
+  def gcloud_settings
+    @gcloud_settings ||= Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
+  end
+
+  def do_enabled?
+    gcloud_settings[:service_account].present?
+  end
 end

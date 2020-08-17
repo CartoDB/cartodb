@@ -1,13 +1,13 @@
 <template>
   <div class="dataset-listItem-extra-container u-flex u-flex__direction--column u-pt--12 u-pl--24 u-pb--24">
-    <SubscriptionStatus></SubscriptionStatus>
-    <div class="is-caption u-mt--12"><span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span> <span>123.5 MB</span></div>
-    <div class="u-flex u-flex__direction--column u-mt--28">
-      <div class="u-flex u-flex__align--center">
-        <a class="is-caption" href="#">{{$t('BulkActions.datasets.createMap')}}</a>  <span class="u-ml--8 u-mr--8">|</span>
-        <a class="is-caption" href="#">{{$t('BulkActions.datasets.viewDataset')}}</a>
-      </div>
-      <a class="is-caption u-mt--12" href="#">{{$t('Subscriptions.exploreNotebook')}}</a>
+    <SubscriptionStatus :status="dataset.status" :expiresDate="dataset.expires_at" class="u-width--100"></SubscriptionStatus>
+    <div class="u-ml--16">
+       <!-- <div class="is-caption u-mt--12 is-small">
+         <span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span>
+         <span class="u-ml--4">{{ getDatasetSize }}</span>
+        </div> -->
+       <SubscriptionActions :dataset="dataset" class="u-mt--28"></SubscriptionActions>
+      <SlugCopy v-if="dataset.slug" :slug="dataset.slug" class="u-mt--24"></SlugCopy>
     </div>
   </div>
 </template>
@@ -15,17 +15,38 @@
 <script>
 
 import SubscriptionStatus from './SubscriptionStatus';
+import SubscriptionActions from './SubscriptionActions';
+import SlugCopy from './SlugCopy';
 
 export default {
   name: 'DatasetListItemExtra',
   components: {
-    SubscriptionStatus
+    SubscriptionStatus,
+    SubscriptionActions,
+    SlugCopy
   },
-  props: {},
-  data: function () {
+  computed: {
+    getDatasetSize () {
+      if (!this.dataset.estimated_size || this.dataset.estimated_size === 0) {
+        return '0 B';
+      }
+      const k = 1024;
+      const dm = 2;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+      const i = Math.floor(Math.log(this.dataset.estimated_size) / Math.log(k));
+
+      return parseFloat((this.dataset.estimated_size / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+  },
+  props: {
+    dataset: {
+      type: Object,
+      required: true
+    }
+  },
+  data () {
     return {};
   },
-  computed: {},
   methods: {}
 };
 </script>
@@ -33,6 +54,6 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 .dataset-listItem-extra-container {
-  flex: 0 0 282px;
+  flex: 0 0 306px;
 }
 </style>

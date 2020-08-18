@@ -789,13 +789,10 @@ defaults: &defaults
     pgproxy:
       host: 'dbconn.carto.com'
       port: 5432
-    firewall:
-      enabled: false
-      project_id: ''
-      rule_name: ''
-      network: ''
-      target_tag: ''
-      ports: 'tcp:5432'
+    metadata_persist:
+      enabled: true
+      prefix_namespace: 'dbdirect:'
+      hash_key: 'ips'
 
 development:
   <<: *defaults

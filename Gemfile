@@ -95,9 +95,7 @@ gem 'rqrcode', '~> 0.10.1'
 gem 'sys_cmd', '>= 1.1.3'
 
 # db-connectors (DO Sync connector)
-# gem 'google-cloud-bigquery-storage-v1', '~>0.2.3'
-# TODO: Delete this. Just using a TMP personal access token:
-gem 'google-cloud-bigquery-storage-v1', git: 'https://juanrmn:bd52ab87ff5baad9c58f78ac59c2f9c290a0382c@github.com/CartoDB/db-connectors.git', :branch => 'feature/ch97488/use-storage-api-for-do-sync'
+gem 'google-cloud-bigquery-storage-v1', '~>0.2.3'
 gem 'avro', '~>1.10.0'
 
 group :test do

@@ -294,7 +294,7 @@ describe 'UserMigration' do
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-      user.destroy_cascade
+      user.force_destroy
 
       import = Carto::UserMigrationImport.create(
         exported_file: export.exported_file,
@@ -313,8 +313,6 @@ describe 'UserMigration' do
       imported_user = Carto::User.find(user_attributes['id'])
       imported_user.visualizations.count.should eq 3
       expect { imported_user.visualizations.find(table_visualization.id) }.to raise_error(ActiveRecord::RecordNotFound)
-
-      user.destroy_cascade
     end
 
     it 'exporting and then importing to the same DB host fails but DB is not deleted (#c1945)' do

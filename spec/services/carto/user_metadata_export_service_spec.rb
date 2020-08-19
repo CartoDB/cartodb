@@ -300,10 +300,6 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#user export + import' do
-    after :each do
-      destroy_user
-    end
-
     it 'export + import latest' do
       create_user_with_basemaps_assets_visualizations
       export_import(@user)
@@ -311,10 +307,6 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#full export + import (user and visualizations)' do
-    after :each do
-      destroy_user(@imported_user)
-    end
-
     it 'export + import user with rate limit and visualizations' do
       Dir.mktmpdir do |path|
         create_user_with_basemaps_assets_visualizations

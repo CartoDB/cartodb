@@ -95,7 +95,8 @@ gem 'rqrcode', '~> 0.10.1'
 gem 'sys_cmd', '>= 1.1.3'
 
 # db-connectors (DO Sync connector)
-gem 'google-cloud-bigquery-storage-v1', '~>0.2.3'
+# gem 'google-cloud-bigquery-storage-v1', '~>0.2.3'
+gem 'google-cloud-bigquery-storage-v1', git: 'https://github.com/CartoDB/db-connectors.git', :branch => 'feature/ch97488/use-storage-api-for-do-sync'
 gem 'avro', '~>1.10.0'
 
 group :test do

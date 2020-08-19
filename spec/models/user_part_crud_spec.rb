@@ -363,6 +363,36 @@ describe User do
 
       check_deleted_data(user.id, table.id, visualizations, layer.id)
     end
+
+    context 'when user DB does not exist' do
+      it 'logs a warning and proceeds with deletion' do
+        sequel_user = create(:valid_user)
+        user = sequel_user.carto_user
+        user.update!(database_name: 'unexistent')
+
+        sequel_user.reload.destroy
+        expect { user.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when unable to connect to DB server' do
+      it 'fails' do
+        sequel_user = create(:valid_user)
+        user = sequel_user.carto_user
+        user.update!(database_host: '1.2.3.4')
+
+        expect { sequel_user.reload.destroy }.to raise_exception(Sequel::DatabaseConnectionError)
+      end
+
+      it 'suceeds if force_destroy is true' do
+        sequel_user = create(:valid_user)
+        user = sequel_user.carto_user
+        user.update!(database_host: '1.2.3.4')
+
+        sequel_user.reload.force_destroy
+        expect { user.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 
   describe 'User#destroy_cascade' do

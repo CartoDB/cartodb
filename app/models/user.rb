@@ -373,6 +373,7 @@ class User < Sequel::Model
 
   def before_destroy(skip_table_drop: false)
     ensure_nonviewer
+    test_db_connection_before_deletion
 
     @org_id_for_org_wipe = nil
     error_happened = false
@@ -438,21 +439,16 @@ class User < Sequel::Model
       assign_search_tweets_to_organization_owner
 
       ClientApplication.where(user_id: id).each(&:destroy)
-    rescue StandardError => exception
-      error_happened = true
-      CartoDB::Logger.error(message: "Error destroying user #{username}", exception: exception)
     end
 
     # Invalidate user cache
     invalidate_varnish_cache
 
-    drop_database(has_organization) unless skip_table_drop || error_happened
+    drop_database(has_organization) if successful_db_connection? && !skip_table_drop
 
     # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
-    unless error_happened
-      $users_metadata.DEL(key)
-      $users_metadata.DEL(timeout_key)
-    end
+    $users_metadata.DEL(key)
+    $users_metadata.DEL(timeout_key)
 
     feature_flags_user.each(&:delete)
   end
@@ -1404,10 +1400,11 @@ class User < Sequel::Model
     user_creation && user_creation.invitation_token
   end
 
-  def destroy_cascade
+  def force_destroy
     set_force_destroy
     destroy
   end
+  alias destroy_cascade force_destroy
 
   # Central will request some data back to cartodb (quotas, for example), so the user still needs to exist.
   # Corollary: multithreading is needed for deletion to work.
@@ -1563,5 +1560,29 @@ class User < Sequel::Model
 
   def sync_enabled_api_keys
     api_keys.each(&:set_enabled_for_engine)
+  end
+
+  def successful_db_connection?
+    in_database(as: :public_user)
+    true
+  rescue StandardError => e
+    false
+  end
+
+  def test_db_connection_before_deletion
+    in_database(as: :public_user)
+  rescue Sequel::DatabaseConnectionError => e
+    if e.wrapped_exception.message.match?(/database.*does not exist/i)
+      log_warning(
+        message: "Can't connect to user database. Probably it was already deleted, so proceeding with user deletion",
+        current_user: self, database_host: database_host, database_name: database_name, exception: e
+      )
+    else
+      log_error(
+        message: "Can't connect to DB server. Check there's no user data in other servers and force delete manually",
+        current_user: self, database_host: database_host, database_name: database_name, exception: e
+      )
+      raise e unless @force_destroy
+    end
   end
 end

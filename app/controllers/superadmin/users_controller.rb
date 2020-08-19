@@ -82,8 +82,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     respond_with(:superadmin, @user)
   rescue CartoDB::SharedEntitiesError => e
     render json: { "error": "Error destroying user: #{e.message}", "errorCode": "userHasSharedEntities" }, status: 422
-  rescue => e
-    CartoDB::Logger.error(exception: e, message: 'Error destroying user', user: @user)
+  rescue StandardError => e
+    log_error(message: 'Error destroying user', exception: e, target_user: @user)
     render json: { "error": "Error destroying user: #{e.message}", "errorCode": "" }, status: 422
   end
 

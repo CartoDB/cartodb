@@ -121,8 +121,8 @@ describe Carto::UserMetadataExportService do
       st.data_import.destroy
       st.destroy
     end
+    user.sequel_user.before_destroy(skip_table_drop: true)
     user.destroy
-    ::User[user.id].before_destroy(skip_table_drop: true)
   end
 
   let(:service) { Carto::UserMetadataExportService.new }

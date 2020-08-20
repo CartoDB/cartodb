@@ -373,7 +373,10 @@ class User < Sequel::Model
 
   def before_destroy(skip_table_drop: false)
     ensure_nonviewer
-    test_db_connection_before_deletion
+
+    # Abort deletion if DB server timeouts, as deleting user metadata
+    # while accidentally keeping its DB may cause GDPR issues
+    test_db_connection_before_deletion!
 
     @org_id_for_org_wipe = nil
     error_happened = false
@@ -410,7 +413,7 @@ class User < Sequel::Model
         end
         oauth_app_user = Carto::OauthAppUser.where(user_id: id).first
         oauth_app_user.oauth_access_tokens.each(&:destroy) if oauth_app_user
-        Carto::ApiKey.where(user_id: id).each(&:destroy)
+        Carto::ApiKey.where(user_id: id).each(&:destroy) if carto_user.db_service.successful_connection?
       end
 
       # This shouldn't be needed, because previous step deletes canonical visualizations.
@@ -444,7 +447,7 @@ class User < Sequel::Model
     # Invalidate user cache
     invalidate_varnish_cache
 
-    drop_database(has_organization) if successful_db_connection? && !skip_table_drop
+    drop_database(has_organization) if carto_user.db_service.successful_connection? && !skip_table_drop
 
     # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
     $users_metadata.DEL(key)
@@ -1562,27 +1565,22 @@ class User < Sequel::Model
     api_keys.each(&:set_enabled_for_engine)
   end
 
-  def successful_db_connection?
-    in_database(as: :public_user)
-    true
-  rescue StandardError => e
-    false
-  end
-
-  def test_db_connection_before_deletion
-    in_database(as: :public_user)
-  rescue Sequel::DatabaseConnectionError => e
-    if e.wrapped_exception.message.match?(/database.*does not exist/i)
+  def test_db_connection_before_deletion!
+    carto_user.db_service.test_connection
+  rescue PG::ConnectionBad => e
+    if e.message.match?(/database.*does not exist/i)
       log_warning(
-        message: "Can't connect to user database. Probably it was already deleted, so proceeding with user deletion",
+        message: "Database does not exist, so proceeding with user deletion",
         current_user: self, database_host: database_host, database_name: database_name, exception: e
       )
-    else
+    elsif e.message.match?(/timeout expired/i)
       log_error(
-        message: "Can't connect to DB server. Check there's no user data in other servers and force delete manually",
+        message: "Database connection timed out. Check there's no user data in other servers and force delete manually",
         current_user: self, database_host: database_host, database_name: database_name, exception: e
       )
       raise e unless @force_destroy
+    else
+      raise e
     end
   end
 end

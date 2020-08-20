@@ -381,7 +381,7 @@ describe User do
         user = sequel_user.carto_user
         user.update!(database_host: '1.2.3.4')
 
-        expect { sequel_user.reload.destroy }.to raise_exception(Sequel::DatabaseConnectionError)
+        expect { sequel_user.reload.destroy }.to raise_exception(Sequel::DatabaseDisconnectError)
       end
 
       it 'suceeds if force_destroy is true' do

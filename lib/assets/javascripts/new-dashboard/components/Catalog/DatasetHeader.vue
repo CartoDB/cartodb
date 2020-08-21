@@ -140,10 +140,10 @@ export default {
       ) {
         return this.subscriptionInfo.status;
       }
-      if (this.isPublicWebsite || !this.isEnterprise) {
+      if (this.isPublicWebsite || !this.isDOEnabled) {
         return 'interested';
       } else if (
-        this.isEnterprise &&
+        this.isDOEnabled &&
         this.dataset.is_public_data !== undefined
       ) {
         return this.dataset.is_public_data
@@ -157,6 +157,9 @@ export default {
     },
     isEnterprise () {
       return this.$store.state.user.is_enterprise;
+    },
+    isDOEnabled () {
+      return this.$store.state.user.do_enabled;
     }
   },
   methods: {

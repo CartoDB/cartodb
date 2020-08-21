@@ -305,9 +305,9 @@ module Carto::UserCommons
         message: "Database role does not exist, so proceeding with user deletion",
         current_user: self, database_host: database_host, database_name: database_name, exception: e
       )
-    elsif e.message.match?(/timeout expired/i)
+    elsif e.message.match?(/timeout expired/i) || e.message.match?(/server closed the connection unexpectedly/i)
       log_error(
-        message: "Database connection timed out. Check there's no user data in other servers and force delete manually",
+        message: "Database connection failed. Check there's no user data in other servers and force delete manually",
         current_user: self, database_host: database_host, database_name: database_name, exception: e
       )
       raise e unless @force_destroy

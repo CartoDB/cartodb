@@ -17,24 +17,6 @@ module Carto
       self.user = user
     end
 
-    def test_connection
-      connection = PG::Connection.new(
-        host: database_host,
-        dbname: database_name,
-        user: database_username,
-        password: database_password,
-        connect_timeout: 5
-      )
-      connection.close
-      true
-    end
-
-    def successful_connection?
-      test_connection
-    rescue PG::ConnectionBad
-      false
-    end
-
     def build_search_path(user_schema = nil, quote_user_schema = true)
       UserDBService.build_search_path(user_schema || database_schema, quote_user_schema)
     end

@@ -6,13 +6,19 @@ module Carto
     SCHEMA_IMPORTER = 'cdb_importer'.freeze
     SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
 
+    attr_accessor :user
+
+    delegate(
+      :database_host, :database_name, :database_username, :database_password, :database_schema,
+      to: :user
+    )
+
     def initialize(user)
-      @user = user
+      self.user = user
     end
 
     def build_search_path(user_schema = nil, quote_user_schema = true)
-      user_schema ||= @user.database_schema
-      UserDBService.build_search_path(user_schema, quote_user_schema)
+      UserDBService.build_search_path(user_schema || database_schema, quote_user_schema)
     end
 
     # Centralized method to provide the (ordered) search_path
@@ -23,7 +29,7 @@ module Carto
     end
 
     def public_user_roles
-      @user.organization_user? ? [CartoDB::PUBLIC_DB_USER, @user.service.database_public_username] : [CartoDB::PUBLIC_DB_USER]
+      user.organization_user? ? [CartoDB::PUBLIC_DB_USER, user.service.database_public_username] : [CartoDB::PUBLIC_DB_USER]
     end
 
     # Execute a query in the user database
@@ -33,7 +39,7 @@ module Carto
     #                                      of Hashes that map column name (as string) to value
     # @raise [PG::Error] if the query fails
     def execute_in_user_database(query, *binds)
-      @user.in_database.exec_query(query, 'ExecuteUserDb', binds.map { |v| [nil, v] })
+      user.in_database.exec_query(query, 'ExecuteUserDb', binds.map { |v| [nil, v] })
     rescue ActiveRecord::StatementInvalid => exception
       raise exception.cause
     end
@@ -44,10 +50,10 @@ module Carto
     end
 
     def all_user_roles
-      roles = [@user.database_username]
-      if @user.organization_user?
+      roles = [database_username]
+      if user.organization_user?
         roles << organization_member_group_role_member_name
-        roles += @user.groups.map(&:database_role)
+        roles += user.groups.map(&:database_role)
       end
 
       roles
@@ -71,7 +77,7 @@ module Carto
         GROUP BY schema, t;
       }
 
-      @user.in_database(as: :superuser) do |database|
+      user.in_database(as: :superuser) do |database|
         database.execute(query)
       end
     end
@@ -136,7 +142,7 @@ module Carto
             granted_permissions is not null and granted_permissions <> '';
       }
 
-      @user.in_database(as: :superuser) do |database|
+      user.in_database(as: :superuser) do |database|
         database.execute(query)
       end
     end
@@ -155,7 +161,7 @@ module Carto
         WHERE  rolname = '#{rolname}'
       }
 
-      result = @user.in_database(as: :superuser).execute(query)
+      result = user.in_database(as: :superuser).execute(query)
       result.count > 0
     end
 
@@ -165,11 +171,11 @@ module Carto
     end
 
     def create_oauth_reassign_ownership_event_trigger
-      @user.in_database(as: :superuser).execute('SELECT CDB_EnableOAuthReassignTablesTrigger()')
+      user.in_database(as: :superuser).execute('SELECT CDB_EnableOAuthReassignTablesTrigger()')
     end
 
     def drop_oauth_reassign_ownership_event_trigger
-      @user.in_database(as: :superuser).execute('SELECT CDB_DisableOAuthReassignTablesTrigger()')
+      user.in_database(as: :superuser).execute('SELECT CDB_DisableOAuthReassignTablesTrigger()')
     end
   end
 end

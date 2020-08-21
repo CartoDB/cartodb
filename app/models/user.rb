@@ -374,6 +374,10 @@ class User < Sequel::Model
   def before_destroy(skip_table_drop: false)
     ensure_nonviewer
 
+    # Abort deletion if DB server timeouts, as deleting user metadata
+    # while accidentally keeping its DB may cause GDPR issues
+    test_db_connection_before_deletion!
+
     @org_id_for_org_wipe = nil
     error_happened = false
     has_organization = false
@@ -409,7 +413,7 @@ class User < Sequel::Model
         end
         oauth_app_user = Carto::OauthAppUser.where(user_id: id).first
         oauth_app_user.oauth_access_tokens.each(&:destroy) if oauth_app_user
-        Carto::ApiKey.where(user_id: id).each(&:destroy)
+        Carto::ApiKey.where(user_id: id).each(&:destroy) if successful_db_connection?
       end
 
       # This shouldn't be needed, because previous step deletes canonical visualizations.
@@ -438,21 +442,16 @@ class User < Sequel::Model
       assign_search_tweets_to_organization_owner
 
       ClientApplication.where(user_id: id).each(&:destroy)
-    rescue StandardError => exception
-      error_happened = true
-      CartoDB::Logger.error(message: "Error destroying user #{username}", exception: exception)
     end
 
     # Invalidate user cache
     invalidate_varnish_cache
 
-    drop_database(has_organization) unless skip_table_drop || error_happened
+    drop_database(has_organization) if successful_db_connection? && !skip_table_drop
 
     # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
-    unless error_happened
-      $users_metadata.DEL(key)
-      $users_metadata.DEL(timeout_key)
-    end
+    $users_metadata.DEL(key)
+    $users_metadata.DEL(timeout_key)
 
     feature_flags_user.each(&:delete)
   end
@@ -1404,10 +1403,11 @@ class User < Sequel::Model
     user_creation && user_creation.invitation_token
   end
 
-  def destroy_cascade
+  def force_destroy
     set_force_destroy
     destroy
   end
+  alias destroy_cascade force_destroy
 
   # Central will request some data back to cartodb (quotas, for example), so the user still needs to exist.
   # Corollary: multithreading is needed for deletion to work.
@@ -1564,4 +1564,5 @@ class User < Sequel::Model
   def sync_enabled_api_keys
     api_keys.each(&:set_enabled_for_engine)
   end
+
 end

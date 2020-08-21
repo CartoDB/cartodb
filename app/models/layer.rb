@@ -89,7 +89,7 @@ class Layer < Sequel::Model
   end
 
   def before_destroy
-    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user && user.viewer
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user&.reload&.viewer?
     maps.each(&:notify_map_change)
     super
   end

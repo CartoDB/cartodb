@@ -10,17 +10,12 @@ describe UserOrganization do
     before(:each) do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
-      @organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      @organization = create(:organization, quota_in_bytes: 1234567890, seats: 5)
 
       @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
     end
 
-    after(:each) do
-      bypass_named_maps
-      @organization.destroy_cascade if @organization
-      @owner = ::User.where(id: @owner.id).first if @owner
-      @owner.destroy if @owner
-    end
+    after { bypass_named_maps }
 
     # See #3534: Quota trigger re-creation not done correctly when promoting user to org
     it 'moves tables with geometries' do

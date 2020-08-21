@@ -351,7 +351,7 @@ module Carto
     end
 
     def ensure_not_viewer
-      raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user && user.viewer
+      raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user&.reload&.viewer?
     end
 
     def validate_not_viewer

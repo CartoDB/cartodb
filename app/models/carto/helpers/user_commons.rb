@@ -292,4 +292,46 @@ module Carto::UserCommons
     end
   end
 
+  def test_db_connection_before_deletion!
+    test_db_connection
+  rescue PG::ConnectionBad => e
+    if e.message.match?(/database.*does not exist/i)
+      log_warning(
+        message: "Database does not exist, so proceeding with user deletion",
+        current_user: self, database_host: database_host, database_name: database_name, exception: e
+      )
+    elsif e.message.match?(/role.*does not exist/i)
+      log_warning(
+        message: "Database role does not exist, so proceeding with user deletion",
+        current_user: self, database_host: database_host, database_name: database_name, exception: e
+      )
+    elsif e.message.match?(/timeout expired/i) || e.message.match?(/server closed the connection unexpectedly/i)
+      log_error(
+        message: "Database connection failed. Check there's no user data in other servers and force delete manually",
+        current_user: self, database_host: database_host, database_name: database_name, exception: e
+      )
+      raise e unless @force_destroy
+    else
+      raise e
+    end
+  end
+
+  def test_db_connection
+    connection = PG::Connection.new(
+      host: database_host,
+      dbname: database_name,
+      user: database_username,
+      password: database_password,
+      connect_timeout: 5
+    )
+    connection.close
+    true
+  end
+
+  def successful_db_connection?
+    test_db_connection
+  rescue PG::ConnectionBad
+    false
+  end
+
 end

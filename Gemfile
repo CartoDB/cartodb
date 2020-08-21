@@ -69,7 +69,7 @@ gem 'google-cloud-pubsub', '1.2.0'
 
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
-gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.3.2'
+gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.3.3'
 gem 'email_address',            '~> 0.1.11'
 
 # Markdown
@@ -93,6 +93,10 @@ gem 'rqrcode', '~> 0.10.1'
 
 # keys in PKCS#8 format require external command openssl
 gem 'sys_cmd', '>= 1.1.3'
+
+# db-connectors (DO Sync connector)
+gem 'google-cloud-bigquery-storage-v1', '~>0.2.3'
+gem 'avro', '~>1.10.0'
 
 group :test do
   gem 'simplecov', '0.13.0', require: false
@@ -125,7 +129,7 @@ group :development, :test do
   gem 'rspec-rails',           '2.12.0'
   gem 'rb-readline'
   gem 'byebug'
-  gem 'pry-byebug',            '3.3.0'
+  gem 'pry-byebug',            '3.9.0'
   gem 'rack'
   gem 'zeus'
 

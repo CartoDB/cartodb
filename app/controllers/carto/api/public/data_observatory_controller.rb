@@ -181,6 +181,8 @@ module Carto
         end
 
         def rescue_from_central_error(exception)
+          log_rescue_from(__method__, exception)
+
           render_jsonp({ errors: exception.errors }, 500)
         end
 

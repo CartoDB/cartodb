@@ -5,12 +5,14 @@ require_dependency 'carto/http_header_authentication'
 class ApplicationController < ActionController::Base
   include UrlHelper
   include Carto::ControllerHelper
+  include ::LoggerControllerHelper
 
   protect_from_forgery
 
   helper :all
 
   around_filter :wrap_in_profiler
+  around_filter :set_request_id
 
   before_filter :set_security_headers
   before_filter :http_header_authentication, if: :http_header_authentication?

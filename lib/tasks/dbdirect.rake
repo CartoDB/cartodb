@@ -1,3 +1,5 @@
+require_relative '../../lib/carto/dbdirect/metadata_manager'
+
 namespace :carto do
   namespace :dbdirect do
 
@@ -162,9 +164,10 @@ namespace :carto do
         diff = database_ips - metadata_ips | metadata_ips - database_ips
         if diff.any?
           puts "#{user.username} not in sync:"
-          puts "Database: #{database_ips.join(', ')}"
-          puts "Metadata: #{metadata_ips.join(', ')}"
-          puts "Diff: #{diff.join(', ')}"
+          puts "  > Database: #{database_ips.join(', ')}"
+          puts "  > Metadata: #{metadata_ips.join(', ')}"
+          puts "  > Diff: #{diff.join(', ')}"
+          puts ""
         end
       end
     end

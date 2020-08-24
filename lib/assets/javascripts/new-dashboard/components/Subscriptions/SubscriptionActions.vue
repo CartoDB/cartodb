@@ -45,7 +45,9 @@
       </span>
     </div>
     <div v-if="mode !== 'column'" class="white-separator u-ml--12 u-mr--12"></div>
-    <a class="text is-caption" :class="{'u-mt--12': mode === 'column'}" href="#" @click="downloadNotebook">Explore Notebook</a>
+    <a class="text is-caption" :class="{'u-mt--12': mode === 'column'}" href="#" @click="downloadNotebook">
+      Explore with CARTOFrames
+    </a>
   </div>
 </template>
 

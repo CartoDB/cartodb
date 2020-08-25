@@ -92,7 +92,7 @@ export default {
       return this.subscriptions.filter(s => s.slug).length;
     },
     subscriptionsByPage () {
-      return this.subscriptions.filter(s => s.slug).slice(
+      return this.subscriptions.filter(s => s.slug).reverse().slice(
         this.currentPage * this.pageSize,
         (this.currentPage + 1) * this.pageSize
       );

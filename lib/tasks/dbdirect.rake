@@ -1,3 +1,5 @@
+require_relative '../../lib/carto/dbdirect/metadata_manager'
+
 namespace :carto do
   namespace :dbdirect do
 
@@ -100,7 +102,6 @@ namespace :carto do
       if ips.present?
         puts "DBDirect IPs for organization #{org_id}:"
         puts ips
-        puts "GCP Firewall Rule name: #{organization.owner.dbdirect_effective_ip.firewall_rule_name}"
       else
         puts "No IPs defined for organization #{org_id}"
       end
@@ -116,7 +117,6 @@ namespace :carto do
       if ips.present?
         puts "DBDirect IPs for user #{user_id}:"
         puts ips
-        puts "GCP Firewall Rule name: #{user.dbdirect_effective_ip.firewall_rule_name}"
       else
         puts "No IPs defined for user #{user_id}"
       end
@@ -147,6 +147,28 @@ namespace :carto do
       else
         puts "New IPs for organization #{org_id}:"
         puts new_ips
+      end
+    end
+
+    desc "Check database and redis metadata are in sync"
+    task :check_metadata_sync, [] => :environment do |_t, args|
+      config = Cartodb.get_config(:dbdirect, 'metadata_persist') || {}
+      raise "Config entries for dbdirect:metadata_persist are missing" unless config.any?
+
+      metadata_manager = Carto::Dbdirect::MetadataManager.new(config, $users_metadata)
+
+      Carto::User.find_each do |user|
+        database_ips = user.dbdirect_effective_ips.sort
+        metadata_ips = metadata_manager.get(user.username).sort
+
+        diff = database_ips - metadata_ips | metadata_ips - database_ips
+        if diff.any?
+          puts "#{user.username} not in sync:"
+          puts "  > Database: #{database_ips.join(', ')}"
+          puts "  > Metadata: #{metadata_ips.join(', ')}"
+          puts "  > Diff: #{diff.join(', ')}"
+          puts ""
+        end
       end
     end
   end

@@ -9,7 +9,6 @@ module Carto
       before_action :check_permissions
 
       setup_default_rescues
-      rescue_from Carto::FirewallNotReadyError, with: :rescue_from_carto_error
 
       def show
         ips = @user.dbdirect_effective_ips

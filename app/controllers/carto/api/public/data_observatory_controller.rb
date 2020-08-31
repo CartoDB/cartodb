@@ -156,7 +156,7 @@ module Carto
             VALID_ORDER_PARAMS, default_order: 'id', default_order_direction: 'asc'
           )
           @status = VALID_STATUSES.include?(params[:status]) ? params[:status] : nil
-          load_type(required: false)  
+          load_type(required: false)
         end
 
         def load_id
@@ -177,7 +177,8 @@ module Carto
         end
 
         def check_do_enabled
-          Cartodb::Central.new.check_do_enabled(@user.username)
+          # Cartodb::Central.new.check_do_enabled(@user.username)
+          @user.do_enabled
         end
 
         def rescue_from_central_error(exception)
@@ -230,12 +231,19 @@ module Carto
         end
 
         def license_info(metadata, status)
+          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
+          entity_info = doss.entity_info(metadata[:id])
           {
             dataset_id: metadata[:id],
             available_in: metadata[:available_in],
             price: metadata[:subscription_list_price],
             expires_at: Time.now.round + 1.year,
-            status: status
+            status: status,
+            type: entity_info[:type],
+            estimated_size: entity_info[:estimated_size],
+            estimated_row_count: entity_info[:estimated_row_count],
+            estimated_columns_count: entity_info[:estimated_columns_count],
+            num_bytes: entity_info[:num_bytes]
           }
         end
       end

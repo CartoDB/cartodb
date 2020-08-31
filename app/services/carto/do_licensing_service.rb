@@ -64,7 +64,6 @@ module Carto
 
     def insert_redis_value(dataset, storage)
       redis_value = JSON.parse($users_metadata.hget(@redis_key, storage) || '[]')
-
       if dataset[:available_in].include?(storage)
         # Remove a previous dataset if exists
         redis_value = redis_value.reject { |d| d[:dataset_id] == dataset[:dataset_id] }
@@ -72,7 +71,13 @@ module Carto
         new_value = [{
           "dataset_id" => dataset[:dataset_id],
           "expires_at" => dataset[:expires_at].to_s,
-          "status" => dataset[:status]
+          "status" => dataset[:status],
+          "available_in": dataset[:available_in],
+          "type": dataset[:type],
+          "estimated_size": dataset[:estimated_size],
+          "estimated_row_count": dataset[:estimated_row_count],
+          "estimated_columns_count": dataset[:estimated_columns_count],
+          "num_bytes": dataset[:num_bytes]
         }]
         # Append to the current one
         redis_value = redis_value + new_value

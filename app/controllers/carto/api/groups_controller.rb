@@ -44,12 +44,12 @@ module Carto
       end
 
       def create
-        group = @organization.create_group(params['display_name'])
-        render_jsonp(Carto::Api::GroupPresenter.full(group).to_poro, 200)
+        @group = @organization.create_group(params['display_name'])
+        render_jsonp(Carto::Api::GroupPresenter.full(@group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
         render json: { errors: ["A group with that name already exists"] }, status: 409
       rescue ActiveRecord::StatementInvalid => e
-        handle_statement_invalid_error(e, group)
+        handle_statement_invalid_error(e, @group)
       rescue StandardError => e
         log_error(exception: e)
         render json: { errors: [e.message] }, status: 500
@@ -174,7 +174,7 @@ module Carto
       end
 
       def log_context
-        super.merge(params: params, group: group, organization: @organization)
+        super.merge(params: params, group: @group, organization: @organization)
       end
     end
   end

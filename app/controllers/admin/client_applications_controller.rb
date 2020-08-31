@@ -31,7 +31,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
     begin
       current_user.regenerate_api_key
     rescue Errno::ECONNREFUSED => e
-      CartoDB::StdoutLogger.info "Could not clear varnish cache", "#{e.inspect}"
+      log_info(message: "Could not clear varnish cache", exception: e)
       if Rails.env.development?
         current_user.set_map_key
         error_message = "Your API key has been regenerated succesfully but the varnish cache has not been invalidated."

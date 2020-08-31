@@ -33,7 +33,7 @@ module Carto
               visualization: @visualization.attributes.slice(:id),
               user_tables_ids: params[:user_tables_ids],
               visualization_export: visualization_export.attributes.slice(:id)
-                                                        .merge(errors: visualization_export.errors.full_messages),
+                                                        .merge(errors: visualization_export.errors.full_messages)
             )
             raise Carto::UnprocesableEntityError.new("Errors: #{visualization_export.errors.full_messages}")
           end

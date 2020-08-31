@@ -63,7 +63,6 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       rescue CartoDB::InvalidInterval => exception
         render_jsonp({ errors: "#{exception.detail['message']}: #{exception.detail['hint']}" }, 400)
       rescue InvalidUrlError => exception
-        CartoDB::StdoutLogger.info('Error: create', "#{exception.message} #{exception.backtrace.inspect}")
         render_jsonp({ errors: exception.message }, 400)
       end
 

@@ -7,8 +7,6 @@ describe Carto::UserTable do
   let(:user) { create(:carto_user) }
 
   before(:all) do
-    bypass_named_maps
-
     @user = user
     @carto_user = user
     @user_table = Carto::UserTable.new

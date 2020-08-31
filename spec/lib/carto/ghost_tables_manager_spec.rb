@@ -249,6 +249,8 @@ module Carto
     end
 
     it 'should link raster tables' do
+      skip unless ::User[user.id].in_database.table_exists?('raster_overviews')
+
       run_in_user_database(%{
         CREATE TABLE manolo_raster ("cartodb_id" uuid, "the_raster_webmercator" raster);
         CREATE TRIGGER test_quota_per_row

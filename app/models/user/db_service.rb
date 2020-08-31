@@ -11,6 +11,7 @@ module CartoDB
     class DBService
       include CartoDB::MiniSequel
       include Carto::Configuration
+      include ::LoggerHelper
       extend CartoDB::SequelConnectionHelper
 
       # Also default schema for new users
@@ -21,6 +22,8 @@ module CartoDB
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
       CDB_DATASERVICES_CLIENT_VERSION = '0.30.0'.freeze
+
+      attr_accessor :user
 
       def initialize(user)
         raise "User nil" unless user
@@ -621,7 +624,7 @@ module CartoDB
       rescue Sequel::DatabaseError => error
         # For the time being we'll be resilient to the odbc_fdw not being available
         # and just proceed without installing it.
-        CartoDB::Logger.error(exception: error, message: "Could not install odbc_fdw", user: @user)
+        log_error(message: "Could not install odbc_fdw", exception: error, error_detail: error.cause.inspect)
       end
 
       def setup_organization_owner
@@ -1690,6 +1693,10 @@ module CartoDB
             "password":"#{config['password']}"} } } }'::json
           );
         }
+      end
+
+      def log_context
+        super.merge(current_user: user)
       end
     end
   end

@@ -3,7 +3,6 @@ require 'json'
 require_relative '../util/csv_file_dumper'
 
 require_relative '../../../../twitter-search/twitter-search'
-require_relative '../../../../../lib/cartodb/logger'
 require_relative '../base_file_stream'
 
 module CartoDB

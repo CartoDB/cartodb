@@ -1,5 +1,5 @@
 require 'rollbar/rails'
-require 'cartodb/logger'
+
 Rollbar.configure do |config|
   config.access_token = Cartodb.config[:rollbar_api_key]
   config.enabled = (Rails.env.production? || Rails.env.staging?) && config.access_token.present?

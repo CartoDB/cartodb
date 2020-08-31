@@ -62,7 +62,7 @@ module Resque
       module SyncRedis
         extend ::Resque::Metrics
         include Carto::Common::JobLogger
-        include ::LoggerHelper
+        extend ::LoggerHelper
 
         @queue = :batch_updates
 

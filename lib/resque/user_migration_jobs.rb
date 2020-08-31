@@ -3,7 +3,7 @@ require_relative './base_job'
 module Resque
   class UserMigrationJobs < BaseJob
     module Export
-      include ::LoggerHelper
+      extend ::LoggerHelper
 
       @queue = :user_migrations
 
@@ -17,7 +17,7 @@ module Resque
     end
 
     module Import
-      include ::LoggerHelper
+      extend ::LoggerHelper
 
       @queue = :user_migrations
 

@@ -36,7 +36,7 @@ module Resque
 
       module AutoIndexTable
         include Carto::Common::JobLogger
-        include ::LoggerHelper
+        extend ::LoggerHelper
 
         @queue = :user_dbs
 

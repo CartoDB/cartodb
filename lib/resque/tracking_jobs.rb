@@ -15,7 +15,7 @@ module Resque
 
     module SendSegmentEvent
       include Carto::Common::JobLogger
-      include ::LoggerHelper
+      extend ::LoggerHelper
 
       ANONYMOUS_SEGMENT_USER_ID = '00000000-0000-0000-0000-000000000000'.freeze
 
@@ -34,7 +34,7 @@ module Resque
 
     module SendHubspotEvent
       include Carto::Common::JobLogger
-      include ::LoggerHelper
+      extend ::LoggerHelper
 
       @queue = :tracker
 

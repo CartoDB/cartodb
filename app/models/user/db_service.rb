@@ -1403,6 +1403,8 @@ module CartoDB
       def execute_in_user_database(query, *binds)
         placeholder_query = query.gsub(/\$\d+/, '?')
         @user.in_database.fetch(placeholder_query, *binds).all.map(&:stringify_keys)
+      rescue Sequel::DatabaseError => exception
+        raise exception.cause
       end
 
       def create_ghost_tables_event_trigger

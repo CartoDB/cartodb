@@ -9,7 +9,7 @@ Dir[Rails.root.join("lib/resque/*.rb")].each {|f| require f}
 
 Resque.redis = RedisFactory.new_connection
 
-Resque::Failure::Multiple.classes = [Resque::Failure::Redis, CartoDB::Logger::RollbarLogger]
+Resque::Failure::Multiple.classes = [Resque::Failure::Redis, ResqueFailureLogger]
 Resque::Failure.backend = Resque::Failure::Multiple
 
 ## Logging

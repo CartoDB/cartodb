@@ -45,7 +45,7 @@ export default {
   border-radius: 4px;
 
   &.grid-cell {
-    padding: 0 16px 0 8px;
+    padding: 0 16px;
   }
 
   .white-separator {

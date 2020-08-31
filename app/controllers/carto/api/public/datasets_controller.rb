@@ -19,7 +19,7 @@ module Carto
         rescue_from Carto::OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
 
         VALID_ORDER_PARAMS = %i(name).freeze
- 
+
         def index
           tables = @user.in_database[select_tables_query].all
           result = enrich_tables(tables)
@@ -63,7 +63,7 @@ module Carto
             privacy: nil,
             updated_at: nil
           }
-        end        
+        end
 
         def table_visualizations(names)
           visualizations = Carto::VisualizationQueryBuilder.new
@@ -100,12 +100,12 @@ module Carto
         def query
           roles_in = @user.db_service.all_user_roles.join("','")
           %{
-            SELECT table_schema, table_name as name,   
-              string_agg(CASE privilege_type WHEN 'SELECT' THEN 'r' ELSE 'w' END, 
+            SELECT table_schema, table_name as name,
+              string_agg(CASE privilege_type WHEN 'SELECT' THEN 'r' ELSE 'w' END,
                         '' order by privilege_type) as mode
             FROM information_schema.role_table_grants
             WHERE grantee IN ('#{roles_in}')
-              AND table_schema not in ('cartodb', 'aggregation')  
+              AND table_schema not in ('cartodb', 'aggregation')
               AND grantor!='postgres'
               AND privilege_type in ('SELECT', 'UPDATE')
             GROUP BY table_schema,  table_name
@@ -125,6 +125,8 @@ module Carto
         end
 
         def rescue_oauth_errors(exception)
+          log_rescue_from(__method__, exception)
+
           render json: { errors: exception.parameters[:error_description] }, status: 500
         end
       end

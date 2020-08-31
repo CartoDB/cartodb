@@ -247,9 +247,8 @@ module Carto
       user.tables.count.should eq 0
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
     end
-    #
+
     it 'should link raster tables' do
-      next unless ::User[user.id].in_database.table_exists?('raster_overviews')
       run_in_user_database(%{
         CREATE TABLE manolo_raster ("cartodb_id" uuid, "the_raster_webmercator" raster);
         CREATE TRIGGER test_quota_per_row

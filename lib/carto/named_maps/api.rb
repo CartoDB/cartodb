@@ -175,9 +175,8 @@ module Carto
           message: 'Error in named maps API',
           current_user: @user,
           action: action,
-          request_url: response.request.url,
-          status: response.code,
-          response_body: response.body
+          request: { url: response.request.url },
+          response: { status: response.code, body: response.body }
         )
       end
     end

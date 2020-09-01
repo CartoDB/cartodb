@@ -57,7 +57,7 @@ class Carto::BoundingBoxService
       }
     end
   rescue PG::Error => exception
-    log_error(exception: exception, table: @table_name)
+    log_error(exception: exception, table: { name: @table_name })
     raise BoundingBoxError.new("Can't calculate the bounding box for table #{@table_name}. ERROR: #{exception}")
   end
 

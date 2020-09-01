@@ -19,6 +19,10 @@ CHECKOUT_TEMP_DIR = '/tmp/sequel-loc'
 begin
   # Use a fresh clone
   system "git clone https://github.com/CartoDB/cartodb.git #{CHECKOUT_TEMP_DIR}"
+  # Here's how to use the local repo instead of cloning through network
+  #src_dir = `git rev-parse --show-toplevel`.strip
+  #system "git clone #{src_dir} #{CHECKOUT_TEMP_DIR}"
+
   Dir.chdir(CHECKOUT_TEMP_DIR) do
 
     CSV.open(OUTPUT_FILE, 'w') do |csv|

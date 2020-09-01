@@ -1,3 +1,11 @@
+# Script to gather lines of code in Sequel Models
+#
+# Usage:
+#   ruby script/sequel-model-lines.rb
+#
+# The output is left in OUTPUT_FILE as a CSV
+# Check constants for customizations.
+
 require 'date'
 require 'csv'
 require 'fileutils'

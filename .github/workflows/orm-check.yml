@@ -28,7 +28,7 @@ jobs:
                 fi
               done
             fi
-          done < <(git diff $(git merge-base $(git rev-parse HEAD) origin/master) --name-status)
+          done < <(git diff $(git merge-base $(git rev-parse HEAD) master) --name-status)
 
           if [ ${#MODIFIED_FILES[@]} -gt 0 ]; then
             for i in ${MODIFIED_FILES[@]}; do
@@ -37,4 +37,3 @@ jobs:
             exit 1
           fi
           exit 0
-        shell: bash

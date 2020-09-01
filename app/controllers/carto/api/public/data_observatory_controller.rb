@@ -177,8 +177,7 @@ module Carto
         end
 
         def check_do_enabled
-          # Cartodb::Central.new.check_do_enabled(@user.username)
-          @user.do_enabled
+          @user.do_enabled?
         end
 
         def rescue_from_central_error(exception)
@@ -191,12 +190,8 @@ module Carto
           if @type.present?
             subscriptions = subscriptions.select { |subscription| subscription[:type] == @type }
           end
-          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
-          enriched_subscriptions = subscriptions.map do |subscription|
-            sync_data = doss.sync(subscription[:id])
-            subscription.merge(sync_data)
-          end
-          ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }
+
+          ordered_subscriptions = subscriptions.sort_by { |subscription| subscription[@order] }
           @direction == :asc ? ordered_subscriptions : ordered_subscriptions.reverse
         end
 
@@ -233,18 +228,13 @@ module Carto
         def license_info(metadata, status)
           doss = Carto::DoSyncServiceFactory.get_for_user(@user)
           entity_info = doss.entity_info(metadata[:id])
-          {
+          entity_info.merge({
             dataset_id: metadata[:id],
             available_in: metadata[:available_in],
             price: metadata[:subscription_list_price],
             expires_at: Time.now.round + 1.year,
-            status: status,
-            type: entity_info[:type],
-            estimated_size: entity_info[:estimated_size],
-            estimated_row_count: entity_info[:estimated_row_count],
-            estimated_columns_count: entity_info[:estimated_columns_count],
-            num_bytes: entity_info[:num_bytes]
-          }
+            status: status
+          })
         end
       end
     end

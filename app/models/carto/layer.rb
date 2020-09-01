@@ -41,7 +41,7 @@ module Carto
       # For example, if layer SQL contains wrong SQL (uses a table that doesn't exist, or uses an invalid operator).
       # This warning level is checked in tests to ensure that embed view does not need user DB connection,
       # so we need to keep it (or change the tests accordingly)
-      log_warning(message: 'Could not retrieve tables from query', exception: e, current_user: user, layer: self.attributes)
+      log_warning(message: 'Could not retrieve tables from query', exception: e, current_user: user, layer: attributes)
       []
     end
 

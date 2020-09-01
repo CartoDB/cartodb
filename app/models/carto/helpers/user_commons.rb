@@ -249,7 +249,7 @@ module Carto::UserCommons
     viewer ? 'viewer' : 'builder'
   end
 
-  # pending to replace .to_hash with .to_h, and monkeypatch Sequel model to respond to attributes
+  # TODO: replace .to_hash with .to_h, and monkeypatch Sequel model to respond to :attributes
   def logging_attrs
     if self.respond_to?(:attributes)
       # AR

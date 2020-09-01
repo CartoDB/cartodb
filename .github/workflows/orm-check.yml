@@ -1,8 +1,5 @@
 name: Check ORM (Sequel) usage
-on:
-  push:
-    branches-ignore: [master]
-
+on: [pull_request]
 jobs:
   orm-check:
     runs-on: ubuntu-latest

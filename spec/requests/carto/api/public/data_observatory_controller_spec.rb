@@ -123,22 +123,23 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     before(:each) do
-      Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+      # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
       @doss = mock
       Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
       @doss.stubs(:sync).returns({sync_status: 'synced', sync_table: 'my_do_subscription'})
     end
 
     after(:each) do
-      Cartodb::Central.any_instance.unstub(:check_do_enabled)
+      # Cartodb::Central.any_instance.unstub(:check_do_enabled)
     end
 
     it_behaves_like 'an endpoint validating a DO API key'
 
     it 'checks if DO is enabled' do
-      central_mock = mock
-      Cartodb::Central.stubs(:new).returns(central_mock)
-      central_mock.expects(:check_do_enabled).once.returns(true)
+      # central_mock = mock
+      # Cartodb::Central.stubs(:new).returns(central_mock)
+      # central_mock.expects(:check_do_enabled).once.returns(true)
+      Carto::User.any_instance.expects(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master), @headers
     end
@@ -307,12 +308,12 @@ describe Carto::Api::Public::DataObservatoryController do
 
   describe 'subscription_info' do
     before(:each) do
-      Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+      # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
       Carto::DoLicensingService.any_instance.stubs(:subscriptions).returns([@params])
     end
 
     after(:each) do
-      Cartodb::Central.any_instance.unstub(:check_do_enabled)
+      # Cartodb::Central.any_instance.unstub(:check_do_enabled)
       Carto::DoLicensingService.any_instance.unstub(:subscriptions)
     end
 
@@ -328,9 +329,10 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'checks if DO is enabled' do
-      central_mock = mock
-      Cartodb::Central.stubs(:new).returns(central_mock)
-      central_mock.expects(:check_do_enabled).once.returns(true)
+      # central_mock = mock
+      # Cartodb::Central.stubs(:new).returns(central_mock)
+      # central_mock.expects(:check_do_enabled).once.returns(true)
+      Carto::User.any_instance.expects(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers
     end

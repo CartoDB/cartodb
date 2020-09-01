@@ -9,9 +9,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout current repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 2
+        uses: actions/checkout@v1
 
       - name: Check if the last commit modified deprecated Sequel models
         shell: bash

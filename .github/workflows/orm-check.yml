@@ -1,0 +1,43 @@
+name: Check ORM (Sequel) usage
+on:
+  push:
+    branches-ignore: [master]
+
+jobs:
+  orm-check:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v2
+
+      - name: Check if the last commit modified deprecated Sequel models
+        env:
+          DEST_BRANCH: ${{ github.base_ref }}
+          SOURCE_BRANCH: ${{ github.head_ref }}
+        run: |
+          # This script will exit if any of these files is found in the head branch.
+          ORM_FILES=$(git grep -l 'class.*Sequel::Model' -- app/models)
+
+          MODIFIED_FILES=()
+          while IFS='$\n' read -r c; do
+            # Only check modified files
+            if [ $(echo $c | awk '{print $1}') = 'M' ]; then
+              modified=$(echo $c | awk '{print $2}')
+
+              for orm in $ORM_FILES; do
+                if [ $modified = $orm ]; then
+                  MODIFIED_FILES+=($modified)
+                fi
+              done
+            fi
+          done < <(git diff --name-status ${DEST_BRANCH}...${SOURCE_BRANCH})
+
+          if [ ${#MODIFIED_FILES[@]} -gt 0 ]; then
+            for i in ${MODIFIED_FILES[@]}; do
+              echo "::warning file=$i::This file should not be modified!"
+            done
+            exit 1
+          fi
+          exit 0
+        shell: bash

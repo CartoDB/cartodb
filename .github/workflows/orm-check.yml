@@ -19,21 +19,22 @@ jobs:
 
           MODIFIED_FILES=()
           while IFS='$\n' read -r c; do
-            # Only check modified files
-            if [ $(echo $c | awk '{print $1}') = 'M' ]; then
-              modified=$(echo $c | awk '{print $2}')
+            # Mark files as modified if new lines have been added
+            summary=$(($(echo $c | awk '{print $1}') - $(echo $c | awk '{print $2}')))
+            filename=$(echo $c | awk '{print $3}')
 
+            if [ $summary -gt 0 ]; then
               for orm in $ORM_FILES; do
-                if [ $modified = $orm ]; then
-                  MODIFIED_FILES+=($modified)
+                if [ $filename = $orm ]; then
+                  MODIFIED_FILES+=($filename)
                 fi
               done
             fi
-          done < <(git diff $(git merge-base $(git rev-parse HEAD) origin/master) --name-status)
+          done < <(git diff $(git merge-base $(git rev-parse HEAD) origin/master) --numstat)
 
           if [ ${#MODIFIED_FILES[@]} -gt 0 ]; then
             for i in ${MODIFIED_FILES[@]}; do
-              echo "::warning file=$i::This file should not be modified!"
+              echo "::error file=$i::This file has been flagged to be migrated, please do not add new lines."
             done
             exit 1
           fi

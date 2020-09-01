@@ -26,9 +26,9 @@ begin
         system "git checkout #{revision}" || exit
 
         # Calculate lines of code of Sequel models
-        loc = `git grep -l 'class.*Sequel::Model' -- app/models | xargs cat | wc -l`.strip
+        loc = `git grep -l 'class.*Sequel::Model' -- app/models | xargs cat | wc -l`.strip.to_i
 
-        csv << [date.to_s, revision, loc]
+        csv << [date.to_s, revision, loc] unless loc == 0
         date = date.next_month
       end
     end

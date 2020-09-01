@@ -1,5 +1,8 @@
 name: Check ORM (Sequel) usage
-on: [pull_request]
+on:
+  push:
+    branches-ignore:
+      - master
 jobs:
   orm-check:
     runs-on: ubuntu-latest
@@ -9,9 +12,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Check if the last commit modified deprecated Sequel models
-        env:
-          DEST_BRANCH: ${{ github.base_ref }}
-          SOURCE_BRANCH: ${{ github.head_ref }}
         run: |
           # This script will exit if any of these files is found in the head branch.
           ORM_FILES=$(git grep -l 'class.*Sequel::Model' -- app/models)
@@ -28,7 +28,7 @@ jobs:
                 fi
               done
             fi
-          done < <(git diff --name-status origin/${DEST_BRANCH}...origin/${SOURCE_BRANCH})
+          done < <(git diff $(git merge-base $(git rev-parse HEAD) origin/master) --name-status)
 
           if [ ${#MODIFIED_FILES[@]} -gt 0 ]; then
             for i in ${MODIFIED_FILES[@]}; do

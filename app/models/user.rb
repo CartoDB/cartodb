@@ -77,7 +77,6 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
-  # Test
   DEFAULT_MAX_LAYERS = 8
 
   DEFAULT_GEOCODING_QUOTA = 0

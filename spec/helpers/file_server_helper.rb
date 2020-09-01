@@ -22,8 +22,6 @@ module FileServerHelper
 
     begin
       yield "http://localhost:#{port}/#{File.basename(file_path)}" if block_given?
-    rescue StandardError => e
-      raise e
     ensure
       b = Thread.new { server.shutdown }
 

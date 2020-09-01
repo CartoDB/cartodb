@@ -44,9 +44,9 @@ module Resque
 
         code, body = events_api.report(id, params: params)
 
-        return if code == '200' && body.present?
-
-        log_error(message: 'Carto::Tracking: Hubspot service error', event: { id: id }, params: params)
+        if code != '200' || body.blank?
+          log_error(message: 'Carto::Tracking: Hubspot service error', event: { id: id }, params: params)
+        end
       end
     end
   end

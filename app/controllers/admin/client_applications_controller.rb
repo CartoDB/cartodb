@@ -42,8 +42,6 @@ class Admin::ClientApplicationsController < Admin::AdminController
       log_warning(exception: e, message: 'Error updating API key in mobile apps')
       error_message = "Your API key has been successfully generated, " \
                       "but there was an error updating the license keys of mobile apps"
-    rescue StandardError => e
-      raise e
     end
 
     flash = if error_message

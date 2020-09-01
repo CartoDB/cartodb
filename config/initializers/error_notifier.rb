@@ -21,7 +21,7 @@ Rollbar.configure do |config|
   )
 end
 
-# Wrapper for legacy logger
+# TODO: remove this wrapper for legacy logger
 module CartoDB
 
   include ::LoggerHelper

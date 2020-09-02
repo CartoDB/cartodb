@@ -98,7 +98,7 @@ class ApplicationController < ActionController::Base
     if user.present?
       user.invalidate_all_sessions!
     elsif opts[:scope]
-      scope_user = ::User.where(username: opts[:scope]).first
+      scope_user = Carto::User.find_by(username: opts[:scope])
       scope_user&.invalidate_all_sessions!
     end
     auth.cookies.delete(ME_ENDPOINT_COOKIE, domain: Cartodb.config[:session_domain])

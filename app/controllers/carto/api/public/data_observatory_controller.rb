@@ -63,12 +63,7 @@ module Carto
           subscriptions = Carto::DoLicensingService.new(@user.username).subscriptions
           sub = subscriptions.find { |s| s[:id] = @id }
 
-          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
-          sync_data = doss.sync(@id)
-
-          response = response.merge(sub).merge(sync_data)
-
-          render(json: response)
+          render(json: sub)
         end
 
         def subscribe
@@ -166,6 +161,13 @@ module Carto
 
         def load_type(required: true)
           @type = params[:type]
+          id = params[:id]
+          if @type.nil? && !(id.nil?) then
+            # If we don't have the type, we can figure it out from the id:
+            doss = Carto::DoSyncServiceFactory.get_for_user(@user)
+            parsed_entity_id = doss.parsed_entity_id(id)
+            @type = parsed_entity_id[:type]
+          end
           return if @type.nil? && !required
 
           raise ParamInvalidError.new(:type, VALID_TYPES.join(', ')) unless VALID_TYPES.include?(@type)

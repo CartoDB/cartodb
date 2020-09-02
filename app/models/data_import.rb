@@ -430,6 +430,15 @@ class DataImport < Sequel::Model
 
   private
 
+  def get_provider_name_from_id(service_item_id)
+    begin
+      connector_params = JSON.parse(service_item_id)
+      return connector_params['provider']
+    rescue StandardError
+      return nil
+    end
+  end
+
   def dispatch
     self.state = STATE_UPLOADING
     return from_table         if table_copy.present? || from_query.present?
@@ -758,7 +767,8 @@ class DataImport < Sequel::Model
   # * importer: the new importer (nil if download errors detected)
   # * connector: the connector that the importer uses
   def new_importer_with_connector
-    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user)
+    provider_name = get_provider_name_from_id(service_item_id)
+    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user, provider_name)
 
     database_options = pg_options
 

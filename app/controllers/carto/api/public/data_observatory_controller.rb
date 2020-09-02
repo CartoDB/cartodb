@@ -156,7 +156,7 @@ module Carto
             VALID_ORDER_PARAMS, default_order: 'id', default_order_direction: 'asc'
           )
           @status = VALID_STATUSES.include?(params[:status]) ? params[:status] : nil
-          load_type(required: false)  
+          load_type(required: false)
         end
 
         def load_id
@@ -177,7 +177,10 @@ module Carto
         end
 
         def check_do_enabled
-          Cartodb::Central.new.check_do_enabled(@user.username)
+          # This makes a request to central. In dev environment it may cause dead-locks when a request
+          # from central reaches this filter.
+          # # Cartodb::Central.new.check_do_enabled(@user.username)
+          @user.do_enabled?
         end
 
         def rescue_from_central_error(exception)

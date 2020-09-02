@@ -99,11 +99,6 @@ class Carto::User < ActiveRecord::Base
   end
   alias_method_chain :static_notifications, :creation
 
-  def invalidate_all_sessions!
-    user = ::User.where(id: self.id).first
-    user&.invalidate_all_sessions!
-  end
-
   def default_avatar
     "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
   end

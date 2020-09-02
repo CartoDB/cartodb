@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-* Now every user manages its own dbdirect IPs
+* Now every user manages its own dbdirect IPs, regardless of being a organization user [#15805](https://github.com/CartoDB/cartodb/pull/15805)
 * Add a script to measure Sequel model LOC [#15803](https://github.com/CartoDB/cartodb/pull/15803)
 
 4.41.0 (2020-09-01)

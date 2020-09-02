@@ -8,7 +8,8 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+
+* Add a script to measure Sequel model LOC [#15803](https://github.com/CartoDB/cartodb/pull/15803)
 
 4.41.0 (2020-09-01)
 -------------------

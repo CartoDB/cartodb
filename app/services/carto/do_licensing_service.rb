@@ -44,6 +44,7 @@ module Carto
       parsed_entity_id = @doss.parsed_entity_id(subscription['dataset_id'])
       expires_at = Time.parse(subscription['expires_at']) if subscription['expires_at'].present?
       subscription_data = subscription.merge(parsed_entity_id).merge({
+        id: subscription['dataset_id'],
         status: (expires_at && (Time.now >= expires_at)) ? 'expired' : subscription['status']
       })
       subscription_data.with_indifferent_access

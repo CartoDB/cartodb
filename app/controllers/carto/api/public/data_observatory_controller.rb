@@ -63,7 +63,7 @@ module Carto
           subscriptions = Carto::DoLicensingService.new(@user.username).subscriptions
           sub = subscriptions.find { |s| s[:id] = @id }
 
-          render(json: sub)
+          render(json: response.merge(sub))
         end
 
         def subscribe

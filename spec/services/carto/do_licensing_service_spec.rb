@@ -53,7 +53,12 @@ describe Carto::DoLicensingService do
       ].to_json
 
       bigtable_redis = [
-        { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000', status: 'active' }
+        {
+          dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000', status: 'active',
+          available_in: ['bq', 'bigtable'], type: nil, estimated_size: 0, estimated_row_count: 0,
+          estimated_columns_count: 0, num_bytes: 0, sync_status: 'unsynced', sync_table: nil,
+          sync_table_id: nil, synchronization_id: nil
+        }
       ].to_json
 
       @service.subscribe(@dataset)

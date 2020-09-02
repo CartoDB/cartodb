@@ -69,7 +69,7 @@ class ApplicationController < ActionController::Base
         # If current user session was there, do nothing; else, retrieve first available
         if current_user_present.nil?
           unless authenticated_usernames.first.nil?
-            user = ::User.where(username: authenticated_usernames.first).first
+            user = Carto::User.find_by(username: authenticated_usernames.first)
             Carto::AuthenticationManager.validate_session(warden, request, user) unless user.nil?
             @current_viewer = user
           end

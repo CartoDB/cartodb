@@ -24,7 +24,7 @@ end
 # TODO: remove this wrapper for legacy logger
 module CartoDB
 
-  include ::LoggerHelper
+  extend ::LoggerHelper
 
   def self.notify_exception(e, extra = {})
     log_error(exception: e, **extra)

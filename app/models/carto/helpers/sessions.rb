@@ -6,9 +6,9 @@ module Carto::Sessions
       # NOTE: this is a hack for making the code AR/Sequel compatible
       save(raise_on_failure: true) || raise(ActiveRecord::RecordNotSaved.new("Failed to save the record", self))
     else
-      CartoDB::Logger.error(message: "Cannot invalidate session")
+      log_error(message: "Could not invalidate session in Central")
     end
   rescue CartoDB::CentralCommunicationFailure, Sequel::ValidationFailed, ActiveRecord::RecordNotSaved => e
-    CartoDB::Logger.error(exception: e, message: "Cannot invalidate session")
+    log_error(exception: e, message: "Could not invalidate session")
   end
 end

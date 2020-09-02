@@ -2,6 +2,7 @@ require 'resque'
 require 'resque/failure/base'
 require 'resque/failure/multiple'
 require 'resque/failure/redis'
+require './lib/resque_failure_logger'
 require_dependency 'redis_factory'
 
 # Load automatically all resque files from lib/resque

@@ -320,11 +320,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def dbdirect_bearer
-    if organization.present? && organization.owner != self
-      organization.owner.reload
-    else
-      reload
-    end
+    reload
   end
 
   private

@@ -46,9 +46,9 @@ describe Carto::DoLicensingService do
       bq_redis = [
         {
           dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000', status: 'active',
-          available_in: [bq, bigtable], type:null, estimated_size:0, estimated_row_count:0,
-          estimated_columns_count:0, num_bytes:0, sync_status: unsynced, sync_table:null,
-          sync_table_id:null, synchronization_id:null
+          available_in: [bq, bigtable], type: null, estimated_size: 0, estimated_row_count: 0,
+          estimated_columns_count: 0, num_bytes: 0, sync_status: unsynced, sync_table: null,
+          sync_table_id: null, synchronization_id: null
         }
       ].to_json
 

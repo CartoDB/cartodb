@@ -12,12 +12,7 @@ module Carto
                  title: title.present? && legend['show_title'] ? title : nil,
                  type: 'custom',
                  definition: definition)
-    rescue => exception
-      CartoDB::Logger.debug(message: 'Carto::LegendMigrator: couldn\'t migrate',
-                            exception: exception,
-                            legend: @legend,
-                            layer_id: @layer_id)
-
+    rescue StandardError
       Legend.new(layer_id: @layer_id)
     end
 

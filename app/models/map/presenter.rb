@@ -11,7 +11,7 @@ module CartoDB
         @configuration  = configuration
         logger.info(map.inspect) if logger
       end
-    
+
       def to_poro
 
         {
@@ -40,11 +40,10 @@ module CartoDB
 
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
-      rescue => exception
+      rescue StandardError => exception
         CartoDB::notify_exception(exception, user: current_user)
         nil
       end
     end
   end
 end
-

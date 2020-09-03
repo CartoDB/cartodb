@@ -61,9 +61,8 @@ class SearchTweet < Sequel::Model
   def price
     return 0 unless self.retrieved_items > 0
 
-    if user.effective_twitter_block_price.nil? || calculate_used_credits.nil? \
-       || user.effective_twitter_datasource_block_size.nil?
-      CartoDB::Logger.error('Looks like user/org has not set all twitter block or price params', user: user)
+    if [user.effective_twitter_block_price, calculate_used_credits, user.effective_twitter_datasource_block_size].any?(&:nil?)
+      log_error('Uncomplete twitter configuration', current_user: user)
       # As the import itself went well don't break execution, just return something
       0
     else

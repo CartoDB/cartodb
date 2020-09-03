@@ -66,6 +66,7 @@ module Carto
     include LayerImporter
     include DataImportImporter
     include ConnectorConfigurationImporter
+    include ::LoggerHelper
 
     def build_user_from_json_export(exported_json_string)
       build_user_from_hash_export(parse_json(exported_json_string))
@@ -157,13 +158,12 @@ module Carto
     end
 
     def build_feature_flag_from_name(ff_name)
-      ff = FeatureFlag.where(name: ff_name).first
-      if ff
-        Carto::FeatureFlagsUser.new(feature_flag_id: ff.id)
-      else
-        CartoDB::Logger.warning(message: 'Feature flag not found in user import', feature_flag: ff_name)
-        nil
-      end
+      ff = Carto::FeatureFlag.find_by(name: ff_name)
+
+      return Carto::FeatureFlagsUser.new(feature_flag_id: ff.id) if ff
+
+      log_warning(message: 'Feature flag not found in user import', feature_flag: ff.attributes)
+      nil
     end
 
     def build_asset_from_hash(exported_asset)

@@ -16,6 +16,9 @@ require_relative '../../../../lib/cartodb/stats/importer'
 module CartoDB
   module Importer2
     class Loader
+
+      include ::LoggerHelper
+
       SCHEMA            = 'cdb_importer'
       TABLE_PREFIX      = 'importer'
       NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
@@ -68,7 +71,7 @@ module CartoDB
 
           self
         end
-      rescue => exception
+      rescue StandardError => exception
         begin
           job.delete_job_table
         ensure
@@ -110,11 +113,11 @@ module CartoDB
           rescue StandardError => e
             raise e unless statement_timeout?(e.to_s)
             # Ignore timeouts in query batcher
-            CartoDB::Logger.warning(exception: e, message: 'Could not fix geometries during import')
+            log_warning(exception: e, message: 'Could not fix geometries during import')
             job.log "Error fixing geometries during import, skipped (#{e.message})"
           end
         end
-      rescue => e
+      rescue StandardError => e
         raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError]) unless statement_timeout?(e.to_s)
         raise StatementTimeoutError.new(e.to_s, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
       end
@@ -362,7 +365,7 @@ module CartoDB
         #Maybe we could use a cheaper solution
         rows = @job.db.fetch(%Q{SELECT COUNT(1) as num_rows FROM #{SCHEMA}.#{@job.table_name}}).first
         return rows.nil? ? nil : rows.fetch(:num_rows, nil)
-      rescue
+      rescue StandardError
         # If there is an import error and try to get the imported rows
         return nil
       end

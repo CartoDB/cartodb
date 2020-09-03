@@ -241,7 +241,7 @@ class Carto::UserCreation < ActiveRecord::Base
     end
 
     @cartodb_user
-  rescue => e
+  rescue StandardError => e
     handle_failure(e, mark_as_failure = true)
     nil
   end
@@ -250,7 +250,7 @@ class Carto::UserCreation < ActiveRecord::Base
   def validate_user
     @cartodb_user.validate_credentials_not_taken_in_central
     raise "Credentials already used" unless @cartodb_user.errors.empty?
-  rescue => e
+  rescue StandardError => e
     handle_failure(e, mark_as_failure = true)
   end
 
@@ -261,7 +261,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.save(raise_on_failure: true)
     self.user_id = @cartodb_user.id
     self.save
-  rescue => e
+  rescue StandardError => e
     handle_failure(e, mark_as_failure = true)
   end
 
@@ -282,19 +282,19 @@ class Carto::UserCreation < ActiveRecord::Base
     user_organization = CartoDB::UserOrganization.new(organization_id, @cartodb_user.id)
     user_organization.promote_user_to_admin
     @cartodb_user.reload
-  rescue => e
+  rescue StandardError => e
     handle_failure(e, mark_as_failure = true)
   end
 
   def load_common_data
     @cartodb_user.load_common_data(@common_data_url) unless @common_data_url.nil?
-  rescue => e
+  rescue StandardError => e
     handle_failure(e, mark_as_failure = false)
   end
 
   def create_in_central
     cartodb_user.create_in_central
-  rescue => e
+  rescue StandardError => e
     handle_failure(e, mark_as_failure = true)
   end
 
@@ -306,7 +306,7 @@ class Carto::UserCreation < ActiveRecord::Base
     CartoGearsApi::Events::EventManager.instance.notify(
       CartoGearsApi::Events::UserCreationEvent.new(created_via, cartodb_user)
     )
-  rescue => e
+  rescue StandardError => e
     handle_failure(e, mark_as_failure = false)
   end
 
@@ -329,11 +329,11 @@ class Carto::UserCreation < ActiveRecord::Base
 
     begin
       cartodb_user.destroy
-    rescue => e
+    rescue StandardError => e
       CartoDB.notify_exception(e, action: 'safe user destruction', user: cartodb_user)
       begin
         cartodb_user.delete
-      rescue => ee
+      rescue StandardError => ee
         CartoDB.notify_exception(ee, action: 'safe user deletion', user: cartodb_user)
       end
 

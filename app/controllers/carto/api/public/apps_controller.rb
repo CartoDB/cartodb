@@ -38,10 +38,10 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
     }
     render_jsonp(response)
   rescue Carto::ParamInvalidError => e
-    CartoDB::Logger.error(exception: e)
+    log_error(exception: e)
     render_jsonp({ error: e.message }, 400)
   rescue StandardError => e
-    CartoDB::Logger.error(exception: e)
+    log_error(exception: e)
     render_jsonp({ error: e.message }, 500)
   end
 
@@ -54,10 +54,10 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
 
     render_jsonp(Carto::Api::Public::AppPresenter.new(self, @logged_user, app).to_hash, 200)
   rescue ActiveRecord::RecordInvalid => e
-    CartoDB::Logger.error(message: 'Error creating app', params: params, exception: e)
+    log_error(message: 'Error creating app', params: params, exception: e)
     render_jsonp({ error: e.message }, 400)
   rescue StandardError => e
-    CartoDB::Logger.error(message: 'Error creating app', params: params, exception: e)
+    log_error(message: 'Error creating app', params: params, exception: e)
     render_jsonp({ error: 'The app can not be created' }, 500)
   end
 
@@ -81,7 +81,7 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
     @app.destroy
     head 204
   rescue StandardError => e
-    CartoDB::Logger.error(message: 'Error deleting app', exception: e, visualization: @app)
+    log_error(message: 'Error deleting app', exception: e, visualization: @app)
     render_jsonp({ errors: [e.message] }, 400)
   end
 

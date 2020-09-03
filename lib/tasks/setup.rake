@@ -200,7 +200,7 @@ DESC
           raise u.errors.inspect
         end
         puts "USER_ID #{u.id}"
-      rescue => e
+      rescue StandardError => e
         puts e.inspect
       end
     end

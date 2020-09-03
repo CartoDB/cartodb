@@ -54,9 +54,9 @@ module Carto
       update_attributes(state: state, exported_file: uploaded_path)
 
       true
-    rescue => e
+    rescue StandardError => e
       log.append_exception('Exporting', exception: e)
-      CartoDB::Logger.error(exception: e, message: 'Error exporting user data', job: inspect)
+      log_error(exception: e, message: 'Error exporting user data', error_detail: inspect)
       update_attributes(state: STATE_FAILURE)
 
       false

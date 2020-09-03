@@ -70,7 +70,6 @@ module Carto
     def rescue_from_standard_error(error)
       log_rescue_from(__method__, error)
 
-      CartoDB::Logger.error(exception: error)
       message = error.message
       respond_to do |format|
         format.html { render text: message, status: 500 }
@@ -91,9 +90,6 @@ module Carto
 
     def rescue_from_central_error(error)
       log_rescue_from(__method__, error)
-      CartoDB::Logger.error(exception: error,
-                            message: 'Error while updating data in Central',
-                            user: @user)
       render_jsonp({ errors: 'Error while updating data in Central' }, 500)
     end
   end

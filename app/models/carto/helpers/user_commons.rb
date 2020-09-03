@@ -86,21 +86,6 @@ module Carto::UserCommons
     @oauths ||= CartoDB::OAuths.new(self)
   end
 
-  def remaining_days_deletion
-    return nil unless state == STATE_LOCKED
-
-    begin
-      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
-      return nil unless deletion_date
-
-      (deletion_date.to_date - Date.today).to_i
-    rescue StandardError => e
-      message = 'Something went wrong calculating the number of remaining days for account deletion'
-      CartoDB::Logger.warning(exception: e, message: message)
-      return nil
-    end
-  end
-
   def unverified?
     (active? || locked?) &&
     email_verification_token.present? &&
@@ -264,6 +249,7 @@ module Carto::UserCommons
     viewer ? 'viewer' : 'builder'
   end
 
+  # TODO: replace .to_hash with .to_h, and monkeypatch Sequel model to respond to :attributes
   def logging_attrs
     if self.respond_to?(:attributes)
       # AR
@@ -287,7 +273,7 @@ module Carto::UserCommons
       license_srv.add_to_redis(attributes[:do_dataset])
     else
       message = 'Error updating a DO subscription: unknown action'
-      CartoDB::Logger.error(message: message)
+      log_error(message: message)
       raise message
     end
   end

@@ -20,7 +20,7 @@ module Carto
         else
           render json: { errors: invitation.errors }, status: 400
         end
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, params: params , invitation: (invitation ? invitation : 'not created'))
         render json: { errors: e.message }, status: 500
       end

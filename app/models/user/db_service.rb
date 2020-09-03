@@ -11,6 +11,7 @@ module CartoDB
     class DBService
       include CartoDB::MiniSequel
       include Carto::Configuration
+      include ::LoggerHelper
       extend CartoDB::SequelConnectionHelper
 
       # Also default schema for new users
@@ -21,6 +22,8 @@ module CartoDB
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
       CDB_DATASERVICES_CLIENT_VERSION = '0.30.0'.freeze
+
+      attr_accessor :user
 
       def initialize(user)
         raise "User nil" unless user
@@ -309,7 +312,7 @@ module CartoDB
         if @user.organization_owner?
           begin
             roles << organization_member_group_role_member_name
-          rescue => e
+          rescue StandardError => e
             errors << "WARN: Error fetching org member role (does #{@user.organization.name} has that role?)"
           end
         end
@@ -324,7 +327,7 @@ module CartoDB
           @user.in_database(as: :superuser) do |database|
             begin
               database.run(query)
-            rescue => e
+            rescue StandardError => e
               # We can find organizations not yet upgraded for any reason or missing roles
               errors << e.message
             end
@@ -332,7 +335,7 @@ module CartoDB
         end
 
         errors
-      rescue => e
+      rescue StandardError => e
         # For broken organizations
         ["FATAL ERROR for #{name}: #{e.message}"]
       end
@@ -483,7 +486,7 @@ module CartoDB
 
         begin
           conn.run("DROP USER IF EXISTS \"#{username}\"")
-        rescue => e
+        rescue StandardError => e
           if !retried && e.message =~ /cannot be dropped because some objects depend on it/
             retried = true
             e.message =~ /object[s]? in database (.*)$/
@@ -597,7 +600,7 @@ module CartoDB
             end
           end
           return true
-        rescue => e
+        rescue StandardError => e
           CartoDB.notify_error(
             'Error installing and configuring geocoder api extension',
             error: e.inspect, user: @user
@@ -621,7 +624,7 @@ module CartoDB
       rescue Sequel::DatabaseError => error
         # For the time being we'll be resilient to the odbc_fdw not being available
         # and just proceed without installing it.
-        CartoDB::Logger.error(exception: error, message: "Could not install odbc_fdw", user: @user)
+        log_error(message: "Could not install odbc_fdw", exception: error, error_detail: error.cause.inspect)
       end
 
       def setup_organization_owner
@@ -1188,7 +1191,7 @@ module CartoDB
           create_public_db_user
           set_database_search_path
         end
-      rescue => e
+      rescue StandardError => e
         # Undo metadata changes if process fails
         begin
           @user.this.update database_schema: old_database_schema_name
@@ -1198,7 +1201,7 @@ module CartoDB
             drop_all_functions_from_schema(new_schema_name)
             @user.in_database.run(%{ DROP SCHEMA "#{new_schema_name}" })
           end
-        rescue => ee
+        rescue StandardError => ee
           # Avoid shadowing the actual error
           CartoDB.notify_exception(ee, user: @user)
         end
@@ -1240,7 +1243,7 @@ module CartoDB
           modified: pg_modified?(res),
           affected_rows: pg_size(res)
         }
-      rescue => e
+      rescue StandardError => e
         if e.is_a? PGError
           if e.message.include?("does not exist")
             if e.message.include?("column")
@@ -1263,7 +1266,7 @@ module CartoDB
             begin
               conn.run("CREATE USER \"#{@user.database_username}\" PASSWORD '#{@user.database_password}'")
               conn.run("GRANT publicuser to \"#{@user.database_username}\"")
-            rescue => e
+            rescue StandardError => e
               puts "#{Time.now} USER SETUP ERROR (#{@user.database_username}): #{$!}"
               raise e
             end
@@ -1279,7 +1282,7 @@ module CartoDB
           OWNER = #{::SequelRails.configuration.environment_for(Rails.env)['username']}
           ENCODING = 'UTF8'
           CONNECTION LIMIT=-1")
-        rescue => e
+        rescue StandardError => e
           puts "#{Time.now} USER SETUP ERROR WHEN CREATING DATABASE #{@user.database_name}: #{$!}"
           raise e
         end
@@ -1574,7 +1577,7 @@ module CartoDB
         invalidation_timeout = Cartodb.get_config(:invalidation_service, 'timeout') || 5
         invalidation_critical = Cartodb.get_config(:invalidation_service, 'critical') ? 1 : 0
         invalidation_retry = Cartodb.get_config(:invalidation_service, 'retry') || 5
-        invalidation_trigger_verbose = 
+        invalidation_trigger_verbose =
           Cartodb.get_config(:invalidation_service).fetch('trigger_verbose', true) == true ? 1 : 0
 
         @user.in_database(as: :superuser).run(
@@ -1690,6 +1693,10 @@ module CartoDB
             "password":"#{config['password']}"} } } }'::json
           );
         }
+      end
+
+      def log_context
+        super.merge(current_user: user)
       end
     end
   end

@@ -43,7 +43,7 @@ module CartoDB
         mapviews: total_mapviews,
         visualization_name: visualization.name
       }
-    rescue => e
+    rescue StandardError => e
       CartoDB.notify_error("Trending map visualization unknown", visualization: visualization_id, error: e.inspect)
       {}
     end

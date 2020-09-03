@@ -1,5 +1,8 @@
 module Carto
   class SamlService
+
+    include ::LoggerHelper
+
     def initialize(organization)
       raise "organization can't be nil" unless organization
 
@@ -79,13 +82,15 @@ module Carto
     end
 
     def debug_response(message, response)
-      CartoDB::Logger.debug(
+      log_info(
         message: message,
-        response_settings: response.settings.to_json,
-        response_options: response.options,
-        response_errors: response.errors,
-        response_body: response.response,
-        response_attributes: response.attributes.try(:to_h)
+        response: {
+          settings: response.settings.to_json,
+          options: response.options,
+          errors: response.errors,
+          body: response.response,
+          attributes: response.attributes.try(:to_h)
+        }
       )
       nil
     end

@@ -17,16 +17,16 @@ module CartoDB
           increment("success.total")
           increment("success.hosts.#{Socket.gethostname.gsub('.', '_')}")
           increment("success.users.#{get_username(email)}")
-        rescue
+        rescue StandardError
         end
       end
-    
+
       def increment_failed_login_counter(email)
         begin
           increment("failed.total")
           increment("failed.hosts.#{Socket.gethostname.gsub('.', '_')}")
           increment("failed.users.#{get_username(email)}")
-        rescue
+        rescue StandardError
         end
       end
 

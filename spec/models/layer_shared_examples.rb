@@ -266,7 +266,7 @@ shared_examples_for 'Layer model' do
       layer.kind = 'torque'
       saved = begin
                 layer.save
-              rescue
+              rescue StandardError
                 false
               end
       saved.should be_false

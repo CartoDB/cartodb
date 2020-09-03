@@ -103,7 +103,7 @@ module Carto
 
       def json_post(raw_post = request.raw_post)
         @json_post ||= (raw_post.present? ? JSON.parse(raw_post) : nil)
-      rescue => e
+      rescue StandardError => e
         # Malformed JSON is not our business
         CartoDB.notify_warning_exception(e)
         raise UnprocesableEntityError.new("Malformed JSON: #{raw_post}")

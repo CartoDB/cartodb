@@ -26,7 +26,7 @@ describe Carto::Api::VisualizationsController do
 
     begin
       delete_user_data @user
-    rescue => exception
+    rescue StandardError => exception
       # Silence named maps problems only here upon data cleaning, not in specs
       raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
     end

@@ -25,7 +25,7 @@ module CartoDB
         def read_config
           begin
             load_from_json
-          rescue
+          rescue StandardError
             load_from_yml
           end
         end
@@ -66,7 +66,7 @@ module CartoDB
           yml_config[:user] = yml_config.delete :username
           yml_config[:adapter].sub!('postgresql', 'postgres')
           yml_config
-        rescue
+        rescue StandardError
           raise("Configure database settings in RAILS_ROOT/config/database.yml or spec/factories/database.json")
         end
       end

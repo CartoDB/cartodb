@@ -34,7 +34,7 @@ module CartoDB
         @force_name = false
       end
 
-    rescue => e
+    rescue StandardError => e
       log $!
       log e.backtrace
       raise e
@@ -54,7 +54,7 @@ module CartoDB
 
       return @suggested_name
 
-    rescue => e
+    rescue StandardError => e
       log "====================="
       log $!
       log e.backtrace

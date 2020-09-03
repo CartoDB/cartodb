@@ -65,7 +65,7 @@ namespace :cartodb do
             }
 
           printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, index, count
-        rescue => exception
+        rescue StandardError => exception
           puts exception.backtrace.join("\n")
           printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{exception.message}\n", user.username, index, count
         end

@@ -134,7 +134,7 @@ module Carto
 
     def visualization_exists?(criteria)
       Carto::Visualization.where(criteria).exists?
-    rescue
+    rescue StandardError
       false
     end
 

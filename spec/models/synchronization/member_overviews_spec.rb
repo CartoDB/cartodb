@@ -54,8 +54,6 @@ describe Synchronization::Member do
 
     describe "synchronization" do
       it 'creates overviews' do
-        CartoDB::Logger.stubs(:error).never
-
         url = 'https://wadus.com/cities-box.csv'
         path = "#{Rails.root}/spec/support/data/cities-box.csv"
         stub_download(url: url, filepath: path, content_disposition: false)
@@ -88,8 +86,6 @@ describe Synchronization::Member do
       end
 
       it 'deletes overviews' do
-        CartoDB::Logger.stubs(:error).never
-
         url = 'https://wadus.com/cities-box.csv'
         path = "#{Rails.root}/spec/support/data/cities-box.csv"
         stub_download(url: url, filepath: path, content_disposition: false)
@@ -123,8 +119,6 @@ describe Synchronization::Member do
       end
 
       it 'updates overviews' do
-        CartoDB::Logger.stubs(:error).never
-
         url = 'https://wadus.com/cities-box.csv'
         path = "#{Rails.root}/spec/support/data/cities-box.csv"
         stub_download(url: url, filepath: path, content_disposition: false)

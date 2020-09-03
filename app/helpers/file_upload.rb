@@ -40,7 +40,7 @@ module CartoDB
         filename = filename_param.original_filename rescue filename_param.to_s
         begin
           filepath = filename_param.path
-        rescue
+        rescue StandardError
           filepath = filename_param.to_s
           load_file_from_request_body = true
         end
@@ -137,7 +137,7 @@ module CartoDB
       else
         begin
           data = filedata.read.force_encoding(FILE_ENCODING)
-        rescue
+        rescue StandardError
           data = request_body.read.force_encoding(FILE_ENCODING)
         end
         save(data, random_token, filename)

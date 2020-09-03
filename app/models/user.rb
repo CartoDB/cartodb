@@ -25,6 +25,7 @@ require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
 require_dependency 'carto/gcloud_user_settings'
 require_dependency 'carto/helpers/user_commons'
+require_dependency 'carto/helpers/active_record_compatibility'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -36,6 +37,7 @@ class User < Sequel::Model
   include Carto::EmailCleaner
   include SequelFormCompatibility
   include Carto::UserCommons
+  include Carto::ActiveRecordCompatibility
 
   self.strict_param_setting = false
 

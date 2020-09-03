@@ -1,8 +1,17 @@
 module Concerns
   module CartodbCentralSynchronizable
+
+    def is_a_user?
+      return self.is_a?(::User) || self.is_a?(Carto::User)
+    end
+
+    def is_an_organization?
+      return self.is_a?(::Organization) || self.is_a?(Carto::Organization)
+    end
+
     # This validation can't be added to the model because if a user creation begins at Central we can't know if user is the same or existing
     def validate_credentials_not_taken_in_central
-      return true unless self.is_a?(::User)
+      return true unless self.is_a_user?
       return true unless Cartodb::Central.sync_data_with_cartodb_central?
 
       central_client = Cartodb::Central.new
@@ -14,13 +23,13 @@ module Concerns
 
     def create_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(::User)
+      if self.is_a_user?
         if organization.present?
           cartodb_central_client.create_organization_user(organization.name, allowed_attributes_to_central(:create))
         else
           CartoDB.notify_debug("User creations at box without organization are not notified to Central", user: self)
         end
-      elsif self.is_a?(::Organization)
+      elsif self.is_an_organization?
         raise "Can't create organizations in editor"
       end
       return true
@@ -28,13 +37,13 @@ module Concerns
 
     def update_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(::User)
+      if self.is_a_user?
         if organization.present?
           cartodb_central_client.update_organization_user(organization.name, username, allowed_attributes_to_central(:update))
         else
           cartodb_central_client.update_user(username, allowed_attributes_to_central(:update))
         end
-      elsif self.is_a?(::Organization)
+      elsif self.is_an_organization?
         cartodb_central_client.update_organization(name, allowed_attributes_to_central(:update))
       end
       return true
@@ -42,7 +51,7 @@ module Concerns
 
     def delete_in_central
       return true unless sync_data_with_cartodb_central?
-      if self.is_a?(::User)
+      if self.is_a_user?
         if organization.nil?
           cartodb_central_client.delete_user(self.username)
         else
@@ -52,7 +61,7 @@ module Concerns
             raise "Can't destroy the organization owner"
           end
         end
-      elsif is_a?(::Organization)
+      elsif is_an_organization?
         # See Organization#destroy_cascade
         raise "Delete organizations is not allowed" if Carto::Configuration.saas?
         cartodb_central_client.delete_organization(name)
@@ -61,7 +70,7 @@ module Concerns
     end
 
     def allowed_attributes_from_central(action)
-      if is_a?(::Organization)
+      if is_an_organization?
         case action
         when :create
           %i(name seats viewer_seats quota_in_bytes display_name description website
@@ -90,7 +99,7 @@ module Concerns
              mapzen_routing_quota mapzen_routing_block_price no_map_logo auth_github_enabled
              password_expiration_in_d inherit_owner_ffs)
         end
-      elsif is_a?(::User)
+      elsif is_a_user?
         %i(account_type admin org_admin crypted_password database_host
            database_timeout description disqus_shortname available_for_hire email
            geocoding_block_price geocoding_quota map_view_block_price map_view_quota max_layers
@@ -116,7 +125,7 @@ module Concerns
     end
 
     def allowed_attributes_to_central(action)
-      if is_a?(::Organization)
+      if is_an_organization?
         case action
         when :create
           raise "Can't create organizations from editor"
@@ -126,7 +135,7 @@ module Concerns
                                   inherit_owner_ffs)
           values.slice(*allowed_attributes)
         end
-      elsif is_a?(::User)
+      elsif is_a_user?
         allowed_attributes = %i(
           account_type admin org_admin crypted_password database_host database_timeout description disqus_shortname
           available_for_hire email geocoding_block_price geocoding_quota map_view_block_price map_view_quota max_layers
@@ -160,7 +169,7 @@ module Concerns
       return self unless params.present? && action.present?
       self.set(params.slice(*allowed_attributes_from_central(action)))
 
-      if self.is_a?(::User) && params.has_key?(:password)
+      if self.is_a_user? && params.has_key?(:password)
         self.password = self.password_confirmation = params[:password]
       end
       self

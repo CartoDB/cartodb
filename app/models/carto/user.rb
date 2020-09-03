@@ -99,14 +99,6 @@ class Carto::User < ActiveRecord::Base
   end
   alias_method_chain :static_notifications, :creation
 
-  def password=(value)
-    return if !value.nil? && password_validator.validate(value, value, self).any?
-
-    @password = value
-    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
-                                                                     secret: Cartodb.config[:password_secret])
-  end
-
   def password_confirmation=(password_confirmation)
     # TODO: Implement
   end

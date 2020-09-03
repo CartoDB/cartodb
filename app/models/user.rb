@@ -564,15 +564,6 @@ class User < Sequel::Model
     @password_confirmation = password_confirmation
   end
 
-  def password=(value)
-    return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
-
-    @password = value
-    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
-                                                                     secret: Cartodb.config[:password_secret])
-    set_last_password_change_date
-  end
-
   def invalidate_all_sessions!
     self.session_salt = SecureRandom.hex
 

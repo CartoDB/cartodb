@@ -97,7 +97,12 @@ module Carto
     end
 
     def get_initial_sync_status(dataset)
-      sync_errors = @doss.sync(dataset[:dataset_id])
+      sync_errors = @doss.check_syncable(dataset) || @doss.check_sync_limits(dataset.merge({
+        estimated_size: dataset[:estimated_size].to_i,
+        estimated_row_count: dataset[:estimated_row_count].to_i,
+        estimated_columns_count: dataset[:estimated_columns_count].to_i,
+        num_bytes: dataset[:num_bytes].to_i
+      }))
       if sync_errors then
         return sync_errors[:sync_status], sync_errors[:unsyncable_reason]
       else

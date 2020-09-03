@@ -194,7 +194,7 @@ describe Carto::Api::DbdirectIpsController do
       end
     end
 
-    it 'IP changes affect all the organization members' do
+    it 'IP changes affect only to org user, not org admin' do
       ips = ['100.20.30.40']
       params = {
         ips: ips,
@@ -207,10 +207,9 @@ describe Carto::Api::DbdirectIpsController do
               expect(response.status).to eq(201)
               expect(response.body[:ips]).to eq ips
               expect(@org_user.reload.dbdirect_effective_ips).to eq ips
-              expect(@org_owner.reload.dbdirect_effective_ips).to eq ips
-              expect(@dbdirect_metadata.get(@org_owner.username)).to eq ips
-              expect(@dbdirect_metadata.get(@carto_user1.username)).to be_empty
-              expect(@dbdirect_metadata.get(@org_user.username)).to be_empty
+              expect(@org_owner.reload.dbdirect_effective_ips).to be_empty
+              expect(@dbdirect_metadata.get(@org_owner.username)).to be_empty
+              expect(@dbdirect_metadata.get(@org_user.username)).to eq ips
             end
           end
         end

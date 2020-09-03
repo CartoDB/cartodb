@@ -84,6 +84,6 @@ module Carto::Password
   private
 
   def set_last_password_change_date
-    self.last_password_change_date = Time.zone.now unless new?
+    self.last_password_change_date = Time.zone.now unless new_record?
   end
 end

@@ -292,7 +292,8 @@ module CartoDB
         # last-modified time of the external data at the last synchronization) through the
         # downloader provided to the runner.
         # For connectors we need to pass it directly to the connector runner.
-        CartoDB::Importer2::ConnectorRunner.check_availability!(user)
+        provider_name = get_provider_name_from_id(service_item_id)
+        CartoDB::Importer2::ConnectorRunner.check_availability!(user, provider_name)
         CartoDB::Importer2::ConnectorRunner.new(
           service_item_id,
           user: user,
@@ -587,6 +588,17 @@ module CartoDB
       attr_reader :repository
 
       attr_accessor :log_trace, :service_name, :service_item_id
+
+      private
+
+      def get_provider_name_from_id(service_item_id)
+        begin
+          connector_params = JSON.parse(service_item_id)
+          return connector_params['provider']
+        rescue StandardError
+          return nil
+        end
+      end
 
     end
   end

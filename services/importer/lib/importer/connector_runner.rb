@@ -91,8 +91,8 @@ module CartoDB
       end
 
       # General availability of connectors for a user
-      def self.check_availability!(user)
-        Carto::Connector.check_availability! user
+      def self.check_availability!(user, provider_name=nil)
+        Carto::Connector.check_availability!(user, provider_name)
       end
 
       def etag

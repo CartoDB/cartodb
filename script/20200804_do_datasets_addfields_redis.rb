@@ -22,12 +22,13 @@ $users_metadata.keys('do:*:datasets').each do |k|
         estimated_columns_count: sync_data[:estimated_columns_count],
         num_bytes: sync_data[:num_bytes],
         sync_status: sync_data[:sync_status],
-        unsyncable_reason: sync_data[:unsyncable_reason]
+        unsyncable_reason: sync_data[:unsyncable_reason],
         sync_table: sync_data[:sync_table],
         sync_table_id: sync_data[:sync_table_id],
         synchronization_id: sync_data[:synchronization_id],
       })
     end
+    puts "Update: #{dataset['dataset_id']} for #{username}"
     dataset
   end
   $users_metadata.hmset(k, :bq, datasets_enriched.to_json)

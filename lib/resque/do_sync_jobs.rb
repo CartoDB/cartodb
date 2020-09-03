@@ -21,14 +21,15 @@ module Resque
 
     def self.write_do_sync_status(subscription, data_import, licensing_service)
       status_name = 'syncing'
-      if data_import.state == 'complete' then
-        status_name = ((data_import.success == true)? 'synced' : 'unsyncable')
-      elsif data_import.state == 'failure' then
-        status_name = 'unsyncable'
+      sync_unsyncable_reason = nil
+      if data_import.state != 'pending' then
+        sync_info = licensing_service.get_sync_status(subscription[:dataset_id])
+        status_name, sync_unsyncable_reason = sync_info.values_at(:sync_status, :sync_unsyncable_reason)
       end
 
       licensing_service.add_to_redis(subscription.merge({
         sync_status: status_name,
+        sync_unsyncable_reason: sync_unsyncable_reason,
         sync_table: data_import.table_name,
         sync_table_id: data_import.table_id,
         synchronization_id: data_import.synchronization_id

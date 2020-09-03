@@ -10,7 +10,7 @@ $users_metadata.keys('do:*:datasets').each do |k|
 
   datasets_enriched = datasets.map do |dataset|
     # Do not process already enriched datasets:
-    if !(dataset['sync_status'].present?) then
+    if !(dataset['unsyncable_reason'].present?) then
       doss = Carto::DoSyncServiceFactory.get_for_user(user)
       sync_data = doss.sync(dataset['dataset_id'])
       dataset = dataset.merge({
@@ -22,6 +22,7 @@ $users_metadata.keys('do:*:datasets').each do |k|
         estimated_columns_count: sync_data[:estimated_columns_count],
         num_bytes: sync_data[:num_bytes],
         sync_status: sync_data[:sync_status],
+        unsyncable_reason: sync_data[:unsyncable_reason]
         sync_table: sync_data[:sync_table],
         sync_table_id: sync_data[:sync_table_id],
         synchronization_id: sync_data[:synchronization_id],

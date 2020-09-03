@@ -76,6 +76,11 @@ module Carto::Password
     set_last_password_change_date
   end
 
+  def password_confirmation=(password_confirmation)
+    set_last_password_change_date
+    @password_confirmation = password_confirmation
+  end
+
   private
 
   def set_last_password_change_date

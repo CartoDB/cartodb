@@ -99,10 +99,6 @@ class Carto::User < ActiveRecord::Base
   end
   alias_method_chain :static_notifications, :creation
 
-  def password_confirmation=(password_confirmation)
-    # TODO: Implement
-  end
-
   def invalidate_all_sessions!
     user = ::User.where(id: self.id).first
     user&.invalidate_all_sessions!

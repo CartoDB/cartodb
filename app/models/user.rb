@@ -559,11 +559,6 @@ class User < Sequel::Model
     @password_confirmation
   end
 
-  def password_confirmation=(password_confirmation)
-    set_last_password_change_date
-    @password_confirmation = password_confirmation
-  end
-
   def invalidate_all_sessions!
     self.session_salt = SecureRandom.hex
 
@@ -1478,10 +1473,6 @@ class User < Sequel::Model
 
   def name_exists_in_organizations?
     !Organization.where(name: self.username).first.nil?
-  end
-
-  def set_last_password_change_date
-    self.last_password_change_date = Time.zone.now unless new?
   end
 
   def set_viewer_quotas

@@ -20,7 +20,7 @@ module Concerns
         else
           CartoDB.notify_debug("User creations at box without organization are not notified to Central", user: self)
         end
-      elsif self.is_a?(Organization)
+      elsif self.is_a?(::Organization)
         raise "Can't create organizations in editor"
       end
       return true
@@ -34,7 +34,7 @@ module Concerns
         else
           cartodb_central_client.update_user(username, allowed_attributes_to_central(:update))
         end
-      elsif self.is_a?(Organization)
+      elsif self.is_a?(::Organization)
         cartodb_central_client.update_organization(name, allowed_attributes_to_central(:update))
       end
       return true
@@ -52,7 +52,7 @@ module Concerns
             raise "Can't destroy the organization owner"
           end
         end
-      elsif is_a?(Organization)
+      elsif is_a?(::Organization)
         # See Organization#destroy_cascade
         raise "Delete organizations is not allowed" if Carto::Configuration.saas?
         cartodb_central_client.delete_organization(name)
@@ -61,7 +61,7 @@ module Concerns
     end
 
     def allowed_attributes_from_central(action)
-      if is_a?(Organization)
+      if is_a?(::Organization)
         case action
         when :create
           %i(name seats viewer_seats quota_in_bytes display_name description website
@@ -116,7 +116,7 @@ module Concerns
     end
 
     def allowed_attributes_to_central(action)
-      if is_a?(Organization)
+      if is_a?(::Organization)
         case action
         when :create
           raise "Can't create organizations from editor"

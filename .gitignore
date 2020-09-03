@@ -86,3 +86,4 @@ app_config.yml
 database.yml
 build_resources/
 .dockerignore
+fake.log*

@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 * Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
+* New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
 
 4.41.1 (2020-09-03)
 -------------------

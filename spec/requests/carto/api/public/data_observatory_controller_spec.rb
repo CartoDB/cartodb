@@ -317,6 +317,51 @@ describe Carto::Api::Public::DataObservatoryController do
     end
   end
 
+  describe 'subscription' do
+    before(:all) do
+      @url_helper = 'api_v4_do_subscription_show_url'
+
+      @next_year = (Time.now + 1.year).to_s
+      @datasets = [{
+        dataset_id: 'carto.zzz.table1', expires_at: @next_year, status: 'active',
+        project: 'carto', dataset: 'zzz', table: 'table1', :type=>"dataset", :id=>"carto.zzz.table1"
+      }]
+      @redis_key = "do:#{@user1.username}:datasets"
+      $users_metadata.hset(@redis_key, 'bq', @datasets.to_json)
+    end
+
+    after(:all) do
+      $users_metadata.del(@redis_key)
+    end
+
+    before(:each) do
+      @doss = mock
+      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
+      @doss.stubs(:parsed_entity_id).returns({type: 'dataset'})
+    end
+
+    it 'checks if DO is enabled' do
+      Carto::User.any_instance.expects(:do_enabled?).once
+
+      get_json endpoint_url(api_key: @master, subscription_id: 'proj.dat.tab'), @headers
+    end
+
+    it 'returns 400 if the id param is not valid' do
+      get_json endpoint_url(api_key: @master, subscription_id: 'wrong'), @headers do |response|
+        expect(response.status).to eq(400)
+      end
+    end
+
+    it 'returns 200 if the subscription_id is valid' do
+      subscription_id = @datasets[0][:dataset_id]
+      get_json endpoint_url(api_key: @master, subscription_id: subscription_id), @headers do |response|
+        expect(response.status).to eq(200)
+        expect(response.body).to eq @datasets[0]
+      end
+    end
+  end
+
+
   describe 'subscription_info' do
     before(:each) do
       # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)

@@ -58,9 +58,7 @@ module Carto
         end
 
         def subscription
-          response = present_metadata(subscription_metadata)
           bq_subscription = Carto::DoLicensingService.new(@user.username).subscription(@id)
-
           render(json: bq_subscription)
         end
 
@@ -238,7 +236,7 @@ module Carto
             dataset_id: metadata[:id],
             available_in: metadata[:available_in],
             price: metadata[:subscription_list_price],
-            expires_at: Time.now.round + 1.year,
+            expires_at: entity_info[:expires_at] || Time.now.round + 1.year,
             status: status
           })
         end

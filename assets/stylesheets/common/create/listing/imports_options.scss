@@ -11,14 +11,14 @@ $w: $sLayout-width;
 
   &__category-title {
     margin-top: 24px;
-    margin-bottom: 8px;
   }
 
   &__row {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    height: 106px;
+    flex-wrap: wrap;
+    width: 640px;
   }
 
   &__input {
@@ -158,9 +158,9 @@ $import-button-width: 174px;
 
 .ImportButton {
   position: relative;
-  width: $import-button-width;
+  min-width: $import-button-width;
   height: 102px;
-  margin-right: 16px;
+  margin: 12px 16px 0 0;
   border: 1px solid $cStructure-mainLine;
   border-radius: 4px;
   background-color: $cStructure-mainBkg;
@@ -341,6 +341,7 @@ $import-button-width: 174px;
 @include importIcon(arcgis);
 @include importIcon(twitter);
 @include importIcon(dataobservatory);
+@include importIcon(snowflake);
 
 .SelectedImport {
   &__header {
@@ -381,7 +382,7 @@ $import-button-width: 174px;
 }
 
 .ImportOther {
-  margin-right: 16px;
+  margin: 12px 16px 0 0;
 }
 
 .ImportOther__step1,

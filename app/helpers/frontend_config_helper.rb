@@ -41,6 +41,8 @@ module FrontendConfigHelper
       config[:sqlserver_enabled] = Cartodb.get_config(:connectors, 'sqlserver', 'enabled')
       config[:hive_enabled] = Cartodb.get_config(:connectors, 'hive', 'enabled')
       config[:dataobservatory_enabled] = Cartodb.get_config(:connectors, 'dataobservatory', 'enabled')
+      config[:snowflake_enabled] = Carto::Connector.provider_available?('snowflake', user)
+      config[:snowflake_available] = Carto::Connector.provider_public?('snowflake')
       config[:max_asset_file_size] = Cartodb.get_config(:assets, 'max_file_size')
       config[:watcher_ttl] = Cartodb.get_config(:watcher, 'ttl') || 60
       config[:licenses] = Carto::License.all

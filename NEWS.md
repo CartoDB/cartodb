@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+* Added check to avoid modifications of Sequel model files ([#15800](https://github.com/CartoDB/cartodb/pull/15800))
 * Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
 
 4.41.1 (2020-09-03)

@@ -11,6 +11,7 @@ Development
 * Added check to avoid modifications of Sequel model files ([#15800](https://github.com/CartoDB/cartodb/pull/15800))
 * Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
 * Fixes missing includes of LoggerHelper [#15812](https://github.com/CartoDB/cartodb/pull/15812)
+* Adds logging docs [#15813](https://github.com/CartoDB/cartodb/pull/15813)
 
 4.41.1 (2020-09-03)
 -------------------

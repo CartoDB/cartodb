@@ -184,6 +184,10 @@ const entries = {
 
   oauth: [
     rootDir('assets/stylesheets/oauth/oauth.scss')
+  ],
+
+  do_catalog: [
+    rootDir('lib/assets/javascripts/do-catalog/main.js')
   ]
 };
 

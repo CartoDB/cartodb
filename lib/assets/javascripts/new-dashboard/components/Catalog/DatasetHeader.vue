@@ -156,10 +156,10 @@ export default {
       return this.interestedSubscriptions.indexOf(this.dataset.id) >= 0;
     },
     isEnterprise () {
-      return this.$store.state.user.is_enterprise;
+      return this.$store.state.user && this.$store.state.user.is_enterprise;
     },
     isDOEnabled () {
-      return this.$store.state.user.do_enabled;
+      return this.$store.state.user && this.$store.state.user.do_enabled;
     }
   },
   methods: {

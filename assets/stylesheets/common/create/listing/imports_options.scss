@@ -342,6 +342,7 @@ $import-button-width: 174px;
 @include importIcon(twitter);
 @include importIcon(dataobservatory);
 @include importIcon(snowflake);
+@include importIcon(redshift);
 
 .SelectedImport {
   &__header {

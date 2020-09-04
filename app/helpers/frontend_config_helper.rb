@@ -43,6 +43,8 @@ module FrontendConfigHelper
       config[:dataobservatory_enabled] = Cartodb.get_config(:connectors, 'dataobservatory', 'enabled')
       config[:snowflake_enabled] = Carto::Connector.provider_available?('snowflake', user)
       config[:snowflake_available] = Carto::Connector.provider_public?('snowflake')
+      config[:redshift_enabled] = Carto::Connector.provider_available?('redshift', user)
+      config[:redshift_available] = Carto::Connector.provider_public?('redshift')
       config[:max_asset_file_size] = Cartodb.get_config(:assets, 'max_file_size')
       config[:watcher_ttl] = Cartodb.get_config(:watcher, 'ttl') || 60
       config[:licenses] = Carto::License.all

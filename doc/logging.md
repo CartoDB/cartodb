@@ -26,35 +26,21 @@ log_fatal(message: 'Foo')   # Reports to Rollbar
 
 ## Guidelines
 
-**1. Avoid using very-generic names when naming log fields**
-
-If you do:
-
-```ruby
-log_error(message: 'Foo', table: 'mytable')
-```
-
-This would prevent from someone afterwards doing the following:
-
-```ruby
-log_error(message: 'Foo', table: { id: 123, name: 'mytable' })
-```
-
-**2. Use nested attributes when possible**
+**1. Be explicit about the attribute names logged**
 
 Use:
 
 ```ruby
-log_error(message: 'Foo', response: { code: '200', body: 'bar' })
+log_error(message: 'Foo', table_id: 123)
 ```
 
-Instead of:
+Rather than:
 
 ```ruby
-log_error(message: 'Foo', response_code: '200', response_body: 'bar')
+log_error(message: 'Foo', table: 123)
 ```
 
-**3. Reuse existing fields when possible**
+**2. Reuse existing fields when possible**
 
 | Field name     | Kibana field    | Kibana type | Description      |
 | -------------- | --------------- | ----------- | ---------------- |
@@ -65,7 +51,7 @@ log_error(message: 'Foo', response_code: '200', response_body: 'bar')
 | `exception`    | `exception`     | Nested JSON | An `Exception` object |
 | `error_detail` | `error_detail`  | String      | Additional error details |
 
-**4. Abstract common logger information**
+**3. Abstract common logger information**
 
 If the logging messages written in a class share a set of common fields, try to abstract it by defining a `log_context` method.
 

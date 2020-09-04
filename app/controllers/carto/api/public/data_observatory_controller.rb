@@ -20,10 +20,10 @@ module Carto
 
         before_action :load_user
         before_action :load_filters, only: [:subscriptions]
-        before_action :load_id, only: [:subscription_info, :subscribe, :unsubscribe]
-        before_action :load_type, only: [:subscription_info, :subscribe]
+        before_action :load_id, only: [:subscription, :subscription_info, :subscribe, :unsubscribe]
+        before_action :load_type, only: [:subscription, :subscription_info, :subscribe]
         before_action :check_api_key_permissions
-        before_action :check_do_enabled, only: [:subscription_info, :subscriptions]
+        before_action :check_do_enabled, only: [:subscription, :subscription_info, :subscriptions]
 
         setup_default_rescues
         rescue_from Carto::SubscriptionNotFoundError, with: :rescue_from_subscription_not_found
@@ -57,13 +57,17 @@ module Carto
           render(json: { subscriptions: response })
         end
 
+        def subscription
+          response = present_metadata(subscription_metadata)
+          bq_subscription = Carto::DoLicensingService.new(@user.username).subscription(@id)
+
+          render(json: bq_subscription)
+        end
+
         def subscription_info
           response = present_metadata(subscription_metadata)
 
-          subscriptions = Carto::DoLicensingService.new(@user.username).subscriptions
-          sub = subscriptions.find { |s| s[:id] = @id }
-
-          render(json: response.merge(sub))
+          render(json: response)
         end
 
         def subscribe
@@ -155,13 +159,13 @@ module Carto
         end
 
         def load_id
-          @id = params[:id]
+          @id = params[:id] || params[:subscription_id]
           raise ParamInvalidError.new(:id) unless @id =~ DATASET_REGEX
         end
 
         def load_type(required: true)
           @type = params[:type]
-          id = params[:id]
+          id = params[:id] || params[:subscription_id]
           if @type.nil? && !(id.nil?) then
             # If we don't have the type, we can figure it out from the id:
             doss = Carto::DoSyncServiceFactory.get_for_user(@user)

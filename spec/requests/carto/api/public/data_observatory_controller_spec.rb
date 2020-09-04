@@ -138,23 +138,15 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     before(:each) do
-      # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
       @doss = mock
       Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
       @doss.stubs(:sync).returns({sync_status: 'synced', sync_table: 'my_do_subscription'})
       @doss.stubs(:parsed_entity_id).returns({})
     end
 
-    after(:each) do
-      # Cartodb::Central.any_instance.unstub(:check_do_enabled)
-    end
-
     it_behaves_like 'an endpoint validating a DO API key'
 
     it 'checks if DO is enabled' do
-      # central_mock = mock
-      # Cartodb::Central.stubs(:new).returns(central_mock)
-      # central_mock.expects(:check_do_enabled).once.returns(true)
       Carto::User.any_instance.expects(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master), @headers
@@ -339,18 +331,9 @@ describe Carto::Api::Public::DataObservatoryController do
     before(:all) do
       @url_helper = 'api_v4_do_subscription_info_url'
       @params = { id: 'carto.abc.dataset1', type: 'dataset' }
-      @sync_mock = {
-        sync_status: 'unsynced',
-        estimated_size: 100,
-        estimated_row_count: 100,
-        num_bytes: 100
-      }
     end
 
     it 'checks if DO is enabled' do
-      # central_mock = mock
-      # Cartodb::Central.stubs(:new).returns(central_mock)
-      # central_mock.expects(:check_do_enabled).once.returns(true)
       Carto::User.any_instance.expects(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers

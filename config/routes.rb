@@ -612,6 +612,7 @@ CartoDB::Application.routes.draw do
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token
         get 'subscriptions' => 'data_observatory#subscriptions', as: :api_v4_do_subscriptions_show
+        get 'subscriptions/:subscription_id' => 'data_observatory#subscription', as: :api_v4_do_subscription_show, constraints: { subscription_id: /[\w\.\-]+/ }
         post 'subscriptions' => 'data_observatory#subscribe', as: :api_v4_do_subscriptions_create
         delete 'subscriptions' => 'data_observatory#unsubscribe', as: :api_v4_do_subscriptions_destroy
         get 'subscription_info' => 'data_observatory#subscription_info', as: :api_v4_do_subscription_info

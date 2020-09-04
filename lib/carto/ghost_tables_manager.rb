@@ -4,6 +4,7 @@ module Carto
   class GhostTablesManager
 
     include ::LoggerHelper
+    extend ::LoggerHelper
 
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
     MUTEX_TTL_MS = 600000

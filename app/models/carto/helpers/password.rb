@@ -67,8 +67,8 @@ module Carto::Password
   end
 
   def password=(value)
-    return if !value.nil? && password_validator.validate(value, value, self).any?
     return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
+    return if !value.nil? && password_validator.validate(value, value, self).any?
 
     @password = value
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,

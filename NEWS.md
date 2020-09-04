@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 * Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
+* Fixes missing includes of LoggerHelper [#15812](https://github.com/CartoDB/cartodb/pull/15812)
 
 4.41.1 (2020-09-03)
 -------------------

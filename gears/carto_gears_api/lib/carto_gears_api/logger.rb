@@ -1,3 +1,4 @@
+# TODO: replace this with newer ::LoggerHelper
 module CartoGearsApi
   # Logger using CARTO conventions.
   #
@@ -42,9 +43,15 @@ module CartoGearsApi
     private
 
     def log(level, exception: nil, message: nil, user: nil, **additional_data)
-      gear_message = "{#{@gear}}: #{message}" if message
-      additional = additional_data.merge(gear: @gear)
-      CartoDB::Logger.log(level, exception: exception, message: gear_message, user: user, **additional)
+      Rollbar.error(exception) if exception
+      Rails.logger.send(
+        level,
+        exception: { class: exception&.class&.name, message: exception&.message, backtrace_hint: exception&.backtrace&.take(5) },
+        gear: gear,
+        message: message,
+        current_user: user,
+        **additional_data
+      )
     end
   end
 end

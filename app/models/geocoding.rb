@@ -96,7 +96,7 @@ class Geocoding < Sequel::Model
                                                           country_column: country_column,
                                                           region_column: region_column,
                                                           log: log)
-      rescue => e
+      rescue StandardError => e
         @table_geocoder = nil
         raise e
       end
@@ -115,7 +115,7 @@ class Geocoding < Sequel::Model
   def cancel
     log.append_and_store "Cancelling job because of user request"
     table_geocoder.cancel
-  rescue => e
+  rescue StandardError => e
     log.append_and_store "Error trying to cancel a job because of user request: #{e.inspect}"
     count ||= 1
     retry unless (count = count.next) > 5
@@ -143,7 +143,7 @@ class Geocoding < Sequel::Model
     rows_geocoded_before = table_service.owner.in_database.select.from(table_service.sequel_qualified_table_name).where(cartodb_georef_status: true).count rescue 0
 
     self.run_geocoding!(processable_rows, rows_geocoded_before)
-  rescue => e
+  rescue StandardError => e
     # state == nil probably means it has failed even before run_geocoding begun
     handle_geocoding_failure(e, rows_geocoded_before || 0) if state == nil
     log.append_and_store "Unexpected exception: #{e}"
@@ -173,7 +173,7 @@ class Geocoding < Sequel::Model
     raise 'Geocoding timed out'  if state == 'timeout'
 
     handle_geocoding_success(rows_geocoded_before)
-  rescue => e
+  rescue StandardError => e
     handle_geocoding_failure(e, rows_geocoded_before)
   end
 
@@ -224,7 +224,7 @@ class Geocoding < Sequel::Model
     if translated_formatter =~ SANITIZED_FORMATTER_REGEXP
       translated_formatter
     else
-      CartoDB::Logger.warning(message: %{Incorrect formatter string received: "#{formatter}"}, user: user)
+      log_warning(message: 'Incorrect formatter string received', current_user: user, error_detail: formatter)
       ''
     end
   end

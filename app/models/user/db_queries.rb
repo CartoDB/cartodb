@@ -15,7 +15,7 @@ module CartoDB
             queries.each do |query|
               begin
                 user_database.run(query)
-              rescue => e
+              rescue StandardError => e
                 CartoDB.notify_debug('Error running user query in transaction',
                                      query: query, user: @user, error: e.inspect)
                 raise e

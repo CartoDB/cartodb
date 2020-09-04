@@ -739,7 +739,7 @@ module CartoDB
           attributes[:privacy] = @old_privacy
           repository.store(id, attributes.to_hash)
         end
-      rescue => exception
+      rescue StandardError => exception
         CartoDB.notify_exception(exception, user: user, message: "Error restoring previous visualization privacy")
         raise exception
       end
@@ -804,7 +804,7 @@ module CartoDB
           support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
         end
         self
-      rescue => exception
+      rescue StandardError => exception
         if name_changed && !(exception.to_s =~ /relation.*does not exist/)
           revert_name_change(old_name)
         end
@@ -820,7 +820,7 @@ module CartoDB
       def revert_name_change(previous_name)
         self.name = previous_name
         store
-      rescue => exception
+      rescue StandardError => exception
         raise CartoDB::InvalidMember.new(exception.to_s)
       end
 

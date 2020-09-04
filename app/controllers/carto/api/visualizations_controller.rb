@@ -74,8 +74,8 @@ module Carto
         )
 
         render_jsonp(::JSON.dump(presenter.to_poro))
-      rescue => e
-        CartoDB::Logger.error(exception: e)
+      rescue StandardError => e
+        log_error(exception: e)
         head(404)
       end
 
@@ -115,7 +115,7 @@ module Carto
       rescue Carto::ParamInvalidError, Carto::ParamCombinationInvalidError => e
         render_jsonp({ error: e.message }, e.status)
       rescue StandardError => e
-        CartoDB::Logger.error(exception: e)
+        log_error(exception: e)
         render_jsonp({ error: e.message }, 500)
       end
 
@@ -231,8 +231,8 @@ module Carto
         end
 
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
-      rescue => e
-        CartoDB::Logger.error(message: "Error creating visualization", visualization_id: vis.try(:id), exception: e)
+      rescue StandardError => e
+        log_error(message: "Error creating visualization", exception: e)
         raise e if e.is_a?(Carto::UnauthorizedError)
         render_jsonp({ errors: vis.try(:errors).try(:full_messages) }, 400)
       end
@@ -276,8 +276,8 @@ module Carto
         end
 
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
-      rescue => e
-        CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
+      rescue StandardError => e
+        log_error(message: "Error updating visualization", exception: e)
         error_code = vis.errors.include?(:privacy) ? 403 : 400
         render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error updating'] : vis.errors.full_messages },
                      error_code)
@@ -310,9 +310,8 @@ module Carto
         @visualization.destroy
 
         head 204
-      rescue => exception
-        CartoDB::Logger.error(message: 'Error deleting visualization', exception: exception,
-                              visualization: @visualization)
+      rescue StandardError => exception
+        log_error(message: 'Error deleting visualization', exception: exception)
         render_jsonp({ errors: [exception.message] }, 400)
       end
 
@@ -328,8 +327,8 @@ module Carto
         )
 
         render(json: { url: gmaps_api.sign_url(@visualization.user, base_url) })
-      rescue => e
-        CartoDB::Logger.error(message: 'Error generating Google API URL', exception: e)
+      rescue StandardError => e
+        log_error(message: 'Error generating Google API URL', exception: e)
         render(json: { errors: 'Error generating static image URL' }, status: 400)
       end
 
@@ -352,7 +351,7 @@ module Carto
       def render_vizjson(vizjson)
         set_vizjson_response_headers_for(@visualization)
         render_jsonp(vizjson)
-      rescue => exception
+      rescue StandardError => exception
         CartoDB.notify_exception(exception)
         raise exception
       end
@@ -506,6 +505,10 @@ module Carto
                                                  .with_locked(false)
                                                  .count
         }
+      end
+
+      def log_context
+        @visualization.present? ? super.merge(visualization: @visualization&.attributes&.slice(:id)) : super
       end
     end
   end

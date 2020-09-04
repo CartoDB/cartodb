@@ -118,7 +118,7 @@ module Carto
 
           render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
         else
-          CartoDB::Logger.error(message: 'Error creating layer', errors: layer.errors.full_messages)
+          log_error(message: 'Error creating layer', error_detail: layer.errors.full_messages)
           raise UnprocesableEntityError.new(layer.errors.full_messages)
         end
       end
@@ -150,7 +150,7 @@ module Carto
           render_jsonp Carto::Api::LayerPresenter.new(layers[0], viewer_user: current_user).to_poro
         end
       rescue RuntimeError => e
-        CartoDB::Logger.error(message: 'Error updating layer', exception: e)
+        log_error(message: 'Error updating layer', exception: e)
         render_jsonp({ description: e.message }, 400)
       end
 
@@ -236,8 +236,8 @@ module Carto
           move_layer_node_styles(from_layer, from_letter, to_layer, to_letter, to_source)
           update_source_layer_styles(from_layer, from_letter, to_letter, to_source)
         end
-      rescue => e
-        CartoDB::Logger.error(
+      rescue StandardError => e
+        log_error(
           message: 'Error updating layer node styles',
           exception: e,
           from_layer: from_layer,

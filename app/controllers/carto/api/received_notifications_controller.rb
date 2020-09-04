@@ -22,7 +22,7 @@ module Carto
 
       rescue ArgumentError => e
         render_jsonp({ errors: { read_at: 'invalid date format' } }, 422)
-        CartoDB::Logger.warning(exception: e)
+        log_warning(exception: e)
       end
 
       private

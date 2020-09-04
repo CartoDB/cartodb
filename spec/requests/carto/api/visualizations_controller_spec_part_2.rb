@@ -41,7 +41,7 @@ describe Carto::Api::VisualizationsController do
     before(:each) do
       begin
         delete_user_data @user_1
-      rescue => exception
+      rescue StandardError => exception
         # Silence named maps problems only here upon data cleaning, not in specs
         raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
       end
@@ -893,8 +893,8 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'does not need connection to the user db if the viewer is the owner' do
-          CartoDB::Logger.expects(:warning).never
-          CartoDB::Logger.expects(:error).never
+          Rails.logger.expects(:warning).never
+          Rails.logger.expects(:error).never
 
           get_json api_v1_visualizations_show_url(id: @visualization.id),
                    api_key: @visualization.user.api_key,
@@ -1119,8 +1119,8 @@ describe Carto::Api::VisualizationsController do
               end
 
               it 'does not need connection to the user db if viewer is anonymous' do
-                CartoDB::Logger.expects(:warning).never
-                CartoDB::Logger.expects(:error).never
+                Rails.logger.expects(:warning).never
+                Rails.logger.expects(:error).never
                 get_json api_v1_visualizations_show_url(id: @visualization.id),
                          fetch_related_canonical_visualizations: true,
                          fetch_user: true,

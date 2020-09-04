@@ -17,7 +17,7 @@ describe PubSubTracker do
 
     it 'should log an error if an exception occurs during Pubsub initialization' do
       Google::Cloud::Pubsub.stubs(:new).raises('Error')
-      CartoDB::Logger.expects(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
+      Rails.logger.expects(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
 
       PubSubTracker.instance
     end
@@ -27,7 +27,7 @@ describe PubSubTracker do
       @pubsub.stubs(:topic).raises('Error')
       Google::Cloud::Pubsub.stubs(:new).returns(@pubsub)
 
-      CartoDB::Logger.expects(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
+      Rails.logger.expects(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
 
       PubSubTracker.instance
     end
@@ -74,7 +74,7 @@ describe PubSubTracker do
     end
 
     it 'should log error when no event type is sent' do
-      CartoDB::Logger.expects(:error).with(message: 'PubSubTracker: error topic key  not found')
+      Rails.logger.expects(:error).with(message: 'PubSubTracker: error topic key  not found')
 
       @topic.stubs(:publish)
 
@@ -82,7 +82,7 @@ describe PubSubTracker do
     end
 
     it 'should log error when unknown event type sent' do
-      CartoDB::Logger.expects(:error).with(message: 'PubSubTracker: error topic key fake_topic not found')
+      Rails.logger.expects(:error).with(message: 'PubSubTracker: error topic key fake_topic not found')
 
       @topic.stubs(:publish)
 
@@ -90,7 +90,7 @@ describe PubSubTracker do
     end
 
     it 'should do nothing when no user id sent' do
-      CartoDB::Logger.expects(:error).never
+      Rails.logger.expects(:error).never
 
       @topic.stubs(:publish)
 
@@ -100,7 +100,7 @@ describe PubSubTracker do
     end
 
     it 'should do nothing when not enabled' do
-      CartoDB::Logger.expects(:error).never
+      Rails.logger.expects(:error).never
 
       PubSubTracker.any_instance.stubs(:enabled?).returns(false)
 
@@ -110,7 +110,7 @@ describe PubSubTracker do
     end
 
     it 'should log error if publishing did not succeeded' do
-      CartoDB::Logger.expects(:error).with(has_entry(message: "PubSubTracker: error publishing to topic #{@topic_name_and_path} for event track user"))
+      Rails.logger.expects(:error).with(has_entry(message: "PubSubTracker: error publishing to topic #{@topic_name_and_path} for event track user"))
 
       @topic.stubs(:publish).yields(nil)
 
@@ -121,4 +121,3 @@ describe PubSubTracker do
     end
   end
 end
-

@@ -169,7 +169,7 @@ namespace :cartodb do
 
             v.external_source.delete
             v.delete
-          rescue => e
+          rescue StandardError => e
             puts "  Error deleting visualization #{v.id}: #{e.message}"
           end
         end

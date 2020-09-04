@@ -71,14 +71,15 @@ module Carto
       logger.append("Finishing. State: #{state}. File: #{export_file}. URL: #{url}")
       update_attributes(state: state, file: export_file, url: export_url)
       true
-    rescue => e
+    rescue StandardError => e
       logger.append_exception('Exporting', exception: e)
-      CartoDB::Logger.error(
+      log_error(
         exception: e,
         message: "Visualization export error",
-        user: user,
-        visualization_id: visualization.id,
-        visualization_export_id: id)
+        current_user: user,
+        visualization: visualization.attributes.slice(:id),
+        visualization_export: attributes.slice(:id)
+      )
       update_attributes(state: STATE_FAILURE)
 
       false

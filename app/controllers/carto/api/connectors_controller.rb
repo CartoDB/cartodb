@@ -38,7 +38,7 @@ module Carto
           user_account_url = CartoDB.url(self, 'account_user', user: current_user)
           connection_res[:errors] = "Could not connect to Google BigQuery. Please go to #{user_account_url} to check your BigQuery connection"
           error_code = 400
-        rescue => e
+        rescue StandardError => e
           connection_res[:errors] = e.message
           error_code = 400
         end
@@ -57,7 +57,7 @@ module Carto
           end
         rescue Carto::Connector::InvalidParametersError => e
           render_jsonp({ errors: e.message }, 422)
-        rescue => e
+        rescue StandardError => e
           render_jsonp({ errors: "Error connecting to provider #{provider_id}, #{e}" }, 400)
         end
       end
@@ -76,7 +76,7 @@ module Carto
           render_jsonp({ errors: e.message }, 501)
         rescue Carto::Connector::InvalidParametersError => e
           render_jsonp({ errors: e.message }, 422)
-        rescue => e
+        rescue StandardError => e
           render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e}" }, 400)
         end
       end
@@ -96,7 +96,7 @@ module Carto
           render_jsonp({ errors: e.message }, 501)
         rescue Carto::Connector::InvalidParametersError => e
           render_jsonp({ errors: e.message }, 422)
-        rescue => e
+        rescue StandardError => e
           render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e}" }, 400)
         end
       end
@@ -117,7 +117,7 @@ module Carto
           render_jsonp({ errors: e.message }, 501)
         rescue Carto::Connector::InvalidParametersError => e
           render_jsonp({ errors: e.message }, 422)
-        rescue => e
+        rescue StandardError => e
           render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e}" }, 400)
         end
       end
@@ -144,7 +144,7 @@ module Carto
           render_jsonp({ errors: e.message }, 501)
         rescue Carto::Connector::InvalidParametersError => e
           render_jsonp({ errors: e.message }, 422)
-        rescue => e
+        rescue StandardError => e
           render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e.message}" }, 400)
         end
       end

@@ -35,8 +35,8 @@ class HomeController < ApplicationController
     redis_ok = check_redis
     api_ok   = true
     head (db_ok && redis_ok && api_ok) ? 200 : 500
-  rescue => e
-    CartoDB::StdoutLogger.info 'status method failed', e.inspect
+  rescue StandardError => e
+    log_info(message: 'status method failed', exception: e)
     head 500
   end
 
@@ -196,7 +196,7 @@ class HomeController < ApplicationController
 
   def safe_diagnosis(help = nil)
     yield
-  rescue => e
+  rescue StandardError => e
     [ STATUS[false], [ help, e.to_s ].compact ]
   end
 
@@ -255,7 +255,7 @@ class HomeController < ApplicationController
 
   def safe_json_get(url)
     JSON.parse(http_client.get(url).body)
-  rescue => e
+  rescue StandardError => e
     { 'error fetching info' => e.message }
   end
 

@@ -8,7 +8,13 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-* Added check to avoid modifications of Sequel model files ([#15800](https://github.com/CartoDB/cartodb/pull/15800))
+* Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
+
+4.41.1 (2020-09-03)
+-------------------
+
+### Bug fixes / enhancements
+* Now every user manages its own dbdirect IPs, regardless of being a organization user [#15805](https://github.com/CartoDB/cartodb/pull/15805)
 * Add a script to measure Sequel model LOC [#15803](https://github.com/CartoDB/cartodb/pull/15803)
 
 4.41.0 (2020-09-01)
@@ -36,6 +42,7 @@ Development
 * Modify .gitignore
 * Install Carto::Common::Logger with JSON support ([#15762](https://github.com/CartoDB/cartodb/pull/15762))
 * Return all shared datasets ([#15767](https://github.com/CartoDB/cartodb/pull/15767))
+* Migrate traces to new Carto::Common::Logger ([#15776](https://github.com/CartoDB/cartodb/pull/15776))
 
 4.39.0 (2020-07-20)
 -------------------

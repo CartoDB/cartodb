@@ -6,6 +6,8 @@ module Carto
     CLIENT_ID_RANDOM_BYTES = 9
     CLIENT_SECRET_RANDOM_BYTES = 18
 
+    include ::LoggerHelper
+
     belongs_to :user, inverse_of: :oauth_apps
     has_many :oauth_app_users, inverse_of: :oauth_app, dependent: :destroy
     has_many :oauth_app_organizations, inverse_of: :oauth_app, dependent: :destroy
@@ -56,11 +58,12 @@ module Carto
       notification = Carto::Notification.create!(body: notification_body, icon: Notification::ICON_ALERT)
       ::Resque.enqueue(::Resque::UserJobs::Notifications::Send, @user_ids, notification.id)
     rescue StandardError => e
-      CartoDB::Logger.warning(
-        message: "Couldn't notify users about oauth_app '#{name}' deletion",
-        notification_id: notification&.id,
-        exception: e)
-        raise e
+      log_warning(
+        message: "Couldn't notify users about oauth_app deletion",
+        notification: notification&.attributes&.slice(:id, :name),
+        exception: e
+      )
+      raise e
     end
 
     def notification_body

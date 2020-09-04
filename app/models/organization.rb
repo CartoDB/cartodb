@@ -215,12 +215,7 @@ class Organization < Sequel::Model
         over_mapzen_routing = o.get_mapzen_routing_calls > limit
         over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
       rescue OrganizationWithoutOwner => error
-        # Avoid aborting because of inconistent organizations; just omit them
-        CartoDB::Logger.error(
-          message: 'Skipping organization without owner in overquota report',
-          organization: name,
-          exception: error
-        )
+        log_warning(message: 'Skipping inconsistent organization', organization: self, exception: error)
         false
       end
     end

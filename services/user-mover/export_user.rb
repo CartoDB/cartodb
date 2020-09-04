@@ -168,7 +168,7 @@ module CartoDB
         }
       }.freeze
       # the next fields won't be discarded if set to NULL
-      TABLE_NULL_EXCEPTIONS = ['table_quota', 'public_map_quota', 'private_map_quota', 'regular_api_key_quota', 
+      TABLE_NULL_EXCEPTIONS = ['table_quota', 'public_map_quota', 'private_map_quota', 'regular_api_key_quota',
                                'builder_enabled', 'public_dataset_quota'].freeze
       include CartoDB::DataMover::Utils
 
@@ -606,7 +606,7 @@ module CartoDB
                                                 export_job_logger: exportjob_logger)
             end
           end
-        rescue => e
+        rescue StandardError => e
           export_log[:end] = Time.now
           export_log[:elapsed_time] = (export_log[:end] - export_log[:start]).ceil
           export_log[:status] = 'failure'

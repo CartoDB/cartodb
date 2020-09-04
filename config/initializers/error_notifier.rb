@@ -1,5 +1,5 @@
 require 'rollbar/rails'
-require 'cartodb/logger'
+
 Rollbar.configure do |config|
   config.access_token = Cartodb.config[:rollbar_api_key]
   config.enabled = (Rails.env.production? || Rails.env.staging?) && config.access_token.present?
@@ -21,30 +21,29 @@ Rollbar.configure do |config|
   )
 end
 
+# TODO: remove this wrapper for legacy logger
 module CartoDB
-  # Old, deprecated, logging functions
-  # Use the new logging module in lib/cartodb/logger.rb
 
-  # Extra can contain `:request` and `:user`
-  # Deprecated because of that `extra` content limitation. Use `report_exception` instead.
+  extend ::LoggerHelper
+
   def self.notify_exception(e, extra = {})
-    CartoDB::Logger.log('error', exception: e, **extra)
+    log_error(exception: e, **extra)
   end
 
   def self.notify_error(message, additional_data = {})
-    CartoDB::Logger.log('error', message: message, **additional_data)
+    log_error(message: message, **additional_data)
   end
 
   # Add `:request` and `:user` to additional_data if you want request content
   def self.report_exception(e, message = nil, additional_data = {})
-    CartoDB::Logger.log('error', exception: e, message: message, **additional_data)
+    log_error(exception: e, message: message, **additional_data)
   end
 
   def self.notify_debug(message, additional_data = {})
-    CartoDB::Logger.log('debug', message: message, **additional_data)
+    log_debug(message: message, **additional_data)
   end
 
   def self.notify_warning_exception(exception)
-    CartoDB::Logger.log('warning', exception: exception)
+    log_warning(exception: exception)
   end
 end

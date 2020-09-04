@@ -27,13 +27,13 @@ module Carto
           if visualization_export.errors[:user].present?
             raise Carto::UnauthorizedError.new("Errors: #{visualization_export.errors.full_messages}")
           else
-            CartoDB::Logger.warning(
-              message: 'Validation error creating visualization export',
-              user: user,
-              visualization: @visualization.id,
+            log_warning(
+              message: 'Error creating visualization export',
+              current_user: user,
+              visualization: @visualization.attributes.slice(:id),
               user_tables_ids: params[:user_tables_ids],
-              visualization_export: visualization_export.inspect,
-              error_messages: visualization_export.errors.full_messages
+              visualization_export: visualization_export.attributes.slice(:id)
+                                                        .merge(errors: visualization_export.errors.full_messages)
             )
             raise Carto::UnprocesableEntityError.new("Errors: #{visualization_export.errors.full_messages}")
           end

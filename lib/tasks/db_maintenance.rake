@@ -16,7 +16,7 @@ namespace :cartodb do
         begin
           user.link_outdated_tables
           printf "OK %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, i, count
-        rescue => e
+        rescue StandardError => e
           printf "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i, count
         end
         #sleep(1.0/5.0)
@@ -31,7 +31,7 @@ namespace :cartodb do
           user.this.update api_key: $users_metadata.HGET(user.key, 'map_key')
           raise 'No API key!!' if user.reload.api_key.blank?
           puts "(#{i+1} / #{count}) OK   #{user.username}"
-        rescue => e
+        rescue StandardError => e
           puts "(#{i+1} / #{count}) FAIL #{user.username} #{e.message}"
         end
       end
@@ -47,7 +47,7 @@ namespace :cartodb do
             layer.register_table_dependencies
             printf "OK (%-#{4}s/%-#{4}s)\n", i, count
           end
-        rescue => e
+        rescue StandardError => e
           printf "FAIL (%-#{4}s/%-#{4}s) #{e}\n", i, count
         end
       end
@@ -125,7 +125,7 @@ namespace :cartodb do
 
           log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :remove_duplicate_indexes.to_s, database_host)
           sleep(sleep)
-        rescue => e
+        rescue StandardError => e
           log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :remove_duplicate_indexes.to_s, database_host)
           puts "FAIL:#{i} #{e.message}"
         end
@@ -197,7 +197,7 @@ namespace :cartodb do
 
           log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :unregister_extraneous_cartodb_members.to_s, database_host)
           sleep(sleep)
-        rescue => e
+        rescue StandardError => e
           log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :unregister_extraneous_cartodb_members.to_s, database_host)
           puts "FAIL:#{i} #{e.message}"
         end
@@ -238,7 +238,7 @@ namespace :cartodb do
           user.db_service.load_cartodb_functions(statement_timeout, extension_version)
           log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
           sleep(sleep)
-        rescue => e
+        rescue StandardError => e
           log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}", user.username, i+1, count), task_name, database_host)
           puts "FAIL:#{i} #{e.message}"
         end
@@ -272,7 +272,7 @@ namespace :cartodb do
             user.db_service.upgrade_cartodb_postgres_extension(statement_timeout, extension_version)
             log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)", user.username, user.database_name, i+1, count), task_name, database_host)
           end
-        rescue => e
+        rescue StandardError => e
           log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}", user.username, i+1, count), task_name, database_host)
           puts "FAIL:#{i} #{e.message}"
         end
@@ -312,7 +312,7 @@ namespace :cartodb do
             user.db_service.create_function_invalidate_varnish
             log(sprintf("OK %-#{20}s %-#{20}s (%-#{4}s/%-#{4}s)\n", user.username, user.database_name, i+1, count), :load_varnish_trigger.to_s, database_host)
             sleep(sleep)
-          rescue => e
+          rescue StandardError => e
             log(sprintf("FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n", user.username, i+1, count), :load_varnish_trigger.to_s, database_host)
             puts "FAIL:#{i} #{e.message}"
           end
@@ -331,7 +331,7 @@ namespace :cartodb do
         begin
           conn = user.in_database(as: :cluster_admin)
           conn.execute(grant_query)
-        rescue => e
+        rescue StandardError => e
           log("Failed to execute `#{grant_query}`", :grant_publicuser_to_all_users.to_s, user.database_host)
         ensure
           conn.close unless conn.nil?
@@ -419,7 +419,7 @@ namespace :cartodb do
         begin
           puts "Setting user quota in db '#{user.database_name}' (#{user.id} #{user.username})"
           user.db_service.rebuild_quota_trigger
-        rescue => exception
+        rescue StandardError => exception
           puts "\nERRORED #{user.id} (#{user.username}): #{exception.message}\n"
         end
 
@@ -592,7 +592,7 @@ namespace :cartodb do
           user.in_database do |user_database|
             begin
               flatten_schema = user_database.schema(table.name.to_sym).flatten
-            rescue => e
+            rescue StandardError => e
               puts " Skipping table #{table.name}: #{e}"
               next
             end
@@ -653,7 +653,7 @@ namespace :cartodb do
                   SELECT cartodb._CDB_create_triggers('#{schema_name}'::TEXT, '#{table_name}'::REGCLASS);
                 })
               end
-            rescue => exception
+            rescue StandardError => exception
               puts "ERROR:  #{user.username} / #{user.id} : #{table_name} #{exception}"
             end
           end
@@ -676,7 +676,7 @@ namespace :cartodb do
           user.in_database do |user_database|
             begin
               has_the_geom = true if user_database.schema(table.name.to_sym).flatten.include?(:the_geom)
-            rescue => e
+            rescue StandardError => e
               puts " Skipping table #{table.name}: #{e}"
               next
             end
@@ -715,7 +715,7 @@ namespace :cartodb do
             puts "\t=> #{table.name} updated"
             begin
               table.set_trigger_cache_timestamp
-            rescue => e
+            rescue StandardError => e
               puts "\t=> [ERROR] #{table.name}: #{e.inspect}"
             end
           end
@@ -736,7 +736,7 @@ namespace :cartodb do
         begin
           user.db_service.create_public_db_user
           user.save_metadata
-        rescue
+        rescue StandardError
           puts "user #{user.username} already has the public user"
         end
       end
@@ -761,7 +761,7 @@ namespace :cartodb do
               # Just saving will trigger the permission creation
               vis.save!
               puts "OK #{vis.id}"
-            rescue => e
+            rescue StandardError => e
               owner_id = vis.user.nil? ? 'nil' : vis.user.id
               message = "FAIL u:#{owner_id} v:#{vis.id}: #{e.message}"
               puts message
@@ -977,7 +977,7 @@ namespace :cartodb do
           message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n" % [user.username, i, count]
           print message
           log(message, :reload_users_avatars.to_s)
-        rescue => e
+        rescue StandardError => e
           message = "FAIL %-#{20}s (%-#{4}s/%-#{4}s) #{e.message}\n" % [user.username, i, count]
           print message
           log(message, :reload_users_avatars.to_s)
@@ -995,7 +995,7 @@ namespace :cartodb do
             message = "OK %-#{20}s (%-#{4}s/%-#{4}s)\n" % [user.username, i, count]
             print message
             log(message, :grant_general_raster_permissions.to_s)
-          rescue => e
+          rescue StandardError => e
             message = "FAIL %-#{20}s (%-#{4}s/%-#{4}s) MSG:#{e.message}\n" % [user.username, i, count]
             print message
             log(message, :grant_general_raster_permissions.to_s)
@@ -1122,7 +1122,7 @@ namespace :cartodb do
           puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
           begin
             owner.db_service.setup_organization_role_permissions
-          rescue => e
+          rescue StandardError => e
             puts "Error: #{e.message}"
             CartoDB.notify_exception(e)
           end
@@ -1140,7 +1140,7 @@ namespace :cartodb do
           puts "#{o.id} Owner: #{owner.id} #{owner.username}\t\tName: #{o.name}"
           begin
             yield owner
-          rescue => e
+          rescue StandardError => e
             puts "Error: #{e.message}"
             CartoDB.notify_exception(e)
           end
@@ -1168,7 +1168,7 @@ namespace :cartodb do
       run_for_organizations_owner(organizations) do |owner|
         begin
           owner.db_service.grant_admin_permissions
-        rescue => e
+        rescue StandardError => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end
       end
@@ -1180,7 +1180,7 @@ namespace :cartodb do
       run_for_organizations_owner(organizations) do |owner|
         begin
           owner.db_service.configure_extension_org_metadata_api_endpoint
-        rescue => e
+        rescue StandardError => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end
       end
@@ -1208,7 +1208,7 @@ namespace :cartodb do
               puts "Organization user #{u.username}: #{result ? 'OK' : 'ERROR'}"
             end
           end
-        rescue => e
+        rescue StandardError => e
           puts "Error trying to configure geocoder extension for org #{owner.organization.name}: #{e.message}"
         end
       end
@@ -1229,7 +1229,7 @@ namespace :cartodb do
         begin
           result = user.db_service.install_and_configure_geocoder_api_extension
           puts "#{result ? 'OK' : 'ERROR'} #{user.username}"
-        rescue => e
+        rescue StandardError => e
           puts "Error trying to configure geocoder extension for user #{u.name}: #{e.message}"
         end
       elsif args[:all_users]
@@ -1240,7 +1240,7 @@ namespace :cartodb do
               result = user.db_service.install_and_configure_geocoder_api_extension
               puts "#{result ? 'OK' : 'ERROR'} #{user.username}"
             end
-          rescue => e
+          rescue StandardError => e
             puts "Error trying to configure geocoder extension for user #{u.name}: #{e.message}"
           end
         }, 1, 0.3)
@@ -1257,7 +1257,7 @@ namespace :cartodb do
       begin
         date_from = DateTime.parse(args[:date_from])
         date_to = DateTime.parse(args[:date_to])
-      rescue => e
+      rescue StandardError => e
         raise "Error converting argument dates, check the arguments"
       end
       execute_on_users_with_index(:migrate_current_geocoder_billing_to_redis.to_s, Proc.new { |user, i|
@@ -1274,7 +1274,7 @@ namespace :cartodb do
             usage_metrics.incr(:geocoder_cache, :total_requests, metric[:cache_hits], metric[:date])
             puts "Imported metrics for day #{metric[:date]} and user #{user.username}: #{metric}"
           end
-        rescue => e
+        rescue StandardError => e
           puts "Error trying to migrate user current billing cycle to redis #{user.username}: #{e.message}"
         end
       }, 1, 0.3)
@@ -1317,7 +1317,7 @@ namespace :cartodb do
       org.users.each do |u|
         begin
           u.db_service.connect_to_aggregation_tables
-        rescue => e
+        rescue StandardError => e
           puts "Error trying to connect  #{u.username}: #{e.message}"
         end
       end
@@ -1334,7 +1334,7 @@ namespace :cartodb do
         if user.has_feature_flag?('editor-3')
           begin
             user.db_service.connect_to_aggregation_tables
-          rescue => e
+          rescue StandardError => e
             puts "Error trying to connect #{user.username}: #{e.message}"
             puts e.backtrace
           end
@@ -1352,7 +1352,7 @@ namespace :cartodb do
       User.where.use_cursor(rows_per_fetch: 100).each do |user|
         begin
           user.db_service.connect_to_aggregation_tables
-        rescue => e
+        rescue StandardError => e
           puts "Error trying to connect #{user.username}: #{e.message}"
           puts e.backtrace
         end
@@ -1381,7 +1381,7 @@ namespace :cartodb do
             u.save
             puts "User #{u.username} processed OK"
           end
-        rescue => e
+        rescue StandardError => e
           puts "Error trying to give DO quota to #{u.username}: #{e.message}"
         end
       end
@@ -1400,7 +1400,7 @@ namespace :cartodb do
               db.execute("UPDATE \"#{entry[:schema]}\".\"#{entry[:table]}\" SET the_geom = ST_Multi(the_geom) where ST_GeometryType(the_geom) = 'ST_Polygon'")
             end
           end
-        rescue => e
+        rescue StandardError => e
           puts "Error processing user #{user.username}: #{e.inspect}"
         end
       end
@@ -1431,7 +1431,7 @@ namespace :cartodb do
       begin
         user.save_metadata
         puts "Updated redis metadata for user #{user.username}"
-      rescue => e
+      rescue StandardError => e
         puts "Error trying to update the user  metadata for user #{user.username}: #{e.message}"
       end
     end
@@ -1442,7 +1442,7 @@ namespace :cartodb do
           user.organization.save_metadata
           puts "Updated redis metadata for organization #{user.organization.name}"
         end
-      rescue => e
+      rescue StandardError => e
         puts "Error trying to update the user and/or org metadata for user #{user.username}: #{e.message}"
       end
     end

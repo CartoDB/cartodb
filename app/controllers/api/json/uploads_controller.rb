@@ -33,7 +33,7 @@ class Api::Json::UploadsController < Api::ApplicationController
         end
 
         render :json => {:file_uri => file.path[/(\/uploads\/.*)/, 1], :success => true}
-      rescue => e
+      rescue StandardError => e
         logger.error e
         logger.error e.backtrace
         head(400)

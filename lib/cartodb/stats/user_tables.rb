@@ -19,7 +19,7 @@ module CartoDB
         else
           increment("total")
         end
-      rescue
+      rescue StandardError
       end
     end
 
@@ -30,18 +30,18 @@ module CartoDB
         else
           increment("users.#{user}")
         end
-      rescue
+      rescue StandardError
       end
     end
 
     def update_tables_counter_per_host(count)
-      begin 
+      begin
         if count == -1
           decrement("hosts.#{Socket.gethostname.gsub('.', '_')}")
         else
           increment("hosts.#{Socket.gethostname.gsub('.', '_')}")
         end
-      rescue
+      rescue StandardError
       end
     end
 
@@ -52,7 +52,7 @@ module CartoDB
         else
           increment("plans.#{plan.gsub(/[\[\]]/, '').upcase}")
         end
-      rescue
+      rescue StandardError
       end
     end
 

@@ -27,17 +27,6 @@ module CartoDB
           notify_privacy_affected_entities(metadata_table) if privacy_changed
         end
       end
-    rescue NoMethodError => exception
-      CartoDB::Logger.debug(
-        exception: exception,
-        message: "#{exception.message} #{exception.backtrace}",
-        user: Carto::User.find(@table.user_id),
-        table_id: @table.id,
-        table_name: @table.name,
-        data_import_id: @table.data_import_id
-      )
-
-      raise exception
     end
 
     def set_from_visualization(visualization)
@@ -131,7 +120,7 @@ module CartoDB
 
     def revertable_privacy_change(metadata_table, old_privacy = nil, entities = [])
       yield
-    rescue => exception
+    rescue StandardError => exception
       CartoDB.notify_exception(exception, user_id: metadata_table.user_id, table_id: metadata_table.id)
       revert_to_previous_privacy(metadata_table, old_privacy, entities)
       raise exception
@@ -146,7 +135,7 @@ module CartoDB
       additional_revert_targets.each do |visualization|
         begin
           propagate_to([visualization])
-        rescue => exception
+        rescue StandardError => exception
           # Can't do much more, just let remaining ones finish
           errors << exception
         end

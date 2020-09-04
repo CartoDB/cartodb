@@ -4,7 +4,7 @@ module CartoDB
 
   begin
     CARTODB_REV = File.read("#{Rails.root}/REVISION").strip
-  rescue
+  rescue StandardError
     CARTODB_REV = nil
   end
 
@@ -285,7 +285,7 @@ module CartoDB
     uri = URI.parse(url)
     uri.scheme = protocol unless uri.scheme.present?
     uri.to_s
-  rescue
+  rescue StandardError
     nil
   end
 

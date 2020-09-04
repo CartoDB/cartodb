@@ -49,7 +49,7 @@ module Carto
 
       begin
         valid = datasource.token_valid?
-      rescue => e
+      rescue StandardError => e
         delete_oauth_if_expired_and_raise(user, e, oauth)
         valid = false
       end
@@ -59,7 +59,7 @@ module Carto
       end
 
       valid
-    rescue => e
+    rescue StandardError => e
       delete_oauth_if_expired_and_raise(user, e, oauth)
     end
 
@@ -68,7 +68,7 @@ module Carto
       raise CartoDB::Datasources::AuthError.new("No oauth set for service #{service}") if oauth.nil?
       datasource = oauth.get_service_datasource
       datasource.get_resources_list(filter)
-    rescue => e
+    rescue StandardError => e
       delete_oauth_if_expired_and_raise(user, e, oauth)
     end
 
@@ -92,7 +92,7 @@ module Carto
         CartoDB.notify_exception(e, { message: "Error while validating code #{code}, it won't be stored", user: user, service: service })
         return false
       end
-    rescue => e
+    rescue StandardError => e
       delete_oauth_if_expired_and_raise(user, e, oauth)
     end
 
@@ -106,7 +106,7 @@ module Carto
       # TODO: workaround for https://github.com/CartoDB/cartodb/issues/4003
       #user.add_oauth(service, datasource.validate_callback(params))
       CartoDB::OAuths.new(::User.where(id: user.id).first).add(service, token)
-    rescue => e
+    rescue StandardError => e
       delete_oauth_if_expired_and_raise(user, e, oauth)
     end
 

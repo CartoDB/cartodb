@@ -61,8 +61,7 @@ module Carto
         def user_data
           @user_data ||= get_user_data
         rescue StandardError => e
-          Logger.error(message: 'Error obtaining Google user data',
-                       exception: e, access_token: access_token)
+          log_error(message: 'Error obtaining Google user data', exception: e, access_token: access_token)
           nil
         end
 
@@ -81,12 +80,14 @@ module Carto
             message: 'Error in request to Google', exception: e
           }
           if response
-            trace_info.merge!(
-              response_code: response.code, response_headers: response.headers,
-              response_body: response.body, return_code: response.return_code
-            )
+            trace_info.merge!(response: {
+              code: response.code,
+              headers: response.headers,
+              body: response.body,
+              status: response.return_code
+            })
           end
-          Logger.error(trace_info)
+          log_error(trace_info)
           nil
         end
       end

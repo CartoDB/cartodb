@@ -165,7 +165,7 @@ module CartoDB
             check_user_exists_redis
             check_user_exists_postgres
           end
-        rescue => e
+        rescue StandardError => e
           @logger.error "Error in sanity checks: #{e}"
           log_error(e)
           remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
@@ -214,7 +214,7 @@ module CartoDB
           begin
             import_redis("user_#{@target_userid}_metadata.redis")
             import_metadata("user_#{@target_userid}_metadata.sql")
-          rescue => e
+          rescue StandardError => e
             rollback_metadata("user_#{@target_userid}_metadata_undo.sql")
             rollback_redis("user_#{@target_userid}_metadata_undo.redis")
             log_error(e)
@@ -267,7 +267,7 @@ module CartoDB
                             update_metadata: @options[:update_metadata])
           i.run!
         end
-      rescue => e
+      rescue StandardError => e
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
         log_error(e)
         raise e
@@ -621,7 +621,7 @@ module CartoDB
 
       def update_database_retries(userid, username, db_host, db_name, retries = 1)
         update_database(userid, username, db_host, db_name)
-      rescue => e
+      rescue StandardError => e
         @logger.error "Error updating database"
         if retries > 0
           @logger.info "Retrying..."
@@ -695,7 +695,7 @@ module CartoDB
             changed_metadata = true
             user_model.reload
           end
-        rescue => e
+        rescue StandardError => e
           if changed_metadata
             update_database_retries(@target_userid, @target_username, orig_dbhost, @target_dbname, 1)
           end

@@ -9,7 +9,7 @@ module CartoDB
         begin
           c.test_connection
           @@connection = c
-        rescue
+        rescue StandardError
           c = ::Sequel.connect('postgres://postgres:@localhost:5432')
           c.run <<-SQL
 CREATE DATABASE cartodb_importer_test
@@ -21,17 +21,17 @@ SQL
         return @@connection
       end
     end
-    
+
     def self.drop
       @@connection.disconnect
       @@connection = nil
       begin
         c = ::Sequel.connect('postgres://postgres:@localhost:5432')
         c.run "DROP DATABASE cartodb_importer_test"
-      rescue => e
+      rescue StandardError => e
         raise e
       end
       return true
-    end    
+    end
   end
 end

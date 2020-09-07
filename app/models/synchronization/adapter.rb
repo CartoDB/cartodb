@@ -3,6 +3,9 @@ require 'carto/importer/table_setup'
 module CartoDB
   module Synchronization
     class Adapter
+
+      include ::LoggerHelper
+
       STATEMENT_TIMEOUT = (1.hour * 1000).freeze
       DESTINATION_SCHEMA = 'public'.freeze
       THE_GEOM = 'the_geom'.freeze

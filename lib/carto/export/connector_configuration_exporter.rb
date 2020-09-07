@@ -1,6 +1,9 @@
 module Carto
   # Note: Connector provider IDs are not kept between clouds, so we look them up by name
   module ConnectorConfigurationImporter
+
+    include ::LoggerHelper
+
     private
 
     def build_connector_configurations_from_hash(exported_ccs)
@@ -14,7 +17,7 @@ module Carto
       provider = Carto::ConnectorProvider.find_by_name(provider_name)
 
       unless provider
-        CartoDB::Logger.error(message: 'Missing connector provider during migration', provider_name: provider_name)
+        log_error(message: 'Missing connector provider during migration', provider_name: provider_name)
         raise 'Missing connector provider'
       end
 

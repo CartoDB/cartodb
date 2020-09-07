@@ -73,7 +73,7 @@ module CartoDB
           else
             raise "Box Error status: #{res.response_code}, body: #{res.response_body}, headers: #{res.response_headers}"
           end
-        rescue => e
+        rescue StandardError => e
           CartoDB.notify_exception(e, self: inspect, response: res.inspect)
           raise e
         end
@@ -211,7 +211,7 @@ module CartoDB
             body = "client_id=#{@client_id}&client_secret=#{@client_secret}&token=#{token}"
 
             BoxAPI::auth_post(uri, body, false)
-          rescue => ex
+          rescue StandardError => ex
             raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
           end
 
@@ -464,7 +464,7 @@ module CartoDB
           # Any call would do, we just want to see if communicates or refuses the token
           result = client.search('test search')
           !result.nil?
-        rescue => e
+        rescue StandardError => e
           if e.message =~ /invalid_token/
             CartoDB.notify_debug('Box invalid_token', self: inspect)
             false

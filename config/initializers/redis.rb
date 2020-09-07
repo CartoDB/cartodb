@@ -31,7 +31,7 @@ unless Rails.env.test?
     $redis_migrator_logs.ping
     $geocoder_metrics.ping
     $limits_metadata.ping
-  rescue => e
+  rescue StandardError => e
     raise "Error connecting to Redis databases: #{e}"
   end
 end

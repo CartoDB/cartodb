@@ -14,6 +14,9 @@ end
 # - Include this module
 # - Override the methods as needed
 module CartoStrategy
+
+  include ::LoggerHelper
+
   def affected_by_password_expiration?
     true
   end
@@ -45,7 +48,7 @@ module CartoStrategy
     begin
       user.update_in_central
     rescue StandardError => e
-      CartoDB::Logger.warning(message: "Error updating lastlogin_date in central", exception: e)
+      log_warning(message: "Error updating lastlogin_date in central", exception: e)
     end
   end
 end
@@ -218,7 +221,7 @@ Warden::Strategies.add(:http_header_authentication) do
     trigger_login_event(user)
 
     success!(user)
-  rescue => e
+  rescue StandardError => e
     CartoDB.report_exception(e, "Authenticating with http_header_authentication", user: user)
     return fail!
   end
@@ -227,6 +230,7 @@ end
 Warden::Strategies.add(:saml) do
   include CartoStrategy
   include Carto::EmailCleaner
+  include ::LoggerHelper
 
   def affected_by_password_expiration?
     false
@@ -267,8 +271,8 @@ Warden::Strategies.add(:saml) do
             organization_id: organization.id,
             saml_email: email)
     end
-  rescue => e
-    CartoDB::Logger.error(message: "Authenticating with SAML", exception: e)
+  rescue StandardError => e
+    log_error(message: "Authenticating with SAML", exception: e)
     return fail!
   end
 end
@@ -351,7 +355,7 @@ module Carto::Api::AuthApiAuthentication
 
     return fail! unless api_key.exists?
     success!(user)
-  rescue
+  rescue StandardError
     fail!
   end
 

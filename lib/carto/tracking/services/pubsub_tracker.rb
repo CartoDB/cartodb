@@ -4,6 +4,7 @@ require 'google/cloud/pubsub'
 
 class PubSubTracker
   include Singleton
+  include ::LoggerHelper
 
   def initialize
     @pubsub = init_pubsub
@@ -15,7 +16,7 @@ class PubSubTracker
 
   rescue StandardError => e
     @errored = true
-    CartoDB::Logger.error(message: 'PubSubTracker: initialization error', exception: e)
+    log_error(message: 'PubSubTracker: initialization error', exception: e)
   end
 
   def init_pubsub
@@ -44,15 +45,15 @@ class PubSubTracker
     result = topic.publish(event, attributes)
 
     unless result
-      CartoDB::Logger.error(message: "PubSubTracker: error publishing to topic #{topic.name} for event #{event}")
+      log_error(message: 'PubSubTracker: error sending event', event: event, topic: { name: topic.name })
     end
 
     attributes
 
   rescue KeyError => e
-    CartoDB::Logger.error(message: "PubSubTracker: error topic key #{topic_key} not found")
+    log_error(message: 'PubSubTracker: topic not found', exception: e, topic: { key: topic_key })
   rescue StandardError => e
-    CartoDB::Logger.error(message: e.message, exception: e)
+    log_error(message: 'PubSubTracker: error sending event', exception: e)
   end
 
 end

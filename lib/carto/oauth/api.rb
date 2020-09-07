@@ -1,7 +1,8 @@
 module Carto
   module Oauth
     class Api
-      Logger = CartoDB::Logger
+
+      include ::LoggerHelper
 
       attr_reader :config, :access_token
 
@@ -30,6 +31,12 @@ module Carto
 
       def student?
         raise 'Subclass must override student?'
+      end
+
+      private
+
+      def log_context
+        super.merge(current_user: user)
       end
     end
   end

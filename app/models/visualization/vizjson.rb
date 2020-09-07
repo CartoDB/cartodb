@@ -115,7 +115,7 @@ module CartoDB
 
       def bounds_from(map)
         ::JSON.parse("[#{map.view_bounds_sw}, #{map.view_bounds_ne}]")
-      rescue
+      rescue StandardError
         # Do nothing
       end
 

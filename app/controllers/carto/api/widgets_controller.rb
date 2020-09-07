@@ -40,8 +40,8 @@ module Carto
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
       rescue ActiveRecord::RecordInvalid
         render json: { errors: widget.errors }, status: 422
-      rescue => e
-        CartoDB::Logger.error(exception: e, message: "Error creating widget", widget: (widget ? widget : 'not created'))
+      rescue StandardError => e
+        log_error(exception: e, message: "Error creating widget")
         render json: { errors: e.message }, status: 500
       end
 
@@ -49,8 +49,8 @@ module Carto
         update_widget!(@widget, params)
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
-      rescue => e
-        CartoDB::Logger.error(exception: e, message: "Error updating widget", widget: @widget)
+      rescue StandardError => e
+        log_error(exception: e, message: "Error updating widget")
         render json: { errors: e.message }, status: 500
       end
 
@@ -68,8 +68,8 @@ module Carto
         @widget.destroy
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
-      rescue => e
-        CartoDB::Logger.error(exception: e, message: "Error destroying widget", widget: @widget)
+      rescue StandardError => e
+        log_error(exception: e, message: "Error destroying widget")
         render json: { errors: e.message }, status: 500
       end
 
@@ -139,6 +139,10 @@ module Carto
         end
 
         widget
+      end
+
+      def log_context
+        @widget.present? ? super.merge(widget: @widget.attributes) : super
       end
 
     end

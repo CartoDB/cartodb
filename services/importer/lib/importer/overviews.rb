@@ -6,6 +6,8 @@ module CartoDB
     #
     class Overviews
 
+      include ::LoggerHelper
+
       DEFAULT_MIN_ROWS = 1000000
       DEFAULT_STATEMENT_TIMEOUT = 10 * 60 * 1000 # ms
       DEFAULT_TOLERANCE_PX = 1.0 # px
@@ -49,7 +51,7 @@ module CartoDB
       end
 
       def create_overviews!(table_name)
-        CartoDB::Logger.info message: "Creating overviews", user: @user, table_name: table_name
+        log_info(message: "Creating overviews", target_user: @user, table: { name: table_name })
         @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
           log("Will create overviews for #{table_name}")
           @importer_stats.timing('createviews') do

@@ -21,7 +21,7 @@ module Carto
           record_id = @hash[record_id_key]
 
           record_class_name.constantize.find(record_id)
-        rescue
+        rescue StandardError
           record_id ? (raise Carto::LoadError.new("#{record_class_name} not found. Id: #{record_id}")) : nil
         end
 

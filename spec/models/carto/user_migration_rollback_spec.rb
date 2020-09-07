@@ -157,7 +157,7 @@ describe 'UserMigration' do
       begin
         @organization.reload
         @organization.destroy_cascade
-      rescue
+      rescue StandardError
       end
     end
 

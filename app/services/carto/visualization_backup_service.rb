@@ -4,6 +4,7 @@ module Carto
   module VisualizationBackupService
     include Carto::VisualizationsExportService2Exporter
     include Carto::VisualizationsExportService2Importer
+    include ::LoggerHelper
 
     def create_visualization_backup(visualization:, category:, with_mapcaps: true, with_password: true)
       export_json = export_visualization_json_hash(
@@ -20,7 +21,7 @@ module Carto
       )
     rescue StandardError => exception
       # The backup should not break the flow
-      CartoDB::Logger.error(
+      log_error(
         message: 'Error creating a visualization backup',
         exception: exception,
         visualization: visualization

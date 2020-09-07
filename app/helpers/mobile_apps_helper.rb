@@ -7,7 +7,7 @@ module MobileAppsHelper
     else
       ''
     end
-  rescue
+  rescue StandardError
     ''
   end
 
@@ -20,7 +20,7 @@ module MobileAppsHelper
     else
       0
     end
-  rescue
+  rescue StandardError
     0
   end
 
@@ -33,7 +33,7 @@ module MobileAppsHelper
     else
       0
     end
-  rescue
+  rescue StandardError
     0
   end
 end

@@ -99,18 +99,6 @@ class Carto::User < ActiveRecord::Base
   end
   alias_method_chain :static_notifications, :creation
 
-  def password=(value)
-    return if !value.nil? && password_validator.validate(value, value, self).any?
-
-    @password = value
-    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
-                                                                     secret: Cartodb.config[:password_secret])
-  end
-
-  def password_confirmation=(password_confirmation)
-    # TODO: Implement
-  end
-
   def invalidate_all_sessions!
     user = ::User.where(id: self.id).first
     user&.invalidate_all_sessions!
@@ -307,24 +295,12 @@ class Carto::User < ActiveRecord::Base
 
   def dbdirect_effective_ips=(ips)
     ips ||= []
-    bearer = dbdirect_bearer
-    if bearer.dbdirect_ip
-      bearer.dbdirect_ip.update!(ips: ips)
-    else
-      bearer.create_dbdirect_ip!(ips: ips)
-    end
+    reload
+    dbdirect_ip ? dbdirect_ip.update!(ips: ips) : create_dbdirect_ip!(ips: ips)
   end
 
   def dbdirect_effective_ip
-    dbdirect_bearer.dbdirect_ip
-  end
-
-  def dbdirect_bearer
-    if organization.present? && organization.owner != self
-      organization.owner.reload
-    else
-      reload
-    end
+    reload.dbdirect_ip
   end
 
   private

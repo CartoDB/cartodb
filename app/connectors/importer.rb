@@ -8,6 +8,8 @@ require_dependency 'visualization/derived_creator'
 module CartoDB
   module Connector
     class Importer
+      include ::LoggerHelper
+
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
@@ -100,8 +102,8 @@ module CartoDB
         Carto::GhostTablesManager.run_synchronized(
           user.id, attempts: 10, timeout: 3000,
           message: "Couldn't acquire bolt to register. Registering without bolt",
-          user: user,
-          import_id: @data_import_id
+          current_user: user,
+          data_import: { id: data_import.id }
         ) do
           results.select(&:success?).each do |result|
             register(result)
@@ -135,7 +137,7 @@ module CartoDB
         persist_metadata(name, data_import_id, overwrite)
 
         log("Table '#{name}' registered")
-      rescue => exception
+      rescue StandardError => exception
         if exception.message =~ /canceling statement due to statement timeout/i
           drop("#{ORIGIN_SCHEMA}.#{result.table_name}")
           raise CartoDB::Importer2::StatementTimeoutError.new(
@@ -150,7 +152,7 @@ module CartoDB
       def create_overviews(result)
         dataset = @overviews_creator.dataset(result.name)
         dataset.create_overviews!
-      rescue => exception
+      rescue StandardError => exception
         # In case of overview creation failure we'll just omit the
         # overviews creation and continue with the process.
         # Since the actual creation is handled by a single SQL
@@ -158,12 +160,8 @@ module CartoDB
         # need any clean up here. (Either all overviews were created
         # or nothing changed)
         log("Overviews creation failed: #{exception.message}")
-        CartoDB::Logger.error(
-          message:    "Overviews creation failed",
-          exception:  exception,
-          user:       Carto::User.find(data_import.user_id),
-          table_name: result.name
-        )
+        user = Carto::User.find(data_import.user_id)
+        log_error(message: 'Error creating overview', exception: exception, current_user: user, table_name: result.name)
       end
 
       def create_visualization
@@ -212,7 +210,7 @@ module CartoDB
       def drop(table_name)
         Carto::OverviewsService.new(database).delete_overviews table_name
         database.execute(%(DROP TABLE #{table_name}))
-      rescue => exception
+      rescue StandardError => exception
         log("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
         self
       end
@@ -229,7 +227,7 @@ module CartoDB
           { schema: origin_schema, name: table }
         }
         @support_tables_helper.change_schema(destination_schema, table_name)
-      rescue => e
+      rescue StandardError => e
         drop("#{origin_schema}.#{table_name}")
         raise e
       end
@@ -275,13 +273,8 @@ module CartoDB
         end
 
         new_name
-      rescue => exception
+      rescue StandardError => exception
         drop("#{schema}.#{current_name}")
-        CartoDB::Logger.debug(message: 'Error in table rename: dropping importer table',
-                              exception: exception,
-                              table_name: current_name,
-                              new_table_name: new_name,
-                              data_import: @data_import_id)
         raise exception
       end
 
@@ -290,7 +283,7 @@ module CartoDB
           ALTER INDEX IF EXISTS "#{schema}"."#{current_name}_geom_idx"
           RENAME TO "the_geom_#{Carto::UUIDHelper.random_uuid.gsub('-', '_')}"
         })
-      rescue => exception
+      rescue StandardError => exception
         log("Silently failed rename_the_geom_index_if_exists from " +
             "#{current_name} to #{new_name} with exception #{exception}. " +
             "Backtrace: #{exception.backtrace}. ")
@@ -330,7 +323,7 @@ module CartoDB
           begin
             # the logic inside the transaction may vary, so we let the caller to implement it
             yield(database, @destination_schema)
-          rescue => e
+          rescue StandardError => e
             log("Unable to replace #{name} with #{result.table_name}. Rollingback transaction and dropping #{result.table_name}: #{e}")
             drop("\"#{@destination_schema}\".\"#{result.table_name}\"")
             raise e
@@ -353,7 +346,7 @@ module CartoDB
           begin
             log("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
             move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
-          rescue => e
+          rescue StandardError => e
             log("Error replacing data in import: #{e}: #{e.backtrace}")
             raise e
           end

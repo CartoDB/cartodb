@@ -18,7 +18,7 @@ module Cartodb
 
     begin
       config_file_hash = Carto::Conf.new.app_config
-    rescue => e
+    rescue StandardError => e
       raise "Missing or inaccessible config/app_config.yml: #{e.message}"
     end
     @config ||= config_file_hash[Rails.env].try(:to_options!)

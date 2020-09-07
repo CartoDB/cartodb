@@ -41,7 +41,7 @@ module Carto
       rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB.notify_debug('Group already exists', { params: params })
         render json: { errors: "A group with that data already exists" }, status: 409
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created') })
         render json: { errors: e.message }, status: 500
       end
@@ -65,7 +65,7 @@ module Carto
             raise "Group not found and no matching rename found"
           end
         end
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
@@ -73,7 +73,7 @@ module Carto
       def destroy
         @group.destroy
         render json: {}, status: 204
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
@@ -92,7 +92,7 @@ module Carto
         else
           render json: { errors: "Some users were already in the group: #{@usernames - added_usernames }", users: added_usernames }, status: 409
         end
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
@@ -108,7 +108,7 @@ module Carto
         else
           render json: { errors: "Some users (#{@usernames - removed_usernames}) were not in the group", users: removed_usernames }, status: 404
         end
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
@@ -121,7 +121,7 @@ module Carto
       rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB.notify_debug('Permission already granted', { params: params })
         render json: { errors: "That permission is already granted" }, status: 409
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
@@ -134,7 +134,7 @@ module Carto
       rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB.notify_debug('Permission already revoked', { params: params })
         render json: { errors: "That permission is already revoked" }, status: 404
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
         render json: { errors: e.message }, status: 500
       end

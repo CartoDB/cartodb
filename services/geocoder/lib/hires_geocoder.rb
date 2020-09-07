@@ -87,7 +87,7 @@ module CartoDB
     def input_rows
       stdout, _stderr, _status = Open3.capture3('wc', '-l', input_file)
       stdout.to_i
-    rescue
+    rescue StandardError
       0
     end
 
@@ -100,7 +100,7 @@ module CartoDB
       else
         @empty_processed_rows += 1
       end
-    rescue => e
+    rescue StandardError => e
       @log.append_and_store "Error processing row with search text #{input_row['searchtext']}: #{e.message}"
       CartoDB.notify_debug("Hires geocoding process row error",
                            error: e.backtrace.join("\n"),

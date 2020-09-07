@@ -12,6 +12,29 @@ Development
 - The `X-Request-ID` HTTP header is now propagated from incoming requests to outbound requests for better traceability [#15778](https://github.com/CartoDB/cartodb/pull/15778)
 - Fix Catalog "I'm interested" button ([#15785](https://github.com/CartoDB/cartodb/pull/15785))
 - Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
+* Removing unused class ([#15816](https://github.com/CartoDB/cartodb/pull/15816))
+* Added check to avoid modifications of Sequel model files ([#15800](https://github.com/CartoDB/cartodb/pull/15800))
+* Refactor: Use Carto::User model as a CartodbCentralSynchronizable [#15807](https://github.com/CartoDB/cartodb/pull/15807)
+* Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
+* Fixes missing includes of LoggerHelper [#15812](https://github.com/CartoDB/cartodb/pull/15812)
+* Adds logging docs [#15813](https://github.com/CartoDB/cartodb/pull/15813)
+
+4.41.1 (2020-09-03)
+-------------------
+
+### Bug fixes / enhancements
+* Now every user manages its own dbdirect IPs, regardless of being a organization user [#15805](https://github.com/CartoDB/cartodb/pull/15805)
+* Add a script to measure Sequel model LOC [#15803](https://github.com/CartoDB/cartodb/pull/15803)
+
+4.41.0 (2020-09-01)
+-------------------
+
+### Bug fixes / enhancements
+
+* The `X-Request-ID` HTTP header is now propagated from incoming requests to outbound requests for better traceability [#15778](https://github.com/CartoDB/cartodb/pull/15778)
+* Fix Catalog "I'm interested" button ([#15785](https://github.com/CartoDB/cartodb/pull/15785))
+* Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
+* Pg-proxy compatibility: Store the IP firewall information in Redis ([#15791](https://github.com/CartoDB/cartodb/pull/15791))
 
 4.40.0 (2020-07-31)
 -------------------
@@ -28,6 +51,7 @@ Development
 * Modify .gitignore
 * Install Carto::Common::Logger with JSON support ([#15762](https://github.com/CartoDB/cartodb/pull/15762))
 * Return all shared datasets ([#15767](https://github.com/CartoDB/cartodb/pull/15767))
+* Migrate traces to new Carto::Common::Logger ([#15776](https://github.com/CartoDB/cartodb/pull/15776))
 
 4.39.0 (2020-07-20)
 -------------------

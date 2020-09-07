@@ -192,7 +192,7 @@ class DataImport < Sequel::Model
       success = false
       begin
         current_user.oauths.remove(ex.service_name)
-      rescue => ex2
+      rescue StandardError => ex2
         log.append("Exception removing OAuth: #{ex2.message}")
         log.append(ex2.backtrace)
       end
@@ -238,7 +238,7 @@ class DataImport < Sequel::Model
     error = CartoDB::Importer2::MapQuotaExceededError.new
     handle_failure(error)
     raise error
-  rescue => exception
+  rescue StandardError => exception
     log.append("Exception: #{exception.to_s}")
     log.append(exception.backtrace, false)
     stacktrace = exception.to_s + exception.backtrace.join
@@ -304,7 +304,7 @@ class DataImport < Sequel::Model
         end
       rescue Addressable::URI::InvalidURIError
         # this should only happen in testing, but just in case capture and log
-        CartoDB::Logger.warning(message: 'InvalidURIError when processing data_source', data_source: data_source)
+        log_warning(message: 'InvalidURIError when processing data_source', data_source: data_source)
       end
     end
 
@@ -339,9 +339,8 @@ class DataImport < Sequel::Model
                                                                              }
                                                                          })
                                                                     .decrement!
-    rescue => exception
-      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
-                           "#{exception.message} #{exception.backtrace.inspect}")
+    rescue StandardError => exception
+      log_info('Error decreasing concurrent import limit', exception: exception)
     end
     notify(results, id)
 
@@ -365,13 +364,12 @@ class DataImport < Sequel::Model
                                                                            }
                                                                          })
       .decrement!
-    rescue => exception
-      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
-                           "#{exception.message} #{exception.backtrace.inspect}")
+    rescue StandardError => exception
+      log_info('Error decreasing concurrent import limit', exception: exception)
     end
     notify(results)
     self
-  rescue => exception
+  rescue StandardError => exception
     log.append("Exception: #{exception.to_s}")
     log.append(exception.backtrace, false)
     log.store
@@ -732,7 +730,7 @@ class DataImport < Sequel::Model
         error_code: ex.error_code,
         log_info: CartoDB::IMPORTER_ERROR_CODES[ex.error_code]
       }
-    rescue => ex
+    rescue StandardError => ex
       had_errors = true
       manual_fields = {
         error_code: 99999,
@@ -863,7 +861,7 @@ class DataImport < Sequel::Model
 
     store_results(importer, runner, datasource_provider, manual_fields)
     importer.nil? ? false : importer.success?
-  rescue => e
+  rescue StandardError => e
     # Note: If this exception is not treated, results will not be defined
     # and the import will finish with a null error_code
     if manual_fields
@@ -1137,7 +1135,7 @@ class DataImport < Sequel::Model
                                           user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
                                        })
       datasource.token = oauth.token unless oauth.nil?
-    rescue => ex
+    rescue StandardError => ex
       log.append("Exception: #{ex.message}")
       log.append(ex.backtrace, false)
       CartoDB.report_exception(ex, 'Import error: ', error_info: ex.message + ex.backtrace.join)
@@ -1212,9 +1210,8 @@ class DataImport < Sequel::Model
                                                     origin: origin)).report
       end
     end
-  rescue => exception
-    CartoDB::Logger.warning(message: 'Carto::Tracking: Couldn\'t report event',
-                            exception: exception)
+  rescue StandardError => e
+    log_warning(message: "Carto::Tracking: Couldn't report event", exception: e)
   end
 
   def sync?

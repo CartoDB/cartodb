@@ -9,6 +9,9 @@ require_relative '../../../dataservices-metrics/lib/geocoder_usage_metrics'
 module CartoDB
   module Importer2
     class Georeferencer
+
+      include ::LoggerHelper
+
       DEFAULT_BATCH_SIZE = 50000
       GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
       DEFAULT_SCHEMA            = 'cdb_importer'
@@ -95,7 +98,7 @@ module CartoDB
 
         handle_multipoint(qualified_table_name) if multipoint?
         column_name
-      rescue => exception
+      rescue StandardError => exception
         job.log "Error creating the_geom: #{exception}. Trace: #{exception.backtrace}"
         if /statement timeout/.match(exception.message).nil?
           if column.empty?
@@ -127,11 +130,9 @@ module CartoDB
             return geocode_countries country_column_name
           end
         rescue Exception => ex
-          message = "create_the_geom_from_country_guessing failed: #{ex.message}"
-          CartoDB::Logger.warning(exception: ex,
-                                  message: message,
-                                  user_id: @job.logger.user_id)
-          job.log "WARNING: #{message}"
+          message = 'create_the_geom_from_country_guessing failed'
+          log_warning(message: message, exception: ex)
+          job.log "WARNING: #{message}: #{ex.inspect}"
         end
         return false
       end
@@ -152,11 +153,9 @@ module CartoDB
             return geocode_namedplaces
           end
         rescue Exception => ex
-          message = "create_the_geom_from_namedplaces_guessing failed: #{ex.message}"
-          CartoDB::Logger.warning(exception: ex,
-                                  message: message,
-                                  user_id: @job.logger.user_id)
-          job.log "WARNING: #{message}"
+          message = 'create_the_geom_from_namedplaces_guessing failed'
+          log_warning(exception: ex, message: message)
+          job.log "WARNING: #{message}: #{ex.inspect}"
         end
         return false
       end
@@ -178,10 +177,8 @@ module CartoDB
           end
         rescue Exception => ex
           message = "create_the_geom_from_ip_guessing failed: #{ex.message}"
-          CartoDB::Logger.warning(exception: ex,
-                                  message: message,
-                                  user_id: @job.logger.user_id)
-          job.log "WARNING: #{message}"
+          log_warning(exception: ex, message: message)
+          job.log "WARNING: #{message}: #{ex.inspect}"
           return false
         end
       end
@@ -235,12 +232,12 @@ module CartoDB
           begin
             geocoding.run_geocoding!(row_count)
             raise "Geocoding failed" if geocoding.state == 'failed'
-          rescue => e
+          rescue StandardError => e
             config_info = config.select {|key, value| [:table_schema, :table_name, :qualified_table_name, :formatter, :geometry_type, :kind, :max_rows, :country_column, ].include?(key) }
-            CartoDB::Logger.error(exception: e,
-                                  message: 'Georeferencer could not register geocoding, fallback to geocoder.run',
-                                  user_id: user_id,
-                                  config: config_info)
+            log_error(
+              message: 'Georeferencer could not register geocoding, fallback to geocoder.run',
+              exception: e, config: config_info
+            )
             geocoder.run
           end
 
@@ -342,7 +339,7 @@ module CartoDB
         job.log 'found MULTIPOINT geometry' if is_multipoint
 
         is_multipoint
-      rescue
+      rescue StandardError
         false
       end
 
@@ -352,6 +349,10 @@ module CartoDB
 
       def qualified_table_name
         %Q("#{schema}"."#{table_name}")
+      end
+
+      def log_context
+        super.merge(current_user: user)
       end
     end
   end

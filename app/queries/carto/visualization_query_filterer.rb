@@ -4,6 +4,8 @@ class Carto::VisualizationQueryFilterer
 
   REGULAR_FILTERS = %i(id name user_id privacy type version locked).freeze
 
+  class InvalidQuery < StandardError; end
+
   def initialize(query)
     @query = query
   end
@@ -14,8 +16,7 @@ class Carto::VisualizationQueryFilterer
     if params[:name] &&
        !(params[:id] || params[:user_id] || params[:organization_id] || params[:owned_by_or_shared_with_user_id] ||
          params[:shared_with_user_id])
-      CartoDB::Logger.error(message: "VQB query by name without user_id nor org_id")
-      raise 'VQB query by name without user_id nor org_id'
+      raise InvalidQuery, 'User or organization is required'
     end
 
     query = query.where(params.slice(*REGULAR_FILTERS).compact)

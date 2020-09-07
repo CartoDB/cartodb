@@ -62,7 +62,7 @@ module Carto
                                             .with_name(table_name)
                                             .with_user_id(user.id)
                                             .count == 0
-          rescue
+          rescue StandardError
             true
           end
         }

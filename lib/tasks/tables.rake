@@ -23,7 +23,7 @@ namespace :cartodb do
             #puts alter_sql
             begin
               u.in_database.run(alter_sql)
-            rescue => e
+            rescue StandardError => e
               puts "FAIL in #{alter_sql}"
               puts "REASON: #{e.message}"
               task_errors << {:user => u.username, :alter => alter_sql, :error => e.message}

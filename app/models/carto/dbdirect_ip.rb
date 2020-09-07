@@ -1,5 +1,5 @@
 require 'ip_checker'
-require 'carto/dbdirect/firewall_manager'
+require 'carto/dbdirect/metadata_manager'
 
 module Carto
   class DbdirectIp < ActiveRecord::Base
@@ -14,34 +14,26 @@ module Carto
     validate :validate_ips
 
     after_save do
-      update_firewall(*changes[:ips])
+      persist_ips(user.username, ips)
     end
 
     after_destroy do
-      update_firewall(ips, nil)
+      persist_ips(user.username, ips)
     end
 
-
-    def self.firewall_manager
-      firewall_manager_class.new(config)
+    def self.metadata_manager
+      metadata_manager_class.new(config, $users_metadata)
     end
 
-    def self.firewall_manager_class
-      Carto::Dbdirect::FirewallManager
-    end
-
-    def firewall_rule_name
-      return nil unless self.class.firewall_enabled?
-
-      rule_id = user.dbdirect_bearer.organization&.name || user.dbdirect_bearer.username
-      self.class.config['rule_name'].gsub('{{id}}', rule_id)
+    def self.metadata_manager_class
+      Carto::Dbdirect::MetadataManager
     end
 
     def self.config
-      Cartodb.get_config(:dbdirect, 'firewall') || {}
+      Cartodb.get_config(:dbdirect, 'metadata_persist') || {}
     end
 
-    def self.firewall_enabled?
+    def self.metadata_persist_enabled?
       !!config['enabled']
     end
 
@@ -84,22 +76,11 @@ module Carto
       IpChecker.normalize(ip)
     end
 
-    def update_firewall(old_ips=nil, new_ips=nil)
-      return unless self.class.firewall_enabled?
+    def persist_ips(username, ips)
+      return unless self.class.metadata_persist_enabled?
 
-      old_ips ||= []
-      new_ips ||= []
-      return if old_ips.sort == new_ips.sort
-
-      new_ips = new_ips.map { |ip| normalize_ip(ip) }
-
-      if new_ips.blank?
-        self.class.firewall_manager.delete_rule(firewall_rule_name)
-      elsif old_ips.blank?
-        self.class.firewall_manager.create_rule(firewall_rule_name, new_ips)
-      else
-        self.class.firewall_manager.update_rule(firewall_rule_name, new_ips)
-      end
+      ips = ips.map { |ip| normalize_ip(ip) }
+      self.class.metadata_manager.save(username, ips)
     end
   end
 end

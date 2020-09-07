@@ -25,6 +25,7 @@ require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
 require_dependency 'carto/gcloud_user_settings'
 require_dependency 'carto/helpers/user_commons'
+require_dependency 'carto/helpers/active_record_compatibility'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -36,6 +37,7 @@ class User < Sequel::Model
   include Carto::EmailCleaner
   include SequelFormCompatibility
   include Carto::UserCommons
+  include Carto::ActiveRecordCompatibility
 
   self.strict_param_setting = false
 
@@ -298,7 +300,7 @@ class User < Sequel::Model
 
   def load_common_data(visualizations_api_url)
     CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_error(
       "Error loading common data for user",
       user: inspect,
@@ -309,7 +311,7 @@ class User < Sequel::Model
 
   def delete_common_data
     CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_error("Error deleting common data for user", user: self, error: e.inspect)
   end
 
@@ -386,7 +388,7 @@ class User < Sequel::Model
 
         if organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
-          CartoDB::Logger.info(message: msg)
+          log_info(message: msg)
           raise CartoDB::BaseCartoDBError.new(msg)
         end
       end
@@ -440,7 +442,7 @@ class User < Sequel::Model
       ClientApplication.where(user_id: id).each(&:destroy)
     rescue StandardError => exception
       error_happened = true
-      CartoDB::Logger.error(message: "Error destroying user #{username}", exception: exception)
+      log_error(message: 'Error destroying user', current_user: self, exception: exception)
     end
 
     # Invalidate user cache
@@ -479,13 +481,13 @@ class User < Sequel::Model
 
   def delete_external_data_imports
     Carto::ExternalDataImport.by_user_id(id).each(&:destroy)
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_error('Error deleting external data imports at user deletion', user: self, error: e.inspect)
   end
 
   def delete_external_sources
     delete_common_data
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_error('Error deleting external data imports at user deletion', user: self, error: e.inspect)
   end
 
@@ -500,8 +502,8 @@ class User < Sequel::Model
     db.after_commit do
       begin
         rate_limit.try(:destroy_completely, self)
-      rescue => e
-        CartoDB::Logger.error(message: 'Error deleting rate limit at user deletion', exception: e)
+      rescue StandardError => e
+        log_error(message: 'Error deleting rate limit at user deletion', exception: e)
       end
     end
   end
@@ -559,30 +561,16 @@ class User < Sequel::Model
     @password_confirmation
   end
 
-  def password_confirmation=(password_confirmation)
-    set_last_password_change_date
-    @password_confirmation = password_confirmation
-  end
-
-  def password=(value)
-    return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
-
-    @password = value
-    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
-                                                                     secret: Cartodb.config[:password_secret])
-    set_last_password_change_date
-  end
-
   def invalidate_all_sessions!
     self.session_salt = SecureRandom.hex
 
     if update_in_central
       save(raise_on_failure: true)
     else
-      CartoDB::Logger.error(message: "Cannot invalidate session")
+      log_error(message: "Cannot invalidate session", current_user: self)
     end
   rescue CartoDB::CentralCommunicationFailure, Sequel::ValidationFailed => e
-    CartoDB::Logger.error(exception: e, message: "Cannot invalidate session")
+    log_error(exception: e, current_user: self, message: "Cannot invalidate session")
   end
 
   # Database configuration setup
@@ -654,7 +642,7 @@ class User < Sequel::Model
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
       db
     end
-  rescue => exception
+  rescue StandardError => exception
     CartoDB::report_exception(exception, "Cannot connect to user database",
                               user: self, database: configuration['database'])
     raise exception
@@ -717,7 +705,7 @@ class User < Sequel::Model
       avatar_color = colors.sample
       return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
-      CartoDB::Logger.info(message: "Attribute avatars_base_url not found in config. Using default avatar")
+      log_info(message: "Attribute avatars_base_url not found in config. Using default avatar")
       return default_avatar
     end
   end
@@ -831,8 +819,8 @@ class User < Sequel::Model
 
   def save_rate_limits
     effective_rate_limit.save_to_redis(self)
-  rescue => e
-    CartoDB::Logger.error(message: 'Error saving rate limits to redis', exception: e)
+  rescue StandardError => e
+    log_error(message: 'Error saving rate limits to redis', target_user: self, exception: e)
   end
 
   def update_rate_limits(rate_limit_attributes)
@@ -855,7 +843,7 @@ class User < Sequel::Model
   def effective_rate_limit
     rate_limit || effective_account_type.rate_limit
   rescue ActiveRecord::RecordNotFound => e
-    CartoDB::Logger.error(message: 'Error retrieving user rate limits', exception: e)
+    log_error(message: 'Error retrieving user rate limits', target_user: self, exception: e)
   end
 
   def effective_account_type
@@ -1098,12 +1086,12 @@ class User < Sequel::Model
           user_database.fetch(%{SELECT cartodb.#{user_data_size_function}}).first[:cdb_userdatasize]
         end
       end
-    rescue => e
+    rescue StandardError => e
       attempts += 1
       begin
         in_database(:as => :superuser).fetch("ANALYZE")
-      rescue => ee
-        CartoDB::Logger.error(exception: ee)
+      rescue StandardError => ee
+        log_error(exception: ee, current_user: self)
         raise ee
       end
       retry unless attempts > 1
@@ -1141,7 +1129,7 @@ class User < Sequel::Model
 
   def account_type_name
     self.account_type.gsub(' ', '_').downcase
-    rescue
+    rescue StandardError
     ''
   end
 
@@ -1453,8 +1441,8 @@ class User < Sequel::Model
       st.user = organization.owner
       st.save(raise_on_failure: true)
     end
-  rescue => e
-    CartoDB::Logger.error(exception: e, message: 'Error assigning search tweets to org owner', user: self)
+  rescue StandardError => e
+    log_error(exception: e, message: 'Error assigning search tweets to org owner', target_user: self)
   end
 
   # INFO: assigning to owner is necessary because of payment reasons
@@ -1465,17 +1453,13 @@ class User < Sequel::Model
       g.data_import_id = nil
       g.save(raise_on_failure: true)
     end
-  rescue => e
-    CartoDB::Logger.error(exception: e, message: 'Error assigning geocodings to org owner', user: self)
+  rescue StandardError => e
+    log_error(exception: e, message: 'Error assigning geocodings to org owner', target_user: self)
     geocodings.each(&:destroy)
   end
 
   def name_exists_in_organizations?
     !Organization.where(name: self.username).first.nil?
-  end
-
-  def set_last_password_change_date
-    self.last_password_change_date = Time.zone.now unless new?
   end
 
   def set_viewer_quotas

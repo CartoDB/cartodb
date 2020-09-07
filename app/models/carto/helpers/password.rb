@@ -65,4 +65,25 @@ module Carto::Password
   def can_change_password?
     !Carto::Ldap::Manager.new.configuration_present?
   end
+
+  def password=(value)
+    return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
+    return if !value.nil? && password_validator.validate(value, value, self).any?
+
+    @password = value
+    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                     secret: Cartodb.config[:password_secret])
+    set_last_password_change_date
+  end
+
+  def password_confirmation=(password_confirmation)
+    set_last_password_change_date
+    @password_confirmation = password_confirmation
+  end
+
+  private
+
+  def set_last_password_change_date
+    self.last_password_change_date = Time.zone.now unless new_record?
+  end
 end

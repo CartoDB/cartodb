@@ -69,7 +69,7 @@ module CartoDB
         begin
           organization_id = ::User.select(:organization_id).where(:username => name).first[:organization_id]
           return Organization.select(:name).where(:id => organization_id).first[:name]
-        rescue
+        rescue StandardError
           return nil
         end
       else

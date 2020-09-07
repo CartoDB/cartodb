@@ -44,7 +44,7 @@ module Carto
                                                         origin: 'blank').report
           end
         else
-          CartoDB::Logger.error(message: 'Error on tables#create', errors: table.errors.full_messages)
+          log_error(message: 'Error creating table', error_detail: table.errors.full_messages)
           render_jsonp({ description: table.errors.full_messages, stack: table.errors.full_messages }, 400)
         end
       rescue CartoDB::QuotaExceeded
@@ -76,8 +76,8 @@ module Carto
         else
           render_jsonp({ errors: table.errors.full_messages }, 400)
         end
-      rescue => e
-        CartoDB::Logger.error(message: 'Error updating table', exception: e)
+      rescue StandardError => e
+        log_error(message: 'Error updating table', exception: e)
         render_jsonp({ errors: [translate_error(e.message.split("\n").first)] }, 400)
       end
 

@@ -55,7 +55,7 @@ namespace :cartodb do
           File.delete(filepath)
           folder = filepath.slice(0, filepath.rindex('/')).gsub('..', '')
           FileUtils.rm_rf(folder) unless folder.length < uploads_path.to_s.length
-        rescue => exception
+        rescue StandardError => exception
           puts "Errored #{data_import_item_id} : #{exception}"
           CartoDB::notify_error(
             exception,
@@ -71,7 +71,7 @@ namespace :cartodb do
         Resque.enqueue(Resque::ImporterJobs, job_id: data_import_item.id)
 
         puts "Uploaded #{data_import_item.id}"
-      rescue => exception
+      rescue StandardError => exception
         puts "Errored #{data_import_item_id} : #{exception}"
 
         CartoDB::notify_error(

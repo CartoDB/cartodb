@@ -10,4 +10,18 @@ namespace :assets do
       end
     end
   end
+
+  # bundle exec rake assets:copy_coverband_assets
+  desc 'Copy Coverband assets to production path'
+  task :copy_coverband_assets do
+    gem_path = Gem::Specification.find_by_name('coverband').full_gem_path
+    src_path = "#{gem_path}/public/."
+    dst_path = "#{Rails.root}/public/coverband"
+
+    puts "Creating directory: #{dst_path}"
+    FileUtils.mkdir_p(dst_path)
+
+    puts "Copying files from #{src_path} to #{dst_path}"
+    FileUtils.cp_r(src_path, dst_path)
+  end
 end

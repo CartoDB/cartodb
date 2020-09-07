@@ -3,8 +3,7 @@ module Carto::Sessions
     self.session_salt = SecureRandom.hex
 
     if update_in_central
-      # NOTE: this is a hack for making the code AR/Sequel compatible
-      save(raise_on_failure: true) || raise(ActiveRecord::RecordNotSaved.new("Failed to save the record", self))
+      save!
     else
       log_error(message: "Could not invalidate session in Central")
     end

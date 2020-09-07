@@ -6,4 +6,8 @@ module Carto::ActiveRecordCompatibility
   def new_record?
     return new?
   end
+
+  def save!
+    return save(raise_on_failure: true)
+  end
 end

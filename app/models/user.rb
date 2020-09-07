@@ -25,6 +25,7 @@ require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
 require_dependency 'carto/gcloud_user_settings'
 require_dependency 'carto/helpers/user_commons'
+require_dependency 'carto/helpers/active_record_compatibility'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -36,6 +37,7 @@ class User < Sequel::Model
   include Carto::EmailCleaner
   include SequelFormCompatibility
   include Carto::UserCommons
+  include Carto::ActiveRecordCompatibility
 
   self.strict_param_setting = false
 
@@ -557,20 +559,6 @@ class User < Sequel::Model
 
   def password_confirmation
     @password_confirmation
-  end
-
-  def password_confirmation=(password_confirmation)
-    set_last_password_change_date
-    @password_confirmation = password_confirmation
-  end
-
-  def password=(value)
-    return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
-
-    @password = value
-    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
-                                                                     secret: Cartodb.config[:password_secret])
-    set_last_password_change_date
   end
 
   def invalidate_all_sessions!
@@ -1487,10 +1475,6 @@ class User < Sequel::Model
 
   def name_exists_in_organizations?
     !Organization.where(name: self.username).first.nil?
-  end
-
-  def set_last_password_change_date
-    self.last_password_change_date = Time.zone.now unless new?
   end
 
   def set_viewer_quotas

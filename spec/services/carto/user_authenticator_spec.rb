@@ -43,7 +43,8 @@ describe Carto::UserAuthenticator do
 
   context "password reencryption" do
     after(:each) do
-      @user.password = @user_password
+      @user.crypted_password = Carto::Common::EncryptionService.encrypt(password: @user_password,
+                                                                        secret: Cartodb.config[:password_secret])
       @user.save
     end
 

@@ -67,7 +67,6 @@ class Api::Json::GeocodingsController < Api::ApplicationController
           geocoding
         end
 
-        @table.automatic_geocoding.destroy if @table.automatic_geocoding.present?
         Resque.enqueue(Resque::GeocoderJobs, job_id: geocoding.id)
 
         render_jsonp(geocoding.to_json)

@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+* Remove automatic geocodings models and table
 * Removing unused class ([#15816](https://github.com/CartoDB/cartodb/pull/15816))
 * Added check to avoid modifications of Sequel model files ([#15800](https://github.com/CartoDB/cartodb/pull/15800))
 * Refactor: Use Carto::User model as a CartodbCentralSynchronizable [#15807](https://github.com/CartoDB/cartodb/pull/15807)

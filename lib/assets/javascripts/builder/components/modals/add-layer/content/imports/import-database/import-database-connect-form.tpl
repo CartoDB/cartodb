@@ -9,10 +9,10 @@
       <% _.each(params, function(param){ %>
         <div class="Form-row">
           <div class="Form-rowLabel Form-rowLabel--small">
-            <label for="<%- `${param.key}-textbox` %>" class="CDB-Text CDB-Size-medium"><%- _t(`components.modals.add-layer.imports.database.label-${param.key}`) %></label>
+            <label for="<%- param.key + '-textbox' %>" class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-' + param.key) %></label>
           </div>
           <div class="Form-rowData">
-            <input id="<%- `${param.key}-textbox` %>" type="<%- param.type %>" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-<%- param.key %>" value="" placeholder="<%= _t(`components.modals.add-layer.imports.database.placeholder-${param.key}`, { brand: title }) %> <%- param.optional && '(optional)' %>" />
+            <input id="<%- param.key + '-textbox' %>" type="<%- param.type %>" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-<%- param.key %>" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-' + param.key, { brand: title }) %> <%- param.optional && '(optional)' %>" />
           </div>
         </div>
       <% }); %>

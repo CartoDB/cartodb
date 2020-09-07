@@ -133,7 +133,7 @@ module Concerns
           allowed_attributes = %i(seats viewer_seats display_name description website discus_shortname twitter_username
                                   auth_username_password_enabled auth_google_enabled password_expiration_in_d
                                   inherit_owner_ffs)
-          values.slice(*allowed_attributes)
+          attributes.with_indifferent_access.slice(*allowed_attributes)
         end
       elsif is_a_user?
         allowed_attributes = %i(
@@ -151,7 +151,7 @@ module Concerns
           password_reset_sent_at company_employees use_case private_map_quota session_salt public_dataset_quota
           dashboard_viewed_at email_verification_token email_verification_sent_at
         )
-        attrs = values.slice(*allowed_attributes)
+        attrs = attributes.with_indifferent_access.slice(*allowed_attributes)
         attrs[:multifactor_authentication_status] = multifactor_authentication_status()
         case action
         when :create

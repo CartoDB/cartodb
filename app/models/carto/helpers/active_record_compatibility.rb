@@ -10,4 +10,8 @@ module Carto::ActiveRecordCompatibility
   def save!
     return save(raise_on_failure: true)
   end
+
+  def attributes
+    values.with_indifferent_access
+  end
 end

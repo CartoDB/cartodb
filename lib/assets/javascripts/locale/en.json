@@ -1362,6 +1362,7 @@
                         "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM project.dataset.table"
                     },
                     "database": {
+
                         "title": "Enter your %{brand} credentials",
                         "desc": "Get tables or custom SQL queries from your database and keep them in sync.",
                         "label-server": "Server",
@@ -1374,6 +1375,8 @@
                         "placeholder-username": "Type your username",
                         "label-password": "Password",
                         "placeholder-password": "Type your password",
+                        "label-cluster": "Cluster",
+                        "placeholder-cluster": "Type your cluster name",
                         "connect-button": "Connect",
                         "connection-error": "The connection could not be established. Please, check the entered parameters.",
                         "general-error": "Unfortunately, there was an error. Please, try again.",

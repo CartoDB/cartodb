@@ -29,8 +29,7 @@ exports[`DatasetBulkActions.vue should render all multiple actions for all selec
   </button>
   <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
     BulkActions.datasets.delete
-  </button>
-</section>
+  </button></section>
 `;
 
 exports[`DatasetBulkActions.vue should render all multiple actions: "Select all", "Deselect all", "Create map", "Lock", "Delete" 1`] = `
@@ -45,8 +44,7 @@ exports[`DatasetBulkActions.vue should render all multiple actions: "Select all"
   </button>
   <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
     BulkActions.datasets.delete
-  </button>
-</section>
+  </button></section>
 `;
 
 exports[`DatasetBulkActions.vue should render all single actions: "Select all", "Create map", "Change privacy", "Duplicate", "Lock", "Delete" 1`] = `
@@ -63,8 +61,7 @@ exports[`DatasetBulkActions.vue should render all single actions: "Select all", 
   </button>
   <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
     BulkActions.datasets.delete
-  </button>
-</section>
+  </button></section>
 `;
 
 exports[`DatasetBulkActions.vue should render multiple actions for a single shared dataset: "Select All", "Create Map", "Duplicate" 1`] = `
@@ -80,8 +77,7 @@ exports[`DatasetBulkActions.vue should render multiple actions for a single shar
   </button>
   <!----><button disabled="disabled" class="bulk-actions__button button button--ghost is-txtAlert u-is-disabled">
     BulkActions.datasets.delete
-  </button>
-</section>
+  </button></section>
 `;
 
 exports[`DatasetBulkActions.vue should render multiple actions for selection containing shared datasets: "Select All", "Create Map", "Deselect All" 1`] = `
@@ -96,8 +92,7 @@ exports[`DatasetBulkActions.vue should render multiple actions for selection con
   </button>
   <!----><button disabled="disabled" class="bulk-actions__button button button--ghost is-txtAlert u-is-disabled">
     BulkActions.datasets.delete
-  </button>
-</section>
+  </button></section>
 `;
 
 exports[`DatasetBulkActions.vue should render multiple locked actions when not all datasets have been selected: "Select all", Deselect all" and "Unlock" 1`] = `

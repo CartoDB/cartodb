@@ -7,8 +7,7 @@ exports[`Footer.vue should render go to dashboard button in last step 1`] = `
     </button>
     <!----> <button class="button is-primary js-goToDashboard">
       Wizards.footer.goToDashboard
-    </button>
-  </div>
+    </button></div>
 </div>
 `;
 

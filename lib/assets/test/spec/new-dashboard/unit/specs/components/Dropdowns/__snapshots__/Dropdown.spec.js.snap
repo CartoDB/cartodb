@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Dropdown.vue should open dropdown when clicking toggle 1`] = `
-<section><button class="dropdown__toggle"></button>
-  <div class="dropdown">Dropdown Content</div>
+<section><button class="dropdown__toggle dropdown__toggle--active"></button>
+  <div class="dropdown is-open">Dropdown Content</div>
 </section>
 `;
 

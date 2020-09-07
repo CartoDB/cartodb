@@ -49,8 +49,7 @@ exports[`Footer.vue should render items for organization users (no owner) 1`] = 
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.OrganizationAdmin.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
         <p class="description-link text is-small is-txtSoftGrey">Footer.OrganizationAdmin.description</p>
-      </a>
-    </div>
+      </a></div>
   </div>
 </div>
 `;

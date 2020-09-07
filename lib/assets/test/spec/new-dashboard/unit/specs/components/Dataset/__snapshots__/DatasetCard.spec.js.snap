@@ -58,7 +58,7 @@ exports[`DatasetCard.vue Methods should show copy name dropdown 1`] = `
           untitled_table_13
         </h3>
         <div class="dropdown-container">
-          <copydropdown-stub texttocopy="untitled_table_13"></copydropdown-stub>
+          <copydropdown-stub texttocopy="untitled_table_13" isvisible="true"></copydropdown-stub>
         </div> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
       </div>
       <!---->

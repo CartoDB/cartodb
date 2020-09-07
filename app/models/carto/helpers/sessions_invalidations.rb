@@ -1,4 +1,4 @@
-module Carto::Sessions
+module Carto::SessionsInvalidations
   def invalidate_all_sessions!
     self.session_salt = SecureRandom.hex
 

@@ -14,6 +14,7 @@ Development
 * Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
 * Fixes missing includes of LoggerHelper [#15812](https://github.com/CartoDB/cartodb/pull/15812)
 * Adds logging docs [#15813](https://github.com/CartoDB/cartodb/pull/15813)
+* Remove usage of `::User` Sequel model from the `ApplicationController` [#15804](https://github.com/CartoDB/cartodb/pull/15804)
 
 4.41.1 (2020-09-03)
 -------------------

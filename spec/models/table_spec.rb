@@ -680,16 +680,11 @@ describe Table do
 
         CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
         @doomed_table = create_table(user_id: @user.id)
-        @automatic_geocoding = FactoryGirl.create(:automatic_geocoding, table_id: @doomed_table.id)
         @doomed_table.destroy
       end
 
       before(:each) do
         bypass_named_maps
-      end
-
-      it "should remove the automatic_geocoding" do
-        expect { @automatic_geocoding.reload }.to raise_error
       end
 
       it "should remove the table from the user database" do

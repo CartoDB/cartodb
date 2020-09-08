@@ -175,6 +175,8 @@
                 Check your subscriptions
               </Button>
           </router-link>
+
+          <span v-if="error" class="error-msg">There was an issue with the subscription. Please contact CARTO support (support@carto.com)</span>
         </div>
       </div>
     </div>
@@ -214,7 +216,8 @@ export default {
     return {
       currentMode: null,
       licenseStatus: false,
-      loading: false
+      loading: false,
+      error: false
     };
   },
   computed: {
@@ -299,6 +302,7 @@ export default {
       window.dataLayer.push({ event: 'requestDataset' });
     },
     async subscribe () {
+      this.error = false;
       this.loading = true;
       if (
         await this.$store.dispatch('catalog/fetchSubscribe', {
@@ -309,8 +313,10 @@ export default {
       ) {
         await this.$store.dispatch('catalog/fetchSubscriptionsList');
         this.currentMode = 'subscribed';
-        this.loading = false;
+      } else {
+        this.error = true;
       }
+      this.loading = false;
     },
     async unsubscribe () {
       this.loading = true;
@@ -322,11 +328,12 @@ export default {
         })
       ) {
         await this.$store.dispatch('catalog/fetchSubscriptionsList');
-        this.loading = false;
         this.closeModal();
       }
+      this.loading = false;
     },
     async request () {
+      this.error = false;
       this.loading = true;
       if (
         await this.$store.dispatch('catalog/fetchSubscribe', {
@@ -336,13 +343,18 @@ export default {
       ) {
         await this.$store.dispatch('catalog/fetchSubscriptionsList');
         this.currentMode = 'requested';
-        this.loading = false;
+      } else {
+        this.error = true;
       }
+      this.loading = false;
     }
   },
   watch: {
     mode () {
       this.currentMode = this.mode;
+    },
+    isOpen () {
+      this.error = false;
     }
   }
 };
@@ -422,4 +434,10 @@ export default {
   }
 }
 
+.error-msg {
+  font-size: 12px;
+  line-height: 20px;
+  color: $red--500;
+  padding: 12px 0;
+}
 </style>

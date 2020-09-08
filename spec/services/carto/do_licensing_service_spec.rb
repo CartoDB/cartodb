@@ -11,6 +11,7 @@ describe Carto::DoLicensingService do
       dataset_id: @dataset_id,
       available_in: ['bq', 'bigtable'],
       price: 100,
+      created_at: Time.new(2020, 9, 27, 7, 59, 0),
       expires_at: Time.new(2020, 9, 27, 8, 0, 0),
       status: 'active'
     }
@@ -46,21 +47,14 @@ describe Carto::DoLicensingService do
 
       bq_redis = [
         {
-          dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000', status: 'active',
-          available_in: ['bq', 'bigtable'], type: nil, estimated_size: 0, estimated_row_count: 0,
+          dataset_id: 'carto.abc.dataset1', created_at: '2020-09-27 07:59:00 +0000', expires_at: '2021-09-27 08:00:00 +0000',
+          status: 'active', available_in: ['bq', 'bigtable'], type: nil, estimated_size: 0, estimated_row_count: 0,
           estimated_columns_count: 0, num_bytes: 0, sync_status: 'unsynced', unsyncable_reason: nil,
           sync_table: nil, sync_table_id: nil, synchronization_id: nil
         }
       ].to_json
 
-      bigtable_redis = [
-        {
-          dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000', status: 'active',
-          available_in: ['bq', 'bigtable'], type: nil, estimated_size: 0, estimated_row_count: 0,
-          estimated_columns_count: 0, num_bytes: 0, sync_status: 'unsynced', unsyncable_reason: nil,
-          sync_table: nil, sync_table_id: nil, synchronization_id: nil
-        }
-      ].to_json
+      bigtable_redis = bq_redis
 
       @service.subscribe(@dataset)
       $users_metadata.hget(@redis_key, 'bq').should eq bq_redis

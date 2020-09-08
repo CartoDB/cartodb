@@ -617,6 +617,7 @@ describe Carto::Api::Public::DataObservatoryController do
         dataset_id: dataset_id,
         available_in: ['bq'],
         price: 0.0,
+        created_at: Time.parse('2018/01/01 00:00:00'),
         expires_at: Time.parse('2019/01/01 00:00:00'),
         status: 'active'
       }
@@ -659,6 +660,7 @@ describe Carto::Api::Public::DataObservatoryController do
         dataset_id: 'carto.abc.geography1',
         available_in: ['bq'],
         price: 90.0,
+        created_at: Time.parse('2018/01/01 00:00:00'),
         expires_at: Time.parse('2019/01/01 00:00:00'),
         status: 'requested'
       }
@@ -696,6 +698,7 @@ describe Carto::Api::Public::DataObservatoryController do
           dataset_id: 'carto.abc.dataset1',
           available_in: ['bq'],
           price: 100.0,
+          created_at: Time.parse('2018/01/01 00:00:00'),
           expires_at: Time.parse('2019/01/01 00:00:00'),
           status: 'active'
         }
@@ -740,6 +743,7 @@ describe Carto::Api::Public::DataObservatoryController do
           dataset_id: dataset_id,
           available_in: ['bq'],
           price: 100.0,
+          created_at: Time.parse('2018/01/01 00:00:00'),
           expires_at: Time.parse('2019/01/01 00:00:00'),
           status: 'requested'
         }

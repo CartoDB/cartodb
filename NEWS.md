@@ -9,7 +9,9 @@ Development
 
 ### Bug fixes / enhancements
 * Fix column quoting for geometrification ([#15815](https://github.com/CartoDB/cartodb/pull/15815))
+* Removing unused class ([#15816](https://github.com/CartoDB/cartodb/pull/15816))
 * Added check to avoid modifications of Sequel model files ([#15800](https://github.com/CartoDB/cartodb/pull/15800))
+* Refactor: Use Carto::User model as a CartodbCentralSynchronizable [#15807](https://github.com/CartoDB/cartodb/pull/15807)
 * Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
 * Fixes missing includes of LoggerHelper [#15812](https://github.com/CartoDB/cartodb/pull/15812)
 * Adds logging docs [#15813](https://github.com/CartoDB/cartodb/pull/15813)

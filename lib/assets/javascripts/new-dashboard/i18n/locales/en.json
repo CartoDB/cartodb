@@ -814,7 +814,7 @@
     }
   },
   "DBConnection": {
-    "description_fl": "To connect to CARTO's database from third-party tools, you first need to add the IP address you are connecting from and then generate a certificate to secure your connection.",
+    "description_fl": "To connect to CARTO's database from third-party tools, you first need to add the IP address you are connecting from and then optionally generate a certificate to add extra security to your connection.",
     "description_sl": "You can read more about this in our <a href='https://carto.com/help/working-with-data/direct-sql-connection/' target='_blank' rel='noopener noreferrer'>help center</a>.",
     "ipsSection": {
       "title": "1. Your IPs",

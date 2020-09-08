@@ -32,9 +32,6 @@
           >
             <img svg-inline src="../../assets/icons/subscriptions/subscriptions-icon.svg">
           </EmptyState>
-          <router-link :to="{ name: 'spatial-data-catalog' }">
-            <button class="button is-primary goDo">{{$t('Subscriptions.goDo')}}</button>
-          </router-link>
         </div>
         <template v-else>
           <ul>

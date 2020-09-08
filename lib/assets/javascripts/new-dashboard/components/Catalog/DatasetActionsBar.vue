@@ -6,7 +6,7 @@
           <SubscriptionActions v-if="subscriptionWithSlug.slug" :dataset="subscriptionWithSlug" :mode="'row'"></SubscriptionActions>
         </div>
         <div class="white-separator u-ml--12 u-mr--12"></div>
-        <SlugCopy v-if="slug" :slug="slug"></SlugCopy>
+        <SlugCopy v-if="slug" :slug="slug" class="slug-copy"></SlugCopy>
       </div>
       <SubscriptionStatus :status="subscription.status" :expiresDate="subscription.expires_at" class="u-flex__align--center"></SubscriptionStatus>
     </div>
@@ -45,7 +45,7 @@ export default {
   border-radius: 4px;
 
   &.grid-cell {
-    padding: 0 16px;
+    padding: 0 14px;
   }
 
   .white-separator {
@@ -86,5 +86,9 @@ export default {
     }
   }
 
+  .slug-copy {
+    width: 200px;
+    height: 28px;
+  }
 }
 </style>

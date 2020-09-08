@@ -26,7 +26,7 @@
       </SubscriptionButtonTooltip>
       <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsyncable'">
         <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
-          <img src="../../assets/icons/catalog/information-circle.svg">
+          <img src="../../assets/icons/catalog/information-circle.svg" :class="smallClass">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey" :class="smallClass">
             <h1>Insufficient storage</h1>
             <p>{{dataset.unsyncable_reason}}</p>
@@ -38,7 +38,7 @@
     </div>
     <div v-if="dataset.sync_status === 'syncing'" class="u-flex u-flex__align--center">
       <span class="loading u-mr--12 u-flex u-flex__align--center">
-        <img svg-inline src="../../assets/icons/catalog/loading.svg" class="loading__svg" :class="smallClass"/>
+        <img svg-inline src="../../assets/icons/catalog/loading.svg" class="loading__svg"/>
       </span>
       <span class="text is-txtSoftGrey is-caption" :class="smallClass">
         Connecting dataset…

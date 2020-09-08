@@ -25,7 +25,7 @@
         </span>
       </div>
       <div class="u-width--100" v-if="!loading">
-        <div v-if="subscriptions.length === 0" class="grid-cell grid-cell--col12">
+        <div v-if="count === 0" class="grid-cell grid-cell--col12">
           <EmptyState
             :text="$t('Subscriptions.emptyCase')"
             :subtitle="$t('Subscriptions.exploreDescription')"

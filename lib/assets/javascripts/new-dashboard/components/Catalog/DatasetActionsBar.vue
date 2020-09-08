@@ -6,7 +6,7 @@
           <SubscriptionActions v-if="subscriptionWithSlug.slug" :dataset="subscriptionWithSlug" :mode="'row'"></SubscriptionActions>
         </div>
         <div class="white-separator u-ml--12 u-mr--12"></div>
-        <SlugCopy v-if="slug" :slug="slug" class="slug-copy"></SlugCopy>
+        <SlugCopy v-if="subscription.status === 'active' && slug" :slug="slug" class="slug-copy"></SlugCopy>
       </div>
       <SubscriptionStatus :status="subscription.status" :expiresDate="subscription.expires_at" class="u-flex__align--center"></SubscriptionStatus>
     </div>

@@ -123,7 +123,7 @@ export default {
         if (this.isAnySubscriptionSyncing) {
           this.id_interval = setInterval(async () => {
             await this.$store.dispatch('catalog/fetchSubscriptionsList', true);
-          }, 5000);
+          }, 1000);
         }
       }
     }

@@ -312,11 +312,15 @@ export default {
         await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id)
       ) {
         await this.$store.dispatch('catalog/fetchSubscriptionsList');
-        this.currentMode = 'subscribed';
+        setTimeout(() => {
+          // Wait 1s for the 'syncing' state
+          this.currentMode = 'subscribed';
+          this.loading = false;
+        }, 1000);
       } else {
         this.error = true;
+        this.loading = false;
       }
-      this.loading = false;
     },
     async unsubscribe () {
       this.loading = true;

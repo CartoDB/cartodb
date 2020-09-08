@@ -721,7 +721,7 @@
   },
   "Subscriptions": {
     "emptyCase": "No subscriptions yet",
-    "exploreDescription": "Explore the Data Catalog and subscribe to one of our Public or Premium datasets; then you will find it here.",
+    "exploreDescription": "Explore the Spatial Data Catalog and subscribe to one of our Public or Premium datasets; then you will find it here.",
     "new": "New subscriptions",
     "exploreNotebook": "Explore Notebook",
     "datasetSize": "Dataset size"

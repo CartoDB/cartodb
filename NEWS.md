@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+* Fix column quoting for geometrification ([#15815](https://github.com/CartoDB/cartodb/pull/15815))
 * Removing unused class ([#15816](https://github.com/CartoDB/cartodb/pull/15816))
 * Added check to avoid modifications of Sequel model files ([#15800](https://github.com/CartoDB/cartodb/pull/15800))
 * Refactor: Use Carto::User model as a CartodbCentralSynchronizable [#15807](https://github.com/CartoDB/cartodb/pull/15807)
@@ -15,6 +16,7 @@ Development
 * Fixes missing includes of LoggerHelper [#15812](https://github.com/CartoDB/cartodb/pull/15812)
 * Adds logging docs [#15813](https://github.com/CartoDB/cartodb/pull/15813)
 * Add wildcard IP for Direct SQL connection [#15818](https://github.com/CartoDB/cartodb/pull/15818)
+* Remove usage of `::User` Sequel model from the `ApplicationController` [#15804](https://github.com/CartoDB/cartodb/pull/15804)
 
 4.41.1 (2020-09-03)
 -------------------

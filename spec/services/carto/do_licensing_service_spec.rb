@@ -12,7 +12,7 @@ describe Carto::DoLicensingService do
       available_in: ['bq', 'bigtable'],
       price: 100,
       created_at: Time.new(2020, 9, 27, 7, 59, 0),
-      expires_at: Time.new(2020, 9, 27, 8, 0, 0),
+      expires_at: Time.new(2021, 9, 27, 8, 0, 0),
       status: 'active'
     }
   end

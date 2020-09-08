@@ -70,6 +70,7 @@ module Carto
         # Create the new entry
         new_value = [{
           dataset_id: dataset[:dataset_id],
+          created_at: dataset[:created_at].to_s,
           expires_at: dataset[:expires_at].to_s,
           status: dataset[:status],
           available_in: dataset[:available_in],

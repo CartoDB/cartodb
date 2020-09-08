@@ -37,7 +37,7 @@ module Carto
         VALID_TYPES = %w(dataset geography).freeze
         VALID_STATUSES = %w(active requested).freeze
         DATASET_REGEX = /[\w\-]+\.[\w\-]+\.[\w\-]+/.freeze
-        VALID_ORDER_PARAMS = %i(id table dataset project type).freeze
+        VALID_ORDER_PARAMS = %i(created_at id table dataset project type).freeze
         METADATA_FIELDS = %i(id estimated_delivery_days subscription_list_price tos tos_link licenses licenses_link
                              rights type).freeze
         TABLES_BY_TYPE = { 'dataset' => 'datasets', 'geography' => 'geographies' }.freeze
@@ -150,7 +150,7 @@ module Carto
 
         def load_filters
           _, _, @order, @direction = page_per_page_order_params(
-            VALID_ORDER_PARAMS, default_order: 'id', default_order_direction: 'asc'
+            VALID_ORDER_PARAMS, default_order: 'created_at', default_order_direction: 'asc'
           )
           @status = VALID_STATUSES.include?(params[:status]) ? params[:status] : nil
           load_type(required: false)
@@ -195,7 +195,7 @@ module Carto
             subscriptions = subscriptions.select { |subscription| subscription[:type] == @type }
           end
 
-          ordered_subscriptions = subscriptions.sort_by { |subscription| subscription[@order] }
+          ordered_subscriptions = subscriptions.sort_by { |subscription| subscription[@order] || subscription['id'] }
           @direction == :asc ? ordered_subscriptions : ordered_subscriptions.reverse
         end
 
@@ -236,6 +236,7 @@ module Carto
             dataset_id: metadata[:id],
             available_in: metadata[:available_in],
             price: metadata[:subscription_list_price],
+            created_at: entity_info[:created_at] || Time.now.round,
             expires_at: entity_info[:expires_at] || Time.now.round + 1.year,
             status: status
           })

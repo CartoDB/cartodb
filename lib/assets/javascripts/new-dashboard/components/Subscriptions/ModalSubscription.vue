@@ -176,6 +176,8 @@
               </Button>
           </router-link>
 
+        </div>
+        <div class="grid u-flex__justify--center u-mt--24">
           <span v-if="error" class="error-msg">There was an issue with the subscription. Please contact CARTO support (support@carto.com)</span>
         </div>
       </div>
@@ -444,6 +446,5 @@ export default {
   font-size: 12px;
   line-height: 20px;
   color: $red--500;
-  padding: 12px 0;
 }
 </style>

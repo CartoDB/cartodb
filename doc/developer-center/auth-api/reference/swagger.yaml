@@ -11,7 +11,7 @@ info:
 
     This API accepts and returns JSON.
 
-    API base endpoint is `https://<your_username>.carto.com/api/v3/api_keys` or `https://<org_name>.carto.com/u/<your_username/api/v3/api_keys` in case you are using a user belonging to an organization.
+    API base endpoint is `https://<your_username>.carto.com/api/v3/api_keys` or `https://<org_name>.carto.com/u/<your_username>/api/v3/api_keys` in case you are using a user belonging to an organization.
 
     # Authorization
 
@@ -140,6 +140,12 @@ paths:
             type: string
           description: Its used to define the critera by which API Keys are listed. It can be any of the attributes
           required: false
+        - in: query
+          name: target_user
+          schema:
+            type: string
+          description: Username of the user belonging to the organization whose API Keys will be listed
+          required: false
       responses:
         '200':
           description: Ok
@@ -151,6 +157,10 @@ paths:
                   $ref: '#/components/schemas/ApiKeys'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
       security:
         - ApiKeyHTTPBasicAuth: []
         - ApiKeyQueryParam: []
@@ -163,6 +173,13 @@ paths:
       tags:
         - API Keys
       operationId: createApiKey
+      parameters:
+        - in: query
+          name: target_user
+          schema:
+            type: string
+          description: Username of the user belonging to the organization for whom the new `regular` API key will be created
+          required: false
       requestBody:
         required: true
         content:
@@ -178,6 +195,10 @@ paths:
                 $ref: '#/components/schemas/ApiKey'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/BadInput'
       security:
@@ -195,6 +216,13 @@ paths:
       tags:
         - API Keys
       operationId: getApiKeyById
+      parameters:
+        - in: query
+          name: target_user
+          schema:
+            type: string
+          description: Username of the user belonging to the organization who has the API key requested
+          required: false
       responses:
         '200':
           description: Ok
@@ -204,6 +232,8 @@ paths:
                 $ref: '#/components/schemas/ApiKey'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
       security:
@@ -218,6 +248,13 @@ paths:
       tags:
         - API Keys
       operationId: deleteApiKeyById
+      parameters:
+        - in: query
+          name: target_user
+          schema:
+            type: string
+          description: Username of the user belonging to the organization who has the API key that will be deleted
+          required: false
       responses:
         '200':
           description: The resource was deleted successfully.
@@ -241,6 +278,13 @@ paths:
       tags:
         - API Keys
       operationId: regenerateApiKeyById
+      parameters:
+        - in: query
+          name: target_user
+          schema:
+            type: string
+          description: Username of the user belonging to the organization who has the API key whose token will be regenerated
+          required: false
       responses:
         '200':
           description: Ok
@@ -250,6 +294,8 @@ paths:
                 $ref: '#/components/schemas/ApiKey'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
       security:
@@ -616,6 +662,6 @@ components:
     Unauthorized:
       description: Unauthorized. Wrong or no authentication provided.
     Forbidden:
-      description: Forbidden. The API key does not authorize this request.
+      description: Forbidden. The API key does not authorize this request or the user is not an owner nor admin of the organization.
     BadInput:
       description: Request's parameters error

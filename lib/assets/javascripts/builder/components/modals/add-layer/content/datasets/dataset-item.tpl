@@ -30,6 +30,11 @@
   <div>
     <div class="DatasetsList-itemMeta">
 
+      <% if (subscriptionTag && subscriptionType) { %>
+        <span class="CDB-Tag is-subscription CDB-Text is-semibold CDB-Size-small u-upperCase">
+          <%- subscriptionTag %>
+        </span>
+      <% } %>
       <span class="CDB-Tag is-<%- privacy %> CDB-Text is-semibold CDB-Size-small u-upperCase">
         <%- privacy %>
       </span>

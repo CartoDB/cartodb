@@ -299,4 +299,11 @@ module Carto::UserCommons
   def do_enabled?
     gcloud_settings[:service_account].present?
   end
+
+  def has_access_to_coverband?
+    return true unless Rails.env.production?
+
+    organization&.name == 'team'
+  end
+
 end

@@ -53,7 +53,6 @@ group :assets do
   gem "compass",               "1.0.3"
 end
 
-# Importer & sync tables
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '1.3.1'
@@ -63,27 +62,17 @@ gem 'google-api-client',       '0.34.1'
 gem 'dropbox_api',             '0.1.17'
 gem 'gibbon',                  '1.1.4'
 gem 'instagram-continued-continued'
-
-# GCloud
 gem 'google-cloud-pubsub', '1.2.0'
-
-# Service components (/services)
 gem 'virtus',                   '1.0.5'
 gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.3.4'
 gem 'email_address',            '~> 0.1.11'
-
-# Markdown
 gem 'redcarpet', '3.3.3'
-
-# TODO Production gems, put them in :production group
 gem 'rollbar',               '~>2.11.1'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
-
 gem 'net-telnet'
-
 gem 'rubyzip',               '>= 2.0.0'
-
+gem 'coverband'
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
 

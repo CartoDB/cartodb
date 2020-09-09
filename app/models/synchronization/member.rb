@@ -394,7 +394,6 @@ module CartoDB
         self.retried_times  = 0
         self.run_at         = Time.now + interval
         self.modified_at    = importer.last_modified
-        geocode_table
       rescue StandardError => exception
         log_error(
           exception: exception, message: 'Error updating state for sync table',
@@ -467,15 +466,6 @@ module CartoDB
 
         Carto::Tracking::Events::FailedSync.new(self.user_id, properties).report
       end
-
-      # Tries to run automatic geocoding if present
-      def geocode_table
-        return unless table && table.automatic_geocoding
-        log.append 'Running automatic geocoding...'
-        table.automatic_geocoding.run
-      rescue StandardError => e
-        log.append "Error while running automatic geocoding: #{e.message}"
-      end # geocode_table
 
       def to_hash
         attributes.merge({from_external_source: from_external_source?}).to_hash

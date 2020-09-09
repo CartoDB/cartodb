@@ -41,9 +41,6 @@ module Carto
 
     belongs_to :data_import
 
-    has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding,
-                                    foreign_key: :table_id, dependent: :destroy
-
     # Disabled to avoid conflicting with the `tags` field. This relation is updated by ::Table.manage_tags.
     # TODO: We can remove both the `user_tables.tags` field and the `tags` table in favour of the canonical viz tags.
     # has_many :tags, foreign_key: :table_id
@@ -243,10 +240,6 @@ module Carto
     # TODO: This is related to an incompatibility between visualizations models, `get_related_tables`, See #11705
     def privacy_text_for_vizjson
       privacy == PRIVACY_LINK ? 'PUBLIC' : privacy_text
-    end
-
-    def automatic_geocoding
-      automatic_geocodings.first
     end
 
     def is_owner?(user)

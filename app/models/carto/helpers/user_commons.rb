@@ -280,4 +280,10 @@ module Carto::UserCommons
     end
   end
 
+  def has_access_to_coverband?
+    return true unless Rails.env.production?
+
+    organization&.name == 'team'
+  end
+
 end

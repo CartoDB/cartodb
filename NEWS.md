@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+* Remove automatic geocodings models and table ([#15817](https://github.com/CartoDB/cartodb/pull/15817))
 * Fix column quoting for geometrification ([#15815](https://github.com/CartoDB/cartodb/pull/15815))
 * Removing unused class ([#15816](https://github.com/CartoDB/cartodb/pull/15816))
 * Added check to avoid modifications of Sequel model files ([#15800](https://github.com/CartoDB/cartodb/pull/15800))
@@ -15,8 +16,10 @@ Development
 * Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
 * Fixes missing includes of LoggerHelper [#15812](https://github.com/CartoDB/cartodb/pull/15812)
 * Adds logging docs [#15813](https://github.com/CartoDB/cartodb/pull/15813)
+* Add wildcard IP for Direct SQL connection [#15818](https://github.com/CartoDB/cartodb/pull/15818)
 * Remove usage of `::User` Sequel model from the `ApplicationController` [#15804](https://github.com/CartoDB/cartodb/pull/15804)
 * New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
+* Setup Coverband dead code detector [https://github.com/CartoDB/cartodb/pull/15811](https://github.com/CartoDB/cartodb/pull/15811)
 
 4.41.1 (2020-09-03)
 -------------------

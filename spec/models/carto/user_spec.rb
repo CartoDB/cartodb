@@ -2,6 +2,8 @@ require_relative '../../spec_helper'
 require_relative '../user_shared_examples'
 
 describe Carto::User do
+  let(:user) { create(:carto_user) }
+
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
       get_user_by_id(user_id).twitter_imports_count
@@ -12,11 +14,11 @@ describe Carto::User do
     end
 
     def create_user
-      FactoryGirl.create(:carto_user)
+      create(:carto_user)
     end
 
     def build_user
-      FactoryGirl.build(:carto_user)
+      build(:carto_user)
     end
   end
 
@@ -97,6 +99,30 @@ describe Carto::User do
       end
 
       @user.password_reset_sent_at.to_s.should eql now.to_s
+    end
+  end
+
+  describe '#has_access_to_coverband?' do
+    let(:team_organization) { Carto::Organization.find(create(:organization, name: 'team').id) }
+
+    subject { user.has_access_to_coverband? }
+
+    context 'in development' do
+      it { should be_true }
+    end
+
+    context 'in production' do
+      before { Rails.env.stubs(:production?).returns(true) }
+
+      context 'when belongs to team' do
+        before { user.update!(organization: team_organization) }
+
+        it { should be_true }
+      end
+
+      context 'in any other case' do
+        it { should be_false }
+      end
     end
   end
 end

@@ -128,6 +128,8 @@ GEM
     compass-import-once (1.0.5)
       sass (>= 3.2, < 3.5)
     concurrent-ruby (1.1.6)
+    coverband (5.0.0)
+      redis
     crass (1.0.6)
     daemons (1.2.4)
     db-query-matchers (0.4.0)
@@ -503,6 +505,7 @@ DEPENDENCIES
   charlock_holmes (= 0.7.6)
   ci_reporter (= 1.8.4)
   compass (= 1.0.3)
+  coverband
   db-query-matchers (= 0.4.0)
   dbf (= 2.0.6)
   delorean

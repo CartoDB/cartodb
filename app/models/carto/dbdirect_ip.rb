@@ -65,7 +65,7 @@ module Carto
       IpChecker.validate(
         ip,
         max_host_bits: MAX_IP_MASK_HOST_BITS,
-        exclude_0: true,
+        exclude_0: false,
         exclude_private: true,
         exclude_local: true,
         exclude_loopback: true

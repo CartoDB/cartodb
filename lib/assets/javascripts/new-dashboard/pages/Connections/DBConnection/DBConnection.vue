@@ -33,12 +33,6 @@
       <section class="dbconnection__ips">
         <SettingsTitle :title="$t('DBConnection.ipsSection.title')"></SettingsTitle>
 
-        <Toggle
-          class="dbconnection__formsection"
-          :disabled="true"
-          :label="$t('DBConnection.ipsSection.allowAllIPs')">
-        </Toggle>
-
         <InputList
           ref="ipInputList"
           class="dbconnection__formsection"
@@ -51,6 +45,7 @@
           {{ $t('DBConnection.ipsSection.ipList.description') }}
           <a href="javascript:void(0)" @click="fillDeviceIPAddress">{{ $t('DBConnection.ipsSection.ipList.getCurrentIP') }}</a>.
         </InputList>
+        <p class="dbconnection__formsection_allowall" v-html="$t('DBConnection.ipsSection.ipList.allowAll')"></p>
       </section>
 
       <SettingsTitle :title="$t('DBConnection.certificatesSection.title', {certificatesLength, certificateLimit})">
@@ -237,6 +232,13 @@ export default {
 .dbconnection__formsection {
   margin-top: 26px;
   width: 60%
+}
+
+.dbconnection__formsection_allowall {
+  margin-bottom: 12px;
+  font-size: 12px;
+  line-height: 16px;
+  margin-top: 12px;
 }
 
 .dbconnection__certificates {

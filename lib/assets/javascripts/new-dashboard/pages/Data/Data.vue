@@ -9,7 +9,7 @@
           <span>{{ $t('DataPage.tabs.subscriptions') }}</span>
         </router-link>
       </div>
-      <router-link :to="{ name: 'spatial-data-catalog' }" class="tabs__item title is-small" exact active-class="is-active" style="margin-left: auto;">
+      <router-link :to="{ name: 'spatial-data-catalog' }" class="tabs__item title is-small right" exact active-class="is-active">
         <span>{{ $t('DataPage.tabs.catalog') }}</span>
       </router-link>
     </SecondaryNavigation>
@@ -65,4 +65,8 @@ export default {
   }
 }
 
+.right {
+  margin-left: auto;
+  margin-right: 0;
+}
 </style>

@@ -25,16 +25,13 @@
         </span>
       </div>
       <div class="u-width--100" v-if="!loading">
-        <div v-if="subscriptions.length === 0" class="grid-cell grid-cell--col12">
+        <div v-if="count === 0" class="grid-cell grid-cell--col12">
           <EmptyState
             :text="$t('Subscriptions.emptyCase')"
             :subtitle="$t('Subscriptions.exploreDescription')"
           >
             <img svg-inline src="../../assets/icons/subscriptions/subscriptions-icon.svg">
           </EmptyState>
-          <router-link :to="{ name: 'spatial-data-catalog' }">
-            <button class="button is-primary goDo">{{$t('Subscriptions.goDo')}}</button>
-          </router-link>
         </div>
         <template v-else>
           <ul>
@@ -126,7 +123,7 @@ export default {
         if (this.isAnySubscriptionSyncing) {
           this.id_interval = setInterval(async () => {
             await this.$store.dispatch('catalog/fetchSubscriptionsList', true);
-          }, 5000);
+          }, 1000);
         }
       }
     }

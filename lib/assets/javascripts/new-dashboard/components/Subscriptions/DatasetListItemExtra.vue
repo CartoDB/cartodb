@@ -6,8 +6,8 @@
          <span class="is-txtSoftGrey">{{$t('Subscriptions.datasetSize')}}</span>
          <span class="u-ml--4">{{ getDatasetSize }}</span>
         </div> -->
-       <SubscriptionActions :dataset="dataset" class="u-mt--28"></SubscriptionActions>
-      <SlugCopy v-if="dataset.slug" :slug="dataset.slug" class="u-mt--24"></SlugCopy>
+      <SubscriptionActions :dataset="dataset" class="u-mt--28"></SubscriptionActions>
+      <SlugCopy v-if="dataset.status === 'active' && dataset.slug" :slug="dataset.slug" class="u-mt--24"></SlugCopy>
     </div>
   </div>
 </template>

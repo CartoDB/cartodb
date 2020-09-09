@@ -4,7 +4,7 @@
       <div>
         <span class="country">{{ dataset.country_name }}</span>
         <span>·</span
-        >{{ dataset.is_geography ? 'Geography' : dataset.category_name }}
+        >{{ dataset.category_name ? dataset.category_name : 'Geography' }}
       </div>
       <div>
         {{ dataset.provider_name }}

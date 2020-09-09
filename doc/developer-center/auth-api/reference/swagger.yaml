@@ -662,6 +662,6 @@ components:
     Unauthorized:
       description: Unauthorized. Wrong or no authentication provided.
     Forbidden:
-      description: Forbidden. The API key does not authorize this request or the user is not an owner nor admin of the organization.
+      description: Forbidden. The API key does not authorize this request.
     BadInput:
       description: Request's parameters error

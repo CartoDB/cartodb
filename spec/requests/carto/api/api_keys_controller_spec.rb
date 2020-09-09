@@ -1726,5 +1726,121 @@ describe Carto::Api::ApiKeysController do
         end
       end
     end
+
+    describe '#regenerate_token' do
+      describe 'owner org' do
+        it 'can regenerate the token of a regular user api key' do
+          old_token = @regular_api_key.token
+          auth_user(@carto_owner_user)
+          post_json regenerate_api_key_token_url(id: @regular_api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:token].should_not be_nil
+            response.body[:token].should_not eq old_token
+            @regular_api_key.reload
+            response.body[:token].should eq @regular_api_key.token
+          end
+        end
+
+        it 'can regenerate the token of an admin user api key' do
+          old_token = @admin_api_key.token
+          auth_user(@carto_owner_user)
+          post_json regenerate_api_key_token_url(id: @admin_api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:token].should_not be_nil
+            response.body[:token].should_not eq old_token
+            @admin_api_key.reload
+            response.body[:token].should eq @admin_api_key.token
+          end
+        end
+
+        it 'cannot regenerate the token of an admin user api key without the target_user parameter' do
+          old_token = @admin_api_key.token
+          auth_user(@carto_owner_user)
+          post_json regenerate_api_key_token_url(id: @admin_api_key.name), auth_params, auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /API key not found/
+          end
+        end
+
+        it 'cannot regenerate the token of an external user api key' do
+          old_token = @external_api_key.token
+          auth_user(@carto_owner_user)
+          post_json regenerate_api_key_token_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'admin org' do
+        it 'can regenerate the token of a regular user api key' do
+          old_token = @regular_api_key.token
+          auth_user(@carto_admin_user)
+          post_json regenerate_api_key_token_url(id: @regular_api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:token].should_not be_nil
+            response.body[:token].should_not eq old_token
+            @regular_api_key.reload
+            response.body[:token].should eq @regular_api_key.token
+          end
+        end
+
+        it 'can regenerate the token of an owner user api key' do
+          old_token = @owner_api_key.token
+          auth_user(@carto_admin_user)
+          post_json regenerate_api_key_token_url(id: @owner_api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:token].should_not be_nil
+            response.body[:token].should_not eq old_token
+            @owner_api_key.reload
+            response.body[:token].should eq @owner_api_key.token
+          end
+        end
+
+        it 'cannot regenerate the token of an owner user api key without the target_user parameter' do
+          old_token = @owner_api_key.token
+          auth_user(@carto_admin_user)
+          post_json regenerate_api_key_token_url(id: @owner_api_key.name), auth_params, auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /API key not found/
+          end
+        end
+
+        it 'cannot regenerate the token of an external user api key' do
+          old_token = @external_api_key.token
+          auth_user(@carto_admin_user)
+          post_json regenerate_api_key_token_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'regular user' do
+        it 'cannot regenerate the token of an owner user api key' do
+          auth_user(@carto_regular_user)
+          post_json regenerate_api_key_token_url(id: @owner_api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot regenerate the token of an admin user api key' do
+          auth_user(@carto_regular_user)
+          post_json regenerate_api_key_token_url(id: @admin_api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot regenerate the token of an external user api key' do
+          auth_user(@carto_regular_user)
+          post_json regenerate_api_key_token_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+      end
+    end
   end
 end

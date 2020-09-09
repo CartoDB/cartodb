@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+* Fix inconsistent handling of SRID in syncs and imports ([15821](https://github.com/CartoDB/cartodb/pull/15821))
 * Remove automatic geocodings models and table ([#15817](https://github.com/CartoDB/cartodb/pull/15817))
 * Fix column quoting for geometrification ([#15815](https://github.com/CartoDB/cartodb/pull/15815))
 * Removing unused class ([#15816](https://github.com/CartoDB/cartodb/pull/15816))

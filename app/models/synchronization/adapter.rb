@@ -245,6 +245,7 @@ module CartoDB
         if %w(linestring polygon).include?(type)
           user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
             user_database.run("SELECT public.AddGeometryColumn('#{schema_name}', '#{table_name}','the_geom_simple',4326, 'GEOMETRY', 2);")
+            user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom = ST_SetSRID(the_geom,4326)})
             user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_Multi(the_geom);})
             user_database.run("SELECT DropGeometryColumn('#{schema_name}', '#{table_name}','the_geom');")
             user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})

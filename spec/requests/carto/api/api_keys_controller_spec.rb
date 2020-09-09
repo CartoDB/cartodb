@@ -1138,10 +1138,8 @@ describe Carto::Api::ApiKeysController do
       @num_api_keys_external_user = 1
 
       # create org and owner
-      @owner_user = FactoryGirl.create(:valid_user, regular_api_key_quota: 10)
       org = FactoryGirl.create(:organization_with_users)
-      org.update(owner: @owner_user)
-      @owner_user.update(organization: org)
+      @owner_user = org.owner
       @carto_owner_user = Carto::User.find(@owner_user.id)
       apikeys = @carto_owner_user.api_keys.order(:updated_at).all.to_a
       @num_api_keys_owner_user.times { apikeys << FactoryGirl.create(:api_key_apis, user_id: @owner_user.id) }

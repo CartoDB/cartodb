@@ -110,10 +110,6 @@ tables = {
              :related => [],
              :singular => 'asset'
            },
-           :automatic_geocodings => {
-             :related => ['geocodings'],
-             :singular => 'automatic_geocoding'
-           },
            :client_applications => {
              :related => ['oauth_tokens'],
              :singular => 'client_application'
@@ -164,7 +160,7 @@ tables = {
              :singular => 'tag'
            },
            :user_tables => {
-             :related => ['data_imports', 'layers_user_tables', 'tags', 'automatic_geocodings', 'geocodings'],
+             :related => ['data_imports', 'layers_user_tables', 'tags', 'geocodings'],
              :singular => 'table',
              :relation_for => {'layers_user_tables' => 'user_table'}
            },

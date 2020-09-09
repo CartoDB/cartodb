@@ -428,6 +428,8 @@ export default {
 }
 
 .button {
+  height: 36px;
+
   &:not(.is-loading) {
     .loading {
       display: none;

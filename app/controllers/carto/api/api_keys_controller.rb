@@ -24,7 +24,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
                        Carto::ApiKey::TYPE_REGULAR].freeze
 
   def create
-    carto_viewer = Carto::User.find(current_viewer.id)
+    carto_viewer = Carto::User.find(target_user.id)
     api_key = carto_viewer.api_keys.create_regular_key!(name: params[:name], grants: params[:grants])
     render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro, 201)
   rescue ActiveRecord::RecordInvalid => e
@@ -48,7 +48,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def index
     page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
 
-    api_keys = Carto::User.find(current_user.id).api_keys.by_type(type_param).order_weighted_by_type
+    api_keys = Carto::User.find(target_user.id).api_keys.by_type(type_param).order_weighted_by_type
     api_keys = request_api_key.master? ? api_keys : api_keys.where(id: request_api_key.id)
     filtered_api_keys = Carto::PagedModel.paged_association(api_keys, page, per_page, order)
 
@@ -74,7 +74,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   def load_api_key
     name = params[:id]
-    @viewed_api_key = Carto::ApiKey.where(user_id: current_viewer.id, name: name).user_visible.first
+    @viewed_api_key = Carto::ApiKey.where(user_id: target_user.id, name: name).user_visible.first
     if !@viewed_api_key || !request_api_key.master? && @viewed_api_key != request_api_key
       raise Carto::LoadError.new("API key not found: #{name}")
     end
@@ -92,5 +92,17 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     types = (params[:type] || '').split(',').map(&:strip)
     raise Carto::ParamInvalidError.new(:type, VALID_TYPE_PARAMS) unless (types - VALID_TYPE_PARAMS).empty?
     types
+  end
+
+  def target_user
+    if params[:target_user].nil?
+      current_viewer
+    else
+      # just org owners or org admins can manage api keys for other users
+      raise Carto::UnauthorizedError.new unless current_viewer.organization_admin?
+      user = ::User.where(username: params[:target_user], organization: current_viewer.organization).first
+      raise Carto::LoadError.new("User '#{params[:target_user]}' not found in the organization '#{current_viewer.organization.name}'") if user.nil?
+      user
+    end
   end
 end

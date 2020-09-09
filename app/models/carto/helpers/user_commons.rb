@@ -9,6 +9,7 @@ require_dependency 'carto/helpers/password'
 require_dependency 'carto/helpers/password_rate_limit'
 require_dependency 'carto/helpers/urls'
 require_dependency 'carto/helpers/varnish_cache_handler'
+require_dependency 'carto/helpers/sessions_invalidations'
 
 module Carto::UserCommons
   include Carto::BatchQueriesStatementTimeout
@@ -22,6 +23,7 @@ module Carto::UserCommons
   include Carto::PasswordRateLimit
   include Carto::Urls
   include Carto::VarnishCacheHandler
+  include Carto::SessionsInvalidations
 
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
@@ -276,6 +278,12 @@ module Carto::UserCommons
       log_error(message: message)
       raise message
     end
+  end
+
+  def has_access_to_coverband?
+    return true unless Rails.env.production?
+
+    organization&.name == 'team'
   end
 
 end

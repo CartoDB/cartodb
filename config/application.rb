@@ -6,6 +6,9 @@ require "active_record/railtie"
 require_relative '../lib/carto/configuration'
 require_relative '../lib/carto/carto_gears_support'
 
+# Forcefully require Coverband config because otherwise it raises an error in the rails console
+require './config/coverband'
+
 if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)
 end

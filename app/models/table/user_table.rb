@@ -34,7 +34,6 @@ class UserTable < Sequel::Model
     user_id
     user_id=
     updated_at
-    automatic_geocoding
     private?
     public?
     public_with_link_only?
@@ -213,8 +212,6 @@ class UserTable < Sequel::Model
     @fully_dependent_visualizations_cache = fully_dependent_visualizations.to_a
     @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
 
-    automatic_geocoding&.destroy
-
     super
   end
 
@@ -335,10 +332,6 @@ class UserTable < Sequel::Model
   def is_owner?(user)
     return false unless user
     user_id == user.id
-  end
-
-  def automatic_geocoding
-    Carto::AutomaticGeocoding.find_by_table_id(id)
   end
 
   private

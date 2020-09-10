@@ -11,15 +11,21 @@ module Resque
         user = Carto::User.find(data_import.user_id)
         licensing_service = Carto::DoLicensingService.new(user.username)
         subscription_info = get_subscription_info(data_import)
-        subscription  = licensing_service.subscription(subscription_info['subscription_id'])
 
-        write_do_sync_status(subscription, data_import, licensing_service)
+        write_do_sync_status(subscription_info, data_import, licensing_service)
         data_import.run_import!
-        write_do_sync_status(subscription, data_import, licensing_service)
+        write_do_sync_status(subscription_info, data_import, licensing_service)
       })
     end
 
-    def self.write_do_sync_status(subscription, data_import, licensing_service)
+    def self.write_do_sync_status(subscription_info, data_import, licensing_service)
+      subscription  = licensing_service.subscription(subscription_info['subscription_id'])
+      # Check if the subscription has been removed during the synchronization process:
+      if subscription.nil?
+        # TODO: Remove table...
+        raise StandardError.new("Subscription not found after import! (tablename: #{data_import.table_name})")
+      end
+
       status_name = 'syncing'
       unsyncable_reason = nil
       if data_import.state != 'pending' then

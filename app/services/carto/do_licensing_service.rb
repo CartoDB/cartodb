@@ -106,8 +106,10 @@ module Carto
       }))
       if sync_errors then
         return sync_errors[:sync_status], sync_errors[:unsyncable_reason]
-      else
+      elsif dataset[:status] == 'requested' then
         return 'unsynced', nil
+      else
+        return 'syncing', nil
       end
     end
 

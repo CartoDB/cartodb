@@ -19,6 +19,7 @@ Development
 * Add wildcard IP for Direct SQL connection [#15818](https://github.com/CartoDB/cartodb/pull/15818)
 * Remove usage of `::User` Sequel model from the `ApplicationController` [#15804](https://github.com/CartoDB/cartodb/pull/15804)
 * New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
+* Bump version of cartodb-common module to v0.3.6 [#15820](https://github.com/CartoDB/cartodb/pull/15820)
 * Setup Coverband dead code detector [https://github.com/CartoDB/cartodb/pull/15811](https://github.com/CartoDB/cartodb/pull/15811)
 
 4.41.1 (2020-09-03)

@@ -34,6 +34,10 @@ module Resque
         status_name, unsyncable_reason = sync_info.values_at(:sync_status, :unsyncable_reason)
       end
 
+      if data_import.state == 'failure' && unsyncable_reason.nil? then
+        unsyncable_reason = data_import.log.entries
+      end
+
       licensing_service.add_to_redis(subscription.merge({
         sync_status: status_name,
         unsyncable_reason: unsyncable_reason,

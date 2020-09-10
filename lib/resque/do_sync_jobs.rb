@@ -22,7 +22,8 @@ module Resque
       subscription  = licensing_service.subscription(subscription_info['subscription_id'])
       # Check if the subscription has been removed during the synchronization process:
       if subscription.nil?
-        # TODO: Remove table...
+        # Remove just-imported table...
+        Carto::UserTable.find(data_import.table_id).visualization.destroy
         raise StandardError.new("Subscription not found after import! (tablename: #{data_import.table_name})")
       end
 

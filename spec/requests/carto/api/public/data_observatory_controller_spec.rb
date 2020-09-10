@@ -624,7 +624,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       mock_sync_service = mock
       Carto::DoSyncServiceFactory.expects(:get_for_user).once.returns(mock_sync_service)
-      mock_sync_service.stubs(:entity_info).returns(expected_params)
+      mock_sync_service.stubs(:parsed_entity_id).returns(expected_params)
 
       mock_service = mock
       mock_service.expects(:subscribe).with(expected_params).once
@@ -667,7 +667,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       mock_sync_service = mock
       Carto::DoSyncServiceFactory.expects(:get_for_user).once.returns(mock_sync_service)
-      mock_sync_service.stubs(:entity_info).returns(expected_params)
+      mock_sync_service.stubs(:parsed_entity_id).returns(expected_params)
 
       mock_service = mock
       mock_service.expects(:subscribe).with(expected_params).once
@@ -705,7 +705,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
         mock_sync_service = mock
         Carto::DoSyncServiceFactory.expects(:get_for_user).once.returns(mock_sync_service)
-        mock_sync_service.stubs(:entity_info).returns(expected_params)
+        mock_sync_service.stubs(:parsed_entity_id).returns(expected_params)
 
         mock_service = mock
         mock_service.expects(:subscribe).with(expected_params).once
@@ -750,7 +750,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
         mock_sync_service = mock
         Carto::DoSyncServiceFactory.expects(:get_for_user).once.returns(mock_sync_service)
-        mock_sync_service.stubs(:entity_info).returns(expected_params)
+        mock_sync_service.stubs(:parsed_entity_id).returns(expected_params)
 
         mock_service = mock
         mock_service.expects(:subscribe).with(expected_params).once

@@ -177,16 +177,21 @@ module Carto
         log_error(
           message: 'Error in named maps API',
           current_user: user,
-          visualization: { id: visualization.id },
+          visualization_id: visualization.id,
           action: action,
-          request: { url: response.request.url },
-          response: { status: response.code, body: response.body }
+          request_url: response.request.url,
+          response_code: response.code,
+          response: response.body
         )
       rescue Encoding::UndefinedConversionError => e
         # Hotfix for preventing https://rollbar.com/carto/CartoDB/items/41457 until we find the root cause
         # https://cartoteam.slack.com/archives/CEQLWTW9Z/p1599134417001900
         # https://app.clubhouse.io/cartoteam/story/101908/fix-encoding-error-while-logging-request
         Rollbar.error(e)
+      end
+
+      def log_context
+        super.merge(request_id: Carto::CurrentRequest.request_id, component: 'cartodb.named-maps')
       end
     end
   end

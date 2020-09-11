@@ -180,8 +180,8 @@ module Carto
           visualization_id: visualization.id,
           action: action,
           request_url: response.request.url,
-          response_code: response.code,
-          response: response.body
+          status: response.code,
+          response_body: response.body
         )
       rescue Encoding::UndefinedConversionError => e
         # Hotfix for preventing https://rollbar.com/carto/CartoDB/items/41457 until we find the root cause
@@ -191,7 +191,7 @@ module Carto
       end
 
       def log_context
-        super.merge(request_id: Carto::CurrentRequest.request_id, component: 'cartodb.named-maps')
+        super.merge(request_id: Carto::CurrentRequest.request_id, component: 'cartodb.named-maps-client')
       end
     end
   end

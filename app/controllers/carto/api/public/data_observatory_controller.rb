@@ -231,10 +231,12 @@ module Carto
 
         def license_info(metadata, status)
           doss = Carto::DoSyncServiceFactory.get_for_user(@user)
-          entity_info = doss.entity_info(metadata[:id])
+          entity_info = doss.parsed_entity_id(metadata[:id])
+          # 'requested' datasets may no exists yet in 'bq', but let's assume it will...
+          available_in = (metadata[:available_in].nil? && status == 'requested')? ['bq'] : metadata[:available_in]
           entity_info.merge({
             dataset_id: metadata[:id],
-            available_in: metadata[:available_in],
+            available_in: available_in,
             price: metadata[:subscription_list_price],
             created_at: entity_info[:created_at] || Time.now.round,
             expires_at: entity_info[:expires_at] || Time.now.round + 1.year,

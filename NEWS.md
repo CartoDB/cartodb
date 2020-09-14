@@ -21,6 +21,7 @@ Development
 * Bump version of cartodb-common module to v0.3.6 [#15820](https://github.com/CartoDB/cartodb/pull/15820)
 * Setup Coverband dead code detector [https://github.com/CartoDB/cartodb/pull/15811](https://github.com/CartoDB/cartodb/pull/15811)
 * Include LoggerHelper as class methods in models [https://github.com/CartoDB/cartodb/pull/15824](https://github.com/CartoDB/cartodb/pull/15824)
+* Fix Coverband - Resque integration [#15827](https://github.com/CartoDB/cartodb/pull/15827)
 
 4.41.1 (2020-09-03)
 -------------------

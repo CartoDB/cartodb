@@ -36,8 +36,7 @@
         <template v-else>
           <ul>
             <div class="subscription-item u-flex" v-for="subscription in subscriptionsByPage" :key="subscription.slug">
-              <DatasetListItem :dataset="subscription"></DatasetListItem>
-              <DatasetListItemExtra :dataset="subscription"></DatasetListItemExtra>
+              <DatasetListItem :dataset="subscription" :extra="true"></DatasetListItem>
             </div>
           </ul>
           <div class="u-mt--48 u-flex u-flex__justify--center">
@@ -57,7 +56,6 @@ import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import DatasetListItem from 'new-dashboard/components/Catalog/browser/DatasetListItem';
-import DatasetListItemExtra from 'new-dashboard/components/Subscriptions/DatasetListItemExtra';
 import Pager from 'new-dashboard/components/Catalog/browser/Pager';
 
 export default {
@@ -68,7 +66,6 @@ export default {
     VisualizationsTitle,
     SettingsDropdown,
     DatasetListItem,
-    DatasetListItemExtra,
     Pager
   },
   data () {
@@ -175,20 +172,8 @@ export default {
       border-bottom: 1px solid $neutral--300;
     }
     .list-item {
-      flex: 1 1 100%;
-      display: flex;
-      flex-direction: column;
       &:hover {
         background-color: transparent;
-      }
-      /deep/ {
-        .extra {
-          flex: 1 1 100%;
-          >div {
-            display: flex;
-            align-items: flex-end;
-          }
-        }
       }
     }
   }

@@ -38,7 +38,9 @@ export default {
     },
     subscriptionExpirationLabel () {
       if (this.expiresDate && this.expiresDate !== '') {
-        return `Expires at ${format(new Date(this.expiresDate), 'MMM DD, YYYY')}`;
+        // Format to a safer date format (Safari, IE)
+        const expiresDateSafe = this.expiresDate.replace(/-/g, '/');
+        return `Expires at ${format(new Date(expiresDateSafe), 'MMM DD, YYYY')}`;
       }
       return 'Doesn’t expire';
     }

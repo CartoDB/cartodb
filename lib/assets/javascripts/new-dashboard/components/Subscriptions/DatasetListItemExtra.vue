@@ -1,5 +1,5 @@
 <template>
-  <div class="dataset-listItem-extra-container u-flex u-flex__direction--column u-pt--12 u-pl--24 u-pb--24">
+  <div class="dataset-listItem-extra-container u-flex u-flex__direction--column u-pl--24">
     <SubscriptionStatus :status="dataset.status" :expiresDate="dataset.expires_at" class="u-width--100"></SubscriptionStatus>
     <div class="u-ml--16">
        <!-- <div class="is-caption u-mt--12 is-small">

@@ -35,7 +35,7 @@ module LoggerHelper
       if value.is_a?(Exception)
         parsed_params[:exception] = { class: value.class.name, message: value.message, backtrace_hint: value.backtrace&.take(5) }
         parsed_params[:message] = value.message if params[:message].blank?
-      elsif value.is_a?(User) || value.is_a?(Carto::User)
+      elsif value.is_a?(::User) || value.is_a?(::Carto::User)
         parsed_params[key] = value.username
       elsif value.is_a?(Organization) || value.is_a?(Carto::Organization)
         parsed_params[key] = value.name

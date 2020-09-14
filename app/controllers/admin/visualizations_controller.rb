@@ -31,7 +31,13 @@ class Admin::VisualizationsController < Admin::AdminController
   before_filter :login_required, only: [:index]
   before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
-  before_filter :get_viewed_user, only: [:public_map, :public_table, :show_protected_public_map, :show_organization_public_map, :public_map_protected, :embed_map, :embed_protected]
+  before_filter :get_viewed_user_or_org, only: [:public_map,
+                                                :public_table,
+                                                :show_protected_public_map,
+                                                :show_organization_public_map,
+                                                :public_map_protected,
+                                                :embed_map,
+                                                :embed_protected]
 
   before_filter :resolve_visualization_and_table,
                 :ensure_visualization_viewable,
@@ -640,13 +646,12 @@ class Admin::VisualizationsController < Admin::AdminController
     @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
   end
 
-  def get_viewed_user
-    username = CartoDB.extract_subdomain(request)
-    @viewed_user = ::User.where(username: username).first
+  def get_viewed_user_or_org
+    subdomain = CartoDB.extract_subdomain(request).strip.downcase
+    @viewed_user = ::User.where(username: subdomain).first
 
     if @viewed_user.nil?
-      username = username.strip.downcase
-      @org = get_organization_if_exists(username)
+      @org = get_organization_if_exists(subdomain)
     end
   end
 

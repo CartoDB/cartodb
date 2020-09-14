@@ -388,10 +388,6 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def embed_map
-    if @viewed_user&.has_feature_flag?('static_embed_map')
-      return render(file: "public/static/embed_map/index.html", layout: false)
-    end
-
     if request.format == 'text/javascript'
       error_message = "/* Javascript embeds are deprecated, please use the html iframe instead */"
       return render inline: error_message, status: 400

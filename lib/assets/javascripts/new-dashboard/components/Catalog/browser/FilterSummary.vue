@@ -45,7 +45,7 @@
       </div>
     </transition>
     <div
-      v-if="showFilterSuggestions && filterSuggestion"
+      v-if="showFilterSuggestions && filterSuggestion && filterSuggestion.option.entity_count !== '0'"
       class="filter-suggestion grid grid--no-wrap grid--align-center grid--space text is-small"
     >
       <p>

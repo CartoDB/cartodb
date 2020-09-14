@@ -1,7 +1,7 @@
 <template>
   <div class="u-flex" :class="{'u-flex__direction--column': mode === 'column', 'u-flex__align--center': mode !== 'column'}">
     <div v-if="dataset.sync_status !== 'syncing'" class="u-flex u-flex__align--center"
-      :class="{ disabled: dataset.status !== 'active' && dataset.sync_status !== 'synced' }">
+      :class="{ disabled: dataset.status !== 'active' || dataset.sync_status !== 'synced' }">
       <!-- <SubscriptionButtonTooltip v-if="dataset.sync_status === 'synced'">
         <button type="button" class="u-mr--8 connect" @click="unconnect">
           <div class="tooltip text is-small is-txtWhite">

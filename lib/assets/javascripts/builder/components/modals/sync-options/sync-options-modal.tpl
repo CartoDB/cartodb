@@ -13,7 +13,7 @@
     <div>
       <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--m">
         <%- _t('dataset.sync.title') %>
-     </h2>
+      </h2>
       <p class="CDB-Text CDB-Size-medium u-altTextColor" style="white-space: pre-wrap;"><%= _t('dataset.sync.desc', {
         service: service,
         url: url

@@ -297,7 +297,7 @@ module Carto::UserCommons
   end
 
   def do_enabled?
-    gcloud_settings[:service_account].present?
+    gcloud_settings[:service_account].present? && @user.has_feature_flag?('do-subscriptions')
   end
 
   def has_access_to_coverband?

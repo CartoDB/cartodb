@@ -96,8 +96,6 @@ class Admin::VisualizationsController < Admin::AdminController
   def public_table
     return(render_pretty_404) if @visualization.private?
 
-    get_viewed_user
-
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]
         destination_user = ::User.where(username: request.params[:user_domain]).first
@@ -372,8 +370,6 @@ class Admin::VisualizationsController < Admin::AdminController
       flash[:error] = "Invalid password"
       return(embed_protected)
     end
-
-    get_viewed_user
 
     response.headers['Cache-Control']   = "no-cache, private"
 

@@ -22,6 +22,7 @@ Development
 * Setup Coverband dead code detector [https://github.com/CartoDB/cartodb/pull/15811](https://github.com/CartoDB/cartodb/pull/15811)
 * Include LoggerHelper as class methods in models [https://github.com/CartoDB/cartodb/pull/15824](https://github.com/CartoDB/cartodb/pull/15824)
 * Fix Coverband - Resque integration [#15827](https://github.com/CartoDB/cartodb/pull/15827)
+* Fix missing LoggerHelper in CartoDB::LayerModule::Presenter [#15829](https://github.com/CartoDB/cartodb/pull/15829)
 
 4.41.1 (2020-09-03)
 -------------------

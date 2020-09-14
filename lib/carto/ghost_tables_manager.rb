@@ -263,6 +263,9 @@ module Carto
       return unless user_table_to_drop # The table has already been deleted
 
       table_to_drop = ::Table.new(user_table: user_table_to_drop)
+
+      carto_visualizations = Carto::Visualization.where(id: table_to_drop.user_table.affected_visualizations.map(&:id))
+      carto_visualizations.map(&:backup_visualization)
       table_to_drop.keep_user_database_table = true
       table_to_drop.destroy
     rescue StandardError => exception

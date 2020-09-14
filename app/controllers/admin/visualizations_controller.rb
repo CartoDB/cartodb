@@ -648,7 +648,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def get_viewed_user_or_org
     subdomain = CartoDB.extract_subdomain(request).strip.downcase
-    @viewed_user = ::User.where(username: subdomain).first
+    @viewed_user = Carto::User.where(username: subdomain).first
 
     if @viewed_user.nil?
       @org = get_organization_if_exists(subdomain)
@@ -656,7 +656,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def get_organization_if_exists(name)
-    Organization.where(name: name).first
+    Carto::Organization.where(name: name).first
   end
 
   def data_library_user?

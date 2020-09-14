@@ -46,6 +46,7 @@ class Table
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
 
+  attr_accessor :user_table
 
   def initialize(args = {})
     if args[:user_table].nil?

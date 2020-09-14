@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+* New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
 
 ### Bug fixes / enhancements
 * Remove automatic geocodings models and table ([#15817](https://github.com/CartoDB/cartodb/pull/15817))

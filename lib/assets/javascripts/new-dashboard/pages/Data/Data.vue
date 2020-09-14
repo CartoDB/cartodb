@@ -5,7 +5,7 @@
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
           <span>{{ $t('DataPage.tabs.datasets') }}</span>
         </router-link>
-        <router-link :to="{ name: 'subscriptions' }" class="tabs__item title is-small" exact active-class="is-active">
+        <router-link :to="{ name: 'subscriptions' }" class="tabs__item title is-small" exact active-class="is-active" v-if="isDOEnabled">
           <span>{{ $t('DataPage.tabs.subscriptions') }}</span>
         </router-link>
       </div>
@@ -39,6 +39,9 @@ export default {
     },
     showDataCatalog () {
       return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+    },
+    isDOEnabled () {
+      return this.$store.state.user.do_enabled;
     }
   }
 };

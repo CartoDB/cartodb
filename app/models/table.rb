@@ -46,6 +46,7 @@ class Table
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
 
+  attr_accessor :user_table
 
   def initialize(args = {})
     if args[:user_table].nil?
@@ -1213,6 +1214,10 @@ class Table
   # This allows re-applying the same normalization to imported tables.
   def sanitize_columns(table_name: name, **options)
     self.class.sanitize_columns(table_name, column_sanitization_version, options)
+  end
+
+  def visualizations
+    Carto::Visualization.where(id: user_table.affected_visualizations.map(&:id))
   end
 
   private

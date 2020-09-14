@@ -15,6 +15,8 @@ module Carto
       Rails.logger.expects(:error).never
     end
 
+    after { Carto::User.destroy_all }
+
     def run_in_user_database(query)
       sequel_user.in_database.run(query)
     end
@@ -426,6 +428,17 @@ module Carto
       ghost_tables_manager.link_ghost_tables_synchronously
       user.tables.count.should eq 0
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
+    end
+
+    it 'should backup visualizations before dropping a table' do
+      user_table = create(:carto_user_table, :full, user: user)
+
+      expect(Carto::VisualizationBackup.count).to eq(0)
+
+      run_in_user_database("ALTER TABLE #{user_table.name} DROP COLUMN cartodb_id")
+      ghost_tables_manager.link_ghost_tables_synchronously
+
+      expect(Carto::VisualizationBackup.count).to eq(1)
     end
   end
 end

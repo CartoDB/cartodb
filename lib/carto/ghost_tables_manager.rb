@@ -296,7 +296,7 @@ module Carto
     private
 
     def log_context
-      super.merge(target_user: user, table: { id: id, name: name })
+      super.merge(current_user: user.username, table_id: id, table_name: name)
     end
   end
 end

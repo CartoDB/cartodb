@@ -13,30 +13,26 @@ class SearchTweet < Sequel::Model
   many_to_one :user
   many_to_one :table, class: :UserTable
 
-  STATE_IMPORTING = 'importing'
-  STATE_COMPLETE  = 'complete'
-  STATE_FAILED  = 'failed'
-
   def self.get_twitter_imports_count(dataset, date_from, date_to)
     dataset
-      .where('search_tweets.state = ?', ::SearchTweet::STATE_COMPLETE)
+      .where('search_tweets.state = ?', Carto::SearchTweet::STATE_COMPLETE)
       .where('search_tweets.created_at >= ? AND search_tweets.created_at <= ?', date_from, date_to + 1.days)
       .sum(Sequel.lit("retrieved_items")).to_i
   end
 
   def set_importing_state
-    @state = STATE_IMPORTING
+    @state = Carto::SearchTweet::STATE_IMPORTING
     # For persisting into db
     self.state = @state
   end
 
   def set_complete_state
-    @state = STATE_COMPLETE
+    @state = Carto::SearchTweet::STATE_COMPLETE
     self.state = @state
   end
 
   def set_failed_state
-    @state = STATE_FAILED
+    @state = Carto::SearchTweet::STATE_FAILED
     self.state = @state
   end
 
@@ -46,7 +42,7 @@ class SearchTweet < Sequel::Model
   end
 
   def calculate_used_credits
-    return 0 unless self.state == STATE_COMPLETE
+    return 0 unless self.state == Carto::SearchTweet::STATE_COMPLETE
 
     total_rows = self.retrieved_items
     quota = user.effective_twitter_total_quota

@@ -240,7 +240,7 @@ describe Carto::Superadmin::OrganizationsController do
         data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         service_item_id: '555',
         retrieved_items: 42,
-        state: ::SearchTweet::STATE_COMPLETE
+        state: Carto::SearchTweet::STATE_COMPLETE
       )
       st2 = SearchTweet.create(
         user_id: @org_user_1.id,
@@ -248,7 +248,7 @@ describe Carto::Superadmin::OrganizationsController do
         data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         service_item_id: '555',
         retrieved_items: 628,
-        state: ::SearchTweet::STATE_COMPLETE
+        state: Carto::SearchTweet::STATE_COMPLETE
       )
       get_json(usage_superadmin_organization_url(@organization.id), { from: Date.today - 5 }, superadmin_headers) do |response|
         tweets = response.body[:twitter_imports][:retrieved_items]

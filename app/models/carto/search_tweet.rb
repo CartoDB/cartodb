@@ -3,20 +3,29 @@ require 'active_record'
 module Carto
   class SearchTweet < ActiveRecord::Base
 
+    STATE_IMPORTING = 'importing'.freeze
+    STATE_COMPLETE = 'complete'.freeze
+    STATE_FAILED = 'failed'.freeze
+
+    before_save :touch_updated_at
     belongs_to :user, inverse_of: :search_tweets, class_name: 'Carto::User'
     belongs_to :user_table, class_name: 'Carto::UserTable'
     belongs_to :data_import, class_name: 'Carto::DataImport'
 
+    def touch_updated_at
+      self.updated_at = Time.now
+    end
+
     def self.twitter_imports_count(query, date_from, date_to)
       query
-        .where('search_tweets.state' => ::SearchTweet::STATE_COMPLETE)
+        .where('search_tweets.state' => STATE_COMPLETE)
         .where('search_tweets.created_at >= ? AND search_tweets.created_at <= ?', date_from, date_to + 1.days)
         .sum("search_tweets.retrieved_items").to_i
     end
 
     def self.twitter_imports_count_by_date(query, date_from, date_to)
       query
-        .where('search_tweets.state' => ::SearchTweet::STATE_COMPLETE)
+        .where('search_tweets.state' => STATE_COMPLETE)
         .where('search_tweets.created_at >= ? AND search_tweets.created_at <= ?', date_from, date_to + 1.days)
         .group("date_trunc('day', search_tweets.created_at)")
         .select("date_trunc('day', search_tweets.created_at) as date, SUM(search_tweets.retrieved_items) as count")

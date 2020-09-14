@@ -649,8 +649,15 @@ class Carto::Visualization < ActiveRecord::Base
   def dependent_visualizations_count
     user_table&.dependent_visualizations_count.to_i
   end
-
+  # Backup visualization
   def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)
+    log_info(
+      message: 'Called Carto::Visualization#backup_visualization',
+      remote: remote?,
+      category: category,
+      tag: 'AMIEDES-DEBUG'
+    )
+
     return true if remote?
 
     if map && !destroyed?

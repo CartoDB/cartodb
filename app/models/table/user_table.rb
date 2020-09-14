@@ -206,6 +206,7 @@ class UserTable < Sequel::Model
   end
 
   def destroy
+    puts "Called Sequel destroy"
     ::Carto::UserTable.find(id).destroy
   end
 

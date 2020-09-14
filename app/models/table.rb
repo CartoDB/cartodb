@@ -45,6 +45,7 @@ class Table
 
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
+  # destroy is delegated to UserTable
 
   attr_accessor :user_table
 

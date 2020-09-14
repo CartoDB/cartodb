@@ -138,6 +138,7 @@ module Carto
     end
 
     def sync
+      log_info(message: 'GhostTablesManager: called #sync')
       regenerated_tables, renamed_tables, new_tables, dropped_tables = fetch_altered_tables
 
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
@@ -150,6 +151,7 @@ module Carto
       new_tables.each(&:create_user_table)
 
       # Unlink tables that have been created through the SQL API. Should go last.
+      log_info(message: 'GhostTablesManager: calling #drop_user_table on tables', tables_names: dropped_tables.map(&:name))
       dropped_tables.each(&:drop_user_table)
     end
 
@@ -207,6 +209,10 @@ module Carto
         Carto::TableFacade.new(record[:reloid], record[:table_name], @user_id)
       end
     end
+
+    def log_context
+      super.merge(current_user: user.username)
+    end
   end
 
   class TableFacade
@@ -233,6 +239,8 @@ module Carto
     end
 
     def create_user_table
+      log_operation(__method__)
+
       user_table = Carto::UserTable.new
       user_table.user_id = user.id
       user_table.table_id = id
@@ -248,6 +256,8 @@ module Carto
     end
 
     def rename_user_table_vis
+      log_operation(__method__)
+
       user_table_vis = user_table_with_matching_id.table_visualization
 
       user_table_vis.register_table_only = true
@@ -259,6 +269,8 @@ module Carto
     end
 
     def drop_user_table
+      log_operation(__method__)
+
       user_table_to_drop = user.tables.where(table_id: id, name: name).first
       return unless user_table_to_drop # The table has already been deleted
 
@@ -273,6 +285,8 @@ module Carto
     end
 
     def regenerate_user_table
+      log_operation(__method__)
+
       user_table_to_regenerate = user_table_with_matching_name
 
       user_table_to_regenerate.table_id = id
@@ -297,6 +311,13 @@ module Carto
 
     def log_context
       super.merge(current_user: user.username, table_id: id, table_name: name)
+    end
+
+    def log_operation(operation_name)
+      log_info(
+        message: "GhostTables: running #{operation_name}",
+        tag: 'AMIEDES-DEBUG'
+      )
     end
   end
 end

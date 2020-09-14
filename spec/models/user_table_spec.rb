@@ -76,6 +76,7 @@ describe UserTable do
       @user.viewer = false
       @user.save
       @user_table.reload
+      debugger
       @user_table.destroy
     end
   end

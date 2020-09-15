@@ -315,10 +315,6 @@ class DataImport < Sequel::Model
     self
   end
 
-  def is_raster?
-    ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0
-  end
-
   # Calculates the maximum timeout in seconds for a given user, to be used when performing HTTP requests
   # TODO: Candidate for being private if we join syncs and data imports someday
   # TODO: Add timeout config (if we need to change this)

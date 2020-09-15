@@ -647,7 +647,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def get_viewed_user_or_org
-    subdomain = CartoDB.extract_subdomain(request).strip.downcase
+    subdomain = CartoDB.extract_subdomain(request)
     @viewed_user = Carto::User.where(username: subdomain).first
 
     if @viewed_user.nil?

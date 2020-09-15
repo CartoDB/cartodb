@@ -32,7 +32,7 @@
           <img src="../../assets/icons/catalog/information-circle.svg" :class="smallClass">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey" :class="smallClass">
             <h1>Unable to connect</h1>
-            <p>This dataset is too large for Builder; you can use CARTOFrames to access the data</p>
+            <p>This dataset is too large for Builder. You can use CARTOFrames to access the data</p>
           </div>
         </button>
       </SubscriptionButtonTooltip>

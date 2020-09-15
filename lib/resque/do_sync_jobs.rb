@@ -32,7 +32,7 @@ module Resque
       if data_import.state != 'pending' then
         sync_info = licensing_service.get_sync_status(subscription[:dataset_id])
         status_name, unsyncable_reason, unsynced_errors = sync_info.values_at(:sync_status, :unsyncable_reason, :unsynced_errors)
-      endg
+      end
 
       licensing_service.add_to_redis(subscription.merge({
         sync_status: status_name,

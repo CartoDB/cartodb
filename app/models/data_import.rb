@@ -315,12 +315,6 @@ class DataImport < Sequel::Model
     self
   end
 
-  def tables
-    table_names_array.map do |table_name|
-      UserTable.where(name: table_name, user_id: user_id).first.service
-    end
-  end
-
   def table_names_array
     table_names.present? ? table_names.split(' ') : []
   end

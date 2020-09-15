@@ -212,6 +212,7 @@ class DataImport < Sequel::Model
     raise CartoDB::QuotaExceeded, 'More tables required'
   end
 
+  # TODO: move to new model
   def mark_as_failed_if_stuck!
     return false unless stuck?
 
@@ -312,13 +313,6 @@ class DataImport < Sequel::Model
     log.append(exception.backtrace, false)
     log.store
     self
-  end
-
-  def table
-    # We can assume the owner is always who imports the data
-    # so no need to change to a Visualization::Collection based load
-    # TODO better to use an association for this
-    ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
   end
 
   def tables

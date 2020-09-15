@@ -118,9 +118,9 @@ export default {
       handler () {
         clearInterval(this.id_interval);
         if (this.isAnySubscriptionSyncing) {
-          this.id_interval = setInterval(async () => {
-            await this.$store.dispatch('catalog/fetchSubscriptionsList', true);
-          }, 1000);
+          this.id_interval = setInterval(() => {
+            this.$store.dispatch('catalog/fetchSubscriptionsList', true);
+          }, 5000);
         }
       }
     }

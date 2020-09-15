@@ -46,44 +46,6 @@ class DataImport < Sequel::Model
   one_to_many :external_data_imports
   many_to_one :user
 
-  # @see store_results() method also when adding new fields
-  PUBLIC_ATTRIBUTES = [
-    'id',
-    'user_id',
-    'table_id',
-    'data_type',
-    'table_name',
-    'state',
-    'error_code',
-    'queue_id',
-    'get_error_text',
-    'get_error_source',
-    'tables_created_count',
-    'synchronization_id',
-    'service_name',
-    'service_item_id',
-    'type_guessing',
-    'quoted_fields_guessing',
-    'content_guessing',
-    'server',
-    'host',
-    'upload_host',
-    'resque_ppid',
-    'create_visualization',
-    'visualization_id',
-    # String field containing a json, format:
-    # {
-    #   twitter_credits: Integer
-    # }
-    # No automatic conversion coded
-    'user_defined_limits',
-    'original_url',
-    'privacy',
-    'http_response_code',
-    'rejected_layers',
-    'runner_warnings'
-  ]
-
   # Not all constants are used, but so that we keep track of available states
   STATE_ENQUEUED  = 'enqueued'  # Default state for imports whose files are not yet at "import source"
   STATE_PENDING   = 'pending'   # Default state for files already at "import source" (e.g. S3 bucket)
@@ -155,13 +117,6 @@ class DataImport < Sequel::Model
 
   def dataimport_logger
     @@dataimport_logger ||= CartoDB.unformatted_logger(log_file_path("imports.log"))
-  end
-
-  def public_values
-    values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
-    values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE || state == STATE_STUCK)
-    values
   end
 
   def run_import!

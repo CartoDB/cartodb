@@ -315,10 +315,6 @@ class DataImport < Sequel::Model
     self
   end
 
-  def table_names_array
-    table_names.present? ? table_names.split(' ') : []
-  end
-
   def is_raster?
     ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0
   end

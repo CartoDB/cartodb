@@ -31,16 +31,13 @@ module Resque
       unsyncable_reason = nil
       if data_import.state != 'pending' then
         sync_info = licensing_service.get_sync_status(subscription[:dataset_id])
-        status_name, unsyncable_reason = sync_info.values_at(:sync_status, :unsyncable_reason)
-      end
-
-      if data_import.state == 'failure' && unsyncable_reason.nil? then
-        unsyncable_reason = data_import.log.entries
+        status_name, unsyncable_reason, unsynced_errors = sync_info.values_at(:sync_status, :unsyncable_reason, :unsynced_errors)
       end
 
       licensing_service.add_to_redis(subscription.merge({
         sync_status: status_name,
         unsyncable_reason: unsyncable_reason,
+        unsynced_errors: unsynced_errors,
         sync_table: data_import.table_name,
         sync_table_id: data_import.table_id,
         synchronization_id: data_import.synchronization_id

@@ -81,6 +81,7 @@ module Carto
           num_bytes: dataset[:num_bytes].to_i,
           sync_status: sync_status,
           unsyncable_reason: unsyncable_reason,
+          unsynced_errors: dataset[:unsynced_errors] || nil,
           sync_table: dataset[:sync_table] || nil,
           sync_table_id: dataset[:sync_table_id] || nil,
           synchronization_id: dataset[:synchronization_id] || nil
@@ -98,14 +99,14 @@ module Carto
     end
 
     def get_initial_sync_status(dataset)
-      sync_errors = @doss.check_syncable(dataset) || @doss.check_sync_limits(dataset.merge({
+      sync_info = @doss.check_syncable(dataset) || @doss.check_sync_limits(dataset.merge({
         estimated_size: dataset[:estimated_size].to_i,
         estimated_row_count: dataset[:estimated_row_count].to_i,
         estimated_columns_count: dataset[:estimated_columns_count].to_i,
         num_bytes: dataset[:num_bytes].to_i
       }))
-      if sync_errors then
-        return sync_errors[:sync_status], sync_errors[:unsyncable_reason]
+      if sync_info then
+        return sync_info[:sync_status], sync_info[:unsyncable_reason]
       elsif dataset[:status] == 'requested' then
         return 'unsynced', nil
       else

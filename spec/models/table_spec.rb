@@ -1339,7 +1339,7 @@ describe Table do
       it "should assign table_id" do
         fixture = fake_data_path("SHP1.zip")
         data_import = create_import(@user, fixture)
-        data_import.table.table_id.should_not be_nil
+        data_import.table_id.should_not be_nil
       end
 
       it "should add a the_geom column after importing a CSV" do
@@ -1428,7 +1428,7 @@ describe Table do
       it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
         fixture       = fake_data_path("gadm4_export.csv")
         data_import   = create_import(@user, fixture)
-        table         = data_import.table
+        table         = Table.new(user_table: UserTable[data_import.table_id])
         table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
         table_schema  = @user.in_database.schema(table.name)
 
@@ -1482,7 +1482,7 @@ describe Table do
       it "should normalize strings if there is a non-convertible entry when converting string to number" do
         fixture = fake_data_path("short_clubbing.csv")
         data_import = create_import(@user, fixture)
-        table       = data_import.table
+        table       = Table.new(user_table: UserTable[data_import.table_id])
 
         table.modify_column! :name=> "club_id", :type=>"number"
 
@@ -1496,7 +1496,7 @@ describe Table do
       it "should normalize string if there is a non-convertible entry when converting string to boolean" do
         fixture = fake_data_path("column_string_to_boolean.csv")
         data_import = create_import(@user, fixture)
-        table       = data_import.table
+        table       = Table.new(user_table: UserTable[data_import.table_id])
 
         # configure nil column
         table.sequel.where(:test_id => '4').update(:f1 => '0')
@@ -1528,7 +1528,7 @@ describe Table do
       it "should normalize boolean if there is a non-convertible entry when converting boolean to string" do
         fixture = fake_data_path("column_string_to_boolean.csv")
         data_import = create_import(@user, fixture)
-        table       = data_import.table
+        table       = Table.new(user_table: UserTable[data_import.table_id])
         table.modify_column! :name=>"f1", :type=>"boolean"
         table.modify_column! :name=>"f1", :type=>"string"
 
@@ -1539,7 +1539,7 @@ describe Table do
       it "should normalize boolean if there is a non-convertible entry when converting boolean to number" do
         fixture = fake_data_path("column_string_to_boolean.csv")
         data_import = create_import(@user, fixture)
-        table       = data_import.table
+        table       = Table.new(user_table: UserTable[data_import.table_id])
         table.modify_column! :name=>"f1", :type=>"boolean"
         table.modify_column! :name=>"f1", :type=>"number"
 
@@ -1551,7 +1551,7 @@ describe Table do
       converting number to boolean" do
         fixture = fake_data_path("column_number_to_boolean.csv")
         data_import = create_import(@user, fixture)
-        table       = data_import.table
+        table       = Table.new(user_table: UserTable[data_import.table_id])
 
         table.modify_column! :name=>"f1", :type=>"number"
         table.modify_column! :name=>"f1", :type=>"boolean"
@@ -1788,16 +1788,16 @@ describe Table do
         fixture = fake_data_path("twitters.csv")
         data_import = create_import(@user, fixture)
 
-        data_import.table.name.should match(/^twitters/)
-        data_import.table.rows_counted.should == 7
+        data_import.table_name.should match(/^twitters/)
+        Table.new(user_table: UserTable[data_import.table_id]).rows_counted.should == 7
       end
 
       it "file SHP1.zip" do
         fixture = fake_data_path("SHP1.zip")
         data_import = create_import(@user, fixture)
 
-        data_import.table.name.should == "esp_adm1"
-        data_import.table.rows_counted.should == 18
+        data_import.table_name.should == "esp_adm1"
+        Table.new(user_table: UserTable[data_import.table_id]).rows_counted.should == 18
       end
     end
 

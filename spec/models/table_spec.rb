@@ -1788,16 +1788,16 @@ describe Table do
         fixture = fake_data_path("twitters.csv")
         data_import = create_import(@user, fixture)
 
-        data_import.table.name.should match(/^twitters/)
-        data_import.table.rows_counted.should == 7
+        data_import.table_name.should match(/^twitters/)
+        Table.new(user_table: UserTable[data_import.table_id]).rows_counted.should == 7
       end
 
       it "file SHP1.zip" do
         fixture = fake_data_path("SHP1.zip")
         data_import = create_import(@user, fixture)
 
-        data_import.table.name.should == "esp_adm1"
-        data_import.table.rows_counted.should == 18
+        data_import.table_name.should == "esp_adm1"
+        Table.new(user_table: UserTable[data_import.table_id]).rows_counted.should == 18
       end
     end
 

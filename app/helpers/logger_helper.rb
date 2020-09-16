@@ -37,7 +37,7 @@ module LoggerHelper
         parsed_params[:message] = value.message if params[:message].blank?
       elsif value.is_a?(::User) || value.is_a?(::Carto::User)
         parsed_params[key] = value.username
-      elsif value.is_a?(Organization) || value.is_a?(Carto::Organization)
+      elsif value.is_a?(::Organization) || value.is_a?(::Carto::Organization)
         parsed_params[key] = value.name
       else
         parsed_params[key] = value

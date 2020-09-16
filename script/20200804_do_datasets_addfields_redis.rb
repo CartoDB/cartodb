@@ -22,6 +22,14 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
         doss = Carto::DoSyncServiceFactory.get_for_user(user)
         sync_data = doss.sync(dataset['dataset_id'])
 
+        # Initial quick&dirty hack.
+        # Since there is no public datasets yet,
+        # We don't want this to check the user quota (which is the last check in db-connector)
+        if !sync_data[:unsyncable_reason].nil? && (sync_data[:unsyncable_reason].include? "exceeds the quota available") then
+          sync_data[:unsyncable_reason] = nil
+          sync_data[:sync_status] = 'unsynced'
+        end
+
         dataset = dataset.merge({
           status: dataset['status'] || 'active',
           created_at: dataset[:created_at] || (Time.parse(dataset['expires_at']) - 1.year).to_s,

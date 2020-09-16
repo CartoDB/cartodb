@@ -101,6 +101,10 @@ describe Carto::UserMetadataExportService do
   end
 
   def destroy_user(user = @user)
+    # This is necessary because UserMetadataExportService loses user_id information during import.
+    # In part it's because we used custom code for building the corresponding ActiveRecord objects,
+    # instead of using ActiveRecord::Associations::CollectionProxy#build
+    # Since Carto::OauthTokens are not linked to the user, the delete cascade does not work
     Carto::OauthToken.destroy_all
 
     if user

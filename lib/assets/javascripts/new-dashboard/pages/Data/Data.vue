@@ -3,14 +3,14 @@
     <SecondaryNavigation v-if="showDataCatalog">
       <div class="tabs">
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
-          <span>{{ $t('DataPage.tabs.yourDatasets') }}</span>
+          <span>{{ $t('DataPage.tabs.datasets') }}</span>
         </router-link>
-        <!-- <router-link :to="{ name: 'subscriptions' }" class="tabs__item title is-small" exact active-class="is-active">
-          <span>{{ $t('DataPage.tabs.yourSubscriptions') }}</span>
-        </router-link> -->
+        <router-link :to="{ name: 'subscriptions' }" class="tabs__item title is-small" exact active-class="is-active" v-if="isDOEnabled">
+          <span>{{ $t('DataPage.tabs.subscriptions') }}</span>
+        </router-link>
       </div>
-      <router-link :to="{ name: 'do-catalog' }" class="tabs__item title is-small" exact active-class="is-active" style="margin-left: auto;">
-        <span>{{ $t('DataPage.tabs.spatialDataCatalog') }}</span>
+      <router-link :to="{ name: 'spatial-data-catalog' }" class="tabs__item title is-small right" exact active-class="is-active">
+        <span>{{ $t('DataPage.tabs.catalog') }}</span>
       </router-link>
     </SecondaryNavigation>
     <router-view></router-view>
@@ -38,8 +38,10 @@ export default {
       return isAllowed(this.$route.params.filter);
     },
     showDataCatalog () {
-      return true;
-      // return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+      return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+    },
+    isDOEnabled () {
+      return this.$store.state.user.do_enabled;
     }
   }
 };
@@ -66,4 +68,8 @@ export default {
   }
 }
 
+.right {
+  margin-left: auto;
+  margin-right: 0;
+}
 </style>

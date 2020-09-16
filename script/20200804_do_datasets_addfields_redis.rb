@@ -21,9 +21,10 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
       begin
         doss = Carto::DoSyncServiceFactory.get_for_user(user)
         sync_data = doss.sync(dataset['dataset_id'])
+
         dataset = dataset.merge({
           status: dataset['status'] || 'active',
-          created_at: (Time.parse(dataset['expires_at']) - 1.year).to_s,
+          created_at: dataset[:created_at] || (Time.parse(dataset['expires_at']) - 1.year).to_s,
           available_in: ['bq'],
           type: sync_data[:type],
           estimated_size: sync_data[:estimated_size],

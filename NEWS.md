@@ -30,6 +30,7 @@ Development
 * Delete unused DataImport methods [#15833](https://github.com/CartoDB/cartodb/pull/15833)
 * Fix missing LoggerHelper in CartoDB::LayerModule::Presenter [#15829](https://github.com/CartoDB/cartodb/pull/15829)
 * Release Data Observatory subscriptions [#15834](https://github.com/CartoDB/cartodb/pull/15834)
+* Fix map backups when deleting tables via Ghost Tables [#15832](https://github.com/CartoDB/cartodb/pull/15832)
 
 4.41.1 (2020-09-03)
 -------------------

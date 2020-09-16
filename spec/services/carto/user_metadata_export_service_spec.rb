@@ -101,6 +101,8 @@ describe Carto::UserMetadataExportService do
   end
 
   def destroy_user(user = @user)
+    return unless user
+
     user.update_attributes!(viewer: false) unless user && user.destroyed?
 
     gum = CartoDB::GeocoderUsageMetrics.new(user.username)
@@ -588,7 +590,7 @@ describe Carto::UserMetadataExportService do
     expect(fake_app.invalidated_at).to eq token.invalidated_at
     expect(fake_app.valid_to).to eq token.valid_to
     expect(fake_app.created_at).to eq token.created_at
-    expect(fake_app.updated_at).to eq token.updated_at
+    expect(fake_app.updated_at).to be <= token.updated_at
   end
 
   def expect_export_matches_oauth_app_users(exported_oauth_app_user, oauth_app_user)

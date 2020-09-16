@@ -8,8 +8,9 @@ Development
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
 
 ### Bug fixes / enhancements
-- Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
-- Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
+* Fix orm-check workflow when the diff has binary files
+* Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
+* Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
 * Fix logs for named maps ([15826](https://github.com/CartoDB/cartodb/pull/15826))
 * Remove automatic geocodings models and table ([#15817](https://github.com/CartoDB/cartodb/pull/15817))
 * Fix column quoting for geometrification ([#15815](https://github.com/CartoDB/cartodb/pull/15815))

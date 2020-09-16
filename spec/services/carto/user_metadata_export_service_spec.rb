@@ -72,7 +72,7 @@ describe Carto::UserMetadataExportService do
     @user.reload
 
     # Client Application tokens
-    sequel_user.client_application.access_tokens << ::AccessToken.new(
+    sequel_user.client_application.access_tokens << Carto::AccessToken.new(
       token: "access_token",
       secret: "access_secret",
       callback_url: "http://callback2",
@@ -80,7 +80,7 @@ describe Carto::UserMetadataExportService do
       scope: nil,
       client_application_id: sequel_user.client_application.id
     ).save
-    sequel_user.client_application.oauth_tokens << ::Carto::OauthToken.create!(
+    sequel_user.client_application.oauth_tokens << Carto::OauthToken.create!(
       token: "oauth_token",
       secret: "oauth_secret",
       callback_url: "http//callback.com",

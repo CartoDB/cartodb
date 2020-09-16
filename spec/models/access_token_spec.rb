@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AccessToken do
+describe Carto::AccessToken do
 
   let(:carto_user) { @user.carto_user }
 
@@ -17,7 +17,7 @@ describe AccessToken do
   it "should store tokens in redis when it is created" do
     client_application = carto_user.client_application
 
-    access_token = AccessToken.create(:user => carto_user, :client_application => client_application)
+    access_token = Carto::AccessToken.create(:user => carto_user, :client_application => client_application)
     access_token.present?
 
     base_key = "rails:oauth_access_tokens:#{access_token.token}"
@@ -32,7 +32,7 @@ describe AccessToken do
   it "should remove tokens from redis when it is destroyed" do
     client_application = carto_user.client_application
 
-    access_token = AccessToken.create(:user => carto_user, :client_application => client_application)
+    access_token = Carto::AccessToken.create(:user => carto_user, :client_application => client_application)
     access_token.present?
 
     base_key = "rails:oauth_access_tokens:#{access_token.token}"

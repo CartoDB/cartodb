@@ -26,7 +26,7 @@ class ClientApplication < Sequel::Model
   def self.find_token(token_key)
     return nil if token_key.nil?
 
-    token = ::RequestToken.find_by(token: token_key) || ::AccessToken.find_by(token: token_key)
+    token = Carto::RequestToken.find_by(token: token_key) || Carto::AccessToken.find_by(token: token_key)
     token && token.authorized? ? token : nil
   end
 
@@ -64,7 +64,7 @@ class ClientApplication < Sequel::Model
 
   # If your application requires passing in extra parameters handle it here
   def create_request_token(params={})
-    RequestToken.create :client_application => self, :callback_url=>self.token_callback_url
+    Carto::RequestToken.create :client_application => self, :callback_url=>self.token_callback_url
   end
 
   def before_create

@@ -20,8 +20,8 @@ class OauthController < ApplicationController
   def access_token_with_xauth
     if params[:x_auth_mode] == 'client_auth'
       if user = authenticate(params[:x_auth_username], params[:x_auth_password])
-        @token = AccessToken.filter(:user => user, :client_application => current_client_application, :invalidated_at => nil).limit(1).first
-        @token = AccessToken.create(:user => user, :client_application => current_client_application) if @token.blank?
+        @token = Carto::AccessToken.filter(:user => user, :client_application => current_client_application, :invalidated_at => nil).limit(1).first
+        @token = Carto::AccessToken.create(:user => user, :client_application => current_client_application) if @token.blank?
 
         if @token
           render :text => @token.to_query

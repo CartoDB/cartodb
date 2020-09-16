@@ -80,14 +80,14 @@ describe Carto::UserMetadataExportService do
       scope: nil,
       client_application_id: sequel_user.client_application.id
     ).save
-    sequel_user.client_application.oauth_tokens << ::OauthToken.new(
+    sequel_user.client_application.oauth_tokens << ::Carto::OauthToken.create!(
       token: "oauth_token",
       secret: "oauth_secret",
       callback_url: "http//callback.com",
       verifier: "v1",
       scope: nil,
       client_application_id: sequel_user.client_application.id
-    ).save
+    )
 
     Carto::UserMultifactorAuth.create!(user_id: @user.id, type: 'totp', last_login: Time.zone.now)
 

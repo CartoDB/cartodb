@@ -8,6 +8,7 @@ module CartoDB
     def create_access_token(attributes = {})
       token = new_access_token(attributes)
       token.save
+      token
     end
   end
 end

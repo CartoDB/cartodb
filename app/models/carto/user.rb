@@ -94,6 +94,11 @@ class Carto::User < ActiveRecord::Base
   after_destroy { rate_limit.destroy_completely(self) if rate_limit }
   after_destroy :invalidate_varnish_cache
 
+  # Compatibility with ::User, where the association is defined as one_to_one
+  def client_application
+    client_applications.first
+  end
+
   # Auto creates notifications on first access
   def static_notifications_with_creation
     static_notifications_without_creation || build_static_notifications(user: self, notifications: {})

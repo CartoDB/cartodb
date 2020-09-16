@@ -252,14 +252,14 @@ describe User do
             client_application_id: user.client_application.id
           ).save
 
-          user.client_application.oauth_tokens << ::OauthToken.new(
+          user.client_application.oauth_tokens << ::Carto::OauthToken.create!(
             token: "oauth_token",
             secret: "oauth_secret",
             callback_url: "http//callback.com",
             verifier: "v1",
             scope: nil,
             client_application_id: user.client_application.id
-          ).save
+          )
 
           base_key = "rails:oauth_access_tokens:#{user.client_application.access_tokens.first.token}"
 
@@ -273,7 +273,7 @@ describe User do
 
           expect(ClientApplication.where(user_id: user.id).first).to be_nil
           expect(AccessToken.where(user_id: user.id).first).to be_nil
-          expect(OauthToken.where(user_id: user.id).first).to be_nil
+          expect(Carto::OauthToken.where(user_id: user.id).first).to be_nil
           $api_credentials.keys.should_not include(base_key)
         end
 

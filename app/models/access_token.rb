@@ -1,25 +1,19 @@
-class AccessToken < OauthToken
+class AccessToken < Carto::OauthToken
 
-  def before_create
+  before_create :set_authorized_at
+  after_create :store_api_credentials
+  after_destroy :clear_api_credentials
+
+  private
+
+  def metadata_key
+    "rails:oauth_access_tokens:#{token}"
+  end
+
+  def set_authorized_at
     self.authorized_at = Time.now
-    self.created_at = Time.now
-    super
   end
 
-  def before_save
-    self.updated_at = Time.now
-    super
-  end
-
-  def after_create
-    store_api_credentials
-  end
-  
-  def after_destroy
-    $api_credentials.del metadata_key
-    super
-  end
-  
   def store_api_credentials
     $api_credentials.hset metadata_key, "consumer_key", client_application.key
     $api_credentials.hset metadata_key, "consumer_secret", client_application.secret
@@ -28,11 +22,9 @@ class AccessToken < OauthToken
     $api_credentials.hset metadata_key, "user_id", user_id
     $api_credentials.hset metadata_key, "time", authorized_at
   end
-  
-  private
-  
-  def metadata_key
-    "rails:oauth_access_tokens:#{token}"
+
+  def clear_api_credentials
+    $api_credentials.del metadata_key
   end
-  
+
 end

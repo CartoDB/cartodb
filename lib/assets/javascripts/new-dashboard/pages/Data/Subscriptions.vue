@@ -97,16 +97,16 @@ export default {
   },
   async mounted () {
     this.loading = true;
-    await this.$store.dispatch('catalog/fetchSubscriptionsList');
-    await this.fetchSubscriptionsListDetail();
+    window.scrollTo(0, 0);
+    try {
+      await this.$store.dispatch('catalog/fetchSubscriptionsList');
+      await this.$store.dispatch('catalog/fetchSubscriptionsDetailsList', this.subscriptions.map(s => s.id));
+    } catch (e) {
+      this.loading = false;
+    }
+    this.loading = false;
   },
   methods: {
-    async fetchSubscriptionsListDetail () {
-      this.loading = true;
-      window.scrollTo(0, 0);
-      await this.$store.dispatch('catalog/fetchSubscriptionsDetailsList', this.subscriptions.map(s => s.id));
-      this.loading = false;
-    },
     goToPage (pageNum) {
       this.currentPage = pageNum;
       window.scrollTo(0, 0);

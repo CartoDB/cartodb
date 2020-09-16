@@ -34,10 +34,10 @@ describe CommonData do
     Rails.logger.expects(:error).with(
       'exception' => {
         'class' => 'JSON::ParserError',
-        'message' => 'A JSON text must at least contain two octets!',
+        'message' => '784: unexpected token at \'{\'',
         'backtrace_hint' => ['line_1', 'line_2']
       },
-      'message' => 'A JSON text must at least contain two octets!'
+      'message' => '784: unexpected token at \'{\''
     )
 
     Rails.logger.expects(:error).with('message' => 'common-data empty', 'url' => common_data_url)

@@ -7,6 +7,7 @@ module CartoDB
   module LayerModule
     class Presenter
       include Carto::TableUtils
+      include ::LoggerHelper
 
       EMPTY_CSS = '#dummy{}'
 

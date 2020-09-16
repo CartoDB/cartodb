@@ -50,7 +50,7 @@ describe Carto::DoLicensingService do
           dataset_id: 'carto.abc.dataset1', created_at: '2020-09-27 07:59:00 +0000', expires_at: '2021-09-27 08:00:00 +0000',
           status: 'active', available_in: ['bq', 'bigtable'], type: nil, estimated_size: 0, estimated_row_count: 0,
           estimated_columns_count: 0, num_bytes: 0, sync_status: 'unsynced', unsyncable_reason: nil,
-          sync_table: nil, sync_table_id: nil, synchronization_id: nil
+          unsynced_errors: nil, sync_table: nil, sync_table_id: nil, synchronization_id: nil
         }
       ].to_json
 

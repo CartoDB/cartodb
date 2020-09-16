@@ -5,11 +5,11 @@
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
           <span>{{ $t('DataPage.tabs.datasets') }}</span>
         </router-link>
-        <router-link :to="{ name: 'subscriptions' }" class="tabs__item title is-small" exact active-class="is-active">
+        <router-link :to="{ name: 'subscriptions' }" class="tabs__item title is-small" exact active-class="is-active" v-if="isDOEnabled">
           <span>{{ $t('DataPage.tabs.subscriptions') }}</span>
         </router-link>
       </div>
-      <router-link :to="{ name: 'spatial-data-catalog' }" class="tabs__item title is-small" exact active-class="is-active" style="margin-left: auto;">
+      <router-link :to="{ name: 'spatial-data-catalog' }" class="tabs__item title is-small right" exact active-class="is-active">
         <span>{{ $t('DataPage.tabs.catalog') }}</span>
       </router-link>
     </SecondaryNavigation>
@@ -39,6 +39,9 @@ export default {
     },
     showDataCatalog () {
       return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+    },
+    isDOEnabled () {
+      return this.$store.state.user.do_enabled;
     }
   }
 };
@@ -65,4 +68,8 @@ export default {
   }
 }
 
+.right {
+  margin-left: auto;
+  margin-right: 0;
+}
 </style>

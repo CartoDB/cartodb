@@ -774,4 +774,12 @@ CartoDB::Application.routes.draw do
   end
 end
 
+Rails.application.routes.draw do
+  mount(
+    Coverband::Reporters::Web.new,
+    at: '/coverband',
+    constraints: lambda { |request| request.env['warden']&.user&.has_access_to_coverband? }
+  )
+end
+
 # rubocop:enable Layout/LineLength, Layout/ExtraSpacing, Layout/SpaceBeforeFirstArg

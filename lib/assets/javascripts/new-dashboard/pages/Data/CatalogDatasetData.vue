@@ -201,8 +201,9 @@ export default {
       return null;
     },
     tableSample () {
-      if (this.tableKey) {
-        return this.dataset.summary_json[this.tableKey].tail;
+      if (this.tableKey && this.dataset.summary_json) {
+        const geom_column = { column_name: 'geom', values: Array(10) };
+        return [...this.dataset.summary_json[this.tableKey].tail, geom_column];
       }
       return [];
     },

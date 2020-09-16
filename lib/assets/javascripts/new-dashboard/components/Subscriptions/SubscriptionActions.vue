@@ -1,53 +1,59 @@
 <template>
   <div class="u-flex" :class="{'u-flex__direction--column': mode === 'column', 'u-flex__align--center': mode !== 'column'}">
-    <div v-if="dataset.sync_status !== 'syncing'" class="u-flex u-flex__align--center" :class="{ disabled: dataset.sync_status !== 'synced' }">
-      <!-- <SubscriptionButtonTooltip v-if="dataset.sync_status === 'synced'">
-        <button type="button" class="u-mr--8 connect" @click="unconnect">
-          <div class="tooltip text is-small is-txtWhite">
-            Disconnect from Dashboard
-          </div>
-        </button>
-      </SubscriptionButtonTooltip> -->
-      <SubscriptionButtonTooltip v-if="dataset.sync_status === 'unsynced' && (!dataset.unsynced_errors || dataset.unsynced_errors === '')">
+    <div v-if="dataset.sync_status !== 'syncing'" class="u-flex u-flex__align--center"
+      :class="{ disabled: dataset.status !== 'active' || dataset.sync_status !== 'synced' }">
+      <SubscriptionButtonTooltip v-if="dataset.sync_status === 'unsynced' && (dataset.unsynced_errors && dataset.unsynced_errors.length === 0)">
         <button type="button" class="u-mr--8 unconnect" @click="connect">
           <div class="tooltip text is-small is-txtWhite">
             Connect to Dashboard
           </div>
         </button>
       </SubscriptionButtonTooltip>
-      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsynced'">
+      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsynced' && (dataset.unsynced_errors && dataset.unsynced_errors.length > 0)">
         <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
-          <img src="../../assets/icons/catalog/alert-triangle.svg" :class="smallClass">
+          <img src="../../assets/icons/catalog/error-triangle.svg" :class="smallClass">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey">
-            <h1>Unable to connect</h1>
-            <p>{{dataset.unsynced_errors ? `An error ocurred during the synchronization. Error code: ${dataset.unsynced_errors}.` : ''}}</p>
+            <h1>Connection error</h1>
+            <p>An error occurred during synchronization. Please, contact support@carto.com</p>
           </div>
         </button>
       </SubscriptionButtonTooltip>
-      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsyncable'">
+      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsyncable' && dataset.unsyncable_reason.includes('exceeds the quota available')">
         <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
-          <img src="../../assets/icons/catalog/information-circle.svg">
-          <div class="tooltip text bgWhite is-small is-txtSoftGrey" :class="smallClass">
+          <img src="../../assets/icons/catalog/warning-triangle.svg" :class="smallClass">
+          <div class="tooltip text bgWhite is-small is-txtSoftGrey">
             <h1>Insufficient storage</h1>
             <p>{{dataset.unsyncable_reason}}</p>
           </div>
         </button>
       </SubscriptionButtonTooltip>
-      <a class="text is-caption" :class="smallClass" :href="`${user.base_url}/dashboard/datasets/?id=${dataset.sync_table}&create=true`">Create map</a>  <span class="u-ml--8 u-mr--8">|</span>
+      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsyncable' && dataset.unsyncable_reason.includes('exceeds the maximum')">
+        <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
+          <img src="../../assets/icons/catalog/information-circle.svg" :class="smallClass">
+          <div class="tooltip text bgWhite is-small is-txtSoftGrey" :class="smallClass">
+            <h1>Unable to connect</h1>
+            <p>This dataset is too large for Builder. You can use CARTOFrames to access the data</p>
+          </div>
+        </button>
+      </SubscriptionButtonTooltip>
+      <a class="text is-caption" :class="smallClass" :href="`${user.base_url}/dashboard/datasets/?id=${dataset.sync_table}&create=true`">Create map</a>
+      <span class="u-ml--8 u-mr--8">|</span>
       <a class="text is-caption" :class="smallClass" :href="`${user.base_url}/dataset/${dataset.sync_table}`">View dataset</a>
     </div>
     <div v-if="dataset.sync_status === 'syncing'" class="u-flex u-flex__align--center">
       <span class="loading u-mr--12 u-flex u-flex__align--center">
-        <img svg-inline src="../../assets/icons/catalog/loading.svg" class="loading__svg" :class="smallClass"/>
+        <img svg-inline src="../../assets/icons/catalog/loading.svg" class="loading__svg"/>
       </span>
       <span class="text is-txtSoftGrey is-caption" :class="smallClass">
         Connecting dataset…
       </span>
     </div>
     <div v-if="mode !== 'column'" class="white-separator u-ml--12 u-mr--12"></div>
-    <a class="text is-caption" :class="{ 'u-mt--12': mode === 'column', ...smallClass }" href="#" @click="downloadNotebook">
-      Explore with CARTOFrames
-    </a>
+    <div :class="{ 'u-mt--12': mode === 'column', disabled: dataset.status !== 'active' }">
+      <a class="text is-caption" :class="smallClass" href="#" @click="downloadNotebook">
+        Explore with CARTOFrames
+      </a>
+    </div>
   </div>
 </template>
 
@@ -131,6 +137,9 @@ export default {
   >a {
     opacity: 0.4;
     pointer-events: none;
+  }
+  >span {
+    opacity: 0.4;
   }
 }
 .white-separator {

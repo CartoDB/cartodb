@@ -10,6 +10,7 @@ require_dependency 'carto/helpers/password_rate_limit'
 require_dependency 'carto/helpers/urls'
 require_dependency 'carto/helpers/varnish_cache_handler'
 require_dependency 'carto/gcloud_user_settings'
+require_dependency 'carto/helpers/sessions_invalidations'
 
 module Carto::UserCommons
   include Carto::BatchQueriesStatementTimeout
@@ -23,6 +24,7 @@ module Carto::UserCommons
   include Carto::PasswordRateLimit
   include Carto::Urls
   include Carto::VarnishCacheHandler
+  include Carto::SessionsInvalidations
 
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
@@ -295,6 +297,13 @@ module Carto::UserCommons
   end
 
   def do_enabled?
-    gcloud_settings[:service_account].present?
+    gcloud_settings[:service_account].present? && has_feature_flag?('do-subscriptions')
   end
+
+  def has_access_to_coverband?
+    return true unless Rails.env.production?
+
+    organization&.name == 'team'
+  end
+
 end

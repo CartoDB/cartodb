@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="subscription-button-tooltip-container">
     <slot></slot>
   </div>
 </template>
@@ -13,6 +13,11 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
+
+.subscription-button-tooltip-container {
+  height: 100%;
+}
+
 button {
   position: relative;
   outline: none;

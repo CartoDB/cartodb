@@ -259,7 +259,7 @@ describe 'legacy behaviour tests' do
       expected = {"geocodings"=>[{"table_name" => nil, "processed_rows" => 1, "remote_id" => nil, "formatter" => 'foo',
                                   "geocoder_type" => nil, "state" => "started", "cache_hits" => 0,
                                   "id" => geocoding1.id, "user_id" => @user1.id,"table_id" => nil,
-                                  "automatic_geocoding_id" => nil, "kind" => "high-resolution", "country_code" => nil,
+                                  "kind" => "high-resolution", "country_code" => nil,
                                   "geometry_type" => nil, "processable_rows" => nil, "real_rows" => nil,
                                   "used_credits" => nil, "country_column" => nil, "data_import_id" => nil,
                                   "region_code" => nil, "region_column" => nil, "batched" => nil, "error_code" => nil,

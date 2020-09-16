@@ -30,7 +30,6 @@ class Geocoding < Sequel::Model
 
   many_to_one :user
   many_to_one :user_table, :key => :table_id
-  many_to_one :automatic_geocoding
   many_to_one :data_import
 
   attr_reader :table_geocoder

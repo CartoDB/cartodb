@@ -1,8 +1,15 @@
 #!/usr/bin/env ruby
 # bundle exec rails runner script/20200804_do_datasets_addfields_redis.rb
 
-$users_metadata.keys('do:*:datasets').each do |k|
-  username = k.split(':')[1]
+if ARGV.length != 1 then
+  puts "*** Please introduce the target username (or --all to update them all) ***"
+  exit
+end
+
+username = (ARGV[0] != '--all')? ARGV[0] : '*'
+puts "Updating user: #{username}..."
+
+$users_metadata.keys("do:#{username}:datasets").each do |k|
   user = User.where(username: username).first
 
   datasets = $users_metadata.hget(k, :bq)

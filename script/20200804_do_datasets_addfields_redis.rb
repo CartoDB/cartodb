@@ -17,23 +17,31 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
 
   datasets_enriched = datasets.map do |dataset|
     # Do not process already enriched datasets:
-    if !(dataset['unsyncable_reason'].present?) then
-      doss = Carto::DoSyncServiceFactory.get_for_user(user)
-      sync_data = doss.sync(dataset['dataset_id'])
-      dataset = dataset.merge({
-        status: dataset['status'] || 'active',
-        available_in: ['bq'],
-        type: sync_data[:type],
-        estimated_size: sync_data[:estimated_size],
-        estimated_row_count: sync_data[:estimated_row_count],
-        estimated_columns_count: sync_data[:estimated_columns_count],
-        num_bytes: sync_data[:num_bytes],
-        sync_status: sync_data[:sync_status],
-        unsyncable_reason: sync_data[:unsyncable_reason],
-        sync_table: sync_data[:sync_table],
-        sync_table_id: sync_data[:sync_table_id],
-        synchronization_id: sync_data[:synchronization_id],
-      })
+    if !(dataset['unsynced_errors'].present?) then
+      begin
+        doss = Carto::DoSyncServiceFactory.get_for_user(user)
+        sync_data = doss.sync(dataset['dataset_id'])
+        dataset = dataset.merge({
+          status: dataset['status'] || 'active',
+          created_at: (Time.parse(dataset['expires_at']) - 1.year).to_s,
+          available_in: ['bq'],
+          type: sync_data[:type],
+          estimated_size: sync_data[:estimated_size],
+          estimated_row_count: sync_data[:estimated_row_count],
+          estimated_columns_count: sync_data[:estimated_columns_count],
+          num_bytes: sync_data[:num_bytes],
+          sync_status: sync_data[:sync_status],
+          unsyncable_reason: sync_data[:unsyncable_reason],
+          unsynced_errors: [],
+          sync_table: sync_data[:sync_table],
+          sync_table_id: sync_data[:sync_table_id],
+          synchronization_id: sync_data[:synchronization_id],
+        })
+      rescue Google::Apis::ClientError => e
+        puts "Not found in BQ: #{dataset['dataset_id']}"
+        # leaving it as is:
+        dataset
+      end
     end
     puts "Update: #{dataset['dataset_id']} for #{username}"
     dataset

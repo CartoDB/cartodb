@@ -15,7 +15,7 @@ describe CartoDB::Connector::Importer do
 
   after(:each) do
     if @data_import
-      @data_import.table.destroy if @data_import.table.id.present?
+      ::Table.get_by_table_id(@data_import.table_id)&.destroy if @data_import.table_id.present?
       @data_import.destroy
     end
     @visualization.destroy if @visualization
@@ -117,7 +117,7 @@ describe CartoDB::Connector::Importer do
 
     @data_import.run_import!
 
-    UserTable[id: @data_import.table.id].privacy.should eq ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+    UserTable[id: @data_import.table_id].privacy.should eq ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
   end
 
   it 'importing the same file twice should import the table twice renaming the second import' do
@@ -129,16 +129,16 @@ describe CartoDB::Connector::Importer do
     @data_import.run_import!
 
     @data_import.success.should eq true
-    UserTable[id: @data_import.table.id].name.should eq name
+    UserTable[id: @data_import.table_id].name.should eq name
 
     data_import2 = DataImport.create(user_id: @user.id, data_source: filepath)
     data_import2.values[:data_source] = filepath
     data_import2.run_import!
 
     data_import2.success.should eq true
-    UserTable[id: data_import2.table.id].name.should eq "#{name}_1"
+    UserTable[id: data_import2.table_id].name.should eq "#{name}_1"
 
-    data_import2.table.destroy if data_import2 && data_import2.table.id.present?
+    ::Table.get_by_table_id(data_import2.table_id).destroy if data_import2 && data_import2.table_id.present?
     data_import2.destroy
   end
 
@@ -151,7 +151,7 @@ describe CartoDB::Connector::Importer do
     @data_import.run_import!
 
     expect(@data_import.success).to be_true
-    expect(UserTable[id: @data_import.table.id].name).to eq(long_name1)
+    expect(UserTable[id: @data_import.table_id].name).to eq(long_name1)
 
     long_name2 = 'carto_long_filename_that_almost_matches_another_one_63chars_aab'
     filepath2 = "#{Rails.root}/spec/support/data/#{long_name2}.csv"
@@ -163,9 +163,9 @@ describe CartoDB::Connector::Importer do
     expect(data_import2.success).to be_true
 
     expected_name = 'carto_long_filename_that_almost_matches_another_one_63chars_a_1'
-    expect(UserTable[id: data_import2.table.id].name).to eq(expected_name)
+    expect(UserTable[id: data_import2.table_id].name).to eq(expected_name)
 
-    data_import2.table.destroy if data_import2 && data_import2.table.id.present?
+    ::Table.get_by_table_id(data_import2.table_id).destroy if data_import2 && data_import2.table_id.present?
     data_import2.destroy
   end
 
@@ -177,7 +177,7 @@ describe CartoDB::Connector::Importer do
     @data_import.values[:data_source] = filepath
     @data_import.run_import!
 
-    UserTable[id: @data_import.table.id].name.should eq name
+    UserTable[id: @data_import.table_id].name.should eq name
     @data_import.success.should eq true
 
     data_import2 = DataImport.create(user_id: @user.id, data_source: filepath, collision_strategy: skip)
@@ -191,7 +191,7 @@ describe CartoDB::Connector::Importer do
     data_import2.table_names.should eq ''
     data_import2.table_name.should be_nil
 
-    data_import2.table.destroy if data_import2 && data_import2.table.id.present?
+    ::Table.get_by_table_id(data_import2.table_id).destroy if data_import2 && data_import2.table_id.present?
     data_import2.destroy
   end
 
@@ -212,7 +212,7 @@ describe CartoDB::Connector::Importer do
 
     data_import.run_import!
 
-    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+    UserTable[id: data_import.table_id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
   end
 
   it 'should import table and vis as private if privacy param is set to private' do
@@ -241,7 +241,7 @@ describe CartoDB::Connector::Importer do
 
     data_import.run_import!
 
-    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+    UserTable[id: data_import.table_id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
   end
 
   it 'should import vis as public if privacy param is set to private and user doesn\' have private maps' do
@@ -270,7 +270,7 @@ describe CartoDB::Connector::Importer do
 
     data_import.run_import!
 
-    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['private']
+    UserTable[id: data_import.table_id].privacy.should eq ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['private']
   end
 
   it 'should import tables as private by default if user has private tables enabled' do
@@ -289,7 +289,7 @@ describe CartoDB::Connector::Importer do
 
     data_import.run_import!
 
-    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+    UserTable[id: data_import.table_id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
   end
 
   it 'should import tables as public by default if user doesnt have private tables enabled' do
@@ -308,7 +308,7 @@ describe CartoDB::Connector::Importer do
 
     data_import.run_import!
 
-    UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+    UserTable[id: data_import.table_id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
   end
 
   it 'should import as public with private_tables enabled' do
@@ -601,7 +601,7 @@ describe CartoDB::Connector::Importer do
         layer.should_not be_nil
         layer.user_tables.count.should eq 1
       end
-      @data_import.tables.map(&:destroy)
+      Carto::DataImport.find_by(id: @data_import.id).user_tables.map(&:destroy)
     end
 
     it 'imports a visualization export with two data layers' do
@@ -634,7 +634,7 @@ describe CartoDB::Connector::Importer do
       layer2.options['type'].should eq "CartoDB"
       layer2.options['table_name'].should eq "twitter_t3chfest_reduced"
       layer2.user_tables.count.should eq 1
-      @data_import.tables.map(&:destroy)
+      Carto::DataImport.find_by(id: @data_import.id).user_tables.map(&:destroy)
     end
 
     it 'imports a visualization export without data' do
@@ -664,7 +664,7 @@ describe CartoDB::Connector::Importer do
       layer2 = @visualization.layers[2]
       layer2.options['type'].should eq "CartoDB"
       layer2.options['table_name'].should eq "twitter_t3chfest_reduced"
-      @data_import.tables.map(&:destroy)
+      Carto::DataImport.find_by(id: @data_import.id).user_tables.map(&:destroy)
     end
 
     it 'registers table dependencies for .carto import' do

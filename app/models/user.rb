@@ -842,21 +842,6 @@ class User < Sequel::Model
     Carto::RateLimit.find(rate_limit_id) if rate_limit_id
   end
 
-  def update_gcloud_settings(attributes)
-    return if attributes.nil?
-    settings = Carto::GCloudUserSettings.new(self)
-    settings.update attributes
-  end
-
-  def gcloud_settings
-    @gcloud_settings ||= Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
-  end
-
-  def do_subscription(dataset_id)
-    subscriptions = Carto::DoLicensingService.new(username).subscriptions
-    subscriptions.find { |subscription| subscription['id'] == dataset_id }&.with_indifferent_access
-  end
-
   def carto_account_type
     Carto::AccountType.find(account_type)
   end

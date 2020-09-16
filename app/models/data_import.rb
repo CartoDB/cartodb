@@ -46,54 +46,6 @@ class DataImport < Sequel::Model
   one_to_many :external_data_imports
   many_to_one :user
 
-  # @see store_results() method also when adding new fields
-  PUBLIC_ATTRIBUTES = [
-    'id',
-    'user_id',
-    'table_id',
-    'data_type',
-    'table_name',
-    'state',
-    'error_code',
-    'queue_id',
-    'get_error_text',
-    'get_error_source',
-    'tables_created_count',
-    'synchronization_id',
-    'service_name',
-    'service_item_id',
-    'type_guessing',
-    'quoted_fields_guessing',
-    'content_guessing',
-    'server',
-    'host',
-    'upload_host',
-    'resque_ppid',
-    'create_visualization',
-    'visualization_id',
-    # String field containing a json, format:
-    # {
-    #   twitter_credits: Integer
-    # }
-    # No automatic conversion coded
-    'user_defined_limits',
-    'original_url',
-    'privacy',
-    'http_response_code',
-    'rejected_layers',
-    'runner_warnings'
-  ]
-
-  # This attributes will get removed from public_values upon calling api_call_public_values
-  NON_API_VISIBLE_ATTRIBUTES = [
-    'service_item_id',
-    'service_name',
-    'server',
-    'host',
-    'upload_host',
-    'resque_ppid',
-  ]
-
   # Not all constants are used, but so that we keep track of available states
   STATE_ENQUEUED  = 'enqueued'  # Default state for imports whose files are not yet at "import source"
   STATE_PENDING   = 'pending'   # Default state for files already at "import source" (e.g. S3 bucket)
@@ -165,20 +117,6 @@ class DataImport < Sequel::Model
 
   def dataimport_logger
     @@dataimport_logger ||= CartoDB.unformatted_logger(log_file_path("imports.log"))
-  end
-
-  # Meant to be used when calling from API endpoints (hides some fields not needed at editor scope)
-  def api_public_values
-    public_values.reject { |key|
-      DataImport::NON_API_VISIBLE_ATTRIBUTES.include?(key)
-    }
-  end
-
-  def public_values
-    values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
-    values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE || state == STATE_STUCK)
-    values
   end
 
   def run_import!
@@ -274,6 +212,7 @@ class DataImport < Sequel::Model
     raise CartoDB::QuotaExceeded, 'More tables required'
   end
 
+  # TODO: move to new model
   def mark_as_failed_if_stuck!
     return false unless stuck?
 
@@ -376,27 +315,6 @@ class DataImport < Sequel::Model
     self
   end
 
-  def table
-    # We can assume the owner is always who imports the data
-    # so no need to change to a Visualization::Collection based load
-    # TODO better to use an association for this
-    ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
-  end
-
-  def tables
-    table_names_array.map do |table_name|
-      UserTable.where(name: table_name, user_id: user_id).first.service
-    end
-  end
-
-  def table_names_array
-    table_names.present? ? table_names.split(' ') : []
-  end
-
-  def is_raster?
-    ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0
-  end
-
   # Calculates the maximum timeout in seconds for a given user, to be used when performing HTTP requests
   # TODO: Candidate for being private if we join syncs and data imports someday
   # TODO: Add timeout config (if we need to change this)
@@ -427,6 +345,15 @@ class DataImport < Sequel::Model
   end
 
   private
+
+  def get_provider_name_from_id(service_item_id)
+    begin
+      connector_params = JSON.parse(service_item_id)
+      return connector_params['provider']
+    rescue StandardError
+      return nil
+    end
+  end
 
   def dispatch
     self.state = STATE_UPLOADING
@@ -756,7 +683,8 @@ class DataImport < Sequel::Model
   # * importer: the new importer (nil if download errors detected)
   # * connector: the connector that the importer uses
   def new_importer_with_connector
-    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user)
+    provider_name = get_provider_name_from_id(service_item_id)
+    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user, provider_name)
 
     database_options = pg_options
 

@@ -8,6 +8,9 @@ Development
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
 
 ### Bug fixes / enhancements
+- Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
+- Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
+* Fix logs for named maps ([15826](https://github.com/CartoDB/cartodb/pull/15826))
 * Remove automatic geocodings models and table ([#15817](https://github.com/CartoDB/cartodb/pull/15817))
 * Fix column quoting for geometrification ([#15815](https://github.com/CartoDB/cartodb/pull/15815))
 * Removing unused class ([#15816](https://github.com/CartoDB/cartodb/pull/15816))
@@ -19,9 +22,13 @@ Development
 * Add wildcard IP for Direct SQL connection [#15818](https://github.com/CartoDB/cartodb/pull/15818)
 * Remove usage of `::User` Sequel model from the `ApplicationController` [#15804](https://github.com/CartoDB/cartodb/pull/15804)
 * Bump version of cartodb-common module to v0.3.6 [#15820](https://github.com/CartoDB/cartodb/pull/15820)
-* Setup Coverband dead code detector [https://github.com/CartoDB/cartodb/pull/15811](https://github.com/CartoDB/cartodb/pull/15811)
-* Include LoggerHelper as class methods in models [https://github.com/CartoDB/cartodb/pull/15824](https://github.com/CartoDB/cartodb/pull/15824)
+* Setup Coverband dead code detector [#15811](https://github.com/CartoDB/cartodb/pull/15811)
+* Include LoggerHelper as class methods in models [#15824](https://github.com/CartoDB/cartodb/pull/15824)
+* Refactor of `Admin::VisualizationsController` code [#15830](https://github.com/CartoDB/cartodb/pull/15830)
 * Fix Coverband - Resque integration [#15827](https://github.com/CartoDB/cartodb/pull/15827)
+* Delete unused DataImport methods [#15833](https://github.com/CartoDB/cartodb/pull/15833)
+* Fix missing LoggerHelper in CartoDB::LayerModule::Presenter [#15829](https://github.com/CartoDB/cartodb/pull/15829)
+* Release Data Observatory subscriptions [#15834](https://github.com/CartoDB/cartodb/pull/15834)
 
 4.41.1 (2020-09-03)
 -------------------

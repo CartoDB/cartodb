@@ -101,16 +101,18 @@ describe Carto::UserMetadataExportService do
   end
 
   def destroy_user(user = @user)
-    return unless user
+    Carto::OauthToken.destroy_all
 
-    user.update_attributes!(viewer: false) unless user && user.destroyed?
+    if user
+      user.update_attributes!(viewer: false) unless user && user.destroyed?
 
-    gum = CartoDB::GeocoderUsageMetrics.new(user.username)
-    $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.zone.now))
+      gum = CartoDB::GeocoderUsageMetrics.new(user.username)
+      $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.zone.now))
 
-    user.oauth_app_users.each do |oau|
-      oau.skip_role_setup = true
-      oau.oauth_access_tokens.each { |oat| oat.api_key.skip_role_setup = true }
+      user.oauth_app_users.each do |oau|
+        oau.skip_role_setup = true
+        oau.oauth_access_tokens.each { |oat| oat.api_key.skip_role_setup = true }
+      end
     end
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
@@ -123,8 +125,11 @@ describe Carto::UserMetadataExportService do
       st.data_import.destroy
       st.destroy
     end
-    user.destroy
-    ::User[user.id].before_destroy(skip_table_drop: true)
+
+    if user
+      user.destroy
+      ::User[user.id].before_destroy(skip_table_drop: true)
+    end
   end
 
   let(:service) { Carto::UserMetadataExportService.new }

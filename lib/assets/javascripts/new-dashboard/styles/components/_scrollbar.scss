@@ -1,0 +1,22 @@
+$scrollbar-thumb-color: #AAA;
+$scrollbar-track-color: #EEE;
+
+// Chrome / Safari / Opera / Edge
+::-webkit-scrollbar {
+  width: 4px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: $scrollbar-track-color;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $scrollbar-thumb-color;
+}
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: $scrollbar-thumb-color $scrollbar-track-color;
+}

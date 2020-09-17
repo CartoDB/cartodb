@@ -79,7 +79,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table_name = UserTable[id: data_import.table.id].name
+      table_name = ::Table.get_by_table_id(data_import.table_id).name
       has_overviews?(@user, table_name).should eq false
       remove_overviews @user, table_name
       has_overviews?(@user, table_name).should eq false
@@ -104,7 +104,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table_name = UserTable[id: data_import.table.id].name
+      table_name = ::Table.get_by_table_id(data_import.table_id).name
       has_overviews?(@user, table_name).should eq false
       remove_overviews @user, table_name
       has_overviews?(@user, table_name).should eq false
@@ -129,7 +129,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table_name = UserTable[id: data_import.table.id].name
+      table_name = ::Table.get_by_table_id(data_import.table_id).name
       has_overviews?(@user, table_name).should eq false
       remove_overviews @user, table_name
       has_overviews?(@user, table_name).should eq false
@@ -154,7 +154,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table_name = UserTable[id: data_import.table.id].name
+      table_name = ::Table.get_by_table_id(data_import.table_id).name
       has_overviews?(@user, table_name).should eq true
       remove_overviews @user, table_name
       has_overviews?(@user, table_name).should eq false
@@ -179,7 +179,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table = UserTable[id: data_import.table.id]
+      table = ::Table.get_by_table_id(data_import.table_id)
       ov_tables = overview_tables(@user, table.name)
       ov_tables.size.should > 0
       table.destroy
@@ -211,10 +211,10 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table = UserTable[id: data_import.table.id]
+      table = ::Table.get_by_table_id(data_import.table_id)
       ov_tables = overview_tables(@user, table.name)
       ov_tables.size.should > 0
-      table.service.name = 'cities2_box'
+      table.name = 'cities2_box'
       (!!table.save).should eq true
       table.save.name.should eq 'cities2_box'
       ov_tables.each do |ov_table|
@@ -251,7 +251,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table = UserTable[id: data_import.table.id]
+      table = ::Table.get_by_table_id(data_import.table_id)
       has_overviews?(user, table.name).should eq true
       ov_tables = overview_tables(user, table.name)
       # Check overviews are private
@@ -296,7 +296,7 @@ describe CartoDB::Importer2::Overviews do
       # import the dataset correctly.
       data_import.run_import!
       data_import.success.should eq true
-      table_name = UserTable[id: data_import.table.id].name
+      table_name = ::Table.get_by_table_id(data_import.table_id).name
       has_overviews?(@user, table_name).should eq false
     end
   end
@@ -328,7 +328,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table = UserTable[id: data_import.table.id]
+      table = ::Table.get_by_table_id(data_import.table_id)
       has_overviews?(user1, table.name).should eq true
       ov_tables = overview_tables(user1, table.name)
     end
@@ -379,7 +379,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table1 = UserTable[id: data_import.table.id]
+      table1 = ::Table.get_by_table_id(data_import.table_id)
       has_overviews?(user, table1.name).should eq true
       ov_tables1 = overview_tables(user, table1.name)
 
@@ -393,7 +393,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table2 = UserTable[id: data_import.table.id]
+      table2 = ::Table.get_by_table_id(data_import.table_id)
       has_overviews?(user, table2.name).should eq true
       ov_tables2 = overview_tables(user, table2.name)
     end
@@ -454,7 +454,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table1 = UserTable[id: data_import.table.id]
+      table1 = ::Table.get_by_table_id(data_import.table_id)
       has_overviews?(user, table1.name).should eq true
       ov_tables1 = overview_tables(user, table1.name)
 
@@ -468,7 +468,7 @@ describe CartoDB::Importer2::Overviews do
       data_import.values[:data_source] = filepath
       data_import.run_import!
       data_import.success.should eq true
-      table2 = UserTable[id: data_import.table.id]
+      table2 = ::Table.get_by_table_id(data_import.table_id)
       has_overviews?(user, table2.name).should eq true
       ov_tables2 = overview_tables(user, table2.name)
     end

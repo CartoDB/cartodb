@@ -1,3 +1,6 @@
+# Load the ::Resque constant manually so Coverband installs the corresponding hooks
+# https://github.com/danmayer/coverband/blob/v5.0.1/lib/coverband.rb#L114
+require 'resque'
 require 'coverband'
 
 Coverband.configure do |config|

@@ -13,13 +13,11 @@
     <div>
       <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--m">
         <%- _t('dataset.sync.title') %>
-     </h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor">
-        <%= _t('dataset.sync.desc', {
-          service: service,
-          url: url
-        }) %>
-      </p>
+      </h2>
+      <p class="CDB-Text CDB-Size-medium u-altTextColor" style="white-space: pre-wrap;"><%= _t('dataset.sync.desc', {
+        service: service,
+        url: url
+      }) %></p>
       <div class="Modal-listTextItem u-flex u-alignCenter">
         <h3 class="CDB-Text CDB-Size-small is-semibold u-upperCase"><%- _t('dataset.sync.label') %></h3>
         <ul class="Modal-listForm u-flex u-alignCenter CDB-Text CDB-Size-small js-intervals">

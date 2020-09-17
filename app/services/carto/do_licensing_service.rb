@@ -63,8 +63,8 @@ module Carto
         # Initial sync status
         sync_status = dataset[:sync_status]
         unsyncable_reason = dataset[:unsyncable_reason]
+        entity_info = @doss.entity_info(dataset[:dataset_id])
         if sync_status.nil? then
-          entity_info = @doss.entity_info(dataset[:dataset_id])
           sync_status, unsyncable_reason = get_initial_sync_status(dataset, entity_info)
         end
 

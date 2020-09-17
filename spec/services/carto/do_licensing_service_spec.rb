@@ -28,7 +28,10 @@ describe Carto::DoLicensingService do
   describe '#subscribe' do
     before(:each) do
       @central_mock = mock
+      @doss = mock
       Cartodb::Central.stubs(:new).returns(@central_mock)
+      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
+      @doss.stubs(:entity_info).returns({})
       @service.stubs(:get_initial_sync_status).returns('unsynced')
     end
 

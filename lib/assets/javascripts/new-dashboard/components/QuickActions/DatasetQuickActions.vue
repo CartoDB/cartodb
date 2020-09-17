@@ -48,6 +48,13 @@ export default {
           { name: this.$t('QuickActions.lock'), event: 'lockDataset' },
           { name: this.$t('QuickActions.delete'), event: 'deleteDataset', isDestructive: true }
         ],
+        do_subscription: [
+          { name: this.$t('QuickActions.createMap'), event: 'createMap', shouldBeDisabled: this.isOutOfPrivateMapsQuota },
+          { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
+          { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
+          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset', shouldBeDisabled: this.isOutOfDatasetsQuota }
+        ],
         shared: [
           { name: this.$t('QuickActions.createMap'), event: 'createMap' },
           { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' }
@@ -65,11 +72,18 @@ export default {
       if (this.isSharedWithMe) {
         return 'shared';
       }
+      if (this.isDOSubscription) {
+        return 'do_subscription';
+      }
       return 'mine';
     },
     isUserInsideOrganization () {
       const userOrganization = this.$store.state.user.organization;
       return userOrganization && userOrganization.id;
+    },
+    isDOSubscription () {
+      const subscription = this.dataset.subscription;
+      return subscription && subscription.provider === 'do-v2';
     }
   },
   methods: {

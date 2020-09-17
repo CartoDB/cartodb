@@ -8,6 +8,7 @@ Development
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
 
 ### Bug fixes / enhancements
+* Fix inconsistent handling of SRID in syncs and imports ([15821](https://github.com/CartoDB/cartodb/pull/15821))
 * Fix orm-check workflow when the diff has binary files
 * Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
 * Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))

@@ -7,7 +7,16 @@
           <img src="../../assets/icons/catalog/error-triangle.svg" :class="smallClass">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey">
             <h1>Connection error</h1>
-            <p>An error occurred during synchronization. Please, contact support@carto.com</p>
+            <p>An error occurred during connection. Please, contact support@carto.com</p>
+          </div>
+        </button>
+      </SubscriptionButtonTooltip>
+      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsynced'">
+        <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
+          <img src="../../assets/icons/catalog/information-circle.svg" :class="smallClass">
+          <div class="tooltip text bgWhite is-small is-txtSoftGrey">
+            <h1>Not connected</h1>
+            <p>This dataset is not connected. Please, contact support@carto.com</p>
           </div>
         </button>
       </SubscriptionButtonTooltip>

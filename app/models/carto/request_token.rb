@@ -1,6 +1,11 @@
 module Carto
   class RequestToken < OauthToken
 
+    # Compatibility with ActiveRecord inheritance. When migrating to ActiveRecord,
+    # the class name changed from ::RequestToken to ::Carto::RequestToken
+    # Source: https://yiming.dev/blog/2017/12/07/add-sti-to-a-legacy-activerecord-model/
+    self.store_full_sti_class = false
+
     attr_accessor :provided_oauth_verifier
 
     def authorize!(user)

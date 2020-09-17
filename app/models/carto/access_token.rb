@@ -1,6 +1,11 @@
 module Carto
   class AccessToken < OauthToken
 
+    # Compatibility with ActiveRecord inheritance. When migrating to ActiveRecord,
+    # the class name changed from ::AccessToken to ::Carto::AccessToken
+    # Source: https://yiming.dev/blog/2017/12/07/add-sti-to-a-legacy-activerecord-model/
+    self.store_full_sti_class = false
+
     before_create :set_authorized_at
     after_create :store_api_credentials
     after_destroy :clear_api_credentials

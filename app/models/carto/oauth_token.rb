@@ -8,6 +8,12 @@ module Carto
 
     before_create :set_token_and_secret
 
+    # ActiveRecord inheritance compatibility after AccessToken and RequestToken were migrated from Sequel
+    # Source: https://yiming.dev/blog/2017/12/07/add-sti-to-a-legacy-activerecord-model/
+    def self.find_sti_class(type_name)
+      super("Carto::#{type_name}")
+    end
+
     def invalidated?
       invalidated_at.present?
     end

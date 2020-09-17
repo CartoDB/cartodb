@@ -64,7 +64,8 @@ module Carto
         sync_status = dataset[:sync_status]
         unsyncable_reason = dataset[:unsyncable_reason]
         if sync_status.nil? then
-          sync_status, unsyncable_reason = get_initial_sync_status(dataset)
+          entity_info = @doss.entity_info(dataset[:dataset_id])
+          sync_status, unsyncable_reason = get_initial_sync_status(dataset, entity_info)
         end
 
         # Create the new entry
@@ -75,10 +76,10 @@ module Carto
           status: dataset[:status],
           available_in: dataset[:available_in],
           type: dataset[:type],
-          estimated_size: dataset[:estimated_size].to_i,
-          estimated_row_count: dataset[:estimated_row_count].to_i,
-          estimated_columns_count: dataset[:estimated_columns_count].to_i,
-          num_bytes: dataset[:num_bytes].to_i,
+          estimated_size: entity_info[:estimated_size].to_i,
+          estimated_row_count: entity_info[:estimated_row_count].to_i,
+          estimated_columns_count: entity_info[:estimated_columns_count].to_i,
+          num_bytes: entity_info[:num_bytes].to_i,
           sync_status: sync_status,
           unsyncable_reason: unsyncable_reason,
           unsynced_errors: dataset[:unsynced_errors] || nil,
@@ -98,12 +99,12 @@ module Carto
       redis_value.reject { |dataset| dataset["dataset_id"] == dataset_id }.to_json
     end
 
-    def get_initial_sync_status(dataset)
+    def get_initial_sync_status(dataset, entity_info)
       sync_info = @doss.check_syncable(dataset) || @doss.check_sync_limits(dataset.merge({
-        estimated_size: dataset[:estimated_size].to_i,
-        estimated_row_count: dataset[:estimated_row_count].to_i,
-        estimated_columns_count: dataset[:estimated_columns_count].to_i,
-        num_bytes: dataset[:num_bytes].to_i
+        estimated_size: entity_info[:estimated_size].to_i,
+        estimated_row_count: entity_info[:estimated_row_count].to_i,
+        estimated_columns_count: entity_info[:estimated_columns_count].to_i,
+        num_bytes: entity_info[:num_bytes].to_i
       }))
       if sync_info then
         return sync_info[:sync_status], sync_info[:unsyncable_reason]

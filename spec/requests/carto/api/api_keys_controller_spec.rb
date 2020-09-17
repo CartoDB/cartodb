@@ -1117,4 +1117,730 @@ describe Carto::Api::ApiKeysController do
       end
     end
   end
+
+  describe 'managing api keys for other organization users' do
+    def auth_user(u)
+      @auth_user = u
+    end
+
+    def auth_headers
+      json_headers_with_auth(@auth_user.username, @auth_user.api_key)
+    end
+
+    def auth_params
+      { user_domain: @auth_user.username }
+    end
+
+    before :all do
+      @num_api_keys_owner_user = 4
+      @num_api_keys_admin_user = 3
+      @num_api_keys_regular_user = 2
+      @num_api_keys_external_user = 1
+
+      # create org and owner
+      org = FactoryGirl.create(:organization_with_users)
+      @owner_user = org.owner
+      @carto_owner_user = Carto::User.find(@owner_user.id)
+      apikeys = @carto_owner_user.api_keys.order(:updated_at).all.to_a
+      @num_api_keys_owner_user.times { apikeys << FactoryGirl.create(:api_key_apis, user_id: @owner_user.id) }
+      apikeys << FactoryGirl.create(:oauth_api_key, user_id: @owner_user.id)
+      @owner_api_key = apikeys[3]
+      @owner_table1 = create_table(user_id: @carto_owner_user.id)
+      @owner_table2 = create_table(user_id: @carto_owner_user.id)
+      @owner_api_key_grants = [
+        {
+          type: "apis",
+          apis: ["sql", "maps"]
+        },
+        {
+          type: "database",
+          tables: [
+            {
+              schema: @carto_owner_user.database_schema,
+              name: @owner_table1.name,
+              permissions: [
+                "insert",
+                "select",
+                "update",
+                "delete"
+              ]
+            },
+            {
+              schema: @carto_owner_user.database_schema,
+              name: @owner_table2.name,
+              permissions: [
+                "select"
+              ]
+            }
+          ]
+        }
+      ]
+      @owner_api_key_name = 'owner_wadus'
+      @owner_api_key_payload = {
+        name: @owner_api_key_name,
+        grants: @owner_api_key_grants
+      }
+
+      # create admin
+      @admin_user = FactoryGirl.create(:valid_user, organization: org, org_admin: true)
+      @carto_admin_user = Carto::User.find(@admin_user.id)
+      apikeys = @carto_admin_user.api_keys.order(:updated_at).all.to_a
+      @num_api_keys_admin_user.times { apikeys << FactoryGirl.create(:api_key_apis, user_id: @admin_user.id) }
+      apikeys << FactoryGirl.create(:oauth_api_key, user_id: @admin_user.id)
+      @admin_api_key = apikeys[3]
+      @admin_table1 = create_table(user_id: @carto_admin_user.id)
+      @admin_table2 = create_table(user_id: @carto_admin_user.id)
+      @admin_api_key_grants = [
+        {
+          type: "apis",
+          apis: ["sql", "maps"]
+        },
+        {
+          type: "database",
+          tables: [
+            {
+              schema: @carto_admin_user.database_schema,
+              name: @admin_table1.name,
+              permissions: [
+                "insert",
+                "select",
+                "update",
+                "delete"
+              ]
+            },
+            {
+              schema: @carto_admin_user.database_schema,
+              name: @admin_table2.name,
+              permissions: [
+                "select"
+              ]
+            }
+          ]
+        }
+      ]
+      @admin_api_key_name = 'admin_wadus'
+      @admin_api_key_payload = {
+        name: @admin_api_key_name,
+        grants: @admin_api_key_grants
+      }
+
+      # create regular
+      @regular_user = FactoryGirl.create(:valid_user, organization: org)
+      @carto_regular_user = Carto::User.find(@regular_user.id)
+      apikeys = @carto_regular_user.api_keys.order(:updated_at).all.to_a
+      @num_api_keys_regular_user.times { apikeys << FactoryGirl.create(:api_key_apis, user_id: @regular_user.id) }
+      apikeys << FactoryGirl.create(:oauth_api_key, user_id: @regular_user.id)
+      @regular_api_key = apikeys[3]
+      @regular_table1 = create_table(user_id: @carto_regular_user.id)
+      @regular_table2 = create_table(user_id: @carto_regular_user.id)
+      @regular_api_key_grants = [
+        {
+          type: "apis",
+          apis: ["sql", "maps"]
+        },
+        {
+          type: "database",
+          tables: [
+            {
+              schema: @carto_regular_user.database_schema,
+              name: @regular_table1.name,
+              permissions: [
+                "insert",
+                "select",
+                "update",
+                "delete"
+              ]
+            },
+            {
+              schema: @carto_regular_user.database_schema,
+              name: @regular_table2.name,
+              permissions: [
+                "select"
+              ]
+            }
+          ]
+        }
+      ]
+      @regular_api_key_name = 'regular_wadus'
+      @regular_api_key_payload = {
+        name: @regular_api_key_name,
+        grants: @regular_api_key_grants
+      }
+
+      # external user
+      @external_user = FactoryGirl.create(:valid_user)
+      @carto_external_user = Carto::User.find(@external_user.id)
+      apikeys = @carto_external_user.api_keys.order(:updated_at).all.to_a
+      @num_api_keys_external_user.times { apikeys << FactoryGirl.create(:api_key_apis, user_id: @external_user.id) }
+      apikeys << FactoryGirl.create(:oauth_api_key, user_id: @external_user.id)
+      @external_api_key = apikeys[3]
+      @external_table1 = create_table(user_id: @carto_external_user.id)
+      @external_table2 = create_table(user_id: @carto_external_user.id)
+      @external_api_key_grants = [
+        {
+          type: "apis",
+          apis: ["sql", "maps"]
+        },
+        {
+          type: "database",
+          tables: [
+            {
+              schema: @carto_external_user.database_schema,
+              name: @external_table1.name,
+              permissions: [
+                "insert",
+                "select",
+                "update",
+                "delete"
+              ]
+            },
+            {
+              schema: @carto_external_user.database_schema,
+              name: @external_table2.name,
+              permissions: [
+                "select"
+              ]
+            }
+          ]
+        }
+      ]
+      @external_api_key_name = 'external_wadus'
+      @external_api_key_payload = {
+        name: @external_api_key_name,
+        grants: @external_api_key_grants
+      }
+
+    end
+
+    after :all do
+      @owner_table1.destroy
+      @owner_table2.destroy
+      @admin_table1.destroy
+      @admin_table2.destroy
+      @regular_table1.destroy
+      @regular_table2.destroy
+      @external_table1.destroy
+      @external_table2.destroy
+    end
+
+    describe '#index' do
+      describe 'owner org' do
+        it 'can list regular user api keys' do
+          auth_user(@carto_owner_user)
+          get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:result][0][:type].should eq 'master'
+            response.body[:result][1][:type].should eq 'default'
+            response.body[:result][2][:type].should eq 'regular'
+            response.body[:result].length.should eq @num_api_keys_regular_user + 2 # master and default
+          end
+        end
+
+        it 'can list admin user api keys' do
+          auth_user(@carto_owner_user)
+          get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:result][0][:type].should eq 'master'
+            response.body[:result][1][:type].should eq 'default'
+            response.body[:result][2][:type].should eq 'regular'
+            response.body[:result].length.should eq @num_api_keys_admin_user + 2 # master and default
+          end
+        end
+
+        it 'cannot list external user api keys' do
+          auth_user(@carto_owner_user)
+          get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'admin org' do
+        it 'can list regular user api keys' do
+          auth_user(@carto_admin_user)
+          get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:result][0][:type].should eq 'master'
+            response.body[:result][1][:type].should eq 'default'
+            response.body[:result][2][:type].should eq 'regular'
+            response.body[:result].length.should eq @num_api_keys_regular_user + 2 # master and default
+          end
+        end
+
+        it 'can list owner user api keys' do
+          auth_user(@carto_admin_user)
+          get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:result][0][:type].should eq 'master'
+            response.body[:result][1][:type].should eq 'default'
+            response.body[:result][2][:type].should eq 'regular'
+            response.body[:result].length.should eq @num_api_keys_owner_user + 2 # master and default
+          end
+        end
+
+        it 'cannot list external user api keys' do
+          auth_user(@carto_admin_user)
+          get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'regular user' do
+        it 'cannot list owner user api keys' do
+          auth_user(@carto_regular_user)
+          get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot list admin user api keys' do
+          auth_user(@carto_regular_user)
+          get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot list external user api keys' do
+          auth_user(@carto_regular_user)
+          get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+      end
+    end
+
+    describe '#show' do
+      describe 'owner org' do
+        it 'can show info of a regular user api key' do
+          auth_user(@carto_owner_user)
+          get_json api_key_url(id: @regular_api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:name] = @regular_api_key.name
+          end
+        end
+
+        it 'can show info of an admin user api key' do
+          auth_user(@carto_owner_user)
+          get_json api_key_url(id: @admin_api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:name] = @admin_api_key.name
+          end
+        end
+
+        it 'cannot show info of an admin user api key without the target_user parameter' do
+          auth_user(@carto_owner_user)
+          get_json api_key_url(id: @admin_api_key.name), auth_params, auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /API key not found/
+          end
+        end
+
+        it 'cannot show info of an external user api key' do
+          auth_user(@carto_owner_user)
+          get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'admin org' do
+        it 'can show info of a regular user api key' do
+          auth_user(@carto_admin_user)
+          get_json api_key_url(id: @regular_api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:name] = @regular_api_key.name
+          end
+        end
+
+        it 'can show info of an owner user api key' do
+          auth_user(@carto_admin_user)
+          get_json api_key_url(id: @owner_api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:name] = @owner_api_key.name
+          end
+        end
+
+        it 'cannot show info of an owner user api key without the target_user parameter' do
+          auth_user(@carto_admin_user)
+          get_json api_key_url(id: @owner_api_key.name), auth_params, auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /API key not found/
+          end
+        end
+
+        it 'cannot show info of an external user api key' do
+          auth_user(@carto_admin_user)
+          get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'regular user' do
+        it 'cannot show info of an owner user api key' do
+          auth_user(@carto_regular_user)
+          get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot show info of an admin user api key' do
+          auth_user(@carto_regular_user)
+          get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot show info of an external user api key' do
+          auth_user(@carto_regular_user)
+          get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+      end
+    end
+
+    describe '#create' do
+      describe 'owner org' do
+        it 'can create a regular user api key' do
+          auth_user(@carto_owner_user)
+          post_json api_keys_url, auth_params.merge(@regular_api_key_payload).merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 201
+            api_key_response = response.body
+            api_key_response[:id].should_not be
+            api_key_response[:name].should eq @regular_api_key_name
+            api_key_response[:user][:username].should eq @carto_regular_user.username
+            api_key_response[:type].should eq 'regular'
+            api_key_response[:token].should_not be_empty
+
+            request_table_permissions = @regular_api_key_grants.find { |grant| grant[:type] == 'database' }[:tables]
+            response_grants_should_include_request_permissions(api_key_response[:grants], request_table_permissions)
+
+            api_key_response[:databaseConfig].should_not be
+
+            Carto::ApiKey.where(name: api_key_response[:name]).each(&:destroy)
+          end
+        end
+
+        it 'can create an admin user api key' do
+          auth_user(@carto_owner_user)
+          post_json api_keys_url, auth_params.merge(@admin_api_key_payload).merge(target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 201
+            api_key_response = response.body
+            api_key_response[:id].should_not be
+            api_key_response[:name].should eq @admin_api_key_name
+            api_key_response[:user][:username].should eq @carto_admin_user.username
+            api_key_response[:type].should eq 'regular'
+            api_key_response[:token].should_not be_empty
+
+            request_table_permissions = @admin_api_key_grants.find { |grant| grant[:type] == 'database' }[:tables]
+            response_grants_should_include_request_permissions(api_key_response[:grants], request_table_permissions)
+
+            api_key_response[:databaseConfig].should_not be
+
+            Carto::ApiKey.where(name: api_key_response[:name]).each(&:destroy)
+          end
+        end
+
+        it 'cannot create an external user api key' do
+          auth_user(@carto_owner_user)
+          post_json api_keys_url, auth_params.merge(@external_api_key_payload).merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'admin org' do
+        it 'can create a regular user api key' do
+          auth_user(@carto_admin_user)
+          post_json api_keys_url, auth_params.merge(@regular_api_key_payload).merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 201
+            api_key_response = response.body
+            api_key_response[:id].should_not be
+            api_key_response[:name].should eq @regular_api_key_name
+            api_key_response[:user][:username].should eq @carto_regular_user.username
+            api_key_response[:type].should eq 'regular'
+            api_key_response[:token].should_not be_empty
+
+            request_table_permissions = @regular_api_key_grants.find { |grant| grant[:type] == 'database' }[:tables]
+            response_grants_should_include_request_permissions(api_key_response[:grants], request_table_permissions)
+
+            api_key_response[:databaseConfig].should_not be
+
+            Carto::ApiKey.where(name: api_key_response[:name]).each(&:destroy)
+          end
+        end
+
+        it 'can create an owner user api key' do
+          auth_user(@carto_admin_user)
+          post_json api_keys_url, auth_params.merge(@owner_api_key_payload).merge(target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 201
+            api_key_response = response.body
+            api_key_response[:id].should_not be
+            api_key_response[:name].should eq @owner_api_key_name
+            api_key_response[:user][:username].should eq @carto_owner_user.username
+            api_key_response[:type].should eq 'regular'
+            api_key_response[:token].should_not be_empty
+
+            request_table_permissions = @owner_api_key_grants.find { |grant| grant[:type] == 'database' }[:tables]
+            response_grants_should_include_request_permissions(api_key_response[:grants], request_table_permissions)
+
+            api_key_response[:databaseConfig].should_not be
+
+            Carto::ApiKey.where(name: api_key_response[:name]).each(&:destroy)
+          end
+        end
+
+        it 'cannot create an external user api key' do
+          auth_user(@carto_admin_user)
+          post_json api_keys_url, auth_params.merge(@external_api_key_payload).merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'regular user' do
+        it 'cannot create an owner user api key' do
+          auth_user(@carto_regular_user)
+          post_json api_keys_url, auth_params.merge(@owner_api_key_payload).merge(target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot create an admin user api key' do
+          auth_user(@carto_regular_user)
+          post_json api_keys_url, auth_params.merge(@admin_api_key_payload).merge(target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot create an external user api key' do
+          auth_user(@carto_regular_user)
+          post_json api_keys_url, auth_params.merge(@external_api_key_payload).merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+      end
+    end
+
+    describe '#destroy' do
+      describe 'owner org' do
+        it 'can destroy a regular user api key' do
+          api_key = FactoryGirl.create(:api_key_apis, user_id: @carto_regular_user.id)
+          auth_user(@carto_owner_user)
+          delete_json api_key_url(id: api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 204
+          end
+
+          Carto::ApiKey.where(name: api_key.name, user_id: @carto_regular_user.id).first.should be_nil
+        end
+
+        it 'can destroy an admin user api key' do
+          api_key = FactoryGirl.create(:api_key_apis, user_id: @carto_admin_user.id)
+          auth_user(@carto_owner_user)
+          delete_json api_key_url(id: api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 204
+          end
+
+          Carto::ApiKey.where(name: api_key.name, user_id: @carto_admin_user.id).first.should be_nil
+        end
+
+        it 'cannot destroy an external user api key' do
+          auth_user(@carto_owner_user)
+          delete_json api_key_url(id: 'foo'), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'admin org' do
+        it 'can destroy a regular user api key' do
+          api_key = FactoryGirl.create(:api_key_apis, user_id: @carto_regular_user.id)
+          auth_user(@carto_admin_user)
+          delete_json api_key_url(id: api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 204
+          end
+
+          Carto::ApiKey.where(name: api_key.name, user_id: @carto_regular_user.id).first.should be_nil
+        end
+
+        it 'can destroy an owner user api key' do
+          api_key = FactoryGirl.create(:api_key_apis, user_id: @carto_owner_user.id)
+          auth_user(@carto_admin_user)
+          delete_json api_key_url(id: api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 204
+          end
+
+          Carto::ApiKey.where(name: api_key.name, user_id: @carto_owner_user.id).first.should be_nil
+        end
+
+        it 'cannot destroy an external user api key' do
+          auth_user(@carto_admin_user)
+          delete_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'regular user' do
+        it 'cannot destroy an owner user api key' do
+          auth_user(@carto_regular_user)
+          delete_json api_key_url(id: @owner_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot destroy an admin user api key' do
+          auth_user(@carto_regular_user)
+          delete_json api_key_url(id: @admin_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot destroy an external user api key' do
+          auth_user(@carto_regular_user)
+          delete_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+      end
+    end
+
+    describe '#regenerate_token' do
+      describe 'owner org' do
+        it 'can regenerate the token of a regular user api key' do
+          old_token = @regular_api_key.token
+          auth_user(@carto_owner_user)
+          post_json regenerate_api_key_token_url(id: @regular_api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:token].should_not be_nil
+            response.body[:token].should_not eq old_token
+            @regular_api_key.reload
+            response.body[:token].should eq @regular_api_key.token
+          end
+        end
+
+        it 'can regenerate the token of an admin user api key' do
+          old_token = @admin_api_key.token
+          auth_user(@carto_owner_user)
+          post_json regenerate_api_key_token_url(id: @admin_api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:token].should_not be_nil
+            response.body[:token].should_not eq old_token
+            @admin_api_key.reload
+            response.body[:token].should eq @admin_api_key.token
+          end
+        end
+
+        it 'cannot regenerate the token of an admin user api key without the target_user parameter' do
+          old_token = @admin_api_key.token
+          auth_user(@carto_owner_user)
+          post_json regenerate_api_key_token_url(id: @admin_api_key.name), auth_params, auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /API key not found/
+          end
+        end
+
+        it 'cannot regenerate the token of an external user api key' do
+          old_token = @external_api_key.token
+          auth_user(@carto_owner_user)
+          post_json regenerate_api_key_token_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'admin org' do
+        it 'can regenerate the token of a regular user api key' do
+          old_token = @regular_api_key.token
+          auth_user(@carto_admin_user)
+          post_json regenerate_api_key_token_url(id: @regular_api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:token].should_not be_nil
+            response.body[:token].should_not eq old_token
+            @regular_api_key.reload
+            response.body[:token].should eq @regular_api_key.token
+          end
+        end
+
+        it 'can regenerate the token of an owner user api key' do
+          old_token = @owner_api_key.token
+          auth_user(@carto_admin_user)
+          post_json regenerate_api_key_token_url(id: @owner_api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 200
+            response.body[:token].should_not be_nil
+            response.body[:token].should_not eq old_token
+            @owner_api_key.reload
+            response.body[:token].should eq @owner_api_key.token
+          end
+        end
+
+        it 'cannot regenerate the token of an owner user api key without the target_user parameter' do
+          old_token = @owner_api_key.token
+          auth_user(@carto_admin_user)
+          post_json regenerate_api_key_token_url(id: @owner_api_key.name), auth_params, auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /API key not found/
+          end
+        end
+
+        it 'cannot regenerate the token of an external user api key' do
+          old_token = @external_api_key.token
+          auth_user(@carto_admin_user)
+          post_json regenerate_api_key_token_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 404
+            response.body[:errors].should match /not found in the organization/
+          end
+        end
+      end
+
+      describe 'regular user' do
+        it 'cannot regenerate the token of an owner user api key' do
+          auth_user(@carto_regular_user)
+          post_json regenerate_api_key_token_url(id: @owner_api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot regenerate the token of an admin user api key' do
+          auth_user(@carto_regular_user)
+          post_json regenerate_api_key_token_url(id: @admin_api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+
+        it 'cannot regenerate the token of an external user api key' do
+          auth_user(@carto_regular_user)
+          post_json regenerate_api_key_token_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
+            response.status.should eq 403
+            response.body[:errors].should match /don't have permission to access/
+          end
+        end
+      end
+    end
+  end
 end

@@ -242,6 +242,7 @@ module CartoDB
         if %w(linestring polygon).include?(type)
           user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
             user_database.run("UPDATE #{qualified_table_name} SET the_geom = ST_Multi(the_geom);")
+
             type = user_database[%Q{
               SELECT GeometryType(#{THE_GEOM})
               FROM #{qualified_table_name}

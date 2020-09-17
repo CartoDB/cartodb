@@ -25,6 +25,7 @@ Development
 * Refactor of `Admin::VisualizationsController` code [#15830](https://github.com/CartoDB/cartodb/pull/15830)
 * Fix Coverband - Resque integration [#15827](https://github.com/CartoDB/cartodb/pull/15827)
 * Fix missing LoggerHelper in CartoDB::LayerModule::Presenter [#15829](https://github.com/CartoDB/cartodb/pull/15829)
+* Migrate ::OauthToken from Sequel to ActiveRecord [#15840](https://github.com/CartoDB/cartodb/pull/15840)
 
 4.41.1 (2020-09-03)
 -------------------

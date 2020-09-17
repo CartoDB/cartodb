@@ -28,10 +28,8 @@ describe Carto::DoLicensingService do
   describe '#subscribe' do
     before(:each) do
       @central_mock = mock
-      @doss = mock
       Cartodb::Central.stubs(:new).returns(@central_mock)
-      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-      @doss.stubs(:entity_info).returns({})
+      DbCartoConnectors::DoSyncService.any_instance.stubs(:entity_info).returns({})
       @service.stubs(:get_initial_sync_status).returns('unsynced')
     end
 
@@ -102,6 +100,7 @@ describe Carto::DoLicensingService do
     end
 
     it 'removes the metadata from Redis' do
+      DbCartoConnectors::DoSyncService.any_instance.stubs(:entity_info).returns(@dataset)
       @central_mock.stubs(:create_do_datasets)
       @central_mock.stubs(:remove_do_dataset)
 

@@ -298,6 +298,14 @@ class UserTable < Sequel::Model
     service.actual_row_count
   end
 
+  def external_source_visualization
+    if data_import_id
+      Carto::ExternalDataImports.where(data_import_id: data_import_id)&.first&.external_source&.visualization
+    else
+      nil
+    end
+  end
+
   def table_visualization
     @table_visualization ||= map_id && CartoDB::Visualization::Collection.new.fetch(
       map_id: map_id,

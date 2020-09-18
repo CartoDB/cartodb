@@ -33,7 +33,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
         if @external_source
           @stats_aggregator.timing('external-data-import.save') do
-            ExternalDataImport.new(
+            Carto::ExternalDataImport.new(
               data_import_id: data_import.id,
               external_source_id: @external_source.id,
               synchronization_id: member.id

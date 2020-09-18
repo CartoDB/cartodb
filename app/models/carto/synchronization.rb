@@ -2,11 +2,11 @@ require 'active_record'
 
 class Carto::Synchronization < ActiveRecord::Base
 
-  belongs_to :user
+  belongs_to :user, class_name: Carto::User
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :log, class_name: Carto::Log
 
-  has_many :external_data_imports
+  has_many :external_data_imports, class_name: Carto::ExternalDataImport
 
   STATE_CREATED   = 'created'
   # Already at resque, waiting for slot

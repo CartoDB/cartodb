@@ -1,6 +1,7 @@
 require 'active_record'
 require 'cartodb-common'
 require_relative '../visualization/stats'
+require_relative '../quota_checker'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'

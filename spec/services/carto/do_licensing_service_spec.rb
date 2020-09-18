@@ -30,6 +30,7 @@ describe Carto::DoLicensingService do
       @central_mock = mock
       Cartodb::Central.stubs(:new).returns(@central_mock)
       @service.stubs(:get_initial_sync_status).returns('unsynced')
+      @service.stubs(:get_entity_info).returns({})
     end
 
     after(:each) do
@@ -99,6 +100,7 @@ describe Carto::DoLicensingService do
     end
 
     it 'removes the metadata from Redis' do
+      @service.stubs(:get_entity_info).returns(@dataset)
       @central_mock.stubs(:create_do_datasets)
       @central_mock.stubs(:remove_do_dataset)
 

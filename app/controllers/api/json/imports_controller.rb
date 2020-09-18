@@ -78,7 +78,10 @@ class Api::Json::ImportsController < Api::ApplicationController
 
         if external_source.present?
           @stats_aggregator.timing('external-data-import.save') do
-            ExternalDataImport.new(data_import.id, external_source.id).save
+            ExternalDataImport.new(
+              data_import_id: data_import.id,
+              external_source_id: external_source.id
+            ).save
           end
         end
 

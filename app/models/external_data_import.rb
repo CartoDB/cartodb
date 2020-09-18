@@ -5,14 +5,6 @@ class ExternalDataImport < Sequel::Model
   many_to_one :data_import
   many_to_one :external_source, class: CartoDB::Visualization::ExternalSource
 
-  def initialize(data_import_id, external_source_id, synchronization_id = nil)
-    super({
-        external_source_id: external_source_id,
-        data_import_id: data_import_id,
-        synchronization_id: synchronization_id
-      })
-  end
-
   def self.by_user_id(user_id)
     user_data_imports = DataImport.where(user_id: user_id)
     ExternalDataImport.where(data_import_id: user_data_imports.select(:id)).all

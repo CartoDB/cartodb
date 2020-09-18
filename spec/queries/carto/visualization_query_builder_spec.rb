@@ -342,9 +342,12 @@ describe Carto::VisualizationQueryBuilder do
 
     # Old external data imports don't hide anything
 
-    ExternalDataImport.new(data_import_1.id, external_source_1.id, nil).save
-    ExternalDataImport.new(data_import_1.id, external_source_2.id, nil).save
-    ExternalDataImport.new(data_import_1.id, external_source_3.id, nil).save
+    ExternalDataImport.new(data_import_id: data_import_1.id,
+                           external_source_id: external_source_1.id).save
+    ExternalDataImport.new(data_import_id: data_import_1.id,
+                           external_source_id: external_source_2.id).save
+    ExternalDataImport.new(data_import_id: data_import_1.id,
+                           external_source_id: external_source_3.id).save
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
         .with_order(:updated_at, :desc)
@@ -357,7 +360,9 @@ describe Carto::VisualizationQueryBuilder do
 
     sync_1 = CartoDB::Synchronization::Member.new({
       }).store
-    ExternalDataImport.new(data_import_1.id, external_source_2.id, sync_1.id).save
+    ExternalDataImport.new(data_import_id: data_import_1.id,
+                           external_source_id: external_source_2.id,
+                           synchronization_id: sync_1.id).save
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
         .with_order(:updated_at, :desc)
@@ -368,7 +373,9 @@ describe Carto::VisualizationQueryBuilder do
 
     sync_2 = CartoDB::Synchronization::Member.new({
       }).store
-    ExternalDataImport.new(data_import_1.id, external_source_3.id, sync_2.id).save
+    ExternalDataImport.new(data_import_id: data_import_1.id,
+                           external_source_id: external_source_3.id,
+                           synchronization_id: sync_2.id).save
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
         .with_order(:updated_at, :desc)

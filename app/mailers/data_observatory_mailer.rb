@@ -6,10 +6,11 @@ class DataObservatoryMailer < ActionMailer::Base
   default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
-  def user_request(user, dataset_name)
+  def user_request(user, dataset_name, provider_name)
     subject = 'Your premium dataset request to CARTO'
     @user_name = user.name
     @dataset_name = dataset_name
+    @provider_name = provider_name
 
     mail to: user.email, subject: subject
   end

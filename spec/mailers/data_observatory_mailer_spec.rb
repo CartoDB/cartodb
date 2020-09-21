@@ -8,7 +8,7 @@ describe DataObservatoryMailer do
     end
 
     before(:each) do
-      @mailer = DataObservatoryMailer.user_request(@user, 'Demographics')
+      @mailer = DataObservatoryMailer.user_request(@user, 'Demographics', 'CARTO')
     end
 
     after(:each) do
@@ -42,6 +42,13 @@ describe DataObservatoryMailer do
 
       mail = ActionMailer::Base.deliveries.first
       expect(mail.body).to include('Demographics')
+    end
+
+    it "delivers a text including the requested provider name" do
+      @mailer.deliver_now
+
+      mail = ActionMailer::Base.deliveries.first
+      expect(mail.body).to include('CARTO')
     end
   end
 

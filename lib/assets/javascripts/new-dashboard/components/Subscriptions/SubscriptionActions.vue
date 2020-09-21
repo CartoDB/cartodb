@@ -2,19 +2,21 @@
   <div class="u-flex" :class="{'u-flex__direction--column': mode === 'column', 'u-flex__align--center': mode !== 'column'}">
     <div v-if="dataset.sync_status !== 'syncing'" class="u-flex u-flex__align--center"
       :class="{ disabled: dataset.status !== 'active' || dataset.sync_status !== 'synced' }">
-      <SubscriptionButtonTooltip v-if="dataset.sync_status === 'unsynced' && (dataset.unsynced_errors && dataset.unsynced_errors.length === 0)">
-        <button type="button" class="u-mr--8 unconnect" @click="connect">
-          <div class="tooltip text is-small is-txtWhite">
-            Connect to Dashboard
-          </div>
-        </button>
-      </SubscriptionButtonTooltip>
-      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsynced' && (dataset.unsynced_errors && dataset.unsynced_errors.length > 0)">
+      <SubscriptionButtonTooltip v-if="dataset.sync_status === 'unsynced' && (dataset.unsynced_errors && dataset.unsynced_errors.length > 0)">
         <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
           <img src="../../assets/icons/catalog/error-triangle.svg" :class="smallClass">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey">
             <h1>Connection error</h1>
-            <p>An error occurred during synchronization. Please, contact support@carto.com</p>
+            <p>An error occurred during connection. Please, contact support@carto.com</p>
+          </div>
+        </button>
+      </SubscriptionButtonTooltip>
+      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsynced'">
+        <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
+          <img src="../../assets/icons/catalog/information-circle.svg" :class="smallClass">
+          <div class="tooltip text bgWhite is-small is-txtSoftGrey">
+            <h1>Not connected</h1>
+            <p>This dataset is not connected. Please, contact support@carto.com</p>
           </div>
         </button>
       </SubscriptionButtonTooltip>
@@ -94,14 +96,6 @@ export default {
     downloadNotebook (e) {
       e.preventDefault();
       this.$store.dispatch('catalog/downloadNotebook', { id: this.dataset.slug, type: this.dataset.type });
-    },
-    async connect () {
-      await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id);
-      this.$store.dispatch('catalog/fetchSubscriptionsList', true);
-    },
-    async unconnect () {
-      await this.$store.dispatch('catalog/fetchSubscriptionUnSync', this.dataset.id);
-      this.$store.dispatch('catalog/fetchSubscriptionsList');
     }
   }
 };
@@ -109,30 +103,6 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-.connect, .unconnect {
-  border-radius: 2px;
-  width: 24px;
-  height: 24px;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-.connect {
-  background-color: $blue--500;
-  border: 1px solid $blue--500;
-  background-image: url('../../assets/icons/catalog/connect.svg');
-  &:hover {
-    background-color: $white;
-    background-image: url('../../assets/icons/catalog/unconnect.svg');
-  }
-}
-.unconnect {
-  border: 1px solid $blue--500;
-  background-image: url('../../assets/icons/catalog/unconnect.svg');
-  &:hover {
-    background-color: $blue--500;
-    background-image: url('../../assets/icons/catalog/connect.svg');
-  }
-}
 .disabled {
   >a {
     opacity: 0.4;
@@ -169,5 +139,4 @@ export default {
 img.small {
   height: 20px;
 }
-
 </style>

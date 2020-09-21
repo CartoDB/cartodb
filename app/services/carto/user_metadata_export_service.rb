@@ -93,9 +93,7 @@ module Carto
       client_application = user.client_applications.first
       if client_application
         client_application.access_tokens.each do |t|
-          # AR does not know about this, so it needs to be fixed
-          t.update_column(:type, 'AccessToken')
-          AccessToken[t.id].after_save
+          t.update!(type: 'AccessToken')
         end
       end
     end

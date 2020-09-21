@@ -51,8 +51,8 @@ class Carto::User < ActiveRecord::Base
   has_many :permissions, inverse_of: :owner, foreign_key: :owner_id
   has_many :connector_configurations, inverse_of: :user, dependent: :destroy
 
-  has_many :client_applications, class_name: Carto::ClientApplication
-  has_many :oauth_tokens, class_name: Carto::OauthToken
+  has_many :client_applications, class_name: Carto::ClientApplication, dependent: :destroy
+  has_many :tokens, class_name: Carto::OauthToken, dependent: :destroy
 
   has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
   has_many :groups, through: :users_group
@@ -94,6 +94,11 @@ class Carto::User < ActiveRecord::Base
 
   after_destroy { rate_limit.destroy_completely(self) if rate_limit }
   after_destroy :invalidate_varnish_cache
+
+  # Compatibility with ::User, where the association is defined as one_to_one
+  def client_application
+    client_applications.first
+  end
 
   # Auto creates notifications on first access
   def static_notifications_with_creation

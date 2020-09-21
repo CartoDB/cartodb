@@ -1253,10 +1253,6 @@ class Table
     "#{prefix}#{name}_#{column}"
   end
 
-  def external_source_visualization
-    @user_table.try(:external_source_visualization)
-  end
-
   def previous_privacy
     # INFO: @user_table.initial_value(:privacy) weirdly returns incorrect value so using changes index instead
     privacy_changed? ? @user_table.privacy_was : nil

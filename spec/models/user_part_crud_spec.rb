@@ -21,29 +21,6 @@ describe User do
     end
   end
 
-  describe '#set_relationships_from_central' do
-    context 'when syncing feature flags' do
-      let(:old_feature_flag) { create(:feature_flag) }
-      let(:new_feature_flag) { create(:feature_flag) }
-      let(:user) { create(:user) }
-
-      before { user.activate_feature_flag!(old_feature_flag) }
-
-      it 'updates feature flags' do
-        expect(user.feature_flags).to include(old_feature_flag)
-
-        user.set_relationships_from_central(feature_flags: [new_feature_flag.id])
-
-        expect(user.feature_flags).not_to include(old_feature_flag)
-        expect(user.feature_flags).to include(new_feature_flag)
-      end
-
-      it 'deletes associated feature flags when user is destroyed' do
-        expect { user.destroy }.to change { Carto::FeatureFlagsUser.count }.by(-1)
-      end
-    end
-  end
-
   it "should have many tables" do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC

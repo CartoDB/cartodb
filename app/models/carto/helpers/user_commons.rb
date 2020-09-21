@@ -327,4 +327,15 @@ module Carto::UserCommons
     Carto::FeatureFlagsUser.create!(feature_flag: feature_flag, user_id: id)
   end
 
+  def update_feature_flags(feature_flag_ids = nil)
+    return unless feature_flag_ids
+
+    self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all
+
+    new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)
+    new_feature_flags_ids.each do |feature_flag_id|
+      self_feature_flags_user.find_or_create_by(feature_flag_id: feature_flag_id)
+    end
+  end
+
 end

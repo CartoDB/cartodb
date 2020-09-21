@@ -54,7 +54,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     if @user.save
       @user.reload
       CartoDB::Visualization::CommonDataService.load_common_data(@user, self) if @user.should_load_common_data?
-      @user.set_relationships_from_central(user_param)
+      @user.update_feature_flags(user_param[:feature_flags])
     end
     CartoGearsApi::Events::EventManager.instance.notify(
       CartoGearsApi::Events::UserCreationEvent.new(
@@ -67,7 +67,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def update
     user_param = params[:user]
     @user.set_fields_from_central(user_param, :update)
-    @user.set_relationships_from_central(user_param)
+    @user.update_feature_flags(user_param[:feature_flags])
     @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
     @user.update_rate_limits(user_param[:rate_limit])
     @user.update_gcloud_settings(user_param[:gcloud_settings])

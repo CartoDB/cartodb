@@ -88,7 +88,7 @@ describe Carto::Api::UserPresenter do
 
     feature_flag1 = FactoryGirl.create(:feature_flag, id: 1, name: 'ff1')
     feature_flag2 = FactoryGirl.create(:feature_flag, id: 2, name: 'ff2')
-    user.set_relationships_from_central({ feature_flags: [ feature_flag1.id.to_s, feature_flag2.id.to_s ]})
+    user.update_feature_flags([ feature_flag1.id.to_s, feature_flag2.id.to_s ])
     user.save.reload
 
     compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.find(user.id)).data, false, false)

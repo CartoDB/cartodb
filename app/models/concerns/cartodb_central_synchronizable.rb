@@ -175,25 +175,12 @@ module Concerns
       self
     end
 
-    def set_relationships_from_central(params = {})
-      update_feature_flags(params[:feature_flags]) if params[:feature_flags]
-    end
-
     def sync_data_with_cartodb_central?
       Cartodb::Central.sync_data_with_cartodb_central?
     end
 
     def cartodb_central_client
       @cartodb_central_client ||= Cartodb::Central.new
-    end
-
-    def update_feature_flags(feature_flag_ids)
-      self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all
-
-      new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)
-      new_feature_flags_ids.each do |feature_flag_id|
-        self_feature_flags_user.find_or_create_by(feature_flag_id: feature_flag_id)
-      end
     end
 
   end

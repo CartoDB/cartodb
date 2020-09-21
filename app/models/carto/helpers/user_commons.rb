@@ -321,4 +321,10 @@ module Carto::UserCommons
     feature_flags.exists?(name: feature_flag_name)
   end
 
+  def activate_feature_flag!(feature_flag)
+    return if Carto::FeatureFlagsUser.exists?(feature_flag: feature_flag, user_id: id)
+
+    Carto::FeatureFlagsUser.create!(feature_flag: feature_flag, user_id: id)
+  end
+
 end

@@ -48,7 +48,7 @@ describe Carto::FeatureFlag do
     end
 
     it 'should destroy feature flag user relations' do
-      user.self_feature_flags_user.create!(feature_flag: feature_flag)
+      user.activate_feature_flag!(feature_flag)
 
       expect {
         delete superadmin_feature_flag_url(feature_flag.id), payload, superadmin_headers

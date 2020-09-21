@@ -40,7 +40,7 @@ describe Carto::UserCommons do
   describe 'feature flags' do
     let(:feature_flag) { create(:feature_flag) }
 
-    before { user.self_feature_flags_user.create!(feature_flag: feature_flag) }
+    before { user.activate_feature_flag!(feature_flag) }
 
     describe '#self_feature_flags_user' do
       subject { user.self_feature_flags_user }
@@ -78,7 +78,7 @@ describe Carto::UserCommons do
       it 'returns feature flags inherited from organization' do
         organization.update!(inherit_owner_ffs: true)
         user.update!(organization: organization)
-        organization_owner.self_feature_flags_user.create!(feature_flag: organization_feature_flag)
+        organization_owner.activate_feature_flag!(organization_feature_flag)
 
         expect(subject).to include(organization_feature_flag)
       end
@@ -112,6 +112,28 @@ describe Carto::UserCommons do
 
       it 'is compatible with Sequel and ActiveRecord' do
         expect(subject).to eq(sequel_user.has_feature_flag?(feature_flag.name))
+      end
+    end
+
+    describe '#activate_feature_flag!' do
+      let(:new_feature_flag) { create(:feature_flag) }
+
+      context 'when not active yet' do
+        it 'activates it' do
+          user.activate_feature_flag!(new_feature_flag)
+          user.reload
+
+          expect(user.has_feature_flag?(new_feature_flag.name)).to be_true
+        end
+      end
+
+      context 'when already active' do
+        it 'preserves it' do
+          user.activate_feature_flag!(feature_flag)
+          user.reload
+
+          expect(user.has_feature_flag?(feature_flag.name)).to be_true
+        end
       end
     end
   end

@@ -6,7 +6,7 @@ namespace :cartodb do
     desc 'Acceptance tests regarding Ghost Tables trigger'
     task :ghost_tables, [:username, :sleep_time] => :environment do |_t, args|
       raise 'usage: rake cartodb:acceptance:ghost_tables[username]' if args[:username].blank?
-      @user = User.where(username: args[:username]).first
+      @user = Carto::User.find_by(username: args[:username])
       raise "user with username '#{args[:username]}' not found" unless @user
       args.with_defaults(sleep_time: DEFAULT_SLEEP_TIME)
       @sleep_time = args[:sleep_time].to_i
@@ -62,7 +62,7 @@ namespace :cartodb do
 
     def enable_feature_flag
       ff = Carto::FeatureFlag.find_by(name: 'ghost_tables_trigger_disabled')
-      Carto::FeatureFlagsUser.create(feature_flag: ff, user: @user)
+      @user.activate_feature_flag!(ff)
       @user.reload
     end
 

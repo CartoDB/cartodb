@@ -8,7 +8,7 @@ module FeatureFlagHelper
       ffu = Carto::FeatureFlagsUser.find_by(feature_flag: ff, user: user)
       if state
         unless ffu
-          Carto::FeatureFlagsUser.create(feature_flag: ff, user: user)
+          user.activate_feature_flag!(ff)
         end
       else
         ff.update restricted: false unless ff.restricted

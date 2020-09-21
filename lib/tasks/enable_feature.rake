@@ -9,9 +9,9 @@ namespace :cartodb do
       ff = Carto::FeatureFlag.find_by(name: args[:feature])
       raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
-      ::User.all.each do |user|
+      Carto::User.find_each do |user|
         if !Carto::FeatureFlagsUser.exists?(feature_flag: ff, user: user)
-          Carto::FeatureFlagsUser.create(feature_flag: ff, user: user)
+          user.activate_feature_flag!(ff)
           track_feature_flag_state(user.id, args[:feature], 'enabled')
         end
       end
@@ -25,11 +25,11 @@ namespace :cartodb do
       ff = Carto::FeatureFlag.find_by(name: args[:feature])
       raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
-      user = ::User[username: args[:username]]
+      user = Carto::User.find_by(username: args[:username])
       raise "[ERROR]  User '#{args[:username]}' does not exist" if user.nil?
 
       if !Carto::FeatureFlagsUser.exists?(feature_flag: ff, user: user)
-        Carto::FeatureFlagsUser.create(feature_flag: ff, user: user)
+        user.activate_feature_flag!(ff)
         track_feature_flag_state(user.id, args[:feature], 'enabled')
       else
         puts "[INFO]  Feature '#{args[:feature]}' was already enabled for user '#{args[:username]}'"
@@ -44,12 +44,12 @@ namespace :cartodb do
       ff = Carto::FeatureFlag.find_by(name: args[:feature])
       raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
-      organization = Organization[name: args[:org_name]]
+      organization = Carto::Organization.find_by(name: args[:org_name])
       raise "[ERROR]  Organization '#{args[:org_name]}' does not exist" if organization.nil?
 
       organization.users.each do |user|
         if !Carto::FeatureFlagsUser.exists?(feature_flag: ff, user: user)
-          Carto::FeatureFlagsUser.create(feature_flag: ff, user: user)
+          user.activate_feature_flag!(ff)
           track_feature_flag_state(user.id, args[:feature], 'enabled')
         end
       end
@@ -67,7 +67,7 @@ namespace :cartodb do
       if ffus.nil?
         puts "[INFO]  No users had feature '#{args[:feature]}' enabled"
       else
-        ffus.destroy
+        ffus.destroy_all
       end
     end
 
@@ -79,7 +79,7 @@ namespace :cartodb do
       ff = Carto::FeatureFlag.find_by(name: args[:feature])
       raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
-      user = ::User[username: args[:username]]
+      user = Carto::User.find_by(username: args[:username])
       raise "[ERROR]  User '#{args[:username]}' does not exist" if user.nil?
 
       if !Carto::FeatureFlagsUser.exists?(feature_flag: ff, user: user)
@@ -98,7 +98,7 @@ namespace :cartodb do
       ff = Carto::FeatureFlag.find_by(name: args[:feature])
       raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
-      organization = Organization[name: args[:org_name]]
+      organization = Carto::Organization.find_by(name: args[:org_name])
       raise "[ERROR]  Organization '#{args[:org_name]}' does not exist" if organization.nil?
 
       organization.users.each do |user|
@@ -170,7 +170,7 @@ namespace :cartodb do
       if ffus.nil?
         puts "[INFO]  No users had feature '#{args[:feature]}' enabled"
       else
-        ffus.destroy
+        ffus.destroy_all
       end
 
       ff.destroy()
@@ -182,7 +182,7 @@ namespace :cartodb do
     task :list_all_features => :environment do
 
       puts "Available features:"
-      Carto::FeatureFlag.all.each do |feature|
+      Carto::FeatureFlag.find_each do |feature|
         puts "  - #{feature.name}"
       end
     end

@@ -37,7 +37,7 @@ describe Carto::UserMetadataExportService do
 
     @asset = FactoryGirl.create(:carto_asset, user: @user)
 
-    Carto::FeatureFlagsUser.create(feature_flag: @feature_flag, user: @user)
+    @user.activate_feature_flag!(@feature_flag)
 
     CartoDB::GeocoderUsageMetrics.new(@user.username).incr(:geocoder_here, :success_responses)
 

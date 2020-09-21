@@ -27,7 +27,7 @@ describe User do
       let(:new_feature_flag) { create(:feature_flag) }
       let(:user) { create(:user) }
 
-      before { user.self_feature_flags_user.create!(feature_flag: feature_flag) }
+      before { user.activate_feature_flag!(feature_flag) }
 
       it 'updates feature flags' do
         expect(user.feature_flags).to include(feature_flag)

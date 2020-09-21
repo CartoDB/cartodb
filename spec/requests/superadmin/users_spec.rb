@@ -550,7 +550,7 @@ feature "Superadmin's users API" do
     it 'should create user feature_flag relation' do
       user = create(:user)
       feature_flag = create(:feature_flag)
-      user.self_feature_flags_user.create!(feature_flag: feature_flag)
+      user.activate_feature_flag!(feature_flag)
       new_feature_flag = create(:feature_flag)
 
       payload = {

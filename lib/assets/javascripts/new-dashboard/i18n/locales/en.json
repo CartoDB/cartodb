@@ -803,7 +803,7 @@
   },
   "Connections": {
     "sections": {
-      "directSQLConnection": "Direct SQL Connection (beta)"
+      "directSQLConnection": "Direct SQL Connection"
     }
   }
 }

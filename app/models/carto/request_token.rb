@@ -32,7 +32,9 @@ module Carto
       oauth10? ? super : "#{super}&oauth_callback_confirmed=true"
     end
 
-    private
+    def oob?
+      callback_url == 'oob'
+    end
 
     def oauth10?
       (defined? OAUTH_10_SUPPORT) && OAUTH_10_SUPPORT && callback_url.blank?

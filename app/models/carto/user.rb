@@ -52,7 +52,7 @@ class Carto::User < ActiveRecord::Base
   has_many :connector_configurations, inverse_of: :user, dependent: :destroy
 
   has_many :client_applications, class_name: Carto::ClientApplication, dependent: :destroy
-  has_many :oauth_tokens, class_name: Carto::OauthToken, dependent: :destroy
+  has_many :tokens, class_name: Carto::OauthToken, dependent: :destroy
 
   has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
   has_many :groups, through: :users_group

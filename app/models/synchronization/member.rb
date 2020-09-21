@@ -575,7 +575,7 @@ module CartoDB
       end
 
       def from_external_source?
-        ::ExternalDataImport.where(synchronization_id: self.id).first != nil
+        Carto::ExternalDataImport.where(synchronization_id: self.id).first != nil
       end
 
       attr_reader :repository

@@ -11,7 +11,7 @@ describe Carto::UserMetadataExportService do
 
   before(:all) do
     bypass_named_maps
-    @feature_flag = FactoryGirl.create(:carto_feature_flag)
+    @feature_flag = create(:feature_flag)
     @connector_provider = FactoryGirl.create(:connector_provider)
     user = FactoryGirl.create(:carto_user)
     @oauth_app = FactoryGirl.create(:oauth_app, user: user)
@@ -421,7 +421,7 @@ describe Carto::UserMetadataExportService do
     expect(export[:assets].count).to eq user.assets.size
     export[:assets].zip(user.assets).each { |exported_asset, asset| expect_export_matches_asset(exported_asset, asset) }
 
-    expect(export[:feature_flags]).to eq user.feature_flags_user.map(&:feature_flag).map(&:name)
+    expect(export[:feature_flags]).to eq user.feature_flags_names
 
     if export[:search_tweets]
       expect(export[:search_tweets].count).to eq user.search_tweets.size

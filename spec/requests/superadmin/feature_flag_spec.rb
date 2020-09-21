@@ -1,6 +1,6 @@
 require_relative '../../acceptance_helper'
 
-describe FeatureFlag do
+describe Carto::FeatureFlag do
   describe '#create' do
     it 'should create feature flag' do
       feature_flag = FactoryGirl.build(:feature_flag)
@@ -9,7 +9,7 @@ describe FeatureFlag do
         post superadmin_feature_flags_url, { feature_flag: feature_flag }.to_json, superadmin_headers
 
         response.status.should == 204
-      }.to change(FeatureFlag, :count).by(1)
+      }.to change(Carto::FeatureFlag, :count).by(1)
     end
   end
 
@@ -39,7 +39,7 @@ describe FeatureFlag do
 
       expect {
         delete superadmin_feature_flag_url(feature_flag.id), { feature_flag: feature_flag }.to_json, superadmin_headers
-      }.to change(FeatureFlag, :count).by(-1)
+      }.to change(Carto::FeatureFlag, :count).by(-1)
     end
 
     it 'should destroy feature flag user relations' do
@@ -50,7 +50,7 @@ describe FeatureFlag do
 
       expect {
         delete superadmin_feature_flag_url(feature_flag.id), { feature_flag: feature_flag }.to_json, superadmin_headers
-      }.to change(FeatureFlagsUser, :count).by(-1)
+      }.to change(Carto::FeatureFlagsUser, :count).by(-1)
     end
   end
 

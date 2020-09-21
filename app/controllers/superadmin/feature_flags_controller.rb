@@ -26,11 +26,7 @@ class Superadmin::FeatureFlagsController < Superadmin::SuperadminController
 
   def get_feature_flag
     feature_flag_params = params[:feature_flag]
-    @feature_flag = FeatureFlag[feature_flag_params[:id]]
-    if !@feature_flag.present?
-      @feature_flag = FeatureFlag.new
-      @feature_flag.id = feature_flag_params[:id]
-    end
+    @feature_flag = Carto::FeatureFlag.find_or_initialize_by(id: feature_flag_params[:id])
     @feature_flag.name = feature_flag_params[:name]
     @feature_flag.restricted = feature_flag_params[:restricted]
   end

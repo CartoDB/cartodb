@@ -544,21 +544,23 @@ feature "Superadmin's users API" do
         put superadmin_user_url(user.id), {
           user: { feature_flags: ["#{second_feature_flag.id}"] }, id: user.id
         }.to_json, superadmin_headers
-      end.to change(FeatureFlagsUser, :count).by(-1)
+      end.to change(Carto::FeatureFlagsUser, :count).by(-1)
     end
 
     it 'should create user feature_flag relation' do
-      user                = FactoryGirl.create(:user)
-      first_feature_flag  = FactoryGirl.create(:feature_flag)
-      second_feature_flag = FactoryGirl.create(:feature_flag)
+      user = create(:user)
+      feature_flag = create(:feature_flag)
+      user.self_feature_flags_user.create!(feature_flag: feature_flag)
+      new_feature_flag = create(:feature_flag)
 
-      second_feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
+      payload = {
+        user: { feature_flags: [feature_flag.id, new_feature_flag.id] },
+        id: user.id
+      }
 
       expect do
-        put superadmin_user_url(user.id), {
-          user: { feature_flags: [first_feature_flag.id.to_s, second_feature_flag.id.to_s] }, id: user.id
-        }.to_json, superadmin_headers
-      end.to change(FeatureFlagsUser, :count).by(1)
+        put superadmin_user_url(user.id), payload.to_json, superadmin_headers
+      end.to change(Carto::FeatureFlagsUser, :count).by(1)
     end
 
     it 'should create new rate limit if user does not have' do
@@ -705,7 +707,7 @@ feature "Superadmin's users API" do
 
       expect do
         delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
-      end.to change(FeatureFlagsUser, :count).by(-1)
+      end.to change(Carto::FeatureFlagsUser, :count).by(-1)
     end
 
     it 'should destroy rate_limit' do

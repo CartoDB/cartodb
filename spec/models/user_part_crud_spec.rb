@@ -21,26 +21,27 @@ describe User do
     end
   end
 
-  it 'should store feature flags' do
-    ff = FactoryGirl.create(:feature_flag, id: 10001, name: 'ff10001')
+  describe '#set_relationships_from_central' do
+    context 'when syncing feature flags' do
+      let(:feature_flag) { create(:feature_flag) }
+      let(:new_feature_flag) { create(:feature_flag) }
+      let(:user) { create(:user) }
 
-    user = create_user email: 'ff@example.com', username: 'ff-user-01', password: '000ff-user-01'
-    user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
-    user.save
-    user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
-    user.destroy
-  end
+      before { user.self_feature_flags_user.create!(feature_flag: feature_flag) }
 
-  it 'should delete feature flags assignations to a deleted user' do
-    ff = FactoryGirl.create(:feature_flag, id: 10002, name: 'ff10002')
+      it 'updates feature flags' do
+        expect(user.feature_flags).to include(feature_flag)
 
-    user = create_user email: 'ff2@example.com', username: 'ff2-user-01', password: '000ff2-user-01'
-    user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
-    user.save
-    user_id = user.id
-    user.destroy
-    SequelRails.connection["select count(*) from feature_flags_users where user_id = '#{user_id}'"].first[:count].should eq 0
-    SequelRails.connection["select count(*) from feature_flags where id = '#{ff.id}'"].first[:count].should eq 1
+        user.set_relationships_from_central(feature_flags: [new_feature_flag.id])
+
+        expect(user.feature_flags).not_to include(feature_flag)
+        expect(user.feature_flags).to include(new_feature_flag)
+      end
+
+      it 'deletes associated feature flags when user is destroyed' do
+        expect { user.destroy }.to change { Carto::FeatureFlagsUser.count }.by(-1)
+      end
+    end
   end
 
   it "should have many tables" do

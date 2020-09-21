@@ -91,7 +91,7 @@ describe Carto::Api::UserPresenter do
     user.set_relationships_from_central({ feature_flags: [ feature_flag1.id.to_s, feature_flag2.id.to_s ]})
     user.save.reload
 
-    compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.where(id: user.id).first).data, false, false)
+    compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.find(user.id)).data, false, false)
 
     # Now org user, organization and another member
 
@@ -135,7 +135,7 @@ describe Carto::Api::UserPresenter do
     user2.reload
     organization.reload
 
-    compare_data(owner.data, Carto::Api::UserPresenter.new(Carto::User.where(id: owner.id).first).data, true)
+    compare_data(owner.data, Carto::Api::UserPresenter.new(Carto::User.find(owner.id)).data, true)
 
     SequelRails.connection.run( %Q{ DELETE FROM geocodings } )
     SequelRails.connection.run( %Q{ DELETE FROM data_imports } )

@@ -481,8 +481,8 @@ describe User do
 
         @user_regu = FactoryGirl.create(:valid_user)
 
-        @ff_owner = FactoryGirl.create(:carto_feature_flag, name: 'drop', restricted: true)
-        @ff_user = FactoryGirl.create(:carto_feature_flag, name: 'drop-user', restricted: true)
+        @ff_owner = create(:feature_flag, name: 'drop', restricted: true)
+        @ff_user = create(:feature_flag, name: 'drop-user', restricted: true)
 
         FactoryGirl.create(:feature_flags_user, feature_flag_id: @ff_owner.id, user_id: @owner.id)
         FactoryGirl.create(:feature_flags_user, feature_flag_id: @ff_user.id, user_id: @user_org.id)

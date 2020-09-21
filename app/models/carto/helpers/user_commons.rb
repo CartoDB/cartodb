@@ -306,4 +306,19 @@ module Carto::UserCommons
     organization&.name == 'team'
   end
 
+  def feature_flags
+    feature_flags_ids = self_feature_flags.pluck(:id) + Carto::FeatureFlag.not_restricted.pluck(:id)
+    feature_flags_ids += organization.inheritable_feature_flags.pluck(:id) if organization
+
+    Carto::FeatureFlag.where(id: feature_flags_ids)
+  end
+
+  def feature_flags_names
+    feature_flags.pluck(:name)
+  end
+
+  def has_feature_flag?(feature_flag_name)
+    feature_flags.exists?(name: feature_flag_name)
+  end
+
 end

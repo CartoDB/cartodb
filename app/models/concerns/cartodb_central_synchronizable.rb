@@ -188,11 +188,11 @@ module Concerns
     end
 
     def update_feature_flags(feature_flag_ids)
-      self_feature_flags_user.where.not(id: feature_flag_ids).destroy_all
+      self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all
 
-      new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:id)
+      new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)
       new_feature_flags_ids.each do |feature_flag_id|
-        self_feature_flags_user.create!(feature_flag_id: feature_flag_id)
+        self_feature_flags_user.find_or_create_by(feature_flag_id: feature_flag_id)
       end
     end
 

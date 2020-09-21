@@ -23,18 +23,18 @@ describe User do
 
   describe '#set_relationships_from_central' do
     context 'when syncing feature flags' do
-      let(:feature_flag) { create(:feature_flag) }
+      let(:old_feature_flag) { create(:feature_flag) }
       let(:new_feature_flag) { create(:feature_flag) }
       let(:user) { create(:user) }
 
-      before { user.activate_feature_flag!(feature_flag) }
+      before { user.activate_feature_flag!(old_feature_flag) }
 
       it 'updates feature flags' do
-        expect(user.feature_flags).to include(feature_flag)
+        expect(user.feature_flags).to include(old_feature_flag)
 
         user.set_relationships_from_central(feature_flags: [new_feature_flag.id])
 
-        expect(user.feature_flags).not_to include(feature_flag)
+        expect(user.feature_flags).not_to include(old_feature_flag)
         expect(user.feature_flags).to include(new_feature_flag)
       end
 

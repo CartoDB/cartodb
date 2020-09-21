@@ -8,6 +8,7 @@ Development
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
 
 ### Bug fixes / enhancements
+* WMTS compatibility: Replace OGC parameters ([15849](https://github.com/CartoDB/cartodb/pull/15849))
 * Fix logs for named maps ([15826](https://github.com/CartoDB/cartodb/pull/15826))
 * Remove automatic geocodings models and table ([#15817](https://github.com/CartoDB/cartodb/pull/15817))
 * Fix column quoting for geometrification ([#15815](https://github.com/CartoDB/cartodb/pull/15815))

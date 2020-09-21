@@ -3,12 +3,11 @@ module Carto
 
     include ::LoggerHelper
 
-    DEFAULT_REDIS_OBJECT = $users_metadata
     DEFAULT_TTL_MS = 10000
     DEFAULT_RETRY_ATTEMPTS = 1
     DEFAULT_RETRY_TIMEOUT = 10000 # in_ms
 
-    def initialize(bolt_key, redis_object: DEFAULT_REDIS_OBJECT, ttl_ms: DEFAULT_TTL_MS)
+    def initialize(bolt_key, redis_object: $users_metadata, ttl_ms: DEFAULT_TTL_MS)
       @bolt_key = add_namespace_to_key(bolt_key)
       @redis_object = redis_object
       @ttl_ms = ttl_ms

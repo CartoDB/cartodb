@@ -1,6 +1,7 @@
 require 'active_record'
 require 'cartodb-common'
 require_relative '../visualization/stats'
+require_relative '../quota_checker'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
@@ -659,14 +660,10 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def subscription
-    false
-    # if user_table
-    #   # TEMP MOCK
-    #   { type: 'do-v2', id: 'ags_businesscou_8dc7d1e0' } if user_table.name == 'my_do_subscription'
-    #   # doss = Carto::DoSyncService.new(user)
-    #   # subscription_id = doss.subscription_from_sync_table(user_table.name)
-    #   # { type: 'do-v2', id: subscription_id } if subscription_id.present?
-    # end
+    if user_table
+      doss = Carto::DoSyncServiceFactory.get_for_user(user)
+      doss&.subscription_from_sync_table(user_table.name)
+    end
   end
 
   private

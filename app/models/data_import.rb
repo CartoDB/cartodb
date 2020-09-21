@@ -43,7 +43,6 @@ class DataImport < Sequel::Model
 
   attr_accessor   :log, :results
 
-  one_to_many :external_data_imports
   many_to_one :user
 
   # Not all constants are used, but so that we keep track of available states
@@ -345,6 +344,15 @@ class DataImport < Sequel::Model
   end
 
   private
+
+  def get_provider_name_from_id(service_item_id)
+    begin
+      connector_params = JSON.parse(service_item_id)
+      return connector_params['provider']
+    rescue StandardError
+      return nil
+    end
+  end
 
   def dispatch
     self.state = STATE_UPLOADING
@@ -674,7 +682,8 @@ class DataImport < Sequel::Model
   # * importer: the new importer (nil if download errors detected)
   # * connector: the connector that the importer uses
   def new_importer_with_connector
-    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user)
+    provider_name = get_provider_name_from_id(service_item_id)
+    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user, provider_name)
 
     database_options = pg_options
 

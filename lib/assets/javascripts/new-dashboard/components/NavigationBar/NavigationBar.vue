@@ -39,7 +39,7 @@
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
 
         <NotificationPopup
-          v-if="!popupWasShown('feedback.popupWasShown') && twoWeeksSinceRelease"
+          v-if="!popupWasShown('feedback.popupWasShown')"
           class="notification-popup"
           :title="$t('FeedbackMessage.title')"
           :message="$t('FeedbackMessage.message')"

@@ -43,7 +43,6 @@ class DataImport < Sequel::Model
 
   attr_accessor   :log, :results
 
-  one_to_many :external_data_imports
   many_to_one :user
 
   # Not all constants are used, but so that we keep track of available states

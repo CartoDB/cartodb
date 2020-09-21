@@ -3,32 +3,34 @@ class Superadmin::FeatureFlagsController < Superadmin::SuperadminController
 
   ssl_required :create, :update, :destroy
 
-  before_filter :get_feature_flag, only: [:create, :update, :destroy]
+  before_filter :load_feature_flag, only: [:update, :destroy]
 
   def create
-    @feature_flag.save
-    render json: @feature_flag, status: 204
+    Carto::FeatureFlag.create!(feature_flag_params)
+
+    render json: @feature_flag, status: :no_content
   end
 
   def update
-    @feature_flag.save
-    render json: @feature_flag, status: 204
+    @feature_flag.update!(feature_flag_params)
+
+    render json: @feature_flag, status: :no_content
   end
 
   def destroy
-    if @feature_flag.present?
-      @feature_flag.destroy
-    end
-    render json: @feature_flag, status: 204
+    @feature_flag.destroy!
+
+    render json: @feature_flag, status: :no_content
   end
 
   private
 
-  def get_feature_flag
-    feature_flag_params = params[:feature_flag]
-    @feature_flag = Carto::FeatureFlag.find_or_initialize_by(id: feature_flag_params[:id])
-    @feature_flag.name = feature_flag_params[:name]
-    @feature_flag.restricted = feature_flag_params[:restricted]
+  def load_feature_flag
+    @feature_flag = Carto::FeatureFlag.find(params[:id])
+  end
+
+  def feature_flag_params
+    params.require(:feature_flag).permit(:id, :name, :restricted)
   end
 
 end

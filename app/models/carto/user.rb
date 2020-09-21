@@ -84,6 +84,7 @@ class Carto::User < ActiveRecord::Base
   alias_method :assets_dataset, :assets
   alias_method :data_imports_dataset, :data_imports
   alias_method :geocodings_dataset, :geocodings
+  def carto_user; self end
 
   before_create :set_database_host
   before_create :generate_api_key

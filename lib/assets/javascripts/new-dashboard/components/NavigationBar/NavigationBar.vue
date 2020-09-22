@@ -124,7 +124,8 @@ export default {
         !this.popupWasShown;
     },
     twoWeeksSinceRelease () {
-      return isAfter(new Date(), new Date(2020, 9, 21));
+      // 2020/09/22 + 2w = 2020/10/06
+      return isAfter(new Date(), new Date(2020, 9, 6));
     }
   },
   methods: {

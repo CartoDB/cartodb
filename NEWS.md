@@ -6,6 +6,7 @@ Development
 
 ### Features
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
+* New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
 
 ### Bug fixes / enhancements
 * Fix inconsistent handling of SRID in syncs and imports ([15821](https://github.com/CartoDB/cartodb/pull/15821))
@@ -23,7 +24,6 @@ Development
 * Adds logging docs [#15813](https://github.com/CartoDB/cartodb/pull/15813)
 * Add wildcard IP for Direct SQL connection [#15818](https://github.com/CartoDB/cartodb/pull/15818)
 * Remove usage of `::User` Sequel model from the `ApplicationController` [#15804](https://github.com/CartoDB/cartodb/pull/15804)
-* New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
 * Bump version of cartodb-common module to v0.3.6 [#15820](https://github.com/CartoDB/cartodb/pull/15820)
 * Setup Coverband dead code detector [#15811](https://github.com/CartoDB/cartodb/pull/15811)
 * Include LoggerHelper as class methods in models [#15824](https://github.com/CartoDB/cartodb/pull/15824)
@@ -35,6 +35,10 @@ Development
 * Migrated and removed old `::ExternalDataImport` sequel model [#15844](https://github.com/CartoDB/cartodb/pull/15844)
 * Fix map backups when deleting tables via Ghost Tables [#15832](https://github.com/CartoDB/cartodb/pull/15832)
 * Add DO subscriptions improvements [#15847](https://github.com/CartoDB/cartodb/pull/15847)
+* Migrate ::OauthToken from Sequel to ActiveRecord [#15840](https://github.com/CartoDB/cartodb/pull/15840)
+* Fix passing `::User` instead of `::Carto::User` [#15848](https://github.com/CartoDB/cartodb/pull/15848)
+* Fix DO subscriptions [#15855](https://github.com/CartoDB/cartodb/pull/15855)
+* Make the logger honor the environment variable `RAILS_LOG_BASE_PATH` again
 
 4.41.1 (2020-09-03)
 -------------------

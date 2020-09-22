@@ -7,7 +7,7 @@ if ARGV.length != 1 then
 end
 
 username = (ARGV[0] != '--all')? ARGV[0] : '*'
-puts "Downgrading user: #{username}..."
+puts "Un-update user: #{username}..."
 
 $users_metadata.keys("do:#{username}:datasets").each do |k|
   user = User.where(username: username).first
@@ -22,7 +22,7 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
         expires_at: dataset['expires_at'] || (Time.parse(dataset['expires_at']) - 1.year).to_s
       }
     end
-    puts "Downgrade: #{dataset['dataset_id']} for #{username}"
+    puts "Un-update: #{dataset['dataset_id']} for #{username}"
     oldy_dataset
   end
   $users_metadata.hmset(k, :bq, oldy_datasets.to_json)

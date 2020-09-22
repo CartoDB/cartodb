@@ -1374,6 +1374,10 @@
                         "placeholder-username": "Type your username",
                         "label-password": "Password",
                         "placeholder-password": "Type your password",
+                        "label-cluster": "Cluster",
+                        "placeholder-cluster": "Type your cluster name",
+                        "label-warehouse": "Warehouse",
+                        "placeholder-warehouse": "Type your warehouse name",
                         "connect-button": "Connect",
                         "connection-error": "The connection could not be established. Please, check the entered parameters.",
                         "general-error": "Unfortunately, there was an error. Please, try again.",
@@ -1384,7 +1388,6 @@
                         "import-as-hint": "Name of the new Dataset that will be created in your CARTO Dashboard with the imported data.",
                         "run": "Run SQL query",
                         "run-bq-go-to-connect": "Connect to BQ",
-                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM table",
                         "sidebar-connect": {
                             "title": "Getting connected",
                             "desc": "If you need to configure your firewall to ensure CARTO has access to your %{brand} database, please contact us to obtain a list of IPs",

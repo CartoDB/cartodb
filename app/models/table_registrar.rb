@@ -30,16 +30,11 @@ module CartoDB
     attr_writer :table
 
     def set_metadata_from_data_import_id(table, data_import_id)
-      external_data_import = ExternalDataImport.where(data_import_id: data_import_id).first
-      if external_data_import
-        external_source = Carto::ExternalSource.where(id: external_data_import.external_source_id).first
-        if external_source
-          visualization = external_source.visualization
-          if visualization
-            table.description = visualization.description
-            table.set_tag_array(visualization.tags)
-          end
-        end
+      external_data_import = Carto::ExternalDataImport.where(data_import_id: data_import_id).first
+      visualization = external_data_import&.external_source&.visualization
+      if visualization
+        table.description = visualization.description
+        table.set_tag_array(visualization.tags)
       end
     rescue StandardError => e
       CartoDB.notify_exception(e)

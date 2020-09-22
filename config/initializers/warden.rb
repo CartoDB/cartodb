@@ -190,7 +190,7 @@ Warden::Strategies.add(:api_authentication) do
           [(@oauth_token.nil? ? nil : @oauth_token.secret), (@oauth_token.nil? || @oauth_token.client_application.nil? ? nil : @oauth_token.client_application.secret)]
         end
 
-      if @oauth_token && @oauth_token.is_a?(::AccessToken)
+      if @oauth_token && @oauth_token.is_a?(Carto::AccessToken)
         user = ::User.find_with_custom_fields(@oauth_token.user_id)
         if user.enable_account_token.nil?
           success!(user) and return

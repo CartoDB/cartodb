@@ -31,8 +31,13 @@ Development
 * Delete unused DataImport methods [#15833](https://github.com/CartoDB/cartodb/pull/15833)
 * Fix missing LoggerHelper in CartoDB::LayerModule::Presenter [#15829](https://github.com/CartoDB/cartodb/pull/15829)
 * Release Data Observatory subscriptions [#15834](https://github.com/CartoDB/cartodb/pull/15834)
-* Make the logger honor the environment variable `RAILS_LOG_BASE_PATH` again
+* Migrated and removed old `::ExternalDataImport` sequel model [#15844](https://github.com/CartoDB/cartodb/pull/15844)
 * Fix map backups when deleting tables via Ghost Tables [#15832](https://github.com/CartoDB/cartodb/pull/15832)
+* Add DO subscriptions improvements [#15847](https://github.com/CartoDB/cartodb/pull/15847)
+* Migrate ::OauthToken from Sequel to ActiveRecord [#15840](https://github.com/CartoDB/cartodb/pull/15840)
+* Fix passing `::User` instead of `::Carto::User` [#15848](https://github.com/CartoDB/cartodb/pull/15848)
+* Fix DO subscriptions [#15855](https://github.com/CartoDB/cartodb/pull/15855)
+* Make the logger honor the environment variable `RAILS_LOG_BASE_PATH` again
 
 4.41.1 (2020-09-03)
 -------------------

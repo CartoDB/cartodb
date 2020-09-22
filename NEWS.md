@@ -40,6 +40,7 @@ Development
 * Fix DO subscriptions [#15855](https://github.com/CartoDB/cartodb/pull/15855)
 * Make the logger honor the environment variable `RAILS_LOG_BASE_PATH` again
 * Update DO subscriptions email [#15851](https://github.com/CartoDB/cartodb/pull/15851)
+* Remove beta descriptor from Direct SQL Connection text [#15854](https://github.com/CartoDB/cartodb/pull/15854)
 
 4.41.1 (2020-09-03)
 -------------------

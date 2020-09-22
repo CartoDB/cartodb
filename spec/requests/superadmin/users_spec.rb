@@ -537,12 +537,12 @@ feature "Superadmin's users API" do
       first_feature_flag  = FactoryGirl.create(:feature_flag)
       second_feature_flag = FactoryGirl.create(:feature_flag)
 
-      FactoryGirl.create(:feature_flags_user, feature_flag_id: first_feature_flag.id, user_id: user.id)
-      FactoryGirl.create(:feature_flags_user, feature_flag_id: second_feature_flag.id, user_id: user.id)
+      user.activate_feature_flag!(first_feature_flag)
+      user.activate_feature_flag!(second_feature_flag)
 
       expect do
         put superadmin_user_url(user.id), {
-          user: { feature_flags: ["#{second_feature_flag.id}"] }, id: user.id
+          user: { feature_flags: [second_feature_flag.id] }, id: user.id
         }.to_json, superadmin_headers
       end.to change(Carto::FeatureFlagsUser, :count).by(-1)
     end
@@ -691,19 +691,17 @@ feature "Superadmin's users API" do
   end
 
   describe '#destroy' do
-    it 'should destroy user' do
-      user = FactoryGirl.create(:user)
+    let!(:user) { create(:user).carto_user }
 
-      expect do
-        delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
-      end.to change(::User, :count).by(-1)
+    it 'should destroy user' do
+      delete superadmin_user_url(user.id), {}.to_json, superadmin_headers
+
+      expect { user.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it 'should destroy user feature flag relations' do
-      user         = FactoryGirl.create(:user)
-      feature_flag = FactoryGirl.create(:feature_flag)
-
-      feature_flag_user = FactoryGirl.create(:feature_flags_user, feature_flag_id: feature_flag.id, user_id: user.id)
+      feature_flag = create(:feature_flag)
+      user.activate_feature_flag!(feature_flag)
 
       expect do
         delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
@@ -711,11 +709,8 @@ feature "Superadmin's users API" do
     end
 
     it 'should destroy rate_limit' do
-      user       = FactoryGirl.create(:user)
-      rate_limit = FactoryGirl.create(:rate_limits)
-
-      user.rate_limit_id = rate_limit.id
-      user.save
+      rate_limit = create(:rate_limits)
+      user.update!(rate_limit_id: rate_limit.id)
 
       expect {
         delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers

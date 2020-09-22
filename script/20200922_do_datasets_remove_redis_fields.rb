@@ -22,7 +22,7 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
   datasets = $users_metadata.hget(k, :bq)
   datasets = JSON.parse(datasets)
   oldy_datasets = datasets.map do |dataset|
-    # Do not process already enriched datasets:
+    oldy_dataset = dataset
     if dataset['sync_status'].present? then
       # Note this will not change the user's quota, so be carefull if you have to execute this script multiple times
       delete_table(dataset['sync_table_id']) unless !dataset['sync_table_id']

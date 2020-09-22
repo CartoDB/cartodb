@@ -6,12 +6,18 @@ if ARGV.length != 1 then
   exit
 end
 
+def get_sync(doss, dataset_id)
+  begin
+    doss.sync(dataset_id).merge(doss.sync(dataset_id, true))
+  rescue
+  end
+end
+
 username = (ARGV[0] != '--all')? ARGV[0] : '*'
 puts "Updating user: #{username}..."
 
 $users_metadata.keys("do:#{username}:datasets").each do |k|
   user = User.where(username: username).first
-
   datasets = $users_metadata.hget(k, :bq)
   datasets = JSON.parse(datasets)
 
@@ -20,12 +26,16 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
     if !(dataset['unsynced_errors'].present?) then
       begin
         doss = Carto::DoSyncServiceFactory.get_for_user(user)
-        sync_data = doss.sync(dataset['dataset_id']).merge(doss.sync(dataset['dataset_id'], true))
+        sync_data = get_sync(doss, dataset['dataset_id']) || {}
 
         # Initial quick&dirty hack.
         # Since there is no public datasets yet,
         # We don't want this to check the user quota (which is the last check in db-connector)
         if !sync_data[:unsyncable_reason].nil? && (sync_data[:unsyncable_reason].include? "exceeds the quota available") then
+          sync_data[:unsyncable_reason] = nil
+          sync_data[:sync_status] = 'unsynced'
+        end
+        if dataset['status'] == 'requested' then
           sync_data[:unsyncable_reason] = nil
           sync_data[:sync_status] = 'unsynced'
         end

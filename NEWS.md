@@ -36,6 +36,7 @@ Development
 * Add DO subscriptions improvements [#15847](https://github.com/CartoDB/cartodb/pull/15847)
 * Migrate ::OauthToken from Sequel to ActiveRecord [#15840](https://github.com/CartoDB/cartodb/pull/15840)
 * Fix passing `::User` instead of `::Carto::User` [#15848](https://github.com/CartoDB/cartodb/pull/15848)
+* Fix DO subscriptions [#15855](https://github.com/CartoDB/cartodb/pull/15855)
 
 4.41.1 (2020-09-03)
 -------------------

@@ -9,7 +9,8 @@ require_relative '../helpers/data_services_metrics_helper'
 require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
-require_relative './external_data_import'
+require_relative './data_import'
+require_relative './visualization/external_source'
 require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
@@ -43,7 +44,6 @@ class User < Sequel::Model
 
   one_to_one  :client_application
   one_to_many :synchronization_oauths
-  one_to_many :tokens, :class => :OauthToken
   one_to_many :maps
   one_to_many :assets
   one_to_many :data_imports
@@ -1384,6 +1384,11 @@ class User < Sequel::Model
   def create_api_keys
     carto_user.api_keys.create_master_key! unless carto_user.api_keys.master.exists?
     carto_user.api_keys.create_default_public_key! unless carto_user.api_keys.default_public.exists?
+  end
+
+  # TODO: migrate to AR association
+  def tokens
+    Carto::OauthToken.where(user_id: id)
   end
 
   private

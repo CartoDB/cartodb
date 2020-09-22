@@ -60,14 +60,16 @@ feature "Sessions" do
     end
 
     scenario "Get the session information via OAuth" do
-      client_application = create_client_application :user => @user, :url => CartoDB.hostname, :callback_url => CartoDB.hostname
+      # TODO: migrate this factory to AR (only used here)
+      sequel_client_application = create_client_application(user: @user, url: CartoDB.hostname, callback_url: CartoDB.hostname)
+      client_application = Carto::ClientApplication.find(sequel_client_application.id)
 
       oauth_consumer = OAuth::Consumer.new(client_application.key, client_application.secret, {
         :site => client_application.url,
         :scheme => :query_string,
         :http_method => :post
       })
-      access_token = create_access_token :client_application => client_application, :user => @user
+      access_token = create_access_token(client_application: client_application, user: @user.carto_user)
       identity_uri = "http://vizzuality.testhost.lan/oauth/identity.json"
       req = prepare_oauth_request(oauth_consumer, identity_uri, :token => access_token)
       get_json identity_uri, {}, {'Authorization' => req["Authorization"]} do |response|

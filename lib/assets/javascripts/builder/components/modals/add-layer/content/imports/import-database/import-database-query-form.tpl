@@ -12,7 +12,7 @@
           </div>
         <% } %>
       </div>
-      <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-altTextColor u-mt--8"><%- _t('components.modals.add-layer.imports.database.sql-hint') %></div>
+      <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-altTextColor u-mt--8"><%- sqlHint %></div>
     </div>
   </div>
   <div class="Form-row u-flex__align--start">

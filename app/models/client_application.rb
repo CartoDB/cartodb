@@ -9,18 +9,24 @@ end
 class ClientApplication < Sequel::Model
   extend CartoDB::ConfigUtils
 
-  one_to_many :tokens, :class_name => :OauthToken
-  one_to_many :access_tokens
-  one_to_many :oauth_tokens
-
-  plugin :association_dependencies
-  add_association_dependencies :oauth_tokens => :destroy
-
   attr_accessor :token_callback_url
+
+  def tokens
+    Carto::OauthToken.where(client_application_id: id)
+  end
+
+  def access_tokens
+    tokens.where(type: 'AccessToken')
+  end
+
+  def oauth_tokens
+    tokens
+  end
 
   def self.find_token(token_key)
     return nil if token_key.nil?
-    token = ::RequestToken.first(:token => token_key) || ::AccessToken.first(:token => token_key)
+
+    token = Carto::RequestToken.find_by(token: token_key) || Carto::AccessToken.find_by(token: token_key)
     token && token.authorized? ? token : nil
   end
 
@@ -58,7 +64,7 @@ class ClientApplication < Sequel::Model
 
   # If your application requires passing in extra parameters handle it here
   def create_request_token(params={})
-    RequestToken.create :client_application => self, :callback_url=>self.token_callback_url
+    Carto::RequestToken.create :client_application => self, :callback_url=>self.token_callback_url
   end
 
   def before_create
@@ -69,5 +75,9 @@ class ClientApplication < Sequel::Model
 
   def before_save
     self.updated_at = Time.now
+  end
+
+  def before_destroy
+    oauth_tokens.map(&:destroy)
   end
 end

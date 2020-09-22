@@ -6,10 +6,13 @@ Development
 
 ### Features
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
+* New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
 
 ### Bug fixes / enhancements
-- Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
-- Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
+* Fix inconsistent handling of SRID in syncs and imports ([15821](https://github.com/CartoDB/cartodb/pull/15821))
+* Fix orm-check workflow when the diff has binary files
+* Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
+* Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
 * Fix logs for named maps ([15826](https://github.com/CartoDB/cartodb/pull/15826))
 * Remove automatic geocodings models and table ([#15817](https://github.com/CartoDB/cartodb/pull/15817))
 * Fix column quoting for geometrification ([#15815](https://github.com/CartoDB/cartodb/pull/15815))
@@ -29,6 +32,15 @@ Development
 * Delete unused DataImport methods [#15833](https://github.com/CartoDB/cartodb/pull/15833)
 * Fix missing LoggerHelper in CartoDB::LayerModule::Presenter [#15829](https://github.com/CartoDB/cartodb/pull/15829)
 * Release Data Observatory subscriptions [#15834](https://github.com/CartoDB/cartodb/pull/15834)
+* Migrated and removed old `::ExternalDataImport` sequel model [#15844](https://github.com/CartoDB/cartodb/pull/15844)
+* Fix map backups when deleting tables via Ghost Tables [#15832](https://github.com/CartoDB/cartodb/pull/15832)
+* Add DO subscriptions improvements [#15847](https://github.com/CartoDB/cartodb/pull/15847)
+* Migrate ::OauthToken from Sequel to ActiveRecord [#15840](https://github.com/CartoDB/cartodb/pull/15840)
+* Fix passing `::User` instead of `::Carto::User` [#15848](https://github.com/CartoDB/cartodb/pull/15848)
+* Fix DO subscriptions [#15855](https://github.com/CartoDB/cartodb/pull/15855)
+* Make the logger honor the environment variable `RAILS_LOG_BASE_PATH` again
+* Update DO subscriptions email [#15851](https://github.com/CartoDB/cartodb/pull/15851)
+* Remove beta descriptor from Direct SQL Connection text [#15854](https://github.com/CartoDB/cartodb/pull/15854)
 
 4.41.1 (2020-09-03)
 -------------------

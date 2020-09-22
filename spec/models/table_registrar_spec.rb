@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../app/models/table_registrar'
 
 describe CartoDB::TableRegistrar do
   before(:all) do

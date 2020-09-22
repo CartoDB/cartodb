@@ -46,6 +46,7 @@ class Table
   def_delegators :relator, *CartoDB::TableRelator::INTERFACE
   def_delegators :@user_table, *::UserTable::INTERFACE
 
+  attr_accessor :user_table
 
   def initialize(args = {})
     if args[:user_table].nil?
@@ -1215,6 +1216,10 @@ class Table
     self.class.sanitize_columns(table_name, column_sanitization_version, options)
   end
 
+  def visualizations
+    Carto::Visualization.where(id: user_table.affected_visualizations.map(&:id))
+  end
+
   private
 
   def valid_cartodb_id_candidate?(col_name)
@@ -1246,10 +1251,6 @@ class Table
 
   def index_name(column, prefix)
     "#{prefix}#{name}_#{column}"
-  end
-
-  def external_source_visualization
-    @user_table.try(:external_source_visualization)
   end
 
   def previous_privacy

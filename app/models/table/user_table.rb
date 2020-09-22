@@ -299,7 +299,11 @@ class UserTable < Sequel::Model
   end
 
   def external_source_visualization
-    data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
+    if data_import_id
+      Carto::ExternalDataImports.where(data_import_id: data_import_id)&.first&.external_source&.visualization
+    else
+      nil
+    end
   end
 
   def table_visualization

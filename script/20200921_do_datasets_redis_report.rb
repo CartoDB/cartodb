@@ -1,7 +1,10 @@
 #!/usr/bin/env ruby
-# bundle exec rails runner script/20200921_do_datasets_redis_report.rb
+# [RAILS_ENV=staging] bundle exec rails runner script/20200921_do_datasets_redis_report.rb
 include ActionView::Helpers::NumberHelper
 
+# header
+puts "sync size\t\t datasets/total\t  username"
+total_space_needed = 0
 $users_metadata.keys("do:*:datasets").each do |k|
   username = k.split(':')[1]
   user = User.where(username: username).first
@@ -29,9 +32,10 @@ $users_metadata.keys("do:*:datasets").each do |k|
       end
     end
   end
+  total_space_needed += extra_quota_needed
   if !user_datasets.empty? then
     # printing user's report:
-    puts "** User #{username} has #{user_datasets.size} datasets (#{syncable_datasets.size} syncable). \
-     \n\tTotal extra quota: #{extra_quota_needed} (#{number_to_human_size(extra_quota_needed)})"
+    puts "#{number_to_human_size(extra_quota_needed)}\t\t #{syncable_datasets.size}/#{user_datasets.size}\t\t #{username} "
   end
 end
+puts "------\nTotal extra quota: #{number_to_human_size(total_space_needed)} (#{total_space_needed} bytes)"

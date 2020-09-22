@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# bundle exec rails runner script/20200804_do_datasets_addfields_redis.rb <username>
+# [RAILS_ENV=staging] bundle exec rails runner script/20200804_do_datasets_addfields_redis.rb <username>
 
 if ARGV.length != 1 then
   puts "*** Please introduce the target username (or --all to update them all) ***"

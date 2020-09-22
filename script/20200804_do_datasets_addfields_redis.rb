@@ -8,7 +8,7 @@ end
 
 def get_sync(doss, dataset_id)
   begin
-    doss.sync(dataset_id).merge(doss.sync(dataset_id, true))
+    doss.sync(dataset_id, true).merge(doss.sync(dataset_id))
   rescue
   end
 end
@@ -35,7 +35,7 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
           sync_data[:unsyncable_reason] = nil
           sync_data[:sync_status] = 'unsynced'
         end
-        if dataset['status'] == 'requested' then
+        if sync_data.empty? then
           sync_data[:unsyncable_reason] = nil
           sync_data[:sync_status] = 'unsynced'
         end

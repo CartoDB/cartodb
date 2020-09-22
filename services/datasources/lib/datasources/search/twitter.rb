@@ -584,8 +584,8 @@ module CartoDB
         def audit_entry(override_class = nil)
           if @audit_entry.nil?
             if override_class.nil?
-              require_relative '../../../../../app/models/search_tweet'
-              @audit_entry = ::SearchTweet.new
+              require_relative '../../../../../app/models/carto/search_tweet'
+              @audit_entry = Carto::SearchTweet.new
             else
               @audit_entry = override_class.new
             end

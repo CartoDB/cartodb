@@ -306,4 +306,48 @@ module Carto::UserCommons
     organization&.name == 'team'
   end
 
+  def remaining_twitter_quota
+    if effective_organization.present?
+      pp effective_organization.class.name
+      remaining = effective_organization.remaining_twitter_quota
+    else
+      remaining = self.twitter_datasource_quota - self.get_twitter_imports_count
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def effective_twitter_total_quota
+    effective_organization.present? ? effective_organization.twitter_datasource_quota : self.twitter_datasource_quota
+  end
+
+  def effective_twitter_block_price
+    effective_organization.present? ? effective_organization.twitter_datasource_block_price : self.twitter_datasource_block_price
+  end
+
+  def effective_twitter_datasource_block_size
+    effective_organization.present? ? effective_organization.twitter_datasource_block_size : self.twitter_datasource_block_size
+  end
+
+  def effective_get_twitter_imports_count
+    effective_organization.present? ? effective_organization.get_twitter_imports_count : self.get_twitter_imports_count
+  end
+
+  # Should return the number of tweets imported by this user for the specified period of time, as an integer
+  def get_twitter_imports_count(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
+
+    Carto::SearchTweet.twitter_imports_count(self.search_tweets, date_from, date_to)
+  end
+  alias get_twitter_datasource_calls get_twitter_imports_count
+
+  def effective_organization
+    if organization.present?
+      if !organization.kind_of?(ActiveRecord::Base)
+        Carto::Organization.find_by_id(organization.id)
+      else
+        organization
+      end
+    end
+  end
 end

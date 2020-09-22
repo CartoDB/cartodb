@@ -2,13 +2,14 @@ require 'active_record'
 require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/carto_json_serializer'
-require_dependency 'common/organization_common'
+require_dependency 'carto/helpers/organization_commons'
 
 module Carto
   class Organization < ActiveRecord::Base
     include DataServicesMetricsHelper
     include AuthTokenGenerator
     include Carto::OrganizationSoftLimits
+    include Carto::OrganizationCommons
 
     serialize :auth_saml_configuration, CartoJsonSymbolizerSerializer
     before_validation :ensure_auth_saml_configuration
@@ -30,6 +31,34 @@ module Carto
         where('users.database_name = ?', database_name).first
     end
 
+    ##
+    # SLOW! Checks redis data (geocoding and isolines) for every user in every organization
+    # delta: get organizations who are also this percentage below their limit.
+    #        example: 0.20 will get all organizations at 80% of their map view limit
+    #
+    def self.overquota(delta = 0)
+      Carto::Organization.all.select do |o|
+        begin
+          limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
+          over_geocodings = o.get_geocoding_calls > limit
+          limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
+          over_here_isolines = o.get_here_isolines_calls > limit
+          limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
+          over_obs_snapshot = o.get_obs_snapshot_calls > limit
+          limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
+          over_obs_general = o.get_obs_general_calls > limit
+          limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
+          over_twitter_imports = o.twitter_imports_count > limit
+          limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
+          over_mapzen_routing = o.get_mapzen_routing_calls > limit
+          over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
+        rescue Carto::Organization::OrganizationWithoutOwner => error
+          log_warning(message: 'Skipping inconsistent organization', organization: self, exception: error)
+          false
+        end
+      end
+    end
+
     def get_geocoding_calls(options = {})
       require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
@@ -38,7 +67,7 @@ module Carto
     end
 
     def period_end_date
-      owner && owner.period_end_date
+      owner&.period_end_date
     end
 
     def get_here_isolines_calls(options = {})
@@ -75,6 +104,7 @@ module Carto
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
       Carto::SearchTweet.twitter_imports_count(users.joins(:search_tweets), date_from, date_to)
     end
+    alias get_twitter_imports_count twitter_imports_count
 
     def owner?(user)
       owner_id == user.id
@@ -135,7 +165,7 @@ module Carto
 
     def require_organization_owner_presence!
       if owner.nil?
-        raise ::Organization::OrganizationWithoutOwner.new(self)
+        raise Carto::Organization::OrganizationWithoutOwner.new(self)
       end
     end
 
@@ -169,6 +199,11 @@ module Carto
 
     def dbdirect_effective_ips=(ips)
       owner.dbdirect_effective_ips = ips
+    end
+
+    def remaining_twitter_quota
+      remaining = twitter_datasource_quota - twitter_imports_count
+      (remaining > 0 ? remaining : 0)
     end
 
     private

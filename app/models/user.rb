@@ -48,7 +48,6 @@ class User < Sequel::Model
   one_to_many :assets
   one_to_many :data_imports
   one_to_many :geocodings, order: Sequel.desc(:created_at)
-  one_to_many :search_tweets, order: Sequel.desc(:created_at)
   many_to_one :organization
 
   many_to_many :layers, class: ::Layer, :order => :order, :after_add => proc { |user, layer|
@@ -846,13 +845,6 @@ class User < Sequel::Model
     Carto::AccountType.find(account_type)
   end
 
-  # Should return the number of tweets imported by this user for the specified period of time, as an integer
-  def get_twitter_imports_count(options = {})
-    date_from, date_to = quota_dates(options)
-    SearchTweet.get_twitter_imports_count(self.search_tweets_dataset, date_from, date_to)
-  end
-  alias get_twitter_datasource_calls get_twitter_imports_count
-
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})
@@ -889,22 +881,6 @@ class User < Sequel::Model
     get_user_mapzen_routing_data(self, date_from, date_to)
   end
 
-  def effective_twitter_block_price
-    organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
-  end
-
-  def effective_twitter_datasource_block_size
-    organization.present? ? organization.twitter_datasource_block_size : self.twitter_datasource_block_size
-  end
-
-  def effective_twitter_total_quota
-    organization.present? ? organization.twitter_datasource_quota : self.twitter_datasource_quota
-  end
-
-  def effective_get_twitter_imports_count
-    organization.present? ? organization.get_twitter_imports_count : self.get_twitter_imports_count
-  end
-
   def remaining_geocoding_quota
     if organization.present?
       remaining = organization.remaining_geocoding_quota
@@ -937,15 +913,6 @@ class User < Sequel::Model
       remaining = organization.remaining_obs_general_quota
     else
       remaining = obs_general_quota - get_obs_general_calls
-    end
-    (remaining > 0 ? remaining : 0)
-  end
-
-  def remaining_twitter_quota
-    if organization.present?
-      remaining = organization.remaining_twitter_quota
-    else
-      remaining = self.twitter_datasource_quota - get_twitter_imports_count
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -1391,6 +1358,10 @@ class User < Sequel::Model
     Carto::OauthToken.where(user_id: id)
   end
 
+  def search_tweets
+    Carto::SearchTweet.where(user_id: id).order(created_at: :desc)
+  end
+
   private
 
   def common_data_outdated?
@@ -1430,7 +1401,7 @@ class User < Sequel::Model
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner
     return if organization.nil? || organization.owner.nil? || organization_owner?
-    search_tweets_dataset.all.each do |st|
+    search_tweets.each do |st|
       st.user = organization.owner
       st.save(raise_on_failure: true)
     end

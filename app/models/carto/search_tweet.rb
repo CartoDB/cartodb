@@ -16,6 +16,10 @@ module Carto
       self.updated_at = Time.now
     end
 
+    def self.get_by_import_id(data_import_id)
+      self.where(data_import_id: data_import_id).first
+    end
+
     def self.twitter_imports_count(query, date_from, date_to)
       query
         .where('search_tweets.state' => STATE_COMPLETE)
@@ -32,6 +36,45 @@ module Carto
         .all
         .map { |t| { t.date.to_date => t.count.to_i } }
         .reduce({}, &:merge)
+    end
+
+    def set_importing_state
+      @state = STATE_IMPORTING
+      self.state = @state
+    end
+
+    def set_complete_state
+      @state = STATE_COMPLETE
+      self.state = @state
+    end
+
+    def set_failed_state
+      @state = STATE_FAILED
+      self.state = @state
+    end
+
+    def calculate_used_credits
+      return 0 unless self.state == Carto::SearchTweet::STATE_COMPLETE
+
+      total_rows = self.retrieved_items
+      quota = user.effective_twitter_total_quota
+
+      remaining_quota  = quota + total_rows - user.effective_get_twitter_imports_count
+      remaining_quota  = (remaining_quota > 0 ? remaining_quota : 0)
+      used_credits     = total_rows - remaining_quota
+      (used_credits > 0 ? used_credits : 0)
+    end
+
+    def price
+      return 0 unless self.retrieved_items > 0
+
+      if [user.effective_twitter_block_price, calculate_used_credits, user.effective_twitter_datasource_block_size].any?(&:nil?)
+        log_error('Uncomplete twitter configuration', current_user: user)
+        # As the import itself went well don't break execution, just return something
+        0
+      else
+        (user.effective_twitter_block_price * calculate_used_credits) / user.effective_twitter_datasource_block_size.to_f
+      end
     end
   end
 end

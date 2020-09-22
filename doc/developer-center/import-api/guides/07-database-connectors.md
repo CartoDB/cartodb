@@ -807,6 +807,23 @@ from_external_source | Has the value **false** for all connector-based synchroni
 }
 ```
 
+#### Geography columns
+
+SQL Server columns of type GEOGRAPHY can be imported as the geometry of the resulting CARTO dataset
+(the `the_geom` column). In order to do so, the BigQuery column needs to be converted to either binary (`STAsBinary`) or text (`STAsBinary`) format and be name as `the_geom`. In addition, at present time, due to technical issues soon to be resolved, you must cast the result to type `VARCHAR(1000)`. You'll need to use a query (`sql_query` parameter) to do so:
+
+```sql
+SELECT *, CONVERT(VARCHAR(1000), my_geography.STAsBinary(), 2) as the_geom FROM my_table
+```
+
+##### Tip: define points by longitude and latitude
+
+In case your BigQuery table specifies geographic locations using longitude and latitude numeric columns, you could import them as geometry like this:
+
+```sql
+SELECT *, CONVERT(VARCHAR(1000), geography::Point(latitude, longitude, 4326).STAsBinary(), 2) AS the_geom FROM my_table
+```
+
 ### The Hive Connector
 
 The Hive Connector allows you to import data into a CARTO account as tables from a HiveServer2 database. Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.

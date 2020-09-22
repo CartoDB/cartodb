@@ -699,16 +699,16 @@ shared_examples_for 'permission models' do
       ]
       acl2 = permission.acl
 
-      CartoDB::Permission.expects(:compare_new_acl).with(acl1, acl2).once
+      Carto::Permission.expects(:compare_new_acl).with(acl1, acl2).once
       permission.save
 
-      CartoDB::Permission.expects(:compare_new_acl).with(acl2, []).once
+      Carto::Permission.expects(:compare_new_acl).with(acl2, []).once
       # Hack to workaround FK while keeping the destroy test
       fake_permission = FactoryGirl.create(:carto_permission, owner_id: @user.id)
       visualization.update_column(:permission_id, fake_permission.id)
       permission.destroy
 
-      CartoDB::Permission.expects(:compare_new_acl).with([], []).at_least_once
+      Carto::Permission.expects(:compare_new_acl).with([], []).at_least_once
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
@@ -729,7 +729,7 @@ shared_examples_for 'permission models' do
         }
       }
 
-      CartoDB::Permission.compare_new_acl(acl1, acl2).should == expected_diff
+      Carto::Permission.compare_new_acl(acl1, acl2).should == expected_diff
     end
   end
 

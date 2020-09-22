@@ -186,13 +186,13 @@ describe Carto::Api::DatabaseGroupsController do
       @table_user_2 = create_table_with_options(@org_user_2)
       put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: @table_user_2['table_visualization'][:permission][:id]),
           { acl: [ {
-              type: CartoDB::Permission::TYPE_USER,
+              type: Carto::Permission::TYPE_USER,
               entity: { id:   @org_user_1.id },
-              access: CartoDB::Permission::ACCESS_READONLY
+              access: Carto::Permission::ACCESS_READONLY
             }, {
-              type: CartoDB::Permission::TYPE_ORGANIZATION,
+              type: Carto::Permission::TYPE_ORGANIZATION,
               entity: { id:   @organization.id },
-              access: CartoDB::Permission::ACCESS_READONLY
+              access: Carto::Permission::ACCESS_READONLY
             } ]
           }.to_json, http_json_headers
       response.status.should == 200

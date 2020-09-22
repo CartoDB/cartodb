@@ -23,7 +23,7 @@ describe Visualization::Member do
       canonical_vis.has_permission?(@org_user_owner, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
       canonical_vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
 
-      give_permission(canonical_vis, @org_user_1, CartoDB::Permission::ACCESS_READONLY)
+      give_permission(canonical_vis, @org_user_1, Carto::Permission::ACCESS_READONLY)
 
       canonical_vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
     end

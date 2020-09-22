@@ -160,9 +160,9 @@ module Carto
         case params['access']
             when nil
             when 'r'
-              @access = CartoDB::Permission::ACCESS_READONLY
+              @access = Carto::Permission::ACCESS_READONLY
             when 'w'
-              @access = CartoDB::Permission::ACCESS_READWRITE
+              @access = Carto::Permission::ACCESS_READWRITE
             else raise "Unknown access #{params['access']}"
             end
       end

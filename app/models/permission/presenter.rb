@@ -39,11 +39,11 @@ module CartoDB
 
     def entity_decoration(entry)
       case entry[:type]
-      when CartoDB::Permission::TYPE_USER
+      when Carto::Permission::TYPE_USER
         @user_presenter.decorate(entry[:id])
-      when CartoDB::Permission::TYPE_ORGANIZATION
+      when Carto::Permission::TYPE_ORGANIZATION
         @org_presenter.decorate(entry[:id])
-      when CartoDB::Permission::TYPE_GROUP
+      when Carto::Permission::TYPE_GROUP
         CartoDB::PermissionGroupPresenter.new.decorate(entry[:id])
       else
         raise "Unknown entity type for entry #{entry}"
@@ -52,4 +52,3 @@ module CartoDB
 
   end
 end
-

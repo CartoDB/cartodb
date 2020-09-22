@@ -103,11 +103,11 @@ module Carto
     def grant_db_permission(table, access)
       table.owner.in_database do |conn|
         case access
-        when CartoDB::Permission::ACCESS_NONE
+        when Carto::Permission::ACCESS_NONE
           Carto::Group.revoke_all(conn, name, table.database_schema, table.name)
-        when CartoDB::Permission::ACCESS_READONLY
+        when Carto::Permission::ACCESS_READONLY
           Carto::Group.grant_read(conn, name, table.database_schema, table.name)
-        when CartoDB::Permission::ACCESS_READWRITE
+        when Carto::Permission::ACCESS_READWRITE
           Carto::Group.grant_write(conn, name, table.database_schema, table.name)
         else
           raise "Unknown access: #{access}"

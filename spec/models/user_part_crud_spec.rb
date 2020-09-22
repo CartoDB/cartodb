@@ -66,12 +66,12 @@ describe User do
       permission = user2_vis.permission
       permission.acl = [
         {
-          type: CartoDB::Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user.id,
             username: @user.username
           },
-          access: CartoDB::Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
       permission.save

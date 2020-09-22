@@ -88,19 +88,19 @@ shared_examples_for 'permission models' do
       # invalid ACL formats
       expect {
         permission2.acl = 'not an array!'
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       expect {
         permission2.acl = [
           'aaa'
         ]
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       expect {
         permission2.acl = [
           {}
         ]
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       expect {
         permission2.acl = [
@@ -109,7 +109,7 @@ shared_examples_for 'permission models' do
             wadus: 'aaa'
           }
         ]
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       permission2.acl = [
         {
@@ -136,7 +136,7 @@ shared_examples_for 'permission models' do
             access: '123'
           }
         ]
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       visualization.destroy
       visualization2.destroy
@@ -253,7 +253,7 @@ shared_examples_for 'permission models' do
       permission.save
       permission.reload
 
-      permission.permission_for_user(changing_user).should eq CartoDB::Permission::ACCESS_READWRITE
+      permission.permission_for_user(changing_user).should eq Carto::Permission::ACCESS_READWRITE
 
       changing_user.viewer = true
       Table.any_instance.expects(:remove_access).once.returns(true)
@@ -262,7 +262,7 @@ shared_examples_for 'permission models' do
       changing_user.reload
 
       permission.reload
-      permission.permission_for_user(changing_user).should eq CartoDB::Permission::ACCESS_READONLY
+      permission.permission_for_user(changing_user).should eq Carto::Permission::ACCESS_READONLY
 
       destroy_full_visualization(map, table, table_visualization, visualization)
 

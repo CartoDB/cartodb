@@ -1428,11 +1428,11 @@ class User < Sequel::Model
   def revoke_rw_permission_on_shared_entities
     rw_permissions = visualizations_shared_with_this_user
                      .map(&:permission)
-                     .select { |p| p.permission_for_user(self) == CartoDB::Permission::ACCESS_READWRITE }
+                     .select { |p| p.permission_for_user(self) == Carto::Permission::ACCESS_READWRITE }
 
     rw_permissions.each do |p|
       p.remove_user_permission(self)
-      p.set_user_permission(self, CartoDB::Permission::ACCESS_READONLY)
+      p.set_user_permission(self, Carto::Permission::ACCESS_READONLY)
     end
     rw_permissions.map(&:save)
   end

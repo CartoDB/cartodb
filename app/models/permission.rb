@@ -164,13 +164,13 @@ module CartoDB
     # access is from ACCESS_xxxxx constants
     #
     # @param value Array
-    # @throws PermissionError
+    # @throws Carto::Permission::Error
     def acl=(value)
       incoming_acl = value.nil? ? ::JSON.parse(DEFAULT_ACL_VALUE) : value
-      raise PermissionError.new('ACL is not an array') unless incoming_acl.kind_of? Array
+      raise Carto::Permission::Error.new('ACL is not an array') unless incoming_acl.kind_of? Array
       incoming_acl.map { |item|
         unless item.kind_of?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
-          raise PermissionError.new('Wrong ACL entry format')
+          raise Carto::Permission::Error.new('Wrong ACL entry format')
         end
       }
 
@@ -528,7 +528,7 @@ module CartoDB
             check_related_visualizations(entity.table)
           end
         else
-          raise PermissionError.new("Unsupported entity type trying to grant permission: #{entity.class.name}")
+          raise Carto::Permission::Error.new("Unsupported entity type trying to grant permission: #{entity.class.name}")
       end
     end
 
@@ -545,13 +545,13 @@ module CartoDB
           # assert database permissions for non canonical tables are assigned
           # its canonical vis
           if not entity.table
-              raise PermissionError.new('Trying to change permissions to a table without ownership')
+              raise Carto::Permission::Error.new('Trying to change permissions to a table without ownership')
           end
           table = entity.table
 
           # check ownership
           if not self.owner_id == entity.permission.owner_id
-            raise PermissionError.new('Trying to change permissions to a table without ownership')
+            raise Carto::Permission::Error.new('Trying to change permissions to a table without ownership')
           end
           # give permission
           if access == ACCESS_READONLY
@@ -560,7 +560,7 @@ module CartoDB
             permission_strategy.add_read_write_permission(table)
           end
         else
-          raise PermissionError.new('Unsupported entity type trying to grant permission')
+          raise Carto::Permission::Error.new('Unsupported entity type trying to grant permission')
       end
     end
 
@@ -605,9 +605,6 @@ module CartoDB
     end
 
   end
-
-  class PermissionError < StandardError; end
-
 
   class OrganizationPermission
     def add_read_permission(table)

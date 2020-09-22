@@ -134,11 +134,11 @@ describe Carto::Api::VisualizationsController do
       # Share u1 vis with u2
       put api_v1_permissions_update_url(user_domain:user_1.username, api_key: user_1.api_key, id: u1_vis_1_perm_id),
           {acl: [{
-            type: CartoDB::Permission::TYPE_USER,
+            type: Carto::Permission::TYPE_USER,
             entity: {
               id:   user_2.id,
             },
-            access: CartoDB::Permission::ACCESS_READONLY
+            access: Carto::Permission::ACCESS_READONLY
           }]}.to_json, @headers
       last_response.status.should == 200
 
@@ -213,11 +213,11 @@ describe Carto::Api::VisualizationsController do
       # Share u1 table with u2
       put api_v1_permissions_update_url(user_domain:user_1.username, api_key: user_1.api_key, id: u1_t_1_perm_id),
           {acl: [{
-                   type: CartoDB::Permission::TYPE_USER,
+                   type: Carto::Permission::TYPE_USER,
                    entity: {
                      id:   user_2.id,
                    },
-                   access: CartoDB::Permission::ACCESS_READONLY
+                   access: Carto::Permission::ACCESS_READONLY
                  }]}.to_json, @headers
       last_response.status.should == 200
 
@@ -361,11 +361,11 @@ describe Carto::Api::VisualizationsController do
         # Share u2 vis1 with organization
         put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_vis_1_perm_id),
             {acl: [{
-                       type: CartoDB::Permission::TYPE_ORGANIZATION,
+                       type: Carto::Permission::TYPE_ORGANIZATION,
                        entity: {
                            id:   @organization.id,
                        },
-                       access: CartoDB::Permission::ACCESS_READONLY
+                       access: Carto::Permission::ACCESS_READONLY
                    }]}.to_json, @headers
         last_response.status.should == 200
 
@@ -379,11 +379,11 @@ describe Carto::Api::VisualizationsController do
         # Share u2 vis2 with u1
         put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_vis_2_perm_id),
             {acl: [{
-                       type: CartoDB::Permission::TYPE_USER,
+                       type: Carto::Permission::TYPE_USER,
                        entity: {
                            id:   @org_user_1.id,
                        },
-                       access: CartoDB::Permission::ACCESS_READONLY
+                       access: Carto::Permission::ACCESS_READONLY
                    }]}.to_json, @headers
         last_response.status.should == 200
 
@@ -417,11 +417,11 @@ describe Carto::Api::VisualizationsController do
         # Share u2 table1 with org
         put api_v1_permissions_update_url(user_domain:@org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_1_perm_id),
             {acl: [{
-                       type: CartoDB::Permission::TYPE_ORGANIZATION,
+                       type: Carto::Permission::TYPE_ORGANIZATION,
                        entity: {
                            id:   @organization.id,
                        },
-                       access: CartoDB::Permission::ACCESS_READONLY
+                       access: Carto::Permission::ACCESS_READONLY
                    }]}.to_json, @headers
 
         get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
@@ -434,11 +434,11 @@ describe Carto::Api::VisualizationsController do
         # Share u2 table2 with org
         put api_v1_permissions_update_url(user_domain:@org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_2_perm_id),
             {acl: [{
-                       type: CartoDB::Permission::TYPE_USER,
+                       type: Carto::Permission::TYPE_USER,
                        entity: {
                            id:   @org_user_1.id,
                        },
-                       access: CartoDB::Permission::ACCESS_READONLY
+                       access: Carto::Permission::ACCESS_READONLY
                    }]}.to_json, @headers
 
         get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,

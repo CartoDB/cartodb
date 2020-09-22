@@ -5,6 +5,15 @@ Development
 - None yet
 
 ### Features
+- None yet
+
+### Bug fixes / enhancements
+- None yet
+
+4.41.2 (2020-09-22)
+-------------------
+
+### Features
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
 
 ### Bug fixes / enhancements

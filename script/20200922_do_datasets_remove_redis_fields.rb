@@ -9,6 +9,13 @@ end
 username = (ARGV[0] != '--all')? ARGV[0] : '*'
 puts "Un-update user: #{username}..."
 
+def delete_table(table_id)
+  begin
+    Carto::UserTable.find(table_id).visualization.destroy
+  rescue
+  end
+end
+
 $users_metadata.keys("do:#{username}:datasets").each do |k|
   user = User.where(username: username).first
 
@@ -17,6 +24,8 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
   oldy_datasets = datasets.map do |dataset|
     # Do not process already enriched datasets:
     if dataset['sync_status'].present? then
+      # Note this will not change the user's quota, so be carefull if you have to execute this script multiple times
+      delete_table(dataset['sync_table_id']) unless !dataset['sync_table_id']
       oldy_dataset = {
         dataset_id: dataset['dataset_id'],
         expires_at: dataset['expires_at'] || (Time.parse(dataset['expires_at']) - 1.year).to_s

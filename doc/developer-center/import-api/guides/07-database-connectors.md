@@ -4,11 +4,11 @@ Typically when you import data, you are fetching a file or layer of data and imp
 
 Alternatively, you can use the Import API to connect to an external database. Your data from the external database is cached into a CARTO table by using the `connector` parameters.
 
-There are several types of database connectors that you can activate to your CARTO account.
+There are several types of database connectors available for Enterprise CARTO accounts.
 
 ### The MySQL Connector
 
-The MySQL Connector allows you to import data into a CARTO account as tables from a MySQL database. Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.
+The MySQL Connector allows you to import data into a CARTO account as tables from a MySQL database.
 
 You can use the MySQL Connector to:
 
@@ -284,7 +284,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
 
 ### The PostgreSQL Connector
 
-The PostgreSQL Connector allows you to import data into a CARTO account as tables from a PostgreSQL database. Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.
+The PostgreSQL Connector allows you to import data into a CARTO account as tables from a PostgreSQL database.
 
 You can use the PostgreSQL Connector to:
 
@@ -551,7 +551,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
 
 ### The Microsoft SQL Server Connector
 
-The Microsoft SQL Server Connector allows you to import data into a CARTO account as tables from a Microsoft SQL Server database. Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.
+The Microsoft SQL Server Connector allows you to import data into a CARTO account as tables from a Microsoft SQL Server database.
 
 You can use the Microsoft SQL Server Connector to:
 
@@ -1071,7 +1071,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
 
 **Warning:** This connector is in **BETA** stage and the API might change or have limited support-
 
-The BigQuery Connector allows you to import data into a CARTO account as tables from BigQuery. Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.
+The BigQuery Connector allows you to import data into a CARTO account as tables from BigQuery.
 
 You can use the BigQuery Connector to:
 

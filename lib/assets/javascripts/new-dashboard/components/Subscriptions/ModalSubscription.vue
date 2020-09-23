@@ -290,11 +290,11 @@ export default {
       this.error = false;
       this.loading = true;
       if (
-        await this.$store.dispatch('catalog/fetchSubscribe', {
+        await this.$store.dispatch('catalog/performSubscribe', {
           id: this.dataset.id,
           type: this.type
         }) &&
-        await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id)
+        await this.$store.dispatch('catalog/performSubscriptionSync', this.dataset.id)
       ) {
         await this.$store.dispatch('catalog/fetchSubscriptionsList');
         this.currentMode = 'subscribed';
@@ -307,8 +307,8 @@ export default {
     async unsubscribe () {
       this.loading = true;
       if (
-        await this.$store.dispatch('catalog/fetchSubscriptionUnSync', this.dataset.id) &&
-        await this.$store.dispatch('catalog/fetchUnSubscribe', {
+        await this.$store.dispatch('catalog/performSubscriptionUnsync', this.dataset.id) &&
+        await this.$store.dispatch('catalog/performUnsubscribe', {
           id: this.dataset.id,
           type: this.type
         })
@@ -326,7 +326,7 @@ export default {
           user: this.user,
           dataset: this.dataset
         }) &&
-        await this.$store.dispatch('catalog/fetchSubscribe', {
+        await this.$store.dispatch('catalog/performSubscribe', {
           id: this.dataset.id,
           type: this.type
         })

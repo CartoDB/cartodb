@@ -18,7 +18,7 @@ $users_metadata.keys("do:*:datasets").each do |k|
     syncable_datasets = []
     datasets.map do |dataset|
       # Do not process already enriched datasets:
-      if !(dataset['num_bytes'].present?) then
+      if !(dataset['sync_status'].present?) then
         begin
           doss = Carto::DoSyncServiceFactory.get_for_user(user)
           entity_info = doss.entity_info(dataset['dataset_id'])

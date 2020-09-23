@@ -23,7 +23,7 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
 
   datasets_enriched = datasets.map do |dataset|
     # Do not process already enriched datasets:
-    if !(dataset['unsynced_errors'].present?) then
+    if !(dataset['sync_status'].present?) then
       begin
         doss = Carto::DoSyncServiceFactory.get_for_user(user)
         sync_data = get_sync(doss, dataset['dataset_id']) || {}
@@ -61,13 +61,13 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
           sync_table_id: sync_data[:sync_table_id],
           synchronization_id: sync_data[:synchronization_id],
         })
+        puts "Update: #{dataset['dataset_id']} for #{username}"
       rescue Google::Apis::ClientError => e
         puts "Not found in BQ: #{dataset['dataset_id']}"
         # leaving it as is:
         dataset
       end
     end
-    puts "Update: #{dataset['dataset_id']} for #{username}"
     dataset
   end
   $users_metadata.hmset(k, :bq, datasets_enriched.to_json)

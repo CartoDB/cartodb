@@ -7,25 +7,28 @@
           <img src="../../assets/icons/catalog/error-triangle.svg" :class="smallClass">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey">
             <h1>Connection error</h1>
-            <p>An error occurred during connection. Please, contact support@carto.com</p>
+            <p>An error occurred during connection. Please, contact support@carto.com.</p>
           </div>
         </button>
       </SubscriptionButtonTooltip>
-      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsynced'">
+      <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsynced' && dataset.status === 'active'">
         <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
           <img src="../../assets/icons/catalog/information-circle.svg" :class="smallClass">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey">
             <h1>Not connected</h1>
-            <p>This dataset is not connected. Please, contact support@carto.com</p>
+            <p>This dataset is not connected. Please, contact support@carto.com.</p>
           </div>
         </button>
       </SubscriptionButtonTooltip>
       <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsyncable' && dataset.unsyncable_reason.includes('exceeds the quota available')">
         <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
-          <img src="../../assets/icons/catalog/warning-triangle.svg" :class="smallClass">
+          <img src="../../assets/icons/catalog/warning-triangle.svg" :class="smallClass" @click="connect">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey">
             <h1>Insufficient storage</h1>
-            <p>{{dataset.unsyncable_reason}}</p>
+            <p>
+              {{dataset.unsyncable_reason}}.
+              Click the icon to check again.
+            </p>
           </div>
         </button>
       </SubscriptionButtonTooltip>
@@ -34,7 +37,7 @@
           <img src="../../assets/icons/catalog/information-circle.svg" :class="smallClass">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey" :class="smallClass">
             <h1>Unable to connect</h1>
-            <p>This dataset is too large for Builder. You can use CARTOFrames to access the data</p>
+            <p>This dataset is too large for Builder. You can use CARTOFrames to access the data.</p>
           </div>
         </button>
       </SubscriptionButtonTooltip>
@@ -96,6 +99,10 @@ export default {
     downloadNotebook (e) {
       e.preventDefault();
       this.$store.dispatch('catalog/downloadNotebook', { id: this.dataset.slug, type: this.dataset.type });
+    },
+    async connect () {
+      await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id);
+      this.$store.dispatch('catalog/fetchSubscriptionsList', true);
     }
   }
 };

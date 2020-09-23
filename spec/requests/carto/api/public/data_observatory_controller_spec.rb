@@ -806,32 +806,34 @@ describe Carto::Api::Public::DataObservatoryController do
   def populate_do_metadata
     with_do_connection() do |connection|
       queries = %{
+        CREATE TABLE providers(id text, name text);
+         INSERT INTO providers VALUES ('provider', 'Test Provider');
 
         CREATE TABLE datasets(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                               tos_link text, licenses text, licenses_link text, rights text, available_in text[],
-                              name text, provider_name text, is_public_data boolean);
+                              name text, provider_name text, is_public_data boolean, provider_id text);
         INSERT INTO datasets VALUES ('carto.abc.dataset1', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq}', 'CARTO dataset 1', 'CARTO', false);
+                                     'rights', '{bq}', 'CARTO dataset 1', 'CARTO', false, 'provider');
         INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', NULL, 'Incomplete dataset', 'CARTO', false);
+                                     'rights', NULL, 'Incomplete dataset', 'CARTO', false, 'provider');
         INSERT INTO datasets VALUES ('carto.abc.datasetnull', NULL, NULL, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq}', 'CARTO dataset null', 'CARTO', false);
+                                     'rights', '{bq}', 'CARTO dataset null', 'CARTO', false, 'provider');
         INSERT INTO datasets VALUES ('carto.abc.datasetzero', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq}', 'CARTO dataset zero', 'CARTO', false);
+                                     'rights', '{bq}', 'CARTO dataset zero', 'CARTO', false, 'provider');
         INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearrayempty', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{}', 'CARTO dataset array empty', 'CARTO', false);
+                                     'rights', '{}', 'CARTO dataset array empty', 'CARTO', false, 'provider');
         INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearraynil', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', NULL, 'CARTO dataset array nil', 'CARTO', false);
+                                     'rights', NULL, 'CARTO dataset array nil', 'CARTO', false, 'provider');
         INSERT INTO datasets VALUES ('carto.abc.deliver_1day', 1.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-          'rights', '{bq}', 'CARTO dataset 1', 'CARTO', false);
+          'rights', '{bq}', 'CARTO dataset 1', 'CARTO', false, 'provider');
         INSERT INTO datasets VALUES ('carto.abc.public_dataset', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-            'rights', '{bq}', 'CARTO dataset 1', 'CARTO', true);
+            'rights', '{bq}', 'CARTO dataset 1', 'CARTO', true, 'provider');
 
         CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                                  tos_link text, licenses text, licenses_link text, rights text, available_in text[],
-                                 name text, provider_name text);
+                                 name text, provider_name text, provider_id text);
         INSERT INTO geographies VALUES ('carto.abc.geography1', 3.0, 90.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                        'rights', '{bq}', 'CARTO geography 1', 'CARTO');
+                                        'rights', '{bq}', 'CARTO geography 1', 'CARTO', 'provider');
       }
 
       connection.execute(queries)

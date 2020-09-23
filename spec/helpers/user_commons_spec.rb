@@ -152,6 +152,12 @@ describe Carto::UserCommons do
         expect(user.feature_flags).not_to include(old_feature_flag)
         expect(user.feature_flags).to include(new_feature_flag)
       end
+
+      it 'preserves existing feature flags if nil is received' do
+        user.update_feature_flags
+
+        expect(user.reload.feature_flags).not_to be_empty
+      end
     end
   end
 end

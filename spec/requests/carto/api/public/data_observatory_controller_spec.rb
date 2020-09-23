@@ -807,7 +807,7 @@ describe Carto::Api::Public::DataObservatoryController do
     with_do_connection() do |connection|
       queries = %{
         CREATE TABLE providers(id text, name text);
-         INSERT INTO providers VALUES ('provider', 'Test Provider');
+         INSERT INTO providers VALUES ('provider', 'CARTO');
 
         CREATE TABLE datasets(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                               tos_link text, licenses text, licenses_link text, rights text, available_in text[],

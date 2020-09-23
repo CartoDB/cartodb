@@ -173,7 +173,7 @@ module Carto
     end
 
     def build_search_tweet_from_hash(exported_search_tweet)
-      SearchTweet.new(
+      Carto::SearchTweet.new(
         data_import: build_data_import_from_hash(exported_search_tweet[:data_import]),
         service_item_id: exported_search_tweet[:service_item_id],
         retrieved_items: exported_search_tweet[:retrieved_items],

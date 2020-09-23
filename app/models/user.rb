@@ -1402,8 +1402,8 @@ class User < Sequel::Model
   def assign_search_tweets_to_organization_owner
     return if organization.nil? || organization.owner.nil? || organization_owner?
     search_tweets.each do |st|
-      st.user = organization.owner
-      st.save(raise_on_failure: true)
+      st.user = Carto::User.find(organization.owner.id)
+      st.save
     end
   rescue StandardError => e
     log_error(exception: e, message: 'Error assigning search tweets to org owner', target_user: self)

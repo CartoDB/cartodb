@@ -7,7 +7,7 @@ module Carto
     STATE_COMPLETE = 'complete'.freeze
     STATE_FAILED = 'failed'.freeze
 
-    before_save :touch_updated_at
+    before_update :touch_updated_at
     belongs_to :user, inverse_of: :search_tweets, class_name: 'Carto::User'
     belongs_to :user_table, class_name: 'Carto::UserTable'
     belongs_to :data_import, class_name: 'Carto::DataImport'

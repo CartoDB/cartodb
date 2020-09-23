@@ -60,9 +60,9 @@ describe Carto::UserMetadataExportService do
     )
     @table2.data_import = FactoryGirl.create(:data_import, user: @user, table_id: @table2.id)
     @table2.save!
-    @st1 = FactoryGirl.create(:carto_search_tweet, user_id: @user.id, data_import_id: @table2.data_import.id)
+    @st1 = FactoryGirl.create(:search_tweet, user_id: @user.id, data_import_id: @table2.data_import.id)
     @st2 = FactoryGirl.create(
-      :carto_search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id
+      :search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id
     )
 
     # Rate limits

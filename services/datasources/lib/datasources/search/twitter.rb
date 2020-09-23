@@ -579,8 +579,8 @@ module CartoDB
         end
 
         # Call this inside specs to override returned class
-        # @param override_class SearchTweet|nil (optional)
-        # @return SearchTweet
+        # @param override_class Carto::SearchTweet|nil (optional)
+        # @return Carto::SearchTweet
         def audit_entry(override_class = nil)
           if @audit_entry.nil?
             if override_class.nil?

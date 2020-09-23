@@ -37,6 +37,9 @@ export default {
       }
     },
     subscriptionExpirationLabel () {
+      if (this.status === 'requested') {
+        return '';
+      }
       if (this.expiresDate && this.expiresDate !== '') {
         // Format to a safer date format (Safari, IE)
         const expiresDateSafe = this.expiresDate.replace(/-/g, '/');

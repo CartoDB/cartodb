@@ -17,15 +17,16 @@ username = (ARGV[0] != '--all')? ARGV[0] : '*'
 puts "Updating user: #{username}..."
 
 $users_metadata.keys("do:#{username}:datasets").each do |k|
+  username = k.split(':')[1]
   user = User.where(username: username).first
   datasets = $users_metadata.hget(k, :bq)
   datasets = JSON.parse(datasets)
+  doss = Carto::DoSyncServiceFactory.get_for_user(user)
 
   datasets_enriched = datasets.map do |dataset|
     # Do not process already enriched datasets:
     if !(dataset['sync_status'].present?) then
       begin
-        doss = Carto::DoSyncServiceFactory.get_for_user(user)
         sync_data = get_sync(doss, dataset['dataset_id']) || {}
 
         # Initial quick&dirty hack.
@@ -40,13 +41,16 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
           sync_data[:sync_status] = 'unsynced'
         end
 
+        expires_at = Time.parse(dataset['expires_at'])
         prev_created_at = dataset['created_at'] ? Time.parse(dataset['created_at']) : nil
-        created_at = prev_created_at || (Time.parse(dataset['expires_at']) - 1.year)
+        created_at = prev_created_at || (expires_at - 1.year)
         today = Time.now
         created_at = (created_at < today) ? created_at.to_s : today.to_s
 
+        status = (expires_at && (today >= expires_at)) ? 'expired' : dataset['status']
+
         dataset = dataset.merge({
-          status: dataset['status'] || 'active',
+          status: status || 'active',
           created_at: created_at,
           available_in: ['bq'],
           type: sync_data[:type],

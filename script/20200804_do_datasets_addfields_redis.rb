@@ -43,9 +43,7 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
         prev_created_at = dataset['created_at'] ? Time.parse(dataset['created_at']) : nil
         created_at = prev_created_at || (Time.parse(dataset['expires_at']) - 1.year)
         today = Time.now
-        if created_at > today then
-          created_at = today
-        end
+        created_at = (created_at < today) ? created_at.to_s : today.to_s
 
         dataset = dataset.merge({
           status: dataset['status'] || 'active',

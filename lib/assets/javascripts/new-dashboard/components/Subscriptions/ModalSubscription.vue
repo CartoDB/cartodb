@@ -123,9 +123,6 @@
             class="noBorder"
             >{{ getCloseText }}</Button
           >
-          <!-- <Button class="u-ml--16" @click.native="requestDataset()"
-            >Confirm request</Button
-          > -->
           <Button
             v-if="currentMode === 'subscribe'"
             @click.native="subscribe()"
@@ -289,29 +286,15 @@ export default {
     closeModal () {
       this.$emit('closeModal');
     },
-    requestDataset () {
-      // Check if requestDataset is defined or call Dashboard's requestDataset action as a fallback
-      if (this.$root.requestDataset) {
-        this.$root.requestDataset(this.user, this.dataset);
-      } else {
-        this.$store.dispatch('catalog/requestDataset', {
-          user: this.user,
-          dataset: this.dataset
-        });
-      }
-      // GTM event trigger
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: 'requestDataset' });
-    },
     async subscribe () {
       this.error = false;
       this.loading = true;
       if (
-        await this.$store.dispatch('catalog/fetchSubscribe', {
+        await this.$store.dispatch('catalog/performSubscribe', {
           id: this.dataset.id,
           type: this.type
         }) &&
-        await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id)
+        await this.$store.dispatch('catalog/performSubscriptionSync', this.dataset.id)
       ) {
         await this.$store.dispatch('catalog/fetchSubscriptionsList');
         this.currentMode = 'subscribed';
@@ -324,8 +307,8 @@ export default {
     async unsubscribe () {
       this.loading = true;
       if (
-        await this.$store.dispatch('catalog/fetchSubscriptionUnSync', this.dataset.id) &&
-        await this.$store.dispatch('catalog/fetchUnSubscribe', {
+        await this.$store.dispatch('catalog/performSubscriptionUnsync', this.dataset.id) &&
+        await this.$store.dispatch('catalog/performUnsubscribe', {
           id: this.dataset.id,
           type: this.type
         })
@@ -339,7 +322,11 @@ export default {
       this.error = false;
       this.loading = true;
       if (
-        await this.$store.dispatch('catalog/fetchSubscribe', {
+        await this.$store.dispatch('catalog/requestDataset', {
+          user: this.user,
+          dataset: this.dataset
+        }) &&
+        await this.$store.dispatch('catalog/performSubscribe', {
           id: this.dataset.id,
           type: this.type
         })

@@ -123,9 +123,6 @@
             class="noBorder"
             >{{ getCloseText }}</Button
           >
-          <!-- <Button class="u-ml--16" @click.native="requestDataset()"
-            >Confirm request</Button
-          > -->
           <Button
             v-if="currentMode === 'subscribe'"
             @click.native="subscribe()"
@@ -289,20 +286,6 @@ export default {
     closeModal () {
       this.$emit('closeModal');
     },
-    requestDataset () {
-      // Check if requestDataset is defined or call Dashboard's requestDataset action as a fallback
-      if (this.$root.requestDataset) {
-        this.$root.requestDataset(this.user, this.dataset);
-      } else {
-        this.$store.dispatch('catalog/requestDataset', {
-          user: this.user,
-          dataset: this.dataset
-        });
-      }
-      // GTM event trigger
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: 'requestDataset' });
-    },
     async subscribe () {
       this.error = false;
       this.loading = true;
@@ -339,6 +322,10 @@ export default {
       this.error = false;
       this.loading = true;
       if (
+        await this.$store.dispatch('catalog/requestDataset', {
+          user: this.user,
+          dataset: this.dataset
+        }) &&
         await this.$store.dispatch('catalog/fetchSubscribe', {
           id: this.dataset.id,
           type: this.type

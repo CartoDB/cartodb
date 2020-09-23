@@ -1946,7 +1946,7 @@ SELECT my_othercolumn, ST_AsWKT(my_geography) AS the_geom FROM my_database.my_sc
 
 ##### Tip: define points by longitude and latitude
 
-In case your BigQuery table specifies geographic locations using longitude and latitude numeric columns, you could import them as geometry by using the BigQuery [ST_MAKEPOINT](https://docs.snowflake.com/en/sql-reference/functions/st_makepoint.html) function to convert them into a GEOGRAPHY like this:
+In case your Snowflake table specifies geographic locations using longitude and latitude numeric columns, you could import them as geometry by using the BigQuery [ST_MAKEPOINT](https://docs.snowflake.com/en/sql-reference/functions/st_makepoint.html) function to convert them into a GEOGRAPHY like this:
 
 ```sql
 SELECT my_othercolumn, ST_ASWKT(ST_MAKEPOINT(my_long_column, my_lat_column)) AS the_geom FROM my_database.my_schema.my_table

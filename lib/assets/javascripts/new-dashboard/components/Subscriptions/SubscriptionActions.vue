@@ -101,7 +101,7 @@ export default {
       this.$store.dispatch('catalog/downloadNotebook', { id: this.dataset.slug, type: this.dataset.type });
     },
     async connect () {
-      await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id);
+      await this.$store.dispatch('catalog/performSubscriptionSync', this.dataset.id);
       this.$store.dispatch('catalog/fetchSubscriptionsList', true);
     }
   }

@@ -117,9 +117,6 @@ export default {
       }
     }
   },
-  mounted () {
-    this.initializeDataset();
-  },
   watch: {
     isSubscriptionSyncing: {
       immediate: true,

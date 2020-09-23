@@ -213,7 +213,10 @@ module Carto
         def subscription_metadata
           connection = Carto::Db::Connection.do_metadata_connection()
 
-          query = "SELECT *, '#{@type}' as type FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
+          query = "SELECT t.*, p.name as provider_name, '#{@type}' as type
+            FROM #{TABLES_BY_TYPE[@type]} t
+              INNER JOIN providers p ON t.provider_id = p.id
+            WHERE t.id = '#{@id}'"
           result = connection.execute(query).first
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 

@@ -28,7 +28,7 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
       delete_table(dataset['sync_table_id']) unless !dataset['sync_table_id']
       oldy_dataset = {
         dataset_id: dataset['dataset_id'],
-        expires_at: dataset['expires_at'] || (Time.parse(dataset['expires_at']) - 1.year).to_s
+        expires_at: dataset['expires_at']
       }
     end
     puts "Un-update: #{dataset['dataset_id']} for #{username}"

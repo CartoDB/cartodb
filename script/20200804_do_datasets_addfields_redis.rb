@@ -25,7 +25,7 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
 
   datasets_enriched = datasets.map do |dataset|
     # Do not process already enriched datasets:
-    if !(dataset['sync_status'].present?) then
+    if !(dataset['sync_status'].present?) || !(dataset['type'].present?) then
       begin
         sync_data = get_sync(doss, dataset['dataset_id']) || {}
 

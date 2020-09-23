@@ -6,6 +6,7 @@ Development
 
 ### Features
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
+* Import API documentation for new db-connectors Snowflake & Redshift ([#15858](https://github.com/CartoDB/cartodb/pull/15858))
 
 ### Bug fixes / enhancements
 * Fix inconsistent handling of SRID in syncs and imports ([15821](https://github.com/CartoDB/cartodb/pull/15821))

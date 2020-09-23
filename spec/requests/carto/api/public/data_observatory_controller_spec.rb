@@ -845,6 +845,7 @@ describe Carto::Api::Public::DataObservatoryController do
       queries = %{
         DROP TABLE datasets;
         DROP TABLE geographies;
+        DROP TABLE providers;
       }
 
       connection.execute(queries)

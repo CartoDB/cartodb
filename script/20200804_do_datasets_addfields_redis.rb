@@ -35,14 +35,20 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
           sync_data[:unsyncable_reason] = nil
           sync_data[:sync_status] = 'unsynced'
         end
-        if sync_data.empty? then
+        if sync_data.empty? then  # indeed, should be a `requested` case
           sync_data[:unsyncable_reason] = nil
           sync_data[:sync_status] = 'unsynced'
+        end
+        created_at = dataset['created_at'] || nil
+        if created_at.nil? then
+          from_expiration = (Time.parse(dataset['expires_at']) - 1.year)
+          today = Time.now
+          created_at = (from_expiration < toda) ? from_expiration.to_s : today.to_s
         end
 
         dataset = dataset.merge({
           status: dataset['status'] || 'active',
-          created_at: dataset['created_at'] || (Time.parse(dataset['expires_at']) - 1.year).to_s,
+          created_at: created_at,
           available_in: ['bq'],
           type: sync_data[:type],
           estimated_size: sync_data[:estimated_size],

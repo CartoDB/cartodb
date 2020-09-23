@@ -49,8 +49,8 @@
     <% if (showUpgrade) { %>
       <div class="Upgrade-info">
         <p class="CDB-Text CDB-Size-medium u-ellipsis u-secondaryTextColor">
-         <% featuresLink = '<a href="https://carto.com/pricing">' + _t('components.modals.add-layer.imports.selected-state.more-features') + '</a>' %>
-          <%- _t('components.modals.add-layer.imports.selected-state.upgrade-desc', { features: featuresLink }) %>
+          <% featuresLink = '<a href="https://carto.com/pricing" target="_blank">' + _t('components.modals.add-layer.imports.selected-state.more-features') + '</a>' %>
+          <%= _t('components.modals.add-layer.imports.selected-state.upgrade-desc', { features: featuresLink }) %>
         </p>
         <div class="Upgrade-infoActions">
           <% if (showTrial) { %>

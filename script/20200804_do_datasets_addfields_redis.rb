@@ -39,11 +39,12 @@ $users_metadata.keys("do:#{username}:datasets").each do |k|
           sync_data[:unsyncable_reason] = nil
           sync_data[:sync_status] = 'unsynced'
         end
-        created_at = dataset['created_at'] || nil
-        if created_at.nil? then
-          from_expiration = (Time.parse(dataset['expires_at']) - 1.year)
-          today = Time.now
-          created_at = (from_expiration < today) ? from_expiration.to_s : today.to_s
+
+        prev_created_at = dataset['created_at'] ? Time.parse(dataset['created_at']) : nil
+        created_at = prev_created_at || (Time.parse(dataset['expires_at']) - 1.year)
+        today = Time.now
+        if created_at > today then
+          created_at = today
         end
 
         dataset = dataset.merge({

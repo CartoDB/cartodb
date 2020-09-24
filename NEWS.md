@@ -9,6 +9,7 @@ Development
 * New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
 
 ### Bug fixes / enhancements
+* WMTS compatibility: Replace OGC parameters from cartodb-wmsproxy ([15866](https://github.com/CartoDB/cartodb/pull/15866))
 * WMTS compatibility: Replace OGC parameters ([15849](https://github.com/CartoDB/cartodb/pull/15849))
 * Fix inconsistent handling of SRID in syncs and imports ([15821](https://github.com/CartoDB/cartodb/pull/15821))
 * Fix orm-check workflow when the diff has binary files

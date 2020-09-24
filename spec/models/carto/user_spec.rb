@@ -101,28 +101,4 @@ describe Carto::User do
       @user.password_reset_sent_at.to_s.should eql now.to_s
     end
   end
-
-  describe '#has_access_to_coverband?' do
-    let(:team_organization) { Carto::Organization.find(create(:organization, name: 'team').id) }
-
-    subject { user.has_access_to_coverband? }
-
-    context 'in development' do
-      it { should be_true }
-    end
-
-    context 'in production' do
-      before { Rails.env.stubs(:production?).returns(true) }
-
-      context 'when belongs to team' do
-        before { user.update!(organization: team_organization) }
-
-        it { should be_true }
-      end
-
-      context 'in any other case' do
-        it { should be_false }
-      end
-    end
-  end
 end

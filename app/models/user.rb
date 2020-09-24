@@ -11,7 +11,6 @@ require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
 require_relative './data_import'
 require_relative './visualization/external_source'
-require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
@@ -54,13 +53,19 @@ class User < Sequel::Model
     layer.set_default_order(user)
   }
 
-  one_to_many :feature_flags_user
+  def self_feature_flags_user
+    Carto::FeatureFlagsUser.where(user_id: id)
+  end
+
+  def self_feature_flags
+    Carto::FeatureFlag.where(id: self_feature_flags_user.pluck(:feature_flag_id))
+  end
 
   plugin :many_through_many
   many_through_many :groups, [[:users_groups, :user_id, :group_id]]
 
   # Sequel setup & plugins
-  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
+  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -455,7 +460,7 @@ class User < Sequel::Model
       $users_metadata.DEL(timeout_key)
     end
 
-    feature_flags_user.each(&:delete)
+    self_feature_flags_user.each(&:destroy)
   end
 
   def drop_database(has_organization)
@@ -1235,20 +1240,6 @@ class User < Sequel::Model
     else
       false
     end
-  end
-
-  def feature_flags
-    ffs = feature_flags_user + (organization&.inheritable_feature_flags || [])
-    @feature_flag_names = (ffs.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
-  end
-
-  def has_feature_flag?(feature_flag_name)
-    self.feature_flags.present? && self.feature_flags.include?(feature_flag_name)
-  end
-
-  def reload
-    @feature_flag_names = nil
-    super
   end
 
   def create_client_application

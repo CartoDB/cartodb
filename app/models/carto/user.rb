@@ -39,8 +39,8 @@ class Carto::User < ActiveRecord::Base
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
   has_one :static_notifications, class_name: Carto::UserNotification, inverse_of: :user
 
-  has_many :feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user
-  has_many :feature_flags, through: :feature_flags_user
+  has_many :self_feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user, class_name: Carto::FeatureFlagsUser
+  has_many :self_feature_flags, through: :self_feature_flags_user, source: :feature_flag
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
@@ -126,17 +126,6 @@ class Carto::User < ActiveRecord::Base
 
   def default_table_privacy
     private_tables_enabled ? Carto::UserTable::PRIVACY_PRIVATE : Carto::UserTable::PRIVACY_PUBLIC
-  end
-
-  def feature_flags_list
-    ffs = feature_flags_user + (organization&.inheritable_feature_flags || [])
-    @feature_flag_names = (ffs
-                                 .map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false)
-                                                                                 .map(&:name)).uniq.sort
-  end
-
-  def has_feature_flag?(feature_flag_name)
-    feature_flags_list.present? && feature_flags_list.include?(feature_flag_name)
   end
 
   def twitter_datasource_enabled

@@ -14,7 +14,7 @@ describe Carto::Api::MapcapsController do
   end
 
   before(:all) do
-    FactoryGirl.create(:carto_feature_flag, name: 'editor-3', restricted: false)
+    create(:feature_flag, name: 'editor-3', restricted: false)
 
     @user = FactoryGirl.create(:carto_user, builder_enabled: true)
     @intruder = FactoryGirl.create(:carto_user, builder_enabled: true)

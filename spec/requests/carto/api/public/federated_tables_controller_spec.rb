@@ -11,7 +11,7 @@ describe Carto::Api::Public::FederatedTablesController do
     host! "#{@user1.username}.localhost.lan"
 
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'federated_tables', restricted: true)
-    Carto::FeatureFlagsUser.create(user_id: @user1.id, feature_flag_id: @feature_flag.id)
+    @user1.activate_feature_flag!(@feature_flag)
 
     puts "Starting remote server"
     @dir = Cartodb.get_config(:federated_server, 'dir')

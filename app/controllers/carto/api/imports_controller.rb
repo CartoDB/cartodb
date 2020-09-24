@@ -97,7 +97,7 @@ module Carto
       def decorate_twitter_import_data!(data, data_import)
         return if data_import.service_name != CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME
 
-        audit_entry = Carto::SearchTweet.get_by_import_id(data_import.id)
+        audit_entry = Carto::SearchTweet.find_by(data_import_id: data_import.id)
         data[:tweets_georeferenced] = audit_entry.retrieved_items
         data[:tweets_cost] = audit_entry.price
         data[:tweets_overquota] = audit_entry.user.remaining_twitter_quota == 0

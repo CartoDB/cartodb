@@ -7,18 +7,9 @@ module Carto
     STATE_COMPLETE = 'complete'.freeze
     STATE_FAILED = 'failed'.freeze
 
-    before_update :touch_updated_at
     belongs_to :user, inverse_of: :search_tweets, class_name: 'Carto::User'
     belongs_to :user_table, class_name: 'Carto::UserTable'
     belongs_to :data_import, class_name: 'Carto::DataImport'
-
-    def touch_updated_at
-      self.updated_at = Time.now
-    end
-
-    def self.get_by_import_id(data_import_id)
-      self.where(data_import_id: data_import_id).first
-    end
 
     def self.twitter_imports_count(query, date_from, date_to)
       query
@@ -39,18 +30,15 @@ module Carto
     end
 
     def set_importing_state
-      @state = STATE_IMPORTING
-      self.state = @state
+      self.state = STATE_IMPORTING
     end
 
     def set_complete_state
-      @state = STATE_COMPLETE
-      self.state = @state
+      self.state = STATE_COMPLETE
     end
 
     def set_failed_state
-      @state = STATE_FAILED
-      self.state = @state
+      self.state = STATE_FAILED
     end
 
     def calculate_used_credits

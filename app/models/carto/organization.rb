@@ -37,7 +37,7 @@ module Carto
     #        example: 0.20 will get all organizations at 80% of their map view limit
     #
     def self.overquota(delta = 0)
-      Carto::Organization.all.select do |o|
+      Carto::Organization.find_each.select do |o|
         begin
           limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
           over_geocodings = o.get_geocoding_calls > limit

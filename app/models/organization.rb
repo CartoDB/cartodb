@@ -220,7 +220,7 @@ class Organization < Sequel::Model
   end
 
   def get_twitter_imports_count(options = {})
-    Carto::Organization.find_by(id: self.id).get_twitter_imports_count(options)
+    Carto::Organization.find(self.id).get_twitter_imports_count(options)
   end
 
   def get_mapzen_routing_calls(options = {})

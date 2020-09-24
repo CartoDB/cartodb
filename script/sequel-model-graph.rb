@@ -11,7 +11,8 @@ Dir.glob('./app/models/**/*.rb').each {|file| require file }
 # List Sequel through reflection
 Sequel::Model.subclasses.each do |model|
   # Get its associations
-  assocs = model.associations.map {|assoc| assoc.to_s.singularize.camelize}.join(',')
-  # Graphviz dot output
-  puts "#{model.to_s.demodulize} -> {#{assocs}}"
+  model.association_reflections.values.each do |assoc|
+    # Graphviz dot output
+    puts "#{model.to_s.demodulize} -> #{assoc.associated_class.to_s} [ label=\"#{assoc[:type].to_s}\" ];"
+  end
 end

@@ -80,6 +80,7 @@ WORKING_SPECS_1 = \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/helpers/logger_helper_spec.rb \
+	spec/helpers/user_commons_spec.rb \
 	spec/models/carto/data_import_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/models/carto/visualization/watcher_spec.rb \

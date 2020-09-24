@@ -306,4 +306,36 @@ module Carto::UserCommons
     organization&.name == 'team'
   end
 
+  def feature_flags
+    feature_flags_ids = self_feature_flags.pluck(:id) + Carto::FeatureFlag.not_restricted.pluck(:id)
+    feature_flags_ids += organization.inheritable_feature_flags.pluck(:id) if organization
+
+    Carto::FeatureFlag.where(id: feature_flags_ids)
+  end
+
+  def feature_flags_names
+    feature_flags.pluck(:name)
+  end
+
+  def has_feature_flag?(feature_flag_name)
+    feature_flags.exists?(name: feature_flag_name)
+  end
+
+  def activate_feature_flag!(feature_flag)
+    return if Carto::FeatureFlagsUser.exists?(feature_flag: feature_flag, user_id: id)
+
+    Carto::FeatureFlagsUser.create!(feature_flag: feature_flag, user_id: id)
+  end
+
+  def update_feature_flags(feature_flag_ids = nil)
+    return unless feature_flag_ids
+
+    self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all
+
+    new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)
+    new_feature_flags_ids.each do |feature_flag_id|
+      self_feature_flags_user.find_or_create_by(feature_flag_id: feature_flag_id)
+    end
+  end
+
 end

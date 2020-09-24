@@ -2,27 +2,30 @@ require_relative '../../spec_helper_min'
 
 describe Carto::FeatureFlag do
 
-  before(:all) do
-    @user = FactoryGirl.create(:carto_user)
-    @user_ff = FactoryGirl.create(:carto_feature_flag, name: 'user-ff', restricted: true)
-    @unused_ff = FactoryGirl.create(:carto_feature_flag, name: 'unused-ff', restricted: true)
-    FactoryGirl.create(:feature_flags_user, feature_flag_id: @user_ff.id, user_id: @user.id)
-    @unrestricted_ff = FactoryGirl.create(:carto_feature_flag, name: 'unrestricted-ff', restricted: false)
-  end
+  let(:restricted_feature_flag) { create(:feature_flag, :restricted) }
+  let(:not_restricted_feature_flag) { create(:feature_flag, :not_restricted) }
 
-  after(:all) do
-    @user.destroy
-    [@user_ff, @unused_ff, @unrestricted_ff].each(&:destroy)
-  end
+  describe '::restricted' do
+    subject { Carto::FeatureFlag.restricted }
 
-  describe "#find_by_user" do
-    it "returns the user feature flags and the unrestricted ones" do
-      expected_result = [@unrestricted_ff, @user_ff]
+    it 'returns restricted feature flags' do
+      expect(subject).to include(restricted_feature_flag)
+    end
 
-      result = Carto::FeatureFlag.find_by_user(@user)
-
-      expect(result).to eql(expected_result)
+    it 'does not return unrestricted feature flags' do
+      expect(subject).not_to include(not_restricted_feature_flag)
     end
   end
 
+  describe '::not_restricted' do
+    subject { Carto::FeatureFlag.not_restricted }
+
+    it 'does not return restricted feature flags' do
+      expect(subject).not_to include(restricted_feature_flag)
+    end
+
+    it 'returns unrestricted feature flags' do
+      expect(subject).to include(not_restricted_feature_flag)
+    end
+  end
 end

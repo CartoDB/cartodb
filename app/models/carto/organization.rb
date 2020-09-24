@@ -160,7 +160,7 @@ module Carto
     end
 
     def inheritable_feature_flags
-      inherit_owner_ffs ? owner.feature_flags_user : []
+      inherit_owner_ffs ? owner.self_feature_flags : Carto::FeatureFlag.none
     end
 
     def dbdirect_effective_ips

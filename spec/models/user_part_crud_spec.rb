@@ -21,28 +21,6 @@ describe User do
     end
   end
 
-  it 'should store feature flags' do
-    ff = FactoryGirl.create(:feature_flag, id: 10001, name: 'ff10001')
-
-    user = create_user email: 'ff@example.com', username: 'ff-user-01', password: '000ff-user-01'
-    user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
-    user.save
-    user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
-    user.destroy
-  end
-
-  it 'should delete feature flags assignations to a deleted user' do
-    ff = FactoryGirl.create(:feature_flag, id: 10002, name: 'ff10002')
-
-    user = create_user email: 'ff2@example.com', username: 'ff2-user-01', password: '000ff2-user-01'
-    user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
-    user.save
-    user_id = user.id
-    user.destroy
-    SequelRails.connection["select count(*) from feature_flags_users where user_id = '#{user_id}'"].first[:count].should eq 0
-    SequelRails.connection["select count(*) from feature_flags where id = '#{ff.id}'"].first[:count].should eq 1
-  end
-
   it "should have many tables" do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC

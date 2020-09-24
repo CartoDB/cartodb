@@ -57,17 +57,24 @@
             :title="subscriptionInfo.sync_status === 'syncing' ? 'Can not remove a subscription while connecting' : ''"
             @click="subscriptionInfo.sync_status !== 'syncing' && showModal('unsubscribe')"
             :class="{ 'disabled': subscriptionInfo.sync_status === 'syncing' }"
-            class="text is-small is-txtSoftGrey u-mt--8 underline"
-            >Unsubscribe
+            class="text is-small is-txtSoftGrey u-mt--8 underline">
+            Unsubscribe
           </a>
         </div>
-        <Button
+        <div
           v-else-if="getSubscriptionStatus === 'requested'"
-          class="is-outline extra-border navy-blue noCursor"
+          class="u-flex u-flex__direction--column u-flex__align--center"
         >
-          Requested
-          <img class="u-ml--12" src="../../assets/icons/catalog/check.svg" alt="check" />
-        </Button>
+          <Button class="is-outline extra-border navy-blue noCursor">
+            Requested
+            <img class="u-ml--12" src="../../assets/icons/catalog/check.svg" alt="check" />
+          </Button>
+          <a
+            @click="showModal('cancelRequest')"
+            class="text is-small is-txtSoftGrey u-mt--8 underline">
+            Cancel request
+          </a>
+        </div>
       </div>
       <p
         v-if="subscriptionInfo && subscriptionInfo.status !== 'active'"
@@ -170,7 +177,10 @@ export default {
       if (this.isPublicWebsite) {
         window.location.replace(this.getFormURL());
       } else {
-        this.$store.dispatch('catalog/requestDataset', { user: this.$store.state.user, dataset: this.dataset });
+        this.$store.dispatch('catalog/requestDataset', {
+          user: this.$store.state.user,
+          dataset: this.dataset
+        });
       }
     },
     showModal (mode) {

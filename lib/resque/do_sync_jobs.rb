@@ -29,7 +29,10 @@ module Resque
 
       status_name = 'syncing'
       unsyncable_reason = nil
-      if data_import.state != 'pending' then
+      unsynced_errors = []
+      if data_import.state == 'complete' && data_import.success == true then
+        status_name = 'synced'
+      elsif data_import.state != 'pending' then
         sync_info = licensing_service.get_sync_status(subscription[:dataset_id])
         status_name, unsyncable_reason, unsynced_errors = sync_info.values_at(:sync_status, :unsyncable_reason, :unsynced_errors)
       end

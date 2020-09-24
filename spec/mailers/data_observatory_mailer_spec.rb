@@ -8,7 +8,7 @@ describe DataObservatoryMailer do
     end
 
     before(:each) do
-      @mailer = DataObservatoryMailer.user_request(@user, 'carto.open-data.demographics', 'Demographics')
+      @mailer = DataObservatoryMailer.user_request(@user, 'Demographics', 'CARTO')
     end
 
     after(:each) do
@@ -27,7 +27,7 @@ describe DataObservatoryMailer do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
-      expect(mail.subject).to eql('Your dataset request to CARTO')
+      expect(mail.subject).to eql('Your premium dataset request to CARTO')
     end
 
     it "delivers to the expected recipients" do
@@ -37,18 +37,18 @@ describe DataObservatoryMailer do
       expect(mail.to).to eql([@user.email])
     end
 
-    it "delivers a text including the requested dataset id" do
-      @mailer.deliver_now
-
-      mail = ActionMailer::Base.deliveries.first
-      expect(mail.body).to include('carto.open-data.demographics')
-    end
-
     it "delivers a text including the requested dataset name" do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
       expect(mail.body).to include('Demographics')
+    end
+
+    it "delivers a text including the requested provider name" do
+      @mailer.deliver_now
+
+      mail = ActionMailer::Base.deliveries.first
+      expect(mail.body).to include('CARTO')
     end
   end
 

@@ -224,7 +224,7 @@ module CartoDB
 
     ## Logging
     config.log_level = :info
-    config.logger = Carto::Common::Logger.new("log/#{Rails.env}.log")
+    config.logger = Carto::Common::Logger.new(Carto::Conf.new.log_file_path("#{Rails.env}.log"))
   end
 end
 

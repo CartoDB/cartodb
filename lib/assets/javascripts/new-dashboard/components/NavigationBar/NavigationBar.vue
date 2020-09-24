@@ -39,7 +39,7 @@
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
 
         <NotificationPopup
-          v-if="!popupWasShown('feedback.popupWasShown') && twoWeeksSinceRelease"
+          v-if="!popupWasShown('feedback.popupWasShown')"
           class="notification-popup"
           :title="$t('FeedbackMessage.title')"
           :message="$t('FeedbackMessage.message')"
@@ -51,6 +51,14 @@
           title="New Connection Feature"
           :message="`Bring your CARTO data to the tools you already use. You can now connect to your CARTO account from other GIS or BI tools and database clients. <a href='${this.$router.resolve({name: 'connections'}).href}'>Discover it!</a>`"
           :messageHasHTML="true"/>
+
+        <NotificationPopup
+          v-if="!popupWasShown('popups.snowflakeRedshiftConnectors') && !twoWeeksSinceRelease && hasCCFFActive"
+          class="notification-popup"
+          title="New database connectors"
+          :message="`You can now import data from Snowflake and Amazon Redshift.<br>Please request access to the beta.<br><a href='${this.$router.resolve({name: 'datasets'}).href}'>Connect a new dataset!</a>`"
+          :messageHasHTML="true"
+          @click.native="markPopupAsRead('popups.snowflakeRedshiftConnectors')"/>
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/close.svg" />
@@ -103,6 +111,9 @@ export default {
     hasDBFFActive () {
       return hasFeatureEnabled(this.$props.user, 'dbdirect');
     },
+    hasCCFFActive () {
+      return hasFeatureEnabled(this.$props.user, 'carto-connectors');
+    },
     isDashboardBundle () {
       return this.$props.bundleType === 'dashboard';
     },
@@ -113,7 +124,8 @@ export default {
         !this.popupWasShown;
     },
     twoWeeksSinceRelease () {
-      return isAfter(new Date(), new Date(2020, 5, 11));
+      // 2020/09/22 + 2w = 2020/10/06
+      return isAfter(new Date(), new Date(2020, 9, 6));
     }
   },
   methods: {

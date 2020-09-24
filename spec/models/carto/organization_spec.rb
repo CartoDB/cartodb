@@ -56,13 +56,8 @@ describe Carto::Organization do
       @overquota_org = create(:carto_organization)
       @overquota_org_user = create(:carto_user)
 
-      @overquota_org_user.organization = @overquota_org
-      @overquota_org_user.save
-      @overquota_org_user.reload
-
-      @overquota_org.owner = @overquota_org_user
-      @overquota_org.save
-      @overquota_org.reload
+      @overquota_org_user.update!(organization: @overquota_org)
+      @overquota_org.update!(owner: @overquota_org_user)
     end
 
     it "should return organizations over their geocoding quota" do

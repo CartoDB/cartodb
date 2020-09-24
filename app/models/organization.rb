@@ -7,6 +7,8 @@ require_dependency 'common/organization_common'
 
 class Organization < Sequel::Model
 
+  include Carto::ActiveRecordCompatibility
+
   class OrganizationWithoutOwner < StandardError
     attr_reader :organization
 

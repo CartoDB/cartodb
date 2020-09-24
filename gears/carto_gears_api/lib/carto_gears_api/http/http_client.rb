@@ -33,19 +33,23 @@ module CartoGearsApi
 
     # Preferred way for performing HTTP requests from a gear. It contains logging and useful defaults.
     class HttpClient
+
+      include ::LoggerHelper
+
       def initialize(https: !development, host:, port: nil, username: nil, password: nil)
         @host = host
         @port = port
         @username = username
         @password = password
 
-        @base_url = "http#{'s' if https}://#{@host}"
+        @base_url = "https://#{@host}"
         @base_url << ":#{@port}" if @port.present?
         @auth = { username: username, password: password } if username && password
       end
 
       def send_request(path:, body: nil, method: :get, valid_codes: [200], timeout: nil)
         request = build_request(path: path, body: body, method: method, timeout: timeout)
+        log_info(message: 'Sending request to Central', request: request.inspect)
         response = request.run
         if valid_codes.include?(response.code)
           HttpResponse.new(

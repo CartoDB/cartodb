@@ -471,6 +471,7 @@ class ApplicationController < ActionController::Base
   end
 
   def ensure_required_params(required_params, status = 400)
+    log_info(message: 'Called ensure_required_params', required_params: required_params, received_params: params)
     params_with_value = params.reject { |_, v| v.empty? }
     missing_params = required_params - params_with_value.keys
     raise Carto::MissingParamsError.new(missing_params, status) unless missing_params.empty?

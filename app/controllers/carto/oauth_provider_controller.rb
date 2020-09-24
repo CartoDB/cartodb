@@ -181,11 +181,13 @@ module Carto
     end
 
     def ensure_required_token_params
+      log_info(message: 'Reading params from ensure_required_token_params', parameters: params)
       grant_params = grant_strategy.try(:required_params) || []
       ensure_required_params(REQUIRED_TOKEN_PARAMS + grant_params)
     end
 
     def ensure_required_authorize_params
+      log_info(message: 'Reading params from ensure_required_authorize_params', parameters: params)
       ensure_required_params(REQUIRED_AUTHORIZE_PARAMS)
     end
 

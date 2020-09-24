@@ -82,7 +82,7 @@ module Carto
     def validate_uri(redirect_uri)
       uri = URI.parse(redirect_uri)
       errors.add(:redirect_uris, "must be absolute") unless uri.absolute?
-      errors.add(:redirect_uris, "must be https") unless uri.scheme == 'https'
+      #errors.add(:redirect_uris, "must be https") unless uri.scheme == 'https'
       errors.add(:redirect_uris, "must not contain a fragment") unless uri.fragment.nil?
     rescue URI::InvalidURIError
       errors.add(:redirect_uris, "must be valid")

@@ -11,7 +11,7 @@ module Cartodb
     def initialize
       config_host = Cartodb.get_config(:cartodb_central_api, 'host')
       config_port = Cartodb.get_config(:cartodb_central_api, 'port')
-      @host = "http#{'s' if Rails.env.production? || Rails.env.staging?}://#{config_host}"
+      @host = "https://#{config_host}"
       @host << ":#{config_port}" if config_port.present?
       @auth = {
         username: Cartodb.get_config(:cartodb_central_api, 'username'),

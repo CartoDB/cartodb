@@ -10,6 +10,6 @@ jobs:
         uses: reviewdog/action-rubocop@v1
         with:
           github_token: ${{ secrets.github_token }}
-          reporter: github-pr-check
-          level: error
+          reporter: github-pr-review
+          level: info
           fail_on_error: true

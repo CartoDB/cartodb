@@ -9,7 +9,8 @@ jobs:
       - name: Rubocop linter
         uses: reviewdog/action-rubocop@v1
         with:
-          github_token: ${{ secrets.github_token }}
-          reporter: github-pr-review
-          level: info
           fail_on_error: true
+          github_token: ${{ secrets.github_token }}
+          # The other reporter is less-intrusive, but raises an error
+          level: warning
+          reporter: github-pr-review

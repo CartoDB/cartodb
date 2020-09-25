@@ -45,7 +45,7 @@ class Carto::User < ActiveRecord::Base
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
   has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
-  has_many :search_tweets, inverse_of: :user
+  has_many :search_tweets, class_name: Carto::SearchTweet, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
   has_many :tags, inverse_of: :user
   has_many :permissions, inverse_of: :owner, foreign_key: :owner_id

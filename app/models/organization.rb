@@ -3,18 +3,9 @@ require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './permission'
 require_dependency 'carto/helpers/auth_token_generator'
-require_dependency 'common/organization_common'
+require_dependency 'carto/helpers/organization_commons'
 
 class Organization < Sequel::Model
-
-  class OrganizationWithoutOwner < StandardError
-    attr_reader :organization
-
-    def initialize(organization)
-      @organization = organization
-      super "Organization #{organization.name} has no owner"
-    end
-  end
 
   include CartoDB::OrganizationDecorator
   include Concerns::CartodbCentralSynchronizable
@@ -22,6 +13,7 @@ class Organization < Sequel::Model
   include Carto::AuthTokenGenerator
   include SequelFormCompatibility
   include Carto::OrganizationSoftLimits
+  include Carto::OrganizationCommons
 
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false
@@ -199,26 +191,7 @@ class Organization < Sequel::Model
   #        example: 0.20 will get all organizations at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-    Organization.all.select do |o|
-      begin
-        limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
-        over_geocodings = o.get_geocoding_calls > limit
-        limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
-        over_here_isolines = o.get_here_isolines_calls > limit
-        limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
-        over_obs_snapshot = o.get_obs_snapshot_calls > limit
-        limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
-        over_obs_general = o.get_obs_general_calls > limit
-        limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
-        over_twitter_imports = o.get_twitter_imports_count > limit
-        limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
-        over_mapzen_routing = o.get_mapzen_routing_calls > limit
-        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
-      rescue OrganizationWithoutOwner => error
-        log_warning(message: 'Skipping inconsistent organization', organization: self, exception: error)
-        false
-      end
-    end
+    Carto::Organization.overquota(delta)
   end
 
   def get_api_calls(options = {})
@@ -247,9 +220,7 @@ class Organization < Sequel::Model
   end
 
   def get_twitter_imports_count(options = {})
-    date_from, date_to = quota_dates(options)
-
-    SearchTweet.get_twitter_imports_count(users_dataset.join(:search_tweets, :user_id => :id), date_from, date_to)
+    Carto::Organization.find(self.id).get_twitter_imports_count(options)
   end
 
   def get_mapzen_routing_calls(options = {})
@@ -274,11 +245,6 @@ class Organization < Sequel::Model
 
   def remaining_obs_general_quota
     remaining = obs_general_quota - get_obs_general_calls
-    (remaining > 0 ? remaining : 0)
-  end
-
-  def remaining_twitter_quota
-    remaining = twitter_datasource_quota - get_twitter_imports_count
     (remaining > 0 ? remaining : 0)
   end
 
@@ -455,7 +421,7 @@ class Organization < Sequel::Model
 
   def require_organization_owner_presence!
     if owner.nil?
-      raise Organization::OrganizationWithoutOwner.new(self)
+      raise Carto::Organization::OrganizationWithoutOwner.new(self)
     end
   end
 

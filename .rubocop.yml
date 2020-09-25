@@ -6,6 +6,7 @@ AllCops:
     - 'assets/**/*'
     - 'build_resources/**/*'
     - 'coverage/**/*'
+    - 'db/**/*'
     - 'doc/**/*'
     - 'log/**/*'
     - 'node_modules/**/*'
@@ -17,8 +18,17 @@ AllCops:
     - 'webpack/**/*'
     - '.git/**/*'
     # TODO: This should be removed one the IO error is fixed
+    - 'gears/**/*'
     - 'lib/**/*'
     - 'spec/**/*'
+    - 'services/**/*'
+    - 'app/models/**/*'
+    - 'app/controllers/**/*'
+    - 'app/helpers/**/*'
+    - 'app/services/**/*'
+    - config/routes.rb
+    - Gemfile
+    - config/**/*
 
   NewCops: disable
 

@@ -173,14 +173,18 @@ export default {
     getFormURL () {
       return formURL(this.dataset);
     },
-    interesed () {
+    async interesed () {
       if (this.isPublicWebsite) {
         window.location.replace(this.getFormURL());
       } else {
-        this.$store.dispatch('catalog/requestDataset', {
-          user: this.$store.state.user,
-          dataset: this.dataset
-        });
+        if (
+          await this.$store.dispatch('catalog/requestDataset', {
+            user: this.$store.state.user,
+            dataset: this.dataset
+          })
+        ) {
+          this.$store.commit('catalog/addInterestedSubscriptions', this.dataset.id);
+        }
       }
     },
     showModal (mode) {

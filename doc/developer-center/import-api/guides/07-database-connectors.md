@@ -810,7 +810,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
 #### Geography columns
 
 SQL Server columns of type GEOGRAPHY can be imported as the geometry of the resulting CARTO dataset
-(the `the_geom` column). In order to do so, the BigQuery column needs to be converted to either binary (`STAsBinary`) or text (`STAsBinary`) format and be name as `the_geom`. In addition, at present time, due to technical issues soon to be resolved, you must cast the result to type `VARCHAR(1000)`. You'll need to use a query (`sql_query` parameter) to do so:
+(the `the_geom` column). In order to do so, the SQL Server column needs to be converted to either binary (`STAsBinary`) or text (`STAsText`) format and be name as `the_geom`. In addition, at present time, due to technical issues soon to be resolved, you must cast the result to type `VARCHAR(1000)`. You'll need to use a query (`sql_query` parameter) to do so:
 
 ```sql
 SELECT *, CONVERT(VARCHAR(1000), my_geography.STAsBinary(), 2) as the_geom FROM my_table
@@ -818,7 +818,7 @@ SELECT *, CONVERT(VARCHAR(1000), my_geography.STAsBinary(), 2) as the_geom FROM 
 
 ##### Tip: define points by longitude and latitude
 
-In case your BigQuery table specifies geographic locations using longitude and latitude numeric columns, you could import them as geometry like this:
+In case your SQL Server table specifies geographic locations using longitude and latitude numeric columns, you could import them as geometry like this:
 
 ```sql
 SELECT *, CONVERT(VARCHAR(1000), geography::Point(latitude, longitude, 4326).STAsBinary(), 2) AS the_geom FROM my_table
@@ -826,7 +826,7 @@ SELECT *, CONVERT(VARCHAR(1000), geography::Point(latitude, longitude, 4326).STA
 
 ### The Hive Connector
 
-The Hive Connector allows you to import data into a CARTO account as tables from a HiveServer2 database. Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.
+The Hive Connector allows you to import data into a CARTO account as tables from a HiveServer2 database. Note that this connector is available only for CARTO On-Premises version.
 
 You can use the Hive Connector to:
 
@@ -1135,8 +1135,6 @@ you could use a query (`sql_query` parameter) and rename your columns using `AS`
 SELECT my_othercolumn, my_geography AS the_geom FROM my_project.my_dataset.my_table
 ```
 
-PLANNED: relax this naming restriction.
-
 ##### Tip: define points by longitude and latitude
 
 In case your BigQuery table specifies geographic locations using longitude and latitude numeric columns, you could import them as geometry by using the BigQuery [ST_GEOGPOINT](https://cloud.google.com/bigquery/docs/reference/standard-sql/geography_functions#st_geogpoint) function to convert them into a GEOGRAPHY like this:
@@ -1407,20 +1405,20 @@ from_external_source | Has the value **false** for all connector-based synchroni
 }
 ```
 
-### The Redshift Connector (BETA)
+### The Amazon Redshift Connector (BETA)
 
 **Warning:** This connector is in **BETA** stage and the API might change or have limited support-
-Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.
+Note that **this connector is disabled by default** in the CARTO importer options.Please request access to the beta trhough the CARTO dashboard.
 
 The Redshift Connector allows you to import data into a CARTO account as tables from a Redshift database. 
 
-You can use the PostgreSQL Connector to:
+You can use the Redshift Connector to:
 
 - Import a single, whole table stored in your PostgreSQL database
 - Apply a SQL query to import filtered data
 - Apply a SQL query from multiple joined tables
 
-To use the PostgreSQL Connector, you must include a `connector` parameter with the following attributes:
+To use the Redshift Connector, you must include a `connector` parameter with the following attributes:
 
 ```javascript
 {
@@ -1440,7 +1438,7 @@ To use the PostgreSQL Connector, you must include a `connector` parameter with t
 
 #### Connector Attributes
 
-The following table describes the connector attributes required to connect to a PostgreSQL database.
+The following table describes the connector attributes required to connect to a Redshift database.
 
 Param | Description
 --- | ---
@@ -1464,9 +1462,9 @@ password | Password of the user account.
 
 #### Connect to a Table
 
-In order to connect to an external PostgreSQL database table, the following rules apply:
+In order to connect to an external Redshift database table, the following rules apply:
 
-- The name of the remote PostgreSQL table must be passed in the `connector`/`table` parameter
+- The name of the remote Redshift table must be passed in the `connector`/`table` parameter
 - The `sql_query` parameter must not be present
 - A CARTO dataset with the same name will be connected to the external table
 
@@ -1512,7 +1510,7 @@ The `table` parameter must also be used to define the name of the local table. T
 
 ##### Example
 
-The following example displays how to connect to PostgreSQL through a SQL query.
+The following example displays how to connect to Redshift through a SQL query.
 
 ###### Call
 
@@ -1575,7 +1573,7 @@ interval | The number of seconds for the synchronization period._Sync interval m
 
 ##### Example
 
-The following example displays how to sync data through an external PostgreSQL database.
+The following example displays how to sync data through an external Redshift database.
 
 ###### Call
 
@@ -1664,7 +1662,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
 #### Geometry columns
 
 Redshift columns of type GEOMETRY or GEOGRAPHY can be imported as the geometry of the resulting CARTO dataset
-(the `the_geom` column). In order to do so, the BigQuery column needs to have one of these names:
+(the `the_geom` column). In order to do so, the Redshift column needs to have one of these names:
 `geometry`, `the_geom`,  `wkb_geometry`, `geom` or `wkt`. If your geography doesn't have one of those names,
 you could use a query (`sql_query` parameter) and rename your columns using `AS`:
 
@@ -1674,7 +1672,7 @@ SELECT my_othercolumn, my_geography AS the_geom FROM my_table
 
 ##### Tip: define points by longitude and latitude
 
-In case your Redshift table specifies geographic locations using longitude and latitude numeric columns, you could import them as geometry by using the BigQuery [ST_MakePoint](https://docs.aws.amazon.com/redshift/latest/dg/ST_MakePoint-function.html) function to convert them into a GEOMETRY like this:
+In case your Redshift table specifies geographic locations using longitude and latitude numeric columns, you could import them as geometry by using the Redshift [ST_MakePoint](https://docs.aws.amazon.com/redshift/latest/dg/ST_MakePoint-function.html) function to convert them into a GEOMETRY like this:
 
 ```sql
 SELECT my_othercolumn, ST_MakePoint(my_long_column, my_lat_column) AS the_geom FROM my_table
@@ -1683,7 +1681,7 @@ SELECT my_othercolumn, ST_MakePoint(my_long_column, my_lat_column) AS the_geom F
 ### The Snowflake Connector (BETA)
 
 **Warning:** This connector is in **BETA** stage and the API might change or have limited support-
-Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.
+Note that **this connector is disabled by default**. Please request access to the beta through the CARTO dashboard
 
 The Snowflake Connector allows you to import data into a CARTO account as tables from Snowflake.
 
@@ -1733,10 +1731,11 @@ server | The address of the Snowflake server.
 database | database | Name of the database that contains the table to be imported (or default database for the query in sql_query)
 username | User name used to connect to Redshift.
 password | Password of the user account.
+warehouse | Specifies the [warehose](https://docs.snowflake.com/en/user-guide/warehouses.html) to use (optional).
 
 #### Connect to a Table
 
-In order to connect to an external PostgreSQL database table, the following rules apply:
+In order to connect to an external Snowflake database table, the following rules apply:
 
 - The name of the remote Snowflake table must be passed in the `connector`/`table` parameter
 - The `sql_query` parameter must not be present
@@ -1778,7 +1777,7 @@ The `item_queue_id` value is a unique identifier that references the connection 
 
 #### Connect to a SQL Query
 
-The SQL code to select the data that is imported from the remote database must be passed through the `connector`/`sql_query` parameter. Note that the SQL query is interpreted by the remote Redshift database.
+The SQL code to select the data that is imported from the remote database must be passed through the `connector`/`sql_query` parameter. Note that the SQL query is interpreted by the remote Snowflake database.
 
 The `table` parameter must also be used to define the name of the local table. This table stores the data of the remote table. This is the dataset that will be created in your CARTO account.
 
@@ -1936,7 +1935,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
 #### Geography columns
 
 Snowflake columns of type GEOGRAPHY can be imported as the geometry of the resulting CARTO dataset
-(the `the_geom` column). In order to do so, the BigQuery column needs to be converted to WKT format and be name as `the_geom`. You'll need to use a query (`sql_query` parameter) to do so:
+(the `the_geom` column). In order to do so, the Snowflake column needs to be converted to WKT format and be name as `the_geom`. You'll need to use a query (`sql_query` parameter) to do so:
 
 ```sql
 SELECT my_othercolumn, ST_AsWKT(my_geography) AS the_geom FROM my_database.my_schema.my_table
@@ -1956,9 +1955,9 @@ SELECT my_othercolumn, ST_ASWKT(ST_MAKEPOINT(my_long_column, my_lat_column)) AS 
 
 When using database connectors, the following limitations or restrictions are enforced:
 
-- The maximum number of rows that the connector can fetch from the remote table is 1 MILLION rows. When this limit is reached, a warning will be fired and the dataset will be successfully imported, but truncated to 1 million rows
+- The maximum number of rows that the connector can fetch from the remote table is 1 MILLION rows, 5 MILLION rows for the BigQuery, Snowflake and Redis connectors. When this limit is reached, a warning will be fired and the dataset will be successfully imported, but truncated to 1 million rows
 
-  **Note:** Lower limits may apply to your particular CARTO account and further restrict your imports or even prevent the connection. [Contact us](mailto:sales@carto.com) if you have questions about account limitations.
+  **Note:** Lower limits may apply to your particular CARTO account and further restrict your imports or evenprevent the connection. [Contact us](mailto:sales@carto.com) if you have questions about account limitations.
 
 - The maximum number of columns for a remote table is 256. Connections will fail if this limit is surpassed
 - The number of simultaneous sync tables and concurrent executions is subject to limits, depending on your account plan. [Contact us](sales@carto.com) to discuss support for your connector

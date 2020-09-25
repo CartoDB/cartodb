@@ -1,14 +1,14 @@
 module Carto::ActiveRecordCompatibility
   # This module is meant to contain methods present in ActiveRecord
   # models but not in Sequel, in order to provide a light
-  # compatibiltiy layer
+  # compatibility layer
 
   def new_record?
-    return new?
+    new?
   end
 
   def save!
-    return save(raise_on_failure: true)
+    save(raise_on_failure: true)
   end
 
   def attributes

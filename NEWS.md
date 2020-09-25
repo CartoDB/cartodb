@@ -42,7 +42,9 @@ Development
 * Make the logger honor the environment variable `RAILS_LOG_BASE_PATH` again
 * Update DO subscriptions email [#15851](https://github.com/CartoDB/cartodb/pull/15851)
 * Remove beta descriptor from Direct SQL Connection text [#15854](https://github.com/CartoDB/cartodb/pull/15854)
+* Added a script to generate a graph of Sequel models associations [#15865](https://github.com/CartoDB/cartodb/pull/15865)
 * Migrate `::FeatureFlagsUser` to `ActiveRecord` [#15841](https://github.com/CartoDB/cartodb/pull/15841)
+* Migrate `::SearchTweet` to ActiveRecord [#15859](https://github.com/CartoDB/cartodb/pull/15859)
 
 4.41.1 (2020-09-03)
 -------------------

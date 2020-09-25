@@ -1,13 +1,10 @@
 require 'ruby-prof'
 require 'stringio'
 
-require 'carto/configuration'
-
 module CartoDB
 
   # A profiler based on https://github.com/justinweiss/request_profiler/
   class Profiler
-    include Carto::Configuration
 
     def initialize(printer: nil, exclude: nil)
       @printer = printer || ::RubyProf::CallTreePrinter

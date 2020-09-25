@@ -25,13 +25,13 @@
     <div class="u-ml--auto grid-cell grid-cell--col3 grid-cell--col4--tablet buttons-actions">
       <div class="u-flex u-flex__justify--end">
         <Button
-          v-if="getSubscriptionStatus === 'interested' && !interesedInSubscription"
-          @click.native="interesed"
+          v-if="getSubscriptionStatus === 'interested' && !interestedInSubscription"
+          @click.native="interested"
         >
           I’m interested
         </Button>
         <SubscriptionRequestSuccess
-          v-else-if="getSubscriptionStatus === 'interested' && interesedInSubscription"
+          v-else-if="getSubscriptionStatus === 'interested' && interestedInSubscription"
         ></SubscriptionRequestSuccess>
         <Button
           v-else-if="getSubscriptionStatus === 'free_subscription'"
@@ -159,7 +159,7 @@ export default {
       }
       return null;
     },
-    interesedInSubscription () {
+    interestedInSubscription () {
       return this.interestedSubscriptions.indexOf(this.dataset.id) >= 0;
     },
     isEnterprise () {
@@ -173,7 +173,7 @@ export default {
     getFormURL () {
       return formURL(this.dataset);
     },
-    async interesed () {
+    async interested () {
       if (this.isPublicWebsite) {
         window.location.replace(this.getFormURL());
       } else {

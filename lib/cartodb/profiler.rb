@@ -70,17 +70,16 @@ module CartoDB
       result.eliminate_methods!(@exclusions) if @exclusions
       printer = @printer.new(result)
       url = request.fullpath.gsub(/[?\/]/, '-')
-      filename = "#{prefix(printer)}#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}-#{url.slice(0, 50)}.#{format(printer)}"
+      base_name = "#{prefix(printer)}#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}-#{url.slice(0, 50)}"
+      printer.print(path: Dir.tmpdir, profile: base_name)
 
-      in_mem_file = ""
-      ::StringIO.open(in_mem_file, 'w+') do |f|
-        printer.print(f)
-      end
+      # see https://github.com/ruby-prof/ruby-prof/blob/1.4.1/lib/ruby-prof/printers/call_tree_printer.rb#L115
+      output_file = [base_name, "callgrind.out", $$].join(".")
 
-      response.body = in_mem_file
+      response.body = File.read(File.join(Dir.tmpdir, output_file))
       response.status = 200
       response.content_type = 'text/plain'
-      response.headers['Content-Disposition'] = "attachment; filename=\"#{filename}\""
+      response.headers['Content-Disposition'] = "attachment; filename=\"#{output_file}\""
     end
 
   end

@@ -61,9 +61,10 @@ feature "Superadmin's users API" do
     ::User.where(username: @user_atts[:username]).first.destroy
   end
 
-  scenario "user create with crypted_password success" do
+  scenario "user wadus create with crypted_password success" do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
+      response.status.should == 202
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
       response.body[:email].should == @user_atts[:email]

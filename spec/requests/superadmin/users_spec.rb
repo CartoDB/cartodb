@@ -66,6 +66,7 @@ feature "Superadmin's users API" do
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
+      response.body[:email].should == @user_atts[:email]
       response.body[:username].should == @user_atts[:username]
       response.body.should_not have_key(:crypted_password)
 

@@ -42,8 +42,6 @@ module CartoDB
       case printer
       when ::RubyProf::FlatPrinter
         'txt'
-      when ::RubyProf::FlatPrinterWithLineNumbers
-        'txt'
       when ::RubyProf::GraphPrinter
         'txt'
       when ::RubyProf::GraphHtmlPrinter

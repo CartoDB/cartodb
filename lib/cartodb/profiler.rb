@@ -74,12 +74,15 @@ module CartoDB
       printer.print(path: Dir.tmpdir, profile: base_name)
 
       # see https://github.com/ruby-prof/ruby-prof/blob/1.4.1/lib/ruby-prof/printers/call_tree_printer.rb#L115
-      output_file = [base_name, "callgrind.out", $$].join(".")
+      output_file_name = [base_name, "callgrind.out", $$].join(".")
+      output_file_path = File.join(Dir.tmpdir, output_file_name)
 
-      response.body = File.read(File.join(Dir.tmpdir, output_file))
+      response.body = File.read(output_file_path)
       response.status = 200
       response.content_type = 'text/plain'
-      response.headers['Content-Disposition'] = "attachment; filename=\"#{output_file}\""
+      response.headers['Content-Disposition'] = "attachment; filename=\"#{output_file_name}\""
+    ensure
+      File.delete(output_file_path) if File.exist?(output_file_path)
     end
 
   end

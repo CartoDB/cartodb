@@ -5,6 +5,15 @@ Development
 - None yet
 
 ### Features
+- None yet
+
+### Bug fixes / enhancements
+- None yet
+
+4.42.0 (2020-09-28)
+-------------------
+
+### Features
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
 * New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
 * Release Data Observatory subscriptions [#15834](https://github.com/CartoDB/cartodb/pull/15834)

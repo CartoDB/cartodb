@@ -7,6 +7,8 @@ Development
 ### Features
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
 * New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
+* Release Data Observatory subscriptions [#15834](https://github.com/CartoDB/cartodb/pull/15834)
+* Allow to cancel premium DO requests [#15864](https://github.com/CartoDB/cartodb/pull/15864)
 
 ### Bug fixes / enhancements
 * WMTS compatibility: Replace OGC parameters from cartodb-wmsproxy ([15866](https://github.com/CartoDB/cartodb/pull/15866))
@@ -33,7 +35,6 @@ Development
 * Fix Coverband - Resque integration [#15827](https://github.com/CartoDB/cartodb/pull/15827)
 * Delete unused DataImport methods [#15833](https://github.com/CartoDB/cartodb/pull/15833)
 * Fix missing LoggerHelper in CartoDB::LayerModule::Presenter [#15829](https://github.com/CartoDB/cartodb/pull/15829)
-* Release Data Observatory subscriptions [#15834](https://github.com/CartoDB/cartodb/pull/15834)
 * Migrated and removed old `::ExternalDataImport` sequel model [#15844](https://github.com/CartoDB/cartodb/pull/15844)
 * Fix map backups when deleting tables via Ghost Tables [#15832](https://github.com/CartoDB/cartodb/pull/15832)
 * Add DO subscriptions improvements [#15847](https://github.com/CartoDB/cartodb/pull/15847)
@@ -43,7 +44,10 @@ Development
 * Make the logger honor the environment variable `RAILS_LOG_BASE_PATH` again
 * Update DO subscriptions email [#15851](https://github.com/CartoDB/cartodb/pull/15851)
 * Remove beta descriptor from Direct SQL Connection text [#15854](https://github.com/CartoDB/cartodb/pull/15854)
+* Added a script to generate a graph of Sequel models associations [#15865](https://github.com/CartoDB/cartodb/pull/15865)
 * Migrate `::FeatureFlagsUser` to `ActiveRecord` [#15841](https://github.com/CartoDB/cartodb/pull/15841)
+* Migrate `::SearchTweet` to ActiveRecord [#15859](https://github.com/CartoDB/cartodb/pull/15859)
+* Revamp Rubocop config
 
 4.41.1 (2020-09-03)
 -------------------

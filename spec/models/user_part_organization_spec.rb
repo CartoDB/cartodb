@@ -317,15 +317,18 @@ describe User do
       u2 = create_user(email: 'u2@exampleb.com', username: 'ub2', password: 'admin123', organization: org)
 
       tweet_attributes = {
-        user: u2,
+        user_id: u2.id,
         table_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         service_item_id: '555',
-        state: ::SearchTweet::STATE_COMPLETE
+        state: Carto::SearchTweet::STATE_COMPLETE
       }
 
-      st1 = SearchTweet.create(tweet_attributes.merge(retrieved_items: 5))
-      st2 = SearchTweet.create(tweet_attributes.merge(retrieved_items: 10))
+      st1 = Carto::SearchTweet.new(tweet_attributes.merge(retrieved_items: 5))
+      st2 = Carto::SearchTweet.new(tweet_attributes.merge(retrieved_items: 10))
+
+      st1.save
+      st2.save
 
       u1.reload
       u2.reload
@@ -338,6 +341,8 @@ describe User do
       u1.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
 
       org.destroy
+      st1.destroy
+      st2.destroy
     end
   end
 

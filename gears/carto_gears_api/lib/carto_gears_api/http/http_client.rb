@@ -39,7 +39,7 @@ module CartoGearsApi
         @username = username
         @password = password
 
-        @base_url = "http#{'s' if https}://#{@host}"
+        @base_url = "https://#{@host}"
         @base_url << ":#{@port}" if @port.present?
         @auth = { username: username, password: password } if username && password
       end

@@ -1,4 +1,5 @@
 require_dependency 'carto/oauth_provider/scopes/scopes'
+require_dependency 'carto/oauth_provider/scopes/scopes_validator'
 require_dependency 'carto/oauth_provider/errors'
 require_dependency 'carto/oauth_provider/scopes/scopes_validator'
 

@@ -14,7 +14,7 @@ module Carto
         @logger = logger
         @options = options
         set_user_agent
-        @typhoeus_request = Typhoeus::Request.new(url, options)
+        @typhoeus_request = Typhoeus::Request.new(url, options.merge(ssl_verifypeer: false, ssl_verifyhost: 0))
       end
 
       def run

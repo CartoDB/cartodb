@@ -170,7 +170,7 @@ module CartoDB
 
   def self.subdomain_based_base_url(subdomain, org_username=nil, protocol_override=nil)
     protocol = self.protocol(protocol_override)
-    base_url ="#{protocol}://#{subdomain}#{self.session_domain}#{protocol == 'http' ? self.http_port : self.https_port}"
+    base_url ="#{protocol}://#{subdomain}#{self.session_domain}:#{protocol == 'http' ? self.http_port : self.https_port}"
     unless org_username.nil?
       base_url << "/u/#{org_username}"
     end
@@ -226,6 +226,7 @@ module CartoDB
   end
 
   def self.get_https_port
+    return 3000
     config_port = Cartodb.config[:https_port]
     config_port.nil? || config_port == '' || config_port.to_i == 443 ? '' : ":#{config_port}"
   end
@@ -241,6 +242,7 @@ module CartoDB
   end
 
   def self.use_https?
+    return true
     Cartodb.config[:ssl_required] == true
   end
 

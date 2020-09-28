@@ -5,7 +5,7 @@ module Carto::OrganizationCommons
 
     def initialize(organization)
       @organization = organization
-      super "Organization #{organization.name} has no owner"
+      super "Organization has no owner"
     end
   end
 end

@@ -53,7 +53,7 @@ module Carto
           over_mapzen_routing = o.get_mapzen_routing_calls > limit
           over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
         rescue Carto::Organization::OrganizationWithoutOwner => error
-          log_warning(message: 'Skipping inconsistent organization', organization: self, exception: error)
+          log_warning(message: 'Skipping inconsistent organization', organization: o, exception: error)
           false
         end
       end

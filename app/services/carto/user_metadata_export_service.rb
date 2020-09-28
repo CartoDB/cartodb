@@ -160,7 +160,7 @@ module Carto
 
       return Carto::FeatureFlagsUser.new(feature_flag_id: ff.id) if ff
 
-      log_warning(message: 'Feature flag not found in user import', feature_flag: ff.attributes)
+      log_warning(message: 'Feature flag not found in user import', feature_flag_name: ff_name)
       nil
     end
 

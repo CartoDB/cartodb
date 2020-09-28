@@ -364,9 +364,9 @@ module Carto
     end
 
     def export_permission(permission)
-      {
-        access_control_list: JSON.parse(permission.access_control_list, symbolize_names: true)
-      }
+      access_control_list = []
+      access_control_list = JSON.parse(permission.access_control_list, symbolize_names: true) if permission
+      { access_control_list: access_control_list }
     end
 
     def export_syncronization(synchronization)

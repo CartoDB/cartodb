@@ -47,6 +47,7 @@ Development
 * Migrate `::FeatureFlagsUser` to `ActiveRecord` [#15841](https://github.com/CartoDB/cartodb/pull/15841)
 * Migrate `::SearchTweet` to ActiveRecord [#15859](https://github.com/CartoDB/cartodb/pull/15859)
 * Revamp Rubocop config
+* Fix visualization backup when permission is missing [#15874](https://github.com/CartoDB/cartodb/pull/15874)
 
 4.41.1 (2020-09-03)
 -------------------

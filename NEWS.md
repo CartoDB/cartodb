@@ -60,6 +60,7 @@ Development
 * Fix Organization.overquota exception logging [#15873](https://github.com/CartoDB/cartodb/pull/15873)
 * Revamp Rubocop config
 * Fix visualization backup when permission is missing [#15874](https://github.com/CartoDB/cartodb/pull/15874)
+* Include `::Carto::ActiveRecordCompatibility` in all `Sequel` models [#15879](https://github.com/CartoDB/cartodb/pull/15879)
 
 4.41.1 (2020-09-03)
 -------------------

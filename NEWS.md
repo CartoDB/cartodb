@@ -46,6 +46,7 @@ Development
 * Added a script to generate a graph of Sequel models associations [#15865](https://github.com/CartoDB/cartodb/pull/15865)
 * Migrate `::FeatureFlagsUser` to `ActiveRecord` [#15841](https://github.com/CartoDB/cartodb/pull/15841)
 * Migrate `::SearchTweet` to ActiveRecord [#15859](https://github.com/CartoDB/cartodb/pull/15859)
+* Make import/export of user metadata resilient to missing feature flag [#15872](https://github.com/CartoDB/cartodb/pull/15872)
 * Fix Organization.overquota exception logging [#15873](https://github.com/CartoDB/cartodb/pull/15873)
 * Revamp Rubocop config
 

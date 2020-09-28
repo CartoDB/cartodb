@@ -11,6 +11,7 @@ Development
 * Allow to cancel premium DO requests [#15864](https://github.com/CartoDB/cartodb/pull/15864)
 
 ### Bug fixes / enhancements
+* WMTS compatibility: Replace OGC parameters from cartodb-wmsproxy ([15866](https://github.com/CartoDB/cartodb/pull/15866))
 * WMTS compatibility: Replace OGC parameters ([15849](https://github.com/CartoDB/cartodb/pull/15849))
 * Fix inconsistent handling of SRID in syncs and imports ([15821](https://github.com/CartoDB/cartodb/pull/15821))
 * Fix orm-check workflow when the diff has binary files

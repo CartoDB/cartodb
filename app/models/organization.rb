@@ -11,7 +11,6 @@ class Organization < Sequel::Model
   include Concerns::CartodbCentralSynchronizable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
-  include SequelFormCompatibility
   include Carto::OrganizationSoftLimits
   include Carto::OrganizationCommons
 

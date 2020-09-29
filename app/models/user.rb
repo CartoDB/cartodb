@@ -34,7 +34,6 @@ class User < Sequel::Model
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
   include Carto::EmailCleaner
-  include SequelFormCompatibility
   include Carto::UserCommons
 
   self.strict_param_setting = false

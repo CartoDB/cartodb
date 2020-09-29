@@ -114,7 +114,7 @@ module Carto
       end
 
       def update_permission
-        permission = CartoDB::Permission[@table.permission.id]
+        permission = Carto::Permission.find(@table.permission.id)
         permission.set_group_permission(@group, @access)
         permission.save
         render json: {}, status: 200
@@ -127,7 +127,7 @@ module Carto
       end
 
       def destroy_permission
-        permission = CartoDB::Permission[@table.permission.id]
+        permission = Carto::Permission.find(@table.permission.id)
         permission.remove_group_permission(@group)
         permission.save
         render json: {}, status: 200

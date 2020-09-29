@@ -110,11 +110,10 @@ describe Carto::Api::PermissionsController do
 
   describe 'PUT/DELETE /api/v1/perm' do
     it "makes sure we don't expose unwanted call types" do
-      permission = CartoDB::Permission.new(
-          owner_id: @user.id,
-          owner_username: @user.username
+      permission = Carto::Permission.create(
+        owner_id: @user.id,
+        owner_username: @user.username
       )
-      permission.save
 
       expect {
         post "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", nil, @headers

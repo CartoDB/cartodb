@@ -442,16 +442,13 @@ describe Organization do
     end
   end
 
-  describe "#get_api_calls and #get_geocodings" do
-    before(:each) do
-      @organization = create_organization_with_users(name: 'overquota-org')
-    end
-    after(:each) do
-      @organization.destroy
-    end
-    it "should return the sum of the api_calls for all organization users" do
-      ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
-      @organization.get_api_calls.should == (0..30).to_a.sum * @organization.users.size
+  describe '#get_api_calls and #get_geocodings' do
+    let(:organization) { create_organization_with_users }
+
+    before { Carto::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a }
+
+    it 'should return the sum of the api_calls for all organization users' do
+      expect(organization.get_api_calls).to eq((0..30).to_a.sum * organization.users.size)
     end
   end
 

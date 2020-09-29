@@ -48,6 +48,12 @@ class Organization < Sequel::Model
   DEFAULT_OBS_GENERAL_QUOTA = 0
   DEFAULT_MAPZEN_ROUTING_QUOTA = nil
 
+  delegate :get_api_calls, to: :carto_organization
+
+  def carto_organization
+    @carto_organization ||= Carto::Organization.find(id)
+  end
+
   def default_password_expiration_in_d
     Cartodb.get_config(:passwords, 'expiration_in_d')
   end
@@ -182,19 +188,6 @@ class Organization < Sequel::Model
     users.select { |u| owner && u.id != owner.id }
   end
 
-  ##
-  # SLOW! Checks redis data (geocoding and isolines) for every user in every organization
-  # delta: get organizations who are also this percentage below their limit.
-  #        example: 0.20 will get all organizations at 80% of their map view limit
-  #
-  def self.overquota(delta = 0)
-    Carto::Organization.overquota(delta)
-  end
-
-  def get_api_calls(options = {})
-    users.map{ |u| u.get_api_calls(options).sum }.sum
-  end
-
   def get_geocoding_calls(options = {})
     require_organization_owner_presence!
     date_from, date_to = quota_dates(options)
@@ -248,10 +241,6 @@ class Organization < Sequel::Model
   def remaining_mapzen_routing_quota
     remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls
     (remaining > 0 ? remaining : 0)
-  end
-
-  def db_size_in_bytes
-    users.map(&:db_size_in_bytes).sum.to_i
   end
 
   def assigned_quota

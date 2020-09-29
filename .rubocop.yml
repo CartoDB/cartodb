@@ -2,29 +2,34 @@
 
 AllCops:
   TargetRubyVersion: 2.5
-  Include:
-  - "**/*.gemspec"
-  - "**/*.podspec"
-  - "**/*.rake"
-  - "**/Gemfile"
-  - "**/Rakefile"
-  - "**/Capfile"
-  - "**/Guardfile"
   Exclude:
-  - "vendor/**/*"
-  - "db/schema.rb"
-  - "bin"
-  - "coverage"
-  - "doc"
-  - "engines"
-  - "lib/assets"
-  - "lib/build"
-  - "log"
-  - "node_modules"
-  - "public"
-  - "script"
-  - "tmp"
-  - "vendor"
+    - 'assets/**/*'
+    - 'build_resources/**/*'
+    - 'coverage/**/*'
+    - 'db/**/*'
+    - 'doc/**/*'
+    - 'log/**/*'
+    - 'node_modules/**/*'
+    - 'private_gears/**/*'
+    - 'public/**/*'
+    - 'script/**/*'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+    - 'webpack/**/*'
+    - '.git/**/*'
+    # TODO: This should be removed one the IO error is fixed
+    - 'gears/**/*'
+    - 'lib/**/*'
+    - 'spec/**/*'
+    - 'services/**/*'
+    - 'app/models/**/*'
+    - 'app/controllers/**/*'
+    - 'app/helpers/**/*'
+    - 'app/services/**/*'
+    - config/routes.rb
+    - Gemfile
+    - config/**/*
+
   NewCops: disable
 
 ####################

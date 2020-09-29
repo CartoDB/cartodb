@@ -121,6 +121,7 @@ group :development, :test do
   gem 'rb-readline'
   gem 'rspec-rails', '2.12.0'
   gem 'rubocop', '~> 0.92'
+  gem 'rubocop-performance'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
   gem 'thin', require: false

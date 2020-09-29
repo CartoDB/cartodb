@@ -47,6 +47,7 @@ Development
 * Migrate `::FeatureFlagsUser` to `ActiveRecord` [#15841](https://github.com/CartoDB/cartodb/pull/15841)
 * Migrate `::SearchTweet` to ActiveRecord [#15859](https://github.com/CartoDB/cartodb/pull/15859)
 * Revamp Rubocop config
+* Show outdated subscriptions. Optimize requests [#15879](https://github.com/CartoDB/cartodb/pull/15879)
 
 4.41.1 (2020-09-03)
 -------------------

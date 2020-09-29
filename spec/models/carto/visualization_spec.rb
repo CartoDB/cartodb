@@ -537,12 +537,12 @@ describe Carto::Visualization do
         shared_entity.save
         visualization.permission.acl = [
           {
-            type: Permission::TYPE_USER,
+            type: Carto::Permission::TYPE_USER,
             entity: {
               id: @carto_org_user_2.id,
               username: @carto_org_user_2.username
             },
-            access: Permission::ACCESS_READONLY
+            access: Carto::Permission::ACCESS_READONLY
           }
         ]
         visualization.permission.save
@@ -589,12 +589,12 @@ describe Carto::Visualization do
         shared_entity.save
         visualization.permission.acl = [
           {
-            type: Permission::TYPE_USER,
+            type: Carto::Permission::TYPE_USER,
             entity: {
               id: @carto_org_user_2.id,
               username: @carto_org_user_2.username
             },
-            access: Permission::ACCESS_READONLY
+            access: Carto::Permission::ACCESS_READONLY
           }
         ]
         visualization.permission.save

@@ -391,45 +391,45 @@ describe Visualization::Member do
 
       acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: user2_mock.id,
             username: user2_mock.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         },
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: user3_mock.id,
             username: user3_mock.username
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         },
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: viewer_user.id,
             username: viewer_user.username
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         }
       ]
       acl_expected = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           id: user2_mock.id,
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         },
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           id: user3_mock.id,
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         },
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           id: viewer_user.id,
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         }
       ]
 

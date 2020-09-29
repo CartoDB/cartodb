@@ -103,12 +103,12 @@ describe Carto::Api::DatabaseGroupsController do
 
       expected_acl = [
           {
-              type: Permission::TYPE_GROUP,
+              type: Carto::Permission::TYPE_GROUP,
               entity: {
                   id:         group.id,
                   name:       group.name
               },
-              access: Permission::ACCESS_READONLY
+              access: Carto::Permission::ACCESS_READONLY
           }
       ]
       permission.to_poro[:acl].should == expected_acl
@@ -148,14 +148,11 @@ describe Carto::Api::DatabaseGroupsController do
       permission.should_not be_nil
 
       expected_acl = [
-          {
-              type: Permission::TYPE_GROUP,
-              entity: {
-                  id:         group.id,
-                  name:       group.name
-              },
-              access: Permission::ACCESS_READWRITE
-          }
+        {
+          type: Carto::Permission::TYPE_GROUP,
+          entity: { id: group.id, name: group.name },
+          access: Carto::Permission::ACCESS_READWRITE
+        }
       ]
       permission.to_poro[:acl].should == expected_acl
     end

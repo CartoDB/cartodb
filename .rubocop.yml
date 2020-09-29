@@ -39,6 +39,10 @@ Layout/EmptyLinesAroundClassBody:
   Description: Keeps track of empty lines around class bodies.
   EnforcedStyle: empty_lines_except_namespace
 
+Layout/EmptyLinesAroundModuleBody:
+  Description: Keeps track of empty lines around module bodies.
+  EnforcedStyle: empty_lines_except_namespace
+
 ####################
 #  Metrics
 ####################
@@ -94,6 +98,10 @@ Style/FrozenStringLiteralComment:
   Description: >-
                   Add the frozen_string_literal comment to the top of files
                   to help transition to frozen string literals by default.
+  Enabled: false
+
+Style/SymbolArray:
+  Description: Use %i or %I for arrays of symbols.
   Enabled: false
 
 Style/WordArray:

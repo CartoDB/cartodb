@@ -116,6 +116,18 @@ class Carto::Visualization < ActiveRecord::Base
 
   attr_accessor :register_table_only
 
+  # NASTY HACK: previously, the user was updated to viewer: false for the destroy hooks to pass. As the Sequel
+  # migration advanced, that wasn't possible anymore since the ::User changes were not visible from the ActiveRecord
+  # transaction.
+  def destroy_without_checking_permissions!
+    Carto::Visualization.skip_callback(:destroy, :before, :check_destroy_permissions!)
+    Carto::Overlay.skip_callback(:destroy, :before, :validate_user_not_viewer)
+    destroy!
+  ensure
+    Carto::Visualization.set_callback(:destroy, :before, :check_destroy_permissions!)
+    Carto::Overlay.set_callback(:destroy, :before, :validate_user_not_viewer)
+  end
+
   def set_register_table_only
     self.register_table_only = false
     # This is a callback, returning `true` avoids halting because of assignment `false` return value

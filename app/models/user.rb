@@ -406,10 +406,7 @@ class User < Sequel::Model
       ActiveRecord::Base.transaction do
         delete_external_data_imports
         delete_external_sources
-        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each do |v|
-          v.user.viewer = false
-          v.destroy!
-        end
+        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.map(&:destroy_without_checking_permissions!)
         oauth_app_user = Carto::OauthAppUser.where(user_id: id).first
         oauth_app_user.oauth_access_tokens.each(&:destroy) if oauth_app_user
         Carto::ApiKey.where(user_id: id).each(&:destroy)

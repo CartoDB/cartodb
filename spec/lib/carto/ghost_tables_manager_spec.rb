@@ -439,6 +439,7 @@ module Carto
       ghost_tables_manager.link_ghost_tables_synchronously
 
       expect(Carto::VisualizationBackup.count).to eq(1)
+      expect(Carto::VisualizationBackup.first[:export][:visualization][:user_table]).to be_present
     end
   end
 end

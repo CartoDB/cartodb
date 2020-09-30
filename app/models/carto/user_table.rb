@@ -67,6 +67,7 @@ module Carto
     # TODO: This can be simplified after deleting the old UserTable model
     before_destroy :ensure_not_viewer
     before_destroy :cache_dependent_visualizations, unless: :destroyed?
+    before_destroy :backup_visualizations, unless: :destroyed?
     after_destroy :destroy_dependent_visualizations
     after_destroy :service_after_destroy
 
@@ -290,12 +291,21 @@ module Carto
       @partially_dependent_visualizations_cache = partially_dependent_visualizations
     end
 
+    def backup_visualizations
+      affected_visualizations.each(&:backup_visualization)
+    end
+
     def destroy_dependent_visualizations
+      # Replace these backups per the ones done at Carto::UserTable#backup_visualizations level.
+      # The first ones run when the user table has already been deleted, resulting in an incomplete backup.
+      Carto::Visualization.skip_callback(:destroy, :before, :backup_visualization)
       table_visualization.try(:delete_from_table)
       @fully_dependent_visualizations_cache.each(&:destroy)
       @partially_dependent_visualizations_cache.each do |visualization|
         visualization.unlink_from(self)
       end
+    ensure
+      Carto::Visualization.set_callback(:destroy, :before, :backup_visualization)
     end
 
     def ensure_not_viewer

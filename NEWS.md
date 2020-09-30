@@ -62,6 +62,7 @@ Development
 * Fix Organization.overquota exception logging [#15873](https://github.com/CartoDB/cartodb/pull/15873)
 * Revamp Rubocop config
 * Fix visualization backup when permission is missing [#15874](https://github.com/CartoDB/cartodb/pull/15874)
+* Show outdated subscriptions. Optimize requests [#15879](https://github.com/CartoDB/cartodb/pull/15879)
 
 4.41.1 (2020-09-03)
 -------------------

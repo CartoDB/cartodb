@@ -73,7 +73,7 @@
         </li>
         <li
           class="u-mb--32 u-mb--12--tablet"
-          v-if="!isGeography && dataset.geography_published && (dataset.geography_slug || dataset.geography_id)"
+          v-if="!isGeography && dataset.geography_is_product && (dataset.geography_slug || dataset.geography_id)"
         >
           <h4 class="text is-small is-txtSoftGrey u-mb--10">
             Associated Geography

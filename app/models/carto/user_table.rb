@@ -299,8 +299,7 @@ module Carto
     end
 
     def ensure_not_viewer
-      # Loading ::User is a workaround for User deletion: viewer attribute change is not visible at AR transaction
-      raise "Viewer users can't destroy tables" if user && user.viewer && ::User[user_id].viewer
+      raise "Viewer users can't destroy tables" if user&.carto_user&.reload&.viewer
     end
 
     def service_before_create

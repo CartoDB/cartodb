@@ -24,4 +24,4 @@ end
 # Disable schema dumping, it is broken with the combination of sequel-rails >= 0.4.4 and sequel < 3.47
 Rails.application.config.sequel.schema_dump = false
 
-Sequel::Model.class_eval { include Carto::ActiveRecordCompatibility }
+Sequel::Model.class_eval { include ActiveRecordCompatibility }

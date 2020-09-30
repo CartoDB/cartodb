@@ -6,7 +6,7 @@ require_dependency 'carto/helpers/organization_commons'
 
 class Organization < Sequel::Model
 
-  include Concerns::CartodbCentralSynchronizable
+  include CartodbCentralSynchronizable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
   include Carto::OrganizationSoftLimits

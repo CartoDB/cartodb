@@ -29,7 +29,7 @@ require_dependency 'carto/helpers/user_commons'
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
-  include Concerns::CartodbCentralSynchronizable
+  include CartodbCentralSynchronizable
   include CartoDB::ConfigUtils
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator

@@ -47,6 +47,12 @@ Layout/EmptyLinesAroundModuleBody:
 #  Metrics
 ####################
 
+Metrics/AbcSize:
+  Description: >-
+                 A calculated magnitude based on number of assignments,
+                 branches, and conditions.
+  Max: 30
+
 Metrics/BlockLength:
   Description: Avoid long blocks with many lines.
   Max: 50
@@ -65,11 +71,11 @@ Metrics/CyclomaticComplexity:
   Max: 15
 
 Metrics/MethodLength:
-  Description: Avoid methods longer than 50 lines of code.
-  Max: 50
+  Description: Avoid methods longer than 100 lines of code.
+  Max: 100
 
 Metrics/ModuleLength:
-  Description: Avoid modules longer than 100 lines of code.
+  Description: Avoid modules longer than 400 lines of code.
   Max: 400
 
 Metrics/PerceivedComplexity:
@@ -81,6 +87,10 @@ Metrics/PerceivedComplexity:
 ####################
 #  Style
 ####################
+
+Style/PercentLiteralDelimiters:
+  Description: Use `%`-literal delimiters consistently.
+  Enabled: false
 
 Style/StringLiterals:
   Description: Checks if uses of quotes match the configured preference.

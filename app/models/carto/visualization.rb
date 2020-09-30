@@ -110,6 +110,7 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
+  before_destroy :before_destroy_hooks
   before_destroy :backup_visualization
   before_destroy :check_destroy_permissions!
   after_commit :perform_invalidations
@@ -122,10 +123,12 @@ class Carto::Visualization < ActiveRecord::Base
   def destroy_without_checking_permissions!
     Carto::Visualization.skip_callback(:destroy, :before, :check_destroy_permissions!)
     Carto::Overlay.skip_callback(:destroy, :before, :validate_user_not_viewer)
+    Carto::UserTable.skip_callback(:destroy, :before, :ensure_not_viewer)
     destroy!
   ensure
     Carto::Visualization.set_callback(:destroy, :before, :check_destroy_permissions!)
     Carto::Overlay.set_callback(:destroy, :before, :validate_user_not_viewer)
+    Carto::UserTable.set_callback(:destroy, :before, :ensure_not_viewer)
   end
 
   def set_register_table_only
@@ -847,6 +850,32 @@ class Carto::Visualization < ActiveRecord::Base
 
   def check_destroy_permissions!
     raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user&.reload&.viewer
+  end
+
+  def prev_list_item
+    Carto::Visualization.find_by(id: prev_id)
+  end
+
+  def next_list_item
+    Carto::Visualization.find_by(id: next_id)
+  end
+
+  def unlink_self_from_list!
+    ActiveRecord::Base.transaction do
+      prev_list_item&.update!(next_id: next_id)
+      next_list_item&.update!(prev_id: prev_id)
+
+      unless destroyed?
+        self.prev_id = nil
+        self.next_id = nil
+      end
+    end
+  end
+
+  def before_destroy_hooks
+    unlink_self_from_list!
+    children.each(&:destroy)
+    Carto::NamedMaps::Api.new(self).destroy
   end
 
   class Watcher

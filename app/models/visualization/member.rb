@@ -513,23 +513,6 @@ module CartoDB
         fetch
       end
 
-      def unlink_self_from_list!
-        repository.transaction do
-          unless self.prev_id.nil?
-            prev_item = prev_list_item
-            prev_item.next_id = self.next_id
-            prev_item.store
-          end
-          unless self.next_id.nil?
-            next_item = next_list_item
-            next_item.prev_id = self.prev_id
-            next_item.store
-          end
-          self.prev_id = nil
-          self.next_id = nil
-        end
-      end
-
       def liked_by?(user)
         !likes.select { |like| like.actor == user.id }.first.nil?
       end

@@ -1012,24 +1012,31 @@ describe Visualization::Member do
 
       starting_collection_count = Visualization::Collection.new.fetch.count
 
-      parent = Visualization::Member.new(random_attributes_for_vis_member({
-                                                             user_id: @user_mock.id,
-                                                             name: 'PARENT',
-                                                             type: Visualization::Member::TYPE_DERIVED
-                                                           })).store
+      parent = Visualization::Member.new(
+        random_attributes_for_vis_member(
+          user_id: @user_mock.id,
+          name: 'PARENT',
+          type: Visualization::Member::TYPE_DERIVED
+        )
+      ).store
 
-      child1 = Visualization::Member.new(random_attributes_for_vis_member({
-                                                             user_id: @user_mock.id,
-                                                             name: 'CHILD 1',
-                                                             type: Visualization::Member::TYPE_SLIDE,
-                                                             parent_id:  parent.id
-                                                           })).store.fetch
-      child2 = Visualization::Member.new(random_attributes_for_vis_member({
-                                                             user_id: @user_mock.id,
-                                                             name: 'CHILD 2',
-                                                             type: Visualization::Member::TYPE_SLIDE,
-                                                             parent_id:  parent.id
-                                                           })).store.fetch
+      child1 = Visualization::Member.new(
+        random_attributes_for_vis_member(
+          user_id: @user_mock.id,
+          name: 'CHILD 1',
+          type: Visualization::Member::TYPE_SLIDE,
+          parent_id: parent.id
+        )
+      ).store.fetch
+
+      child2 = Visualization::Member.new(
+        random_attributes_for_vis_member(
+          user_id: @user_mock.id,
+          name: 'CHILD 2',
+          type: Visualization::Member::TYPE_SLIDE,
+          parent_id: parent.id
+        )
+      ).store.fetch
 
       child2.set_prev_list_item!(child1)
       parent.fetch

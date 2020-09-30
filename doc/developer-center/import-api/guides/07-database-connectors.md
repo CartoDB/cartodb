@@ -1957,9 +1957,9 @@ SELECT my_othercolumn, ST_ASWKT(ST_MAKEPOINT(my_long_column, my_lat_column)) AS 
 
 When using database connectors, the following limitations or restrictions are enforced:
 
-- The maximum number of rows that the connector can fetch from the remote table is 1 MILLION rows, 5 MILLION rows for the BigQuery, Snowflake and Redis connectors. When this limit is reached, a warning will be fired and the dataset will be successfully imported, but truncated to 1 million rows
+- The maximum number of rows that the connector can fetch from the remote table is 1 MILLION rows, 5 MILLION rows for the BigQuery, Snowflake and Redshift connectors. When this limit is reached, a warning will be fired and the dataset will be successfully imported, but truncated to 1 million rows
 
-  **Note:** Lower limits may apply to your particular CARTO account and further restrict your imports or evenprevent the connection. [Contact us](mailto:sales@carto.com) if you have questions about account limitations.
+  **Note:** Lower limits may apply to your particular CARTO account and further restrict your imports or even prevent the connection. [Contact us](mailto:sales@carto.com) if you have questions about account limitations.
 
 - The maximum number of columns for a remote table is 256. Connections will fail if this limit is surpassed
 - The number of simultaneous sync tables and concurrent executions is subject to limits, depending on your account plan. [Contact us](sales@carto.com) to discuss support for your connector

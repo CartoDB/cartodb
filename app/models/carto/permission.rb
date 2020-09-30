@@ -331,8 +331,13 @@ class Carto::Permission < ActiveRecord::Base
     self.acl = new_acl
   end
 
-  # TODO: make all methods public until Sequel model and its delegations are removed
-  # private
+  def clear
+    self.acl = []
+    revoke_previous_permissions(entity)
+    save
+  end
+
+  private
 
   def real_entity_type
     entity.type

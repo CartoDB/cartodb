@@ -1794,6 +1794,7 @@ curl -v -H "Content-Type: application/json" -d '{
     "connection": {
       "server":"xxx.snowflakecomputing.com",
       "database":"sfdatabase",
+      "warehouse":"sfwarehouse",
       "username":"sfusername",
       "password":"sfpassword"
     },
@@ -1814,6 +1815,7 @@ curl -v -H "Content-Type: application/json" -d '{
     "connection": {
       "server":"xxx.snowflakecomputing.com",
       "database":"sfdatabase",
+      "warehouse":"sfwarehouse",
       "username":"sfusername",
       "password":"sfpassword"
     },

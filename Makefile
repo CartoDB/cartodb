@@ -190,7 +190,6 @@ WORKING_SPECS_5 = \
 	spec/models/organization_spec.rb \
 	spec/models/user_organization_spec.rb \
 	spec/models/synchronization/synchronization_oauth_spec.rb \
-	spec/models/permission_spec.rb \
 	spec/models/carto/permission_spec.rb \
 	spec/lib/carto/ghost_tables_manager_spec.rb \
 	spec/lib/carto/bolt_spec.rb \

@@ -241,13 +241,13 @@ describe Carto::Superadmin::UsersController do
     end
 
     it 'returns Twitter imports' do
-      st = SearchTweet.create(
+      st = Carto::SearchTweet.create(
         user_id: @user.id,
         table_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         service_item_id: '555',
         retrieved_items: 42,
-        state: ::SearchTweet::STATE_COMPLETE
+        state: Carto::SearchTweet::STATE_COMPLETE
       )
       get_json(usage_superadmin_user_url(@user.id), { from: Date.today - 5 }, superadmin_headers) do |response|
         tweets = response.body[:twitter_imports][:retrieved_items]

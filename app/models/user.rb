@@ -11,7 +11,6 @@ require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
 require_relative './data_import'
 require_relative './visualization/external_source'
-require_relative './feature_flag'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
@@ -48,20 +47,25 @@ class User < Sequel::Model
   one_to_many :assets
   one_to_many :data_imports
   one_to_many :geocodings, order: Sequel.desc(:created_at)
-  one_to_many :search_tweets, order: Sequel.desc(:created_at)
   many_to_one :organization
 
   many_to_many :layers, class: ::Layer, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)
   }
 
-  one_to_many :feature_flags_user
+  def self_feature_flags_user
+    Carto::FeatureFlagsUser.where(user_id: id)
+  end
+
+  def self_feature_flags
+    Carto::FeatureFlag.where(id: self_feature_flags_user.pluck(:feature_flag_id))
+  end
 
   plugin :many_through_many
   many_through_many :groups, [[:users_groups, :user_id, :group_id]]
 
   # Sequel setup & plugins
-  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy, :feature_flags_user => :destroy
+  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -456,7 +460,7 @@ class User < Sequel::Model
       $users_metadata.DEL(timeout_key)
     end
 
-    feature_flags_user.each(&:delete)
+    self_feature_flags_user.each(&:destroy)
   end
 
   def drop_database(has_organization)
@@ -846,13 +850,6 @@ class User < Sequel::Model
     Carto::AccountType.find(account_type)
   end
 
-  # Should return the number of tweets imported by this user for the specified period of time, as an integer
-  def get_twitter_imports_count(options = {})
-    date_from, date_to = quota_dates(options)
-    SearchTweet.get_twitter_imports_count(self.search_tweets_dataset, date_from, date_to)
-  end
-  alias get_twitter_datasource_calls get_twitter_imports_count
-
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
   def get_api_calls(options = {})
@@ -889,22 +886,6 @@ class User < Sequel::Model
     get_user_mapzen_routing_data(self, date_from, date_to)
   end
 
-  def effective_twitter_block_price
-    organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
-  end
-
-  def effective_twitter_datasource_block_size
-    organization.present? ? organization.twitter_datasource_block_size : self.twitter_datasource_block_size
-  end
-
-  def effective_twitter_total_quota
-    organization.present? ? organization.twitter_datasource_quota : self.twitter_datasource_quota
-  end
-
-  def effective_get_twitter_imports_count
-    organization.present? ? organization.get_twitter_imports_count : self.get_twitter_imports_count
-  end
-
   def remaining_geocoding_quota
     if organization.present?
       remaining = organization.remaining_geocoding_quota
@@ -937,15 +918,6 @@ class User < Sequel::Model
       remaining = organization.remaining_obs_general_quota
     else
       remaining = obs_general_quota - get_obs_general_calls
-    end
-    (remaining > 0 ? remaining : 0)
-  end
-
-  def remaining_twitter_quota
-    if organization.present?
-      remaining = organization.remaining_twitter_quota
-    else
-      remaining = self.twitter_datasource_quota - get_twitter_imports_count
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -1270,20 +1242,6 @@ class User < Sequel::Model
     end
   end
 
-  def feature_flags
-    ffs = feature_flags_user + (organization&.inheritable_feature_flags || [])
-    @feature_flag_names = (ffs.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
-  end
-
-  def has_feature_flag?(feature_flag_name)
-    self.feature_flags.present? && self.feature_flags.include?(feature_flag_name)
-  end
-
-  def reload
-    @feature_flag_names = nil
-    super
-  end
-
   def create_client_application
     ClientApplication.create(:user_id => self.id)
   end
@@ -1391,6 +1349,10 @@ class User < Sequel::Model
     Carto::OauthToken.where(user_id: id)
   end
 
+  def search_tweets
+    Carto::SearchTweet.where(user_id: id).order(created_at: :desc)
+  end
+
   private
 
   def common_data_outdated?
@@ -1430,10 +1392,7 @@ class User < Sequel::Model
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner
     return if organization.nil? || organization.owner.nil? || organization_owner?
-    search_tweets_dataset.all.each do |st|
-      st.user = organization.owner
-      st.save(raise_on_failure: true)
-    end
+    search_tweets.each { |st| st.update!(user: Carto::User.find(organization.owner.id)) }
   rescue StandardError => e
     log_error(exception: e, message: 'Error assigning search tweets to org owner', target_user: self)
   end

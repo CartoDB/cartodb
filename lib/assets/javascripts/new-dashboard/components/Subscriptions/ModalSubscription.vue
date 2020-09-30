@@ -119,13 +119,10 @@
           <Button
             @click.native="closeModal()"
             :isOutline="true"
-            :color="currentMode === 'unsubscribe' ? 'navy-blue' : ''"
+            :color="(currentMode === 'unsubscribe' || currentMode === 'cancelRequest') ? 'navy-blue' : ''"
             class="noBorder"
             >{{ getCloseText }}</Button
           >
-          <!-- <Button class="u-ml--16" @click.native="requestDataset()"
-            >Confirm request</Button
-          > -->
           <Button
             v-if="currentMode === 'subscribe'"
             @click.native="subscribe()"
@@ -161,6 +158,19 @@
             <img svg-inline src="../../assets/icons/catalog/loading_white.svg" class="loading__svg"/>
           </span>
             Confirm request
+          </Button>
+
+          <Button
+            v-else-if="currentMode === 'cancelRequest'"
+            @click.native="cancelRequest()"
+            class="u-ml--16"
+            :class="{ 'is-loading': loading }"
+            :color="'red'"
+          >
+          <span class="loading u-flex u-flex__align-center u-mr--12">
+            <img svg-inline src="../../assets/icons/catalog/loading_white.svg" class="loading__svg"/>
+          </span>
+            Confirm cancellation
           </Button>
 
           <router-link
@@ -210,7 +220,7 @@ export default {
       type: String,
       required: false,
       validator: value => {
-        return ['subscribe', 'unsubscribe', 'request'].indexOf(value) !== -1;
+        return ['subscribe', 'unsubscribe', 'request', 'cancelRequest'].indexOf(value) !== -1;
       }
     }
   },
@@ -237,6 +247,8 @@ export default {
         return 'subsc-subscribed-icon.svg';
       } else if (this.currentMode === 'requested') {
         return 'subsc-requested-icon.svg';
+      } else if (this.currentMode === 'cancelRequest') {
+        return 'subsc-unsubsc-icon.svg';
       }
       return null;
     },
@@ -251,6 +263,8 @@ export default {
         return 'Subscription confirmed';
       } else if (this.currentMode === 'requested') {
         return 'Subscription request confirmed';
+      } else if (this.currentMode === 'cancelRequest') {
+        return 'Confirm cancellation of subscription request';
       }
       return '';
     },
@@ -265,6 +279,8 @@ export default {
         return 'Your subscription has been activated successfully.';
       } else if (this.currentMode === 'requested') {
         return 'We have received your subscription request and we will contact you really soon about the following dataset:';
+      } else if (this.currentMode === 'cancelRequest') {
+        return 'You are going to cancel the request to start the subscription process for the following dataset:';
       }
       return '';
     },
@@ -289,43 +305,28 @@ export default {
     closeModal () {
       this.$emit('closeModal');
     },
-    requestDataset () {
-      // Check if requestDataset is defined or call Dashboard's requestDataset action as a fallback
-      if (this.$root.requestDataset) {
-        this.$root.requestDataset(this.user, this.dataset);
-      } else {
-        this.$store.dispatch('catalog/requestDataset', {
-          user: this.user,
-          dataset: this.dataset
-        });
-      }
-      // GTM event trigger
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: 'requestDataset' });
-    },
     async subscribe () {
       this.error = false;
       this.loading = true;
       if (
-        await this.$store.dispatch('catalog/fetchSubscribe', {
+        await this.$store.dispatch('catalog/performSubscribe', {
           id: this.dataset.id,
           type: this.type
         }) &&
-        await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id)
+        await this.$store.dispatch('catalog/performSubscriptionSync', this.dataset.id)
       ) {
         await this.$store.dispatch('catalog/fetchSubscriptionsList');
         this.currentMode = 'subscribed';
-        this.loading = false;
       } else {
         this.error = true;
-        this.loading = false;
       }
+      this.loading = false;
     },
     async unsubscribe () {
       this.loading = true;
       if (
-        await this.$store.dispatch('catalog/fetchSubscriptionUnSync', this.dataset.id) &&
-        await this.$store.dispatch('catalog/fetchUnSubscribe', {
+        await this.$store.dispatch('catalog/performSubscriptionUnsync', this.dataset.id) &&
+        await this.$store.dispatch('catalog/performUnsubscribe', {
           id: this.dataset.id,
           type: this.type
         })
@@ -339,7 +340,11 @@ export default {
       this.error = false;
       this.loading = true;
       if (
-        await this.$store.dispatch('catalog/fetchSubscribe', {
+        await this.$store.dispatch('catalog/requestDataset', {
+          user: this.user,
+          dataset: this.dataset
+        }) &&
+        await this.$store.dispatch('catalog/performSubscribe', {
           id: this.dataset.id,
           type: this.type
         })
@@ -348,6 +353,24 @@ export default {
         this.currentMode = 'requested';
       } else {
         this.error = true;
+      }
+      this.loading = false;
+    },
+    async cancelRequest () {
+      this.loading = true;
+      if (
+        await this.$store.dispatch('catalog/performUnsubscribe', {
+          id: this.dataset.id,
+          type: this.type
+        }) &&
+        await this.$store.dispatch('catalog/requestDataset', {
+          user: this.user,
+          dataset: this.dataset,
+          requestStatus: 'cancel'
+        })
+      ) {
+        await this.$store.dispatch('catalog/fetchSubscriptionsList');
+        this.closeModal();
       }
       this.loading = false;
     }

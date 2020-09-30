@@ -11,7 +11,7 @@ describe Carto::UserMetadataExportService do
 
   before(:all) do
     bypass_named_maps
-    @feature_flag = FactoryGirl.create(:carto_feature_flag)
+    @feature_flag = create(:feature_flag)
     @connector_provider = FactoryGirl.create(:connector_provider)
     user = FactoryGirl.create(:carto_user)
     @oauth_app = FactoryGirl.create(:oauth_app, user: user)
@@ -37,7 +37,7 @@ describe Carto::UserMetadataExportService do
 
     @asset = FactoryGirl.create(:carto_asset, user: @user)
 
-    Carto::FeatureFlagsUser.create(feature_flag: @feature_flag, user: @user)
+    @user.activate_feature_flag!(@feature_flag)
 
     CartoDB::GeocoderUsageMetrics.new(@user.username).incr(:geocoder_here, :success_responses)
 
@@ -60,9 +60,9 @@ describe Carto::UserMetadataExportService do
     )
     @table2.data_import = FactoryGirl.create(:data_import, user: @user, table_id: @table2.id)
     @table2.save!
-    @st1 = FactoryGirl.create(:carto_search_tweet, user_id: @user.id, data_import_id: @table2.data_import.id)
+    @st1 = FactoryGirl.create(:search_tweet, user_id: @user.id, data_import_id: @table2.data_import.id)
     @st2 = FactoryGirl.create(
-      :carto_search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id
+      :search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id
     )
 
     # Rate limits
@@ -432,7 +432,7 @@ describe Carto::UserMetadataExportService do
     expect(export[:assets].count).to eq user.assets.size
     export[:assets].zip(user.assets).each { |exported_asset, asset| expect_export_matches_asset(exported_asset, asset) }
 
-    expect(export[:feature_flags]).to eq user.feature_flags_user.map(&:feature_flag).map(&:name)
+    expect(export[:feature_flags]).to eq user.feature_flags_names
 
     if export[:search_tweets]
       expect(export[:search_tweets].count).to eq user.search_tweets.size

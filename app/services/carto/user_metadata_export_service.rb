@@ -123,7 +123,7 @@ module Carto
     def build_user_from_hash(exported_user)
       user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES - [:id]))
 
-      user.feature_flags_user = exported_user[:feature_flags].map { |ff_name| build_feature_flag_from_name(ff_name) }
+      user.self_feature_flags_user = exported_user[:feature_flags].map { |ff_name| build_feature_flag_from_name(ff_name) }
                                                              .compact
 
       user.assets = exported_user[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
@@ -160,7 +160,7 @@ module Carto
 
       return Carto::FeatureFlagsUser.new(feature_flag_id: ff.id) if ff
 
-      log_warning(message: 'Feature flag not found in user import', feature_flag: ff.attributes)
+      log_warning(message: 'Feature flag not found in user import', feature_flag_name: ff_name)
       nil
     end
 
@@ -173,7 +173,7 @@ module Carto
     end
 
     def build_search_tweet_from_hash(exported_search_tweet)
-      SearchTweet.new(
+      Carto::SearchTweet.new(
         data_import: build_data_import_from_hash(exported_search_tweet[:data_import]),
         service_item_id: exported_search_tweet[:service_item_id],
         retrieved_items: exported_search_tweet[:retrieved_items],
@@ -328,7 +328,7 @@ module Carto
     def export(user)
       user_hash = EXPORTED_USER_ATTRIBUTES.map { |att| [att, user.attributes[att.to_s]] }.to_h
 
-      user_hash[:feature_flags] = user.feature_flags_user.map(&:feature_flag).map(&:name)
+      user_hash[:feature_flags] = user.feature_flags_names
 
       user_hash[:assets] = user.assets.map { |a| export_asset(a) }
 

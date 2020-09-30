@@ -8,7 +8,7 @@ describe Carto::Api::AnalysesController do
   include HelperMethods
 
   before(:all) do
-    FactoryGirl.create(:carto_feature_flag, name: 'editor-3', restricted: false)
+    create(:feature_flag, name: 'editor-3', restricted: false)
     @user = FactoryGirl.create(:carto_user, builder_enabled: true)
     @user2 = FactoryGirl.create(:carto_user, builder_enabled: true)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)

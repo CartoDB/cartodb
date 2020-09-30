@@ -175,40 +175,12 @@ module Concerns
       self
     end
 
-    def set_relationships_from_central(params)
-      if params.present? && params.has_key?(:feature_flags)
-        update_feature_flags(params[:feature_flags])
-      end
-    end
-
     def sync_data_with_cartodb_central?
       Cartodb::Central.sync_data_with_cartodb_central?
     end
 
     def cartodb_central_client
       @cartodb_central_client ||= Cartodb::Central.new
-    end
-
-    def update_feature_flags(feature_flag_ids)
-      feature_flag_ids = feature_flag_ids.compact.reject(&:empty?)
-      current_feature_flag_ids = self.feature_flags_user.map { | ffu | ffu.feature_flag_id }
-      to_add = feature_flag_ids - current_feature_flag_ids
-      to_remove = current_feature_flag_ids - feature_flag_ids
-
-      removed_feature_flags_user = self.feature_flags_user.select { | ffu | to_remove.include?(ffu.feature_flag_id) }
-      removed_feature_flags_user.map do | rffu |
-        rffu.destroy
-      end
-
-      to_add.map { | ff_id |
-        ffu = FeatureFlagsUser.new
-        ffu.user_id = self.id
-        ffu.feature_flag_id = ff_id
-        ffu.save
-      }.each { |ffu|
-        self.feature_flags_user << ffu
-      }
-
     end
 
   end

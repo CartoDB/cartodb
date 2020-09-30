@@ -13,7 +13,7 @@
       </SubscriptionButtonTooltip>
       <SubscriptionButtonTooltip v-else-if="dataset.sync_status === 'unsynced' && dataset.status === 'active'">
         <button type="button" class="u-mr--8 u-flex u-flex__align--center u-flex__justify--center">
-          <img src="../../assets/icons/catalog/information-circle.svg" :class="smallClass">
+          <img src="../../assets/icons/catalog/information-not-connected.svg" :class="smallClass">
           <div class="tooltip text bgWhite is-small is-txtSoftGrey">
             <h1>Not connected</h1>
             <p>This dataset is not connected. Please, contact support@carto.com.</p>
@@ -101,7 +101,7 @@ export default {
       this.$store.dispatch('catalog/downloadNotebook', { id: this.dataset.slug, type: this.dataset.type });
     },
     async connect () {
-      await this.$store.dispatch('catalog/fetchSubscriptionSync', this.dataset.id);
+      await this.$store.dispatch('catalog/performSubscriptionSync', this.dataset.id);
       this.$store.dispatch('catalog/fetchSubscriptionsList', true);
     }
   }

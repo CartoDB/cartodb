@@ -7,7 +7,7 @@ describe Carto::Api::ConnectorsController do
   include_context 'organization with users helper'
 
   before(:all) do
-    FactoryGirl.create(:carto_feature_flag, name: 'carto-connectors', restricted: false)
+    create(:feature_flag, name: 'carto-connectors', restricted: false)
     @user = FactoryGirl.create(:carto_user)
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('postgres', 'PostgreSQL')
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('hive', 'Hive')

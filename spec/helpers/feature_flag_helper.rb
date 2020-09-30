@@ -1,13 +1,14 @@
 module FeatureFlagHelper
   def set_feature_flag(user, feature, state)
-    user.reload
+    user = user.carto_user
+
     previous_state = user.has_feature_flag?(feature)
     if state != previous_state
-      ff = FeatureFlag[name: feature]
-      ffu = FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id]
+      ff = Carto::FeatureFlag.find_by(name: feature)
+      ffu = Carto::FeatureFlagsUser.find_by(feature_flag: ff, user: user)
       if state
         unless ffu
-          FeatureFlagsUser.new(feature_flag_id: ff.id, user_id: user.id).save
+          user.activate_feature_flag!(ff)
         end
       else
         ff.update restricted: false unless ff.restricted

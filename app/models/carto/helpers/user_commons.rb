@@ -297,7 +297,7 @@ module Carto::UserCommons
   end
 
   def do_enabled?
-    gcloud_settings[:service_account].present? && has_feature_flag?('do-subscriptions')
+    gcloud_settings[:service_account].present?
   end
 
   def has_access_to_coverband?
@@ -306,4 +306,79 @@ module Carto::UserCommons
     organization&.name == 'team'
   end
 
+  def feature_flags
+    feature_flags_ids = self_feature_flags.pluck(:id) + Carto::FeatureFlag.not_restricted.pluck(:id)
+    feature_flags_ids += organization.inheritable_feature_flags.pluck(:id) if organization
+
+    Carto::FeatureFlag.where(id: feature_flags_ids)
+  end
+
+  def feature_flags_names
+    feature_flags.pluck(:name)
+  end
+
+  def has_feature_flag?(feature_flag_name)
+    feature_flags.exists?(name: feature_flag_name)
+  end
+
+  def activate_feature_flag!(feature_flag)
+    return if Carto::FeatureFlagsUser.exists?(feature_flag: feature_flag, user_id: id)
+
+    Carto::FeatureFlagsUser.create!(feature_flag: feature_flag, user_id: id)
+  end
+
+  def update_feature_flags(feature_flag_ids = nil)
+    return unless feature_flag_ids
+
+    self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all
+
+    new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)
+    new_feature_flags_ids.each do |feature_flag_id|
+      self_feature_flags_user.find_or_create_by(feature_flag_id: feature_flag_id)
+    end
+  end
+
+  def remaining_twitter_quota
+    if active_record_organization.present?
+      remaining = active_record_organization.remaining_twitter_quota
+    else
+      remaining = twitter_datasource_quota - get_twitter_imports_count
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def effective_twitter_total_quota
+    active_record_organization.present? ? active_record_organization.twitter_datasource_quota : twitter_datasource_quota
+  end
+
+  def effective_twitter_block_price
+    active_record_organization.present? ? active_record_organization.twitter_datasource_block_price : twitter_datasource_block_price
+  end
+
+  def effective_twitter_datasource_block_size
+    active_record_organization.present? ? active_record_organization.twitter_datasource_block_size : twitter_datasource_block_size
+  end
+
+  def effective_get_twitter_imports_count
+    active_record_organization.present? ? active_record_organization.get_twitter_imports_count : get_twitter_imports_count
+  end
+
+  # Should return the number of tweets imported by this user for the specified period of time, as an integer
+  def get_twitter_imports_count(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+
+    Carto::SearchTweet.twitter_imports_count(search_tweets, date_from, date_to)
+  end
+  alias get_twitter_datasource_calls get_twitter_imports_count
+
+  def active_record_organization
+    if organization.present?
+      if organization.kind_of?(ActiveRecord::Base)
+        organization
+      else
+        Carto::Organization.find(organization.id)
+      end
+    end
+  end
 end

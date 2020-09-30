@@ -28,7 +28,7 @@ gem 'nokogiri',                '~> 1.10'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk-acmpca',          '~> 1'
 gem 'aws-sdk-s3',              '~> 1'
-gem 'ruby-prof',               '0.15.1'
+gem 'ruby-prof',               '1.4.1'
 gem 'request_store',           '1.1.0'
 
 # It's used in the dataimport and arcgis.
@@ -115,15 +115,16 @@ group :test, :development do
 end
 
 group :development, :test do
-  gem 'rspec-rails',           '2.12.0'
-  gem 'rb-readline'
   gem 'byebug'
-  gem 'pry-byebug',            '3.9.0'
+  gem 'pry-byebug', '3.9.0'
   gem 'rack'
+  gem 'rb-readline'
+  gem 'rspec-rails', '2.12.0'
+  gem 'rubocop', '~> 0.92'
+  gem 'rubocop-rails'
+  gem 'rubocop-rspec'
+  gem 'thin', require: false
   gem 'zeus'
-
-  # Server
-  gem 'thin',                           require: false
 end
 
 # segment metrics

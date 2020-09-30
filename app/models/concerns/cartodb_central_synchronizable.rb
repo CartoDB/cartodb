@@ -158,14 +158,14 @@ module CartodbCentralSynchronizable
         dashboard_viewed_at email_verification_token email_verification_sent_at
       )
       attrs = attributes.symbolize_keys.slice(*allowed_attributes)
-      attrs[:multifactor_authentication_status] = multifactor_authentication_status()
+      attrs[:multifactor_authentication_status] = multifactor_authentication_status
       case action
       when :create
         attrs[:remote_user_id] = id
         attrs.delete(:organization_id)
         attrs
       when :update
-        attrs[:batch_queries_statement_timeout] = batch_queries_statement_timeout()
+        attrs[:batch_queries_statement_timeout] = batch_queries_statement_timeout
         attrs
       end
     end

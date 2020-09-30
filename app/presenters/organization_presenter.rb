@@ -20,6 +20,28 @@ class OrganizationPresenter < BasePresenter
         avatar_url: owner ? owner.avatar : nil,
         groups: owner_groups
       },
+      geocoder_provider: geocoder_provider,
+      isolines_provider: isolines_provider,
+      routing_provider: routing_provider,
+      seats: seats,
+      twitter_username: twitter_username,
+      location: location,
+      updated_at: updated_at,
+      website: website,
+      avatar_url: avatar_url,
+      password_expiration_in_d: password_expiration_in_d
+    }.merge(quotas_information)
+  end
+
+  def extended_representation
+    default_representation.merge(
+      table_count: visualizations_builder.with_type(Carto::Visualization::TYPE_CANONICAL).count,
+      map_count: visualizations_builder.with_type(Carto::Visualization::TYPE_DERIVED).count
+    )
+  end
+
+  def quotas_information
+    {
       quota_in_bytes: quota_in_bytes,
       unassigned_quota: unassigned_quota,
       used_quota: db_size_in_bytes,
@@ -37,9 +59,6 @@ class OrganizationPresenter < BasePresenter
         quota: mapzen_routing_quota,
         monthly_use: get_mapzen_routing_calls
       },
-      geocoder_provider: geocoder_provider,
-      isolines_provider: isolines_provider,
-      routing_provider: routing_provider,
       obs_snapshot: {
         quota: obs_snapshot_quota,
         monthly_use: get_obs_snapshot_calls
@@ -54,22 +73,8 @@ class OrganizationPresenter < BasePresenter
         block_price: twitter_datasource_block_price,
         block_size: twitter_datasource_block_size,
         monthly_use: get_twitter_imports_count
-      },
-      seats: seats,
-      twitter_username: twitter_username,
-      location: location,
-      updated_at: updated_at,
-      website: website,
-      avatar_url: avatar_url,
-      password_expiration_in_d: password_expiration_in_d
+      }
     }
-  end
-
-  def extended_representation
-    default_representation.merge(
-      table_count: visualizations_builder.with_type(Carto::Visualization::TYPE_CANONICAL).count,
-      map_count: visualizations_builder.with_type(Carto::Visualization::TYPE_DERIVED).count
-    )
   end
 
   def visualizations_builder

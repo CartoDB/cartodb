@@ -1,0 +1,81 @@
+steps:
+
+# Cancel previous job on the same branch
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - 'gcloud builds list --ongoing --filter="buildTriggerId=7c2750ed-7d87-4d94-9f60-de53b2e64c61 AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
+
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - 'gcloud builds cancel $(cat jobs_to_cancel | xargs) || true'
+
+# Decrypt github key
+- name: gcr.io/cloud-builders/gcloud
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=script/ci/.gh_helper.enc
+  - --plaintext-file=/root/.ssh/id_rsa
+  - --location=global
+  - --keyring=keyring-github-ci
+  - --key=github-key
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Set up git with key and domain
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    chmod 600 /root/.ssh/id_rsa
+    cat <<EOF >/root/.ssh/config
+    Hostname github.com
+    IdentityFile /root/.ssh/id_rsa
+    EOF
+    mv script/ci/known_hosts /root/.ssh/known_hosts
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Clean working directory
+- name: alpine
+  args: ['sh', '-c', 'rm -rf .* | true && rm -rf *']
+
+# Checkout repo with submodules
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/cartodb.git -b "${BRANCH_NAME}" --depth 1 --recursive .']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Checkout ci-tools
+- name: 'gcr.io/cloud-builders/git'
+  args:
+  - clone
+  - git@github.com:CartoDB/ci-tools.git
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+- name: ubuntu
+  args: ['bash', '-c', 'rm -rf .git && cp ci-tools/repos/cartodb/* . && cp config/app_config.yml.sample.py2 config/app_config.yml && cp config/database.yml.sample config/database.yml && cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json && cp script/ci/* .']
+
+- name: 'docker/compose:1.22.0'
+  args: ['-f', 'docker-compose-pg11.yml', 'up', '--build', '-d']
+  timeout: 900s
+
+- name: gcr.io/cloud-builders/docker
+  args: ['exec', '-e', 'SLACK_TOKEN=$_SLACK_TOKEN', '-e', 'BUILD_ID=$BUILD_ID', '-e', 'BRANCH_NAME=$BRANCH_NAME', '-i', 'builder_1', 'bash', '-c',
+         "trap '/cartodb/script/ci/send_slack_notification.sh' ERR && /cartodb/runParallelTests.sh 24" ]
+  timeout: 2700s
+
+options:
+    machineType: 'N1_HIGHCPU_32'
+timeout: 3600s

@@ -42,7 +42,7 @@ describe Carto::Api::PermissionsController do
   describe 'PUT /api/v1/perm' do
 
     it 'modifies an existing permission' do
-      entity_type = Carto::PermissionENTITY_TYPE_VISUALIZATION
+      entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
 
       acl_initial = [ ]
       client_acl_modified = [
@@ -149,7 +149,7 @@ describe 'group permission support' do
     visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@org_user_1.id))
     entity_id = visualization.id
 
-    entity_type = Carto::PermissionENTITY_TYPE_VISUALIZATION
+    entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
 
     acl_initial = [ ]
     client_acl_modified = [

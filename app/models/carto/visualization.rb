@@ -111,6 +111,7 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_privacy_and_name_to, if: :table
 
   before_destroy :backup_visualization
+  before_destroy :check_destroy_permissions!
   after_commit :perform_invalidations
 
   attr_accessor :register_table_only
@@ -830,6 +831,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def invalidation_service
     @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
+  end
+
+  def check_destroy_permissions!
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user&.reload&.viewer
   end
 
   class Watcher

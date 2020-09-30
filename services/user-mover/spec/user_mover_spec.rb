@@ -282,7 +282,7 @@ module Helpers
   end
 
   def give_permission(vis, user, access)
-    per = ::Permission[vis.permission.id]
+    per = Carto::Permission.find(vis.permission.id)
     per.set_user_permission(user, access)
     per.save
     per.reload

@@ -1,5 +1,4 @@
 require_dependency 'carto/configuration'
-require_dependency 'carto/helpers/active_record_compatibility'
 require 'sequel_rails/railties/legacy_model_config'
 
 Sequel::Model.plugin :after_initialize

@@ -259,6 +259,8 @@ WORKING_SPECS_9 = \
 	services/geocoder/spec/hires_geocoder_factory_spec.rb \
 	services/table-geocoder/spec/geocoder_cache_spec.rb \
 	services/user-mover/spec/user_mover_spec.rb \
+	spec/presenters/base_presenter_spec.rb \
+	spec/presenters/organization_presenter_spec.rb \
 	$(NULL)
 
 # Tests using spec_helper_min instead of spec_helper

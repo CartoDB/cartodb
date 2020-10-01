@@ -2,17 +2,17 @@ class BasePresenter
 
   attr_accessor :object, :params
 
+  def self.object_klass
+    raise 'Must be overriden in child class'
+  end
+
+  def self.delegated_methods
+    object_klass.columns.map(&:name).map(&:to_sym) + object_klass.instance_methods
+  end
+
   def initialize(object, params = {})
     @object = object
     @params = params
-  end
-
-  def method_missing(*args, &block)
-    object.send(*args, &block)
-  end
-
-  def respond_to_missing?(method_name, _include_private = false)
-    object.respond_to?(method_name)
   end
 
 end

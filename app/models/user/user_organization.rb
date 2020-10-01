@@ -56,16 +56,16 @@ module CartoDB
       return CartoDB::UserOrganization.new(organization.id, organization.owner_id)
     end
 
-    def self.is_a_user?(name)
+    def self.user?(name)
       return ::User.where(:username => name).count > 0 ? true : false
     end
 
-    def self.is_a_organization?(name)
+    def self.organization?(name)
       return Organization.where(:username => name).count > 0 ? true : false
     end
 
     def self.user_belongs_to_organization?(name)
-      if CartoDB::UserOrganization.is_a_user?(name)
+      if CartoDB::UserOrganization.user?(name)
         begin
           organization_id = ::User.select(:organization_id).where(:username => name).first[:organization_id]
           return Organization.select(:name).where(:id => organization_id).first[:name]

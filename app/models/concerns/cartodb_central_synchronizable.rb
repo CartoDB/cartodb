@@ -175,7 +175,7 @@ module CartodbCentralSynchronizable
     return self unless params.present? && action.present?
 
     set(params.slice(*allowed_attributes_from_central(action)))
-    self.password = self.password_confirmation = params[:password] if is_a_user? && params.key?(:password)
+    self.password = self.password_confirmation = params[:password] if user? && params.key?(:password)
 
     self
   end

@@ -15,8 +15,8 @@ namespace :bus do
         user_id = attributes.delete("remote_user_id")
         if !user_id.nil? && attributes.any?
           user = Carto::User.find(user_id)
-          # user.set not working, for some reason :(
-          user.set(attributes)
+          user.update(attributes)
+          user.save!
         end
       end
 

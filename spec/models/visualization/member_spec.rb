@@ -10,6 +10,8 @@ require_dependency 'cartodb/redis_vizjson_cache'
 include CartoDB
 
 describe Visualization::Member do
+
+  include Carto::Factories::Visualizations
   let(:user) { create(:carto_user) }
 
   before(:all) do
@@ -370,80 +372,49 @@ describe Visualization::Member do
       Carto::Permission.any_instance.stubs(:grant_db_permission).returns(nil)
       Carto::Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
 
-      user2_mock = mock_user('user2')
-      user3_mock = mock_user('user3')
-      user4_mock = mock_user('user4')
-      viewer_user = mock_user('user_v', viewer: true)
+      read_user = create(:carto_user)
+      write_user = create(:carto_user)
+      unauthorized_user = create(:carto_user)
 
-      visualization = Visualization::Member.new(
-          privacy: Visualization::Member::PRIVACY_PUBLIC,
-          name: 'test',
-          type: Visualization::Member::TYPE_CANONICAL,
-          user_id: @user.id
-      )
-      visualization.store
-
-      permission = Carto::Permission.find(visualization.permission_id)
+      _map, _table, visualization, _map_visualization = create_full_visualization(@user)
 
       acl = [
         {
           type: Carto::Permission::TYPE_USER,
-          entity: {
-            id: user2_mock.id,
-            username: user2_mock.username
-          },
+          entity: { id: read_user.id, username: read_user.username },
           access: Carto::Permission::ACCESS_READONLY
         },
         {
           type: Carto::Permission::TYPE_USER,
-          entity: {
-            id: user3_mock.id,
-            username: user3_mock.username
-          },
-          access: Carto::Permission::ACCESS_READWRITE
-        },
-        {
-          type: Carto::Permission::TYPE_USER,
-          entity: {
-            id: viewer_user.id,
-            username: viewer_user.username
-          },
+          entity: { id: write_user.id, username: write_user.username },
           access: Carto::Permission::ACCESS_READWRITE
         }
       ]
       acl_expected = [
         {
           type: Carto::Permission::TYPE_USER,
-          id: user2_mock.id,
+          id: read_user.id,
           access: Carto::Permission::ACCESS_READONLY
         },
         {
           type: Carto::Permission::TYPE_USER,
-          id: user3_mock.id,
-          access: Carto::Permission::ACCESS_READWRITE
-        },
-        {
-          type: Carto::Permission::TYPE_USER,
-          id: viewer_user.id,
+          id: write_user.id,
           access: Carto::Permission::ACCESS_READWRITE
         }
       ]
 
-      permission.acl = acl
-      permission.save
-      visualization.permission.acl.should eq acl_expected
+      visualization.permission.update!(acl: acl)
 
-      visualization.has_permission?(user2_mock, Visualization::Member::PERMISSION_READONLY).should eq true
-      visualization.has_permission?(user2_mock, Visualization::Member::PERMISSION_READWRITE).should eq false
+      expect(visualization.permission.acl).to eq(acl_expected)
 
-      visualization.has_permission?(user3_mock, Visualization::Member::PERMISSION_READONLY).should eq true
-      visualization.has_permission?(user3_mock, Visualization::Member::PERMISSION_READWRITE).should eq true
+      expect(visualization.has_permission?(read_user, Visualization::Member::PERMISSION_READONLY)).to be_true
+      expect(visualization.has_permission?(read_user, Visualization::Member::PERMISSION_READWRITE)).to be_false
 
-      visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READONLY).should eq false
-      visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READWRITE).should eq false
+      expect(visualization.has_permission?(write_user, Visualization::Member::PERMISSION_READONLY)).to be_true
+      expect(visualization.has_permission?(write_user, Visualization::Member::PERMISSION_READWRITE)).to be_true
 
-      # Viewer users hasn't RW permission even though granted
-      visualization.has_permission?(viewer_user, Visualization::Member::PERMISSION_READWRITE).should eq false
+      expect(visualization.has_permission?(unauthorized_user, Visualization::Member::PERMISSION_READONLY)).to be_false
+      expect(visualization.has_permission?(unauthorized_user, Visualization::Member::PERMISSION_READWRITE)).to be_false
 
       delete_user_data(@user)
     end

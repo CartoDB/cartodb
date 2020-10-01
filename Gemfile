@@ -130,6 +130,8 @@ end
 # segment metrics
 gem 'analytics-ruby', '~> 2.0.0', :require => 'segment/analytics'
 
+gem "bunny", ">= 2.17.0"
+
 # CARTO Gears engines
 require File.dirname(__FILE__) + '/lib/carto/carto_gears_support'
 

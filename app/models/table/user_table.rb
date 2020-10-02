@@ -63,11 +63,6 @@ class UserTable < Sequel::Model
     PRIVACY_LINK => 'link'
   }
 
-  # For compatibility with AR model
-  def new_record?
-    new?
-  end
-
   # Associations
   many_to_one  :map
   many_to_many :layers, join_table: :layers_user_tables,

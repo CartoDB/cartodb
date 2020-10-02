@@ -206,6 +206,10 @@ module Carto
       (remaining > 0 ? remaining : 0)
     end
 
+    def get_api_calls(options = {})
+      users.map { |u| u.get_api_calls(options).sum }.sum
+    end
+
     private
 
     def ensure_auth_saml_configuration

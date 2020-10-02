@@ -4,7 +4,7 @@
 # carto-do-public-data.open_data.demographics_acs_usa_cbsaclipped_2015_yearly_2015,bq,2000,2020-09-27T08:00:00
 namespace :cartodb do
   namespace :data_observatory do
-    desc "Enables access to DO datasets for a user and saves the metadata in Central and Redis"
+    desc 'Enables access to DO datasets for a user and saves the metadata in Central and Redis'
     task :purchase_datasets, [:username, :datasets_csv] => [:environment] do |_, args|
       username = args[:username]
       datasets_csv = args[:datasets_csv]
@@ -28,7 +28,7 @@ namespace :cartodb do
       puts 'Task finished succesfully!'
     end
 
-    desc "Removes access to a DO dataset for a user and updates the metadata in Central and Redis"
+    desc 'Removes access to a DO dataset for a user and updates the metadata in Central and Redis'
     task :remove_purchase, [:username, :dataset_id] => [:environment] do |_, args|
       username = args[:username]
       dataset_id = args[:dataset_id]

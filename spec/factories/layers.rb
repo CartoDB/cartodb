@@ -12,15 +12,15 @@ FactoryGirl.define do
     options do
       {
         "default": true,
-        "url": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-        "subdomains": "abcd",
-        "minZoom": "0",
-        "maxZoom": "18",
+        "url": 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+        "subdomains": 'abcd',
+        "minZoom": '0',
+        "maxZoom": '18',
         "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://carto.com/about-carto/\">CARTO</a>",
-        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-        "type": "Tiled",
-        "className": "positron_rainbow",
-        "name": "Positron (labels below)"
+        "urlTemplate": 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+        "type": 'Tiled',
+        "className": 'positron_rainbow',
+        "name": 'Positron (labels below)'
       }
     end
   end
@@ -40,9 +40,9 @@ FactoryGirl.define do
 
     factory :carto_layer_with_infowindow do
       infowindow_light = {
-        "fields": [{ "name": "country", "title": true, "position": 1 }],
-        "template_name": "table/views/infowindow_light",
-        "template": "",
+        "fields": [{ "name": 'country', "title": true, "position": 1 }],
+        "template_name": 'table/views/infowindow_light',
+        "template": '',
         "alternative_names": {},
         "width": 226,
         "maxHeight": 180
@@ -53,9 +53,9 @@ FactoryGirl.define do
 
     factory :carto_layer_with_tooltip do
       tooltip_light = {
-        "fields": [{ "name": "amount", "title": true, "position": 0 }],
-        "template_name": "tooltip_light",
-        "template": "",
+        "fields": [{ "name": 'amount', "title": true, "position": 0 }],
+        "template_name": 'tooltip_light',
+        "template": '',
         "alternative_names": {},
         "maxHeight": 180
       }
@@ -70,22 +70,23 @@ FactoryGirl.define do
       options do
         {
           table_name: table_name,
-          query:      "select * from #{table_name}",
-          sql_wrap:   "select * from (<%= sql %>) __wrap"
+          query: "select * from #{table_name}",
+          sql_wrap: 'select * from (<%= sql %>) __wrap'
         }
       end
     end
   end
-
 end
 
 module Fixtures
   module Layers
+
     module Tooltips
+
       def custom_tooltip(template = 'wadus tooltip')
         {
-          "fields": [{ "name": "amount", "title": true, "position": 0 }],
-          "template_name": "",
+          "fields": [{ "name": 'amount', "title": true, "position": 0 }],
+          "template_name": '',
           "template": template,
           "alternative_names": {},
           "maxHeight": 180
@@ -102,16 +103,18 @@ module Fixtures
       def v3_tooltip_light_template_fragment
         '<div class="CDB-Tooltip CDB-Tooltip--isLight">'
       end
+
     end
 
     # These depend on infowindow_light.jst.mustache at the following paths:
     # - /lib/assets/javascripts/cartodb/table/views/infowindow/templates/infowindow_light.jst.mustache
     # - /lib/assets/javascripts/builder/mustache-templates/infowindows/infowindow_light.jst.mustache
     module Infowindows
+
       def custom_infowindow(template = 'wadus infowindow')
         {
-          "fields": [{ "name": "country", "title": true, "position": 1 }],
-          "template_name": "",
+          "fields": [{ "name": 'country', "title": true, "position": 1 }],
+          "template_name": '',
           "template": template,
           "alternative_names": {},
           "width": 226,
@@ -131,6 +134,8 @@ module Fixtures
       def v3_infowindow_light_template_fragment
         '{{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}'
       end
+
     end
+
   end
 end

@@ -1,9 +1,9 @@
-
 require_dependency 'carto/uuidhelper'
 
 module Carto
   module Api
     class LayersController < ::Api::ApplicationController
+
       ssl_required :show, :layers_by_map, :custom_layers_by_user, :map_index, :user_index, :map_show, :user_show,
                    :map_create, :user_create, :map_update, :user_update, :map_destroy, :user_destroy
 
@@ -78,15 +78,11 @@ module Carto
         unless @map.can_add_layer?(current_user, layer)
           raise UnprocesableEntityError.new('Cannot add more layers to this visualization')
         end
-        unless @map.admits_layer?(layer)
-          raise UnprocesableEntityError.new('Cannot add more layers of this type')
-        end
+        raise UnprocesableEntityError.new('Cannot add more layers of this type') unless @map.admits_layer?(layer)
 
         table_name = layer.options['table_name']
         user_name = layer.options['user_name']
-        if user_name.present?
-          table_name = user_name + '.' + table_name
-        end
+        table_name = user_name + '.' + table_name if user_name.present?
 
         if layer.data_layer?
           table_visualization = Helpers::TableLocator.new.get_by_id_or_name(
@@ -166,12 +162,14 @@ module Carto
       def ensure_current_user
         user_id = uuid_parameter(:user_id)
         raise UnauthorizedError unless current_user.id == user_id
+
         @user = Carto::User.find(user_id)
       end
 
       def load_user_layer
         load_user_layers
         raise LoadError.new('Layer not found') unless @layers.length == 1
+
         @layer = @layers.first
       end
 
@@ -199,6 +197,7 @@ module Carto
       def load_map_layer
         load_map_layers
         raise LoadError.new('Layer not found') unless @layers.length == 1
+
         @layer = @layers.first
       end
 
@@ -271,11 +270,12 @@ module Carto
         else
           # Dragging head node: remove unneeded old styles in the old layer
           from_layer.reload
-          from_layer.layer_node_styles.select { |lns|
+          from_layer.layer_node_styles.select do |lns|
             lns.source_id.starts_with?(from_letter) && lns.source_id != to_source
-          }.each(&:destroy)
+          end.each(&:destroy)
         end
       end
+
     end
   end
 end

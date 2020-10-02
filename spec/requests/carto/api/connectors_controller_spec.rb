@@ -12,31 +12,30 @@ describe Carto::Api::ConnectorsController do
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('postgres', 'PostgreSQL')
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('hive', 'Hive')
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('bigquery', 'BigQuery',
-      'sql_queries': false,
-      'list_databases': true,
-      'list_tables': true,
-      'preview_table': true,
-      'dry_run': true,
-      'list_projects': true
-    )
+                                                                    'sql_queries': false,
+                                                                    'list_databases': true,
+                                                                    'list_tables': true,
+                                                                    'preview_table': true,
+                                                                    'dry_run': true,
+                                                                    'list_projects': true)
 
     @connector_provider_postgres = FactoryGirl.create(:connector_provider, name: 'postgres')
     @connector_provider_hive = FactoryGirl.create(:connector_provider, name: 'hive')
     @connector_config_user = FactoryGirl.create(:connector_configuration,
-                                                 user_id: @user.id,
-                                                 connector_provider_id: @connector_provider_postgres.id,
-                                                 enabled: true,
-                                                 max_rows: 100)
-    @connector_config_org_user = FactoryGirl.create(:connector_configuration,
-                                                     user_id: @org_user_1.id,
-                                                     connector_provider_id: @connector_provider_hive.id,
-                                                     enabled: false,
-                                                     max_rows: 100)
-    @connector_config_org = FactoryGirl.create(:connector_configuration,
-                                                organization_id: @organization.id,
-                                                connector_provider_id: @connector_provider_hive.id,
+                                                user_id: @user.id,
+                                                connector_provider_id: @connector_provider_postgres.id,
                                                 enabled: true,
                                                 max_rows: 100)
+    @connector_config_org_user = FactoryGirl.create(:connector_configuration,
+                                                    user_id: @org_user_1.id,
+                                                    connector_provider_id: @connector_provider_hive.id,
+                                                    enabled: false,
+                                                    max_rows: 100)
+    @connector_config_org = FactoryGirl.create(:connector_configuration,
+                                               organization_id: @organization.id,
+                                               connector_provider_id: @connector_provider_hive.id,
+                                               enabled: true,
+                                               max_rows: 100)
   end
 
   after(:all) do
@@ -53,7 +52,7 @@ describe Carto::Api::ConnectorsController do
     it 'returns provider enabled for regular user' do
       get_json api_v1_connectors_index_url(user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
         response.status.should be_success
-        response.body[:postgres][:name].should eq "PostgreSQL"
+        response.body[:postgres][:name].should eq 'PostgreSQL'
         response.body[:postgres][:enabled].should eq true
       end
     end
@@ -62,7 +61,7 @@ describe Carto::Api::ConnectorsController do
       get_json api_v1_connectors_index_url(user_domain: @org_user_1.username,
                                            api_key: @org_user_1.api_key), {}, @headers do |response|
         response.status.should be_success
-        response.body[:hive][:name].should eq "Hive"
+        response.body[:hive][:name].should eq 'Hive'
         response.body[:hive][:enabled].should eq false
       end
     end
@@ -71,7 +70,7 @@ describe Carto::Api::ConnectorsController do
       get_json api_v1_connectors_index_url(user_domain: @org_user_2.username,
                                            api_key: @org_user_2.api_key), {}, @headers do |response|
         response.status.should be_success
-        response.body[:hive][:name].should eq "Hive"
+        response.body[:hive][:name].should eq 'Hive'
         response.body[:hive][:enabled].should eq true
       end
     end
@@ -101,8 +100,8 @@ describe Carto::Api::ConnectorsController do
     it 'returns connector tables list' do
       get_json api_v1_connectors_tables_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
         response.status.should be_success
-        response.body[0]["schema"].should eq "s1"
-        response.body[0]["name"].blank?.should eq false
+        response.body[0]['schema'].should eq 's1'
+        response.body[0]['name'].blank?.should eq false
       end
     end
     it 'returns 422 if provider doesn\'t exists' do
@@ -135,7 +134,7 @@ describe Carto::Api::ConnectorsController do
 
   describe '#dryrun' do
     it 'returns 422 if not supported' do
-      post_json api_v1_connectors_dryrun_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {}  do |response|
+      post_json api_v1_connectors_dryrun_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {} do |response|
         response.status.should eq 422
       end
     end
@@ -152,7 +151,7 @@ describe Carto::Api::ConnectorsController do
         post_json api_v1_connectors_dryrun_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key), {} do |response|
           response.status.should be 400
           response.body[:errors].present?.should eq true
-          response.body[:errors].should match /BIG PROBLEM/m
+          response.body[:errors].should match(/BIG PROBLEM/m)
         end
       end
     end
@@ -169,8 +168,8 @@ describe Carto::Api::ConnectorsController do
       get_json api_v1_connectors_projects_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
         response.status.should be_success
         response.body.should eq [
-          { 'id' => 'project-1', 'friendly_name' => "Project 1" },
-          { 'id' => 'project-2', 'friendly_name' => "Project 2" }
+          { 'id' => 'project-1', 'friendly_name' => 'Project 1' },
+          { 'id' => 'project-2', 'friendly_name' => 'Project 2' }
         ]
       end
     end
@@ -193,8 +192,8 @@ describe Carto::Api::ConnectorsController do
       get_json api_v1_connectors_project_datasets_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key, project_id: 'my-project'), {}, @headers do |response|
         response.status.should be_success
         response.body.should eq [
-          { 'id' => 'data-1', 'qualified_name' => "my-project.data-1" },
-          { 'id' => 'data-2', 'qualified_name' => "my-project.data-2" }
+          { 'id' => 'data-1', 'qualified_name' => 'my-project.data-1' },
+          { 'id' => 'data-2', 'qualified_name' => 'my-project.data-2' }
         ]
       end
     end
@@ -217,8 +216,8 @@ describe Carto::Api::ConnectorsController do
       get_json api_v1_connectors_project_dataset_tables_url(provider_id: 'bigquery', user_domain: @user.username, api_key: @user.api_key, project_id: 'my-project', dataset_id: 'my-dataset'), {}, @headers do |response|
         response.status.should be_success
         response.body.should eq [
-          { 'id' => 't-1', 'qualified_name' => "my-project.my-dataset.t-1" },
-          { 'id' => 't-2', 'qualified_name' => "my-project.my-dataset.t-2" }
+          { 'id' => 't-1', 'qualified_name' => 'my-project.my-dataset.t-1' },
+          { 'id' => 't-2', 'qualified_name' => 'my-project.my-dataset.t-2' }
         ]
       end
     end

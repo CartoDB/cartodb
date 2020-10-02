@@ -3,10 +3,10 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     add_column :organizations, :inherit_owner_ffs, :boolean, null: false, default: false
   end,
-  Proc.new do
+  proc do
     drop_column :organizations, :inherit_owner_ffs
   end
 )

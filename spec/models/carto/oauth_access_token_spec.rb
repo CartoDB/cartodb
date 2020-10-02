@@ -2,6 +2,7 @@ require 'spec_helper_min'
 require 'helpers/database_connection_helper'
 
 module Carto
+
   describe OauthAccessToken do
     include_context 'organization with users helper'
     include DatabaseConnectionHelper
@@ -24,11 +25,11 @@ module Carto
       it 'does not accept invalid scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['wadus'])
         expect(access_token).to_not(be_valid)
-        expect(access_token.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
+        expect(access_token.errors[:scopes]).to(include('contains unsupported scopes: wadus'))
       end
 
       it 'does accept create tables in schema scopes' do
-        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["schemas:c"])
+        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['schemas:c'])
         expect(access_token).to(be_valid)
       end
 
@@ -84,17 +85,17 @@ module Carto
       end
 
       it 'raises an error when creating an api key for an non-existent dataset' do
-        expect {
+        expect do
           OauthAccessToken.create!(oauth_app_user: @app_user,
                                    scopes: ['datasets:r:wadus'])
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'raises an error when creating an api key for an non-existent dataset' do
-        expect {
+        expect do
           OauthAccessToken.create!(oauth_app_user: @app_user,
                                    scopes: ['schemas:c:wadus'])
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'includes create permission for schemas scopes' do
@@ -276,7 +277,7 @@ module Carto
                      .at_least_once
         OauthAccessToken.create!(oauth_app_user: @app_user,
                                  scopes: [
-                                   "schemas:c"
+                                   'schemas:c'
                                  ])
       end
 
@@ -343,24 +344,24 @@ module Carto
       end
 
       it 'should fail with non shared dataset' do
-        expect {
+        expect do
           OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [@non_shared_dataset_scope])
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
+        end.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
       end
 
       it 'should fail with non shared schema' do
-        expect {
+        expect do
           OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['schemas:c:non_existent'])
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant schema permissions you have/)
+        end.to raise_error(ActiveRecord::RecordInvalid, /can only grant schema permissions you have/)
       end
 
       it 'should fail with shared and non shared dataset' do
-        expect {
+        expect do
           OauthAccessToken.create!(
             oauth_app_user: @app_user,
             scopes: [@shared_dataset_scope, @non_shared_dataset_scope]
           )
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
+        end.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
       end
 
       describe 'read - write permissions' do
@@ -378,9 +379,9 @@ module Carto
 
         it 'should fail write scope in shared dataset with only read perms' do
           rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
-          expect {
+          expect do
             OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [rw_scope])
-          }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
+          end.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
         end
       end
     end
@@ -462,25 +463,25 @@ module Carto
       end
 
       it 'should fail with non shared dataset' do
-        expect {
+        expect do
           OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [@non_org_shared_dataset_scope])
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
+        end.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
       end
 
       it 'should fail with non shared schema' do
-        expect {
+        expect do
           OauthAccessToken.create!(oauth_app_user: @app_user,
-                                   scopes: ["schemas:c:wadus"])
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant schema permissions you have/)
+                                   scopes: ['schemas:c:wadus'])
+        end.to raise_error(ActiveRecord::RecordInvalid, /can only grant schema permissions you have/)
       end
 
       it 'should fail with shared and non shared dataset' do
-        expect {
+        expect do
           OauthAccessToken.create!(
             oauth_app_user: @app_user,
             scopes: [@org_shared_dataset_scope, @non_org_shared_dataset_scope]
           )
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
+        end.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
       end
 
       describe 'read - write permissions' do
@@ -504,9 +505,9 @@ module Carto
 
         it 'should fail write scope in shared dataset with only read perms' do
           rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
-          expect {
+          expect do
             OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [rw_scope])
-          }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
+          end.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
         end
       end
     end
@@ -606,4 +607,5 @@ module Carto
       end
     end
   end
+
 end

@@ -1,4 +1,5 @@
 module OrganizationsHelper
+
   def load_organization
     @organization = Carto::Organization.where(id: params[:id]).first
     render_jsonp({}, 401) if @organization.nil?
@@ -23,4 +24,5 @@ module OrganizationsHelper
 
     hardened_params.symbolize_keys
   end
+
 end

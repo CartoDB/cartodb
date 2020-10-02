@@ -23,7 +23,7 @@ module CartoDB
         else
           Statsd.host = config['host']
           Statsd.port = config['port']
-          return new(prefix, host_info)
+          new(prefix, host_info)
         end
       end
 
@@ -33,7 +33,7 @@ module CartoDB
       end
 
       def set_host_info(host_info)
-        @fully_qualified_prefix = host_info.nil? ? "#{@prefix}" : "#{@prefix}.#{host_info}"
+        @fully_qualified_prefix = host_info.nil? ? @prefix.to_s : "#{@prefix}.#{host_info}"
         reset_timing_stack
       end
 
@@ -41,12 +41,10 @@ module CartoDB
         return_value = nil
         @timing_stack.push(key)
         Statsd.timing(timing_chain) do
-          begin
-            return_value = yield
-          rescue StandardError => e
-            @timing_stack.pop
-            raise e
-          end
+          return_value = yield
+        rescue StandardError => e
+          @timing_stack.pop
+          raise e
         end
         @timing_stack.pop
         return_value
@@ -72,31 +70,29 @@ module CartoDB
         Statsd.update_counter("#{fully_qualified_prefix}.#{key}", delta)
       end
 
-      protected
-
       def self.read_config
         config = Cartodb.config[:graphite]
         config.nil? ? {} : config
-      rescue StandardError => exception
-        CartoDB.notify_exception(exception)
+      rescue StandardError => e
+        CartoDB.notify_exception(e)
         {}
       end
 
       private
 
       def reset_timing_stack
-        @timing_stack = [ @fully_qualified_prefix ]
+        @timing_stack = [@fully_qualified_prefix]
       end
 
     end
 
     class NullAggregator
+
       # INFO: Provided as catch-all for both general increment/decrement/etc. & specific aggregator convenience methods
-      def method_missing(method, *arguments, &block)
-        if block
-          yield
-        end
+      def method_missing(_method, *_arguments, &block)
+        yield if block
       end
+
     end
 
   end

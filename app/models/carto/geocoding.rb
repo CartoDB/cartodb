@@ -5,9 +5,9 @@ module Carto
   class Geocoding < ActiveRecord::Base
 
     PUBLIC_ATTRIBUTES = [:id, :table_id, :table_name, :state, :kind, :country_code, :region_code, :formatter,
-                        :geocoder_type, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows,
-                        :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column,
-                        :data_import_id, :error_code]
+                         :geocoder_type, :geometry_type, :error, :processed_rows, :cache_hits, :processable_rows,
+                         :real_rows, :price, :used_credits, :remaining_quota, :country_column, :region_column,
+                         :data_import_id, :error_code].freeze
 
     GEOCODING_BLOCK_SIZE = 1000.0
 
@@ -22,7 +22,13 @@ module Carto
     belongs_to :user
 
     def public_values
-      Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]
+      Hash[PUBLIC_ATTRIBUTES.map do |k|
+             [k, begin
+                                            send(k)
+                 rescue StandardError
+                   self[k].to_s
+                                          end]
+           end ]
     end
 
     def error
@@ -48,5 +54,6 @@ module Carto
     def log
       CartoDB::Log[log_id]
     end
+
   end
 end

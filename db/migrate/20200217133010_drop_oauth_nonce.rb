@@ -3,10 +3,10 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     drop_table :oauth_nonces
   end,
-  Proc.new do
+  proc do
     create_table :oauth_nonces do
       Uuid :id, primary_key: true
       String :nonce

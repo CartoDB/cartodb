@@ -6,5 +6,4 @@ Sequel.migration do
   down do
     drop_column :visualizations, :locked
   end
-
 end

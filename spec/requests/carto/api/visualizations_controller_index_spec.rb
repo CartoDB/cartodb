@@ -29,7 +29,7 @@ describe Carto::Api::VisualizationsController do
     include_context 'visualization creation helpers'
 
     before(:all) do
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
+      @headers = { 'CONTENT_TYPE' => 'application/json' }
     end
 
     before(:each) do
@@ -53,7 +53,8 @@ describe Carto::Api::VisualizationsController do
         visualization_id: vis_2_id,
         import_url: 'http://www.fake.com',
         rows_counted: 1,
-        size: 200).save
+        size: 200
+      ).save
 
       post api_v1_visualizations_create_url(api_key: @user.api_key),
            factory(@user, locked: true, type: 'remote', name: 'visu3').to_json, @headers
@@ -62,7 +63,8 @@ describe Carto::Api::VisualizationsController do
         visualization_id: vis_3_id,
         import_url: 'http://www.fake.com',
         rows_counted: 1,
-        size: 200).save
+        size: 200
+      ).save
 
       get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'remote,table'), {}, @headers
       last_response.status.should == 200
@@ -75,7 +77,7 @@ describe Carto::Api::VisualizationsController do
 
     context 'with_dependent_visualizations' do
       before(:each) do
-        Delorean.time_travel_to "2018/01/01 00:00:00" do
+        Delorean.time_travel_to '2018/01/01 00:00:00' do
           _, table = create_full_visualization(@user)
 
           @dependencies = Array.new(2) do
@@ -149,7 +151,7 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'does not return the dependent visualizations if with_dependent_visualizations = 0' do
-          with_feature_flag(@user, 'faster-dependencies', true) do          
+          with_feature_flag(@user, 'faster-dependencies', true) do
             get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
                                                 with_dependent_visualizations: 0), {}, @headers
           end
@@ -183,7 +185,6 @@ describe Carto::Api::VisualizationsController do
     end
 
     context 'ordering' do
-
       it 'returns the expected status' do
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
         last_response.status.should == 200
@@ -563,7 +564,7 @@ describe Carto::Api::VisualizationsController do
                                                    id: shared_table.id, api_key: @org_user_1.api_key)
       get_json request_url, {}, http_json_headers do |response|
         response.status.should == 200
-        response.body[:url].should include("/tables/fulano-de-tal.tabluca")
+        response.body[:url].should include('/tables/fulano-de-tal.tabluca')
       end
     end
   end

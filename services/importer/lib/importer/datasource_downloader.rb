@@ -8,6 +8,7 @@ require_relative '../helpers/quota_check_helpers.rb'
 module CartoDB
   module Importer2
     class DatasourceDownloader
+
       include CartoDB::Importer2::QuotaCheckHelpers
 
       def initialize(datasource, item_metadata, options = {}, logger = nil, repository = nil)
@@ -21,11 +22,11 @@ module CartoDB
 
         @http_response_code = nil
         @logger = logger
-        @repository   = repository || DataRepository::Filesystem::Local.new(temporary_directory)
+        @repository = repository || DataRepository::Filesystem::Local.new(temporary_directory)
       end
 
       def provides_stream?
-        @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
+        @datasource.is_a? CartoDB::Datasources::BaseDirectStream
       end
 
       def http_download?
@@ -33,7 +34,7 @@ module CartoDB
       end
 
       def run(available_quota_in_bytes=nil)
-        @datasource.logger=@logger unless @logger.nil?
+        @datasource.logger = @logger unless @logger.nil?
         set_downloaded_source_file(available_quota_in_bytes)
         self
       end
@@ -60,11 +61,12 @@ module CartoDB
 
       def modified?
         previous_checksum = @options.fetch(:checksum, false)
-        previous_checksum = false if previous_checksum == ''  # If comes empty from DB, make pure false
-        checksum          = (@checksum.nil? || @checksum.size == 0) ? false : @checksum
+        previous_checksum = false if previous_checksum == '' # If comes empty from DB, make pure false
+        checksum          = @checksum.nil? || @checksum.size == 0 ? false : @checksum
 
-        return true unless (previous_checksum)
+        return true unless previous_checksum
         return true if previous_checksum && checksum && previous_checksum != checksum
+
         false
       end
 
@@ -72,7 +74,7 @@ module CartoDB
         @datasource.multi_resource_import_supported?(@item_metadata[:id])
       end
 
-      attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository, :etag, :checksum, :last_modified
+      attr_reader :source_file, :item_metadata, :datasource, :options, :logger, :repository, :etag, :checksum, :last_modified
 
       private
 
@@ -84,8 +86,8 @@ module CartoDB
         @checksum = @item_metadata[:checksum]
         return self unless modified?
 
-        stream_to_file = @datasource.kind_of? CartoDB::Datasources::BaseFileStream
-        direct_stream  = @datasource.kind_of? CartoDB::Datasources::BaseDirectStream
+        stream_to_file = @datasource.is_a? CartoDB::Datasources::BaseFileStream
+        direct_stream  = @datasource.is_a? CartoDB::Datasources::BaseDirectStream
 
         # a) Streaming to DB
         if direct_stream
@@ -96,7 +98,7 @@ module CartoDB
         # b) Streaming, but into an intermediate file
         if stream_to_file
           self.source_file = SourceFile.new(filepath(@item_metadata[:filename]), @item_metadata[:filename])
-          output_stream = File.open(self.source_file.fullpath, 'wb')
+          output_stream = File.open(source_file.fullpath, 'wb')
           @datasource.stream_resource(@item_metadata[:id], output_stream)
           output_stream.close
         end
@@ -106,8 +108,8 @@ module CartoDB
           begin
             resource_data = @datasource.get_resource(@item_metadata[:id])
             @http_response_code = @datasource.get_http_response_code if @datasource.providers_download_url?
-          rescue StandardError => exception
-            if exception.message =~ /quota/i
+          rescue StandardError => e
+            if e.message =~ /quota/i
               user_id = @options[:user_id]
               report_over_quota(user_id) if user_id
 
@@ -125,9 +127,11 @@ module CartoDB
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
         if resource_data.is_a?(StringIO)
           return if resource_data.size.zero?
+
           data = resource_data
         else
           return if resource_data.empty?
+
           data = StringIO.new(resource_data)
         end
         name = filename
@@ -148,8 +152,10 @@ module CartoDB
 
       def temporary_directory
         return @temporary_directory if @temporary_directory
+
         @temporary_directory = Unp.new(@importer_config).generate_temporary_directory.temporary_directory
       end
+
     end
   end
 end

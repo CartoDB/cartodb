@@ -39,11 +39,9 @@ module CartoDB
       end
 
       def mail_sent?
-        return @mail_sent
+        @mail_sent
       end
 
     end
-
-  end #Importer2
-end #CartoDB
-
+  end # Importer2
+end # CartoDB

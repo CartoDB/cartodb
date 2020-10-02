@@ -126,9 +126,9 @@ describe Carto::OrganizationMetadataExportService do
         source_assets = @organization.assets.map(&:attributes)
         expect(source_assets).not_to be_empty
         source_notifications = @organization.notifications.map(&:attributes)
-        source_received_notifications = @organization.notifications.map { |n|
+        source_received_notifications = @organization.notifications.map do |n|
           [n.id, n.received_notifications.map(&:attributes)]
-        }.to_h
+        end.to_h
 
         # Destroy, keeping the database
         clean_redis
@@ -320,36 +320,36 @@ describe Carto::OrganizationMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.3",
+      version: '1.0.3',
       organization: {
-        id: "189d642c-c7da-40aa-bffd-517aa0eb7999",
+        id: '189d642c-c7da-40aa-bffd-517aa0eb7999',
         seats: 100,
-        quota_in_bytes: 99999999997,
+        quota_in_bytes: 99_999_999_997,
         created_at: DateTime.now,
         updated_at: DateTime.now,
-        name: "worg",
+        name: 'worg',
         avatar_url: nil,
-        owner_id: "06b974db-de0d-49b7-ae9b-76c63af8c122",
-        website: "",
-        description: "",
-        display_name: "",
-        discus_shortname: "",
+        owner_id: '06b974db-de0d-49b7-ae9b-76c63af8c122',
+        website: '',
+        description: '',
+        display_name: '',
+        discus_shortname: '',
         twitter_organizationname: nil,
         geocoding_quota: 0,
         map_view_quota: nil,
-        auth_token: "pgYcd8XnAn46HlczpvQcIw",
+        auth_token: 'pgYcd8XnAn46HlczpvQcIw',
         geocoding_block_price: nil,
         map_view_block_price: nil,
         twitter_datasource_enabled: true,
         twitter_datasource_block_price: 100,
         twitter_datasource_block_size: 1000,
         twitter_datasource_quota: 1,
-        google_maps_key: "key=AIzaEa12DxNYEyM257DwzuieArJ_pinDIPyYVts",
+        google_maps_key: 'key=AIzaEa12DxNYEyM257DwzuieArJ_pinDIPyYVts',
         google_maps_private_key: nil,
-        color: "#FF9900",
-        default_quota_in_bytes: 209715200,
-        whitelisted_email_domains: ["carto.com", "worg.com"],
-        admin_email: "worg1@worg.com",
+        color: '#FF9900',
+        default_quota_in_bytes: 209_715_200,
+        whitelisted_email_domains: ['carto.com', 'worg.com'],
+        admin_email: 'worg1@worg.com',
         auth_username_password_enabled: nil,
         auth_google_enabled: true,
         location: nil,
@@ -358,13 +358,13 @@ describe Carto::OrganizationMetadataExportService do
         strong_passwords_enabled: false,
         obs_snapshot_quota: 0,
         obs_snapshot_block_price: nil,
-        obs_general_quota: 999999999,
+        obs_general_quota: 999_999_999,
         obs_general_block_price: nil,
         salesforce_datasource_enabled: false,
         viewer_seats: 100,
-        geocoder_provider: "heremaps",
-        isolines_provider: "heremaps",
-        routing_provider: "mapzen",
+        geocoder_provider: 'heremaps',
+        isolines_provider: 'heremaps',
+        routing_provider: 'mapzen',
         auth_github_enabled: true,
         engine_enabled: true,
         mapzen_routing_quota: nil,
@@ -375,12 +375,12 @@ describe Carto::OrganizationMetadataExportService do
         password_expiration_in_d: 365,
         inherit_owner_ffs: false,
         assets: [{
-          public_url: "http://localhost.lan:3000/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0",
-          kind: "organization_asset",
+          public_url: 'http://localhost.lan:3000/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0',
+          kind: 'organization_asset',
           storage_info: {
-            type: "local",
-            location: "organization_assets",
-            identifier: "public/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0"
+            type: 'local',
+            location: 'organization_assets',
+            identifier: 'public/uploads/organization_assets/189d642c-c7da-40aa-bffd-517aa0eb7999/asset_download_148430456220170113-20961-67b7r0'
           }
         }],
         groups: [
@@ -394,9 +394,9 @@ describe Carto::OrganizationMetadataExportService do
         ],
         notifications: [
           {
-            icon: "alert",
-            recipients: "all",
-            body: "Empty body",
+            icon: 'alert',
+            recipients: 'all',
+            body: 'Empty body',
             created_at: DateTime.now,
             received_by: [
               {
@@ -412,7 +412,7 @@ describe Carto::OrganizationMetadataExportService do
             created_at: DateTime.now,
             updated_at: DateTime.now,
             enabled: true,
-            max_rows: 100000,
+            max_rows: 100_000,
             provider_name: @connector_provider.name
           }
         ],
@@ -420,8 +420,8 @@ describe Carto::OrganizationMetadataExportService do
           {
             oauth_app_id: @oauth_app.id,
             seats: 5,
-            created_at: "2018-11-16T14:31:46+00:00",
-            updated_at: "2018-11-17T16:41:56+00:00"
+            created_at: '2018-11-16T14:31:46+00:00',
+            updated_at: '2018-11-17T16:41:56+00:00'
           }
         ]
       }

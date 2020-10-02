@@ -1,6 +1,7 @@
 module Carto
   module Db
     class UserSchema
+
       def initialize(user)
         @user = user
       end
@@ -36,6 +37,7 @@ module Carto
 
         @user.in_database[sql].all.map { |result| result[:name] }
       end
+
     end
   end
 end

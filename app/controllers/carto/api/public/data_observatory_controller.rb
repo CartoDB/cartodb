@@ -1,18 +1,24 @@
 module Carto
+
   class SubscriptionNotFoundError < StandardError
+
     def initialize(username, subscription_id)
       super "Subscription not found with id #{subscription_id} for user #{username}"
     end
+
   end
   class EntityNotFoundError < StandardError
+
     def initialize(entity_id)
       super "Entity not found with id #{entity_id}"
     end
+
   end
 
   module Api
     module Public
       class DataObservatoryController < Carto::Api::Public::ApplicationController
+
         include Carto::Api::PagedSearcher
         extend Carto::DefaultRescueFroms
 
@@ -109,6 +115,7 @@ module Carto
           doss = Carto::DoSyncServiceFactory.get_for_user(@user)
           info = doss.entity_info(params[:entity_id])
           raise Carto::EntityNotFoundError.new(params[:entity_id]) if info[:error].present?
+
           render json: info
         end
 
@@ -164,7 +171,7 @@ module Carto
         def load_type(required: true)
           @type = params[:type]
           id = params[:id] || params[:subscription_id]
-          if @type.nil? && !(id.nil?) then
+          if @type.nil? && !id.nil?
             # If we don't have the type, we can figure it out from the id:
             doss = Carto::DoSyncServiceFactory.get_for_user(@user)
             parsed_entity_id = doss.parsed_entity_id(id)
@@ -176,7 +183,7 @@ module Carto
         end
 
         def check_api_key_permissions
-          api_key = Carto::ApiKey.find_by_token(params["api_key"])
+          api_key = Carto::ApiKey.find_by_token(params['api_key'])
           raise UnauthorizedError unless api_key&.master? || api_key&.data_observatory_permissions?
         end
 
@@ -191,9 +198,7 @@ module Carto
         end
 
         def present_subscriptions(subscriptions)
-          if @type.present?
-            subscriptions = subscriptions.select { |subscription| subscription[:type] == @type }
-          end
+          subscriptions = subscriptions.select { |subscription| subscription[:type] == @type } if @type.present?
 
           ordered_subscriptions = subscriptions.sort_by { |subscription| subscription[@order] || subscription['id'] }
           @direction == :asc ? ordered_subscriptions : ordered_subscriptions.reverse
@@ -211,7 +216,7 @@ module Carto
         end
 
         def subscription_metadata
-          connection = Carto::Db::Connection.do_metadata_connection()
+          connection = Carto::Db::Connection.do_metadata_connection
 
           query = "SELECT t.*, p.name as provider_name, '#{@type}' as type
             FROM #{TABLES_BY_TYPE[@type]} t
@@ -236,17 +241,19 @@ module Carto
           doss = Carto::DoSyncServiceFactory.get_for_user(@user)
           entity_info = doss.parsed_entity_id(metadata[:id])
           # 'requested' datasets may no exists yet in 'bq', but let's assume it will...
-          available_in = (metadata[:available_in].nil? && status == 'requested')? ['bq'] : metadata[:available_in]
+          available_in = metadata[:available_in].nil? && status == 'requested' ? ['bq'] : metadata[:available_in]
           entity_info.merge({
-            dataset_id: metadata[:id],
-            available_in: available_in,
-            price: metadata[:subscription_list_price],
-            created_at: entity_info[:created_at] || Time.now.round,
-            expires_at: entity_info[:expires_at] || Time.now.round + 1.year,
-            status: status
-          })
+                              dataset_id: metadata[:id],
+                              available_in: available_in,
+                              price: metadata[:subscription_list_price],
+                              created_at: entity_info[:created_at] || Time.now.round,
+                              expires_at: entity_info[:expires_at] || Time.now.round + 1.year,
+                              status: status
+                            })
         end
+
       end
     end
   end
+
 end

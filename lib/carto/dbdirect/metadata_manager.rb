@@ -1,6 +1,7 @@
 module Carto
   module Dbdirect
     class MetadataManager
+
       def initialize(config, metadata_server)
         @config = config
         @metadata = metadata_server
@@ -21,6 +22,7 @@ module Carto
       def reset(key)
         @metadata.DEL(config['prefix_namespace'] + key)
       end
+
     end
   end
 end

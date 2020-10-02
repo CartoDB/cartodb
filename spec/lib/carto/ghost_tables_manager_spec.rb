@@ -3,6 +3,7 @@ require_relative '../../../lib/carto/ghost_tables_manager'
 require 'helpers/database_connection_helper'
 
 module Carto
+
   describe GhostTablesManager do
     include DatabaseConnectionHelper
 
@@ -30,16 +31,14 @@ module Carto
     it 'should not run sync when the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables' do
       # We simulate the deletion of 2 tables, which would trigger a sync run in a small user
       ghost_tables_manager.stubs(:fetch_user_tables)
-                           .returns([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK + 2].map do |id|
-                                        Carto::TableFacade.new(id, "name #{id}", user.id)
-                                    end
-                                   )
+                          .returns([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK + 2].map do |id|
+                                     Carto::TableFacade.new(id, "name #{id}", user.id)
+                                   end)
 
       ghost_tables_manager.stubs(:fetch_cartodbfied_tables)
-                           .returns([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK].map do |id|
-                                        Carto::TableFacade.new(id, "name #{id}", user.id)
-                                    end
-                                   )
+                          .returns([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK].map do |id|
+                                     Carto::TableFacade.new(id, "name #{id}", user.id)
+                                   end)
       ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
       # In big databases, `:should_run_synchronously?` is expensive so we want to ensure it isn't called at all
       ghost_tables_manager.expects(:should_run_synchronously?).never
@@ -53,7 +52,7 @@ module Carto
       new_tables = []
       dropped_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN]
       ghost_tables_manager.stubs(:fetch_altered_tables)
-                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
+                          .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
       ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
       ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
@@ -66,7 +65,7 @@ module Carto
       new_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN - 2]
       dropped_tables = ['manolo', 'pepito']
       ghost_tables_manager.stubs(:fetch_altered_tables)
-                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
+                          .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
       ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
       ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
@@ -79,7 +78,7 @@ module Carto
       new_tables = []
       dropped_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN - 1]
       ghost_tables_manager.stubs(:fetch_altered_tables)
-                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
+                          .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
       ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
       ghost_tables_manager.expects(:link_ghost_tables_asynchronously).never
@@ -92,7 +91,7 @@ module Carto
       new_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN]
       dropped_tables = []
       ghost_tables_manager.stubs(:fetch_altered_tables)
-                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
+                          .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
       ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
       ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
@@ -148,10 +147,10 @@ module Carto
           apis: ['maps', 'sql']
         },
         {
-          type: "database",
+          type: 'database',
           schemas: [
             {
-              name: "#{user.database_schema}",
+              name: user.database_schema.to_s,
               permissions: ['create']
             }
           ]
@@ -441,4 +440,5 @@ module Carto
       expect(Carto::VisualizationBackup.count).to eq(1)
     end
   end
+
 end

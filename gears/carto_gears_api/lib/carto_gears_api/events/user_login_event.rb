@@ -8,6 +8,7 @@ module CartoGearsApi
     # LDAP, SAML and other authentication systems will work, because they use
     # local authentication system.
     class UserLoginEvent < BaseEvent
+
       def initialize(user)
         @first_login = user.dashboard_viewed_at.nil?
         @user = Users::User.from_model(user)
@@ -18,6 +19,7 @@ module CartoGearsApi
       def first_login?
         @first_login
       end
+
     end
   end
 end

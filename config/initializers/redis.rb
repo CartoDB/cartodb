@@ -1,20 +1,20 @@
 require_dependency 'redis_factory'
 
 if Cartodb.config[:redis].blank?
-  raise <<-MESSAGE
-Please, configure Redis in your config/app_config.yml file like this:
-  development:
-    ...
-    redis:
-      host: '127.0.0.1'
-      port: 6379
-MESSAGE
+  raise <<~MESSAGE
+    Please, configure Redis in your config/app_config.yml file like this:
+      development:
+        ...
+        redis:
+          host: '127.0.0.1'
+          port: 6379
+  MESSAGE
 end
 
-$tables_metadata     = RedisFactory.new_connection(db_id: :tables_metadata)
+$tables_metadata = RedisFactory.new_connection(db_id: :tables_metadata)
 $tables_metadata_secondary = RedisFactory.new_connection(db_id: :tables_metadata, secondary: true)
-$api_credentials     = RedisFactory.new_connection(db_id: :api_credentials)
-$users_metadata      = RedisFactory.new_connection(db_id: :users_metadata)
+$api_credentials = RedisFactory.new_connection(db_id: :api_credentials)
+$users_metadata = RedisFactory.new_connection(db_id: :users_metadata)
 $redis_migrator_logs = RedisFactory.new_connection(db_id: :redis_migrator_logs)
 $geocoder_metrics    = RedisFactory.new_connection(db_id: :users_metadata)
 $limits_metadata     = RedisFactory.new_connection(db_id: :limits_metadata)

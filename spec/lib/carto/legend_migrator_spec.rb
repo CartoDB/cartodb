@@ -2,6 +2,7 @@ require 'spec_helper_min'
 require 'carto/legend_migrator'
 
 module Carto
+
   describe LegendMigrator do
     before(:all) do
       @layer = Carto::Layer.create(kind: 'carto')
@@ -14,11 +15,11 @@ module Carto
     describe('#with templates') do
       let(:old_legend_with_template) do
         {
-          "show_title" => false,
-          "title" => "",
-          "template" => "<h1>Manolo Escobar</h1>",
-          "visible" => true,
-          "items" => []
+          'show_title' => false,
+          'title' => '',
+          'template' => '<h1>Manolo Escobar</h1>',
+          'visible' => true,
+          'items' => []
         }
       end
 
@@ -58,66 +59,66 @@ module Carto
       describe('#with categories') do
         let(:old_category) do
           {
-            "type" => "category",
-            "show_title" => false,
-            "title" => "",
-            "template" => "",
-            "visible" => true,
-            "items" => [
+            'type' => 'category',
+            'show_title' => false,
+            'title' => '',
+            'template' => '',
+            'visible' => true,
+            'items' => [
               {
-                "name" => 0,
-                "visible" => true,
-                "value" => "super.png"
+                'name' => 0,
+                'visible' => true,
+                'value' => 'super.png'
               },
               {
-                "name" => 1350,
-                "visible" => true,
-                "value" => "#1F78B4"
+                'name' => 1350,
+                'visible' => true,
+                'value' => '#1F78B4'
               },
               {
-                "name" => 1440,
-                "visible" => true,
-                "value" => "#B2DF8A"
+                'name' => 1440,
+                'visible' => true,
+                'value' => '#B2DF8A'
               },
               {
-                "name" => 1800,
-                "visible" => true,
-                "value" => "#33A02C"
+                'name' => 1800,
+                'visible' => true,
+                'value' => '#33A02C'
               },
               {
-                "name" => 2250,
-                "visible" => true,
-                "value" => "#FB9A99"
+                'name' => 2250,
+                'visible' => true,
+                'value' => '#FB9A99'
               },
               {
-                "name" => 2700,
-                "visible" => true,
-                "value" => "#E31A1C"
+                'name' => 2700,
+                'visible' => true,
+                'value' => '#E31A1C'
               },
               {
-                "name" => 4500,
-                "visible" => true,
-                "value" => "#FDBF6F"
+                'name' => 4500,
+                'visible' => true,
+                'value' => '#FDBF6F'
               },
               {
-                "name" => 450000,
-                "visible" => true,
-                "value" => "#FF7F00"
+                'name' => 450_000,
+                'visible' => true,
+                'value' => '#FF7F00'
               },
               {
-                "name" => 900,
-                "visible" => true,
-                "value" => "duper.png"
+                'name' => 900,
+                'visible' => true,
+                'value' => 'duper.png'
               },
               {
-                "name" => 90000,
-                "visible" => true,
-                "value" => "#6A3D9A"
+                'name' => 90_000,
+                'visible' => true,
+                'value' => '#6A3D9A'
               },
               {
-                "name" => "Others",
-                "visible" => true,
-                "value" => "#DDDDDD"
+                'name' => 'Others',
+                'visible' => true,
+                'value' => '#DDDDDD'
               }
             ]
           }
@@ -125,35 +126,35 @@ module Carto
 
         let(:old_custom) do
           {
-            "type" => "custom",
-            "show_title" => true,
-            "title" => "",
-            "template" => "",
-            "visible" => true,
-            "items" => [
+            'type' => 'custom',
+            'show_title' => true,
+            'title' => '',
+            'template' => '',
+            'visible' => true,
+            'items' => [
               {
-                "name" => "preta",
-                "visible" => true,
-                "value" => "#41006D",
-                "sync" => true
+                'name' => 'preta',
+                'visible' => true,
+                'value' => '#41006D',
+                'sync' => true
               },
               {
-                "name" => "Untitled",
-                "visible" => true,
-                "value" => "url(http://com.cartodb.users-assets.production.s3.amazonaws.com/superduper.png)",
-                "sync" => true
+                'name' => 'Untitled',
+                'visible' => true,
+                'value' => 'url(http://com.cartodb.users-assets.production.s3.amazonaws.com/superduper.png)',
+                'sync' => true
               },
               {
-                "name" => "patata",
-                "visible" => true,
-                "value" => "#cccccc",
-                "sync" => true
+                'name' => 'patata',
+                'visible' => true,
+                'value' => '#cccccc',
+                'sync' => true
               },
               {
-                "name" => "Untitled",
-                "visible" => true,
-                "value" => "#cccccc",
-                "sync" => true
+                'name' => 'Untitled',
+                'visible' => true,
+                'value' => '#cccccc',
+                'sync' => true
               }
             ]
           }
@@ -192,8 +193,8 @@ module Carto
           if @old_legend['type'] == 'custom'
             new_legend.definition[:categories].map { |category| category[:icon] }.each do |icon|
               unless icon.blank?
-                icon.should include("https://s3.amazonaws.com/com.cartodb.users-assets.production/superduper.png")
-                icon.should_not include("url(")
+                icon.should include('https://s3.amazonaws.com/com.cartodb.users-assets.production/superduper.png')
+                icon.should_not include('url(')
               end
             end
           end
@@ -203,44 +204,44 @@ module Carto
       describe('#with html') do
         let(:old_custom) do
           {
-            "type" => "custom",
-            "show_title" => true,
-            "title" => "",
-            "template" => "<h1>Manolo Escobar</h1>",
-            "visible" => true,
-            "items" => []
+            'type' => 'custom',
+            'show_title' => true,
+            'title' => '',
+            'template' => '<h1>Manolo Escobar</h1>',
+            'visible' => true,
+            'items' => []
           }
         end
 
         let(:old_bubble) do
           {
-            "type" => "bubble",
-            "show_title" => false,
-            "title" => "",
-            "template" => "",
-            "visible" => true,
-            "items" => [
+            'type' => 'bubble',
+            'show_title' => false,
+            'title' => '',
+            'template' => '',
+            'visible' => true,
+            'items' => [
               {
-                "name" => "Left label",
-                "visible" => true,
-                "value" => 787.5,
-                "legend_type" => "bubble",
-                "type" => "text",
-                "sync" => false
+                'name' => 'Left label',
+                'visible' => true,
+                'value' => 787.5,
+                'legend_type' => 'bubble',
+                'type' => 'text',
+                'sync' => false
               },
               {
-                "name" => "Right Label",
-                "visible" => true,
-                "value" => 6273765,
-                "legend_type" => "bubble",
-                "type" => "text",
-                "sync" => false
+                'name' => 'Right Label',
+                'visible' => true,
+                'value' => 6_273_765,
+                'legend_type' => 'bubble',
+                'type' => 'text',
+                'sync' => false
               },
               {
-                "name" => "Color",
-                "visible" => true,
-                "value" => "#FF5C00",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true,
+                'value' => '#FF5C00',
+                'type' => 'color'
               }
             ]
           }
@@ -248,33 +249,33 @@ module Carto
 
         let(:old_bubble_with_custom_labels) do
           {
-            "type" => "bubble",
-            "show_title" => false,
-            "title" => "",
-            "template" => "",
-            "visible" => true,
-            "items" => [
+            'type' => 'bubble',
+            'show_title' => false,
+            'title' => '',
+            'template' => '',
+            'visible' => true,
+            'items' => [
               {
-                "name" => "Left label",
-                "visible" => true,
-                "value" => "few",
-                "legend_type" => "bubble",
-                "type" => "text",
-                "sync" => false
+                'name' => 'Left label',
+                'visible' => true,
+                'value' => 'few',
+                'legend_type' => 'bubble',
+                'type' => 'text',
+                'sync' => false
               },
               {
-                "name" => "Right Label",
-                "visible" => true,
-                "value" => "many",
-                "legend_type" => "bubble",
-                "type" => "text",
-                "sync" => false
+                'name' => 'Right Label',
+                'visible' => true,
+                'value' => 'many',
+                'legend_type' => 'bubble',
+                'type' => 'text',
+                'sync' => false
               },
               {
-                "name" => "Color",
-                "visible" => true,
-                "value" => "#FF5C00",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true,
+                'value' => '#FF5C00',
+                'type' => 'color'
               }
             ]
           }
@@ -282,57 +283,57 @@ module Carto
 
         let(:old_choropleth) do
           {
-            "type" => "choropleth",
-            "show_title" => false,
-            "title" => "",
-            "template" => "",
-            "visible" => true,
-            "items" => [
+            'type' => 'choropleth',
+            'show_title' => false,
+            'title' => '',
+            'template' => '',
+            'visible' => true,
+            'items' => [
               {
-                "name" => "Left label",
-                "visible" => true, "value" => "1350.00",
-                "type" => "text"
+                'name' => 'Left label',
+                'visible' => true, 'value' => '1350.00',
+                'type' => 'text'
               },
               {
-                "name" => "Right label",
-                "visible" => true,
-                "value" => "6273765.00",
-                "type" => "text"
+                'name' => 'Right label',
+                'visible' => true,
+                'value' => '6273765.00',
+                'type' => 'text'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#FFFFB2",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#FFFFB2',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#FED976",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#FED976',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#FEB24C",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#FEB24C',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#FD8D3C",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#FD8D3C',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#FC4E2A",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#FC4E2A',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#E31A1C",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#E31A1C',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#B10026",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#B10026',
+                'type' => 'color'
               }
             ]
           }
@@ -340,52 +341,52 @@ module Carto
 
         let(:old_density) do
           {
-            "type" => "density",
-            "show_title" => false,
-            "title" => "",
-            "template" => "",
-            "visible" => true,
-            "items" => [
+            'type' => 'density',
+            'show_title' => false,
+            'title' => '',
+            'template' => '',
+            'visible' => true,
+            'items' => [
               {
-                "name" => "Less",
-                "visible" => true,
-                "value" => "less",
-                "legend_type" => "density",
-                "type" => "text",
-                "sync" => true
+                'name' => 'Less',
+                'visible' => true,
+                'value' => 'less',
+                'legend_type' => 'density',
+                'type' => 'text',
+                'sync' => true
               },
               {
-                "name" => "More",
-                "visible" => true,
-                "value" => "more",
-                "legend_type" => "density",
-                "type" => "text",
-                "sync" => true
+                'name' => 'More',
+                'visible' => true,
+                'value' => 'more',
+                'legend_type' => 'density',
+                'type' => 'text',
+                'sync' => true
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#FFFFB2",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#FFFFB2',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#FECC5C",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#FECC5C',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#FD8D3C",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#FD8D3C',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#F03B20",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#F03B20',
+                'type' => 'color'
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#BD0026",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#BD0026',
+                'type' => 'color'
               }
             ]
           }
@@ -393,32 +394,32 @@ module Carto
 
         let(:old_intensity) do
           {
-            "type" => "intensity",
-            "show_title" => false,
-            "title" => "",
-            "template" => "",
-            "visible" => true,
-            "items" => [
+            'type' => 'intensity',
+            'show_title' => false,
+            'title' => '',
+            'template' => '',
+            'visible' => true,
+            'items' => [
               {
-                "name" => "Left label",
-                "visible" => true,
-                "value" => "Less",
-                "legend_type" => "intensity",
-                "type" => "text",
-                "sync" => true
+                'name' => 'Left label',
+                'visible' => true,
+                'value' => 'Less',
+                'legend_type' => 'intensity',
+                'type' => 'text',
+                'sync' => true
               },
               {
-                "name" => "Right label",
-                "visible" => true,
-                "value" => "More",
-                "legend_type" => "intensity",
-                "type" => "text",
-                "sync" => true
+                'name' => 'Right label',
+                'visible' => true,
+                'value' => 'More',
+                'legend_type' => 'intensity',
+                'type' => 'text',
+                'sync' => true
               },
               {
-                "name" => "Color",
-                "visible" => true, "value" => "#FFCC00",
-                "type" => "color"
+                'name' => 'Color',
+                'visible' => true, 'value' => '#FFCC00',
+                'type' => 'color'
               }
             ]
           }
@@ -504,4 +505,5 @@ module Carto
       end
     end
   end
+
 end

@@ -9,7 +9,6 @@ include UniqueNamesHelper
 include CartoDB
 
 describe Synchronization::Collection do
-
   before(:each) do
   end
 
@@ -32,7 +31,7 @@ describe Synchronization::Collection do
     it 'fetches many members of the collection to see that paging works' do
       user_id = random_uuid
       (1..400).each do |idx|
-        Synchronization::Member.new(random_attributes(name:   "sync_#{idx}",
+        Synchronization::Member.new(random_attributes(name: "sync_#{idx}",
                                                       user_id: user_id)).store
       end
 
@@ -52,10 +51,10 @@ describe Synchronization::Collection do
   def random_attributes(attributes = {})
     random = unique_integer
     {
-      name:       attributes.fetch(:name, "name #{random}"),
-      interval:   attributes.fetch(:interval, 900),
-      state:      attributes.fetch(:state, 'enabled'),
-      user_id:    attributes.fetch(:user_id, random_uuid)
+      name: attributes.fetch(:name, "name #{random}"),
+      interval: attributes.fetch(:interval, 900),
+      state: attributes.fetch(:state, 'enabled'),
+      user_id: attributes.fetch(:user_id, random_uuid)
     }
   end
 end # Synchronization::Collection

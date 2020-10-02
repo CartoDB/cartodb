@@ -14,8 +14,8 @@ include CartoDB::Importer2
 
 describe 'csv regression tests' do
   include AcceptanceHelpers
-  include_context "cdb_importer schema"
-  include_context "no stats"
+  include_context 'cdb_importer schema'
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -72,7 +72,7 @@ describe 'csv regression tests' do
     result = runner.results.first
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
     table = result.tables.first
-    columns = @user.in_database[%Q{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
+    columns = @user.in_database[%{ SELECT * FROM information_schema.columns WHERE table_schema = 'cdb_importer' AND table_name   = '#{table}' }].map { |c| c[:column_name] }
     columns.should include('column')
     columns.should include('column2')
   end
@@ -134,7 +134,7 @@ describe 'csv regression tests' do
   end
 
   it 'imports files with spaces as delimiters' do
-    filepath    = path_to('fsq_places_uniq.csv')
+    filepath = path_to('fsq_places_uniq.csv')
   end
 
   it 'imports files with & in the name' do
@@ -186,7 +186,7 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @user.in_database[%{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
@@ -205,7 +205,7 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @user.in_database[%{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
@@ -224,7 +224,7 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @user.in_database[%{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
@@ -243,17 +243,17 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @user.in_database[%{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
     }].first.fetch(:count).should eq 2
 
-    @user.in_database[%Q{
+    @user.in_database[%{
       SELECT c
       FROM #{result.schema}.#{result.table_name}
       WHERE a='200'
-    }].first.fetch(:c).should match /\AFirst line.Second line\Z/u
+    }].first.fetch(:c).should match(/\AFirst line.Second line\Z/u)
   end
 
   it 'import records with cell utf8 reverse line breaks' do
@@ -268,23 +268,23 @@ describe 'csv regression tests' do
     runner.run
 
     result = runner.results.first
-    @user.in_database[%Q{
+    @user.in_database[%{
       SELECT count(*)
       FROM #{result.schema}.#{result.table_name}
       AS count
     }].first.fetch(:count).should eq 2
 
-   chk = @user.in_database[%Q{
+    chk = @user.in_database[%{
      SELECT c
      FROM #{result.schema}.#{result.table_name}
      WHERE a='200'
    }].first.fetch(:c)
 
-    @user.in_database[%Q{
+    @user.in_database[%{
       SELECT c
       FROM #{result.schema}.#{result.table_name}
       WHERE a='200'
-    }].first.fetch(:c).should match /\AFirst line.Second line\Z/u
+    }].first.fetch(:c).should match(/\AFirst line.Second line\Z/u)
   end
 
   it 'import records with escaped quotes' do
@@ -300,29 +300,29 @@ describe 'csv regression tests' do
       runner.run
 
       result = runner.results.first
-      @user.in_database[%Q{
+      @user.in_database[%{
         SELECT count(*)
         FROM #{result.schema}.#{result.table_name}
         AS count
       }].first.fetch(:count).should eq 2
 
-      @user.in_database[%Q{
+      @user.in_database[%{
         SELECT b
         FROM #{result.schema}.#{result.table_name}
         WHERE a='100'
-      }].first.fetch(:b).should eq "--\"--"
+      }].first.fetch(:b).should eq '--"--'
 
-      @user.in_database[%Q{
+      @user.in_database[%{
         SELECT c
         FROM #{result.schema}.#{result.table_name}
         WHERE a='100'
-      }].first.fetch(:c).should eq "\"XYZ\""
+      }].first.fetch(:c).should eq '"XYZ"'
 
-      @user.in_database[%Q{
+      @user.in_database[%{
         SELECT c
         FROM #{result.schema}.#{result.table_name}
         WHERE a='200'
-      }].first.fetch(:c).should eq "I\"J\"K"
+      }].first.fetch(:c).should eq 'I"J"K'
     end
   end
 
@@ -341,7 +341,6 @@ describe 'csv regression tests' do
     runner.results.first.error_code.should eq CartoDB::Importer2::ERRORS_MAP[EncodingDetectionError]
   end
 
-
   it 'displays a specific error message for a file with too many columns' do
     runner = runner_with_fixture('too_many_columns.csv')
     runner.run
@@ -356,7 +355,7 @@ describe 'csv regression tests' do
     runner = runner_with_fixture('too_many_columns.csv', job)
     runner.run
 
-    table_exists = @user.in_database[%Q{SELECT 1
+    table_exists = @user.in_database[%{SELECT 1
                     FROM   information_schema.tables
                     WHERE  table_schema = '#{job.schema}'
                     AND    table_name = '#{job.table_name}'}].first.to_i
@@ -378,7 +377,7 @@ describe 'csv regression tests' do
   end
 
   def sample_for(job)
-    job.db[%Q{
+    job.db[%{
       SELECT *
       FROM #{job.qualified_table_name}
     }].first
@@ -386,7 +385,7 @@ describe 'csv regression tests' do
 
   def ogr2ogr2_options
     {
-      ogr2ogr_csv_guessing:   'yes'
+      ogr2ogr_csv_guessing: 'yes'
     }
   end
 
@@ -394,16 +393,13 @@ describe 'csv regression tests' do
     filepath = path_to(file)
     downloader = Downloader.new(@user.id, filepath)
     runner = Runner.new({
-                 pg: @user.db_service.db_configuration_for,
-                 downloader: downloader,
-                 log: CartoDB::Importer2::Doubles::Log.new(@user),
-                 user: @user,
-                 job: job
-               })
-    if add_ogr2ogr2_options
-      runner.loader_options = ogr2ogr2_options
-    end
+                          pg: @user.db_service.db_configuration_for,
+                          downloader: downloader,
+                          log: CartoDB::Importer2::Doubles::Log.new(@user),
+                          user: @user,
+                          job: job
+                        })
+    runner.loader_options = ogr2ogr2_options if add_ogr2ogr2_options
     runner
   end
-
 end

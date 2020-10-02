@@ -69,7 +69,8 @@ shared_context 'layer hierarchy' do
     options: { 'a field' => 'first', 'another field' => 'second' },
     order: nil,
     source: { id: 'a0' },
-    style: { 'widget_style': { 'fill': 'wadus' } })
+    style: { 'widget_style': { 'fill': 'wadus' } }
+  )
 
     payload = {
       layer_id: layer_id,
@@ -187,7 +188,8 @@ describe Carto::Api::WidgetsController do
         user_domain: @user1.username,
         map_id: @map.id,
         map_layer_id: @widget.layer_id,
-        api_key: @user1.api_key)
+        api_key: @user1.api_key
+      )
       post_json url, payload, http_json_headers do |response|
         response.status.should eq 201
         response_widget = response.body
@@ -292,7 +294,8 @@ describe Carto::Api::WidgetsController do
         map_id: @map.id,
         map_layer_id: @widget.layer_id,
         id: @widget.id,
-        api_key: @user1.api_key)
+        api_key: @user1.api_key
+      )
 
       put_json url, payload, http_json_headers do |response|
         response.status.should eq 200

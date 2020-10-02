@@ -1,6 +1,7 @@
 module Carto
   module Api
     class MetricsController < ::Api::ApplicationController
+
       ssl_required :create
 
       skip_before_filter :api_authorization_required
@@ -14,7 +15,7 @@ module Carto
       def create
         @event.report!
 
-        render json: Hash.new, status: :created
+        render json: {}, status: :created
       end
 
       private
@@ -31,6 +32,7 @@ module Carto
       rescue NameError
         raise Carto::LoadError.new("Event not found: #{event_name}")
       end
+
     end
   end
 end

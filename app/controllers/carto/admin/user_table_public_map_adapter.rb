@@ -1,7 +1,7 @@
-
 module Carto
   module Admin
     class UserTablePublicMapAdapter
+
       extend Forwardable
 
       delegate [:dependent_visualizations, :partially_dependent_visualizations,

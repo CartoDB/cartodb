@@ -11,8 +11,7 @@ include UniqueNamesHelper
 include CartoDB
 
 describe Synchronization::Member do
-
-  describe "synchronizations" do
+  describe 'synchronizations' do
     before(:all) do
       @user1 = create_user(sync_tables_enabled: true)
       @user2 = create_user(sync_tables_enabled: true)
@@ -52,7 +51,7 @@ describe Synchronization::Member do
       end
     end
 
-    describe "synchronization" do
+    describe 'synchronization' do
       it 'creates overviews' do
         url = 'https://wadus.com/cities-box.csv'
         path = "#{Rails.root}/spec/support/data/cities-box.csv"
@@ -72,7 +71,7 @@ describe Synchronization::Member do
             service_name: 'public_url',
             service_item_id: url,
             updated_at: Time.now,
-            privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+            privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
           ).run_import!
         end
         table_name = UserTable[id: data_import.table_id].name
@@ -104,7 +103,7 @@ describe Synchronization::Member do
             service_name: 'public_url',
             service_item_id: url,
             updated_at: Time.now,
-            privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+            privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
           ).run_import!
         end
         table_name = UserTable[id: data_import.table_id].name
@@ -137,7 +136,7 @@ describe Synchronization::Member do
             service_name: 'public_url',
             service_item_id: url,
             updated_at: Time.now,
-            privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+            privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
           ).run_import!
         end
         table_name = UserTable[id: data_import.table_id].name
@@ -158,10 +157,10 @@ describe Synchronization::Member do
   def random_attributes(attributes = {})
     random = unique_integer
     {
-      name:       attributes.fetch(:name, "name#{random}"),
-      interval:   attributes.fetch(:interval, 15 * 60 + random),
-      state:      attributes.fetch(:state, 'enabled'),
-      user_id:    attributes.fetch(:user_id, nil)
+      name: attributes.fetch(:name, "name#{random}"),
+      interval: attributes.fetch(:interval, 15 * 60 + random),
+      state: attributes.fetch(:state, 'enabled'),
+      user_id: attributes.fetch(:user_id, nil)
     }
   end
 end

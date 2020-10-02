@@ -6,7 +6,7 @@ describe 'layers.rake' do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    Rake.application.rake_require "tasks/layers"
+    Rake.application.rake_require 'tasks/layers'
     Rake::Task.define_task(:environment)
   end
 
@@ -29,7 +29,7 @@ describe 'layers.rake' do
     end
 
     it 'updates single layers' do
-      class_name = @visualization.user_layers.sort_by(&:order).first.options['className']
+      class_name = @visualization.user_layers.min_by(&:order).options['className']
 
       Cartodb.with_config(basemaps: { 'CARTO' => { class_name => { 'className' => class_name, 'dummy' => 'opt' } } }) do
         Rake::Task['carto:db:sync_basemaps_from_app_config'].invoke
@@ -40,7 +40,7 @@ describe 'layers.rake' do
     end
 
     it 'updates sandwiched layers' do
-      class_name = @table_visualization.user_layers.sort_by(&:order).first.options['className']
+      class_name = @table_visualization.user_layers.min_by(&:order).options['className']
 
       dummy_options = {
         'className' => class_name,
@@ -62,7 +62,7 @@ describe 'layers.rake' do
     end
 
     it 'updates mapcaps' do
-      class_name = @visualization.user_layers.sort_by(&:order).first.options['className']
+      class_name = @visualization.user_layers.min_by(&:order).options['className']
       @visualization.create_mapcap!
 
       Cartodb.with_config(basemaps: { 'CARTO' => { class_name => { 'className' => class_name, 'dummy' => 'opt' } } }) do
@@ -86,7 +86,7 @@ describe 'layers.rake' do
       end
 
       it 'updates layers for viewer users' do
-        class_name = @table_visualization.user_layers.sort_by(&:order).first.options['className']
+        class_name = @table_visualization.user_layers.min_by(&:order).options['className']
 
         dummy_options = {
           'className' => class_name,

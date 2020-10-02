@@ -6,7 +6,7 @@ include Carto::Factories::Visualizations
 def login(user)
   login_as(user, scope: user.username)
   domain = user.organization ? user.organization.name : user.username
-  base_url = CartoDB.subdomainless_urls? ? "localhost.lan" : "#{domain}.localhost.lan"
+  base_url = CartoDB.subdomainless_urls? ? 'localhost.lan' : "#{domain}.localhost.lan"
   host! base_url
 end
 
@@ -16,8 +16,7 @@ def follow_redirects(limit = 10)
   end
 end
 
-describe "UserState" do
-
+describe 'UserState' do
   before(:all) do
     @organization = create_organization_with_owner
     @org_account_type = create_account_type_fg('ORGANIZATION USER')
@@ -36,17 +35,17 @@ describe "UserState" do
                       "/builder/#{@visualization.id}", "/builder/#{@visualization.id}/embed"].freeze
     @admin_endpoints = @public_user_endpoints + @user_endpoints + @dashboard_endpoints + @tables_endpoints +
                        @viz_endpoints
-    @public_api_viz_endpoints = ["/api/v1/viz", "/api/v1/viz/#{@visualization.id}",
+    @public_api_viz_endpoints = ['/api/v1/viz', "/api/v1/viz/#{@visualization.id}",
                                  "/api/v2/viz/#{@visualization.id}/viz",
                                  "/api/v3/viz/#{@visualization.id}/viz"].freeze
-    @public_api_me_endpoint = ["/api/v3/me"].freeze
+    @public_api_me_endpoint = ['/api/v3/me'].freeze
     @public_api_endpoints = @public_api_viz_endpoints + @public_api_me_endpoint
     @private_api_endpoints = ["/api/v1/tables/#{@table.id}", "/api/v1/tables/#{@table.id}/columns",
-                              "/api/v1/imports", "/api/v1/users/#{@locked_user.id}/layers",
-                              "/api/v1/synchronizations", "/api/v1/geocodings",
+                              '/api/v1/imports', "/api/v1/users/#{@locked_user.id}/layers",
+                              '/api/v1/synchronizations', '/api/v1/geocodings',
                               "/api/v1/users/#{@locked_user.id}"]
     @headers = {}
-    @api_headers = { 'CONTENT_TYPE' => 'application/json', :format => "json" }
+    @api_headers = { 'CONTENT_TYPE' => 'application/json', :format => 'json' }
     @maintenance_mode_user = FactoryGirl.create(:valid_user, maintenance_mode: true)
   end
 
@@ -69,7 +68,7 @@ describe "UserState" do
           response.status.should == 302
           follow_redirect!
 
-          request.path.should include "unverified"
+          request.path.should include 'unverified'
         end
       end
 
@@ -109,7 +108,7 @@ describe "UserState" do
   end
 
   context 'locked state' do
-    shared_examples "locked user" do
+    shared_examples 'locked user' do
       it 'redirects to lockout for admin endpoints' do
         @admin_endpoints.each do |endpoint|
           login(@locked_user)
@@ -247,7 +246,7 @@ describe "UserState" do
           @public_api_endpoints.each do |endpoint|
             get endpoint, {}, @api_headers
             request.path.should == endpoint
-            response.status.should == if endpoint == "/api/v3/me"
+            response.status.should == if endpoint == '/api/v3/me'
                                         200
                                       else
                                         404
@@ -271,7 +270,7 @@ describe "UserState" do
           @public_api_endpoints.each do |endpoint|
             get endpoint, {}, @api_headers
             request.path.should == endpoint
-            response.status.should == if endpoint == "/api/v3/me"
+            response.status.should == if endpoint == '/api/v3/me'
                                         200
                                       else
                                         404
@@ -295,11 +294,13 @@ describe "UserState" do
   end
 
   context 'maintenance mode' do
-    shared_examples "maintenance mode" do
+    shared_examples 'maintenance mode' do
       it 'redirects to maintenance_mode for admin endpoints' do
         @admin_endpoints.each do |endpoint|
           login(@maintenance_mode_user)
-          endpoint = "/user/#{@maintenance_mode_user.username}/#{endpoint}" unless host.include?(@maintenance_mode_user.username)
+          unless host.include?(@maintenance_mode_user.username)
+            endpoint = "/user/#{@maintenance_mode_user.username}/#{endpoint}"
+          end
 
           get endpoint, {}, @headers
 
@@ -314,7 +315,9 @@ describe "UserState" do
       it 'returns 403 for private api endpoints' do
         @private_api_endpoints.each do |endpoint|
           login(@maintenance_mode_user)
-          endpoint = "/user/#{@maintenance_mode_user.username}/#{endpoint}" unless host.include?(@maintenance_mode_user.username)
+          unless host.include?(@maintenance_mode_user.username)
+            endpoint = "/user/#{@maintenance_mode_user.username}/#{endpoint}"
+          end
 
           get "#{endpoint}?api_key=#{@maintenance_mode_user.api_key}", {}, @api_headers
 
@@ -325,7 +328,9 @@ describe "UserState" do
       it 'returns 403 for public api viz endpoints' do
         @public_api_viz_endpoints.each do |endpoint|
           login(@maintenance_mode_user)
-          endpoint = "/user/#{@maintenance_mode_user.username}/#{endpoint}" unless host.include?(@maintenance_mode_user.username)
+          unless host.include?(@maintenance_mode_user.username)
+            endpoint = "/user/#{@maintenance_mode_user.username}/#{endpoint}"
+          end
 
           get endpoint, {}, @api_headers
 

@@ -5,7 +5,7 @@ require_relative '../../../app/models/visualization/overlays'
 
 describe 'cartodb:fix_unique_overlays' do
   before(:each) do
-    Rake.application.rake_require "tasks/fix_unique_overlays"
+    Rake.application.rake_require 'tasks/fix_unique_overlays'
     Rake::Task.define_task(:environment)
 
     member = Visualization::Member.new

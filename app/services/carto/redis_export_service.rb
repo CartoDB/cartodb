@@ -3,15 +3,19 @@ require 'json'
 # Version History
 # 1.0.0: export organization metadata
 module Carto
+
   module RedisExportServiceConfiguration
+
     CURRENT_VERSION = '1.0.0'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
     end
+
   end
 
   module RedisExportServiceImporter
+
     include RedisExportServiceConfiguration
 
     def restore_redis_from_json_export(exported_json_string)
@@ -65,9 +69,11 @@ module Carto
         redis_db.del(key)
       end
     end
+
   end
 
   module RedisExportServiceExporter
+
     include RedisExportServiceConfiguration
 
     def export_organization_json_string(organization)
@@ -109,9 +115,9 @@ module Carto
     end
 
     def export_dataservices(prefix)
-      $users_metadata_secondary.keys("#{prefix}:*").map { |key|
+      $users_metadata_secondary.keys("#{prefix}:*").map do |key|
         export_key($users_metadata_secondary, key)
-      }.reduce({}, &:merge)
+      end.reduce({}, &:merge)
     end
 
     def export_named_maps(user)
@@ -123,6 +129,7 @@ module Carto
         m.merge(named_map => Base64.encode64($tables_metadata_secondary.hget(named_maps_key, named_map)))
       end
       return {} unless named_maps_hash.any?
+
       { named_maps_key => named_maps_hash }
     end
 
@@ -146,12 +153,16 @@ module Carto
         }
       }
     end
+
   end
 
   # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
   # and having separated methods make handling and testing much easier.
   class RedisExportService
+
     include RedisExportServiceImporter
     include RedisExportServiceExporter
+
   end
+
 end

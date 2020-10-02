@@ -4,9 +4,9 @@ module Carto
   module Api
     module VisualizationSearcher
 
-      FILTER_SHARED_YES = 'yes'
-      FILTER_SHARED_NO = 'no'
-      FILTER_SHARED_ONLY = 'only'
+      FILTER_SHARED_YES = 'yes'.freeze
+      FILTER_SHARED_NO = 'no'.freeze
+      FILTER_SHARED_ONLY = 'only'.freeze
 
       # Creates a visualization query builder ready
       # to search based on params hash (can be request params).
@@ -26,8 +26,8 @@ module Carto
         shared = compose_shared(params[:shared], only_shared, exclude_shared)
         tags = params.fetch(:tags, '').split(',')
         tags = nil if tags.empty?
-        bbox_parameter = params.fetch(:bbox,nil)
-        privacy = params.fetch(:privacy,nil)
+        bbox_parameter = params.fetch(:bbox, nil)
+        privacy = params.fetch(:privacy, nil)
         only_with_display_name = params[:only_with_display_name] == 'true'
         with_dependent_visualizations = params[:with_dependent_visualizations].to_i
         only_published = params[:only_published] == 'true'
@@ -41,14 +41,12 @@ module Carto
                                        .with_types(types)
                                        .with_tags(tags)
 
-        if !bbox_parameter.blank?
+        unless bbox_parameter.blank?
           vqb.with_bounding_box(Carto::BoundingBoxUtils.parse_bbox_parameters(bbox_parameter))
         end
 
-        # FIXME Patch to exclude legacy visualization from data-library #5097
-        if only_with_display_name
-          vqb.with_display_name
-        end
+        # FIXME: Patch to exclude legacy visualization from data-library #5097
+        vqb.with_display_name if only_with_display_name
 
         vqb.with_published if only_published
 
@@ -59,10 +57,10 @@ module Carto
           when FILTER_SHARED_YES
             vqb.with_owned_by_or_shared_with_user_id(current_user.id)
           when FILTER_SHARED_NO
-            vqb.with_user_id(current_user.id) if !only_liked
+            vqb.with_user_id(current_user.id) unless only_liked
           when FILTER_SHARED_ONLY
             vqb.with_shared_with_user_id(current_user.id)
-                .with_user_id_not(current_user.id)
+               .with_user_id_not(current_user.id)
           end
 
           vqb.without_raster if exclude_raster
@@ -86,13 +84,12 @@ module Carto
         else
           user = Carto::User.where(username: CartoDB.extract_subdomain(request)).first
           raise Carto::ParamInvalidError.new(:username) unless user.present?
+
           vqb.with_user_id(user.id)
              .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
         end
 
-        if pattern.present?
-          vqb.with_partial_match(pattern)
-        end
+        vqb.with_partial_match(pattern) if pattern.present?
 
         vqb
       end
@@ -100,7 +97,7 @@ module Carto
       def presenter_options_from_hash(params)
         options = {}
 
-        params.each { |k, v| options[k.to_sym] = false if params[k].to_s == 'false' }
+        params.each { |k, _v| options[k.to_sym] = false if params[k].to_s == 'false' }
 
         options[:with_dependent_visualizations] = params[:with_dependent_visualizations].to_i
 
@@ -113,13 +110,17 @@ module Carto
         # INFO: this fits types and type into types, so only types is used for search.
         # types defaults to type if empty.
         # types defaults to derived if type is also empty.
-        types = params.fetch(:types, "").split(',')
-        type = params[:type].present? ? params[:type] : (types.empty? ? nil : types[0])
+        types = params.fetch(:types, '').split(',')
+        type = if params[:type].present?
+                 params[:type]
+               else
+                 (types.empty? ? nil : types[0])
+               end
 
         types = [type].compact if types.empty?
         types = [Carto::Visualization::TYPE_DERIVED] if types.empty?
 
-        return types
+        types
       end
 
       def compose_shared(shared, only_shared, exclude_shared)
@@ -132,17 +133,15 @@ module Carto
           FILTER_SHARED_NO
         elsif exclude_shared == false
           FILTER_SHARED_YES
-        else
-          # INFO: exclude_shared == nil && !only_shared
-          nil
         end
       end
 
-      def validate_parameters(types, parameters)
-        if (!params.fetch(:bbox, nil).nil? && (types.length > 1 || !types.include?(Carto::Visualization::TYPE_CANONICAL)))
+      def validate_parameters(types, _parameters)
+        if !params.fetch(:bbox, nil).nil? && (types.length > 1 || !types.include?(Carto::Visualization::TYPE_CANONICAL))
           raise CartoDB::BoundingBoxError.new('Filter by bbox is only supported for type table')
         end
       end
+
     end
   end
 end

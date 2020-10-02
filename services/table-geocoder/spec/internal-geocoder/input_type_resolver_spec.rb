@@ -2,21 +2,21 @@ require_relative '../../lib/internal-geocoder/input_type_resolver.rb'
 require_relative '../../../../spec/rspec_configuration.rb'
 
 class String
+
   # We just need this instead of adding the whole rails thing
   def present?
     self && !empty?
   end
+
 end
 
 describe CartoDB::InternalGeocoder::InputTypeResolver do
-
   before(:each) do
     @internal_geocoder = mock
     @input_type_resolver = CartoDB::InternalGeocoder::InputTypeResolver.new(@internal_geocoder)
   end
 
   describe '#type' do
-
     it 'should return an array characterizing the inputs for <namedplace, country_name, region_name, point>' do
       @internal_geocoder.stubs('kind').once.returns(:namedplace)
       @internal_geocoder.stubs('geometry_type').once.returns(:point)
@@ -26,7 +26,6 @@ describe CartoDB::InternalGeocoder::InputTypeResolver do
 
       @input_type_resolver.type.should == [:namedplace, :text, :text, :point]
     end
-
   end
 
   describe '#kind' do
@@ -70,8 +69,7 @@ describe CartoDB::InternalGeocoder::InputTypeResolver do
     it 'should return nil if no column or text are present' do
       @internal_geocoder.stubs('region_column').once.returns(nil)
       @internal_geocoder.stubs('regions').once.returns('')
-      @input_type_resolver.region_input_type.should == nil
+      @input_type_resolver.region_input_type.should.nil?
     end
   end
-
 end

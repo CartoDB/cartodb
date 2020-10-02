@@ -98,7 +98,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(500)
-        expect(response.body).to eq(errors: ["boom"])
+        expect(response.body).to eq(errors: ['boom'])
       end
     end
   end
@@ -140,7 +140,7 @@ describe Carto::Api::Public::DataObservatoryController do
     before(:each) do
       @doss = mock
       Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-      @doss.stubs(:sync).returns({sync_status: 'synced', sync_table: 'my_do_subscription'})
+      @doss.stubs(:sync).returns({ sync_status: 'synced', sync_table: 'my_do_subscription' })
       @doss.stubs(:parsed_entity_id).returns({})
     end
 
@@ -172,7 +172,6 @@ describe Carto::Api::Public::DataObservatoryController do
         expect(datasets.count).to eq 0
       end
     end
-
 
     context 'ordering' do
       it 'orders by id ascending by default' do
@@ -249,7 +248,7 @@ describe Carto::Api::Public::DataObservatoryController do
       before(:each) do
         @doss = mock
         Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-        @doss.stubs(:sync).returns({sync_status: 'unsynced'})
+        @doss.stubs(:sync).returns({ sync_status: 'unsynced' })
         @doss.stubs(:parsed_entity_id).returns({})
       end
 
@@ -273,7 +272,7 @@ describe Carto::Api::Public::DataObservatoryController do
       before(:each) do
         @doss = mock
         Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-        @doss.stubs(:create_sync!).returns({sync_status: 'syncing'})
+        @doss.stubs(:create_sync!).returns({ sync_status: 'syncing' })
         @doss.stubs(:parsed_entity_id).returns({})
       end
 
@@ -324,7 +323,7 @@ describe Carto::Api::Public::DataObservatoryController do
       @next_year = (Time.now + 1.year).to_s
       @datasets = [{
         dataset_id: 'carto.zzz.table1', expires_at: @next_year, status: 'active',
-        project: 'carto', dataset: 'zzz', table: 'table1', :type=>"dataset", :id=>"carto.zzz.table1"
+        project: 'carto', dataset: 'zzz', table: 'table1', type: 'dataset', id: 'carto.zzz.table1'
       }]
       @redis_key = "do:#{@user1.username}:datasets"
       $users_metadata.hset(@redis_key, 'bq', @datasets.to_json)
@@ -337,7 +336,7 @@ describe Carto::Api::Public::DataObservatoryController do
     before(:each) do
       @doss = mock
       Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-      @doss.stubs(:parsed_entity_id).returns({type: 'dataset'})
+      @doss.stubs(:parsed_entity_id).returns({ type: 'dataset' })
     end
 
     it 'checks if DO is enabled' do
@@ -360,7 +359,6 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
   end
-
 
   describe 'subscription_info' do
     before(:each) do
@@ -411,10 +409,7 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-
-
     context 'with right metadata' do
-
       it 'returns 200 with the metadata for a dataset' do
         get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers do |response|
           expect(response.status).to eq(200)
@@ -522,7 +517,6 @@ describe Carto::Api::Public::DataObservatoryController do
           expect(response.status).to eq(200)
         end
       end
-
     end
   end
 
@@ -546,7 +540,7 @@ describe Carto::Api::Public::DataObservatoryController do
       dataset_id = 'carto.zzz.table1'
       dataset_info = {
         id: dataset_id, project: 'carto', dataset: 'zzz', table: 'table1',
-        estimated_size: 10000, estimated_row_count: 1000, estimated_columns_count: 1000
+        estimated_size: 10_000, estimated_row_count: 1000, estimated_columns_count: 1000
       }
       @doss.stubs(:entity_info).with(dataset_id).returns(dataset_info)
       get_json endpoint_url(api_key: @master, entity_id: dataset_id), @headers do |response|
@@ -557,12 +551,11 @@ describe Carto::Api::Public::DataObservatoryController do
 
     it 'returns 404 if the dataset does not exist ' do
       dataset_id = 'carto.zzz.table1'
-      @doss.stubs(:entity_info).with(dataset_id).returns({ error: 'bad entity id'})
+      @doss.stubs(:entity_info).with(dataset_id).returns({ error: 'bad entity id' })
       get_json endpoint_url(api_key: @master, entity_id: dataset_id), @headers do |response|
         expect(response.status).to eq(404)
       end
     end
-
   end
 
   describe 'subscribe' do
@@ -592,7 +585,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'returns 404 if the dataset metadata does not exist' do
       post_json endpoint_url(api_key: @master), id: 'carto.abc.inexistent', type: 'dataset' do |response|
         expect(response.status).to eq(404)
-        expect(response.body).to eq(errors: "No metadata found for carto.abc.inexistent", errors_cause: nil)
+        expect(response.body).to eq(errors: 'No metadata found for carto.abc.inexistent', errors_cause: nil)
       end
     end
 
@@ -603,7 +596,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       post_json endpoint_url(api_key: @master), @payload do |response|
         expect(response.status).to eq(500)
-        expect(response.body).to eq(errors: ["boom"])
+        expect(response.body).to eq(errors: ['boom'])
       end
     end
 
@@ -690,7 +683,6 @@ describe Carto::Api::Public::DataObservatoryController do
         }
         expect(response.body).to eq expected_response
       end
-
     end
 
     it 'subscribes if instant licensing is enabled and delivery time is 0' do
@@ -728,7 +720,6 @@ describe Carto::Api::Public::DataObservatoryController do
           }
           expect(response.body).to eq expected_response
         end
-
       end
     end
 
@@ -776,7 +767,6 @@ describe Carto::Api::Public::DataObservatoryController do
         end
       end
     end
-
   end
 
   describe 'unsubscribe' do
@@ -804,7 +794,7 @@ describe Carto::Api::Public::DataObservatoryController do
   end
 
   def populate_do_metadata
-    with_do_connection() do |connection|
+    with_do_connection do |connection|
       queries = %{
         CREATE TABLE providers(id text, name text);
          INSERT INTO providers VALUES ('provider', 'CARTO');
@@ -841,7 +831,7 @@ describe Carto::Api::Public::DataObservatoryController do
   end
 
   def unpopulate_do_metadata
-    with_do_connection() do |connection|
+    with_do_connection do |connection|
       queries = %{
         DROP TABLE datasets;
         DROP TABLE geographies;

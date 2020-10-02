@@ -3,13 +3,14 @@ require_relative './source_file'
 module CartoDB
   module Importer2
     class OsmSplitter
-      LAYER_NAMES = %w{ points lines multilinestrings multipolygons }
+
+      LAYER_NAMES = %w{points lines multilinestrings multipolygons}.freeze
 
       def self.support?(source_file)
         source_file.extension == '.osm'
       end
 
-      def initialize(source_file, temporary_directory = nil, ogr2ogr_config = nil)
+      def initialize(source_file, _temporary_directory = nil, _ogr2ogr_config = nil)
         @source_file = source_file
       end
 
@@ -29,6 +30,7 @@ module CartoDB
       end
 
       attr_reader :source_file
+
     end # OsmSplitter
   end # Importer 2
 end # CartoDB

@@ -1,4 +1,5 @@
 module DatabaseConnectionHelper
+
   def with_connection(options)
     connection = ::Sequel.connect(options)
     begin
@@ -35,4 +36,5 @@ module DatabaseConnectionHelper
     )
     with_connection do_configuration, &block
   end
+
 end

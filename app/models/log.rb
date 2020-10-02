@@ -9,10 +9,10 @@ module CartoDB
     MAX_ENTRY_LENGTH = 256
     MAX_LOG_ENTRIES = 1000
 
-    ENTRY_POSTFIX = "\n"
+    ENTRY_POSTFIX = "\n".freeze
 
-    ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}"
-    ENTRY_REHYDRATED_FORMAT = "%s#{ENTRY_POSTFIX}"
+    ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}".freeze
+    ENTRY_REHYDRATED_FORMAT = "%s#{ENTRY_POSTFIX}".freeze
 
     HALF_OF_LOG_MARK = "===LOG HALF===\n".freeze
     END_OF_LOG_MARK  = '===LOG END==='.freeze
@@ -27,7 +27,7 @@ module CartoDB
       TYPE_SYNCHRONIZATION,
       TYPE_USER_CREATION,
       TYPE_GEOCODING
-    ]
+    ].freeze
 
     # @param id Numeric
     # @param type String
@@ -39,14 +39,14 @@ module CartoDB
     def after_initialize
       super
 
-      if (MAX_LOG_ENTRIES < 2 || MAX_LOG_ENTRIES % 2 != 0)
+      if MAX_LOG_ENTRIES < 2 || MAX_LOG_ENTRIES.odd?
         raise StandardError.new('MAX_LOG_ENTRIES must be greater than 2 and an even number')
       end
 
       @dirty = true if new?
 
       clear_entries # Reset internal lists
-      rehydrate_entries_from_string(self.entries)  # And now load if proceeds
+      rehydrate_entries_from_string(entries) # And now load if proceeds
     end
 
     def clear
@@ -61,9 +61,7 @@ module CartoDB
       # Extra decoration only for string presentation
       list = @fixed_entries_half
       circular_half = ordered_circular_entries_half
-      if circular_half.length > 0
-        list = list + [HALF_OF_LOG_MARK]
-      end
+      list += [HALF_OF_LOG_MARK] if circular_half.length > 0
       list = (list + circular_half + [END_OF_LOG_MARK]).join('')
     end
 
@@ -74,29 +72,29 @@ module CartoDB
         @dirty = false
       end
     rescue StandardError => e
-      CartoDB.notify_error("Error appending log, likely an encoding issue",
-        {
-          error_info: "id: #{id}. #{self.inspect} --------- #{e.backtrace.join}"
-        })
+      CartoDB.notify_error('Error appending log, likely an encoding issue',
+                           {
+                             error_info: "id: #{id}. #{inspect} --------- #{e.backtrace.join}"
+                           })
       begin
         fix_entries_encoding
-        self.save
-      rescue StandardError => e2
-        CartoDB.notify_exception(e2,
-          {
-            message: "Error saving fallback log info.",
-            error_info: "id: #{id}"
-          })
+        save
+      rescue StandardError => e
+        CartoDB.notify_exception(e,
+                                 {
+                                   message: 'Error saving fallback log info.',
+                                   error_info: "id: #{id}"
+                                 })
         begin
           self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}\n" +
                          END_OF_LOG_MARK
-          self.save
-        rescue StandardError => e3
-          CartoDB.notify_exception(e3,
-            {
-              message: "Error saving stripped fallback log info.",
-              error_info: "id: #{id}"
-            })
+          save
+        rescue StandardError => e
+          CartoDB.notify_exception(e,
+                                   {
+                                     message: 'Error saving stripped fallback log info.',
+                                     error_info: "id: #{id}"
+                                   })
         end
       end
     end
@@ -105,7 +103,7 @@ module CartoDB
     def append(content, truncate = true, timestamp = Time.now.utc)
       @dirty = true
       content.slice!(MAX_ENTRY_LENGTH..-1) if truncate
-      add_to_entries(ENTRY_FORMAT % [ timestamp, content ])
+      add_to_entries(format(ENTRY_FORMAT, timestamp, content))
     end
 
     def append_and_store(content, truncate = true, timestamp = Time.now.utc)
@@ -135,23 +133,23 @@ module CartoDB
     end
 
     def rehydrate_entries_from_string(source)
-      existing_entries = source.nil? ? [] : source.split("#{ENTRY_POSTFIX}")
+      existing_entries = source.nil? ? [] : source.split(ENTRY_POSTFIX.to_s)
 
       # If rehydrated data, assume nothing changed yet
       @dirty = false if existing_entries.length > 0
 
       @fixed_entries_half = existing_entries.slice!(0, half_max_size)
-                                            .map { |entry| ENTRY_REHYDRATED_FORMAT % [entry] }
-      @fixed_entries_half = [] if @fixed_entries_half.nil?  # Log was empty
+                                            .map { |entry| format(ENTRY_REHYDRATED_FORMAT, entry) }
+      @fixed_entries_half = [] if @fixed_entries_half.nil? # Log was empty
 
-      if (existing_entries.length > 0)
+      if existing_entries.length > 0
         index = existing_entries.length > half_max_size ? -half_max_size : -existing_entries.length
         @circular_entries_half = existing_entries.slice(index, half_max_size)
-                                                 .map { |entry| ENTRY_REHYDRATED_FORMAT % [entry] }
+                                                 .map { |entry| format(ENTRY_REHYDRATED_FORMAT, entry) }
         # Fill circular part
         if @circular_entries_half.length < half_max_size
           @circular_index = @circular_entries_half.length
-          @circular_entries_half = @circular_entries_half + Array.new(half_max_size - @circular_entries_half.length)
+          @circular_entries_half += Array.new(half_max_size - @circular_entries_half.length)
         else
           @circular_index = 0
         end
@@ -173,12 +171,12 @@ module CartoDB
     end
 
     def fix_entries_encoding
-      @fixed_entries_half = @fixed_entries_half.map { |entry|
+      @fixed_entries_half = @fixed_entries_half.map do |entry|
         entry.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????') unless entry.nil?
-      }
-      @circular_entries_half = @circular_entries_half.map { |entry|
+      end
+      @circular_entries_half = @circular_entries_half.map do |entry|
         entry.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????') unless entry.nil?
-      }
+      end
       @dirty = true
 
       self.entries = collect_entries
@@ -186,7 +184,7 @@ module CartoDB
 
     def validate
       super
-      errors.add(:type, 'unsupported type') unless SUPPORTED_TYPES.include?(self.type)
+      errors.add(:type, 'unsupported type') unless SUPPORTED_TYPES.include?(type)
     end
 
     def before_save

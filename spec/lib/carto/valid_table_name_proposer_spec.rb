@@ -1,6 +1,7 @@
 require_relative '../../../lib/carto/valid_table_name_proposer.rb'
 
 module Carto
+
   describe ValidTableNameProposer do
     before(:all) do
       @valid_table_name_proposer = Carto::ValidTableNameProposer.new
@@ -57,7 +58,7 @@ module Carto
       it 'should find unused names when taken_names is specified' do
         taken = %w(manolo_escobar manolo_escobar_1)
 
-        valid_name = @valid_table_name_proposer.propose_valid_table_name("manolo_escobar", taken_names: taken)
+        valid_name = @valid_table_name_proposer.propose_valid_table_name('manolo_escobar', taken_names: taken)
 
         valid_name.should eq 'manolo_escobar_2'
       end
@@ -87,4 +88,5 @@ module Carto
       end
     end
   end
+
 end

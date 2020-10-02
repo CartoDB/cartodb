@@ -3,6 +3,7 @@ require_relative '../../../../lib/resque/user_jobs'
 module CartoDB
   module Importer2
     class MailNotifier
+
       MIN_IMPORT_TIME_TO_NOTIFY = 3 * 60 # seconds
 
       def initialize(data_import, results, resque)
@@ -27,9 +28,9 @@ module CartoDB
       def send!
         user_id = @data_import.user_id
         filenames = extract_file_names(@data_import)
-        imported_tables = @results.select {|r| r.success }.length
+        imported_tables = @results.select { |r| r.success }.length
         total_tables = @results.length
-        first_imported_table = imported_tables == 0 ? nil : @results.select {|r| r.success }.first
+        first_imported_table = imported_tables == 0 ? nil : @results.select { |r| r.success }.first
         first_table = @results.first
         error_text = @data_import.get_error_text
         errors = error_text.present? ? error_text : nil
@@ -58,7 +59,7 @@ module CartoDB
             # Connector imports have all its parameters in service_item_id
             # but we don't want to make them visible because they may contain
             # credentials
-            files << "(connector)"
+            files << '(connector)'
           elsif !data_import.service_item_id.blank?
             # Imports from files, URLs  have a service_item_id
             files << File.basename(data_import.service_item_id)
@@ -72,9 +73,9 @@ module CartoDB
       end
 
       def mail_sent?
-        return @mail_sent
+        @mail_sent
       end
+
     end
   end
 end
-

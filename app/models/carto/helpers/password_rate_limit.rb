@@ -1,4 +1,5 @@
 module Carto::PasswordRateLimit
+
   LOGIN_NOT_RATE_LIMITED = -1
 
   def rate_limit_password_key
@@ -27,4 +28,5 @@ module Carto::PasswordRateLimit
   def reset_password_rate_limit
     $users_metadata.DEL rate_limit_password_key if password_rate_limit_configured?
   end
+
 end

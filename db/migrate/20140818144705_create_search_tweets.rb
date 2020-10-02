@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
+    SequelRails.connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
     create_table :search_tweets do
       Uuid      :id,                primary_key: true, null: false, unique: false, default: Sequel.lit('uuid_generate_v4()')
       Uuid      :user_id,           null: false

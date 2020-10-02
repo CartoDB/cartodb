@@ -6,6 +6,7 @@ require_dependency 'account_creator'
 
 module Carto
   class OauthLoginController < ApplicationController
+
     include AccountCreator
 
     ssl_required  :github, :google
@@ -75,29 +76,27 @@ module Carto
     def signup(api)
       org_name = @organization_name
       @organization = ::Organization.where(name: org_name).first if org_name.present?
-      unless @organization.present? && signup_page_enabled?(api)
-        return redirect_to CartoDB.url(self, 'login')
-      end
+      return redirect_to CartoDB.url(self, 'login') unless @organization.present? && signup_page_enabled?(api)
 
       account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
-                        with_organization(@organization).
-                        with_invitation_token(@invitation_token).
-                        with_oauth_api(api)
+                        with_organization(@organization)
+                                                   .with_invitation_token(@invitation_token)
+                                                   .with_oauth_api(api)
 
       if account_creator.valid?
         trigger_account_creation(account_creator)
-        return render('shared/signup_confirmation')
+        render('shared/signup_confirmation')
       else
         @user = account_creator.user
         errors = account_creator.validation_errors
 
         if errors[:organization].present?
           @signup_source = 'Organization'
-          return render('shared/signup_issue')
+          render('shared/signup_issue')
         else
           @oauth_fields = api.hidden_fields
           flash.now[:error] = 'User not valid' if @user.errors.empty?
-          return render('signup/signup', status: @user.errors.empty? ? 200 : 422)
+          render('signup/signup', status: @user.errors.empty? ? 200 : 422)
         end
       end
     end
@@ -105,5 +104,6 @@ module Carto
     def signup_page_enabled?(api)
       api.config.auth_enabled?(@organization) && @organization.whitelisted_email_domains.present?
     end
+
   end
 end

@@ -2,9 +2,7 @@ require_relative '../../spec_helper'
 require_relative '../../../app/models/carto/group'
 
 describe Carto::Group do
-
   describe '#valid_group_name' do
-
     it 'returns valid names' do
       valid_names = ['A Group', 'My5Group']
       valid_names.each do |valid_name|
@@ -25,7 +23,6 @@ describe Carto::Group do
         Carto::Group.valid_group_name(name).should == valid
       end
     end
-
   end
 
   describe 'organization behaviour' do

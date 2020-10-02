@@ -21,13 +21,9 @@ class Carto::VisualizationQueryFilterer
 
     query = query.where(params.slice(*REGULAR_FILTERS).compact)
 
-    if params[:excluded_ids]
-      query = query.where('visualizations.id not in (?)', params[:excluded_ids])
-    end
+    query = query.where('visualizations.id not in (?)', params[:excluded_ids]) if params[:excluded_ids]
 
-    if params[:user_id_not]
-      query = query.where('visualizations.user_id != ?', params[:user_id_not])
-    end
+    query = query.where('visualizations.user_id != ?', params[:user_id_not]) if params[:user_id_not]
 
     if params[:liked_by_user_id]
       query = query
@@ -67,7 +63,8 @@ class Carto::VisualizationQueryFilterer
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
       shared_with_viz_ids = ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(
-        params[:owned_by_or_shared_with_user_id]).build.uniq.pluck('visualizations.id')
+        params[:owned_by_or_shared_with_user_id]
+      ).build.uniq.pluck('visualizations.id')
       query = if shared_with_viz_ids.empty?
                 query.where(' "visualizations"."user_id" = (?)', params[:owned_by_or_shared_with_user_id])
               else
@@ -87,7 +84,7 @@ class Carto::VisualizationQueryFilterer
                               AND (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
                               #{exclude_only_synchronized(params[:exclude_imported_remote_visualizations])}
                           })
-                   .where("edi.id IS NULL")
+                   .where('edi.id IS NULL')
     end
 
     if params[:exclude_imported_remote_visualizations]
@@ -131,13 +128,9 @@ class Carto::VisualizationQueryFilterer
       query = query.where("visualizations.bbox IS NOT NULL AND visualizations.bbox && #{bbox_sql}")
     end
 
-    if params[:only_with_display_name]
-      query = query.where("display_name IS NOT NULL")
-    end
+    query = query.where('display_name IS NOT NULL') if params[:only_with_display_name]
 
-    if params[:organization_id]
-      query = query.joins(:user).where(users: { organization_id: params[:organization_id] })
-    end
+    query = query.joins(:user).where(users: { organization_id: params[:organization_id] }) if params[:organization_id]
 
     if params[:only_published]
       # "Published" is only required for builder maps
@@ -159,7 +152,7 @@ class Carto::VisualizationQueryFilterer
   private
 
   def exclude_only_synchronized(exclude_imported_remote_visualizations)
-    "AND edi.synchronization_id IS NOT NULL" unless exclude_imported_remote_visualizations
+    'AND edi.synchronization_id IS NOT NULL' unless exclude_imported_remote_visualizations
   end
 
   def recipient_ids(user)

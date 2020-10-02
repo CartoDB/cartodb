@@ -17,6 +17,7 @@ describe 'UserMigration' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     user = FactoryGirl.build(:valid_user).save
     next unless user.in_database.table_exists?('raster_overviews')
+
     carto_user = Carto::User.find(user.id)
     user_attributes = carto_user.attributes
     user.in_database.execute('CREATE TABLE i_hate_raster(rast raster)')
@@ -46,7 +47,9 @@ describe 'UserMigration' do
   describe 'legacy functions' do
     before(:all) do
       class DummyTester
+
         include CartoDB::DataMover::LegacyFunctions
+
       end
       @dummy_tester = DummyTester.new
     end
@@ -89,7 +92,7 @@ describe 'UserMigration' do
 
     it 'skips importing legacy functions using fixture' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)", "FUNCTION sumita(integer,integer)"].freeze
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ['FUNCTION increment(integer)', 'FUNCTION sumita(integer,integer)'].freeze
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
@@ -198,7 +201,6 @@ describe 'UserMigration' do
 
         import.state.should eq 'complete'
         Organization[@organization.id].users.first.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'st_text'").should eq 0
-
       end
     end
   end
@@ -207,10 +209,10 @@ describe 'UserMigration' do
     include_context 'organization with users helper'
 
     records =
-    [
-      { name: 'carto', description: 'awesome' },
-      { name: 'user-mover', description: 'insanity' }
-    ]
+      [
+        { name: 'carto', description: 'awesome' },
+        { name: 'user-mover', description: 'insanity' }
+      ]
 
     agg_ds_config =
       {
@@ -243,9 +245,9 @@ describe 'UserMigration' do
         records.each { |row| @table1.insert_row!(row) }
         create_database('test_migration', @organization.owner) if migrate_metadata
         @owner_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_owner, name: unique_name('api_key'),
-                                                           grants: [{ type: "apis", apis: ["maps", "sql"] }])
+                                                           grants: [{ type: 'apis', apis: ['maps', 'sql'] }])
         @user1_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_1, name: unique_name('api_key'),
-                                                           grants: [{ type: "apis", apis: ["maps", "sql"] }])
+                                                           grants: [{ type: 'apis', apis: ['maps', 'sql'] }])
         @carto_organization.reload
       end
 
@@ -288,11 +290,11 @@ describe 'UserMigration' do
           records.each.with_index { |row, index| @table1.record(index + 1).should include(row) }
           if migrate_metadata
             new_organization.owner.in_database(as: :superuser) do |db|
-              db.exec_query("SELECT cartodb.cdb_extension_reload()")
+              db.exec_query('SELECT cartodb.cdb_extension_reload()')
               ds_config = db.exec_query("SELECT * from cdb_conf where key = 'geocoder_server_config'").first['value']
               fdws_config = db.exec_query("SELECT * from cdb_conf where key = 'fdws'").first['value']
-              expect(ds_config).to match /dbname=test_migration/
-              expect(fdws_config).to match /\"dbname\":\"test_migration\"/
+              expect(ds_config).to match(/dbname=test_migration/)
+              expect(fdws_config).to match(/\"dbname\":\"test_migration\"/)
             end
           end
         end
@@ -363,8 +365,8 @@ describe 'UserMigration' do
                                                            name: 'Some ApiKey',
                                                            grants: [
                                                              {
-                                                               type: "apis",
-                                                               apis: ["maps", "sql"]
+                                                               type: 'apis',
+                                                               apis: ['maps', 'sql']
                                                              },
                                                              {
                                                                type: 'database',
@@ -454,9 +456,9 @@ describe 'UserMigration' do
 
       api_key = access_token.api_key
       with_connection_from_api_key(api_key) do |connection|
-        connection.execute("create table test_table(id INT)")
-        connection.execute("insert into test_table values (999)")
-        connection.execute("select id from test_table") do |result|
+        connection.execute('create table test_table(id INT)')
+        connection.execute('insert into test_table values (999)')
+        connection.execute('select id from test_table') do |result|
           result[0]['id'].should eq '999'
         end
       end
@@ -517,15 +519,15 @@ describe 'UserMigration' do
       access_token = oauth_app_user.oauth_access_tokens.first
       api_key = access_token.api_key
       with_connection_from_api_key(api_key) do |connection|
-        connection.execute("drop table test_table")
+        connection.execute('drop table test_table')
         connection.execute("select relname from pg_class where relname = 'test_table'") do |result|
           result.count eq 0
         end
-        connection.execute("create table test_table(id INT)")
+        connection.execute('create table test_table(id INT)')
       end
 
       check_cdb_conf_query = "SELECT value->>'ownership_role_name' as c from cdb_conf where key = 'api_keys_' || '#{api_key.db_role}';"
-      user.in_database(as: :superuser).execute("SELECT cartodb.cdb_extension_reload()")
+      user.in_database(as: :superuser).execute('SELECT cartodb.cdb_extension_reload()')
       result = user.in_database(as: :superuser).execute(check_cdb_conf_query)
       expect(result.count).to eq 1
       Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
@@ -535,9 +537,9 @@ describe 'UserMigration' do
     it 'api keys keeps the grants and you can drop tables after migration' do
       regular_api_key = @carto_user.api_keys.regular.first
       with_connection_from_api_key(regular_api_key) do |connection|
-        connection.execute("create table test_table(id INT)")
-        connection.execute("insert into test_table values (999)")
-        connection.execute("select id from test_table") do |result|
+        connection.execute('create table test_table(id INT)')
+        connection.execute('insert into test_table values (999)')
+        connection.execute('select id from test_table') do |result|
           result[0]['id'].should eq '999'
         end
       end
@@ -584,7 +586,7 @@ describe 'UserMigration' do
       user.api_keys.select { |a| a.type == 'master' }.first.table_permissions_from_db.count.should be > 0
 
       with_connection_from_api_key(user.api_keys.master.first) do |connection|
-        connection.execute("drop table test_table")
+        connection.execute('drop table test_table')
         connection.execute("select relname from pg_class where relname = 'test_table'") do |result|
           result.count eq 0
         end

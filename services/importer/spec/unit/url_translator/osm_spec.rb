@@ -5,9 +5,9 @@ include CartoDB::Importer2
 describe UrlTranslator::OSM do
   describe '#translate' do
     it 'returns a translated OSM url' do
-      url = "http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M"
+      url = 'http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M'
       translated = UrlTranslator::OSM.new.translate(url)
-      translated.should match /api.openstreetmap.org/
+      translated.should match(/api.openstreetmap.org/)
     end
 
     it 'returns the url if already translated' do
@@ -19,7 +19,7 @@ describe UrlTranslator::OSM do
       not_supported = 'http://bogus.com'
       UrlTranslator::OSM.new.translate(not_supported).should eq not_supported
     end
-  end #translate
+  end # translate
 
   describe '#bounding_box_for' do
     it 'returns a bouding box from a OSM url' do
@@ -30,29 +30,28 @@ describe UrlTranslator::OSM do
         40.02077883605958
       ]
 
-      url = "http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M"
+      url = 'http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M'
       UrlTranslator::OSM.new.bounding_box_for(url)
-        .should eq bounding_box.join(',')
+                        .should eq bounding_box.join(',')
     end
-  end #bounding_box_for
+  end # bounding_box_for
 
   describe '#supported?' do
     it 'returns true if URL is from OSM' do
-      url = "http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M"
+      url = 'http://www.openstreetmap.org/?lat=40.01005&lon=-105.27517&zoom=15&layers=M'
       UrlTranslator::OSM.new.supported?(url)
-        .should eq true
+                        .should eq true
       UrlTranslator::OSM.new.supported?('http://bogus.com')
-        .should eq false
+                        .should eq false
     end
-  end #supported?
+  end # supported?
 
   describe '#translated?' do
     it 'returns true if URL already translated' do
       UrlTranslator::OSM.new.translated?('http://api.openstreetmap.org')
-        .should eq true
+                        .should eq true
       UrlTranslator::OSM.new.translated?('http://www.openstreetmap.org')
-        .should eq false
+                        .should eq false
     end
-  end #translated?
+  end # translated?
 end # UrlTranslator::OSM
-

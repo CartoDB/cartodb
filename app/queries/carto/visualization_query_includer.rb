@@ -16,7 +16,7 @@ class Carto::VisualizationQueryIncluder
       %{
         LEFT JOIN likes
           ON "likes"."subject" = "visualizations"."id"
-          AND "likes"."actor" = #{ActiveRecord::Base::sanitize(user_id)}
+          AND "likes"."actor" = #{ActiveRecord::Base.sanitize(user_id)}
       }.squish
     )
   end

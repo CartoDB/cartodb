@@ -4,15 +4,16 @@ require 'factories/carto_visualizations'
 
 module Carto
   module Api
+
     describe Carto::Api::LegendsController do
       include Carto::Factories::Visualizations, HelperMethods
 
       let(:category_legend_payload) do
         {
-          pre_html: "<h3>Es acaso</h3>",
-          post_html: "<h3>el mejor artista del mundo?</h3>",
-          title: "La verdad",
-          type: "category",
+          pre_html: '<h3>Es acaso</h3>',
+          post_html: '<h3>el mejor artista del mundo?</h3>',
+          title: 'La verdad',
+          type: 'category',
           conf: {
             columns: ['manolo', 'escobar']
           },
@@ -22,10 +23,10 @@ module Carto
 
       let(:custom_legend_payload) do
         {
-          pre_html: "<h3>Es acaso</h3>",
-          post_html: "<h3>el mejor artista del mundo?</h3>",
-          title: "La verdad",
-          type: "custom",
+          pre_html: '<h3>Es acaso</h3>',
+          post_html: '<h3>el mejor artista del mundo?</h3>',
+          title: 'La verdad',
+          type: 'custom',
           conf: {
             columns: ['manolo', 'escobar']
           },
@@ -42,10 +43,10 @@ module Carto
 
       let(:bubble_legend_payload) do
         {
-          pre_html: "<h3>Es acaso</h3>",
-          post_html: "<h3>el mejor artista del mundo?</h3>",
-          title: "La verdad",
-          type: "bubble",
+          pre_html: '<h3>Es acaso</h3>',
+          post_html: '<h3>el mejor artista del mundo?</h3>',
+          title: 'La verdad',
+          type: 'bubble',
           conf: {
             columns: ['manolo', 'escobar']
           },
@@ -57,32 +58,32 @@ module Carto
 
       let(:choropleth_legend_payload) do
         {
-          pre_html: "<h3>Es acaso</h3>",
-          post_html: "<h3>el mejor artista del mundo?</h3>",
-          title: "La verdad",
-          type: "choropleth",
+          pre_html: '<h3>Es acaso</h3>',
+          post_html: '<h3>el mejor artista del mundo?</h3>',
+          title: 'La verdad',
+          type: 'choropleth',
           conf: {
             columns: ['manolo', 'escobar']
           },
           definition: {
-            prefix: "123",
-            suffix: "foo"
+            prefix: '123',
+            suffix: 'foo'
           }
         }
       end
 
       let(:custom_choropleth_legend_payload) do
         {
-          pre_html: "<h3>Es acaso</h3>",
-          post_html: "<h3>el mejor artista del mundo?</h3>",
-          title: "La verdad",
-          type: "custom_choropleth",
+          pre_html: '<h3>Es acaso</h3>',
+          post_html: '<h3>el mejor artista del mundo?</h3>',
+          title: 'La verdad',
+          type: 'custom_choropleth',
           conf: {
             columns: ['manolo', 'escobar']
           },
           definition: {
-            prefix: "123",
-            suffix: "foo",
+            prefix: '123',
+            suffix: 'foo',
             colors: [
               { color: '#fff' },
               { color: '#fabada' },
@@ -402,8 +403,8 @@ module Carto
       end
 
       describe '#show' do
-        before (:all) { @legend = Legend.create!(custom_legend_payload.merge(layer_id: @layer.id)) }
-        after  (:all) { @legend.destroy }
+        before(:all) { @legend = Legend.create!(custom_legend_payload.merge(layer_id: @layer.id)) }
+        after(:all) { @legend.destroy }
 
         def show_legend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
           legend_url(user_domain: user.subdomain,
@@ -442,8 +443,8 @@ module Carto
       end
 
       describe '#update' do
-        before (:all) { @legend = Legend.create!(custom_legend_payload.merge(layer_id: @layer.id)) }
-        after  (:all) { @legend.destroy }
+        before(:all) { @legend = Legend.create!(custom_legend_payload.merge(layer_id: @layer.id)) }
+        after(:all) { @legend.destroy }
 
         def update_legend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
           legend_url(user_domain: user.subdomain,
@@ -533,8 +534,8 @@ module Carto
       end
 
       describe '#delete' do
-        before (:each) { @legend = Legend.create!(custom_legend_payload.merge(layer_id: @layer.id)) }
-        after  (:each) { @legend.destroy }
+        before(:each) { @legend = Legend.create!(custom_legend_payload.merge(layer_id: @layer.id)) }
+        after(:each) { @legend.destroy }
 
         def delete_legend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
           legend_url(user_domain: user.subdomain,
@@ -576,5 +577,6 @@ module Carto
         end
       end
     end
+
   end
 end

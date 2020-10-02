@@ -1,4 +1,5 @@
 class VisualizationsMigration < Sequel::Migration
+
   def up
     create_table :visualizations do
       String      :id,          null: false, primary_key: true
@@ -7,10 +8,10 @@ class VisualizationsMigration < Sequel::Migration
       String      :map_id,      index: true
       String      :type
     end
-  end #up
-  
+  end # up
+
   def down
     drop_table :visualizations
-  end #down
-end # VisualizationsMigration
+  end # down
 
+end # VisualizationsMigration

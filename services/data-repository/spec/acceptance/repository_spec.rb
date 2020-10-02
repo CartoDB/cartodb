@@ -16,6 +16,5 @@ describe DataRepository do
       repository.must_be_instance_of DataRepository::Repository
       repository.backend.must_be_instance_of DataRepository::Backend::Redis
     end
-  end # DataRepository.new 
+  end # DataRepository.new
 end # DataRepository
-

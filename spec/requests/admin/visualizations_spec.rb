@@ -8,7 +8,7 @@ require 'helpers/unique_names_helper'
 
 def app
   CartoDB::Application.new
-end #app
+end # app
 
 describe Admin::VisualizationsController do
   include UniqueNamesHelper
@@ -19,6 +19,7 @@ describe Admin::VisualizationsController do
 
   # Mock for a Rails context
   class ContextMock
+
     def initialize(global_context)
       @global_context = global_context
     end
@@ -30,6 +31,7 @@ describe Admin::VisualizationsController do
     def polymorphic_path(*args)
       @global_context.polymorphic_path(*args)
     end
+
   end
 
   before(:all) do
@@ -39,7 +41,7 @@ describe Admin::VisualizationsController do
     @user.stubs(:should_load_common_data?).returns(false)
 
     @headers = {
-      'CONTENT_TYPE'  => 'application/json',
+      'CONTENT_TYPE' => 'application/json'
     }
     @mock_context = ContextMock.new(self)
   end
@@ -60,12 +62,12 @@ describe Admin::VisualizationsController do
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
       login_as(@user, scope: @user.username)
 
-      get "/viz", {}, @headers
+      get '/viz', {}, @headers
       last_response.status.should == 200
     end
 
     it 'returns 403 if user not logged in' do
-      get "/viz", {}, @headers
+      get '/viz', {}, @headers
       last_response.status.should == 302
     end
   end # GET /viz
@@ -166,7 +168,7 @@ describe Admin::VisualizationsController do
         it 'never for vizjson2 visualizations' do
           @user.stubs(:builder_enabled).returns(true)
           @user.stubs(:builder_enabled?).returns(true)
-          Carto::Visualization::any_instance.stubs(:uses_vizjson2?).returns(true)
+          Carto::Visualization.any_instance.stubs(:uses_vizjson2?).returns(true)
 
           login_as(@user, scope: @user.username)
           get public_visualizations_show_path(id: @id), {}, @headers
@@ -249,18 +251,18 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{id}/public_map", {}, @headers
       last_response.status.should == 200
-      last_response.headers["Surrogate-Key"].should_not be_empty
-      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+      last_response.headers['Surrogate-Key'].should_not be_empty
+      last_response.headers['Surrogate-Key'].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
     end
 
     it 'returns public map for org users' do
       org = OrganizationFactory.new.new_organization.save
 
-      user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
+      user_a = create_user(quota_in_bytes: 123_456_789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
 
-      vis_id = new_table({user_id: user_a.id, privacy: ::UserTable::PRIVACY_PUBLIC}).save.reload.table_visualization.id
+      vis_id = new_table({ user_id: user_a.id, privacy: ::UserTable::PRIVACY_PUBLIC }).save.reload.table_visualization.id
 
       host! "#{org.name}.localhost.lan"
       get "/viz/#{vis_id}/public_map", @headers
@@ -270,10 +272,10 @@ describe Admin::VisualizationsController do
     it 'go to password protected page if the organization viz is password protected' do
       org = OrganizationFactory.new.new_organization.save
 
-      user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
+      user_a = create_user(quota_in_bytes: 123_456_789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
-      id = factory(owner=user_a).fetch('id')
+      id = factory(owner = user_a).fetch('id')
       visualization = CartoDB::Visualization::Member.new(id: id).fetch
       visualization.version = 2
       visualization.password = 'foobar'
@@ -310,7 +312,6 @@ describe Admin::VisualizationsController do
   end
 
   describe 'public_visualizations_show_map' do
-
     it 'does not load daily mapviews stats' do
       CartoDB::Visualization::Stats.expects(:mapviews).never
       CartoDB::Visualization::Stats.any_instance.expects(:to_poro).never
@@ -325,7 +326,6 @@ describe Admin::VisualizationsController do
       get public_visualizations_show_map_url(id: id), {}, @headers
       last_response.status.should == 200
     end
-
   end
 
   describe 'GET /viz/:id/public' do
@@ -358,7 +358,7 @@ describe Admin::VisualizationsController do
 
   describe 'GET /tables/:id/embed_map' do
     it 'returns 404 for nonexisting tables when table name is used' do
-      get "/tables/tablethatdoesntexist/embed_map", {}, @headers
+      get '/tables/tablethatdoesntexist/embed_map', {}, @headers
       last_response.status.should == 404
     end
   end
@@ -368,35 +368,35 @@ describe Admin::VisualizationsController do
       table = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
       name = table.table_visualization.name
 
-      get "/viz/#{URI::encode(name)}/embed_map", {}, @headers
+      get "/viz/#{URI.encode(name)}/embed_map", {}, @headers
       last_response.status.should == 200
-      last_response.headers["X-Cache-Channel"].should_not be_empty
-      last_response.headers["X-Cache-Channel"].should include(table.name)
-      last_response.headers["X-Cache-Channel"].should include(table.table_visualization.varnish_key)
-      last_response.headers["Surrogate-Key"].should_not be_empty
-      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
-      last_response.headers["Surrogate-Key"].should include(table.table_visualization.surrogate_key)
+      last_response.headers['X-Cache-Channel'].should_not be_empty
+      last_response.headers['X-Cache-Channel'].should include(table.name)
+      last_response.headers['X-Cache-Channel'].should include(table.table_visualization.varnish_key)
+      last_response.headers['Surrogate-Key'].should_not be_empty
+      last_response.headers['Surrogate-Key'].should include(CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES)
+      last_response.headers['Surrogate-Key'].should include(table.table_visualization.surrogate_key)
     end
 
     it 'renders embed map error page if visualization private' do
       table = table_factory
       put "/api/v1/tables/#{table.id}?api_key=#{@api_key}",
-        { privacy: 0 }.to_json, @headers
+          { privacy: 0 }.to_json, @headers
 
       name = table.table_visualization.name
-      name = URI::encode(name)
+      name = URI.encode(name)
 
       login_as(@user, scope: @user.username)
 
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 403
-      last_response.body.should include("Map or dataset not found, or with restricted access.")
+      last_response.body.should include('Map or dataset not found, or with restricted access.')
     end
 
     it 'renders embed map error when an exception is raised' do
       login_as(@user, scope: @user.username)
 
-      get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
+      get '/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map', {}, @headers
       last_response.status.should == 404
     end
 
@@ -404,7 +404,7 @@ describe Admin::VisualizationsController do
       table = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC)
       name = table.table_visualization.name
 
-      get "/viz/#{URI::encode(name)}/embed_map", {}, @headers
+      get "/viz/#{URI.encode(name)}/embed_map", {}, @headers
       last_response.status.should == 200
       last_response.headers.include?('X-Frame-Options').should_not == true
     end
@@ -441,22 +441,22 @@ describe Admin::VisualizationsController do
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
       embed_redis_cache = EmbedRedisCache.new
 
-      embed_redis_cache.get(id, https=false).should == nil
+      embed_redis_cache.get(id, https = false).should.nil?
       get "/viz/#{id}/embed_map", {}, @headers
       last_response.status.should == 200
 
       # The https key/value pair should be differenent
-      embed_redis_cache.get(id, https=true).should == nil
+      embed_redis_cache.get(id, https = true).should.nil?
       last_response.status.should == 200
 
       # It should be cached after the first request
-      embed_redis_cache.get(id, https=false).should_not be_nil
+      embed_redis_cache.get(id, https = false).should_not be_nil
       first_response = last_response
 
       get "/viz/#{id}/embed_map", {}, @headers
       last_response.status.should == 200
       # Headers of both responses should be the same excluding some
-      remove_changing = lambda {|h| h.reject {|k, v| ['X-Request-Id', 'X-Runtime'].include?(k)} }
+      remove_changing = ->(h) { h.reject { |k, _v| ['X-Request-Id', 'X-Runtime'].include?(k)} }
       remove_changing.call(first_response.headers).should == remove_changing.call(last_response.headers)
       first_response.body.should == last_response.body
     end
@@ -474,14 +474,14 @@ describe Admin::VisualizationsController do
     it 'renders the view by passing a visualization name' do
       login_as(@user, scope: @user.username)
 
-      get "/viz/track_embed", {}, @headers
+      get '/viz/track_embed', {}, @headers
       last_response.status.should == 200
     end
 
     it 'doesnt serve X-Frame-Options: DENY for track_embed' do
       login_as(@user, scope: @user.username)
 
-      get "/viz/track_embed", {}, @headers
+      get '/viz/track_embed', {}, @headers
       last_response.status.should == 200
       last_response.headers.include?('X-Frame-Options').should_not == true
     end
@@ -507,8 +507,8 @@ describe Admin::VisualizationsController do
       Carto::ApiKey.any_instance.stubs(:save_cdb_conf_info)
       CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
-          :set_from_table_privacy => nil,
-          :propagate_to_varnish => nil
+        set_from_table_privacy: nil,
+        propagate_to_varnish: nil
       )
 
       ::User.any_instance.stubs(
@@ -548,20 +548,20 @@ describe Admin::VisualizationsController do
 
       org = Organization.new
       org.name = 'vis-spec-org-2'
-      org.quota_in_bytes = 1024 ** 3
+      org.quota_in_bytes = 1024**3
       org.seats = 10
       org.builder_enabled = false
       org.save
 
       ::User.any_instance.stubs(:remaining_quota).returns(1000)
-      user_a = create_user(username: 'user-a', quota_in_bytes: 123456789, table_quota: 400)
+      user_a = create_user(username: 'user-a', quota_in_bytes: 123_456_789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
       org.reload
       user_a.reload
 
       user_b = create_user(username: 'user-b',
-                           quota_in_bytes: 123456789,
+                           quota_in_bytes: 123_456_789,
                            table_quota: 400,
                            organization: org,
                            account_type: 'ORGANIZATION USER')
@@ -597,7 +597,7 @@ describe Admin::VisualizationsController do
       # Now url will get rewritten to current user
       last_response.status.should == 302
       url = CartoDB.base_url(org.name, user_b.username) +
-            CartoDB.path(self, 'public_visualizations_show', id: "#{user_a.username}.#{vis.name}") + "?redirected=true"
+            CartoDB.path(self, 'public_visualizations_show', id: "#{user_a.username}.#{vis.name}") + '?redirected=true'
       last_response.location.should eq url
 
       ['public_visualizations_public_map', 'public_tables_embed_map'].each do |forbidden_endpoint|
@@ -662,13 +662,13 @@ describe Admin::VisualizationsController do
       org.save
 
       ::User.any_instance.stubs(:remaining_quota).returns(1000)
-      user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
+      user_a = create_user(quota_in_bytes: 123_456_789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
       org.reload
       user_a.reload
 
-      user_b = create_user(quota_in_bytes: 123456789, table_quota: 400)
+      user_b = create_user(quota_in_bytes: 123_456_789, table_quota: 400)
 
       # Needed because after_create is stubbed
       user_a.create_api_keys
@@ -689,7 +689,7 @@ describe Admin::VisualizationsController do
 
       get destination_url
       last_response.status.should be(302)
-      last_response.headers["Location"].should eq CartoDB.url(@mock_context, 'public_visualizations_public_map',
+      last_response.headers['Location'].should eq CartoDB.url(@mock_context, 'public_visualizations_public_map',
                                                               params: { id: vis.id, redirected: true }, user: user_a)
       follow_redirect!
       last_response.status.should be(200)
@@ -764,26 +764,25 @@ describe Admin::VisualizationsController do
   end
 
   def follow_redirects(limit = 10)
-    while last_response.status == 302 && (limit -= 1) > 0 do
-        follow_redirect!
+    while last_response.status == 302 && (limit -= 1) > 0
+      follow_redirect!
     end
   end
 
   def factory(owner=nil)
     owner = @user if owner.nil?
-    map     = Map.create(user_id: owner.id)
+    map = Map.create(user_id: owner.id)
     payload = {
-      name:         unique_name('viz'),
-      tags:         ['foo', 'bar'],
-      map_id:       map.id,
-      description:  'bogus',
-      type:         'derived'
+      name: unique_name('viz'),
+      tags: ['foo', 'bar'],
+      map_id: map.id,
+      description: 'bogus',
+      type: 'derived'
     }
 
     with_host "#{owner.username}.localhost.lan" do
       post "/api/v1/viz?api_key=#{owner.api_key}", payload.to_json
     end
-
 
     JSON.parse(last_response.body)
   end
@@ -791,5 +790,4 @@ describe Admin::VisualizationsController do
   def table_factory(attrs = {})
     new_table(attrs.merge(user_id: @user.id)).save.reload
   end
-
 end # Admin::VisualizationsController

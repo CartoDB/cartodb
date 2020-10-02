@@ -3,7 +3,7 @@ Sequel.migration do
     add_column :visualizations, :user_id, :uuid
 
     SequelRails.connection.transaction do
-      SequelRails.connection.run(%Q{
+      SequelRails.connection.run(%{
         UPDATE visualizations
         SET user_id = maps.user_id FROM maps
         WHERE maps.user_id IN (SELECT users.id FROM users)

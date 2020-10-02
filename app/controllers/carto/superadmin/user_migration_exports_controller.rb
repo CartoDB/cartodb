@@ -1,6 +1,7 @@
 module Carto
   module Superadmin
     class UserMigrationExportsController < ::Superadmin::SuperadminController
+
       respond_to :json
 
       ssl_required :show, :create
@@ -25,6 +26,7 @@ module Carto
         export = Carto::UserMigrationExport.find(params[:id])
         render json: UserMigrationExportPresenter.new(export).to_poro
       end
+
     end
   end
 end

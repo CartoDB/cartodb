@@ -7,7 +7,6 @@ require 'spec_helper'
 require_relative './../../../factories/organizations_contexts'
 require 'api/json/synchronizations_controller'
 
-
 def app
   CartoDB::Application.new
 end
@@ -40,35 +39,34 @@ describe Carto::Api::PermissionsController do
   end
 
   describe 'PUT /api/v1/perm' do
-
     it 'modifies an existing permission' do
       entity_type = Permission::ENTITY_TYPE_VISUALIZATION
 
-      acl_initial = [ ]
+      acl_initial = []
       client_acl_modified = [
         {
           type: Permission::TYPE_USER,
           entity: {
-            id:   @user2.id,
+            id: @user2.id
           },
           access: Permission::ACCESS_READONLY
         }
       ]
       client_acl_modified_expected = [
-          {
-              type: Permission::TYPE_USER,
-              entity: {
-                  id:         @user2.id,
-                  username:   @user2.username,
-                  avatar_url: @user2.avatar_url,
-                  viewer:     false,
-                  base_url:   @user2.public_url,
-                  groups:     []
-              },
-              access: Permission::ACCESS_READONLY
-          }
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: @user2.id,
+            username: @user2.username,
+            avatar_url: @user2.avatar_url,
+            viewer: false,
+            base_url: @user2.public_url,
+            groups: []
+          },
+          access: Permission::ACCESS_READONLY
+        }
       ]
-      client_acl_final = [ ]
+      client_acl_final = []
 
       permission = @visualization.permission
       permission.owner_id.should eq @user.id
@@ -78,7 +76,7 @@ describe Carto::Api::PermissionsController do
       # To force updated_at to change
       sleep(1)
 
-      put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", { user_domain: @user.username, acl: client_acl_modified}.to_json, @headers
+      put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", { user_domain: @user.username, acl: client_acl_modified }.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body, symbolize_names: true)
       response.fetch(:id).should eq permission.id
@@ -100,31 +98,29 @@ describe Carto::Api::PermissionsController do
       client_acl_modified_expected_entity = client_acl_modified_expected[0].delete(:entity)
       acl[0].should include client_acl_modified_expected[0]
       acl_entity.should include client_acl_modified_expected_entity
-      put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", { user_domain: @user.username, acl: client_acl_final}.to_json, @headers
+      put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", { user_domain: @user.username, acl: client_acl_final }.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body, symbolize_names: true)
       response.fetch(:acl).should eq client_acl_final
     end
-
   end
 
   describe 'PUT/DELETE /api/v1/perm' do
     it "makes sure we don't expose unwanted call types" do
       permission = CartoDB::Permission.new(
-          owner_id: @user.id,
-          owner_username: @user.username
+        owner_id: @user.id,
+        owner_username: @user.username
       )
       permission.save
 
-      expect {
+      expect do
         post "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", nil, @headers
-      }.to raise_exception ActionController::RoutingError
-      expect {
+      end.to raise_exception ActionController::RoutingError
+      expect do
         delete "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", nil, @headers
-      }.to raise_exception ActionController::RoutingError
+      end.to raise_exception ActionController::RoutingError
     end
   end
-
 end
 
 describe 'group permission support' do
@@ -136,7 +132,7 @@ describe 'group permission support' do
     @group_2 = FactoryGirl.create(:random_group, organization_id: @organization.id)
 
     @headers = {
-      'CONTENT_TYPE'  => 'application/json',
+      'CONTENT_TYPE' => 'application/json',
       'HTTP_ACCEPT' => 'application/json'
     }
   end
@@ -152,25 +148,25 @@ describe 'group permission support' do
 
     entity_type = Permission::ENTITY_TYPE_VISUALIZATION
 
-    acl_initial = [ ]
+    acl_initial = []
     client_acl_modified = [
       {
         type: Permission::TYPE_GROUP,
         entity: {
-          id:   @group.id,
+          id: @group.id
         },
         access: Permission::ACCESS_READONLY
       }
     ]
     client_acl_modified_expected = [
-        {
-            type: Permission::TYPE_GROUP,
-            entity: {
-                id:         @group.id,
-                name:       @group.name
-            },
-            access: Permission::ACCESS_READONLY
-        }
+      {
+        type: Permission::TYPE_GROUP,
+        entity: {
+          id: @group.id,
+          name: @group.name
+        },
+        access: Permission::ACCESS_READONLY
+      }
     ]
 
     permission = visualization.permission
@@ -179,7 +175,7 @@ describe 'group permission support' do
     permission.acl = acl_initial
     permission.save
 
-    put_json(api_v1_permissions_update_url(user_domain: @org_user_1.username, id: permission.id, api_key: @org_user_1.api_key), {acl: client_acl_modified}, @headers) do |response|
+    put_json(api_v1_permissions_update_url(user_domain: @org_user_1.username, id: permission.id, api_key: @org_user_1.api_key), { acl: client_acl_modified }, @headers) do |response|
       response.status.should == 200
       response_body = response.body.deep_symbolize_keys
       response_body.fetch(:id).should eq permission.id
@@ -209,13 +205,13 @@ describe 'group permission support' do
       {
         type: Permission::TYPE_GROUP,
         entity: {
-          id:   @group.id,
+          id: @group.id
         },
         access: Permission::ACCESS_READONLY
       }, {
         type: Permission::TYPE_GROUP,
         entity: {
-          id:   @group_2.id,
+          id: @group_2.id
         },
         access: Permission::ACCESS_READONLY
       }
@@ -227,5 +223,4 @@ describe 'group permission support' do
 
     visualization.delete
   end
-
 end

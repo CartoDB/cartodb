@@ -14,14 +14,16 @@ module Carto
 
       def run!
         csv = CSV.open(filepath, 'wb', headers: true)
-        Carto::Visualization.where(type: @types).find_each { |vis| process_row(statistics_for_visualization(vis), csv) if vis.user.present? }
+        Carto::Visualization.where(type: @types).find_each do |vis|
+          process_row(statistics_for_visualization(vis), csv) if vis.user.present?
+        end
         csv.close
       end
 
       private
 
       def process_row(row, csv)
-        if !@headers_written
+        unless @headers_written
           csv << row.keys
           @headers_written = true
         end
@@ -41,6 +43,7 @@ module Carto
           type: visualization.builder? ? 'builder' : 'editor'
         }
       end
+
     end
   end
 end

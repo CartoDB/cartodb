@@ -6,7 +6,7 @@ require './lib/resque_failure_logger'
 require_dependency 'redis_factory'
 
 # Load automatically all resque files from lib/resque
-Dir[Rails.root.join("lib/resque/*.rb")].each {|f| require f}
+Dir[Rails.root.join('lib/resque/*.rb')].each { |f| require f}
 
 Resque.redis = RedisFactory.new_connection
 

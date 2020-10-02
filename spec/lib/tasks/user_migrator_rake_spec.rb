@@ -6,7 +6,7 @@ describe 'user_migrator.rake' do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    Rake.application.rake_require "tasks/user_migrator"
+    Rake.application.rake_require 'tasks/user_migrator'
     Rake::Task.define_task(:environment)
   end
 
@@ -18,7 +18,7 @@ describe 'user_migrator.rake' do
         user: org.owner,
         organization_id: org.id
       )
-      Asset.any_instance.stubs(:remove).raises("NOOOO!")
+      Asset.any_instance.stubs(:remove).raises('NOOOO!')
       Rake::Task['cartodb:user_migrator:cleanup:organization'].invoke(org.name)
     end
 
@@ -28,7 +28,7 @@ describe 'user_migrator.rake' do
         asset_file: Rails.root + 'spec/support/data/cartofante_blue.png',
         user: user
       )
-      Asset.any_instance.stubs(:remove).raises("NOOOO!")
+      Asset.any_instance.stubs(:remove).raises('NOOOO!')
       Rake::Task['cartodb:user_migrator:cleanup:user'].invoke(user.username)
     end
   end

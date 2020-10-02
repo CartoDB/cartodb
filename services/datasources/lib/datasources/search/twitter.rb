@@ -8,7 +8,6 @@ require_relative '../base_file_stream'
 module CartoDB
   module Datasources
     module Search
-
       # NOTE: 'redis_storage' is only sent in normal imports, not at OAuth or Synchronizations,
       # as this datasource is not intended to be used in such.
       class Twitter < BaseFileStream
@@ -16,7 +15,7 @@ module CartoDB
         include ::LoggerHelper
 
         # Required for all datasources
-        DATASOURCE_NAME = 'twitter_search'
+        DATASOURCE_NAME = 'twitter_search'.freeze
 
         NO_TOTAL_RESULTS = -1
 
@@ -36,9 +35,9 @@ module CartoDB
         CATEGORY_NAME_KEY  = :name
         CATEGORY_TERMS_KEY = :terms
 
-        GEO_SEARCH_FILTER = 'has:geo'
-        PROFILE_GEO_SEARCH_FILTER = 'has:profile_geo'
-        OR_SEARCH_FILTER  = 'OR'
+        GEO_SEARCH_FILTER = 'has:geo'.freeze
+        PROFILE_GEO_SEARCH_FILTER = 'has:profile_geo'.freeze
+        OR_SEARCH_FILTER = 'OR'.freeze
 
         # Seconds to substract from current time as threshold to consider a time
         # as "now or from the future" upon date filter build
@@ -65,25 +64,29 @@ module CartoDB
         # @throws UninitializedError
         def initialize(config, user, redis_storage = nil, user_defined_limits={})
           @service_name = DATASOURCE_NAME
-          @filters = Hash.new
+          @filters = {}
 
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
-          raise MissingConfigurationError.new('missing auth_required', DATASOURCE_NAME) unless config.include?('auth_required')
+          unless config.include?('auth_required')
+            raise MissingConfigurationError.new('missing auth_required', DATASOURCE_NAME)
+          end
           raise MissingConfigurationError.new('missing username', DATASOURCE_NAME) unless config.include?('username')
           raise MissingConfigurationError.new('missing password', DATASOURCE_NAME) unless config.include?('password')
-          raise MissingConfigurationError.new('missing search_url for GNIP API', DATASOURCE_NAME) unless config.include?('search_url')
+          unless config.include?('search_url')
+            raise MissingConfigurationError.new('missing search_url for GNIP API', DATASOURCE_NAME)
+          end
 
           @user_defined_limits = user_defined_limits
 
           @search_api_config = {
-            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED              => config['auth_required'],
-            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME              => config['username'],
-            TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD              => config['password'],
-            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL                 => config['search_url'],
-            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_ACTIVE            => config.fetch('ratelimit_active', nil),
-            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_MAX_CONCURRENCY   => config.fetch('ratelimit_concurrency', nil),
-            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_TTL               => config.fetch('ratelimit_ttl', nil),
-            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_WAIT_SECS         => config.fetch('ratelimit_wait_secs', nil)
+            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED => config['auth_required'],
+            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME => config['username'],
+            TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD => config['password'],
+            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL => config['search_url'],
+            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_ACTIVE => config.fetch('ratelimit_active', nil),
+            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_MAX_CONCURRENCY => config.fetch('ratelimit_concurrency', nil),
+            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_TTL => config.fetch('ratelimit_ttl', nil),
+            TwitterSearch::SearchAPI::CONFIG_REDIS_RL_WAIT_SECS => config.fetch('ratelimit_wait_secs', nil)
           }
           @redis_storage = redis_storage
 
@@ -104,7 +107,7 @@ module CartoDB
         # @param user_defined_limits Hash|nil
         # @return CartoDB::Datasources::Search::TwitterSearch
         def self.get_new(config, user, redis_storage = nil, user_defined_limits={})
-          return new(config, user, redis_storage, user_defined_limits)
+          new(config, user, redis_storage, user_defined_limits)
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -157,13 +160,13 @@ module CartoDB
         def get_resource_metadata(id)
           fields_from(id)
           {
-              id:       id,
-              title:    DATASOURCE_NAME,
-              url:      nil,
-              service:  DATASOURCE_NAME,
-              checksum: nil,
-              size:     0,
-              filename: "#{table_name}.csv"
+            id: id,
+            title: DATASOURCE_NAME,
+            url: nil,
+            service: DATASOURCE_NAME,
+            checksum: nil,
+            size: 0,
+            filename: "#{table_name}.csv"
           }
         end
 
@@ -192,14 +195,14 @@ module CartoDB
 
         # Stores the data import item instance to use/manipulate it
         # @param value DataImport
-        def data_import_item=(value)
-          @data_import_item = value
-        end
+        attr_writer :data_import_item
 
         def set_audit_to_completed(table_id = nil)
-          entry =  audit_entry.class.where(data_import_id:@data_import_item.id).first
-          raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
-                                        DATASOURCE_NAME) if entry.nil?
+          entry = audit_entry.class.where(data_import_id: @data_import_item.id).first
+          if entry.nil?
+            raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
+                                          DATASOURCE_NAME)
+          end
 
           entry.set_complete_state
           entry.table_id = table_id unless table_id.nil?
@@ -207,9 +210,11 @@ module CartoDB
         end
 
         def set_audit_to_failed
-          entry =  audit_entry.class.where(data_import_id:@data_import_item.id).first
-          raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
-                                        DATASOURCE_NAME) if entry.nil?
+          entry = audit_entry.class.where(data_import_id: @data_import_item.id).first
+          if entry.nil?
+            raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
+                                          DATASOURCE_NAME)
+          end
 
           entry.set_failed_state
           entry.save
@@ -217,10 +222,12 @@ module CartoDB
 
         # @return Hash
         def get_audit_stats
-          entry =  audit_entry.class.where(data_import_id:@data_import_item.id).first
-          raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
-                                        DATASOURCE_NAME) if entry.nil?
-          { :retrieved_items => entry.retrieved_items }
+          entry = audit_entry.class.where(data_import_id: @data_import_item.id).first
+          if entry.nil?
+            raise DatasourceBaseError.new("Couldn't fetch SearchTweet entry for data import #{@data_import_item.id}", \
+                                          DATASOURCE_NAME)
+          end
+          { retrieved_items: entry.retrieved_items }
         end
 
         private
@@ -231,11 +238,11 @@ module CartoDB
 
         def search_api_config_public_values
           {
-            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED            =>
+            TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED =>
               @search_api_config[TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED],
-            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME            =>
+            TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME =>
               @search_api_config[TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME],
-            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL               =>
+            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL =>
               @search_api_config[TwitterSearch::SearchAPI::CONFIG_SEARCH_URL]
           }
         end
@@ -249,14 +256,17 @@ module CartoDB
         # Wraps check of specified user limit or not (to use instead their max quota)
         # @return Integer
         def remaining_quota
-          twitter_credit_limits > 0 ? [@user.remaining_twitter_quota, twitter_credit_limits].min
-                                    : @user.remaining_twitter_quota
+          if twitter_credit_limits > 0
+            [@user.remaining_twitter_quota, twitter_credit_limits].min
+          else
+            @user.remaining_twitter_quota
+          end
         end
 
         def table_name
-          terms_fragment = @filters[FILTER_CATEGORIES].map { |category|
+          terms_fragment = @filters[FILTER_CATEGORIES].map do |category|
             clean_category(category[CATEGORY_TERMS_KEY]).gsub(/[^0-9a-z,]/i, '').gsub(/[,]/i, '_')
-          }.join('_').slice(0,MAX_TABLE_NAME_SIZE)
+          end.join('_').slice(0, MAX_TABLE_NAME_SIZE)
 
           "twitter_#{terms_fragment}"
         end
@@ -298,42 +308,42 @@ module CartoDB
         # @return Mixed The data
         def do_search(api_config, redis_storage, filters, stream)
           threads = {}
-          base_filters = filters.select { |k, v| k != FILTER_CATEGORIES }
+          base_filters = filters.select { |k, _v| k != FILTER_CATEGORIES }
 
           category_totals = {}
           dumper_additional_fields = {}
-          filters[FILTER_CATEGORIES].each { |category|
+          filters[FILTER_CATEGORIES].each do |category|
             dumper_additional_fields[category[CATEGORY_NAME_KEY]] = {
-              category_name:  category[CATEGORY_NAME_KEY],
+              category_name: category[CATEGORY_NAME_KEY],
               category_terms: clean_category(category[CATEGORY_TERMS_KEY])
             }
             @csv_dumper.begin_dump(category[CATEGORY_NAME_KEY])
-          }
+          end
           @csv_dumper.additional_fields = dumper_additional_fields
 
           log("Searching #{filters[FILTER_CATEGORIES].length} categories")
 
-          filters[FILTER_CATEGORIES].each { |category|
+          filters[FILTER_CATEGORIES].each do |category|
             # If all threads are created at the same time, redis semaphore inside search_api
             # might not yet have new value, so introduce a small delay on each thread creation
             sleep(0.1)
-            threads[category[CATEGORY_NAME_KEY]] = Thread.new {
+            threads[category[CATEGORY_NAME_KEY]] = Thread.new do
               api = TwitterSearch::SearchAPI.new(api_config, redis_storage, @csv_dumper)
               # Dumps happen inside upon each block response
               total_results = search_by_category(api, base_filters, category)
               category_totals[category[CATEGORY_NAME_KEY]] = total_results
-            }
-          }
-          threads.each {|key, thread|
+            end
+          end
+          threads.each do |_key, thread|
             thread.join
-          }
+          end
 
           # INFO: For now we don't treat as error a no results scenario, else use:
           # raise NoResultsError.new if category_totals.values.inject(:+) == 0
 
-          filters[FILTER_CATEGORIES].each { |category|
+          filters[FILTER_CATEGORIES].each do |category|
             @csv_dumper.end_dump(category[CATEGORY_NAME_KEY])
-          }
+          end
           streamed_size = @csv_dumper.merge_dumps_into_stream(dumper_additional_fields.keys, stream)
 
           log("Temp files:\n#{@csv_dumper.file_paths}")
@@ -359,11 +369,11 @@ module CartoDB
           next_results_cursor = nil
           total_results = 0
 
-          begin
+          loop do
             exception = nil
             out_of_quota = false
 
-            @user_semaphore.synchronize {
+            @user_semaphore.synchronize do
               # Credit limits must be honoured above soft limit
               if twitter_credit_limits > 0 || !@user.soft_twitter_datasource_limit
                 if remaining_quota - @used_quota <= 0
@@ -371,7 +381,7 @@ module CartoDB
                   next_results_cursor = nil
                 end
               end
-            }
+            end
 
             unless out_of_quota
               api.query_param = category[CATEGORY_TERMS_KEY]
@@ -382,21 +392,22 @@ module CartoDB
                 report_error(e.to_s, e.backtrace)
                 # Stop gracefully to not break whole import process
                 results_page = {
-                    results: [],
-                    next: nil
+                  results: [],
+                  next: nil
                 }
               end
 
               dumped_items_count = @csv_dumper.dump(category[CATEGORY_NAME_KEY], results_page[:results])
               next_results_cursor = results_page[:next].nil? ? nil : results_page[:next]
 
-              @user_semaphore.synchronize {
+              @user_semaphore.synchronize do
                 @used_quota += dumped_items_count
-              }
+              end
 
               total_results += dumped_items_count
             end
-          end while (!next_results_cursor.nil? && !out_of_quota && !exception)
+            break unless !next_results_cursor.nil? && !out_of_quota && !exception
+          end
 
           log("'#{category[CATEGORY_NAME_KEY]}' got #{total_results} results")
           log("Got exception at '#{category[CATEGORY_NAME_KEY]}': #{exception.inspect}") if exception
@@ -411,15 +422,12 @@ module CartoDB
             if [401, 404].include?(exception.http_code)
               raise MissingConfigurationError.new(exception.to_s, DATASOURCE_NAME)
             end
-            if [400, 422].include?(exception.http_code)
-              raise InvalidInputDataError.new(exception.to_s, DATASOURCE_NAME)
-            end
-            if exception.http_code == 429
-              raise ResponseError.new(exception.to_s, DATASOURCE_NAME)
-            end
+            raise InvalidInputDataError.new(exception.to_s, DATASOURCE_NAME) if [400, 422].include?(exception.http_code)
+            raise ResponseError.new(exception.to_s, DATASOURCE_NAME) if exception.http_code == 429
             if exception.http_code >= 500 && exception.http_code < 600
               raise GNIPServiceError.new(exception.to_s, DATASOURCE_NAME)
             end
+
             raise DatasourceBaseError.new(exception.to_s, DATASOURCE_NAME)
           end
 
@@ -431,14 +439,14 @@ module CartoDB
               if fields[:dates].nil?
 
           case date_type
-            when 'from'
-              date_sym = :fromDate
-              hour_sym = :fromHour
-              min_sym  = :fromMin
-            when 'to'
-              date_sym = :toDate
-              hour_sym = :toHour
-              min_sym  = :toMin
+          when 'from'
+            date_sym = :fromDate
+            hour_sym = :fromHour
+            min_sym  = :fromMin
+          when 'to'
+            date_sym = :toDate
+            hour_sym = :toHour
+            min_sym  = :toMin
           else
             raise ParameterError.new("unknown date type #{date_type}", DATASOURCE_NAME)
           end
@@ -454,10 +462,10 @@ module CartoDB
             rescue ArgumentError
               raise ParameterError.new('Invalid date format', DATASOURCE_NAME)
             end
-            timezoned_date += timezone*60
+            timezoned_date += timezone * 60
 
             # Gnip doesn't allows searches "in the future"
-            date = timezoned_date >= (Time.now - TIMEZONE_THRESHOLD).utc ? nil : timezoned_date.strftime("%Y%m%d%H%M")
+            date = timezoned_date >= (Time.now - TIMEZONE_THRESHOLD).utc ? nil : timezoned_date.strftime('%Y%m%d%H%M')
           end
 
           date
@@ -468,14 +476,12 @@ module CartoDB
               if fields[:categories].nil? || fields[:categories].empty?
 
           queries = []
-          fields[:categories].each { |category|
+          fields[:categories].each do |category|
             raise ParameterError.new('missing category', DATASOURCE_NAME) if category[:category].nil?
             raise ParameterError.new('missing terms', DATASOURCE_NAME) if category[:terms].nil?
 
             # Gnip limitation
-            if category[:terms].count > MAX_SEARCH_TERMS
-              category[:terms] = category[:terms].slice(0, MAX_SEARCH_TERMS)
-            end
+            category[:terms] = category[:terms].slice(0, MAX_SEARCH_TERMS) if category[:terms].count > MAX_SEARCH_TERMS
 
             category[:terms] = sanitize_terms(category[:terms])
 
@@ -495,21 +501,19 @@ module CartoDB
             end
 
             queries << query
-          }
+          end
           queries
         end
 
         # @param terms_list Array
         def sanitize_terms(terms_list)
-          terms_list.map{ |term|
+          terms_list.map do |term|
             # Remove unwanted stuff
             sanitized = term.to_s.gsub(/^ /, '').gsub(/ $/, '').gsub('"', '')
             # Quote if needed
-            if sanitized.gsub(/[a-z0-9@#]/i,'') != ''
-              sanitized = '"' + sanitized + '"'
-            end
+            sanitized = '"' + sanitized + '"' if sanitized.gsub(/[a-z0-9@#]/i, '') != ''
             sanitized.length == 0 ? nil : sanitized
-          }.compact
+          end.compact
         end
 
         # Max results per page
@@ -531,7 +535,6 @@ module CartoDB
             end
           end
         end
-
 
         # Max total results
         # @param user ::User
@@ -592,6 +595,7 @@ module CartoDB
           end
           @audit_entry
         end
+
       end
     end
   end

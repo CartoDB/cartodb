@@ -1,6 +1,7 @@
 module Carto
   module Db
     class Function
+
       attr_reader :database_name, :database_schema, :name, :argument_data_types
 
       def initialize(database_name:, database_schema:, name:, argument_data_types:)
@@ -16,6 +17,7 @@ module Carto
           @name == other.name &&
           @argument_data_types == other.argument_data_types
       end
+
     end
   end
 end

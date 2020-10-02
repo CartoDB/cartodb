@@ -3,8 +3,8 @@ require 'mock_redis'
 require_relative '../../../../spec/rspec_configuration'
 
 describe CartoDB::ServiceUsageMetrics do
-
   class DummyServiceUsageMetrics < CartoDB::ServiceUsageMetrics
+
     VALID_METRICS = [:dummy_metric].freeze
     VALID_SERVICES = [:dummy_service].freeze
 
@@ -12,6 +12,7 @@ describe CartoDB::ServiceUsageMetrics do
       raise ArgumentError.new('Invalid service') unless VALID_SERVICES.include?(service)
       raise ArgumentError.new('Invalid metric') unless VALID_METRICS.include?(metric)
     end
+
   end
 
   before(:each) do
@@ -20,15 +21,14 @@ describe CartoDB::ServiceUsageMetrics do
   end
 
   describe 'Read quota info from redis with zero padding' do
-
     it 'reads standard zero padded keys' do
       @redis_mock.zincrby('org:team:dummy_service:dummy_metric:201606', 1543, '01')
       @usage_metrics.get(:dummy_service, :dummy_metric, Date.new(2016, 6, 1)).should eq 1543
     end
 
     it "does not request redis twice when there's no need" do
-      @redis_mock.expects(:zscore).once.with('org:team:dummy_service:dummy_metric:201606', '20').returns(3141592)
-      @usage_metrics.get(:dummy_service, :dummy_metric, Date.new(2016, 6, 20)).should eq 3141592
+      @redis_mock.expects(:zscore).once.with('org:team:dummy_service:dummy_metric:201606', '20').returns(3_141_592)
+      @usage_metrics.get(:dummy_service, :dummy_metric, Date.new(2016, 6, 20)).should eq 3_141_592
     end
 
     it "returns zero when there's no consumption" do
@@ -42,15 +42,15 @@ describe CartoDB::ServiceUsageMetrics do
     end
 
     it 'validates that the amount passed cannot be nil' do
-      expect {
+      expect do
         @usage_metrics.send(:assert_valid_amount, nil)
-      }.to raise_exception(ArgumentError, 'Invalid metric amount')
+      end.to raise_exception(ArgumentError, 'Invalid metric amount')
     end
 
     it 'validates that the amount passed cannot be negative' do
-      expect {
+      expect do
         @usage_metrics.send(:assert_valid_amount, -42)
-      }.to raise_exception(ArgumentError, 'Invalid metric amount')
+      end.to raise_exception(ArgumentError, 'Invalid metric amount')
     end
 
     it 'validates that the amount passed can actually be zero' do

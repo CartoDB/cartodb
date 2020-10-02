@@ -301,12 +301,12 @@ describe Carto::OauthProviderController do
       expect(response.status).to(eq(200))
       expect(response.body).to(include(valid_payload[:client_id]))
       expect(response.body).to(include(valid_payload[:state]))
-      expect(response.body).to_not(include("by <strong>"))
+      expect(response.body).to_not(include('by <strong>'))
     end
 
     it 'with valid payload and datasets scopes shows the consent form' do
       user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
-      scopes = ["datasets:r:#{user_table.name}", "datasets:metadata"]
+      scopes = ["datasets:r:#{user_table.name}", 'datasets:metadata']
       get oauth_provider_authorize_url(valid_payload.merge(scopes: scopes))
 
       expect(response.status).to(eq(200))
@@ -345,7 +345,7 @@ describe Carto::OauthProviderController do
       it_behaves_like 'success with response pre-authorized'
 
       it 'redirects with invalid request if prompt is not none' do
-        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token', prompt: "wat"))
+        get oauth_provider_authorize_url(valid_payload.merge(response_type: 'token', prompt: 'wat'))
 
         expect(response.status).to(eq(302))
         expect(response.body).to(include('invalid_request'))
@@ -422,8 +422,8 @@ describe Carto::OauthProviderController do
         end
 
         it 'redirects to login without username' do
-          endpoint = "http://localhost.lan:53716/oauth2/authorize"
-          expected_url = "http://localhost.lan:53716/login"
+          endpoint = 'http://localhost.lan:53716/oauth2/authorize'
+          expected_url = 'http://localhost.lan:53716/login'
 
           post endpoint, valid_payload
 
@@ -439,7 +439,7 @@ describe Carto::OauthProviderController do
 
         it 'redirects to login with username' do
           endpoint = "http://wadus.localhost.lan:53716/user/#{@user.username}/oauth2/authorize"
-          expected_url = "http://wadus.localhost.lan:53716/login"
+          expected_url = 'http://wadus.localhost.lan:53716/login'
 
           post endpoint, valid_payload
 
@@ -448,8 +448,8 @@ describe Carto::OauthProviderController do
         end
 
         it 'redirects to login without username' do
-          endpoint = "http://wadus.localhost.lan:53716/oauth2/authorize"
-          expected_url = "http://wadus.localhost.lan:53716/login"
+          endpoint = 'http://wadus.localhost.lan:53716/oauth2/authorize'
+          expected_url = 'http://wadus.localhost.lan:53716/login'
 
           post endpoint, valid_payload
 
@@ -542,7 +542,7 @@ describe Carto::OauthProviderController do
       @authorization_code = @oauth_app_user.oauth_authorization_codes.create!
     end
 
-    let (:auth_code_token_payload) do
+    let(:auth_code_token_payload) do
       {
         client_id: @oauth_app.client_id,
         client_secret: @oauth_app.client_secret,
@@ -646,7 +646,7 @@ describe Carto::OauthProviderController do
         @refresh_token = @oauth_app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
       end
 
-      let (:refresh_token_payload) do
+      let(:refresh_token_payload) do
         {
           client_id: @oauth_app.client_id,
           client_secret: @oauth_app.client_secret,

@@ -1,9 +1,10 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe Definition do
-    before (:all) { @definition = Carto::Definition.instance }
-    after  (:all) { @definition = nil }
+    before(:all) { @definition = Carto::Definition.instance }
+    after(:all) { @definition = nil }
 
     it 'handles inexesitent file paths' do
       expect { @definition.load_from_file('/fake/path.json') }.to raise_error do
@@ -21,4 +22,5 @@ module Carto
       end
     end
   end
+
 end

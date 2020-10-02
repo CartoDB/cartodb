@@ -4,23 +4,18 @@
 # - it's very slow to check this certificate each request
 module OAuth
   class Consumer
+
     protected
 
     # Instantiates the http object
     def create_http(_url = nil)
+      _url = request_endpoint unless request_endpoint.nil?
 
-
-      if !request_endpoint.nil?
-       _url = request_endpoint
-      end
-
-
-      if _url.nil? || _url[0] =~ /^\//
-        our_uri = URI.parse(site)
-      else
-        our_uri = URI.parse(_url)
-      end
-
+      our_uri = if _url.nil? || _url[0] =~ %r{^/}
+                  URI.parse(site)
+                else
+                  URI.parse(_url)
+                end
 
       if proxy.nil?
         http_object = Net::HTTP.new(our_uri.host, our_uri.port)
@@ -36,9 +31,10 @@ module OAuth
       #   http_object.verify_mode = OpenSSL::SSL::VERIFY_PEER
       #   http_object.verify_depth = 5
       # else
-        http_object.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      http_object.verify_mode = OpenSSL::SSL::VERIFY_NONE
       # end
       http_object
     end
+
   end
 end

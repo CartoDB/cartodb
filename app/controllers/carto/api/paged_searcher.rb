@@ -6,13 +6,11 @@ module Carto
 
       def page_per_page_params(default_per_page: 20)
         page = (params[:page].presence || 1).to_i
-        unless page > 0
-          raise Carto::ParamInvalidError.new('page')
-        end
+        raise Carto::ParamInvalidError.new('page') unless page > 0
+
         per_page = (params[:per_page].presence || default_per_page).to_i
-        unless per_page > 0
-          raise Carto::ParamInvalidError.new('per_page')
-        end
+        raise Carto::ParamInvalidError.new('per_page') unless per_page > 0
+
         [page, per_page]
       end
 
@@ -53,9 +51,7 @@ module Carto
         param_values = param.to_s.split(',').map(&:to_sym)
         single_parameter = valid_combinations.empty? || param_values.size == 1
 
-        if single_parameter && valid_values.exclude?(param)
-          raise Carto::ParamInvalidError.new(name, valid_values)
-        end
+        raise Carto::ParamInvalidError.new(name, valid_values) if single_parameter && valid_values.exclude?(param)
 
         if !single_parameter && (param_values - valid_combinations).present?
           raise Carto::ParamCombinationInvalidError.new(name, valid_combinations)
@@ -63,6 +59,7 @@ module Carto
 
         param
       end
+
     end
   end
 end

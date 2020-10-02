@@ -45,9 +45,9 @@ describe Carto::OrganizationImageAssetsService do
     it 'uses conf when available' do
       Cartodb.stubs(:get_config)
              .with(:assets, 'organization', 'max_size_in_bytes')
-             .returns(123456789)
+             .returns(123_456_789)
 
-      Carto::OrganizationImageAssetsService.instance.max_size_in_bytes.should eq 123456789
+      Carto::OrganizationImageAssetsService.instance.max_size_in_bytes.should eq 123_456_789
     end
 
     it 'uses default when conf is not available' do

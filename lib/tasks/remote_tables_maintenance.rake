@@ -3,10 +3,8 @@ require_relative '../../app/services/carto/data_library_service'
 require_relative '../../lib/carto_api/json_client'
 
 namespace :cartodb do
-
   namespace :remotes do
-
-    task :clear, [:username] => [:environment] do |t, args|
+    task :clear, [:username] => [:environment] do |_t, args|
       username = args[:username]
       raise 'username required' unless username.present?
 
@@ -16,20 +14,20 @@ namespace :cartodb do
       puts "Deleted #{deleted} remote visualizations"
     end
 
-    task :clear_org, [:org_name] => [:environment] do |t, args|
+    task :clear_org, [:org_name] => [:environment] do |_t, args|
       org_name = args[:org_name]
       raise 'organization name required' unless org_name.present?
 
       require_relative '../../app/services/visualization/common_data_service'
       common_data_service = CartoDB::Visualization::CommonDataService.new
       o = Organization.where(name: org_name).first
-      o.users.each { |u|
+      o.users.each do |u|
         common_data_service.delete_common_data_for_user(u)
-      }
+      end
     end
 
     desc 'Load common data account remotes. Pass username as first argument. Example: `rake cartodb:remotes:reload[development]`'
-    task :reload, [:username] => [:environment] do |t, args|
+    task :reload, [:username] => [:environment] do |_t, args|
       username = args[:username]
       raise 'username required' unless username.present?
 
@@ -40,7 +38,7 @@ namespace :cartodb do
     end
 
     desc 'Load common data account remotes for a whole organization. Pass organization name as first argument. Example: `rake cartodb:remotes:reload[my_team]`'
-    task :reload_org, [:org_name] => [:environment] do |t, args|
+    task :reload_org, [:org_name] => [:environment] do |_t, args|
       org_name = args[:org_name]
       raise 'organization name required' unless org_name.present?
 
@@ -48,13 +46,13 @@ namespace :cartodb do
       common_data_service = CartoDB::Visualization::CommonDataService.new
       vis_api_url = get_visualizations_api_url
       o = Organization.where(name: org_name).first
-      o.users.each {|u|
+      o.users.each do |u|
         common_data_service.load_common_data_for_user(u, vis_api_url)
-      }
+      end
     end
 
     desc 'Load common data account remotes for multiple users, in alphabetical order. If you pass a username, it will do it beginning in the next username'
-    task :load_all, [:from_username] => [:environment] do |t, args|
+    task :load_all, [:from_username] => [:environment] do |_t, args|
       require_relative '../../app/services/visualization/common_data_service'
       common_data_service = CartoDB::Visualization::CommonDataService.new
       vis_api_url = get_visualizations_api_url
@@ -76,7 +74,8 @@ namespace :cartodb do
     # Example: rake cartodb:remotes:load_in_data_library_from_api_key[https,carto.com,80,s_user,s_user_key,t_user,g_key,[format]]
     desc 'Loads all datasets for a API key in a Data Library. `granted_api_key` will be stored for importing.'
     task :load_in_data_library_from_api_key, load_in_data_library_from_api_key_args => [:environment] do |_, args|
-      raise "All arguments are mandatory" unless load_in_data_library_mandatory_args.all? { |a| args[a].present? }
+      raise 'All arguments are mandatory' unless load_in_data_library_mandatory_args.all? { |a| args[a].present? }
+
       format_arg = args[:format] || 'gpkg'
 
       client = CartoAPI::JsonClient.new(
@@ -94,7 +93,10 @@ namespace :cartodb do
     # Example: rake cartodb:remotes:load_in_data_library[https,carto.com,80,s_data,s_user,s_user_key,t_user,g_key, source_dataset, [format]]
     desc 'Loads a dataset in a Data Library. `granted_api_key` is the key that will be stored for importing.'
     task :load_in_data_library, load_in_data_library_args => [:environment] do |_, args|
-      raise "All arguments except format are mandatory" unless load_in_data_library_mandatory_with_source_args.all? { |a| args[a].present? }
+      unless load_in_data_library_mandatory_with_source_args.all? { |a| args[a].present? }
+        raise 'All arguments except format are mandatory'
+      end
+
       format_arg = args[:format] || 'gpkg'
 
       client = CartoAPI::JsonClient.new(
@@ -124,11 +126,11 @@ namespace :cartodb do
     end
 
     desc "Invalidate user's date flag and make them refresh data library"
-    task :invalidate_common_data => [:environment] do
+    task invalidate_common_data: [:environment] do
       require_relative '../../app/helpers/common_data_redis_cache'
       require_relative '../../app/services/visualization/common_data_service'
 
-      invalidate_sql = %Q[
+      invalidate_sql = %[
           UPDATE users
           SET last_common_data_update_date = null
           WHERE last_common_data_update_date >= now() - '#{::User::COMMON_DATA_ACTIVE_DAYS} day'::interval;
@@ -139,7 +141,7 @@ namespace :cartodb do
 
       # Now we try to add the new common-data request to the cache using the common_data user
       common_data_user = ::User.where(username: Cartodb.get_config(:common_data, 'username')).first
-      if !common_data_user.nil?
+      unless common_data_user.nil?
         vis_api_url = get_visualizations_api_url
         CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(common_data_user, vis_api_url)
       end
@@ -147,33 +149,33 @@ namespace :cartodb do
 
     def get_visualizations_api_url
       common_data_config = Cartodb.config[:common_data]
-      username = common_data_config["username"]
-      base_url = common_data_config["base_url"].nil? ? CartoDB.base_url(username) : common_data_config["base_url"]
-      base_url + "/api/v1/viz?type=table&privacy=public"
+      username = common_data_config['username']
+      base_url = common_data_config['base_url'].nil? ? CartoDB.base_url(username) : common_data_config['base_url']
+      base_url + '/api/v1/viz?type=table&privacy=public'
     end
 
     module RemoteTablesMaintenanceRake
+
       def self.delete_remote_visualizations(user)
         user.update_column(:last_common_data_update_date, nil)
 
         user.visualizations.where(type: 'remote').each do |v|
-          begin
-            unless v.external_source
-              puts "  Remote visualization #{v.id} does not have a external source. Skipping..."
-              next
-            end
-            if v.external_source.external_data_imports.any?
-              puts "  Remote visualization #{v.id} has been previously imported. Skipping..."
-              next
-            end
-
-            v.external_source.delete
-            v.delete
-          rescue StandardError => e
-            puts "  Error deleting visualization #{v.id}: #{e.message}"
+          unless v.external_source
+            puts "  Remote visualization #{v.id} does not have a external source. Skipping..."
+            next
           end
+          if v.external_source.external_data_imports.any?
+            puts "  Remote visualization #{v.id} has been previously imported. Skipping..."
+            next
+          end
+
+          v.external_source.delete
+          v.delete
+        rescue StandardError => e
+          puts "  Error deleting visualization #{v.id}: #{e.message}"
         end
       end
+
     end
 
     # Removes common data visualizations from users which have not seen activity in some time
@@ -184,6 +186,7 @@ namespace :cartodb do
       start_days_ago = args[:start_days_ago].try(:to_i) || 365 * 2
       end_days_ago = args[:end_days_ago].try(:to_i) || 30 * 3
       raise 'Invalid date interval' unless start_days_ago > end_days_ago && end_days_ago > 0
+
       start_date = DateTime.now - start_days_ago
       end_date = DateTime.now - end_days_ago
 
@@ -223,5 +226,4 @@ namespace :cartodb do
       end
     end
   end
-
 end

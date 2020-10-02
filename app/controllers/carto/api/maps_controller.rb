@@ -1,6 +1,7 @@
 module Carto
   module Api
     class MapsController < ::Api::ApplicationController
+
       ssl_required :show, :update
 
       before_filter :load_map, :owners_only
@@ -30,9 +31,7 @@ module Carto
       end
 
       def owners_only
-        unless @map.writable_by_user?(current_viewer)
-          raise Carto::LoadError.new('Map not found')
-        end
+        raise Carto::LoadError.new('Map not found') unless @map.writable_by_user?(current_viewer)
       end
 
       STRING_PARAMS = [:bounding_box_sw, :bounding_box_ne, :center, :view_bounds_sw, :view_bounds_ne].freeze
@@ -60,6 +59,7 @@ module Carto
       def map_presentation
         Carto::Api::MapPresenter.new(@map).to_hash
       end
+
     end
   end
 end

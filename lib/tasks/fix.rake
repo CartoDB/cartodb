@@ -1,8 +1,8 @@
 # One-time fix tasks
 namespace :carto do
   namespace :fix do
-    desc "Fix zeroed mapzen quotas for organizations"
-    task :zero_mapzen_quota_orgs => :environment do
+    desc 'Fix zeroed mapzen quotas for organizations'
+    task zero_mapzen_quota_orgs: :environment do
       deploy_time_utc = '2016-10-20 15:32:00'
       num_orgs = ::Organization.where("updated_at >= '#{deploy_time_utc}' AND mapzen_routing_quota IS NULL").count
       num_org = 0
@@ -14,8 +14,8 @@ namespace :carto do
       end
     end
 
-    desc "Fix zeroed mapzen quotas for users"
-    task :zero_mapzen_quota_users => :environment do
+    desc 'Fix zeroed mapzen quotas for users'
+    task zero_mapzen_quota_users: :environment do
       deploy_time_utc = '2016-10-20 15:32:00'
       num_users = ::User.where("updated_at >= '#{deploy_time_utc}' AND mapzen_routing_quota IS NULL").count
       num_user = 0

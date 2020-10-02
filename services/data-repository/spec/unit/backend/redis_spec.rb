@@ -48,7 +48,7 @@ describe Backend::Redis do
       data        = { id: 5 }
       key         = data.fetch(:id)
       expiration  = 1
-      
+
       @repository.store(key, data, expiration: expiration)
       retrieved_data = @repository.fetch(key)
       retrieved_data.keys.must_include 'id'
@@ -56,7 +56,7 @@ describe Backend::Redis do
       sleep(expiration.to_f + 1.0 / 1.0)
       @connection.get(key).must_be_nil
     end
-  end #store
+  end # store
 
   describe '#fetch' do
     it 'retrieves a data structure from a key' do
@@ -65,14 +65,14 @@ describe Backend::Redis do
 
       @repository.store(key, data)
       retrieved_data = @repository.fetch(key)
-      
+
       retrieved_data.fetch('id').must_equal data.fetch(:id)
     end
 
     it 'returns nil if key does not exist' do
       @repository.fetch('non_existent_key').must_equal nil
     end
-  end #fetch
+  end # fetch
 
   describe '#delete' do
     it 'deletes a key' do
@@ -85,7 +85,7 @@ describe Backend::Redis do
       @repository.delete(key)
       @repository.fetch(key).must_be_nil
     end
-  end #delete
+  end # delete
 
   describe '#keys' do
     it 'returns all stored keys, stringified' do
@@ -95,7 +95,7 @@ describe Backend::Redis do
       @repository.store(key, data)
       @repository.keys.must_equal [key.to_s]
     end
-  end #keys
+  end # keys
 
   describe '#exists?' do
     it 'returns if key exists' do
@@ -106,6 +106,5 @@ describe Backend::Redis do
       @repository.store(key, data)
       @repository.exists?(key.to_s).must_equal true
     end
-  end #exists?
+  end # exists?
 end # Backend::Redis
-

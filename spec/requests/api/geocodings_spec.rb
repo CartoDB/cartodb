@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Geocodings API" do
+describe 'Geocodings API' do
   before(:all) do
     @user = FactoryGirl.create(:valid_user, table_quota: 50)
 
@@ -16,14 +16,14 @@ describe "Geocodings API" do
     bypass_named_maps
   end
 
-  let(:params) { { :api_key => @user.api_key } }
+  let(:params) { { api_key: @user.api_key } }
 
   describe 'POST /api/v1/geocodings' do
     let(:table) { create_table(user_id: @user.id) }
 
     it 'creates a new geocoding' do
-      Geocoding.any_instance.stubs("run!").returns(true)
-      payload = params.merge table_name: table.name, formatter:  'name, description', kind: 'high-resolution'
+      Geocoding.any_instance.stubs('run!').returns(true)
+      payload = params.merge table_name: table.name, formatter: 'name, description', kind: 'high-resolution'
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 200
         response.body[:id].should_not be_nil
@@ -36,8 +36,8 @@ describe "Geocodings API" do
     end
 
     it 'uses column_name instead of formatter if present' do
-      Geocoding.any_instance.stubs("run!").returns(true)
-      payload = params.merge table_name: table.name, column_name:  'name', kind: 'high-resolution'
+      Geocoding.any_instance.stubs('run!').returns(true)
+      payload = params.merge table_name: table.name, column_name: 'name', kind: 'high-resolution'
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 200
         response.body[:id].should_not be_nil
@@ -46,11 +46,11 @@ describe "Geocodings API" do
     end
 
     describe 'namedplace geocodings' do
-      it "should set the country_code when the name of the country is present" do
-        Geocoding.any_instance.stubs("run!").returns(true)
+      it 'should set the country_code when the name of the country is present' do
+        Geocoding.any_instance.stubs('run!').returns(true)
         payload = params.merge \
           table_name: table.name,
-          column_name:  'name',
+          column_name: 'name',
           text: true,
           location: 'spain',
           kind: 'namedplace'
@@ -62,17 +62,17 @@ describe "Geocodings API" do
         end
       end
 
-      it "should set country_code and country_column when a country column has been selected" do
-        table.add_column!(name: "country", type: "text")
-        table.insert_row!(country: "spain")
-        table.insert_row!(country: "spain")
-        table.insert_row!(country: "us")
+      it 'should set country_code and country_column when a country column has been selected' do
+        table.add_column!(name: 'country', type: 'text')
+        table.insert_row!(country: 'spain')
+        table.insert_row!(country: 'spain')
+        table.insert_row!(country: 'us')
         table.reload
 
-        Geocoding.any_instance.stubs("run!").returns(true)
+        Geocoding.any_instance.stubs('run!').returns(true)
         payload = params.merge \
           table_name: table.name,
-          column_name:  'name',
+          column_name: 'name',
           text: false,
           location: 'country',
           kind: 'namedplace'
@@ -80,15 +80,15 @@ describe "Geocodings API" do
           response.status.should eq 200
           response.body[:id].should_not be_nil
           response.body[:country_code].split(',').sort.should eq ["'spain'", "'us'"]
-          response.body[:country_column].should eq "country"
+          response.body[:country_column].should eq 'country'
         end
       end
 
-      it "should set the region_code when the name of the region is present" do
-        Geocoding.any_instance.stubs("run!").returns(true)
+      it 'should set the region_code when the name of the region is present' do
+        Geocoding.any_instance.stubs('run!').returns(true)
         payload = params.merge \
           table_name: table.name,
-          column_name:  'name',
+          column_name: 'name',
           text: true,
           location: 'spain',
           region_text: true,
@@ -102,18 +102,18 @@ describe "Geocodings API" do
         end
       end
 
-      it "should set region_code and region_column when a region column has been selected" do
-        table.add_column!(name: "country", type: "text")
-        table.add_column!(name: "region", type: "text")
-        table.insert_row!(country: "spain", region: "madrid")
-        table.insert_row!(country: "spain", region: "madrid")
-        table.insert_row!(country: "us", region: "minnesota")
+      it 'should set region_code and region_column when a region column has been selected' do
+        table.add_column!(name: 'country', type: 'text')
+        table.add_column!(name: 'region', type: 'text')
+        table.insert_row!(country: 'spain', region: 'madrid')
+        table.insert_row!(country: 'spain', region: 'madrid')
+        table.insert_row!(country: 'us', region: 'minnesota')
         table.reload
 
-        Geocoding.any_instance.stubs("run!").returns(true)
+        Geocoding.any_instance.stubs('run!').returns(true)
         payload = params.merge \
           table_name: table.name,
-          column_name:  'name',
+          column_name: 'name',
           text: false,
           location: 'country',
           region_text: false,
@@ -124,7 +124,7 @@ describe "Geocodings API" do
           response.status.should eq 200
           response.body[:id].should_not be_nil
           response.body[:region_code].split(',').sort.should eq ["'madrid'", "'minnesota'"]
-          response.body[:region_column].should eq "region"
+          response.body[:region_column].should eq 'region'
         end
       end
     end
@@ -133,16 +133,16 @@ describe "Geocodings API" do
       payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 422
-        response.body[:description].should eq "formatter is not present"
+        response.body[:description].should eq 'formatter is not present'
       end
     end
 
     it 'responds with 500 on failure' do
-      payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
+      payload = params.merge(table_name: '', formatter: '', kind: 'high-resolution')
       Geocoding.any_instance.stubs(:save).raises(RuntimeError.new)
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 500
-        response.body[:description].should eq "RuntimeError"
+        response.body[:description].should eq 'RuntimeError'
       end
     end
   end
@@ -154,9 +154,8 @@ describe "Geocodings API" do
 
       put_json api_v1_geocodings_update_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|
         response.status.should eq 400
-        response.body.should eq errors: "wadus"
+        response.body.should eq errors: 'wadus'
       end
     end
   end
-
 end

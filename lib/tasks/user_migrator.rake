@@ -13,9 +13,9 @@ namespace :cartodb do
           puts "Exporting user #{ume.user.username}"
         end
         if ume.export_metadata
-          puts "Including metadata (moving between clouds)"
+          puts 'Including metadata (moving between clouds)'
         else
-          puts "Without metadata (moving inside a single cloud)"
+          puts 'Without metadata (moving inside a single cloud)'
         end
         puts 'Control + C to cancel (will continue in 5 seconds)'
         sleep 5
@@ -37,7 +37,7 @@ namespace :cartodb do
           import_params[:user_id] = ume.user_id if !ume.export_metadata && ume.user_id
           import_params[:organization_id] = ume.organization_id if !ume.export_metadata && ume.organization_id
           config_filename = "/tmp/import_for_#{ume.id}.json"
-          puts "Pass the following parameters to the import task"
+          puts 'Pass the following parameters to the import task'
           puts JSON.pretty_generate(import_params)
           File.write(config_filename, JSON.pretty_generate(import_params))
           puts "Written to #{config_filename}"
@@ -52,6 +52,7 @@ namespace :cartodb do
       task :organization, [:orgname, :metadata, :metadata_only] => :environment do |_task, args|
         organization = Carto::Organization.find_by_name(args[:orgname])
         raise 'Organization not found' unless organization
+
         export_metadata = args[:metadata] == 'true'
         metadata_only = args[:metadata_only] == 'true'
 
@@ -67,6 +68,7 @@ namespace :cartodb do
       task :user, [:username, :metadata, :metadata_only] => :environment do |_task, args|
         user = Carto::User.find_by_username(args[:username])
         raise 'User not found' unless user
+
         export_metadata = args[:metadata] == 'true'
         metadata_only = args[:metadata_only] == 'true'
 
@@ -94,8 +96,10 @@ namespace :cartodb do
 
     namespace :cleanup do
       module OrganizationMigrationCleanup
+
         def clean_user_metadata(user)
           return unless user.present? && user.persisted?
+
           carto_user = Carto::User.find(user.id)
           carto_user.assets.each(&:delete)
           user.destroy
@@ -103,6 +107,7 @@ namespace :cartodb do
 
         def clean_organization_metadata(organization)
           return unless organization.persisted?
+
           organization.assets.each(&:delete)
           organization.users.each { |u| u.assets.each(&:delete) }
           organization.destroy_cascade
@@ -138,6 +143,7 @@ namespace :cartodb do
           clean_redis_user(user)
           clean_user_metadata(user)
         end
+
       end
 
       desc 'Cleans all organizations data and metadata matching filter in config file'
@@ -173,7 +179,6 @@ namespace :cartodb do
         user = User.where("username = '#{args[:username]}'").first || User.new(username: args[:username])
         clean_user(user)
       end
-
 
       desc 'Cleans redis keys for org with given name'
       task :redis_for_orgname, [:orgname] => :environment do |_, args|

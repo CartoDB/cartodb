@@ -1,4 +1,5 @@
 class Admin::UsersController < Admin::AdminController
+
   include LoginHelper
 
   ssl_required  :account, :profile, :lockout, :maintenance, :unverified
@@ -10,11 +11,11 @@ class Admin::UsersController < Admin::AdminController
   layout 'application'
 
   def profile
-    render(file: "public/static/profile/index.html", layout: false)
+    render(file: 'public/static/profile/index.html', layout: false)
   end
 
   def account
-    render(file: "public/static/account/index.html", layout: false)
+    render(file: 'public/static/account/index.html', layout: false)
   end
 
   def lockout
@@ -49,4 +50,5 @@ class Admin::UsersController < Admin::AdminController
   def setup_user
     @user = current_user
   end
+
 end

@@ -1,17 +1,15 @@
 Sequel.migration do
-
   up do
-
-    SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
+    SequelRails.connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     alter_table :organizations do
       add_column :default_quota_in_bytes, :bigint
     end
 
-    SequelRails.connection.run(%q{
+    SequelRails.connection.run('
       ALTER TABLE "organizations"
       ADD COLUMN whitelisted_email_domains text[] NOT NULL DEFAULT ARRAY[]::text[]
-    })
+    ')
 
     alter_table :users do
       add_column :enable_account_token, String
@@ -25,7 +23,7 @@ Sequel.migration do
       String    :crypted_password,  null: false
       String    :salt,              null: false
       Uuid      :organization_id
-      Boolean   :google_sign_in,    default: false
+      Boolean   :google_sign_in, default: false
       Bigint    :quota_in_bytes
       String    :state
       Uuid      :log_id
@@ -51,5 +49,4 @@ Sequel.migration do
       drop_column :default_quota_in_bytes
     end
   end
-
 end

@@ -15,6 +15,7 @@ module Carto
           created_at: @mapcap.created_at
         }
       end
+
     end
   end
 end

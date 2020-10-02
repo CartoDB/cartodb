@@ -1,4 +1,3 @@
-# coding: utf-8
 require 'ostruct'
 require_relative '../../acceptance_helper'
 require_relative '../../factories/organizations_contexts'
@@ -11,7 +10,7 @@ feature "Superadmin's users API" do
 
   background do
     Capybara.current_driver = :rack_test
-    @new_user = new_user(password: "this_is_a_password")
+    @new_user = new_user(password: 'this_is_a_password')
     @user_atts = @new_user.values
   end
 
@@ -25,25 +24,25 @@ feature "Superadmin's users API" do
     @account_type_juliet.destroy if @account_type_juliet
   end
 
-  scenario "Http auth is needed" do
-    post_json superadmin_users_path, format: "json" do |response|
+  scenario 'Http auth is needed' do
+    post_json superadmin_users_path, format: 'json' do |response|
       response.status.should == 401
     end
   end
 
-  scenario "user create fail" do
+  scenario 'user create fail' do
     @user_atts[:email] = nil
 
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 422
       response.body[:errors][:email].should be_present
-      response.body[:errors][:email].should include("is not present")
+      response.body[:errors][:email].should include('is not present')
     end
   end
 
-  scenario "user create with password success" do
+  scenario 'user create with password success' do
     @user_atts.delete(:crypted_password)
-    @user_atts.merge!(password: "this_is_a_password")
+    @user_atts.merge!(password: 'this_is_a_password')
 
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
@@ -56,12 +55,12 @@ feature "Superadmin's users API" do
       user = ::User.filter(email: @user_atts[:email]).first
       user.should be_present
       user.id.should == response.body[:id]
-      authenticate(user.username, "this_is_a_password").should == user
+      authenticate(user.username, 'this_is_a_password').should == user
     end
     ::User.where(username: @user_atts[:username]).first.destroy
   end
 
-  scenario "user create with crypted_password success" do
+  scenario 'user create with crypted_password success' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
@@ -73,12 +72,12 @@ feature "Superadmin's users API" do
       user = ::User.filter(email: @user_atts[:email]).first
       user.should be_present
       user.id.should == response.body[:id]
-      authenticate(user.username, "this_is_a_password").should == user
+      authenticate(user.username, 'this_is_a_password').should == user
     end
     ::User.where(username: @user_atts[:username]).first.destroy
   end
 
-  scenario "user create default account settings" do
+  scenario 'user create default account settings' do
     @user_atts[:private_tables_enabled] = false
     @user_atts[:sync_tables_enabled] = false
     @user_atts[:map_view_quota] = 80
@@ -88,12 +87,12 @@ feature "Superadmin's users API" do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
-      response.body[:quota_in_bytes].should == 104857600
+      response.body[:quota_in_bytes].should == 104_857_600
       response.body[:table_quota].should == 5
-      response.body[:public_map_quota].should == nil
-      response.body[:public_dataset_quota].should == nil
-      response.body[:private_map_quota].should == nil
-      response.body[:regular_api_key_quota].should == nil
+      response.body[:public_map_quota].should.nil?
+      response.body[:public_dataset_quota].should.nil?
+      response.body[:private_map_quota].should.nil?
+      response.body[:regular_api_key_quota].should.nil?
       response.body[:account_type].should == 'FREE'
       response.body[:private_tables_enabled].should == false
       response.body[:sync_tables_enabled].should == false
@@ -101,12 +100,12 @@ feature "Superadmin's users API" do
 
       # Double check that the user has been created properly
       user = ::User.filter(email: @user_atts[:email]).first
-      user.quota_in_bytes.should == 104857600
+      user.quota_in_bytes.should == 104_857_600
       user.table_quota.should == 5
-      user.public_map_quota.should == nil
-      user.public_dataset_quota.should == nil
-      user.private_map_quota.should == nil
-      user.regular_api_key_quota.should == nil
+      user.public_map_quota.should.nil?
+      user.public_dataset_quota.should.nil?
+      user.private_map_quota.should.nil?
+      user.regular_api_key_quota.should.nil?
       user.account_type.should == 'FREE'
       user.private_tables_enabled.should == false
       user.upgraded_at.should.to_s == t.to_s
@@ -114,7 +113,7 @@ feature "Superadmin's users API" do
     ::User.where(username: @user_atts[:username]).first.destroy
   end
 
-  scenario "user create with rate limits" do
+  scenario 'user create with rate limits' do
     t = Time.now
     @user_atts[:upgraded_at] = t
     rate_limits = FactoryGirl.create(:rate_limits)
@@ -133,7 +132,7 @@ feature "Superadmin's users API" do
     rate_limits.destroy
   end
 
-  scenario "user create non-default account settings" do
+  scenario 'user create non-default account settings' do
     @user_atts[:quota_in_bytes] = 2000
     @user_atts[:table_quota] = 20
     @user_atts[:public_map_quota] = 20
@@ -203,7 +202,7 @@ feature "Superadmin's users API" do
     ::User.where(username: @user_atts[:username]).first.destroy
   end
 
-  scenario "update user account details" do
+  scenario 'update user account details' do
     user = create_user
     t = Time.now
     @update_atts = { quota_in_bytes: 2000,
@@ -213,8 +212,8 @@ feature "Superadmin's users API" do
                      private_map_quota: 20,
                      regular_api_key_quota: 20,
                      max_layers: 10,
-                     user_timeout: 100000,
-                     database_timeout: 200000,
+                     user_timeout: 100_000,
+                     database_timeout: 200_000,
                      account_type: 'Juliet',
                      private_tables_enabled: true,
                      sync_tables_enabled: true,
@@ -248,8 +247,8 @@ feature "Superadmin's users API" do
     user.private_tables_enabled.should == true
     user.sync_tables_enabled.should == true
     user.max_layers.should == 10
-    user.database_timeout.should == 200000
-    user.user_timeout.should == 100000
+    user.database_timeout.should == 200_000
+    user.user_timeout.should == 100_000
     user.upgraded_at.to_s.should == t.to_s
     user.map_view_block_price.should == 200
     user.geocoding_quota.should == 230
@@ -268,8 +267,8 @@ feature "Superadmin's users API" do
     # then test back to false
     put_json superadmin_user_path(user), { user: {
       private_tables_enabled: false,
-      builder_enabled: false }
-    }, superadmin_headers do |response|
+      builder_enabled: false
+    } }, superadmin_headers do |response|
       response.status.should == 204
     end
     user = ::User[user.id]
@@ -289,36 +288,36 @@ feature "Superadmin's users API" do
     user.destroy
   end
 
-  scenario "user update fail" do
+  scenario 'user update fail' do
     user = create_user
 
-    put_json superadmin_user_path(user), { user: { email: "" } }, superadmin_headers do |response|
+    put_json superadmin_user_path(user), { user: { email: '' } }, superadmin_headers do |response|
       response.status.should == 422
     end
 
     user.destroy
   end
 
-  scenario "user update success" do
+  scenario 'user update success' do
     user = create_user
     put_json superadmin_user_path(user),
-             { user: { email: "newmail@test.com", map_view_quota: 80 } },
+             { user: { email: 'newmail@test.com', map_view_quota: 80 } },
              superadmin_headers do |response|
       response.status.should == 204
     end
     user = ::User[user.id]
-    user.email.should == "newmail@test.com"
+    user.email.should == 'newmail@test.com'
     user.map_view_quota.should == 80
 
     user.destroy
   end
 
-  scenario "update success with new organization" do
-    pending "Organizations handling has been refactored and needs new specs"
+  scenario 'update success with new organization' do
+    pending 'Organizations handling has been refactored and needs new specs'
     user = create_user
     @update_atts = {
       quota_in_bytes: 2000,
-      organization_attributes: { name: 'wadus', seats: 25, quota_in_bytes: 40000 }
+      organization_attributes: { name: 'wadus', seats: 25, quota_in_bytes: 40_000 }
     }
 
     put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
@@ -328,7 +327,7 @@ feature "Superadmin's users API" do
     user.quota_in_bytes.should eq 2000
     user.organization.name.should eq 'wadus'
     user.organization.seats.should eq 25
-    user.organization.quota_in_bytes.should eq 40000
+    user.organization.quota_in_bytes.should eq 40_000
 
     @update_atts = {
       quota_in_bytes: 2001,
@@ -341,12 +340,12 @@ feature "Superadmin's users API" do
     user.quota_in_bytes.should eq 2001
     user.organization.name.should eq 'wadus'
     user.organization.seats.should eq 26
-    user.organization.quota_in_bytes.should eq 40000
+    user.organization.quota_in_bytes.should eq 40_000
 
     user.destroy
   end
 
-  scenario "user delete success" do
+  scenario 'user delete success' do
     user = create_user
     delete_json superadmin_user_path(user), {}, superadmin_headers do |response|
       response.status.should == 204
@@ -354,7 +353,7 @@ feature "Superadmin's users API" do
     ::User[user.id].should be_nil
   end
 
-  scenario "user dump success" do
+  scenario 'user dump success' do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
     json_data = { database: user.database_name, username: user.username }
@@ -366,11 +365,10 @@ feature "Superadmin's users API" do
       }
     }
     Typhoeus.stub(dump_url,
-                  method: :post
-                 )
-      .and_return(
-        Typhoeus::Response.new(code: 200, body: response_body.to_json)
-      )
+                  method: :post)
+            .and_return(
+              Typhoeus::Response.new(code: 200, body: response_body.to_json)
+            )
 
     get_json "/superadmin/users/#{user.id}/dump", {}, superadmin_headers do |response|
       response.status.should == 200
@@ -379,16 +377,15 @@ feature "Superadmin's users API" do
     user.destroy
   end
 
-  scenario "user dump fail" do
+  scenario 'user dump fail' do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
     json_data = { database: user.database_name, username: user.username }
     Typhoeus.stub(dump_url,
-                  method: :post
-                 )
-      .and_return(
-        Typhoeus::Response.new(code: 200, body: '{"retcode": 111}')
-      )
+                  method: :post)
+            .and_return(
+              Typhoeus::Response.new(code: 200, body: '{"retcode": 111}')
+            )
 
     get_json "/superadmin/users/#{user.id}/dump", {}, superadmin_headers do |response|
       response.status.should == 400
@@ -397,16 +394,15 @@ feature "Superadmin's users API" do
     user.destroy
   end
 
-  scenario "user dump fail retcode" do
+  scenario 'user dump fail retcode' do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
     json_data = { database: user.database_name, username: user.username }
     Typhoeus.stub(dump_url,
-                  method: :post
-                 )
-      .and_return(
-        Typhoeus::Response.new(code: 500, body: '{"retcode": 0}')
-      )
+                  method: :post)
+            .and_return(
+              Typhoeus::Response.new(code: 500, body: '{"retcode": 0}')
+            )
 
     get_json "/superadmin/users/#{user.id}/dump", {}, superadmin_headers do |response|
       response.status.should == 400
@@ -414,7 +410,7 @@ feature "Superadmin's users API" do
     user.destroy
   end
 
-  scenario "user get info success" do
+  scenario 'user get info success' do
     user = create_user
     get_json superadmin_user_path(user), {}, superadmin_headers do |response|
       response.status.should == 200
@@ -434,7 +430,7 @@ feature "Superadmin's users API" do
     user.destroy
   end
 
-  scenario "user get info fail" do
+  scenario 'user get info fail' do
     get_json superadmin_user_path('7b77546f-79cb-4662-9439-9ebafd9627cb'), {}, superadmin_headers do |response|
       response.status.should == 404
     end
@@ -444,7 +440,7 @@ feature "Superadmin's users API" do
     end
   end
 
-  describe "GET /superadmin/users" do
+  describe 'GET /superadmin/users' do
     before do
       @user  = create_user
       @user2 = create_user
@@ -459,25 +455,25 @@ feature "Superadmin's users API" do
       @user4&.destroy
     end
 
-    it "gets all users" do
+    it 'gets all users' do
       get_json superadmin_users_path, {}, superadmin_headers do |response|
         response.status.should == 200
-        response.body.map { |u| u["username"] }.should include(@user.username, @user2.username)
+        response.body.map { |u| u['username'] }.should include(@user.username, @user2.username)
         response.body.length.should >= 2
       end
     end
 
-    it "gets overquota users" do
+    it 'gets overquota users' do
       ::User.stubs(:overquota).returns [@user]
       Carto::OverquotaUsersService.any_instance.stubs(:get_stored_overquota_users).returns [@user.data]
       get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
-        response.body[0]["username"].should == @user.username
+        response.body[0]['username'].should == @user.username
         response.body.length.should == 1
       end
     end
 
-    it "gets active Juliet users" do
+    it 'gets active Juliet users' do
       @user3.account_type = 'Juliet'
       @user3.state = 'active'
       @user3.save
@@ -489,7 +485,7 @@ feature "Superadmin's users API" do
       get_json superadmin_users_path, { account_type: 'Juliet', state: 'active' }, superadmin_headers do |response|
         response.status.should == 200
         response.body.length.should eq 1
-        response.body[0]["username"].should == @user3.username
+        response.body[0]['username'].should == @user3.username
         response.body[0].has_key?('table_count').should eq true
         response.body[0].has_key?('public_map_count').should eq true
         response.body[0].has_key?('map_count').should eq true
@@ -502,7 +498,7 @@ feature "Superadmin's users API" do
       end
     end
 
-    it "gets cached db_size_in_bytes_change_users and returns username and db_size_in_bytes_change" do
+    it 'gets cached db_size_in_bytes_change_users and returns username and db_size_in_bytes_change' do
       cached_users_mock = {
         'username1' => 1111,
         'username2' => 2222
@@ -523,7 +519,7 @@ feature "Superadmin's users API" do
 
     it "doesn't get organization users" do
       ::User.stubs(:organization).returns(Organization.new)
-      ::User.stubs(:organization_id).returns("organization-id")
+      ::User.stubs(:organization_id).returns('organization-id')
       get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body.length.should == 0
@@ -567,15 +563,14 @@ feature "Superadmin's users API" do
       user        = FactoryGirl.create(:user)
       rate_limit  = FactoryGirl.create(:rate_limits)
 
-      expect {
+      expect do
         put superadmin_user_url(user.id), {
           user: { rate_limit: rate_limit.api_attributes }, id: user.id
         }.to_json, superadmin_headers
 
         user.reload
         user.rate_limit.api_attributes.should eq rate_limit.api_attributes
-
-      }.to change(Carto::RateLimit, :count).by(1)
+      end.to change(Carto::RateLimit, :count).by(1)
     end
 
     it 'should update existing user rate limit' do
@@ -594,7 +589,6 @@ feature "Superadmin's users API" do
     end
 
     describe 'gcloud settings' do
-
       before(:all) do
         @user = FactoryGirl.create(:user)
       end
@@ -677,14 +671,14 @@ feature "Superadmin's users API" do
       it 'An update without gcloud settings does not add an empty key to redis' do
         payload = {
           user: {
-            #builder_enabled: true
+            # builder_enabled: true
           }
         }
         put superadmin_user_url(@user.id), payload.to_json, superadmin_headers do |response|
           response.status.should == 204
         end
 
-        keys = $users_metadata.keys("do_settings:*")
+        keys = $users_metadata.keys('do_settings:*')
         keys.should be_empty
       end
     end
@@ -712,9 +706,9 @@ feature "Superadmin's users API" do
       rate_limit = create(:rate_limits)
       user.update!(rate_limit_id: rate_limit.id)
 
-      expect {
+      expect do
         delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
-      }.to change(Carto::RateLimit, :count).by(-1)
+      end.to change(Carto::RateLimit, :count).by(-1)
     end
   end
 
@@ -740,8 +734,8 @@ feature "Superadmin's users API" do
         private_map_quota: 20,
         regular_api_key_quota: 20,
         max_layers: 10,
-        user_timeout: 100000,
-        database_timeout: 200000,
+        user_timeout: 100_000,
+        database_timeout: 200_000,
         private_tables_enabled: true,
         sync_tables_enabled: true,
         map_view_block_price: 200,

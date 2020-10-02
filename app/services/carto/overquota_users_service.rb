@@ -53,5 +53,6 @@ module Carto
         user.send("get_#{service}_calls") > user.send("#{service}_quota").to_i * (1 - delta)
       end
     end
+
   end
 end

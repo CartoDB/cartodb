@@ -34,7 +34,7 @@ describe CartoDB::Importer2::GpxSplitter do
     it 'returns all layers name in the file' do
       source_file = CartoDB::Importer2::SourceFile.new(@one_layer_filepath)
       splitter    = CartoDB::Importer2::GpxSplitter.new(source_file, @temporary_directory, @ogr2ogr_config)
-      splitter.layers_in(source_file).should eq ["tracks", "track_points"]
+      splitter.layers_in(source_file).should eq ['tracks', 'track_points']
 
       source_file = CartoDB::Importer2::SourceFile.new(@multiple_layer_filepath)
       splitter    = CartoDB::Importer2::GpxSplitter.new(source_file, @temporary_directory, @ogr2ogr_config)

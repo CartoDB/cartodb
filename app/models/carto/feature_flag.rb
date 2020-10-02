@@ -8,5 +8,6 @@ module Carto
     scope :not_restricted, -> { where(restricted: false) }
 
     validates :name, presence: true
+
   end
 end

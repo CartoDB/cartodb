@@ -12,7 +12,7 @@ class ResqueFailureLogger < Resque::Failure::Base
       worker: { pid: worker.pid, hostname: worker.hostname },
       job_class: payload['class'],
       args: payload['args'].inspect,
-      run_at: worker.job["run_at"]
+      run_at: worker.job['run_at']
     )
   end
 

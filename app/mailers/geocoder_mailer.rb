@@ -1,9 +1,10 @@
 class GeocoderMailer < ActionMailer::Base
+
   default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
-  def geocoding_finished(user, state, table_name, error_code=nil, processable_rows, geocoded_rows)
-    @geocoding_failed = (state == "failed" ||  state == "timeout") ? true : false
+  def geocoding_finished(user, state, table_name, _error_code=nil, processable_rows, geocoded_rows)
+    @geocoding_failed = state == 'failed' || state == 'timeout' ? true : false
     @state = state
     @subject = set_subject(state)
     @table_name = table_name
@@ -12,19 +13,19 @@ class GeocoderMailer < ActionMailer::Base
     @all_rows_geocoded = (processable_rows - geocoded_rows == 0)
     @link = "#{user.public_url}#{CartoDB.path(self, 'public_tables_show', { id: @table_name })}"
 
-    mail ({:to => user.email, :subject => @subject})
+    mail({ to: user.email, subject: @subject })
   end
 
   private
 
-    def set_subject(state)
-      if @geocoding_failed
-        subject = "Your dataset geocoding has failed"
-      else
-        subject = "Your dataset geocoding has just finished"
-      end
+  def set_subject(_state)
+    subject = if @geocoding_failed
+                'Your dataset geocoding has failed'
+              else
+                'Your dataset geocoding has just finished'
+              end
 
-      subject
-    end
+    subject
+  end
 
 end

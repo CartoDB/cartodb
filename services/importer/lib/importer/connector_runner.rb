@@ -16,6 +16,7 @@ module CartoDB
     # the Connector class, which in turn defines the rest of valid parameters for the connector.
     #
     class ConnectorRunner
+
       include CartoDB::Importer2::RunnerHelper
 
       attr_reader :results, :log, :job, :warnings
@@ -54,15 +55,15 @@ module CartoDB
           @job.log "Table #{table_name} needs not be updated"
         else
           updated = true
-          @job.log "Copy connected table"
+          @job.log 'Copy connected table'
           warnings = @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
           @job.log 'Georeference geometry column'
           georeference
           @warnings.merge! warnings if warnings.present?
         end
-      rescue StandardError => error
-        @job.log "ConnectorRunner Error #{error}"
-        @results.push result_for(@job.schema, table_name, error)
+      rescue StandardError => e
+        @job.log "ConnectorRunner Error #{e}"
+        @results.push result_for(@job.schema, table_name, e)
       else
         if updated
           @job.log "ConnectorRunner created table #{table_name}"
@@ -73,8 +74,8 @@ module CartoDB
 
       def georeference
         @georeferencer.run
-      rescue StandardError => error
-        @job.log "ConnectorRunner Error while georeference #{error}"
+      rescue StandardError => e
+        @job.log "ConnectorRunner Error while georeference #{e}"
       end
 
       def remote_data_updated?
@@ -82,7 +83,7 @@ module CartoDB
       end
 
       def tracker
-        @tracker || lambda { |state| state }
+        @tracker || ->(state) { state }
       end
 
       def visualizations
@@ -129,12 +130,12 @@ module CartoDB
         @job.success_status = !error
         @job.logger.store
         Result.new(
-          name:           result_table_name,
-          schema:         schema,
-          tables:         [table_name],
-          success:        @job.success_status,
-          error_code:     error_for(error),
-          log_trace:      @job.logger.to_s,
+          name: result_table_name,
+          schema: schema,
+          tables: [table_name],
+          success: @job.success_status,
+          error_code: error_for(error),
+          log_trace: @job.logger.to_s,
           support_tables: []
         )
       end
@@ -151,11 +152,12 @@ module CartoDB
         Georeferencer.new(job.db, job.table_name, {}, Georeferencer::DEFAULT_SCHEMA, job)
       end
 
-      UNKNOWN_ERROR_CODE = 99999
+      UNKNOWN_ERROR_CODE = 99_999
 
       def error_for(exception)
         exception && ERRORS_MAP.fetch(exception.class, UNKNOWN_ERROR_CODE)
       end
+
     end
   end
 end

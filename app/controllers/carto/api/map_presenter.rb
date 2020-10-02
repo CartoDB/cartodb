@@ -1,6 +1,7 @@
 module Carto
   module Api
     class MapPresenter
+
       def initialize(map)
         @map = map
       end
@@ -21,6 +22,7 @@ module Carto
           scrollwheel: @map.scrollwheel
         }
       end
+
     end
   end
 end

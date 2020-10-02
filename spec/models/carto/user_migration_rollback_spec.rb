@@ -119,12 +119,12 @@ describe 'UserMigration' do
       Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
       Asset.any_instance.stubs(:use_s3?).returns(false)
       asset = Asset.create(asset_file: Rails.root + 'spec/support/data/cartofante_blue.png', user: @user)
-      local_url = CGI.unescape(asset.public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
+      local_url = CGI.unescape(asset.public_url.gsub(%r{(http:)?//#{CartoDB.account_host}}, ''))
       imp = import
 
       imp.run_import.should eq false
       imp.state.should eq 'failure'
-      File.exists?((asset.public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/')).should eq true
+      File.exist?((asset.public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/')).should eq true
     end
   end
 
@@ -154,11 +154,9 @@ describe 'UserMigration' do
     end
 
     after :each do
-      begin
-        @organization.reload
-        @organization.destroy_cascade
-      rescue StandardError
-      end
+      @organization.reload
+      @organization.destroy_cascade
+    rescue StandardError
     end
 
     it 'import failing in import_metadata should rollback' do
@@ -251,7 +249,7 @@ describe 'UserMigration' do
 
       imp.run_import.should eq false
       imp.state.should eq 'failure'
-      File.exists?(asset.storage_info[:identifier]).should eq true
+      File.exist?(asset.storage_info[:identifier]).should eq true
     end
   end
 end

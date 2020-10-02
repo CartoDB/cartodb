@@ -57,19 +57,31 @@ module CartoDB
     def handle_response(response)
       @response_code    = response.response_code
       body              = inflate(response.body.to_s)
-      @parsed_response  = ::JSON.parse(body) rescue nil
+      @parsed_response  = begin
+                            ::JSON.parse(body)
+                          rescue StandardError
+                            nil
+                          end
       raise_if_error(response)
-      parsed_response["rows"] rescue body
+      begin
+        parsed_response['rows']
+      rescue StandardError
+        body
+      end
     end
 
     def inflate(text)
       Zlib::GzipReader.new(StringIO.new(text)).read
     rescue Zlib::GzipFile::Error
-      return text
+      text
     end
 
     def raise_if_error(response)
-      error_message   = parsed_response["error"].first rescue nil
+      error_message = begin
+                          parsed_response['error'].first
+                      rescue StandardError
+                        nil
+                        end
       raise DnsError if response.return_code == :couldnt_resolve_host
       raise TimeoutError if response.timed_out?
       raise PermissionError if error_message =~ /^permission denied for relation/
@@ -78,10 +90,10 @@ module CartoDB
 
     def build_base_url(sql_api_config_type)
       config = ::Cartodb.get_config(:sql_api, sql_api_config_type.to_s)
-      if self.base_url.nil?
-        %Q[#{config["protocol"]}://#{username}.#{config["domain"]}#{config["endpoint"]}]
+      if base_url.nil?
+        %[#{config['protocol']}://#{username}.#{config['domain']}#{config['endpoint']}]
       else
-        %Q[#{self.base_url}#{config["endpoint"]}]
+        %[#{base_url}#{config['endpoint']}]
       end
     end
 
@@ -99,10 +111,10 @@ module CartoDB
     end
 
     def build_params(query, format = '', filename = '')
-      params = {q: query}
-      params["format"] = format if !format.empty?
-      params["filename"] = filename if !filename.empty?
-      params["api_key"] = api_key if !api_key.nil? && !api_key.empty?
+      params = { q: query }
+      params['format'] = format unless format.empty?
+      params['filename'] = filename unless filename.empty?
+      params['api_key'] = api_key if !api_key.nil? && !api_key.empty?
       params
     end
 

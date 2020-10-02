@@ -6,61 +6,66 @@ require_dependency 'carto/query_rewriter'
 require_relative 'carto/layer'
 
 class Layer < Sequel::Model
+
   include Carto::TableUtils
   include Carto::LayerTableDependencies
   include Carto::QueryRewriter
 
   plugin :serialization, :json, :options, :infowindow, :tooltip
 
-  ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
-  BASE_LAYER_KINDS  = %w(tiled background gmapsbase wms)
+  ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
+  BASE_LAYER_KINDS = %w(tiled background gmapsbase wms).freeze
   DATA_LAYER_KINDS = ALLOWED_KINDS - BASE_LAYER_KINDS
 
-  PUBLIC_ATTRIBUTES = %W{ options kind infowindow tooltip id order }
+  PUBLIC_ATTRIBUTES = %w{options kind infowindow tooltip id order}.freeze
 
   TEMPLATES_MAP = {
-    'table/views/infowindow_light' =>               'infowindow_light',
-    'table/views/infowindow_dark' =>                'infowindow_dark',
-    'table/views/infowindow_light_header_blue' =>   'infowindow_light_header_blue',
+    'table/views/infowindow_light' => 'infowindow_light',
+    'table/views/infowindow_dark' => 'infowindow_dark',
+    'table/views/infowindow_light_header_blue' => 'infowindow_light_header_blue',
     'table/views/infowindow_light_header_yellow' => 'infowindow_light_header_yellow',
     'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
-    'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
-    'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
-  }
+    'table/views/infowindow_light_header_green' => 'infowindow_light_header_green',
+    'table/views/infowindow_header_with_image' => 'infowindow_header_with_image'
+  }.freeze
 
   # Sets default order to the maximum order of the sibling layers + 1
   def set_default_order(parent)
     max_order = parent.layers_dataset.select(:order).map(&:order).compact.max
-    order = (max_order == nil ? 0 : max_order + 1)
-    self.update(:order => order) if self.order.blank?
+    order = (max_order.nil? ? 0 : max_order + 1)
+    update(order: order) if self.order.blank?
   end
 
   one_to_many  :layer_node_styles
   many_to_many :maps,  after_add: proc { |layer, parent| layer.after_added_to_map(parent) }
   many_to_many :users, after_add: proc { |layer, parent| layer.set_default_order(parent) }
   many_to_many :user_tables,
-                join_table: :layers_user_tables,
-                left_key: :layer_id, right_key: :user_table_id,
-                reciprocal: :layers, class: ::UserTable
+               join_table: :layers_user_tables,
+               left_key: :layer_id, right_key: :user_table_id,
+               reciprocal: :layers, class: ::UserTable
 
-  plugin  :association_dependencies, :maps => :nullify, :users => :nullify, :user_tables => :nullify
+  plugin :association_dependencies, maps: :nullify, users: :nullify, user_tables: :nullify
 
   def public_values
-    Hash[ PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
+    Hash[PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] }]
   end
 
   def validate
     super
-    errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
+    errors.add(:kind, 'not accepted') unless ALLOWED_KINDS.include?(kind)
     errors.add(:maps, "Viewer users can't edit layers") if maps.find { |m| m.user && m.user.viewer }
 
-    if ((Cartodb.config[:enforce_non_empty_layer_css] rescue true))
+    if begin
+          Cartodb.config[:enforce_non_empty_layer_css]
+       rescue StandardError
+         true
+        end
       style = options.include?('tile_style') ? options['tile_style'] : nil
       if style.nil? || style.strip.empty?
         errors.add(:options, 'Tile style is empty')
         stats_aggregator = CartoDB::Stats::EditorAPIs.instance
-        stats_aggregator.increment("errors.layer.empty-css")
-        stats_aggregator.increment("errors.total")
+        stats_aggregator.increment('errors.layer.empty-css')
+        stats_aggregator.increment('errors.total')
       end
     end
   end
@@ -72,9 +77,9 @@ class Layer < Sequel::Model
 
   def to_json(*args)
     public_values.merge(
-      infowindow: self.values[:infowindow].nil? ? {} : JSON.parse(self.values[:infowindow]),
-      tooltip: JSON.parse(self.values[:tooltip]),
-      options: self.values[:options].nil? ? {} : JSON.parse(self.values[:options])
+      infowindow: values[:infowindow].nil? ? {} : JSON.parse(values[:infowindow]),
+      tooltip: JSON.parse(values[:tooltip]),
+      options: values[:options].nil? ? {} : JSON.parse(values[:options])
     ).to_json(*args)
   end
 
@@ -90,34 +95,31 @@ class Layer < Sequel::Model
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user && user.viewer
+
     maps.each(&:notify_map_change)
     super
   end
 
   def key
-    "rails:layer_styles:#{self.id}"
+    "rails:layer_styles:#{id}"
   end
 
   def infowindow_template_path
-    if self.infowindow.present? && self.infowindow['template_name'].present?
-      template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
+    if infowindow.present? && infowindow['template_name'].present?
+      template_name = TEMPLATES_MAP.fetch(infowindow['template_name'], infowindow['template_name'])
       Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
-    else
-      nil
     end
   end
 
   def tooltip_template_path
-    if self.tooltip.present? && self.tooltip['template_name'].present?
-      template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
+    if tooltip.present? && tooltip['template_name'].present?
+      template_name = TEMPLATES_MAP.fetch(tooltip['template_name'], tooltip['template_name'])
       Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
-    else
-      nil
     end
   end
 
   def copy(override_attributes={})
-    attributes = public_values.select { |k, v| k != 'id' }.merge(override_attributes)
+    attributes = public_values.select { |k, _v| k != 'id' }.merge(override_attributes)
     ::Layer.new(attributes)
   end
   alias dup copy
@@ -135,11 +137,11 @@ class Layer < Sequel::Model
   end
 
   def basemap?
-    ["gmapsbase", "tiled"].include?(kind)
+    ['gmapsbase', 'tiled'].include?(kind)
   end
 
   def supports_labels_layer?
-    basemap? && options["labels"] && options["labels"]["urlTemplate"]
+    basemap? && options['labels'] && options['labels']['urlTemplate']
   end
 
   def register_table_dependencies(db=SequelRails.connection)
@@ -150,11 +152,12 @@ class Layer < Sequel::Model
   end
 
   def rename_table(current_table_name, new_table_name)
-    return self unless data_layer? or torque_layer?
-    target_keys = %w{ table_name tile_style query }
+    return self unless data_layer? || torque_layer?
+
+    target_keys = %w{table_name tile_style query}
 
     options = JSON.parse(self[:options])
-    targets = options.select { |key, value| target_keys.include?(key) }
+    targets = options.select { |key, _value| target_keys.include?(key) }
     renamed = targets.map do |key, value|
       [key, rename_in(value, current_table_name, new_table_name)]
     end
@@ -178,7 +181,7 @@ class Layer < Sequel::Model
   def set_option(key, value)
     return unless data_layer?
 
-    self.options[key] = value
+    options[key] = value
   end
 
   def qualified_table_name(viewer_user)
@@ -210,6 +213,7 @@ class Layer < Sequel::Model
 
   def rename_in(target, anchor, substitution)
     return if target.nil? || target.empty?
+
     regex = /(\A|\W+)(#{anchor})(\W+|\z)/
     target.gsub(regex) { |match| match.gsub(anchor, substitution) }
   end
@@ -229,7 +233,7 @@ class Layer < Sequel::Model
   end
 
   def affected_table_names(query)
-    query_tables = user.in_database["SELECT unnest(CDB_QueryTablesText(?))", query]
+    query_tables = user.in_database['SELECT unnest(CDB_QueryTablesText(?))', query]
     query_tables.map(:unnest)
   end
 
@@ -251,6 +255,8 @@ class Layer < Sequel::Model
 
   def current_layer_node_style
     return nil unless source_id
+
     LayerNodeStyle.find(layer_id: id, source_id: source_id) || LayerNodeStyle.new(layer: self, source_id: source_id)
   end
+
 end

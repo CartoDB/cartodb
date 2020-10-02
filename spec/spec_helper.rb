@@ -6,7 +6,7 @@ require 'helpers/unique_names_helper'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 
 # Needed because load order changes in Ruby 2.3+, related to https://github.com/rspec/rspec-rails/pull/1372
 # We can remove this if we upgrade to rspec 3+
@@ -71,6 +71,7 @@ RSpec.configure do |config|
   module Rack
     module Test
       module Methods
+
         def build_rack_mock_session
           Rack::MockSession.new(app, host)
         end
@@ -82,6 +83,7 @@ RSpec.configure do |config|
         ensure
           host! old_host
         end
+
       end
     end
   end
@@ -99,12 +101,13 @@ end
 
 def http_json_authorization_headers(user, password)
   http_json_headers.merge(
-    "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
-    "HTTP_ACCEPT" => "application/json")
+    'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
+    'HTTP_ACCEPT' => 'application/json'
+  )
 end
 
 def http_json_headers
-  { "CONTENT_TYPE" => "application/json", :format => "json" }
+  { 'CONTENT_TYPE' => 'application/json', :format => 'json' }
 end
 
 def fake_data_path(filename)
@@ -112,7 +115,7 @@ def fake_data_path(filename)
 end
 
 def login_page_response?(response)
-  response.status == 200 && response.body.include?("title=\"Email or username\"")
+  response.status == 200 && response.body.include?('title="Email or username"')
 end
 
 def post_session(params = {})
@@ -127,12 +130,12 @@ end
 def parse_set_cookie_header(header)
   kv_pairs = header.split(/\s*;\s*/).map do |attr|
     k, v = attr.split '='
-    [ k, v || nil ]
+    [k, v || nil]
   end
-  Hash[ kv_pairs ]
+  Hash[kv_pairs]
 end
 
 def set_cookies_for_next_request(previous_response)
-  received_cookies = parse_set_cookie_header(previous_response.headers["Set-Cookie"])
+  received_cookies = parse_set_cookie_header(previous_response.headers['Set-Cookie'])
   received_cookies.each { |key, value| cookies[key] = value }
 end

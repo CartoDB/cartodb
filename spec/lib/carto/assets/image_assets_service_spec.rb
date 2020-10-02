@@ -7,16 +7,16 @@ describe Carto::ImageAssetsService do
       max_size = Carto::ImageAssetsService.new.max_size_in_bytes
       IO.stubs(:copy_stream).returns(max_size + 1)
 
-      expect {
+      expect do
         Carto::ImageAssetsService.new.fetch_file(Tempfile.new(['manolo', '.png']))
-      }.to raise_error(Carto::UnprocesableEntityError, "resource is too big (> #{max_size} bytes)")
+      end.to raise_error(Carto::UnprocesableEntityError, "resource is too big (> #{max_size} bytes)")
     end
 
     it 'validates file dimensions' do
       file = File.new(Rails.root + 'spec/support/data/images/1025x1.jpg')
-      expect {
+      expect do
         Carto::ImageAssetsService.new.fetch_file(file)
-      }.to raise_error(Carto::UnprocesableEntityError, "file is too big, 1024x1024 max")
+      end.to raise_error(Carto::UnprocesableEntityError, 'file is too big, 1024x1024 max')
     end
 
     it 'keeps original extension' do
@@ -35,9 +35,9 @@ describe Carto::ImageAssetsService do
       file.rewind
       uploaded_file = Rack::Test::UploadedFile.new(file)
 
-      expect {
+      expect do
         Carto::ImageAssetsService.new.fetch_file(uploaded_file)
-      }.to raise_error(Carto::UnprocesableEntityError, "extension not accepted")
+      end.to raise_error(Carto::UnprocesableEntityError, 'extension not accepted')
     end
   end
 end

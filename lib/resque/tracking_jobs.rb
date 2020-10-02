@@ -3,7 +3,9 @@ require 'carto/tracking/services/pubsub_tracker'
 
 module Resque
   module TrackingJobs
+
     module SendPubSubEvent
+
       include Carto::Common::JobLogger
 
       @queue = :tracker
@@ -11,9 +13,11 @@ module Resque
       def self.perform(user_id, name, properties)
         PubSubTracker.instance.send_event(:metrics, user_id, name, properties)
       end
+
     end
 
     module SendSegmentEvent
+
       include Carto::Common::JobLogger
       extend ::LoggerHelper
 
@@ -30,9 +34,11 @@ module Resque
       rescue StandardError => e
         log_warning(message: "Can't report to Segment", exception: e, event: { name: name }, properties: properties)
       end
+
     end
 
     module SendHubspotEvent
+
       include Carto::Common::JobLogger
       extend ::LoggerHelper
 
@@ -48,6 +54,8 @@ module Resque
           log_error(message: 'Carto::Tracking: Hubspot service error', event: { id: id }, params: params)
         end
       end
+
     end
+
   end
 end

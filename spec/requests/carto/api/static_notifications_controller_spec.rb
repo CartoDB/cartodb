@@ -26,7 +26,7 @@ describe Carto::Api::StaticNotificationsController do
     it 'updates the notification for the category' do
       put_json(api_v3_static_notifications_update_url('builder', auth_params), notifications: notification) do |response|
         response.status.should eq 200
-        response.body.should eq ({ notifications: notification })
+        response.body.should eq({ notifications: notification })
       end
     end
 

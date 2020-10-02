@@ -1,12 +1,15 @@
 require 'oauth'
 
 class DomainPatcherRequestProxy < OAuth::RequestProxy::RackRequest
+
   def uri
     super.sub('carto.com', 'cartodb.com')
   end
+
 end
 
 class ClientApplication < Sequel::Model
+
   extend CartoDB::ConfigUtils
 
   attr_accessor :token_callback_url
@@ -31,7 +34,7 @@ class ClientApplication < Sequel::Model
   end
 
   def self.find_by_key(key)
-    first(:key => key)
+    first(key: key)
   end
 
   def user
@@ -39,7 +42,7 @@ class ClientApplication < Sequel::Model
   end
 
   def user=(value)
-    set(:user_id => value.id)
+    set(user_id: value.id)
   end
 
   def self.verify_request(request, options = {}, &block)
@@ -55,7 +58,7 @@ class ClientApplication < Sequel::Model
   end
 
   def oauth_server
-    @oauth_server ||= OAuth::Server.new("http://your.site")
+    @oauth_server ||= OAuth::Server.new('http://your.site')
   end
 
   def credentials
@@ -63,13 +66,13 @@ class ClientApplication < Sequel::Model
   end
 
   # If your application requires passing in extra parameters handle it here
-  def create_request_token(params={})
-    Carto::RequestToken.create :client_application => self, :callback_url=>self.token_callback_url
+  def create_request_token(_params={})
+    Carto::RequestToken.create client_application: self, callback_url: token_callback_url
   end
 
   def before_create
-    self.key        = OAuth::Helper.generate_key(40)[0,40]
-    self.secret     = OAuth::Helper.generate_key(40)[0,40]
+    self.key        = OAuth::Helper.generate_key(40)[0, 40]
+    self.secret     = OAuth::Helper.generate_key(40)[0, 40]
     self.created_at = Time.now
   end
 
@@ -80,4 +83,5 @@ class ClientApplication < Sequel::Model
   def before_destroy
     oauth_tokens.map(&:destroy)
   end
+
 end

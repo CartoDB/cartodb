@@ -107,7 +107,7 @@ module Carto
       end
 
       def roles
-        execute_query(@conn, "SELECT usename from pg_user").map do |r|
+        execute_query(@conn, 'SELECT usename from pg_user').map do |r|
           r = r.deep_symbolize_keys
           Role.new(database_name: @database_name, name: r[:usename])
         end

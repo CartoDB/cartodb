@@ -6,14 +6,13 @@ require_relative '../../../../spec/spec_helper_min'
 module CartoDB::Importer2
 
   describe NamedplacesGuesser do
-
     describe '#found?' do
       it 'raises an exception if not run yet' do
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
-        expect {
+        expect do
           namedplaces.found?
-        }.to raise_error(ContentGuesserException, 'not run yet!')
+        end.to raise_error(ContentGuesserException, 'not run yet!')
       end
 
       it 'returns false if there was no namedplaces column found during checks' do
@@ -37,7 +36,6 @@ module CartoDB::Importer2
         namedplaces.run!
         namedplaces.found?.should be_true
       end
-
     end
 
     describe '#run!' do
@@ -60,7 +58,6 @@ module CartoDB::Importer2
 
         namedplaces.run!
       end
-
     end
 
     describe '#country_column' do
@@ -76,11 +73,10 @@ module CartoDB::Importer2
       end
     end
 
-
     # These methods below are private but worth testing
 
     describe '#guess_with_country_column' do
-      it "gets the column with highest proportion of namedplaces, if any" do
+      it 'gets the column with highest proportion of namedplaces, if any' do
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
 
@@ -97,20 +93,20 @@ module CartoDB::Importer2
     end
 
     describe '#namedplace_guess_country' do
-      it "checks all candidates for a positive country guess through the geocoder api" do
+      it 'checks all candidates for a positive country guess through the geocoder api' do
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
 
         namedplaces.stubs(:text_columns).returns([
-                                                  {column_name: 'japanese_cities'},
-                                                  {column_name: 'another_column'}
+                                                   { column_name: 'japanese_cities' },
+                                                   { column_name: 'another_column' }
                                                  ])
-        content_guesser.stubs(:sample).returns([{japanese_cities: 'Tokyo', another_column: 'whatever'}])
+        content_guesser.stubs(:sample).returns([{ japanese_cities: 'Tokyo', another_column: 'whatever' }])
 
         sql_api_mock = mock
         sql_api_mock.expects(:fetch)
-          .with("SELECT namedplace_guess_country(Array['Tokyo']) as country")
-          .returns([{'country' => 'JP'}])
+                    .with("SELECT namedplace_guess_country(Array['Tokyo']) as country")
+                    .returns([{ 'country' => 'JP' }])
         content_guesser.stubs(:geocoder_sql_api).returns(sql_api_mock)
 
         namedplaces.stubs(:run?).returns(true)
@@ -125,13 +121,12 @@ module CartoDB::Importer2
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
 
-        cities_column = {column_name: 'cities_column'}
-        countries_column = {column_name: 'countries'}
-        content_guesser.stubs(:sample).returns([{cities_column: 'Tokyo'}])
+        cities_column = { column_name: 'cities_column' }
+        countries_column = { column_name: 'countries' }
+        content_guesser.stubs(:sample).returns([{ cities_column: 'Tokyo' }])
         namedplaces.stubs(:text_columns).returns([cities_column])
         namedplaces.stubs(:country_column).returns(countries_column)
         namedplaces.stubs(:count_namedplaces_with_country_column).with(:cities_column).returns(1)
-
 
         namedplaces.send(:proportion, cities_column).should eq 1.0
       end
@@ -142,21 +137,19 @@ module CartoDB::Importer2
         content_guesser = mock
         namedplaces = NamedplacesGuesser.new(content_guesser)
 
-        content_guesser.stubs(:sample).returns([{japanese_cities: 'Tokyo', country: 'Japan'}])
-        namedplaces.stubs(:country_column).returns({column_name: 'country'})
-        namedplaces.stubs(:text_columns).returns([{column_name: 'japanese_cities'}])
+        content_guesser.stubs(:sample).returns([{ japanese_cities: 'Tokyo', country: 'Japan' }])
+        namedplaces.stubs(:country_column).returns({ column_name: 'country' })
+        namedplaces.stubs(:text_columns).returns([{ column_name: 'japanese_cities' }])
 
         sql_api_mock = mock
         sql_api_mock.expects(:fetch)
-          .with("WITH geo_function as (SELECT (geocode_namedplace(Array['Tokyo'], Array['Japan'])).*) select count(success) FROM geo_function where success = TRUE")
-          .returns([{'count' => 1}])
+                    .with("WITH geo_function as (SELECT (geocode_namedplace(Array['Tokyo'], Array['Japan'])).*) select count(success) FROM geo_function where success = TRUE")
+                    .returns([{ 'count' => 1 }])
         content_guesser.stubs(:geocoder_sql_api).returns(sql_api_mock)
-
 
         namedplaces.send(:count_namedplaces_with_country_column, :japanese_cities).should eq 1
       end
     end
-
   end
 
 end

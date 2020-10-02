@@ -19,6 +19,7 @@ require_relative 'utils'
 module CartoDB
   module DataMover
     class DumpJob
+
       attr_reader :logger
       include CartoDB::DataMover::Utils
 
@@ -41,7 +42,7 @@ module CartoDB
         @path = path
         @logger = logger
 
-        if database_schema == nil
+        if database_schema.nil?
           dump_db
         else
           dump_schema
@@ -73,6 +74,7 @@ module CartoDB
 
       def orphan_overview_tables
         return @orphan_overviews if @orphan_overviews
+
         # PG12_DEPRECATED checks if the table raster_columns exsits
         raster_available = user_pg_conn.exec(%{
           SELECT 1
@@ -81,9 +83,10 @@ module CartoDB
         }).count > 0
 
         return @orphan_overviews ||= [] unless raster_available
-        raster_tables = user_pg_conn.exec("SELECT DISTINCT r_table_schema, r_table_name FROM raster_columns").map {
-          |r| "#{r['r_table_schema']}.#{r['r_table_name']}"
-        }
+
+        raster_tables = user_pg_conn.exec('SELECT DISTINCT r_table_schema, r_table_name FROM raster_columns').map do |r|
+          "#{r['r_table_schema']}.#{r['r_table_name']}"
+        end
         overview_re = Regexp.new('([^\.]+)\.o_\d+_(.+)$')
         @orphan_overviews = raster_tables.select do |table|
           match = overview_re.match(table)
@@ -95,41 +98,46 @@ module CartoDB
       def pg_dump_bin_path
         get_pg_dump_bin_path(@conn)
       end
+
     end
   end
 end
 
 module CartoDB
   module DataMover
+
     class TsortableHash < Hash
+
       include TSort
       alias tsort_each_node each_key
       def tsort_each_child(node, &block)
         fetch(node).each(&block)
       end
+
     end
     class ExportJob
+
       include Carto::Configuration
 
       attr_reader :logger, :json_file
 
       REDIS_KEYS = {
         mapviews: {
-          template: "user:USERNAME:mapviews:*",
+          template: 'user:USERNAME:mapviews:*',
           var_position: 1,
           type: 'zset',
           db: 5,
-          separator: ":"
+          separator: ':'
         },
         map_style: {
-          template: "map_style|USERDB|*",
+          template: 'map_style|USERDB|*',
           var_position: 1,
           separator: '|',
           db: 0,
           type: 'string'
         },
         map_template: {
-          template: "map_tpl|USERNAME",
+          template: 'map_tpl|USERNAME',
           no_clone: true,
           var_position: 1,
           separator: '|',
@@ -137,7 +145,7 @@ module CartoDB
           type: 'hash'
         },
         table: {
-          template: "rails:USERDB:*",
+          template: 'rails:USERDB:*',
           var_position: 1,
           separator: ':',
           db: 0,
@@ -147,7 +155,7 @@ module CartoDB
           }
         },
         limits_tiler: {
-          template: "limits:tiler:USERNAME",
+          template: 'limits:tiler:USERNAME',
           no_clone: true,
           var_position: 2,
           separator: ':',
@@ -155,7 +163,7 @@ module CartoDB
           type: 'hash'
         },
         user: {
-          template: "rails:users:USERNAME",
+          template: 'rails:users:USERNAME',
           no_clone: true,
           var_position: 2,
           separator: ':',
@@ -202,7 +210,7 @@ module CartoDB
           ORDER BY (CASE WHEN u.id = o.owner_id THEN 1 ELSE 0 END) ASC;
         })
         if q.count > 0
-          return q
+          q
         else
           raise "Can't find organization #{@organization_id}"
         end
@@ -247,7 +255,7 @@ module CartoDB
             .map(&:klass).select { |s| models.include?(s) }]
         end
         models_ordered = TsortableHash[model_dependencies].tsort
-        File.open(@options[:path] + "/#{prefix}_metadata.sql", "w") do |f|
+        File.open(@options[:path] + "/#{prefix}_metadata.sql", 'w') do |f|
           models_ordered.each do |model|
             data[model].each do |rows|
               keys = rows.keys.select { |k| TABLE_NULL_EXCEPTIONS.include?(k.to_s) || !rows[k].nil? }
@@ -255,7 +263,7 @@ module CartoDB
             end
           end
         end
-        File.open(@options[:path] + "/#{prefix}_metadata_undo.sql", "w") do |f|
+        File.open(@options[:path] + "/#{prefix}_metadata_undo.sql", 'w') do |f|
           models_ordered.reverse_each do |model|
             data[model].each do |rows|
               keys = rows.keys.select { |k| !rows[k].nil? }
@@ -276,7 +284,7 @@ module CartoDB
       # That would require creating and removing extra tables
       # Another approach would be using COPY with SQL query into a CSV and restore it later
       def generate_pg_insert_query(table_name, keys, rows)
-        "INSERT INTO #{table_name}(#{keys.map { |i| "\"#{i}\"" }.join(',')}) VALUES(#{keys.map { |i| rows[i] == nil ? 'NULL' : "'" + pg_conn.escape_string(rows[i]) + "'" }.join(',')});\n"
+        "INSERT INTO #{table_name}(#{keys.map { |i| "\"#{i}\"" }.join(',')}) VALUES(#{keys.map { |i| rows[i].nil? ? 'NULL' : "'" + pg_conn.escape_string(rows[i]) + "'" }.join(',')});\n"
       end
 
       def dump_related_data(model, id, exclude = [])
@@ -291,24 +299,27 @@ module CartoDB
         end
 
         model.reflections.each do |_name, reflection|
-          unless exclude.include?(reflection.klass) || !reflection.through_reflection.nil?
-            if reflection.belongs_to?
-              ids = data[model].map { |t| t[reflection.association_foreign_key.to_s] }.reject { |t| t == nil }
-              next if ids.empty?
-              query = "SELECT * FROM #{reflection.table_name} WHERE #{reflection.association_primary_key} IN (#{ids.map { |i| "'#{i}'" }.join(', ')})"
-            else
-              query = "SELECT * FROM #{reflection.table_name} WHERE #{reflection.foreign_key} IN (#{id.map { |i| "'#{i}'" }.join(', ')})"
-            end
-            result = pg_conn.exec(query)
+          next if exclude.include?(reflection.klass) || !reflection.through_reflection.nil?
 
-            data[reflection.klass] = (0..result.cmd_tuples - 1).map do |tuple_number|
-              result[tuple_number]
-            end
+          if reflection.belongs_to?
+            ids = data[model].map { |t| t[reflection.association_foreign_key.to_s] }.reject { |t| t.nil? }
+            next if ids.empty?
 
-            ids = data[reflection.klass].map do |data_for_related_key|
-              data_for_related_key[reflection.klass.primary_key]
-            end
-            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y, reflection.klass.primary_key) } if !ids.empty?
+            query = "SELECT * FROM #{reflection.table_name} WHERE #{reflection.association_primary_key} IN (#{ids.map { |i| "'#{i}'" }.join(', ')})"
+          else
+            query = "SELECT * FROM #{reflection.table_name} WHERE #{reflection.foreign_key} IN (#{id.map { |i| "'#{i}'" }.join(', ')})"
+          end
+          result = pg_conn.exec(query)
+
+          data[reflection.klass] = (0..result.cmd_tuples - 1).map do |tuple_number|
+            result[tuple_number]
+          end
+
+          ids = data[reflection.klass].map do |data_for_related_key|
+            data_for_related_key[reflection.klass.primary_key]
+          end
+          unless ids.empty?
+            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y, reflection.klass.primary_key) }
           end
         end
 
@@ -324,10 +335,10 @@ module CartoDB
       # This is not very solid since we are definining the protocol
       # It would be nice using dump/restore
       def gen_redis_proto(*cmd)
-        proto = ""
-        proto << "*" + cmd.length.to_s + "\r\n"
+        proto = ''
+        proto << '*' + cmd.length.to_s + "\r\n"
         cmd.each do |arg|
-          proto << "$" + arg.to_s.bytesize.to_s + "\r\n"
+          proto << '$' + arg.to_s.bytesize.to_s + "\r\n"
           proto << arg.to_s + "\r\n"
         end
         proto
@@ -338,22 +349,20 @@ module CartoDB
       end
 
       def dump_redis_keys
-        File.open(@options[:path] + "/user_#{@user_id}_metadata.redis", "wb") do |dump|
-          File.open(@options[:path] + "/user_#{@user_id}_metadata_undo.redis", "wb") do |undo|
+        File.open(@options[:path] + "/user_#{@user_id}_metadata.redis", 'wb') do |dump|
+          File.open(@options[:path] + "/user_#{@user_id}_metadata_undo.redis", 'wb') do |undo|
             REDIS_KEYS.each do |k, v|
-              dump.write gen_redis_proto("SELECT", v[:db])
-              undo.write gen_redis_proto("SELECT", v[:db])
+              dump.write gen_redis_proto('SELECT', v[:db])
+              undo.write gen_redis_proto('SELECT', v[:db])
               redis_conn.select(v[:db])
               these_redis_keys = redis_conn.keys(redis_template_user_gsub(v[:template], @user_id, @username))
               these_redis_keys.each do |trd|
                 type = redis_conn.type(trd)
-                if type == 'string'
-                  dump.write gen_redis_proto("SET", trd, redis_conn.get(trd))
-                end
+                dump.write gen_redis_proto('SET', trd, redis_conn.get(trd)) if type == 'string'
 
                 if type == 'hash'
                   redis_conn.hgetall(trd).each do |key, value|
-                    dump.write gen_redis_proto("HSET", trd, key, value)
+                    dump.write gen_redis_proto('HSET', trd, key, value)
                   end
                 end
 
@@ -361,10 +370,10 @@ module CartoDB
                   r = redis_conn.zrangebyscore(trd, '-inf', '+inf')
                   r.each do |r_key|
                     k = redis_conn.zscore(trd, r_key)
-                    dump.write gen_redis_proto("ZINCRBY", trd, k, r_key)
+                    dump.write gen_redis_proto('ZINCRBY', trd, k, r_key)
                   end
                 end
-                undo.write gen_redis_proto("DEL", trd)
+                undo.write gen_redis_proto('DEL', trd)
               end
             end
             dump.write redis_oauth_keys
@@ -373,13 +382,13 @@ module CartoDB
       end
 
       def redis_oauth_keys
-        dump = ""
+        dump = ''
         pg_conn.exec("SELECT token,user_id FROM oauth_tokens WHERE type='AccessToken' AND user_id = '#{@user_id}'") do |result|
-          dump += gen_redis_proto("SELECT", 3)
+          dump += gen_redis_proto('SELECT', 3)
           redis_conn.select(3)
           result.each do |row|
             redis_conn.hgetall("rails:oauth_access_tokens:#{row['token']}").each do |key, value|
-              dump += gen_redis_proto("HSET", "rails:oauth_access_tokens:#{row['token']}", key, value)
+              dump += gen_redis_proto('HSET', "rails:oauth_access_tokens:#{row['token']}", key, value)
             end
           end
         end
@@ -465,7 +474,7 @@ module CartoDB
         result = {}
         parents << model.table_name.to_sym
         reflections = model.reflections
-        related = reflections.keys.select { |r| reflections[r].through_reflection == nil && !parents.include?(reflections[r].table_name.to_sym) }
+        related = reflections.keys.select { |r| reflections[r].through_reflection.nil? && !parents.include?(reflections[r].table_name.to_sym) }
         relations = {}
         related.each do |reflection_name|
           reflection = reflections[reflection_name]
@@ -481,7 +490,7 @@ module CartoDB
       end
 
       def exportjob_logger
-        @@exportjob_logger ||= CartoDB.unformatted_logger(log_file_path("datamover.log"))
+        @@exportjob_logger ||= CartoDB.unformatted_logger(log_file_path('datamover.log'))
       end
 
       def get_db_size(database)
@@ -495,11 +504,11 @@ module CartoDB
       end
 
       def disable_ghost_tables_event_trigger
-        user_pg_conn.exec("SELECT CDB_DisableGhostTablesTrigger()")
+        user_pg_conn.exec('SELECT CDB_DisableGhostTablesTrigger()')
       end
 
       def enable_ghost_tables_event_trigger
-        user_pg_conn.exec("SELECT CDB_EnableGhostTablesTrigger()")
+        user_pg_conn.exec('SELECT CDB_EnableGhostTablesTrigger()')
       end
 
       def initialize(options)
@@ -511,26 +520,24 @@ module CartoDB
         @@exportjob_logger = options[:export_job_logger]
 
         job_uuid = @options[:job_uuid] || Carto::UUIDHelper.random_uuid
-        export_log = { job_uuid:     job_uuid,
-                       id:           @options[:id] || @options[:organization_name] || nil,
-                       type:         'export',
-                       path:         @options[:path],
-                       start:        @start,
-                       end:          nil,
+        export_log = { job_uuid: job_uuid,
+                       id: @options[:id] || @options[:organization_name] || nil,
+                       type: 'export',
+                       path: @options[:path],
+                       start: @start,
+                       end: nil,
                        elapsed_time: nil,
-                       server:       `hostname`.strip,
-                       pid:          Process.pid,
-                       db_source:    nil,
-                       db_size:      nil,
-                       status:       nil,
-                       trace:        nil
-                     }
+                       server: `hostname`.strip,
+                       pid: Process.pid,
+                       db_source: nil,
+                       db_size: nil,
+                       status: nil,
+                       trace: nil }
         begin
-
           if @options[:id]
             @user_data = get_user_metadata(options[:id])
-            @username = @user_data["username"]
-            @user_id = @user_data["id"]
+            @username = @user_data['username']
+            @user_id = @user_data['id']
             @database_host = @user_data['database_host']
             @database_name = @user_data['database_name']
             disable_ghost_tables_event_trigger
@@ -552,7 +559,7 @@ module CartoDB
             end
 
             @json_file = "user_#{@user_id}.json"
-            File.open("#{@options[:path]}/#{json_file}", "w") do |f|
+            File.open("#{@options[:path]}/#{json_file}", 'w') do |f|
               f.write(user_info.to_json)
             end
             set_user_mover_banner(@user_id) if options[:set_banner]
@@ -564,18 +571,24 @@ module CartoDB
 
             # Ensure all users belong to the same database
             database_names = @org_users.map { |u| u['database_name'] }.uniq
-            raise "Organization users inconsistent - there are users belonging to multiple databases" if database_names.length > 1
+            if database_names.length > 1
+              raise 'Organization users inconsistent - there are users belonging to multiple databases'
+            end
+
             @database_name = database_names[0]
 
             # Ensure all users belong to the same database host
             database_hosts = @org_users.map { |u| u['database_host'] }.uniq
-            raise "Organization users inconsistent - there are users belonging to multiple database hosts" if database_hosts.length > 1
+            if database_hosts.length > 1
+              raise 'Organization users inconsistent - there are users belonging to multiple database hosts'
+            end
+
             @database_host = database_hosts[0]
 
             dump_org_metadata if @options[:metadata]
             data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups, split_user_schemas: @options[:split_user_schemas] }
             @json_file = "org_#{@org_metadata['id']}.json"
-            File.open("#{@options[:path]}/#{json_file}", "w") do |f|
+            File.open("#{@options[:path]}/#{json_file}", 'w') do |f|
               f.write(data.to_json)
             end
 
@@ -626,6 +639,8 @@ module CartoDB
           enable_ghost_tables_event_trigger
         end
       end
+
     end
+
   end
 end

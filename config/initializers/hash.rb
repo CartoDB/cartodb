@@ -1,7 +1,7 @@
 class Hash
-  
+
   def convert_nulls
-    self.inject({}){|h,(k,v)| h[k] = (v == "null" ? nil : v); h }
+    each_with_object({}) { |(k, v), h| h[k] = (v == 'null' ? nil : v); }
   end
-  
+
 end

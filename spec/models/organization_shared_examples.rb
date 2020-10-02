@@ -3,13 +3,12 @@ require_relative '../spec_helper'
 # Tests should define the following methods:
 # - get_organization: returns a correspoding Organization instance
 # - get_twitter_imports_count_by_organization_id: returns organization import count. Needed because implementations don't share a common interface
-shared_examples_for "organization models" do
+shared_examples_for 'organization models' do
   include_context 'users helper'
   include_context 'organization with users helper'
 
-  describe "#get_geocoding_calls" do
-
-    it "counts all geocodings within the org" do
+  describe '#get_geocoding_calls' do
+    it 'counts all geocodings within the org' do
       base_line = get_geocoding_calls_by_organization_id(@organization.id)
 
       get_organization.owner.geocoder_provider = 'heremaps'
@@ -35,7 +34,7 @@ shared_examples_for "organization models" do
       get_geocoding_calls_by_organization_id(@organization.id).should == base_line + 14
     end
 
-    it "counts all geocodings within the org using the org provider" do
+    it 'counts all geocodings within the org using the org provider' do
       base_line = get_geocoding_calls_by_organization_id(@organization.id)
 
       get_organization.owner.geocoder_provider = 'tomtom'
@@ -60,10 +59,9 @@ shared_examples_for "organization models" do
       ::User.any_instance.expects(:get_geocoding_calls).never
       get_geocoding_calls_by_organization_id(get_organization.id).should == base_line + 14
     end
-
   end
 
-  describe "#signup_page_enabled" do
+  describe '#signup_page_enabled' do
     it 'is true if domain whitelist is not empty' do
       organization = get_organization
       organization.auth_username_password_enabled = true

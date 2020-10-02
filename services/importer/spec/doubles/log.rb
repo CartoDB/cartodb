@@ -2,13 +2,14 @@ module CartoDB
   module Importer2
     module Doubles
       class Log
+
         def initialize(user)
           @user = user
           clear
         end
 
         # We wil ignore params in testing
-        def append(message, truncate = nil, timestamp = nil)
+        def append(message, _truncate = nil, _timestamp = nil)
           @log << message.to_s
         end
 
@@ -31,6 +32,7 @@ module CartoDB
         def user_id
           @user.id
         end
+
       end
     end
   end

@@ -17,7 +17,7 @@ describe CartoGearsApi::Users::UsersService do
         organization: nil,
         feature_flags: [],
         can_change_email: true,
-        quota_in_bytes: 100000,
+        quota_in_bytes: 100_000,
         viewer: false
       )
       warden = double

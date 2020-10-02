@@ -1,9 +1,9 @@
 module LoginHelper
 
-  DEFAULT_BACKGROUND_COLOR = "#F9F9F9".freeze
+  DEFAULT_BACKGROUND_COLOR = '#F9F9F9'.freeze
 
   def background
-    base_color = (@organization.present? && @organization.color.present?) ? @organization.color : DEFAULT_BACKGROUND_COLOR
+    base_color = @organization.present? && @organization.color.present? ? @organization.color : DEFAULT_BACKGROUND_COLOR
     color = color_to_rgb(base_color)
 
     "background-image: linear-gradient(0deg, #F9F9F9 70%, rgba(#{color}, 0.4) 100%);"
@@ -17,21 +17,21 @@ module LoginHelper
   end
 
   def darken_color(hex_color, amount=0.4)
-    hex_color = hex_color.gsub('#','')
-    rgb = hex_color.scan(/../).map {|color| color.hex}
+    hex_color = hex_color.gsub('#', '')
+    rgb = hex_color.scan(/../).map { |color| color.hex}
     rgb[0] = (rgb[0].to_i * amount).round
     rgb[1] = (rgb[1].to_i * amount).round
     rgb[2] = (rgb[2].to_i * amount).round
 
-    "#%02x%02x%02x" % rgb
+    '#%02x%02x%02x' % rgb
   end
 
   def organization_color(organization)
-    !organization.nil? ? darken_color(organization.color, 0.4) : "#292E33"
+    !organization.nil? ? darken_color(organization.color, 0.4) : '#292E33'
   end
 
   def render_organization_avatar
-    brand_path = image_path("layout/sessions/brand.png")
+    brand_path = image_path('layout/sessions/brand.png')
 
     if @organization && @organization.name != 'team' && @organization.avatar_url.present?
       avatar_url = @organization.avatar_url.sub(/^https?\:/, '')
@@ -66,7 +66,7 @@ module LoginHelper
     if env['warden']
       env['warden'].logout
       warden_sessions = request.session.to_hash.select do |k, _|
-        k.start_with?("warden.user") && !k.end_with?(".session")
+        k.start_with?('warden.user') && !k.end_with?('.session')
       end
       warden_sessions.each do |_, value|
         env['warden'].logout(value) if warden_proxy.authenticated?(value)

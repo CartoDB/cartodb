@@ -4,6 +4,7 @@ require_relative './external_source'
 module CartoDB
   module Visualization
     class Presenter
+
       def initialize(visualization, options={})
         @visualization   = visualization
         @viewing_user    = options.fetch(:user, nil)
@@ -54,16 +55,16 @@ module CartoDB
 
       def to_public_poro
         {
-          id:               visualization.id,
-          name:             visualization.name,
-          display_name:     visualization.display_name,
-          type:             visualization.type,
-          tags:             visualization.tags,
-          description:      visualization.description,
-          updated_at:       visualization.updated_at,
-          title:            visualization.title,
-          kind:             visualization.kind,
-          privacy:          privacy_for_vizjson.upcase,
+          id: visualization.id,
+          name: visualization.name,
+          display_name: visualization.display_name,
+          type: visualization.type,
+          tags: visualization.tags,
+          description: visualization.description,
+          updated_at: visualization.updated_at,
+          title: visualization.title,
+          kind: visualization.kind,
+          privacy: privacy_for_vizjson.upcase
         }
       end
 
@@ -74,15 +75,16 @@ module CartoDB
       # Simplify certain privacy values for the vizjson
       def privacy_for_vizjson
         return @visualization.privacy if @real_privacy
+
         case @visualization.privacy
-          when Member::PRIVACY_PUBLIC, Member::PRIVACY_LINK
-            Member::PRIVACY_PUBLIC
-          when Member::PRIVACY_PRIVATE
-            Member::PRIVACY_PRIVATE
-          when Member::PRIVACY_PROTECTED
-            Member::PRIVACY_PROTECTED
-          else
-            Member::PRIVACY_PRIVATE
+        when Member::PRIVACY_PUBLIC, Member::PRIVACY_LINK
+          Member::PRIVACY_PUBLIC
+        when Member::PRIVACY_PRIVATE
+          Member::PRIVACY_PRIVATE
+        when Member::PRIVACY_PROTECTED
+          Member::PRIVACY_PROTECTED
+        else
+          Member::PRIVACY_PRIVATE
         end
       end
 
@@ -92,6 +94,7 @@ module CartoDB
 
       def table_data_for(table=nil, permission = nil)
         return {} unless table
+
         table_name = table.name
         unless @viewing_user.nil?
           unless @visualization.is_owner?(@viewing_user)
@@ -100,9 +103,9 @@ module CartoDB
         end
 
         table_data = {
-          id:           table.id,
-          name:         table_name,
-          permission:   nil
+          id: table.id,
+          name: table_name,
+          permission: nil
         }
         table_visualization = table.table_visualization
         unless table_visualization.nil?
@@ -116,8 +119,8 @@ module CartoDB
         end
 
         table_data.merge!(
-          privacy:      table.privacy_text_for_vizjson,
-          updated_at:   table.updated_at
+          privacy: table.privacy_text_for_vizjson,
+          updated_at: table.updated_at
         )
 
         table_data.merge!(table.row_count_and_size)
@@ -137,23 +140,24 @@ module CartoDB
           row_count: external_source.rows_counted,
           geometry_types: external_source.geometry_types
         }
-
       end
 
       def children
-        @visualization.children.map { |vis| {
-                                              id: vis.id,
-                                              prev_id: vis.prev_id,
-                                              type: Visualization::Member::TYPE_SLIDE,
-                                              next_id: vis.next_id,
-                                              transition_options: vis.transition_options,
-                                              map_id: vis.map_id
-                                            }
-        }
+        @visualization.children.map do |vis|
+          {
+            id: vis.id,
+            prev_id: vis.prev_id,
+            type: Visualization::Member::TYPE_SLIDE,
+            next_id: vis.next_id,
+            transition_options: vis.transition_options,
+            map_id: vis.map_id
+          }
+        end
       end
 
       def synchronization_data_for(table=nil)
         return nil unless table
+
         table.synchronization
       end
 
@@ -164,8 +168,10 @@ module CartoDB
 
       def without_associated_table(tables)
         return tables unless visualization.table
+
         tables.select { |table| table.id != visualization.table.id }
       end
+
     end
   end
 end

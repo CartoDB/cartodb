@@ -3,6 +3,7 @@ require_dependency 'carto/superadmin/metrics_controller_helper'
 module Carto
   module Superadmin
     class OrganizationsController < ::Superadmin::SuperadminController
+
       include MetricsControllerHelper
 
       respond_to :json
@@ -28,6 +29,7 @@ module Carto
         @organization = Carto::Organization.where(id: params[:id]).first
         render json: { error: 'Organization not found' }, status: 404 unless @organization
       end
+
     end
   end
 end

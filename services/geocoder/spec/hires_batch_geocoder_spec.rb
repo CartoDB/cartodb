@@ -4,9 +4,7 @@ require_relative '../../../spec/rspec_configuration.rb'
 require_relative '../../../spec/spec_helper.rb'
 require_relative '../lib/hires_batch_geocoder'
 
-
 describe CartoDB::HiresBatchGeocoder do
-
   RSpec.configure do |config|
     config.before :each do
       Typhoeus::Expectation.clear
@@ -20,12 +18,12 @@ describe CartoDB::HiresBatchGeocoder do
     @working_dir = Dir.mktmpdir
     @input_csv_file = path_to '../../table-geocoder/spec/fixtures/nokia_input.csv'
     CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
-        'base_url' => 'batch.example.com',
-        'app_id' => '',
-        'token' => '',
-        'mailto' => ''
-      })
-    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}' )
+                                                                      'base_url' => 'batch.example.com',
+                                                                      'app_id' => '',
+                                                                      'token' => '',
+                                                                      'mailto' => ''
+                                                                    })
+    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}')
     @batch_geocoder = CartoDB::HiresBatchGeocoder.new(@input_csv_file, @working_dir, @log, @geocoding_model)
   end
 
@@ -71,9 +69,9 @@ describe CartoDB::HiresBatchGeocoder do
       Typhoeus.stub(url, method: :post).and_return(response)
       CartoDB.expects(:notify_exception).once
 
-      expect {
+      expect do
         @batch_geocoder.upload
-      }.to raise_error(RuntimeError, /Geocoding API communication failure/)
+      end.to raise_error(RuntimeError, /Geocoding API communication failure/)
     end
 
     it 'raises an exception if the api does not return a RequestId' do
@@ -82,11 +80,10 @@ describe CartoDB::HiresBatchGeocoder do
       Typhoeus.stub(url, method: :post).and_return(response)
       CartoDB.expects(:notify_exception).once
 
-      expect {
+      expect do
         @batch_geocoder.upload
-      }.to raise_error(RuntimeError, /Could not get the request ID/)
+      end.to raise_error(RuntimeError, /Could not get the request ID/)
     end
-
   end
 
   describe '#cancel' do
@@ -97,7 +94,7 @@ describe CartoDB::HiresBatchGeocoder do
       @batch_geocoder.stubs(:request_id).returns(request_id)
       url = @batch_geocoder.send(:api_url, action: 'cancel')
       url.should match(%r'/#{request_id}/')
-      url.should match(%r'action=cancel')
+      url.should match(/action=cancel/)
 
       expected_status = 'cancelled'
       expected_processed_rows = 20
@@ -106,16 +103,16 @@ describe CartoDB::HiresBatchGeocoder do
       expected_empty_rows = 3
       expected_total_rows = 30
 
-      response_body = <<END_XML
-<Response>
-  <Status>#{expected_status}</Status>
-  <ProcessedCount>#{expected_processed_rows}</ProcessedCount>
-  <SuccessCount>#{expected_success_rows}</SuccessCount>
-  <ErrorCount>#{expected_failed_rows}</ErrorCount>
-  <InvalidCount>#{expected_empty_rows}</InvalidCount>
-  <TotalCount>#{expected_total_rows}</TotalCount>
-</Response>
-END_XML
+      response_body = <<~END_XML
+        <Response>
+          <Status>#{expected_status}</Status>
+          <ProcessedCount>#{expected_processed_rows}</ProcessedCount>
+          <SuccessCount>#{expected_success_rows}</SuccessCount>
+          <ErrorCount>#{expected_failed_rows}</ErrorCount>
+          <InvalidCount>#{expected_empty_rows}</InvalidCount>
+          <TotalCount>#{expected_total_rows}</TotalCount>
+        </Response>
+      END_XML
 
       response = Typhoeus::Response.new(code: 200, body: response_body)
       Typhoeus.stub(url, method: :put).and_return(response)
@@ -134,7 +131,7 @@ END_XML
       @batch_geocoder.stubs(:request_id).returns(request_id)
       url = @batch_geocoder.send(:api_url, action: 'status')
       url.should match(%r'/#{request_id}/')
-      url.should match(%r'action=status')
+      url.should match(/action=status/)
 
       expected_status = 'running'
       expected_processed_rows = 20
@@ -143,16 +140,16 @@ END_XML
       expected_empty_rows = 3
       expected_total_rows = 30
 
-      response_body = <<END_XML
-<Response>
-  <Status>#{expected_status}</Status>
-  <ProcessedCount>#{expected_processed_rows}</ProcessedCount>
-  <SuccessCount>#{expected_success_rows}</SuccessCount>
-  <ErrorCount>#{expected_failed_rows}</ErrorCount>
-  <InvalidCount>#{expected_empty_rows}</InvalidCount>
-  <TotalCount>#{expected_total_rows}</TotalCount>
-</Response>
-END_XML
+      response_body = <<~END_XML
+        <Response>
+          <Status>#{expected_status}</Status>
+          <ProcessedCount>#{expected_processed_rows}</ProcessedCount>
+          <SuccessCount>#{expected_success_rows}</SuccessCount>
+          <ErrorCount>#{expected_failed_rows}</ErrorCount>
+          <InvalidCount>#{expected_empty_rows}</InvalidCount>
+          <TotalCount>#{expected_total_rows}</TotalCount>
+        </Response>
+      END_XML
 
       response = Typhoeus::Response.new(code: 200, body: response_body)
       Typhoeus.stub(url, method: :get).and_return(response)
@@ -165,9 +162,9 @@ END_XML
 
   describe '#result' do
     it "raises an exception if there's no request_id from a previous upload" do
-      expect {
+      expect do
         @batch_geocoder.result
-      }.to raise_error(RuntimeError, /No request_id provided/)
+      end.to raise_error(RuntimeError, /No request_id provided/)
     end
 
     it 'downloads the result file from the remote server' do
@@ -198,30 +195,29 @@ END_XML
       response = Typhoeus::Response.new(code: 400)
       Typhoeus.stub(url, method: :get).and_return(response)
 
-      expect {
+      expect do
         @batch_geocoder.result
-      }.to raise_error(RuntimeError, /Download request failed/)
+      end.to raise_error(RuntimeError, /Download request failed/)
     end
   end
-
 
   def path_to(filepath = '')
     File.expand_path(
       File.join(File.dirname(__FILE__), "../fixtures/#{filepath}")
-      )
+    )
   end
 
   def mock_complete_response(state='completed')
     @geocoding_model.remote_id = 'dummy_id'
     @geocoding_model.save.reload
-    url = @batch_geocoder.send(:api_url, {action: 'status'})
+    url = @batch_geocoder.send(:api_url, { action: 'status' })
     xml_response_body = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                           <ns2:SearchBatch xmlns:ns2="http://www.navteq.com/lbsp/Search-Batch/1">
                             <Response>
                               <MetaInfo>
                                 <RequestId>dummy_id</RequestId>
                               </MetaInfo>
-                              <Status>'+state+'</Status>
+                              <Status>' + state + '</Status>
                               <JobStarted>2016-04-08T08:24:05.000Z</JobStarted>
                               <JobFinished>2016-04-08T08:24:39.000Z</JobFinished>
                               <TotalCount>1</TotalCount>
@@ -236,5 +232,4 @@ END_XML
     response = Typhoeus::Response.new(code: 200, body: xml_response_body)
     Typhoeus.stub(url, method: :get).and_return(response)
   end
-
 end

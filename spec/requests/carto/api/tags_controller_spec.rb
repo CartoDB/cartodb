@@ -7,23 +7,23 @@ describe Carto::Api::TagsController do
   include HelperMethods
 
   before(:all) do
-    @params = { user_domain: @user1.username, api_key: @user1.api_key, types: "derived,table" }
+    @params = { user_domain: @user1.username, api_key: @user1.api_key, types: 'derived,table' }
     @headers = { 'CONTENT_TYPE' => 'application/json' }
   end
 
   describe 'index' do
     before(:each) do
-      FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["owned-tag"])
+      FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ['owned-tag'])
 
       table = create_random_table(@user2)
       shared_visualization = table.table_visualization
-      shared_visualization.tags = ["shared-tag"]
+      shared_visualization.tags = ['shared-tag']
       shared_visualization.save
       shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user1.id,
+        recipient_id: @user1.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: shared_visualization.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.save
     end
@@ -35,14 +35,14 @@ describe Carto::Api::TagsController do
     end
 
     it 'raises a 400 error if types parameter is not valid' do
-      params = @params.merge(types: "table,wrong")
+      params = @params.merge(types: 'table,wrong')
       get_json api_v3_users_tags_url(params), @headers do |response|
         expect(response.status).to eq(400)
       end
     end
 
     it 'returns a 200 response with the tags owned by the current user' do
-      expected_tags = [{ tag: "owned-tag", maps: 1, datasets: 0 }]
+      expected_tags = [{ tag: 'owned-tag', maps: 1, datasets: 0 }]
 
       get_json api_v3_users_tags_url(@params), @headers do |response|
         expect(response.status).to eq(200)
@@ -54,10 +54,10 @@ describe Carto::Api::TagsController do
 
     it 'returns a 200 response with the tags owned or shared by the current user' do
       expected_tags = [
-        { tag: "owned-tag", maps: 1, datasets: 0 },
-        { tag: "shared-tag", maps: 0, datasets: 1 }
+        { tag: 'owned-tag', maps: 1, datasets: 0 },
+        { tag: 'shared-tag', maps: 0, datasets: 1 }
       ]
-      shared_params = @params.merge(include_shared: "true")
+      shared_params = @params.merge(include_shared: 'true')
 
       get_json api_v3_users_tags_url(shared_params), @headers do |response|
         expect(response.status).to eq(200)
@@ -68,9 +68,9 @@ describe Carto::Api::TagsController do
     end
 
     it 'returns a 200 response with filtered tags' do
-      FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["otra"])
-      expected_tags = [{ tag: "otra", maps: 0, datasets: 1 }]
-      search_params = @params.merge(q: "otra")
+      FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ['otra'])
+      expected_tags = [{ tag: 'otra', maps: 0, datasets: 1 }]
+      search_params = @params.merge(q: 'otra')
 
       get_json api_v3_users_tags_url(search_params), @headers do |response|
         expect(response.status).to eq(200)

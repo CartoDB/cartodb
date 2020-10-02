@@ -1,5 +1,3 @@
-require 'thread'
-
 class ThreadsMachine
 
   MAX_THREADS = 20
@@ -19,7 +17,7 @@ class ThreadsMachine
   def async
     MAX_THREADS.times do |count|
       queue.enq(:EOF)
-      threads << Thread.new do |number|
+      threads << Thread.new do |_number|
         Thread.current[:name] = "Thread ##{count}"
 
         item = nil
@@ -34,11 +32,9 @@ class ThreadsMachine
     end
 
     threads.each do |t|
-      begin
-        t.join
-      rescue RuntimeError => e
-        puts "Failure on thread #{t[:name]}: #{e.message}"
-      end
+      t.join
+    rescue RuntimeError => e
+      puts "Failure on thread #{t[:name]}: #{e.message}"
     end
   end
 

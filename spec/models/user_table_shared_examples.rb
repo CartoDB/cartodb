@@ -32,15 +32,13 @@ shared_examples_for 'user table models' do
     end
 
     it 'validates privacy' do
-      begin
-        ut = build_user_table(user: @user, privacy: 234)
-        # AR fails validation
-        expect(ut.valid?).to be_false
-        expect(ut.errors.keys).to include :privacy
-      rescue RuntimeError => e
-        # Sequel raises when building the model
-        raise 'Spec failed' unless e.message.include?('Invalid privacy value')
-      end
+      ut = build_user_table(user: @user, privacy: 234)
+      # AR fails validation
+      expect(ut.valid?).to be_false
+      expect(ut.errors.keys).to include :privacy
+    rescue RuntimeError => e
+      # Sequel raises when building the model
+      raise 'Spec failed' unless e.message.include?('Invalid privacy value')
     end
 
     it 'defaults to public privacy for users without private tables' do

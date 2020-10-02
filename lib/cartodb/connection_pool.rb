@@ -3,6 +3,7 @@ require 'cartodb/sequel_connection_helper'
 
 module CartoDB
   class ConnectionPool
+
     include CartoDB::SequelConnectionHelper
 
     # Until migration to AR is done
@@ -27,20 +28,20 @@ module CartoDB
         conn = create_new_connection(configuration, &block)
       end
       # This conn may be still broken after 3 tries
-      return conn
+      conn
     end
 
     def max_pool_size?
       if @pool.size >= MAX_POOL_SIZE
-        #close_connections!
+        # close_connections!
         close_oldest_connection!
       end
     end
 
-    def create_new_connection(configuration, &block)
+    def create_new_connection(configuration)
       max_pool_size?
       connection = yield
-      @pool[connection_id(configuration)] = { :connection => connection, :last_accessed => Time.now }
+      @pool[connection_id(configuration)] = { connection: connection, last_accessed: Time.now }
       Rails.logger.debug "[pool] Creating a new connection for #{connection_id(configuration)} (#{@pool.keys.size})"
       connection
     end
@@ -48,7 +49,7 @@ module CartoDB
     def close_connections!(db=nil)
       newpool = {}
       @pool.each do |id, conn|
-        if ! db || ( id.start_with? "#{db}:" )
+        if !db || (id.start_with? "#{db}:")
           Rails.logger.debug "[pool] Dropping connection #{id}"
           close_connection(conn[:connection], id)
         else
@@ -93,5 +94,6 @@ module CartoDB
       # parameters to the id.
       "#{host}:#{database}:#{port}:#{username}:#{orm}"
     end
+
   end
 end

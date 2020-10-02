@@ -3,6 +3,6 @@ FactoryGirl.define do
     to_create(&:save!)
 
     skip_token_regeneration true
-    token "a-fake-and-test-token"
+    token 'a-fake-and-test-token'
   end
 end

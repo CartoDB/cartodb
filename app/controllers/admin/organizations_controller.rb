@@ -2,6 +2,7 @@ require_relative './../helpers/avatar_helper'
 require_relative './../helpers/organization_notifications_helper'
 
 class Admin::OrganizationsController < Admin::AdminController
+
   include AvatarHelper
   include OrganizationNotificationsHelper
 
@@ -116,7 +117,7 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.save(raise_on_failure: true)
 
     redirect_to CartoDB.url(self, 'organization_settings', user: current_user),
-                flash: { success: "Your changes have been saved correctly." }
+                flash: { success: 'Your changes have been saved correctly.' }
   rescue CartoDB::CentralCommunicationFailure => e
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
@@ -134,13 +135,13 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.users.each(&:regenerate_all_api_keys)
 
     redirect_to CartoDB.url(self, 'organization_settings', user: current_user),
-                flash: { success: "Users API keys regenerated successfully" }
+                flash: { success: 'Users API keys regenerated successfully' }
   rescue Carto::PasswordConfirmationError => e
     flash.now[:error] = e.message
     render action: 'settings', status: e.status
   rescue StandardError => e
     CartoDB.notify_exception(e, { organization: @organization.id, current_user: current_user.id })
-    flash[:error] = "There was an error regenerating the API keys. Please, try again and contact us if the problem persists"
+    flash[:error] = 'There was an error regenerating the API keys. Please, try again and contact us if the problem persists'
     render action: 'settings'
   end
 
@@ -153,7 +154,7 @@ class Admin::OrganizationsController < Admin::AdminController
   def auth_update
     valid_password_confirmation
     attributes = params[:organization]
-    @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
+    @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(',')
     @organization.auth_username_password_enabled = attributes[:auth_username_password_enabled]
     @organization.auth_google_enabled = attributes[:auth_google_enabled]
     @organization.auth_github_enabled = attributes[:auth_github_enabled]
@@ -163,7 +164,7 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.save(raise_on_failure: true)
 
     redirect_to CartoDB.url(self, 'organization_auth', user: current_user),
-                flash: { success: "Your changes have been saved correctly." }
+                flash: { success: 'Your changes have been saved correctly.' }
   rescue CartoDB::CentralCommunicationFailure => e
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
@@ -180,6 +181,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def load_organization_and_members
     raise RecordNotFound unless current_user.organization_admin?
+
     @organization = current_user.organization
 
     display_signup_warnings if @organization.signup_page_enabled
@@ -195,8 +197,8 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def display_signup_warnings
     warning = []
-    warning << "Your organization has run out of quota" unless @organization.valid_disk_quota?
-    warning << "Your organization has run out of seats" unless @organization.valid_builder_seats?
+    warning << 'Your organization has run out of quota' unless @organization.valid_disk_quota?
+    warning << 'Your organization has run out of seats' unless @organization.valid_builder_seats?
     unless warning.empty?
       flash.now[:warning] = "#{warning.join('. ')}."
       flash.now[:warning_detail] = "Users won't be able to sign up to your organization. <a href='mailto:contact@carto.com'>Contact us</a> to increase your quota."
@@ -212,9 +214,7 @@ class Admin::OrganizationsController < Admin::AdminController
   end
 
   def enforce_engine_enabled
-    unless @organization.engine_enabled
-      render_403
-    end
+    render_403 unless @organization.engine_enabled
   end
 
   def load_carto_organization
@@ -224,4 +224,5 @@ class Admin::OrganizationsController < Admin::AdminController
   def load_notification
     @notification = Carto::Notification.find(params[:id])
   end
+
 end

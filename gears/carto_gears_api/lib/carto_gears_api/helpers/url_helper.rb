@@ -1,6 +1,7 @@
 module CartoGearsApi
   module Helpers
     module UrlHelper
+
       # @param gear [Symbol] Gear name.
       # @param context [ActionController::Base]
       # @param path [String] path name defined at the current Gear.
@@ -14,6 +15,7 @@ module CartoGearsApi
       def carto_path(context, path, params = {})
         CartoDB.path(context.main_app, path, params)
       end
+
     end
   end
 end

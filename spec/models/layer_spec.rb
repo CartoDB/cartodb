@@ -48,7 +48,7 @@ describe Layer do
 
     before(:all) do
       helper = TestUserFactory.new
-      @organization = FactoryGirl.create(:organization, quota_in_bytes: 1000000000000)
+      @organization = FactoryGirl.create(:organization, quota_in_bytes: 1_000_000_000_000)
       @owner = helper.create_owner(@organization)
       @nonhyphen_user = helper.create_test_user(unique_name('user'), @organization)
       @hyphen_user = helper.create_test_user(unique_name('user-'), @organization)

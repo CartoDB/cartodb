@@ -1,6 +1,7 @@
 module Carto
   module Db
     class Role
+
       attr_reader :database_name, :name, :id
 
       def initialize(database_name:, name:)
@@ -14,10 +15,10 @@ module Carto
       end
 
       def self.db_username_prefix
-        return "cartodb_user_" if Rails.env.production?
-        return "development_cartodb_user_" if Rails.env.development?
-        return "test_cartodb_user_" if Rails.env.test?
-        return "cartodb_staging_user_" if Rails.env.staging?
+        return 'cartodb_user_' if Rails.env.production?
+        return 'development_cartodb_user_' if Rails.env.development?
+        return 'test_cartodb_user_' if Rails.env.test?
+        return 'cartodb_staging_user_' if Rails.env.staging?
       end
 
       def carto_db_role?

@@ -3,6 +3,7 @@ require 'carto/dbdirect/metadata_manager'
 
 module Carto
   class DbdirectIp < ActiveRecord::Base
+
     belongs_to :user, inverse_of: :dbdirect_ip, foreign_key: :user_id
 
     # Note about the `ips` attribute:
@@ -43,8 +44,8 @@ module Carto
 
     def validate_ips
       # Check type
-      unless ips.kind_of?(Array) && ips.all? { |ip| ip.kind_of?(String) }
-        errors.add(:ips, "IPs must be an array of strings ")
+      unless ips.is_a?(Array) && ips.all? { |ip| ip.is_a?(String) }
+        errors.add(:ips, 'IPs must be an array of strings ')
         return false
       end
       ok = true
@@ -82,5 +83,6 @@ module Carto
       ips = ips.map { |ip| normalize_ip(ip) }
       self.class.metadata_manager.save(username, ips)
     end
+
   end
 end

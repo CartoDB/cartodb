@@ -8,6 +8,7 @@ module Carto
   module Dbdirect
     # Private CA certificate manager for dbdirect
     class CertificateManager
+
       GCP_AUTH_URL = 'https://www.googleapis.com/auth/cloud-platform'.freeze
 
       def initialize(config)
@@ -46,9 +47,9 @@ module Carto
       GET_CERTIFICATE_MAX_ATTEMPTS = 8
       GET_CERTIFICATE_DELAY_S = 1
 
-      SIGNING_ALGORITHM = "SHA256WITHRSA".freeze
-      TEMPLATE_ARN = "arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1".freeze
-      VALIDITY_TYPE_DAYS = "DAYS".freeze
+      SIGNING_ALGORITHM = 'SHA256WITHRSA'.freeze
+      TEMPLATE_ARN = 'arn:aws:acm-pca:::template/EndEntityClientAuthCertificate/V1'.freeze
+      VALIDITY_TYPE_DAYS = 'DAYS'.freeze
 
       def get_server_ca
         # If not configured, the CA used to sign client certificates will be used (handy for development)
@@ -88,11 +89,11 @@ module Carto
 
       def openssl_generate_csr(username, key, passphrase)
         subj = OpenSSL::X509::Name.parse("/C=US/ST=New York/L=New York/O=CARTO/OU=Customer/CN=#{username}")
-        if passphrase.present?
-          key = OpenSSL::PKey::RSA.new key, passphrase
-        else
-          key = OpenSSL::PKey::RSA.new key
-        end
+        key = if passphrase.present?
+                OpenSSL::PKey::RSA.new key, passphrase
+              else
+                OpenSSL::PKey::RSA.new key
+              end
         csr = OpenSSL::X509::Request.new
         csr.version = 0
         csr.subject = subj
@@ -138,23 +139,24 @@ module Carto
       def aws_get_ca_certificate_chain
         # TODO: we could cache this
         resp = aws_acmpca_client.get_certificate_authority_certificate({
-          certificate_authority_arn: config['ca_arn']
-        })
+                                                                         certificate_authority_arn: config['ca_arn']
+                                                                       })
         [resp.certificate, resp.certificate_chain].join("\n")
       end
 
       def aws_revoke_certificate(arn, reason)
         serial = serial_from_arn(arn)
         resp = aws_acmpca_client.revoke_certificate({
-          certificate_authority_arn: config['ca_arn'],
-          certificate_serial: serial,
-          revocation_reason: reason
-        })
+                                                      certificate_authority_arn: config['ca_arn'],
+                                                      certificate_serial: serial,
+                                                      revocation_reason: reason
+                                                    })
       end
 
       def serial_from_arn(arn)
-        match = /\/certificate\/(.{32})\Z/.match(arn)
+        match = %r{/certificate/(.{32})\Z}.match(arn)
         raise "Invalid arn format #{arn}" unless match
+
         match[1].scan(/../).join(':')
       end
 
@@ -179,7 +181,7 @@ module Carto
         end
         yield
       ensure
-        vars.each do |key, value|
+        vars.each do |key, _value|
           key = key.to_s
           ENV[key] = old[key]
         end
@@ -191,14 +193,15 @@ module Carto
           raise cmd.error
         elsif cmd.status_value != 0
           msg = error_message
-          msg += ": " + cmd.error_output if cmd.error_output.present?
+          msg += ': ' + cmd.error_output if cmd.error_output.present?
           raise msg
         end
+
         result
       end
 
       def fetch(url)
-        match = /\Ags:\/\/([^\/]+)\/(.+)\Z/.match(url)
+        match = %r{\Ags://([^/]+)/(.+)\Z}.match(url)
         if match
           bucket = match[1]
           path = match[2]
@@ -209,6 +212,7 @@ module Carto
           open(url) { |io| io.read }
         end
       end
+
     end
   end
 end

@@ -2,6 +2,7 @@ require 'spec_helper_min'
 require 'support/helpers'
 
 module Carto
+
   describe Api::ReceivedNotificationsController do
     include HelperMethods
 
@@ -72,4 +73,5 @@ module Carto
       end
     end
   end
+
 end

@@ -2,6 +2,7 @@ require_dependency 'cartodb_config_utils'
 require_dependency 'carto/configuration'
 
 module ApplicationHelper
+
   include Carto::Configuration
   include CartoDB::ConfigUtils
   include SafeJsObject
@@ -24,7 +25,7 @@ module ApplicationHelper
 
   def show_footer?
     (controller_name == 'tables' && action_name != 'show') ||
-    (controller_name == 'client_applications') || (controller_name == 'users')
+      (controller_name == 'client_applications') || (controller_name == 'users')
   end
 
   def show_google_api_keys?(user)
@@ -45,22 +46,17 @@ module ApplicationHelper
 
   def paginate(collection)
     return if collection.empty?
+
     if collection.is_a?(Hash)
-      if collection[:page_count] > 1
-        render(:partial => 'shared/paginate', :locals => {:collection => collection}).html_safe
-      end
+      render(partial: 'shared/paginate', locals: { collection: collection }).html_safe if collection[:page_count] > 1
     else
-      if collection.page_count > 1
-        render(:partial => 'shared/paginate', :locals => {:collection => collection}).html_safe
-      end
+      render(partial: 'shared/paginate', locals: { collection: collection }).html_safe if collection.page_count > 1
     end
   end
 
   def last_blog_posts
     # Data generated from Rake task in lib/tasks/blog.rake
-    if File.file?(CartoDB::LAST_BLOG_POSTS_FILE_PATH)
-      File.read(CartoDB::LAST_BLOG_POSTS_FILE_PATH).html_safe
-    end
+    File.read(CartoDB::LAST_BLOG_POSTS_FILE_PATH).html_safe if File.file?(CartoDB::LAST_BLOG_POSTS_FILE_PATH)
   end
 
   module_function :maps_api_template, :maps_api_url
@@ -68,15 +64,15 @@ module ApplicationHelper
   module_function :app_assets_base_url
 
   def frontend_config_public(options={ https_apis: false })
-    api_type = (options[:https_apis].present? && options[:https_apis]) ? 'private' : 'public'
+    api_type = options[:https_apis].present? && options[:https_apis] ? 'private' : 'public'
 
     config = {
-      maps_api_template:   maps_api_template(api_type),
-      user_name:           CartoDB.extract_subdomain(request),
-      cartodb_com_hosted:  Cartodb.get_config(:cartodb_com_hosted),
-      account_host:        CartoDB.account_host,
+      maps_api_template: maps_api_template(api_type),
+      user_name: CartoDB.extract_subdomain(request),
+      cartodb_com_hosted: Cartodb.get_config(:cartodb_com_hosted),
+      account_host: CartoDB.account_host,
       max_asset_file_size: Cartodb.get_config(:assets, 'max_file_size'),
-      api_key:             ''
+      api_key: ''
     }
 
     # Assumption: it is safe to expose private SQL API endpoint (or it is the same just using HTTPS)
@@ -92,17 +88,11 @@ module ApplicationHelper
       config[:error_track_percent_users] = Cartodb.get_config(:error_track, 'percent_users')
     end
 
-    if Cartodb.get_config(:cdn_url)
-      config[:cdn_url] = Cartodb.get_config(:cdn_url)
-    end
+    config[:cdn_url] = Cartodb.get_config(:cdn_url) if Cartodb.get_config(:cdn_url)
 
-    if Cartodb.get_config(:explore_api)
-      config[:explore_user] = Cartodb.get_config(:explore_api, 'username')
-    end
+    config[:explore_user] = Cartodb.get_config(:explore_api, 'username') if Cartodb.get_config(:explore_api)
 
-    if Cartodb.get_config(:common_data)
-      config[:common_data_user] = Cartodb.get_config(:common_data, 'username')
-    end
+    config[:common_data_user] = Cartodb.get_config(:common_data, 'username') if Cartodb.get_config(:common_data)
 
     config.to_json
   end
@@ -112,10 +102,10 @@ module ApplicationHelper
   end
 
   def insert_hubspot_form(form = 'newsletter')
-    if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank? && CartoDB::Hubspot::instance.form_ids.present? && !CartoDB::Hubspot::instance.form_ids[form].blank?
-      token = CartoDB::Hubspot::instance.token
+    if CartoDB::Hubspot.instance.enabled? && !CartoDB::Hubspot.instance.token.blank? && CartoDB::Hubspot.instance.form_ids.present? && !CartoDB::Hubspot.instance.form_ids[form].blank?
+      token = CartoDB::Hubspot.instance.token
 
-      render(:partial => 'shared/hubspot_form', :locals => { token: token, form_id: CartoDB::Hubspot::instance.form_ids[form] })
+      render(partial: 'shared/hubspot_form', locals: { token: token, form_id: CartoDB::Hubspot.instance.form_ids[form] })
     end
   end
 
@@ -151,11 +141,11 @@ module ApplicationHelper
   # Note: You will need to move config.assets.precompile to application.rb from production.rb
 
   def javascript_include_tag(*sources)
-    super *sources_with_path('javascripts', sources)
+    super(*sources_with_path('javascripts', sources))
   end
 
   def stylesheet_link_tag(*sources)
-    super *sources_with_path('stylesheets', sources)
+    super(*sources_with_path('stylesheets', sources))
   end
 
   def image_path(source, editor = false)
@@ -179,32 +169,34 @@ module ApplicationHelper
   end
 
   def editor_stylesheet_link_tag(*sources)
-    stylesheet_link_tag *([:editor] + sources)
+    stylesheet_link_tag(*([:editor] + sources))
   end
 
   def editor_javascript_include_tag(*sources)
-    javascript_include_tag *([:editor] + sources)
+    javascript_include_tag(*([:editor] + sources))
   end
 
-  def raise_on_asset_absence *sources
-    sources.flatten.each do |source|
-      next if source == {:media => "all"}
-      raise "Hey, #{source} is not in the precompile list (check application.rb). This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
-        if matcher.is_a? Proc
-          matcher.call(source)
-        elsif matcher.is_a? Regexp
-          matcher.match(source)
-        else
-          rx = /(\.css)|(\.js)/
-          matcher.to_s.gsub(rx,'') == source.to_s.gsub(rx,'')
+  def raise_on_asset_absence(*sources)
+    if Rails.env.development?
+      sources.flatten.each do |source|
+        next if source == { media: 'all' }
+        raise "Hey, #{source} is not in the precompile list (check application.rb). This will fall apart in production." unless Rails.application.config.assets.precompile.any? do |matcher|
+          if matcher.is_a? Proc
+            matcher.call(source)
+          elsif matcher.is_a? Regexp
+            matcher.match(source)
+          else
+            rx = /(\.css)|(\.js)/
+            matcher.to_s.gsub(rx, '') == source.to_s.gsub(rx, '')
+          end
         end
       end
-    end if Rails.env.development?
+    end
   end
 
   def form_error_for(attribute, errors)
-    error_messages = errors[attribute].map{|e| e.humanize }.join('. ')
-    content_tag :div, error_messages, :class => 'field_error' if error_messages.present?
+    error_messages = errors[attribute].map { |e| e.humanize }.join('. ')
+    content_tag :div, error_messages, class: 'field_error' if error_messages.present?
   end
 
   def v1_vizjson_url(visualization)
@@ -220,12 +212,10 @@ module ApplicationHelper
 
     tags.first(visibleCount).each_with_index do |tag, i|
       yield tag
-      concat ', ' if i < visibleCount-1 && i < tags.size-1
+      concat ', ' if i < visibleCount - 1 && i < tags.size - 1
     end
 
-    if tags.size > visibleCount
-      concat " and #{tags.size - visibleCount} more"
-    end
+    concat " and #{tags.size - visibleCount} more" if tags.size > visibleCount
   end
 
   def terms_path
@@ -249,4 +239,5 @@ module ApplicationHelper
   def model_errors(model)
     model.errors.full_messages.map(&:capitalize).join(', ') if model.errors.present?
   end
+
 end

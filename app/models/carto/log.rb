@@ -4,8 +4,8 @@ class Carto::Log < ActiveRecord::Base
 
   MAX_ENTRY_LENGTH = 256
 
-  ENTRY_POSTFIX = "\n"
-  ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}"
+  ENTRY_POSTFIX = "\n".freeze
+  ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}".freeze
 
   TYPE_USER_CREATION = 'user_creation'.freeze
 
@@ -22,9 +22,9 @@ class Carto::Log < ActiveRecord::Base
   def append(line, truncate = true, timestamp = Time.now.utc)
     line.slice!(MAX_ENTRY_LENGTH..-1) if truncate
 
-    entry = ENTRY_FORMAT % [ timestamp, line.slice(0..MAX_ENTRY_LENGTH) ]
-    self.entries = "#{self.entries}#{entry}"
-    self.save
+    entry = format(ENTRY_FORMAT, timestamp, line.slice(0..MAX_ENTRY_LENGTH))
+    self.entries = "#{entries}#{entry}"
+    save
   end
 
   def append_exception(line, exception:, truncate: true, timestamp: Time.now.utc)
@@ -32,7 +32,7 @@ class Carto::Log < ActiveRecord::Base
   end
 
   def store
-    self.save
+    save
   end
 
   def logger
@@ -47,6 +47,7 @@ class Carto::Log < ActiveRecord::Base
 
   # A logger implementation that logs to this Carto::Log
   class LogWriter < ::Logger
+
     SAVE_BLOCK = 10 # Save the changes to DB every X lines
 
     def initialize(log)
@@ -68,5 +69,7 @@ class Carto::Log < ActiveRecord::Base
     def close
       @log.save
     end
+
   end
+
 end

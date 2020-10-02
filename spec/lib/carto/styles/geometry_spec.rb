@@ -2,6 +2,7 @@ require 'spec_helper_min'
 
 module Carto
   module Styles
+
     describe Geometry do
       describe '#default' do
         let(:prod_default_geometry_cartocss) do
@@ -29,7 +30,7 @@ module Carto
           "    line-width: 1;\n"\
           "    line-opacity: 0.5;\n"\
           "  }\n"\
-          "}"
+          '}'
         end
 
         it 'has stayed the same' do
@@ -39,5 +40,6 @@ module Carto
         end
       end
     end
+
   end
 end

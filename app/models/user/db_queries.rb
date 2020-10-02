@@ -1,4 +1,3 @@
-
 module CartoDB
   # To avoid collisions with User class
   module UserModule
@@ -13,13 +12,11 @@ module CartoDB
         @user.in_database(conn_params) do |user_database|
           user_database.transaction do
             queries.each do |query|
-              begin
-                user_database.run(query)
-              rescue StandardError => e
-                CartoDB.notify_debug('Error running user query in transaction',
-                                     query: query, user: @user, error: e.inspect)
-                raise e
-              end
+              user_database.run(query)
+            rescue StandardError => e
+              CartoDB.notify_debug('Error running user query in transaction',
+                                   query: query, user: @user, error: e.inspect)
+              raise e
             end
             yield(user_database) if block_given?
           end

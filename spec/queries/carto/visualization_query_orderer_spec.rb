@@ -4,14 +4,14 @@ describe Carto::VisualizationQueryOrderer do
   before(:all) do
     @user = FactoryGirl.create(:carto_user)
     @visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id, name: 'Visualization A',
-                                                                  privacy: Carto::Visualization::PRIVACY_PUBLIC)
+                                                                privacy: Carto::Visualization::PRIVACY_PUBLIC)
     Delorean.jump(1.day)
     @visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, name: 'Visualization B',
-                                                                  privacy: Carto::Visualization::PRIVACY_LINK)
+                                                                privacy: Carto::Visualization::PRIVACY_LINK)
     @visualization_b.add_like_from(@user)
     Delorean.back_to_the_present
 
-    query = Carto::Visualization.all.select("visualizations.*").where(user_id: @user.id)
+    query = Carto::Visualization.all.select('visualizations.*').where(user_id: @user.id)
     @orderer = Carto::VisualizationQueryOrderer.new(query)
   end
 

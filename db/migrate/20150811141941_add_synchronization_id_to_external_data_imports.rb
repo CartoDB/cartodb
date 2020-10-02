@@ -1,11 +1,10 @@
 Sequel.migration do
-
   up do
     alter_table :external_data_imports do
-      add_column :synchronization_id, :text #'uuid'
+      add_column :synchronization_id, :text # 'uuid'
     end
 
-    SequelRails.connection.run(%Q{
+    SequelRails.connection.run(%{
       ALTER TABLE "external_data_imports"
         ADD CONSTRAINT  synchronization_id_fkey
         FOREIGN KEY (synchronization_id)

@@ -4,6 +4,7 @@ module Carto
   module Tracking
     module Services
       module Hubspot
+
         include ::LoggerHelper
 
         def report_to_hubspot
@@ -27,6 +28,7 @@ module Carto
           event_ids = Cartodb.get_config(:metrics, 'hubspot', 'event_ids')
           event_ids[event_name] if event_ids
         end
+
       end
     end
   end

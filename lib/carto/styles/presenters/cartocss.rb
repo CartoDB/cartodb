@@ -2,6 +2,7 @@ module Carto
   module Styles
     module Presenters
       class CartoCSS
+
         def initialize(class_name: 'layer', cartocss_array: [])
           @class_name = class_name
           @cartocss_array = cartocss_array
@@ -10,7 +11,7 @@ module Carto
         def to_s
           "##{@class_name} {\n"\
           "#{formatted_cartocss_body}\n"\
-          "}"
+          '}'
         end
 
         private
@@ -33,15 +34,16 @@ module Carto
             formatted_cartocss_property = cartocss_property.keys.map do |key|
               "  #{key} {\n"\
               "#{cartocss_property[key].map { |v| "    #{v}" }.join("\n")}\n"\
-              "  }"
+              '  }'
             end
 
             formatted_cartocss_property.join("\n")
           else
             log_error(message: 'Unrecognized CartoCSS property', error_detail: property_class)
-            ""
+            ''
           end
         end
+
       end
     end
   end

@@ -33,8 +33,8 @@ module Carto
     private
 
     def set_token_and_secret
-      self.token = OAuth::Helper.generate_key(40)[0,40] if token.blank?
-      self.secret = OAuth::Helper.generate_key(40)[0,40] if secret.blank?
+      self.token = OAuth::Helper.generate_key(40)[0, 40] if token.blank?
+      self.secret = OAuth::Helper.generate_key(40)[0, 40] if secret.blank?
     end
 
   end

@@ -12,7 +12,7 @@ module CartoDB
     def initialize(arguments)
       @connection  = arguments.fetch(:connection)
       @table_name  = arguments[:table_name]
-      @table_schema  = arguments[:table_schema]
+      @table_schema = arguments[:table_schema]
       @qualified_table_name = arguments[:qualified_table_name]
       @sequel_qualified_table_name = arguments[:sequel_qualified_table_name]
       @schema = arguments[:schema] || 'cdb'
@@ -60,11 +60,10 @@ module CartoDB
       set_georef_status_from_false_to_null
     end
 
-
     protected
 
     def ensure_georef_status_colummn_valid
-      connection.run(%Q{
+      connection.run(%{
           ALTER TABLE #{@qualified_table_name}
           ADD COLUMN cartodb_georef_status BOOLEAN DEFAULT NULL
         })
@@ -73,27 +72,27 @@ module CartoDB
         raise Carto::GeocoderErrors::AddGeorefStatusColumnDbTimeoutError.new
       end
       raise unless e.message =~ /column .* of relation .* already exists/
+
       cast_georef_status_column
     end
-
 
     private
 
     def set_georef_status_to_null
-      connection.select.from(@sequel_qualified_table_name).update(:cartodb_georef_status => nil)
+      connection.select.from(@sequel_qualified_table_name).update(cartodb_georef_status: nil)
     end
 
     def set_georef_status_from_false_to_null
-      connection.select.from(@sequel_qualified_table_name).where(:cartodb_georef_status => false).update(:cartodb_georef_status => nil)
+      connection.select.from(@sequel_qualified_table_name).where(cartodb_georef_status: false).update(cartodb_georef_status: nil)
     end
 
     def cast_georef_status_column
-      connection.run(%Q{
+      connection.run(%{
         ALTER TABLE #{@qualified_table_name} ALTER COLUMN cartodb_georef_status
         TYPE boolean USING cast(cartodb_georef_status as boolean)
       })
     rescue StandardError => e
-      raise "Error converting cartodb_georef_status to boolean, please, convert it manually or remove it."
+      raise 'Error converting cartodb_georef_status to boolean, please, convert it manually or remove it.'
     end
 
   end

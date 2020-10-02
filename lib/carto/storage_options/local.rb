@@ -1,4 +1,5 @@
 class Carto::StorageOptions::Local
+
   include Carto::Configuration
 
   def initialize(location)
@@ -23,4 +24,5 @@ class Carto::StorageOptions::Local
   def remove(path)
     File.delete(path) if path && File.exist?(path)
   end
+
 end

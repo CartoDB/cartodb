@@ -4,6 +4,7 @@ require_relative '../shared_entity'
 module CartoDB
   module Visualization
     class Tags
+
       DEFAULT_LIMIT = 500
 
       def initialize(user, options={})
@@ -15,7 +16,7 @@ module CartoDB
         if only_shared?(params)
           filter = shared_entities_sql_filter(params)
           if filter.empty?
-            return []
+            []
           else
             Carto::Tag.find_by_sql(
               [%{
@@ -49,7 +50,7 @@ module CartoDB
         if only_shared?(params)
           filter = shared_entities_sql_filter(params)
           if filter.empty?
-            return []
+            []
           else
             Carto::Tag.find_by_sql(
               [%{
@@ -99,22 +100,22 @@ module CartoDB
         only_shared = only_shared?(params)
 
         ids = CartoDB::SharedEntity.where({
-          recipient_id: @user.id,
-          entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-        }).all.map { |entity|
+                                            recipient_id: @user.id,
+                                            entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+                                          }).all.map do |entity|
           entity.entity_id
-        }
+        end
         return '' if ids.nil? || ids.empty?
 
         if only_shared
           "id IN ('#{ids.join("','")}')"
         else
           types_filter = types_from(params)
-          if types_filter.size  == 1
-            types_fragment = " AND type IN ('#{types_filter.first}')"
-          else
-            types_fragment = ''
-          end
+          types_fragment = if types_filter.size == 1
+                             " AND type IN ('#{types_filter.first}')"
+                           else
+                             ''
+                           end
 
           "OR (id IN ('#{ids.join("','")}') #{types_fragment})"
         end
@@ -123,7 +124,7 @@ module CartoDB
       def locked_from(params={})
         locked = params.fetch(:locked, nil)
         if locked.nil?
-          ""
+          ''
         else
           locked = locked.to_s == 'true' ? 'true' : 'false'
           "AND locked=#{locked}"
@@ -136,17 +137,18 @@ module CartoDB
 
       def privacy_from(params={})
         privacy = params.fetch(:privacy, nil)
-        (privacy.nil? || privacy.empty?) ? Member::PRIVACY_VALUES : [privacy]
+        privacy.nil? || privacy.empty? ? Member::PRIVACY_VALUES : [privacy]
       end
 
       def types_from(params={})
         type = params.fetch(:type, nil)
-        (type.nil? || type.empty?) ? [Member::TYPE_CANONICAL, Member::TYPE_DERIVED] : [type]
+        type.nil? || type.empty? ? [Member::TYPE_CANONICAL, Member::TYPE_DERIVED] : [type]
       end
 
       def limit_from(params={})
         (params.fetch(:limit, DEFAULT_LIMIT) || DEFAULT_LIMIT).to_i
       end
+
     end
   end
 end

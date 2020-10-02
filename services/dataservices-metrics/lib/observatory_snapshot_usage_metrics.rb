@@ -27,5 +27,6 @@ module CartoDB
       raise ArgumentError.new('Invalid service') unless VALID_SERVICES.include?(service)
       raise ArgumentError.new('Invalid metric') unless VALID_METRICS.include?(metric)
     end
+
   end
 end

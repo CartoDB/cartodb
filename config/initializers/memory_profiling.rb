@@ -2,7 +2,7 @@
 # This enables memory logging in order to check memory consumption (reproducing memory leaks)
 if ENV['MEMORY_REPORTING']
   Thread.new do
-    while true
+    loop do
       pid = Process.pid
       rss = `ps -eo pid,rss | grep #{pid} | awk '{print $2}'`.to_i
       Rails.logger.info "MEMORY[#{pid}]: rss: #{rss}, live objects #{GC.stat[:heap_live_slots]}"
@@ -22,12 +22,16 @@ if ENV['MEMORY_REPORTING']
 end
 
 module CartoDB
+
   def self.memory_dump(filename)
     require 'objspace'
     # Dump classes (id -> name)
-    cls = ObjectSpace.each_object.inject(Hash.new(0)) do |h, o|
-      h[o.class.object_id] = o.class.name rescue 'ERR'
-      h
+    cls = ObjectSpace.each_object.each_with_object(Hash.new(0)) do |o, h|
+      h[o.class.object_id] = begin
+                               o.class.name
+                             rescue StandardError
+                               'ERR'
+                             end
     end
     File.open(filename + '.classes', 'w') do |f|
       JSON.dump(cls, f)
@@ -40,4 +44,5 @@ module CartoDB
       ObjectSpace.dump_all(output: f)
     end
   end
+
 end

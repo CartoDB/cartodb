@@ -2,7 +2,6 @@ require_relative '../../../importer/lib/importer/query_batcher'
 
 module CartoDB
   module InternalGeocoder
-
     class LatitudeLongitude
 
       def initialize(db, logger = nil)
@@ -12,7 +11,7 @@ module CartoDB
 
       def geocode(table_schema, table_name, latitude_column, longitude_column)
         qualified_table_name = "\"#{table_schema}\".\"#{table_name}\""
-        query_fragment_update = %Q{
+        query_fragment_update = %{
           UPDATE #{qualified_table_name}
           SET
             the_geom = ST_GeomFromText(
@@ -20,7 +19,7 @@ module CartoDB
                 REPLACE(TRIM(CAST("#{latitude_column}" AS text)), ',', '.') || ')', 4326
             )
         }
-        query_fragment_where = %Q{
+        query_fragment_where = %{
           REPLACE(TRIM(CAST("#{longitude_column}" AS text)), ',', '.') ~
             '^(([-+]?(([0-9]|[1-9][0-9]|1[0-7][0-9])(\.[0-9]+)?))|[-+]?180)$'
           AND REPLACE(TRIM(CAST("#{latitude_column}" AS text)), ',', '.')  ~
@@ -28,21 +27,21 @@ module CartoDB
         }
 
         CartoDB::Importer2::QueryBatcher.new(
-            @db, 
-            @logger, 
-            !table_has_cartodb_id(table_schema, table_name)
-          ).execute_update(
-              %Q{#{query_fragment_update} where #{query_fragment_where}},
-              table_schema, table_name
-          )
+          @db,
+          @logger,
+          !table_has_cartodb_id(table_schema, table_name)
+        ).execute_update(
+          %{#{query_fragment_update} where #{query_fragment_where}},
+          table_schema, table_name
+        )
       end
 
       def table_has_cartodb_id(table_schema, table_name)
-        result = @db.fetch(%Q{
+        result = @db.fetch(%{
           select *
           from information_schema.columns
-          where table_schema = '#{table_schema}' 
-            and table_name = '#{table_name}' 
+          where table_schema = '#{table_schema}'
+            and table_name = '#{table_name}'
             and column_name = 'cartodb_id'
             and data_type = 'integer';
         }).all
@@ -50,6 +49,5 @@ module CartoDB
       end
 
     end
-
   end
 end

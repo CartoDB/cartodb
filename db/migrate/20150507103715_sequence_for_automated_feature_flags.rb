@@ -1,11 +1,12 @@
 class SequenceForAutomatedFeatureFlags < Sequel::Migration
+
   START_SEQ_NUMBER = -1000
-  NAME = 'machine_added_feature_flags_id_seq'
+  NAME = 'machine_added_feature_flags_id_seq'.freeze
 
   def up
     # Create sequence to avoid trouble generating unique ids
     # It starts in negative numbers and goes downward in order to be able to identify quickly flags added automatically
-    SequelRails.connection.run(%Q{
+    SequelRails.connection.run(%{
       CREATE SEQUENCE #{NAME} INCREMENT BY -1
         START WITH #{START_SEQ_NUMBER}
         OWNED BY feature_flags.id;
@@ -13,7 +14,7 @@ class SequenceForAutomatedFeatureFlags < Sequel::Migration
   end
 
   def down
-    SequelRails.connection.run(%Q{
+    SequelRails.connection.run(%{
       DROP SEQUENCE IF EXISTS #{NAME}
     })
   end

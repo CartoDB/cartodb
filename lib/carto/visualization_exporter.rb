@@ -1,7 +1,9 @@
 require_relative 'file_system/sanitize'
 
 module Carto
+
   class DataExporter
+
     def initialize(http_client = Carto::Http::Client.get('data_exporter', log_requests: true))
       @http_client = http_client
     end
@@ -32,9 +34,11 @@ module Carto
     def privacy(user_table)
       user_table.private? ? 'private' : 'public'
     end
+
   end
 
   module ExporterConfig
+
     DEFAULT_EXPORTER_TMP_FOLDER = '/tmp/exporter'.freeze
 
     def exporter_config
@@ -55,17 +59,19 @@ module Carto
     end
 
     def ensure_folder(folder)
-      FileUtils.mkdir_p(folder) unless Dir.exists?(folder)
+      FileUtils.mkdir_p(folder) unless Dir.exist?(folder)
       folder
     end
 
     def ensure_clean_folder(folder)
-      FileUtils.remove_dir(folder) if Dir.exists?(folder)
+      FileUtils.remove_dir(folder) if Dir.exist?(folder)
       ensure_folder(folder)
     end
+
   end
 
   module VisualizationExporter
+
     include ExporterConfig
 
     DEFAULT_EXPORT_FORMAT = 'gpkg'.freeze
@@ -94,7 +100,8 @@ module Carto
         user,
         tmp_dir,
         format,
-        user_tables_ids: user_tables_ids)
+        user_tables_ids: user_tables_ids
+      )
 
       visualization_json = visualization_export_service.export_visualization_json_string(visualization_id, user)
       visualization_json_file = "#{tmp_dir}/#{visualization_id}#{EXPORT_EXTENSION}"
@@ -105,11 +112,13 @@ module Carto
       filename = "#{safe_vis_name} (#{Time.now.utc.strftime('on %Y-%m-%d at %H.%M.%S')})#{CARTO_EXTENSION}".freeze
 
       status = system('zip', '-r', filename, visualization_id, chdir: export_dir)
-      raise "Error compressing export" unless status
+      raise 'Error compressing export' unless status
 
       FileUtils.remove_dir(tmp_dir)
 
       "#{export_dir}/#{filename}"
     end
+
   end
+
 end

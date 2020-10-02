@@ -12,7 +12,7 @@ describe Carto::Api::TablePresenter do
       aux_table = create_table(user_id: @user.id)
 
       canonical_layer = main_table.layers.first
-      canonical_layer.options["query"] = "SELECT * FROM #{main_table.name} JOIN #{aux_table.name} ON true"
+      canonical_layer.options['query'] = "SELECT * FROM #{main_table.name} JOIN #{aux_table.name} ON true"
       canonical_layer.save
 
       context = mock

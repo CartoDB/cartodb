@@ -1,6 +1,7 @@
 module Carto
   module Db
     class Trigger
+
       attr_reader :database_name, :database_schema, :table_name, :trigger_name
 
       def initialize(database_name:, database_schema:, table_name:, trigger_name:)
@@ -16,6 +17,7 @@ module Carto
           @table_name == other.table_name &&
           @trigger_name == other.trigger_name
       end
+
     end
   end
 end

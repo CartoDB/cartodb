@@ -10,6 +10,7 @@ include Mocha::ParameterMatchers
 
 module CartoDB
   module Stats
+
     describe Importer do
       TEST_HOST = '172.28.128.3'.freeze
       TEST_PORT = 8125
@@ -18,18 +19,19 @@ module CartoDB
       TIMING_TEST_KEY = "#{TIMING_TEST_KEY_A}.#{TIMING_TEST_KEY_B}".freeze
       GAUGE_TEST_KEY = 'gauge'.freeze
       GAUGE_TEST_VALUE = 0.5
-      HOST_INFO = "fake-test-queue".freeze
+      HOST_INFO = 'fake-test-queue'.freeze
 
       EXPECTED_PREFIX = "importer.#{HOST_INFO}".freeze
 
       describe '#timing' do
-        it "sends key with importer prefix" do
+        it 'sends key with importer prefix' do
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY}")
           CartoDB::Stats::Importer.instance(
             {
               'host' => TEST_HOST,
               'port' => TEST_PORT
-            }, HOST_INFO).timing(TIMING_TEST_KEY) { foo }
+            }, HOST_INFO
+          ).timing(TIMING_TEST_KEY) { foo }
         end
 
         it "doesn't send anything if host or port are not met" do
@@ -48,7 +50,7 @@ module CartoDB
           ).timing(TIMING_TEST_KEY) { foo }
         end
 
-        it "runs block even without host or port" do
+        it 'runs block even without host or port' do
           count = 0
           CartoDB::Stats::Importer.instance(
             'host' => nil,
@@ -71,14 +73,15 @@ module CartoDB
           count.should eq 3
         end
 
-        it "registers nested timing" do
+        it 'registers nested timing' do
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY_A}")
           expected_send("#{EXPECTED_PREFIX}.#{TIMING_TEST_KEY}")
           importer_stats = CartoDB::Stats::Importer.instance(
             {
               'host' => TEST_HOST,
               'port' => TEST_PORT
-            }, HOST_INFO)
+            }, HOST_INFO
+          )
           importer_stats.timing(TIMING_TEST_KEY_A) do
             importer_stats.timing(TIMING_TEST_KEY_B) do
               foo
@@ -92,7 +95,8 @@ module CartoDB
             {
               'host' => TEST_HOST,
               'port' => TEST_PORT
-            }, HOST_INFO)
+            }, HOST_INFO
+          )
           begin
             importer_stats.timing(TIMING_TEST_KEY_A) do
               raise 'error'
@@ -112,7 +116,8 @@ module CartoDB
             {
               'host' => TEST_HOST,
               'port' => TEST_PORT
-            }, HOST_INFO).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
+            }, HOST_INFO
+          ).gauge(GAUGE_TEST_KEY, GAUGE_TEST_VALUE)
         end
 
         it "doesn't send anything if host or port are not met" do
@@ -137,7 +142,7 @@ module CartoDB
       end
 
       def expected_send(buf)
-        buf_re = %r{^#{buf}:}
+        buf_re = /^#{buf}:/
         UDPSocket.any_instance.expects(:send).with(regexp_matches(buf_re), 0, TEST_HOST, TEST_PORT).once
       end
 
@@ -145,5 +150,6 @@ module CartoDB
         UDPSocket.any_instance.expects(:send).never
       end
     end
+
   end
 end

@@ -1,4 +1,5 @@
 class Carto::Api::AssetsController < ::Api::ApplicationController
+
   ssl_required :index
 
   def index
@@ -8,4 +9,5 @@ class Carto::Api::AssetsController < ::Api::ApplicationController
 
     render json: { total_entries: assets.size, assets: assets }
   end
+
 end

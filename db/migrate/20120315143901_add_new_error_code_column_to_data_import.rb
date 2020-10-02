@@ -5,7 +5,7 @@ class AddNewErrorCodeColumnToDataImportMigration < Sequel::Migration
   end
 
   def down
-    drop_column :data_imports, :error_code  
+    drop_column :data_imports, :error_code
   end
 
 end

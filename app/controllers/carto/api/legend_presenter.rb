@@ -1,6 +1,7 @@
 module Carto
   module Api
     class LegendPresenter
+
       def initialize(legend)
         @legend = legend
       end
@@ -19,6 +20,7 @@ module Carto
           updated_at: @legend.updated_at
         }
       end
+
     end
   end
 end

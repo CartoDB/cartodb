@@ -12,8 +12,8 @@ require_relative 'no_stats_context'
 
 describe 'zip regression tests' do
   include AcceptanceHelpers
-  include_context "cdb_importer schema"
-  include_context "no stats"
+  include_context 'cdb_importer schema'
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -28,11 +28,11 @@ describe 'zip regression tests' do
     filepath    = path_to('one_unsupported.zip')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
 
     runner.results.length.should eq 0
@@ -42,11 +42,11 @@ describe 'zip regression tests' do
     filepath    = path_to('one_unsupported_one_valid.zip')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
 
     runner.results.length.should eq 1
@@ -56,38 +56,38 @@ describe 'zip regression tests' do
     filepath    = path_to('multiple_csvs.zip')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
 
     runner.results.select(&:success?).length.should eq 2
     runner.results.length.should eq 2
-    runner.results.each { |result|
-      name = @user.in_database[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+    runner.results.each do |result|
+      name = @user.in_database[%{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
-    }
+    end
   end
 
   it 'imports a maximum of Runner::MAX_TABLES_PER_IMPORT files from a zip, but doesnt errors' do
     filepath    = path_to('more_than_10_files.zip')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
 
     runner.results.select(&:success?).length.should eq ::CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
     runner.results.length.should eq ::CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
-    runner.results.each { |result|
-      name = @user.in_database[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+    runner.results.each do |result|
+      name = @user.in_database[%{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
-    }
+    end
   end
 
   it 'imports a shapefile that includes a xxx.VERSION.txt file skipping it' do
@@ -95,38 +95,38 @@ describe 'zip regression tests' do
     filepath    = path_to('shapefile_with_version_txt.zip')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
 
     runner.results.select(&:success?).length.should eq 1
     runner.results.length.should eq 1
-    runner.results.each { |result|
-      name = @user.in_database[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+    runner.results.each do |result|
+      name = @user.in_database[%{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
-    }
+    end
   end
 
-    it 'imports all non-failing items from a zip without failing the whole import' do
-    filepath    = path_to('file_ok_and_file_ko.zip')
-    downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
-    runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+  it 'imports all non-failing items from a zip without failing the whole import' do
+    filepath = path_to('file_ok_and_file_ko.zip')
+    downloader = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
+    runner = ::CartoDB::Importer2::Runner.new({
+                                                pg: @user.db_service.db_configuration_for,
+                                                downloader: downloader,
+                                                log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                user: @user
+                                              })
     runner.run
 
     runner.results.select(&:success?).length.should eq 1
     runner.results.length.should eq 2
-    runner.results.select(&:success?).each { |result|
-      name = @user.in_database[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+    runner.results.select(&:success?).each do |result|
+      name = @user.in_database[%{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
-    }
+    end
   end
 
   describe 'visualization importing' do
@@ -178,5 +178,4 @@ describe 'zip regression tests' do
       name.should eq table_result.table_name
     end
   end
-
 end

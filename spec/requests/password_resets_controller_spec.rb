@@ -1,7 +1,6 @@
 require_relative '../spec_helper_min'
 
 describe PasswordResetsController do
-
   before(:all) do
     User.any_instance.stubs(:update_in_central).returns(true)
     @user = FactoryGirl.create(:user)
@@ -24,7 +23,7 @@ describe PasswordResetsController do
       post create_password_reset_path, payload, @headers
 
       response.status.should == 200
-      response.body.should include "Email cannot be blank"
+      response.body.should include 'Email cannot be blank'
       request.path.should eq create_password_reset_path
     end
 
@@ -74,7 +73,7 @@ describe PasswordResetsController do
       put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
       response.status.should == 200
-      response.body.should include "Please ensure your passwords match"
+      response.body.should include 'Please ensure your passwords match'
     end
 
     it 'shows an error if the password is the username' do
@@ -83,7 +82,7 @@ describe PasswordResetsController do
       put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
       response.status.should == 200
-      response.body.should include "must be different than the user name"
+      response.body.should include 'must be different than the user name'
     end
 
     it 'shows an error if the password is a common one' do
@@ -92,7 +91,7 @@ describe PasswordResetsController do
       put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
       response.status.should == 200
-      response.body.should include "be a common password"
+      response.body.should include 'be a common password'
     end
 
     it 'shows an error if the password is not strong' do
@@ -107,7 +106,7 @@ describe PasswordResetsController do
       put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
       response.status.should == 200
-      response.body.should include "must be at least 8 characters long"
+      response.body.should include 'must be at least 8 characters long'
       Carto::User.any_instance.unstub(:organization)
     end
 

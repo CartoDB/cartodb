@@ -7,6 +7,7 @@ require_dependency 'dummy_password_generator'
 # This class is quite coupled to UserCreation.
 module CartoDB
   class UserAccountCreator
+
     include DummyPasswordGenerator
 
     PARAM_USERNAME = :username
@@ -118,9 +119,7 @@ module CartoDB
       email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/, '-').downcase
     end
 
-    def user
-      @user
-    end
+    attr_reader :user
 
     def with_oauth_api(oauth_api)
       @built = false
@@ -137,8 +136,8 @@ module CartoDB
 
       if @organization
         if @organization.owner.nil?
-          if !promote_to_organization_owner?
-            @custom_errors[:organization] = ["Organization owner is not set. Administrator must login first."]
+          unless promote_to_organization_owner?
+            @custom_errors[:organization] = ['Organization owner is not set. Administrator must login first.']
           end
         else
           validate_organization_soft_limits
@@ -283,5 +282,6 @@ module CartoDB
       !!(@organization && !@organization.owner_id && @user_params[PARAM_USERNAME] &&
         @user_params[PARAM_USERNAME] == "#{@organization.name}-admin")
     end
+
   end
 end

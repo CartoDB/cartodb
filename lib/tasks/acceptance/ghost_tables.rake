@@ -1,13 +1,14 @@
 namespace :cartodb do
   namespace :acceptance do
-
     DEFAULT_SLEEP_TIME = 10
 
     desc 'Acceptance tests regarding Ghost Tables trigger'
     task :ghost_tables, [:username, :sleep_time] => :environment do |_t, args|
       raise 'usage: rake cartodb:acceptance:ghost_tables[username]' if args[:username].blank?
+
       @user = Carto::User.find_by(username: args[:username])
       raise "user with username '#{args[:username]}' not found" unless @user
+
       args.with_defaults(sleep_time: DEFAULT_SLEEP_TIME)
       @sleep_time = args[:sleep_time].to_i
       @results = []
@@ -73,7 +74,7 @@ namespace :cartodb do
     end
 
     def build_result(description, condition)
-      result = condition ? "OK!" : "Fail!"
+      result = condition ? 'OK!' : 'Fail!'
       "#{description}... #{result}"
     end
 
@@ -84,19 +85,19 @@ namespace :cartodb do
     # tests
 
     def test1
-      description = "Create table"
-      run_and_wait("CREATE TABLE casper ();")
+      description = 'Create table'
+      run_and_wait('CREATE TABLE casper ();')
       p build_result(description, !table_linked?)
     end
 
     def test2
-      description = "Create table and cartodbfy"
+      description = 'Create table and cartodbfy'
       create_table_and_cartodbfy
       p build_result(description, table_linked?)
     end
 
     def test3
-      description = "Select into and cartodbfy"
+      description = 'Select into and cartodbfy'
       run_and_wait(%{
         SELECT INTO casper FROM (SELECT 1) AS tmp;
         SELECT * FROM CDB_CartodbfyTable('casper');
@@ -105,25 +106,25 @@ namespace :cartodb do
     end
 
     def test4
-      description = "Drop table"
+      description = 'Drop table'
       create_table_and_cartodbfy
       assert1 = table_linked?
 
-      run_and_wait("DROP TABLE casper;")
+      run_and_wait('DROP TABLE casper;')
       assert2 = !table_linked?
 
       p build_result(description, assert1 && assert2)
     end
 
     def test5
-      description = "Create table and cartodbfy without trigger"
+      description = 'Create table and cartodbfy without trigger'
       @user.db_service.drop_ghost_tables_event_trigger
       create_table_and_cartodbfy
       p build_result(description, !table_linked?)
     end
 
     def test6
-      description = "Drop and create inside a transaction"
+      description = 'Drop and create inside a transaction'
       create_table_and_cartodbfy
       create_map
       assert1 = Carto::Visualization.where(user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED).all.count == 1
@@ -139,12 +140,12 @@ namespace :cartodb do
     end
 
     def test7
-      description = "Drop and create without transaction"
+      description = 'Drop and create without transaction'
       create_table_and_cartodbfy
       create_map
       assert1 = Carto::Visualization.where(user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED).all.count == 1
 
-      run_and_wait("DROP TABLE casper;")
+      run_and_wait('DROP TABLE casper;')
       create_table_and_cartodbfy
       assert2 = Carto::Visualization.where(user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED).all.empty?
 
@@ -152,7 +153,7 @@ namespace :cartodb do
     end
 
     def test8
-      description = "With ghost_tables_trigger_disabled FF"
+      description = 'With ghost_tables_trigger_disabled FF'
       @user.db_service.drop_ghost_tables_event_trigger
       enable_feature_flag
       @user.db_service.create_ghost_tables_event_trigger
@@ -163,7 +164,7 @@ namespace :cartodb do
     end
 
     def test9
-      description = "Without TIS configuration"
+      description = 'Without TIS configuration'
       @user.in_database(as: :superuser).run("SELECT cartodb.CDB_Conf_RemoveConf('invalidation_service')")
 
       create_table_and_cartodbfy

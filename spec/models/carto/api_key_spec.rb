@@ -23,7 +23,7 @@ describe Carto::ApiKey do
                      permissions: ['insert', 'select', 'update', 'delete'],
                      schema_permissions: ['create'])
     {
-      type: "database",
+      type: 'database',
       tables: [
         {
           schema: database_schema,
@@ -44,7 +44,7 @@ describe Carto::ApiKey do
   def table_grant(database_schema = 'wadus', table_name = 'wadus', owner = false,
                   permissions: ['insert', 'select', 'update', 'delete'])
     {
-      type: "database",
+      type: 'database',
       tables: [
         {
           schema: database_schema,
@@ -58,7 +58,7 @@ describe Carto::ApiKey do
 
   def schema_grant(database_schema = 'wadus', schema_permissions: ['create'])
     {
-      type: "database",
+      type: 'database',
       schemas: [
         {
           name: database_schema,
@@ -116,7 +116,7 @@ describe Carto::ApiKey do
           connection.execute("select count(1) from #{@table2.name}")
         rescue Sequel::DatabaseError => e
           failed = true
-          e.message.should match /permission denied .* #{@table2.name}/
+          e.message.should match(/permission denied .* #{@table2.name}/)
         end
         failed.should be_true
 
@@ -174,7 +174,7 @@ describe Carto::ApiKey do
         create_select_drop_check(connection, @carto_user1.database_schema, 'test_table', false)
       end
 
-      @carto_user1.in_database.execute("drop table test_table")
+      @carto_user1.in_database.execute('drop table test_table')
     end
 
     it 'reassigns role ownerships after deleting a regular API key' do
@@ -191,28 +191,28 @@ describe Carto::ApiKey do
       @carto_user1.in_database.execute(ownership_query) do |result|
         result[0]['owner'].should eq @carto_user1.database_username
       end
-      @carto_user1.in_database.execute("drop table test_table")
+      @carto_user1.in_database.execute('drop table test_table')
     end
 
     it 'fails to grant to a non-existent schema' do
-      expect {
+      expect do
         grants = [schema_grant('not-exists'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception(ActiveRecord::RecordInvalid, /can only grant schema permissions you have/)
+      end.to raise_exception(ActiveRecord::RecordInvalid, /can only grant schema permissions you have/)
     end
 
     it 'fails to grant to a non-existent table' do
-      expect {
+      expect do
         grants = [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
+      end.to raise_exception(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
     end
 
     it 'fails to grant to system table' do
-      expect {
+      expect do
         grants = [database_grant('cartodb', 'cdb_tablemetadata'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception ActiveRecord::RecordInvalid
+      end.to raise_exception ActiveRecord::RecordInvalid
     end
 
     it 'fails to access system tables' do
@@ -220,9 +220,9 @@ describe Carto::ApiKey do
 
       with_connection_from_api_key(api_key) do |connection|
         ['cdb_tablemetadata', 'cdb_analysis_catalog'].each do |table|
-          expect {
+          expect do
             connection.execute("select count(1) from cartodb.#{table}")
-          }.to raise_exception /permission denied/
+          end.to raise_exception(/permission denied/)
         end
       end
     end
@@ -231,26 +231,26 @@ describe Carto::ApiKey do
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: [apis_grant])
 
       with_connection_from_api_key(api_key) do |connection|
-        expect {
+        expect do
           connection.execute("create table \"#{@table1.database_schema}\".test as select 1 as test")
-        }.to raise_exception /permission denied/
+        end.to raise_exception(/permission denied/)
       end
     end
 
     it 'fails to grant to system schema' do
-      expect {
+      expect do
         grants = [schema_grant('information_schema'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception ActiveRecord::RecordInvalid
+      end.to raise_exception ActiveRecord::RecordInvalid
     end
 
     it 'fails to create table in system schema' do
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: [apis_grant])
 
       with_connection_from_api_key(api_key) do |connection|
-        expect {
-          connection.execute("create table information_schema.test as select 1 as test")
-        }.to raise_exception /permission denied/
+        expect do
+          connection.execute('create table information_schema.test as select 1 as test')
+        end.to raise_exception(/permission denied/)
       end
     end
 
@@ -261,7 +261,7 @@ describe Carto::ApiKey do
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'valid_table_name', grants: grants)
 
       with_connection_from_api_key(api_key) do |connection|
-        connection.execute("select count(1) from \"wadus\"\"wadus\"") do |result|
+        connection.execute('select count(1) from "wadus""wadus"') do |result|
           result[0]['count'].should eq '0'
         end
       end
@@ -295,7 +295,7 @@ describe Carto::ApiKey do
         begin
           connection.execute("select count(1) from #{@table1.name}")
         rescue Sequel::DatabaseError => e
-          e.message.should match /permission denied .* #{@table1.name}/
+          e.message.should match(/permission denied .* #{@table1.name}/)
         end
 
         connection.execute("select count(1) from #{view_name}") do |result|
@@ -318,9 +318,7 @@ describe Carto::ApiKey do
       permissions = api_key.table_permissions_from_db
 
       permissions.each do |p|
-        if p.name == 'test_table'
-          p.owner.should eq true
-        end
+        p.owner.should eq true if p.name == 'test_table'
       end
 
       with_connection_from_api_key(api_key) do |connection|
@@ -344,7 +342,7 @@ describe Carto::ApiKey do
       end
     end
 
-    let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }
+    let(:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }
 
     describe '#destroy' do
       it 'removes the role from DB' do
@@ -413,70 +411,70 @@ describe Carto::ApiKey do
     describe 'validations' do
       it 'fails with invalid schema permissions' do
         database_grants = {
-          type: "database",
+          type: 'database',
           tables: [
             {
-              schema: "wadus",
-              name: "wadus",
-              permissions: ["insert"]
+              schema: 'wadus',
+              name: 'wadus',
+              permissions: ['insert']
             }
           ],
           schemas: [
             {
-              name: "wadus",
-              permissions: ["create", "insert"]
+              name: 'wadus',
+              permissions: ['create', 'insert']
             }
           ]
         }
         grants = [apis_grant, database_grants]
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
-        }.to raise_exception(ActiveRecord::RecordInvalid, /value "insert" did not match one of the following values/)
+        end.to raise_exception(ActiveRecord::RecordInvalid, /value "insert" did not match one of the following values/)
       end
 
       it 'validates with no tables' do
         database_grants = {
-          type: "database"
+          type: 'database'
         }
         grants = [apis_grant, database_grants]
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
-        }.to_not raise_error
+        end.to_not raise_error
       end
 
       it 'validates tables_metadata grant' do
         database_grants = {
-          type: "database",
+          type: 'database',
           table_metadata: []
         }
         grants = [apis_grant, database_grants]
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
-        }.to_not raise_error
+        end.to_not raise_error
       end
 
       it 'validates do API grant' do
         apis_grants = {
-          type: "apis",
-          apis: ["do"]
+          type: 'apis',
+          apis: ['do']
         }
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
-        }.to_not raise_error
+        end.to_not raise_error
       end
 
       it 'fails with several apis sections' do
         two_apis_grant = [apis_grant, apis_grant, database_grant]
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: two_apis_grant)
-        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one apis section is allowed/)
+        end.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one apis section is allowed/)
       end
 
       it 'fails with several database sections' do
         two_apis_grant = [apis_grant, database_grant, database_grant]
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: two_apis_grant)
-        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one database section is allowed/)
+        end.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one database section is allowed/)
       end
 
       it 'fails when creating without apis grants' do
@@ -499,23 +497,23 @@ describe Carto::ApiKey do
           ]
         }
       ]', symbolize_names: true)
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
-        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one apis section is allowed/)
+        end.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one apis section is allowed/)
       end
 
       it 'fails with several dataservices sections' do
         two_apis_grant = [apis_grant, data_services_grant, data_services_grant]
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: two_apis_grant)
-        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one dataservices section is allowed/)
+        end.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one dataservices section is allowed/)
       end
 
       it 'fails with several user sections' do
         two_apis_grant = [apis_grant, user_grant, user_grant]
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: two_apis_grant)
-        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one user section is allowed/)
+        end.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one user section is allowed/)
       end
 
       context 'without enough regular api key quota' do
@@ -532,9 +530,9 @@ describe Carto::ApiKey do
         it 'raises an exception when creating a regular key' do
           grants = [database_grant(@table1.database_schema, @table1.name), apis_grant]
 
-          expect {
+          expect do
             @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-          }.to raise_exception(CartoDB::QuotaExceeded, /limit of API keys/)
+          end.to raise_exception(CartoDB::QuotaExceeded, /limit of API keys/)
         end
       end
     end
@@ -672,9 +670,9 @@ describe Carto::ApiKey do
       end
 
       it 'cannot create more than one master key' do
-        expect {
+        expect do
           @carto_user1.api_keys.create_master_key!
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'create master api key works' do
@@ -690,16 +688,16 @@ describe Carto::ApiKey do
       end
 
       it 'cannot create a non master api_key with master as the name' do
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: Carto::ApiKey::NAME_MASTER, grants: [apis_grant])
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'token must match user api key' do
         api_key = @carto_user1.api_keys.master.first
         api_key.token = 'wadus'
         api_key.save.should be_false
-        api_key.errors.full_messages.should include "Token must match user model for master keys"
+        api_key.errors.full_messages.should include 'Token must match user model for master keys'
       end
     end
 
@@ -712,22 +710,22 @@ describe Carto::ApiKey do
       end
 
       it 'cannot create more than one default public key' do
-        expect {
+        expect do
           @carto_user1.api_keys.create_default_public_key!
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'cannot create a non default public api_key with default public name' do
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: Carto::ApiKey::NAME_DEFAULT_PUBLIC, grants: [apis_grant])
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'cannot change token' do
         api_key = @carto_user1.api_keys.default_public.first
         api_key.token = 'wadus'
         api_key.save.should be_false
-        api_key.errors.full_messages.should include "Token must be default_public for default public keys"
+        api_key.errors.full_messages.should include 'Token must be default_public for default public keys'
       end
     end
 
@@ -784,17 +782,17 @@ describe Carto::ApiKey do
       it 'fails with invalid data services' do
         grants = [apis_grant, data_services_grant(['invalid-service'])]
 
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'fails with valid and invalid data services' do
         grants = [apis_grant, data_services_grant(services: ['geocoding', 'invalid-service'])]
 
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'fails with invalid data services key' do
@@ -806,9 +804,9 @@ describe Carto::ApiKey do
           }
         ]
 
-        expect {
+        expect do
           @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
-        }.to raise_error(ActiveRecord::RecordInvalid)
+        end.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
 
@@ -844,8 +842,8 @@ describe Carto::ApiKey do
     describe '#data_observatory_permissions?' do
       it 'returns true when it has the do api grant' do
         apis_grants = {
-          type: "apis",
-          apis: ["do"]
+          type: 'apis',
+          apis: ['do']
         }
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
 
@@ -854,8 +852,8 @@ describe Carto::ApiKey do
 
       it 'returns false when it does not have the do api grant' do
         apis_grants = {
-          type: "apis",
-          apis: ["sql"]
+          type: 'apis',
+          apis: ['sql']
         }
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
 
@@ -895,9 +893,9 @@ describe Carto::ApiKey do
       other_user = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
       table = create_table(user_id: other_user.id)
       grants = [table_grant(table.database_schema, table.name), apis_grant]
-      expect {
+      expect do
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception ActiveRecord::RecordInvalid
+      end.to raise_exception ActiveRecord::RecordInvalid
 
       table.destroy
       other_user.destroy
@@ -907,9 +905,9 @@ describe Carto::ApiKey do
       other_user = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
       table = create_table(user_id: other_user.id)
       grants = [schema_grant(table.database_schema), apis_grant]
-      expect {
+      expect do
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception ActiveRecord::RecordInvalid
+      end.to raise_exception ActiveRecord::RecordInvalid
 
       table.destroy
       other_user.destroy
@@ -940,7 +938,7 @@ describe Carto::ApiKey do
       api_key = create_oauth_api_key
 
       with_connection_from_api_key(api_key) do |connection|
-        connection.execute("create table test.wadus()")
+        connection.execute('create table test.wadus()')
       end
 
       api_key.destroy
@@ -950,7 +948,7 @@ describe Carto::ApiKey do
         result[0]['owner'].should eq @carto_user1.database_username
       end
 
-      @carto_user1.in_database(as: :superuser).execute("drop table test.wadus")
+      @carto_user1.in_database(as: :superuser).execute('drop table test.wadus')
     end
   end
 
@@ -996,9 +994,9 @@ describe Carto::ApiKey do
           result[0]['count'].should eq '0'
         end
 
-        expect {
+        expect do
           connection.execute("insert into #{schema_table} (name) values ('wadus')")
-        }.to raise_exception /permission denied/
+        end.to raise_exception(/permission denied/)
       end
 
       api_key.destroy
@@ -1017,13 +1015,13 @@ describe Carto::ApiKey do
       schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
 
       with_connection_from_api_key(api_key) do |connection|
-        expect {
+        expect do
           connection.execute("select count(1) from #{schema_table}")
-        }.to raise_exception /permission denied/
+        end.to raise_exception(/permission denied/)
 
-        expect {
+        expect do
           connection.execute("insert into #{schema_table} (name) values ('wadus')")
-        }.to raise_exception /permission denied/
+        end.to raise_exception(/permission denied/)
       end
 
       api_key.destroy

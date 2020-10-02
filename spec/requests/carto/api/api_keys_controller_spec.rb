@@ -29,7 +29,7 @@ describe Carto::Api::ApiKeysController do
   end
 
   def empty_grants
-    [{ type: "apis", apis: [] }]
+    [{ type: 'apis', apis: [] }]
   end
 
   def public_api_key
@@ -52,11 +52,11 @@ describe Carto::Api::ApiKeysController do
       name: 'wadus',
       grants: [
         {
-          type: "apis",
+          type: 'apis',
           apis: []
         },
         {
-          type: "database",
+          type: 'database',
           tables: [
             {
               schema: @carto_user.database_schema,
@@ -161,27 +161,27 @@ describe Carto::Api::ApiKeysController do
       it 'creates a new API key' do
         grants = [
           {
-            type: "apis",
-            apis: ["sql", "maps"]
+            type: 'apis',
+            apis: ['sql', 'maps']
           },
           {
-            type: "database",
+            type: 'database',
             tables: [
               {
                 schema: @carto_user.database_schema,
                 name: @table1.name,
                 permissions: [
-                  "insert",
-                  "select",
-                  "update",
-                  "delete"
+                  'insert',
+                  'select',
+                  'update',
+                  'delete'
                 ]
               },
               {
                 schema: @carto_user.database_schema,
                 name: @table2.name,
                 permissions: [
-                  "select"
+                  'select'
                 ]
               }
             ]
@@ -232,21 +232,21 @@ describe Carto::Api::ApiKeysController do
         post_json api_keys_url, auth_params.merge(name: 'wadus'), auth_headers do |response|
           response.status.should eq 422
           error_response = response.body
-          error_response[:errors].should match /grants has to be an array/
+          error_response[:errors].should match(/grants has to be an array/)
         end
 
         auth_user(@carto_user)
         post_json api_keys_url, auth_params.merge(name: 'wadus', grants: 'something'), auth_headers do |response|
           response.status.should eq 422
           error_response = response.body
-          error_response[:errors].should match /grants has to be an array/
+          error_response[:errors].should match(/grants has to be an array/)
         end
 
         auth_user(@carto_user)
         post_json api_keys_url, auth_params.merge(name: 'wadus', grants: {}), auth_headers do |response|
           response.status.should eq 422
           error_response = response.body
-          error_response[:errors].should match /grants has to be an array/
+          error_response[:errors].should match(/grants has to be an array/)
         end
       end
 
@@ -269,7 +269,7 @@ describe Carto::Api::ApiKeysController do
         post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
           response.status.should eq 422
           error_response = response.body
-          error_response[:errors].should match /permissions.*did not match one of the following values: insert, select, update, delete/
+          error_response[:errors].should match(/permissions.*did not match one of the following values: insert, select, update, delete/)
         end
       end
 
@@ -292,7 +292,7 @@ describe Carto::Api::ApiKeysController do
         post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
           response.status.should eq 422
           error_response = response.body
-          error_response[:errors].should match /can only grant table permissions you have/
+          error_response[:errors].should match(/can only grant table permissions you have/)
         end
       end
 
@@ -315,7 +315,7 @@ describe Carto::Api::ApiKeysController do
         post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
           response.status.should eq 422
           error_response = response.body
-          error_response[:errors].should match /can only grant table permissions you have/
+          error_response[:errors].should match(/can only grant table permissions you have/)
         end
       end
 
@@ -347,7 +347,7 @@ describe Carto::Api::ApiKeysController do
         post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
           response.status.should eq 422
           api_key_response = response.body
-          api_key_response[:errors].should match /Name has already been taken/
+          api_key_response[:errors].should match(/Name has already been taken/)
         end
 
         Carto::ApiKey.where(name: 'wadus').each(&:destroy)
@@ -368,7 +368,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_user)
           post_json api_keys_url, auth_params.merge(create_payload), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /limit of API keys/
+            response.body[:errors].should match(/limit of API keys/)
           end
         end
       end
@@ -514,16 +514,16 @@ describe Carto::Api::ApiKeysController do
           api_key = Carto::ApiKey.where(user_id: @carto_user.id, name: response.body[:name]).user_visible.first
         end
         with_connection_from_api_key(api_key) do |connection|
-          connection.execute("create table test_table(id INT)")
-          connection.execute("insert into test_table values (999)")
-          connection.execute("select id from test_table") do |result|
+          connection.execute('create table test_table(id INT)')
+          connection.execute('insert into test_table values (999)')
+          connection.execute('select id from test_table') do |result|
             result[0]['id'].should eq '999'
           end
           get_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
             response.status.should eq 200
             response.body[:grants][1][:tables][0][:owner] = true
           end
-          connection.execute("drop table test_table")
+          connection.execute('drop table test_table')
         end
         api_key.destroy
       end
@@ -593,7 +593,6 @@ describe Carto::Api::ApiKeysController do
           response.body[:result][1][:type].should eq 'default'
           response.body[:result][2][:type].should eq 'regular'
         end
-
       end
 
       it 'paginates correctly' do
@@ -603,9 +602,9 @@ describe Carto::Api::ApiKeysController do
           response.body[:total].should eq 5
           response.body[:count].should eq 2
           expect(response.body[:_links].keys).not_to include(:prev)
-          response.body[:_links][:first][:href].should match /page=1/
-          response.body[:_links][:next][:href].should match /page=2/
-          response.body[:_links][:last][:href].should match /page=3/
+          response.body[:_links][:first][:href].should match(/page=1/)
+          response.body[:_links][:next][:href].should match(/page=2/)
+          response.body[:_links][:last][:href].should match(/page=3/)
           response.body[:result].size.should eq 2
           response.body[:result][0][:name].should eq @apikeys[0].name
           response.body[:result][1][:name].should eq @apikeys[1].name
@@ -616,10 +615,10 @@ describe Carto::Api::ApiKeysController do
           response.status.should eq 200
           response.body[:total].should eq 5
           response.body[:count].should eq 2
-          response.body[:_links][:first][:href].should match /page=1/
-          response.body[:_links][:prev][:href].should match /page=1/
-          response.body[:_links][:next][:href].should match /page=3/
-          response.body[:_links][:last][:href].should match /page=3/
+          response.body[:_links][:first][:href].should match(/page=1/)
+          response.body[:_links][:prev][:href].should match(/page=1/)
+          response.body[:_links][:next][:href].should match(/page=3/)
+          response.body[:_links][:last][:href].should match(/page=3/)
           response.body[:result].size.should eq 2
           response.body[:result][0][:name].should eq @apikeys[2].name
           response.body[:result][1][:name].should eq @apikeys[3].name
@@ -630,9 +629,9 @@ describe Carto::Api::ApiKeysController do
           response.status.should eq 200
           response.body[:total].should eq 5
           response.body[:count].should eq 1
-          response.body[:_links][:first][:href].should match /page=1/
+          response.body[:_links][:first][:href].should match(/page=1/)
           expect(response.body[:_links].keys).not_to include(:next)
-          response.body[:_links][:last][:href].should match /page=3/
+          response.body[:_links][:last][:href].should match(/page=3/)
           response.body[:result].size.should eq 1
           response.body[:result][0][:name].should eq @apikeys[4].name
         end
@@ -642,9 +641,9 @@ describe Carto::Api::ApiKeysController do
           response.status.should eq 200
           response.body[:total].should eq 5
           response.body[:count].should eq 3
-          response.body[:_links][:first][:href].should match /page=1/
-          response.body[:_links][:next][:href].should match /page=2/
-          response.body[:_links][:last][:href].should match /page=2/
+          response.body[:_links][:first][:href].should match(/page=1/)
+          response.body[:_links][:next][:href].should match(/page=2/)
+          response.body[:_links][:last][:href].should match(/page=2/)
           response.body[:result].size.should eq 3
           3.times { |n| response.body[:result][n][:name].should eq @apikeys[n].name }
         end
@@ -654,7 +653,7 @@ describe Carto::Api::ApiKeysController do
           response.status.should eq 200
           response.body[:total].should eq 5
           response.body[:count].should eq 5
-          response.body[:_links][:first][:href].should match /page=1/
+          response.body[:_links][:first][:href].should match(/page=1/)
           expect(response.body[:_links].keys).not_to include(:prev)
           expect(response.body[:_links].keys).not_to include(:next)
           response.body[:result].size.should eq 5
@@ -668,7 +667,7 @@ describe Carto::Api::ApiKeysController do
           response.status.should eq 200
           response.body[:total].should eq 2
           response.body[:count].should eq 2
-          response.body[:_links][:first][:href].should match /page=1/
+          response.body[:_links][:first][:href].should match(/page=1/)
           expect(response.body[:_links].keys).not_to include(:prev)
           expect(response.body[:_links].keys).not_to include(:next)
           response.body[:result].size.should eq 2
@@ -943,16 +942,16 @@ describe Carto::Api::ApiKeysController do
       it 'creates api_key' do
         grants = [
           {
-            "type" => "apis",
-            "apis" => []
+            'type' => 'apis',
+            'apis' => []
           },
           {
-            "type" => "database",
-            "tables" => [
+            'type' => 'database',
+            'tables' => [
               {
-                "schema" => @carto_user.database_schema,
-                "name" => @table1.name,
-                "permissions" => []
+                'schema' => @carto_user.database_schema,
+                'name' => @table1.name,
+                'permissions' => []
               }
             ]
           }
@@ -1149,27 +1148,27 @@ describe Carto::Api::ApiKeysController do
       @owner_table2 = create_table(user_id: @carto_owner_user.id)
       @owner_api_key_grants = [
         {
-          type: "apis",
-          apis: ["sql", "maps"]
+          type: 'apis',
+          apis: ['sql', 'maps']
         },
         {
-          type: "database",
+          type: 'database',
           tables: [
             {
               schema: @carto_owner_user.database_schema,
               name: @owner_table1.name,
               permissions: [
-                "insert",
-                "select",
-                "update",
-                "delete"
+                'insert',
+                'select',
+                'update',
+                'delete'
               ]
             },
             {
               schema: @carto_owner_user.database_schema,
               name: @owner_table2.name,
               permissions: [
-                "select"
+                'select'
               ]
             }
           ]
@@ -1192,27 +1191,27 @@ describe Carto::Api::ApiKeysController do
       @admin_table2 = create_table(user_id: @carto_admin_user.id)
       @admin_api_key_grants = [
         {
-          type: "apis",
-          apis: ["sql", "maps"]
+          type: 'apis',
+          apis: ['sql', 'maps']
         },
         {
-          type: "database",
+          type: 'database',
           tables: [
             {
               schema: @carto_admin_user.database_schema,
               name: @admin_table1.name,
               permissions: [
-                "insert",
-                "select",
-                "update",
-                "delete"
+                'insert',
+                'select',
+                'update',
+                'delete'
               ]
             },
             {
               schema: @carto_admin_user.database_schema,
               name: @admin_table2.name,
               permissions: [
-                "select"
+                'select'
               ]
             }
           ]
@@ -1235,27 +1234,27 @@ describe Carto::Api::ApiKeysController do
       @regular_table2 = create_table(user_id: @carto_regular_user.id)
       @regular_api_key_grants = [
         {
-          type: "apis",
-          apis: ["sql", "maps"]
+          type: 'apis',
+          apis: ['sql', 'maps']
         },
         {
-          type: "database",
+          type: 'database',
           tables: [
             {
               schema: @carto_regular_user.database_schema,
               name: @regular_table1.name,
               permissions: [
-                "insert",
-                "select",
-                "update",
-                "delete"
+                'insert',
+                'select',
+                'update',
+                'delete'
               ]
             },
             {
               schema: @carto_regular_user.database_schema,
               name: @regular_table2.name,
               permissions: [
-                "select"
+                'select'
               ]
             }
           ]
@@ -1278,27 +1277,27 @@ describe Carto::Api::ApiKeysController do
       @external_table2 = create_table(user_id: @carto_external_user.id)
       @external_api_key_grants = [
         {
-          type: "apis",
-          apis: ["sql", "maps"]
+          type: 'apis',
+          apis: ['sql', 'maps']
         },
         {
-          type: "database",
+          type: 'database',
           tables: [
             {
               schema: @carto_external_user.database_schema,
               name: @external_table1.name,
               permissions: [
-                "insert",
-                "select",
-                "update",
-                "delete"
+                'insert',
+                'select',
+                'update',
+                'delete'
               ]
             },
             {
               schema: @carto_external_user.database_schema,
               name: @external_table2.name,
               permissions: [
-                "select"
+                'select'
               ]
             }
           ]
@@ -1309,7 +1308,6 @@ describe Carto::Api::ApiKeysController do
         name: @external_api_key_name,
         grants: @external_api_key_grants
       }
-
     end
 
     after :all do
@@ -1351,7 +1349,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_owner_user)
           get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1383,7 +1381,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_admin_user)
           get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1393,7 +1391,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_owner_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1401,7 +1399,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_admin_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1409,7 +1407,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           get_json api_keys_url, auth_params.merge(per_page: 20, target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
       end
@@ -1437,7 +1435,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_owner_user)
           get_json api_key_url(id: @admin_api_key.name), auth_params, auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /API key not found/
+            response.body[:errors].should match(/API key not found/)
           end
         end
 
@@ -1445,7 +1443,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_owner_user)
           get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1471,7 +1469,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_admin_user)
           get_json api_key_url(id: @owner_api_key.name), auth_params, auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /API key not found/
+            response.body[:errors].should match(/API key not found/)
           end
         end
 
@@ -1479,7 +1477,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_admin_user)
           get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1489,7 +1487,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1497,7 +1495,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1505,7 +1503,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           get_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
       end
@@ -1557,7 +1555,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_owner_user)
           post_json api_keys_url, auth_params.merge(@external_api_key_payload).merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1607,7 +1605,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_admin_user)
           post_json api_keys_url, auth_params.merge(@external_api_key_payload).merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1617,7 +1615,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           post_json api_keys_url, auth_params.merge(@owner_api_key_payload).merge(target_user: @carto_owner_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1625,7 +1623,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           post_json api_keys_url, auth_params.merge(@admin_api_key_payload).merge(target_user: @carto_admin_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1633,7 +1631,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           post_json api_keys_url, auth_params.merge(@external_api_key_payload).merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
       end
@@ -1665,7 +1663,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_owner_user)
           delete_json api_key_url(id: 'foo'), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1695,7 +1693,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_admin_user)
           delete_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1705,7 +1703,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           delete_json api_key_url(id: @owner_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1713,7 +1711,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           delete_json api_key_url(id: @admin_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1721,7 +1719,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           delete_json api_key_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
       end
@@ -1758,7 +1756,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_owner_user)
           post_json regenerate_api_key_token_url(id: @admin_api_key.name), auth_params, auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /API key not found/
+            response.body[:errors].should match(/API key not found/)
           end
         end
 
@@ -1767,7 +1765,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_owner_user)
           post_json regenerate_api_key_token_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1802,7 +1800,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_admin_user)
           post_json regenerate_api_key_token_url(id: @owner_api_key.name), auth_params, auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /API key not found/
+            response.body[:errors].should match(/API key not found/)
           end
         end
 
@@ -1811,7 +1809,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_admin_user)
           post_json regenerate_api_key_token_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 404
-            response.body[:errors].should match /not found in the organization/
+            response.body[:errors].should match(/not found in the organization/)
           end
         end
       end
@@ -1821,7 +1819,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           post_json regenerate_api_key_token_url(id: @owner_api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1829,7 +1827,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           post_json regenerate_api_key_token_url(id: @admin_api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
 
@@ -1837,7 +1835,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_regular_user)
           post_json regenerate_api_key_token_url(id: @external_api_key.name), auth_params.merge(target_user: @carto_external_user.username), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /don't have permission to access/
+            response.body[:errors].should match(/don't have permission to access/)
           end
         end
       end

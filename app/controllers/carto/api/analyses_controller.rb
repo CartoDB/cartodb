@@ -4,6 +4,7 @@ require_relative '../builder/builder_users_module'
 module Carto
   module Api
     class AnalysesController < ::Api::ApplicationController
+
       include Carto::UUIDHelper
       include Carto::Builder::BuilderUsersModule
 
@@ -66,9 +67,9 @@ module Carto
 
       def find_affected_nodes(modified_node_ids)
         all_visualization_nodes = @visualization.analyses.map(&:analysis_node).map(&:descendants).flatten
-        all_visualization_nodes.select { |node|
+        all_visualization_nodes.select do |node|
           node.descendants.any? { |descendant| modified_node_ids.include?(descendant.id) }
-        }.map(&:id)
+        end.map(&:id)
       end
 
       def find_modified_nodes(old_root, new_root)
@@ -89,13 +90,11 @@ module Carto
       def analysis_definition_from_request
         analysis_json = json_post(request.raw_post)
 
-        if analysis_json.nil? || analysis_json.empty?
-          raise Carto::UnprocesableEntityError.new("Empty analysis")
-        end
+        raise Carto::UnprocesableEntityError.new('Empty analysis') if analysis_json.nil? || analysis_json.empty?
 
         analysis_definition = analysis_json['analysis_definition']
         if analysis_definition.nil? || analysis_definition.empty? || analysis_definition.class == String
-          raise Carto::UnprocesableEntityError.new("Invalid analysis definition")
+          raise Carto::UnprocesableEntityError.new('Invalid analysis definition')
         end
 
         analysis_definition
@@ -142,13 +141,12 @@ module Carto
         unless params[:id].nil?
           @analysis = Carto::Analysis.where(id: params[:id]).first if uuid?(params[:id])
 
-          if @analysis.nil?
-            @analysis = Carto::Analysis.find_by_natural_id(@visualization.id, params[:id])
-          end
+          @analysis = Carto::Analysis.find_by_natural_id(@visualization.id, params[:id]) if @analysis.nil?
         end
 
         raise Carto::LoadError.new("Analysis not found: #{params[:id]}") unless @analysis
       end
+
     end
   end
 end

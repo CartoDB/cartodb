@@ -1,5 +1,6 @@
 module Carto
   class LegendMigrator
+
     attr_reader :layer_id, :legend
 
     def initialize(layer_id, legend)
@@ -50,9 +51,9 @@ module Carto
       end
     end
 
-    COLOR_REGEXP = /^#(?:[0-9a-fA-F]{3}){1,2}$/
-    CSS_URL_REGEX = /^(?:url\(['"]?)(.*?)(?:['"]?\))$/
-    STATIC_ASSETS_REGEX = /http:\/\/com.cartodb.users-assets.production.s3.amazonaws.com(.*)/
+    COLOR_REGEXP = /^#(?:[0-9a-fA-F]{3}){1,2}$/.freeze
+    CSS_URL_REGEX = /^(?:url\(['"]?)(.*?)(?:['"]?\))$/.freeze
+    STATIC_ASSETS_REGEX = %r{http://com.cartodb.users-assets.production.s3.amazonaws.com(.*)}.freeze
 
     def build_custom_definition_from_custom_type
       categories = items.each_with_index.map do |item, index|
@@ -111,9 +112,7 @@ module Carto
       end
 
       compact_item_colors = item_colors.compact
-      if compact_item_colors.count == 1
-        compact_item_colors << generate_end_color(item_colors.first)
-      end
+      compact_item_colors << generate_end_color(item_colors.first) if compact_item_colors.count == 1
 
       gradient_stops = compact_item_colors.join(', ')
       "background: linear-gradient(90deg, #{gradient_stops})"
@@ -150,7 +149,7 @@ module Carto
           formatted_string_number(min + (index * step))
         end
       else
-        values = [min] + [""] * (steps - 2) + [max]
+        values = [min] + [''] * (steps - 2) + [max]
       end
 
       heights = Array.new(steps) do |index|
@@ -166,13 +165,9 @@ module Carto
       first_item = items.first
       second_item = items.second
 
-      if first_item && first_item['type'] == 'text'
-        left_label = first_item['value']
-      end
+      left_label = first_item['value'] if first_item && first_item['type'] == 'text'
 
-      if second_item && second_item['type'] == 'text'
-        right_label = second_item['value']
-      end
+      right_label = second_item['value'] if second_item && second_item['type'] == 'text'
 
       @labels_for_items = [left_label, right_label]
       @labels_for_items
@@ -194,17 +189,11 @@ module Carto
       hex_green = brightened_green.to_s(16)
       hex_blue = brightened_blue.to_s(16)
 
-      if hex_red.length == 1
-        hex_red = [hex_red, hex_red].join
-      end
+      hex_red = [hex_red, hex_red].join if hex_red.length == 1
 
-      if hex_green.length == 1
-        hex_green = [hex_green, hex_green].join
-      end
+      hex_green = [hex_green, hex_green].join if hex_green.length == 1
 
-      if hex_blue.length == 1
-        hex_blue = [hex_blue, hex_blue].join
-      end
+      hex_blue = [hex_blue, hex_blue].join if hex_blue.length == 1
 
       "##{hex_red}#{hex_green}#{hex_blue}"
     end
@@ -236,5 +225,6 @@ module Carto
 
       integer == rounded ? integer : rounded
     end
+
   end
 end

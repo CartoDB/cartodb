@@ -50,11 +50,9 @@ module Carto
 
       def run_index_statements(statements, database)
         statements.each do |statement|
-          begin
-            database.run(statement)
-          rescue StandardError => e
-            log_error(exception: e)
-          end
+          database.run(statement)
+        rescue StandardError => e
+          log_error(exception: e)
         end
       end
 
@@ -132,6 +130,7 @@ module Carto
       def log_context
         super.merge(current_user: @user)
       end
+
     end
   end
 end

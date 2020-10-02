@@ -8,11 +8,11 @@ require_relative '../../services/dataservices-metrics/lib/observatory_general_us
 # Tests should define the following method:
 # - `get_twitter_imports_count_by_user_id`
 # - `get_user_by_id`
-shared_examples_for "user models" do
+shared_examples_for 'user models' do
   describe '#get_twitter_imports_count' do
     include_context 'users helper'
 
-    it "should count tweet imports" do
+    it 'should count tweet imports' do
       FactoryGirl.create(:search_tweet, user: @carto_user1, retrieved_items: 5)
       FactoryGirl.create(:search_tweet, user: @carto_user2, retrieved_items: 6)
 
@@ -36,14 +36,14 @@ shared_examples_for "user models" do
         and enabled if he/she has it enabled and with custom config, no matter whether org has it or not' do
       twitter_search_conf = @config[:datasource_search]['twitter_search']
       custom_wadus = {
-        "auth_required" => false,
-        "username" => "xx",
-        "password" => "xx",
-        "search_url" => "http://fake.url.nil",
-        "ratelimit_active" => false,
-        "ratelimit_concurrency" => 3,
-        "ratelimit_ttl" => 4,
-        "ratelimit_wait_secs" => 0.1
+        'auth_required' => false,
+        'username' => 'xx',
+        'password' => 'xx',
+        'search_url' => 'http://fake.url.nil',
+        'ratelimit_active' => false,
+        'ratelimit_concurrency' => 3,
+        'ratelimit_ttl' => 4,
+        'ratelimit_wait_secs' => 0.1
       }
       twitter_search_conf['customized']['custom_wadus'] = custom_wadus
 
@@ -130,9 +130,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      Date.stubs(:today).returns(Date.new(2016, 0o2, 28))
+      Date.stubs(:current).returns(Date.new(2016, 0o2, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 0o2, 28))
       @mock_redis = MockRedis.new
       @user1.geocoding_quota = 500
       @user1.geocoder_provider = 'heremaps'
@@ -216,9 +216,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      Date.stubs(:today).returns(Date.new(2016, 0o2, 28))
+      Date.stubs(:current).returns(Date.new(2016, 0o2, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 0o2, 28))
       @mock_redis = MockRedis.new
       @user1.here_isolines_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -258,9 +258,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      Date.stubs(:today).returns(Date.new(2016, 0o2, 28))
+      Date.stubs(:current).returns(Date.new(2016, 0o2, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 0o2, 28))
       @mock_redis = MockRedis.new
       @user1.here_isolines_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -310,9 +310,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016, 02, 28))
-      Date.stubs(:current).returns(Date.new(2016, 02, 28))
-      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      Date.stubs(:today).returns(Date.new(2016, 0o2, 28))
+      Date.stubs(:current).returns(Date.new(2016, 0o2, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 0o2, 28))
       @mock_redis = MockRedis.new
       @user1.obs_snapshot_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -350,9 +350,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016, 02, 28))
-      Date.stubs(:current).returns(Date.new(2016, 02, 28))
-      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      Date.stubs(:today).returns(Date.new(2016, 0o2, 28))
+      Date.stubs(:current).returns(Date.new(2016, 0o2, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 0o2, 28))
       @mock_redis = MockRedis.new
       @user1.obs_general_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -390,9 +390,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016, 02, 28))
-      Date.stubs(:current).returns(Date.new(2016, 02, 28))
-      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      Date.stubs(:today).returns(Date.new(2016, 0o2, 28))
+      Date.stubs(:current).returns(Date.new(2016, 0o2, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 0o2, 28))
       @mock_redis = MockRedis.new
       @user1.obs_snapshot_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -440,9 +440,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016, 02, 28))
-      Date.stubs(:current).returns(Date.new(2016, 02, 28))
-      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      Date.stubs(:today).returns(Date.new(2016, 0o2, 28))
+      Date.stubs(:current).returns(Date.new(2016, 0o2, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 0o2, 28))
       @mock_redis = MockRedis.new
       @user1.obs_general_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -490,9 +490,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      Date.stubs(:today).returns(Date.new(2016, 0o2, 28))
+      Date.stubs(:current).returns(Date.new(2016, 0o2, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 0o2, 28))
       @mock_redis = MockRedis.new
       @user1.mapzen_routing_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -537,9 +537,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      Date.stubs(:today).returns(Date.new(2016, 0o2, 28))
+      Date.stubs(:current).returns(Date.new(2016, 0o2, 28))
+      DateTime.stubs(:current).returns(DateTime.new(2016, 0o2, 28))
       @mock_redis = MockRedis.new
       @user1.mapzen_routing_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -590,7 +590,6 @@ shared_examples_for "user models" do
       @user1.get_mapzen_routing_calls.should == 120
     end
   end
-
 
   describe 'single user' do
     before(:all) do
@@ -665,7 +664,7 @@ shared_examples_for "user models" do
       User[@user.id].destroy
     end
 
-    it "Should properly report ability to change (or not) email & password when proceeds" do
+    it 'Should properly report ability to change (or not) email & password when proceeds' do
       @user.google_sign_in = false
       password_change_date = @user.last_password_change_date
       Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(false)
@@ -689,26 +688,26 @@ shared_examples_for "user models" do
       @user.can_change_password?.should eq false
     end
 
-    it "should set a default database_host" do
+    it 'should set a default database_host' do
       @user.database_host.should eq ::SequelRails.configuration.environment_for(Rails.env)['host']
     end
 
-    it "should set a default api_key" do
+    it 'should set a default api_key' do
       @user.reload.api_key.should_not be_blank
     end
 
-    it "should set created_at" do
+    it 'should set created_at' do
       @user.created_at.should_not be_nil
     end
 
-    it "should update updated_at" do
-      expect {
+    it 'should update updated_at' do
+      expect do
         @user.name = "new #{@user.name}"
         @user.save
-      }.to change(@user, :updated_at)
+      end.to change(@user, :updated_at)
     end
 
-    it "should set up a user after create" do
+    it 'should set up a user after create' do
       @new_user = new_user
       @new_user.save
       @new_user.reload
@@ -718,14 +717,13 @@ shared_examples_for "user models" do
       @new_user.destroy
     end
 
-    it "should have a crypted password" do
+    it 'should have a crypted password' do
       @user.crypted_password.should_not be_blank
       @user.crypted_password.should_not == 'admin123'
     end
   end
 
   describe 'batch_queries_statement_timeout' do
-
     include_context 'users helper'
 
     it 'batch_queries_statement_timeout is not touched at all when creating a user' do
@@ -746,9 +744,9 @@ shared_examples_for "user models" do
 
     it 'synces with central upon update_to_central' do
       cartodb_central_client_mock = mock
-      cartodb_central_client_mock.expects(:update_user).once.with { |username, attributes|
+      cartodb_central_client_mock.expects(:update_user).once.with do |username, attributes|
         username == @user1.username && attributes[:batch_queries_statement_timeout] == 42
-      }
+      end
       @user1.expects(:sync_data_with_cartodb_central?).once.returns(true)
       @user1.expects(:cartodb_central_client).once.returns(cartodb_central_client_mock)
 
@@ -757,25 +755,21 @@ shared_examples_for "user models" do
     end
 
     it 'reads from redis just once' do
-      begin
-        user = create_user
-        $users_metadata.expects(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([42])
-        user.batch_queries_statement_timeout.should be 42
-        user.batch_queries_statement_timeout.should be 42
-      ensure
-        user.destroy
-      end
+      user = create_user
+      $users_metadata.expects(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([42])
+      user.batch_queries_statement_timeout.should be 42
+      user.batch_queries_statement_timeout.should be 42
+    ensure
+      user.destroy
     end
 
     it 'reads from redis just once, even if nil' do
-      begin
-        user = create_user
-        $users_metadata.expects(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([nil])
-        user.batch_queries_statement_timeout.should be_nil
-        user.batch_queries_statement_timeout.should be_nil
-      ensure
-        user.destroy
-      end
+      user = create_user
+      $users_metadata.expects(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([nil])
+      user.batch_queries_statement_timeout.should be_nil
+      user.batch_queries_statement_timeout.should be_nil
+    ensure
+      user.destroy
     end
 
     it 'deletes the key in redis when set to nil' do
@@ -788,8 +782,8 @@ shared_examples_for "user models" do
     it 'deletes the key in redis when set to the empty string' do
       # This is important to sync from central and use the default value instead
       $users_metadata.expects(:HDEL).with("limits:batch:#{@user1.username}", 'timeout').once
-      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', "").never
-      @user1.batch_queries_statement_timeout = ""
+      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', '').never
+      @user1.batch_queries_statement_timeout = ''
       @user1.batch_queries_statement_timeout.should be_nil
     end
 
@@ -801,21 +795,21 @@ shared_examples_for "user models" do
 
     it 'raises an error if set to zero' do
       $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 0).never
-      expect {
+      expect do
         @user1.batch_queries_statement_timeout = 0
-      }.to raise_exception
+      end.to raise_exception
     end
 
     it 'raises an error if set to a negative value' do
       $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', -42).never
-      expect {
+      expect do
         @user1.batch_queries_statement_timeout = -42
-      }.to raise_exception
+      end.to raise_exception
     end
 
     it 'can cast to integer values' do
       $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 42).once
-      @user1.batch_queries_statement_timeout = "42"
+      @user1.batch_queries_statement_timeout = '42'
       @user1.batch_queries_statement_timeout.should eq 42
     end
   end

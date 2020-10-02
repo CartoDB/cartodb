@@ -5,7 +5,7 @@ Sequel.migration do
       set_column_default :total_rows, 0
     end
   end
-  
+
   down do
     alter_table :geocodings do
       set_column_default :processed_rows, nil

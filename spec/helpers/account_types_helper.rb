@@ -1,4 +1,5 @@
 module AccountTypesHelper
+
   def create_account_type(account_type_name)
     rate_limit = Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([0, 1, 2]),
                                           maps_static: Carto::RateLimitValues.new([3, 4, 5]),
@@ -50,4 +51,5 @@ module AccountTypesHelper
       FactoryGirl.create(:account_type, account_type: account_type)
     end
   end
+
 end

@@ -10,10 +10,10 @@ include CartoDB::Importer2
 
 describe Ogr2ogr do
   before(:all) do
-    @user             = create_user
+    @user = create_user
     @user.save
-    @pg_options       = @user.db_service.db_configuration_for.with_indifferent_access
-    @db               = @user.in_database
+    @pg_options = @user.db_service.db_configuration_for.with_indifferent_access
+    @db = @user.in_database
     @db.execute('CREATE SCHEMA IF NOT EXISTS cdb_importer')
     @db.execute('SET search_path TO cdb_importer,public')
   end
@@ -21,7 +21,7 @@ describe Ogr2ogr do
   before(:each) do
     @csv              = Factories::CSV.new.write
     @filepath         = @csv.filepath
-    @table_name       = "importer_#{rand(99999)}"
+    @table_name       = "importer_#{rand(99_999)}"
     @full_table_name  = "cdb_importer.#{@table_name}"
     @dataset          = @db[@table_name.to_sym]
     @wrapper          = CartoDB::Importer2::Ogr2ogr.new(@table_name, @filepath, @pg_options)
@@ -40,12 +40,12 @@ describe Ogr2ogr do
 
   describe '#initialize' do
     it 'requires a filepath and postgres options' do
-      expect{
+      expect do
         CartoDB::Importer2::Ogr2ogr.new
-      }.to raise_error ArgumentError
-      expect{
+      end.to raise_error ArgumentError
+      expect do
         CartoDB::Importer2::Ogr2ogr.new('bogus.txt')
-      }.to raise_error ArgumentError
+      end.to raise_error ArgumentError
     end
   end
 
@@ -87,29 +87,28 @@ describe Ogr2ogr do
     end
 
     it 'keeps an existing cartodb_id column in imported records' do
-      header = ["cartodb_id", "header_2"]
-      data   = ["5", "cell_#{rand(999)}"]
+      header = ['cartodb_id', 'header_2']
+      data   = ['5', "cell_#{rand(999)}"]
       csv    = Factories::CSV.new.write(header, data)
 
       @wrapper = CartoDB::Importer2::Ogr2ogr.new(@table_name, csv.filepath, @pg_options)
       @wrapper.run
 
-      record    = @dataset.first
+      record = @dataset.first
       record.fetch(:cartodb_id).should eq '5'
     end
 
     it 'Does not create header if one column is numerical' do
-      header = ["id", "2"]
-      data   = ["5", "cell_#{rand(999)}"]
+      header = ['id', '2']
+      data   = ['5', "cell_#{rand(999)}"]
       csv    = Factories::CSV.new.write(header, data)
 
       @wrapper = CartoDB::Importer2::Ogr2ogr.new(@table_name, csv.filepath, @pg_options)
       @wrapper.run
 
-      record    = @dataset.first
+      record = @dataset.first
       record.fetch(:field_1).should eq 'id'
     end
-
   end
 
   describe '#command_output' do
@@ -138,26 +137,25 @@ describe Ogr2ogr do
 
   describe '#append_mode' do
     it "tests that ogr2ogr's append mode works as expected" do
-      header = ["cartodb_id", "header_2"]
-      data_1   = ["1", "cell_#{rand(999)}"]
-      data_2   = ["2", "cell_#{rand(999)}"]
+      header = ['cartodb_id', 'header_2']
+      data_1 = ['1', "cell_#{rand(999)}"]
+      data_2 = ['2', "cell_#{rand(999)}"]
 
-      csv_1 = Factories::CSV.new(name=nil, how_many_duplicates=0)
-        .write(header, data_1)
+      csv_1 = Factories::CSV.new(name = nil, how_many_duplicates = 0)
+                            .write(header, data_1)
 
-      csv_2 = Factories::CSV.new(name=nil, how_many_duplicates=0)
-        .write(header, data_2)
+      csv_2 = Factories::CSV.new(name = nil, how_many_duplicates = 0)
+                            .write(header, data_2)
 
       ogr2ogr = CartoDB::Importer2::Ogr2ogr.new(@table_name, csv_1.filepath, @pg_options)
       ogr2ogr.run
 
       ogr2ogr.filepath = csv_2.filepath
-      ogr2ogr.run(append_mode=true)
+      ogr2ogr.run(append_mode = true)
 
       @dataset.all[0].fetch(:cartodb_id).should eq '1'
       @dataset.all[1].fetch(:cartodb_id).should eq '2'
       @dataset.all.count.should eq 2
     end
   end
-
 end

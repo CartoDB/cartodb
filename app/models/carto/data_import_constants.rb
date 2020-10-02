@@ -1,5 +1,6 @@
 module Carto
   module DataImportConstants
+
     COLLISION_STRATEGY_SKIP = 'skip'.freeze
     COLLISION_STRATEGY_OVERWRITE = 'overwrite'.freeze
 
@@ -7,8 +8,9 @@ module Carto
 
     def validate_collision_strategy
       unless VALID_COLLISION_STRATEGIES.include?(collision_strategy)
-        errors.add(:collision_strategy, "Invalid collision strategy")
+        errors.add(:collision_strategy, 'Invalid collision strategy')
       end
     end
+
   end
 end

@@ -5,6 +5,7 @@ module Carto
   module Builder
     module Public
       class EmbedsController < BuilderController
+
         include VisualizationsControllerHelper
         include Carto::FrameOptionsHelper
 
@@ -34,7 +35,7 @@ module Carto
 
           response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
           response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
-          response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate,public"
+          response.headers['Cache-Control'] = 'no-cache,max-age=86400,must-revalidate,public'
 
           render 'show', layout: 'application_public_visualization_layout'
         end
@@ -100,9 +101,7 @@ module Carto
         end
 
         def ensure_protected_viewable
-          unless @visualization.published? || @visualization.has_read_permission?(current_viewer)
-            render_404
-          end
+          render_404 unless @visualization.published? || @visualization.has_read_permission?(current_viewer)
         end
 
         def visualization_for_presentation
@@ -114,6 +113,7 @@ module Carto
             redirect_to CartoDB.url(self, 'public_visualizations_embed_map', params: { id: @visualization.id })
           end
         end
+
       end
     end
   end

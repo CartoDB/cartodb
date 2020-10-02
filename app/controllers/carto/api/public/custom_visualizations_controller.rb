@@ -2,6 +2,7 @@ require_relative '../visualization_searcher'
 require_relative '../paged_searcher'
 
 class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::ApplicationController
+
   include Carto::Api::VisualizationSearcher
   include Carto::Api::PagedSearcher
 
@@ -122,7 +123,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def check_master_api_key
-    api_key = Carto::ApiKey.find_by_token(params["api_key"])
+    api_key = Carto::ApiKey.find_by_token(params['api_key'])
     raise Carto::UnauthorizedError unless api_key&.master?
   end
 
@@ -132,6 +133,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def check_public_map_quota
     return unless CartoDB::QuotaChecker.new(@logged_user).will_be_over_public_map_quota?
+
     raise Carto::QuotaExceededError.new('Public map quota exceeded')
   end
 
@@ -154,7 +156,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
         decoded_data = Base64.strict_decode64(params[:data])
         return render_jsonp({ error: 'data parameter must be HTML' }, 400) unless html_param?(decoded_data)
       rescue ArgumentError
-        return render_jsonp({ error: 'data parameter must be encoded in base64' }, 400)
+        render_jsonp({ error: 'data parameter must be encoded in base64' }, 400)
       end
     end
   end
@@ -168,7 +170,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def html_param?(data)
-    # FIXME this is a very naive implementantion. I'm trying to use
+    # FIXME: this is a very naive implementantion. I'm trying to use
     # Nokogiri to validate the HTML but it doesn't works as I want
     # so
     data.match(/\<html.*\>/).present?
@@ -176,9 +178,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def get_kuviz
     @kuviz = Carto::Visualization.find(params[:id])
-    if @kuviz.nil?
-      raise Carto::LoadError.new('Kuviz doesn\'t exist', 404)
-    end
+    raise Carto::LoadError.new('Kuviz doesn\'t exist', 404) if @kuviz.nil?
   end
 
   def validate_if_exists
@@ -187,13 +187,13 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
       @if_exists = @kuviz.present? ? IF_EXISTS_REPLACE : IF_EXISTS_FAIL
     end
 
-    raise Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', ')) unless VALID_IF_EXISTS.include?(@if_exists)
+    unless VALID_IF_EXISTS.include?(@if_exists)
+      raise Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', '))
+    end
   end
 
   def get_last_one
-    if @if_exists == IF_EXISTS_REPLACE
-      @kuviz = kuvizs_by_name.order(updated_at: :desc).first
-    end
+    @kuviz = kuvizs_by_name.order(updated_at: :desc).first if @if_exists == IF_EXISTS_REPLACE
   end
 
   def remove_duplicates
@@ -206,4 +206,5 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   def kuvizs_by_name
     Carto::Visualization.where(user: @logged_user, name: params[:name], type: Carto::Visualization::TYPE_KUVIZ)
   end
+
 end

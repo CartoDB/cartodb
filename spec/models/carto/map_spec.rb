@@ -18,7 +18,7 @@ describe Carto::Map do
     @user.destroy
   end
 
-  it "Tests layer ordering" do
+  it 'Tests layer ordering' do
     table = ::Table.new
     table.user_id = @user.id
     table.save

@@ -2,6 +2,7 @@ require 'singleton'
 
 module Hubspot
   class EventsAPI
+
     include Singleton
 
     def report(id, params: {})
@@ -30,5 +31,6 @@ module Hubspot
     def token
       @token ||= Cartodb.get_config(:metrics, 'hubspot', 'token')
     end
+
   end
 end

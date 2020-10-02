@@ -4,9 +4,7 @@ class OrganizationPresenter < BasePresenter
     Carto::Organization
   end
 
-  # rubocop:disable Style/AccessModifierDeclarations
   protected(*delegate(*delegated_methods, to: :object))
-  # rubocop:enable Style/AccessModifierDeclarations
   delegate(:owner, :unassigned_quota, :db_size_in_bytes, to: :object)
 
   def data

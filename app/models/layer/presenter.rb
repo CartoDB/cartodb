@@ -6,10 +6,11 @@ module CartoDB
   # Natural naming would be "Layer", but it collides with Layer class
   module LayerModule
     class Presenter
+
       include Carto::TableUtils
       include ::LoggerHelper
 
-      EMPTY_CSS = '#dummy{}'
+      EMPTY_CSS = '#dummy{}'.freeze
 
       TORQUE_ATTRS = %w(
         table_name
@@ -26,11 +27,11 @@ module CartoDB
         tile_style
         named_map
         visible
-      )
+      ).freeze
 
       INFOWINDOW_KEYS = %w(
         fields template_name template alternative_names width maxHeight
-      )
+      ).freeze
 
       def initialize(layer, options={}, configuration={}, decoration_data={})
         @layer            = layer
@@ -46,14 +47,14 @@ module CartoDB
           as_torque
         else
           {
-            id:         layer.id,
-            type:       'CartoDB',
+            id: layer.id,
+            type: 'CartoDB',
             infowindow: infowindow_data_v2,
-            tooltip:    tooltip_data_v2,
-            legend:     layer.legend,
-            order:      layer.order,
-            visible:    layer.public_values['options']['visible'],
-            options:    options_data_v2
+            tooltip: tooltip_data_v2,
+            legend: layer.legend,
+            order: layer.order,
+            visible: layer.public_values['options']['visible'],
+            options: options_data_v2
           }
         end
       end
@@ -66,12 +67,13 @@ module CartoDB
 
       def to_vizjson_v1
         return layer.public_values.symbolize_keys if base?(layer)
+
         {
-          id:         layer.id,
-          kind:       'CartoDB',
+          id: layer.id,
+          kind: 'CartoDB',
           infowindow: infowindow_data_v1,
-          order:      layer.order,
-          options:    options_data_v1
+          order: layer.order,
+          options: options_data_v1
         }
       end
 
@@ -106,12 +108,12 @@ module CartoDB
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
       def decorate_with_data(source_hash, decoration_data)
-        decoration_data.each { |key, value|
+        decoration_data.each do |key, value|
           source_hash[key] = value
-          source_hash.delete_if { |k, v|
+          source_hash.delete_if do |_k, v|
             v.nil?
-          }
-        }
+          end
+        end
         source_hash
       end
 
@@ -130,32 +132,61 @@ module CartoDB
       def as_torque
         api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
         layer_options = decorate_with_data(
-            # Make torque always have a SQL query too (as vizjson v2)
-            layer.options.merge({ 'query' => wrap(sql_from(layer.options), layer.options) }),
-            @decoration_data
-          )
+          # Make torque always have a SQL query too (as vizjson v2)
+          layer.options.merge({ 'query' => wrap(sql_from(layer.options), layer.options) }),
+          @decoration_data
+        )
 
         {
-          id:         layer.id,
-          type:       'torque',
-          order:      layer.order,
-          legend:     layer.legend,
-          options:    {
-            stat_tag:           options.fetch(:visualization_id),
+          id: layer.id,
+          type: 'torque',
+          order: layer.order,
+          legend: layer.legend,
+          options: {
+            stat_tag: options.fetch(:visualization_id),
             maps_api_template: fix_torque_maps_api_template(ApplicationHelper.maps_api_template(api_templates_type)),
             sql_api_template: ApplicationHelper.sql_api_template(api_templates_type),
             # tiler_* is kept for backwards compatibility
-            tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
-            tiler_domain:       (configuration[:tiler]["public"]["domain"] rescue nil),
-            tiler_port:         (configuration[:tiler]["public"]["port"] rescue nil),
+            tiler_protocol: begin
+                                  configuration[:tiler]['public']['protocol']
+                            rescue StandardError
+                              nil
+                                end,
+            tiler_domain: begin
+                                  configuration[:tiler]['public']['domain']
+                          rescue StandardError
+                            nil
+                                end,
+            tiler_port: begin
+                                  configuration[:tiler]['public']['port']
+                        rescue StandardError
+                          nil
+                                end,
             # sql_api_* is kept for backwards compatibility
-            sql_api_protocol:   (configuration[:sql_api]["public"]["protocol"] rescue nil),
-            sql_api_domain:     (configuration[:sql_api]["public"]["domain"] rescue nil),
-            sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
-            sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
-            layer_name:         name_for(layer),
+            sql_api_protocol: begin
+                                  configuration[:sql_api]['public']['protocol']
+                              rescue StandardError
+                                nil
+                                end,
+            sql_api_domain: begin
+                                  configuration[:sql_api]['public']['domain']
+                            rescue StandardError
+                              nil
+                                end,
+            sql_api_endpoint: begin
+                                  configuration[:sql_api]['public']['endpoint']
+                              rescue StandardError
+                                nil
+                                end,
+            sql_api_port: begin
+                                  configuration[:sql_api]['public']['port']
+                          rescue StandardError
+                            nil
+                                end,
+            layer_name: name_for(layer)
           }.merge(
-            layer_options.select { |k| TORQUE_ATTRS.include? k })
+            layer_options.select { |k| TORQUE_ATTRS.include? k }
+          )
         }
       end
 
@@ -186,6 +217,7 @@ module CartoDB
         # - path = nil or template filled: either pre-filled or custom infowindow, nothing to do here
         # - template and path not nil but template not filled: stay and fill
         return nil if infowindow.nil?
+
         template = infowindow['template']
         return infowindow if (!template.nil? && !template.empty?) || path.nil?
 
@@ -199,10 +231,10 @@ module CartoDB
         else
           layer_options = layer.options
           data = {
-            layer_name:         name_for(layer),
-            cartocss:           css_from(layer.options),
-            cartocss_version:   layer.options.fetch('style_version'),
-            interactivity:      layer.options.fetch('interactivity')
+            layer_name: name_for(layer),
+            cartocss: css_from(layer.options),
+            cartocss_version: layer.options.fetch('style_version'),
+            interactivity: layer.options.fetch('interactivity')
           }
           source = layer.options['source']
           if options[:for_named_map] && source
@@ -233,28 +265,32 @@ module CartoDB
         table_name  = layer.options.fetch('table_name')
 
         return table_name unless layer_alias && !layer_alias.empty?
+
         layer_alias
       end
 
       def options_data_v1
         return layer.options if options[:full]
-        layer.options.select { |key, value| public_options.include?(key.to_s) }
+
+        layer.options.select { |key, _value| public_options.include?(key.to_s) }
       end
 
       def sql_from(options)
         query = options.fetch('query', '')
         return default_query_for(options) if query.nil? || query.empty?
+
         query
       end
 
       def css_from(options)
         style = options.include?('tile_style') ? options['tile_style'] : nil
-        (style.nil? || style.strip.empty?) ? EMPTY_CSS : options.fetch('tile_style')
+        style.nil? || style.strip.empty? ? EMPTY_CSS : options.fetch('tile_style')
       end
 
       def wrap(query, options)
         wrapper = options.fetch('query_wrapper', nil)
         return query if wrapper.nil? || wrapper.empty?
+
         EJS.evaluate(wrapper, sql: query)
       end
 
@@ -275,13 +311,18 @@ module CartoDB
 
       def public_options
         return configuration if configuration.empty?
-        configuration.fetch(:layer_opts).fetch("public_opts")
+
+        configuration.fetch(:layer_opts).fetch('public_opts')
       end
 
       def whitelisted_infowindow(infowindow)
-        infowindow.nil? ? nil : infowindow.select { |key, value|
-                                                    INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
-                                                  }
+        if infowindow.nil?
+          nil
+        else
+          infowindow.select do |key, _value|
+            INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
+          end
+        end
       end
 
       def fix_torque_maps_api_template(maps_api_template)
@@ -298,6 +339,7 @@ module CartoDB
         layer.options.nil? || layer.options['user_name'].nil? || layer.user.nil? ||
           layer.options['user_name'] == layer.user.username
       end
+
     end
   end
 end

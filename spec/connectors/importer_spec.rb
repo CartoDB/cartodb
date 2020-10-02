@@ -4,7 +4,6 @@ require_relative '../doubles/result'
 require 'csv'
 
 describe CartoDB::Connector::Importer do
-
   before(:all) do
     @user = create_user(quota_in_bytes: 1000.megabyte, table_quota: 400, max_layers: 4)
   end
@@ -30,7 +29,6 @@ describe CartoDB::Connector::Importer do
   let(:skip) { DataImport::COLLISION_STRATEGY_SKIP }
 
   it 'should not fail to return a new_name when ALTERing the INDEX fails' do
-
     # this basically validates the empty rescue handling in rename_the_geom_index_if_exists,
     # if you remove that rescue this test will fail
 
@@ -43,13 +41,13 @@ describe CartoDB::Connector::Importer do
     destination_schema = 'public'
 
     database = mock
-    database.stubs(:execute).with { |query|
+    database.stubs(:execute).with do |query|
       /ALTER INDEX/.match(query)
-    }.raises('wadus')
+    end.raises('wadus')
 
-    database.stubs(:execute).with { |query|
+    database.stubs(:execute).with do |query|
       /ALTER TABLE/.match(query)
-    }.returns(nil)
+    end.returns(nil)
 
     table_registrar = mock
     table_registrar.stubs(:user).returns(@user)
@@ -57,7 +55,7 @@ describe CartoDB::Connector::Importer do
     importer_table_name = "table_#{Carto::UUIDHelper.random_uuid}"
     desired_table_name = 'european_countries'
 
-    result_mock = CartoDB::Doubles::Importer2::Result.new({table_name: importer_table_name, name: desired_table_name})
+    result_mock = CartoDB::Doubles::Importer2::Result.new({ table_name: importer_table_name, name: desired_table_name })
 
     importer = CartoDB::Connector::Importer.new(
       runner: runner,
@@ -68,7 +66,7 @@ describe CartoDB::Connector::Importer do
       destination_schema: destination_schema
     )
     new_table_name = importer.rename(result_mock, importer_table_name, desired_table_name, destination_schema)
-    new_table_name.should_not == nil
+    new_table_name.should_not.nil?
   end
 
   # This test checks that the importer detects files with names that are
@@ -85,10 +83,10 @@ describe CartoDB::Connector::Importer do
     end
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now,
+      append: false
     )
     data_import.values[:data_source] = filepath
 
@@ -107,11 +105,11 @@ describe CartoDB::Connector::Importer do
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
     @data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false,
-      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now,
+      append: false,
+      privacy: (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
     )
     @data_import.values[:data_source] = filepath
 
@@ -202,11 +200,11 @@ describe CartoDB::Connector::Importer do
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false,
-      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now,
+      append: false,
+      privacy: (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
     )
     data_import.values[:data_source] = filepath
 
@@ -280,10 +278,10 @@ describe CartoDB::Connector::Importer do
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now,
+      append: false
     )
     data_import.values[:data_source] = filepath
 
@@ -299,10 +297,10 @@ describe CartoDB::Connector::Importer do
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now,
+      append: false
     )
     data_import.values[:data_source] = filepath
 
@@ -318,11 +316,11 @@ describe CartoDB::Connector::Importer do
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false,
-      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now,
+      append: false,
+      privacy: (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['public']
     )
     data_import.values[:data_source] = filepath
 
@@ -409,11 +407,11 @@ describe CartoDB::Connector::Importer do
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
 
     data_import = DataImport.create(
-      :user_id       => @user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false,
-      :privacy       => (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now,
+      append: false,
+      privacy: (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
     )
     data_import.values[:data_source] = filepath
 
@@ -427,10 +425,10 @@ describe CartoDB::Connector::Importer do
     filepath = "#{Rails.root}/spec/support/data/wrong_the_geom_guessing.csv"
 
     data_import = DataImport.create(
-      user_id:      @user.id,
-      data_source:  filepath,
-      updated_at:   Time.now,
-      append:       false
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now,
+      append: false
     )
     data_import.values[:data_source] = filepath
 
@@ -504,11 +502,11 @@ describe CartoDB::Connector::Importer do
       # Fixture file checks
       @data_import.table_name.should eq 'twitter_t3chfest_reduced'
       @visualization = Carto::Visualization.find(@data_import.visualization_id)
-      @visualization.name.should eq "exported map"
-      @visualization.description.should eq "A map that has been exported"
+      @visualization.name.should eq 'exported map'
+      @visualization.description.should eq 'A map that has been exported'
       @visualization.tags.should include('exported')
       map = @visualization.map
-      map.center.should eq "[39.75365697136308, -2.318115234375]"
+      map.center.should eq '[39.75365697136308, -2.318115234375]'
     end
 
     it 'imports a visualization export when the table already exists' do
@@ -620,19 +618,19 @@ describe CartoDB::Connector::Importer do
       @data_import.success.should eq true
 
       # Fixture file checks
-      @data_import.table_names.should eq "guess_country twitter_t3chfest_reduced"
+      @data_import.table_names.should eq 'guess_country twitter_t3chfest_reduced'
       @visualization = Carto::Visualization.find(@data_import.visualization_id)
-      @visualization.name.should eq "map with two layers"
+      @visualization.name.should eq 'map with two layers'
       @visualization.layers.count.should eq 3 # basemap + 2 data layers
       layers = @visualization.layers
-      layers[0].options['name'].should eq "CartoDB World Eco"
+      layers[0].options['name'].should eq 'CartoDB World Eco'
       layer1 = @visualization.layers[1]
-      layer1.options['type'].should eq "CartoDB"
-      layer1.options['table_name'].should eq "guess_country"
+      layer1.options['type'].should eq 'CartoDB'
+      layer1.options['table_name'].should eq 'guess_country'
       layer1.user_tables.count.should eq 1
       layer2 = @visualization.layers[2]
-      layer2.options['type'].should eq "CartoDB"
-      layer2.options['table_name'].should eq "twitter_t3chfest_reduced"
+      layer2.options['type'].should eq 'CartoDB'
+      layer2.options['table_name'].should eq 'twitter_t3chfest_reduced'
       layer2.user_tables.count.should eq 1
       Carto::DataImport.find_by(id: @data_import.id).user_tables.map(&:destroy)
     end
@@ -654,16 +652,16 @@ describe CartoDB::Connector::Importer do
 
       # Fixture file checks
       @visualization = Carto::Visualization.find(@data_import.visualization_id)
-      @visualization.name.should eq "map with two layers"
+      @visualization.name.should eq 'map with two layers'
       layers = @visualization.layers
       @visualization.layers.count.should eq 3 # basemap + 2 data layers
-      layers[0].options['name'].should eq "CartoDB World Eco"
+      layers[0].options['name'].should eq 'CartoDB World Eco'
       layer1 = @visualization.layers[1]
-      layer1.options['type'].should eq "CartoDB"
-      layer1.options['table_name'].should eq "guess_country"
+      layer1.options['type'].should eq 'CartoDB'
+      layer1.options['table_name'].should eq 'guess_country'
       layer2 = @visualization.layers[2]
-      layer2.options['type'].should eq "CartoDB"
-      layer2.options['table_name'].should eq "twitter_t3chfest_reduced"
+      layer2.options['type'].should eq 'CartoDB'
+      layer2.options['table_name'].should eq 'twitter_t3chfest_reduced'
       Carto::DataImport.find_by(id: @data_import.id).user_tables.map(&:destroy)
     end
 

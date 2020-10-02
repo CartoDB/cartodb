@@ -3,6 +3,7 @@ require_relative '../support/factories/tables'
 module Carto
   module Factories
     module Visualizations
+
       include CartoDB::Factories
 
       def full_visualization_table(carto_user, map)
@@ -36,7 +37,7 @@ module Carto
           data_layer = visualization.map.data_layers.first
           data_layer.options[:table_name] = table.name
           data_layer.options[:query] = "select * from #{table.name}"
-          data_layer.options[:sql_wrap] = "select * from (<%= sql %>) __wrap"
+          data_layer.options[:sql_wrap] = 'select * from (<%= sql %>) __wrap'
           data_layer.save
         end
 
@@ -51,12 +52,13 @@ module Carto
 
         visualization.reload
 
-        return map, table, table_visualization, visualization
+        [map, table, table_visualization, visualization]
       end
 
       def create_table_visualization(carto_user, table)
         FactoryGirl.create(
-          :carto_visualization, user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
+          :carto_visualization, user: carto_user, type: 'table', name: table.name, map_id: table.map_id
+        )
       end
 
       # Helper method for `create_full_visualization` results cleanup
@@ -72,6 +74,7 @@ module Carto
         member = CartoDB::Visualization::Member.new(id: visualization_id).fetch
         member.delete
       end
+
     end
   end
 end

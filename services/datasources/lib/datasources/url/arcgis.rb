@@ -5,19 +5,19 @@ require_relative '../../../../../lib/carto/http/client'
 
 module CartoDB
   module Datasources
-    module Url
 
+    module Url
       class ArcGIS < BaseDirectStream
 
         # Required for all datasources
-        DATASOURCE_NAME = 'arcgis'
+        DATASOURCE_NAME = 'arcgis'.freeze
 
-        ARCGIS_API_LIKE_URL_RE = /\/rest\/services/i
+        ARCGIS_API_LIKE_URL_RE = %r{/rest/services}i.freeze
 
-        METADATA_URL     = '%s?f=json'
-        FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'
-        FEATURE_DATA_POST_URL = '%s/query'
-        LAYERS_URL       = '%s/layers?f=json'
+        METADATA_URL     = '%s?f=json'.freeze
+        FEATURE_IDS_URL  = '%s/query?where=1%%3D1&returnIdsOnly=true&f=json'.freeze
+        FEATURE_DATA_POST_URL = '%s/query'.freeze
+        LAYERS_URL = '%s/layers?f=json'.freeze
 
         MINIMUM_SUPPORTED_VERSION = 10.1
 
@@ -86,13 +86,13 @@ module CartoDB
         # @param user ::User
         # @return CartoDB::Datasources::Url::ArcGIS
         def self.get_new(user)
-          return new(user)
+          new(user)
         end
 
         # @return String
         def to_s
           "<CartoDB::Datasources::Url::ArcGis @url=#{@url} @metadata=#{@metadata} @ids_total=#{@ids_total}" +
-          " @ids_retrieved=#{@ids_retrieved} current_block_size=#{block_size(update=false)}>"
+            " @ids_retrieved=#{@ids_retrieved} current_block_size=#{block_size(update = false)}>"
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -111,13 +111,13 @@ module CartoDB
         # Retrieves a resource and returns its contents
         # @param id string
         # @return mixed
-        def get_resource(id)
+        def get_resource(_id)
           raise 'Not supported by this datasource'
         end
 
         def timed_log(s)
           t2 = Time.now
-          if ((@log_timer == nil) || ((t2 - @log_timer) > LOG_TIMEOUT))
+          if @log_timer.nil? || ((t2 - @log_timer) > LOG_TIMEOUT)
             append_and_store(s)
             @log_timer = t2
           end
@@ -147,7 +147,7 @@ module CartoDB
 
         # @param id string
         # @return String|nil Nil if no more items
-        def stream_resource(id)
+        def stream_resource(_id)
           return nil if @ids.empty?
 
           retries = 0
@@ -161,13 +161,13 @@ module CartoDB
             @current_stream_status = true
             retries = 0
             sleep(BLOCK_SLEEP_TIME) unless BLOCK_SLEEP_TIME == 0
-          rescue ExternalServiceError => exception
+          rescue ExternalServiceError => e
             if @block_size == MIN_BLOCK_SIZE && retries >= MAX_RETRIES
               if SKIP_FAILED_IDS
                 items = []
               else
-                append_and_store("Too many download failures. Giving up.")
-                raise exception
+                append_and_store('Too many download failures. Giving up.')
+                raise e
               end
             else
               timed_log("FAILED to download a chunk of #{ids_block.length} ids (#{@ids_retrieved} ids already downloaded). Retrying...")
@@ -177,7 +177,7 @@ module CartoDB
 
               if @block_size == MIN_BLOCK_SIZE
                 retries += 1
-                sleep_time = SLEEP_REQUEST_TIME ** retries
+                sleep_time = SLEEP_REQUEST_TIME**retries
                 puts "Retry delay (#{sleep_time}s)" if DEBUG
                 sleep(sleep_time)
               end
@@ -202,7 +202,7 @@ module CartoDB
             @url = sanitize_id(id)
             {
               # Store original id, not the sanitized one
-              id:           id,
+              id: id,
               subresources: get_layers_list(@url)
             }
           else
@@ -255,53 +255,53 @@ module CartoDB
         def get_subresource_metadata(id, subresource_id)
           @url = sanitize_id(id, subresource_id)
 
-          response = http_client.get(METADATA_URL % [@url], http_options)
-          validate_response(METADATA_URL % [@url], response)
+          response = http_client.get(format(METADATA_URL, @url), http_options)
+          validate_response(format(METADATA_URL, @url), response)
 
           # non-rails symbolize keys
-          data = ::JSON.parse(response.body).inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+          data = ::JSON.parse(response.body).each_with_object({}) { |(k, v), memo| memo[k.to_sym] = v; }
 
           raise ResponseError.new("Invalid layer type: '#{data[:type]}'") if data[:type] != VECTOR_LAYER_TYPE
           raise ResponseError.new("Missing data: 'fields'") if data[:fields].nil?
 
-          if data[:supportedQueryFormats].present?
-            supported_formats = data.fetch(:supportedQueryFormats).gsub(' ', '').split(',')
-          else
-            supported_formats = []
-          end
+          supported_formats = if data[:supportedQueryFormats].present?
+                                data.fetch(:supportedQueryFormats).gsub(' ', '').split(',')
+                              else
+                                []
+                              end
 
           begin
             @metadata = {
-              arcgis_version:             data.fetch(:currentVersion),
-              name:                       data.fetch(:name),
-              description:                data.fetch(:description, ''),
-              type:                       data.fetch(:type),
-              geometry_type:              data.fetch(:geometryType),
-              copyright:                  data.fetch(:copyrightText, ''),
-              fields:                     data.fetch(:fields).try(:map) { |field|
+              arcgis_version: data.fetch(:currentVersion),
+              name: data.fetch(:name),
+              description: data.fetch(:description, ''),
+              type: data.fetch(:type),
+              geometry_type: data.fetch(:geometryType),
+              copyright: data.fetch(:copyrightText, ''),
+              fields: data.fetch(:fields).try(:map) do |field|
                 {
                   name: field['name'],
                   type: field['type']
                 }
-              },
-              max_records_per_query:      data.fetch(:maxRecordCount, 500),
-              supported_formats:          supported_formats,
+              end,
+              max_records_per_query: data.fetch(:maxRecordCount, 500),
+              supported_formats: supported_formats,
               advanced_queries_supported: data.fetch(:supportsAdvancedQueries, false)
             }
-          rescue StandardError => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
+          rescue StandardError => e
+            raise ResponseError.new("Missing data: #{e} #{e.backtrace}")
           end
 
           raise InvalidServiceError.new("Unsupported ArcGIS version #{@metadata[:arcgis_Version]}, must be >= #{MINIMUM_SUPPORTED_VERSION}") \
             if @metadata[:arcgis_version] < MINIMUM_SUPPORTED_VERSION
 
           {
-            id:       id,
-            title:    @metadata[:name],
-            url:      nil,
-            service:  DATASOURCE_NAME,
+            id: id,
+            title: @metadata[:name],
+            url: nil,
+            service: DATASOURCE_NAME,
             checksum: nil,
-            size:     NO_CONTENT_SIZE_PROVIDED,
+            size: NO_CONTENT_SIZE_PROVIDED,
             filename: filename_from(@metadata[:name])
           }
         end
@@ -310,14 +310,12 @@ module CartoDB
         # @param id String
         # @return Bool
         def is_multiresource?(id)
-          unless id.rindex('?').nil?
-            id = id.slice(0, id.rindex('?'))
-          end
-          (id =~ /\/([0-9]+\/|[0-9]+)$/).nil?
+          id = id.slice(0, id.rindex('?')) unless id.rindex('?').nil?
+          (id =~ %r{/([0-9]+/|[0-9]+)$}).nil?
         end
 
         def get_subresource_id(id)
-          id.match(/([0-9]+\/|[0-9]+)$?/)[0]
+          id.match(%r{([0-9]+/|[0-9]+)$?})[0]
         end
 
         # @param id String
@@ -327,13 +325,9 @@ module CartoDB
         def sanitize_id(id, sub_id=nil)
           # http://<host>/<site>/rest/services/<folder>/<serviceName>/<serviceType>/
           # <site> is almost always "arcgis" (according to official doc)
-          unless id =~ ARCGIS_API_LIKE_URL_RE
-            raise InvalidInputDataError.new("Url doesn't looks as from ArcGIS server")
-          end
+          raise InvalidInputDataError.new("Url doesn't looks as from ArcGIS server") unless id =~ ARCGIS_API_LIKE_URL_RE
 
-          unless id.rindex('?').nil?
-            id = id.slice(0, id.rindex('?'))
-          end
+          id = id.slice(0, id.rindex('?')) unless id.rindex('?').nil?
           if is_multiresource?(id) && !sub_id.nil?
             id = (id.end_with?('/') ? id : id + '/') + sub_id
           end
@@ -345,14 +339,14 @@ module CartoDB
         # @throws DataDownloadError
         # @throws ResponseError
         def get_layers_list(url)
-          request_url = LAYERS_URL % [url]
+          request_url = format(LAYERS_URL, url)
           response = http_client.get(request_url, http_options)
           validate_response(request_url, response)
 
           begin
             data = ::JSON.parse(response.body).fetch('layers')
-          rescue StandardError => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
+          rescue StandardError => e
+            raise ResponseError.new("Missing data: #{e} #{request_url} #{e.backtrace}")
           end
 
           # We only support vector layers (not raster layers)
@@ -361,15 +355,15 @@ module CartoDB
           raise ResponseError.new("Empty layers list #{request_url}") if data.length == 0
 
           begin
-            data.collect { |item|
+            data.collect do |item|
               {
                 # Leave prepared all child urls
                 id: (url.end_with?('/') ? url : url + '/') + item.fetch('id').to_s,
                 title: item.fetch('name')
               }
-            }
-          rescue StandardError => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
+            end
+          rescue StandardError => e
+            raise ResponseError.new("Missing data: #{e} #{request_url} #{e.backtrace}")
           end
         end
 
@@ -381,14 +375,14 @@ module CartoDB
         # @throws DataDownloadError
         # @throws ResponseError
         def get_ids_list(url)
-          request_url = FEATURE_IDS_URL % [url]
+          request_url = format(FEATURE_IDS_URL, url)
           response = http_client.get(request_url, http_options)
           validate_response(request_url, response)
 
           begin
             data = ::JSON.parse(response.body).fetch('objectIds').sort
-          rescue StandardError => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
+          rescue StandardError => e
+            raise ResponseError.new("Missing data: #{e} #{request_url} #{e.backtrace}")
           end
 
           raise ResponseError.new("Empty ids list #{request_url}") if data.length == 0
@@ -405,31 +399,31 @@ module CartoDB
         # @throws DataDownloadError
         # @throws ExternalServiceError
         def get_by_ids(url, ids, fields)
-          raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
-          raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
+          raise InvalidInputDataError.new("'ids' empty or invalid") if ids.nil? || ids.length == 0
+          raise InvalidInputDataError.new("'fields' empty or invalid") if fields.nil? || fields.length == 0
 
           oid_field = fields.find { |field| field[:type] == OID_FIELD_TYPE }
 
           if ids.length == 1
             ids_field = { objectIds: ids.first }
           else
-            if oid_field
-              # Note that ids is sorted
-              ids_field = { where: "#{oid_field[:name]} >=#{ids.first} AND #{oid_field[:name]} <=#{ids.last}" }
-            else
-              # This could be innefficient with large number of ids, but it is limited to MAX_BLOCK_SIZE
-              ids_field = { objectIds: ids.join(',') }
-            end
+            ids_field = if oid_field
+                          # Note that ids is sorted
+                          { where: "#{oid_field[:name]} >=#{ids.first} AND #{oid_field[:name]} <=#{ids.last}" }
+                        else
+                          # This could be innefficient with large number of ids, but it is limited to MAX_BLOCK_SIZE
+                          { objectIds: ids.join(',') }
+                        end
           end
 
-          prepared_fields = fields.map { |field| "#{field[:name]}" }.join(',')
+          prepared_fields = fields.map { |field| (field[:name]).to_s }.join(',')
 
-          prepared_url = FEATURE_DATA_POST_URL % [url]
+          prepared_url = format(FEATURE_DATA_POST_URL, url)
           # @see http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#/Query_Map_Service_Layer/02r3000000p1000000/
           params_data = {
-            outFields:  prepared_fields,
-            outSR:      4326,
-            f:          'json'
+            outFields: prepared_fields,
+            outSR: 4326,
+            f: 'json'
           }
 
           params_data.merge! ids_field
@@ -438,12 +432,11 @@ module CartoDB
           response = http_client.post(prepared_url, http_options(params_data, :post))
 
           # Timeout connecting to ArcGIS
-          if response.code == 0
-            raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.body} #{self.to_s}")
-          end
+          raise ExternalServiceError.new("TIMEOUT: #{prepared_url} : #{response.body} #{self}") if response.code == 0
+
           if response.code != 200
             raise DataDownloadError.new("ERROR: #{prepared_url} POST " +
-                                        "#{params_data} (#{response.code}) : #{response.body} #{self.to_s}")
+                                        "#{params_data} (#{response.code}) : #{response.body} #{self}")
           end
           if response.code == 400 && !response.return_message.nil? \
               && response.return_message.downcase.include?('operation is not supported')
@@ -459,7 +452,7 @@ module CartoDB
             rescue JSON::ParserError => e
               # We cannot do much about it, log, skip and continue
               append_and_store("get_by_ids: #{e.inspect}")
-              append_and_store("get_by_ids: #{prepared_url} (POST) Params: #{params_data}", _truncate=false)
+              append_and_store("get_by_ids: #{prepared_url} (POST) Params: #{params_data}", _truncate = false)
               return []
             end
           end
@@ -470,30 +463,31 @@ module CartoDB
           begin
             retrieved_items = body.fetch('features')
             return [] if retrieved_items.nil? || retrieved_items.empty?
+
             retrieved_fields = body.fetch('fields')
             geometry_type = body.fetch('geometryType')
             spatial_reference = body.fetch('spatialReference')
-          rescue StandardError => exception
-            raise ResponseError.new("Missing data: #{exception.to_s} #{prepared_url} #{exception.backtrace}")
+          rescue StandardError => e
+            raise ResponseError.new("Missing data: #{e} #{prepared_url} #{e.backtrace}")
           end
           raise ResponseError.new("'fields' empty or invalid #{prepared_url}") \
-            if (retrieved_fields.nil? || retrieved_fields.length == 0)
+            if retrieved_fields.nil? || retrieved_fields.length == 0
           raise ResponseError.new("'features' empty or invalid #{prepared_url}") \
-            if (retrieved_items.nil? || !retrieved_items.kind_of?(Array))
+            if retrieved_items.nil? || !retrieved_items.is_a?(Array)
 
           # Fields can be optional, cannot be enforced to always be present
           desired_fields = fields.map { |field| field[:name] }
 
           {
-            geometryType:     geometry_type,
+            geometryType: geometry_type,
             spatialReference: spatial_reference,
-            fields:           retrieved_fields,
-            features:         retrieved_items.collect { |item|
+            fields: retrieved_fields,
+            features: retrieved_items.collect do |item|
               {
-                'attributes' => item['attributes'].select{ |k, v| desired_fields.include?(k) },
+                'attributes' => item['attributes'].select { |k, _v| desired_fields.include?(k) },
                 'geometry' => item['geometry']
               }
-            }
+            end
           }
         end
 
@@ -506,7 +500,7 @@ module CartoDB
               @block_size = [@block_size * BLOCK_FACTOR, MAX_BLOCK_SIZE].min
             end
             if !@current_stream_status && @block_size > MIN_BLOCK_SIZE
-              @block_size = [[(@block_size / (BLOCK_FACTOR ** BLOCK_FACTOR)).floor, MIN_BLOCK_SIZE].max, MAX_BLOCK_SIZE].min
+              @block_size = [[(@block_size / (BLOCK_FACTOR**BLOCK_FACTOR)).floor, MIN_BLOCK_SIZE].max, MAX_BLOCK_SIZE].min
             end
             @block_size = [@block_size, @metadata[:max_records_per_query]].min
           end
@@ -515,17 +509,17 @@ module CartoDB
 
         def http_options(params={}, method=:get)
           {
-            method:           method,
-            params:           method == :get ? params : {},
-            body:             method == :post ? params : {},
-            followlocation:   true,
-            ssl_verifypeer:   false,
-            accept_encoding:  'gzip',
-            headers:          { 'Accept-Charset' => 'utf-8' },
-            ssl_verifyhost:   0,
-            nosignal:         true,
-            connecttimeout:   HTTP_CONNECTION_TIMEOUT,
-            timeout:          HTTP_TIMEOUT
+            method: method,
+            params: method == :get ? params : {},
+            body: method == :post ? params : {},
+            followlocation: true,
+            ssl_verifypeer: false,
+            accept_encoding: 'gzip',
+            headers: { 'Accept-Charset' => 'utf-8' },
+            ssl_verifyhost: 0,
+            nosignal: true,
+            connecttimeout: HTTP_CONNECTION_TIMEOUT,
+            timeout: HTTP_TIMEOUT
           }
         end
 
@@ -545,10 +539,12 @@ module CartoDB
           raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code != 200
         end
+
       end
     end
 
     class URLTooLargeError < StandardError
     end
+
   end
 end

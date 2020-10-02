@@ -33,7 +33,7 @@ describe CartoDB::Visualization::CommonDataService do
       url: 'http://example.org',
       geometry_types: '{ST_MultiPolygon}',
       rows: 1000,
-      size: 1000000
+      size: 1_000_000
     }.stringify_keys
   end
 
@@ -54,17 +54,17 @@ describe CartoDB::Visualization::CommonDataService do
     expect(remote_visualizations(@user).count).to eq 1
     remote_visualization = remote_visualizations(@user).first
     expect(remote_visualization.name).to eq 'ds1'
-    expect(remote_visualization.external_source.geometry_types).to eq ["ST_MultiPolygon"]
+    expect(remote_visualization.external_source.geometry_types).to eq ['ST_MultiPolygon']
   end
 
   it 'should import common data datasets within an ActiveRecord transaction (see #12488)' do
     # This would trigger an exception because of data integrity
-    expect {
+    expect do
       ActiveRecord::Base.transaction do
         stub_datasets([dataset('ds1')])
         service.load_common_data_for_user(@user, 'some_url')
       end
-    }.not_to raise_error
+    end.not_to raise_error
   end
 
   it 'should update common data datasets' do
@@ -137,7 +137,7 @@ describe CartoDB::Visualization::CommonDataService do
     expect(remote_visualizations(@user).count).to eq 2
 
     common_data_singleton_mock = mock
-    common_data_singleton_mock.stubs(:datasets).raises("error!")
+    common_data_singleton_mock.stubs(:datasets).raises('error!')
     CommonDataSingleton.stubs(:instance).returns(common_data_singleton_mock)
     service.load_common_data_for_user(@user, 'some_url').should be_nil
 

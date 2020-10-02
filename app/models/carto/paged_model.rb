@@ -2,7 +2,7 @@ module Carto
   module PagedModel
 
     def paged(page = 1, per_page = 20, order = nil)
-      self.paged_association(self, page, per_page, order)
+      paged_association(self, page, per_page, order)
     end
 
     def self.paged_association(association, page = 1, per_page = 20, order = nil)

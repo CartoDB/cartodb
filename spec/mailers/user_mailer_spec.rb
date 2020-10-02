@@ -12,30 +12,30 @@ describe UserMailer do
     ActionMailer::Base.deliveries = []
   end
 
-  describe ".password_reset" do
+  describe '.password_reset' do
     before(:each) do
       @mailer = UserMailer.password_reset(@carto_org_user_1)
     end
 
-    it "delivers the mail" do
+    it 'delivers the mail' do
       expect { @mailer.deliver_now }.to change(ActionMailer::Base.deliveries, :size).by(1)
     end
 
-    it "delivers with the expected subject" do
+    it 'delivers with the expected subject' do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
       expect(mail.subject).to eql('Reset CARTO password')
     end
 
-    it "delivers to the expected recipients" do
+    it 'delivers to the expected recipients' do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
       expect(mail.to).to eql([@carto_org_user_1.email])
     end
 
-    it "delivers a link with the password reset token" do
+    it 'delivers a link with the password reset token' do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
@@ -43,31 +43,31 @@ describe UserMailer do
     end
   end
 
-  describe ".share_visualization kuviz" do
+  describe '.share_visualization kuviz' do
     before(:each) do
       @kuviz = FactoryGirl.create(:kuviz_visualization, user: @carto_org_user_2)
       @mailer = UserMailer.share_visualization(@kuviz, @carto_org_user_1)
     end
 
-    it "delivers the mail" do
+    it 'delivers the mail' do
       expect { @mailer.deliver_now }.to change(ActionMailer::Base.deliveries, :size).by(1)
     end
 
-    it "delivers with the expected subject" do
+    it 'delivers with the expected subject' do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
       expect(mail.subject).to eql("#{@carto_org_user_2.username} has shared a CARTO map with you")
     end
 
-    it "delivers to the expected recipients" do
+    it 'delivers to the expected recipients' do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
       expect(mail.to).to eql([@carto_org_user_1.email])
     end
 
-    it "delivers a link with the right link for kuviz" do
+    it 'delivers a link with the right link for kuviz' do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
@@ -77,31 +77,31 @@ describe UserMailer do
     end
   end
 
-  describe ".share_visualization app" do
+  describe '.share_visualization app' do
     before(:each) do
       @app = FactoryGirl.create(:app_visualization, user: @carto_org_user_2)
       @mailer = UserMailer.share_visualization(@app, @carto_org_user_1)
     end
 
-    it "delivers the mail" do
+    it 'delivers the mail' do
       expect { @mailer.deliver_now }.to change(ActionMailer::Base.deliveries, :size).by(1)
     end
 
-    it "delivers with the expected subject" do
+    it 'delivers with the expected subject' do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
       expect(mail.subject).to eql("#{@carto_org_user_2.username} has shared a CARTO map with you")
     end
 
-    it "delivers to the expected recipients" do
+    it 'delivers to the expected recipients' do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
       expect(mail.to).to eql([@carto_org_user_1.email])
     end
 
-    it "delivers a link with the right link for app" do
+    it 'delivers a link with the right link for app' do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first

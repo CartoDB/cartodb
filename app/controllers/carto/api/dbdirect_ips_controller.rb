@@ -1,6 +1,7 @@
 module Carto
   module Api
     class DbdirectIpsController < ::Api::ApplicationController
+
       extend Carto::DefaultRescueFroms
 
       ssl_required :show, :update, :destroy
@@ -35,7 +36,7 @@ module Carto
 
       def check_permissions
         # TODO: should the user be an organization owner?
-        api_key = Carto::ApiKey.find_by_token(params["api_key"])
+        api_key = Carto::ApiKey.find_by_token(params['api_key'])
         if api_key.present?
           raise UnauthorizedError unless api_key.master?
           raise UnauthorizedError unless api_key.user_id == @user.id
@@ -44,6 +45,7 @@ module Carto
           raise UnauthorizedError.new("DBDirect not enabled for user #{@user.username}")
         end
       end
+
     end
   end
 end

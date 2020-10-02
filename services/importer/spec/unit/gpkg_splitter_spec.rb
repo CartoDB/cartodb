@@ -19,7 +19,6 @@ describe CartoDB::Importer2::GpkgSplitter do
       splitter.run
       splitter.source_files.length.should eq 2
     end
-
   end
 
   describe '#layers_in' do
@@ -27,7 +26,7 @@ describe CartoDB::Importer2::GpkgSplitter do
       source_file = CartoDB::Importer2::SourceFile.new(@multiple_layer_filepath)
       splitter    = CartoDB::Importer2::GpkgSplitter.new(source_file, @temporary_directory, @ogr2ogr_config)
       splitter.layers_in(source_file).length.should eq 2
-      splitter.layers_in(source_file).should eq ["pts", "lns"]
+      splitter.layers_in(source_file).should eq ['pts', 'lns']
     end
   end
 

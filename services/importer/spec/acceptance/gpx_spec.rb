@@ -12,8 +12,8 @@ require_relative 'no_stats_context'
 
 describe 'GPX regression tests' do
   include AcceptanceHelpers
-  include_context "cdb_importer schema"
-  include_context "no stats"
+  include_context 'cdb_importer schema'
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -30,8 +30,7 @@ describe 'GPX regression tests' do
     runner      = CartoDB::Importer2::Runner.new(pg: @user.db_service.db_configuration_for,
                                                  downloader: downloader,
                                                  log: CartoDB::Importer2::Doubles::Log.new(@user),
-                                                 user: @user
-                                                )
+                                                 user: @user)
     runner.run
 
     geometry_type_for(runner, @user).should be
@@ -43,8 +42,7 @@ describe 'GPX regression tests' do
     runner      = CartoDB::Importer2::Runner.new(pg: @user.db_service.db_configuration_for,
                                                  downloader: downloader,
                                                  log: CartoDB::Importer2::Doubles::Log.new(@user),
-                                                 user: @user
-                                                )
+                                                 user: @user)
     runner.run
 
     runner.results.each { |result| result.success.should eq true }

@@ -1,4 +1,5 @@
 module SpecHelperHelpers
+
   def clean_redis_databases
     $tables_metadata.flushdb
     $api_credentials.flushdb
@@ -12,12 +13,12 @@ module SpecHelperHelpers
     else
       protected_tables = [:schema_migrations, :spatial_ref_sys]
       SequelRails.connection.tables.each do |t|
-        if !protected_tables.include?(t)
-          begin
-            SequelRails.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
-          rescue Sequel::DatabaseError => e
-            raise e unless e.message =~ /PG::Error: ERROR:  relation ".*" does not exist/
-          end
+        next if protected_tables.include?(t)
+
+        begin
+          SequelRails.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
+        rescue Sequel::DatabaseError => e
+          raise e unless e.message =~ /PG::Error: ERROR:  relation ".*" does not exist/
         end
       end
     end
@@ -51,4 +52,5 @@ module SpecHelperHelpers
       SequelRails.connection.run("drop user \"#{username}\"") if username =~ /^test_cartodb_user_/
     end
   end
+
 end

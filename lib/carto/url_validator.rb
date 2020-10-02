@@ -4,12 +4,15 @@ require 'ipaddr'
 
 module Carto
   module UrlValidator
+
     DEFAULT_URL_VALID_PORTS = [21, 80, 443].freeze
 
     class InvalidUrlError < StandardError
+
       def initialize(url)
         super "Invalid URL, cannot connect dataset: #{url}"
       end
+
     end
 
     def validate_url!(str, valid_ports = DEFAULT_URL_VALID_PORTS)
@@ -25,7 +28,7 @@ module Carto
         valid_ports.include?(uri.port) &&
         !blacklisted_ip?(uri)
     rescue URI::InvalidURIError
-      return false
+      false
     end
 
     def blacklisted_ip?(uri)
@@ -46,7 +49,8 @@ module Carto
 
     def blacklisted_ip_ranges
       @blacklisted_ip_ranges ||= (::Cartodb.get_config(:importer, 'blacklisted_ip_addr') || [])
-        .map { |ip| IPAddr.new(ip) }
+                                 .map { |ip| IPAddr.new(ip) }
     end
+
   end
 end

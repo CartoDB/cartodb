@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe CartoDB::TablePrivacyManager do
   before(:all) do
-    @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+    @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524_288_000, table_quota: 500, private_tables_enabled: true)
   end
 
   before(:each) do
@@ -32,7 +32,7 @@ describe CartoDB::TablePrivacyManager do
   shared_examples_for 'table create_canonical_visualization support' do
     describe '#apply_privacy_change' do
       it 'changes canonical visualization privacy' do
-        table = create_table(user_id: @user.id, name: "aaa", privacy: UserTable::PRIVACY_PRIVATE)
+        table = create_table(user_id: @user.id, name: 'aaa', privacy: UserTable::PRIVACY_PRIVATE)
         previous_privacy = table.instance_eval { previous_privacy }
         user_table = table.instance_eval { @user_table }
         privacy_changed = table.instance_eval { privacy_changed? }

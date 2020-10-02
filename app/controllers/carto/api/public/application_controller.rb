@@ -1,4 +1,5 @@
 class Carto::Api::Public::ApplicationController < ::Api::ApplicationController
+
   include Carto::Api::AuthApiAuthentication
 
   # Override all CORS settings
@@ -39,4 +40,5 @@ class Carto::Api::Public::ApplicationController < ::Api::ApplicationController
   def only_api_key_authorization
     authenticate!(:any_auth_api, :api_authentication, scope: WARDEN_SCOPE)
   end
+
 end

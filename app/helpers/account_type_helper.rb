@@ -1,5 +1,6 @@
 # This file should be synched with Central
 module AccountTypeHelper
+
   # Customer-facing plan name. Front is responsible of shortening long ones.
   def plan_name(account_type)
     PLAN_NAME_BY_ACCOUNT_TYPE_DOWN.fetch(account_type.downcase, account_type)
@@ -62,4 +63,5 @@ module AccountTypeHelper
   }.freeze
 
   PLAN_NAME_BY_ACCOUNT_TYPE_DOWN = Hash[PLAN_NAME_BY_ACCOUNT_TYPE.map { |k, v| [k.downcase, v] }]
+
 end

@@ -3,6 +3,7 @@ require 'fileutils'
 module DataRepository
   module Filesystem
     class Local
+
       DEFAULT_PREFIX = File.join(File.dirname(__FILE__), '..', 'tmp')
 
       def initialize(base_directory=DEFAULT_PREFIX)
@@ -36,14 +37,12 @@ module DataRepository
       end
 
       def exists?(path)
-        File.exists?(fullpath_for(path))
+        File.exist?(fullpath_for(path))
       end
 
       # Use from controlled environments always
       def remove(path)
-        if exists?(path)
-          File.delete(fullpath_for(path))
-        end
+        File.delete(fullpath_for(path)) if exists?(path)
       end
 
       def fullpath_for(path)
@@ -70,9 +69,9 @@ module DataRepository
       end
 
       def relative_path_for(path, base_directory)
-       (path.split('/') - base_directory.split('/')).join('/')
+        (path.split('/') - base_directory.split('/')).join('/')
       end
+
     end
   end
 end
-

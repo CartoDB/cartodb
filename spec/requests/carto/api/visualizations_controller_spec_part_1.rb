@@ -135,7 +135,8 @@ describe Carto::Api::VisualizationsController do
         user_domain: @user_1.username,
         id: @table1.table_visualization.id,
         width: width,
-        height: height), @headers
+        height: height
+      ), @headers
       last_response.status.should == 302
 
       tpl_id = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
@@ -148,7 +149,7 @@ describe Carto::Api::VisualizationsController do
 
       Carto::StaticMapsURLHelper.any_instance
                                 .stubs(:get_cdn_config)
-                                .returns("http" => "cdn.local.lan")
+                                .returns('http' => 'cdn.local.lan')
 
       get api_v2_visualizations_static_map_url(
         user_domain: @user_1.username,
@@ -222,7 +223,7 @@ describe Carto::Api::VisualizationsController do
 
       Carto::StaticMapsURLHelper.any_instance
                                 .stubs(:get_cdn_config)
-                                .returns("http" => "cdn.local.lan")
+                                .returns('http' => 'cdn.local.lan')
 
       get api_v2_visualizations_static_map_url(
         user_domain: @user_1.username,
@@ -232,13 +233,12 @@ describe Carto::Api::VisualizationsController do
         height: height
       ), @headers
       last_response.status.should == 302
-      last_response.headers["X-Cache-Channel"].should include(@table1.name)
-      last_response.headers["X-Cache-Channel"].should include(@table1.table_visualization.varnish_key)
-      last_response.headers["Surrogate-Key"].should_not be_empty
-      last_response.headers["Surrogate-Key"].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
-      last_response.headers["Surrogate-Key"].should include(@table1.table_visualization.surrogate_key)
+      last_response.headers['X-Cache-Channel'].should include(@table1.name)
+      last_response.headers['X-Cache-Channel'].should include(@table1.table_visualization.varnish_key)
+      last_response.headers['Surrogate-Key'].should_not be_empty
+      last_response.headers['Surrogate-Key'].should include(CartoDB::SURROGATE_NAMESPACE_VIZJSON)
+      last_response.headers['Surrogate-Key'].should include(@table1.table_visualization.surrogate_key)
     end
-
   end
 
   describe 'index' do
@@ -281,8 +281,8 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'raises param invalid error if user does not exist' do
-      host! "pra.localhost.lan"
-      get base_url, {  }, @headers
+      host! 'pra.localhost.lan'
+      get base_url, {}, @headers
       JSON.load(last_response.body)['error'].should eq "Wrong 'username' parameter value."
       last_response.status.should eq 400
     end
@@ -318,7 +318,8 @@ describe Carto::Api::VisualizationsController do
         table_data: true,
         user: @user_1,
         table: table1,
-        synchronization: nil)
+        synchronization: nil
+      )
       table1_visualization_hash[:permission][:owner].delete(:groups)
       table1_visualization_hash[:table][:permission][:owner].delete(:groups)
       expected_visualization = JSON.parse(table1_visualization_hash.to_json)

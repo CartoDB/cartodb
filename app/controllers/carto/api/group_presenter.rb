@@ -8,7 +8,7 @@ module Carto
         fetch_shared_tables_count: true,
         fetch_shared_maps_count: true,
         fetch_users: true
-      }
+      }.freeze
 
       def self.full(group)
         Carto::Api::GroupPresenter.new(group, FULL_FETCH_OPTIONS)
@@ -34,12 +34,8 @@ module Carto
         if @fetching_options[:fetch_shared_tables_count] == true
           poro.merge!({ shared_tables_count: shared_tables_count })
         end
-        if @fetching_options[:fetch_shared_maps_count] == true
-          poro.merge!({ shared_maps_count: shared_maps_count })
-        end
-        if @fetching_options[:fetch_users] == true
-          poro.merge!({ users: users })
-        end
+        poro.merge!({ shared_maps_count: shared_maps_count }) if @fetching_options[:fetch_shared_maps_count] == true
+        poro.merge!({ users: users }) if @fetching_options[:fetch_users] == true
 
         poro
       end
@@ -47,11 +43,11 @@ module Carto
       private
 
       def shared_tables_count
-        shared_visualizations_query.where(:visualizations => { type: Carto::Visualization::TYPE_CANONICAL }).count
+        shared_visualizations_query.where(visualizations: { type: Carto::Visualization::TYPE_CANONICAL }).count
       end
 
       def shared_maps_count
-        shared_visualizations_query.where(:visualizations => { type: Carto::Visualization::TYPE_DERIVED }).count
+        shared_visualizations_query.where(visualizations: { type: Carto::Visualization::TYPE_DERIVED }).count
       end
 
       def shared_visualizations_query
@@ -59,7 +55,7 @@ module Carto
       end
 
       def users
-        @group.users.map { |u| Carto::Api::UserPresenter.new(u, { fetch_groups: false } ).to_poro }
+        @group.users.map { |u| Carto::Api::UserPresenter.new(u, { fetch_groups: false }).to_poro }
       end
 
     end

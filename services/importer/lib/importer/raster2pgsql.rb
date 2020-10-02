@@ -4,24 +4,25 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class Raster2Pgsql
-      SCHEMA                        = 'cdb_importer'
+
+      SCHEMA                        = 'cdb_importer'.freeze
       PROJECTION                    = 3857
-      BLOCKSIZE                     = '128x128'
-      DOWNSAMPLED_FILENAME          = '%s_downsampled.tif'
-      WEBMERCATOR_FILENAME          = '%s_webmercator.tif'
-      ALIGNED_WEBMERCATOR_FILENAME  = '%s_aligned_webmercator.tif'
-      SQL_FILENAME                  = '%s%s.sql'
-      OVERLAY_TABLENAME             = 'o_%s_%s'
-      RASTER_COLUMN_NAME            = 'the_raster_webmercator'
+      BLOCKSIZE                     = '128x128'.freeze
+      DOWNSAMPLED_FILENAME          = '%s_downsampled.tif'.freeze
+      WEBMERCATOR_FILENAME          = '%s_webmercator.tif'.freeze
+      ALIGNED_WEBMERCATOR_FILENAME  = '%s_aligned_webmercator.tif'.freeze
+      SQL_FILENAME                  = '%s%s.sql'.freeze
+      OVERLAY_TABLENAME             = 'o_%s_%s'.freeze
+      RASTER_COLUMN_NAME            = 'the_raster_webmercator'.freeze
       GDALWARP_COMMON_OPTIONS       = ['-co', 'COMPRESS=LZW', '-co', 'BIGTIFF=IF_SAFER'].freeze
       MAX_REDUCTED_SIZE             = 256
 
       def initialize(table_name, filepath, pg_options, db)
         self.filepath             = filepath
-        self.basepath             = filepath.slice(0, filepath.rindex('/')+1)
-        self.webmercator_filepath = WEBMERCATOR_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
-        self.aligned_filepath     = ALIGNED_WEBMERCATOR_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
-        self.downsampled_filepath = DOWNSAMPLED_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
+        self.basepath             = filepath.slice(0, filepath.rindex('/') + 1)
+        self.webmercator_filepath = format(WEBMERCATOR_FILENAME, filepath.gsub(/\.tif$/, ''))
+        self.aligned_filepath     = format(ALIGNED_WEBMERCATOR_FILENAME, filepath.gsub(/\.tif$/, ''))
+        self.downsampled_filepath = format(DOWNSAMPLED_FILENAME, filepath.gsub(/\.tif$/, ''))
         self.pg_options           = pg_options
         self.table_name           = table_name
         self.exit_code            = nil
@@ -31,7 +32,7 @@ module CartoDB
         self.base_table_fqtn      = SCHEMA + '.' + table_name
       end
 
-      attr_reader   :exit_code, :command_output
+      attr_reader :exit_code, :command_output
 
       def run
         if need_downsample?
@@ -60,13 +61,13 @@ module CartoDB
       def need_downsample?
         # There is no less than Byte type in GDAL Byte/Int16/UInt16/UInt32/Int32/Float32/Float64/CInt16/CInt32/CFloat32/CFloat64
         bands_type = extract_bands_type
-        bands_type.select{|band| band.downcase!='byte'}.size > 0
+        bands_type.select { |band| band.downcase != 'byte'}.size > 0
       end
 
       # Returns a list of additional support tables created, that should go to the user DB
       # but not get cartodbfied/shown on the dashboard
       def additional_support_tables
-        additional_tables.map { |scale| OVERLAY_TABLENAME % [scale, table_name] }
+        additional_tables.map { |scale| format(OVERLAY_TABLENAME, scale, table_name) }
       end
 
       private
@@ -78,19 +79,19 @@ module CartoDB
       def downsample_raster
         gdal_translate_command = [gdal_translate_path, '-scale', '-ot', 'Byte', GDALWARP_COMMON_OPTIONS, filepath, downsampled_filepath].flatten
 
-        stdout, stderr, status  = Open3.capture3(*gdal_translate_command)
+        stdout, stderr, status = Open3.capture3(*gdal_translate_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdal_translate_command}"
-        self.command_output << "\n#{output_message}"
+        command_output << "\n#{output_message}"
         self.exit_code = status.to_i
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
       end
 
       def reproject_raster(file)
-        gdalwarp_command =[gdalwarp_path, GDALWARP_COMMON_OPTIONS, '-t_srs', "EPSG:#{PROJECTION}", file, webmercator_filepath].flatten
+        gdalwarp_command = [gdalwarp_path, GDALWARP_COMMON_OPTIONS, '-t_srs', "EPSG:#{PROJECTION}", file, webmercator_filepath].flatten
 
-        stdout, stderr, status  = Open3.capture3(*gdalwarp_command)
+        stdout, stderr, status = Open3.capture3(*gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
-        self.command_output << "\n#{output_message}"
+        command_output << "\n#{output_message}"
         self.exit_code = status.to_i
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
       end
@@ -98,9 +99,9 @@ module CartoDB
       def align_raster(scale)
         gdalwarp_command = [gdalwarp_path, GDALWARP_COMMON_OPTIONS, '-tr', scale.to_s, "-#{scale}", webmercator_filepath, aligned_filepath].flatten
 
-        stdout, stderr, status  = Open3.capture3(*gdalwarp_command)
+        stdout, stderr, status = Open3.capture3(*gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
-        self.command_output << "\n#{output_message}"
+        command_output << "\n#{output_message}"
         self.exit_code = status.to_i
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
       end
@@ -110,6 +111,7 @@ module CartoDB
         output_message = extract_raster_info(webmercator_filepath)
         matches = output_message.match(/pixel size = \((.*)?,/i)
         raise TiffToSqlConversionError.new("Error obtaining raster pixel size: #{output_message}") unless matches[1]
+
         matches[1].to_f
       end
 
@@ -117,8 +119,9 @@ module CartoDB
         output_message = extract_raster_info(webmercator_filepath)
         matches = output_message.match(/size is (.*)?\n/i)
         raise TiffToSqlConversionError.new("Error obtaining raster size: #{output_message}") unless matches[1]
+
         matches[1].split(', ')
-                  .map{ |value| value.to_i }
+                  .map { |value| value.to_i }
       end
 
       # Returns the raster bands type: Byte, Float64...
@@ -133,13 +136,13 @@ module CartoDB
       def extract_raster_info(file)
         gdalinfo_command = [gdalinfo_path, file]
 
-        stdout, stderr, status  = Open3.capture3(*gdalinfo_command)
+        stdout, stderr, status = Open3.capture3(*gdalinfo_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalinfo_command}"
-        self.command_output << "\n#{output_message}"
+        command_output << "\n#{output_message}"
         self.exit_code = status.to_i
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
 
-        return output_message
+        output_message
       end
 
       def run_raster2pgsql(overviews_list)
@@ -150,7 +153,7 @@ module CartoDB
           status = statuses.last.value
           output = output_st.read
           output_message = "(#{status}) |#{output}| Command: #{pipeline}"
-          self.command_output << "\n#{output_message}"
+          command_output << "\n#{output_message}"
           self.exit_code = status.to_i
 
           if output =~ /canceling statement due to statement timeout/i
@@ -164,14 +167,14 @@ module CartoDB
       end
 
       def calculate_raster_scale(pixel_size)
-        z0 = 156543.03515625
+        z0 = 156_543.03515625
 
         factor = z0 / pixel_size
 
-        pw = Math::log(factor) / Math::log(2)
+        pw = Math.log(factor) / Math.log(2)
         pow2 = pw.ceil
 
-        out_scale = z0 / (2 ** pow2)
+        out_scale = z0 / (2**pow2)
 
         out_scale - (out_scale * 0.0001)
       end
@@ -181,7 +184,7 @@ module CartoDB
 
         max_power =
           if bigger_size > MAX_REDUCTED_SIZE
-            Math::log(bigger_size.to_f / MAX_REDUCTED_SIZE, 2).ceil
+            Math.log(bigger_size.to_f / MAX_REDUCTED_SIZE, 2).ceil
           else
             0
           end
@@ -208,7 +211,7 @@ module CartoDB
       # should be imported without any transformation to avoid
       # reprojection/resampling artifacts in analysis.
       def add_raster_base_overview_for_tiler
-        overview_name = OVERLAY_TABLENAME % [1, table_name]
+        overview_name = format(OVERLAY_TABLENAME, 1, table_name)
         overview_fqtn = SCHEMA + '.' + overview_name
         db.run %{CREATE TABLE #{overview_fqtn} AS SELECT * FROM #{base_table_fqtn}}
         db.run %{CREATE INDEX ON "#{SCHEMA}"."#{overview_name}" USING gist (st_convexhull("#{RASTER_COLUMN_NAME}"))}
@@ -223,13 +226,13 @@ module CartoDB
         db.run %{DROP TABLE #{base_table_fqtn}}
         raster_import_command = [raster2pgsql_path, '-t', BLOCKSIZE, '-C', '-x', '-Y', '-I', '-f', RASTER_COLUMN_NAME,
                                  filepath, "#{SCHEMA}.#{table_name}"]
-        # TODO refactor with run_raster2pgsql
+        # TODO: refactor with run_raster2pgsql
         pipeline = [raster_import_command, psql_base_command]
         Open3.pipeline_r(*pipeline, err: :out) do |output_st, statuses|
           status = statuses.last.value
           output = output_st.read
           output_message = "(#{status}) |#{output}| Command: #{pipeline}"
-          self.command_output << "\n#{output_message}"
+          command_output << "\n#{output_message}"
           self.exit_code = status.to_i
 
           if output =~ /canceling statement due to statement timeout/i

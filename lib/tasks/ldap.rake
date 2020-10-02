@@ -1,6 +1,6 @@
 namespace :cartodb do
   namespace :ldap do
-    desc "Tests an LDAP connection. Returns a summary of all tests ran, with success status and error messages."
+    desc 'Tests an LDAP connection. Returns a summary of all tests ran, with success status and error messages.'
     task :test_ldap_connection, [:from_database] => :environment do |_t, args|
       args.with_defaults(from_database: false)
 
@@ -35,7 +35,7 @@ namespace :cartodb do
         result[:connection].delete(:connection)
         if ldap.domain_bases.present?
           result[:login] = if test_user.present? && test_password.present?
-                            test_ldap_user(ldap, test_user, test_password)
+                             test_ldap_user(ldap, test_user, test_password)
                            else
                              { success: false, error: 'Test credentials not provided' }
                            end
@@ -74,12 +74,11 @@ namespace :cartodb do
     end
 
     # INFO: Separate multiple domain names by commas
-    desc "Creates an LDAP Configuration entry"
+    desc 'Creates an LDAP Configuration entry'
     task :create_ldap_configuration, [] => :environment do |_t, _args|
-
       if ENV['ORGANIZATION_ID'].blank?
         if ENV['ORGANIZATION_NAME'].blank?
-          raise "Missing ORGANIZATION_ID and ORGANIZATION_NAME. Must provide one of both"
+          raise 'Missing ORGANIZATION_ID and ORGANIZATION_NAME. Must provide one of both'
         else
           organization = Carto::Organization.where(name: ENV['ORGANIZATION_NAME']).first
         end
@@ -90,17 +89,17 @@ namespace :cartodb do
 
       unless ldap.valid?
         missing = ldap.errors.keys.reject { |k| k == :domain_bases_list }
-        raise "Missing: " + missing.join(', ').upcase
+        raise 'Missing: ' + missing.join(', ').upcase
       end
 
       if ldap.save
         puts "LDAP configuration created with id: #{ldap.id}"
       else
-        puts "Error saving LDAP configuration"
+        puts 'Error saving LDAP configuration'
       end
     end
 
-    desc "Deletes existing LDAP Configuration entries"
+    desc 'Deletes existing LDAP Configuration entries'
     task :reset_ldap_configuration, [] => :environment do |_t, _args|
       Carto::Ldap::Configuration.delete_all
     end
@@ -129,20 +128,20 @@ namespace :cartodb do
     group_object_class = ENV['GROUP_OBJECT_CLASS']
 
     Carto::Ldap::Configuration.new(
-      organization:             organization,
-      host:                     host,
-      port:                     port,
-      encryption:               encryption,
-      ssl_version:              ssl_version,
-      connection_user:          connection_user,
-      connection_password:      connection_password,
-      user_id_field:            user_id_field,
-      username_field:           username_field,
+      organization: organization,
+      host: host,
+      port: port,
+      encryption: encryption,
+      ssl_version: ssl_version,
+      connection_user: connection_user,
+      connection_password: connection_password,
+      user_id_field: user_id_field,
+      username_field: username_field,
       additional_search_filter: additional_search_filter,
-      email_field:              email_field,
-      domain_bases:             domain_bases,
-      user_object_class:        user_object_class,
-      group_object_class:       group_object_class
+      email_field: email_field,
+      domain_bases: domain_bases,
+      user_object_class: user_object_class,
+      group_object_class: group_object_class
     )
   end
 

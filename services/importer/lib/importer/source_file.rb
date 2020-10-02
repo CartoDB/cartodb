@@ -1,7 +1,8 @@
 module CartoDB
   module Importer2
     class SourceFile
-      ENCODING_RE = /_encoding_([\w|-]+)_encoding_.*\./
+
+      ENCODING_RE = /_encoding_([\w|-]+)_encoding_.*\./.freeze
 
       def initialize(filepath, filename = nil, layer = nil, http_opts = {})
         @filepath       = filepath
@@ -45,6 +46,7 @@ module CartoDB
 
       def encoding
         return nil unless filepath =~ ENCODING_RE
+
         filepath.match(ENCODING_RE)[1].upcase
       end
 
@@ -54,6 +56,7 @@ module CartoDB
       private
 
       attr_reader :filepath
+
     end
   end
 end

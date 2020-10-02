@@ -1,6 +1,7 @@
-EmailAddress::Config.configure(local_format: :conventional, host_validation: Cartodb.config[:disable_email_mx_check] ? :syntax : :mx )
+EmailAddress::Config.configure(local_format: :conventional, host_validation: Cartodb.config[:disable_email_mx_check] ? :syntax : :mx)
 
 class EmailValidator < ActiveModel::EachValidator
+
   def validate_each(record, attribute, value)
     return unless value
 
@@ -14,8 +15,7 @@ class EmailValidator < ActiveModel::EachValidator
   private
 
   def validate_value(record, attribute, value)
-    unless EmailAddress.valid?(value)
-      record.errors[attribute] << (options[:message] || "#{value} is not a valid email")
-    end
+    record.errors[attribute] << (options[:message] || "#{value} is not a valid email") unless EmailAddress.valid?(value)
   end
+
 end

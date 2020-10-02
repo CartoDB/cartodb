@@ -5,6 +5,7 @@ require_dependency 'carto/oauth_provider/scopes/scopes'
 require_dependency 'carto/api_key_permissions'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
+
   def validate_each(record, attribute, value)
     return record.errors[attribute] = ['grants has to be an array'] unless value&.is_a?(Array)
 
@@ -17,6 +18,7 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
       end
     end
   end
+
 end
 
 module Carto
@@ -37,7 +39,7 @@ module Carto
     API_MAPS      = 'maps'.freeze
     API_DO        = 'do'.freeze
 
-    GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS] }.freeze
+    GRANTS_ALL_APIS = { type: 'apis', apis: [API_SQL, API_MAPS] }.freeze
     GRANTS_ALL_DATA_SERVICES = {
       type: 'dataservices',
       services: ['geocoding', 'routing', 'isolines', 'observatory']
@@ -54,7 +56,7 @@ module Carto
     TYPE_WEIGHTED_ORDER = "CASE WHEN type = '#{TYPE_MASTER}' THEN 3 " \
                           "WHEN type = '#{TYPE_DEFAULT_PUBLIC}' THEN 2 " \
                           "WHEN type = '#{TYPE_REGULAR}' THEN 1 " \
-                          "ELSE 0 END DESC".freeze
+                          'ELSE 0 END DESC'.freeze
 
     CDB_CONF_KEY_PREFIX = 'api_keys_'.freeze
 
@@ -236,7 +238,7 @@ module Carto
       db_run(query).map do |line|
         TablePermissions.new(schema: line['table_schema'],
                              name: line['table_name'],
-                             owner: line['owner'] == 't' ? true : false,
+                             owner: line['owner'] == 't',
                              permissions: line['privilege_types'].split(','))
       end
     end
@@ -307,7 +309,7 @@ module Carto
     def role_permission_queries
       queries = [
         "GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"",
-        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}",
+        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}"
       ]
 
       # This is GRANTED to the organizational role for organization users, and the PUBLIC users for non-orgs
@@ -318,9 +320,7 @@ module Carto
       if user.organization_user?
         queries << "GRANT ALL ON FUNCTION \"#{user.database_schema}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\""
       end
-      if regular?
-        queries << "GRANT \"#{db_role}\" TO \"#{user.database_username}\""
-      end
+      queries << "GRANT \"#{db_role}\" TO \"#{user.database_username}\"" if regular?
       queries
     end
 
@@ -355,6 +355,7 @@ module Carto
 
     def effective_ownership_role_name
       return if schema_permissions.all? { |s| s.permissions.empty? }
+
       ownership_role_name || oauth_access_token.try(:ownership_role_name)
     end
 
@@ -382,18 +383,20 @@ module Carto
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     def raise_unprocessable_entity_error(error)
-      raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && $1 || 'Unexpected error')
+      raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && Regexp.last_match(1) || 'Unexpected error')
     end
 
     def invalidate_cache
       return unless user
+
       user.invalidate_varnish_cache
     end
 
     def create_token
-      begin
+      loop do
         self.token = generate_auth_token
-      end while self.class.exists?(user_id: user_id, token: token)
+        break unless self.class.exists?(user_id: user_id, token: token)
+      end
     end
 
     def add_to_redis
@@ -403,6 +406,7 @@ module Carto
     def process_granted_apis
       apis = grants.find { |v| v[:type] == 'apis' }[:apis]
       raise UnprocesableEntityError.new('apis array is needed for type "apis"') unless apis
+
       apis
     end
 
@@ -481,11 +485,11 @@ module Carto
 
       invalid = []
       databases[:tables].each do |table|
-        if allowed[table[:schema]].nil? ||
-           allowed[table[:schema]][table[:name]].nil? ||
-           (table[:permissions] - allowed[table[:schema]][table[:name]]).any?
-          invalid << table
-        end
+        next unless allowed[table[:schema]].nil? ||
+                    allowed[table[:schema]][table[:name]].nil? ||
+                    (table[:permissions] - allowed[table[:schema]][table[:name]]).any?
+
+        invalid << table
       end
       invalid
     end
@@ -505,9 +509,10 @@ module Carto
     end
 
     def create_db_config
-      begin
+      loop do
         self.db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
-      end while self.class.exists?(user_id: user_id, db_role: db_role)
+        break unless self.class.exists?(user_id: user_id, db_role: db_role)
+      end
       self.db_password = SecureRandom.hex(PASSWORD_LENGTH / 2) unless db_password
     end
 
@@ -529,6 +534,7 @@ module Carto
       errors = []
       permissions.each do |api_key_permission|
         next if api_key_permission.permissions.empty?
+
         begin
           # here we catch exceptions to show a proper error to the user request
           # this is because we allow OAuth requests to include a `datasets` or `schemas` scope with
@@ -536,6 +542,7 @@ module Carto
           yield api_key_permission
         rescue Carto::UnprocesableEntityError => e
           raise e unless e.message =~ /does not exist/
+
           non_existent << api_key_permission.name
           errors << e.message
         end
@@ -595,6 +602,7 @@ module Carto
     rescue ActiveRecord::StatementInvalid => e
       log_warning(message: 'Error running SQL command', exception: e)
       return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped
+
       raise_unprocessable_entity_error(e)
     end
 
@@ -627,15 +635,13 @@ module Carto
 
     def valid_master_key
       errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
-      unless grants == MASTER_API_KEY_GRANTS
-        errors.add(:grants, "must grant all apis")
-      end
-      errors.add(:token, "must match user model for master keys") unless token == user.api_key
+      errors.add(:grants, 'must grant all apis') unless grants == MASTER_API_KEY_GRANTS
+      errors.add(:token, 'must match user model for master keys') unless token == user.api_key
     end
 
     def valid_default_public_key
       errors.add(:name, "must be #{NAME_DEFAULT_PUBLIC} for default public keys") unless name == NAME_DEFAULT_PUBLIC
-      errors.add(:grants, "must grant all apis") unless grants == [GRANTS_ALL_APIS]
+      errors.add(:grants, 'must grant all apis') unless grants == [GRANTS_ALL_APIS]
       errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
     end
 
@@ -643,5 +649,6 @@ module Carto
       # This is not avalidation per-se, since we don't want to remove api keys when a user is disabled
       !(user.locked? || regular? && !user.engine_enabled?)
     end
+
   end
 end

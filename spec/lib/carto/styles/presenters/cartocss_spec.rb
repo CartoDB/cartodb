@@ -3,20 +3,21 @@ require 'spec_helper_min'
 module Carto
   module Styles
     module Presenters
+
       describe CartoCSS do
-        before (:all) { @presenter_class = Carto::Styles::Presenters::CartoCSS }
-        after  (:all) { @presenter_class = nil }
+        before(:all) { @presenter_class = Carto::Styles::Presenters::CartoCSS }
+        after(:all) { @presenter_class = nil }
 
         let(:empty_cartocss) do
           "#layer {\n"\
           "\n"\
-          "}"
+          '}'
         end
 
         let(:cartocss_array) do
-          ["color-camisa: blanco;",
-           "talla-zapatos: 46;",
-           "altura: 186cm;"]
+          ['color-camisa: blanco;',
+           'talla-zapatos: 46;',
+           'altura: 186cm;']
         end
 
         let(:cartocss) do
@@ -24,7 +25,7 @@ module Carto
           "  color-camisa: blanco;\n"\
           "  talla-zapatos: 46;\n"\
           "  altura: 186cm;\n"\
-          "}"
+          '}'
         end
 
         it 'returns empty cartocss when no params specified' do
@@ -43,6 +44,7 @@ module Carto
           @presenter_class.new(cartocss_array: cartocss_array).to_s.should eq cartocss
         end
       end
+
     end
   end
 end

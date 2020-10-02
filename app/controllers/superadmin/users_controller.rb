@@ -4,6 +4,7 @@ require_dependency 'carto/overquota_users_service'
 require_dependency 'carto/api/paged_searcher'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
+
   include Carto::UUIDHelper
   include Carto::Api::PagedSearcher
 
@@ -20,7 +21,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   VALID_ORDER_PARAMS = [:updated_at].freeze
 
   def show
-    respond_with(@user.data({:extended => true}))
+    respond_with(@user.data({ extended: true }))
   end
 
   def index
@@ -81,22 +82,22 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.destroy
     respond_with(:superadmin, @user)
   rescue CartoDB::SharedEntitiesError => e
-    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "userHasSharedEntities" }, status: 422
+    render json: { "error": "Error destroying user: #{e.message}", "errorCode": 'userHasSharedEntities' }, status: 422
   rescue StandardError => e
     log_error(exception: e, message: 'Error destroying user', target_user: @user)
-    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "" }, status: 422
+    render json: { "error": "Error destroying user: #{e.message}", "errorCode": '' }, status: 422
   end
 
   def dump
     database_port = Cartodb.get_config(:users_dumps, 'service', 'port')
-    raise "There is not a dump method configured" unless database_port
+    raise 'There is not a dump method configured' unless database_port
 
-    json_data = {database: @user.database_name, username: @user.username}
+    json_data = { database: @user.database_name, username: @user.username }
     http_client = Carto::Http::Client.get(self.class.name, log_requests: true)
     response = http_client.request(
       "#{@user.database_host}:#{database_port}/scripts/db_dump",
       method: :post,
-      headers: { "Content-Type" => "application/json" },
+      headers: { 'Content-Type' => 'application/json' },
       body: json_data.to_json
     ).run
     parsed_response = JSON.parse(response.body)
@@ -107,15 +108,15 @@ class Superadmin::UsersController < Superadmin::SuperadminController
        !parsed_response['return_values']['remote_file'].nil? &&
        !parsed_response['return_values']['remote_file'].empty?
       sa_response = {
-        :dumper_response => parsed_response,
-        :remote_file => parsed_response['remote_file'],
-        :local_file => parsed_response['local_file'],
-        :database_host => @user.database_host
+        dumper_response: parsed_response,
+        remote_file: parsed_response['remote_file'],
+        local_file: parsed_response['local_file'],
+        database_host: @user.database_host
       }
       render json: sa_response, status: 200
     else
       sa_response = {
-        :dumper_response => parsed_response
+        dumper_response: parsed_response
       }
       render json: sa_response, status: 400
     end

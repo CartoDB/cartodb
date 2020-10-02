@@ -3,6 +3,7 @@ require_relative './presenters/cartocss'
 module Carto
   module Styles
     class Style
+
       include ::LoggerHelper
 
       CARTOGRAPHY_DEFINITION_LOCATION =
@@ -66,6 +67,7 @@ module Carto
       def parse_stroke(_)
         []
       end
+
     end
   end
 end

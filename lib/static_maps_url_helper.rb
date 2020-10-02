@@ -1,5 +1,4 @@
 module Carto
-
   class StaticMapsURLHelper
 
     def url_for_static_map(request, visualization, map_width, map_height)

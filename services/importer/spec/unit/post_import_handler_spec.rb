@@ -25,4 +25,3 @@ describe CartoDB::Importer2::PostImportHandler do
     end
   end
 end
-

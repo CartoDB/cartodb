@@ -1,5 +1,5 @@
 namespace :cartodb do
-  desc "fixes duplicated unique overlays"
+  desc 'fixes duplicated unique overlays'
   task fix_unique_overlays: :environment do
     query = <<-SQL
       select visualization_id, type from overlays

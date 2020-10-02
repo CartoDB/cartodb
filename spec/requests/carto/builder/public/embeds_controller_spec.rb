@@ -98,7 +98,7 @@ describe Carto::Builder::Public::EmbedsController do
       response.status.should == 200
       response.headers['X-Cache-Channel'].should eq "#{@visualization.varnish_key}:vizjson"
       response.headers['Surrogate-Key'].should eq "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
-      response.headers['Cache-Control'].should eq "no-cache,max-age=86400,must-revalidate,public"
+      response.headers['Cache-Control'].should eq 'no-cache,max-age=86400,must-revalidate,public'
     end
 
     describe 'connectivity issues' do
@@ -141,7 +141,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should_not include("maps.googleapis.com/maps/api/js")
+      response.body.should_not include('maps.googleapis.com/maps/api/js')
     end
 
     it 'includes the google maps client id if configured' do
@@ -153,7 +153,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should include("maps.googleapis.com/maps/api/js?v=3.32&client=wadus_cid")
+      response.body.should include('maps.googleapis.com/maps/api/js?v=3.32&client=wadus_cid')
     end
 
     it 'does not includes google maps if the maps does not need it' do
@@ -165,7 +165,7 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should_not include("maps.googleapis.com/maps/api/js")
+      response.body.should_not include('maps.googleapis.com/maps/api/js')
     end
 
     it 'includes 3rd party scripts for analytics' do
@@ -184,7 +184,7 @@ describe Carto::Builder::Public::EmbedsController do
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
-        response.body.should include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
+        response.body.should include('d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js')
       end
     end
 
@@ -204,7 +204,7 @@ describe Carto::Builder::Public::EmbedsController do
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id, cookies: '0')
 
-        response.body.should_not include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
+        response.body.should_not include('d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js')
       end
     end
 
@@ -348,7 +348,7 @@ describe Carto::Builder::Public::EmbedsController do
         get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
         response.status.should == 200
-        response.body.should include("maps.googleapis.com/maps/api/js?v=3.32&client=wadus_org_cid")
+        response.body.should include('maps.googleapis.com/maps/api/js?v=3.32&client=wadus_org_cid')
       end
     end
   end
@@ -387,7 +387,7 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
-      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: "${TEST_PASSWORD}NO!")
+      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: '${TEST_PASSWORD}NO!')
 
       response.body.include?('Invalid password').should be true
       response.status.should == 403

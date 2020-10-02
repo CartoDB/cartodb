@@ -4,12 +4,12 @@
 # GET FIXED
 
 class Capybara::Selenium::Driver
+
   def find(selector)
-    begin
-      browser.find_elements(:xpath, selector).map { |node| Capybara::Selenium::Node.new(self, node) }
-    rescue Selenium::WebDriver::Error::InvalidSelectorError, Selenium::WebDriver::Error::UnhandledError
-      sleep 1
-      browser.find_elements(:xpath, selector).map { |node| Capybara::Selenium::Node.new(self, node) }
-    end
+    browser.find_elements(:xpath, selector).map { |node| Capybara::Selenium::Node.new(self, node) }
+  rescue Selenium::WebDriver::Error::InvalidSelectorError, Selenium::WebDriver::Error::UnhandledError
+    sleep 1
+    browser.find_elements(:xpath, selector).map { |node| Capybara::Selenium::Node.new(self, node) }
   end
+
 end

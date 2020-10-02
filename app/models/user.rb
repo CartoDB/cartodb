@@ -27,6 +27,7 @@ require_dependency 'carto/gcloud_user_settings'
 require_dependency 'carto/helpers/user_commons'
 
 class User < Sequel::Model
+
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator
   include CartodbCentralSynchronizable
@@ -46,7 +47,7 @@ class User < Sequel::Model
   one_to_many :geocodings, order: Sequel.desc(:created_at)
   many_to_one :organization
 
-  many_to_many :layers, class: ::Layer, :order => :order, :after_add => proc { |user, layer|
+  many_to_many :layers, class: ::Layer, order: :order, after_add: proc { |user, layer|
     layer.set_default_order(user)
   }
 
@@ -62,7 +63,7 @@ class User < Sequel::Model
   many_through_many :groups, [[:users_groups, :user_id, :group_id]]
 
   # Sequel setup & plugins
-  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
+  plugin :association_dependencies, client_application: :destroy, synchronization_oauths: :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -70,14 +71,14 @@ class User < Sequel::Model
 
   # Restrict to_json attributes
   @json_serializer_opts = {
-    :except => [ :crypted_password,
-                 :session_salt,
-                 :invite_token,
-                 :invite_token_date,
-                 :admin,
-                 :enabled,
-                 :map_enabled],
-    :naked => true # avoid adding json_class to result
+    except: [:crypted_password,
+             :session_salt,
+             :invite_token,
+             :invite_token_date,
+             :admin,
+             :enabled,
+             :map_enabled],
+    naked: true # avoid adding json_class to result
   }
 
   DEFAULT_MAX_LAYERS = 8
@@ -88,8 +89,8 @@ class User < Sequel::Model
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
 
-  DEFAULT_MAX_IMPORT_FILE_SIZE = 157286400
-  DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT = 500000
+  DEFAULT_MAX_IMPORT_FILE_SIZE = 157_286_400
+  DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT = 500_000
   DEFAULT_MAX_CONCURRENT_IMPORT_COUNT = 3
 
   COMMON_DATA_ACTIVE_DAYS = 31
@@ -122,9 +123,9 @@ class User < Sequel::Model
   def validate_username
     validates_presence :username
     validates_unique   :username
-    validates_format /\A[a-z0-9\-]+\z/, :username, message: "must only contain lowercase letters, numbers and the dash (-) symbol"
-    validates_format /\A[a-z0-9]{1}/, :username, message: "must start with alphanumeric chars"
-    validates_format /[a-z0-9]{1}\z/, :username, message: "must end with alphanumeric chars"
+    validates_format(/\A[a-z0-9\-]+\z/, :username, message: 'must only contain lowercase letters, numbers and the dash (-) symbol')
+    validates_format(/\A[a-z0-9]{1}/, :username, message: 'must start with alphanumeric chars')
+    validates_format(/[a-z0-9]{1}\z/, :username, message: 'must end with alphanumeric chars')
     validates_max_length 63, :username
     errors.add(:name, 'is taken') if name_exists_in_organizations?
   end
@@ -141,7 +142,7 @@ class User < Sequel::Model
     validates_presence :password if new? && crypted_password.blank?
 
     if new? || (password.present? && !@new_password.present?)
-      errors.add(:password, "is not confirmed") unless password == password_confirmation
+      errors.add(:password, 'is not confirmed') unless password == password_confirmation
     end
     validate_password_change
   end
@@ -150,15 +151,15 @@ class User < Sequel::Model
     if organization.present?
       organization_validation
     elsif org_admin
-      errors.add(:org_admin, "cannot be set for non-organization user")
+      errors.add(:org_admin, 'cannot be set for non-organization user')
     end
   end
 
   def validate_quotas
-    errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
-    errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
-    errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
-    errors.add(:obs_general_quota, "cannot be nil") if obs_general_quota.nil?
+    errors.add(:geocoding_quota, 'cannot be nil') if geocoding_quota.nil?
+    errors.add(:here_isolines_quota, 'cannot be nil') if here_isolines_quota.nil?
+    errors.add(:obs_snapshot_quota, 'cannot be nil') if obs_snapshot_quota.nil?
+    errors.add(:obs_general_quota, 'cannot be nil') if obs_general_quota.nil?
   end
 
   def organization_validation
@@ -172,13 +173,13 @@ class User < Sequel::Model
       if quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
         # Organization#assigned_quota includes the OLD quota for this user,
         # so we have to ammend that in the calculation:
-        errors.add(:quota_in_bytes, "not enough disk quota")
+        errors.add(:quota_in_bytes, 'not enough disk quota')
       end
 
       organization.validate_seats(self, errors)
     end
 
-    errors.add(:viewer, "cannot be enabled for organization admin") if organization_admin? && viewer
+    errors.add(:viewer, 'cannot be enabled for organization admin') if organization_admin? && viewer
   end
 
   def valid_creation?(creator_user)
@@ -222,18 +223,18 @@ class User < Sequel::Model
 
   def before_save
     super
-    self.quota_in_bytes = self.quota_in_bytes.to_i if !self.quota_in_bytes.nil? && self.quota_in_bytes != self.quota_in_bytes.to_i
+    self.quota_in_bytes = quota_in_bytes.to_i if !quota_in_bytes.nil? && quota_in_bytes != quota_in_bytes.to_i
     self.updated_at = Time.now
     # Set account_type and default values for organization users
     # TODO: Abstract this
-    self.account_type = "ORGANIZATION USER" if self.organization_user? && !self.organization_owner?
-    if self.organization_user?
+    self.account_type = 'ORGANIZATION USER' if organization_user? && !organization_owner?
+    if organization_user?
       if new? || column_changed?(:organization_id)
         self.twitter_datasource_enabled = organization.twitter_datasource_enabled
         self.google_maps_key = organization.google_maps_key
         self.google_maps_private_key = organization.google_maps_private_key
 
-        if !organization_owner?
+        unless organization_owner?
           self.max_import_file_size ||= organization.max_import_file_size
           self.max_import_table_row_count ||= organization.max_import_table_row_count
           self.max_concurrent_import_count ||= organization.max_concurrent_import_count
@@ -241,7 +242,7 @@ class User < Sequel::Model
 
           # Non-owner org users get the free SDK plan
           if organization.owner && organization.owner.mobile_sdk_enabled?
-            self.mobile_max_open_users = 10000 unless changed_columns.include?(:mobile_max_open_users)
+            self.mobile_max_open_users = 10_000 unless changed_columns.include?(:mobile_max_open_users)
             self.mobile_max_private_users = 10 unless changed_columns.include?(:mobile_max_private_users)
             self.mobile_xamarin = true unless changed_columns.include?(:mobile_xamarin)
             self.mobile_gis_extension = true unless changed_columns.include?(:mobile_gis_extension)
@@ -264,9 +265,7 @@ class User < Sequel::Model
     if viewer
       # Enforce quotas
       set_viewer_quotas
-      if !new? && column_changed?(:viewer)
-        revoke_rw_permission_on_shared_entities
-      end
+      revoke_rw_permission_on_shared_entities if !new? && column_changed?(:viewer)
     end
   end
 
@@ -278,7 +277,7 @@ class User < Sequel::Model
     super
     setup_user
     save_metadata
-    self.load_avatar
+    load_avatar
 
     db.after_commit { create_api_keys }
 
@@ -288,7 +287,7 @@ class User < Sequel::Model
   end
 
   def notify_new_organization_user
-    ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, self.id)
+    ::Resque.enqueue(::Resque::UserJobs::Mail::NewOrganizationUser, id)
   end
 
   def notify_org_seats_limit_reached
@@ -303,7 +302,7 @@ class User < Sequel::Model
     CartoDB::Visualization::CommonDataService.new.load_common_data_for_user(self, visualizations_api_url)
   rescue StandardError => e
     CartoDB.notify_error(
-      "Error loading common data for user",
+      'Error loading common data for user',
       user: inspect,
       url: visualizations_api_url,
       error: e.inspect
@@ -313,13 +312,13 @@ class User < Sequel::Model
   def delete_common_data
     CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
   rescue StandardError => e
-    CartoDB.notify_error("Error deleting common data for user", user: self, error: e.inspect)
+    CartoDB.notify_error('Error deleting common data for user', user: self, error: e.inspect)
   end
 
   def after_save
     super
     save_metadata
-    changes = (self.previous_changes.present? ? self.previous_changes.keys : [])
+    changes = (previous_changes.present? ? previous_changes.keys : [])
     db_service.set_statement_timeouts if changes.include?(:user_timeout) || changes.include?(:database_timeout)
     db_service.rebuild_quota_trigger if changes.include?(:quota_in_bytes)
     if changes.include?(:account_type) || changes.include?(:available_for_hire) || changes.include?(:disqus_shortname) || changes.include?(:email) || \
@@ -441,9 +440,9 @@ class User < Sequel::Model
       assign_search_tweets_to_organization_owner
 
       ClientApplication.where(user_id: id).each(&:destroy)
-    rescue StandardError => exception
+    rescue StandardError => e
       error_happened = true
-      log_error(message: 'Error destroying user', current_user: self, exception: exception)
+      log_error(message: 'Error destroying user', current_user: self, exception: e)
     end
 
     # Invalidate user cache
@@ -469,13 +468,14 @@ class User < Sequel::Model
       )
     elsif ::User.where(database_name: database_name).count > 1
       raise CartoDB::BaseCartoDBError.new(
-        'The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
+        'The user is not supposed to be in a organization but another user has the same database_name. Not dropping it'
+      )
     else
-      Thread.new {
+      Thread.new do
         conn = in_database(as: :cluster_admin)
         db_service.drop_database_and_user(conn)
         db_service.drop_user(conn)
-      }.join
+      end.join
       db_service.monitor_user_notification
     end
   end
@@ -501,25 +501,21 @@ class User < Sequel::Model
     # we need to wait for the deletion to be commited because of the mix of Sequel (user)
     # and AR (rate_limit) models and rate_limit_id being a FK in the users table
     db.after_commit do
-      begin
-        rate_limit.try(:destroy_completely, self)
-      rescue StandardError => e
-        log_error(message: 'Error deleting rate limit at user deletion', exception: e)
-      end
+      rate_limit.try(:destroy_completely, self)
+    rescue StandardError => e
+      log_error(message: 'Error deleting rate limit at user deletion', exception: e)
     end
   end
 
   # allow extra vars for auth
   attr_reader :password
 
-  def created_via=(created_via)
-    @created_via = created_via
-  end
+  attr_writer :created_via
 
   def validate_password_change
-    return if @changing_passwords.nil?  # Called always, validate whenever proceeds
+    return if @changing_passwords.nil? # Called always, validate whenever proceeds
 
-    errors.add(:old_password, "Old password not valid") unless @old_password_validated || !needs_password_confirmation?
+    errors.add(:old_password, 'Old password not valid') unless @old_password_validated || !needs_password_confirmation?
 
     valid_password?(:new_password, @new_password, @new_password_confirmation)
   end
@@ -556,11 +552,9 @@ class User < Sequel::Model
     needs_password_confirmation?
   end
 
-  alias :password_set? :needs_password_confirmation?
+  alias password_set? needs_password_confirmation?
 
-  def password_confirmation
-    @password_confirmation
-  end
+  attr_reader :password_confirmation
 
   # Database configuration setup
 
@@ -568,7 +562,7 @@ class User < Sequel::Model
     if Rails.env.production?
       "cartodb_user_#{id}"
     elsif Rails.env.staging?
-      "cartodb_staging_user_#{self.id}"
+      "cartodb_staging_user_#{id}"
     else
       "#{Rails.env}_cartodb_user_#{id}"
     end
@@ -585,10 +579,8 @@ class User < Sequel::Model
   # Obtain a db connection through the default port. Allows to set a statement_timeout
   # which is only effective in case the connection does not use PGBouncer or any other
   # PostgreSQL transaction-level connection pool which might not persist connection variables.
-  def in_database(options = {}, &block)
-    if options[:statement_timeout]
-      in_database.run("SET statement_timeout TO #{options[:statement_timeout]}")
-    end
+  def in_database(options = {})
+    in_database.run("SET statement_timeout TO #{options[:statement_timeout]}") if options[:statement_timeout]
 
     configuration = db_service.db_configuration_for(options[:as])
     configuration['database'] = options['database'] unless options['database'].nil?
@@ -600,11 +592,8 @@ class User < Sequel::Model
     else
       connection
     end
-
   ensure
-    if options[:statement_timeout]
-      in_database.run('SET statement_timeout TO DEFAULT')
-    end
+    in_database.run('SET statement_timeout TO DEFAULT') if options[:statement_timeout]
   end
 
   # Execute DB code inside a transaction with an optional statement timeout.
@@ -615,26 +604,24 @@ class User < Sequel::Model
     statement_timeout = options.delete(:statement_timeout)
     in_database(options) do |db|
       db.transaction do
-        begin
-          db.run("SET statement_timeout TO #{statement_timeout}") if statement_timeout
-          yield db
-          db.run('SET statement_timeout TO DEFAULT')
-        end
+        db.run("SET statement_timeout TO #{statement_timeout}") if statement_timeout
+        yield db
+        db.run('SET statement_timeout TO DEFAULT')
       end
     end
   end
 
   def get_connection(options = {}, configuration)
-  connection = $pool.fetch(configuration) do
+    connection = $pool.fetch(configuration) do
       db = get_database(options, configuration)
       db.extension(:connection_validator)
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
       db
     end
-  rescue StandardError => exception
-    CartoDB::report_exception(exception, "Cannot connect to user database",
-                              user: self, database: configuration['database'])
-    raise exception
+  rescue StandardError => e
+    CartoDB.report_exception(e, 'Cannot connect to user database',
+                             user: self, database: configuration['database'])
+    raise e
   end
 
   def connection(options = {})
@@ -647,20 +634,16 @@ class User < Sequel::Model
 
   def get_database(options, configuration)
     ::Sequel.connect(configuration.merge(after_connect: (proc do |conn|
-      unless options[:as] == :cluster_admin
-        conn.execute(%{ SET search_path TO #{db_service.build_search_path} })
-      end
+      conn.execute(%{ SET search_path TO #{db_service.build_search_path} }) unless options[:as] == :cluster_admin
     end)))
   end
 
   def tables
-    ::UserTable.filter(:user_id => self.id).order(:id).reverse
+    ::UserTable.filter(user_id: id).order(:id).reverse
   end
 
   def load_avatar
-    if self.avatar_url.nil?
-      self.reload_avatar
-    end
+    reload_avatar if avatar_url.nil?
   end
 
   def reload_avatar
@@ -692,15 +675,15 @@ class User < Sequel::Model
     if avatar_base_url && kinds && colors
       avatar_kind = kinds.sample
       avatar_color = colors.sample
-      return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
+      "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
-      log_info(message: "Attribute avatars_base_url not found in config. Using default avatar")
-      return default_avatar
+      log_info(message: 'Attribute avatars_base_url not found in config. Using default avatar')
+      default_avatar
     end
   end
 
   def default_avatar
-    "/assets/unversioned/images/avatars/public_dashboard_default_avatar.png"
+    '/assets/unversioned/images/avatars/public_dashboard_default_avatar.png'
   end
 
   def gravatar_enabled?
@@ -709,7 +692,7 @@ class User < Sequel::Model
     value.to_s != 'false'
   end
 
-  def gravatar(protocol = "http://", size = 128, default_image = default_avatar)
+  def gravatar(protocol = 'http://', size = 128, default_image = default_avatar)
     "#{protocol}#{gravatar_user_url(size)}&d=#{protocol}#{URI.encode(default_image)}"
   end # gravatar
 
@@ -759,7 +742,7 @@ class User < Sequel::Model
   end
 
   def view_dashboard
-    self.this.update dashboard_viewed_at: Time.now
+    this.update dashboard_viewed_at: Time.now
     set dashboard_viewed_at: Time.now
   end
 
@@ -768,7 +751,7 @@ class User < Sequel::Model
   end
 
   def geocoder_type
-    google_maps_geocoder_enabled? ? "google" : "heremaps"
+    google_maps_geocoder_enabled? ? 'google' : 'heremaps'
   end
 
   # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
@@ -849,8 +832,8 @@ class User < Sequel::Model
 
   # Returns an array representing the last 30 days, populated with api_calls
   # from three different sources
-  def get_api_calls(options = {})
-    return CartoDB::Stats::APICalls.new.get_api_calls_without_dates(self.username, {old_api_calls: false})
+  def get_api_calls(_options = {})
+    CartoDB::Stats::APICalls.new.get_api_calls_without_dates(username, { old_api_calls: false })
   end
 
   def get_geocoding_calls(options = {})
@@ -860,7 +843,7 @@ class User < Sequel::Model
 
   def get_not_aggregated_geocoding_calls(options = {})
     date_from, date_to = quota_dates(options)
-    Geocoding.get_not_aggregated_user_geocoding_calls(geocodings_dataset.db, self.id, date_from, date_to)
+    Geocoding.get_not_aggregated_user_geocoding_calls(geocodings_dataset.db, id, date_from, date_to)
   end
 
   def get_here_isolines_calls(options = {})
@@ -884,47 +867,47 @@ class User < Sequel::Model
   end
 
   def remaining_geocoding_quota
-    if organization.present?
-      remaining = organization.remaining_geocoding_quota
-    else
-      remaining = geocoding_quota - get_geocoding_calls
-    end
+    remaining = if organization.present?
+                  organization.remaining_geocoding_quota
+                else
+                  geocoding_quota - get_geocoding_calls
+                end
     (remaining > 0 ? remaining : 0)
   end
 
   def remaining_here_isolines_quota
-    if organization.present?
-      remaining = organization.remaining_here_isolines_quota
-    else
-      remaining = here_isolines_quota - get_here_isolines_calls
-    end
+    remaining = if organization.present?
+                  organization.remaining_here_isolines_quota
+                else
+                  here_isolines_quota - get_here_isolines_calls
+                end
     (remaining > 0 ? remaining : 0)
   end
 
   def remaining_obs_snapshot_quota
-    if organization.present?
-      remaining = organization.remaining_obs_snapshot_quota
-    else
-      remaining = obs_snapshot_quota - get_obs_snapshot_calls
-    end
+    remaining = if organization.present?
+                  organization.remaining_obs_snapshot_quota
+                else
+                  obs_snapshot_quota - get_obs_snapshot_calls
+                end
     (remaining > 0 ? remaining : 0)
   end
 
   def remaining_obs_general_quota
-    if organization.present?
-      remaining = organization.remaining_obs_general_quota
-    else
-      remaining = obs_general_quota - get_obs_general_calls
-    end
+    remaining = if organization.present?
+                  organization.remaining_obs_general_quota
+                else
+                  obs_general_quota - get_obs_general_calls
+                end
     (remaining > 0 ? remaining : 0)
   end
 
   def remaining_mapzen_routing_quota
-    if organization.present?
-      remaining = organization.remaining_mapzen_routing_quota
-    else
-      remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls
-    end
+    remaining = if organization.present?
+                  organization.remaining_mapzen_routing_quota
+                else
+                  mapzen_routing_quota.to_i - get_mapzen_routing_calls
+                end
     (remaining > 0 ? remaining : 0)
   end
 
@@ -933,34 +916,33 @@ class User < Sequel::Model
   def get_api_calls_from_es
     require 'date'
     yesterday = Date.today - 1
-    from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
-    to_date = DateTime.now.strftime("%Q")
+    from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime('%Q')
+    to_date = DateTime.now.strftime('%Q')
     request_body = Cartodb.config[:api_requests_es_service]['body'].dup
     request_url = Cartodb.config[:api_requests_es_service]['url'].dup
-    request_body.gsub!("$CDB_SUBDOMAIN$", self.username)
-    request_body.gsub!("\"$FROM$\"", from_date)
-    request_body.gsub!("\"$TO$\"", to_date)
+    request_body.gsub!('$CDB_SUBDOMAIN$', username)
+    request_body.gsub!('"$FROM$"', from_date)
+    request_body.gsub!('"$TO$"', to_date)
     request = http_client.request(
       request_url,
       method: :post,
-      headers: { "Content-Type" => "application/json" },
+      headers: { 'Content-Type' => 'application/json' },
       body: request_body
     )
     response = request.run
-    if response.code != 200
-      raise(response.body)
-    end
+    raise(response.body) if response.code != 200
+
     values = {}
-    JSON.parse(response.body)["aggregations"]["0"]["buckets"].each {|i| values[i['key']] = i['doc_count']}
-    return values
+    JSON.parse(response.body)['aggregations']['0']['buckets'].each { |i| values[i['key']] = i['doc_count']}
+    values
   end
 
   # Get the final api calls from ES and write them to redis
   def set_api_calls_from_es(options = {})
     if options[:force_update]
       es_api_calls = get_api_calls_from_es
-      es_api_calls.each do |d,v|
-        $users_metadata.ZADD "user:#{self.username}:mapviews_es:global", v, DateTime.strptime(d.to_s, "%Q").strftime("%Y%m%d")
+      es_api_calls.each do |d, v|
+        $users_metadata.ZADD "user:#{username}:mapviews_es:global", v, DateTime.strptime(d.to_s, '%Q').strftime('%Y%m%d')
       end
     end
   end
@@ -968,18 +950,24 @@ class User < Sequel::Model
   ## Legacy stats fetching
   ## This is DEPRECATED
   def get_old_api_calls
-    JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
+    JSON.parse($users_metadata.HMGET(key, 'api_calls').first)
+  rescue StandardError
+    {}
   end
 
   def set_old_api_calls(options = {})
     # Ensure we update only once every 3 hours
-    if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
-      api_calls = JSON.parse(
-        open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
-      ) rescue {}
+    if options[:force_update] || get_old_api_calls['updated_at'].to_i < 3.hours.ago.to_i
+      api_calls = begin
+                    JSON.parse(
+                      open("#{Cartodb.config[:api_requests_service_url]}?username=#{username}").read
+                    )
+                  rescue StandardError
+                    {}
+                  end
 
       # Manually set updated_at
-      api_calls["updated_at"] = Time.now.to_i
+      api_calls['updated_at'] = Time.now.to_i
       $users_metadata.HMSET key, 'api_calls', api_calls.to_json
     end
   end
@@ -1001,42 +989,44 @@ class User < Sequel::Model
   end
 
   def reset_client_application!
-    if client_application
-      client_application.destroy
-    end
-    ClientApplication.create(:user_id => self.id)
+    client_application.destroy if client_application
+    ClientApplication.create(user_id: id)
   end
 
   def self.find_with_custom_fields(user_id)
-    ::User.filter(:id => user_id).select(:id,:email,:username,:crypted_password,:database_name,:admin).first
+    ::User.filter(id: user_id).select(:id, :email, :username, :crypted_password, :database_name, :admin).first
   end
 
   def enabled?
-    self.enabled && self.enable_account_token.nil?
+    enabled && enable_account_token.nil?
   end
 
   def disabled?
-    !self.enabled
+    !enabled
   end
 
   def database_exists?
     return false if database_name.blank?
-    conn = self.in_database(as: :cluster_admin)
-    conn[:pg_database].filter(:datname => database_name).all.any?
+
+    conn = in_database(as: :cluster_admin)
+    conn[:pg_database].filter(datname: database_name).all.any?
   end
 
   # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
   # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
   # Needs to go on a background job.
   def db_size_in_bytes
-    return 0 if self.new?
+    return 0 if new?
 
     attempts = 0
     begin
       # Hack to support users without the new MU functiones loaded
       user_data_size_function =
-        self.db_service.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()"
-                                                          : "CDB_UserDataSize('#{self.database_schema}')"
+        if db_service.cartodb_extension_version_pre_mu?
+          'CDB_UserDataSize()'
+        else
+          "CDB_UserDataSize('#{database_schema}')"
+        end
       in_database(as: :superuser) do |user_database|
         user_database.transaction do
           user_database.fetch(%{SET LOCAL lock_timeout = '1s'})
@@ -1046,10 +1036,10 @@ class User < Sequel::Model
     rescue StandardError => e
       attempts += 1
       begin
-        in_database(:as => :superuser).fetch("ANALYZE")
-      rescue StandardError => ee
-        log_error(exception: ee, current_user: self)
-        raise ee
+        in_database(as: :superuser).fetch('ANALYZE')
+      rescue StandardError => e
+        log_error(exception: e, current_user: self)
+        raise e
       end
       retry unless attempts > 1
       CartoDB.notify_exception(e, { user: self })
@@ -1058,35 +1048,35 @@ class User < Sequel::Model
     end
   end
 
-  def real_tables(in_schema=self.database_schema)
-    self.in_database(:as => :superuser)
-        .select(:pg_class__oid, :pg_class__relname)
-        .from(:pg_class)
-        .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-        .where(:relkind => 'r', :nspname => in_schema)
-        .exclude(:relname => Carto::DB::Sanitize::SYSTEM_TABLE_NAMES)
-        .all
+  def real_tables(in_schema=database_schema)
+    in_database(as: :superuser)
+      .select(:pg_class__oid, :pg_class__relname)
+      .from(:pg_class)
+      .join_table(:inner, :pg_namespace, oid: :relnamespace)
+      .where(relkind: 'r', nspname: in_schema)
+      .exclude(relname: Carto::DB::Sanitize::SYSTEM_TABLE_NAMES)
+      .all
   end
 
   def exceeded_quota?
-    self.over_disk_quota? || self.over_table_quota?
+    over_disk_quota? || over_table_quota?
   end
 
   def disk_quota_overspend
-    self.over_disk_quota? ? self.remaining_quota.abs : 0
+    over_disk_quota? ? remaining_quota.abs : 0
   end
 
   def over_disk_quota?
-    self.remaining_quota <= 0
+    remaining_quota <= 0
   end
 
   def over_table_quota?
-    (remaining_table_quota && remaining_table_quota <= 0) ? true : false
+    remaining_table_quota && remaining_table_quota <= 0 ? true : false
   end
 
   def account_type_name
-    self.account_type.gsub(' ', '_').downcase
-    rescue StandardError
+    account_type.gsub(' ', '_').downcase
+  rescue StandardError
     ''
   end
 
@@ -1105,15 +1095,15 @@ class User < Sequel::Model
   end
 
   def failed_import_count
-    DataImport.where(user_id: self.id, state: 'failure').count
+    DataImport.where(user_id: id, state: 'failure').count
   end
 
   def success_import_count
-    DataImport.where(user_id: self.id, state: 'complete').count
+    DataImport.where(user_id: id, state: 'complete').count
   end
 
   def import_count
-    DataImport.where(user_id: self.id).count
+    DataImport.where(user_id: id).count
   end
 
   # Get the count of public visualizations
@@ -1195,17 +1185,21 @@ class User < Sequel::Model
   end
 
   def last_visualization_created_at
-    SequelRails.connection.fetch("SELECT created_at FROM visualizations WHERE " +
-      "map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC " +
-      "LIMIT 1;", id)
-      .to_a.fetch(0, {}).fetch(:created_at, nil)
+    SequelRails.connection.fetch('SELECT created_at FROM visualizations WHERE ' +
+      'map_id IN (select id FROM maps WHERE user_id=?) ORDER BY created_at DESC ' +
+      'LIMIT 1;', id)
+               .to_a.fetch(0, {}).fetch(:created_at, nil)
   end
 
   def importing_jobs
     imports = DataImport.where(state: ['complete', 'failure']).invert
-      .where(user_id: self.id)
-      .where { created_at > Time.now - 24.hours }.all
-    running_import_ids = Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact
+                        .where(user_id: id)
+                        .where { created_at > Time.now - 24.hours }.all
+    running_import_ids = Resque::Worker.all.map do |worker|
+      worker.job['payload']['args'].first['job_id']
+                         rescue StandardError
+                           nil
+    end .compact
     imports.map do |import|
       # INFO: this timeout is big because huge files might make the import not to be *running*,
       # as well as high load periods. With a smaller timeout modal window displays an error message,
@@ -1220,19 +1214,19 @@ class User < Sequel::Model
   end
 
   def job_tracking_identifier
-    "account#{self.username}"
+    "account#{username}"
   end
 
   def partial_db_name
-    if self.has_organization_enabled?
-      self.organization.owner_id
+    if has_organization_enabled?
+      organization.owner_id
     else
-      self.id
+      id
     end
   end
 
   def has_organization_enabled?
-    if self.has_organization? && self.organization.owner.present?
+    if has_organization? && organization.owner.present?
       true
     else
       false
@@ -1240,19 +1234,20 @@ class User < Sequel::Model
   end
 
   def create_client_application
-    ClientApplication.create(:user_id => self.id)
+    ClientApplication.create(user_id: id)
   end
 
   ## User's databases setup methods
   def setup_user
     return if disabled?
+
     db_service.set_database_name
 
     create_client_application
-    if self.has_organization_enabled?
+    if has_organization_enabled?
       db_service.new_organization_user_main_db_setup
     else
-      if self.has_organization?
+      if has_organization?
         raise "It's not possible to create a user within a inactive organization"
       else
         db_service.new_non_organization_user_main_db_setup
@@ -1266,8 +1261,8 @@ class User < Sequel::Model
   # @see EmbedRedisCache
   def purge_redis_vizjson_cache
     vizs = Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all
-    CartoDB::Visualization::RedisVizjsonCache.new().purge(vizs)
-    EmbedRedisCache.new().purge(vizs)
+    CartoDB::Visualization::RedisVizjsonCache.new.purge(vizs)
+    EmbedRedisCache.new.purge(vizs)
   end
 
   def google_maps_private_key
@@ -1311,9 +1306,7 @@ class User < Sequel::Model
     @invitation_token ||= get_invitation_token_from_user_creation
   end
 
-  def invitation_token=(invitation_token)
-    @invitation_token = invitation_token
-  end
+  attr_writer :invitation_token
 
   def created_with_invitation?
     user_creation = get_user_creation
@@ -1367,9 +1360,7 @@ class User < Sequel::Model
 
   def get_invitation_token_from_user_creation
     user_creation = get_user_creation
-    if !user_creation.nil? && user_creation.has_valid_invitation?
-      user_creation.invitation_token
-    end
+    user_creation.invitation_token if !user_creation.nil? && user_creation.has_valid_invitation?
   end
 
   def get_user_creation
@@ -1378,8 +1369,8 @@ class User < Sequel::Model
 
   def quota_dates(options)
     date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : self.last_billing_cycle)
-    return date_from, date_to
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    [date_from, date_to]
   end
 
   def http_client
@@ -1389,6 +1380,7 @@ class User < Sequel::Model
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner
     return if organization.nil? || organization.owner.nil? || organization_owner?
+
     search_tweets.each { |st| st.update!(user: Carto::User.find(organization.owner.id)) }
   rescue StandardError => e
     log_error(exception: e, message: 'Error assigning search tweets to org owner', target_user: self)
@@ -1397,6 +1389,7 @@ class User < Sequel::Model
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_geocodings_to_organization_owner
     return if organization.nil? || organization.owner.nil? || organization_owner?
+
     geocodings_dataset.all.each do |g|
       g.user = organization.owner
       g.data_import_id = nil
@@ -1408,7 +1401,7 @@ class User < Sequel::Model
   end
 
   def name_exists_in_organizations?
-    !Organization.where(name: self.username).first.nil?
+    !Organization.where(name: username).first.nil?
   end
 
   def set_viewer_quotas
@@ -1442,9 +1435,7 @@ class User < Sequel::Model
   end
 
   def setup_aggregation_tables
-    if Cartodb.get_config(:aggregation_tables).present?
-      db_service.connect_to_aggregation_tables
-    end
+    db_service.connect_to_aggregation_tables if Cartodb.get_config(:aggregation_tables).present?
   end
 
   def valid_email_domain?(email)
@@ -1482,4 +1473,5 @@ class User < Sequel::Model
   def sync_enabled_api_keys
     api_keys.each(&:set_enabled_for_engine)
   end
+
 end

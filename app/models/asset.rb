@@ -4,24 +4,25 @@ require_relative '../helpers/file_upload'
 require_dependency 'carto/configuration'
 
 class Asset < Sequel::Model
+
   include Carto::Configuration
 
   many_to_one :user
 
-  KIND_ORG_AVATAR = 'orgavatar'
+  KIND_ORG_AVATAR = 'orgavatar'.freeze
 
-  VALID_EXTENSIONS = %w{ .jpeg .jpg .gif .png .svg }
+  VALID_EXTENSIONS = %w{.jpeg .jpg .gif .png .svg}.freeze
 
   attr_accessor :asset_file, :url
 
- def before_create
-  store
-  super
- end
+  def before_create
+    store
+    super
+  end
 
   def after_destroy
     super
-    remove unless self.public_url.blank?
+    remove unless public_url.blank?
   end
 
   def validate
@@ -36,23 +37,23 @@ class Asset < Sequel::Model
     dir = Dir.mktmpdir
     stdout, stderr, status = Open3.capture3('wget', '-nv', '-P', dir, '-E', url)
     self.asset_file = Dir[File.join(dir, '*')][0]
-    errors.add(:url, "is invalid") unless status.exitstatus == 0
+    errors.add(:url, 'is invalid') unless status.exitstatus == 0
   end
 
   def max_size
-    Cartodb::config[:assets]["max_file_size"]
+    Cartodb.config[:assets]['max_file_size']
   end
 
   def validate_file
     extension = asset_file_extension
     unless VALID_EXTENSIONS.include?(extension)
-      errors.add(:file, "has invalid format")
+      errors.add(:file, 'has invalid format')
       return
     end
 
     @file = open_file(asset_file)
     unless @file && File.readable?(@file.path)
-      errors.add(:file, "is invalid")
+      errors.add(:file, 'is invalid')
       return
     end
 
@@ -63,7 +64,7 @@ class Asset < Sequel::Model
     end
 
     metadata = CartoDB::ImageMetadata.new(@file.path, extension: extension)
-    errors.add(:file, "is too big, 1024x1024 max") if metadata.width > 1024 || metadata.height > 1024
+    errors.add(:file, 'is too big, 1024x1024 max') if metadata.width > 1024 || metadata.height > 1024
     # If metadata reports no size, 99% sure not valid, so out
     errors.add(:file, "doesn't appear to be an image") if metadata.width == 0 || metadata.height == 0
   rescue StandardError => e
@@ -91,12 +92,13 @@ class Asset < Sequel::Model
 
   def store
     return unless @file
+
     filename = (@file.respond_to?(:original_filename) ? @file.original_filename : File.basename(@file))
-    filename = "#{Time.now.strftime("%Y%m%d%H%M%S")}#{filename}"
+    filename = "#{Time.now.strftime('%Y%m%d%H%M%S')}#{filename}"
 
     remote_url = (use_s3? ? save_to_s3(filename) : save_local(filename))
-    self.set(public_url: remote_url)
-    self.this.update(public_url: remote_url)
+    set(public_url: remote_url)
+    this.update(public_url: remote_url)
   end
 
   def save_to_s3(filename)
@@ -125,16 +127,16 @@ class Asset < Sequel::Model
   end
 
   def use_s3?
-    Cartodb.get_config(:assets, "s3_bucket_name") && Cartodb.get_config(:aws, "s3")
+    Cartodb.get_config(:assets, 's3_bucket_name') && Cartodb.get_config(:aws, 's3')
   end
 
   def remove
     unless use_s3?
-      local_url = CGI.unescape(public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
+      local_url = CGI.unescape(public_url.gsub(%r{(http:)?//#{CartoDB.account_host}}, ''))
       begin
         FileUtils.rm((public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/'))
       rescue StandardError => e
-        log_error(message: "Error removing asset", current_user: self, exception: e)
+        log_error(message: 'Error removing asset', current_user: self, exception: e)
       end
       return
     end
@@ -144,7 +146,7 @@ class Asset < Sequel::Model
   end
 
   def target_asset_path
-    "#{Rails.env}/#{self.user.username}/assets/"
+    "#{Rails.env}/#{user.username}/assets/"
   end
 
   def s3_bucket
@@ -172,7 +174,7 @@ class Asset < Sequel::Model
   def chmod_mode
     # Example in case asset kind should change mode
     # kind == KIND_ORG_AVATAR ? 0644 : nil
-    0644
+    0o644
   end
 
   def asset_protocol

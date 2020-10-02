@@ -4,6 +4,7 @@ require_dependency 'carto/controller_helper'
 module Carto
   module Api
     class UsersController < ::Api::ApplicationController
+
       include OrganizationUsersHelper
       include AppAssetsHelper
       include MapsApiHelper
@@ -84,6 +85,7 @@ module Carto
           unless user.valid_password_confirmation(attributes[:password_confirmation])
             raise Carto::PasswordConfirmationError.new
           end
+
           update_user_attributes(user, attributes)
           raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
 
@@ -97,11 +99,11 @@ module Carto
         render_jsonp(Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro)
       rescue CartoDB::CentralCommunicationFailure => e
         log_error(exception: e, target_user: user, params: params)
-        render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
+        render_jsonp({ errors: 'There was a problem while updating your data. Please, try again.' }, 422)
       rescue Sequel::ValidationFailed, ActiveRecord::RecordInvalid
-        render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
+        render_jsonp({ message: 'Error updating your account details', errors: user.errors }, 400)
       rescue Carto::PasswordConfirmationError
-        render_jsonp({ message: "Error updating your account details", errors: user.errors }, 403)
+        render_jsonp({ message: 'Error updating your account details', errors: user.errors }, 403)
       end
 
       def delete_me
@@ -125,18 +127,16 @@ module Carto
       end
 
       def get_authenticated_users
-        referer = request.env["HTTP_ORIGIN"].blank? ? request.env["HTTP_REFERER"] : %[#{request.env['HTTP_X_FORWARDED_PROTO']}://#{request.env["HTTP_HOST"]}]
-        referer_match = /https?:\/\/([\w\-\.]+)(:[\d]+)?(\/((u|user)\/([\w\-\.]+)))?/.match(referer)
-        if referer_match.nil?
-          render json: { error: "Referer #{referer} does not match" }, status: 400 and return
-        end
+        referer = request.env['HTTP_ORIGIN'].blank? ? request.env['HTTP_REFERER'] : %[#{request.env['HTTP_X_FORWARDED_PROTO']}://#{request.env['HTTP_HOST']}]
+        referer_match = %r{https?://([\w\-\.]+)(:[\d]+)?(/((u|user)/([\w\-\.]+)))?}.match(referer)
+        render json: { error: "Referer #{referer} does not match" }, status: 400 and return if referer_match.nil?
 
         if session_user.nil?
           render json: {
-                         urls: [],
-                         username: nil,
-                         avatar_url: nil
-                       } and return
+            urls: [],
+            username: nil,
+            avatar_url: nil
+          } and return
         end
 
         subdomain = referer_match[1].gsub(CartoDB.session_domain, '').downcase
@@ -157,7 +157,7 @@ module Carto
         carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n).to_hash }
       end
 
-      def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
+      def render_auth_users_data(user, _referrer, subdomain, referrer_organization_username=nil)
         organization_name = nil
 
         # It doesn't have a organization username component. We assume it's not a organization referer
@@ -212,9 +212,7 @@ module Carto
       def update_user_attributes(user, attributes)
         update_password_if_needed(user, attributes)
 
-        if user.can_change_email? && attributes[:email].present?
-          user.set_fields(attributes, [:email])
-        end
+        user.set_fields(attributes, [:email]) if user.can_change_email? && attributes[:email].present?
 
         if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
           user.set_fields(attributes, [:avatar_url])
@@ -258,6 +256,7 @@ module Carto
 
         send(:license_expiration_date) if respond_to?(:license_expiration_date)
       end
+
     end
   end
 end

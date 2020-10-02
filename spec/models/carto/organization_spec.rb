@@ -16,18 +16,19 @@ describe Carto::Organization do
 
     def get_twitter_imports_count_by_organization_id(organization_id)
       raise "id doesn't match" unless organization_id == @the_organization.id
+
       @the_organization.twitter_imports_count
     end
 
     def get_geocoding_calls_by_organization_id(organization_id)
       raise "id doesn't match" unless organization_id == @the_organization.id
+
       @the_organization.get_geocoding_calls
     end
 
     def get_organization
       @the_organization
     end
-
   end
 
   describe '#destroy' do
@@ -44,7 +45,7 @@ describe Carto::Organization do
     it 'destroys organization assets' do
       bypass_storage
       asset = create(:organization_asset,
-                                 organization_id: @organization.id)
+                     organization_id: @organization.id)
 
       @organization.destroy
       expect(Carto::Asset.exists?(asset.id)).to be_false
@@ -60,7 +61,7 @@ describe Carto::Organization do
       @overquota_org.update!(owner: @overquota_org_user)
     end
 
-    it "should return organizations over their geocoding quota" do
+    it 'should return organizations over their geocoding quota' do
       expect(Carto::Organization.overquota).to be_empty
       Carto::Organization.any_instance.stubs(:get_api_calls).returns(0)
       Carto::Organization.any_instance.stubs(:map_view_quota).returns(10)
@@ -70,7 +71,7 @@ describe Carto::Organization do
       expect(Carto::Organization.overquota.size).to eq(Carto::Organization.count)
     end
 
-    it "should return organizations over their here isolines quota" do
+    it 'should return organizations over their here isolines quota' do
       expect(Carto::Organization.overquota).to be_empty
       Carto::Organization.any_instance.stubs(:get_api_calls).returns(0)
       Carto::Organization.any_instance.stubs(:map_view_quota).returns(10)
@@ -82,7 +83,7 @@ describe Carto::Organization do
       expect(Carto::Organization.overquota.size).to eq(Carto::Organization.count)
     end
 
-    it "should return organizations over their data observatory snapshot quota" do
+    it 'should return organizations over their data observatory snapshot quota' do
       expect(Carto::Organization.overquota).to be_empty
       Carto::Organization.any_instance.stubs(:get_api_calls).returns(0)
       Carto::Organization.any_instance.stubs(:map_view_quota).returns(10)
@@ -94,7 +95,7 @@ describe Carto::Organization do
       expect(Carto::Organization.overquota.size).to eq(Carto::Organization.count)
     end
 
-    it "should return organizations over their data observatory general quota" do
+    it 'should return organizations over their data observatory general quota' do
       expect(Carto::Organization.overquota).to be_empty
       Carto::Organization.any_instance.stubs(:get_api_calls).returns(0)
       Carto::Organization.any_instance.stubs(:map_view_quota).returns(10)
@@ -108,7 +109,7 @@ describe Carto::Organization do
       expect(Carto::Organization.overquota.size).to eq(Carto::Organization.count)
     end
 
-    it "should return organizations near their geocoding quota" do
+    it 'should return organizations near their geocoding quota' do
       Carto::Organization.any_instance.stubs(:get_api_calls).returns(0)
       Carto::Organization.any_instance.stubs(:map_view_quota).returns(120)
       Carto::Organization.any_instance.stubs(:get_geocoding_calls).returns(81)
@@ -119,7 +120,7 @@ describe Carto::Organization do
       expect(Carto::Organization.overquota(0.10)).to be_empty
     end
 
-    it "should return organizations near their here isolines quota" do
+    it 'should return organizations near their here isolines quota' do
       Carto::Organization.any_instance.stubs(:get_api_calls).returns(0)
       Carto::Organization.any_instance.stubs(:map_view_quota).returns(120)
       Carto::Organization.any_instance.stubs(:get_geocoding_calls).returns(0)
@@ -138,7 +139,7 @@ describe Carto::Organization do
       expect(Carto::Organization.overquota(0.10)).to be_empty
     end
 
-    it "should return organizations near their data observatory snapshot quota" do
+    it 'should return organizations near their data observatory snapshot quota' do
       Carto::Organization.any_instance.stubs(:get_api_calls).returns(0)
       Carto::Organization.any_instance.stubs(:map_view_quota).returns(120)
       Carto::Organization.any_instance.stubs(:get_geocoding_calls).returns(0)
@@ -157,7 +158,7 @@ describe Carto::Organization do
       expect(Carto::Organization.overquota(0.10)).to be_empty
     end
 
-    it "should return organizations near their data observatory general quota" do
+    it 'should return organizations near their data observatory general quota' do
       Carto::Organization.any_instance.stubs(:get_api_calls).returns(0)
       Carto::Organization.any_instance.stubs(:map_view_quota).returns(120)
       Carto::Organization.any_instance.stubs(:get_geocoding_calls).returns(0)
@@ -176,7 +177,7 @@ describe Carto::Organization do
       expect(Carto::Organization.overquota(0.10)).to be_empty
     end
 
-    it "should return organizations over their mapzen routing quota" do
+    it 'should return organizations over their mapzen routing quota' do
       expect(Carto::Organization.overquota).to be_empty
       Carto::Organization.any_instance.stubs(:get_api_calls).returns(0)
       Carto::Organization.any_instance.stubs(:map_view_quota).returns(10)

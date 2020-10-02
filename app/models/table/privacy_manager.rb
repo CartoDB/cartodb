@@ -120,10 +120,10 @@ module CartoDB
 
     def revertable_privacy_change(metadata_table, old_privacy = nil, entities = [])
       yield
-    rescue StandardError => exception
-      CartoDB.notify_exception(exception, user_id: metadata_table.user_id, table_id: metadata_table.id)
+    rescue StandardError => e
+      CartoDB.notify_exception(e, user_id: metadata_table.user_id, table_id: metadata_table.id)
       revert_to_previous_privacy(metadata_table, old_privacy, entities)
-      raise exception
+      raise e
     end
 
     def revert_to_previous_privacy(metadata_table, old_privacy, additional_revert_targets = [])
@@ -133,16 +133,14 @@ module CartoDB
 
       errors = []
       additional_revert_targets.each do |visualization|
-        begin
-          propagate_to([visualization])
-        rescue StandardError => exception
-          # Can't do much more, just let remaining ones finish
-          errors << exception
-        end
+        propagate_to([visualization])
+      rescue StandardError => e
+        # Can't do much more, just let remaining ones finish
+        errors << e
       end
 
-      if !errors.empty?
-        CartoDB.notify_error("Errors reverting Table privacy", user_id: metadata_table.user_id,
+      unless errors.empty?
+        CartoDB.notify_error('Errors reverting Table privacy', user_id: metadata_table.user_id,
                                                                table_id: metadata_table.id,
                                                                errors: errors)
       end
@@ -156,5 +154,6 @@ module CartoDB
     def fully_qualified_table_name(schema, table_name)
       %{"#{schema}"."#{table_name}"}
     end
+
   end
 end

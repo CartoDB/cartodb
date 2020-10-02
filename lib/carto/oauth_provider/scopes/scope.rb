@@ -2,6 +2,7 @@ module Carto
   module OauthProvider
     module Scopes
       class Scope
+
         attr_reader :name, :category, :description
 
         def initialize(name, category, description)
@@ -23,6 +24,7 @@ module Carto
           apis_section = grants.find { |i| i[:type] == 'apis' }
           apis_section[:apis] = (apis_section[:apis] + apis).uniq
         end
+
       end
     end
   end

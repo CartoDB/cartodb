@@ -5,17 +5,17 @@ describe Carto::Admin::MobileAppsController do
 
   TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
   MOBILE_APP = {
-    id:           TEST_UUID,
-    name:         'app_name',
-    description:  'Description of the app',
-    icon_url:     'http://icon.png',
-    platform:     'android',
-    app_id:       'com.app.id',
-    app_type:     'open'
+    id: TEST_UUID,
+    name: 'app_name',
+    description: 'Description of the app',
+    icon_url: 'http://icon.png',
+    platform: 'android',
+    app_id: 'com.app.id',
+    app_type: 'open'
   }.freeze
 
   before(:all) do
-    @carto_user = FactoryGirl.create(:carto_user, mobile_max_open_users: 10000)
+    @carto_user = FactoryGirl.create(:carto_user, mobile_max_open_users: 10_000)
     @user = ::User[@carto_user.id]
   end
 
@@ -30,7 +30,7 @@ describe Carto::Admin::MobileAppsController do
   describe '#index' do
     it 'loads apps from Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:get_mobile_apps).returns(mobile_apps: [], monthly_users: { open: 10000, private: 0 }).once
+      Cartodb::Central.any_instance.stubs(:get_mobile_apps).returns(mobile_apps: [], monthly_users: { open: 10_000, private: 0 }).once
       login(@user)
       get mobile_apps_path
       response.status.should eq 200

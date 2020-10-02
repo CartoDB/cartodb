@@ -9,14 +9,13 @@ describe Carto::HTMLAssetsService do
   end
 
   describe('#fetch_file') do
-
     it 'rejects files that are too big' do
       max_size = Carto::HTMLAssetsService.instance.max_size_in_bytes
       IO.stubs(:copy_stream).returns(max_size + 1)
 
-      expect {
+      expect do
         Carto::HTMLAssetsService.instance.fetch_file(StringIO.new('test'))
-      }.to raise_error(Carto::UnprocesableEntityError, "resource is too big (> #{max_size} bytes)")
+      end.to raise_error(Carto::UnprocesableEntityError, "resource is too big (> #{max_size} bytes)")
     end
 
     it 'create a file has html extension' do

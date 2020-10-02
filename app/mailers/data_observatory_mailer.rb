@@ -26,4 +26,5 @@ class DataObservatoryMailer < ActionMailer::Base
       mail to: CARTO_REQUEST_RECIPIENT, subject: subject
     end
   end
+
 end

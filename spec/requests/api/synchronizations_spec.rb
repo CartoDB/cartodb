@@ -17,7 +17,6 @@ describe Api::Json::SynchronizationsController do
   include Rack::Test::Methods
 
   before(:all) do
-
     @user = create_user(
       sync_tables_enabled: true
     )
@@ -47,8 +46,8 @@ describe Api::Json::SynchronizationsController do
     it 'creates a synchronization' do
       payload = {
         table_name: 'table_1',
-        interval:   3600,
-        url:        'http://www.foo.com'
+        interval: 3600,
+        url: 'http://www.foo.com'
       }
 
       post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
@@ -68,14 +67,14 @@ describe Api::Json::SynchronizationsController do
 
       post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
       last_response.status.should eq 400
-      last_response.body.to_str.should match /15 minutes/
+      last_response.body.to_str.should match(/15 minutes/)
     end
 
     it 'schedules an import' do
       payload = {
         table_name: 'table_1',
-        interval:   3600,
-        url:        'http://www.foo.com'
+        interval: 3600,
+        url: 'http://www.foo.com'
       }
 
       post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
@@ -84,7 +83,5 @@ describe Api::Json::SynchronizationsController do
       response = JSON.parse(last_response.body)
       response.fetch('data_import').should_not be_empty
     end
-
   end
-
 end

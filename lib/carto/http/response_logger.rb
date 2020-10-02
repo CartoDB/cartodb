@@ -3,8 +3,8 @@ require 'carto/configuration'
 
 module Carto
   module Http
-
     class ResponseLogger
+
       include Carto::Configuration
 
       def self.enabled?
@@ -32,7 +32,7 @@ module Carto
       def logger
         @@logger ||= CartoDB.unformatted_logger(log_file_path('http_client.log'))
       end
-    end
 
+    end
   end
 end

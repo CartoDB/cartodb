@@ -12,6 +12,7 @@ require_relative './scopes_validator'
 module Carto
   module OauthProvider
     module Scopes
+
       SCOPE_DEFAULT = '_default'.freeze
       SCOPE_OFFLINE = 'offline'.freeze
 
@@ -53,7 +54,7 @@ module Carto
 
       def self.build(scope)
         result = SCOPES_BY_NAME[scope]
-        if !result
+        unless result
           if DatasetsScope.is_a?(scope)
             result = DatasetsScope.new(scope)
           elsif SchemasScope.is_a?(scope)
@@ -126,6 +127,7 @@ module Carto
           datasets1.delete(schema_table) unless datasets1[schema_table] == 'rw' && permissions == 'r'
         end
       end
+
     end
   end
 end

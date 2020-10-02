@@ -96,7 +96,7 @@ describe Carto::Api::UsersController do
 
     context 'license_expiration field' do
       before(:each) do
-        @expiration_date = Time.parse("2020-11-05T00:00:00.000+00:00")
+        @expiration_date = Time.parse('2020-11-05T00:00:00.000+00:00')
       end
 
       after(:each) do
@@ -131,7 +131,7 @@ describe Carto::Api::UsersController do
         Cartodb.with_config(cartodb_com_hosted: true) do
           get_json api_v3_users_me_url(params), @headers do |response|
             expect(response.status).to eq(200)
-            expect(response.body[:license_expiration]).to eq "2020-11-05T00:00:00.000+00:00"
+            expect(response.body[:license_expiration]).to eq '2020-11-05T00:00:00.000+00:00'
           end
         end
       end
@@ -216,7 +216,7 @@ describe Carto::Api::UsersController do
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(403)
-          expect(response.body[:message]).to eq("Error updating your account details")
+          expect(response.body[:message]).to eq('Error updating your account details')
           expect(response.body[:errors]).to have_key(:password)
         end
       end
@@ -239,7 +239,7 @@ describe Carto::Api::UsersController do
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(400)
-          expect(response.body[:message]).to eq("Error updating your account details")
+          expect(response.body[:message]).to eq('Error updating your account details')
           expect(response.body[:errors]).to have_key(:email)
         end
       end
@@ -249,7 +249,7 @@ describe Carto::Api::UsersController do
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(403)
-          expect(response.body[:message]).to eq("Error updating your account details")
+          expect(response.body[:message]).to eq('Error updating your account details')
           expect(response.body[:errors]).to have_key(:password)
         end
       end
@@ -259,7 +259,7 @@ describe Carto::Api::UsersController do
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(400)
-          expect(response.body[:message]).to eq("Error updating your account details")
+          expect(response.body[:message]).to eq('Error updating your account details')
           expect(response.body[:errors]).to have_key(:new_password)
         end
       end
@@ -509,7 +509,7 @@ describe Carto::Api::UsersController do
 
         delete_json api_v3_users_delete_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(400)
-          expect(response.body[:message]).to eq("Error deleting user: Password does not match")
+          expect(response.body[:message]).to eq('Error deleting user: Password does not match')
         end
       end
 
@@ -520,5 +520,4 @@ describe Carto::Api::UsersController do
       end
     end
   end
-
 end

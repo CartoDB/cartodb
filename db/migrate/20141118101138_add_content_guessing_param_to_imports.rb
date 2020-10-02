@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    add_column :data_imports, :content_guessing,           :boolean, null: false, default: false
+    add_column :data_imports, :content_guessing, :boolean, null: false, default: false
   end
 
   down do

@@ -1,4 +1,5 @@
 module Carto
+
   # Note: Connector provider IDs are not kept between clouds, so we look them up by name
   module ConnectorConfigurationImporter
 
@@ -29,9 +30,11 @@ module Carto
         connector_provider: provider
       )
     end
+
   end
 
   module ConnectorConfigurationExporter
+
     private
 
     def export_connector_configuration(connector_configuration)
@@ -43,5 +46,7 @@ module Carto
         provider_name: connector_configuration.connector_provider.name
       }
     end
+
   end
+
 end

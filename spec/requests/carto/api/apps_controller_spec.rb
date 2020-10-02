@@ -250,7 +250,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
       post_json api_v4_app_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @app_name do |response|
         expect(response.status).to eq(400)
-        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
+        expect(response.body[:error]).to eq('Validation failed: Name has already been taken')
       end
     end
 
@@ -289,13 +289,13 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @app2 = FactoryGirl.create(:app_visualization, user: @user, name: 'app2')
       @app2.save!
       @asset2 = Carto::Asset.for_visualization(visualization: @app,
-                                              resource: StringIO.new('<html><body>test</body></html>'))
+                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset2.save
 
       @app_other_user = FactoryGirl.create(:app_visualization)
       @app_other_user.save!
       @asset_other_user = Carto::Asset.for_visualization(visualization: @app_other_user,
-                                               resource: StringIO.new('<html><body>test</body></html>'))
+                                                         resource: StringIO.new('<html><body>test</body></html>'))
       @asset_other_user.save
     end
 
@@ -339,7 +339,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'should update an existing app data' do
       get app_show_url(id: @app.id) do |response|
         response.status.should eq 200
-        response.body.scan(/<body>test<\/body>/).present?.should == true
+        response.body.scan(%r{<body>test</body>}).present?.should == true
       end
 
       new_html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>new data uploaded</body></html>')
@@ -349,7 +349,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
       get app_show_url(id: @app.id) do |response|
         response.status.should eq 200
-        response.body.scan(/<body>new data uploaded<\/body>/).present?.should == true
+        response.body.scan(%r{<body>new data uploaded</body>}).present?.should == true
       end
     end
 
@@ -394,7 +394,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'rejects if name already exists' do
       put_json api_v4_app_update_viz_url(api_key: @user.api_key, id: @app.id), name: @app2.name do |response|
         expect(response.status).to eq(400)
-        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
+        expect(response.body[:error]).to eq('Validation failed: Name has already been taken')
       end
     end
 
@@ -439,7 +439,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @app_other_user = FactoryGirl.create(:app_visualization)
       @app_other_user.save
       @asset_other_user = Carto::Asset.for_visualization(visualization: @app_other_user,
-                                               resource: StringIO.new('<html><body>test</body></html>'))
+                                                         resource: StringIO.new('<html><body>test</body></html>'))
       @asset_other_user.save
     end
 

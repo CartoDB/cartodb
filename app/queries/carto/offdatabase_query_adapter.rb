@@ -28,9 +28,9 @@ module Carto
     end
 
     def map
-      results.map { |a|
+      results.map do |a|
         yield(a)
-      }
+      end
     end
 
     def count
@@ -63,7 +63,7 @@ module Carto
           y_attribute = is_array ? y.send(attribute).count : y.send(attribute)
           x_attribute = 0 if x_attribute.nil?
           y_attribute = 0 if y_attribute.nil?
-          asc_or_desc == "asc" ? x_attribute <=> y_attribute : y_attribute <=> x_attribute
+          asc_or_desc == 'asc' ? x_attribute <=> y_attribute : y_attribute <=> x_attribute
         end
       end
       all[@offset, @limit.nil? ? all.count : @limit]

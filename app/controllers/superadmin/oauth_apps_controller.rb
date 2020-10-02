@@ -1,4 +1,5 @@
 class Superadmin::OauthAppsController < Superadmin::SuperadminController
+
   respond_to :json
 
   ssl_required
@@ -38,4 +39,5 @@ class Superadmin::OauthAppsController < Superadmin::SuperadminController
     params[:oauth_app].permit(ALLOWED_SYNC_PARAMS)
                       .merge(avoid_sync_central: true)
   end
+
 end

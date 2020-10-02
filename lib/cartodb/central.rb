@@ -19,9 +19,7 @@ module Cartodb
       }
     end
 
-    def host
-      @host
-    end
+    attr_reader :host
 
     def google_signup_url
       "#{host}/google/signup"
@@ -40,9 +38,9 @@ module Cartodb
       http_client.request(
         "#{@host}/#{path}",
         method: method,
-        body: body.nil? ? nil: body.to_json,
+        body: body.nil? ? nil : body.to_json,
         userpwd: "#{@auth[:username]}:#{@auth[:password]}",
-        headers: { "Content-Type" => "application/json" },
+        headers: { 'Content-Type' => 'application/json' },
         ssl_verifypeer: Rails.env.production?,
         timeout: timeout,
         followlocation: true
@@ -53,7 +51,7 @@ module Cartodb
       request = build_request(path, body, method, timeout)
       response = request.run
       if expected_codes.include?(response.code)
-        return response.body && response.body.length >= 2 ? JSON.parse(response.body) : {}
+        response.body && response.body.length >= 2 ? JSON.parse(response.body) : {}
       else
         raise CartoDB::CentralCommunicationFailure.new(response)
       end
@@ -64,21 +62,21 @@ module Cartodb
     end
 
     def get_organization_users(organization_name)
-      send_request("api/organizations/#{ organization_name }/users", nil, :get, [200], 600)
+      send_request("api/organizations/#{organization_name}/users", nil, :get, [200], 600)
     end
 
     def get_organization_user(organization_name, username)
-      send_request("api/organizations/#{ organization_name }/users/#{ username }", nil, :get, [200])
+      send_request("api/organizations/#{organization_name}/users/#{username}", nil, :get, [200])
     end
 
     def create_organization_user(organization_name, user_attributes)
-      body = {user: user_attributes}
-      send_request("api/organizations/#{ organization_name }/users", body, :post, [201])
+      body = { user: user_attributes }
+      send_request("api/organizations/#{organization_name}/users", body, :post, [201])
     end
 
     def update_organization_user(organization_name, username, user_attributes)
-      body = {user: user_attributes}
-      send_request("api/organizations/#{ organization_name }/users/#{ username }", body, :put, [204])
+      body = { user: user_attributes }
+      send_request("api/organizations/#{organization_name}/users/#{username}", body, :put, [204])
     end
 
     def delete_organization_user(organization_name, username)
@@ -86,7 +84,7 @@ module Cartodb
     end
 
     def update_user(username, user_attributes)
-      body = {user: user_attributes}
+      body = { user: user_attributes }
       send_request("api/users/#{username}", body, :put, [204])
     end
 
@@ -115,25 +113,25 @@ module Cartodb
     # Organizations
 
     def get_organizations
-      send_request("api/organizations", nil, :get, [200], 600)
+      send_request('api/organizations', nil, :get, [200], 600)
     end
 
     def get_organization(organization_name)
-      send_request("api/organizations/#{ organization_name }", nil, :get, [200])
+      send_request("api/organizations/#{organization_name}", nil, :get, [200])
     end
 
     # Returns remote organization attributes if response code is 201
     # otherwise returns nil
     # luisico asks: Not sure why organization_name is passed to this method. It's not used
     # rilla answers: That's right, but this methods is just a stub: org creation from the editor is still unsupported
-    def create_organization(organization_name, organization_attributes)
-      body = {organization: organization_attributes}
-      send_request("api/organizations", body, :post, [201])
+    def create_organization(_organization_name, organization_attributes)
+      body = { organization: organization_attributes }
+      send_request('api/organizations', body, :post, [201])
     end
 
     def update_organization(organization_name, organization_attributes)
-      body = {organization: organization_attributes}
-      send_request("api/organizations/#{ organization_name }", body, :put, [204])
+      body = { organization: organization_attributes }
+      send_request("api/organizations/#{organization_name}", body, :put, [204])
     end
 
     def delete_organization(organization_name)
@@ -181,5 +179,6 @@ module Cartodb
     def delete_oauth_app(username, app_id)
       send_request("api/users/#{username}/oauth_apps/#{app_id}", nil, :delete, [204])
     end
+
   end
 end

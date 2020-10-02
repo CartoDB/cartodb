@@ -1,3 +1,2 @@
-shared_examples_for "overlays controllers" do
-
+shared_examples_for 'overlays controllers' do
 end

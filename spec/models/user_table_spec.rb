@@ -29,7 +29,7 @@ describe UserTable do
     end
   end
 
-  it "can save large OIDs" do
+  it 'can save large OIDs' do
     user_table = ::UserTable.new
     user_table.user_id = @user.id
     user_table.name = 'user_table_3'

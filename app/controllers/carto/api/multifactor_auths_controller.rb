@@ -1,4 +1,5 @@
 class Carto::Api::MultifactorAuthsController < ::Api::ApplicationController
+
   ssl_required
 
   before_action :load_user

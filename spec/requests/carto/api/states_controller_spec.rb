@@ -15,7 +15,7 @@ describe Carto::Api::StatesController do
       "widgets":
       {
         "314accaf-61e7-4a37-803d-c1dd6ffaafed": {
-          "acceptedCategories": ["Manolo,Escobar"]
+          "acceptedCategories": ['Manolo,Escobar']
         },
         "fc4d1354-1de7-490f-a3cc-bc95614177e6": {
           "min": 29.04,

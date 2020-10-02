@@ -1,6 +1,7 @@
 module Carto
   module StorageOptions
     class S3
+
       def self.conf
         Cartodb.get_config(:aws, 's3')
       end
@@ -35,6 +36,7 @@ module Carto
       def bucket
         @bucket ||= Aws::S3::Resource.new.bucket(@bucket_name)
       end
+
     end
   end
 end

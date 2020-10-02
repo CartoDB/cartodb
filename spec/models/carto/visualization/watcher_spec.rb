@@ -23,7 +23,7 @@ describe Carto::Visualization::Watcher do
       user1_mock.stubs(:username).returns(user1_name)
       user1_mock.stubs(:organization).returns(organization_mock)
 
-      #Another org user
+      # Another org user
       user2_name = 'wadus2'
       user2_mock = mock
       user2_mock.stubs(:username).returns(user2_name)
@@ -34,11 +34,11 @@ describe Carto::Visualization::Watcher do
       visualization_mock.stubs(:id).returns(vis_id)
 
       # Try to create a watcher from a non-org user
-      expect {
+      expect do
         non_org_user_mock = mock
         non_org_user_mock.stubs(:organization).returns(nil)
         Carto::Visualization::Watcher.new(non_org_user_mock, visualization_mock)
-      }.to raise_exception Carto::Visualization::WatcherError
+      end.to raise_exception Carto::Visualization::WatcherError
 
       u1_watcher = Carto::Visualization::Watcher.new(user1_mock, visualization_mock, watcher_ttl)
       u1_watcher.nil?.should eq false
@@ -47,7 +47,7 @@ describe Carto::Visualization::Watcher do
       u1_watcher.notify
       u1_watcher.list.should eq [user1_mock.username]
 
-      sleep(watcher_ttl+1)
+      sleep(watcher_ttl + 1)
       u1_watcher.list.should eq []
 
       u1_watcher.notify
@@ -63,7 +63,7 @@ describe Carto::Visualization::Watcher do
       (u2_watcher.list - [user1_mock.username, user2_mock.username]).should eq []
       (u1_watcher.list - [user1_mock.username, user2_mock.username]).should eq []
 
-      sleep(watcher_ttl+1)
+      sleep(watcher_ttl + 1)
       # And empty
       u1_watcher.list.should eq []
       u2_watcher.list.should eq []

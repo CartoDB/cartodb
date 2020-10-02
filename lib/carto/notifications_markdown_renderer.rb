@@ -4,6 +4,7 @@ require 'redcarpet/render_strip'
 # It is used to validate the length of the notifications messages, and check that the content is valid
 module Carto
   class NotificationsMarkdownRenderer < Redcarpet::Render::StripDown
+
     def link(_link, _title, content)
       content
     end
@@ -19,5 +20,6 @@ module Carto
         raise "cannot contain #{method.to_s.humanize.downcase}"
       end
     end
+
   end
 end

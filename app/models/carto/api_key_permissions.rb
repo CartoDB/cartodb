@@ -1,5 +1,7 @@
 module Carto
+
   class ApiKeyPermissions
+
     attr_reader :name, :permissions
 
     def initialize(name:, permissions: [])
@@ -17,9 +19,11 @@ module Carto
     end
 
     def write_permissions; end
+
   end
 
   class TablePermissions < ApiKeyPermissions
+
     WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
 
     attr_reader :schema, :owner
@@ -33,13 +37,17 @@ module Carto
     def write_permissions
       WRITE_PERMISSIONS
     end
+
   end
 
   class SchemaPermissions < ApiKeyPermissions
+
     WRITE_PERMISSIONS = ['create'].freeze
 
     def write_permissions
       WRITE_PERMISSIONS
     end
+
   end
+
 end

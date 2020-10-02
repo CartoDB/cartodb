@@ -10,8 +10,8 @@ module CartoGearsApi
     # @attr_reader [Integer] quota_in_bytes Disk quota in bytes
     # @attr_reader [Boolean] viewer The user is a viewer (cannot create maps, datasets, etc.)
     # @attr_reader [CartoGearsApi::Organizations::Organization] organization Organization
-    class User < Value.new(:id, :username, :email, :organization, :feature_flags, :can_change_email, :quota_in_bytes,
-                           :viewer)
+    class User < Value.new(:id, :username, :email, :organization, :feature_flags, :can_change_email, :quota_in_bytes, :viewer)
+
       # @return [String] The subdomain required by this user in the current CARTO configuration.
       #                  It takes into account subdomainless URLs and organizations.
       def subdomain
@@ -43,6 +43,7 @@ module CartoGearsApi
           viewer: user.viewer
         )
       end
+
     end
   end
 end

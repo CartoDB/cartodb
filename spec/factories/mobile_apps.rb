@@ -5,7 +5,6 @@ require 'helpers/unique_names_helper'
 include UniqueNamesHelper
 
 FactoryGirl.define do
-
   factory :mobile_app, class: Carto::MobileApp do
     id Carto::UUIDHelper.random_uuid
     name 'MyApp'

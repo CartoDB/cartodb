@@ -5,7 +5,7 @@ class AddErrorCodeToGeocodings < Sequel::Migration
   end
 
   def down
-    drop_column :geocodings, :error_code  
+    drop_column :geocodings, :error_code
   end
 
 end

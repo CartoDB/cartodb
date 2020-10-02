@@ -11,7 +11,7 @@ module Carto
 
         @analysis.analysis_node.descendants.each do |node|
           style_history = Carto::LayerNodeStyle.from_visualization_and_source(@analysis.visualization, node.id)
-          node.options[:style_history] = style_history.map { |lns|
+          node.options[:style_history] = style_history.map do |lns|
             [
               lns.layer_id,
               {
@@ -20,7 +20,7 @@ module Carto
                 options: lns.options
               }
             ]
-          }.to_h
+          end.to_h
         end
 
         {

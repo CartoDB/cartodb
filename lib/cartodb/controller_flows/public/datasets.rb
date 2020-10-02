@@ -1,7 +1,6 @@
 module CartoDB
   module ControllerFlows
     module Public
-
       class Datasets
 
         def initialize(ctrl)
@@ -23,8 +22,8 @@ module CartoDB
         def user_content(user)
           @ctrl.datasets_for_user(user)
         end
-      end
 
+      end
     end
   end
 end

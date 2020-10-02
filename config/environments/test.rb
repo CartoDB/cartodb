@@ -1,7 +1,7 @@
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
+  ActiveSupport::Dependencies.autoload_paths << File.join(Rails.root, 'lib')
 
   # The test environment is used exclusively to run your application's
   # test suite.  You never need to work with it otherwise.  Remember that
@@ -53,7 +53,7 @@ CartoDB::Application.configure do
 
   # Configure static asset server for tests with Cache-Control for performance
   config.serve_static_files = true
-  config.static_cache_control = "public, max-age=3600"
+  config.static_cache_control = 'public, max-age=3600'
 
   # Allow pass debug_assets=true as a query parameter to load pages with unpackaged assets
   config.assets.allow_debugging = false

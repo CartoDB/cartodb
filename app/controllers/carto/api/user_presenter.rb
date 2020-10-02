@@ -3,6 +3,7 @@ require_relative 'group_presenter'
 module Carto
   module Api
     class UserPresenter
+
       include AccountTypeHelper
 
       def initialize(user,
@@ -24,29 +25,29 @@ module Carto
         return to_public_poro unless current_viewer && @user.viewable_by?(current_viewer)
 
         poro = {
-          id:                         @user.id,
-          name:                       @user.name,
-          last_name:                  @user.last_name,
-          username:                   @user.username,
-          email:                      @user.email,
-          avatar_url:                 @user.avatar_url,
-          website:                    @user.website,
-          description:                @user.description,
-          location:                   @user.location,
-          twitter_username:           @user.twitter_username,
-          disqus_shortname:           @user.disqus_shortname,
-          available_for_hire:         @user.available_for_hire,
-          base_url:                   @user.public_url,
-          google_maps_query_string:   @user.google_maps_query_string,
-          quota_in_bytes:             @user.quota_in_bytes,
-          table_count:                @user.table_count,
-          viewer:                     @user.viewer?,
-          role_display:               @user.role_display,
-          org_admin:                  @user.organization_admin?,
+          id: @user.id,
+          name: @user.name,
+          last_name: @user.last_name,
+          username: @user.username,
+          email: @user.email,
+          avatar_url: @user.avatar_url,
+          website: @user.website,
+          description: @user.description,
+          location: @user.location,
+          twitter_username: @user.twitter_username,
+          disqus_shortname: @user.disqus_shortname,
+          available_for_hire: @user.available_for_hire,
+          base_url: @user.public_url,
+          google_maps_query_string: @user.google_maps_query_string,
+          quota_in_bytes: @user.quota_in_bytes,
+          table_count: @user.table_count,
+          viewer: @user.viewer?,
+          role_display: @user.role_display,
+          org_admin: @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
-          all_visualization_count:    @user.all_visualization_count,
-          org_user:                   @user.organization_id.present?,
-          remove_logo:                @user.remove_logo?
+          all_visualization_count: @user.all_visualization_count,
+          org_user: @user.organization_id.present?,
+          remove_logo: @user.remove_logo?
         }
 
         if fetch_groups
@@ -83,18 +84,18 @@ module Carto
         return {} if @user.nil?
 
         poro = {
-          id:               @user.id,
-          username:         @user.username,
-          name:             @user.name,
-          last_name:        @user.last_name,
-          avatar_url:       @user.avatar_url,
-          base_url:         @user.public_url,
+          id: @user.id,
+          username: @user.username,
+          name: @user.name,
+          last_name: @user.last_name,
+          avatar_url: @user.avatar_url,
+          base_url: @user.public_url,
           google_maps_query_string: @user.google_maps_query_string,
           disqus_shortname: @user.disqus_shortname,
-          viewer:           @user.viewer?,
-          org_admin:        @user.organization_admin?,
-          org_user:         @user.organization_id.present?,
-          remove_logo:      @user.remove_logo?
+          viewer: @user.viewer?,
+          org_admin: @user.organization_admin?,
+          org_user: @user.organization_id.present?,
+          remove_logo: @user.remove_logo?
         }
 
         if fetch_groups
@@ -159,49 +160,49 @@ module Carto
           api_calls_quota: @user.organization_user? ? @user.organization.map_view_quota : @user.map_view_quota,
           api_calls_block_price: @user.organization_user? ? @user.organization.map_view_block_price : @user.map_view_block_price,
           geocoding: {
-            quota:       @user.organization_user? ? @user.organization.geocoding_quota : @user.geocoding_quota,
+            quota: @user.organization_user? ? @user.organization.geocoding_quota : @user.geocoding_quota,
             block_price: @user.organization_user? ? @user.organization.geocoding_block_price : @user.geocoding_block_price,
             monthly_use: @user.organization_user? ? @user.organization.get_geocoding_calls : @user.get_geocoding_calls,
-            hard_limit:  @user.hard_geocoding_limit?
+            hard_limit: @user.hard_geocoding_limit?
           },
           here_isolines: {
-            quota:       @user.organization_user? ? @user.organization.here_isolines_quota : @user.here_isolines_quota,
+            quota: @user.organization_user? ? @user.organization.here_isolines_quota : @user.here_isolines_quota,
             block_price: @user.organization_user? ? @user.organization.here_isolines_block_price : @user.here_isolines_block_price,
             monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
-            hard_limit:  @user.hard_here_isolines_limit?
+            hard_limit: @user.hard_here_isolines_limit?
           },
           mapzen_routing: {
-            quota:       @user.organization_user? ? @user.organization.mapzen_routing_quota : @user.mapzen_routing_quota,
+            quota: @user.organization_user? ? @user.organization.mapzen_routing_quota : @user.mapzen_routing_quota,
             block_price: @user.organization_user? ? @user.organization.mapzen_routing_block_price : @user.mapzen_routing_block_price,
             monthly_use: @user.organization_user? ? @user.organization.get_mapzen_routing_calls : @user.get_mapzen_routing_calls,
-            hard_limit:  @user.hard_mapzen_routing_limit?
+            hard_limit: @user.hard_mapzen_routing_limit?
           },
           geocoder_provider: @user.geocoder_provider,
           isolines_provider: @user.isolines_provider,
           routing_provider: @user.routing_provider,
           obs_snapshot: {
-            quota:       @user.organization_user? ? @user.organization.obs_snapshot_quota : @user.obs_snapshot_quota,
+            quota: @user.organization_user? ? @user.organization.obs_snapshot_quota : @user.obs_snapshot_quota,
             block_price: @user.organization_user? ? @user.organization.obs_snapshot_block_price : @user.obs_snapshot_block_price,
             monthly_use: @user.organization_user? ? @user.organization.get_obs_snapshot_calls : @user.get_obs_snapshot_calls,
-            hard_limit:  @user.hard_obs_snapshot_limit?
+            hard_limit: @user.hard_obs_snapshot_limit?
           },
           obs_general: {
-            quota:       @user.organization_user? ? @user.organization.obs_general_quota : @user.obs_general_quota,
+            quota: @user.organization_user? ? @user.organization.obs_general_quota : @user.obs_general_quota,
             block_price: @user.organization_user? ? @user.organization.obs_general_block_price : @user.obs_general_block_price,
             monthly_use: @user.organization_user? ? @user.organization.get_obs_general_calls : @user.get_obs_general_calls,
-            hard_limit:  @user.hard_obs_general_limit?
+            hard_limit: @user.hard_obs_general_limit?
           },
           twitter: {
-            enabled:     @user.twitter_datasource_enabled,
-            quota:       @user.organization_user? ? @user.organization.twitter_datasource_quota           :  @user.twitter_datasource_quota,
-            block_price: @user.organization_user? ? @user.organization.twitter_datasource_block_price     : @user.twitter_datasource_block_price,
-            block_size:  @user.organization_user? ? @user.organization.twitter_datasource_block_size      : @user.twitter_datasource_block_size,
-            monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.twitter_imports_count,
-            hard_limit:  @user.hard_twitter_datasource_limit,
+            enabled: @user.twitter_datasource_enabled,
+            quota: @user.organization_user? ? @user.organization.twitter_datasource_quota : @user.twitter_datasource_quota,
+            block_price: @user.organization_user? ? @user.organization.twitter_datasource_block_price : @user.twitter_datasource_block_price,
+            block_size: @user.organization_user? ? @user.organization.twitter_datasource_block_size : @user.twitter_datasource_block_size,
+            monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count : @user.twitter_imports_count,
+            hard_limit: @user.hard_twitter_datasource_limit,
             customized_config: CartoDB::Datasources::DatasourcesFactory.customized_config?(CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME, @user)
           },
           salesforce: {
-            enabled:     @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled
+            enabled: @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled
           },
           mailchimp: {
             enabled: Carto::AccountType.new.mailchimp?(@user)
@@ -209,9 +210,9 @@ module Carto
           billing_period: @user.last_billing_cycle,
           next_billing_period: @user.next_billing_cycle,
           api_key: @user.api_key,
-          layers: @user.layers.map { |layer|
-              Carto::Api::LayerPresenter.new(layer).to_poro
-          },
+          layers: @user.layers.map do |layer|
+            Carto::Api::LayerPresenter.new(layer).to_poro
+          end,
           trial_ends_at: @user.trial_ends_at,
           upgraded_at: @user.upgraded_at,
           show_trial_reminder: @user.show_trial_reminder?,
@@ -259,9 +260,7 @@ module Carto
           data[:organization][:available_quota_for_user] = @user.organization.unassigned_quota + @user.quota_in_bytes
         end
 
-        if !@user.groups.nil?
-          data[:groups] = @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
-        end
+        data[:groups] = @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } unless @user.groups.nil?
 
         if @user.mobile_sdk_enabled?
           data[:mobile_apps] = {
@@ -277,9 +276,9 @@ module Carto
         if options[:extended]
           # TODO: This fields are pending migration
           data.merge({
-            :real_table_count => @user.real_tables.size,
-            :last_active_time => @user.get_last_active_time
-          })
+                       real_table_count: @user.real_tables.size,
+                       last_active_time: @user.get_last_active_time
+                     })
         else
           data
         end

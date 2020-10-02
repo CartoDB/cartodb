@@ -10,7 +10,7 @@ module CartoDB
       :total_requests,
       :failed_responses,
       :success_responses,
-      :empty_responses,
+      :empty_responses
     ].freeze
 
     VALID_SERVICES = [
@@ -25,14 +25,13 @@ module CartoDB
     ].freeze
 
     GEOCODER_KEYS = {
-      "heremaps" => :geocoder_here,
-      "google" => :geocoder_google,
-      "mapzen" => :geocoder_mapzen,
-      "mapbox" => :geocoder_mapbox,
-      "tomtom" => :geocoder_tomtom,
-      "geocodio" => :geocoder_geocodio
+      'heremaps' => :geocoder_here,
+      'google' => :geocoder_google,
+      'mapzen' => :geocoder_mapzen,
+      'mapbox' => :geocoder_mapbox,
+      'tomtom' => :geocoder_tomtom,
+      'geocodio' => :geocoder_geocodio
     }.freeze
-
 
     def initialize(username, orgname = nil, redis=$geocoder_metrics)
       super(username, orgname, redis)
@@ -44,5 +43,6 @@ module CartoDB
       raise ArgumentError.new('Invalid service') unless VALID_SERVICES.include?(service)
       raise ArgumentError.new('Invalid metric') unless VALID_METRICS.include?(metric)
     end
+
   end
 end

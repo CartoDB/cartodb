@@ -1,13 +1,14 @@
 require_relative 'bolt.rb'
 
 module Carto
+
   class GhostTablesManager
 
     include ::LoggerHelper
     extend ::LoggerHelper
 
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
-    MUTEX_TTL_MS = 600000
+    MUTEX_TTL_MS = 600_000
     MAX_TABLES_FOR_SYNC_RUN = 8
     MAX_USERTABLES_FOR_SYNC_CHECK = 128
 
@@ -21,7 +22,7 @@ module Carto
 
     def link_ghost_tables
       user_tables = fetch_user_tables
-      if (user_tables.length > MAX_USERTABLES_FOR_SYNC_CHECK)
+      if user_tables.length > MAX_USERTABLES_FOR_SYNC_CHECK
         # When the user has a big amount of tables, we don't even attempt to check if we
         # need to run ghost tables, and instead we request an async link.
         # We do this because doing comparisons with the arrays scales pretty badly
@@ -66,7 +67,7 @@ module Carto
     # if warning_params is provided (with paramters for Logger.warning) then
     # the code is executed even if the lock is not acquired (in which case
     # a warning is emmitted)
-    def self.run_synchronized(user_id, attempts: 10, timeout: 30000, **warning_params)
+    def self.run_synchronized(user_id, attempts: 10, timeout: 30_000, **warning_params)
       gtm = new(user_id)
       bolt = gtm.get_bolt
       lock_acquired = bolt.run_locked(attempts: attempts, timeout: timeout) do
@@ -88,7 +89,7 @@ module Carto
     end
 
     def sync_user_tables_with_db
-      got_locked = get_bolt.run_locked(fail_function: lambda { link_ghost_tables_asynchronously }) { sync }
+      got_locked = get_bolt.run_locked(fail_function: -> { link_ghost_tables_asynchronously }) { sync }
     end
 
     def fetch_altered_tables
@@ -102,16 +103,14 @@ module Carto
       renamed_tables = []
 
       # Find which ids are new, which existed but have changed names, and which one have dissapeared
-      while (cartodb_table_it < cartodbfied_tables.size && user_tables_it < user_tables.size)
+      while cartodb_table_it < cartodbfied_tables.size && user_tables_it < user_tables.size
         cdb_table = cartodbfied_tables[cartodb_table_it]
         user_table = user_tables[user_tables_it]
-        if (cdb_table.id < user_table.id)
+        if cdb_table.id < user_table.id
           new_cartodbfied_ids << cdb_table
           cartodb_table_it += 1
-        elsif (cdb_table.id == user_table.id)
-          if (cdb_table.name != user_table.name)
-            renamed_tables << cdb_table
-          end
+        elsif cdb_table.id == user_table.id
+          renamed_tables << cdb_table if cdb_table.name != user_table.name
           cartodb_table_it += 1
           user_tables_it += 1
         else
@@ -120,21 +119,25 @@ module Carto
         end
       end
 
-      new_cartodbfied_ids += cartodbfied_tables[cartodb_table_it, cartodbfied_tables.size - cartodb_table_it] if cartodb_table_it < cartodbfied_tables.size
-      missing_user_tables_ids += user_tables[user_tables_it, user_tables.size - user_tables_it] if user_tables_it < user_tables.size
+      if cartodb_table_it < cartodbfied_tables.size
+        new_cartodbfied_ids += cartodbfied_tables[cartodb_table_it, cartodbfied_tables.size - cartodb_table_it]
+      end
+      if user_tables_it < user_tables.size
+        missing_user_tables_ids += user_tables[user_tables_it, user_tables.size - user_tables_it]
+      end
 
       # Out of the extracted ids we need to know which one are truly new tables, which ones are
       # regenerated tables (the underlying ids have changed, but the name remains) and which ones
       # have been completely deleted
       regenerated_tables = new_cartodbfied_ids.select do |cartodbfied_table|
-            missing_user_tables_ids.any?{|t| t.name == cartodbfied_table.name}
-        end
+        missing_user_tables_ids.any? { |t| t.name == cartodbfied_table.name}
+      end
       new_tables = new_cartodbfied_ids - regenerated_tables
       dropped_tables = missing_user_tables_ids.reject do |dropped_table|
-            regenerated_tables.any?{|t| t.name == dropped_table.name}
-        end
+        regenerated_tables.any? { |t| t.name == dropped_table.name}
+      end
 
-      return regenerated_tables, renamed_tables, new_tables, dropped_tables
+      [regenerated_tables, renamed_tables, new_tables, dropped_tables]
     end
 
     def sync
@@ -168,7 +171,7 @@ module Carto
             SELECT c.oid, c.relname
             FROM pg_catalog.pg_class c
             LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-            WHERE   c.relowner IN (#{user.get_database_roles.map{ |r| "to_regrole(\'#{r}\')" }.join(',')})
+            WHERE   c.relowner IN (#{user.get_database_roles.map { |r| "to_regrole(\'#{r}\')" }.join(',')})
                 AND c.relkind = 'r'
                 AND n.nspname = '#{user.database_schema}'
         ),
@@ -207,9 +210,11 @@ module Carto
         Carto::TableFacade.new(record[:reloid], record[:table_name], @user_id)
       end
     end
+
   end
 
   class TableFacade
+
     include ::LoggerHelper
 
     attr_reader :id, :name, :user_id
@@ -243,8 +248,8 @@ module Carto
       new_table.keep_user_database_table = true
 
       new_table.save
-    rescue StandardError => exception
-      log_error(message: 'Ghost tables: Error creating UserTable', exception: exception)
+    rescue StandardError => e
+      log_error(message: 'Ghost tables: Error creating UserTable', exception: e)
     end
 
     def rename_user_table_vis
@@ -254,8 +259,8 @@ module Carto
       user_table_vis.name = name
 
       user_table_vis.store
-    rescue StandardError => exception
-      log_error(message: 'Ghost tables: Error renaming Visualization', exception: exception)
+    rescue StandardError => e
+      log_error(message: 'Ghost tables: Error renaming Visualization', exception: e)
     end
 
     def drop_user_table
@@ -267,8 +272,8 @@ module Carto
       table_to_drop.visualizations.map(&:backup_visualization)
       table_to_drop.keep_user_database_table = true
       table_to_drop.destroy
-    rescue StandardError => exception
-      log_error(message: 'Ghost tables: Error dropping Table', exception: exception)
+    rescue StandardError => e
+      log_error(message: 'Ghost tables: Error dropping Table', exception: e)
     end
 
     def regenerate_user_table
@@ -276,8 +281,8 @@ module Carto
 
       user_table_to_regenerate.table_id = id
       user_table_to_regenerate.save
-    rescue StandardError => exception
-      log_error(message: 'Ghost tables: Error syncing table_id for UserTable', exception: exception)
+    rescue StandardError => e
+      log_error(message: 'Ghost tables: Error syncing table_id for UserTable', exception: e)
     end
 
     def eql?(other)
@@ -297,5 +302,7 @@ module Carto
     def log_context
       super.merge(target_user: user, table: { id: id, name: name })
     end
+
   end
+
 end

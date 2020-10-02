@@ -6,36 +6,37 @@ module DataRepository
   module Backend
     class Redis
 
-      HANDLERS =  {
-        'set'     => Backend::Redis::Set,
-        'string'  => Backend::Redis::String
-      }
+      HANDLERS = {
+        'set' => Backend::Redis::Set,
+        'string' => Backend::Redis::String
+      }.freeze
 
       def initialize(redis=::Redis.new)
         @redis = redis
-      end #initialize
+      end # initialize
 
       def store(key, data, options={})
         persister_for(data).new(redis).store(key, data)
         expire_in(options.fetch(:expiration, nil), key)
-      end #store
+      end # store
 
       def fetch(key)
         return nil unless redis.exists(key)
+
         retriever_for(key).new(redis).fetch(key)
-      end #fetch
+      end # fetch
 
       def keys
         redis.keys
-      end #keys
+      end # keys
 
       def exists?(key)
         redis.exists(key)
-      end #exists?
+      end # exists?
 
       def delete(key)
         redis.del(key)
-      end #delete
+      end # delete
 
       # Not supported, so just call data
       def transaction(&block)
@@ -48,16 +49,16 @@ module DataRepository
 
       def expire_in(seconds, key)
         !!seconds && redis.expire(key, seconds)
-      end #expire_in
+      end # expire_in
 
       def retriever_for(key)
         HANDLERS.fetch(redis.type(key), Backend::Redis::String)
-      end #retriever_for
+      end # retriever_for
 
       def persister_for(data)
         HANDLERS.fetch(data.class.to_s.downcase, Backend::Redis::String)
-      end #persister_for(data)
+      end # persister_for(data)
+
     end # Redis
   end # Backend
 end # DataRepository
-

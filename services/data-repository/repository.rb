@@ -2,12 +2,14 @@ require_relative 'backend/detector'
 require_relative 'backend/memory'
 
 module DataRepository
+
   def self.new(backend_or_connection=nil)
     backend = Backend::Detector.new(backend_or_connection).detect
     Repository.new(backend)
   end # DataRepository.new
 
   class Repository
+
     def initialize(storage=Backend::Memory.new)
       @storage = storage
     end
@@ -43,6 +45,7 @@ module DataRepository
     private
 
     attr_reader :storage
-  end # Handler
-end # DataRepository
 
+  end # Handler
+
+end # DataRepository

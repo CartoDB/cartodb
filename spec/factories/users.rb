@@ -17,7 +17,7 @@ FactoryGirl.define do
     password               { email.split('@').first }
     password_confirmation  { email.split('@').first }
     table_quota            5
-    quota_in_bytes         5000000
+    quota_in_bytes         5_000_000
     id                     { Carto::UUIDHelper.random_uuid }
     builder_enabled        nil # Most tests still assume editor
 
@@ -40,8 +40,8 @@ FactoryGirl.define do
     end
 
     trait :mobile do
-      mobile_max_open_users    100000
-      mobile_max_private_users 20000
+      mobile_max_open_users    100_000
+      mobile_max_private_users 20_000
     end
 
     trait :locked do
@@ -89,7 +89,7 @@ FactoryGirl.define do
 
     api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
     table_quota nil
-    quota_in_bytes 5000000
+    quota_in_bytes 5_000_000
     id { Carto::UUIDHelper.random_uuid }
     builder_enabled nil # Most tests still assume editor
 

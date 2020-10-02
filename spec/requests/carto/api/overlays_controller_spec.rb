@@ -3,7 +3,6 @@ require_relative '../../../../app/controllers/carto/api/overlays_controller'
 require_relative '../../../../spec/requests/api/json/overlays_controller_shared_examples'
 
 describe Carto::Api::OverlaysController do
-
   it_behaves_like 'overlays controllers' do
   end
 

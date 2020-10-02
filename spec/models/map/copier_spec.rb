@@ -21,5 +21,5 @@ describe CartoDB::Map::Copier do
       new_map = @copier.copy(@map)
       new_map.layers.length.should == 5
     end
-  end #copy
+  end # copy
 end # CartoDB::Map::Copier

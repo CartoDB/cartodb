@@ -2,6 +2,7 @@ require 'spec_helper_min'
 
 module Carto
   module Styles
+
     describe Polygon do
       describe '#default' do
         let(:production_default_polygon_cartocss) do
@@ -13,7 +14,7 @@ module Carto
           "    line-width: 1;\n"\
           "    line-opacity: 0.5;\n"\
           "  }\n"\
-          "}"
+          '}'
         end
 
         it 'has stayed the same' do
@@ -23,5 +24,6 @@ module Carto
         end
       end
     end
+
   end
 end

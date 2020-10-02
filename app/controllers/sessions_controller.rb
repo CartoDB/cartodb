@@ -8,6 +8,7 @@ require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
 
 class SessionsController < ApplicationController
+
   include ActionView::Helpers::DateHelper
   include LoginHelper
   include Carto::EmailCleaner
@@ -94,7 +95,7 @@ class SessionsController < ApplicationController
   end
 
   def show
-    render :json => {:email => current_user.email, :uid => current_user.id, :username => current_user.username}
+    render json: { email: current_user.email, uid: current_user.id, username: current_user.username }
   end
 
   def multifactor_authentication
@@ -111,7 +112,7 @@ class SessionsController < ApplicationController
     user = ::User.where(id: params[:user_id]).first
     url = after_login_url(user)
 
-    if params[:skip] == "true" && user.active_multifactor_authentication.needs_setup?
+    if params[:skip] == 'true' && user.active_multifactor_authentication.needs_setup?
       disable_mfa(user.id)
     else
       return multifactor_authentication_inactivity if mfa_inactivity_period_expired?(user)
@@ -149,6 +150,7 @@ class SessionsController < ApplicationController
     respond_to do |format|
       format.html do
         return multifactor_authentication if mfa_request?
+
         return render action: 'new'
       end
       format.json do
@@ -252,14 +254,14 @@ class SessionsController < ApplicationController
       render 'shared/signup_confirmation'
     else
       errors = account_creator.validation_errors
-      CartoDB.notify_debug('User not valid at signup', { errors: errors } )
+      CartoDB.notify_debug('User not valid at signup', { errors: errors })
       @signup_source = created_via.upcase
       @signup_errors = errors
       render 'shared/signup_issue'
     end
   rescue StandardError => e
-    new_user = account_creator.nil? ? "account_creator nil" : account_creator.user.inspect
-    CartoDB.report_exception(e, "Creating user", new_user: new_user)
+    new_user = account_creator.nil? ? 'account_creator nil' : account_creator.user.inspect
+    CartoDB.report_exception(e, 'Creating user', new_user: new_user)
     flash.now[:error] = e.message
     render action: 'new'
   end
@@ -308,6 +310,7 @@ class SessionsController < ApplicationController
 
   def after_login_url(user)
     return login_url unless user
+
     session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
   end
 
@@ -367,9 +370,7 @@ class SessionsController < ApplicationController
   end
 
   def saml_service
-    if load_organization
-      @saml_service ||= Carto::SamlService.new(load_organization)
-    end
+    @saml_service ||= Carto::SamlService.new(load_organization) if load_organization
   end
 
   def load_organization
@@ -417,9 +418,9 @@ class SessionsController < ApplicationController
     if username && (Carto::User.exists?(username: username) || Carto::Organization.exists?(name: username))
       CartoDB.url(self, 'public_visualizations_home')
     elsif Cartodb::Central.sync_data_with_cartodb_central?
-      "https://carto.com"
+      'https://carto.com'
     else
-      "/404.html"
+      '/404.html'
     end
   end
 
@@ -427,4 +428,5 @@ class SessionsController < ApplicationController
     service = Carto::UserMultifactorAuthUpdateService.new(user_id: user_id)
     service.update(enabled: false)
   end
+
 end

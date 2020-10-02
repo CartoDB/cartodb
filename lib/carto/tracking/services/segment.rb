@@ -2,6 +2,7 @@ module Carto
   module Tracking
     module Services
       module Segment
+
         def report_to_segment
           return unless segment_api_key
 
@@ -14,6 +15,7 @@ module Carto
         def segment_api_key
           @segment_api_key ||= Cartodb.get_config(:segment, 'api_key')
         end
+
       end
     end
   end

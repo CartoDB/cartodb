@@ -1,14 +1,15 @@
 module FileServerHelper
+
   def serve_file(file_path, options = {})
     port = get_unused_port
 
     require 'webrick'
     server = WEBrick::HTTPServer.new(
       AccessLog: [],
-      Logger: WEBrick::Log::new("/dev/null", 7), # comment this line if weird things happen
+      Logger: WEBrick::Log.new('/dev/null', 7), # comment this line if weird things happen
       Port: port,
       DocumentRoot: File.dirname(file_path),
-      RequestCallback: Proc.new do |_req, res|
+      RequestCallback: proc do |_req, res|
         options[:headers].each { |k, v| res[k] = v } unless options[:headers].nil?
         unless options[:headers].nil? || options[:headers]['content-type'].nil?
           res.content_type = options[:headers]['content-type']
@@ -16,7 +17,7 @@ module FileServerHelper
       end
     )
 
-    trap("INT") { server.shutdown }
+    trap('INT') { server.shutdown }
 
     a = Thread.new { server.start }
 
@@ -34,11 +35,11 @@ module FileServerHelper
     used_ports_command = `netstat -tln | tail -n +3 | awk '{ print $4 }' | cut -f2 -d ':'`
     used_ports = used_ports_command.split("\n").map(&:to_i)
 
-    (rand(10000..10100)..65535).each do |port|
-      return port if !used_ports.include?(port)
+    (rand(10_000..10_100)..65_535).each do |port|
+      return port unless used_ports.include?(port)
     end
 
-    raise "No ports available on machine."
+    raise 'No ports available on machine.'
   end
 
   def stub_download(url:, filepath:, headers: {}, content_disposition: true)
@@ -55,21 +56,22 @@ module FileServerHelper
 
   def response_for(filepath, headers = {}, content_disposition: true)
     response = Typhoeus::Response.new(
-      code:     200,
-      body:     File.new(filepath).read.to_s,
-      headers:  headers.merge(headers_for(filepath, content_disposition: content_disposition))
+      code: 200,
+      body: File.new(filepath).read.to_s,
+      headers: headers.merge(headers_for(filepath, content_disposition: content_disposition))
     )
     response
   end
 
-  def failed_response_for(_filepath, headers={})
+  def failed_response_for(_filepath, _headers={})
     Typhoeus::Response.new(code: 404, body: nil, headers: {})
   end
 
   def headers_for(filepath, content_disposition: true)
     return {} unless content_disposition
+
     filename = filepath.split('/').last
-    { "Content-Disposition" => "attachment; filename=#{filename}" }
+    { 'Content-Disposition' => "attachment; filename=#{filename}" }
   end
 
   def stub_arcgis_response_with_file(
@@ -77,7 +79,7 @@ module FileServerHelper
     absolute_metadata_filepath = File.expand_path('spec/fixtures/arcgis_metadata.json')
   )
     # Metadata of a layer
-    Typhoeus.stub(/\/arcgis\/rest\/services\/Planning\/EPI_Primary_Planning_Layers\/MapServer\/2\?f=json/) do
+    Typhoeus.stub(%r{/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2\?f=json}) do
       body = File.read(absolute_metadata_filepath)
       Typhoeus::Response.new(
         code: 200,
@@ -87,19 +89,19 @@ module FileServerHelper
     end
 
     # IDs list of a layer
-    Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
+    Typhoeus.stub(%r{/arcgis/rest/(.*)query\?where=}) do
       json_file = JSON.parse(File.read(absolute_filepath))
       Typhoeus::Response.new(
         code: 200,
         headers: { 'Content-Type' => 'application/json' },
         body: JSON.dump(
-          objectIdFieldName: "OBJECTID",
+          objectIdFieldName: 'OBJECTID',
           objectIds: json_file['features'].map { |f| f['attributes']['OBJECTID'] }
         )
       )
     end
 
-    Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |request|
+    Typhoeus.stub(%r{/arcgis/rest/(.*)query$}) do |request|
       response_body = File.read(absolute_filepath)
       response_body = ::JSON.parse(response_body)
 
@@ -135,4 +137,5 @@ module FileServerHelper
       )
     end
   end
+
 end

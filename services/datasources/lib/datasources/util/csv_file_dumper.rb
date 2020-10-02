@@ -7,19 +7,19 @@ module CartoDB
     # TODO: Error handling, now assumes all done ok
     class CSVFileDumper
 
-      ORIGINAL_FILE_EXTENSION = '.json'
-      CONVERTED_FILE_EXTENSION = '.csv'
-      HEADERS_FILE_EXTENSION = '_headers.csv'
+      ORIGINAL_FILE_EXTENSION = '.json'.freeze
+      CONVERTED_FILE_EXTENSION = '.csv'.freeze
+      HEADERS_FILE_EXTENSION = '_headers.csv'.freeze
 
-      FILE_DUMPER_TMP_SUBFOLDER = '/tmp/csv_file_dumper/'
+      FILE_DUMPER_TMP_SUBFOLDER = '/tmp/csv_file_dumper/'.freeze
 
-      OUTPUT_ENCODING = 'utf-8'
+      OUTPUT_ENCODING = 'utf-8'.freeze
 
       def initialize(json_to_csv_conversor, debug_mode = false)
         @debug_mode = debug_mode
         @json2csv_conversor = json_to_csv_conversor
         @temporary_directory = nil
-        @temporary_folder = Time.now.strftime("%Y%m%d_%H%M%S_") + rand(1000).to_s
+        @temporary_folder = Time.now.strftime('%Y%m%d_%H%M%S_') + rand(1000).to_s
 
         @additional_fields = {}
 
@@ -60,12 +60,8 @@ module CartoDB
 
       # @param name String
       def end_dump(name)
-        if @files[name]
-          @files[name].close
-        end
-        if @original_files[name]
-          @original_files[name].close
-        end
+        @files[name].close if @files[name]
+        @original_files[name].close if @original_files[name]
       end
 
       # @param names_list Array
@@ -80,13 +76,14 @@ module CartoDB
         names_list.each do |name|
           input_stream = File.open(@files[name].path)
 
-          begin
+          loop do
             buffer = input_stream.read(@buffer_size)
             if buffer
               stream.write(buffer)
               streamed_size += buffer.length
             end
-          end while buffer
+            break unless buffer
+          end
 
           input_stream.close
 

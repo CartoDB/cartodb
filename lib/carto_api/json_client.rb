@@ -2,6 +2,7 @@
 # as soon as swagger-codegen supports v3 and we release the first version of the spec.
 module CartoAPI
   class JsonClient
+
     def initialize(http_client_tag: 'carto-api-client', scheme: 'https', base_domain: 'carto.com', port: nil)
       @http_client_tag = http_client_tag
       @base_domain = base_domain
@@ -36,7 +37,7 @@ module CartoAPI
 
     CONNECT_TIMEOUT = 45
     DEFAULT_TIMEOUT = 60
-    NO_PAGE_LIMIT = 100000
+    NO_PAGE_LIMIT = 100_000
 
     def carto_url(username, path, params: nil)
       uri = URI::HTTP.build(host: base_url(username), path: path, query: params && params.to_query)
@@ -61,5 +62,6 @@ module CartoAPI
     def parse(json)
       JSON.parse(json, symbolize_names: true)
     end
+
   end
 end

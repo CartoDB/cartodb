@@ -3,8 +3,8 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
-    SequelRails::connection.run(
+  proc do
+    SequelRails.connection.run(
       'DELETE FROM states WHERE id NOT IN (SELECT state_id FROM visualizations WHERE state_id IS NOT NULL);'
     )
     alter_table :states do
@@ -12,7 +12,7 @@ migration(
       add_index :visualization_id, unique: true
     end
   end,
-  Proc.new do
+  proc do
     alter_table :states do
       drop_index :visualization_id
 

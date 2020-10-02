@@ -3,6 +3,7 @@ require_relative '../definition.rb'
 
 module Carto::Styles
   class Point < Style
+
     def initialize(definition: default_definition)
       super(definition)
     end
@@ -35,9 +36,10 @@ module Carto::Styles
       ["marker-line-color: #{color};",
        "marker-line-width: #{width};",
        "marker-line-opacity: #{opacity};",
-       "marker-placement: point;",
-       "marker-type: ellipse;",
-       "marker-allow-overlap: true;"]
+       'marker-placement: point;',
+       'marker-type: ellipse;',
+       'marker-allow-overlap: true;']
     end
+
   end
 end

@@ -3,6 +3,7 @@ require_dependency 'account_creator'
 require_relative '../../lib/user_account_creator'
 
 class SignupController < ApplicationController
+
   include LoginHelper
   include AccountCreator
 
@@ -29,7 +30,9 @@ class SignupController < ApplicationController
                       with_organization(@organization, viewer: invitation.try(:viewer)).
                       with_invitation_token(params[:invitation_token])
 
-    raise "Organization doesn't allow user + password authentication" if user_password_signup? && !@organization.auth_username_password_enabled
+    if user_password_signup? && !@organization.auth_username_password_enabled
+      raise "Organization doesn't allow user + password authentication"
+    end
 
     if params[:user]
       account_creator.with_username(params[:user][:username]) if params[:user][:username].present?
@@ -50,14 +53,14 @@ class SignupController < ApplicationController
     else
       @user = account_creator.user
       errors = account_creator.validation_errors
-      CartoDB.notify_debug('User not valid at signup', { errors: errors } )
+      CartoDB.notify_debug('User not valid at signup', { errors: errors })
       if errors['organization'] && !errors[:organization].empty?
         @signup_source = 'Organization'
         @signup_errors = errors
         render 'shared/signup_issue'
       else
         if google_signup? && existing_user(@user)
-          flash.now[:error] = "User already registered, go to login"
+          flash.now[:error] = 'User already registered, go to login'
         elsif @user.errors.empty?
           # No need for additional errors if there're field errors
           flash.now[:error] = 'User not valid'
@@ -65,7 +68,6 @@ class SignupController < ApplicationController
         render action: 'signup', status: @user.errors.empty? ? 200 : 422
       end
     end
-
   rescue StandardError => e
     @user ||= ::User.new
     CartoDB.notify_exception(e, { new_user: account_creator.user.inspect })
@@ -80,8 +82,8 @@ class SignupController < ApplicationController
     render_403 and return false unless authenticator.valid?(request)
 
     account_creator = CartoDB::UserAccountCreator.
-      new(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION).
-      with_email_only(authenticator.email(request))
+                      new(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION).
+                      with_email_only(authenticator.email(request))
 
     account_creator = account_creator.with_organization(@organization) if @organization
 
@@ -93,7 +95,7 @@ class SignupController < ApplicationController
       render_500
     end
   rescue StandardError => e
-    CartoDB.report_exception(e, "Creating user with HTTP authentication", new_user: account_creator.user.inspect)
+    CartoDB.report_exception(e, 'Creating user with HTTP authentication', new_user: account_creator.user.inspect)
     flash.now[:error] = e.message
     render_500
   end
@@ -157,16 +159,12 @@ class SignupController < ApplicationController
   def load_organization
     if CartoDB.subdomainless_urls?
       subdomain = request.host.to_s.gsub(".#{CartoDB.session_domain}", '')
-      if subdomain == CartoDB.session_domain
-        subdomain = params[:user_domain]
-      end
+      subdomain = params[:user_domain] if subdomain == CartoDB.session_domain
     else
       subdomain = CartoDB.subdomain_from_request(request)
     end
 
-    if subdomain && subdomain != CartoDB.session_domain
-      @organization = ::Organization.where(name: subdomain).first
-    end
+    @organization = ::Organization.where(name: subdomain).first if subdomain && subdomain != CartoDB.session_domain
   end
 
   def check_organization_quotas
@@ -183,6 +181,7 @@ class SignupController < ApplicationController
   def load_mandatory_organization
     load_organization
     return render_404 unless @organization && (@organization.signup_page_enabled || invitation)
+
     check_organization_quotas
   end
 
@@ -192,10 +191,13 @@ class SignupController < ApplicationController
 
   def invitation
     return @invitation if @invitation
+
     email = (params[:user] && params[:user][:email]) || params[:email]
     token = params[:invitation_token]
     return unless email && token
+
     invitations = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
     @invitation = invitations.find { |i| i.token(email) == token }
   end
+
 end

@@ -16,11 +16,11 @@ describe Carto::VisualizationsExportService2 do
 
   let(:visualization_sync_export) do
     sync = {
-      id: "46a16aa4-3f67-11e8-b4f0-080027eb929e",
-      name: "world_borders_hd",
-      interval: 2592000,
-      url: "https://common-data.carto.com/api/v2/sql?q=select+*+from+%22world_borders_hd%22&format=shp&filename=world_borders_hd",
-      state: "success",
+      id: '46a16aa4-3f67-11e8-b4f0-080027eb929e',
+      name: 'world_borders_hd',
+      interval: 2_592_000,
+      url: 'https://common-data.carto.com/api/v2/sql?q=select+*+from+%22world_borders_hd%22&format=shp&filename=world_borders_hd',
+      state: 'success',
       created_at: Time.now.utc.to_json,
       updated_at: Time.now.utc.to_json,
       run_at: Time.now.utc.to_json,
@@ -33,9 +33,9 @@ describe Carto::VisualizationsExportService2 do
       etag: nil,
       user_id: nil,
       visualization_id: nil,
-      checksum: "",
+      checksum: '',
       service_name: nil,
-      service_item_id: "https://common-data.carto.com/api/v2/sql?q=select+*+from+%22world_borders_hd%22&format=shp&filename=world_borders_hd",
+      service_item_id: 'https://common-data.carto.com/api/v2/sql?q=select+*+from+%22world_borders_hd%22&format=shp&filename=world_borders_hd',
       type_guessing: true,
       quoted_fields_guessing: true,
       content_guessing: true,
@@ -49,13 +49,13 @@ describe Carto::VisualizationsExportService2 do
   let(:mapcapped_visualization_export) do
     mapcap = {
       ids_json: {
-        visualization_id: "04e0ddac-bea8-4e79-a362-f06b9a7396cf",
-        map_id: "bf727caa-f05a-45df-baa5-c29cb4542ecd",
+        visualization_id: '04e0ddac-bea8-4e79-a362-f06b9a7396cf',
+        map_id: 'bf727caa-f05a-45df-baa5-c29cb4542ecd',
         layers: [
-          { layer_id: "c2be46d2-d44e-49fa-a604-8814fcd150f7", widgets: [] },
-          { layer_id: "dd1a006b-5791-4221-b120-4b9e1f2e93e7", widgets: [] },
-          { layer_id: "f4a9823b-8de2-474f-bcc0-8b230f881a75", widgets: ["b5dcb89b-0c4a-466c-b459-cc5c8053f4ec"] },
-          { layer_id: "4ffea696-e127-40bc-90cf-9e34b9a77d89", widgets: [] }
+          { layer_id: 'c2be46d2-d44e-49fa-a604-8814fcd150f7', widgets: [] },
+          { layer_id: 'dd1a006b-5791-4221-b120-4b9e1f2e93e7', widgets: [] },
+          { layer_id: 'f4a9823b-8de2-474f-bcc0-8b230f881a75', widgets: ['b5dcb89b-0c4a-466c-b459-cc5c8053f4ec'] },
+          { layer_id: '4ffea696-e127-40bc-90cf-9e34b9a77d89', widgets: [] }
         ]
       },
       export_json: {
@@ -179,8 +179,8 @@ describe Carto::VisualizationsExportService2 do
           widgets: [
             {
               options: {
-                aggregation: "count",
-                aggregation_column: "category_t"
+                aggregation: 'count',
+                aggregation_column: 'category_t'
               },
               style: {
                 widget_style: {
@@ -194,9 +194,9 @@ describe Carto::VisualizationsExportService2 do
                   }
                 }
               },
-              title: "Category category_t",
-              type: "category",
-              source_id: "a1",
+              title: 'Category category_t',
+              type: 'category',
+              source_id: 'a1',
               order: 1
             }
           ],
@@ -539,9 +539,9 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'fails if version is not 2' do
-        expect {
+        expect do
           Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.merge(version: 1).to_json)
-        }.to raise_error("Wrong export version")
+        end.to raise_error('Wrong export version')
       end
 
       it 'builds base visualization' do
@@ -712,8 +712,8 @@ describe Carto::VisualizationsExportService2 do
         layer_with_table.user_tables.should be_empty
       end
 
-      it "Register layer tables dependencies if user table exists" do
-        user_table = FactoryGirl.create(:carto_user_table, user_id: @user.id, name: "guess_ip_1")
+      it 'Register layer tables dependencies if user table exists' do
+        user_table = FactoryGirl.create(:carto_user_table, user_id: @user.id, name: 'guess_ip_1')
         imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
         layer_with_table = visualization.layers.find { |l| l.options[:table_name].present? }
@@ -911,9 +911,7 @@ describe Carto::VisualizationsExportService2 do
         it '2.0.0 (without Widget.source_id)' do
           export_2_0_0 = export
           export_2_0_0[:visualization][:layers].each do |layer|
-            if layer[:widgets]
-              layer[:widgets].each { |widget| widget.delete(:source_id) }
-            end
+            layer[:widgets].each { |widget| widget.delete(:source_id) } if layer[:widgets]
           end
 
           service = Carto::VisualizationsExportService2.new
@@ -958,15 +956,15 @@ describe Carto::VisualizationsExportService2 do
 
         it 'works for derived/canonical/remote visualizations' do
           exporter = Carto::VisualizationsExportService2.new
-          expect {
+          expect do
             exporter.export_visualization_json_hash(@table_visualization.id, @user)
-          }.not_to raise_error
-          expect {
+          end.not_to raise_error
+          expect do
             exporter.export_visualization_json_hash(@visualization.id, @user)
-          }.not_to raise_error
-          expect {
+          end.not_to raise_error
+          expect do
             exporter.export_visualization_json_hash(@remote_visualization.id, @user)
-          }.not_to raise_error
+          end.not_to raise_error
         end
       end
 
@@ -1009,9 +1007,9 @@ describe Carto::VisualizationsExportService2 do
       it 'truncates long sync logs' do
         FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
         @table_visualization.reload
-        @table_visualization.synchronization.log.update_attribute(:entries, 'X' * 15000)
+        @table_visualization.synchronization.log.update_attribute(:entries, 'X' * 15_000)
         export = Carto::VisualizationsExportService2.new.export_visualization_json_hash(@table_visualization.id, @user)
-        expect(export[:visualization][:synchronization][:log][:entries].length).to be < 10000
+        expect(export[:visualization][:synchronization][:log][:entries].length).to be < 10_000
       end
     end
 
@@ -1074,13 +1072,13 @@ describe Carto::VisualizationsExportService2 do
 
         map = FactoryGirl.create(:carto_map, layers: [layer], user: owner_user)
         map, table, table_visualization, visualization = create_full_visualization(owner_user,
-                                                                                       map: map,
-                                                                                       table: user_table,
-                                                                                       data_layer: layer)
+                                                                                   map: map,
+                                                                                   table: user_table,
+                                                                                   data_layer: layer)
 
         FactoryGirl.create(:source_analysis, visualization: visualization, user: owner_user,
                                              source_table: table.name, query: query1)
-        return map, table, table_visualization, visualization
+        [map, table, table_visualization, visualization]
       end
 
       after(:each) do
@@ -1455,7 +1453,7 @@ describe Carto::VisualizationsExportService2 do
       imported_overlays.length.should eq original_overlays.length
       (0..(imported_overlays.length - 1)).each do |i|
         imported_overlay = imported_overlays[i]
-        imported_overlay.order.should eq (i + 1)
+        imported_overlay.order.should eq(i + 1)
         verify_overlay_match(imported_overlay, original_overlays[i])
       end
     end
@@ -1610,9 +1608,9 @@ describe Carto::VisualizationsExportService2 do
         @user2.stubs(:public_map_quota).returns(1)
         exported_string = export_service.export_visualization_json_string(@visualization.id, @user, with_password: true)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
-        expect {
+        expect do
           Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-        }.to raise_error(Carto::UnauthorizedError)
+        end.to raise_error(Carto::UnauthorizedError)
         @user2.unstub(:public_map_quota)
       end
 
@@ -1624,9 +1622,9 @@ describe Carto::VisualizationsExportService2 do
         @user2.stubs(:private_map_quota).returns(1)
         exported_string = export_service.export_visualization_json_string(@visualization.id, @user, with_password: true)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
-        expect {
+        expect do
           Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-        }.to raise_error(Carto::UnauthorizedError)
+        end.to raise_error(Carto::UnauthorizedError)
         @user2.unstub(:private_map_quota)
       end
 
@@ -1824,7 +1822,8 @@ describe Carto::VisualizationsExportService2 do
         built_viz = export_service.build_visualization_from_json_export(exported_string)
 
         expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz) }.to raise_error(
-          'Cannot rename a dataset during import')
+          'Cannot rename a dataset during import'
+        )
       end
 
       it 'importing a dataset without a table should raise an error' do
@@ -1832,7 +1831,8 @@ describe Carto::VisualizationsExportService2 do
         built_viz = export_service.build_visualization_from_json_export(exported_string)
 
         expect { Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz) }.to raise_error(
-          'Cannot import a dataset without physical table')
+          'Cannot import a dataset without physical table'
+        )
       end
 
       it 'importing an exported dataset should keep the synchronization' do
@@ -1936,9 +1936,9 @@ describe Carto::VisualizationsExportService2 do
         @user_no_private_tables.public_dataset_quota = 0
         @user_no_private_tables.save!
 
-        expect {
+        expect do
           Carto::VisualizationsExportPersistenceService.new.save_import(@user_no_private_tables, built_viz)
-        }.to raise_error(Carto::UnauthorizedError)
+        end.to raise_error(Carto::UnauthorizedError)
       end
     end
   end

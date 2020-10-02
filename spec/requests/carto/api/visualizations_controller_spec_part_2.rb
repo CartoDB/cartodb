@@ -41,9 +41,9 @@ describe Carto::Api::VisualizationsController do
     before(:each) do
       begin
         delete_user_data @user_1
-      rescue StandardError => exception
+      rescue StandardError => e
         # Silence named maps problems only here upon data cleaning, not in specs
-        raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
+        raise unless e.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
       end
 
       @headers = {
@@ -104,47 +104,47 @@ describe Carto::Api::VisualizationsController do
       u2_vis_1_id = JSON.parse(last_response.body).fetch('id')
 
       get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_CANONICAL), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       vis = body['visualizations'].first
       vis['id'].should eq u1_t_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       vis = body['visualizations'].first
       vis['id'].should eq u1_vis_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_CANONICAL), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       vis = body['visualizations'].first
       vis['id'].should eq u2_t_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       vis = body['visualizations'].first
       vis['id'].should eq u2_vis_1_id
 
       # Share u1 vis with u2
-      put api_v1_permissions_update_url(user_domain:user_1.username, api_key: user_1.api_key, id: u1_vis_1_perm_id),
-          {acl: [{
+      put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_vis_1_perm_id),
+          { acl: [{
             type: CartoDB::Permission::TYPE_USER,
             entity: {
-              id:   user_2.id,
+              id: user_2.id
             },
             access: CartoDB::Permission::ACCESS_READONLY
-          }]}.to_json, @headers
+          }] }.to_json, @headers
       last_response.status.should == 200
 
       # Vis listing checks
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 2
       # Permissions don't change updated_at
@@ -152,129 +152,128 @@ describe Carto::Api::VisualizationsController do
       body['visualizations'][1]['id'].should eq u1_vis_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       body['visualizations'][0]['id'].should eq u1_vis_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
-          exclude_shared: false), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
+                                          exclude_shared: false), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 2
       body['visualizations'][0]['id'].should eq u2_vis_1_id
       body['visualizations'][1]['id'].should eq u1_vis_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
-          only_shared: false), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
+                                          only_shared: false), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 2
       body['visualizations'][0]['id'].should eq u2_vis_1_id
       body['visualizations'][1]['id'].should eq u1_vis_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
-          exclude_shared: true), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
+                                          exclude_shared: true), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       body['visualizations'][0]['id'].should eq u2_vis_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
-          only_shared: true), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
+                                          only_shared: true), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       body['visualizations'][0]['id'].should eq u1_vis_1_id
 
       # Same with 'shared' filter (convenience alias for not handling both exclude_shared and only_shared)
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
-          shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
+                                          shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 2
       body['visualizations'][0]['id'].should eq u2_vis_1_id
       body['visualizations'][1]['id'].should eq u1_vis_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
-          shared: CartoDB::Visualization::Collection::FILTER_SHARED_NO), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
+                                          shared: CartoDB::Visualization::Collection::FILTER_SHARED_NO), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       body['visualizations'][0]['id'].should eq u2_vis_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
-          shared: CartoDB::Visualization::Collection::FILTER_SHARED_ONLY), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at',
+                                          shared: CartoDB::Visualization::Collection::FILTER_SHARED_ONLY), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       body['visualizations'][0]['id'].should eq u1_vis_1_id
 
       # Share u1 table with u2
-      put api_v1_permissions_update_url(user_domain:user_1.username, api_key: user_1.api_key, id: u1_t_1_perm_id),
-          {acl: [{
-                   type: CartoDB::Permission::TYPE_USER,
-                   entity: {
-                     id:   user_2.id,
-                   },
-                   access: CartoDB::Permission::ACCESS_READONLY
-                 }]}.to_json, @headers
+      put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_t_1_perm_id),
+          { acl: [{
+            type: CartoDB::Permission::TYPE_USER,
+            entity: {
+              id: user_2.id
+            },
+            access: CartoDB::Permission::ACCESS_READONLY
+          }] }.to_json, @headers
       last_response.status.should == 200
 
       # Dunno why (rack test error?) but this call seems to cache previous params, so just call it to "flush" them
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
-          shared: 'wadus',
-          exclude_shared: false,
-          only_shared: false),
+                                          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
+                                          shared: 'wadus',
+                                          exclude_shared: false,
+                                          only_shared: false),
           @headers
       # -------------
 
       # Table listing checks
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 2
       body['visualizations'][0]['id'].should eq u2_t_1_id
       body['visualizations'][1]['id'].should eq u1_t_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_1.username, api_key: user_1.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       body['visualizations'][0]['id'].should eq u1_t_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
-          exclude_shared: false), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
+                                          exclude_shared: false), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 2
       body['visualizations'][0]['id'].should eq u2_t_1_id
       body['visualizations'][1]['id'].should eq u1_t_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
-          only_shared: false), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
+                                          only_shared: false), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 2
       body['visualizations'][0]['id'].should eq u2_t_1_id
       body['visualizations'][1]['id'].should eq u1_t_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
-          exclude_shared: true), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
+                                          exclude_shared: true), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       body['visualizations'][0]['id'].should eq u2_t_1_id
 
       get api_v1_visualizations_index_url(user_domain: user_2.username, api_key: user_2.api_key,
-          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
-          only_shared: true), @headers
+                                          type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
+                                          only_shared: true), @headers
       body = JSON.parse(last_response.body)
       body['total_entries'].should eq 1
       body['visualizations'][0]['id'].should eq u1_t_1_id
     end
-
 
     describe 'tests visualization endpoints in organizations' do
       include_context 'organization with users helper'
@@ -360,13 +359,13 @@ describe Carto::Api::VisualizationsController do
 
         # Share u2 vis1 with organization
         put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_vis_1_perm_id),
-            {acl: [{
-                       type: CartoDB::Permission::TYPE_ORGANIZATION,
-                       entity: {
-                           id:   @organization.id,
-                       },
-                       access: CartoDB::Permission::ACCESS_READONLY
-                   }]}.to_json, @headers
+            { acl: [{
+              type: CartoDB::Permission::TYPE_ORGANIZATION,
+              entity: {
+                id: @organization.id
+              },
+              access: CartoDB::Permission::ACCESS_READONLY
+            }] }.to_json, @headers
         last_response.status.should == 200
 
         get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
@@ -378,13 +377,13 @@ describe Carto::Api::VisualizationsController do
 
         # Share u2 vis2 with u1
         put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_vis_2_perm_id),
-            {acl: [{
-                       type: CartoDB::Permission::TYPE_USER,
-                       entity: {
-                           id:   @org_user_1.id,
-                       },
-                       access: CartoDB::Permission::ACCESS_READONLY
-                   }]}.to_json, @headers
+            { acl: [{
+              type: CartoDB::Permission::TYPE_USER,
+              entity: {
+                id: @org_user_1.id
+              },
+              access: CartoDB::Permission::ACCESS_READONLY
+            }] }.to_json, @headers
         last_response.status.should == 200
 
         get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
@@ -413,16 +412,15 @@ describe Carto::Api::VisualizationsController do
         body['total_shared'].should eq 2
         body['total_locked'].should eq 0
 
-
         # Share u2 table1 with org
-        put api_v1_permissions_update_url(user_domain:@org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_1_perm_id),
-            {acl: [{
-                       type: CartoDB::Permission::TYPE_ORGANIZATION,
-                       entity: {
-                           id:   @organization.id,
-                       },
-                       access: CartoDB::Permission::ACCESS_READONLY
-                   }]}.to_json, @headers
+        put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_1_perm_id),
+            { acl: [{
+              type: CartoDB::Permission::TYPE_ORGANIZATION,
+              entity: {
+                id: @organization.id
+              },
+              access: CartoDB::Permission::ACCESS_READONLY
+            }] }.to_json, @headers
 
         get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
@@ -432,14 +430,14 @@ describe Carto::Api::VisualizationsController do
         body['total_locked'].should eq 0
 
         # Share u2 table2 with org
-        put api_v1_permissions_update_url(user_domain:@org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_2_perm_id),
-            {acl: [{
-                       type: CartoDB::Permission::TYPE_USER,
-                       entity: {
-                           id:   @org_user_1.id,
-                       },
-                       access: CartoDB::Permission::ACCESS_READONLY
-                   }]}.to_json, @headers
+        put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_2_perm_id),
+            { acl: [{
+              type: CartoDB::Permission::TYPE_USER,
+              entity: {
+                id: @org_user_1.id
+              },
+              access: CartoDB::Permission::ACCESS_READONLY
+            }] }.to_json, @headers
 
         get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
@@ -468,11 +466,9 @@ describe Carto::Api::VisualizationsController do
         body['total_shared'].should eq 2
         body['total_locked'].should eq 0
       end
-
     end
 
     describe 'index endpoint' do
-
       it 'tests normal users authenticated and unauthenticated calls' do
         bypass_named_maps
 
@@ -509,7 +505,7 @@ describe Carto::Api::VisualizationsController do
 
         get api_v1_visualizations_index_url(user_domain: @user_2.username, type: 'derived', api_key: @user_2.api_key,
                                             order: 'updated_at'),
-          {}, @headers
+            {}, @headers
         body = JSON.parse(last_response.body)
 
         body['total_entries'].should eq 2
@@ -528,7 +524,7 @@ describe Carto::Api::VisualizationsController do
 
         user_2 = create_user(
           username: unique_name('user'),
-          email:    unique_email,
+          email: unique_email,
           password: 'clientex'
         )
 
@@ -538,14 +534,14 @@ describe Carto::Api::VisualizationsController do
         user_2.reload
 
         post "http://#{organization.name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
-                                                                                 api_key: user_2.api_key)}",
+                                                                                          api_key: user_2.api_key)}",
              factory(user_2).to_json, @headers
         last_response.status.should == 200
         pub_vis_id = JSON.parse(last_response.body).fetch('id')
 
         put "http://#{organization.name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
-                                                                               api_key: user_2.api_key,
-                                                                               id: pub_vis_id)}",
+                                                                                         api_key: user_2.api_key,
+                                                                                         id: pub_vis_id)}",
             {
               id: pub_vis_id,
               privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -553,14 +549,14 @@ describe Carto::Api::VisualizationsController do
         last_response.status.should == 200
 
         post "http://#{organization.name}.cartodb.test#{api_v1_visualizations_create_path(user_domain: user_2.username,
-                                                                                api_key: user_2.api_key)}",
+                                                                                          api_key: user_2.api_key)}",
              factory(user_2).to_json, @headers
         last_response.status.should == 200
         priv_vis_id = JSON.parse(last_response.body).fetch('id')
 
         put "http://#{organization.name}.cartodb.test#{api_v1_visualizations_update_path(user_domain: user_2.username,
-                                                                               api_key: user_2.api_key,
-                                                                               id: priv_vis_id)}",
+                                                                                         api_key: user_2.api_key,
+                                                                                         id: priv_vis_id)}",
             {
               id: priv_vis_id,
               privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
@@ -568,7 +564,7 @@ describe Carto::Api::VisualizationsController do
         last_response.status.should == 200
 
         get "http://#{organization.name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
-                                                                               type: 'derived')}", @headers
+                                                                                        type: 'derived')}", @headers
         body = JSON.parse(last_response.body)
 
         body['total_entries'].should eq 1
@@ -576,11 +572,10 @@ describe Carto::Api::VisualizationsController do
         vis['id'].should eq pub_vis_id
         vis['privacy'].should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC.upcase
 
-
         get "http://#{organization.name}.cartodb.test#{api_v1_visualizations_index_path(user_domain: user_2.username,
-                                                                               api_key: user_2.api_key,
-                                                                               type: 'derived',
-                                                                               order: 'updated_at')}", {}, @headers
+                                                                                        api_key: user_2.api_key,
+                                                                                        type: 'derived',
+                                                                                        order: 'updated_at')}", {}, @headers
         body = JSON.parse(last_response.body)
 
         body['total_entries'].should eq 2
@@ -607,7 +602,7 @@ describe Carto::Api::VisualizationsController do
         id = JSON.parse(last_response.body).fetch('id')
 
         get api_v1_visualizations_index_url(api_key: @api_key),
-          {}, @headers
+            {}, @headers
 
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
@@ -617,10 +612,10 @@ describe Carto::Api::VisualizationsController do
       it 'is updated after creating a visualization' do
         payload = factory(@user_1)
         post api_v1_visualizations_create_url(api_key: @api_key),
-          payload.to_json, @headers
+             payload.to_json, @headers
 
         get api_v1_visualizations_index_url(api_key: @api_key),
-          {}, @headers
+            {}, @headers
 
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
@@ -628,10 +623,10 @@ describe Carto::Api::VisualizationsController do
 
         payload = factory(@user_1).merge('name' => 'another one')
         post api_v1_visualizations_create_url(api_key: @api_key),
-          payload.to_json, @headers
+             payload.to_json, @headers
 
         get api_v1_visualizations_index_url(api_key: @api_key),
-          {}, @headers
+            {}, @headers
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.size.should == 2
@@ -640,11 +635,11 @@ describe Carto::Api::VisualizationsController do
       it 'is updated after deleting a visualization' do
         payload = factory(@user_1)
         post api_v1_visualizations_create_url(api_key: @api_key),
-          payload.to_json, @headers
+             payload.to_json, @headers
         id = JSON.parse(last_response.body).fetch('id')
 
         get api_v1_visualizations_index_url(api_key: @api_key),
-          {}, @headers
+            {}, @headers
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.should_not be_empty
@@ -653,7 +648,7 @@ describe Carto::Api::VisualizationsController do
                { id: id }.to_json,
                @headers
         get api_v1_visualizations_index_url(api_key: @api_key),
-          {}, @headers
+            {}, @headers
 
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
@@ -666,7 +661,7 @@ describe Carto::Api::VisualizationsController do
 
         total_entries.times do
           post api_v1_visualizations_index_url(api_key: @api_key),
-            factory(@user_1).to_json, @headers
+               factory(@user_1).to_json, @headers
         end
 
         get api_v1_visualizations_index_url(api_key: @api_key, page: 1, per_page: per_page), {}, @headers
@@ -681,21 +676,21 @@ describe Carto::Api::VisualizationsController do
 
       it 'returns filtered results' do
         post api_v1_visualizations_create_url(api_key: @api_key),
-          factory(@user_1).to_json, @headers
+             factory(@user_1).to_json, @headers
 
         get api_v1_visualizations_index_url(api_key: @api_key, type: 'table'),
-          {}, @headers
+            {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.should be_empty
 
         post api_v1_visualizations_create_url(api_key: @api_key),
-          factory(@user_1).to_json, @headers
+             factory(@user_1).to_json, @headers
         post api_v1_visualizations_create_url(api_key: @api_key),
-          factory(@user_1).merge(type: 'table').to_json, @headers
+             factory(@user_1).merge(type: 'table').to_json, @headers
         get api_v1_visualizations_index_url(api_key: @api_key, type: 'derived'),
-          {}, @headers
+            {}, @headers
 
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
@@ -720,29 +715,28 @@ describe Carto::Api::VisualizationsController do
         }
 
         post api_v1_visualizations_create_url(api_key: @api_key),
-              payload.to_json, @headers
+             payload.to_json, @headers
         last_response.status.should == 200
 
         visualization = JSON.parse(last_response.body)
 
         # TODO: this endpoint doesn't exist now. Current replacement?
-        #get "/api/v1/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
+        # get "/api/v1/viz/#{visualization.fetch('id')}/viz?api_key=#{@api_key}",
         #  {}, @headers
-        #last_response.status.should == 403
+        # last_response.status.should == 403
 
         get api_v2_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key),
-          {}, @headers
+            {}, @headers
         last_response.status.should == 200
 
         # include overlays
 
         get overlays_url(visualization_id: visualization.fetch('id'), api_key: @api_key),
-          {}, @headers
+            {}, @headers
         last_response.status.should == 200
         overlays = JSON.parse(last_response.body)
         overlays.length.should == 5
       end
-
     end
 
     describe 'GET /api/v1/viz/:id' do
@@ -795,8 +789,8 @@ describe Carto::Api::VisualizationsController do
 
         get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
           response.status.should eq 403
-          response.body[:errors].should eq "Visualization not viewable"
-          response.body[:errors_cause].should eq "privacy_password"
+          response.body[:errors].should eq 'Visualization not viewable'
+          response.body[:errors_cause].should eq 'privacy_password'
           response.body[:visualization].should eq expected_visualization_info
         end
       end
@@ -807,7 +801,7 @@ describe Carto::Api::VisualizationsController do
 
         get_json api_v1_visualizations_show_url(id: @visualization.id) do |response|
           response.status.should eq 403
-          response.body[:errors].should eq "Visualization not viewable"
+          response.body[:errors].should eq 'Visualization not viewable'
           response.body[:errors_cause].should be_nil
         end
       end
@@ -1215,7 +1209,6 @@ describe Carto::Api::VisualizationsController do
           collection.length.should eq 2
         end
       end
-
     end
 
     describe 'non existent visualization' do
@@ -1392,7 +1385,7 @@ describe Carto::Api::VisualizationsController do
         @carto_user1.private_tables_enabled = true
         @carto_user1.save
         user_table = FactoryGirl.create(:carto_user_table, :full, user: @carto_user1,
-                                        privacy: Carto::Visualization::PRIVACY_PRIVATE)
+                                                                  privacy: Carto::Visualization::PRIVACY_PRIVATE)
         visualization = user_table.visualization
 
         request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
@@ -1409,7 +1402,7 @@ describe Carto::Api::VisualizationsController do
         @carto_user1.private_tables_enabled = true
         @carto_user1.save
         user_table = FactoryGirl.create(:carto_user_table, :full, user: @carto_user1,
-                                        privacy: Carto::Visualization::PRIVACY_PRIVATE)
+                                                                  privacy: Carto::Visualization::PRIVACY_PRIVATE)
         visualization = user_table.visualization
 
         request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }

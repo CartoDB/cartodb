@@ -369,18 +369,18 @@ describe Admin::OrganizationUsersController do
 
     describe '#new' do
       it 'quota defaults to organization default' do
-        expected_quota = 123456789
+        expected_quota = 123_456_789
         Organization.any_instance.stubs(:default_quota_in_bytes).returns(expected_quota)
 
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
 
-        last_response.body.should include 123456789.to_s
+        last_response.body.should include 123_456_789.to_s
       end
 
       it 'quota defaults to remaining quota if the assigned default goes overquota' do
         expected_quota = @organization.unassigned_quota
-        Organization.any_instance.stubs(:default_quota_in_bytes).returns(123456789012345)
+        Organization.any_instance.stubs(:default_quota_in_bytes).returns(123_456_789_012_345)
 
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
@@ -453,7 +453,7 @@ describe Admin::OrganizationUsersController do
         it 'validates before updating in Central' do
           ::User.any_instance.stubs(:update_in_central).never
           params = {
-            password:         'zyx',
+            password: 'zyx',
             confirm_password: 'abc'
           }
 
@@ -467,7 +467,7 @@ describe Admin::OrganizationUsersController do
           last_change = @existing_user.last_password_change_date
           ::User.any_instance.stubs(:update_in_central).never
           params = {
-            password:         'abcdefgh',
+            password: 'abcdefgh',
             confirm_password: 'abcdefgh'
           }
 
@@ -619,7 +619,7 @@ describe Admin::OrganizationUsersController do
           old_limits = update_soft_limits(@org_user_owner, false)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
-               user: user_params.merge(soft_limits_params("1")),
+               user: user_params.merge(soft_limits_params('1')),
                password_confirmation: @org_user_owner.password
           last_response.status.should eq 422
 
@@ -632,7 +632,7 @@ describe Admin::OrganizationUsersController do
           old_limits = update_soft_limits(@org_user_owner, false)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
-               user: user_params.merge(soft_geocoding_limit: "1"),
+               user: user_params.merge(soft_geocoding_limit: '1'),
                password_confirmation: @org_user_owner.password
           last_response.status.should eq 422
 
@@ -660,7 +660,7 @@ describe Admin::OrganizationUsersController do
           old_limits = update_soft_limits(@org_user_owner, true)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
-               user: user_params.merge(soft_limits_params("1")),
+               user: user_params.merge(soft_limits_params('1')),
                password_confirmation: @org_user_owner.password
           last_response.status.should eq 302
 
@@ -683,7 +683,7 @@ describe Admin::OrganizationUsersController do
                                               soft_limits_params(false).merge(organization: @carto_organization))
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: soft_limits_params("1"),
+              user: soft_limits_params('1'),
               password_confirmation: @org_user_owner.password
           last_response.status.should eq 422
 
@@ -698,7 +698,7 @@ describe Admin::OrganizationUsersController do
                                               soft_limits_params(false).merge(organization: @carto_organization))
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: soft_limits_params("1"),
+              user: soft_limits_params('1'),
               password_confirmation: @org_user_owner.password
           last_response.status.should eq 302
 
@@ -712,7 +712,7 @@ describe Admin::OrganizationUsersController do
           @existing_user = FactoryGirl.create(:carto_user,
                                               soft_limits_params(true).merge(organization: @carto_organization))
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: soft_limits_params("0"),
+              user: soft_limits_params('0'),
               password_confirmation: @org_user_owner.password
           last_response.status.should eq 302
 
@@ -721,7 +721,6 @@ describe Admin::OrganizationUsersController do
           update_soft_limits(@org_user_owner, old_limits)
         end
       end
-
     end
   end
 end

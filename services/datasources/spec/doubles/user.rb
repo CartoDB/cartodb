@@ -15,17 +15,15 @@ module CartoDB
           @twitter_datasource_quota = attrs.fetch(:twitter_datasource_quota, 123)
           @username = attrs.fetch(:username, 'wadus')
           @id = attrs.fetch(:id, '000-000')
-          @organization = attrs.fetch(:has_org, false) \
-            ? Organization.new({
-              twitter_datasource_enabled: attrs.fetch(:org_twitter_datasource_enabled, true),
-              twitter_datasource_quota: attrs.fetch(:org_twitter_datasource_quota, 123)
-            }) \
-            : nil
+          @organization = if attrs.fetch(:has_org, false)
+                            Organization.new({
+                                               twitter_datasource_enabled: attrs.fetch(:org_twitter_datasource_enabled, true),
+                                               twitter_datasource_quota: attrs.fetch(:org_twitter_datasource_quota, 123)
+                                             })
+                          end
         end
 
-        def organization
-          @organization
-        end
+        attr_reader :organization
 
         def save
           self

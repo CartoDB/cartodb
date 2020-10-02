@@ -1,5 +1,7 @@
 module Carto
+
   module LayerImporter
+
     private
 
     def build_layers_from_hash(exported_layers)
@@ -71,9 +73,11 @@ module Carto
         style: exported_widget[:style]
       )
     end
+
   end
 
   module LayerExporter
+
     private
 
     def export_layer(layer, active_layer: false)
@@ -111,5 +115,7 @@ module Carto
         type: legend.type
       }
     end
+
   end
+
 end

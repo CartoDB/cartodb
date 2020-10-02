@@ -1,5 +1,6 @@
 module CartoDB
   class ImageMetadata
+
     attr_reader :input_file, :width, :height
 
     def initialize(input_file, extension: nil)
@@ -25,8 +26,16 @@ module CartoDB
       return unless status == 0
 
       result = stdout.match(/ (\d+)x(\d+) /)
-      @width  = result[1].to_i rescue 0
-      @height = result[2].to_i rescue 0
+      @width = begin
+                  result[1].to_i
+               rescue StandardError
+                 0
+                end
+      @height = begin
+                  result[2].to_i
+                rescue StandardError
+                  0
+                end
     end
 
     def parse_file
@@ -34,8 +43,16 @@ module CartoDB
       return unless status == 0
 
       result  = stdout.match(/(\d+) x (\d+)/)
-      @width  = result[1].to_i rescue 0
-      @height = result[2].to_i rescue 0
+      @width  = begin
+                  result[1].to_i
+                rescue StandardError
+                  0
+                end
+      @height = begin
+                  result[2].to_i
+                rescue StandardError
+                  0
+                end
     end
 
     private
@@ -51,5 +68,6 @@ module CartoDB
         ''
       end
     end
+
   end
 end

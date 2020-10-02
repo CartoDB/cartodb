@@ -60,7 +60,7 @@ CartoDB::Application.configure do
 
   config.assets.initialize_on_precompile = true
 
-  config.action_controller.asset_host = Proc.new do
+  config.action_controller.asset_host = proc do
     Cartodb.asset_path
   end
 end

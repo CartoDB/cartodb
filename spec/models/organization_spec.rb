@@ -18,11 +18,13 @@ describe 'refactored behaviour' do
 
     def get_twitter_imports_count_by_organization_id(organization_id)
       raise "id doesn't match" unless organization_id == @the_organization.id
+
       @the_organization.get_twitter_imports_count
     end
 
     def get_geocoding_calls_by_organization_id(organization_id)
       raise "id doesn't match" unless organization_id == @the_organization.id
+
       @the_organization.get_geocoding_calls
     end
 
@@ -33,9 +35,8 @@ describe 'refactored behaviour' do
 end
 
 describe Organization do
-
   before(:all) do
-    @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+    @user = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
   end
 
   after(:all) do
@@ -65,15 +66,15 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123_456_789_000, name: 'wadus', seats: 5).save
 
-      owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      owner = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
       owner_org.promote_user_to_admin
       owner.reload
       organization.reload
 
-      user = create_user(quota_in_bytes: 524288000, table_quota: 500, organization_id: organization.id)
+      user = create_user(quota_in_bytes: 524_288_000, table_quota: 500, organization_id: organization.id)
       user.save
       user.reload
       organization.reload
@@ -87,9 +88,9 @@ describe Organization do
     end
 
     it 'Destroys viewer users with shared visualizations' do
-      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 3, viewer_seats: 2).save
+      organization = Organization.new(quota_in_bytes: 123_456_789_000, name: 'wadus', seats: 3, viewer_seats: 2).save
 
-      owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+      owner = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
       owner_org.promote_user_to_admin
       user1 = create_user(organization_id: organization.id)
@@ -116,15 +117,15 @@ describe Organization do
     end
 
     it 'destroys users with unregistered tables' do
-      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123_456_789_000, name: 'wadus', seats: 5).save
 
-      owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+      owner = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
       owner_org.promote_user_to_admin
       owner.reload
       organization.reload
 
-      user = create_user(quota_in_bytes: 524288000, table_quota: 500, organization_id: organization.id)
+      user = create_user(quota_in_bytes: 524_288_000, table_quota: 500, organization_id: organization.id)
       user.save
       user.reload
       organization.reload
@@ -159,7 +160,7 @@ describe Organization do
 
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do
-      org_quota = 123456789000
+      org_quota = 123_456_789_000
       org_name = unique_name('org')
       org_seats = 5
 
@@ -172,7 +173,7 @@ describe Organization do
       organization.seats = org_seats
       organization.save
       organization.valid?.should eq true
-      organization.errors.should eq Hash.new
+      organization.errors.should eq({})
 
       @user.organization = organization
       @user.save
@@ -194,7 +195,7 @@ describe Organization do
     end
 
     it 'validates viewer and builder quotas' do
-      quota = 123456789000
+      quota = 123_456_789_000
       name = unique_name('org')
       seats = 1
       viewer_seats = 1
@@ -264,9 +265,9 @@ describe Organization do
 
     it 'Tests setting a user as the organization owner' do
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5).save
 
-      user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      user = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
 
       user_org = CartoDB::UserOrganization.new(organization.id, user.id)
       # This also covers the usecase of an user being moved to its own schema (without org)
@@ -281,24 +282,23 @@ describe Organization do
       user.database_schema.should eq user.username
 
       user_org = CartoDB::UserOrganization.new(organization.id, user.id)
-      expect {
+      expect do
         user_org.promote_user_to_admin
-      }.to raise_error
+      end.to raise_error
 
       user.destroy
     end
   end
 
   describe '#org_members_and_owner_removal' do
-
     it 'Tests removing a normal member from the organization' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5).save
 
-      owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
+      owner = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
 
       user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
       user_org.promote_user_to_admin
@@ -306,16 +306,16 @@ describe Organization do
       organization.reload
       owner.reload
 
-      member1 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, organization_id: organization.id)
+      member1 = create_user(quota_in_bytes: 524_288_000, table_quota: 500, organization_id: organization.id)
       member1.reload
       organization.reload
 
-      member2 = create_user(:quota_in_bytes => 524288000, :table_quota => 500, organization_id: organization.id)
+      member2 = create_user(quota_in_bytes: 524_288_000, table_quota: 500, organization_id: organization.id)
       member2.reload
 
       organization.users.count.should eq 3
 
-      results = member1.in_database(as: :public_user).fetch(%Q{
+      results = member1.in_database(as: :public_user).fetch(%{
         SELECT has_function_privilege('#{member1.database_public_username}', 'CDB_QueryTablesText(text)', 'execute')
       }).first
       results.nil?.should eq false
@@ -326,23 +326,23 @@ describe Organization do
 
       organization.users.count.should eq 2
 
-      results = member2.in_database(as: :public_user).fetch(%Q{
+      results = member2.in_database(as: :public_user).fetch(%{
         SELECT has_function_privilege('#{member2.database_public_username}', 'CDB_QueryTablesText(text)', 'execute')
       }).first
       results.nil?.should eq false
       results[:has_function_privilege].should eq true
 
       # Can't remove owner if other members exist
-      expect {
+      expect do
         owner.destroy
-      }.to raise_error CartoDB::BaseCartoDBError
+      end.to raise_error CartoDB::BaseCartoDBError
 
       member2.destroy
       organization.reload
 
       organization.users.count.should eq 1
 
-      results = owner.in_database(as: :public_user).fetch(%Q{
+      results = owner.in_database(as: :public_user).fetch(%{
         SELECT has_function_privilege('#{owner.database_public_username}', 'CDB_QueryTablesText(text)', 'execute')
       }).first
       results.nil?.should eq false
@@ -350,16 +350,16 @@ describe Organization do
 
       owner.destroy
 
-      expect {
+      expect do
         organization.reload
-      }.to raise_error Sequel::Error
+      end.to raise_error Sequel::Error
     end
     it 'Tests removing a normal member with analysis tables' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5).save
       owner = create_test_user('orgowner')
       user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
       user_org.promote_user_to_admin
@@ -391,9 +391,9 @@ describe Organization do
     it 'Tests removing a normal user' do
       initial_count = ::User.all.count
 
-      user = create_user(:quota_in_bytes => 524288000, :table_quota => 50)
+      user = create_user(quota_in_bytes: 524_288_000, table_quota: 50)
 
-      ::User.all.count.should eq (initial_count + 1)
+      ::User.all.count.should eq(initial_count + 1)
 
       user.destroy
 
@@ -404,13 +404,13 @@ describe Organization do
 
   describe '#users_in_same_db_removal_error' do
     it "Tests that if 2+ users somehow have same database name, can't be deleted" do
-      user2 = create_user(:quota_in_bytes => 524288000, :table_quota => 50, :database_name => @user.database_name)
+      user2 = create_user(quota_in_bytes: 524_288_000, table_quota: 50, database_name: @user.database_name)
       user2.database_name = @user.database_name
       user2.save
 
-      expect {
+      expect do
         user2.destroy
-      }.to raise_error CartoDB::BaseCartoDBError
+      end.to raise_error CartoDB::BaseCartoDBError
     end
   end
 
@@ -462,18 +462,18 @@ describe Organization do
     organization.valid?.should be_true
     organization.password_expiration_in_d.should eq 1
 
-    expect {
+    expect do
       organization = FactoryGirl.create(:organization, password_expiration_in_d: 0)
-    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+    end.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
 
     # maximum 1 year
     organization = FactoryGirl.create(:organization, password_expiration_in_d: 365)
     organization.valid?.should be_true
     organization.password_expiration_in_d.should eq 365
 
-    expect {
+    expect do
       organization = FactoryGirl.create(:organization, password_expiration_in_d: 366)
-    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+    end.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
 
     # nil or blank means unlimited
     organization = FactoryGirl.create(:organization, password_expiration_in_d: nil)
@@ -523,13 +523,12 @@ describe Organization do
   def random_attributes(attributes = {})
     random = unique_name('viz')
     {
-      name:         attributes.fetch(:name, random),
-      description:  attributes.fetch(:description, "description #{random}"),
-      privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
-      tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, Visualization::Member::TYPE_DERIVED),
-      user_id:      attributes.fetch(:user_id, Carto::UUIDHelper.random_uuid)
+      name: attributes.fetch(:name, random),
+      description: attributes.fetch(:description, "description #{random}"),
+      privacy: attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
+      tags: attributes.fetch(:tags, ['tag 1']),
+      type: attributes.fetch(:type, Visualization::Member::TYPE_DERIVED),
+      user_id: attributes.fetch(:user_id, Carto::UUIDHelper.random_uuid)
     }
   end # random_attributes
-
 end

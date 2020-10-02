@@ -4,6 +4,7 @@ require_dependency 'carto/legend_definition_validator'
 
 module Carto
   class Legend < ActiveRecord::Base
+
     self.inheritance_column = :_type
 
     belongs_to :layer, class_name: Carto::Layer
@@ -36,17 +37,15 @@ module Carto
     private
 
     def ensure_definition
-      self.definition ||= Hash.new
+      self.definition ||= {}
     end
 
     def ensure_conf
-      self.conf ||= Hash.new
+      self.conf ||= {}
     end
 
     def on_data_layer
-      if layer && !layer.data_layer?
-        errors.add(:layer, "'#{layer.kind}' layers can't have legends")
-      end
+      errors.add(:layer, "'#{layer.kind}' layers can't have legends") if layer && !layer.data_layer?
     end
 
     MAX_LEGENDS_PER_LAYER = 2
@@ -63,6 +62,7 @@ module Carto
 
     def under_max_legends_per_layer_and_type
       return unless type
+
       LEGEND_TYPES_PER_ATTRIBUTE.each do |attribute, legend_types|
         next unless legend_types.include?(type)
 
@@ -75,9 +75,7 @@ module Carto
       validator = Carto::LegendDefinitionValidator.new(type, definition)
       definition_errors = validator.errors
 
-      if definition_errors.any?
-        errors.add(:definition, definition_errors.join(', '))
-      end
+      errors.add(:definition, definition_errors.join(', ')) if definition_errors.any?
     end
 
     def validate_conf_schema
@@ -87,13 +85,12 @@ module Carto
       parsed_conf = conf.try(:is_a?, Hash) ? conf.with_indifferent_access : conf
       conf_errors = JSON::Validator.fully_validate(schema, parsed_conf)
 
-      if conf_errors.any?
-        errors.add(:conf, conf_errors.join(', '))
-      end
+      errors.add(:conf, conf_errors.join(', ')) if conf_errors.any?
     end
 
     def force_notify_layer_change
       layer.force_notify_change
     end
+
   end
 end

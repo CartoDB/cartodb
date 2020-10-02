@@ -1,7 +1,6 @@
 require_relative '../spec_helper'
 
 describe PasswordChangeController do
-
   before(:each) do
     User.any_instance.stubs(:update_in_central).returns(true)
     PasswordChangeController.any_instance.stubs(:check_password_expired)
@@ -12,7 +11,7 @@ describe PasswordChangeController do
     @user.destroy
   end
 
-  let (:payload_wrong_old_password) do
+  let(:payload_wrong_old_password) do
     {
       username: @user.username,
       old_password: 'wrong',
@@ -21,7 +20,7 @@ describe PasswordChangeController do
     }
   end
 
-  let (:payload_mismatch_new_password) do
+  let(:payload_mismatch_new_password) do
     {
       username: @user.username,
       old_password: @user.password,
@@ -30,7 +29,7 @@ describe PasswordChangeController do
     }
   end
 
-  let (:payload_ok) do
+  let(:payload_ok) do
     {
       username: @user.username,
       old_password: @user.password,
@@ -39,7 +38,7 @@ describe PasswordChangeController do
     }
   end
 
-  let (:payload_password_not_changed) do
+  let(:payload_password_not_changed) do
     {
       username: @user.username,
       old_password: @user.password,
@@ -48,7 +47,7 @@ describe PasswordChangeController do
     }
   end
 
-  let (:payload_password_short) do
+  let(:payload_password_short) do
     {
       username: @user.username,
       old_password: @user.password,

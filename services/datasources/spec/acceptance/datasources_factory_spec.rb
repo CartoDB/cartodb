@@ -8,7 +8,6 @@ require 'spec_helper_min'
 include CartoDB::Datasources
 
 describe DatasourcesFactory do
-
   def get_config
     @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']
   end
@@ -41,9 +40,9 @@ describe DatasourcesFactory do
       nil_provider = DatasourcesFactory.get_datasource(nil, user)
       nil_provider.nil?.should eq true
 
-      expect {
+      expect do
         DatasourcesFactory.get_datasource('blablabla...', user)
-      }.to raise_exception MissingConfigurationError
+      end.to raise_exception MissingConfigurationError
     end
   end
 

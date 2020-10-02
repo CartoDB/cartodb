@@ -6,11 +6,12 @@ require_relative '../../../../lib/cartodb/stats/importer'
 
 module CartoDB
   module Importer2
+
     class ContentGuesser
 
       SQLAPI_CALLS_TIMEOUT = 45
-      COUNTRIES_COLUMN = 'name_'
-      COUNTRIES_QUERY = "SELECT #{COUNTRIES_COLUMN} FROM admin0_synonyms"
+      COUNTRIES_COLUMN = 'name_'.freeze
+      COUNTRIES_QUERY = "SELECT #{COUNTRIES_COLUMN} FROM admin0_synonyms".freeze
       DEFAULT_MINIMUM_ENTROPY = 0.9
       ID_COLUMNS = ['ogc_fid', 'gid', 'cartodb_id', 'objectid'].freeze
 
@@ -23,7 +24,7 @@ module CartoDB
         @options    = options
         @job        = job
         @importer_stats = CartoDB::Stats::Importer.instance
-        @country_name_normalizer = Proc.new {|str| str.nil? ? '' : str.gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase }
+        @country_name_normalizer = proc { |str| str.nil? ? '' : str.gsub(/[^a-zA-Z\u00C0-\u00ff]+/, '').downcase }
       end
 
       def set_importer_stats(importer_stats)
@@ -31,11 +32,14 @@ module CartoDB
       end
 
       def enabled?
-        @options[:guessing][:enabled] rescue false
+        @options[:guessing][:enabled]
+      rescue StandardError
+        false
       end
 
       def country_column
-        return nil if not enabled?
+        return nil unless enabled?
+
         columns.each do |column|
           return column[:column_name] if is_country_column? column
         end
@@ -47,7 +51,8 @@ module CartoDB
       end
 
       def ip_column
-        return nil if not enabled?
+        return nil unless enabled?
+
         columns.each do |column|
           return column[:column_name] if is_ip_column? column
         end
@@ -55,7 +60,7 @@ module CartoDB
       end
 
       def columns
-        @columns ||= @db[%Q(
+        @columns ||= @db[%(
           SELECT column_name, data_type
           FROM information_schema.columns
           WHERE table_name = '#{@table_name}' AND table_schema = '#{@schema}'
@@ -64,6 +69,7 @@ module CartoDB
 
       def is_country_column?(column)
         return false unless is_text_type? column
+
         entropy = metric_entropy(column, country_name_normalizer)
         if entropy < minimum_entropy
           false
@@ -88,7 +94,8 @@ module CartoDB
 
       def is_ip_column?(column)
         return false unless is_text_type? column
-        proportion  = ip_proportion(column)
+
+        proportion = ip_proportion(column)
         if proportion > threshold
           log "ip_proportion(#{column[:column_name]}) = #{proportion}; threshold = #{threshold}; sample.count = #{sample.count}"
           log "sample.first(4) = #{sample.first(4)}"
@@ -98,7 +105,6 @@ module CartoDB
           false
         end
       end
-
 
       # See http://en.wikipedia.org/wiki/Entropy_(information_theory)
       # See http://www.shannonentropy.netmark.pl/
@@ -112,7 +118,7 @@ module CartoDB
       def shannon_entropy(column, normalizer)
         sum = 0.0
         frequencies(column, normalizer).each { |freq| sum += (freq * Math.log(freq)) }
-        return sum.abs
+        sum.abs
       end
 
       # Returns an array with the relative frequencies of the elements of that column
@@ -131,7 +137,7 @@ module CartoDB
           end
         end
         length = sample.count.to_f
-        frequency_table.map { |key, value| value / length }
+        frequency_table.map { |_key, value| value / length }
       end
 
       def country_proportion(column)
@@ -152,6 +158,7 @@ module CartoDB
 
       def id_column
         return @id_column if @id_column
+
         columns.each do |column|
           if ID_COLUMNS.include? column[:column_name]
             @id_column = column[:column_name]
@@ -185,7 +192,8 @@ module CartoDB
 
       def countries
         return @countries if @countries
-        @countries = Set.new()
+
+        @countries = Set.new
         geocoder_sql_api.fetch(COUNTRIES_QUERY).each do |country|
           country_name = country[COUNTRIES_COLUMN]
           @countries.add country_name if country_name.length >= 2
@@ -202,7 +210,7 @@ module CartoDB
       attr_writer :geocoder_sql_api
 
       def qualified_table_name
-        %Q("#{@schema}"."#{@table_name}")
+        %("#{@schema}"."#{@table_name}")
       end
 
       private

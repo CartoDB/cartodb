@@ -4,13 +4,13 @@ require_relative 'layer_vizjson_adapter'
 module Carto
   module Api
     class VisualizationVizJSONAdapter
+
       extend Forwardable
       include Carto::HtmlSafe
 
       delegate [:id, :map, :qualified_name, :description, :retrieve_named_map?, :password_protected?, :overlays,
                 :prev_id, :next_id, :transition_options, :has_password?, :parent_id, :get_auth_tokens, :user,
-                :related_canonical_visualizations
-               ] => :visualization
+                :related_canonical_visualizations] => :visualization
 
       attr_reader :visualization
 
@@ -26,13 +26,13 @@ module Carto
       end
 
       def attributions_from_derived_visualizations
-        @visualization.related_canonical_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
+        @visualization.related_canonical_visualizations.map(&:attributions).reject { |attribution| attribution.blank? }
       end
 
       def children
-        @visualization.children.map { |v|
+        @visualization.children.map do |v|
           Carto::Api::VisualizationVizJSONAdapter.new(v, @redis_cache)
-        }
+        end
       end
 
       def parent
@@ -46,9 +46,9 @@ module Carto
       private
 
       def get_layers(kind)
-        choose_layers(kind).map { |layer|
+        choose_layers(kind).map do |layer|
           Carto::Api::LayerVizJSONAdapter.new(layer)
-        }
+        end
       end
 
       def choose_layers(kind)

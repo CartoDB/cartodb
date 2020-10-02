@@ -12,27 +12,28 @@ module Carto
       user.db_service.reset_pooled_connections
       log = params.fetch(:log)
       log.append_and_store 'TableGeocoderFactory.get()'
-      log.append_and_store "params: #{params.select{ |k| k != :log }}"
+      log.append_and_store "params: #{params.select { |k| k != :log }}"
 
       if user == table_service.owner
         user_connection = user.in_database
       else
-        if !table_service.table_visualization.has_permission?(user, Carto::Permission::ACCESS_READWRITE)
+        unless table_service.table_visualization.has_permission?(user, Carto::Permission::ACCESS_READWRITE)
           raise 'Insufficient permissions on table'
         end
+
         user_connection = table_service.owner.in_database
       end
 
       instance_config = cartodb_geocoder_config
-        .deep_symbolize_keys
-        .merge(
-               table_schema:  table_service.try(:database_schema),
-               table_name:    table_service.try(:name),
-               qualified_table_name: table_service.try(:qualified_table_name),
-               sequel_qualified_table_name: table_service.try(:sequel_qualified_table_name),
-               connection:    user_connection
-               )
-        .merge(params)
+                        .deep_symbolize_keys
+                        .merge(
+                          table_schema: table_service.try(:database_schema),
+                          table_name: table_service.try(:name),
+                          qualified_table_name: table_service.try(:qualified_table_name),
+                          sequel_qualified_table_name: table_service.try(:sequel_qualified_table_name),
+                          connection: user_connection
+                        )
+                        .merge(params)
 
       kind = instance_config.fetch(:kind)
 
@@ -65,5 +66,6 @@ module Carto
       orgname = user.organization.nil? ? nil : user.organization.name
       CartoDB::GeocoderUsageMetrics.new(user.username, orgname)
     end
+
   end
 end

@@ -1,8 +1,8 @@
 require 'singleton'
 require 'google/cloud/pubsub'
 
-
 class PubSubTracker
+
   include Singleton
   include ::LoggerHelper
 
@@ -13,7 +13,6 @@ class PubSubTracker
     @topics = {
       metrics: metrics_topic
     }
-
   rescue StandardError => e
     @errored = true
     log_error(message: 'PubSubTracker: initialization error', exception: e)
@@ -40,16 +39,13 @@ class PubSubTracker
     return unless user_id.present? && enabled?
 
     topic = @topics.fetch(topic_key)
-    attributes = {user_id: user_id}.merge(properties)
+    attributes = { user_id: user_id }.merge(properties)
 
     result = topic.publish(event, attributes)
 
-    unless result
-      log_error(message: 'PubSubTracker: error sending event', event: event, topic: { name: topic.name })
-    end
+    log_error(message: 'PubSubTracker: error sending event', event: event, topic: { name: topic.name }) unless result
 
     attributes
-
   rescue KeyError => e
     log_error(message: 'PubSubTracker: topic not found', exception: e, topic: { key: topic_key })
   rescue StandardError => e

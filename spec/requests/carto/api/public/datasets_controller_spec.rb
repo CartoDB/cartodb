@@ -32,7 +32,6 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.body[:result][0][:updated_at]).to_not be_nil
         expect(response.body[:result][0][:table_schema]).to eq @user1.database_schema
         expect(response.body[:result][0][:shared]).to eq false
-
       end
     end
 
@@ -76,12 +75,11 @@ describe Carto::Api::Public::DatasetsController do
     end
 
     context 'shared datasets' do
-
       before(:each) do
         host! "#{@org_user_2.username}.localhost.lan"
         @table_name = 'shared_table'
         @params = { api_key: @org_user_2.api_key, page: 1, per_page: 10 }
-        @shared_table = FactoryGirl.create(:table, user_id: @org_user_1.id, name: @table_name )
+        @shared_table = FactoryGirl.create(:table, user_id: @org_user_1.id, name: @table_name)
       end
 
       it 'includes shared datasets read only' do

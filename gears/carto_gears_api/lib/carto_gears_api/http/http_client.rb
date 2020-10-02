@@ -1,6 +1,8 @@
 module CartoGearsApi
   module Http
+
     class ConnectionError < StandardError
+
       def initialize(message, request:, response: nil, url: nil, body: nil, method: nil, timeout: nil)
         super(message)
         @request = request
@@ -19,9 +21,11 @@ module CartoGearsApi
         "#{message}; #{@method} #{@url}; #{@body}; timeout: #{@timeout} \
   request: #{@request.inspect}; response: #{@response.inspect}"
       end
+
     end
 
     class HttpResponse
+
       def initialize(body:)
         @body = body
       end
@@ -29,10 +33,12 @@ module CartoGearsApi
       def json
         JSON.parse(@body)
       end
+
     end
 
     # Preferred way for performing HTTP requests from a gear. It contains logging and useful defaults.
     class HttpClient
+
       def initialize(https: !development, host:, port: nil, username: nil, password: nil)
         @host = host
         @port = port
@@ -67,7 +73,7 @@ module CartoGearsApi
         !(Rails.env.production? || Rails.env.staging?)
       end
 
-      def build_request(path:, body:, method:, content_type: { "Content-Type" => "application/json" }, timeout: 200)
+      def build_request(path:, body:, method:, content_type: { 'Content-Type' => 'application/json' }, timeout: 200)
         http_client = Carto::Http::Client.get(@host, log_requests: true)
         http_client.request(
           "#{@base_url}/#{path}",
@@ -80,6 +86,8 @@ module CartoGearsApi
           followlocation: true
         )
       end
+
     end
+
   end
 end

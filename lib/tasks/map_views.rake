@@ -1,8 +1,8 @@
 namespace :cartodb do
   namespace :users do
     desc 'Get map views from remote service for every user'
-    task :update_remote_map_views => :environment do
-      puts "Updating local map views cache for every user..."
+    task update_remote_map_views: :environment do
+      puts 'Updating local map views cache for every user...'
       ::User.all.each do |u|
         print "  - Update #{u.username}"
         u.set_old_api_calls # updates map views stats older than 3 hours
@@ -13,7 +13,7 @@ namespace :cartodb do
 
   namespace :mapviews do
     desc 'Get the sum of all the torque mapviews'
-    task :torque_total => :environment do
+    task torque_total: :environment do
       total_torque_mapviews = 0
       total_visualizations = 0
       offset = 0
@@ -39,7 +39,7 @@ namespace :cartodb do
     end
 
     def get_total_vis_mapviews(visualization, stats_manager)
-        stats_manager.get_total_api_calls_from_redis(visualization[:username], visualization[:id])
+      stats_manager.get_total_api_calls_from_redis(visualization[:username], visualization[:id])
     end
   end
 end

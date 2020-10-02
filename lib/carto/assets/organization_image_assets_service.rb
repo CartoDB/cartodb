@@ -4,6 +4,7 @@ require 'singleton'
 
 module Carto
   class OrganizationImageAssetsService < ImageAssetsService
+
     include Singleton
 
     def upload(organization, resource)
@@ -25,5 +26,6 @@ module Carto
 
       @max_size_in_bytes = configured || super
     end
+
   end
 end

@@ -18,7 +18,7 @@ module Carto
 
     # INFO: Needed as rails 3 + activerecord-postgres-array gem is still buggy
     def required_tables
-      self.required_tables_list.split(',')
+      required_tables_list.split(',')
     end
 
     # INFO: Needed as rails 3 + activerecord-postgres-array gem is still buggy
@@ -27,7 +27,7 @@ module Carto
     end
 
     def relates_to_table?(table)
-      required_tables.include?(table.qualified_table_name.gsub('"',''))
+      required_tables.include?(table.qualified_table_name.gsub('"', ''))
     end
 
     private
@@ -35,18 +35,18 @@ module Carto
     def source_visualization_referential_integrity
       return if errors.keys.include?(:source_visualization_id)
 
-      visualization = Carto::Visualization.where(id: self.source_visualization_id).first
-      errors.add(:source_visualization_id, "Source visualization not found") if visualization.nil?
+      visualization = Carto::Visualization.where(id: source_visualization_id).first
+      errors.add(:source_visualization_id, 'Source visualization not found') if visualization.nil?
 
-      if visualization.user.organization_id != self.organization_id
-        errors.add(:source_visualization_id, "Source visualization not found")
+      if visualization.user.organization_id != organization_id
+        errors.add(:source_visualization_id, 'Source visualization not found')
       end
     end
 
     def required_tables_should_be_qualified
-      wrong_table_names = required_tables.select { |table_name|
-          !::Table.is_qualified_name_valid?(table_name)
-        }
+      wrong_table_names = required_tables.select do |table_name|
+        !::Table.is_qualified_name_valid?(table_name)
+      end
       errors.add(:required_tables, "Invalid names: #{wrong_table_names.join(', ')}") if wrong_table_names.length > 0
     end
 
@@ -54,18 +54,18 @@ module Carto
       # If already have invalid names, don't run this validation
       return if errors.keys.include?(:required_tables)
 
-      wrong_tables = required_tables.select { |qualified_name|
-          schema, table_name = qualified_name.split('.')
-          begin
-            user = Carto::User.where({ database_schema: schema, organization_id: self.organization_id}).first
-            Carto::VisualizationQueryBuilder.new
-                                            .with_name(table_name)
-                                            .with_user_id(user.id)
-                                            .count == 0
-          rescue StandardError
-            true
-          end
-        }
+      wrong_tables = required_tables.select do |qualified_name|
+        schema, table_name = qualified_name.split('.')
+        begin
+          user = Carto::User.where({ database_schema: schema, organization_id: organization_id }).first
+          Carto::VisualizationQueryBuilder.new
+                                          .with_name(table_name)
+                                          .with_user_id(user.id)
+                                          .count == 0
+        rescue StandardError
+          true
+        end
+      end
 
       errors.add(:required_tables, "Invalid tables: #{wrong_tables.join(', ')}") if wrong_tables.length > 0
     end

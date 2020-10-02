@@ -2,6 +2,7 @@ require_dependency 'carto/uuidhelper'
 
 module Carto
   class HttpHeaderAuthentication
+
     include Carto::UUIDHelper
 
     def valid?(request)
@@ -30,6 +31,7 @@ module Carto
 
     def email(request)
       raise "Configuration is not set to email, or it's auto but request hasn't email" unless field(request) == 'email'
+
       identity(request)
     end
 
@@ -76,5 +78,6 @@ module Carto
       header = ::Cartodb.get_config(:http_header_authentication, 'header')
       !header.nil? && !header.empty? ? headers[header] : nil
     end
+
   end
 end

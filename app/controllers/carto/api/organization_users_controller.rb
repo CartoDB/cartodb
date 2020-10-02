@@ -3,6 +3,7 @@ require_relative './user_presenter'
 module Carto
   module Api
     class OrganizationUsersController < ::Api::ApplicationController
+
       include OrganizationUsersHelper
 
       ssl_required :index, :show, :create, :update, :destroy
@@ -66,9 +67,7 @@ module Carto
           account_creator.with_soft_mapzen_routing_limit(create_params[:soft_mapzen_routing_limit])
         end
 
-        if create_params[:force_password_change] == true
-          account_creator.with_force_password_change
-        end
+        account_creator.with_force_password_change if create_params[:force_password_change] == true
 
         unless account_creator.valid_creation?(current_viewer)
           render_jsonp(account_creator.validation_errors.full_messages, 410)
@@ -122,15 +121,13 @@ module Carto
       end
 
       def destroy
-        if @organization.owner_id == @user.id
-          render_jsonp("Can't delete org owner", 401) and return
-        end
+        render_jsonp("Can't delete org owner", 401) and return if @organization.owner_id == @user.id
 
         force_destroy = params[:force].present?
 
         if !force_destroy && @user.has_shared_entities?
           error_message = "Can't delete @user. 'Has shared entities"
-          render_jsonp(error_message, 410 ) and return
+          render_jsonp(error_message, 410) and return
         end
 
         @user.set_force_destroy if force_destroy
@@ -171,6 +168,7 @@ module Carto
       def update_params
         @update_params ||= permit(COMMON_MUTABLE_ATTRIBUTES)
       end
+
     end
   end
 end

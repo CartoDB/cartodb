@@ -3,9 +3,11 @@ require 'ostruct'
 require 'delorean'
 
 describe Carto::Billing do
-  describe "#last_billing_cycle" do
+  describe '#last_billing_cycle' do
     class MyDummyUser < OpenStruct
+
       include Carto::Billing
+
     end
 
     before(:each) do
@@ -22,7 +24,7 @@ describe Carto::Billing do
       today = example[:today]
       period_end_date = example[:period_end_date]
       expected = example[:expected]
-      it "returns the current month if period_end_date.day <= today.day" \
+      it 'returns the current month if period_end_date.day <= today.day' \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
         Delorean.time_travel_to(today) do
@@ -41,7 +43,7 @@ describe Carto::Billing do
       today = example[:today]
       period_end_date = example[:period_end_date]
       expected = example[:expected]
-      it "returns the previous month if period_end_date.day > today.day" \
+      it 'returns the previous month if period_end_date.day > today.day' \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
         Delorean.time_travel_to(today) do
@@ -59,7 +61,7 @@ describe Carto::Billing do
       today = example[:today]
       period_end_date = example[:period_end_date]
       expected = example[:expected]
-      it "returns the previous valid day when dealing with 28, 29 or 30-day month corner cases" \
+      it 'returns the previous valid day when dealing with 28, 29 or 30-day month corner cases' \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
         Delorean.time_travel_to(today) do
@@ -69,9 +71,11 @@ describe Carto::Billing do
     end
   end
 
-  describe "#next_billing_cycle" do
+  describe '#next_billing_cycle' do
     class MyDummyUser < OpenStruct
+
       include Carto::Billing
+
     end
 
     before(:each) do
@@ -88,7 +92,7 @@ describe Carto::Billing do
       today = example[:today]
       period_end_date = example[:period_end_date]
       expected = example[:expected]
-      it "returns the current month if period_end_date.day > today.day" \
+      it 'returns the current month if period_end_date.day > today.day' \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
         Delorean.time_travel_to(today) do
@@ -107,7 +111,7 @@ describe Carto::Billing do
       today = example[:today]
       period_end_date = example[:period_end_date]
       expected = example[:expected]
-      it "returns the next month if period_end_date.day <= today.day" \
+      it 'returns the next month if period_end_date.day <= today.day' \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
         Delorean.time_travel_to(today) do
@@ -125,7 +129,7 @@ describe Carto::Billing do
       today = example[:today]
       period_end_date = example[:period_end_date]
       expected = example[:expected]
-      it "returns the previous valid day when dealing with 28, 29 or 30-day month corner cases" \
+      it 'returns the previous valid day when dealing with 28, 29 or 30-day month corner cases' \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
         Delorean.time_travel_to(today) do

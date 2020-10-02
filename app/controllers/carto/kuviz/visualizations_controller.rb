@@ -3,6 +3,7 @@ require_dependency 'carto/helpers/frame_options_helper'
 module Carto
   module Kuviz
     class VisualizationsController < ApplicationController
+
       include Carto::FrameOptionsHelper
 
       ssl_required
@@ -29,7 +30,7 @@ module Carto
 
         unless @kuviz.password_valid?(submitted_password)
           flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
-          flash[:error] = "Invalid password"
+          flash[:error] = 'Invalid password'
           return kuviz_password_protected
         end
 
@@ -52,9 +53,7 @@ module Carto
 
       def get_kuviz
         @kuviz = Carto::Visualization.find(params[:id])
-        if @kuviz.nil?
-          raise Carto::LoadError.new('Kuviz doesn\'t exist', 404)
-        end
+        raise Carto::LoadError.new('Kuviz doesn\'t exist', 404) if @kuviz.nil?
       end
 
       def kuviz_password_protected
@@ -64,8 +63,9 @@ module Carto
       def add_cache_headers
         response.headers['X-Cache-Channel'] = "#{@kuviz.varnish_key}:vizjson"
         response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@kuviz.surrogate_key}"
-        response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate,public"
+        response.headers['Cache-Control'] = 'no-cache,max-age=86400,must-revalidate,public'
       end
+
     end
   end
 end

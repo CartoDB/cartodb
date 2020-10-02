@@ -65,7 +65,7 @@ class PasswordChangeController < ApplicationController
 
   def set_user
     username = params[:id].strip.downcase
-    @user = User.where("email = ? OR username = ?", username, username).first
+    @user = User.where('email = ? OR username = ?', username, username).first
     @organization = @user.organization
   end
 
@@ -76,4 +76,5 @@ class PasswordChangeController < ApplicationController
   def check_password_expired
     render_403 unless @user.password_expired?
   end
+
 end

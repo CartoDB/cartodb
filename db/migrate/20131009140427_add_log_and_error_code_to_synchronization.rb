@@ -1,4 +1,5 @@
 class AddLogAndErrorCodeToSynchronization < Sequel::Migration
+
   def up
     alter_table :synchronizations do
       add_column :log_id, String
@@ -14,4 +15,5 @@ class AddLogAndErrorCodeToSynchronization < Sequel::Migration
       drop_column :error_message
     end
   end
+
 end

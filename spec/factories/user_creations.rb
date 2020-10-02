@@ -1,25 +1,23 @@
 require 'ostruct'
 
 FactoryGirl.define do
-
   factory :user_creation, class: Carto::UserCreation do
-    username "whatever"
-    email "whatever@carto.com"
-    crypted_password "rgjreogjorejgpovrjeg"
+    username 'whatever'
+    email 'whatever@carto.com'
+    crypted_password 'rgjreogjorejgpovrjeg'
     google_sign_in false
-    quota_in_bytes 10000000
+    quota_in_bytes 10_000_000
     soft_twitter_datasource_limit false
 
     factory :autologin_user_creation do
       state 'success'
       created_at { Time.now }
 
-      after(:build) do |model, evaluator|
+      after(:build) do |model, _evaluator|
         # This is useful to test user creation logic without persistence
         fake_user = OpenStruct.new(enable_account_token: nil, enabled: true, dashboard_viewed_at: nil)
         model.instance_variable_set(:@cartodb_user, fake_user)
       end
     end
   end
-
 end

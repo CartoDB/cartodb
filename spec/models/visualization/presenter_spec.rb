@@ -9,7 +9,7 @@ describe Visualization::Member do
     @db = SequelRails.connection
     Sequel.extension(:pagination)
 
-    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
   end
 
   before(:each) do
@@ -26,9 +26,9 @@ describe Visualization::Member do
   describe '#privacy_for_vizjson' do
     it 'checks expected privacy values for the vizjson' do
       visualization = Visualization::Member.new(
-          privacy: Visualization::Member::PRIVACY_PUBLIC,
-          name: 'test',
-          type: Visualization::Member::TYPE_CANONICAL
+        privacy: Visualization::Member::PRIVACY_PUBLIC,
+        name: 'test',
+        type: Visualization::Member::TYPE_CANONICAL
       )
 
       # Careful, do a user mock after touching user_data as it does some checks about user too
@@ -105,14 +105,14 @@ describe Visualization::Member do
       data[:updated_at].present?.should eq true
       data[:permission].present?.should eq true
       data[:locked].present?.should eq true
-      data[:related_tables].should eq Array.new
-      data[:table].should eq Hash.new
+      data[:related_tables].should eq []
+      data[:table].should eq({})
       data[:parent_id].should eq nil
-      data[:children].should eq Array.new
+      data[:children].should eq []
       data[:kind].should eq Visualization::Member::KIND_GEOM
       data[:prev_id].should eq nil
       data[:next_id].should eq nil
-      data[:transition_options].should eq Hash.new
+      data[:transition_options].should eq({})
       data[:active_child].should eq nil
     end
   end
@@ -124,7 +124,7 @@ describe Visualization::Member do
       ::Permission.any_instance.stubs(:owner).returns(@user_mock)
 
       parent = Visualization::Member.new(random_attributes_for_vis_member({
-                                                                            name:'PARENT',
+                                                                            name: 'PARENT',
                                                                             user_id: @user_mock.id,
                                                                             type: Visualization::Member::TYPE_DERIVED
                                                                           }))
@@ -132,35 +132,35 @@ describe Visualization::Member do
 
       # Create unsorted on purpose
       member_d = Visualization::Member.new(random_attributes_for_vis_member({
-                                                                              name:'D',
+                                                                              name: 'D',
                                                                               user_id: @user_mock.id,
                                                                               type: Visualization::Member::TYPE_SLIDE,
                                                                               parent_id: parent.id
                                                                             }))
       member_d = member_d.store.fetch
       member_c = Visualization::Member.new(random_attributes_for_vis_member({
-                                                                              name:'C',
+                                                                              name: 'C',
                                                                               user_id: @user_mock.id,
                                                                               type: Visualization::Member::TYPE_SLIDE,
                                                                               parent_id: parent.id
                                                                             }))
       member_c = member_c.store.fetch
       member_b = Visualization::Member.new(random_attributes_for_vis_member({
-                                                                              name:'B',
+                                                                              name: 'B',
                                                                               user_id: @user_mock.id,
                                                                               type: Visualization::Member::TYPE_SLIDE,
                                                                               parent_id: parent.id
                                                                             }))
       member_b = member_b.store.fetch
       member_e = Visualization::Member.new(random_attributes_for_vis_member({
-                                                                              name:'E',
+                                                                              name: 'E',
                                                                               user_id: @user_mock.id,
                                                                               type: Visualization::Member::TYPE_SLIDE,
                                                                               parent_id: parent.id
                                                                             }))
       member_e = member_e.store.fetch
       member_a = Visualization::Member.new(random_attributes_for_vis_member({
-                                                                              name:'A',
+                                                                              name: 'A',
                                                                               user_id: @user_mock.id,
                                                                               type: Visualization::Member::TYPE_SLIDE,
                                                                               parent_id: parent.id
@@ -184,7 +184,7 @@ describe Visualization::Member do
       @request_mock.stubs(:host).returns("#{@user_mock.username}#{CartoDB.session_domain}")
       @request_mock.stubs(:fullpath).returns('')
 
-      data = Visualization::Presenter.new(parent,{request:@request_mock}).to_poro
+      data = Visualization::Presenter.new(parent, { request: @request_mock }).to_poro
 
       data[:children].length.should eq 5
 
@@ -195,5 +195,4 @@ describe Visualization::Member do
       data[:children][4][:id].should eq member_e.id
     end
   end
-
 end

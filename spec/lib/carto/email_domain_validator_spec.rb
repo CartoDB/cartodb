@@ -1,6 +1,7 @@
 require_relative '../../../lib/carto/email_domain_validator.rb'
 
 module Carto
+
   describe EmailDomainValidator do
     describe '#validate email domains against whitelist' do
       it 'validate a non-wildcard domain' do
@@ -37,4 +38,5 @@ module Carto
       end
     end
   end
+
 end

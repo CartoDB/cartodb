@@ -44,12 +44,12 @@ describe Carto::Api::MultifactorAuthenticationController do
       @organization.owner.reload
 
       FactoryGirl.create(:totp, user_id: @org_user_1.id)
-        get api_v2_organization_users_mfa_show_url(
-          id_or_name: @organization.name,
-          u_username: @org_user_1.username,
-          type: 'totp'
-        )
-        expect(JSON.parse(last_response.body)['mfa_required']).to eq true
+      get api_v2_organization_users_mfa_show_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      )
+      expect(JSON.parse(last_response.body)['mfa_required']).to eq true
     end
 
     it 'correctly shows MFA not configured' do
@@ -94,13 +94,13 @@ describe Carto::Api::MultifactorAuthenticationController do
       login(@organization.owner)
       @organization.owner.reload
 
-      expect {
+      expect do
         post api_v2_organization_users_mfa_create_url(
           id_or_name: @organization.name,
           u_username: @org_user_1.username,
           type: 'totp'
         )
-      }.to change(@org_user_1.user_multifactor_auths, :count).by(1)
+      end.to change(@org_user_1.user_multifactor_auths, :count).by(1)
     end
 
     it 'raises an error if MFA already exists' do
@@ -147,13 +147,13 @@ describe Carto::Api::MultifactorAuthenticationController do
       @organization.owner.reload
       FactoryGirl.create(:totp, user_id: @org_user_1.id)
 
-      expect {
+      expect do
         delete api_v2_organization_users_mfa_delete_url(
           id_or_name: @organization.name,
           u_username: @org_user_1.username,
           type: 'totp'
         )
-      }.to change(@org_user_1.reload.user_multifactor_auths, :count).by(-1)
+      end.to change(@org_user_1.reload.user_multifactor_auths, :count).by(-1)
     end
 
     it 'raises an error if MFA does not exist' do

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe Resque::TrackingJobs do
-
   describe Resque::TrackingJobs::SendPubSubEvent do
     it 'should send event to PubSub tracker' do
       Singleton.__init__(PubSubTracker)

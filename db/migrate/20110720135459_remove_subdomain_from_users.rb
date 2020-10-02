@@ -7,7 +7,7 @@ class RemoveSubdomainFromUsersMigration < Sequel::Migration
   def down
     add_column :users, :subdomain, 'character varying'
     alter_table(:users) do
-      add_index [:subdomain], :unique => true
+      add_index [:subdomain], unique: true
     end
   end
 

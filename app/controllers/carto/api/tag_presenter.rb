@@ -8,9 +8,9 @@ class Carto::Api::TagPresenter
 
   def to_search_preview_poro
     {
-      type: "tag",
+      type: 'tag',
       name: @tag_name,
-      url: CartoDB.url(@context, "tag_search", user: @current_viewer, params: { q: @tag_name })
+      url: CartoDB.url(@context, 'tag_search', user: @current_viewer, params: { q: @tag_name })
     }
   end
 

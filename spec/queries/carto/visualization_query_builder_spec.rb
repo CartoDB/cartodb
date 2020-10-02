@@ -55,16 +55,16 @@ describe Carto::VisualizationQueryBuilder do
   it 'can prefetch user' do
     table1 = create_random_table(@user1)
 
-    expect {
+    expect do
       @vqb.build.first.user.username.should_not eq nil
-    }.to make_database_queries(count: 2..3)
+    end.to make_database_queries(count: 2..3)
     # 1: SELECT * FROM visualizations LIMIT 1
     # 2: to select basic user fields
     # 3: AR seems to not be very clever detecting vis.user is already fetched and sometimes re-fetches it
 
-    expect {
+    expect do
       @vqb.with_prefetch_user(true).build.first.user.username.should_not eq nil
-    }.to make_database_queries(count: 1)
+    end.to make_database_queries(count: 1)
   end
 
   it 'can prefetch table' do
@@ -73,13 +73,13 @@ describe Carto::VisualizationQueryBuilder do
 
     preload_activerecord_metadata
 
-    expect {
+    expect do
       @vqb.build.where(id: table_visualization.id).first.user_table.name
-    }.to make_database_queries(count: 2..3)
+    end.to make_database_queries(count: 2..3)
 
-    expect {
+    expect do
       @vqb.with_prefetch_table.build.where(id: table_visualization.id).first.user_table.name
-    }.to make_database_queries(count: 1)
+    end.to make_database_queries(count: 1)
   end
 
   context '#with_prefetch_dependent_visualizations' do
@@ -101,25 +101,25 @@ describe Carto::VisualizationQueryBuilder do
     end
 
     it 'can prefetch dependent visualizations' do
-      expect {
+      expect do
         @vqb.build.where(id: @table_visualization.id).all[0].dependent_visualizations
-      }.to make_database_queries(count: 10)
+      end.to make_database_queries(count: 10)
 
-      expect {
+      expect do
         @vqb.with_prefetch_dependent_visualizations
             .build.where(id: @table_visualization.id).all[0].dependent_visualizations
-      }.to make_database_queries(count: 1)
+      end.to make_database_queries(count: 1)
     end
 
     it 'can prefetch together two nested associations with the same root' do
-      expect {
+      expect do
         @vqb.build.where(id: @table_visualization.id).all[0].dependent_visualizations
-      }.to make_database_queries(count: 10)
+      end.to make_database_queries(count: 10)
 
-      expect {
+      expect do
         @vqb.with_prefetch_dependent_visualizations.with_prefetch_table
             .build.where(id: @table_visualization.id).all[0].dependent_visualizations
-      }.to make_database_queries(count: 1)
+      end.to make_database_queries(count: 1)
     end
   end
 
@@ -127,10 +127,10 @@ describe Carto::VisualizationQueryBuilder do
     table = create_random_table(@user1)
     shared_visualization = table.table_visualization
     shared_entity = CartoDB::SharedEntity.new(
-      recipient_id:   @user2.id,
+      recipient_id: @user2.id,
       recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-      entity_id:      shared_visualization.id,
-      entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      entity_id: shared_visualization.id,
+      entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
     )
     shared_entity.save
     vq = @vqb.with_shared_with_user_id(@user2.id)
@@ -143,10 +143,10 @@ describe Carto::VisualizationQueryBuilder do
       table = create_random_table(@org_user_1)
       shared_visualization = table.table_visualization
       org_shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @organization.id,
+        recipient_id: @organization.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: shared_visualization.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       org_shared_entity.save
 
@@ -162,10 +162,10 @@ describe Carto::VisualizationQueryBuilder do
       table = create_random_table(@org_user_1)
       shared_visualization = table.table_visualization
       org_shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @group.id,
+        recipient_id: @group.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: shared_visualization.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       org_shared_entity.save
 
@@ -184,18 +184,18 @@ describe Carto::VisualizationQueryBuilder do
       table = create_random_table(@org_user_1)
       shared_visualization = table.table_visualization
       user_shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @org_user_2.id,
+        recipient_id: @org_user_2.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: shared_visualization.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       user_shared_entity.save
 
       org_shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @organization.id,
+        recipient_id: @organization.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: shared_visualization.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       org_shared_entity.save
 
@@ -206,14 +206,13 @@ describe Carto::VisualizationQueryBuilder do
   end
 
   it 'orders using different criteria' do
-
     table1 = create_random_table(@user1)
     table2 = create_random_table(@user1)
     table3 = create_random_table(@user1)
 
     # Searches only using query builder itself
     ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order(:updated_at, :desc).build.all.map(&:id)
-    ids.should == [ table3.table_visualization.id, table2.table_visualization.id, table1.table_visualization.id ]
+    ids.should == [table3.table_visualization.id, table2.table_visualization.id, table1.table_visualization.id]
 
     # From here on, uses OffdatabaseQueryAdapter
 
@@ -227,32 +226,32 @@ describe Carto::VisualizationQueryBuilder do
               .build
               .all.map(&:id)
 
-    ids.should == [ table1.table_visualization.id, table3.table_visualization.id, table2.table_visualization.id ]
+    ids.should == [table1.table_visualization.id, table3.table_visualization.id, table2.table_visualization.id]
 
     @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('likes', :desc).build.count.should == 3
 
     # Check with limit
     ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('likes', :desc).build.limit(2).all.map(&:id)
-    ids.should == [ table1.table_visualization.id, table3.table_visualization.id ]
+    ids.should == [table1.table_visualization.id, table3.table_visualization.id]
 
     # Check with limit AND offset
     ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('likes', :desc).build
               .offset(1).limit(2).all.map(&:id)
-    ids.should == [ table3.table_visualization.id, table2.table_visualization.id ]
+    ids.should == [table3.table_visualization.id, table2.table_visualization.id]
 
     # Mapviews
 
     # visualization.mapviews -> visualization.stats -> CartoDB::Visualization::Stats ->
     #   CartoDB::Stats::APICalls.get_api_calls_with_dates
     CartoDB::Stats::APICalls.any_instance.stubs(:get_api_calls_with_dates)
-                            .with(@user1.username, {stat_tag: table1.table_visualization.id})
-                            .returns({ "2015-04-15" => 1, "2015-04-14" => 0 })
+                            .with(@user1.username, { stat_tag: table1.table_visualization.id })
+                            .returns({ '2015-04-15' => 1, '2015-04-14' => 0 })
     CartoDB::Stats::APICalls.any_instance.stubs(:get_api_calls_with_dates)
-                            .with(@user1.username, {stat_tag: table2.table_visualization.id})
-                            .returns({ "2015-04-15" => 333, "2015-04-14" => 666 })
+                            .with(@user1.username, { stat_tag: table2.table_visualization.id })
+                            .returns({ '2015-04-15' => 333, '2015-04-14' => 666 })
     CartoDB::Stats::APICalls.any_instance.stubs(:get_api_calls_with_dates)
-                            .with(@user1.username, {stat_tag: table3.table_visualization.id})
-                            .returns({ "2015-04-15" => 12, "2015-04-14" => 20 })
+                            .with(@user1.username, { stat_tag: table3.table_visualization.id })
+                            .returns({ '2015-04-15' => 12, '2015-04-14' => 20 })
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('mapviews', :desc).build.all.map(&:id)
     ids.should == [table2.table_visualization.id, table3.table_visualization.id, table1.table_visualization.id]
@@ -279,66 +278,65 @@ describe Carto::VisualizationQueryBuilder do
   end
 
   it 'filters remote tables with syncs' do
-
     bypass_named_maps
 
     table = create_random_table(@user1)
 
     remote_vis_1 = CartoDB::Visualization::Member.new({
-          user_id: @user1.id,
-          name:    "remote vis #{unique_name('viz')}",
-          map_id:  ::Map.create(user_id: @user1.id).id,
-          type:    CartoDB::Visualization::Member::TYPE_REMOTE,
-          privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
-        }).store
+                                                        user_id: @user1.id,
+                                                        name: "remote vis #{unique_name('viz')}",
+                                                        map_id: ::Map.create(user_id: @user1.id).id,
+                                                        type: CartoDB::Visualization::Member::TYPE_REMOTE,
+                                                        privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+                                                      }).store
 
     remote_vis_2 = CartoDB::Visualization::Member.new({
-          user_id: @user1.id,
-          name:    "remote vis #{unique_name('viz')}",
-          map_id:  ::Map.create(user_id: @user1.id).id,
-          type:    CartoDB::Visualization::Member::TYPE_REMOTE,
-          privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
-        }).store
+                                                        user_id: @user1.id,
+                                                        name: "remote vis #{unique_name('viz')}",
+                                                        map_id: ::Map.create(user_id: @user1.id).id,
+                                                        type: CartoDB::Visualization::Member::TYPE_REMOTE,
+                                                        privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+                                                      }).store
 
     remote_vis_3 = CartoDB::Visualization::Member.new({
-          user_id: @user1.id,
-          name:    "remote vis #{unique_name('viz')}",
-          map_id:  ::Map.create(user_id: @user1.id).id,
-          type:    CartoDB::Visualization::Member::TYPE_REMOTE,
-          privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
-        }).store
+                                                        user_id: @user1.id,
+                                                        name: "remote vis #{unique_name('viz')}",
+                                                        map_id: ::Map.create(user_id: @user1.id).id,
+                                                        type: CartoDB::Visualization::Member::TYPE_REMOTE,
+                                                        privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE
+                                                      }).store
 
     external_source_1 = Carto::ExternalSource.new({
-      visualization_id: remote_vis_1.id,
-      import_url: 'http://test.fake',
-      rows_counted: 2,
-      size: 12345,
-      username: @user1.username,
-      })
+                                                    visualization_id: remote_vis_1.id,
+                                                    import_url: 'http://test.fake',
+                                                    rows_counted: 2,
+                                                    size: 12_345,
+                                                    username: @user1.username
+                                                  })
     external_source_1.save
 
     external_source_2 = Carto::ExternalSource.new({
-      visualization_id: remote_vis_2.id,
-      import_url: 'http://test2.fake',
-      rows_counted: 4,
-      size: 123456,
-      username: @user1.username,
-      })
+                                                    visualization_id: remote_vis_2.id,
+                                                    import_url: 'http://test2.fake',
+                                                    rows_counted: 4,
+                                                    size: 123_456,
+                                                    username: @user1.username
+                                                  })
     external_source_2.save
 
     external_source_3 = Carto::ExternalSource.new({
-      visualization_id: remote_vis_3.id,
-      import_url: 'http://test3.fake',
-      rows_counted: 6,
-      size: 9999,
-      username: @user1.username,
-      })
+                                                    visualization_id: remote_vis_3.id,
+                                                    import_url: 'http://test3.fake',
+                                                    rows_counted: 6,
+                                                    size: 9999,
+                                                    username: @user1.username
+                                                  })
     external_source_3.save
 
     # Trick: reusing same data import for all 3 external
     data_import_1 = DataImport.create({
-      user_id:                @user1.id,
-      })
+                                        user_id: @user1.id
+                                      })
 
     # Old external data imports don't hide anything
 
@@ -350,57 +348,57 @@ describe Carto::VisualizationQueryBuilder do
                                   external_source_id: external_source_3.id).save
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
-        .with_order(:updated_at, :desc)
-        .without_synced_external_sources
-        .build
-        .all.map(&:id)
-    ids.should == [ remote_vis_3.id, remote_vis_2.id, remote_vis_1.id ]
+              .with_order(:updated_at, :desc)
+              .without_synced_external_sources
+              .build
+              .all.map(&:id)
+    ids.should == [remote_vis_3.id, remote_vis_2.id, remote_vis_1.id]
 
     # But new ones that have a sync should hide
 
     sync_1 = CartoDB::Synchronization::Member.new({
-      }).store
+                                                  }).store
     Carto::ExternalDataImport.new(data_import_id: data_import_1.id,
                                   external_source_id: external_source_2.id,
                                   synchronization_id: sync_1.id).save
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
-        .with_order(:updated_at, :desc)
-        .without_synced_external_sources
-        .build
-        .all.map(&:id)
-    ids.should == [ remote_vis_3.id, remote_vis_1.id ]
+              .with_order(:updated_at, :desc)
+              .without_synced_external_sources
+              .build
+              .all.map(&:id)
+    ids.should == [remote_vis_3.id, remote_vis_1.id]
 
     sync_2 = CartoDB::Synchronization::Member.new({
-      }).store
+                                                  }).store
     Carto::ExternalDataImport.new(data_import_id: data_import_1.id,
                                   external_source_id: external_source_3.id,
                                   synchronization_id: sync_2.id).save
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
-        .with_order(:updated_at, :desc)
-        .without_synced_external_sources
-        .build
-        .all.map(&:id)
-    ids.should == [ remote_vis_1.id ]
+              .with_order(:updated_at, :desc)
+              .without_synced_external_sources
+              .build
+              .all.map(&:id)
+    ids.should == [remote_vis_1.id]
 
     # as there are constraints, deleting the sync should remove the external data import
     sync_1.delete
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_REMOTE)
-        .with_order(:updated_at, :desc)
-        .without_synced_external_sources
-        .build
-        .all.map(&:id)
-    ids.should == [ remote_vis_2.id, remote_vis_1.id ]
+              .with_order(:updated_at, :desc)
+              .without_synced_external_sources
+              .build
+              .all.map(&:id)
+    ids.should == [remote_vis_2.id, remote_vis_1.id]
 
     # Searching for multiple types should not hide or show more/less remote tables, neither break search
-    ids = @vqb.with_types([ Carto::Visualization::TYPE_CANONICAL, Carto::Visualization::TYPE_REMOTE ])
-        .with_order(:updated_at, :desc)
-        .without_synced_external_sources
-        .build
-        .all.map(&:id)
-    ids.should == [ remote_vis_2.id, remote_vis_1.id, table.table_visualization.id]
+    ids = @vqb.with_types([Carto::Visualization::TYPE_CANONICAL, Carto::Visualization::TYPE_REMOTE])
+              .with_order(:updated_at, :desc)
+              .without_synced_external_sources
+              .build
+              .all.map(&:id)
+    ids.should == [remote_vis_2.id, remote_vis_1.id, table.table_visualization.id]
 
     Carto::ExternalDataImport.all.each { |edi| edi.destroy } # Clean up to avoid foreign key not null violation
   end

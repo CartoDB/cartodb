@@ -40,9 +40,9 @@ describe Carto::Api::VisualizationsController do
   before(:each) do
     begin
       delete_user_data @user_1
-    rescue StandardError => exception
+    rescue StandardError => e
       # Silence named maps problems only here upon data cleaning, not in specs
-      raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
+      raise unless e.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
     end
 
     @headers = {
@@ -167,7 +167,7 @@ describe Carto::Api::VisualizationsController do
           payload = {
             source_visualization_id: table1.table_visualization.id,
             visChanges: 0,
-            name: "untitled_table_XXX_map"
+            name: 'untitled_table_XXX_map'
           }
           post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                     payload) do |response|
@@ -185,7 +185,7 @@ describe Carto::Api::VisualizationsController do
           payload = {
             source_visualization_id: table1.table_visualization.id,
             visChanges: 0,
-            name: "untitled_table_XXX_map"
+            name: 'untitled_table_XXX_map'
           }
 
           @org_user_1.viewer = true
@@ -414,12 +414,12 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
-    describe "#update" do
+    describe '#update' do
       before(:each) do
         login(@user)
       end
 
-      it "Does not update visualizations if user is viewer" do
+      it 'Does not update visualizations if user is viewer' do
         table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
 
         @user.viewer = true
@@ -436,7 +436,7 @@ describe Carto::Api::VisualizationsController do
         table.destroy
       end
 
-      it "Updates changes even if named maps communication fails" do
+      it 'Updates changes even if named maps communication fails' do
         @user.private_tables_enabled = true
         @user.save
 
@@ -461,20 +461,20 @@ describe Carto::Api::VisualizationsController do
       it 'filters attributes' do
         table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
 
-        table.table_visualization.description.should_not eq "something"
+        table.table_visualization.description.should_not eq 'something'
 
-        payload = { id: table.table_visualization.id, description: "something", fake: "NO!" }
+        payload = { id: table.table_visualization.id, description: 'something', fake: 'NO!' }
         put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|
           response.status.should be_success
         end
 
         table.reload
-        table.table_visualization.description.should eq "something"
+        table.table_visualization.description.should eq 'something'
 
         table.destroy
       end
 
-      it "renames datasets" do
+      it 'renames datasets' do
         table = new_table(user_id: @user.id).save.reload
 
         payload = { id: table.table_visualization.id, name: 'vis_rename_test1' }
@@ -607,7 +607,6 @@ describe Carto::Api::VisualizationsController do
             response_tooltip[:template_name].should eq tooltip[:template_name]
             response_tooltip[:template].should include(v2_tooltip_light_template_fragment)
             response_tooltip[:template].should_not include(v3_tooltip_light_template_fragment)
-
           end
 
           get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
@@ -615,8 +614,8 @@ describe Carto::Api::VisualizationsController do
 
             layer = first_data_layer_from_response(response)
             response_infowindow = layer[:infowindow]
-            infowindow[:template_name].should eq "table/views/infowindow_light"
-            response_infowindow[:template_name].should eq "infowindow_light"
+            infowindow[:template_name].should eq 'table/views/infowindow_light'
+            response_infowindow[:template_name].should eq 'infowindow_light'
             response_infowindow[:template].should include(v3_infowindow_light_template_fragment)
             response_infowindow[:template].should_not include(v2_infowindow_light_template_fragment)
 
@@ -661,7 +660,7 @@ describe Carto::Api::VisualizationsController do
 
             layer = first_data_layer_from_response(response)
             response_infowindow = layer[:infowindow]
-            infowindow[:template_name].should eq "table/views/infowindow_light"
+            infowindow[:template_name].should eq 'table/views/infowindow_light'
             response_infowindow[:template_name].should eq 'infowindow_light'
             response_infowindow[:template].should include(v3_infowindow_light_template_fragment)
             response_infowindow[:template].should_not include(v2_infowindow_light_template_fragment)

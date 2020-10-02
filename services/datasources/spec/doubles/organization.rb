@@ -12,6 +12,7 @@ module CartoDB
         def save
           self
         end
+
       end
     end
   end

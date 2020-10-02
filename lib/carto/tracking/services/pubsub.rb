@@ -2,6 +2,7 @@ module Carto
   module Tracking
     module Services
       module PubSub
+
         def report_to_pubsub
           return unless pubsub_topic
 
@@ -12,8 +13,8 @@ module Carto
         def pubsub_topic
           @pubsub_topic ||= Cartodb.get_config(:pubsub, 'topic')
         end
+
       end
     end
   end
 end
-

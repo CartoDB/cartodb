@@ -7,6 +7,7 @@ module Carto
     # * has validation (errors) based on required and optional keys
     #
     class Parameters
+
       # Parameters can be defined by a Hash or an array of [key, value] pairs
       # If required or optional arrays of parameter names are passed,
       # then #errors, #valid? use them to check valid parameters
@@ -64,9 +65,7 @@ module Carto
       def reverse_merge!(params)
         params.each do |new_name, new_value|
           old_name, _old_value = fetch(new_name)
-          unless old_name
-            @params[new_name.to_sym] = new_value
-          end
+          @params[new_name.to_sym] = new_value unless old_name
         end
         self
       end
@@ -76,7 +75,7 @@ module Carto
       end
 
       def each(&blk)
-        parameters.map &blk
+        parameters.map(&blk)
       end
 
       def map(&blk)
@@ -112,9 +111,7 @@ module Carto
           invalid_params = normalized_names - @accepted_parameters
           missing_parameters = @required_parameters - normalized_names
           missing_parameters &= normalize_parameter_names(only_for)
-          if missing_parameters.present?
-            errors << "Missing required #{parameters_term} #{missing_parameters * ','}"
-          end
+          errors << "Missing required #{parameters_term} #{missing_parameters * ','}" if missing_parameters.present?
           errors << "Invalid #{parameters_term}: #{invalid_params * ', '}" if invalid_params.present?
         end
         errors
@@ -155,6 +152,7 @@ module Carto
       def fetch(name)
         @params.find { |internal_name, _value| internal_name.to_s.casecmp(name.to_s).zero? }
       end
+
     end
   end
 end

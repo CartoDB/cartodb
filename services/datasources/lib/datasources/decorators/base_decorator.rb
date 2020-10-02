@@ -10,12 +10,12 @@ module CartoDB
 
         # @param layer Layer|nil
         # @return bool
-        def layer_eligible?(layer=nil)
+        def layer_eligible?(_layer=nil)
           raise 'To be implemented in child classes'
         end
 
         # @param layer Layer|nil
-        def decorate_layer!(layer=nil)
+        def decorate_layer!(_layer=nil)
           raise 'To be implemented in child classes'
         end
 

@@ -1,4 +1,5 @@
 module Carto::OauthServices
+
   OAUTH_SERVICE_TITLES = {
     'gdrive' => 'Google Drive',
     'dropbox' => 'Dropbox',
@@ -18,7 +19,7 @@ module Carto::OauthServices
     array = []
 
     datasources.each do |serv|
-      obj ||= Hash.new
+      obj ||= {}
 
       title = OAUTH_SERVICE_TITLES.fetch(serv, serv)
       revoke_url = OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
@@ -40,18 +41,19 @@ module Carto::OauthServices
                   true
                 end
 
-      if enabled
-        oauth = oauths.select(serv)
+      next unless enabled
 
-        obj['name'] = serv
-        obj['title'] = title
-        obj['revoke_url'] = revoke_url
-        obj['connected'] = !oauth.nil? ? true : false
+      oauth = oauths.select(serv)
 
-        array.push(obj)
-      end
+      obj['name'] = serv
+      obj['title'] = title
+      obj['revoke_url'] = revoke_url
+      obj['connected'] = !oauth.nil? ? true : false
+
+      array.push(obj)
     end
 
     array
   end
+
 end

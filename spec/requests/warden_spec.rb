@@ -60,7 +60,7 @@ describe 'Warden' do
 
     it 'returns 401 if base64 is malforemd' do
       get_json generate_api_key_url, {}, http_json_headers.merge(
-        'Authorization' => 'Basic ' + "asda2" + Base64.encode64("#{@user_api_keys.username}:#{@master_api_key.token}")
+        'Authorization' => 'Basic ' + 'asda2' + Base64.encode64("#{@user_api_keys.username}:#{@master_api_key.token}")
       ) do |response|
         response.status.should eq 401
       end
@@ -80,7 +80,7 @@ describe 'Warden' do
       @user.destroy
     end
 
-    let (:session_expired_message) { 'Your session has expired' }
+    let(:session_expired_message) { 'Your session has expired' }
 
     it 'allows access for non-expired session' do
       # we use this to avoid generating the static assets in CI
@@ -110,7 +110,7 @@ describe 'Warden' do
         expect(response.status).to eq 302
         follow_redirect!
 
-        expect(request.fullpath).to end_with "/login?error=session_expired"
+        expect(request.fullpath).to end_with '/login?error=session_expired'
         Delorean.back_to_the_present
       end
     end
@@ -201,8 +201,8 @@ describe 'Warden' do
       expect(response.status).to eq 302
       follow_redirect!
 
-      expect(request.fullpath).to include "/login?error=password_locked"
-      expect(response.body).to include "Too many failed login attempts"
+      expect(request.fullpath).to include '/login?error=password_locked'
+      expect(response.body).to include 'Too many failed login attempts'
     end
 
     def expect_login
@@ -349,7 +349,7 @@ describe 'Warden' do
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
       login
-      cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+      cookies['_cartodb_session'] = response.cookies['_cartodb_session']
 
       get dashboard_url
 
@@ -360,7 +360,7 @@ describe 'Warden' do
     xit 'should not be valid for different security token' do
       login
 
-      @user.session_salt = "1234567f"
+      @user.session_salt = '1234567f'
       @user.save
 
       get account_user_url

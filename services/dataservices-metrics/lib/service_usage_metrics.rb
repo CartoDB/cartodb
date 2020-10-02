@@ -17,23 +17,21 @@ module CartoDB
       assert_valid_amount(amount)
       return if amount == 0
 
-      # TODO We could add EXPIRE command to add TTL to the keys
-      if !@orgname.nil?
-        @redis.zincrby("#{org_key_prefix(service, metric, date)}", amount, "#{date_day(date)}")
-      end
+      # TODO: We could add EXPIRE command to add TTL to the keys
+      @redis.zincrby(org_key_prefix(service, metric, date).to_s, amount, date_day(date).to_s) unless @orgname.nil?
 
-      @redis.zincrby("#{user_key_prefix(service, metric, date)}", amount, "#{date_day(date)}")
+      @redis.zincrby(user_key_prefix(service, metric, date).to_s, amount, date_day(date).to_s)
     end
 
     def get(service, metric, date = DateTime.current)
       check_valid_data(service, metric)
 
       total = 0
-      if !@orgname.nil?
-        total += @redis.zscore(org_key_prefix(service, metric, date), date_day(date)) || 0
-      else
-        total += @redis.zscore(user_key_prefix(service, metric, date), date_day(date)) || 0
-      end
+      total += if !@orgname.nil?
+                 @redis.zscore(org_key_prefix(service, metric, date), date_day(date)) || 0
+               else
+                 @redis.zscore(user_key_prefix(service, metric, date), date_day(date)) || 0
+               end
 
       total
     end
@@ -62,7 +60,7 @@ module CartoDB
     protected
 
     def check_valid_data(_service, _metric)
-      raise NotImplementedError.new("You must implement check_valid_data in your metrics class.")
+      raise NotImplementedError.new('You must implement check_valid_data in your metrics class.')
     end
 
     private

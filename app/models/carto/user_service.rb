@@ -95,8 +95,8 @@ module Carto
 
     # Returns an array representing the last 30 days, populated with api_calls
     # from three different sources
-    def get_api_calls(options = {})
-      return CartoDB::Stats::APICalls.new.get_api_calls_without_dates(@user.username, {old_api_calls: false})
+    def get_api_calls(_options = {})
+      CartoDB::Stats::APICalls.new.get_api_calls_without_dates(@user.username, { old_api_calls: false })
     end
 
     # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
@@ -109,9 +109,11 @@ module Carto
       begin
         # Hack to support users without the new MU functiones loaded
         # TODO: Check this works as expected
-        user_data_size_function = cartodb_extension_version_pre_mu? ?
-          "CDB_UserDataSize()" :
-          "CDB_UserDataSize('#{@user.database_schema}')"
+        user_data_size_function = if cartodb_extension_version_pre_mu?
+                                    'CDB_UserDataSize()'
+                                  else
+                                    "CDB_UserDataSize('#{@user.database_schema}')"
+                                  end
         in_database(as: :superuser) do |user_database|
           user_database.transaction do
             user_database.execute(%{SET LOCAL lock_timeout = '1s'})
@@ -121,10 +123,10 @@ module Carto
       rescue StandardError => e
         attempts += 1
         begin
-          in_database(as: :superuser).execute("ANALYZE")
-        rescue StandardError => ee
-          CartoDB.report_exception(ee, "Failed to get user db size, retrying...", user: @user)
-          raise ee
+          in_database(as: :superuser).execute('ANALYZE')
+        rescue StandardError => e
+          CartoDB.report_exception(e, 'Failed to get user db size, retrying...', user: @user)
+          raise e
         end
         retry unless attempts > 1
         CartoDB.notify_exception(e, user: @user)
@@ -146,7 +148,7 @@ module Carto
     def cartodb_extension_version_pre_mu?
       current_version = cartodb_extension_semver(cartodb_extension_version)
       if current_version.size == 3
-        major, minor, _ = current_version
+        major, minor, = current_version
         major == 0 and minor < 3
       else
         raise 'Current cartodb extension version does not match standard x.y.z format'
@@ -159,7 +161,7 @@ module Carto
 
     def organization_member_group_role_member_name
       @user.in_database.execute(
-        "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
+        'SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;'
       ).first['org_member_role']
     end
 
@@ -169,8 +171,8 @@ module Carto
     end
 
     def cartodb_extension_version
-      @cartodb_extension_version ||= in_database(:as => :superuser).execute('select cartodb.cdb_version() as v')
-                                                                   .first['v']
+      @cartodb_extension_version ||= in_database(as: :superuser).execute('select cartodb.cdb_version() as v')
+                                                                .first['v']
     end
 
     def database_password
@@ -189,5 +191,6 @@ module Carto
         end
       end
     end
+
   end
 end

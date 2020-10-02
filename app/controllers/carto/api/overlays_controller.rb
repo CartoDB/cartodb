@@ -3,6 +3,7 @@ require_dependency 'carto/controller_helper'
 module Carto
   module Api
     class OverlaysController < ::Api::ApplicationController
+
       ssl_required :index, :show, :create, :update, :destroy
 
       before_filter :logged_users_only
@@ -26,41 +27,37 @@ module Carto
 
       def create
         @stats_aggregator.timing('overlays.create') do
-          begin
-            overlay = Carto::Overlay.new(type:             params[:type],
-                                         options:          params[:options],
-                                         template:         params[:template],
-                                         order:            params[:order],
-                                         visualization_id: @visualization.id)
+          overlay = Carto::Overlay.new(type: params[:type],
+                                       options: params[:options],
+                                       template: params[:template],
+                                       order: params[:order],
+                                       visualization_id: @visualization.id)
 
-            saved = @stats_aggregator.timing('save') do
-              overlay.save
-            end
-            if saved
-              render_jsonp(Carto::Api::OverlayPresenter.new(overlay).to_poro)
-            else
-              render_jsonp({ errors: overlay.errors }, :unprocessable_entity)
-            end
+          saved = @stats_aggregator.timing('save') do
+            overlay.save
+          end
+          if saved
+            render_jsonp(Carto::Api::OverlayPresenter.new(overlay).to_poro)
+          else
+            render_jsonp({ errors: overlay.errors }, :unprocessable_entity)
           end
         end
       end
 
       def update
         @stats_aggregator.timing('overlays.update') do
-          begin
-            @overlay.type =     params[:type]     if params[:type]
-            @overlay.options =  params[:options]  if params[:options]
-            @overlay.template = params[:template] if params[:template]
-            @overlay.order =    params[:order]    if params[:order]
+          @overlay.type = params[:type] if params[:type]
+          @overlay.options =  params[:options]  if params[:options]
+          @overlay.template = params[:template] if params[:template]
+          @overlay.order =    params[:order]    if params[:order]
 
-            saved = @stats_aggregator.timing('save') do
-              @overlay.save
-            end
-            if saved
-              render_jsonp(Carto::Api::OverlayPresenter.new(@overlay).to_poro)
-            else
-              render_jsonp({ errors: @overlay.errors }, :unprocessable_entity)
-            end
+          saved = @stats_aggregator.timing('save') do
+            @overlay.save
+          end
+          if saved
+            render_jsonp(Carto::Api::OverlayPresenter.new(@overlay).to_poro)
+          else
+            render_jsonp({ errors: @overlay.errors }, :unprocessable_entity)
           end
         end
       end
@@ -97,6 +94,7 @@ module Carto
         @overlay = @visualization.overlays.where(id: overlay_id).first
         raise Carto::LoadError.new("Overlay not found: #{overlay_id}") unless @overlay
       end
+
     end
   end
 end

@@ -2,14 +2,13 @@ require_dependency 'carto/configuration'
 require_dependency 'carto/deep_freeze'
 
 module Cartodb
+
   def self.get_config(*config_chain)
     current = Cartodb.config
-    config_chain.each { |config_param|
+    config_chain.each do |config_param|
       current = current[config_param]
-      if current.nil?
-        break
-      end
-    }
+      break if current.nil?
+    end
     current if current.present?
   end
 
@@ -24,38 +23,39 @@ module Cartodb
     @config ||= config_file_hash[Rails.env].try(:to_options!)
     Carto.deep_freeze(@config)
 
-    if @config.blank?
-      raise "Can't find App configuration for #{Rails.env} environment on config/app_config.yml"
-    end
+    raise "Can't find App configuration for #{Rails.env} environment on config/app_config.yml" if @config.blank?
 
     # Check if we have all the important keys on config/app_config.yml
-    raise "Missing mandatory_keys key on config/app_config.yml" unless @config[:mandatory_keys].present?
-    unless(@config[:mandatory_keys].map(&:to_sym) - @config.keys).blank?
+    raise 'Missing mandatory_keys key on config/app_config.yml' unless @config[:mandatory_keys].present?
+    unless (@config[:mandatory_keys].map(&:to_sym) - @config.keys).blank?
       raise "Missing the following config keys on config/app_config.yml: #{(@config[:mandatory_keys].map(&:to_sym) - @config.keys).join(', ')}"
     end
-    ActionDispatch::Http::URL.tld_length = @config[:session_domain].split('.').delete_if {|i| i.empty? }.length - 1
 
-    if !@config[:mailer].nil?
+    ActionDispatch::Http::URL.tld_length = @config[:session_domain].split('.').delete_if { |i| i.empty? }.length - 1
+
+    unless @config[:mailer].nil?
       # AuthSMTP
       CartoDB::Application.config.action_mailer.delivery_method = :smtp
       CartoDB::Application.config.action_mailer.smtp_settings = {
-        :address              => Cartodb.get_config(:mailer, 'address'),
-        :port                 => Cartodb.get_config(:mailer, 'port'),
-        :user_name            => Cartodb.get_config(:mailer, 'user_name'),
-        :password             => Cartodb.get_config(:mailer, 'password'),
-        :authentication       => Cartodb.get_config(:mailer, 'authentication'),
-        :enable_starttls_auto => Cartodb.get_config(:mailer, 'enable_starttls_auto') }
+        address: Cartodb.get_config(:mailer, 'address'),
+        port: Cartodb.get_config(:mailer, 'port'),
+        user_name: Cartodb.get_config(:mailer, 'user_name'),
+        password: Cartodb.get_config(:mailer, 'password'),
+        authentication: Cartodb.get_config(:mailer, 'authentication'),
+        enable_starttls_auto: Cartodb.get_config(:mailer, 'enable_starttls_auto')
+      }
     end
 
     if !@config[:basemaps].present? || @config[:basemaps].count == 0
-      raise "Missing basemaps configuration, there should be at least one basemap"
+      raise 'Missing basemaps configuration, there should be at least one basemap'
     end
   end
 
   def self.error_codes
     return @error_codes if @error_codes
+
     file_hash = YAML.load_file("#{Rails.root}/config/error_codes.yml")
-    @error_codes ||= file_hash["cartodb_errors"].try(:to_options!)
+    @error_codes ||= file_hash['cartodb_errors'].try(:to_options!)
   end
 
   def self.asset_path
@@ -101,4 +101,5 @@ module Cartodb
     @config = original_config
     return_value
   end
+
 end

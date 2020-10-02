@@ -3,6 +3,7 @@ require_dependency 'carto/tracking/events'
 module Carto
   module Api
     class VisualizationExportsController < ::Api::ApplicationController
+
       include VisualizationsControllerHelper
 
       ssl_required :create, :show, :download
@@ -22,7 +23,8 @@ module Carto
         visualization_export = Carto::VisualizationExport.new(
           visualization: @visualization,
           user: user,
-          user_tables_ids: params[:user_tables_ids])
+          user_tables_ids: params[:user_tables_ids]
+        )
         unless visualization_export.save
           if visualization_export.errors[:user].present?
             raise Carto::UnauthorizedError.new("Errors: #{visualization_export.errors.full_messages}")
@@ -59,7 +61,7 @@ module Carto
       end
 
       def download
-        send_file @visualization_export.file, type: "application/zip"
+        send_file @visualization_export.file, type: 'application/zip'
       end
 
       private
@@ -74,11 +76,13 @@ module Carto
         id = params[:id].present? ? uuid_parameter(:id) : uuid_parameter(:visualization_export_id)
         @visualization_export = Carto::VisualizationExport.where(id: id).first
         raise Carto::LoadError.new("Visualization export not found: #{id}") unless @visualization_export
+
         export_user_id = @visualization_export.user_id
         unless export_user_id.nil? || (current_viewer && export_user_id == current_viewer.id)
           raise Carto::UnauthorizedError.new
         end
       end
+
     end
   end
 end

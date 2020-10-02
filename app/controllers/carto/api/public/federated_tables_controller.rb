@@ -2,6 +2,7 @@ module Carto
   module Api
     module Public
       class FederatedTablesController < Carto::Api::Public::ApplicationController
+
         include Carto::Api::PagedSearcher
         extend Carto::DefaultRescueFroms
 
@@ -12,13 +13,13 @@ module Carto
         FEDERATED_SERVER_ATTRIBUTES = %i(federated_server_name mode dbname host port username password).freeze
         REMOTE_TABLE_ATTRIBUTES = %i(federated_server_name remote_schema_name remote_table_name local_table_name_override id_column_name geom_column_name webmercator_column_name).freeze
 
-        REQUIRED_POST_FEDERATED_SERVER_ATTRIBUTES = %w{ federated_server_name mode host username password }.freeze
-        REQUIRED_PUT_FEDERATED_SERVER_ATTRIBUTES = %w{ mode host username password }.freeze
-        ALLOWED_PUT_FEDERATED_SERVER_ATTRIBUTES = %w{ mode dbname host port username password }.freeze
+        REQUIRED_POST_FEDERATED_SERVER_ATTRIBUTES = %w{federated_server_name mode host username password}.freeze
+        REQUIRED_PUT_FEDERATED_SERVER_ATTRIBUTES = %w{mode host username password}.freeze
+        ALLOWED_PUT_FEDERATED_SERVER_ATTRIBUTES = %w{mode dbname host port username password}.freeze
 
-        REQUIRED_POST_REMOTE_TABLE_ATTRIBUTES = %w{ remote_table_name id_column_name }.freeze
-        REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES = %w{ id_column_name }.freeze
-        ALLOWED_PUT_REMOTE_TABLE_ATTRIBUTES = %w{ local_table_name_override id_column_name geom_column_name webmercator_column_name }.freeze
+        REQUIRED_POST_REMOTE_TABLE_ATTRIBUTES = %w{remote_table_name id_column_name}.freeze
+        REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES = %w{id_column_name}.freeze
+        ALLOWED_PUT_REMOTE_TABLE_ATTRIBUTES = %w{local_table_name_override id_column_name geom_column_name webmercator_column_name}.freeze
 
         before_action :load_user
         before_action :check_federated_tables_enable
@@ -30,7 +31,7 @@ module Carto
         before_action only: [:list_federated_servers] do
           load_pagination_params(default_order: 'federated_server_name', valid_order_params: VALID_ORDER_PARAMS_FEDERATED_SERVER)
         end
-        before_action :load_federated_server_attributes, only: [:register_federated_server, :update_federated_server ]
+        before_action :load_federated_server_attributes, only: [:register_federated_server, :update_federated_server]
         before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server]
         before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
         before_action :ensure_required_federated_server_attributes, only: [:register_federated_server, :update_federated_server]
@@ -47,7 +48,7 @@ module Carto
         before_action only: [:list_remote_tables] do
           load_pagination_params(default_order: 'remote_table_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_TABLE)
         end
-        before_action :load_remote_table_attributes, only: [:register_remote_table, :update_remote_table ]
+        before_action :load_remote_table_attributes, only: [:register_remote_table, :update_remote_table]
         before_action :load_remote_table, only: [:update_remote_table, :unregister_remote_table, :show_remote_table]
         before_action :check_remote_table, only: [:unregister_remote_table, :show_remote_table]
         before_action :ensure_required_remote_table_attributes, only: [:register_remote_table, :update_remote_table]
@@ -78,7 +79,7 @@ module Carto
         def update_federated_server
           unless @federated_server
             @federated_server = @service.register_server(@federated_server_attributes)
-            response.headers['Content-Location'] = "#{request.path}"
+            response.headers['Content-Location'] = request.path.to_s
             return render_jsonp(@federated_server, 201)
           end
           @federated_server = @service.update_server(@federated_server_attributes)
@@ -107,7 +108,9 @@ module Carto
             **@pagination
           )
           # For unregistered tables we only want to keep the relevant properties
-          result.each {|table| table.slice!(:registered, :remote_schema_name, :remote_table_name, :columns) unless table[:registered]}
+          result.each do |table|
+            table.slice!(:registered, :remote_schema_name, :remote_table_name, :columns) unless table[:registered]
+          end
           total = @service.count_remote_tables(
             federated_server_name: params[:federated_server_name],
             remote_schema_name: params[:remote_schema_name]
@@ -128,7 +131,7 @@ module Carto
         def update_remote_table
           unless @remote_table[:registered]
             @remote_table = @service.register_table(@remote_table_attributes)
-            response.headers['Content-Location'] = "#{request.path}"
+            response.headers['Content-Location'] = request.path.to_s
             return render_jsonp(@remote_table, 201)
           end
           @remote_table = @service.update_table(@remote_table_attributes)
@@ -175,11 +178,15 @@ module Carto
 
         def validate_federated_server_attributes
           name = @federated_server_attributes[:federated_server_name]
-          raise Carto::InvalidParameterFormatError.new('federated_server_name', "The value #{name} must be lowercase") unless name.strip.downcase == name
+          unless name.strip.downcase == name
+            raise Carto::InvalidParameterFormatError.new('federated_server_name', "The value #{name} must be lowercase")
+          end
         end
 
         def check_federated_server
-          raise Carto::LoadError.new("Federated server not found: #{params[:federated_server_name]}") unless @federated_server
+          unless @federated_server
+            raise Carto::LoadError.new("Federated server not found: #{params[:federated_server_name]}")
+          end
         end
 
         def ensure_required_federated_server_attributes
@@ -202,11 +209,15 @@ module Carto
             remote_schema_name: params[:remote_schema_name],
             remote_table_name: params[:remote_table_name]
           )
-          raise Carto::LoadError.new("Table '#{params[:remote_schema_name]}'.'#{params[:remote_table_name]}' not found at '#{params[:federated_server_name]}'") if @remote_table.nil?
+          if @remote_table.nil?
+            raise Carto::LoadError.new("Table '#{params[:remote_schema_name]}'.'#{params[:remote_table_name]}' not found at '#{params[:federated_server_name]}'")
+          end
         end
 
         def check_remote_table
-          raise Carto::LoadError.new("Remote table key not found: #{params[:federated_server_name]}/#{params[:remote_schema_name]}.#{params[:remote_table_name]}") unless @remote_table
+          unless @remote_table
+            raise Carto::LoadError.new("Remote table key not found: #{params[:federated_server_name]}/#{params[:remote_schema_name]}.#{params[:remote_table_name]}")
+          end
         end
 
         def ensure_required_remote_table_attributes
@@ -219,11 +230,13 @@ module Carto
         end
 
         def ensure_readonly_mode
-            raise Carto::UnprocesableEntityError.new("Invalid access mode: '#{params[:mode]}'. Only 'read-only' accepted") unless ("read-only".casecmp params[:mode]) == 0
+          unless ('read-only'.casecmp params[:mode]) == 0
+            raise Carto::UnprocesableEntityError.new("Invalid access mode: '#{params[:mode]}'. Only 'read-only' accepted")
+          end
         end
 
         def check_permissions
-          @api_key = Carto::ApiKey.find_by_token(params["api_key"])
+          @api_key = Carto::ApiKey.find_by_token(params['api_key'])
           raise UnauthorizedError unless @api_key&.master?
           raise UnauthorizedError unless @api_key.user_id === @user.id
         end
@@ -271,6 +284,7 @@ module Carto
 
           message
         end
+
       end
     end
   end

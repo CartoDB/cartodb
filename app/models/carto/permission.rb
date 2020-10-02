@@ -2,6 +2,7 @@ require 'active_record'
 require_dependency 'cartodb/errors'
 
 class Carto::Permission < ActiveRecord::Base
+
   DEFAULT_ACL_VALUE = [].freeze
 
   ACCESS_READONLY   = 'r'.freeze
@@ -88,6 +89,7 @@ class Carto::Permission < ActiveRecord::Base
   def acl=(value)
     incoming_acl = value.nil? ? DEFAULT_ACL_VALUE : value
     raise CartoDB::PermissionError.new('ACL is not an array') unless incoming_acl.is_a? Array
+
     incoming_acl.map do |item|
       unless item.is_a?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
         raise CartoDB::PermissionError.new('Wrong ACL entry format')
@@ -96,17 +98,15 @@ class Carto::Permission < ActiveRecord::Base
 
     acl_items = incoming_acl.map do |item|
       {
-        type:   item[:type],
-        id:     item[:entity][:id],
+        type: item[:type],
+        id: item[:entity][:id],
         access: item[:access]
       }
     end
 
     cleaned_acl = acl_items.select { |i| i[:id] } # Cleaning, see #5668
 
-    if @old_acl.nil?
-      @old_acl = acl
-    end
+    @old_acl = acl if @old_acl.nil?
 
     self.access_control_list = ::JSON.dump(cleaned_acl)
   end
@@ -137,34 +137,32 @@ class Carto::Permission < ActiveRecord::Base
   def notify_permissions_change(permissions_changes)
     permissions_changes.each do |c, v|
       # At the moment we just check users permissions
-      if c == TYPE_USER
-        v.each do |affected_id, perm|
-          # Perm is an array. For the moment just one type of permission can
-          # be applied to a type of object. But with an array this is open
-          # to more than one permission change at a time
-          perm.each do |p|
-            if visualization.derived? || visualization.kuviz? || visualization.app?
-              if p['action'] == 'grant'
-                # At this moment just inform as read grant
-                if p['type'].include?('r')
-                  ::Resque.enqueue(::Resque::UserJobs::Mail::ShareVisualization, entity.id, affected_id)
-                end
-              elsif p['action'] == 'revoke'
-                if p['type'].include?('r')
-                  ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareVisualization,
-                                   entity.name, owner_username, affected_id)
-                end
+      next unless c == TYPE_USER
+
+      v.each do |affected_id, perm|
+        # Perm is an array. For the moment just one type of permission can
+        # be applied to a type of object. But with an array this is open
+        # to more than one permission change at a time
+        perm.each do |p|
+          if visualization.derived? || visualization.kuviz? || visualization.app?
+            if p['action'] == 'grant'
+              # At this moment just inform as read grant
+              if p['type'].include?('r')
+                ::Resque.enqueue(::Resque::UserJobs::Mail::ShareVisualization, entity.id, affected_id)
               end
-            elsif visualization.canonical?
-              if p['action'] == 'grant'
-                # At this moment just inform as read grant
-                if p['type'].include?('r')
-                  ::Resque.enqueue(::Resque::UserJobs::Mail::ShareTable, entity.id, affected_id)
-                end
-              elsif p['action'] == 'revoke'
-                if p['type'].include?('r')
-                  ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareTable, entity.name, owner_username, affected_id)
-                end
+            elsif p['action'] == 'revoke'
+              if p['type'].include?('r')
+                ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareVisualization,
+                                 entity.name, owner_username, affected_id)
+              end
+            end
+          elsif visualization.canonical?
+            if p['action'] == 'grant'
+              # At this moment just inform as read grant
+              ::Resque.enqueue(::Resque::UserJobs::Mail::ShareTable, entity.id, affected_id) if p['type'].include?('r')
+            elsif p['action'] == 'revoke'
+              if p['type'].include?('r')
+                ::Resque.enqueue(::Resque::UserJobs::Mail::UnshareTable, entity.name, owner_username, affected_id)
               end
             end
           end
@@ -172,7 +170,7 @@ class Carto::Permission < ActiveRecord::Base
       end
     end
   rescue StandardError => e
-    log_error(message: "Problem sending notification mail", exception: e)
+    log_error(message: 'Problem sending notification mail', exception: e)
   end
 
   def set_user_permission(subject, access)
@@ -217,9 +215,7 @@ class Carto::Permission < ActiveRecord::Base
 
   def remove_user_permission(user)
     granted_access = granted_access_for_user(user)
-    if granted_access != ACCESS_NONE
-      self.acl = inputable_acl.select { |entry| entry[:entity][:id] != user.id }
-    end
+    self.acl = inputable_acl.select { |entry| entry[:entity][:id] != user.id } if granted_access != ACCESS_NONE
   end
 
   # acl write method expects entries to have entity, although they're not
@@ -268,6 +264,7 @@ class Carto::Permission < ActiveRecord::Base
 
   def higher_access(accesses)
     return ACCESS_NONE if accesses.empty?
+
     index = SORTED_ACCESSES.index do |access|
       accesses.include?(access)
     end
@@ -307,14 +304,12 @@ class Carto::Permission < ActiveRecord::Base
 
   def acl_has_valid_access?(acl_item)
     valid_access = [ACCESS_READONLY, ACCESS_NONE]
-    if entity.table?
-      valid_access << ACCESS_READWRITE
-    end
+    valid_access << ACCESS_READWRITE if entity.table?
     valid_access.include?(acl_item[:access])
   end
 
   def update_changes
-    if !@old_acl.nil?
+    unless @old_acl.nil?
       notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, acl))
       Carto::DbPermissionService.shared_entities_revokes(@old_acl, acl, entity.table) if entity.table?
     end
@@ -342,38 +337,34 @@ class Carto::Permission < ActiveRecord::Base
     # Avoid entries without recipient id. See #5668.
     users.select { |u| u[:id] }.each do |user|
       shared_entity = Carto::SharedEntity.create(
-        recipient_id:   user[:id],
+        recipient_id: user[:id],
         recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      entity.id,
-        entity_type:    Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: entity.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
 
-      if e.table?
-        grant_db_permission(e, user[:access], shared_entity)
-      end
+      grant_db_permission(e, user[:access], shared_entity) if e.table?
     end
 
     org = relevant_org_acl_entry(acl)
     if org
       shared_entity = Carto::SharedEntity.create(
-        recipient_id:   org[:id],
+        recipient_id: org[:id],
         recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
-        entity_id:      entity.id,
-        entity_type:    Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: entity.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
 
-      if e.table?
-        grant_db_permission(e, org[:access], shared_entity)
-      end
+      grant_db_permission(e, org[:access], shared_entity) if e.table?
     end
 
     groups = relevant_groups_acl_entries(acl)
     groups.each do |group|
       Carto::SharedEntity.create(
-        recipient_id:   group[:id],
+        recipient_id: group[:id],
         recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_GROUP,
-        entity_id:      entity.id,
-        entity_type:    Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: entity.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
 
       # You only want to switch it off when request is a permission request coming from database
@@ -396,9 +387,7 @@ class Carto::Permission < ActiveRecord::Base
     case entity.class.name
     when Carto::Visualization.to_s
       if entity.table
-        if org
-          entity.table.remove_organization_access
-        end
+        entity.table.remove_organization_access if org
         users.each do |user|
           # Cleaning, see #5668
           u = Carto::User.find(user[:id])
@@ -443,18 +432,14 @@ class Carto::Permission < ActiveRecord::Base
       # check permissions, if the owner does not have permissions
       # to see the table the layers using this table are removed
       perm = visualization.permission
-      unless table_visualization.has_permission?(perm.owner, ACCESS_READONLY)
-        visualization.unlink_from(table)
-      end
+      visualization.unlink_from(table) unless table_visualization.has_permission?(perm.owner, ACCESS_READONLY)
     end
 
     fully_dependent_visualizations.each do |visualization|
       # check permissions, if the owner does not have permissions
       # to see the table the visualization is removed
       perm = visualization.permission
-      unless table_visualization.has_permission?(perm.owner, ACCESS_READONLY)
-        visualization.delete
-      end
+      visualization.delete unless table_visualization.has_permission?(perm.owner, ACCESS_READONLY)
     end
   end
 
@@ -470,15 +455,17 @@ class Carto::Permission < ActiveRecord::Base
     when Carto::Visualization.to_s
       # assert database permissions for non canonical tables are assigned
       # its canonical vis
-      if not entity.table
+      unless entity.table
         raise CartoDB::PermissionError.new('Trying to change permissions to a table without ownership')
       end
+
       table = entity.table
 
       # check ownership
-      if not owner_id == entity.permission.owner_id
+      unless owner_id == entity.permission.owner_id
         raise CartoDB::PermissionError.new('Trying to change permissions to a table without ownership')
       end
+
       # give permission
       if access == ACCESS_READONLY
         permission_strategy.add_read_permission(table)
@@ -519,9 +506,7 @@ class Carto::Permission < ActiveRecord::Base
     permission = nil
 
     acl.map do |entry|
-      if entry[:type] == type && entry[:id] == entity.id
-        permission = entry[:access]
-      end
+      permission = entry[:access] if entry[:type] == type && entry[:id] == entity.id
     end
     permission = ACCESS_NONE if permission.nil?
     permission

@@ -1,5 +1,6 @@
 module RedisDoubles
   class RedisSpy
+
     attr_reader :deleted
 
     def initialize

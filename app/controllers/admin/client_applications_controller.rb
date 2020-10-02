@@ -1,6 +1,7 @@
 require_relative './../helpers/organization_notifications_helper'
 
 class Admin::ClientApplicationsController < Admin::AdminController
+
   include OrganizationNotificationsHelper
 
   ssl_required :oauth, :api_key, :regenerate_api_key, :regenerate_oauth
@@ -31,23 +32,23 @@ class Admin::ClientApplicationsController < Admin::AdminController
     begin
       current_user.regenerate_api_key
     rescue Errno::ECONNREFUSED => e
-      log_info(message: "Could not clear varnish cache", exception: e)
+      log_info(message: 'Could not clear varnish cache', exception: e)
       if Rails.env.development?
         current_user.set_map_key
-        error_message = "Your API key has been regenerated succesfully but the varnish cache has not been invalidated."
+        error_message = 'Your API key has been regenerated succesfully but the varnish cache has not been invalidated.'
       else
         raise e
       end
     rescue CartoDB::CentralCommunicationFailure => e
       log_warning(exception: e, message: 'Error updating API key in mobile apps')
-      error_message = "Your API key has been successfully generated, " \
-                      "but there was an error updating the license keys of mobile apps"
+      error_message = 'Your API key has been successfully generated, ' \
+                      'but there was an error updating the license keys of mobile apps'
     end
 
     flash = if error_message
               { error: error_message }
             else
-              { success: "Your API key has been regenerated successfully" }
+              { success: 'Your API key has been regenerated successfully' }
             end
     redirect_to CartoDB.url(self, 'api_key_credentials', params: { type: 'api_key' }, user: current_user), flash: flash
   end
@@ -55,17 +56,17 @@ class Admin::ClientApplicationsController < Admin::AdminController
   def regenerate_oauth
     @client_application = current_user.client_application
     return if request.get?
+
     current_user.reset_client_application!
 
     redirect_to CartoDB.url(self, 'oauth_credentials', params: { type: 'oauth' }, user: current_user),
-                flash: { success: "Your OAuth credentials have been updated successfully" }
+                flash: { success: 'Your OAuth credentials have been updated successfully' }
   end
 
   private
+
   def enforce_engine_enabled
-    unless current_user.engine_enabled?
-      render_403
-    end
+    render_403 unless current_user.engine_enabled?
   end
 
   def load_dashboard_notifications
@@ -73,4 +74,5 @@ class Admin::ClientApplicationsController < Admin::AdminController
 
     @dashboard_notifications = carto_user ? carto_user.notifications_for_category(:dashboard) : {}
   end
+
 end

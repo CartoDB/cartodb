@@ -1,6 +1,7 @@
 module Carto
   module Api
     class StatesController < ::Api::ApplicationController
+
       ssl_required :update
 
       before_filter :load_visualization,
@@ -29,10 +30,9 @@ module Carto
       end
 
       def check_writer
-        unless @visualization.writable_by?(current_viewer)
-          raise UnauthorizedError.new
-        end
+        raise UnauthorizedError.new unless @visualization.writable_by?(current_viewer)
       end
+
     end
   end
 end

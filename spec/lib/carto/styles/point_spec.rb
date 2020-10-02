@@ -2,6 +2,7 @@ require 'spec_helper_min'
 
 module Carto
   module Styles
+
     describe Point do
       describe '#default' do
         let(:production_default_point_cartocss) do
@@ -15,7 +16,7 @@ module Carto
           "  marker-placement: point;\n"\
           "  marker-type: ellipse;\n"\
           "  marker-allow-overlap: true;\n"\
-          "}"
+          '}'
         end
 
         it 'has stayed the same' do
@@ -25,5 +26,6 @@ module Carto
         end
       end
     end
+
   end
 end

@@ -2,7 +2,7 @@ require_relative '../../app/models/carto/state'
 
 FactoryGirl.define do
   factory :state, class: Carto::State do
-    json {
+    json do
       {
         map: {
           ne: [-89.81756220409478, -335.39062500000006],
@@ -11,6 +11,6 @@ FactoryGirl.define do
           zoom: 1
         }
       }
-    }
+    end
   end
 end

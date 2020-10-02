@@ -1,5 +1,6 @@
 module Carto
   module Db
+
     class InvalidConfiguration < RuntimeError; end
 
     class Connection
@@ -12,6 +13,7 @@ module Carto
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
 
       class << self
+
         include ::LoggerHelper
 
         def connect(db_host, db_name, options = {})
@@ -33,7 +35,7 @@ module Carto
           if block_given?
             yield(database, conn)
           else
-            return database, conn
+            [database, conn]
           end
         ensure
           if options[:statement_timeout]
@@ -43,14 +45,14 @@ module Carto
           end
         end
 
-        def do_metadata_connection()
-          configuration = get_metadata_db_configuration()
+        def do_metadata_connection
+          configuration = get_metadata_db_configuration
           $pool.fetch(configuration) do
             get_database_without_search_path(configuration)
           end
-        rescue StandardError => exception
-          CartoDB::report_exception(exception, "Cannot connect to DO Metadata database")
-          raise exception
+        rescue StandardError => e
+          CartoDB.report_exception(e, 'Cannot connect to DO Metadata database')
+          raise e
         end
 
         private
@@ -71,15 +73,17 @@ module Carto
         end
 
         def build_search_path(user_schema, quote_user_schema = true)
-          quote_char = quote_user_schema ? "\"" : ""
+          quote_char = quote_user_schema ? '"' : ''
           "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, #{SCHEMA_PUBLIC}"
         end
 
         class NamedThing
+
           def initialize(name)
             @name = name
           end
           attr_reader :name
+
         end
 
         def get_connection_name(kind = :carto_db_connection)
@@ -92,14 +96,14 @@ module Carto
           # TODO: proper AR config when migration is complete
           base_config = ::SequelRails.configuration.environment_for(Rails.env)
           config = {
-            orm:      'ar',
-            adapter:  "postgresql",
-            logger:   logger,
-            host:     db_host,
+            orm: 'ar',
+            adapter: 'postgresql',
+            logger: logger,
+            host: db_host,
             username: base_config['username'],
             password: base_config['password'],
             database: db_name,
-            port:     base_config['port'],
+            port: base_config['port'],
             encoding: base_config['encoding'].nil? ? 'unicode' : base_config['encoding'],
             connect_timeout: base_config['connect_timeout']
           }
@@ -150,7 +154,7 @@ module Carto
           end
         end
 
-        def get_metadata_db_configuration()
+        def get_metadata_db_configuration
           do_configuration = Cartodb.config[:do_metadata_database]
           configuration = get_db_configuration_for(do_configuration['host'], do_configuration['database'], {})
           configuration.merge(do_configuration)
@@ -162,7 +166,10 @@ module Carto
             get_connection_name(:do_metadata_connection), resolver.spec(configuration)
           ).connection
         end
+
       end
+
     end
+
   end
 end

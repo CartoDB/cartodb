@@ -13,8 +13,8 @@ include CartoDB::Importer2
 
 describe 'rar regression tests' do
   include AcceptanceHelpers
-  include_context "cdb_importer schema"
-  include_context "no stats"
+  include_context 'cdb_importer schema'
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -29,10 +29,10 @@ describe 'rar regression tests' do
     filepath    = path_to('one_unsupported.rar')
     downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
-      pg:         @user.db_service.db_configuration_for,
+      pg: @user.db_service.db_configuration_for,
       downloader: downloader,
-      log:        CartoDB::Importer2::Doubles::Log.new(@user),
-      user:       @user
+      log: CartoDB::Importer2::Doubles::Log.new(@user),
+      user: @user
     )
     runner.run
 
@@ -43,10 +43,10 @@ describe 'rar regression tests' do
     filepath    = path_to('one_unsupported_one_valid.rar')
     downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
-      pg:         @user.db_service.db_configuration_for,
+      pg: @user.db_service.db_configuration_for,
       downloader: downloader,
-      log:        CartoDB::Importer2::Doubles::Log.new(@user),
-      user:       @user
+      log: CartoDB::Importer2::Doubles::Log.new(@user),
+      user: @user
     )
     runner.run
 
@@ -57,10 +57,10 @@ describe 'rar regression tests' do
     filepath    = path_to('multiple_csvs.rar')
     downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
-      pg:         @user.db_service.db_configuration_for,
+      pg: @user.db_service.db_configuration_for,
       downloader: downloader,
-      log:        CartoDB::Importer2::Doubles::Log.new(@user),
-      user:       @user
+      log: CartoDB::Importer2::Doubles::Log.new(@user),
+      user: @user
     )
     runner.run
 
@@ -76,10 +76,10 @@ describe 'rar regression tests' do
     filepath    = path_to('more_than_10_files.rar')
     downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
-      pg:         @user.db_service.db_configuration_for,
+      pg: @user.db_service.db_configuration_for,
       downloader: downloader,
-      log:        CartoDB::Importer2::Doubles::Log.new(@user),
-      user:       @user
+      log: CartoDB::Importer2::Doubles::Log.new(@user),
+      user: @user
     )
     runner.run
 
@@ -96,10 +96,10 @@ describe 'rar regression tests' do
     filepath    = path_to('shapefile_with_version_txt.rar')
     downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
-      pg:         @user.db_service.db_configuration_for,
+      pg: @user.db_service.db_configuration_for,
       downloader: downloader,
-      log:        CartoDB::Importer2::Doubles::Log.new(@user),
-      user:       @user
+      log: CartoDB::Importer2::Doubles::Log.new(@user),
+      user: @user
     )
     runner.run
 
@@ -115,10 +115,10 @@ describe 'rar regression tests' do
     filepath    = path_to('file_ok_and_file_ko.rar')
     downloader  = Downloader.new(@user.id, filepath)
     runner = Runner.new(
-      pg:         @user.db_service.db_configuration_for,
+      pg: @user.db_service.db_configuration_for,
       downloader: downloader,
-      log:        CartoDB::Importer2::Doubles::Log.new(@user),
-      user:       @user
+      log: CartoDB::Importer2::Doubles::Log.new(@user),
+      user: @user
     )
     runner.run
 

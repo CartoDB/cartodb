@@ -8,6 +8,7 @@ require_dependency 'carto/helpers/frame_options_helper'
 module Carto
   module Builder
     class VisualizationsController < BuilderController
+
       include VisualizationsControllerHelper
       include Carto::VisualizationMigrator
       include Carto::FrameOptionsHelper
@@ -19,7 +20,7 @@ module Carto
                     :auto_migrate_visualization_if_possible, only: :show
       before_action :authors_only
       before_action :editable_visualizations_only, :load_carto_viewer, only: :show
-      before_action :x_frame_options_allow, only: :show, :if => :embedable?
+      before_action :x_frame_options_allow, only: :show, if: :embedable?
 
       # TODO: remove this when analysis logic lives in the backend
       before_action :ensure_source_analyses, unless: :has_analyses?
@@ -111,6 +112,7 @@ module Carto
           migrate_visualization_to_v3(@visualization)
         end
       end
+
     end
   end
 end

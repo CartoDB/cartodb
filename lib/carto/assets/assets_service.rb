@@ -2,6 +2,7 @@ require_dependency 'carto/storage'
 
 module Carto
   class AssetsService
+
     def upload(namespace, resource)
       file = fetch_file(resource)
       storage = Storage.instance.for(location)
@@ -27,16 +28,16 @@ module Carto
              .remove(storage_info[:identifier])
     end
 
-    def fetch_file(resource)
-      raise NotImplementedError.new("This method should be implemented by children classes")
+    def fetch_file(_resource)
+      raise NotImplementedError.new('This method should be implemented by children classes')
     end
 
     def location
-      raise NotImplementedError.new("This method should be implemented by children classes")
+      raise NotImplementedError.new('This method should be implemented by children classes')
     end
 
     def max_size_in_bytes
-      raise NotImplementedError.new("This method should be implemented by children classes")
+      raise NotImplementedError.new('This method should be implemented by children classes')
     end
 
     def resource_extension(resource)
@@ -44,7 +45,8 @@ module Carto
       filename = resource.respond_to?(:original_filename) ? resource.original_filename : resource
       extension = File.extname(filename).downcase
 
-      raise UnprocesableEntityError.new("extension not accepted") unless VALID_EXTENSIONS.include?(extension)
+      raise UnprocesableEntityError.new('extension not accepted') unless VALID_EXTENSIONS.include?(extension)
+
       extension
     end
 

@@ -29,7 +29,9 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.17: email_verification
 
 module Carto
+
   module UserMetadataExportServiceConfiguration
+
     CURRENT_VERSION = '1.0.17'.freeze
     EXPORTED_USER_ATTRIBUTES = %i(
       email crypted_password database_name username admin enabled invite_token invite_token_date
@@ -59,9 +61,11 @@ module Carto
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
     end
+
   end
 
   module UserMetadataExportServiceImporter
+
     include UserMetadataExportServiceConfiguration
     include LayerImporter
     include DataImportImporter
@@ -124,7 +128,7 @@ module Carto
       user = User.new(exported_user.slice(*EXPORTED_USER_ATTRIBUTES - [:id]))
 
       user.self_feature_flags_user = exported_user[:feature_flags].map { |ff_name| build_feature_flag_from_name(ff_name) }
-                                                             .compact
+                                                                  .compact
 
       user.assets = exported_user[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
 
@@ -243,6 +247,7 @@ module Carto
 
     def build_oauth_app_users_from_hash(oauth_app_users)
       return [] unless oauth_app_users
+
       oauth_app_users.map { |oau| build_oauth_app_user_from_hash(oau) }
     end
 
@@ -304,9 +309,11 @@ module Carto
         skip_token_regeneration: true
       )
     end
+
   end
 
   module UserMetadataExportServiceExporter
+
     include UserMetadataExportServiceConfiguration
     include LayerExporter
     include DataImportExporter
@@ -360,6 +367,7 @@ module Carto
 
     def export_client_application(app)
       return nil unless app
+
       a_t_tokens = app.access_tokens.map(&:token)
       {
         name: app.name,
@@ -489,6 +497,7 @@ module Carto
         updated_at: ort.updated_at
       }
     end
+
   end
 
   class UserAlreadyExists < RuntimeError; end
@@ -496,6 +505,7 @@ module Carto
   # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
   # and having separated methods make handling and testing much easier.
   class UserMetadataExportService
+
     include UserMetadataExportServiceImporter
     include UserMetadataExportServiceExporter
 
@@ -518,6 +528,7 @@ module Carto
       user = user_from_file(path)
 
       raise UserAlreadyExists.new if ::Carto::User.exists?(id: user.id)
+
       save_imported_user(user)
 
       Carto::RedisExportService.new.restore_redis_from_json_export(redis_user_file(path))
@@ -600,7 +611,7 @@ module Carto
       return true if viz.table.nil?
 
       viz.user.visualizations.where(type: viz.type,
-                                    name: viz.name).all.sort_by(&:updated_at).last.id != viz.id
+                                    name: viz.name).all.max_by(&:updated_at).id != viz.id
     end
 
     def with_non_viewer_user(user)
@@ -617,5 +628,7 @@ module Carto
         ::User[user.id].reload
       end
     end
+
   end
+
 end

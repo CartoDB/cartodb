@@ -1,4 +1,5 @@
 module FeatureFlagHelper
+
   def set_feature_flag(user, feature, state)
     user = user.carto_user
 
@@ -7,9 +8,7 @@ module FeatureFlagHelper
       ff = Carto::FeatureFlag.find_by(name: feature)
       ffu = Carto::FeatureFlagsUser.find_by(feature_flag: ff, user: user)
       if state
-        unless ffu
-          user.activate_feature_flag!(ff)
-        end
+        user.activate_feature_flag!(ff) unless ffu
       else
         ff.update restricted: false unless ff.restricted
         ffu.delete if ffu
@@ -25,4 +24,5 @@ module FeatureFlagHelper
     yield
     set_feature_flag user, feature, previous_state if state != previous_state
   end
+
 end

@@ -48,13 +48,15 @@ module CartoStrategy
     begin
       user.update_in_central
     rescue StandardError => e
-      log_warning(message: "Error updating lastlogin_date in central", exception: e)
+      log_warning(message: 'Error updating lastlogin_date in central', exception: e)
     end
   end
+
 end
 
 # Setup Session Serialization
 class Warden::SessionSerializer
+
   def serialize(user)
     user.username
   end
@@ -62,6 +64,7 @@ class Warden::SessionSerializer
   def deserialize(username)
     ::User.filter(username: username).first
   end
+
 end
 
 Warden::Strategies.add(:password) do
@@ -83,10 +86,10 @@ Warden::Strategies.add(:password) do
         if user.enabled? && valid_password_strategy_for_user(user)
           trigger_login_event(user)
 
-          success!(user, :message => "Success")
+          success!(user, message: 'Success')
           request.flash['logged'] = true
         elsif !user.enable_account_token.nil?
-          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
+          throw(:warden, action: 'account_token_authentication_error', user_id: user.id)
         else
           fail!
         end
@@ -150,22 +153,22 @@ Warden::Strategies.add(:ldap) do
   end
 
   def authenticate!
-    (fail! and return) if (params[:email].blank? || params[:password].blank?)
+    (fail! and return) if params[:email].blank? || params[:password].blank?
 
     user = nil
     begin
       user = Carto::Ldap::Manager.new.authenticate(params[:email], params[:password])
-    rescue Carto::Ldap::LDAPUserNotPresentAtCartoDBError => exception
+    rescue Carto::Ldap::LDAPUserNotPresentAtCartoDBError => e
       throw(:warden, action: 'ldap_user_not_at_cartodb',
-        cartodb_username: exception.cartodb_username, organization_id: exception.organization_id,
-        ldap_username: exception.ldap_username, ldap_email: exception.ldap_email)
+                     cartodb_username: e.cartodb_username, organization_id: e.organization_id,
+                     ldap_username: e.ldap_username, ldap_email: e.ldap_email)
     end
     # Fails, but do not stop processin other strategies (allows fallbacks)
     return unless user
 
     trigger_login_event(user)
 
-    success!(user, :message => "Success")
+    success!(user, message: 'Success')
     request.flash['logged'] = true
   end
 end
@@ -182,20 +185,20 @@ Warden::Strategies.add(:api_authentication) do
     # oauth-plugin-0.4.0.pre4/lib/oauth/controllers/application_controller_methods.rb
     # It also checks token class like does the oauth10_access_token method of that same file
     if ClientApplication.verify_request(request) do |request_proxy|
-          @oauth_token = ClientApplication.find_token(request_proxy.token)
-          if @oauth_token.respond_to?(:provided_oauth_verifier=)
-            @oauth_token.provided_oauth_verifier=request_proxy.oauth_verifier
-          end
-          # return the token secret and the consumer secret
-          [(@oauth_token.nil? ? nil : @oauth_token.secret), (@oauth_token.nil? || @oauth_token.client_application.nil? ? nil : @oauth_token.client_application.secret)]
-        end
+         @oauth_token = ClientApplication.find_token(request_proxy.token)
+         if @oauth_token.respond_to?(:provided_oauth_verifier=)
+           @oauth_token.provided_oauth_verifier = request_proxy.oauth_verifier
+         end
+         # return the token secret and the consumer secret
+         [(@oauth_token.nil? ? nil : @oauth_token.secret), (@oauth_token.nil? || @oauth_token.client_application.nil? ? nil : @oauth_token.client_application.secret)]
+       end
 
       if @oauth_token && @oauth_token.is_a?(Carto::AccessToken)
         user = ::User.find_with_custom_fields(@oauth_token.user_id)
         if user.enable_account_token.nil?
           success!(user) and return
         else
-          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
+          throw(:warden, action: 'account_token_authentication_error', user_id: user.id)
         end
       end
     end
@@ -222,8 +225,8 @@ Warden::Strategies.add(:http_header_authentication) do
 
     success!(user)
   rescue StandardError => e
-    CartoDB.report_exception(e, "Authenticating with http_header_authentication", user: user)
-    return fail!
+    CartoDB.report_exception(e, 'Authenticating with http_header_authentication', user: user)
+    fail!
   end
 end
 
@@ -260,7 +263,7 @@ Warden::Strategies.add(:saml) do
       if user.try(:enabled?)
         trigger_login_event(user)
 
-        success!(user, message: "Success")
+        success!(user, message: 'Success')
         request.flash['logged'] = true
       else
         fail!
@@ -272,8 +275,8 @@ Warden::Strategies.add(:saml) do
             saml_email: email)
     end
   rescue StandardError => e
-    log_error(message: "Authenticating with SAML", exception: e)
-    return fail!
+    log_error(message: 'Authenticating with SAML', exception: e)
+    fail!
   end
 end
 
@@ -289,7 +292,7 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   # On testing there is no warden global so we cannot run this logic
   if warden_proxy
     warden_sessions = auth.env['rack.session'].to_hash.select do |key, _|
-      key.start_with?("warden.user") && !key.end_with?(".session")
+      key.start_with?('warden.user') && !key.end_with?('.session')
     end
     warden_sessions.each do |_, value|
       unless value == user.username
@@ -299,7 +302,7 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   end
 end
 
-Warden::Manager.after_set_user do |user, auth, opts|
+Warden::Manager.after_set_user do |user, auth, _opts|
   # Without winning strategy (loading cookie from session) assume we want to respect expired passwords
   should_check_expiration = !auth.winning_strategy || auth.winning_strategy.affected_by_password_expiration?
   throw(:warden, action: :password_expired) if should_check_expiration && user.password_expired?
@@ -319,7 +322,7 @@ Warden::Strategies.add(:user_creation) do
     if user_creation.autologin?
       trigger_login_event(user)
 
-      success!(user, :message => "Success")
+      success!(user, message: 'Success')
     else
       fail!
     end
@@ -327,6 +330,7 @@ Warden::Strategies.add(:user_creation) do
 end
 
 module Carto::Api::AuthApiAuthentication
+
   include CartoStrategy
   # We don't want to store a session and send a response cookie
   def store?
@@ -354,6 +358,7 @@ module Carto::Api::AuthApiAuthentication
     api_key = require_master_key ? api_key.master : api_key
 
     return fail! unless api_key.exists?
+
     success!(user)
   rescue StandardError
     fail!
@@ -373,7 +378,7 @@ module Carto::Api::AuthApiAuthentication
 
   private
 
-  AUTH_HEADER_RE = /basic\s(?<auth>\w+)/i
+  AUTH_HEADER_RE = /basic\s(?<auth>\w+)/i.freeze
 
   def user_and_token_from_request
     return unless valid?
@@ -392,6 +397,7 @@ module Carto::Api::AuthApiAuthentication
     decoded_auth = Base64.decode64(base64_auth)
     decoded_auth.split(':')
   end
+
 end
 
 Warden::Strategies.add(:auth_api) do

@@ -2,7 +2,7 @@ namespace :cartodb do
   # This rake retrieves all sync tables that should get synchronized, and puts the synchronization tasks at Resque
   # NOTE: This version does not mark the tables as "enqueued", should be done if planning to run multiple instances
   desc 'Runs the sync tables process'
-  task :sync_tables, [:force_all_arg] => [:environment] do |task, args|
+  task :sync_tables, [:force_all_arg] => [:environment] do |_task, args|
     puts '> Sync tables started' if ENV['VERBOSE']
 
     require_relative '../../services/synchronizer/lib/synchronizer/collection'
@@ -14,13 +14,12 @@ namespace :cartodb do
     puts '> Sync tables finished' if ENV['VERBOSE']
   end
 
-
   desc 'Adds visualization_id to every Synchronization'
-  task :populate_synchronization_visualization_ids => [:environment] do |task, args|
+  task populate_synchronization_visualization_ids: [:environment] do |_task, _args|
     require_relative '../../services/synchronizer/lib/synchronizer/collection'
     collection = CartoDB::Synchronizer::Collection.new
 
-    collection.fetch_all.each { |record|
+    collection.fetch_all.each do |record|
       begin
         synchronization = CartoDB::Synchronization::Member.new(id: record[:id]).fetch
       rescue KeyError
@@ -29,30 +28,30 @@ namespace :cartodb do
       if synchronization
         begin
           table = UserTable.where({
-              name: synchronization.name,
-              user_id: synchronization.user_id
-            }).first
+                                    name: synchronization.name,
+                                    user_id: synchronization.user_id
+                                  }).first
           if table.nil?
             puts "\nSync id '#{record[:id]}' related table not found"
           else
             table = table.service
           end
-        rescue StandardError => exception
+        rescue StandardError => e
           table = nil
-          puts "\nSync id '#{record[:id]}' errored: #{exception.inspect}"
+          puts "\nSync id '#{record[:id]}' errored: #{e.inspect}"
         end
         unless table.nil?
           if synchronization.visualization_id.nil?
             begin
               synchronization.visualization_id = table.table_visualization.id
-            rescue StandardError => exception
+            rescue StandardError => e
               puts "\nSync id '#{record[:id]}' errored, canonical visualization not found"
             end
             begin
               synchronization.store
               printf '.'
-            rescue StandardError => exception
-              puts "\nSync id '#{record[:id]}' errored: #{exception.inspect}"
+            rescue StandardError => e
+              puts "\nSync id '#{record[:id]}' errored: #{e.inspect}"
             end
           else
             printf 'S'
@@ -61,8 +60,7 @@ namespace :cartodb do
       else
         puts "\nSync id '#{record[:id]}' errored: missing synchronization entry"
       end
-    }
+    end
     puts "\nFINISHED"
-
   end
 end

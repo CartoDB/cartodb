@@ -3,7 +3,7 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     create_table :layer_node_styles do
       primary_key :id, type: :uuid, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :layer_id, :layers, type: :uuid, null: false, on_delete: :cascade
@@ -14,7 +14,7 @@ migration(
       unique      [:layer_id, :source_id]
     end
   end,
-  Proc.new do
+  proc do
     drop_table :layer_node_styles
   end
 )

@@ -5,7 +5,7 @@ Sequel.migration do
   end
 
   down do
-    SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
+    SequelRails.connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :bi_datasets do
       Uuid :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')

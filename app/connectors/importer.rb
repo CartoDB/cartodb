@@ -8,10 +8,11 @@ require_dependency 'visualization/derived_creator'
 module CartoDB
   module Connector
     class Importer
+
       include ::LoggerHelper
 
-      ORIGIN_SCHEMA       = 'cdb_importer'
-      DESTINATION_SCHEMA  = 'public'
+      ORIGIN_SCHEMA       = 'cdb_importer'.freeze
+      DESTINATION_SCHEMA  = 'public'.freeze
       MAX_RENAME_RETRIES  = 20
 
       # The following columns are not validated because we are comparing schemas of a cartodbfied table and one that
@@ -40,7 +41,7 @@ module CartoDB
         @overviews_creator      = overviews_creator
         @destination_schema     = destination_schema
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
-                                                                            {public_user_roles: public_user_roles})
+                                                                            { public_user_roles: public_user_roles })
 
         @imported_table_visualization_ids = []
         @rejected_layers = []
@@ -83,7 +84,7 @@ module CartoDB
                       quota_checker.will_be_over_private_map_quota?(private_maps.count)
 
         log('Results would set map overquota')
-        raise CartoDB::Importer2::MapQuotaExceededError.new
+        raise CartoDB::Importer2::MapQuotaExceededError
       end
 
       def check_dataset_quotas(visualizations)
@@ -95,15 +96,15 @@ module CartoDB
         return unless quota_checker.will_be_over_public_dataset_quota?(public_datasets.count)
 
         log('Results would set dataset overquota')
-        raise CartoDB::Importer2::PublicDatasetQuotaExceededError.new
+        raise CartoDB::Importer2::PublicDatasetQuotaExceededError
       end
 
       def register_results(results)
         Carto::GhostTablesManager.run_synchronized(
           user.id, attempts: 10, timeout: 3000,
-          message: "Couldn't acquire bolt to register. Registering without bolt",
-          current_user: user,
-          data_import: { id: data_import.id }
+                   message: "Couldn't acquire bolt to register. Registering without bolt",
+                   current_user: user,
+                   data_import: { id: data_import.id }
         ) do
           results.select(&:success?).each do |result|
             register(result)
@@ -121,7 +122,8 @@ module CartoDB
         overwrite = overwrite_strategy? && taken_names.include?(name)
 
         if overwrite
-          raise ::CartoDB::Importer2::IncompatibleSchemas.new unless compatible_schemas_for_overwrite?(name)
+          raise ::CartoDB::Importer2::IncompatibleSchemas unless compatible_schemas_for_overwrite?(name)
+
           move_to_schema(result, result.table_name, ORIGIN_SCHEMA, @destination_schema)
           overwrite_register(result, name) do
             drop("\"#{@destination_schema}\".\"#{name}\"")
@@ -137,31 +139,31 @@ module CartoDB
         persist_metadata(name, data_import_id, overwrite)
 
         log("Table '#{name}' registered")
-      rescue StandardError => exception
-        if exception.message =~ /canceling statement due to statement timeout/i
+      rescue StandardError => e
+        if e.message =~ /canceling statement due to statement timeout/i
           drop("#{ORIGIN_SCHEMA}.#{result.table_name}")
           raise CartoDB::Importer2::StatementTimeoutError.new(
-            exception.message,
+            e.message,
             CartoDB::Importer2::ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError]
           )
         else
-          raise exception
+          raise e
         end
       end
 
       def create_overviews(result)
         dataset = @overviews_creator.dataset(result.name)
         dataset.create_overviews!
-      rescue StandardError => exception
+      rescue StandardError => e
         # In case of overview creation failure we'll just omit the
         # overviews creation and continue with the process.
         # Since the actual creation is handled by a single SQL
         # function, and thus executed in a transaction, we shouldn't
         # need any clean up here. (Either all overviews were created
         # or nothing changed)
-        log("Overviews creation failed: #{exception.message}")
+        log("Overviews creation failed: #{e.message}")
         user = Carto::User.find(data_import.user_id)
-        log_error(message: 'Error creating overview', exception: exception, current_user: user, table_name: result.name)
+        log_error(message: 'Error creating overview', exception: e, current_user: user, table_name: result.name)
       end
 
       def create_visualization
@@ -210,22 +212,22 @@ module CartoDB
       def drop(table_name)
         Carto::OverviewsService.new(database).delete_overviews table_name
         database.execute(%(DROP TABLE #{table_name}))
-      rescue StandardError => exception
-        log("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
+      rescue StandardError => e
+        log("Couldn't drop table #{table_name}: #{e}. Backtrace: #{e.backtrace} ")
         self
       end
 
       def move_to_schema(result, table_name, origin_schema, destination_schema)
         return self if origin_schema == destination_schema
 
-        database.execute(%Q{
+        database.execute(%{
           ALTER TABLE "#{origin_schema}"."#{table_name}"
           SET SCHEMA "#{destination_schema}"
         })
 
-        @support_tables_helper.tables = result.support_tables.map { |table|
+        @support_tables_helper.tables = result.support_tables.map do |table|
           { schema: origin_schema, name: table }
-        }
+        end
         @support_tables_helper.change_schema(destination_schema, table_name)
       rescue StandardError => e
         drop("#{origin_schema}.#{table_name}")
@@ -241,6 +243,7 @@ module CartoDB
           api_key.grants.any? do |grant|
             tables = grant[:tables]
             next unless tables
+
             tables.any? do |table|
               table[:name] == table_name
             end
@@ -259,9 +262,9 @@ module CartoDB
 
         rename_the_geom_index_if_exists(current_name, new_name, schema)
 
-        @support_tables_helper.tables = result.support_tables.map { |table|
+        @support_tables_helper.tables = result.support_tables.map do |table|
           { schema: schema, name: table }
-        }
+        end
 
         # Delay recreation of constraints until schema change
         results = @support_tables_helper.rename(current_name, new_name, false)
@@ -273,20 +276,20 @@ module CartoDB
         end
 
         new_name
-      rescue StandardError => exception
+      rescue StandardError => e
         drop("#{schema}.#{current_name}")
-        raise exception
+        raise e
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name, schema)
-        database.execute(%Q{
+        database.execute(%{
           ALTER INDEX IF EXISTS "#{schema}"."#{current_name}_geom_idx"
           RENAME TO "the_geom_#{Carto::UUIDHelper.random_uuid.gsub('-', '_')}"
         })
-      rescue StandardError => exception
-        log("Silently failed rename_the_geom_index_if_exists from " +
-            "#{current_name} to #{new_name} with exception #{exception}. " +
-            "Backtrace: #{exception.backtrace}. ")
+      rescue StandardError => e
+        log('Silently failed rename_the_geom_index_if_exists from ' +
+            "#{current_name} to #{new_name} with exception #{e}. " +
+            "Backtrace: #{e.backtrace}. ")
       end
 
       def persist_metadata(name, data_import_id, overwrite_table)
@@ -308,6 +311,7 @@ module CartoDB
 
       def error_code
         return 8002 if over_table_quota?
+
         results.map(&:error_code).compact.first
       end
 

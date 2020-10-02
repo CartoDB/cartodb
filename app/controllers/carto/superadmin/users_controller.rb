@@ -3,6 +3,7 @@ require_dependency 'carto/superadmin/metrics_controller_helper'
 module Carto
   module Superadmin
     class UsersController < ::Superadmin::SuperadminController
+
       include MetricsControllerHelper
 
       respond_to :json
@@ -28,6 +29,7 @@ module Carto
         @user = Carto::User.where(id: params[:id]).first
         render json: { error: 'User not found' }, status: 404 unless @user
       end
+
     end
   end
 end

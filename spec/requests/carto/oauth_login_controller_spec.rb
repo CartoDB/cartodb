@@ -17,8 +17,8 @@ describe Carto::OauthLoginController do
 
     CartoDB::UserAccountCreator.any_instance.expects(:new).never
     get google_oauth_url(user_domain: @organization.name,
-                        code: 'blabla',
-                        state: '{"organization_name": "' + @organization.name + '"}')
+                         code: 'blabla',
+                         state: '{"organization_name": "' + @organization.name + '"}')
     response.status.should eq 302
     follow_redirect!
     request.path.should eq '/login'
@@ -35,8 +35,8 @@ describe Carto::OauthLoginController do
 
     CartoDB::UserAccountCreator.any_instance.expects(:valid?).once
     get google_oauth_url(user_domain: @organization.name,
-                        code: 'blabla',
-                        state: '{"organization_name": "' + @organization.name + '"}')
+                         code: 'blabla',
+                         state: '{"organization_name": "' + @organization.name + '"}')
     response.status.should eq 200
   end
 end

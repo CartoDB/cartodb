@@ -36,7 +36,7 @@ describe DataRepository::Backend::Sequel do
       Integer   :order,             null: false
       String    :options,           text: true
       String    :type
-      String    :visualization_id,  index: true
+      String    :visualization_id, index: true
     end
 
     Visualization.repository = DataRepository::Backend::Sequel.new(db, :visualizations)
@@ -89,7 +89,7 @@ describe DataRepository::Backend::Sequel do
   describe '#collection' do
     it 'gets a collection of records using the passed filter' do
       Visualization::Member.new(
-        name:   'visualization 1',
+        name: 'visualization 1',
         map_id: 1
       ).store
       Visualization::Member.new(

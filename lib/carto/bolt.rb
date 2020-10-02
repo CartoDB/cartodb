@@ -3,9 +3,9 @@ module Carto
 
     include ::LoggerHelper
 
-    DEFAULT_TTL_MS = 10000
+    DEFAULT_TTL_MS = 10_000
     DEFAULT_RETRY_ATTEMPTS = 1
-    DEFAULT_RETRY_TIMEOUT = 10000 # in_ms
+    DEFAULT_RETRY_TIMEOUT = 10_000 # in_ms
 
     def initialize(bolt_key, redis_object: $users_metadata, ttl_ms: DEFAULT_TTL_MS)
       @bolt_key = add_namespace_to_key(bolt_key)
@@ -35,9 +35,7 @@ module Carto
           yield
           true
         else
-          if fail_function && !set_retry
-            fail_function.call
-          end
+          fail_function.call if fail_function && !set_retry
           false
         end
       ensure
@@ -52,9 +50,8 @@ module Carto
         lock_acquired = get_lock
         # With only 1 attempt, the default value, we dont sleep
         # even if false
-        if lock_acquired || (attempts == index + 1)
-          return lock_acquired
-        end
+        return lock_acquired if lock_acquired || (attempts == index + 1)
+
         sleep((timeout / 1000.0).second)
       end
       log_warning(message: "Couldn't acquire bolt", attempts: attempts, timeout: timeout)
@@ -91,5 +88,6 @@ module Carto
     def add_namespace_to_key(key)
       "rails:bolt:#{key}"
     end
+
   end
 end

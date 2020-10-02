@@ -5,6 +5,7 @@ require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_u
 require_relative '../../services/dataservices-metrics/lib/observatory_general_usage_metrics'
 
 module DataServicesMetricsHelper
+
   def get_user_geocoding_data(user, from, to, orgwise = true)
     get_geocoding_data(user, from, to, orgwise)
   end
@@ -57,8 +58,9 @@ module DataServicesMetricsHelper
     geocoder_provider = org.try(:geocoder_provider) || user.geocoder_provider
     orgname = org.try(:name)
     usage_metrics = CartoDB::GeocoderUsageMetrics.new(user.username, orgname)
-    # FIXME removed once we have fixed to charge google geocoder users for overquota
+    # FIXME: removed once we have fixed to charge google geocoder users for overquota
     return 0 if user.google_maps_geocoder_enabled?
+
     geocoder_key = CartoDB::GeocoderUsageMetrics::GEOCODER_KEYS.fetch(geocoder_provider, :geocoder_mapbox)
     cache_hits = 0
     success = usage_metrics.get_sum_by_date_range(geocoder_key, :success_responses, from, to)
@@ -106,4 +108,5 @@ module DataServicesMetricsHelper
     empty = usage_metrics.get_sum_by_date_range(obs_general_key, :empty_responses, from, to)
     success + empty
   end
+
 end

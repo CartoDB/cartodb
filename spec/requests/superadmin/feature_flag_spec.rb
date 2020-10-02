@@ -9,9 +9,9 @@ describe Carto::FeatureFlag do
     context 'when everything is OK' do
       it 'should create feature flag' do
         payload = { feature_flag: feature_flag.attributes }.to_json
-        expect {
+        expect do
           post superadmin_feature_flags_url, payload, superadmin_headers
-        }.to change(Carto::FeatureFlag, :count).by(1)
+        end.to change(Carto::FeatureFlag, :count).by(1)
 
         expect(response.status).to eq(204)
       end
@@ -42,18 +42,17 @@ describe Carto::FeatureFlag do
     before { feature_flag.save! }
 
     it 'should destroy feature flag' do
-      expect {
+      expect do
         delete superadmin_feature_flag_url(feature_flag.id), payload, superadmin_headers
-      }.to change(Carto::FeatureFlag, :count).by(-1)
+      end.to change(Carto::FeatureFlag, :count).by(-1)
     end
 
     it 'should destroy feature flag user relations' do
       user.activate_feature_flag!(feature_flag)
 
-      expect {
+      expect do
         delete superadmin_feature_flag_url(feature_flag.id), payload, superadmin_headers
-      }.to change(Carto::FeatureFlagsUser, :count).by(-1)
+      end.to change(Carto::FeatureFlagsUser, :count).by(-1)
     end
   end
-
 end

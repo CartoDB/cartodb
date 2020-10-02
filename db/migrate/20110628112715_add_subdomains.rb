@@ -2,9 +2,9 @@ class AddSubdomainsMigration < Sequel::Migration
 
   def up
     add_column :users, :subdomain, 'character varying'
-    
+
     alter_table(:users) do
-      add_index [:subdomain], :unique => true
+      add_index [:subdomain], unique: true
     end
   end
 

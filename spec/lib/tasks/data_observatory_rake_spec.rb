@@ -23,15 +23,15 @@ describe 'data_observatory.rake' do
     end
 
     it 'throws an error if username is not provided' do
-      expect {
+      expect do
         Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke
-      }.to raise_error(RuntimeError, 'USAGE: data_observatory:purchase_datasets["username","path/datasets.csv"]')
+      end.to raise_error(RuntimeError, 'USAGE: data_observatory:purchase_datasets["username","path/datasets.csv"]')
     end
 
     it 'throws an error if the datasets path is not provided' do
-      expect {
+      expect do
         Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke('fulano')
-      }.to raise_error(RuntimeError, 'USAGE: data_observatory:purchase_datasets["username","path/datasets.csv"]')
+      end.to raise_error(RuntimeError, 'USAGE: data_observatory:purchase_datasets["username","path/datasets.csv"]')
     end
 
     it 'calls subscribe from Carto::DoLicensingService with the expected parameters' do
@@ -49,15 +49,15 @@ describe 'data_observatory.rake' do
     end
 
     it 'throws an error if username is not provided' do
-      expect {
+      expect do
         Rake::Task['cartodb:data_observatory:remove_purchase'].invoke
-      }.to raise_error(RuntimeError, 'USAGE: data_observatory:remove_purchase["username","project.schema.table"]')
+      end.to raise_error(RuntimeError, 'USAGE: data_observatory:remove_purchase["username","project.schema.table"]')
     end
 
     it 'throws an error if dataset_id is not provided' do
-      expect {
+      expect do
         Rake::Task['cartodb:data_observatory:remove_purchase'].invoke('fulano')
-      }.to raise_error(RuntimeError, 'USAGE: data_observatory:remove_purchase["username","project.schema.table"]')
+      end.to raise_error(RuntimeError, 'USAGE: data_observatory:remove_purchase["username","project.schema.table"]')
     end
 
     it 'calls unsubscribe from Carto::DoLicensingService with the expected parameters' do
@@ -71,10 +71,9 @@ describe 'data_observatory.rake' do
 
   def csv_example
     CSV.generate do |csv|
-      csv << ["dataset_id", "available_in", "price", "expires_at", "view_def"]
-      csv << ["dataset1", "bq;bigtable", "100", "2020-09-27T08:00:00", "where do_date='1986-11-12'"]
-      csv << ["dataset2", "bigtable", "200", "2020-12-31T12:00:00", nil]
+      csv << ['dataset_id', 'available_in', 'price', 'expires_at', 'view_def']
+      csv << ['dataset1', 'bq;bigtable', '100', '2020-09-27T08:00:00', "where do_date='1986-11-12'"]
+      csv << ['dataset2', 'bigtable', '200', '2020-12-31T12:00:00', nil]
     end
   end
-
 end

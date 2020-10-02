@@ -15,8 +15,8 @@ Rollbar.configure do |config|
   config.exception_level_filters.merge!(
     'ActionController::RoutingError' => 'ignore',
     'Sequel::DatabaseConnectionError' => 'warning',
-    'ActiveRecord::RecordInvalid' => lambda do
-      |error| info_errors.any? { |message| error.to_s.downcase.include?(message) } ? 'info' : 'error'
+    'ActiveRecord::RecordInvalid' => lambda do |error|
+      info_errors.any? { |message| error.to_s.downcase.include?(message) } ? 'info' : 'error'
     end
   )
 end
@@ -46,4 +46,5 @@ module CartoDB
   def self.notify_warning_exception(exception)
     log_warning(exception: exception)
   end
+
 end

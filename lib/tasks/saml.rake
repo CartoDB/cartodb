@@ -40,13 +40,15 @@ namespace :cartodb do
                           idp_cert_fingerprint: ENV['SAML_IDP_CERT_FINGERPRINT'],
                           name_identifier_format: ENV['SAML_NAME_IDENTIFIER_FORMAT']
                         }
-                        config[:idp_slo_target_url] = ENV['SAML_IDP_SLO_TARGET_URL'] if ENV['SAML_IDP_SLO_TARGET_URL'].present?
+                        if ENV['SAML_IDP_SLO_TARGET_URL'].present?
+                          config[:idp_slo_target_url] = ENV['SAML_IDP_SLO_TARGET_URL']
+                        end
 
                         config
                       end
 
       if ENV['SAML_SP_PRIVATE_KEY_FILE'].present? && ENV['SAML_SP_CERTIFICATE_FILE'].present? &&
-        configuration[:name_identifier_format].present? && configuration[:idp_slo_target_url].present?
+         configuration[:name_identifier_format].present? && configuration[:idp_slo_target_url].present?
         configuration[:security] = {
           logout_requests_signed: true,
           logout_responses_signed: true,

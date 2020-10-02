@@ -1,10 +1,12 @@
 module Carto
   class Connector
-    PROVIDERS = []
+
+    PROVIDERS = [].freeze
 
     DEFAULT_PROVIDER = nil # No default provider
 
     class << self
+
       def provider_class(provider_id)
         provider_data provider_id
       end
@@ -18,20 +20,21 @@ module Carto
       end
 
       def provider_ids
-        PROVIDERS.map &:provider_id
+        PROVIDERS.map(&:provider_id)
       end
 
       private
 
       def provider_data(provider_id)
         provider_id ||= DEFAULT_PROVIDER
-        PROVIDERS.find{|p| p.provider_id == provider_id}
+        PROVIDERS.find { |p| p.provider_id == provider_id}
       end
 
       def provider_item(provider_id, item)
         data = provider_data(provider_id)
         data&.send item.to_sym
       end
+
     end
 
   end

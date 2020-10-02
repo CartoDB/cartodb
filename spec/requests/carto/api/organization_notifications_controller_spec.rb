@@ -2,6 +2,7 @@ require 'spec_helper_min'
 require 'support/helpers'
 
 module Carto
+
   describe Api::OrganizationNotificationsController do
     include HelperMethods
 
@@ -111,4 +112,5 @@ module Carto
       end
     end
   end
+
 end

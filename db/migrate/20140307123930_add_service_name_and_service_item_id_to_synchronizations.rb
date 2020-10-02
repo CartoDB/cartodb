@@ -1,5 +1,5 @@
 Sequel.migration do
-  #alter_table :synchronizations do
+  # alter_table :synchronizations do
   up do
     add_column :synchronizations, :service_name, String
     add_column :synchronizations, :service_item_id, String

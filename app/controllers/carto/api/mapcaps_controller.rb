@@ -5,6 +5,7 @@ require_dependency 'carto/tracking/events'
 module Carto
   module Api
     class MapcapsController < ::Api::ApplicationController
+
       include Carto::Builder::BuilderUsersModule
 
       ssl_required :show, :create, :destroy, :index
@@ -29,8 +30,8 @@ module Carto
         mapcap = @visualization.create_mapcap!
 
         render_jsonp(Carto::Api::MapcapPresenter.new(mapcap).to_poro, :created)
-      rescue ActiveRecord::RecordInvalid => exception
-        message = exception.record.errors.full_messages.join(', ')
+      rescue ActiveRecord::RecordInvalid => e
+        message = e.record.errors.full_messages.join(', ')
         raise Carto::UnprocesableEntityError.new(message)
       end
 
@@ -74,6 +75,7 @@ module Carto
                                                   user_id: current_viewer_id,
                                                   visualization_id: @visualization.id).report
       end
+
     end
   end
 end

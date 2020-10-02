@@ -61,6 +61,7 @@ module Carto
       def write_privileges?
         head(401) unless current_user && @user_table.visualization.writable_by?(current_user)
       end
+
     end
   end
 end

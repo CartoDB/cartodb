@@ -233,7 +233,7 @@ describe Carto::Api::VizJSON3Presenter do
 
     it 'v3 should include sql_wrap' do
       v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send(:calculate_vizjson)
-      v3_vizjson[:layers][1][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
+      v3_vizjson[:layers][1][:options][:sql_wrap].should eq 'select * from (<%= sql %>) __wrap'
     end
   end
 

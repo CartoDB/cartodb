@@ -1,5 +1,6 @@
 module Carto::Metrics
   class TwitterImportsRetriever
+
     def metrics
       [:retrieved_items]
     end
@@ -20,5 +21,6 @@ module Carto::Metrics
       end
       result
     end
+
   end
 end

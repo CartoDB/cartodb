@@ -20,10 +20,11 @@ module ActiveRecord
     module PostgreSQL
       module OID # :nodoc:
         class TypeMapInitializer # :nodoc:
+
           def query_conditions_for_initial_load(type_map)
             known_type_names = type_map.keys.map { |n| "'#{n}'" }
             known_type_types = %w('r' 'e' 'd')
-            <<-SQL % [known_type_names.join(", "), known_type_types.join(", ")]
+            format(<<-SQL, known_type_names.join(', '), known_type_types.join(', '))
               LEFT JOIN pg_type as tt ON (tt.typtype = 'c' AND tt.typarray = t.oid AND tt.typinput = 'record_in(cstring,oid,integer)'::regprocedure)
               WHERE
                 tt.oid is null
@@ -33,6 +34,7 @@ module ActiveRecord
                 OR t.typelem != 0)
             SQL
           end
+
         end
       end
     end

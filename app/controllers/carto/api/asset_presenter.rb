@@ -1,4 +1,5 @@
 class Carto::Api::AssetPresenter
+
   def initialize(asset)
     @asset = asset
   end
@@ -11,4 +12,5 @@ class Carto::Api::AssetPresenter
       kind: @asset.kind
     }
   end
+
 end

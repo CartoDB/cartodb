@@ -19,7 +19,7 @@ class CommonData
     @datasets = []
 
     if is_enabled?
-      is_https_request = (@visualizations_api_url =~ /^https:\/\//)
+      is_https_request = (@visualizations_api_url =~ %r{^https://})
       cached_data = redis_cache.get(is_https_request)
       if cached_data.nil?
         client = CartoAPI::JsonClient.new(http_client_tag: 'common_data')
@@ -29,7 +29,7 @@ class CommonData
             @datasets = get_datasets(response.response_body)
             redis_cache.set(is_https_request, response.headers, response.response_body)
           else
-            log_warning(message: "Error retrieving common data datasets", error_detail: response.inspect)
+            log_warning(message: 'Error retrieving common data datasets', error_detail: response.inspect)
           end
         rescue StandardError => e
           log_error(exception: e)
@@ -61,43 +61,44 @@ class CommonData
     datasets = []
     rows.each do |row|
       # Common-data's meta tables starts with meta_ and we want to avoid them
-      next if row["name"] =~ /meta_/
+      next if row['name'] =~ /meta_/
+
       datasets << get_common_data_from_visualization(row)
     end
     datasets
   end
 
   def get_common_data_from_visualization(row)
-      {
-        "name" => row["name"],
-        "display_name" => row["display_name"].nil? ? row["name"] : row["display_name"],
-        "tabname" => row["name"],
-        "attributions" => row["attributions"],
-        "description" => row["description"],
-        "source" => row["source"],
-        "license" => row["license"],
-        "tags" => row["tags"],
-        "geometry_types" => %Q[{#{row["table"]["geometry_types"].join(',')}}],
-        "rows" => row["table"]["row_count"],
-        "size" => row["table"]["size"],
-        "url" => export_url(row["name"]),
-        "created_at" => row["created_at"],
-        "updated_at" => row["updated_at"]
-      }
+    {
+      'name' => row['name'],
+      'display_name' => row['display_name'].nil? ? row['name'] : row['display_name'],
+      'tabname' => row['name'],
+      'attributions' => row['attributions'],
+      'description' => row['description'],
+      'source' => row['source'],
+      'license' => row['license'],
+      'tags' => row['tags'],
+      'geometry_types' => %[{#{row['table']['geometry_types'].join(',')}}],
+      'rows' => row['table']['row_count'],
+      'size' => row['table']['size'],
+      'url' => export_url(row['name']),
+      'created_at' => row['created_at'],
+      'updated_at' => row['updated_at']
+    }
   end
 
   def export_url(table_name)
-    query = %Q[select * from "#{table_name}"]
+    query = %[select * from "#{table_name}"]
     sql_api_url(query, table_name, config('format', 'gpkg'))
   end
 
   def sql_api_url(query, filename, format)
     common_data_base_url = config('base_url')
     CartoDB::SQLApi.new({
-      base_url: common_data_base_url,
-      protocol: 'https',
-      username: config('username'),
-    }).url(query, format, filename)
+                          base_url: common_data_base_url,
+                          protocol: 'https',
+                          username: config('username')
+                        }).url(query, format, filename)
   end
 
   def config(key, default = nil)
@@ -107,4 +108,5 @@ class CommonData
   def redis_cache
     @redis_cache ||= CommonDataRedisCache.new
   end
+
 end

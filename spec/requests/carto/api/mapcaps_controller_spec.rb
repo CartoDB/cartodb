@@ -136,8 +136,8 @@ describe Carto::Api::MapcapsController do
   end
 
   describe '#show' do
-    before (:all) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id) }
-    after  (:all) { @mapcap.destroy }
+    before(:all) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id) }
+    after(:all) { @mapcap.destroy }
 
     def show_mapcap_url(user: @user, visualization: @visualization, mapcap: @mapcap)
       mapcap_url(
@@ -170,8 +170,8 @@ describe Carto::Api::MapcapsController do
   end
 
   describe '#destroy' do
-    before (:each) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id) }
-    after  (:each) { @mapcap.destroy if @mapcap }
+    before(:each) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id) }
+    after(:each) { @mapcap.destroy if @mapcap }
 
     def destroy_mapcap_url(user: @user, visualization: @visualization, mapcap: @mapcap)
       mapcap_url(

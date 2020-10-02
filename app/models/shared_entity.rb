@@ -12,18 +12,18 @@ module CartoDB
     # Allow mass-assignment of fields that compose the PK when using .new()
     unrestrict_primary_key
 
-    ENTITY_TYPE_VISUALIZATION = 'vis'
+    ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
 
-    RECIPIENT_TYPE_USER         = 'user'
-    RECIPIENT_TYPE_ORGANIZATION = 'org'
-    RECIPIENT_TYPE_GROUP = 'group'
+    RECIPIENT_TYPE_USER         = 'user'.freeze
+    RECIPIENT_TYPE_ORGANIZATION = 'org'.freeze
+    RECIPIENT_TYPE_GROUP = 'group'.freeze
 
     def validate
       super
       validates_presence([:recipient_id, :recipient_type, :entity_id, :entity_type])
       validates_unique([:recipient_id, :entity_id])
-      errors.add(:entity_type, 'unsupported type') unless self.entity_type == ENTITY_TYPE_VISUALIZATION
-    end #validate
+      errors.add(:entity_type, 'unsupported type') unless entity_type == ENTITY_TYPE_VISUALIZATION
+    end # validate
 
     def before_save
       super
@@ -35,5 +35,4 @@ module CartoDB
     end
 
   end
-
 end

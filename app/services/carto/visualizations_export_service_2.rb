@@ -21,23 +21,29 @@ require_dependency 'carto/export/data_import_exporter'
 # 2.1.2: export locked and password
 # 2.1.3: export synchronization id
 module Carto
+
   module VisualizationsExportService2Configuration
+
     CURRENT_VERSION = '2.1.3'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
     end
+
   end
 
   module VisualizationsExportService2Validator
+
     def check_valid_visualization(visualization)
       raise 'Only derived or canonical visualizations can be exported' unless visualization.derived? ||
                                                                               visualization.canonical? ||
                                                                               visualization.remote?
     end
+
   end
 
   module VisualizationsExportService2Importer
+
     include VisualizationsExportService2Configuration
     include LayerImporter
     include DataImportImporter
@@ -86,7 +92,8 @@ module Carto
         display_name: exported_visualization[:display_name],
         map: build_map_from_hash(
           exported_visualization[:map],
-          layers: build_layers_from_hash(exported_layers)),
+          layers: build_layers_from_hash(exported_layers)
+        ),
         overlays: build_overlays_from_hash(exported_overlays),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a) },
         permission: build_permission_from_hash(exported_visualization[:permission]),
@@ -101,17 +108,13 @@ module Carto
 
       # This is optional as it was added in version 2.0.2
       exported_user = exported_visualization[:user]
-      if exported_user
-        visualization.user = Carto::User.new(username: exported_user[:username])
-      end
+      visualization.user = Carto::User.new(username: exported_user[:username]) if exported_user
 
       # Added in version 2.0.3
       visualization.state = build_state_from_hash(exported_visualization[:state])
 
       active_layer_order = exported_layers.index { |l| l[:active_layer] }
-      if active_layer_order
-        visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
-      end
+      visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order } if active_layer_order
 
       # Dataset-specific
       user_table = build_user_table_from_hash(exported_visualization[:user_table])
@@ -246,9 +249,11 @@ module Carto
 
       es
     end
+
   end
 
   module VisualizationsExportService2Exporter
+
     include VisualizationsExportService2Configuration
     include VisualizationsExportService2Validator
     include LayerExporter
@@ -371,6 +376,7 @@ module Carto
 
     def export_syncronization(synchronization)
       return nil unless synchronization
+
       {
         id: synchronization.id,
         name: synchronization.name,
@@ -436,12 +442,16 @@ module Carto
         created_at: mapcap.created_at
       }
     end
+
   end
 
   # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
   # and having separated methods make handling and testing much easier.
   class VisualizationsExportService2
+
     include VisualizationsExportService2Importer
     include VisualizationsExportService2Exporter
+
   end
+
 end

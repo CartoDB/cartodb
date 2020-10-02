@@ -6,8 +6,9 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class KmlSplitter
+
       MAX_LAYERS = 50
-      OGRINFO_BINARY = 'ogrinfo'
+      OGRINFO_BINARY = 'ogrinfo'.freeze
       DEFAULT_OGR2OGR_BINARY = 'ogr2ogr'.freeze
 
       def self.support?(source_file)
@@ -27,21 +28,25 @@ module CartoDB
       def run
         n_layers = layers_in(source_file).length
         return self if n_layers <= 1
-        raise CartoDB::Importer2::TooManyLayersError.new("File has too many layers (#{n_layers}). Maximum number of layers: #{MAX_LAYERS}") if n_layers > MAX_LAYERS
+        if n_layers > MAX_LAYERS
+          raise CartoDB::Importer2::TooManyLayersError.new("File has too many layers (#{n_layers}). Maximum number of layers: #{MAX_LAYERS}")
+        end
+
         @source_files = source_files_for(source_file, layers_in(source_file))
         self
       end
 
       def source_files
         return [source_file] unless multiple_layers?(source_file)
+
         @source_files
       end
 
       def source_files_for(source_file, layer_names=[])
-        layer_names.map { |layer_name|
+        layer_names.map do |layer_name|
           extract(path_for(layer_name), source_file, layer_name)
           SourceFile.new(path_for(layer_name))
-        }
+        end
       end
 
       def extract(extracted_file_path, source_file, layer_name)
@@ -56,8 +61,8 @@ module CartoDB
         stdout, stderr, status =
           Open3.capture3(OGRINFO_BINARY, source_file.fullpath)
         stdout.split("\n")
-          .select { |line| line =~ /\A\d/ }
-          .map { |line| line.gsub(/\A\d+:\s/, '') }
+              .select { |line| line =~ /\A\d/ }
+              .map { |line| line.gsub(/\A\d+:\s/, '') }
       end
 
       def path_for(layer_name)
@@ -73,6 +78,7 @@ module CartoDB
 
       attr_reader :temporary_directory
       attr_writer :source_file
+
     end
   end
 end

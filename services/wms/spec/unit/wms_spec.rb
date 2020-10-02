@@ -8,15 +8,15 @@ describe Proxy do
                     '/arcgis/services/USGSImageryTopo/MapServer/WMSServer'
     @query_params = '?service=WMS&request=GetCapabilities'
     @url          = @endpoint + @query_params
-    @fixture_xml  = File.expand_path('../../fixtures/wms.xml', __FILE__)
+    @fixture_xml  = File.expand_path('../fixtures/wms.xml', __dir__)
     @xml          = File.read(@fixture_xml)
   end
 
   describe '#initialize' do
     it 'takes a URL for the service capabilities' do
-      expect {
+      expect do
         Proxy.new
-      }.to raise_error ArgumentError
+      end.to raise_error ArgumentError
       Proxy.new(@url)
     end
 
@@ -55,21 +55,23 @@ describe Proxy do
 
   describe '#layers' do
     it 'returns available layers' do
-      nasa_wms = File.read(File.expand_path('../../fixtures/wms_nasa.xml', __FILE__))
+      nasa_wms = File.read(File.expand_path('../fixtures/wms_nasa.xml', __dir__))
       Typhoeus.stub(
         'http://wms.jpl.nasa.gov/wms.cgi?Service=WMS&Version=1.1.1&Request=GetCapabilities',
-       { method: :get}  )
-      .and_return(
-        Typhoeus::Response.new(code: 200, body: nasa_wms)
+        { method: :get }
       )
+              .and_return(
+                Typhoeus::Response.new(code: 200, body: nasa_wms)
+              )
 
-      noaa_wms = File.read(File.expand_path('../../fixtures/wms_noaa.xml', __FILE__))
+      noaa_wms = File.read(File.expand_path('../fixtures/wms_noaa.xml', __dir__))
       Typhoeus.stub(
-          'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs?service=WMS&request=GetCapabilities',
-          { method: :get}  )
-      .and_return(
-          Typhoeus::Response.new(code: 200, body: noaa_wms)
+        'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs?service=WMS&request=GetCapabilities',
+        { method: :get }
       )
+              .and_return(
+                Typhoeus::Response.new(code: 200, body: noaa_wms)
+              )
 
       proxy = Proxy.new(@url, @xml)
       proxy.run
@@ -90,11 +92,10 @@ describe Proxy do
 
   describe '#formats' do
     it 'returns the supported formats' do
-      expected_formats = %w{ image/bmp image/jpeg image/tiff image/png image/png8 image/png24 image/png32 image/gif image/svg+xml }
+      expected_formats = %w{image/bmp image/jpeg image/tiff image/png image/png8 image/png24 image/png32 image/gif image/svg+xml}
       proxy = Proxy.new(@url, @xml)
       proxy.run
       proxy.formats.sort.should eq expected_formats.sort
     end
   end
 end # Proxy
-

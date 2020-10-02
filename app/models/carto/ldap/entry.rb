@@ -24,9 +24,7 @@ class Carto::Ldap::Entry
     extract_field(@configuration.email_field)
   end
 
-  def configuration
-    @configuration
-  end
+  attr_reader :configuration
 
   private
 

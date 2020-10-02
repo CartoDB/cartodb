@@ -4,6 +4,7 @@ require_dependency 'carto/named_maps/api'
 
 module Carto
   class Mapcap < ActiveRecord::Base
+
     include Carto::VisualizationsExportService2Importer
     include Carto::VisualizationsExportService2Exporter
 
@@ -69,7 +70,9 @@ module Carto
     def set_entity_as_readonly(entity)
       return unless entity.public_methods.include?(:readonly!)
       return if entity.readonly?
+
       entity.readonly!
     end
+
   end
 end

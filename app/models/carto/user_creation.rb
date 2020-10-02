@@ -15,8 +15,8 @@ class Carto::UserCreation < ActiveRecord::Base
     CREATED_VIA_API, CREATED_VIA_HTTP_AUTENTICATION
   ].freeze
 
-  IN_PROGRESS_STATES = [:initial, :enqueuing, :creating_user, :validating_user, :saving_user, :promoting_user, :load_common_data, :creating_user_in_central]
-  FINAL_STATES = [:success, :failure]
+  IN_PROGRESS_STATES = [:initial, :enqueuing, :creating_user, :validating_user, :saving_user, :promoting_user, :load_common_data, :creating_user_in_central].freeze
+  FINAL_STATES = [:success, :failure].freeze
 
   scope :http_authentication, -> { where(created_via: CREATED_VIA_HTTP_AUTENTICATION) }
   scope :in_progress, -> { where(state: IN_PROGRESS_STATES) }
@@ -56,13 +56,12 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation
   end
 
-  state_machine :state, :initial => :enqueuing do
-
+  state_machine :state, initial: :enqueuing do
     before_transition any => any, :do => :log_transition_begin
     after_transition any => any, :do => :log_transition_end
 
     after_failure do
-      self.fail_user_creation
+      fail_user_creation
     end
 
     after_transition any => :creating_user, :do => :initialize_user
@@ -76,10 +75,10 @@ class Carto::UserCreation < ActiveRecord::Base
     before_transition any => :failure, :do => :clean_user
 
     event :next_creation_step do
-      transition :enqueuing => :creating_user,
-          :creating_user => :validating_user,
-          :validating_user => :saving_user,
-          :saving_user => :promoting_user
+      transition enqueuing: :creating_user,
+                 creating_user: :validating_user,
+                 validating_user: :saving_user,
+                 saving_user: :promoting_user
 
       # This looks more complex than it actually is. The flow is always:
       # promoting_user -> creating_user_in_central -> load_common_data -> success
@@ -110,7 +109,6 @@ class Carto::UserCreation < ActiveRecord::Base
         true
       end
     end
-
   end
 
   def set_owner_promotion(promote_to_organization_owner)
@@ -159,6 +157,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def has_valid_invitation?
     return false unless invitation_token
+
     !valid_invitation.nil?
   end
 
@@ -183,7 +182,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
     invitation = invitations.select do |i|
       i.token(email) == invitation_token &&
-      organization_id == i.organization_id
+        organization_id == i.organization_id
     end.first
 
     raise "Fake token sent for email #{email}, #{invitation_token}" if invitation_token && invitation.nil?
@@ -204,7 +203,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def log_transition(prefix)
-    self.log.append("#{prefix}: State: #{self.state}")
+    log.append("#{prefix}: State: #{state}")
   end
 
   def initialize_user
@@ -220,7 +219,8 @@ class Carto::UserCreation < ActiveRecord::Base
 
     unless organization_id.nil? || @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first
-      raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
+      raise 'Trying to copy organization settings from one without owner' if organization.owner.nil?
+
       @cartodb_user.organization = organization
       @cartodb_user.organization.owner.copy_account_features(@cartodb_user)
     end
@@ -230,15 +230,15 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_here_isolines_limit = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
     @cartodb_user.soft_obs_snapshot_limit = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
     @cartodb_user.soft_obs_general_limit = soft_obs_general_limit unless soft_obs_general_limit.nil?
-    @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
+    unless soft_twitter_datasource_limit.nil?
+      @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit
+    end
     @cartodb_user.soft_mapzen_routing_limit = soft_mapzen_routing_limit unless soft_mapzen_routing_limit.nil?
     @cartodb_user.viewer = viewer if viewer
     @cartodb_user.org_admin = org_admin if org_admin
     @cartodb_user.last_password_change_date = last_password_change_date unless last_password_change_date.nil?
 
-    if valid_invitation
-      @cartodb_user.viewer = valid_invitation.viewer
-    end
+    @cartodb_user.viewer = valid_invitation.viewer if valid_invitation
 
     @cartodb_user
   rescue StandardError => e
@@ -249,7 +249,7 @@ class Carto::UserCreation < ActiveRecord::Base
   # Central validation
   def validate_user
     @cartodb_user.validate_credentials_not_taken_in_central
-    raise "Credentials already used" unless @cartodb_user.errors.empty?
+    raise 'Credentials already used' unless @cartodb_user.errors.empty?
   rescue StandardError => e
     handle_failure(e, mark_as_failure = true)
   end
@@ -260,13 +260,14 @@ class Carto::UserCreation < ActiveRecord::Base
     # This enables resuming.
     @cartodb_user.save(raise_on_failure: true)
     self.user_id = @cartodb_user.id
-    self.save
+    save
   rescue StandardError => e
     handle_failure(e, mark_as_failure = true)
   end
 
   def use_invitation
     return unless invitation_token
+
     invitation = pertinent_invitation
     return unless invitation
 
@@ -276,7 +277,7 @@ class Carto::UserCreation < ActiveRecord::Base
   def promote_user
     return unless @promote_to_organization_owner
 
-    organization = ::Organization.where(id: self.organization_id).first
+    organization = ::Organization.where(id: organization_id).first
     raise "Trying to set organization owner when there's already one" unless organization.owner.nil?
 
     user_organization = CartoDB::UserOrganization.new(organization_id, @cartodb_user.id)
@@ -312,16 +313,16 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def handle_failure(e, mark_as_failure)
     CartoDB.notify_exception(e, { user_creation: self, mark_as_failure: mark_as_failure })
-    self.log.append("Error on state #{self.state}, mark_as_failure: #{mark_as_failure}. Error: #{e.message}")
-    self.log.append(e.backtrace.join("\n"))
+    log.append("Error on state #{state}, mark_as_failure: #{mark_as_failure}. Error: #{e.message}")
+    log.append(e.backtrace.join("\n"))
 
     process_failure if mark_as_failure
   end
 
   def process_failure
     self.state = 'failure'
-    self.save
-    self.fail_user_creation
+    save
+    fail_user_creation
   end
 
   def clean_user
@@ -333,20 +334,20 @@ class Carto::UserCreation < ActiveRecord::Base
       CartoDB.notify_exception(e, action: 'safe user destruction', user: cartodb_user)
       begin
         cartodb_user.delete
-      rescue StandardError => ee
-        CartoDB.notify_exception(ee, action: 'safe user deletion', user: cartodb_user)
+      rescue StandardError => e
+        CartoDB.notify_exception(e, action: 'safe user deletion', user: cartodb_user)
       end
-
     end
   end
 
   def clean_password
     self.crypted_password = ''
-    self.save
+    save
   end
 
   # INFO: state_machine needs guard methods to be instance methods
   def sync_data_with_cartodb_central?
     Cartodb::Central.sync_data_with_cartodb_central?
   end
+
 end

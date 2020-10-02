@@ -2,14 +2,17 @@ require_relative '../../../simplecov_helper'
 require_relative '../../../../app/controllers/carto/api/presenter_cache'
 
 class Carto::Api::FakeModel
+
   attr_reader :id
 
-  def initialize(id = rand(100000))
+  def initialize(id = rand(100_000))
     @id = id
   end
+
 end
 
 class Carto::Api::FakePresenter
+
   def initialize(model)
     @model = model
   end
@@ -17,12 +20,11 @@ class Carto::Api::FakePresenter
   def to_poro
     { id: @model.id }
   end
+
 end
 
 describe Carto::Api::PresenterCache do
-
   describe '#get_poro' do
-
     let(:cache) { Carto::Api::PresenterCache.new }
 
     let(:fake_model) { Carto::Api::FakeModel.new }
@@ -65,7 +67,5 @@ describe Carto::Api::PresenterCache do
       cache.get_poro(fake_model) { fake_presenter }.should == fake_presenter.to_poro
       cache.get_poro(fake_model) { nil }.should == fake_presenter.to_poro
     end
-
   end
-
 end

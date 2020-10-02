@@ -58,10 +58,11 @@ module Carto
           message: 'Error in Oauth request',
           exception: e,
           request: { method: method, url: url, body: body, headers: headers },
-          response: { code: response.code, headers: response.headers, body: response.body, status: response.code },
+          response: { code: response.code, headers: response.headers, body: response.body, status: response.code }
         )
         nil
       end
+
     end
   end
 end

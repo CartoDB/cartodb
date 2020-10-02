@@ -4,6 +4,7 @@ require 'spec_helper_min'
 module Carto
   module Tracking
     module Events
+
       describe 'Events' do
         include Carto::Factories::Visualizations
 
@@ -34,8 +35,8 @@ module Carto
         end
 
         describe ExportedMap do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -129,8 +130,8 @@ module Carto
         end
 
         describe CreatedMap do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -241,8 +242,8 @@ module Carto
         end
 
         describe AppliedSql do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -350,8 +351,8 @@ module Carto
         end
 
         describe AppliedCartocss do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -454,8 +455,8 @@ module Carto
         end
 
         describe ModifiedStyleForm do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -575,8 +576,8 @@ module Carto
         end
 
         describe DeletedMap do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -669,8 +670,8 @@ module Carto
         end
 
         describe PublishedMap do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -764,8 +765,8 @@ module Carto
         end
 
         describe CompletedConnection do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           let(:connection) do
             {
@@ -850,8 +851,8 @@ module Carto
         end
 
         describe FailedConnection do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           let(:connection) do
             {
@@ -934,8 +935,8 @@ module Carto
         end
 
         describe ExceededQuota do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -1000,8 +1001,8 @@ module Carto
         end
 
         describe ScoredTrendingMap do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -1108,8 +1109,8 @@ module Carto
         end
 
         describe VisitedPrivatePage do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           it 'reports' do
             event = @event_class.new(@user.id, user_id: @user.id, page: 'dashboard')
@@ -1129,8 +1130,8 @@ module Carto
         end
 
         describe CreatedDataset do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -1240,8 +1241,8 @@ module Carto
         end
 
         describe DeletedDataset do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -1334,8 +1335,8 @@ module Carto
         end
 
         describe CreatedAnalysis do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           let(:analysis) do
             {
@@ -1456,8 +1457,8 @@ module Carto
         end
 
         describe ModifiedAnalysis do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           let(:analysis) do
             {
@@ -1606,8 +1607,8 @@ module Carto
         end
 
         describe DeletedAnalysis do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           let(:analysis) do
             {
@@ -1728,8 +1729,8 @@ module Carto
         end
 
         describe DownloadedLayer do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -1856,8 +1857,8 @@ module Carto
         end
 
         describe DraggedNode do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -1886,8 +1887,8 @@ module Carto
         end
 
         describe CreatedLayer do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -1963,8 +1964,8 @@ module Carto
         end
 
         describe StyledByValue do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -2039,8 +2040,8 @@ module Carto
         end
 
         describe ChangedDefaultGeometry do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -2069,8 +2070,8 @@ module Carto
         end
 
         describe AggregatedGeometries do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -2145,8 +2146,8 @@ module Carto
         end
 
         describe UsedAdvancedMode do
-          before (:all) { @event_class = self.class.description.constantize }
-          after  (:all) { @event_class = nil }
+          before(:all) { @event_class = self.class.description.constantize }
+          after(:all) { @event_class = nil }
 
           describe '#properties validation' do
             after(:each) do
@@ -2202,6 +2203,7 @@ module Carto
           end
         end
       end
+
     end
   end
 end

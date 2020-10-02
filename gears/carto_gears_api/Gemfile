@@ -1,4 +1,4 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
 # Declare your gem's dependencies in carto_gears_api.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
@@ -14,8 +14,8 @@ gemspec
 # gem 'debugger'
 
 group :test do
-  gem "rspec-rails", '2.12.0'
-  gem "rack-test", '0.6.3'
-  gem "mocha", '1.1.0'
-  gem "byebug"
+  gem 'byebug'
+  gem 'mocha', '1.1.0'
+  gem 'rack-test', '0.6.3'
+  gem 'rspec-rails', '2.12.0'
 end

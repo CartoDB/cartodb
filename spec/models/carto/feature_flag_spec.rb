@@ -1,7 +1,6 @@
 require_relative '../../spec_helper_min'
 
 describe Carto::FeatureFlag do
-
   let(:restricted_feature_flag) { create(:feature_flag, :restricted) }
   let(:not_restricted_feature_flag) { create(:feature_flag, :not_restricted) }
 

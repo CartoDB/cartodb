@@ -1,11 +1,12 @@
 module VisualizationControllerHelper
+
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
 
   TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
 
-  DATE_ATTRIBUTES = %w{ created_at updated_at }.freeze
+  DATE_ATTRIBUTES = %w{created_at updated_at}.freeze
   NORMALIZED_ASSOCIATION_ATTRIBUTES = {
     attributes: DATE_ATTRIBUTES,
     associations: {
@@ -55,29 +56,29 @@ module VisualizationControllerHelper
   # we allow some differences:
   # - x to many associations can return [] instead of nil
   def normalize_hash(h, normalized_attributes = NORMALIZED_ASSOCIATION_ATTRIBUTES)
-    h.each { |k, v|
+    h.each do |k, v|
       h[k] = nil if v == []
       h[k] = '' if normalized_attributes[:attributes].include?(k)
       if normalized_attributes[:associations].keys.include?(k)
         normalize_hash(v, normalized_attributes[:associations][k])
       end
-    }
+    end
   end
 
   # INFO: this test uses comparison against old data structures to check validity.
   # You can use this method to remove that new data so next comparisons will work.
   def remove_data_only_in_new_controllers(visualization_hash, new_attributes = NEW_ATTRIBUTES)
-    visualization_hash.each { |k, v|
+    visualization_hash.each do |k, v|
       if new_attributes[:attributes].include?(k)
         removed = visualization_hash.delete(k)
       elsif new_attributes[:associations].include?(k)
         remove_data_only_in_new_controllers(v, new_attributes[:associations][k])
       end
-    }
+    end
   end
 
   def login(user)
-    login_as(user, {scope: user.username })
+    login_as(user, { scope: user.username })
     host! "#{user.username}.localhost.lan"
   end
 
@@ -111,7 +112,7 @@ module VisualizationControllerHelper
   def test_organization
     organization = Organization.new
     organization.name = unique_name('org')
-    organization.quota_in_bytes = 1234567890
+    organization.quota_in_bytes = 1_234_567_890
     organization.seats = 5
     organization.builder_enabled = false
     organization
@@ -119,11 +120,12 @@ module VisualizationControllerHelper
 
   def create_geometry_table(user, the_geom)
     table = new_table(privacy: UserTable::PRIVACY_PUBLIC, user_id: user.id)
-    table.force_schema = "the_geom geometry"
-    table.the_geom_type = "point"
+    table.force_schema = 'the_geom geometry'
+    table.the_geom_type = 'point'
     table.save.reload
     table.insert_row!(the_geom: the_geom)
     table.update_bounding_box
     table
   end
+
 end

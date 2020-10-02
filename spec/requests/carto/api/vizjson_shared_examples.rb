@@ -26,7 +26,7 @@ shared_examples_for 'vizjson generator' do
       @api_key = @user_1.api_key
       @user_2 = FactoryGirl.create(:valid_user)
 
-      @headers = { 'CONTENT_TYPE'  => 'application/json' }
+      @headers = { 'CONTENT_TYPE' => 'application/json' }
       host! "#{@user_1.subdomain}.localhost.lan"
     end
 
@@ -88,10 +88,10 @@ shared_examples_for 'vizjson generator' do
       # Share vis with user_2 in readonly (vis can never be shared in readwrite)
       put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_vis_1_perm_id),
           { acl: [{
-                   type: CartoDB::Permission::TYPE_USER,
-                   entity: { id:   user_2.id },
-                   access: CartoDB::Permission::ACCESS_READONLY
-                  }] }.to_json, http_json_headers
+            type: CartoDB::Permission::TYPE_USER,
+            entity: { id: user_2.id },
+            access: CartoDB::Permission::ACCESS_READONLY
+          }] }.to_json, http_json_headers
       last_response.status.should == 200
 
       # privacy private checks
@@ -190,7 +190,7 @@ shared_examples_for 'vizjson generator' do
       viz_id = viz.id
       get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: valid_callback), {}, @headers
       last_response.status.should == 200
-      (last_response.body =~ /^(\/\*\*\/)?#{valid_callback}\(\{/i).should eq 0
+      (last_response.body =~ %r{^(/\*\*/)?#{valid_callback}\(\{}i).should eq 0
 
       get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
       last_response.status.should == 400
@@ -207,7 +207,7 @@ shared_examples_for 'vizjson generator' do
 
       get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: valid_callback2), {}, @headers
       last_response.status.should == 200
-      (last_response.body =~ /^(\/\*\*\/)?#{valid_callback2}\(\{/i).should eq 0
+      (last_response.body =~ %r{^(/\*\*/)?#{valid_callback2}\(\{}i).should eq 0
 
       get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key), {}, @headers
       last_response.status.should == 200
@@ -223,7 +223,7 @@ shared_examples_for 'vizjson generator' do
       it 'renders vizjson vx' do
         viz = api_visualization_creation(@user_1, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
         get api_vx_visualizations_vizjson_url(id: viz.id, api_key: @api_key),
-          {}, @headers
+            {}, @headers
         last_response.status.should == 200
         ::JSON.parse(last_response.body).keys.length.should > 1
       end
@@ -248,7 +248,7 @@ shared_examples_for 'vizjson generator' do
         last_response.status.should == 404
       end
 
-      it "comes with proper surrogate-key" do
+      it 'comes with proper surrogate-key' do
         Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
@@ -292,11 +292,11 @@ shared_examples_for 'vizjson generator' do
         last_response.status.should == 200
 
         # Set the attributions of the tables to check that they are included in the viz.json
-        table1_visualization = Carto::Visualization.find(table1["table_visualization"][:id])
+        table1_visualization = Carto::Visualization.find(table1['table_visualization'][:id])
         table1_visualization.update_attribute(:attributions, 'attribution1')
-        table2_visualization = Carto::Visualization.find(table2["table_visualization"][:id])
+        table2_visualization = Carto::Visualization.find(table2['table_visualization'][:id])
         table2_visualization.update_attribute(:attributions, 'attribution2')
-        table3_visualization = Carto::Visualization.find(table3["table_visualization"][:id])
+        table3_visualization = Carto::Visualization.find(table3['table_visualization'][:id])
         table3_visualization.update_attribute(:attributions, '')
 
         visualization = JSON.parse(last_response.body)
@@ -332,11 +332,11 @@ shared_examples_for 'vizjson generator' do
         last_response.status.should eq 200
 
         # Set the attributions of the tables to check that they are included in the viz.json
-        table1_visualization = Carto::Visualization.find(table1["table_visualization"][:id])
+        table1_visualization = Carto::Visualization.find(table1['table_visualization'][:id])
         table1_visualization.update_attribute(:attributions, 'attribution1')
-        table2_visualization = Carto::Visualization.find(table2["table_visualization"][:id])
+        table2_visualization = Carto::Visualization.find(table2['table_visualization'][:id])
         table2_visualization.update_attribute(:attributions, 'attribution2')
-        table3_visualization = Carto::Visualization.find(table3["table_visualization"][:id])
+        table3_visualization = Carto::Visualization.find(table3['table_visualization'][:id])
         table3_visualization.update_attribute(:attributions, '')
 
         visualization = JSON.parse(last_response.body)
@@ -375,9 +375,9 @@ shared_examples_for 'vizjson generator' do
         last_response.status.should == 200
         visualization = JSON.parse(last_response.body)
 
-        table1_visualization = Carto::Visualization.find(table1["table_visualization"][:id])
+        table1_visualization = Carto::Visualization.find(table1['table_visualization'][:id])
         table1_visualization.update_attribute(:attributions, table_1_attribution)
-        table2_visualization = Carto::Visualization.find(table2["table_visualization"][:id])
+        table2_visualization = Carto::Visualization.find(table2['table_visualization'][:id])
         table2_visualization.update_attribute(:attributions, 'attribution 2')
 
         # Call to cache the vizjson after generating it
@@ -426,7 +426,7 @@ shared_examples_for 'vizjson generator' do
       get api_vx_visualizations_vizjson_url(id: @visualization.id, api_key: @api_key), {}, http_json_headers
       last_response.status.should eq 200
       visualization = JSON.parse(last_response.body)
-      basemap_layer = visualization["layers"][0]
+      basemap_layer = visualization['layers'][0]
       basemap_layer['type'].should eq @visualization.map.base_layers.first.kind
       basemap_layer['kind'].should be_nil
     end

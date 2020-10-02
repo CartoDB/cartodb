@@ -1,4 +1,3 @@
-
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
 
@@ -118,7 +117,7 @@ describe Carto::App::VisualizationsController do
       post app_password_protected_url(id: @app.id), password: 'test'
 
       response.status.should eq 200
-      response.body.scan(/<body>test<\/body>/).present?.should == true
+      response.body.scan(%r{<body>test</body>}).present?.should == true
       response.headers.include?('X-Frame-Options').should == false
     end
   end

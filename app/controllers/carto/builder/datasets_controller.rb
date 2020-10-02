@@ -5,6 +5,7 @@ require_dependency 'carto/tracking/events'
 module Carto
   module Builder
     class DatasetsController < BuilderController
+
       include VisualizationsControllerHelper
 
       ssl_required :show
@@ -23,7 +24,8 @@ module Carto
 
       def show
         @canonical_visualization_data = Carto::Api::VisualizationPresenter.new(
-          @canonical_visualization, current_viewer, self).to_poro
+          @canonical_visualization, current_viewer, self
+        ).to_poro
         @user_table_data = Carto::Api::UserTablePresenter.new(
           @user_table, current_viewer
         ).to_poro(accessible_dependent_derived_maps: true, context: self)
@@ -77,6 +79,7 @@ module Carto
                                                         user_id: current_viewer_id,
                                                         page: 'dataset').report
       end
+
     end
   end
 end

@@ -1,4 +1,5 @@
 module Carto::MultifactorAuthentication
+
   MULTIFACTOR_AUTHENTICATION_ENABLED = 'enabled'.freeze
   MULTIFACTOR_AUTHENTICATION_DISABLED = 'disabled'.freeze
   MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP = 'setup'.freeze
@@ -20,4 +21,5 @@ module Carto::MultifactorAuthentication
       MULTIFACTOR_AUTHENTICATION_DISABLED
     end
   end
+
 end

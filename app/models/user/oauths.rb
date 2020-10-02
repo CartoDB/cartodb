@@ -1,4 +1,3 @@
-
 module CartoDB
   # This class encapsulates access to synchronization_oauths from the outside
   class OAuths
@@ -7,23 +6,23 @@ module CartoDB
     # @param owner_user ::User
     def initialize(owner_user)
       @owner = owner_user
-    end #initialize
+    end # initialize
 
     def all
       @owner.synchronization_oauths
-    end #all
+    end # all
 
     # @param service string
     # @return SynchronizationOauth
     def select(service)
       SynchronizationOauth.where(service: service, user_id: @owner.id).first
-    end #select
+    end # select
 
     def add(service, token)
       new_oauth = SynchronizationOauth.create(
-          user_id:  @owner.id,
-          service:  service,
-          token:    token
+        user_id: @owner.id,
+        service: service,
+        token: token
       )
       @owner.add_synchronization_oauth(new_oauth)
       self
@@ -36,5 +35,5 @@ module CartoDB
       self
     end
 
-  end #OAuths
-end #CartoDB
+  end # OAuths
+end # CartoDB

@@ -1,4 +1,5 @@
 module NamedMapsHelper
+
   def bypass_named_maps
     Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
   end
@@ -12,4 +13,5 @@ module NamedMapsHelper
 
     Carto::NamedMaps::Api.any_instance.stubs(http_client: mocked_http_client, show: nil)
   end
+
 end

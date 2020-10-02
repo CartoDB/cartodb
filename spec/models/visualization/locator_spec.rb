@@ -12,8 +12,7 @@ require_relative '../../doubles/support_tables.rb'
 include CartoDB
 
 describe Visualization::Locator do
-
-  UUID = 'db0dfb0c-a944-11e3-a51e-30f9edfe5da6'
+  UUID = 'db0dfb0c-a944-11e3-a51e-30f9edfe5da6'.freeze
 
   before(:each) do
     support_tables_mock = Doubles::Visualization::SupportTables.new
@@ -26,7 +25,7 @@ describe Visualization::Locator do
     @db = SequelRails.connection
     Sequel.extension(:pagination)
 
-    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     @user_id = Carto::UUIDHelper.random_uuid
 
@@ -36,19 +35,19 @@ describe Visualization::Locator do
     @user_mock = create_mocked_user
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
-    @visualization  = Visualization::Member.new(
+    @visualization = Visualization::Member.new(
       {
-      name:         'Visualization 1',
-      description:  'A sample visualization',
-      privacy:      'public',
-      type:         'derived',
-      map_id:       UUID,
-      id:           @map_id,
-      user_id:      @user_id
+        name: 'Visualization 1',
+        description: 'A sample visualization',
+        privacy: 'public',
+        type: 'derived',
+        map_id: UUID,
+        id: @map_id,
+        user_id: @user_id
       }
     ).store
 
-    user_fake     = model_fake(@map_id, @user_id)
+    user_fake = model_fake(@map_id, @user_id)
 
     @subdomain    = 'bogus'
     @locator      = Visualization::Locator.new(user_fake)
@@ -56,7 +55,7 @@ describe Visualization::Locator do
 
   describe '#get' do
     it 'fetches a Visualization::Member if passed an UUID' do
-      rehydrated  = @locator.get(@visualization.id, @subdomain).first
+      rehydrated = @locator.get(@visualization.id, @subdomain).first
 
       rehydrated.name.should == @visualization.name
       rehydrated.description.should_not be_nil
@@ -64,14 +63,14 @@ describe Visualization::Locator do
 
     it 'fetches a Visualization::Member if passed a visualization name' do
       Visualization::Collection.any_instance.stubs(:user_shared_vis).returns([])
-      rehydrated  = @locator.get(@visualization.name, @subdomain).first
+      rehydrated = @locator.get(@visualization.name, @subdomain).first
 
       rehydrated.id.should == @visualization.id
       rehydrated.description.should_not be_nil
     end
 
     it 'fetches a Table if passed a table id' do
-      user = create_user(quota_in_bytes: 1234567890, table_quota: 10)
+      user = create_user(quota_in_bytes: 1_234_567_890, table_quota: 10)
       user.stubs(:invalidate_varnish_cache).returns(nil)
       table = Table.new
       table.user_id = user.id
@@ -91,13 +90,15 @@ describe Visualization::Locator do
       Visualization::Collection.any_instance.stubs(:user_shared_vis).returns([])
       @locator.get('220d2f46-b371-11e4-93f7-080027880ca6', @subdomain).should == [nil, nil]
     end
-  end #get
+  end # get
 
-  def model_fake(map_id=nil, user_id=UUID)
+  def model_fake(_map_id=nil, user_id=UUID)
     model_klass = Object.new
 
     class << model_klass
+
       attr_accessor :id
+
     end
     model_klass.id = user_id
 
@@ -106,12 +107,12 @@ describe Visualization::Locator do
       [OpenStruct.new(
         maps: [OpenStruct.new(id: UUID)],
         id: id
-       )]
+      )]
     end
 
     def model_klass.called_filter
       @called_filter
     end
     model_klass
-  end #model_fake
+  end # model_fake
 end # Visualization::Locator

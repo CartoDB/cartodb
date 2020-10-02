@@ -11,7 +11,7 @@ include CartoDB::Importer2
 
 describe 'SQL regression tests' do
   include AcceptanceHelpers
-  include_context "cdb_importer schema"
+  include_context 'cdb_importer schema'
 
   it 'imports SQL files' do
     pending 'SQL Loader still disabled'
@@ -21,7 +21,7 @@ describe 'SQL regression tests' do
                                pg: @pg_options,
                                downloader: downloader,
                                log: Doubles::Log.new,
-                               user:Doubles::User.new
+                               user: Doubles::User.new
                              })
     runner.run
 
@@ -29,6 +29,4 @@ describe 'SQL regression tests' do
     result.success?.should be_true, "error code: #{result.error_code}, trace: #{result.log_trace}"
     geometry_type_for(runner).should be
   end
-
 end # SQL regression tests
- 

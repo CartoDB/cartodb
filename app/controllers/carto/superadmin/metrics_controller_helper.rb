@@ -4,6 +4,7 @@ require_dependency 'carto/metrics/twitter_imports_retriever'
 
 module Carto::Superadmin
   module MetricsControllerHelper
+
     USAGE_METRICS_CLASSES = [
       CartoDB::GeocoderUsageMetrics,
       CartoDB::IsolinesUsageMetrics,
@@ -23,6 +24,7 @@ module Carto::Superadmin
     def get_usage(user, org, last_billing_cycle)
       only_services = params[:services] || []
       raise ArgumentError.new('services must be an array') unless only_services.is_a?(Array)
+
       only_services = only_services.map(&:to_sym)
       date_to = params[:to] ? Date.parse(params[:to]) : Date.today
       date_from = params[:from] ? Date.parse(params[:from]) : last_billing_cycle
@@ -43,5 +45,6 @@ module Carto::Superadmin
 
       usage
     end
+
   end
 end

@@ -1,7 +1,7 @@
 class AddEnabledFieldToUsersMigration < Sequel::Migration
 
   def up
-    add_column :users, :enabled, :boolean, :default => false
+    add_column :users, :enabled, :boolean, default: false
   end
 
   def down

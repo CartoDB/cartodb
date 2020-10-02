@@ -1,6 +1,7 @@
 require_relative './carto_json_serializer'
 
 class Carto::Widget < ActiveRecord::Base
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
@@ -55,6 +56,7 @@ class Carto::Widget < ActiveRecord::Base
 
   def analysis_node
     return nil unless source_id
+
     analysis_nodes = visualization.analyses.map(&:analysis_node)
     analysis_nodes.lazy.map { |node| node.find_by_id(source_id) }.find { |node| node }
   end
@@ -90,12 +92,11 @@ class Carto::Widget < ActiveRecord::Base
   end
 
   def valid_source_id
-    unless source_id.is_a?(String) && source_id =~ /^\w*$/
-      errors.add(:source_id, "Source id must be a string")
-    end
+    errors.add(:source_id, 'Source id must be a string') unless source_id.is_a?(String) && source_id =~ /^\w*$/
   end
 
   def user
     @user ||= layer.nil? ? nil : layer.user
   end
+
 end

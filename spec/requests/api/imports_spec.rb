@@ -1,7 +1,6 @@
 require 'spec_helper'
 
-describe "Imports API" do
-
+describe 'Imports API' do
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
   end
@@ -20,11 +19,11 @@ describe "Imports API" do
     { user_domain: @user.username, api_key: @user.api_key }
   end
 
-  let(:params) { { :api_key => @user.api_key } }
+  let(:params) { { api_key: @user.api_key } }
 
   it 'performs asynchronous imports' do
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post api_v1_imports_create_url(params.merge(table_name: "wadus")), filename: f
+    post api_v1_imports_create_url(params.merge(table_name: 'wadus')), filename: f
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)
@@ -32,13 +31,13 @@ describe "Imports API" do
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
     table = UserTable[last_import.table_id]
-    table.name.should == "column_number_to_boolean"
-    table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
+    table.name.should == 'column_number_to_boolean'
+    table.map.data_layers.first.options['table_name'].should == 'column_number_to_boolean'
   end
 
   it 'performs asynchronous imports (file parameter, used in API docs)' do
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
-    post api_v1_imports_create_url(params.merge(table_name: "wadus")), file: f
+    post api_v1_imports_create_url(params.merge(table_name: 'wadus')), file: f
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)
@@ -46,15 +45,15 @@ describe "Imports API" do
     last_import = DataImport[response_json['item_queue_id']]
     last_import.state.should be == 'complete'
     table = UserTable[last_import.table_id]
-    table.name.should == "column_number_to_boolean"
-    table.map.data_layers.first.options["table_name"].should == "column_number_to_boolean"
+    table.name.should == 'column_number_to_boolean'
+    table.map.data_layers.first.options['table_name'].should == 'column_number_to_boolean'
   end
 
   it 'performs asynchronous url imports' do
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
-      post api_v1_imports_create_url(params.merge(:url        => url,
-                                       :table_name => "wadus"))
+      post api_v1_imports_create_url(params.merge(url: url,
+                                                  table_name: 'wadus'))
     end
 
     response.code.should be == '200'
@@ -65,7 +64,7 @@ describe "Imports API" do
   end
 
   pending 'appends data to an existing table' do
-    @table = FactoryGirl.create(:table, :user_id => @user.id)
+    @table = FactoryGirl.create(:table, user_id: @user.id)
 
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
     post api_v1_imports_create_url(params.merge(table_id: @table.id, append: true)),
@@ -83,12 +82,12 @@ describe "Imports API" do
 
   it 'duplicates a table' do
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
     @table_from_import = UserTable.all.last.service
 
-    post api_v1_imports_create_url(params.merge(:table_name => 'wadus_copy__copy',
-                                     :table_copy => @table_from_import.name))
+    post api_v1_imports_create_url(params.merge(table_name: 'wadus_copy__copy',
+                                                table_copy: @table_from_import.name))
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)
@@ -103,21 +102,21 @@ describe "Imports API" do
 
   it 'detects lat/long columns and produces a the_geom column from them' do
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
     @table_from_import = UserTable.all.last.service
 
-    @table_from_import.geometry_types.should == ["ST_Point"]
+    @table_from_import.geometry_types.should == ['ST_Point']
     @table_from_import.record(1)[:the_geom].should == '{"type":"Point","coordinates":[16.5607329,48.1199611]}'
   end
 
   it 'duplicates a table without geometries' do
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'))
 
     @table_from_import = UserTable.all.last.service
 
-    post api_v1_imports_create_url(params.merge(:table_name => 'wadus_copy__copy',
-                                     :table_copy => @table_from_import.name))
+    post api_v1_imports_create_url(params.merge(table_name: 'wadus_copy__copy',
+                                                table_copy: @table_from_import.name))
 
     response.code.should be == '200'
     response_json = JSON.parse(response.body)
@@ -135,7 +134,7 @@ describe "Imports API" do
 
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file(Rails.root.join('spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip')) do |url|
-      post api_v1_imports_create_url(params.merge(url: url, table_name: "wadus"))
+      post api_v1_imports_create_url(params.merge(url: url, table_name: 'wadus'))
 
       response.code.should be == '200'
 
@@ -159,8 +158,8 @@ describe "Imports API" do
     # This file contains 6 data sources
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
-      post api_v1_imports_create_url, params.merge(:url        => url,
-                                       :table_name => "wadus")
+      post api_v1_imports_create_url, params.merge(url: url,
+                                                   table_name: 'wadus')
     end
     response.code.should be == '200'
     last_import = DataImport.order(Sequel.desc(:updated_at)).first
@@ -175,8 +174,8 @@ describe "Imports API" do
     @user.update quota_in_bytes: 1000, table_quota: 200
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
-      post api_v1_imports_create_url, params.merge(:url        => url,
-                                       :table_name => "wadus")
+      post api_v1_imports_create_url, params.merge(url: url,
+                                                   table_name: 'wadus')
     end
     response.code.should be == '200'
     last_import = DataImport.order(Sequel.desc(:updated_at)).first
@@ -189,14 +188,14 @@ describe "Imports API" do
     @user.update table_quota: 1, quota_in_bytes: 100.megabytes
 
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
 
     @table_from_import = UserTable.all.last.service
     last_import = DataImport.order(Sequel.desc(:updated_at)).first
     last_import.state.should be == 'complete', "Import failure: #{last_import.log}"
 
-    post api_v1_imports_create_url, params.merge(:table_name => 'wadus_copy__copy',
-                                      :table_copy => @table_from_import.name)
+    post api_v1_imports_create_url, params.merge(table_name: 'wadus_copy__copy',
+                                                 table_copy: @table_from_import.name)
 
     response.code.should be == '200'
     last_import = DataImport.order(Sequel.desc(:updated_at)).first
@@ -209,7 +208,7 @@ describe "Imports API" do
     @user.update table_quota: nil
 
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
     @table_from_import = UserTable.all.last.service
 
@@ -221,7 +220,7 @@ describe "Imports API" do
 
   it 'updates tables_created_count upon finished import' do
     post api_v1_imports_create_url,
-        params.merge(:filename => upload_file('spec/support/data/zipped_ab.zip', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/zipped_ab.zip', 'application/octet-stream'))
 
     response.code.should be == '200'
     last_import = DataImport.order(Sequel.desc(:updated_at)).first
@@ -238,7 +237,7 @@ describe "Imports API" do
     CartoDB::PlatformLimits::Importer::TableRowCount.any_instance.expects(:get).returns(5)
 
     post api_v1_imports_create_url,
-         params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
     response.code.should be == '200'
     last_import = DataImport.order(Sequel.desc(:updated_at)).first
@@ -251,9 +250,9 @@ describe "Imports API" do
   it 'keeps api_key grants for replaced tables' do
     # imports two files
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
     post api_v1_imports_create_url,
-      params.merge(:filename => upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'))
+         params.merge(filename: upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'))
 
     # get the last one
     @table_from_import = UserTable.all.last.service
@@ -261,27 +260,27 @@ describe "Imports API" do
     # creates an api_key for both files
     grants = [
       {
-        type: "apis",
-        apis: ["sql", "maps"]
+        type: 'apis',
+        apis: ['sql', 'maps']
       },
       {
-        type: "database",
+        type: 'database',
         tables: [
           {
             schema: @user.database_schema,
             name: 'csv_with_lat_lon',
             permissions: [
-              "insert",
-              "select",
-              "update",
-              "delete"
+              'insert',
+              'select',
+              'update',
+              'delete'
             ]
           },
           {
             schema: @user.database_schema,
             name: 'csv_with_number_columns',
             permissions: [
-              "select"
+              'select'
             ]
           }
         ]
@@ -296,10 +295,10 @@ describe "Imports API" do
 
     # replace the file
     post api_v1_imports_create_url,
-      params.merge(
-        :filename => upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'),
-        :collision_strategy => 'overwrite'
-      )
+         params.merge(
+           filename: upload_file('spec/support/data/csv_with_number_columns.csv', 'application/octet-stream'),
+           collision_strategy: 'overwrite'
+         )
 
     # gets the api_keys
     get_json api_key_url(id: 'wadus'), auth_params, http_json_headers do |response|
@@ -307,5 +306,4 @@ describe "Imports API" do
       response.body[:grants][1][:tables][1][:name] = @table_from_import
     end
   end
-
 end

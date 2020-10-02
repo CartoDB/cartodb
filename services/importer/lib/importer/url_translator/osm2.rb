@@ -4,18 +4,20 @@ module CartoDB
   module Importer2
     module UrlTranslator
       class OSM2
-        URL_REGEX               = %r{openstreetmap.org/#map=}
+
+        URL_REGEX = %r{openstreetmap.org/#map=}.freeze
         # New format as of Feb2014
-        URL_REGEX2               = %r{openstreetmap.org/export#map=}
-        TRANSLATED_URL_REGEX    = /api.openstreetmap.org/
-        URL_TEMPLATE  = 'http://api.openstreetmap.org/api/0.6/map?bbox='
-        DEFW = 1200.0/2.0
-        DEFH = 1000.0/2.0
+        URL_REGEX2 = %r{openstreetmap.org/export#map=}.freeze
+        TRANSLATED_URL_REGEX = /api.openstreetmap.org/.freeze
+        URL_TEMPLATE = 'http://api.openstreetmap.org/api/0.6/map?bbox='.freeze
+        DEFW = 1200.0 / 2.0
+        DEFH = 1000.0 / 2.0
 
         def translate(url)
-          return url if !supported?(url) || translated?(url) 
+          return url if !supported?(url) || translated?(url)
+
           "#{URL_TEMPLATE}#{bounding_box_for(url)}"
-        end #translate
+        end # translate
 
         def bounding_box_for(url)
           url_pieces = url.split('/')
@@ -38,25 +40,23 @@ module CartoDB
           lat2  = (res * upy) - 90
 
           [lon1, lat1, lon2, lat2].join(',')
-        end #bounding_box_for
+        end # bounding_box_for
 
         def supported?(url)
           !!(url =~ URL_REGEX2) || !!(url =~ URL_REGEX)
-        end #supported?
+        end # supported?
 
         def translated?(url)
           !!(url =~ TRANSLATED_URL_REGEX)
-        end #translated?
+        end # translated?
 
         private
 
         def is_old_format?(url)
           !!(url =~ URL_REGEX)
-        end #is_old_format?
+        end # is_old_format?
 
-
-      end #OSM2
+      end # OSM2
     end # UrlTranslator
   end # Importer2
 end # CartoDB
-

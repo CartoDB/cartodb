@@ -15,6 +15,7 @@ require_relative '../helpers/quota_check_helpers'
 module CartoDB
   module Importer2
     class Runner
+
       include CartoDB::Importer2::QuotaCheckHelpers
       include CartoDB::Importer2::RunnerHelper
       include ::LoggerHelper
@@ -23,10 +24,10 @@ module CartoDB
       # e.g. a Shapefile shrinks after import. This won't help in scenarios like CSVs (which tend to grow)
       QUOTA_MAGIC_NUMBER      = 0.3
 
-      DEFAULT_AVAILABLE_QUOTA = 2 ** 30
-      LOADERS                 = [Loader, TiffLoader]
+      DEFAULT_AVAILABLE_QUOTA = 2**30
+      LOADERS                 = [Loader, TiffLoader].freeze
       DEFAULT_LOADER          = Loader
-      UNKNOWN_ERROR_CODE      = 99999
+      UNKNOWN_ERROR_CODE      = 99_999
 
       # Hard-limit on number of spawned tables (zip files, KMLs and so on)
       MAX_TABLES_PER_IMPORT = 10
@@ -48,14 +49,14 @@ module CartoDB
       # @throws KeyError
       def initialize(options={})
         @loader = nil
-        @pg_options          = options.fetch(:pg)
-        @log                 = options.fetch(:log, nil) || new_logger
-        @job                 = options.fetch(:job, nil) || new_job(log, pg_options)
-        @downloader          = options.fetch(:downloader)
+        @pg_options = options.fetch(:pg)
+        @log = options.fetch(:log, nil) || new_logger
+        @job = options.fetch(:job, nil) || new_job(log, pg_options)
+        @downloader = options.fetch(:downloader)
 
         @user = options.fetch(:user, nil)
         @available_quota = @user&.remaining_quota || DEFAULT_AVAILABLE_QUOTA
-        @unpacker            = options.fetch(:unpacker, nil) || Unp.new
+        @unpacker = options.fetch(:unpacker, nil) || Unp.new
         @post_import_handler = options.fetch(:post_import_handler, nil)
         @importer_config = options.fetch(:importer_config, nil)
         @importer_stats = CartoDB::Stats::Importer.instance
@@ -63,17 +64,15 @@ module CartoDB
         @import_file_limit = limit_instances.fetch(:import_file_size_instance, input_file_size_limit_instance(@user))
         @table_row_count_limit =
           limit_instances.fetch(:table_row_count_limit_instance, table_row_count_limit_instance(@user, @job.db))
-        @loader_options      = {}
-        @results             = []
-        @stats               = []
+        @loader_options = {}
+        @results = []
+        @stats = []
         @warnings = {}
         @visualizations = []
         @collision_strategy = options[:collision_strategy]
       end
 
-      def loader_options=(value)
-        @loader_options = value
-      end
+      attr_writer :loader_options
 
       def set_importer_stats_host_info(queue_id)
         @importer_stats.set_host_info(queue_id)
@@ -102,27 +101,27 @@ module CartoDB
         tracker.call('uploading')
         @downloader.multi_resource_import_supported? ? multi_resource_import : single_resource_import
         self
-      rescue StandardError => exception
+      rescue StandardError => e
         # Delete job temporary table from cdb_importer schema
         delete_job_table
 
-        log.append "Errored importing data:"
-        log.append "#{exception.class.to_s}: #{exception.to_s}", truncate=false
+        log.append 'Errored importing data:'
+        log.append "#{e.class}: #{e}", truncate = false
         log.append '----------------------------------------------------'
-        log.append exception.backtrace, truncate=false
+        log.append e.backtrace, truncate = false
         log.append '----------------------------------------------------'
-        @results.push(Result.new(error_code: error_for(exception.class), log_trace: report))
+        @results.push(Result.new(error_code: error_for(e.class), log_trace: report))
       end
 
       def report
-        "Log Report: #{log.to_s}"
+        "Log Report: #{log}"
       end
 
       def loader_for(source_file)
         loaders = LOADERS
-        loaders.find(DEFAULT_LOADER) { |loader_klass|
+        loaders.find(DEFAULT_LOADER) do |loader_klass|
           loader_klass.supported?(source_file.extension)
-        }
+        end
       end
 
       def remote_data_updated?
@@ -143,7 +142,7 @@ module CartoDB
 
       # If not specified, fake
       def tracker
-        @tracker || lambda { |state| state }
+        @tracker || ->(state) { state }
       end
 
       attr_reader :results, :log, :loader, :stats, :downloader, :warnings, :visualizations
@@ -175,7 +174,7 @@ module CartoDB
 
           @importer_stats.timing('file_size_limit_check') do
             if hit_platform_file_size_limit?(source_file, downloader)
-              raise CartoDB::Importer2::FileTooBigError.new("#{source_file.fullpath}")
+              raise CartoDB::Importer2::FileTooBigError.new(source_file.fullpath.to_s)
             end
           end
         end
@@ -187,7 +186,7 @@ module CartoDB
 
         @importer_stats.timing('table_row_count_limits') do
           if hit_platform_table_row_count_limit?(@job)
-            raise CartoDB::Importer2::TooManyTableRowsError.new("#{@job.table_name}")
+            raise CartoDB::Importer2::TooManyTableRowsError.new(@job.table_name.to_s)
           end
         end
 
@@ -195,7 +194,7 @@ module CartoDB
 
         @job.success_status = true
         @results.push(result_for(@job, source_file, loader.valid_table_names, loader.additional_support_tables))
-      rescue StandardError => exception
+      rescue StandardError => e
         if loader.nil?
           valid_table_names = []
           additional_support_tables = []
@@ -208,33 +207,34 @@ module CartoDB
         delete_job_table
 
         log_warning(
-          exception: exception, message: "Error importing data", table_name: @job.table_name,
+          exception: e, message: 'Error importing data', table_name: @job.table_name,
           error_detail: @job.logger.to_s, path: source_file.fullpath
         )
 
         @job.log "Errored importing data from #{source_file.fullpath}:"
-        @job.log "#{exception.class.to_s}: #{exception.to_s}", truncate=false
+        @job.log "#{e.class}: #{e}", truncate = false
         @job.log '----------------------------------------------------'
-        @job.log exception.backtrace, truncate=false
+        @job.log e.backtrace, truncate = false
         @job.log '----------------------------------------------------'
         @job.success_status = false
-        @results.push(result_for(@job, source_file, valid_table_names, additional_support_tables, exception.class))
+        @results.push(result_for(@job, source_file, valid_table_names, additional_support_tables, e.class))
       end
 
       def streamed_loader_run(job, loader, downloader)
-        job.log "Streaming import load"
+        job.log 'Streaming import load'
         loader.streamed_run_init
 
-        begin
+        loop do
           got_data = downloader.continue_run(available_quota)
           loader.streamed_run_continue(downloader.source_file) if got_data
-        end while got_data
+          break unless got_data
+        end
 
         loader.streamed_run_finish(@post_import_handler)
       end
 
       def file_based_loader_run(job, loader)
-        job.log "File-based import load"
+        job.log 'File-based import load'
         loader.run(@post_import_handler)
       end
 
@@ -246,12 +246,12 @@ module CartoDB
           end
 
           log.append "Starting import for #{@downloader.source_file.fullpath}"
-          log.store   # Checkpoint-save
+          log.store # Checkpoint-save
 
           # Leaving this limit check as if a compressed source weights too much we avoid even decompressing it
           @importer_stats.timing('file_size_limit_check') do
             if hit_platform_file_size_limit?(@downloader.source_file, @downloader)
-              raise CartoDB::Importer2::FileTooBigError.new("#{@downloader.source_file.fullpath}")
+              raise CartoDB::Importer2::FileTooBigError.new(@downloader.source_file.fullpath.to_s)
             end
           end
 
@@ -265,15 +265,14 @@ module CartoDB
             source_files = unpacker.source_files
 
             table_files = table_files(source_files)
-            if table_files.length > MAX_TABLES_PER_IMPORT
-              add_warning(max_tables_per_import: MAX_TABLES_PER_IMPORT)
-            end
+            add_warning(max_tables_per_import: MAX_TABLES_PER_IMPORT) if table_files.length > MAX_TABLES_PER_IMPORT
 
             table_files.each_with_index do |source_file, index|
               next if (index >= MAX_TABLES_PER_IMPORT) || !should_import?(source_file.name)
-              @job.new_table_name if (index > 0)
 
-              log.store   # Checkpoint-save
+              @job.new_table_name if index > 0
+
+              log.store # Checkpoint-save
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
               import_stats = execute_import(source_file, @downloader)
               @stats << import_stats
@@ -308,17 +307,17 @@ module CartoDB
       end
 
       def build_visualization_source_file(source_file)
-        json_export = File.open(source_file.fullpath, "r") { |file| file.read }
+        json_export = File.open(source_file.fullpath, 'r') { |file| file.read }
         Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
       end
 
       def multi_resource_import
-        log.append "Starting multi-resources import"
+        log.append 'Starting multi-resources import'
         # [ {:id, :title} ]
-        @downloader.item_metadata[:subresources].each_with_index { |subresource, index|
+        @downloader.item_metadata[:subresources].each_with_index do |subresource, index|
           @job.new_table_name if index > 0
 
-          log.store   # Checkpoint-save
+          log.store # Checkpoint-save
 
           @importer_stats.timing('subresource') do
             datasource = nil
@@ -328,13 +327,15 @@ module CartoDB
             @importer_stats.timing('datasource_metadata') do
               # TODO: Support sending user and options to the datasource factory
               datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
-                @downloader.datasource.class::DATASOURCE_NAME, nil, additional_config = {})
+                @downloader.datasource.class::DATASOURCE_NAME, nil, additional_config = {}
+              )
               item_metadata = datasource.get_resource_metadata(subresource[:id])
             end
 
             @importer_stats.timing('download') do
               subres_downloader = @downloader.class.new(
-                datasource, item_metadata, @downloader.options, @downloader.logger, @downloader.repository)
+                datasource, item_metadata, @downloader.options, @downloader.logger, @downloader.repository
+              )
 
               subres_downloader.run(available_quota)
               next unless remote_data_updated?
@@ -355,7 +356,7 @@ module CartoDB
               tracker.call('unpacking')
               source_file = subres_downloader.source_file
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
-              import_stats =  execute_import(source_file, subres_downloader)
+              import_stats = execute_import(source_file, subres_downloader)
               @stats << import_stats
             end
 
@@ -363,7 +364,7 @@ module CartoDB
               subres_downloader.clean_up
             end
           end
-        }
+        end
 
         @http_response_code = @downloader.http_response_code if @downloader.http_download?
       end
@@ -389,22 +390,23 @@ module CartoDB
       def result_for(job, source_file, table_names, support_table_names=[], exception_klass=nil)
         job.logger.store
         Result.new(
-          name:           source_file.name,
-          schema:         source_file.target_schema,
-          extension:      source_file.extension,
-          etag:           source_file.etag,
-          checksum:       source_file.checksum,
-          last_modified:  source_file.last_modified,
-          tables:         table_names,
-          success:        job.success_status,
-          error_code:     error_for(exception_klass),
-          log_trace:      job.logger.to_s,
+          name: source_file.name,
+          schema: source_file.target_schema,
+          extension: source_file.extension,
+          etag: source_file.etag,
+          checksum: source_file.checksum,
+          last_modified: source_file.last_modified,
+          tables: table_names,
+          success: job.success_status,
+          error_code: error_for(exception_klass),
+          log_trace: job.logger.to_s,
           support_tables: support_table_names
         )
       end
 
       def error_for(exception_klass=nil)
         return nil unless exception_klass
+
         errors_to_code_mapping.fetch(exception_klass, UNKNOWN_ERROR_CODE)
       end
 
@@ -415,14 +417,14 @@ module CartoDB
       def hit_platform_file_size_limit?(source_file, downloader=nil)
         # INFO: For Twitter imports skipping this check, as might be hit and we rather apply only row count
         # If more exceptions appear move inside Datasource base class so each decides if disables or not any limit
-        return false if (downloader && downloader.datasource.class.to_s == CartoDB::Datasources::Search::Twitter.to_s)
+        return false if downloader && downloader.datasource.class.to_s == CartoDB::Datasources::Search::Twitter.to_s
 
         file_size = File.size(source_file.fullpath)
         @import_file_limit.is_over_limit!(file_size)
       end
 
       def hit_platform_table_row_count_limit?(job)
-        @table_row_count_limit.is_over_limit!({ table_name: job.table_name, tables_schema: job.schema})
+        @table_row_count_limit.is_over_limit!({ table_name: job.table_name, tables_schema: job.schema })
       end
 
       def input_file_size_limit_instance(user)
@@ -443,6 +445,7 @@ module CartoDB
       def delete_job_table
         @job.delete_job_table
       end
+
     end
   end
 end

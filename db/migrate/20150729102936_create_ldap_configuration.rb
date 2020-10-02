@@ -1,6 +1,5 @@
 Sequel.migration do
-  def up
-  end
-  def down
-  end
+  def up; end
+
+  def down; end
 end

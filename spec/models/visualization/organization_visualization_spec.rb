@@ -14,7 +14,6 @@ describe Visualization::Member do
   end
 
   describe 'sharing tables and visualizations' do
-
     it 'should give read permission to table aka canonical visualization' do
       owner_table = create_table(@org_user_owner)
       carto_canonical_vis = owner_table.table_visualization
@@ -69,8 +68,6 @@ describe Visualization::Member do
       canonical_vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq false
       vis.has_permission?(@org_user_1, CartoDB::Visualization::Member::PERMISSION_READONLY).should eq true
     end
-
-
   end
 
   private
@@ -86,11 +83,11 @@ describe Visualization::Member do
     blender = Visualization::TableBlender.new(user, [table])
     map = blender.blend
     vis = Visualization::Member.new(
-        name:     'wadus_vis',
-        map_id:   map.id,
-        type:     Visualization::Member::TYPE_DERIVED,
-        privacy:  blender.blended_privacy,
-        user_id:  user.id
+      name: 'wadus_vis',
+      map_id: map.id,
+      type: Visualization::Member::TYPE_DERIVED,
+      privacy: blender.blended_privacy,
+      user_id: user.id
     )
     vis.store
 
@@ -120,77 +117,77 @@ describe Visualization::Member do
 
   def layer_params(table)
     {
-        :kind => "carto",
-        :options => {
-            :attribution => 'CartoDB',
-            :type => 'CartoDB',
-            :active => true,
-            :query => '',
-            :opacity => 0.99,
-            :interactivity => 'cartodb_id',
-            :interaction => true,
-            :debug => false,
-            :tiler_domain => 'localhost.lan',
-            :tiler_port => '8181',
-            :tiler_protocol => 'http',
-            :sql_api_domain => 'localhost.lan',
-            :sql_api_port => 8080,
-            :sql_api_protocol => 'http',
-            :extra_params => {
-                :cache_policy => 'persist',
-                :cache_buster => 1404930437358
-            },
-            :maxZoom => 28,
-            :auto_bound => false,
-            :visible => true,
-            :sql_domain => 'localhost.lan',
-            :sql_port => '80',
-            :sql_protocol => 'http',
-            :tile_style_history => ["##{table.name}{ line-color: #FF6600; line-width: 2; line-opacity: 0.7; }"],
-            :style_version => '2.1.1',
-            :table_name => table.name,
-            :user_name => 'foo',
-            :tile_style => "##{table.name}{ line-color: #FF6600; line-width: 2; line-opacity: 0.7; }",
-            :use_server_style => true,
-            :query_history => [],
-            :wizard_properties => {
-                :type => 'polygon',
-                :properties => {
-                    'line-width' => 2,
-                    'line-color' => '#FF6600',
-                    'line-opacity' => 0.7,
-                    'line-comp-op' => 'none',
-                    'text-name' => 'None',
-                    'text-face-name' => 'DejaVu Sans Book',
-                    'text-size' => 10,
-                    'text-fill' => '#000',
-                    'text-halo-fill' => '#FFF',
-                    'text-halo-radius' => 1,
-                    'text-dy' => -10,
-                    'text-allow-overlap' => true,
-                    'text-placement-type' => 'dummy',
-                    'text-label-position-tolerance' => 0,
-                    'text-placement' => 'point',
-                    'geometry_type' => 'line'
-                }
-            },
-            :tile_style_custom => false,
-            :query_wrapper => nil,
-            :query_generated => false,
-            :order => 2,
-            :stat_tag => table.id,
-            :sql_api_endpoint => '/api/v1/sql',
-            :no_cdn => true,
-            :force_cors => true
+      kind: 'carto',
+      options: {
+        attribution: 'CartoDB',
+        type: 'CartoDB',
+        active: true,
+        query: '',
+        opacity: 0.99,
+        interactivity: 'cartodb_id',
+        interaction: true,
+        debug: false,
+        tiler_domain: 'localhost.lan',
+        tiler_port: '8181',
+        tiler_protocol: 'http',
+        sql_api_domain: 'localhost.lan',
+        sql_api_port: 8080,
+        sql_api_protocol: 'http',
+        extra_params: {
+          cache_policy: 'persist',
+          cache_buster: 1_404_930_437_358
         },
-        :infowindow => {
-            :template_name => 'table/views/infowindow_light',
-            :fields => []
+        maxZoom: 28,
+        auto_bound: false,
+        visible: true,
+        sql_domain: 'localhost.lan',
+        sql_port: '80',
+        sql_protocol: 'http',
+        tile_style_history: ["##{table.name}{ line-color: #FF6600; line-width: 2; line-opacity: 0.7; }"],
+        style_version: '2.1.1',
+        table_name: table.name,
+        user_name: 'foo',
+        tile_style: "##{table.name}{ line-color: #FF6600; line-width: 2; line-opacity: 0.7; }",
+        use_server_style: true,
+        query_history: [],
+        wizard_properties: {
+          type: 'polygon',
+          properties: {
+            'line-width' => 2,
+            'line-color' => '#FF6600',
+            'line-opacity' => 0.7,
+            'line-comp-op' => 'none',
+            'text-name' => 'None',
+            'text-face-name' => 'DejaVu Sans Book',
+            'text-size' => 10,
+            'text-fill' => '#000',
+            'text-halo-fill' => '#FFF',
+            'text-halo-radius' => 1,
+            'text-dy' => -10,
+            'text-allow-overlap' => true,
+            'text-placement-type' => 'dummy',
+            'text-label-position-tolerance' => 0,
+            'text-placement' => 'point',
+            'geometry_type' => 'line'
+          }
         },
-        :tooltip => {
-            :fields => []
-        },
-        :order => 2
+        tile_style_custom: false,
+        query_wrapper: nil,
+        query_generated: false,
+        order: 2,
+        stat_tag: table.id,
+        sql_api_endpoint: '/api/v1/sql',
+        no_cdn: true,
+        force_cors: true
+      },
+      infowindow: {
+        template_name: 'table/views/infowindow_light',
+        fields: []
+      },
+      tooltip: {
+        fields: []
+      },
+      order: 2
     }
   end
 end

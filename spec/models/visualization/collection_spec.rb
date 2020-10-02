@@ -12,7 +12,7 @@ describe Visualization::Collection do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    @user_1 = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+    @user_1 = FactoryGirl.create(:valid_user, quota_in_bytes: 524_288_000, table_quota: 500, private_tables_enabled: true)
     @user_2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
   end
 
@@ -74,10 +74,10 @@ describe Visualization::Collection do
       vis3 = Visualization::Member.new(random_attributes_for_vis_member(name: vis_3_name, user_id: @user_2.id)).store
 
       shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user_1.id,
+        recipient_id: @user_1.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      vis2.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: vis2.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.save
       shared_entity.reload
@@ -140,31 +140,31 @@ describe Visualization::Collection do
       vis_3_name = 'viz_3'
       vis_4_name = 'viz_4'
 
-      Visualization::Member.new(random_attributes_for_vis_member(name:    vis_1_name,
+      Visualization::Member.new(random_attributes_for_vis_member(name: vis_1_name,
                                                                  user_id: @user_1.id,
-                                                                 locked:  true)).store
-      vis2 = Visualization::Member.new(random_attributes_for_vis_member(name:    vis_2_name,
+                                                                 locked: true)).store
+      vis2 = Visualization::Member.new(random_attributes_for_vis_member(name: vis_2_name,
                                                                         user_id: @user_2.id,
-                                                                        locked:  true)).store
-      vis3 = Visualization::Member.new(random_attributes_for_vis_member(name:    vis_3_name,
+                                                                        locked: true)).store
+      vis3 = Visualization::Member.new(random_attributes_for_vis_member(name: vis_3_name,
                                                                         user_id: @user_2.id,
-                                                                        locked:  false)).store
-      Visualization::Member.new(random_attributes_for_vis_member(name:    vis_4_name,
+                                                                        locked: false)).store
+      Visualization::Member.new(random_attributes_for_vis_member(name: vis_4_name,
                                                                  user_id: @user_1.id,
-                                                                 locked:  false)).store
+                                                                 locked: false)).store
 
       shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user_1.id,
+        recipient_id: @user_1.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      vis2.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: vis2.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.save
       shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user_1.id,
+        recipient_id: @user_1.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      vis3.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: vis3.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.save
 
@@ -194,26 +194,26 @@ describe Visualization::Collection do
       vis3 = full_visualization_table(@user_1, nil).visualization
 
       # Biggest row count
-      vis3.table.add_column!(name: "test_col", type: "text")
-      vis3.table.insert_row!(test_col: "333")
-      vis3.table.insert_row!(test_col: "333")
-      vis3.table.insert_row!(test_col: "333")
-      vis3.table.insert_row!(test_col: "333")
-      vis3.table.insert_row!(test_col: "333")
-      vis3.table.insert_row!(test_col: "333")
+      vis3.table.add_column!(name: 'test_col', type: 'text')
+      vis3.table.insert_row!(test_col: '333')
+      vis3.table.insert_row!(test_col: '333')
+      vis3.table.insert_row!(test_col: '333')
+      vis3.table.insert_row!(test_col: '333')
+      vis3.table.insert_row!(test_col: '333')
+      vis3.table.insert_row!(test_col: '333')
       # pg_class.reltuples only get updated after VACUUMs, etc.
       @user_1.in_database.run("VACUUM #{vis3.table.name}")
       vis3.updated_at = Time.now - 3.minute
       vis3.save
 
       # Biggest in size and likes
-      long_string = ""
+      long_string = ''
       2000.times do
         long_string << rand(999).to_s
       end
-      vis2.table.add_column!(name: "test_col", type: "text")
-      vis2.table.add_column!(name: "test_col2", type: "text")
-      vis2.table.add_column!(name: "test_col3", type: "text")
+      vis2.table.add_column!(name: 'test_col', type: 'text')
+      vis2.table.add_column!(name: 'test_col2', type: 'text')
+      vis2.table.add_column!(name: 'test_col3', type: 'text')
       vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
       vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
       vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
@@ -223,7 +223,7 @@ describe Visualization::Collection do
       vis2.save
 
       # Latest edited
-      vis1.table.add_column!(name: "test_col", type: "text")
+      vis1.table.add_column!(name: 'test_col', type: 'text')
       @user_1.in_database.run("VACUUM #{vis1.table.name}")
       vis1.updated_at = Time.now - 1.minute
       vis1.save
@@ -264,7 +264,7 @@ describe Visualization::Collection do
     end
 
     it "checks filtering by 'liked' " do
-      user3 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+      user3 = create_user(quota_in_bytes: 524_288_000, table_quota: 500, private_tables_enabled: true)
 
       full_visualization_table(@user_1, nil).visualization
       vis2 = full_visualization_table(@user_1, nil).visualization
@@ -285,9 +285,9 @@ describe Visualization::Collection do
       # vis1 0 likes
 
       vis2.add_like_from(@user_1)
-      expect {
+      expect do
         vis2.add_like_from(@user_2)
-      }.to raise_exception Carto::Visualization::UnauthorizedLikeError
+      end.to raise_exception Carto::Visualization::UnauthorizedLikeError
 
       vis3.add_like_from(@user_1)
 
@@ -348,10 +348,10 @@ describe Visualization::Collection do
       vis2_user2 = Visualization::Member.new(random_attributes(name: vis_4_name, user_id: @user_2.id)).store
 
       shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user_1.id,
+        recipient_id: @user_1.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      vis_user2.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: vis_user2.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.save
       shared_entity.reload
@@ -384,7 +384,6 @@ describe Visualization::Collection do
       # And filtering by user_id
       collection.count_total(user_id: @user_2.id).should eq 2
     end
-
   end
 
   # Slide visualization types specs
@@ -393,21 +392,24 @@ describe Visualization::Collection do
   it 'checks the .children method' do
     parent = Visualization::Member.new(random_attributes_for_vis_member(
                                          user_id: @user_1.id,
-                                         type: Visualization::Member::TYPE_DERIVED)).store
+                                         type: Visualization::Member::TYPE_DERIVED
+                                       )).store
 
     parent.children.count.should eq 0
 
     child1 = Visualization::Member.new(random_attributes_for_vis_member(
-                                         user_id:   @user_1.id,
-                                         type:      Visualization::Member::TYPE_SLIDE,
-                                         parent_id: parent.id)).store.fetch
+                                         user_id: @user_1.id,
+                                         type: Visualization::Member::TYPE_SLIDE,
+                                         parent_id: parent.id
+                                       )).store.fetch
 
     parent.children.count.should eq 1
 
     child2 = Visualization::Member.new(random_attributes_for_vis_member(
-                                         user_id:   @user_1.id,
-                                         type:      Visualization::Member::TYPE_SLIDE,
-                                         parent_id: parent.id)).store.fetch
+                                         user_id: @user_1.id,
+                                         type: Visualization::Member::TYPE_SLIDE,
+                                         parent_id: parent.id
+                                       )).store.fetch
 
     child2.set_prev_list_item!(child1)
     parent.fetch
@@ -416,7 +418,8 @@ describe Visualization::Collection do
 
     canonical = Visualization::Member.new(random_attributes_for_vis_member(
                                             user_id: @user_1.id,
-                                            type: Visualization::Member::TYPE_CANONICAL)).store
+                                            type: Visualization::Member::TYPE_CANONICAL
+                                          )).store
 
     parent.children.count.should eq 2
 
@@ -424,32 +427,37 @@ describe Visualization::Collection do
 
     child_2_1 = Visualization::Member.new(random_attributes_for_vis_member(
                                             user_id: @user_1.id,
-                                            type:    Visualization::Member::TYPE_DERIVED)).store
+                                            type: Visualization::Member::TYPE_DERIVED
+                                          )).store
 
     Visualization::Member.new(random_attributes_for_vis_member(
-                                user_id:   @user_1.id,
-                                type:      Visualization::Member::TYPE_SLIDE,
-                                parent_id: child_2_1.id)).store
+                                user_id: @user_1.id,
+                                type: Visualization::Member::TYPE_SLIDE,
+                                parent_id: child_2_1.id
+                              )).store
 
     child_2_1.children.count.should eq 1
   end
 
   it 'checks retrieving slide type items' do
     member = Visualization::Member.new(random_attributes_for_vis_member(
-                                         type:     Visualization::Member::TYPE_DERIVED,
-                                         user_id:  @user_1.id)).store
+                                         type: Visualization::Member::TYPE_DERIVED,
+                                         user_id: @user_1.id
+                                       )).store
 
     c1 = Visualization::Member.new(random_attributes_for_vis_member(
-                                     type:       Visualization::Member::TYPE_SLIDE,
-                                     parent_id:  member.id,
-                                     user_id:    @user_1.id)).store
+                                     type: Visualization::Member::TYPE_SLIDE,
+                                     parent_id: member.id,
+                                     user_id: @user_1.id
+                                   )).store
     c2 = Visualization::Member.new(random_attributes_for_vis_member(
-                                     type:       Visualization::Member::TYPE_SLIDE,
-                                     parent_id:  member.id,
-                                     user_id:    @user_1.id)).store
+                                     type: Visualization::Member::TYPE_SLIDE,
+                                     parent_id: member.id,
+                                     user_id: @user_1.id
+                                   )).store
 
     collection = Visualization::Collection.new.fetch(user_id: @user_1.id,
-                                                     type:    Visualization::Member::TYPE_SLIDE)
+                                                     type: Visualization::Member::TYPE_SLIDE)
     collection.count.should eq 2
 
     c1.delete
@@ -460,19 +468,19 @@ describe Visualization::Collection do
   def random_attributes(attributes = {})
     random = unique_name('viz')
     {
-      name:           attributes.fetch(:name, random),
-      description:    attributes.fetch(:description, "description #{random}"),
-      privacy:        attributes.fetch(:privacy, 'public'),
-      tags:           attributes.fetch(:tags, ['tag 1']),
-      type:           attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
-      user_id:        attributes.fetch(:user_id, Carto::UUIDHelper.random_uuid),
-      locked:         attributes.fetch(:locked, false),
-      title:          attributes.fetch(:title, ''),
-      source:         attributes.fetch(:source, ''),
-      license:        attributes.fetch(:license, ''),
-      attributions:   attributes.fetch(:attributions, ''),
-      kind:           attributes.fetch(:kind, CartoDB::Visualization::Member::KIND_GEOM),
-      map_id:         attributes.fetch(:map_id, nil)
+      name: attributes.fetch(:name, random),
+      description: attributes.fetch(:description, "description #{random}"),
+      privacy: attributes.fetch(:privacy, 'public'),
+      tags: attributes.fetch(:tags, ['tag 1']),
+      type: attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
+      user_id: attributes.fetch(:user_id, Carto::UUIDHelper.random_uuid),
+      locked: attributes.fetch(:locked, false),
+      title: attributes.fetch(:title, ''),
+      source: attributes.fetch(:source, ''),
+      license: attributes.fetch(:license, ''),
+      attributions: attributes.fetch(:attributions, ''),
+      kind: attributes.fetch(:kind, CartoDB::Visualization::Member::KIND_GEOM),
+      map_id: attributes.fetch(:map_id, nil)
     }
   end # random_attributes
 end # Visualization::Collection

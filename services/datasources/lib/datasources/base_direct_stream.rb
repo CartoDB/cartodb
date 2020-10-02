@@ -8,13 +8,13 @@ module CartoDB
       # Initial stream, to be used for container creation (table usually)
       # @param id string
       # @return String
-      def initial_stream(id)
+      def initial_stream(_id)
         raise 'To be implemented in child classes'
       end
 
       # @param id string
       # @return String
-      def stream_resource(id)
+      def stream_resource(_id)
         raise 'To be implemented in child classes'
       end
 

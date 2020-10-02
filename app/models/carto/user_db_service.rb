@@ -1,5 +1,6 @@
 module Carto
   class UserDBService
+
     # Also default schema for new users
     SCHEMA_PUBLIC = 'public'.freeze
     SCHEMA_CARTODB = 'cartodb'.freeze
@@ -17,8 +18,8 @@ module Carto
 
     # Centralized method to provide the (ordered) search_path
     def self.build_search_path(user_schema, quote_user_schema = true)
-      # TODO Add SCHEMA_CDB_GEOCODER when we open the geocoder API to all the people
-      quote_char = quote_user_schema ? "\"" : ""
+      # TODO: Add SCHEMA_CDB_GEOCODER when we open the geocoder API to all the people
+      quote_char = quote_user_schema ? '"' : ''
       "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, #{SCHEMA_PUBLIC}"
     end
 
@@ -34,8 +35,8 @@ module Carto
     # @raise [PG::Error] if the query fails
     def execute_in_user_database(query, *binds)
       @user.in_database.exec_query(query, 'ExecuteUserDb', binds.map { |v| [nil, v] })
-    rescue ActiveRecord::StatementInvalid => exception
-      raise exception.cause
+    rescue ActiveRecord::StatementInvalid => e
+      raise e.cause
     end
 
     def tables_effective(schema = 'public')
@@ -80,7 +81,7 @@ module Carto
       results = all_tables_granted(role)
       privileges_hashed = {}
 
-      if !results.nil?
+      unless results.nil?
         results.each do |row|
           privileges_hashed[row['schema']] = {} if privileges_hashed[row['schema']].nil?
           privileges_hashed[row['schema']][row['t']] = row['permission'].split(',')
@@ -91,7 +92,7 @@ module Carto
     end
 
     def all_schemas_granted(role)
-      roles_str = role ? role : all_user_roles.join(',')
+      roles_str = role || all_user_roles.join(',')
       permissions = 'create,usage'
       query = %{
         WITH
@@ -160,7 +161,7 @@ module Carto
     end
 
     def organization_member_group_role_member_name
-      query = "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
+      query = 'SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;'
       execute_in_user_database(query).first['org_member_role']
     end
 
@@ -171,5 +172,6 @@ module Carto
     def drop_oauth_reassign_ownership_event_trigger
       @user.in_database(as: :superuser).execute('SELECT CDB_DisableOAuthReassignTablesTrigger()')
     end
+
   end
 end

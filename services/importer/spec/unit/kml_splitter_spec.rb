@@ -26,7 +26,7 @@ describe CartoDB::Importer2::KmlSplitter do
     it 'returns all layers name in the file' do
       source_file = CartoDB::Importer2::SourceFile.new(@one_layer_filepath)
       splitter    = CartoDB::Importer2::KmlSplitter.new(source_file, @temporary_directory, @ogr2ogr_config)
-      splitter.layers_in(source_file).should eq ["Absolute_and_Relative"]
+      splitter.layers_in(source_file).should eq ['Absolute_and_Relative']
 
       source_file = CartoDB::Importer2::SourceFile.new(@multiple_layer_filepath)
       splitter    = CartoDB::Importer2::KmlSplitter.new(source_file, @temporary_directory, @ogr2ogr_config)

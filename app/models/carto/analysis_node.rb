@@ -1,6 +1,7 @@
 require_dependency 'carto/query_rewriter'
 
 class Carto::AnalysisNode
+
   include Carto::QueryRewriter
 
   def initialize(definition)
@@ -32,7 +33,7 @@ class Carto::AnalysisNode
   end
 
   def options
-    definition[:options] ||= Hash.new
+    definition[:options] ||= {}
   end
 
   def children
@@ -45,6 +46,7 @@ class Carto::AnalysisNode
 
   def find_by_id(node_id)
     return self if node_id == id
+
     children.lazy.map { |child| child.find_by_id(node_id) }.find { |child| child }
   end
 
@@ -59,6 +61,7 @@ class Carto::AnalysisNode
 
   def source_descendants
     return [self] if source?
+
     children.map(&:source_descendants).flatten
   end
 
@@ -86,15 +89,16 @@ class Carto::AnalysisNode
   MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params].freeze
   def get_children(definition, path = [])
     children = definition.map do |k, v|
-      if v.is_a?(Hash)
-        this_path = path + [k]
-        if (MANDATORY_KEYS_FOR_ANALYSIS_NODE - v.keys).empty?
-          { this_path => Carto::AnalysisNode.new(v) }
-        else
-          get_children(v, this_path)
-        end
+      next unless v.is_a?(Hash)
+
+      this_path = path + [k]
+      if (MANDATORY_KEYS_FOR_ANALYSIS_NODE - v.keys).empty?
+        { this_path => Carto::AnalysisNode.new(v) }
+      else
+        get_children(v, this_path)
       end
     end
     children.flatten.compact.reduce({}, :merge)
   end
+
 end

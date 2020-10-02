@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe OauthAppOrganization do
     describe '#validation' do
       before(:all) do
@@ -27,14 +28,12 @@ module Carto
       end
 
       it 'does not allow duplicates' do
-        begin
-          @app_organization1 = OauthAppOrganization.create!(organization: @organization, oauth_app: @app, seats: 1)
-          app_organization2 = OauthAppOrganization.new(organization: @organization, oauth_app: @app, seats: 1)
-          expect(app_organization2).to_not(be_valid)
-          expect(app_organization2.errors[:organization]).to(include("has already been taken"))
-        ensure
-          @app_organization1.destroy if @app_organization1
-        end
+        @app_organization1 = OauthAppOrganization.create!(organization: @organization, oauth_app: @app, seats: 1)
+        app_organization2 = OauthAppOrganization.new(organization: @organization, oauth_app: @app, seats: 1)
+        expect(app_organization2).to_not(be_valid)
+        expect(app_organization2.errors[:organization]).to(include('has already been taken'))
+      ensure
+        @app_organization1.destroy if @app_organization1
       end
 
       it 'requires positive seats' do
@@ -44,11 +43,11 @@ module Carto
 
         app_organization.seats = 'wadus'
         expect(app_organization).to_not(be_valid)
-        expect(app_organization.errors[:seats]).to(include("is not a number"))
+        expect(app_organization.errors[:seats]).to(include('is not a number'))
 
         app_organization.seats = 0
         expect(app_organization).to_not(be_valid)
-        expect(app_organization.errors[:seats]).to(include("must be greater than 0"))
+        expect(app_organization.errors[:seats]).to(include('must be greater than 0'))
       end
 
       it 'validates' do
@@ -57,4 +56,5 @@ module Carto
       end
     end
   end
+
 end

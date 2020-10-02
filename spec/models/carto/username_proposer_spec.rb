@@ -1,10 +1,11 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe UsernameProposer do
     describe '#find_unique' do
       before(:all) do
-        @users = Array.new
+        @users = []
         @users << FactoryGirl.create(:carto_user, username: 'manolo')
         @users << FactoryGirl.create(:carto_user, username: 'manolo-1')
       end
@@ -40,4 +41,5 @@ module Carto
       end
     end
   end
+
 end

@@ -1,4 +1,5 @@
 class UserMailer < ActionMailer::Base
+
   include MailerConfig
   default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
@@ -69,7 +70,7 @@ class UserMailer < ActionMailer::Base
     @map_name = visualization.name
     @viewer_name = viewer_user.name_or_username
     @preview_image = visualization_preview_image
-    @subject = "Your map got some love!"
+    @subject = 'Your map got some love!'
     @greetings = GREETINGS
     mail_tracker = get_mail_tracker('like_map')
     path = CartoDB.path(self, 'public_visualizations_show_map', id: visualization.id)
@@ -83,7 +84,7 @@ class UserMailer < ActionMailer::Base
     @dataset_name = canonical_visualization.name
     @viewer_name = viewer_user.name_or_username
     @preview_image = visualization_preview_image
-    @subject = "Your dataset got some love!"
+    @subject = 'Your dataset got some love!'
     @greetings = GREETINGS
     mail_tracker = get_mail_tracker('like_map')
     path = CartoDB.path(self, 'public_visualizations_show', id: canonical_visualization.id)
@@ -97,7 +98,7 @@ class UserMailer < ActionMailer::Base
     @mapviews = mapviews
     @map_name = visualization.name
     @preview_image = visualization_preview_image
-    @subject = "Recent activity on one of your maps!"
+    @subject = 'Recent activity on one of your maps!'
     @greetings = GREETINGS
     mail_tracker = get_mail_tracker('trending_map')
     path = CartoDB.path(self, 'public_visualizations_show_map', id: visualization.id)
@@ -127,6 +128,7 @@ class UserMailer < ActionMailer::Base
 
   def get_mail_tracker(tag)
     hubspot = Cartodb.get_config(:metrics, 'hubspot')
-    hubspot["mailing_track"][tag] unless hubspot.nil? || !hubspot["mailing_track"].present?
+    hubspot['mailing_track'][tag] unless hubspot.nil? || !hubspot['mailing_track'].present?
   end
+
 end

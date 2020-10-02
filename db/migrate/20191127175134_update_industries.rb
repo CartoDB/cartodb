@@ -3,7 +3,7 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     run "UPDATE users SET industry = 'Retail' WHERE industry = 'Apparel & Fashion'"
     run "UPDATE users SET industry = 'Banking and Financial Services' WHERE industry = 'Banking & Financial Services'"
     run "UPDATE users SET industry = 'Consulting' WHERE industry = 'Business Services'"
@@ -19,6 +19,6 @@ migration(
     run "UPDATE users SET industry = 'Transport and Logistics' WHERE industry = 'Transportation & Logistics'"
     run "UPDATE users SET industry = 'Utilities' WHERE industry = 'Utilities & Communications'"
   end,
-  Proc.new do
+  proc do
   end
 )

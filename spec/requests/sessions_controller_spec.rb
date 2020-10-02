@@ -5,7 +5,6 @@ require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
-
   after(:each) do
     Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
   end
@@ -36,7 +35,7 @@ describe SessionsController do
       email: admin_user_email,
       password: admin_user_password,
       private_tables_enabled: true,
-      quota_in_bytes: 12345,
+      quota_in_bytes: 12_345,
       organization: nil
     )
   end
@@ -44,9 +43,9 @@ describe SessionsController do
   shared_examples_for 'LDAP' do
     it "doesn't allows to login until admin does first" do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      normal_user_username = "ldap-user"
-      normal_user_password = "2{Patrañas}"
-      normal_user_email = "ldap-user@test.com"
+      normal_user_username = 'ldap-user'
+      normal_user_password = '2{Patrañas}'
+      normal_user_email = 'ldap-user@test.com'
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
         :dn => normal_user_cn,
@@ -58,7 +57,7 @@ describe SessionsController do
 
       errors = {
         errors: {
-          organization: ["Organization owner is not set. Administrator must login first."]
+          organization: ['Organization owner is not set. Administrator must login first.']
         }
       }
       ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)
@@ -69,7 +68,7 @@ describe SessionsController do
       (response.body =~ /Signup issues/).to_i.should_not eq 0
     end
 
-    it "Allows to login and triggers creation if using the org admin account" do
+    it 'Allows to login and triggers creation if using the org admin account' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       # @See lib/user_account_creator.rb -> promote_to_organization_owner?
       admin_user_username = "#{@organization.name}-admin"
@@ -93,7 +92,7 @@ describe SessionsController do
       (response.body =~ /Your account is being created/).to_i.should_not eq 0
     end
 
-    it "Allows to login and triggers creation of normal users if admin already present" do
+    it 'Allows to login and triggers creation of normal users if admin already present' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
@@ -103,7 +102,7 @@ describe SessionsController do
         email: admin_user_email,
         password: admin_user_password,
         private_tables_enabled: true,
-        quota_in_bytes: 12345,
+        quota_in_bytes: 12_345,
         organization: nil
       )
       @admin_user.save.reload
@@ -111,9 +110,9 @@ describe SessionsController do
       # INFO: Hack to avoid having to destroy and recreate later the organization
       ::Organization.any_instance.stubs(:owner).returns(@admin_user)
 
-      normal_user_username = "ldap-user"
-      normal_user_password = "foobar"
-      normal_user_email = "ldap-user@test.com"
+      normal_user_username = 'ldap-user'
+      normal_user_password = 'foobar'
+      normal_user_email = 'ldap-user@test.com'
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
         :dn => normal_user_cn,
@@ -134,7 +133,7 @@ describe SessionsController do
       @admin_user.destroy
     end
 
-    it "Just logs in if finds a cartodb username that matches with LDAP credentials " do
+    it 'Just logs in if finds a cartodb username that matches with LDAP credentials ' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
@@ -143,14 +142,14 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
 
       response.status.should == 302
-      (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
+      (response.location =~ %r{^http\://#{admin_user_username}(.*)/dashboard/$}).to_i.should eq 0
 
       ::User.unstub(:where)
 
       @admin_user.destroy
     end
 
-    it "Falls back to credentials if user is not present at LDAP" do
+    it 'Falls back to credentials if user is not present at LDAP' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
@@ -169,7 +168,7 @@ describe SessionsController do
         email: admin_user_email,
         password: admin_user_password,
         private_tables_enabled: true,
-        quota_in_bytes: 12345,
+        quota_in_bytes: 12_345,
         organization: nil
       )
       @admin_user.save.reload
@@ -182,7 +181,7 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
 
       response.status.should == 302
-      (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
+      (response.location =~ %r{^http\://#{admin_user_username}(.*)/dashboard/$}).to_i.should eq 0
 
       ::User.unstub(:where)
 
@@ -190,7 +189,7 @@ describe SessionsController do
     end
 
     shared_examples_for 'MFA' do
-      it "Redirects to multifactor_authentication if finds a cartodb username that matches with LDAP credentials" do
+      it 'Redirects to multifactor_authentication if finds a cartodb username that matches with LDAP credentials' do
         Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         admin_user_username = "#{@organization.name}-admin"
         admin_user_password = '2{Patrañas}'
@@ -199,11 +198,11 @@ describe SessionsController do
         post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
 
         response.status.should == 302
-        (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
+        (response.location =~ %r{^http\://#{admin_user_username}(.*)/dashboard/$}).to_i.should eq 0
 
         get response.redirect_url
         response.status.should == 302
-        (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/multifactor_authentication\/$/).to_i.should eq 0
+        (response.location =~ %r{^http\://#{admin_user_username}(.*)/multifactor_authentication/$}).to_i.should eq 0
 
         ::User.unstub(:where)
 
@@ -220,11 +219,11 @@ describe SessionsController do
       @organization = ::Organization.new
       @organization.seats = 5
       @organization.quota_in_bytes = 100.megabytes
-      @organization.name = "ldap-org"
+      @organization.name = 'ldap-org'
       @organization.default_quota_in_bytes = DEFAULT_QUOTA_IN_BYTES
       @organization.save
 
-      @domain_bases = ["dc=cartodb"]
+      @domain_bases = ['dc=cartodb']
 
       @ldap_admin_username = 'user'
       @ldap_admin_cn = "cn=#{@ldap_admin_username},#{@domain_bases[0]}"
@@ -234,7 +233,7 @@ describe SessionsController do
       @user_email_field = 'mail'
 
       @ldap_config = Carto::Ldap::Configuration.create(organization_id: @organization.id,
-                                                       host: "0.0.0.0",
+                                                       host: '0.0.0.0',
                                                        port: 389,
                                                        domain_bases_list: @domain_bases,
                                                        connection_user: @ldap_admin_cn,
@@ -278,7 +277,7 @@ describe SessionsController do
             email: admin_user_email,
             password: admin_user_password,
             private_tables_enabled: true,
-            quota_in_bytes: 12345,
+            quota_in_bytes: 12_345,
             organization: nil
           )
 
@@ -307,7 +306,7 @@ describe SessionsController do
             email: admin_user_email,
             password: admin_user_password,
             private_tables_enabled: true,
-            quota_in_bytes: 12345,
+            quota_in_bytes: 12_345,
             organization: nil
           )
 
@@ -328,7 +327,7 @@ describe SessionsController do
     end
 
     it 'redirects to SAML authentication request if enabled' do
-      authentication_request = "http://fakesaml.com/authenticate"
+      authentication_request = 'http://fakesaml.com/authenticate'
       Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
       Carto::SamlService.any_instance.stubs(:authentication_request).returns(authentication_request)
 
@@ -344,7 +343,7 @@ describe SessionsController do
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
     end
 
-    it "Allows to login and triggers creation of normal users if user is not present" do
+    it 'Allows to login and triggers creation of normal users if user is not present' do
       new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
@@ -360,7 +359,7 @@ describe SessionsController do
       ::User.where(username: new_user.username).first.try(:destroy)
     end
 
-    it "Allows to login and triggers creation of normal users if user is not present" do
+    it 'Allows to login and triggers creation of normal users if user is not present' do
       new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
@@ -376,7 +375,7 @@ describe SessionsController do
       ::User.where(username: new_user.username).first.try(:destroy)
     end
 
-    it "Fails to authenticate if SAML request fails" do
+    it 'Fails to authenticate if SAML request fails' do
       Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
       Carto::SamlService.any_instance.stubs(:get_user_email).returns(nil)
 
@@ -423,7 +422,7 @@ describe SessionsController do
     end
 
     shared_examples_for 'SAML no MFA' do
-      it "authenticates users with casing differences in email" do
+      it 'authenticates users with casing differences in email' do
         # we use this to avoid generating the static assets in CI
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
@@ -465,7 +464,7 @@ describe SessionsController do
         email: admin_user_email,
         password: '2{Patrañas}',
         private_tables_enabled: true,
-        quota_in_bytes: 12345,
+        quota_in_bytes: 12_345,
         organization: nil
       )
       admin_user.save.reload
@@ -516,7 +515,7 @@ describe SessionsController do
     describe 'user with MFA' do
       it_behaves_like 'SAML'
 
-      it "redirects to multifactor_authentication" do
+      it 'redirects to multifactor_authentication' do
         # we use this to avoid generating the static assets in CI
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
@@ -620,7 +619,7 @@ describe SessionsController do
 
       it 'redirects to the `return_to` url if present' do
         get api_key_credentials_url(user_domain: @user.username)
-        cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+        cookies['_cartodb_session'] = response.cookies['_cartodb_session']
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
         response.status.should == 302
         response.headers['Location'].should include '/your_apps'
@@ -628,20 +627,20 @@ describe SessionsController do
 
       it 'redirects to current viewer dashboard if the `return_to` dashboard url belongs to other user' do
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
-        cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+        cookies['_cartodb_session'] = response.cookies['_cartodb_session']
         get login_url(user_domain: 'wadus_user')
         response.headers['Location'].should include @user.username
-        response.headers['Location'].should include "/dashboard"
+        response.headers['Location'].should include '/dashboard'
       end
 
       it 'redirects to the `return_to` only once url if present' do
         get api_key_credentials_url(user_domain: @user.username)
 
-        cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+        cookies['_cartodb_session'] = response.cookies['_cartodb_session']
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
         response.status.should == 302
         response.headers['Location'].should include '/your_apps'
-        Marshal.dump(Base64.decode64(response.cookies["_cartodb_session"]))['return_to'].should be_nil
+        Marshal.dump(Base64.decode64(response.cookies['_cartodb_session']))['return_to'].should be_nil
       end
 
       it 'creates _cartodb_base_url cookie' do
@@ -731,7 +730,7 @@ describe SessionsController do
 
     def expect_login
       response.status.should eq 302
-      response.headers['Location'].should include "/dashboard"
+      response.headers['Location'].should include '/dashboard'
     end
 
     def expect_invalid_code
@@ -864,7 +863,7 @@ describe SessionsController do
 
           login
           get multifactor_authentication_session_url
-          cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
+          cookies['_cartodb_session'] = response.cookies['_cartodb_session']
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
           expect_login
         end
@@ -1071,7 +1070,7 @@ describe SessionsController do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       @user = FactoryGirl.create(:carto_user)
       login_as(@user, scope: @user.username)
-      host! "localhost.lan"
+      host! 'localhost.lan'
 
       cookies['_cartodb_base_url'] = 'prra-prra'
       get CartoDB.base_url(@user.username) + logout_path

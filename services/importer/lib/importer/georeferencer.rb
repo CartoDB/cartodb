@@ -12,21 +12,21 @@ module CartoDB
 
       include ::LoggerHelper
 
-      DEFAULT_BATCH_SIZE = 50000
-      GEOMETRY_POSSIBLE_NAMES   = %w{ geometry the_geom wkb_geometry geom geojson wkt }
-      DEFAULT_SCHEMA            = 'cdb_importer'
-      THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'
+      DEFAULT_BATCH_SIZE = 50_000
+      GEOMETRY_POSSIBLE_NAMES   = %w{geometry the_geom wkb_geometry geom geojson wkt}.freeze
+      DEFAULT_SCHEMA            = 'cdb_importer'.freeze
+      THE_GEOM_WEBMERCATOR      = 'the_geom_webmercator'.freeze
       DIRECT_STATEMENT_TIMEOUT  = 1.hour * 1000
 
       def initialize(db, table_name, options, schema=DEFAULT_SCHEMA, job=nil, geometry_columns=nil, logger=nil)
         @db         = db
-        @job        = job || Job.new({  logger: logger } )
+        @job        = job || Job.new({ logger: logger })
         @table_name = table_name
         @schema     = schema
         @geometry_columns = geometry_columns || GEOMETRY_POSSIBLE_NAMES
         @from_geojson_with_transform = false
         @options = options
-        @tracker = @options[:tracker] || lambda { |state| state }
+        @tracker = @options[:tracker] || ->(state) { state }
         @content_guesser = CartoDB::Importer2::ContentGuesser.new(@db, @table_name, @schema, @options, @job)
         @importer_stats = CartoDB::Stats::Importer.instance
       end
@@ -44,28 +44,31 @@ module CartoDB
 
         drop_the_geom_webmercator
 
-        the_geom_column_name = create_the_geom_from_geometry_column  ||
-          create_the_geom_from_ip_guessing      ||
-          create_the_geom_from_namedplaces_guessing ||
-          create_the_geom_from_country_guessing ||
-          create_the_geom_in(table_name)
+        the_geom_column_name = create_the_geom_from_geometry_column ||
+                               create_the_geom_from_ip_guessing ||
+                               create_the_geom_from_namedplaces_guessing ||
+                               create_the_geom_from_country_guessing ||
+                               create_the_geom_in(table_name)
 
         enable_autovacuum
 
-        raise GeometryCollectionNotSupportedError if get_geometry_type(the_geom_column_name || 'the_geom') == 'GEOMETRYCOLLECTION'
+        if get_geometry_type(the_geom_column_name || 'the_geom') == 'GEOMETRYCOLLECTION'
+          raise GeometryCollectionNotSupportedError
+        end
+
         self
       end
 
       def disable_autovacuum
         job.log "Disabling autovacuum for #{qualified_table_name}"
-        db.run(%Q{
+        db.run(%{
          ALTER TABLE #{qualified_table_name} SET (autovacuum_enabled = FALSE, toast.autovacuum_enabled = FALSE);
         })
       end
 
       def enable_autovacuum
         job.log "Enabling autovacuum for #{qualified_table_name}"
-        db.run(%Q{
+        db.run(%{
          ALTER TABLE #{qualified_table_name} SET (autovacuum_enabled = TRUE, toast.autovacuum_enabled = TRUE);
         })
       end
@@ -74,6 +77,7 @@ module CartoDB
         column = nil
         geometry_column_name = geometry_column_in
         return false unless geometry_column_name
+
         job.log "Creating the_geom from #{geometry_column_name} column"
         column = Column.new(db, table_name, geometry_column_name, user, schema, job)
         column.mark_as_from_geojson_with_transform if @from_geojson_with_transform
@@ -82,12 +86,14 @@ module CartoDB
 
         column_name = geometry_column_name
         if column_exists_in?(table_name, 'the_geom')
-          geometry_type = get_geometry_type('the_geom') rescue nil
+          geometry_type = begin
+                            get_geometry_type('the_geom')
+                          rescue StandardError
+                            nil
+                          end
           if geometry_type.nil? || geometry_type == 'GEOMETRYCOLLECTION'
             invalid_the_geom = get_column('the_geom')
-            if !column_exists_in?(table_name, 'invalid_the_geom')
-              invalid_the_geom.rename_to('invalid_the_geom')
-            end
+            invalid_the_geom.rename_to('invalid_the_geom') unless column_exists_in?(table_name, 'invalid_the_geom')
           end
         end
 
@@ -98,9 +104,9 @@ module CartoDB
 
         handle_multipoint(qualified_table_name) if multipoint?
         column_name
-      rescue StandardError => exception
-        job.log "Error creating the_geom: #{exception}. Trace: #{exception.backtrace}"
-        if /statement timeout/.match(exception.message).nil?
+      rescue StandardError => e
+        job.log "Error creating the_geom: #{e}. Trace: #{e.backtrace}"
+        if /statement timeout/.match(e.message).nil?
           if column.empty?
             job.log "Dropping empty #{geometry_column_name}"
             column.drop
@@ -114,8 +120,9 @@ module CartoDB
       end
 
       def create_the_geom_from_country_guessing
-        return false if not @content_guesser.enabled?
+        return false unless @content_guesser.enabled?
         return false if @content_guesser.sample.count == 0
+
         job.log 'Trying country guessing...'
         begin
           country_column_name = nil
@@ -129,17 +136,18 @@ module CartoDB
             create_the_geom_in table_name
             return geocode_countries country_column_name
           end
-        rescue Exception => ex
+        rescue Exception => e
           message = 'create_the_geom_from_country_guessing failed'
-          log_warning(message: message, exception: ex)
-          job.log "WARNING: #{message}: #{ex.inspect}"
+          log_warning(message: message, exception: e)
+          job.log "WARNING: #{message}: #{e.inspect}"
         end
-        return false
+        false
       end
 
       def create_the_geom_from_namedplaces_guessing
-        return false if not @content_guesser.enabled?
+        return false unless @content_guesser.enabled?
         return false if @content_guesser.sample.count == 0
+
         job.log 'Trying namedplaces guessing...'
         begin
           @importer_stats.timing('guessing') do
@@ -152,17 +160,18 @@ module CartoDB
             create_the_geom_in table_name
             return geocode_namedplaces
           end
-        rescue Exception => ex
+        rescue Exception => e
           message = 'create_the_geom_from_namedplaces_guessing failed'
-          log_warning(exception: ex, message: message)
-          job.log "WARNING: #{message}: #{ex.inspect}"
+          log_warning(exception: e, message: message)
+          job.log "WARNING: #{message}: #{e.inspect}"
         end
-        return false
+        false
       end
 
       def create_the_geom_from_ip_guessing
-        return false if not @content_guesser.enabled?
+        return false unless @content_guesser.enabled?
         return false if @content_guesser.sample.count == 0
+
         job.log 'Trying ip guessing...'
         begin
           ip_column_name = nil
@@ -173,23 +182,23 @@ module CartoDB
           end
           if ip_column_name
             job.log "Found ip column: #{ip_column_name}"
-            return geocode_ips ip_column_name
+            geocode_ips ip_column_name
           end
-        rescue Exception => ex
-          message = "create_the_geom_from_ip_guessing failed: #{ex.message}"
-          log_warning(exception: ex, message: message)
-          job.log "WARNING: #{message}: #{ex.inspect}"
-          return false
+        rescue Exception => e
+          message = "create_the_geom_from_ip_guessing failed: #{e.message}"
+          log_warning(exception: e, message: message)
+          job.log "WARNING: #{message}: #{e.inspect}"
+          false
         end
       end
 
       def geocode_countries country_column_name
-        job.log "Geocoding countries..."
+        job.log 'Geocoding countries...'
         geocode(country_column_name, 'polygon', 'admin0')
       end
 
       def geocode_namedplaces
-        job.log "Geocoding namedplaces..."
+        job.log 'Geocoding namedplaces...'
         geocode(@content_guesser.namedplaces.column[:column_name],
                 'point',
                 'namedplace',
@@ -198,7 +207,7 @@ module CartoDB
       end
 
       def geocode_ips ip_column_name
-        job.log "Geocoding ips..."
+        job.log 'Geocoding ips...'
         geocode(ip_column_name, 'point', 'ipaddress')
       end
 
@@ -231,9 +240,9 @@ module CartoDB
           geocoding.force_geocoder(geocoder)
           begin
             geocoding.run_geocoding!(row_count)
-            raise "Geocoding failed" if geocoding.state == 'failed'
+            raise 'Geocoding failed' if geocoding.state == 'failed'
           rescue StandardError => e
-            config_info = config.select {|key, value| [:table_schema, :table_name, :qualified_table_name, :formatter, :geometry_type, :kind, :max_rows, :country_column, ].include?(key) }
+            config_info = config.select { |key, _value| [:table_schema, :table_name, :qualified_table_name, :formatter, :geometry_type, :kind, :max_rows, :country_column].include?(key) }
             log_error(
               message: 'Georeferencer could not register geocoding, fallback to geocoder.run',
               exception: e, config: config_info
@@ -241,14 +250,14 @@ module CartoDB
             geocoder.run
           end
 
-          job.log "Geocoding finished"
+          job.log 'Geocoding finished'
         end
         geocoder.state == 'completed'
         'the_geom'
       end
 
       def row_count
-        @row_count ||= db[%Q{select count(1) from #{qualified_table_name}}].first[:count]
+        @row_count ||= db[%{select count(1) from #{qualified_table_name}}].first[:count]
       end
 
       def data_import
@@ -267,7 +276,7 @@ module CartoDB
         job.log 'Creating the_geom column'
         return false if column_exists_in?(table_name, 'the_geom')
 
-        db.run(%Q{
+        db.run(%{
           SELECT public.AddGeometryColumn(
             '#{schema}','#{table_name}','the_geom',4326,'geometry',2
           );
@@ -305,7 +314,7 @@ module CartoDB
       end
 
       def find_column_in(table_name, possible_names)
-        sample = db[%Q{
+        sample = db[%{
           SELECT  column_name
           FROM    information_schema.columns
           WHERE   table_name = '#{table_name}'
@@ -322,7 +331,7 @@ module CartoDB
         job.log 'Converting detected multipoint to point'
 
         user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
-            user_direct_conn.run(%Q{
+          user_direct_conn.run(%{
                                     UPDATE #{qualified_table_name}
                                     SET the_geom = ST_GeometryN(the_geom, 1)
                                     })
@@ -330,7 +339,7 @@ module CartoDB
       end
 
       def multipoint?
-        is_multipoint = db[%Q{
+        is_multipoint = db[%{
           SELECT public.GeometryType(the_geom)
           FROM #{qualified_table_name}
           AS geometrytype
@@ -348,12 +357,13 @@ module CartoDB
       attr_reader :db, :table_name, :schema, :job, :geometry_columns
 
       def qualified_table_name
-        %Q("#{schema}"."#{table_name}")
+        %("#{schema}"."#{table_name}")
       end
 
       def log_context
         super.merge(current_user: user)
       end
+
     end
   end
 end

@@ -1,6 +1,7 @@
 namespace :cartodb do
   namespace :redis_keys do
     module ExportRedisKeys
+
       def get_database(number)
         db_numbers[number] || raise('Invalid redis db')
       end
@@ -26,6 +27,7 @@ namespace :cartodb do
       def import_key(rdb, key, value)
         rdb.restore(key, value[:ttl], value[:value])
       end
+
     end
 
     desc 'export keys in file'
@@ -85,6 +87,7 @@ namespace :cartodb do
       end
 
       module ExportNamedMaps
+
         def export_users_json_hash(users, batch_size)
           {
             redis: export_users(users, batch_size)
@@ -101,9 +104,9 @@ namespace :cartodb do
         end
 
         def export_dataservices(rdb, prefix)
-          rdb.keys(prefix.to_s).map { |key|
+          rdb.keys(prefix.to_s).map do |key|
             export_key(rdb, key)
-          }.reduce({}, &:merge)
+          end.reduce({}, &:merge)
         end
 
         def export_key(redis_db, key)
@@ -114,6 +117,7 @@ namespace :cartodb do
             }
           }
         end
+
       end
 
       include ExportNamedMaps
@@ -124,7 +128,6 @@ namespace :cartodb do
 
     desc 'import named_maps key '
     task :import_named_maps, [:filename] => :environment do |_task, args|
-
       if args[:filename].nil?
         puts "usage: bundle exec rake cartodb:redis_keys:import_named_maps['redis_export.json']\n
          you must pass the name of the file with the keys you want to import"
@@ -132,6 +135,7 @@ namespace :cartodb do
       end
 
       module ImportNamedMaps
+
         def restore_redis_from_hash_export(exported_hash)
           restore_redis(exported_hash[:redis])
         end
@@ -147,6 +151,7 @@ namespace :cartodb do
             end
           end
         end
+
       end
 
       include ImportNamedMaps

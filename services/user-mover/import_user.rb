@@ -14,6 +14,7 @@ require_relative 'legacy_functions'
 module CartoDB
   module DataMover
     class ImportJob
+
       include CartoDB::DataMover::Utils
       include CartoDB::DataMover::LegacyFunctions
       attr_reader :logger
@@ -31,26 +32,26 @@ module CartoDB
         @target_dbport = ENV['USER_DB_PORT'] || @config[:dbport]
         @target_dbhost = @options[:host] || @config[:dbhost]
 
-        raise "File #{@options[:file]} does not exist!" unless File.exists?(@options[:file])
-        # User(s) metadata json
-        @pack_config = JSON::parse File.read(@options[:file])
+        raise "File #{@options[:file]} does not exist!" unless File.exist?(@options[:file])
 
-        @path = File.expand_path(File.dirname(@options[:file])) + "/"
+        # User(s) metadata json
+        @pack_config = JSON.parse File.read(@options[:file])
+
+        @path = File.expand_path(File.dirname(@options[:file])) + '/'
 
         job_uuid = @options[:job_uuid] || Carto::UUIDHelper.random_uuid
-        @import_log = { job_uuid:     job_uuid,
-                        id:           nil,
-                        type:         'import',
-                        path:         @path,
-                        start:        @start,
-                        end:          nil,
+        @import_log = { job_uuid: job_uuid,
+                        id: nil,
+                        type: 'import',
+                        path: @path,
+                        start: @start,
+                        end: nil,
                         elapsed_time: nil,
-                        server:       `hostname`.strip,
-                        pid:          Process.pid,
-                        db_target:    @target_dbhost,
-                        status:       nil,
-                        trace:        nil
-                       }
+                        server: `hostname`.strip,
+                        pid: Process.pid,
+                        db_target: @target_dbhost,
+                        status: nil,
+                        trace: nil }
 
         @target_dbname = target_dbname
       end
@@ -96,7 +97,7 @@ module CartoDB
       rescue PG::Error => e
         # Ignore role already exists errors
         if e.message =~ /already exists/
-          @logger.warn "Warning: Oauth app user role already exists"
+          @logger.warn 'Warning: Oauth app user role already exists'
         else
           raise
         end
@@ -177,9 +178,7 @@ module CartoDB
           create_user(@target_dbuser)
           create_org_role(@target_dbname) # Create org role for the original org
           create_org_owner_role(@target_dbname)
-          if org_import?
-            grant_user_org_role(@target_dbuser, @target_dbname)
-          end
+          grant_user_org_role(@target_dbuser, @target_dbname) if org_import?
 
           if @target_schema != 'public'
             set_user_search_path(@target_dbuser, @pack_config['user']['database_schema'])
@@ -190,21 +189,21 @@ module CartoDB
             roles.each { |role| grant_user_role(user, role) }
           end
 
-          if @target_org_id && @target_is_owner && File.exists?(org_dump_path)
+          if @target_org_id && @target_is_owner && File.exist?(org_dump_path)
             setup_db_for_dump_load
             create_org_oauth_app_user_roles(@target_org_id)
             create_org_api_key_roles(@target_org_id)
             import_pgdump("org_#{@target_org_id}.dump")
             grant_org_oauth_app_user_roles(@target_org_id)
             grant_org_api_key_roles(@target_org_id)
-          elsif File.exists?(user_dump_path)
+          elsif File.exist?(user_dump_path)
             setup_db_for_dump_load
             create_user_oauth_app_user_roles(@target_userid)
             create_user_api_key_roles(@target_userid)
             import_pgdump("user_#{@target_userid}.dump")
             grant_user_oauth_app_user_roles(@target_userid)
             grant_user_api_key_roles(@target_userid)
-          elsif File.exists? "#{@path}#{@target_username}.schema.sql"
+          elsif File.exist? "#{@path}#{@target_username}.schema.sql"
             setup_db_for_schema_load
             run_file_restore_schema("#{@target_username}.schema.sql")
           end
@@ -228,9 +227,7 @@ module CartoDB
           drop_deprecated_extensions
         end
 
-        if @options[:update_metadata]
-          update_metadata_user(@target_dbhost)
-        end
+        update_metadata_user(@target_dbhost) if @options[:update_metadata]
 
         log_success
       rescue StandardError => e
@@ -253,7 +250,7 @@ module CartoDB
           grant_user_org_role(database_username(user['id']), user['database_name'])
         end
 
-        org_user_ids = @pack_config['users'].map{|u| u['id']}
+        org_user_ids = @pack_config['users'].map { |u| u['id']}
         # We set the owner to be imported first (if schemas are not split, this will also import the whole org database)
         org_user_ids = org_user_ids.insert(0, org_user_ids.delete(@owner_id))
 
@@ -309,12 +306,14 @@ module CartoDB
       def get_org_info(orgname)
         result = metadata_pg_conn.query('SELECT * FROM organizations WHERE name = $1', [orgname])
         raise "Organization #{orgname} not found" if result.cmd_tuples == 0
+
         result[0]
       end
 
       def get_user_info(user_id)
         result = metadata_pg_conn.query('SELECT * FROM users WHERE id = $1', [user_id])
         raise "User with ID #{user_id} not found" if result.cmd_tuples == 0
+
         result[0]
       end
 
@@ -374,13 +373,13 @@ module CartoDB
       def check_user_exists_postgres
         @logger.debug 'Checking if user does not exist on Postgres metadata...'
         result = metadata_pg_conn.query('SELECT * FROM USERS WHERE id = $1', [@target_userid])
-        raise "User already exists in PostgreSQL metadata" if result.cmd_tuples != 0
+        raise 'User already exists in PostgreSQL metadata' if result.cmd_tuples != 0
       end
 
       def check_user_exists_redis
         @logger.debug 'Checking if user does not exist on Redis metadata...'
         result = metadata_redis_conn.hgetall("rails:users:#{@target_dbname}")
-        raise "User already exists in Redis metadata" if result != {}
+        raise 'User already exists in Redis metadata' if result != {}
       end
 
       def conn_string(user, host, port, name)
@@ -405,7 +404,8 @@ module CartoDB
           @config[:dbuser],
           @target_dbhost,
           @config[:user_dbport],
-          @target_dbname)}"
+          @target_dbname
+        )}"
         command += " --section=#{sections}" if sections
         command += " --use-list=\"#{@toc_file}\""
         run_command(command)
@@ -416,7 +416,8 @@ module CartoDB
           @config[:dbuser],
           @target_dbhost,
           @config[:user_dbport],
-          @target_dbname)}")
+          @target_dbname
+        )}")
       end
 
       def import_redis(file)
@@ -490,12 +491,10 @@ module CartoDB
 
       def create_user_api_key_roles(user_id)
         Carto::User.find(user_id).api_keys.select(&:needs_setup?).each do |k|
-          begin
-            k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
-          rescue PG::Error => e
-            # Ignore role already exists errors
-            raise unless e.message =~ /already exists/
-          end
+          k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
+        rescue PG::Error => e
+          # Ignore role already exists errors
+          raise unless e.message =~ /already exists/
         end
       end
 
@@ -597,16 +596,16 @@ module CartoDB
         begin
           superuser_pg_conn.query("CREATE DATABASE \"#{@target_dbname}\" WITH TEMPLATE template_postgis")
         rescue PG::DuplicateDatabase
-          @logger.warn "Warning: Database already exists"
+          @logger.warn 'Warning: Database already exists'
         end
-        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis")
+        superuser_user_pg_conn.query('CREATE EXTENSION IF NOT EXISTS postgis')
         cartodb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cartodb'")
-        superuser_user_pg_conn.query("CREATE SCHEMA cartodb") if cartodb_schema.count == 0
+        superuser_user_pg_conn.query('CREATE SCHEMA cartodb') if cartodb_schema.count == 0
         cdb_importer_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cdb_importer'")
-        superuser_user_pg_conn.query("CREATE SCHEMA cdb_importer") if cdb_importer_schema.count == 0
+        superuser_user_pg_conn.query('CREATE SCHEMA cdb_importer') if cdb_importer_schema.count == 0
         cdb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cdb'")
-        superuser_user_pg_conn.query("CREATE SCHEMA cdb") if cdb_schema.count == 0
-        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb CASCADE")
+        superuser_user_pg_conn.query('CREATE SCHEMA cdb') if cdb_schema.count == 0
+        superuser_user_pg_conn.query('CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb CASCADE')
       end
 
       def setup_db_for_dump_load
@@ -614,20 +613,20 @@ module CartoDB
 
         return if destination_db_major_version != 12
 
-        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis")
-        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis_raster")
-        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS plpython3u")
+        superuser_user_pg_conn.query('CREATE EXTENSION IF NOT EXISTS postgis')
+        superuser_user_pg_conn.query('CREATE EXTENSION IF NOT EXISTS postgis_raster')
+        superuser_user_pg_conn.query('CREATE EXTENSION IF NOT EXISTS plpython3u')
       end
 
       def update_database_retries(userid, username, db_host, db_name, retries = 1)
         update_database(userid, username, db_host, db_name)
       rescue StandardError => e
-        @logger.error "Error updating database"
+        @logger.error 'Error updating database'
         if retries > 0
-          @logger.info "Retrying..."
+          @logger.info 'Retrying...'
           update_database_retries(userid, username, db_host, db_name, retries - 1)
         else
-          @logger.info "No more retries"
+          @logger.info 'No more retries'
           raise
         end
       end
@@ -641,27 +640,27 @@ module CartoDB
       end
 
       def update_postgres_database_host(userid, db)
-        @logger.info "Updating PostgreSQL database_host..."
-        metadata_pg_conn.exec("UPDATE users SET database_host = $1 WHERE id = $2", [db, userid])
+        @logger.info 'Updating PostgreSQL database_host...'
+        metadata_pg_conn.exec('UPDATE users SET database_host = $1 WHERE id = $2', [db, userid])
       end
 
       def update_postgres_organization(userid, org_id)
-        @logger.info "Updating PostgreSQL organization..."
-        metadata_pg_conn.exec("UPDATE users SET organization_id = $1 WHERE id = $2", [org_id, userid])
+        @logger.info 'Updating PostgreSQL organization...'
+        metadata_pg_conn.exec('UPDATE users SET organization_id = $1 WHERE id = $2', [org_id, userid])
       end
 
       def update_redis_database_host(user, db)
-        @logger.info "Updating Redis database_host..."
+        @logger.info 'Updating Redis database_host...'
         metadata_redis_conn.hset("rails:users:#{user}", 'database_host', db)
       end
 
       def update_postgres_database_name(userid, db)
-        @logger.info "Updating PostgreSQL database_name..."
-        metadata_pg_conn.exec("UPDATE users SET database_name = $1 WHERE id = $2", [db, userid])
+        @logger.info 'Updating PostgreSQL database_name...'
+        metadata_pg_conn.exec('UPDATE users SET database_name = $1 WHERE id = $2', [db, userid])
       end
 
       def update_redis_database_name(user, db)
-        @logger.info "Updating Redis database_name..."
+        @logger.info 'Updating Redis database_name...'
         metadata_redis_conn.hset("rails:users:#{user}", 'database_name', db)
       end
 
@@ -671,7 +670,7 @@ module CartoDB
         user_model = ::User.find(username: @target_username)
         user_model.database_host = target_dbhost
         user_model.database_name = @target_dbname
-        user_model.organization_id = @target_org_id if !@target_org_id.nil?
+        user_model.organization_id = @target_org_id unless @target_org_id.nil?
 
         user_model.db_service.setup_organization_owner if @target_is_owner
         user_model.db_service.monitor_user_notification # Used to inform the database_server
@@ -696,9 +695,7 @@ module CartoDB
             user_model.reload
           end
         rescue StandardError => e
-          if changed_metadata
-            update_database_retries(@target_userid, @target_username, orig_dbhost, @target_dbname, 1)
-          end
+          update_database_retries(@target_userid, @target_username, orig_dbhost, @target_dbname, 1) if changed_metadata
           log_error(e)
           remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
           raise
@@ -751,7 +748,7 @@ module CartoDB
       end
 
       def org_import?
-        @options[:target_org] == nil
+        @options[:target_org].nil?
       end
 
       def organization_import?
@@ -779,6 +776,7 @@ module CartoDB
       def destination_db_major_version
         get_database_version_for_binaries(superuser_pg_conn).split('.').first.to_i
       end
+
     end
   end
 end

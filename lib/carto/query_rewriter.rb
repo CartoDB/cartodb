@@ -1,5 +1,6 @@
 module Carto
   module QueryRewriter
+
     def rewrite_query(query, old_username, new_user, renamed_tables)
       new_query = query
       new_query = rewrite_query_for_new_user(query, old_username, new_user) if old_username != new_user.database_schema
@@ -26,7 +27,7 @@ module Carto
         new_schema = new_user.sql_safe_database_schema
         query.gsub(" #{old_username}.", " #{new_schema}.").gsub(" \"#{old_username}\".", " #{new_schema}.")
       else
-        query.gsub(" #{old_username}.", " ").gsub(" \"#{old_username}\".", " ")
+        query.gsub(" #{old_username}.", ' ').gsub(" \"#{old_username}\".", ' ')
       end
     end
 
@@ -38,5 +39,6 @@ module Carto
         sql.gsub(/(?<!#{PSQL_WORD_CHARS})#{Regexp.escape(old_name)}(?!#{PSQL_WORD_CHARS})/, new_name)
       end
     end
+
   end
 end

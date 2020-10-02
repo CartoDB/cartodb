@@ -51,7 +51,7 @@ module Carto
 
       def get_service_auth_url
         auth_url = DataImportsService.new.get_service_auth_url(uri_user, params[:id])
-        render_jsonp({ url: auth_url, success: true})
+        render_jsonp({ url: auth_url, success: true })
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
         CartoDB.notify_exception(e, { user: uri_user, params: params })
         render_jsonp({ errors: e.message }, 401)
@@ -78,11 +78,11 @@ module Carto
           format.all  { render text: '<script>window.close();</script>', content_type: 'text/html' }
         end
       rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
-        log_warning(message: "Expired oauth token", exception: e, current_user: uri_user, params: params)
+        log_warning(message: 'Expired oauth token', exception: e, current_user: uri_user, params: params)
         render text: 'Expired token. Try reconnecting<script>setTimeout(function(){window.close()}, 1000);</script>',
                content_type: 'text/html', status: 401
       rescue StandardError => e
-        log_warning(message: "Error in oauth callback", exception: e, current_user: uri_user, params: params)
+        log_warning(message: 'Error in oauth callback', exception: e, current_user: uri_user, params: params)
         render text: 'Connection failed<script>setTimeout(function(){window.close()}, 1000);</script>',
                content_type: 'text/html', status: 400
       end

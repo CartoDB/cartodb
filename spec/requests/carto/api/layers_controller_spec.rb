@@ -75,7 +75,7 @@ describe Carto::Api::LayersController do
           layer_id = layer_response.delete(:id)
           layer_id.should_not be_nil
 
-          layer_response.delete(:options).should eq ({ table_name: @table.name })
+          layer_response.delete(:options).should eq({ table_name: @table.name })
 
           layer_response.should eq layer_json.except(:options)
 
@@ -105,7 +105,7 @@ describe Carto::Api::LayersController do
         @user1.save
 
         post_json create_map_layer_url(@map.id), layer_json.merge(kind: 'carto', order: 10) do |response|
-          response.status.to_s.should match /4../ # 422 in new, 403 in old
+          response.status.to_s.should match(/4../) # 422 in new, 403 in old
         end
       end
 
@@ -321,7 +321,7 @@ describe Carto::Api::LayersController do
       end
     end
 
-    describe "API 1.0 map layers management" do
+    describe 'API 1.0 map layers management' do
       before(:all) do
         Capybara.current_driver = :rack_test
         @user = create_user
@@ -343,8 +343,8 @@ describe Carto::Api::LayersController do
 
       let(:params) { { api_key: @user.api_key } }
 
-      it "Create a new layer associated to a map" do
-        opts = { type: "GMapsBase", base_type: "roadmap", style: "null", order: "0", query_history: nil }
+      it 'Create a new layer associated to a map' do
+        opts = { type: 'GMapsBase', base_type: 'roadmap', style: 'null', order: '0', query_history: nil }
         infowindow = { fields: ['column1', 'column2', 'column3'] }
 
         data = { kind: 'gmapsbase', infowindow: infowindow, options: opts }
@@ -360,7 +360,7 @@ describe Carto::Api::LayersController do
         end
       end
 
-      it "Get layer information" do
+      it 'Get layer information' do
         layer = Layer.create(
           kind: 'carto',
           order: 1,
@@ -375,12 +375,12 @@ describe Carto::Api::LayersController do
           response.body[:id].should    eq layer.id
           response.body[:kind].should  eq 'carto'
           response.body[:order].should eq 1
-          response.body[:infowindow].should eq fields: ["column1", "column2"]
-          response.body[:tooltip].should eq fields: ["column1", "column3"]
+          response.body[:infowindow].should eq fields: ['column1', 'column2']
+          response.body[:tooltip].should eq fields: ['column1', 'column3']
         end
       end
 
-      it "Get all map layers" do
+      it 'Get all map layers' do
         layer  = Layer.create kind: 'carto', order: 3
         layer2 = Layer.create kind: 'tiled', order: 2
         layer3 = Layer.create kind: 'tiled', order: 1
@@ -399,7 +399,7 @@ describe Carto::Api::LayersController do
       end
 
       # see https://cartodb.atlassian.net/browse/CDB-3350
-      it "Update a layer" do
+      it 'Update a layer' do
         layer = Layer.create kind: 'carto', order: 0
         @map.add_layer layer
 
@@ -415,7 +415,7 @@ describe Carto::Api::LayersController do
         end
       end
 
-      it "Update several layers at once" do
+      it 'Update several layers at once' do
         layer1 = Layer.create kind: 'carto', order: 0
         layer2 = Layer.create kind: 'carto', order: 1
         @map.add_layer layer1
@@ -437,7 +437,7 @@ describe Carto::Api::LayersController do
         end
       end
 
-      it "Update a layer does not change table_name neither user_name" do
+      it 'Update a layer does not change table_name neither user_name' do
         layer = Layer.create kind: 'carto', order: 0, options: { table_name: 'table1', user_name: @user.username }
         @map.add_layer layer
 
@@ -452,7 +452,7 @@ describe Carto::Api::LayersController do
       end
 
       # see https://cartodb.atlassian.net/browse/CDB-3350
-      it "Update a layer > tiler error" do
+      it 'Update a layer > tiler error' do
         layer = Layer.create kind: 'carto', order: 0
         @map.add_layer layer
         Layer.any_instance.stubs(:after_save).raises(RuntimeError)
@@ -466,7 +466,7 @@ describe Carto::Api::LayersController do
         end
       end
 
-      it "Drop a layer" do
+      it 'Drop a layer' do
         layer = Layer.create kind: 'carto'
         @map.add_layer layer
 
@@ -477,7 +477,7 @@ describe Carto::Api::LayersController do
       end
     end
 
-    describe "API 1.0 user layers management" do
+    describe 'API 1.0 user layers management' do
       before(:all) do
         Capybara.current_driver = :rack_test
         @user = create_user
@@ -497,7 +497,7 @@ describe Carto::Api::LayersController do
 
       let(:params) { { api_key: @user.api_key } }
 
-      it "Create a new layer associated to the current user" do
+      it 'Create a new layer associated to the current user' do
         opts = { kind: 'carto' }
 
         post_json api_v1_users_layers_create_url(params.merge(user_id: @user.id)), opts do |response|
@@ -508,7 +508,7 @@ describe Carto::Api::LayersController do
       end
 
       # see https://cartodb.atlassian.net/browse/CDB-3350
-      it "Update a layer" do
+      it 'Update a layer' do
         layer = Layer.create kind: 'carto'
         @user.add_layer layer
         opts = { options: { opt1: 'value' }, infowindow: { fields: ['column1', 'column2'] }, kind: 'carto' }
@@ -522,7 +522,7 @@ describe Carto::Api::LayersController do
         end
       end
 
-      it "Drop a layer" do
+      it 'Drop a layer' do
         layer = Layer.create kind: 'carto'
         @user.add_layer layer
 
@@ -626,17 +626,17 @@ describe Carto::Api::LayersController do
 
       def factory(user, attributes = {})
         {
-          name:                     attributes.fetch(:name, unique_name('viz')),
-          tags:                     attributes.fetch(:tags, ['foo', 'bar']),
-          map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
-          description:              attributes.fetch(:description, 'bogus'),
-          type:                     attributes.fetch(:type, 'derived'),
-          privacy:                  attributes.fetch(:privacy, 'public'),
-          source_visualization_id:  attributes.fetch(:source_visualization_id, nil),
-          parent_id:                attributes.fetch(:parent_id, nil),
-          locked:                   attributes.fetch(:locked, false),
-          prev_id:                  attributes.fetch(:prev_id, nil),
-          next_id:                  attributes.fetch(:next_id, nil)
+          name: attributes.fetch(:name, unique_name('viz')),
+          tags: attributes.fetch(:tags, ['foo', 'bar']),
+          map_id: attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
+          description: attributes.fetch(:description, 'bogus'),
+          type: attributes.fetch(:type, 'derived'),
+          privacy: attributes.fetch(:privacy, 'public'),
+          source_visualization_id: attributes.fetch(:source_visualization_id, nil),
+          parent_id: attributes.fetch(:parent_id, nil),
+          locked: attributes.fetch(:locked, false),
+          prev_id: attributes.fetch(:prev_id, nil),
+          next_id: attributes.fetch(:next_id, nil)
         }
       end
 
@@ -665,7 +665,7 @@ describe Carto::Api::LayersController do
 
       organization = Organization.new
       organization.name = unique_name('org')
-      organization.quota_in_bytes = 1234567890
+      organization.quota_in_bytes = 1_234_567_890
       organization.seats = 5
       organization.save
       organization.valid?.should eq true
@@ -692,7 +692,7 @@ describe Carto::Api::LayersController do
           { acl: [{
             type: CartoDB::Permission::TYPE_USER,
             entity: {
-              id:   user_2.id
+              id: user_2.id
             },
             access: CartoDB::Permission::ACCESS_READONLY
           }] }.to_json, @headers
@@ -742,7 +742,7 @@ describe Carto::Api::LayersController do
 
     let(:params) { { api_key: @user.api_key } }
 
-    it "Get all user layers" do
+    it 'Get all user layers' do
       layer = Layer.create kind: 'carto'
       layer2 = Layer.create kind: 'tiled'
       @user.add_layer layer
@@ -758,7 +758,7 @@ describe Carto::Api::LayersController do
       end
     end
 
-    it "Gets layers by map id" do
+    it 'Gets layers by map id' do
       layer = Carto::Layer.create(
         kind: 'carto',
         tooltip: {},
@@ -794,7 +794,8 @@ describe Carto::Api::LayersController do
         params.merge(
           map_id: @table.map.id,
           id: layer.id
-        )) do |response|
+        )
+      ) do |response|
         response.status.should be_success
         response_body = response.body.with_indifferent_access
         response_body['id'].should eq layer.id

@@ -6,6 +6,7 @@ require_relative '../definition'
 
 module Carto::Styles
   class Geometry < Style
+
     def initialize
       super(nil)
     end
@@ -38,5 +39,6 @@ module Carto::Styles
 
       definition[:simple][:point]
     end
+
   end
 end

@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe Notification do
     before(:all) do
       @sequel_organization = FactoryGirl.create(:organization_with_users)
@@ -165,4 +166,5 @@ module Carto
       end
     end
   end
+
 end

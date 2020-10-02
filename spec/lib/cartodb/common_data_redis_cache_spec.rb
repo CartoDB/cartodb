@@ -8,7 +8,7 @@ describe CommonDataRedisCache do
     expected_result = { headers: {}, body: string_with_wrong_encoding }
     @mock_redis = MockRedis.new
     cdrc = CommonDataRedisCache.new(@mock_redis)
-    cdrc.set(true, {}, string_with_wrong_encoding).should eq "OK"
+    cdrc.set(true, {}, string_with_wrong_encoding).should eq 'OK'
     cdrc.get(true).should eq expected_result
   end
 end

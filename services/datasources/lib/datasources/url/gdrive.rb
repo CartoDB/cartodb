@@ -8,21 +8,21 @@ module CartoDB
       class GDrive < BaseOAuth
 
         # Required for all providers
-        DATASOURCE_NAME = 'gdrive'
+        DATASOURCE_NAME = 'gdrive'.freeze
 
         OAUTH_SCOPES = ['https://www.googleapis.com/auth/drive'].freeze
         # For when using authorization code instead of callback with token
-        REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
-        FIELDS_TO_RETRIEVE = 'items(downloadUrl,exportLinks,id,modifiedDate,title,fileExtension,fileSize)'
+        REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'.freeze
+        FIELDS_TO_RETRIEVE = 'items(downloadUrl,exportLinks,id,modifiedDate,title,fileExtension,fileSize)'.freeze
 
         # Specific of this provider
         FORMATS_TO_MIME_TYPES = {
-          FORMAT_CSV =>        %w(text/csv),
-          FORMAT_EXCEL =>      %w(application/vnd.ms-excel application/vnd.google-apps.spreadsheet application/vnd.openxmlformats-officedocument.spreadsheetml.sheet),
+          FORMAT_CSV => %w(text/csv),
+          FORMAT_EXCEL => %w(application/vnd.ms-excel application/vnd.google-apps.spreadsheet application/vnd.openxmlformats-officedocument.spreadsheetml.sheet),
           # FORMAT_GPX =>        %w(text/xml), # Disabled because text/xml list any XML file
-          FORMAT_KML =>        %w(application/vnd.google-earth.kml+xml),
-          FORMAT_COMPRESSED => %w(application/zip application/x-zip-compressed), # application/x-compressed-tar application/x-gzip application/x-bzip application/x-tar )
-        }
+          FORMAT_KML => %w(application/vnd.google-earth.kml+xml),
+          FORMAT_COMPRESSED => %w(application/zip application/x-zip-compressed) # application/x-compressed-tar application/x-gzip application/x-bzip application/x-tar )
+        }.freeze
 
         # Constructor (hidden)
         # @param config
@@ -35,18 +35,18 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super(config, user, %w{ application_name client_id client_secret callback_url }, DATASOURCE_NAME)
+          super(config, user, %w{application_name client_id client_secret callback_url}, DATASOURCE_NAME)
 
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
 
-          self.filter=[]
+          self.filter = []
           @refresh_token = nil
 
           @user = user
           @callback_url = config.fetch('callback_url')
           @client = Signet::OAuth2::Client.new(
             authorization_uri: 'https://accounts.google.com/o/oauth2/auth',
-            token_credential_uri:  'https://oauth2.googleapis.com/token',
+            token_credential_uri: 'https://oauth2.googleapis.com/token',
             client_id: config.fetch('client_id'),
             client_secret: config.fetch('client_secret'),
             scope: OAUTH_SCOPES,
@@ -91,28 +91,24 @@ module CartoDB
         # @return string : Access token
         # @throws AuthError
         def validate_auth_code(auth_code, use_callback_flow = true)
-          unless use_callback_flow
-            @client.redirect_uri = REDIRECT_URI
-          end
+          @client.redirect_uri = REDIRECT_URI unless use_callback_flow
           @client.code = auth_code
           @client.fetch_access_token!
           if @client.refresh_token.nil?
             raise AuthError.new(
-              "Error validating auth token. Is this Google account linked to another CARTO account?",
+              'Error validating auth token. Is this Google account linked to another CARTO account?',
               DATASOURCE_NAME
             )
           end
           @refresh_token = @client.refresh_token
-        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => ex
-          raise AuthError.new("validating auth code: #{ex.message}", DATASOURCE_NAME)
+        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => e
+          raise AuthError.new("validating auth code: #{e.message}", DATASOURCE_NAME)
         end
 
         # Validates the authorization callback
         # @param params : mixed
         def validate_callback(params)
-          if params[:error].present?
-            raise AuthError.new("validate_callback: #{params[:error]}", DATASOURCE_NAME)
-          end
+          raise AuthError.new("validate_callback: #{params[:error]}", DATASOURCE_NAME) if params[:error].present?
 
           if params[:code]
             validate_auth_code(params[:code])
@@ -129,11 +125,11 @@ module CartoDB
           @refresh_token = token
           @client.update_token!(refresh_token: @refresh_token)
           @client.fetch_access_token!
-        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => ex
-          raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
+        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => e
+          raise TokenExpiredOrInvalidError.new("Invalid token: #{e.message}", DATASOURCE_NAME)
         rescue Google::Apis::ClientError, \
-               Google::Apis::ServerError, Google::Apis::BatchError, Google::Apis::TransmissionError => ex
-          raise AuthError.new("setting token: #{ex.message}", DATASOURCE_NAME)
+               Google::Apis::ServerError, Google::Apis::BatchError, Google::Apis::TransmissionError => e
+          raise AuthError.new("setting token: #{e.message}", DATASOURCE_NAME)
         end
 
         # Retrieve token
@@ -174,11 +170,11 @@ module CartoDB
           end
 
           all_results.compact
-        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => ex
-          raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
+        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => e
+          raise TokenExpiredOrInvalidError.new("Invalid token: #{e.message}", DATASOURCE_NAME)
         rescue Google::Apis::BatchError, Google::Apis::TransmissionError, Google::Apis::ClientError, \
-               Google::Apis::ServerError => ex
-          raise DataDownloadError.new("getting resources: #{ex.message}", DATASOURCE_NAME)
+               Google::Apis::ServerError => e
+          raise DataDownloadError.new("getting resources: #{e.message}", DATASOURCE_NAME)
         end
 
         # Retrieves a resource and returns its contents
@@ -195,20 +191,22 @@ module CartoDB
             if file.export_links.present?
               @drive.export_file(file.id, 'text/csv', download_dest: StringIO.new) do |content, export_err|
                 raise export_err if export_err
+
                 return content
               end
             else
               @drive.get_file(file.id, download_dest: StringIO.new) do |content, download_err|
                 raise download_err if download_err
+
                 return content
               end
             end
           end
-        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => ex
-          raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
+        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => e
+          raise TokenExpiredOrInvalidError.new("Invalid token: #{e.message}", DATASOURCE_NAME)
         rescue Google::Apis::BatchError, Google::Apis::TransmissionError, Google::Apis::ClientError, \
-               Google::Apis::ServerError => ex
-          raise DataDownloadError.new("downloading file #{id}: #{ex.message}", DATASOURCE_NAME)
+               Google::Apis::ServerError => e
+          raise DataDownloadError.new("downloading file #{id}: #{e.message}", DATASOURCE_NAME)
         end
 
         # @param id string
@@ -253,10 +251,10 @@ module CartoDB
         def filter=(filter_data=[])
           @formats = []
           FORMATS_TO_MIME_TYPES.each do |id, mime_types|
-            if filter_data.empty? || filter_data.include?(id)
-              mime_types.each do |mime_type|
-                @formats = @formats.push(mime_type)
-              end
+            next unless filter_data.empty? || filter_data.include?(id)
+
+            mime_types.each do |mime_type|
+              @formats = @formats.push(mime_type)
             end
           end
         end
@@ -275,7 +273,7 @@ module CartoDB
 
         # Stores the data import item instance to use/manipulate it
         # @param value DataImport
-        def data_import_item=(value)
+        def data_import_item=(_value)
           nil
         end
 
@@ -289,8 +287,8 @@ module CartoDB
         rescue Google::Apis::AuthorizationError, Signet::AuthorizationError
           false
         rescue Google::Apis::BatchError, Google::Apis::TransmissionError, Google::Apis::ClientError, \
-               Google::Apis::ServerError => ex
-          raise AuthError.new("token_valid?() #{id}: #{ex.message}", DATASOURCE_NAME)
+               Google::Apis::ServerError => e
+          raise AuthError.new("token_valid?() #{id}: #{e.message}", DATASOURCE_NAME)
         end
 
         # Revokes current set token
@@ -299,11 +297,9 @@ module CartoDB
                                                 connecttimeout: 60,
                                                 timeout: 600)
           response = http_client.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
-          if response.code == 200
-            true
-          end
-        rescue StandardError => ex
-          raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
+          true if response.code == 200
+        rescue StandardError => e
+          raise AuthError.new("revoke_token: #{e.message}", DATASOURCE_NAME)
         end
 
         private
@@ -314,10 +310,10 @@ module CartoDB
         def format_item_data(item_data)
           data =
             {
-              id:           item_data.id,
-              title:        item_data.title,
-              service:      DATASOURCE_NAME,
-              checksum:     checksum_of(item_data.modified_date.to_s)
+              id: item_data.id,
+              title: item_data.title,
+              service: DATASOURCE_NAME,
+              checksum: checksum_of(item_data.modified_date.to_s)
 
             }
           if item_data.export_links.present?
@@ -340,13 +336,14 @@ module CartoDB
 
         def clean_filename(name)
           clean_name = ''
-          name.gsub(' ','_').scan(/([a-zA-Z0-9_]+)/).flatten.map { |match|
+          name.gsub(' ', '_').scan(/([a-zA-Z0-9_]+)/).flatten.map do |match|
             clean_name << match
-          }
+          end
           clean_name = name if clean_name.size == 0
 
           clean_name
         end
+
       end
     end
   end

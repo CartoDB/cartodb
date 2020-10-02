@@ -1,5 +1,6 @@
 module Carto
   class DoSyncServiceFactory
+
     DO_CONNECTOR_PROVIDER = 'do-v2'.freeze
     def self.get_for_user(user)
       connector = Carto::Connector.new(
@@ -11,5 +12,6 @@ module Carto
       # Support for DO Sync not installed
       nil
     end
+
   end
 end

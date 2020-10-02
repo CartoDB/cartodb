@@ -3,8 +3,8 @@ require_relative '../../lib/user_account_creator'
 
 describe CartoDB::UserAccountCreator do
   describe '#with_email_only' do
-    USERNAME = "person"
-    EMAIL = "#{USERNAME}@company.com"
+    USERNAME = 'person'.freeze
+    EMAIL = "#{USERNAME}@company.com".freeze
 
     it 'sets email, username and (random) password' do
       creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP)

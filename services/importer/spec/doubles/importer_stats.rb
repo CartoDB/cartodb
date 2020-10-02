@@ -5,10 +5,10 @@ module CartoDB
     module Stats
       class Importer < CartoDB::Stats::Importer
 
-        TEST_HOST = '172.28.128.3'
+        TEST_HOST = '172.28.128.3'.freeze
         TEST_PORT = 8125
 
-        def self.instance(config={}, host_info=Socket.gethostname)
+        def self.instance(_config={}, _host_info=Socket.gethostname)
           Statsd.host = TEST_HOST
           Statsd.port = TEST_PORT
           importer_stats_double = new({}, 'importer-stats-double')
@@ -24,11 +24,10 @@ module CartoDB
           begin
             return_value = nil
 
-            if(block_given?)
+            if block_given?
               @timed_blocks[timing_chain] = @timed_blocks[timing_chain] + 1
               return_value = yield
             end
-
           ensure
             @timing_stack.pop
           end
@@ -49,14 +48,14 @@ module CartoDB
         end
 
         def matching_timed_blocks_count(regexp)
-          @timed_blocks.each_key.find_all { | key | !Regexp.new(regexp).match(key).nil? }.map { |key| @timed_blocks[key] }.reduce(0, :+)
+          @timed_blocks.each_key.find_all { |key| !Regexp.new(regexp).match(key).nil? }.map { |key| @timed_blocks[key] }.reduce(0, :+)
         end
 
         def spy_runner(runner)
           importer_self = self
-          runner.instance_eval {
+          runner.instance_eval do
             @importer_stats = importer_self
-          }
+          end
         end
 
       end

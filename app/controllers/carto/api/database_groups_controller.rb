@@ -2,7 +2,6 @@ require_dependency 'cartodb/errors'
 
 module Carto
   module Api
-
     # Group metadata registration. Exclusively for usage from PostgreSQL Extension, not from the Editor.
     # It only registers metadata, actual group roles management must be done by the extension.
     # Named "DatabaseGroups" because it receives _databases_, not organizations.
@@ -26,10 +25,10 @@ module Carto
 
       before_filter :authenticate_extension
       before_filter :load_parameters
-      before_filter :load_mandatory_group, :only => [:destroy, :add_users, :remove_users, :update_permission, :destroy_permission]
-      before_filter :load_user_from_username, :only => [:load_table, :update_permission, :destroy_permission]
-      before_filter :load_users_from_username, :only => [:add_users, :remove_users]
-      before_filter :load_table, :only => [:update_permission, :destroy_permission]
+      before_filter :load_mandatory_group, only: [:destroy, :add_users, :remove_users, :update_permission, :destroy_permission]
+      before_filter :load_user_from_username, only: [:load_table, :update_permission, :destroy_permission]
+      before_filter :load_users_from_username, only: [:add_users, :remove_users]
+      before_filter :load_table, only: [:update_permission, :destroy_permission]
 
       def create
         group = Group.new_instance(@database_name, @name, @database_role)
@@ -40,9 +39,9 @@ module Carto
         end
       rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB.notify_debug('Group already exists', { params: params })
-        render json: { errors: "A group with that data already exists" }, status: 409
+        render json: { errors: 'A group with that data already exists' }, status: 409
       rescue StandardError => e
-        CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created') })
+        CartoDB.notify_exception(e, { params: params, group: (group || 'not created') })
         render json: { errors: e.message }, status: 500
       end
 
@@ -60,13 +59,13 @@ module Carto
           renamed_group = get_group(@database_name, new_name)
           if renamed_group && renamed_group.database_role == @database_role
             CartoDB.notify_debug('Group already renamed', { params: params })
-            render json: { errors: "That group has already been renamed" }, status: 409
+            render json: { errors: 'That group has already been renamed' }, status: 409
           else
-            raise "Group not found and no matching rename found"
+            raise 'Group not found and no matching rename found'
           end
         end
       rescue StandardError => e
-        CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
+        CartoDB.notify_exception(e, { params: params, group: (@group || 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
 
@@ -74,42 +73,40 @@ module Carto
         @group.destroy
         render json: {}, status: 204
       rescue StandardError => e
-        CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
+        CartoDB.notify_exception(e, { params: params, group: (@group || 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
 
       def add_users
         added_usernames = []
-        @usernames.map { |username|
-          begin
-            added_usernames << @group.add_user(username).user.username
-          rescue CartoDB::ModelAlreadyExistsError => e
-            # This will provoke 409 response later
-          end
-        }
+        @usernames.map do |username|
+          added_usernames << @group.add_user(username).user.username
+        rescue CartoDB::ModelAlreadyExistsError => e
+          # This will provoke 409 response later
+        end
         if added_usernames.length == @usernames.length
           render json: { users: added_usernames }, status: 200
         else
-          render json: { errors: "Some users were already in the group: #{@usernames - added_usernames }", users: added_usernames }, status: 409
+          render json: { errors: "Some users were already in the group: #{@usernames - added_usernames}", users: added_usernames }, status: 409
         end
       rescue StandardError => e
-        CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
+        CartoDB.notify_exception(e, { params: params, group: (@group || 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
 
       def remove_users
         removed_usernames = []
-        @usernames.map { |username|
+        @usernames.map do |username|
           removed_user = @group.remove_user(username)
-          removed_usernames << removed_user.username if !removed_user.nil?
-        }
+          removed_usernames << removed_user.username unless removed_user.nil?
+        end
         if removed_usernames.length == @usernames.length
           render json: { users: removed_usernames }, status: 200
         else
           render json: { errors: "Some users (#{@usernames - removed_usernames}) were not in the group", users: removed_usernames }, status: 404
         end
       rescue StandardError => e
-        CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
+        CartoDB.notify_exception(e, { params: params, group: (@group || 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
 
@@ -120,9 +117,9 @@ module Carto
         render json: {}, status: 200
       rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB.notify_debug('Permission already granted', { params: params })
-        render json: { errors: "That permission is already granted" }, status: 409
+        render json: { errors: 'That permission is already granted' }, status: 409
       rescue StandardError => e
-        CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
+        CartoDB.notify_exception(e, { params: params, group: (@group || 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
 
@@ -133,16 +130,16 @@ module Carto
         render json: {}, status: 200
       rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB.notify_debug('Permission already revoked', { params: params })
-        render json: { errors: "That permission is already revoked" }, status: 404
+        render json: { errors: 'That permission is already revoked' }, status: 404
       rescue StandardError => e
-        CartoDB.notify_exception(e, { params: params , group: (@group ? @group : 'not loaded') })
+        CartoDB.notify_exception(e, { params: params, group: (@group || 'not loaded') })
         render json: { errors: e.message }, status: 500
       end
 
       private
 
       def authenticate_extension
-        raise "missing org_metadata_api configuration" unless Cartodb.config[:org_metadata_api]
+        raise 'missing org_metadata_api configuration' unless Cartodb.config[:org_metadata_api]
 
         authenticate_or_request_with_http_basic do |username, password|
           username == Cartodb.get_config(:org_metadata_api, 'username') &&
@@ -155,16 +152,16 @@ module Carto
         @name = [params[:old_name], params[:name]].compact.first
         @database_role = params[:database_role]
         @username = params[:username]
-        @usernames = @username.present? ? [ @username ] : params[:users]
+        @usernames = @username.present? ? [@username] : params[:users]
         @table_name = params[:table_name]
         case params['access']
-            when nil
-            when 'r'
-              @access = CartoDB::Permission::ACCESS_READONLY
-            when 'w'
-              @access = CartoDB::Permission::ACCESS_READWRITE
-            else raise "Unknown access #{params['access']}"
-            end
+        when nil
+        when 'r'
+          @access = CartoDB::Permission::ACCESS_READONLY
+        when 'w'
+          @access = CartoDB::Permission::ACCESS_READWRITE
+        else raise "Unknown access #{params['access']}"
+        end
       end
 
       def get_group_from_loaded_parameters
@@ -177,7 +174,9 @@ module Carto
 
       def load_mandatory_group
         @group = get_group_from_loaded_parameters
-        render json: { errors: "Group with database_name #{@database_name} and name #{@name} not found" }, status: 404 unless @group
+        unless @group
+          render json: { errors: "Group with database_name #{@database_name} and name #{@name} not found" }, status: 404
+        end
       end
 
       def load_user_from_username

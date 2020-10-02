@@ -3,9 +3,10 @@ require 'sequel'
 module DataRepository
   module Backend
     class Sequel
+
       PAGE          = 1
       PER_PAGE      = 300
-      ARRAY_RE      = %r{\[.*\]}
+      ARRAY_RE      = /\[.*\]/.freeze
 
       def initialize(db, relation=nil)
         @db         = db
@@ -19,15 +20,15 @@ module DataRepository
         apply_filters(db[relation], filters, available_filters)
       end
 
-      def store(key, data={})
+      def store(_key, data={})
         naive_upsert_exposed_to_race_conditions(data)
       end
 
       def fetch(value, key=nil)
         if key.nil?
-          parse( db[relation].where(id: value).first )
+          parse(db[relation].where(id: value).first)
         else
-          parse( db[relation].where(key.to_sym => value).first )
+          parse(db[relation].where(key.to_sym => value).first)
         end
       end
 
@@ -41,11 +42,14 @@ module DataRepository
 
       def apply_filters(dataset, filters={}, available_filters=[])
         return dataset if filters.nil? || filters.empty?
-        available_filters   = symbolize_elements(available_filters)
 
-        filters = symbolize_keys(filters).select { |key, value|
-          available_filters.include?(key)
-        } unless available_filters.empty?
+        available_filters = symbolize_elements(available_filters)
+
+        unless available_filters.empty?
+          filters = symbolize_keys(filters).select do |key, _value|
+            available_filters.include?(key)
+          end
+        end
 
         dataset.where(filters)
       end
@@ -78,19 +82,19 @@ module DataRepository
 
       def serialize_for_postgres(data)
         Hash[
-          data.map { |key, value|
+          data.map do |key, value|
             value = ::Sequel.pg_array(value) if value.is_a?(Array) && !value.empty?
             [key, value]
-          }
+          end
         ]
       end
 
       def serialize_for_other_database(data={})
         Hash[
-          data.map { |key, value|
+          data.map do |key, value|
             value = value.to_s if value.is_a?(Array)
             [key, value]
-          }
+          end
         ]
       end
 
@@ -119,7 +123,7 @@ module DataRepository
       end
 
       def symbolize_keys(hash={})
-        Hash[ hash.map { |k, v| [k.to_sym, v] } ]
+        Hash[hash.map { |k, v| [k.to_sym, v] }]
       end
 
       def pagination_params_from(filter)
@@ -128,7 +132,7 @@ module DataRepository
 
         [page, per_page]
       end
+
     end
   end
 end
-

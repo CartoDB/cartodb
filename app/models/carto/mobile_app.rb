@@ -1,4 +1,5 @@
 class Carto::MobileApp
+
   include ActiveModel::Validations
   include ActiveModel::Conversion
   extend ActiveModel::Naming
@@ -27,4 +28,5 @@ class Carto::MobileApp
   def data(current_user, fetch_mobile_platforms: false, fetch_app_types: false)
     Carto::Api::MobileAppPresenter.new(self, current_user, fetch_mobile_platforms, fetch_app_types).data
   end
+
 end

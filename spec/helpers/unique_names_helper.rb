@@ -1,10 +1,11 @@
 # These helpers are meant to be used in tests to generate random data which may collide, e.g: usernames
 # The methods are parameter-less in purpose, so it is easier to modify the name generation if needed
 module UniqueNamesHelper
+
   @@item_count = 0
 
   def unique_string
-    sprintf '%08d', unique_integer
+    format '%08d', unique_integer
   end
 
   def unique_email
@@ -18,7 +19,7 @@ module UniqueNamesHelper
 
   def unique_integer
     @@item_count += 1
-    test_run_id * 1000000 + @@item_count
+    test_run_id * 1_000_000 + @@item_count
   end
 
   def test_run_id
@@ -30,4 +31,5 @@ module UniqueNamesHelper
                         0
                       end
   end
+
 end

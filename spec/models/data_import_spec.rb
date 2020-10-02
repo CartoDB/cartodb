@@ -67,8 +67,8 @@ describe DataImport do
       ON #{table2.name}.name = #{table1.name}.name
     )
     data_import = DataImport.create(
-      user_id:  @user.id,
-      table_name: "merged_table",
+      user_id: @user.id,
+      table_name: 'merged_table',
       from_query: merge_query
     )
     data_import.run_import!
@@ -233,20 +233,20 @@ describe DataImport do
   end
 
   def user_tables_should_be_registered
-    Carto::GhostTablesManager.new(@user.id).fetch_user_tables_synced_with_db?.should eq(true), "Tables not properly registered"
+    Carto::GhostTablesManager.new(@user.id).fetch_user_tables_synced_with_db?.should eq(true), 'Tables not properly registered'
   end
 
   def create_import(user: @user, overwrite:, truncated:, incomplete_schema: false)
     DataImport.create(
       user_id: user.id,
       data_source: Rails.root.join("spec/support/data/#{truncated ? 'truncated/' : ''}#{incomplete_schema ? 'incomplete_schema/' : ''}walmart_latlon.csv").to_s,
-      data_type: "file",
+      data_type: 'file',
       table_name: 'walmart_latlon',
-      state: "pending",
+      state: 'pending',
       success: false,
       updated_at: Time.now,
       created_at: Time.now,
-      original_url: Rails.root.join("spec/support/data/walmart_latlon.csv").to_s,
+      original_url: Rails.root.join('spec/support/data/walmart_latlon.csv').to_s,
       cartodbfy_time: 0.0,
       collision_strategy: overwrite ? 'overwrite' : nil
     )
@@ -257,13 +257,13 @@ describe DataImport do
       user_id: user.id,
       data_source: from_query,
       from_query: from_query,
-      data_type: "query",
+      data_type: 'query',
       table_name: 'walmart_latlon',
-      state: "pending",
+      state: 'pending',
       success: false,
       updated_at: Time.now,
       created_at: Time.now,
-      original_url: Rails.root.join("spec/support/data/walmart_latlon.csv").to_s,
+      original_url: Rails.root.join('spec/support/data/walmart_latlon.csv').to_s,
       cartodbfy_time: 0.0,
       collision_strategy: overwrite ? 'overwrite' : nil
     )
@@ -307,7 +307,8 @@ describe DataImport do
       user_id: @user.id,
       table_name: 'duplicated_table',
       updated_at: Time.now,
-      table_copy: @table.name).run_import!
+      table_copy: @table.name
+    ).run_import!
     data_import.data_type.should eq 'query'
     duplicated_table = ::UserTable.where(id: data_import.table_id).first
     duplicated_table.should_not be_nil
@@ -318,14 +319,16 @@ describe DataImport do
     data_import_1 = DataImport.create(
       user_id: @user.id,
       data_source: fake_data_path('clubbing.csv'),
-      updated_at: Time.now).run_import!
+      updated_at: Time.now
+    ).run_import!
     data_import_1.state.should be == 'complete'
 
     data_import_2 = DataImport.create(
       user_id: @user.id,
       table_name: 'from_query',
       updated_at: Time.now,
-      from_query: "SELECT * FROM #{data_import_1.table_name} LIMIT 5").run_import!
+      from_query: "SELECT * FROM #{data_import_1.table_name} LIMIT 5"
+    ).run_import!
     data_import_2.state.should be == 'complete'
     data_import_2.data_type.should eq 'query'
 
@@ -379,7 +382,8 @@ describe DataImport do
       data_import = DataImport.create(
         user_id: @user.id,
         data_source: url,
-        updated_at: Time.now).run_import!
+        updated_at: Time.now
+      ).run_import!
     end
 
     table = ::UserTable.where(id: data_import.table_id).first
@@ -412,7 +416,7 @@ describe DataImport do
 
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv",
+      data_source: 'http://mydatasource.cartodb.wadus.com/foo.csv',
       synchronization_id: sync_job.id,
       updated_at: Time.now
     ).run_import!
@@ -425,11 +429,12 @@ describe DataImport do
     data_import = nil
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv?param=wadus'),
-               headers: { "content-type" => "text/plain" } do |url|
+               headers: { 'content-type' => 'text/plain' } do |url|
       data_import = DataImport.create(
         user_id: @user.id,
         data_source: url,
-        updated_at: Time.now).run_import!
+        updated_at: Time.now
+      ).run_import!
     end
 
     table = ::UserTable.where(id: data_import.table_id).first
@@ -438,18 +443,20 @@ describe DataImport do
     table.service.records[:rows].should have(10).items
   end
 
-  it "can create a table from a query selecting only the cartodb_id" do
+  it 'can create a table from a query selecting only the cartodb_id' do
     data_import_1 = DataImport.create(
       user_id: @user.id,
       data_source: fake_data_path('clubbing.csv'),
-      updated_at: Time.now).run_import!
+      updated_at: Time.now
+    ).run_import!
     data_import_1.state.should be == 'complete'
 
     data_import_2 = DataImport.create(
       user_id: @user.id,
       table_name: 'from_query',
       updated_at: Time.now,
-      from_query: "SELECT cartodb_id FROM #{data_import_1.table_name} LIMIT 5").run_import!
+      from_query: "SELECT cartodb_id FROM #{data_import_1.table_name} LIMIT 5"
+    ).run_import!
     data_import_2.state.should be == 'complete'
 
     duplicated_table = ::UserTable.where(id: data_import_2.table_id).first
@@ -458,25 +465,26 @@ describe DataImport do
     duplicated_table.service.records[:rows].should have(5).items
   end
 
-  it "should remove any uploaded files after deletion" do
+  it 'should remove any uploaded files after deletion' do
     upload_path = FileUtils.mkdir_p Rails.root.join('public', 'uploads', 'test0000000000000000')
     file_path = File.join(upload_path, 'wadus.csv')
     FileUtils.cp Rails.root.join('db/fake_data/clubbing.csv'), file_path
     data_import = DataImport.create(
       user_id: @user.id,
       data_source: file_path,
-      updated_at: Time.now)
+      updated_at: Time.now
+    )
 
     data_import.destroy
 
-    Dir.exists?(file_path).should be_false
+    Dir.exist?(file_path).should be_false
   end
 
   it 'should add a common_data extra_option' do
     DataImport.any_instance.stubs(:from_common_data?).returns(true)
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: "http://127.0.0.1/foo.csv"
+      data_source: 'http://127.0.0.1/foo.csv'
     )
     data_import.reload
     data_import.extra_options[:common_data].should eq true
@@ -486,7 +494,7 @@ describe DataImport do
     Cartodb.with_config(common_data: { 'username' => 'mycommondata', 'host' => 'cartodb.wadus.com' }) do
       data_import = DataImport.create(
         user_id: @user.id,
-        data_source: "http://mycommondata.cartodb.wadus.com/foo.csv"
+        data_source: 'http://mycommondata.cartodb.wadus.com/foo.csv'
       )
       data_import.from_common_data?.should eq true
     end
@@ -496,7 +504,7 @@ describe DataImport do
     Cartodb.with_config(common_data: nil) do
       data_import = DataImport.create(
         user_id: @user.id,
-        data_source: "http://mycommondata.cartodb.wadus.com/foo.csv"
+        data_source: 'http://mycommondata.cartodb.wadus.com/foo.csv'
       )
       data_import.from_common_data?.should eq false
     end
@@ -506,7 +514,7 @@ describe DataImport do
     Cartodb.with_config(common_data: { 'username' => 'mycommondata', 'host' => 'cartodb.wadus.com' }) do
       data_import = DataImport.create(
         user_id: @user.id,
-        data_source: "http://mydatasource.cartodb.wadus.com/foo.csv"
+        data_source: 'http://mydatasource.cartodb.wadus.com/foo.csv'
       )
       data_import.from_common_data?.should eq false
     end
@@ -515,7 +523,7 @@ describe DataImport do
   it 'mark as failure a stuck job' do
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: "http://mydatasource.cartodb.wadus.com/foo.csv",
+      data_source: 'http://mydatasource.cartodb.wadus.com/foo.csv',
       state: DataImport::STATE_STUCK
     )
     data_import.mark_as_failed_if_stuck!.should eq true
@@ -537,7 +545,7 @@ describe DataImport do
                                       .raises(Sequel::DatabaseError, 'canceling statement due to statement timeout')
 
       data_import = DataImport.create(
-        user_id:    @user.id,
+        user_id: @user.id,
         service_name: 'arcgis',
         service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
       )
@@ -553,7 +561,7 @@ describe DataImport do
                                       .raises(Sequel::DatabaseError, 'GEOSisValid(): InterruptedException: Interrupted!')
 
       data_import = DataImport.create(
-        user_id:    @user.id,
+        user_id: @user.id,
         service_name: 'arcgis',
         service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
       )
@@ -566,7 +574,7 @@ describe DataImport do
       stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_invalid.json'))
 
       data_import = DataImport.create(
-        user_id:    @user.id,
+        user_id: @user.id,
         service_name: 'arcgis',
         service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
       )
@@ -579,7 +587,7 @@ describe DataImport do
       stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'))
 
       data_import = DataImport.create(
-        user_id:    @user.id,
+        user_id: @user.id,
         service_name: 'arcgis',
         service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
       )
@@ -593,7 +601,7 @@ describe DataImport do
       stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'))
 
       data_import = DataImport.create(
-        user_id:    @user.id,
+        user_id: @user.id,
         service_name: 'arcgis',
         service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
       )
@@ -606,14 +614,14 @@ describe DataImport do
     it 'is initialized to a CartoDB::Log instance' do
       data_import = DataImport.create(
         user_id: @user.id,
-        data_source: "http://mydatasource.cartodb.wadus.com/foo.csv"
+        data_source: 'http://mydatasource.cartodb.wadus.com/foo.csv'
       )
       data_import.log.should be_instance_of CartoDB::Log
     end
 
     it 'allows messages to be appended' do
       data_import = DataImport.new(
-        user_id:    @user.id,
+        user_id: @user.id,
         table_name: 'foo',
         from_query: 'bogus'
       )
@@ -624,7 +632,7 @@ describe DataImport do
 
     it 'is fetched after retrieving the data_import object from DB' do
       data_import = DataImport.new(
-        user_id:    @user.id,
+        user_id: @user.id,
         table_name: 'foo',
         from_query: 'bogus'
       )
@@ -639,9 +647,9 @@ describe DataImport do
 
     it 'will not overwrite an existing logger field' do
       data_import = DataImport.new(
-        user_id:    @user.id,
+        user_id: @user.id,
         table_name: 'foo',
-        from_query: 'bogus',
+        from_query: 'bogus'
       )
       data_import.save
       data_import.logger = 'existing log'
@@ -665,7 +673,7 @@ describe DataImport do
       @user.save
 
       data_import = DataImport.new(
-        user_id:    @user.id,
+        user_id: @user.id,
         table_name: 'fromviewer',
         from_query: 'fromviewer_q'
       )

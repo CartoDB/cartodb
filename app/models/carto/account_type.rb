@@ -52,5 +52,6 @@ module Carto
       # Mailchimp is currently not supported
       false
     end
+
   end
 end

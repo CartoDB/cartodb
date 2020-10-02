@@ -7,12 +7,13 @@ require_relative '../layer'
 module CartoDB
   module Visualization
     class Relator
+
       LAYER_SCOPES = {
-        base:             :user_layers,
-        cartodb:          :carto_layers,
-        data:             :data_layers,
-        others:           :other_layers,
-        named_map:        :named_maps_layers
+        base: :user_layers,
+        cartodb: :carto_layers,
+        data: :data_layers,
+        others: :other_layers,
+        named_map: :named_maps_layers
       }.freeze
 
       INTERFACE = %w{ overlays user table related_templates related_tables related_canonical_visualizations
@@ -39,11 +40,9 @@ module CartoDB
         children_vis = Visualization::Collection.new.fetch(parent_id: @id)
         if children_vis.count > 0
           ordered << children_vis.select { |vis| vis[:prev_id].nil? }.first
-          while !ordered.last[:next_id].nil?
+          until ordered.last[:next_id].nil?
             target = ordered.last[:next_id]
-            unless target.nil?
-              ordered << children_vis.select { |vis| vis[:id] == target }.first
-            end
+            ordered << children_vis.select { |vis| vis[:id] == target }.first unless target.nil?
           end
         end
         ordered
@@ -61,12 +60,13 @@ module CartoDB
 
       # @return CartoDB::Visualization::Member
       def next_list_item
-         @next_vis ||= Visualization::Member.new(id: @next_id).fetch unless @next_id.nil?
+        @next_vis ||= Visualization::Member.new(id: @next_id).fetch unless @next_id.nil?
       end
 
       def support_tables
         @support_tables ||= Visualization::SupportTables.new(
-          user.in_database, parent_id: @id, parent_kind: @kind, public_user_roles: user.db_service.public_user_roles)
+          user.in_database, parent_id: @id, parent_kind: @kind, public_user_roles: user.db_service.public_user_roles
+        )
       end
 
       def overlays
@@ -79,6 +79,7 @@ module CartoDB
 
       def table
         return nil if map.nil?
+
         @table ||= ::UserTable.from_map_id(map.id).try(:service)
       end
 
@@ -104,6 +105,7 @@ module CartoDB
 
       def layers(kind)
         return [] unless map
+
         map.send(LAYER_SCOPES.fetch(kind))
       end
 

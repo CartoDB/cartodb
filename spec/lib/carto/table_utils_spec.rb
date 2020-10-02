@@ -2,7 +2,9 @@ require_relative '../../../lib/carto/table_utils'
 
 describe Carto::TableUtils do
   class TableUtilsTest
+
     include Carto::TableUtils
+
   end
 
   table_utils = TableUtilsTest.new

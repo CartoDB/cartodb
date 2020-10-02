@@ -1,5 +1,6 @@
 module CartoDB
   module Factories
+
     def new_access_token(attributes = {})
       attributes = attributes.dup
       Carto::AccessToken.new(attributes)
@@ -10,5 +11,6 @@ module CartoDB
       token.save
       token
     end
+
   end
 end

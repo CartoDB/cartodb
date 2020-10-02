@@ -16,9 +16,10 @@ module Carto
 
       @user = user
 
-      raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
+      raise InvalidParametersError.new(message: 'Provider not defined') if @provider_name.blank?
+
       @provider = Connector.provider_class(@provider_name).try :new, parameters: @params, user: @user, **args
-      raise InvalidParametersError.new(message: "Invalid provider", provider: @provider_name) if @provider.blank?
+      raise InvalidParametersError.new(message: 'Invalid provider', provider: @provider_name) if @provider.blank?
     end
 
     def copy_table(schema_name:, table_name:)
@@ -79,15 +80,12 @@ module Carto
       return false if user.nil?
       return user.do_enabled? if provider_name == 'do-v2'
       # check general availability
-      unless user.has_feature_flag?('carto-connectors')
-        raise ConnectorsDisabledError.new(user: user)
-      end
+      raise ConnectorsDisabledError.new(user: user) unless user.has_feature_flag?('carto-connectors')
+
       if provider_name
         # check the provider is enabled for the user
         limits = Connector.limits provider_name: provider_name, user: user
-        if !limits || !limits[:enabled]
-          raise ConnectorsDisabledError.new(user: user, provider: provider_name)
-        end
+        raise ConnectorsDisabledError.new(user: user, provider: provider_name) if !limits || !limits[:enabled]
       end
     end
 
@@ -148,7 +146,8 @@ module Carto
     # }
     def self.information(provider_name)
       provider = provider_class(provider_name)
-      raise InvalidParametersError.new(message: "Invalid provider", provider: provider_name) if provider.blank?
+      raise InvalidParametersError.new(message: 'Invalid provider', provider: provider_name) if provider.blank?
+
       provider.information
     end
 
@@ -168,6 +167,7 @@ module Carto
       providers_info = {}
       provider_ids.each do |id|
         next unless all || provider_public?(id)
+
         # TODO: load description template for provider id
         description = nil
         enabled = if user
@@ -177,9 +177,9 @@ module Carto
                     ConnectorConfiguration.default(provider).enabled if provider
                   end
         providers_info[id] = {
-          name:        provider_name(id),
+          name: provider_name(id),
           description: description,
-          enabled:     enabled
+          enabled: enabled
         }
       end
       providers_info
@@ -210,5 +210,6 @@ module Carto
     def log(message, truncate = true)
       @provider.log message, truncate
     end
+
   end
 end

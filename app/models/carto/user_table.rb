@@ -3,16 +3,20 @@ require_dependency 'carto/db/sanitize'
 
 # Integer type for PostgreSQL oid columns, with proper range
 class Carto::OidType < ActiveRecord::Type::Integer
+
   def max_value
     (1 << 32) - 1
   end
+
   def min_value
     0
   end
+
 end
 
 module Carto
   class UserTable < ActiveRecord::Base
+
     PRIVACY_PRIVATE = 0
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
@@ -137,7 +141,7 @@ module Carto
         ) v
         ORDER BY v.updated_at DESC
       }
-      query = query + " LIMIT(#{limit})" if limit
+      query += " LIMIT(#{limit})" if limit
       Carto::Visualization.find_by_sql(query)
     end
 
@@ -229,6 +233,7 @@ module Carto
 
     def tags=(value)
       return unless value
+
       super(value.split(',').map(&:strip).reject(&:blank?).uniq.join(','))
     end
 
@@ -244,6 +249,7 @@ module Carto
 
     def is_owner?(user)
       return false unless user
+
       user_id == user.id
     end
 
@@ -318,5 +324,6 @@ module Carto
     def service_after_destroy
       service.after_destroy
     end
+
   end
 end

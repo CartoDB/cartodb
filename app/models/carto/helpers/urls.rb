@@ -1,4 +1,5 @@
 module Carto::Urls
+
   def plan_url(request_protocol)
     account_url(request_protocol) + '/plan'
   end
@@ -32,4 +33,5 @@ module Carto::Urls
       organization.nil? ? username : organization.name
     end
   end
+
 end

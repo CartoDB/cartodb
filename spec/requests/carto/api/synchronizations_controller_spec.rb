@@ -48,8 +48,8 @@ describe Carto::Api::SynchronizationsController do
       it 'returns a synchronization record' do
         payload = {
           table_name: 'table_1',
-          interval:   3600,
-          url:        'http://www.foo.com'
+          interval: 3600,
+          url: 'http://www.foo.com'
         }
 
         post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
@@ -73,8 +73,8 @@ describe Carto::Api::SynchronizationsController do
       it 'returns sync status' do
         payload = {
           table_name: 'table_1',
-          interval:   3600,
-          url:        'http://www.foo.com'
+          interval: 3600,
+          url: 'http://www.foo.com'
         }
 
         post "/api/v1/synchronizations?api_key=#{@api_key}", payload.to_json, @headers
@@ -95,5 +95,4 @@ describe Carto::Api::SynchronizationsController do
       end
     end
   end
-
 end

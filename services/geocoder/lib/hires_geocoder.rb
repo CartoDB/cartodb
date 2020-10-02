@@ -19,7 +19,7 @@ module CartoDB
       jsonattributes: 1,     # lowercase the first character of each JSON response attribute name
       language: 'en-US',     # preferred language of address elements in the result
       maxresults: 1
-    }
+    }.freeze
 
     attr_reader :app_id, :token, :mailto,
                 :status, :processed_rows, :total_rows, :successful_processed_rows, :failed_processed_rows,
@@ -42,19 +42,19 @@ module CartoDB
 
     def run
       init_rows_count
-      @log.append_and_store "Initialized non batch Here geocoding job"
+      @log.append_and_store 'Initialized non batch Here geocoding job'
       @result = File.join(dir, 'generated_csv_out.txt')
       change_status('running')
       @total_rows = input_rows
       @log.append_and_store "Total rows to be processed: #{@total_rows}"
-      ::CSV.open(@result, "wb") do |output_csv_file|
+      ::CSV.open(@result, 'wb') do |output_csv_file|
         ::CSV.foreach(input_file, headers: true) do |input_row|
           process_row(input_row, output_csv_file)
         end
       end
       change_status('completed')
       update_log_stats
-      @log.append_and_store "Non-batch Here geocoding job finished"
+      @log.append_and_store 'Non-batch Here geocoding job finished'
     end
 
     def used_batch_request?
@@ -62,11 +62,10 @@ module CartoDB
     end
 
     def cancel; end
+
     def update_status; end
 
-    def result
-      @result
-    end
+    attr_reader :result
 
     def request_id
       # INFO: there's no request_id for non-batch geocodings
@@ -93,18 +92,18 @@ module CartoDB
 
     def process_row(input_row, output_csv_file)
       @processed_rows += 1
-      latitude, longitude = geocode_text(input_row["searchtext"])
-      if !(latitude.nil? || latitude == "") && !(longitude.nil? || longitude == "")
+      latitude, longitude = geocode_text(input_row['searchtext'])
+      if !(latitude.nil? || latitude == '') && !(longitude.nil? || longitude == '')
         @successful_processed_rows += 1
-        output_csv_file.add_row [input_row["searchtext"], 1, 1, latitude, longitude]
+        output_csv_file.add_row [input_row['searchtext'], 1, 1, latitude, longitude]
       else
         @empty_processed_rows += 1
       end
     rescue StandardError => e
       @log.append_and_store "Error processing row with search text #{input_row['searchtext']}: #{e.message}"
-      CartoDB.notify_debug("Hires geocoding process row error",
+      CartoDB.notify_debug('Hires geocoding process row error',
                            error: e.backtrace.join("\n"),
-                           searchtext: input_row["searchtext"],
+                           searchtext: input_row['searchtext'],
                            backtrace: e.backtrace)
       @failed_processed_rows += 1
     end
@@ -116,21 +115,22 @@ module CartoDB
                                       connecttimeout: HTTP_CONNECTION_TIMEOUT,
                                       timeout: HTTP_REQUEST_TIMEOUT)
       if http_response.success?
-        response = ::JSON.parse(http_response.body)["response"]
+        response = ::JSON.parse(http_response.body)['response']
         if response['view'].empty?
           # no location info for the text input, stop here
           return [nil, nil]
         end
-        position = response["view"][0]["result"][0]["location"]["displayPosition"]
-        return position["latitude"], position["longitude"]
+
+        position = response['view'][0]['result'][0]['location']['displayPosition']
+        [position['latitude'], position['longitude']]
       else
         CartoDB.notify_debug('Non-batched geocoder failed request', http_response)
-        return [nil, nil]
+        [nil, nil]
       end
     rescue NoMethodError => e
-      if e.message == %Q(undefined method `[]' for nil:NilClass)
+      if e.message == %(undefined method `[]' for nil:NilClass)
         CartoDB.notify_debug("Non-batched geocoder couldn't parse response",
-          error: e.backtrace.join("\n"), backtrace: e.backtrace, text: text, response_body: http_response.body)
+                             error: e.backtrace.join("\n"), backtrace: e.backtrace, text: text, response_body: http_response.body)
         [nil, nil]
       else
         raise e
@@ -153,7 +153,7 @@ module CartoDB
     end
 
     def update_log_stats
-      @log.append_and_store "Geocoding non-batch Here job status update. "\
+      @log.append_and_store 'Geocoding non-batch Here job status update. '\
         "Status: #{@status} --- Processed rows: #{@processed_rows} "\
         "--- Success: #{@successful_processed_rows} --- Empty: #{@empty_processed_rows} "\
         "--- Failed: #{@failed_processed_rows}"

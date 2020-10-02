@@ -2,13 +2,13 @@ class UserMetadataExportFactory
 
   def self.full_export(params = {})
     {
-      version: "1.0.16",
+      version: '1.0.16',
       user: {
-        email: "e00000002@d00000002.com",
-        crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
-        database_name: "cartodb_test_user_5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0_db",
-        username: "user00000001",
-        session_salt: "123456789f",
+        email: 'e00000002@d00000002.com',
+        crypted_password: '0f865d90688f867c18bbd2f4a248537878585e6c',
+        database_name: 'cartodb_test_user_5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0_db',
+        username: 'user00000001',
+        session_salt: '123456789f',
         state: 'active',
         admin: nil,
         maintenance_mode: true,
@@ -16,19 +16,19 @@ class UserMetadataExportFactory
         invite_token: nil,
         invite_token_date: nil,
         map_enabled: true,
-        quota_in_bytes: 5000000,
+        quota_in_bytes: 5_000_000,
         table_quota: nil,
         public_map_quota: 20,
         public_dataset_quota: 20,
         private_map_quota: 20,
         regular_api_key_quota: 20,
-        account_type: "FREE",
+        account_type: 'FREE',
         private_tables_enabled: false,
         period_end_date: nil,
-        map_view_quota: 10000,
+        map_view_quota: 10_000,
         max_layers: 8,
-        database_timeout: 300000,
-        user_timeout: 300000,
+        database_timeout: 300_000,
+        user_timeout: 300_000,
         database_render_timeout: 0,
         user_render_timeout: 0,
         upgraded_at: nil,
@@ -36,23 +36,23 @@ class UserMetadataExportFactory
         geocoding_quota: 0,
         dashboard_viewed_at: nil,
         sync_tables_enabled: false,
-        database_host: "localhost",
-        email_verification_token: "aaa",
+        database_host: 'localhost',
+        email_verification_token: 'aaa',
         email_veritification_sent_at: Time.zone.now,
         geocoding_block_price: nil,
-        api_key: "21ee521b8a107ea55d61fd7b485dd93d54c0b9d2",
+        api_key: '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2',
         notification: nil,
         organization_id: nil,
         created_at: Time.zone.now,
         updated_at: Time.zone.now,
         disqus_shortname: nil,
-        id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
+        id: '5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0',
         twitter_username: nil,
         website: nil,
         description: nil,
         name: nil,
-        avatar_url: "example.com/avatars/avatar_stars_red.png",
-        database_schema: "public",
+        avatar_url: 'example.com/avatars/avatar_stars_red.png',
+        database_schema: 'public',
         soft_geocoding_limit: false,
         auth_token: nil,
         twitter_datasource_enabled: nil,
@@ -64,8 +64,8 @@ class UserMetadataExportFactory
         private_maps_enabled: false,
         google_sign_in: false,
         last_password_change_date: nil,
-        max_import_file_size: 157286400,
-        max_import_table_row_count: 500000,
+        max_import_file_size: 157_286_400,
+        max_import_table_row_count: 500_000,
         max_concurrent_import_count: 3,
         last_common_data_update_date: nil,
         google_maps_key: nil,
@@ -106,16 +106,16 @@ class UserMetadataExportFactory
         phone: '1234567',
         api_keys: [
           {
-            created_at: "2018-02-12T16:11:26+00:00",
-            db_password: "kkkkkkkkktest_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
-            db_role: "test_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
-            name: "Master",
-            token: "21ee521b8a107ea55d61fd7b485dd93d54c0b9d2",
-            type: "master",
-            updated_at: "2018-02-12T16:11:26+00:00",
+            created_at: '2018-02-12T16:11:26+00:00',
+            db_password: 'kkkkkkkkktest_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e',
+            db_role: 'test_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e',
+            name: 'Master',
+            token: '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2',
+            type: 'master',
+            updated_at: '2018-02-12T16:11:26+00:00',
             grants: [{
-              type: "apis",
-              apis: ["sql", "maps"]
+              type: 'apis',
+              apis: ['sql', 'maps']
             }, {
               type: 'dataservices',
               services: ['geocoding', 'routing', 'isolines', 'observatory']
@@ -123,54 +123,54 @@ class UserMetadataExportFactory
               type: 'user',
               data: ['profile']
             }],
-            user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
+            user_id: '5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0'
           },
           {
-            created_at: "2018-02-12T16:11:26+00:00",
-            db_password: "be63855d1179de48dc8c82b9fce338636d961e76",
-            db_role: "user00000001_role_31cf62cd1123fe32b0bf76b048e3af39",
-            name: "some Api Key",
-            token: "OHP1p6jPwG5Lbabr4jq20g",
-            type: "regular",
-            updated_at: "2018-02-12T16:11:26+00:00",
+            created_at: '2018-02-12T16:11:26+00:00',
+            db_password: 'be63855d1179de48dc8c82b9fce338636d961e76',
+            db_role: 'user00000001_role_31cf62cd1123fe32b0bf76b048e3af39',
+            name: 'some Api Key',
+            token: 'OHP1p6jPwG5Lbabr4jq20g',
+            type: 'regular',
+            updated_at: '2018-02-12T16:11:26+00:00',
             grants: [{
-              type: "apis",
+              type: 'apis',
               apis: []
             }],
-            user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
+            user_id: '5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0'
           },
           {
-            id: "2135c786-1ecf-4aff-bcde-e759bb1843e0",
-            created_at: "2018-02-12T16:11:26+00:00",
-            db_password: "be63855d1179de48dc8c82b9fce338636d961e76",
-            db_role: "user00000001_role_31cf62cd112354340bf76b048e3af398",
-            name: "oauth_authorization 2135c786-1ecf-4aff-bcde-e759bb1843e0",
-            token: "OHP1p6jPwG5Lbabr4jq202",
-            type: "oauth",
-            updated_at: "2018-02-12T16:11:26+00:00",
+            id: '2135c786-1ecf-4aff-bcde-e759bb1843e0',
+            created_at: '2018-02-12T16:11:26+00:00',
+            db_password: 'be63855d1179de48dc8c82b9fce338636d961e76',
+            db_role: 'user00000001_role_31cf62cd112354340bf76b048e3af398',
+            name: 'oauth_authorization 2135c786-1ecf-4aff-bcde-e759bb1843e0',
+            token: 'OHP1p6jPwG5Lbabr4jq202',
+            type: 'oauth',
+            updated_at: '2018-02-12T16:11:26+00:00',
             grants: [{
-              type: "apis",
-              apis: ["sql", "maps"]
+              type: 'apis',
+              apis: ['sql', 'maps']
             }, {
-              type: "user",
-              data: ["profile"]
+              type: 'user',
+              data: ['profile']
             }, {
-              type: "dataservices",
-              services: ["routing", "isolines", "observatory", "geocoding"]
+              type: 'dataservices',
+              services: ['routing', 'isolines', 'observatory', 'geocoding']
             }, {
-              type: "database",
+              type: 'database',
               tables: [{
-                name: "st",
-                permissions: ["select"],
-                schema: "test1"
+                name: 'st',
+                permissions: ['select'],
+                schema: 'test1'
               }]
             }],
-            user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
+            user_id: '5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0'
           }
         ],
         assets: [
           {
-            public_url: "https://manolo.es/es/co/bar.png",
+            public_url: 'https://manolo.es/es/co/bar.png',
             kind: nil,
             storage_info: nil
           }
@@ -178,21 +178,21 @@ class UserMetadataExportFactory
         layers: [
           {
             options: {
-              "default" => true,
-              "url" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
-              "subdomains" => "abcd",
-              "minZoom" => "0",
-              "maxZoom" => "18",
-              "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> ...",
-              "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
-              "type" => "Tiled",
-              "name" => "Positron Labels"
+              'default' => true,
+              'url' => 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
+              'subdomains' => 'abcd',
+              'minZoom' => '0',
+              'maxZoom' => '18',
+              'attribution' => '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> ...',
+              'urlTemplate' => 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
+              'type' => 'Tiled',
+              'name' => 'Positron Labels'
             },
-            kind: "tiled"
+            kind: 'tiled'
           }
         ],
         rate_limit: {
-          id: "44d9db90-e12a-4764-85a4-fee012a98333",
+          id: '44d9db90-e12a-4764-85a4-fee012a98333',
           limits: {
             maps_anonymous: [0, 1, 2],
             maps_static: [0, 1, 2],
@@ -300,7 +300,7 @@ class UserMetadataExportFactory
             created_at: Time.zone.now,
             updated_at: Time.zone.now,
             enabled: true,
-            max_rows: 100000,
+            max_rows: 100_000,
             provider_name: params[:connector_provider].name
           }
         ],
@@ -309,74 +309,74 @@ class UserMetadataExportFactory
           url: 'http://somewhere.es',
           support_url: 'http://somewhere.es/support',
           callback_url: nil,
-          key: "crjNXIU3p8xKcoFMuX5eb10xDwK71BP446ToBRnP",
-          secret: "CH3M9gcd9BhLu4ukAg8TPruN0W5zsP4OJ0BQOdtv",
-          created_at: "2018-06-08T15:00:45+00:00",
-          updated_at: "2018-06-08T15:00:45+00:00",
+          key: 'crjNXIU3p8xKcoFMuX5eb10xDwK71BP446ToBRnP',
+          secret: 'CH3M9gcd9BhLu4ukAg8TPruN0W5zsP4OJ0BQOdtv',
+          created_at: '2018-06-08T15:00:45+00:00',
+          updated_at: '2018-06-08T15:00:45+00:00',
           oauth_tokens: [{
-            token: "oauth_token",
-            secret: "oauth_secret",
-            callback_url: "http//callback.com",
-            verifier: "v1",
+            token: 'oauth_token',
+            secret: 'oauth_secret',
+            callback_url: 'http//callback.com',
+            verifier: 'v1',
             scope: nil,
-            authorized_at: "2018-06-11T14:31:46+00:00",
-            invalidated_at: "2018-06-11T14:31:46+00:00",
-            valid_to: "2018-06-11T14:31:46+00:00",
-            created_at: "2018-06-11T14:31:46+00:00",
-            updated_at: "2018-06-11T14:31:46+00:00"
+            authorized_at: '2018-06-11T14:31:46+00:00',
+            invalidated_at: '2018-06-11T14:31:46+00:00',
+            valid_to: '2018-06-11T14:31:46+00:00',
+            created_at: '2018-06-11T14:31:46+00:00',
+            updated_at: '2018-06-11T14:31:46+00:00'
           }],
           access_tokens: [{
-            token: "access_token",
-            secret: "access_secret",
-            callback_url: "http://callback2",
-            verifier: "v2",
+            token: 'access_token',
+            secret: 'access_secret',
+            callback_url: 'http://callback2',
+            verifier: 'v2',
             scope: nil,
-            authorized_at: "2018-06-11T14:31:46+00:00",
-            invalidated_at: "2018-06-11T14:31:46+00:00",
-            valid_to: "2018-06-11T14:31:46+00:00",
-            created_at: "2018-06-11T14:31:46+00:00",
-            updated_at: "2018-06-11T14:31:46+00:00"
+            authorized_at: '2018-06-11T14:31:46+00:00',
+            invalidated_at: '2018-06-11T14:31:46+00:00',
+            valid_to: '2018-06-11T14:31:46+00:00',
+            created_at: '2018-06-11T14:31:46+00:00',
+            updated_at: '2018-06-11T14:31:46+00:00'
           }]
         },
         user_multifactor_auths: [{
-          user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
-          created_at: "2018-11-16T14:31:46+00:00",
-          updated_at: "2018-11-17T16:41:56+00:00",
-          last_login: "2018-11-17T16:41:56+00:00",
+          user_id: '5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0',
+          created_at: '2018-11-16T14:31:46+00:00',
+          updated_at: '2018-11-17T16:41:56+00:00',
+          last_login: '2018-11-17T16:41:56+00:00',
           enabled: true,
           shared_secret: 'abcdefgh',
           type: 'totp'
         }],
         oauth_app_users: [{
-          id: "d881e0f1-cf35-4c35-b44a-6dc31608a435", # necessary for role creation
+          id: 'd881e0f1-cf35-4c35-b44a-6dc31608a435', # necessary for role creation
           oauth_app_id: params[:oauth_app].id,
-          scopes: ["datasets:r:test1", "datasets:rw:test2"],
-          created_at: "2018-11-16T14:31:46+00:00",
-          updated_at: "2018-11-17T16:41:56+00:00",
+          scopes: ['datasets:r:test1', 'datasets:rw:test2'],
+          created_at: '2018-11-16T14:31:46+00:00',
+          updated_at: '2018-11-17T16:41:56+00:00',
           oauth_authorization_codes: [{
-            scopes: ["datasets:r:test1"],
-            code: "zzzz",
-            redirect_uri: "https://carto.com",
-            created_at: "2018-11-16T14:31:46+00:00"
+            scopes: ['datasets:r:test1'],
+            code: 'zzzz',
+            redirect_uri: 'https://carto.com',
+            created_at: '2018-11-16T14:31:46+00:00'
           }],
           oauth_access_tokens: [{
-            api_key_id: "2135c786-1ecf-4aff-bcde-e759bb1843e0",
+            api_key_id: '2135c786-1ecf-4aff-bcde-e759bb1843e0',
             scopes: [
-              "user:profile",
-              "dataservices:routing",
-              "dataservices:isolines",
-              "dataservices:observatory",
-              "dataservices:geocoding",
-              "datasets:r:test1",
-              "schemas:c"
+              'user:profile',
+              'dataservices:routing',
+              'dataservices:isolines',
+              'dataservices:observatory',
+              'dataservices:geocoding',
+              'datasets:r:test1',
+              'schemas:c'
             ],
-            created_at: "2018-11-16T14:31:46+00:00"
+            created_at: '2018-11-16T14:31:46+00:00'
           }],
           oauth_refresh_tokens: [{
-            token: "zzzzz",
-            scopes: ["datasets:r:test1", "offline"],
-            created_at: "2018-11-16T14:31:46+00:00",
-            updated_at: "2018-06-11T14:31:46+00:00"
+            token: 'zzzzz',
+            scopes: ['datasets:r:test1', 'offline'],
+            created_at: '2018-11-16T14:31:46+00:00',
+            updated_at: '2018-06-11T14:31:46+00:00'
           }]
         }]
       }

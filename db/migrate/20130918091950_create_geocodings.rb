@@ -1,6 +1,5 @@
-Sequel.migration do 
+Sequel.migration do
   change do
-
     create_table :geocodings do
       primary_key :id
       Integer     :user_id
@@ -10,6 +9,5 @@ Sequel.migration do
       DateTime    :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime    :updated_at, default: Sequel::CURRENT_TIMESTAMP
     end
-
   end
 end

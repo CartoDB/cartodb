@@ -28,4 +28,5 @@ class Carto::Api::SearchPreviewPresenter
       Carto::Api::VisualizationPresenter.new(visualization, @current_viewer, @context).to_search_preview_poro
     end
   end
+
 end

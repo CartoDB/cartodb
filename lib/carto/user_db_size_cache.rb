@@ -12,9 +12,7 @@ module Carto
     end
 
     def update_if_old(user)
-      if last_updated(user) > UPDATE_PROPAGATION_THRESHOLD
-        set_db_size_in_bytes(user)
-      end
+      set_db_size_in_bytes(user) if last_updated(user) > UPDATE_PROPAGATION_THRESHOLD
     end
 
     def db_size_in_bytes(user)
@@ -51,5 +49,6 @@ module Carto
     def extract_username_from_key(key)
       /#{db_size_in_bytes_key('(.*)')}/.match(key)[1]
     end
+
   end
 end

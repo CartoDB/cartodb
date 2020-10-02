@@ -2,8 +2,8 @@ require_dependency 'cartodb/errors'
 
 module Carto
   module Api
-
     class GrantablesController < ::Api::ApplicationController
+
       include PagedSearcher
 
       respond_to :json
@@ -23,9 +23,9 @@ module Carto
         total_entries = grantable_query.count
 
         render_jsonp({
-          grantables: grantables.map { |g| Carto::Api::GrantablePresenter.new(g).to_poro },
-          total_entries: total_entries
-        }, 200)
+                       grantables: grantables.map { |g| Carto::Api::GrantablePresenter.new(g).to_poro },
+                       total_entries: total_entries
+                     }, 200)
       rescue Carto::ParamInvalidError => e
         render json: { errors: e.message }, status: e.status
       rescue StandardError => e
@@ -38,10 +38,11 @@ module Carto
       def load_organization
         @organization = Carto::Organization.where(id: params['organization_id']).first
         render json: { errors: "Organization #{params['organization_id']} not found" }, status: 404 unless @organization
-        render json: { errors: "You don't belong to organization #{params['organization_id']}" }, status: 400 unless current_user.organization_id == @organization.id
+        unless current_user.organization_id == @organization.id
+          render json: { errors: "You don't belong to organization #{params['organization_id']}" }, status: 400
+        end
       end
 
     end
-
   end
 end

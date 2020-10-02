@@ -6,6 +6,7 @@ require_dependency 'carto/helpers/organization_commons'
 
 module Carto
   class Organization < ActiveRecord::Base
+
     include DataServicesMetricsHelper
     include AuthTokenGenerator
     include Carto::OrganizationSoftLimits
@@ -38,24 +39,22 @@ module Carto
     #
     def self.overquota(delta = 0)
       Carto::Organization.find_each.select do |o|
-        begin
-          limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
-          over_geocodings = o.get_geocoding_calls > limit
-          limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
-          over_here_isolines = o.get_here_isolines_calls > limit
-          limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
-          over_obs_snapshot = o.get_obs_snapshot_calls > limit
-          limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
-          over_obs_general = o.get_obs_general_calls > limit
-          limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
-          over_twitter_imports = o.twitter_imports_count > limit
-          limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
-          over_mapzen_routing = o.get_mapzen_routing_calls > limit
-          over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
-        rescue Carto::Organization::OrganizationWithoutOwner => error
-          log_warning(message: 'Skipping inconsistent organization', organization: o, exception: error)
-          false
-        end
+        limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
+        over_geocodings = o.get_geocoding_calls > limit
+        limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
+        over_here_isolines = o.get_here_isolines_calls > limit
+        limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
+        over_obs_snapshot = o.get_obs_snapshot_calls > limit
+        limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
+        over_obs_general = o.get_obs_general_calls > limit
+        limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
+        over_twitter_imports = o.twitter_imports_count > limit
+        limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
+        over_mapzen_routing = o.get_mapzen_routing_calls > limit
+        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
+      rescue Carto::Organization::OrganizationWithoutOwner => e
+        log_warning(message: 'Skipping inconsistent organization', organization: o, exception: e)
+        false
       end
     end
 
@@ -156,17 +155,15 @@ module Carto
     end
 
     def assigned_quota
-      self.users.sum(:quota_in_bytes).to_i
+      users.sum(:quota_in_bytes).to_i
     end
 
     def unassigned_quota
-      self.quota_in_bytes - assigned_quota
+      quota_in_bytes - assigned_quota
     end
 
     def require_organization_owner_presence!
-      if owner.nil?
-        raise Carto::Organization::OrganizationWithoutOwner.new(self)
-      end
+      raise Carto::Organization::OrganizationWithoutOwner.new(self) if owner.nil?
     end
 
     def auth_saml_enabled?
@@ -213,7 +210,7 @@ module Carto
     private
 
     def ensure_auth_saml_configuration
-      self.auth_saml_configuration ||= Hash.new
+      self.auth_saml_configuration ||= {}
     end
 
     def destroy_groups_with_extension
@@ -223,5 +220,6 @@ module Carto
 
       reload
     end
+
   end
 end

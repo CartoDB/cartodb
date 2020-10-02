@@ -5,4 +5,5 @@ class Group < Sequel::Model
   many_to_one :organization
 
   include Carto::AuthTokenGenerator
+
 end

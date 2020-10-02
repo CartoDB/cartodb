@@ -1,10 +1,9 @@
 require 'spec_helper_min'
 
 describe Carto::DoLicensingService do
-
   before(:all) do
     @user = FactoryGirl.create(:valid_user, username: 'fulano')
-    @redis_key = "do:fulano:datasets"
+    @redis_key = 'do:fulano:datasets'
     @service = Carto::DoLicensingService.new('fulano')
     @dataset_id = 'carto.abc.dataset1'
     @dataset = {
@@ -112,5 +111,4 @@ describe Carto::DoLicensingService do
       $users_metadata.hget(@redis_key, 'bq').should eq bq_datasets
     end
   end
-
 end

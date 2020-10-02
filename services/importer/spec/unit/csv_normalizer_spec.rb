@@ -7,8 +7,7 @@ require_relative '../doubles/user'
 include CartoDB::Importer2::Doubles
 
 describe CartoDB::Importer2::CsvNormalizer do
-
-  BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE = "#{File.dirname(__FILE__)}/bug_columns_wrong_split.csv"
+  BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE = "#{File.dirname(__FILE__)}/bug_columns_wrong_split.csv".freeze
 
   before(:all) do
     @user = FactoryGirl.create(:user)
@@ -32,10 +31,10 @@ describe CartoDB::Importer2::CsvNormalizer do
     it 'raise if detects an empty file' do
       fixture = empty_file_factory
 
-      csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
-      expect {
+      csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
+      expect do
         csv.run
-      }.to raise_exception CartoDB::Importer2::EmptyFileError
+      end.to raise_exception CartoDB::Importer2::EmptyFileError
 
       FileUtils.rm(fixture)
     end
@@ -73,7 +72,6 @@ describe CartoDB::Importer2::CsvNormalizer do
       csv = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
       csv.detect_delimiter.should eq ','
     end
-
   end
 
   describe '#encoding' do
@@ -131,7 +129,7 @@ describe CartoDB::Importer2::CsvNormalizer do
       fixture = tab_delimiter_factory
       row     = ['bogus', 'wadus']
       csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
-      csv.multiple_column(row).should eq (row << nil)
+      csv.multiple_column(row).should eq(row << nil)
     end
   end
 
@@ -141,7 +139,7 @@ describe CartoDB::Importer2::CsvNormalizer do
       fixture = spaces_and_commas_factory
       csv     = CartoDB::Importer2::CsvNormalizer.new(fixture, Log.new(@user))
 
-      csv.detect_delimiter.should eq ","
+      csv.detect_delimiter.should eq ','
 
       FileUtils.rm(fixture)
     end
@@ -153,9 +151,9 @@ describe CartoDB::Importer2::CsvNormalizer do
 
       csv = CartoDB::Importer2::CsvNormalizer.new(fixture_filepath, Log.new(@user))
 
-      expect {
+      expect do
         csv.run
-      }.to raise_exception CartoDB::Importer2::MalformedCSVException
+      end.to raise_exception CartoDB::Importer2::MalformedCSVException
 
       FileUtils.rm(fixture_filepath)
     end
@@ -168,23 +166,23 @@ describe CartoDB::Importer2::CsvNormalizer do
 
     filepath = get_temp_csv_fullpath
 
-    File.open(filepath, 'wb') do |f2|  
+    File.open(filepath, 'wb') do |f2|
       f2.puts invalid_content
-    end  
+    end
 
-    return filepath
+    filepath
   end
 
   def utf8_factory
     filepath = get_temp_csv_fullpath
 
     ::CSV.open(filepath, 'wb', col_sep: "\t") do |csv|
-      csv << ["name", "description", "field_3"]
-      csv << ["normal 1 1 ", "normal 1 2", "normal 1 3"]
-      csv << ["normal 2 1", "normal 2 2", "normal 2_3"]
-      csv << ["normal 3 1", "normal 3 2", "normal 3 3"]
-      csv << (["áÁéÉíÍ", "óÓúÚ", "ñÑ"].map { |s| s.encode('UTF-8') })
-      csv << ["normal 5 1", "normal 5 2", "normal 5 3"]
+      csv << ['name', 'description', 'field_3']
+      csv << ['normal 1 1 ', 'normal 1 2', 'normal 1 3']
+      csv << ['normal 2 1', 'normal 2 2', 'normal 2_3']
+      csv << ['normal 3 1', 'normal 3 2', 'normal 3 3']
+      csv << (['áÁéÉíÍ', 'óÓúÚ', 'ñÑ'].map { |s| s.encode('UTF-8') })
+      csv << ['normal 5 1', 'normal 5 2', 'normal 5 3']
     end
 
     filepath
@@ -193,24 +191,24 @@ describe CartoDB::Importer2::CsvNormalizer do
   def spaces_and_commas_factory
     filepath = get_temp_csv_fullpath
 
-      ::CSV.open(filepath, 'wb', col_sep: ",") do |csv|
-          csv << ["name", "description", "field_3"]
-          csv << ["normal 1 1 .", "normal 1 2 .", "normal 1 3 ."]
-          csv << ["normal 2 1", "normal 2 2", "normal 2 3"]
-          csv << ["normal 3 1 .", "normal 3 2 .", "normal 3 3 ."]
-          csv << ["normal 4 1", "normal 4 2", "normal 4 3"]
-          csv << ["normal 5 1 . . ", "normal 5 2 . . ", "normal 5 3 . . "]
-      end
+    ::CSV.open(filepath, 'wb', col_sep: ',') do |csv|
+      csv << ['name', 'description', 'field_3']
+      csv << ['normal 1 1 .', 'normal 1 2 .', 'normal 1 3 .']
+      csv << ['normal 2 1', 'normal 2 2', 'normal 2 3']
+      csv << ['normal 3 1 .', 'normal 3 2 .', 'normal 3 3 .']
+      csv << ['normal 4 1', 'normal 4 2', 'normal 4 3']
+      csv << ['normal 5 1 . . ', 'normal 5 2 . . ', 'normal 5 3 . . ']
+    end
 
-      filepath
+    filepath
   end
 
   def utf16le_factory
     filepath = get_temp_csv_fullpath
 
     ::CSV.open(filepath, 'wb', col_sep: "\t") do |csv|
-      csv << (["name", "description", "wadus"].map  { |s| s.encode('ISO-8859-1') })
-      csv << (["bogus_1", "bogus_2", "bogus_3"].map { |s| s.encode('ISO-8859-1') })
+      csv << (['name', 'description', 'wadus'].map  { |s| s.encode('ISO-8859-1') })
+      csv << (['bogus_1', 'bogus_2', 'bogus_3'].map { |s| s.encode('ISO-8859-1') })
     end
 
     filepath
@@ -220,8 +218,8 @@ describe CartoDB::Importer2::CsvNormalizer do
     filepath = get_temp_csv_fullpath
 
     ::CSV.open(filepath, 'w', col_sep: "\t") do |csv|
-      csv << ["name", "description", "wadus"]
-      csv << ["bogus_1", "bogus_2", "bogus_3"]
+      csv << ['name', 'description', 'wadus']
+      csv << ['bogus_1', 'bogus_2', 'bogus_3']
     end
 
     filepath
@@ -275,7 +273,7 @@ describe CartoDB::Importer2::CsvNormalizer do
 
     ::File.open(filepath, 'w') do |file|
       file << 'name,description with spaces,wadus,wadus' << "\n"
-      file << "foo,,,bar" << "\n"
+      file << 'foo,,,bar' << "\n"
       file << "foo,\"newline with spaces\nnewline with spaces\n\",,bar" << "\n"
     end
 
@@ -285,7 +283,7 @@ describe CartoDB::Importer2::CsvNormalizer do
   def bug_columns_wrong_split_factory
     temp_destination = get_temp_csv_fullpath
 
-    ::FileUtils::copy BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE, temp_destination
+    ::FileUtils.copy BUG_COLUMNS_WRONG_SPLIT_FIXTURE_FILE, temp_destination
 
     temp_destination
   end
@@ -293,5 +291,4 @@ describe CartoDB::Importer2::CsvNormalizer do
   def get_temp_csv_fullpath
     "/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
   end
-
 end

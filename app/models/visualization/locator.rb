@@ -8,18 +8,19 @@ require_dependency 'carto/uuidhelper'
 module CartoDB
   module Visualization
     class Locator
+
       include Carto::UUIDHelper
 
       def initialize(user_model=nil)
-        @user_model   = user_model  || ::User
+        @user_model = user_model || ::User
       end
 
       def get(id_or_name, subdomain, filters={})
         user = user_from(subdomain)
 
         visualization_from(id_or_name, user, filters) ||
-        table_from(id_or_name, user)         ||
-        [nil, nil]
+          table_from(id_or_name, user) ||
+          [nil, nil]
       end
 
       private
@@ -44,6 +45,7 @@ module CartoDB
       def table_from(id_or_name, user)
         table = ::Table.get_by_id(id_or_name, user)
         return false unless table && table.table_visualization
+
         [table.table_visualization, table]
       rescue StandardError
         false
@@ -62,19 +64,20 @@ module CartoDB
 
       def get_by_name(name, user, filters)
         params = {
-          name:   name,
+          name: name,
           user_id: user.id
         }
         # when looking for a visualization using name return the ones that user owns
         Visualization::Collection.new
                                  .fetch(params.merge(filters))
-                                 .select { |u|
-                                   u.user_id == user.id
-                                  }
+                                 .select do |u|
+          u.user_id == user.id
+        end
                                  .first
       rescue KeyError
         nil
       end
+
     end
   end
 end

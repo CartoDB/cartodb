@@ -1,6 +1,7 @@
 module Carto
   module Api
     class SnapshotPresenter
+
       def initialize(snapshot)
         @snapshot = snapshot
       end
@@ -14,6 +15,7 @@ module Carto
           user: Carto::Api::UserPresenter.new(@snapshot.user).to_public_poro
         }
       end
+
     end
   end
 end

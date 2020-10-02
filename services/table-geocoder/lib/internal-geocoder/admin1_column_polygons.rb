@@ -2,11 +2,10 @@ require_relative 'abstract_query_generator'
 
 module CartoDB
   module InternalGeocoder
-
     class Admin1ColumnPolygons < AbstractQueryGenerator
 
       def search_terms_query(page)
-        %Q{
+        %{
           SELECT DISTINCT
             trim(quote_nullable(#{@internal_geocoder.column_name})) as region,
             trim(quote_nullable(#{@internal_geocoder.country_column})) as country
@@ -23,7 +22,7 @@ module CartoDB
       end
 
       def copy_results_to_table_query
-        %Q{
+        %{
           UPDATE #{dest_table} AS dest
           SET the_geom = CASE WHEN orig.cartodb_georef_status THEN orig.the_geom ELSE dest.the_geom END,
               cartodb_georef_status = orig.cartodb_georef_status
@@ -35,6 +34,5 @@ module CartoDB
       end
 
     end # Admin1ColumnPolygons
-
   end # InternalGeocoder
 end # CartoDB

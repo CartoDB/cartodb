@@ -1,4 +1,5 @@
 class Carto::Api::PermissionsController < ::Api::ApplicationController
+
   extend Carto::DefaultRescueFroms
 
   ssl_required :update

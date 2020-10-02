@@ -1,7 +1,5 @@
 module CartoDB
-
   module InternalGeocoder
-
     class InputTypeResolver
 
       def initialize(internal_geocoder)
@@ -38,5 +36,4 @@ module CartoDB
 
     end # InputTypeResolver
   end # InternalGeocoder
-
 end

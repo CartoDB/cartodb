@@ -6,7 +6,7 @@ module CartoDB
       # @param id string
       # @param stream Stream
       # @return Integer bytes streamed
-      def stream_resource(id, stream)
+      def stream_resource(_id, _stream)
         raise 'To be implemented in child classes'
       end
 

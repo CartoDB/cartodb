@@ -1,4 +1,5 @@
 class ChangeSynchronizationRunnedAtToRanAt < Sequel::Migration
+
   def up
     alter_table :synchronizations do
       drop_column :runned_at
@@ -12,5 +13,5 @@ class ChangeSynchronizationRunnedAtToRanAt < Sequel::Migration
       add_column :runned_at, DateTime
     end
   end
-end
 
+end

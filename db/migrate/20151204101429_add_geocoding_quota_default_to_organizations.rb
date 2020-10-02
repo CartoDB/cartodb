@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    execute "UPDATE organizations SET geocoding_quota = 0 WHERE geocoding_quota IS NULL"
+    execute 'UPDATE organizations SET geocoding_quota = 0 WHERE geocoding_quota IS NULL'
 
     alter_table(:organizations) do
       set_column_default :geocoding_quota, 0

@@ -10,6 +10,7 @@ require_dependency 'carto/helpers/user_commons'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
+
   extend Forwardable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
@@ -17,22 +18,22 @@ class Carto::User < ActiveRecord::Base
   include CartodbCentralSynchronizable
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
-  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
-                   "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
-                   "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
-                   "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
-                   "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
-                   "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
-                   "users.description, users.available_for_hire, users.frontend_version, users.asset_host, "\
-                   "users.no_map_logo, users.industry, users.company, users.phone, users.job_role, "\
-                   "users.public_map_quota, users.public_dataset_quota, users.private_map_quota, "\
-                   "users.maintenance_mode, users.company_employees, users.use_case, users.session_salt".freeze
+  DEFAULT_SELECT = 'users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url,' \
+                   'users.api_key, users.database_schema, users.database_name, users.name, users.location,' \
+                   'users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, ' \
+                   'users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, ' \
+                   'users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, ' \
+                   'users.org_admin, users.last_name, users.google_maps_private_key, users.website, ' \
+                   'users.description, users.available_for_hire, users.frontend_version, users.asset_host, '\
+                   'users.no_map_logo, users.industry, users.company, users.phone, users.job_role, '\
+                   'users.public_map_quota, users.public_dataset_quota, users.private_map_quota, '\
+                   'users.maintenance_mode, users.company_employees, users.use_case, users.session_salt'.freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
   has_many :maps, inverse_of: :user
   has_many :layers_user
-  has_many :layers, through: :layers_user, after_add: Proc.new { |user, layer| layer.set_default_order(user) }
+  has_many :layers, through: :layers_user, after_add: proc { |user, layer| layer.set_default_order(user) }
 
   belongs_to :organization, inverse_of: :users
   belongs_to :rate_limit
@@ -79,12 +80,14 @@ class Carto::User < ActiveRecord::Base
   attr_reader :password
 
   # TODO: From sequel, can be removed once finished
-  alias_method :maps_dataset, :maps
-  alias_method :layers_dataset, :layers
-  alias_method :assets_dataset, :assets
-  alias_method :data_imports_dataset, :data_imports
-  alias_method :geocodings_dataset, :geocodings
-  def carto_user; self end
+  alias maps_dataset maps
+  alias layers_dataset layers
+  alias assets_dataset assets
+  alias data_imports_dataset data_imports
+  alias geocodings_dataset geocodings
+  def carto_user
+    self
+  end
 
   before_create :set_database_host
   before_create :generate_api_key
@@ -107,7 +110,7 @@ class Carto::User < ActiveRecord::Base
   alias_method_chain :static_notifications, :creation
 
   def default_avatar
-    "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
+    'cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png'
   end
 
   # TODO: Revisit methods below to delegate to the service, many look like not proper of the model itself
@@ -254,8 +257,8 @@ class Carto::User < ActiveRecord::Base
                                             secret: Cartodb.config[:password_secret])
   end
 
-  alias_method :should_display_old_password?, :needs_password_confirmation?
-  alias_method :password_set?, :needs_password_confirmation?
+  alias should_display_old_password? needs_password_confirmation?
+  alias password_set? needs_password_confirmation?
 
   def get_auth_token
     # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
@@ -309,9 +312,10 @@ class Carto::User < ActiveRecord::Base
   end
 
   def generate_token(column)
-    begin
+    loop do
       self[column] = SecureRandom.urlsafe_base64
-    end while Carto::User.exists?(column => self[column])
+      break unless Carto::User.exists?(column => self[column])
+    end
   end
 
   def ds_metrics_parameters_from_options(options)
@@ -320,4 +324,5 @@ class Carto::User < ActiveRecord::Base
     orgwise = options.fetch(:orgwise, true)
     [date_from, date_to, orgwise]
   end
+
 end

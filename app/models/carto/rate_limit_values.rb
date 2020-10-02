@@ -1,5 +1,7 @@
 module Carto
+
   class RateLimitValues
+
     extend Forwardable
     delegate [:<<,
               :[],
@@ -54,11 +56,14 @@ module Carto
     def convert_from_db_array(values)
       return [] if values.nil? || values.empty?
       return values.delete('{}').split(',') if values.is_a? String
+
       values
     end
+
   end
 
   class RateLimitValue
+
     attr_accessor :max_burst, :count_per_period, :period
 
     def initialize(values)
@@ -71,11 +76,14 @@ module Carto
       if !@values || @values.length < values_per_rate_limit && @values.length % values_per_rate_limit != 0
         raise 'Error: Number of rate limits needs to be multiple of three'
       end
+
       true
     end
 
     def to_array
       [max_burst, count_per_period, period]
     end
+
   end
+
 end

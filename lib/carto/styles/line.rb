@@ -3,6 +3,7 @@ require_relative '../definition.rb'
 
 module Carto::Styles
   class Line < Style
+
     def initialize(definition: default_definition)
       super(definition)
     end
@@ -26,5 +27,6 @@ module Carto::Styles
        "line-width: #{width};",
        "line-opacity: #{opacity};"]
     end
+
   end
 end

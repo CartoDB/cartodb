@@ -5,7 +5,7 @@ module CartoDB
   module Importer2
     class Job
 
-      DEFAULT_IMPORT_SCHEMA = 'cdb_importer'
+      DEFAULT_IMPORT_SCHEMA = 'cdb_importer'.freeze
 
       def initialize(attributes={})
         @id         = attributes.fetch(:id, Carto::UUIDHelper.random_uuid)
@@ -21,9 +21,7 @@ module CartoDB
 
       def new_table_name
         new_name = "importer_#{id.gsub(/-/, '')}"
-        if @table_names.length > 0
-          new_name = "#{new_name}_#{@table_names.length}"
-        end
+        new_name = "#{new_name}_#{@table_names.length}" if @table_names.length > 0
         @table_names << new_name
       end
 
@@ -40,24 +38,22 @@ module CartoDB
       end
 
       def db
-        @db ||= Sequel.postgres(pg_options.merge(:after_connect=>(proc do |conn|
+        @db ||= Sequel.postgres(pg_options.merge(after_connect: (proc do |conn|
           conn.execute('SET search_path TO "$user", cartodb, public')
         end)))
       end
 
       def qualified_table_name
-        %Q("#{schema}"."#{table_name}")
+        %("#{schema}"."#{table_name}")
       end
 
       def concealed_pg_options
-        pg_options.reject { |key, value| key.to_s == 'password' }
+        pg_options.reject { |key, _value| key.to_s == 'password' }
       end
 
       def import_error_percent
         if !imported_rows.nil? && !(source_file_rows.to_i == 0)
-          return ((imported_rows - source_file_rows).abs.to_f/source_file_rows)*100
-        else
-          return nil
+          ((imported_rows - source_file_rows).abs.to_f / source_file_rows) * 100
         end
       end
 

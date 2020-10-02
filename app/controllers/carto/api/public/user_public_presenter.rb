@@ -2,6 +2,7 @@ module Carto
   module Api
     module Public
       class UserPublicPresenter
+
         include SqlApiHelper
         include MapsApiHelper
 
@@ -23,6 +24,7 @@ module Carto
             }
           }
         end
+
       end
     end
   end

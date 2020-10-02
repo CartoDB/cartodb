@@ -6,9 +6,9 @@ module CartoDB
       class PublicUrl < Base
 
         # Required for all datasources
-        DATASOURCE_NAME = 'public_url'
+        DATASOURCE_NAME = 'public_url'.freeze
 
-        URL_REGEXP = %r{://}
+        URL_REGEXP = %r{://}.freeze
 
         # Constructor (hidden)
         # @param config
@@ -27,7 +27,7 @@ module CartoDB
         # @param config {}
         # @return CartoDB::Datasources::Url::PublicUrl
         def self.get_new(config={})
-          return new(config)
+          new(config)
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -43,7 +43,7 @@ module CartoDB
         # Perform the listing and return results
         # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
         # @return [ { :id, :title, :url, :service } ]
-        def get_resources_list(filter=[])
+        def get_resources_list(_filter=[])
           nil
         end
 
@@ -54,9 +54,7 @@ module CartoDB
         # @throws DataDownloadError
         def get_resource(id)
           response = http_client.get(id, http_options)
-          while response.headers['location']
-            response = http_client.get(id, http_options)
-          end
+          response = http_client.get(id, http_options) while response.headers['location']
 
           raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
 
@@ -73,13 +71,13 @@ module CartoDB
         def get_resource_metadata(id)
           fetch_headers(id)
           {
-              id:       id,
-              title:    id,
-              url:      id,
-              service:  DATASOURCE_NAME,
-              checksum: checksum_of(id, etag_header, last_modified_header),
-              size:     content_length_header
-              # No need to use :filename nor file
+            id: id,
+            title: id,
+            url: id,
+            service: DATASOURCE_NAME,
+            checksum: checksum_of(id, etag_header, last_modified_header),
+            size: content_length_header
+            # No need to use :filename nor file
           }
         end
 
@@ -92,7 +90,7 @@ module CartoDB
             raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if response.timed_out?
 
             # For example S3 only allows one verb per signed url (we use GET) so won't allow HEAD, but it's ok
-            @headers = (response.code.to_s =~ /\A[23]\d+/) ? response.headers : {}
+            @headers = response.code.to_s =~ /\A[23]\d+/ ? response.headers : {}
           else
             @headers = {}
           end
@@ -103,10 +101,11 @@ module CartoDB
         # @throws UninitializedError
         def etag_header
           raise UninitializedError.new('headers not fetched', DATASOURCE_NAME) if @headers.nil?
-          etag  =   @headers.fetch('ETag', nil)
-          etag  ||= @headers.fetch('Etag', nil)
-          etag  ||= @headers.fetch('etag', '')
-          etag  = etag.delete('"').delete("'") unless etag.empty?
+
+          etag = @headers.fetch('ETag', nil)
+          etag ||= @headers.fetch('Etag', nil)
+          etag ||= @headers.fetch('etag', '')
+          etag = etag.delete('"').delete("'") unless etag.empty?
           etag
         end
 
@@ -115,6 +114,7 @@ module CartoDB
         # @throws UninitializedError
         def last_modified_header
           raise UninitializedError.new('headers not fetched', DATASOURCE_NAME) if @headers.nil?
+
           last_modified =   @headers.fetch('Last-Modified', nil)
           last_modified ||= @headers.fetch('Last-modified', nil)
           last_modified ||= @headers.fetch('last-modified', '')
@@ -136,7 +136,7 @@ module CartoDB
 
         # Stores the data import item instance to use/manipulate it
         # @param value DataImport
-        def data_import_item=(value)
+        def data_import_item=(_value)
           nil
         end
 
@@ -151,6 +151,7 @@ module CartoDB
         # @throws UninitializedError
         def content_length_header
           raise UninitializedError.new('headers not fetched', DATASOURCE_NAME) if @headers.nil?
+
           content_length = @headers.fetch('Content-Length', nil)
           content_length ||= @headers.fetch('Content-length', nil)
           content_length ||= @headers.fetch('content-length', NO_CONTENT_SIZE_PROVIDED)
@@ -160,18 +161,18 @@ module CartoDB
         # Calculates a checksum of given url
         # @return string
         def checksum_of(url, etag, last_modified)
-          #noinspection RubyArgCount
-          Zlib::crc32(url + etag + last_modified).to_s
+          # noinspection RubyArgCount
+          Zlib.crc32(url + etag + last_modified).to_s
         end
 
         # HTTP (Typhoeus) options
         def http_options
           {
-              followlocation:   true,
-              ssl_verifypeer:   false,
-              ssl_verifyhost:   0,
-              timeout:          @http_timeout,
-              connecttimeout:  @http_connect_timeout
+            followlocation: true,
+            ssl_verifypeer: false,
+            ssl_verifyhost: 0,
+            timeout: @http_timeout,
+            connecttimeout: @http_connect_timeout
           }
         end
 

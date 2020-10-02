@@ -21,7 +21,7 @@ module Carto
       response = get_saml_response(saml_response_param)
       response.is_valid? && email_from_saml_response(response)
     rescue OneLogin::RubySaml::ValidationError
-      debug_response("Invalid SAML response", response)
+      debug_response('Invalid SAML response', response)
     end
 
     def logout_url_configured?
@@ -47,9 +47,7 @@ module Carto
       settings = saml_settings
 
       logout_request = OneLogin::RubySaml::SloLogoutrequest.new(saml_request_param)
-      if !logout_request.is_valid?
-        raise "IdP initiated LogoutRequest was not valid!"
-      end
+      raise 'IdP initiated LogoutRequest was not valid!' unless logout_request.is_valid?
 
       yield
 
@@ -78,7 +76,7 @@ module Carto
     def email_from_saml_response(saml_response)
       email = saml_response.attributes[email_attribute]
 
-      email.present? ? email : debug_response("SAML response lacks email", saml_response)
+      email.present? ? email : debug_response('SAML response lacks email', saml_response)
     end
 
     def debug_response(message, response)
@@ -130,5 +128,6 @@ module Carto
     def carto_saml_configuration
       @organization.try(:auth_saml_configuration).try(:deep_symbolize_keys)
     end
+
   end
 end

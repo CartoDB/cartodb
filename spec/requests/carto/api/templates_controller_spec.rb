@@ -24,7 +24,7 @@ describe Carto::Api::TemplatesController do
       max_supported_version: '2.0.0',
       source_visualization_id: @table.table_visualization.id,
       organization_id: @org_user_owner.organization.id,
-      required_tables: [ "#{@org_user_owner.database_schema}.#{@table.name}" ]
+      required_tables: ["#{@org_user_owner.database_schema}.#{@table.name}"]
     }
 
     @template_2_data = {
@@ -35,7 +35,7 @@ describe Carto::Api::TemplatesController do
       max_supported_version: '99.0.0',
       source_visualization_id: @other_table.table_visualization.id,
       organization_id: @org_user_owner.organization.id,
-      required_tables: [ "#{@org_user_owner.database_schema}.#{@other_table.name}" ]
+      required_tables: ["#{@org_user_owner.database_schema}.#{@other_table.name}"]
     }
 
     @template_3_data = {
@@ -46,31 +46,31 @@ describe Carto::Api::TemplatesController do
       max_supported_version: '666.0.0',
       source_visualization_id: @table.table_visualization.id,
       organization_id: @org_user_owner.organization.id,
-      required_tables: [ "#{@org_user_owner.database_schema}.#{@table.name}" ]
+      required_tables: ["#{@org_user_owner.database_schema}.#{@table.name}"]
     }
 
     @template = Carto::Template.new({
-      title: @template_1_data[:title],
-      code: @template_1_data[:code],
-      description: @template_1_data[:description],
-      min_supported_version: @template_1_data[:min_supported_version],
-      max_supported_version: @template_1_data[:max_supported_version],
-      source_visualization_id: @template_1_data[:source_visualization_id],
-      organization_id: @template_1_data[:organization_id],
-      required_tables: @template_1_data[:required_tables]
-      })
+                                      title: @template_1_data[:title],
+                                      code: @template_1_data[:code],
+                                      description: @template_1_data[:description],
+                                      min_supported_version: @template_1_data[:min_supported_version],
+                                      max_supported_version: @template_1_data[:max_supported_version],
+                                      source_visualization_id: @template_1_data[:source_visualization_id],
+                                      organization_id: @template_1_data[:organization_id],
+                                      required_tables: @template_1_data[:required_tables]
+                                    })
     @template.save
 
     @another_template_from_user = Carto::Template.new({
-      title: @template_2_data[:title],
-      code: @template_2_data[:code],
-      description: @template_2_data[:description],
-      min_supported_version: @template_2_data[:min_supported_version],
-      max_supported_version: @template_2_data[:max_supported_version],
-      source_visualization_id: @template_2_data[:source_visualization_id],
-      organization_id: @template_2_data[:organization_id],
-      required_tables: @template_2_data[:required_tables]
-      })
+                                                        title: @template_2_data[:title],
+                                                        code: @template_2_data[:code],
+                                                        description: @template_2_data[:description],
+                                                        min_supported_version: @template_2_data[:min_supported_version],
+                                                        max_supported_version: @template_2_data[:max_supported_version],
+                                                        source_visualization_id: @template_2_data[:source_visualization_id],
+                                                        organization_id: @template_2_data[:organization_id],
+                                                        required_tables: @template_2_data[:required_tables]
+                                                      })
     @another_template_from_user.save
 
     login(@org_user_owner)
@@ -153,15 +153,15 @@ describe Carto::Api::TemplatesController do
 
   it 'tests update action' do
     third_template = Carto::Template.new({
-      title: @template_3_data[:title],
-      code: @template_3_data[:code],
-      description: @template_3_data[:description],
-      min_supported_version: @template_3_data[:min_supported_version],
-      max_supported_version: @template_3_data[:max_supported_version],
-      source_visualization_id: @template_3_data[:source_visualization_id],
-      organization_id: @template_3_data[:organization_id],
-      required_tables: @template_3_data[:required_tables]
-    })
+                                           title: @template_3_data[:title],
+                                           code: @template_3_data[:code],
+                                           description: @template_3_data[:description],
+                                           min_supported_version: @template_3_data[:min_supported_version],
+                                           max_supported_version: @template_3_data[:max_supported_version],
+                                           source_visualization_id: @template_3_data[:source_visualization_id],
+                                           organization_id: @template_3_data[:organization_id],
+                                           required_tables: @template_3_data[:required_tables]
+                                         })
     third_template.save.should eq true
 
     new_fields = {
@@ -174,11 +174,11 @@ describe Carto::Api::TemplatesController do
       source_visualization_id: third_template[:source_visualization_id],
       # Doesn't changes but must be sent
       organization_id: third_template[:organization_id],
-      required_tables: [ "#{@org_user_owner.database_schema}.#{@table.name}",
-                         "#{@org_user_owner.database_schema}.#{@other_table.name}" ]
+      required_tables: ["#{@org_user_owner.database_schema}.#{@table.name}",
+                        "#{@org_user_owner.database_schema}.#{@other_table.name}"]
     }
 
-    put_json(api_v1_vis_templates_update_url(new_fields.merge({id: third_template.id}))) do |response|
+    put_json(api_v1_vis_templates_update_url(new_fields.merge({ id: third_template.id }))) do |response|
       response.status.should be_success
       response.body[:title].should eq new_fields[:title]
       response.body[:description].should eq new_fields[:description]
@@ -205,15 +205,15 @@ describe Carto::Api::TemplatesController do
 
   it 'tests destroy action' do
     third_template = Carto::Template.new({
-      title: @template_3_data[:title],
-      code: @template_3_data[:code],
-      description: @template_3_data[:description],
-      min_supported_version: @template_3_data[:min_supported_version],
-      max_supported_version: @template_3_data[:max_supported_version],
-      source_visualization_id: @template_3_data[:source_visualization_id],
-      organization_id: @template_3_data[:organization_id],
-      required_tables: @template_3_data[:required_tables]
-    })
+                                           title: @template_3_data[:title],
+                                           code: @template_3_data[:code],
+                                           description: @template_3_data[:description],
+                                           min_supported_version: @template_3_data[:min_supported_version],
+                                           max_supported_version: @template_3_data[:max_supported_version],
+                                           source_visualization_id: @template_3_data[:source_visualization_id],
+                                           organization_id: @template_3_data[:organization_id],
+                                           required_tables: @template_3_data[:required_tables]
+                                         })
     third_template.save.should eq true
 
     delete_json(api_v1_vis_templates_destroy_url(id: third_template.id)) do |response|
@@ -238,5 +238,4 @@ describe Carto::Api::TemplatesController do
       response.body[:items][0]['title'] = @template.title
     end
   end
-
 end

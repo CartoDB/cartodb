@@ -6,6 +6,7 @@ require_dependency 'carto/uuidhelper'
 
 # TODO: consider moving some of this to model scopes if convenient
 class Carto::VisualizationQueryBuilder
+
   include Carto::UUIDHelper
 
   def self.user_public_tables(user)

@@ -1,4 +1,4 @@
-require "resolv"
+require 'resolv'
 
 module CartoDB
 
@@ -20,7 +20,7 @@ module CartoDB
   SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'.freeze
   SURROGATE_NAMESPACE_VIZJSON = 'rj'.freeze
 
-  LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
+  LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html".freeze
 
   # Helper method to encapsulate Rails full URL generation compatible with our subdomainless mode
   # @param context ActionController::Base or a View or something that holds a request
@@ -64,7 +64,7 @@ module CartoDB
 
   # "Smart" subdomain extraction from the request, depending on configuration and /u/xxx url fragment
   def self.extract_subdomain(request)
-    user_domain = self.username_from_request(request)
+    user_domain = username_from_request(request)
     if user_domain.nil?
       if subdomainless_urls? && ip?(request.host)
         ''
@@ -88,17 +88,17 @@ module CartoDB
 
   # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.carto.com)
   def self.extract_host_subdomain(request)
-    self.username_from_request(request).nil? ? nil : self.subdomain_from_request(request)
+    username_from_request(request).nil? ? nil : subdomain_from_request(request)
   end
 
   # Warning, if subdomains are allowed includes the username as the subdomain,
   #  but else returns a base url WITHOUT '/u/username'
   def self.base_url(subdomain, org_username=nil, protocol_override=nil)
-    if self.subdomainless_urls?
-      base_url = self.domainless_base_url(subdomain, protocol_override)
-    else
-      base_url = self.subdomain_based_base_url(subdomain, org_username, protocol_override)
-    end
+    base_url = if subdomainless_urls?
+                 domainless_base_url(subdomain, protocol_override)
+               else
+                 subdomain_based_base_url(subdomain, org_username, protocol_override)
+               end
 
     base_url
   end
@@ -108,37 +108,39 @@ module CartoDB
 
   # Stores the non-user part of the domain (e.g. '.carto.com')
   def self.session_domain
-    @@session_domain ||= self.get_session_domain
+    @@session_domain ||= get_session_domain
   end
 
   def self.domain
     return @@domain if defined?(@@domain)
-    @@domain = self.get_domain
+
+    @@domain = get_domain
   end
 
   def self.subdomainless_urls?
     return @@subdomainless_urls if defined?(@@subdomainless_urls)
-    @@subdomainless_urls = self.get_subdomainless_urls
+
+    @@subdomainless_urls = get_subdomainless_urls
   end
 
   def self.account_host
-    @@account_host ||= self.get_account_host
+    @@account_host ||= get_account_host
   end
 
   def self.account_path
-    @@account_path ||= self.get_account_path
+    @@account_path ||= get_account_path
   end
 
   def self.data_library_path
-    @@data_library_path ||= self.get_data_library_path
+    @@data_library_path ||= get_data_library_path
   end
 
   def self.request_host=(value)
-    @@request_host=value
+    @@request_host = value
   end
 
   def self.protocol(protocol_override=nil)
-    default_protocol = self.use_https? ? 'https' : 'http'
+    default_protocol = use_https? ? 'https' : 'http'
     protocol_override.nil? ? default_protocol : protocol_override
   end
 
@@ -151,29 +153,30 @@ module CartoDB
 
   def self.request_host
     return @@request_host if defined?(@@request_host)
+
     @@request_host = ''
   end
 
   def self.hostname
-    @@hostname ||= self.get_hostname
+    @@hostname ||= get_hostname
   end
 
   def self.http_port
     return @@http_port if defined?(@@http_port)
-    @@http_port = self.get_http_port
+
+    @@http_port = get_http_port
   end
 
   def self.https_port
     return @@https_port if defined?(@@https_port)
-    @@https_port = self.get_https_port
+
+    @@https_port = get_https_port
   end
 
   def self.subdomain_based_base_url(subdomain, org_username=nil, protocol_override=nil)
     protocol = self.protocol(protocol_override)
-    base_url ="#{protocol}://#{subdomain}#{self.session_domain}#{protocol == 'http' ? self.http_port : self.https_port}"
-    unless org_username.nil?
-      base_url << "/u/#{org_username}"
-    end
+    base_url = "#{protocol}://#{subdomain}#{session_domain}#{protocol == 'http' ? http_port : https_port}"
+    base_url << "/u/#{org_username}" unless org_username.nil?
     base_url
   end
 
@@ -216,8 +219,8 @@ module CartoDB
   end
 
   def self.get_hostname
-    protocol = self.use_https? ? 'https' : 'http'
-    "#{protocol}://#{self.domain}#{self.http_port}"
+    protocol = use_https? ? 'https' : 'http'
+    "#{protocol}://#{domain}#{http_port}"
   end
 
   def self.get_http_port
@@ -234,9 +237,9 @@ module CartoDB
     if Rails.env.production? || Rails.env.staging?
       `hostname -f`.strip
     elsif Rails.env.development?
-      "vizzuality#{self.session_domain}"
+      "vizzuality#{session_domain}"
     else
-      "test#{self.session_domain}"
+      "test#{session_domain}"
     end
   end
 
@@ -266,7 +269,7 @@ module CartoDB
 
   def self.python_path
     if Cartodb.config[:importer]['python_path'].blank?
-      ""
+      ''
     else
       Cartodb.config[:importer]['python_path']
     end
@@ -282,6 +285,7 @@ module CartoDB
 
   def self.get_absolute_url(url)
     return unless url.present?
+
     uri = URI.parse(url)
     uri.scheme = protocol unless uri.scheme.present?
     uri.to_s
@@ -309,4 +313,5 @@ module CartoDB
       msg.inspect
     end
   end
+
 end

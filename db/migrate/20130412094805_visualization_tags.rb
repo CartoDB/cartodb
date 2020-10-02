@@ -1,13 +1,14 @@
 class VisualizationsTagsMigration < Sequel::Migration
+
   def up
-    SequelRails.connection.run(%q{
+    SequelRails.connection.run('
       ALTER TABLE "visualizations"
       ADD COLUMN tags text[]
-    })
-  end #up
-  
+    ')
+  end # up
+
   def down
     drop_column :visualizations, :tags
-  end #down
-end #VisualizationsTagsMigration
+  end # down
 
+end # VisualizationsTagsMigration

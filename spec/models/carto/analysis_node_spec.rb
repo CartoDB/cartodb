@@ -3,26 +3,26 @@ require 'spec_helper_min'
 describe Carto::AnalysisNode do
   let(:analysis_definition) do
     {
-      id: "a2",
-      type: "point-in-polygon",
-      options: { primary_source_name: "polygons_source" },
+      id: 'a2',
+      type: 'point-in-polygon',
+      options: { primary_source_name: 'polygons_source' },
       params: {
         points_source: {
-          id: "paradas_metro_madrid",
-          type: "source",
-          params: { query: "SELECT * FROM paradas_metro_madrid" },
-          options: { table_name: "paradas_metro_madrid" }
+          id: 'paradas_metro_madrid',
+          type: 'source',
+          params: { query: 'SELECT * FROM paradas_metro_madrid' },
+          options: { table_name: 'paradas_metro_madrid' }
         },
         polygons_source: {
-          id: "a1",
-          type: "buffer",
-          options: { kind: "car", time: "100", distance: "kilometers" },
+          id: 'a1',
+          type: 'buffer',
+          options: { kind: 'car', time: '100', distance: 'kilometers' },
           params: {
             source: {
-              id: "a0",
-              type: "source",
-              params: { query: "SELECT * FROM paradas_metro_madrid" },
-              options: { table_name: "paradas_metro_madrid" }
+              id: 'a0',
+              type: 'source',
+              params: { query: 'SELECT * FROM paradas_metro_madrid' },
+              options: { table_name: 'paradas_metro_madrid' }
             },
             radius: 2000,
             isolines: 1,

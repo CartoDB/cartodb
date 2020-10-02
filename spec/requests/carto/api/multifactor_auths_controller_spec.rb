@@ -62,7 +62,7 @@ describe Carto::Api::MultifactorAuthsController do
       post_json multifactor_auths_url, params, auth_headers do |response|
         response.status.should eq 422
         response = response.body
-        response[:errors].should include("param is missing or the value is empty: type")
+        response[:errors].should include('param is missing or the value is empty: type')
       end
     end
 
@@ -105,7 +105,7 @@ describe Carto::Api::MultifactorAuthsController do
       post_json verify_code_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
         response.status.should eq 403
         response = response.body
-        response[:errors].should include("The code is not valid")
+        response[:errors].should include('The code is not valid')
       end
     end
 

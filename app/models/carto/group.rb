@@ -4,7 +4,6 @@ require_dependency 'carto/helpers/auth_token_generator'
 require_relative 'paged_model'
 
 module Carto
-
   # Groups are created by the editor because of extension requests, so
   # standard Rails operations (creation, destruction, etc) doesn't trigger
   # extension management functions. In order to keep extension and database
@@ -15,6 +14,7 @@ module Carto
   # - add_users_with_extension
   # - remove_users_with_extension
   class Group < ActiveRecord::Base
+
     include PagedModel
     include AuthTokenGenerator
 
@@ -36,7 +36,9 @@ module Carto
 
       raise "Organization not found for database #{database_name}" unless organization
 
-      raise CartoDB::ModelAlreadyExistsError if Group.find_by_organization_id_and_name_and_database_role(organization.id, name, database_role)
+      if Group.find_by_organization_id_and_name_and_database_role(organization.id, name, database_role)
+        raise CartoDB::ModelAlreadyExistsError
+      end
 
       new(name: name, database_role: database_role, display_name: display_name, organization: organization)
     end
@@ -49,7 +51,7 @@ module Carto
       end
       # Extension triggers a request to the editor databases endpoint which actually creates the group
       group = Carto::Group.find_by_organization_id_and_name(organization.id, name)
-      raise "Group was not created by the extension. Is it installed and configured?" if group.nil?
+      raise 'Group was not created by the extension. Is it installed and configured?' if group.nil?
 
       group.display_name = display_name
       group.save
@@ -67,7 +69,9 @@ module Carto
     end
 
     def rename_group_with_extension(new_display_name)
-      raise CartoDB::ModelAlreadyExistsError if Group.find_by_organization_id_and_display_name(organization.id, new_display_name)
+      if Group.find_by_organization_id_and_display_name(organization.id, new_display_name)
+        raise CartoDB::ModelAlreadyExistsError
+      end
 
       new_name = Carto::Group.valid_group_name(new_display_name)
       organization.owner.in_database do |conn|

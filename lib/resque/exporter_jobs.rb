@@ -2,6 +2,7 @@ require_relative './base_job'
 
 module Resque
   class ExporterJobs < BaseJob
+
     @queue = :exports
 
     def self.perform(options = {})
@@ -10,5 +11,6 @@ module Resque
         Carto::VisualizationExport.find(options.symbolize_keys[:job_id]).run_export!(download_path: download_path)
       end)
     end
+
   end
 end

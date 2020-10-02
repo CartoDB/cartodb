@@ -1,4 +1,5 @@
 class Carto::Api::ReceivedNotificationPresenter
+
   include Carto::HtmlSafe
 
   def initialize(received_notification)
@@ -14,4 +15,5 @@ class Carto::Api::ReceivedNotificationPresenter
       read_at: @received_notification.read_at
     }
   end
+
 end

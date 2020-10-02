@@ -2,6 +2,7 @@ require_dependency 'carto/visualizations_export_service_2'
 
 module Carto
   module VisualizationBackupService
+
     include Carto::VisualizationsExportService2Exporter
     include Carto::VisualizationsExportService2Importer
     include ::LoggerHelper
@@ -19,11 +20,11 @@ module Carto
         category: category,
         export: export_json
       )
-    rescue StandardError => exception
+    rescue StandardError => e
       # The backup should not break the flow
       log_error(
         message: 'Error creating a visualization backup',
-        exception: exception,
+        exception: e,
         visualization: visualization
       )
     end
@@ -38,5 +39,6 @@ module Carto
       visualization_json = build_visualization_from_hash_export(backup.export)
       Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_json, full_restore: true)
     end
+
   end
 end

@@ -49,17 +49,17 @@ describe CartoDB::Importer2::ConnectorRunner do
   include FeatureFlagHelper
 
   describe 'with working connectors' do
-    it "Succeeds if parameters are correct" do
+    it 'Succeeds if parameters are correct' do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
-          table:    'thetable',
+          table: 'thetable',
           req1: 'a',
           req2: 'b',
           opt1: 'c'
         }
         options = {
-          pg:   @pg_options,
-          log:  @fake_log,
+          pg: @pg_options,
+          log: @fake_log,
           user: @user
         }
         @providers.each do |provider|
@@ -73,21 +73,21 @@ describe CartoDB::Importer2::ConnectorRunner do
         end
         DummyConnectorProvider.copies.size.should eq 1
         DummyConnectorProvider.copies[0][0].should eq 'cdb_importer'
-        DummyConnectorProvider.copies[0][1].should match /\Aimporter_/
+        DummyConnectorProvider.copies[0][1].should match(/\Aimporter_/)
       end
     end
 
-    it "Fails if parameters are invalid" do
+    it 'Fails if parameters are invalid' do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
-          table:    'thetable',
+          table: 'thetable',
           req1: 'a',
           req2: 'b',
           invalid_parameter: 'xyz'
         }
         options = {
-          pg:   @pg_options,
-          log:  @fake_log,
+          pg: @pg_options,
+          log: @fake_log,
           user: @user
         }
         @providers.each do |provider|
@@ -97,22 +97,22 @@ describe CartoDB::Importer2::ConnectorRunner do
             connector.run
             connector.success?.should be false
             connector.provider_name.should eq provider
-            @fake_log.to_s.should match /Invalid parameters: invalid_parameter/m
+            @fake_log.to_s.should match(/Invalid parameters: invalid_parameter/m)
           end
         end
       end
     end
 
-    it "Fails if parameters are missing" do
+    it 'Fails if parameters are missing' do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
-          table:    'thetable',
+          table: 'thetable',
           req1: 'a',
           opt1: 'c'
         }
         options = {
-          pg:   @pg_options,
-          log:  @fake_log,
+          pg: @pg_options,
+          log: @fake_log,
           user: @user
         }
         @providers.each do |provider|
@@ -122,55 +122,55 @@ describe CartoDB::Importer2::ConnectorRunner do
             connector.run
             connector.success?.should be false
             connector.provider_name.should eq provider
-            @fake_log.to_s.should match /Error Missing required parameters req2/m
+            @fake_log.to_s.should match(/Error Missing required parameters req2/m)
           end
         end
       end
     end
 
-    it "Fails without the feature flag" do
+    it 'Fails without the feature flag' do
       with_feature_flag @user, 'carto-connectors', false do
         parameters = {
-          table:    'thetable',
+          table: 'thetable',
           req1: 'a',
           req2: 'b'
         }
         options = {
-          pg:   @pg_options,
-          log:  @fake_log,
+          pg: @pg_options,
+          log: @fake_log,
           user: @user
         }
         @providers.each do |provider|
           config = { provider => { 'enabled' => true } }
           Cartodb.with_config connectors: config do
-            expect {
+            expect do
               connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
               connector.run
-            }.to raise_error(Carto::Connector::ConnectorsDisabledError)
+            end.to raise_error(Carto::Connector::ConnectorsDisabledError)
           end
         end
       end
     end
 
-    it "Fails if provider is not available" do
+    it 'Fails if provider is not available' do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
-          table:    'thetable',
+          table: 'thetable',
           req1: 'a',
-          req2: 'b',
+          req2: 'b'
         }
         options = {
-          pg:   @pg_options,
-          log:  @fake_log,
+          pg: @pg_options,
+          log: @fake_log,
           user: @user
         }
         @providers.each do |provider|
           config = { provider => { 'enabled' => false } }
           Cartodb.with_config connectors: config do
-            expect {
+            expect do
               connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
               connector.run
-            }.to raise_error(Carto::Connector::ConnectorsDisabledError)
+            end.to raise_error(Carto::Connector::ConnectorsDisabledError)
           end
         end
       end
@@ -178,16 +178,16 @@ describe CartoDB::Importer2::ConnectorRunner do
   end
 
   describe 'with failing connectors' do
-    it "Always fails" do
+    it 'Always fails' do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
-          table:    'thetable',
+          table: 'thetable',
           req1: 'a',
           req2: 'b'
         }
         options = {
-          pg:   @pg_options,
-          log:  @fake_log,
+          pg: @pg_options,
+          log: @fake_log,
           user: @user
         }
         @providers.each do |provider|
@@ -198,7 +198,7 @@ describe CartoDB::Importer2::ConnectorRunner do
               connector.run
               connector.success?.should be false
               connector.provider_name.should eq provider
-              @fake_log.to_s.should match /COPY ERROR/m
+              @fake_log.to_s.should match(/COPY ERROR/m)
             end
           end
         end
@@ -207,29 +207,27 @@ describe CartoDB::Importer2::ConnectorRunner do
   end
 
   describe 'with invalid provider' do
-
-    it "Fails at creation" do
+    it 'Fails at creation' do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
           provider: 'invalid_provider',
-          table:    'thetable',
+          table: 'thetable',
           req1: 'a',
           req2: 'b'
         }
         options = {
-          pg:   @pg_options,
-          log:  @fake_log,
+          pg: @pg_options,
+          log: @fake_log,
           user: @user
         }
-        expect {
+        expect do
           CartoDB::Importer2::ConnectorRunner.new(parameters.to_json, options)
-        }.to raise_error(Carto::Connector::InvalidParametersError)
+        end.to raise_error(Carto::Connector::InvalidParametersError)
       end
     end
   end
 
-  it "Fails if provider is not available for the user" do
-
+  it 'Fails if provider is not available for the user' do
     @providers.each do |provider|
       connector_provider = Carto::ConnectorProvider.find_by_name(provider)
       Carto::ConnectorConfiguration.create!(
@@ -241,23 +239,23 @@ describe CartoDB::Importer2::ConnectorRunner do
 
     with_feature_flag @user, 'carto-connectors', true do
       parameters = {
-        table:    'thetable',
+        table: 'thetable',
         req1: 'a',
         req2: 'b'
-    }
+      }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        pg: @pg_options,
+        log: @fake_log,
         user: @user
       }
       @providers.each do |provider|
         config = { provider => { 'enabled' => true } }
 
         Cartodb.with_config connectors: config do
-          expect {
+          expect do
             connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
             connector.run
-          }.to raise_error(Carto::Connector::ConnectorsDisabledError)
+          end.to raise_error(Carto::Connector::ConnectorsDisabledError)
         end
       end
     end
@@ -265,17 +263,17 @@ describe CartoDB::Importer2::ConnectorRunner do
     Carto::ConnectorConfiguration.where(user_id: @user.id).destroy_all
   end
 
-  it "Passes global configuration limits to the provider" do
+  it 'Passes global configuration limits to the provider' do
     with_feature_flag @user, 'carto-connectors', true do
       parameters = {
-        table:    'thetable',
+        table: 'thetable',
         req1: 'a',
         req2: 'b',
         opt1: 'c'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        pg: @pg_options,
+        log: @fake_log,
         user: @user
       }
       @providers.each do |provider|
@@ -285,14 +283,14 @@ describe CartoDB::Importer2::ConnectorRunner do
           connector.run
         end
       end
-      DummyConnectorProvider.copies.map(&:last).uniq.should eq [{enabled: true, max_rows: 10}]
+      DummyConnectorProvider.copies.map(&:last).uniq.should eq [{ enabled: true, max_rows: 10 }]
     end
   end
 
   it "Avoids copying data that hasn't changed" do
     with_feature_flag @user, 'carto-connectors', true do
       parameters = {
-        table:    'thetable',
+        table: 'thetable',
         req1: 'a',
         req2: 'b',
         opt1: 'c'
@@ -301,8 +299,8 @@ describe CartoDB::Importer2::ConnectorRunner do
       date_the_data_was_modified = DummyConnectorProviderWithModifiedDate::LAST_MODIFIED
       date_the_data_was_last_copied = date_the_data_was_modified
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        pg: @pg_options,
+        log: @fake_log,
         user: @user,
         previous_last_modified: date_the_data_was_last_copied
       }
@@ -317,17 +315,17 @@ describe CartoDB::Importer2::ConnectorRunner do
     end
   end
 
-  it "Copies data that has changed" do
+  it 'Copies data that has changed' do
     with_feature_flag @user, 'carto-connectors', true do
       parameters = {
-        table:    'thetable',
+        table: 'thetable',
         req1: 'a',
         req2: 'b',
         opt1: 'c'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        pg: @pg_options,
+        log: @fake_log,
         user: @user
       }
       provider = DummyConnectorProviderWithModifiedDate.provider_id
@@ -342,7 +340,7 @@ describe CartoDB::Importer2::ConnectorRunner do
       end
       DummyConnectorProviderWithModifiedDate.copies.size.should eq 1
       DummyConnectorProviderWithModifiedDate.copies[0][0].should eq 'cdb_importer'
-      DummyConnectorProviderWithModifiedDate.copies[0][1].should match /\Aimporter_/
+      DummyConnectorProviderWithModifiedDate.copies[0][1].should match(/\Aimporter_/)
     end
   end
 end

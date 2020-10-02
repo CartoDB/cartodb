@@ -1,6 +1,7 @@
 module Carto
   module Db
     class UserSchemaMover
+
       # Approach: move object by object (tables, views, materialized and functions)
       STEPS_STRATEGY = :move_schema_content_step_by_step
 
@@ -105,6 +106,7 @@ module Carto
       def functions(db, schema = @user.database_schema, owner_role = @user.database_username)
         Carto::Db::Database.new(@user.database_name, db).functions(schema, owner_role)
       end
+
     end
   end
 end

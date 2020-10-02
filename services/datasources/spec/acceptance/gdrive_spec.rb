@@ -5,7 +5,6 @@ require_relative '../doubles/user'
 include CartoDB::Datasources
 
 describe Url::GDrive do
-
   def get_config
     @config ||= YAML.load_file("#{File.dirname(__FILE__)}/../../../../config/app_config.yml")['defaults']['oauth']['gdrive']
   end
@@ -13,7 +12,7 @@ describe Url::GDrive do
   describe '#manual_test' do
     it 'with user interaction, tests the full oauth flow and lists files of an account' do
       config = get_config
-      if !config.include?(:refresh_token)
+      unless config.include?(:refresh_token)
         pending('If config unset, this test requires manual running. Check its source code to see what to do')
       end
 

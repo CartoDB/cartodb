@@ -9,9 +9,11 @@ module Carto
     #   The types of tuple values may vary between Sequel and ActiveRecord (ActiveRecord keeps them as text)
     #   If a block is passed to this method it receives each of the rows
     class SqlInterface
+
       class Error < RuntimeError; end
 
       module SequelConnection
+
         def run(sql)
           @db_connection.run(sql)
           nil
@@ -29,9 +31,11 @@ module Carto
         rescue Sequel::DatabaseError => e
           raise Error.new(e.message)
         end
+
       end
 
       module ActiveRecordConnection
+
         def run(sql)
           @db_connection.execute(sql)
           nil
@@ -42,7 +46,7 @@ module Carto
         def fetch(sql, &block)
           rows = @db_connection.select_all(sql).map(&:symbolize_keys)
           if block
-            rows.each &block
+            rows.each(&block)
             nil
           else
             rows
@@ -50,6 +54,7 @@ module Carto
         rescue ActiveRecord::StatementInvalid => e
           raise Error.new(e.message)
         end
+
       end
 
       def initialize(db_connection)
@@ -60,9 +65,10 @@ module Carto
         when ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
           extend ActiveRecordConnection
         else
-          raise "Invalid database connection"
+          raise 'Invalid database connection'
         end
       end
+
     end
   end
 end

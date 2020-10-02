@@ -3,7 +3,7 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     alter_table :assets do
       add_foreign_key :organization_id,
                       :organizations,
@@ -14,7 +14,7 @@ migration(
       add_column :storage_info, :json
     end
   end,
-  Proc.new do
+  proc do
     alter_table :assets do
       drop_column :organization_id
       drop_column :storage_info

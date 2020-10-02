@@ -2,6 +2,7 @@ require_relative '../../lib/carto/table_utils'
 require_dependency 'carto/bounding_box_utils'
 
 class Carto::BoundingBoxService
+
   include Carto::TableUtils
   include ::LoggerHelper
 
@@ -14,6 +15,7 @@ class Carto::BoundingBoxService
     # (lon,lat) as comes out from postgis
     result = current_bbox_using_stats
     return nil unless result
+
     {
       maxx: Carto::BoundingBoxUtils.bound_for(result[:max][0].to_f, :minx, :maxx),
       maxy: Carto::BoundingBoxUtils.bound_for(result[:max][1].to_f, :miny, :maxy),
@@ -56,9 +58,9 @@ class Carto::BoundingBoxService
         min: [result['minx'].to_f, result['miny'].to_f]
       }
     end
-  rescue PG::Error => exception
-    log_error(exception: exception, table: { name: @table_name })
-    raise BoundingBoxError.new("Can't calculate the bounding box for table #{@table_name}. ERROR: #{exception}")
+  rescue PG::Error => e
+    log_error(exception: e, table: { name: @table_name })
+    raise BoundingBoxError.new("Can't calculate the bounding box for table #{@table_name}. ERROR: #{e}")
   end
 
   def get_bbox_values
@@ -73,4 +75,5 @@ class Carto::BoundingBoxService
 
     result
   end
+
 end

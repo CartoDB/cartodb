@@ -1,4 +1,4 @@
-shared_examples_for "layer presenters" do |tested_klass, model_klass|
+shared_examples_for 'layer presenters' do |tested_klass, model_klass|
   describe '#show legacy tests' do
     def set_tested_classes(tested_class, model_class)
       @tested_class = tested_class
@@ -16,7 +16,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
     before(:all) do
       set_tested_classes(tested_klass, model_klass)
-      puts "Testing class #{tested_klass.to_s} with model #{model_klass.to_s}"
+      puts "Testing class #{tested_klass} with model #{model_klass}"
 
       @user_1 = FactoryGirl.create(:valid_user)
       @user_2 = FactoryGirl.create(:valid_user)
@@ -37,20 +37,20 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       delete_user_data @user_2
     end
 
-    it "Tests to_json()" do
+    it 'Tests to_json()' do
       layer_1 = Layer.create({
-          kind: 'tiled'
-        })
+                               kind: 'tiled'
+                             })
       layer_2 = Layer.create({
-          kind: 'carto',
-          order: 13,
-          options: {
-            'fake' => 'value',
-            'table_name' => 'test_table'
-            },
-          infowindow: { 'fake2' => 'val2' },
-          tooltip: { 'fake3' => 'val3' }
-        })
+                               kind: 'carto',
+                               order: 13,
+                               options: {
+                                 'fake' => 'value',
+                                 'table_name' => 'test_table'
+                               },
+                               infowindow: { 'fake2' => 'val2' },
+                               tooltip: { 'fake3' => 'val3' }
+                             })
 
       layer_2 = instance_of_tested_model(layer_2)
       presenter = instance_of_tested_class(layer_2)
@@ -63,12 +63,12 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       json_data['infowindow'].should == layer_2.infowindow
       json_data['tooltip'].should == layer_2.tooltip
 
-      presenter_options =  {
-          viewer_user: @user_2,
-          user: @user_1
-        }
+      presenter_options = {
+        viewer_user: @user_2,
+        user: @user_1
+      }
 
-      #no changes to layer_2
+      # no changes to layer_2
       presenter = instance_of_tested_class(layer_2, presenter_options)
       json_data = JSON.parse(presenter.to_json)
       # to_json shouldn't change table_name even if viewer/user sent at presenter options
@@ -305,24 +305,24 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
     it 'Tests to_vizjson_v1()' do
       layer_parent = Layer.create({
-          kind: 'tiled'
-        })
+                                    kind: 'tiled'
+                                  })
       layer_parent = instance_of_tested_model(layer_parent)
 
       layer = Layer.create({
-          kind: 'carto',
-          order: 5,
-          options: {
-            'fake' => 'value',
-            'table_name' => 'my_test_table',
-            'opt1' => 'val1',
-            },
-          infowindow: {
-              'template' => nil,
-              'fake2' => 'val2'
-            },
-          tooltip: { 'fake3' => 'val3' }
-        })
+                             kind: 'carto',
+                             order: 5,
+                             options: {
+                               'fake' => 'value',
+                               'table_name' => 'my_test_table',
+                               'opt1' => 'val1'
+                             },
+                             infowindow: {
+                               'template' => nil,
+                               'fake2' => 'val2'
+                             },
+                             tooltip: { 'fake3' => 'val3' }
+                           })
       layer = instance_of_tested_model(layer)
 
       expected_vizjson = {
@@ -338,7 +338,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         }
       }
 
-      presenter_options =  { }
+      presenter_options = {}
 
       presenter_configuration = {
         layer_opts: {
@@ -362,7 +362,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       expected_vizjson[:options] = {
         'fake' => 'value',
         'table_name' => 'my_test_table',
-        'opt1' => 'val1',
+        'opt1' => 'val1'
       }
 
       vizjson = instance_of_tested_class(layer, presenter_options, presenter_configuration).to_vizjson_v1
@@ -376,40 +376,38 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
     end
 
     it 'Tests to_vizjson_v2()' do
-      maps_api_template = "http://{user}.localhost.lan:8181"
-      sql_api_template = "http://{user}.localhost.lan:8080"
+      maps_api_template = 'http://{user}.localhost.lan:8181'
+      sql_api_template = 'http://{user}.localhost.lan:8080'
 
       # Modules do not use '.any_instance' for stubbing
       ApplicationHelper.stubs(:maps_api_template).returns(maps_api_template)
       ApplicationHelper.stubs(:sql_api_template).returns(sql_api_template)
 
-
       stat_tag = '00000000-0000-0000-0000-000000000000'
 
       layer_parent = Layer.create({
-          kind: 'tiled'
-        })
+                                    kind: 'tiled'
+                                  })
       layer_parent = instance_of_tested_model(layer_parent)
 
       # Base, which should be a poro but with symbols
 
       vizjson = instance_of_tested_class(layer_parent).to_vizjson_v2
       vizjson[:id].should == layer_parent.id
-      vizjson[:kind].should == nil
+      vizjson[:kind].should.nil?
       vizjson[:type].should == layer_parent.kind
 
-      presenter_options =  {
+      presenter_options = {
         visualization_id: stat_tag
       }
 
-
       # torque layer with very basic options
       layer = Layer.create({
-          kind: 'torque',
-          options: {
-              'table_name' => 'my_test_table',
-            },
-        })
+                             kind: 'torque',
+                             options: {
+                               'table_name' => 'my_test_table'
+                             }
+                           })
       layer = instance_of_tested_model(layer)
 
       expected_vizjson = {
@@ -418,20 +416,20 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         order: layer.order,
         legend: nil,
         options: {
-            stat_tag: stat_tag,
-            maps_api_template: maps_api_template,
-            sql_api_template: sql_api_template,
-            tiler_protocol: nil,
-            tiler_domain: nil,
-            tiler_port: nil,
-            sql_api_protocol: nil,
-            sql_api_domain: nil,
-            sql_api_endpoint: nil,
-            sql_api_port: nil,
-            layer_name: layer.options['table_name'],
-            'table_name' => layer.options['table_name'],
-            'query' => "select * from #{layer.options['table_name']}"
-          }
+          stat_tag: stat_tag,
+          maps_api_template: maps_api_template,
+          sql_api_template: sql_api_template,
+          tiler_protocol: nil,
+          tiler_domain: nil,
+          tiler_port: nil,
+          sql_api_protocol: nil,
+          sql_api_domain: nil,
+          sql_api_endpoint: nil,
+          sql_api_port: nil,
+          layer_name: layer.options['table_name'],
+          'table_name' => layer.options['table_name'],
+          'query' => "select * from #{layer.options['table_name']}"
+        }
       }
 
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
@@ -439,13 +437,13 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       # torque layer, different viewer
       layer = Layer.create({
-          kind: 'torque',
-          options: {
-            'table_name' => 'my_test_table',
-            # This is only for compatibility with old LayerModule::Presenter, new one checkes in the presenter options
-            'user_name' => @user_1.database_schema
-            },
-        })
+                             kind: 'torque',
+                             options: {
+                               'table_name' => 'my_test_table',
+                               # This is only for compatibility with old LayerModule::Presenter, new one checkes in the presenter options
+                               'user_name' => @user_1.database_schema
+                             }
+                           })
       layer = instance_of_tested_model(layer)
 
       expected_vizjson[:id] = layer.id
@@ -453,12 +451,12 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       expected_vizjson[:options]['query'] = "select * from public.#{layer.options['table_name']}"
       expected_vizjson[:options]['user_name'] = @user_1.database_schema
 
-      presenter_options =  {
-          visualization_id: stat_tag,
-          viewer_user: @user_2,
-          # New presenter way of sending a viewer that's different from the owner
-          user: @user_1
-        }
+      presenter_options = {
+        visualization_id: stat_tag,
+        viewer_user: @user_2,
+        # New presenter way of sending a viewer that's different from the owner
+        user: @user_1
+      }
 
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
       vizjson.should == expected_vizjson
@@ -493,17 +491,17 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       # torque layer, custom query
       layer = Layer.create({
-          kind: 'torque',
-          options: {
-            'query' => 'SELECT * FROM my_test_table LIMIT 5',
-            'table_name' => 'my_test_table',
-            },
-        })
+                             kind: 'torque',
+                             options: {
+                               'query' => 'SELECT * FROM my_test_table LIMIT 5',
+                               'table_name' => 'my_test_table'
+                             }
+                           })
       layer = instance_of_tested_model(layer)
 
-      presenter_options =  {
-          visualization_id: stat_tag
-        }
+      presenter_options = {
+        visualization_id: stat_tag
+      }
 
       expected_vizjson[:id] = layer.id
       expected_vizjson[:options][:layer_name] = layer.options['table_name']
@@ -516,20 +514,20 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       # torque layer, with wrapping
       layer = Layer.create({
-          kind: 'torque',
-          options: {
-            'query' => 'SELECT * FROM my_test_table LIMIT 5',
-            'table_name' => 'my_test_table',
-            'query_wrapper' =>  "select * from (<%= sql %>)",
-            # This options shouldn't appear as is not listed at presnter TORQUE_ATTRS
-            'wadus' => 'whatever'
-            }
-        })
+                             kind: 'torque',
+                             options: {
+                               'query' => 'SELECT * FROM my_test_table LIMIT 5',
+                               'table_name' => 'my_test_table',
+                               'query_wrapper' => 'select * from (<%= sql %>)',
+                               # This options shouldn't appear as is not listed at presnter TORQUE_ATTRS
+                               'wadus' => 'whatever'
+                             }
+                           })
       layer = instance_of_tested_model(layer)
 
-      presenter_options =  {
-          visualization_id: stat_tag
-        }
+      presenter_options = {
+        visualization_id: stat_tag
+      }
 
       expected_vizjson[:id] = layer.id
       expected_vizjson[:options]['query'] = "select * from (#{layer.options['query']})"
@@ -537,21 +535,20 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
       vizjson.should == expected_vizjson
 
-
       # CartoDB layer, minimal options
       layer = Layer.create({
-          kind: 'carto',
-          options: {
-              'table_name' => 'my_test_table',
-              'style_version' => '2.1.1',
-              'interactivity' => 'something'
-            },
-        })
+                             kind: 'carto',
+                             options: {
+                               'table_name' => 'my_test_table',
+                               'style_version' => '2.1.1',
+                               'interactivity' => 'something'
+                             }
+                           })
       layer = instance_of_tested_model(layer)
 
-      presenter_options =  {
-          visualization_id: stat_tag
-        }
+      presenter_options = {
+        visualization_id: stat_tag
+      }
 
       expected_vizjson = {
         id: layer.id,
@@ -582,15 +579,15 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
           'interactivity' => 'something',
           'tile_style' => '/* aaa */ #bbb{ marker-width: 12; } ',
           'legend' => {
-            'type' => "custom",
+            'type' => 'custom',
             'show_title' => true,
-            'title' => "xxx",
-            'template' => "",
+            'title' => 'xxx',
+            'template' => '',
             'items' => [
               {
-                'name' => "yyy",
+                'name' => 'yyy',
                 'visible' => true,
-                'value' => "#ccc",
+                'value' => '#ccc',
                 'sync' => true
               }
             ]
@@ -601,16 +598,16 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         },
         infowindow: {
           'fields' => nil,
-          'template_name' => "infowindow_light",
-          'template' => "<div></div>",
+          'template_name' => 'infowindow_light',
+          'template' => '<div></div>',
           'alternative_names' => {},
           'width' => 200,
           'maxHeight' => 100
         },
         tooltip: {
           'fields' => nil,
-          'template_name' => "tooltip_light",
-          'template' => "<div></div>",
+          'template_name' => 'tooltip_light',
+          'template' => '<div></div>',
           'alternative_names' => {},
           'maxHeight' => 180
         }
@@ -640,46 +637,46 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       # CartoDB layer, non default fields filled
       layer = Layer.create({
-          kind: 'carto',
-          options: {
-              'table_name' => 'my_test_table',
-              'style_version' => '2.1.1',
-              'interactivity' => 'something',
-              'tile_style' => '/* aaa */ #bbb{ marker-width: 12; } ',
-              'legend' => {
-                  'type' => "custom",
-                  'show_title' => true,
-                  'title' => "xxx",
-                  'template' => "",
-                  'items' => [
-                    {
-                      'name' => "yyy",
-                      'visible' => true,
-                      'value' => "#ccc",
-                      'sync' => true
-                    }
-                  ]
-                },
-              'visible' => true,
-              # Shouldn't appear
-              'wadus' => 'whatever'
-            },
-          infowindow: {
-              'fields' => nil,
-              'template_name' => "infowindow_light",
-              'template' => "<div></div>",
-              'alternative_names' => { },
-              'width' => 200,
-              'maxHeight' => 100
-            },
-          tooltip: {
-              'fields' => nil,
-              'template_name' => "tooltip_light",
-              'template' => "<div></div>",
-              'alternative_names' => { },
-              'maxHeight' => 180
-            }
-        })
+                             kind: 'carto',
+                             options: {
+                               'table_name' => 'my_test_table',
+                               'style_version' => '2.1.1',
+                               'interactivity' => 'something',
+                               'tile_style' => '/* aaa */ #bbb{ marker-width: 12; } ',
+                               'legend' => {
+                                 'type' => 'custom',
+                                 'show_title' => true,
+                                 'title' => 'xxx',
+                                 'template' => '',
+                                 'items' => [
+                                   {
+                                     'name' => 'yyy',
+                                     'visible' => true,
+                                     'value' => '#ccc',
+                                     'sync' => true
+                                   }
+                                 ]
+                               },
+                               'visible' => true,
+                               # Shouldn't appear
+                               'wadus' => 'whatever'
+                             },
+                             infowindow: {
+                               'fields' => nil,
+                               'template_name' => 'infowindow_light',
+                               'template' => '<div></div>',
+                               'alternative_names' => {},
+                               'width' => 200,
+                               'maxHeight' => 100
+                             },
+                             tooltip: {
+                               'fields' => nil,
+                               'template_name' => 'tooltip_light',
+                               'template' => '<div></div>',
+                               'alternative_names' => {},
+                               'maxHeight' => 180
+                             }
+                           })
       layer = instance_of_tested_model(layer)
 
       expected_vizjson = {
@@ -705,19 +702,19 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       # CartoDB layer with `Full` options flag
       layer = Layer.create({
-          kind: 'carto',
-          options: {
-              'table_name' => 'my_test_table',
-              'interactivity' => 'something',
-              'wadus' => 'whatever'
-            }
-        })
+                             kind: 'carto',
+                             options: {
+                               'table_name' => 'my_test_table',
+                               'interactivity' => 'something',
+                               'wadus' => 'whatever'
+                             }
+                           })
       layer = instance_of_tested_model(layer)
 
-      presenter_options =  {
-          visualization_id: stat_tag,
-          full: true
-        }
+      presenter_options = {
+        visualization_id: stat_tag,
+        full: true
+      }
 
       expected_vizjson = {
         id: layer.id,
@@ -728,16 +725,15 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         legend: nil,
         visible: nil,
         options: {
-            'table_name' => layer.options['table_name'],
-            'interactivity' => layer.options['interactivity'],
-            'wadus' => 'whatever'
-          }
+          'table_name' => layer.options['table_name'],
+          'interactivity' => layer.options['interactivity'],
+          'wadus' => 'whatever'
+        }
       }
 
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
       puts vizjson.inspect
       vizjson.should == expected_vizjson
     end
-
   end
 end

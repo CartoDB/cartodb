@@ -2,6 +2,7 @@ require 'singleton'
 
 module Carto
   class Definition
+
     include Singleton
     include ::LoggerHelper
 
@@ -21,5 +22,6 @@ module Carto
 
       raise message
     end
+
   end
 end

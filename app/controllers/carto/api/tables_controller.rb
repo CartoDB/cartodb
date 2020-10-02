@@ -4,6 +4,7 @@ require_relative '../../../models/carto/user_table'
 module Carto
   module Api
     class TablesController < ::Api::ApplicationController
+
       ssl_required :show, :create, :update
 
       before_filter :set_start_time
@@ -55,7 +56,7 @@ module Carto
       end
 
       def update
-        # TODO This endpoint is only used to geocode from editor, passing `latitude_column` and `longitude_column`
+        # TODO: This endpoint is only used to geocode from editor, passing `latitude_column` and `longitude_column`
         # TODO It also supports attributes assignement, but this is not called from our frontend
         table = @user_table.service
         warnings = []
@@ -95,6 +96,7 @@ module Carto
       def write_privileges?
         head(401) unless current_user && @user_table.visualization.writable_by?(current_user)
       end
+
     end
   end
 end

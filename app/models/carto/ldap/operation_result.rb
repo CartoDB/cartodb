@@ -7,9 +7,9 @@ module Carto
 
       CODE_UNKNOWN = -1
 
-      def initialize(code = CODE_UNKNOWN, error_message = "", matched_dn = "", message = "")
+      def initialize(code = CODE_UNKNOWN, error_message = '', matched_dn = '', message = '')
         @code = code ||
-        @error_message = error_message
+                @error_message = error_message
         @matched_dn = matched_dn
         @message = message
       end
@@ -18,10 +18,10 @@ module Carto
 
       def to_hash
         {
-          code:           code,
-          message:        message,
-          error_message:  error_message,
-          matched_dn:     matched_dn
+          code: code,
+          message: message,
+          error_message: error_message,
+          matched_dn: matched_dn
         }
       end
 
@@ -32,6 +32,7 @@ module Carto
       def failure?
         !success?
       end
+
     end
   end
 end

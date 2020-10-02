@@ -2,7 +2,6 @@ require 'spec_helper_min'
 require 'carto/oauth/google/api'
 
 describe Carto::Oauth::Google::Api do
-
   before(:all) do
     @valid_token = 'valid_token'
     stub_api_request(200, 'userinfo_valid_response.json')
@@ -52,7 +51,7 @@ describe Carto::Oauth::Google::Api do
     response_path = File.join(File.dirname(__FILE__), response_filename)
     response = File.open(response_path).read
 
-    Typhoeus.stub(/openidconnect\.googleapis\.com\/v1\/userinfo\?access_token=#{@valid_}/).and_return(
+    Typhoeus.stub(%r{openidconnect\.googleapis\.com/v1/userinfo\?access_token=#{@valid_}}).and_return(
       Typhoeus::Response.new(code: code, body: response)
     )
   end

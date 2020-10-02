@@ -1,6 +1,7 @@
 module Carto
   module Api
     class LegendsController < ::Api::ApplicationController
+
       ssl_required :index, :show, :create, :update, :destroy
 
       before_filter :load_layer,
@@ -68,7 +69,6 @@ module Carto
                visualization.writable_by?(current_viewer)
           raise Carto::UnauthorizedError.new
         end
-
       rescue ActiveRecord::RecordNotFound
         raise Carto::LoadError.new('Visualization not found')
       end
@@ -82,6 +82,7 @@ module Carto
       def legend_params
         params.slice(:title, :pre_html, :post_html, :type, :definition, :conf).permit!
       end
+
     end
   end
 end

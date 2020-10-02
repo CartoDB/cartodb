@@ -6,6 +6,7 @@ module Carto
   module Oauth
     module Github
       class Api < Carto::Oauth::Api
+
         attr_reader :access_token
 
         def student?
@@ -34,6 +35,7 @@ module Carto
           unless user
             user = User.where(email: email, github_user_id: nil).first
             return false unless user
+
             user.github_user_id = id
             user.save
           end
@@ -110,15 +112,16 @@ module Carto
           }
           if response
             trace_info.merge!(response: {
-              code: response.code,
-              headers: response.headers,
-              body: response.body,
-              status: response.return_code
-            })
+                                code: response.code,
+                                headers: response.headers,
+                                body: response.body,
+                                status: response.return_code
+                              })
           end
           log_error(trace_info)
           nil
         end
+
       end
     end
   end

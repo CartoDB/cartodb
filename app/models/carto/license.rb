@@ -1,5 +1,4 @@
 module Carto
-
   class License
 
     MIT_LICENSE = :mit
@@ -32,25 +31,23 @@ module Carto
       CC_BY_NC_ND_LICENSE => { id: CC_BY_NC_ND_LICENSE, name: 'CC BY-NC-ND: Attribution + Noncommercial + NoDerivatives' },
       PUBLIC_DOMAIN_LICENSE => { id: PUBLIC_DOMAIN_LICENSE, name: 'Public domain' },
       OPEN_GOVERNMENT_LICENSE => { id: OPEN_GOVERNMENT_LICENSE, name: 'Open Government License' }
-    }
+    }.freeze
 
     attr_reader :id, :name
 
     private_class_method :new
 
     def self.find(license_id)
-      if !license_id.nil?  && !license_id.empty? && LICENSE_VALUES.has_key?(license_id)
+      if !license_id.nil? && !license_id.empty? && LICENSE_VALUES.has_key?(license_id)
         data = LICENSE_VALUES[license_id]
         license = new(data[:id], data[:name])
         license
-      else
-        return nil
       end
     end
 
     def self.all
       values = []
-      LICENSE_VALUES.each do |k, v|
+      LICENSE_VALUES.each do |k, _v|
         values << find(k)
       end
       values
@@ -64,5 +61,6 @@ module Carto
       self.id = id
       self.name = name
     end
+
   end
 end

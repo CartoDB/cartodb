@@ -2,6 +2,7 @@ module Carto
   module OauthProvider
     module Scopes
       class SchemasScope < DefaultScope
+
         CREATE_PERMISSIONS = ['create'].freeze
 
         PERMISSIONS = {
@@ -9,7 +10,7 @@ module Carto
         }.freeze
 
         DESCRIPTIONS = {
-          c: "%<schema_name>s schema (create tables)"
+          c: '%<schema_name>s schema (create tables)'
         }.freeze
 
         attr_reader :schema
@@ -28,7 +29,7 @@ module Carto
         end
 
         def description(permission = @permission, schema = @schema)
-          DESCRIPTIONS[permission] % { schema_name: schema }
+          format(DESCRIPTIONS[permission], schema_name: schema)
         end
 
         def permission
@@ -81,6 +82,7 @@ module Carto
           end
           valid_scopes
         end
+
       end
     end
   end

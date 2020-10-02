@@ -29,7 +29,7 @@ module CartoDB
       PARAM_NEXT_PAGE   = :next
       PARAM_PUBLISHER   = :publisher
 
-      REDIS_KEY = 'importer:twittersearch:rl'
+      REDIS_KEY = 'importer:twittersearch:rl'.freeze
       # default values
       REDIS_RL_CONCURRENCY = 8
       REDIS_RL_TTL = 4
@@ -41,11 +41,18 @@ module CartoDB
       # @param redis_storage Redis|nil (optional)
       def initialize(config, redis_storage = nil, pre_json_parse_cleaner = nil)
         raise TwitterConfigException.new(CONFIG_AUTH_REQUIRED) if config[CONFIG_AUTH_REQUIRED].nil?
+
         if config[CONFIG_AUTH_REQUIRED]
-          raise TwitterConfigException.new(CONFIG_AUTH_USERNAME) if config[CONFIG_AUTH_USERNAME].nil? or config[CONFIG_AUTH_USERNAME].empty?
-          raise TwitterConfigException.new(CONFIG_AUTH_PASSWORD) if config[CONFIG_AUTH_PASSWORD].nil? or config[CONFIG_AUTH_PASSWORD].empty?
+          if config[CONFIG_AUTH_USERNAME].nil? || config[CONFIG_AUTH_USERNAME].empty?
+            raise TwitterConfigException.new(CONFIG_AUTH_USERNAME)
+          end
+          if config[CONFIG_AUTH_PASSWORD].nil? || config[CONFIG_AUTH_PASSWORD].empty?
+            raise TwitterConfigException.new(CONFIG_AUTH_PASSWORD)
+          end
         end
-        raise TwitterConfigException.new(CONFIG_SEARCH_URL) if config[CONFIG_SEARCH_URL].nil? or config[CONFIG_SEARCH_URL].empty?
+        if config[CONFIG_SEARCH_URL].nil? || config[CONFIG_SEARCH_URL].empty?
+          raise TwitterConfigException.new(CONFIG_SEARCH_URL)
+        end
 
         @config = config
         # Defaults for ratelimit (not critical if not present)
@@ -56,13 +63,15 @@ module CartoDB
 
         @redis = redis_storage
 
-        @pre_json_parse_cleaner = pre_json_parse_cleaner if (!pre_json_parse_cleaner.nil? && pre_json_parse_cleaner.respond_to?(:clean_string))
+        if !pre_json_parse_cleaner.nil? && pre_json_parse_cleaner.respond_to?(:clean_string)
+          @pre_json_parse_cleaner = pre_json_parse_cleaner
+        end
 
         @config[CONFIG_REDIS_RL_ACTIVE] = false if @redis.nil?
 
         @more_results_cursor = nil
         @params = {
-            PARAM_MAXRESULTS => MIN_PAGE_RESULTS
+          PARAM_MAXRESULTS => MIN_PAGE_RESULTS
         }
       end
 
@@ -72,11 +81,11 @@ module CartoDB
       end
 
       def params=(value)
-        @params = value if value.kind_of? Hash
+        @params = value if value.is_a? Hash
       end
 
       def query_param=(value)
-        @params[PARAM_QUERY] = value unless (value.nil? || value.empty?)
+        @params[PARAM_QUERY] = value unless value.nil? || value.empty?
       end
 
       # @param more_results_cursor String|nil
@@ -88,8 +97,11 @@ module CartoDB
       #   ]
       # }
       def fetch_results(more_results_cursor = nil)
-        params = query_payload(more_results_cursor.nil? ? @params \
-                                                        : @params.merge({PARAM_NEXT_PAGE => more_results_cursor}))
+        params = query_payload(if more_results_cursor.nil?
+                                 @params
+                               else
+                                 @params.merge({ PARAM_NEXT_PAGE => more_results_cursor })
+                               end)
 
         if @config[CONFIG_REDIS_RL_ACTIVE]
           # TODO: proper rate limiting (previous one was broken)
@@ -105,7 +117,7 @@ module CartoDB
           ::JSON.parse(
             @pre_json_parse_cleaner.nil? ? response.body : @pre_json_parse_cleaner.clean_string(response.body),
             symbolize_names: true
-            )
+          )
         end
       end
 
@@ -113,30 +125,34 @@ module CartoDB
 
       def query_payload(params)
         payload = {
-            PARAM_QUERY => params[PARAM_QUERY]
+          PARAM_QUERY => params[PARAM_QUERY]
         }
-        payload[PARAM_FROMDATE] = params[PARAM_FROMDATE] unless params[PARAM_FROMDATE].nil? or params[PARAM_FROMDATE].empty?
-        payload[PARAM_TODATE] = params[PARAM_TODATE] unless params[PARAM_TODATE].nil? or params[PARAM_TODATE].empty?
+        unless params[PARAM_FROMDATE].nil? || params[PARAM_FROMDATE].empty?
+          payload[PARAM_FROMDATE] = params[PARAM_FROMDATE]
+        end
+        payload[PARAM_TODATE] = params[PARAM_TODATE] unless params[PARAM_TODATE].nil? || params[PARAM_TODATE].empty?
         if !params[PARAM_MAXRESULTS].nil? && params[PARAM_MAXRESULTS].is_a?(Integer) \
            && params[PARAM_MAXRESULTS] >= MIN_PAGE_RESULTS && params[PARAM_MAXRESULTS] <= MAX_PAGE_RESULTS
-        payload[PARAM_MAXRESULTS] = params[PARAM_MAXRESULTS]
+          payload[PARAM_MAXRESULTS] = params[PARAM_MAXRESULTS]
         end
-        payload[PARAM_NEXT_PAGE] = params[PARAM_NEXT_PAGE] unless params[PARAM_NEXT_PAGE].nil? or params[PARAM_NEXT_PAGE].empty?
+        unless params[PARAM_NEXT_PAGE].nil? || params[PARAM_NEXT_PAGE].empty?
+          payload[PARAM_NEXT_PAGE] = params[PARAM_NEXT_PAGE]
+        end
         payload
       end
 
       def http_options(params={})
         options = {
-          params:           params,
-          method:           :get,
-          followlocation:   true,
-          ssl_verifypeer:   false,
-          accept_encoding:  'gzip',
-          headers:          { 'Accept-Charset' => 'utf-8' },
-          ssl_verifyhost:   0,
-          nosignal:         true,
-          connecttimeout:  HTTP_CONNECT_TIMEOUT,
-          timeout:          HTTP_REQUEST_TIMEOUT
+          params: params,
+          method: :get,
+          followlocation: true,
+          ssl_verifypeer: false,
+          accept_encoding: 'gzip',
+          headers: { 'Accept-Charset' => 'utf-8' },
+          ssl_verifyhost: 0,
+          nosignal: true,
+          connecttimeout: HTTP_CONNECT_TIMEOUT,
+          timeout: HTTP_REQUEST_TIMEOUT
         }
         if @config[CONFIG_AUTH_REQUIRED]
           # Basic authentication
@@ -148,4 +164,3 @@ module CartoDB
     end
   end
 end
-

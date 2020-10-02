@@ -1,4 +1,5 @@
 class CommonDataSingleton
+
   include Singleton
 
   def initialize
@@ -18,4 +19,5 @@ class CommonDataSingleton
   def cache_ttl
     Cartodb.get_config(:common_data, 'cache_ttl') || 0
   end
+
 end

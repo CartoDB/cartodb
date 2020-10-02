@@ -1,11 +1,12 @@
 class AccountTokensController < ApplicationController
+
   include LoginHelper
 
   layout 'frontend'
 
   ssl_required :enable, :resend
 
-  skip_before_filter :ensure_account_has_been_activated, :only => [ :enable, :resend ]
+  skip_before_filter :ensure_account_has_been_activated, only: [:enable, :resend]
 
   def enable
     # Cleans session information, making sure that Warden authenticate runs the strategy. Check #10489.
@@ -15,7 +16,7 @@ class AccountTokensController < ApplicationController
     user = ::User.where(enable_account_token: token).first
     render(file: 'signup/account_already_enabled', status: 404) and return unless user
 
-    authenticate!(:enable_account_token, scope: params[:user_domain].present? ?  params[:user_domain] : user.username)
+    authenticate!(:enable_account_token, scope: params[:user_domain].present? ? params[:user_domain] : user.username)
 
     @user = user.reload
     @organization = @user.organization
@@ -28,6 +29,7 @@ class AccountTokensController < ApplicationController
   def resend
     user_id = params[:user_id]
     render_404 and return unless user_id
+
     @user = ::User.where(id: user_id).first
     render_404 and return unless @user
 

@@ -7,7 +7,9 @@ module Carto
       before_filter :load_organization
 
       def create
-        @organization.update_attribute(:auth_username_password_enabled, true) if params[:enable_organization_signup] === true
+        if params[:enable_organization_signup] === true
+          @organization.update_attribute(:auth_username_password_enabled, true)
+        end
 
         invitation = Carto::Invitation.create_new(
           Carto::User.find(current_user.id),
@@ -21,7 +23,7 @@ module Carto
           render json: { errors: invitation.errors }, status: 400
         end
       rescue StandardError => e
-        CartoDB.notify_exception(e, params: params , invitation: (invitation ? invitation : 'not created'))
+        CartoDB.notify_exception(e, params: params, invitation: (invitation || 'not created'))
         render json: { errors: e.message }, status: 500
       end
 
@@ -30,9 +32,7 @@ module Carto
       def load_organization
         @organization = Carto::Organization.where(id: params[:organization_id]).first
         render_404 && return unless @organization
-        unless @organization.admin?(current_user)
-          render_jsonp({ errors: { organization: 'not admin' } }, 401) && return
-        end
+        render_jsonp({ errors: { organization: 'not admin' } }, 401) && return unless @organization.admin?(current_user)
       end
 
     end

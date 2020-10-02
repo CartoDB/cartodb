@@ -2,17 +2,15 @@ require 'spec_helper'
 require 'carto/tracking/services/pubsub_tracker'
 
 describe PubSubTracker do
-
   describe '#initialize' do
-
     before(:each) do
       Singleton.__init__(PubSubTracker)
     end
 
     it 'should raise error if creation of new instances is attempted' do
-      expect {
+      expect do
         PubSubTracker.new
-      }.to raise_error
+      end.to raise_error
     end
 
     it 'should log an error if an exception occurs during Pubsub initialization' do
@@ -34,7 +32,6 @@ describe PubSubTracker do
   end
 
   describe '#send_event' do
-
     before(:each) do
       Singleton.__init__(PubSubTracker)
 
@@ -96,7 +93,7 @@ describe PubSubTracker do
 
       result = PubSubTracker.instance.send_event(:metrics, '', 'event_name')
 
-      result.should == nil
+      result.should.nil?
     end
 
     it 'should do nothing when not enabled' do
@@ -106,7 +103,7 @@ describe PubSubTracker do
 
       result = PubSubTracker.instance.send_event(:metrics, 'user_id', 'disabled')
 
-      result.should == nil
+      result.should.nil?
     end
 
     it 'should log error if publishing did not succeeded' do

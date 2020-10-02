@@ -3,7 +3,7 @@ require 'carto/configuration'
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
+  ActiveSupport::Dependencies.autoload_paths << File.join(Rails.root, 'lib')
   # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib/central')
 
   # The production environment is meant for finished, "live" apps.
@@ -15,7 +15,7 @@ CartoDB::Application.configure do
   config.action_controller.perform_caching = false
 
   # Specifies the header that your server uses for sending files
-  config.action_dispatch.x_sendfile_header = "X-Sendfile"
+  config.action_dispatch.x_sendfile_header = 'X-Sendfile'
 
   # For nginx:
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect'
@@ -79,7 +79,7 @@ CartoDB::Application.configure do
 
   config.assets.initialize_on_precompile = true
 
-  config.action_controller.asset_host = Proc.new do
+  config.action_controller.asset_host = proc do
     Cartodb.asset_path
   end
 end

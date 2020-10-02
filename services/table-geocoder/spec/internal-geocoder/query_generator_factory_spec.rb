@@ -7,45 +7,40 @@ RSpec.configure do |config|
   config.mock_with :mocha
 end
 
-=begin
-The class should generate queries to be used by the InternalGeocoder depending on the inputs.
-
-* Different types of inputs:
-  - kind: namedplace, ipaddress, postalcode, admin0, admin1
-  - country: column, freetext
-  - geometry_type: point, polygon
-
-* Where queries are needed:
-  - to query the data-services
-  - to import results into table
-=end
+# The class should generate queries to be used by the InternalGeocoder depending on the inputs.
+#
+# * Different types of inputs:
+#   - kind: namedplace, ipaddress, postalcode, admin0, admin1
+#   - country: column, freetext
+#   - geometry_type: point, polygon
+#
+# * Where queries are needed:
+#   - to query the data-services
+#   - to import results into table
 
 describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
-
   before(:each) do
     @internal_geocoder = mock
   end
 
   describe '#dataservices' do
-
     it 'should return a query template suitable for <namedplace, country_name, region_name, point>' do
       query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :text, :point])
       query_generator.should be_a_kind_of CartoDB::InternalGeocoder::AbstractQueryGenerator
-      @internal_geocoder.expects('countries').once.returns(%Q{'Spain'})
-      @internal_geocoder.expects('regions').once.returns(%Q{'Madrid'})
-      search_terms = [{city: %Q{'Madrid'}}, {city: %Q{'Granada'}}]
+      @internal_geocoder.expects('countries').once.returns(%{'Spain'})
+      @internal_geocoder.expects('regions').once.returns(%{'Madrid'})
+      search_terms = [{ city: %{'Madrid'} }, { city: %{'Granada'} }]
 
       query = query_generator.dataservices_query(search_terms)
 
       query.should == "WITH geo_function AS (SELECT (geocode_namedplace(Array['Madrid','Granada'], 'Madrid', 'Spain')).*) SELECT q, c, a1, geom, success FROM geo_function"
     end
-
   end
 
   describe '#search_terms_query' do
     it 'should get the search terms for <namedplace, country_name, region_name, point>' do
       @internal_geocoder.stubs('column_name').once.returns('city')
-      @internal_geocoder.stubs('qualified_table_name').once.returns(%Q{"public"."untitled_table"})
+      @internal_geocoder.stubs('qualified_table_name').once.returns(%{"public"."untitled_table"})
       @internal_geocoder.stubs('batch_size').returns(5000)
       query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :text, :point])
 
@@ -57,14 +52,14 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
 
   describe '#copy_results_to_table_query' do
     it 'should generate a suitable query to update geocoded table with temp table' do
-      @internal_geocoder.stubs('qualified_table_name').returns(%Q{"public"."untitled_table"})
+      @internal_geocoder.stubs('qualified_table_name').returns(%{"public"."untitled_table"})
       @internal_geocoder.stubs('temp_table_name').once.returns('any_temp_table')
       @internal_geocoder.stubs('column_name').once.returns('any_column_name')
       query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :text, :point])
 
       query = query_generator.copy_results_to_table_query
 
-      query.squish.should == %Q{
+      query.squish.should == %{
         UPDATE "public"."untitled_table" AS dest
         SET the_geom = CASE WHEN orig.cartodb_georef_status THEN orig.the_geom ELSE dest.the_geom END,
             cartodb_georef_status = orig.cartodb_georef_status
@@ -84,7 +79,7 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
 
       query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:admin1, :column, nil, :polygon])
 
-      query_generator.search_terms_query(0).squish.should == %Q{
+      query_generator.search_terms_query(0).squish.should == %{
         SELECT DISTINCT
           trim(quote_nullable(region_column_name)) as region,
           trim(quote_nullable(country_column_name)) as country
@@ -94,16 +89,16 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
       }.squish
 
       search_terms = [
-        { region: %Q{'New York'}, country: %Q{'USA'}},
-        { region: %Q{'Sucumbios'}, country: %Q{'Ecuador'}}
+        { region: %{'New York'}, country: %{'USA'} },
+        { region: %{'Sucumbios'}, country: %{'Ecuador'} }
       ]
 
-      query_generator.dataservices_query(search_terms).squish.should == %Q{
+      query_generator.dataservices_query(search_terms).squish.should == %{
         WITH geo_function AS (SELECT (geocode_admin1_polygons(Array['New York','Sucumbios'], Array['USA','Ecuador'])).*)
         SELECT q, c, null AS a1, geom, success FROM geo_function
       }.squish
 
-      query_generator.copy_results_to_table_query.squish.should == %Q{
+      query_generator.copy_results_to_table_query.squish.should == %{
         UPDATE any_table_name AS dest
           SET the_geom = CASE WHEN orig.cartodb_georef_status THEN orig.the_geom ELSE dest.the_geom END,
               cartodb_georef_status = orig.cartodb_georef_status
@@ -114,5 +109,4 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
         }.squish
     end
   end
-
 end

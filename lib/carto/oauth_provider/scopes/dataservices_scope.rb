@@ -2,6 +2,7 @@ module Carto
   module OauthProvider
     module Scopes
       class DataservicesScope < DefaultScope
+
         def initialize(service, description)
           super('dataservices', service, CATEGORY_MONEY, description)
           @grant_key = :services
@@ -11,6 +12,7 @@ module Carto
           super(grants)
           ensure_includes_apis(grants, ['sql'])
         end
+
       end
     end
   end

@@ -1,4 +1,5 @@
 class OrganizationMailer < ActionMailer::Base
+
   include MailerConfig
 
   default from: Cartodb.get_config(:mailer, 'from')
@@ -38,4 +39,5 @@ class OrganizationMailer < ActionMailer::Base
     mail to: @organization.owner.email,
          subject: @subject
   end
+
 end

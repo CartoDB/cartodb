@@ -20,20 +20,20 @@ describe Carto::OauthProvider::Scopes do
     it 'detects invalid dataset and schemas scopes' do
       scopes = Carto::OauthProvider::Scopes.invalid_scopes(
         [
-          "datasets:r:twf",
-          "datasets:rw:twf",
-          "datasets:rw:a.twf",
-          "datasets:rw:a.a.twf",
-          "datasets:c:a.twf",
-          "schemas:c",
-          "schemas:c:public",
-          "schemas:c:a",
+          'datasets:r:twf',
+          'datasets:rw:twf',
+          'datasets:rw:a.twf',
+          'datasets:rw:a.a.twf',
+          'datasets:c:a.twf',
+          'schemas:c',
+          'schemas:c:public',
+          'schemas:c:a',
           'schemas:c:a.a',
-          "schemas:w:a",
-          "datasets:metadata"
+          'schemas:w:a',
+          'datasets:metadata'
         ]
       )
-      expect(scopes).to eq ["datasets:rw:a.a.twf", "datasets:c:a.twf", "schemas:w:a"]
+      expect(scopes).to eq ['datasets:rw:a.a.twf', 'datasets:c:a.twf', 'schemas:w:a']
     end
 
     it 'validates supported scopes' do
@@ -65,7 +65,7 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'validates existing datasets scopes' do
-      scopes_to_validate = ["datasets:r:#{@user_table.name}", "datasets:metadata"]
+      scopes_to_validate = ["datasets:r:#{@user_table.name}", 'datasets:metadata']
       scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(scopes_to_validate, @user)
       expect(scopes).to be_empty
     end
@@ -76,7 +76,7 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'validates empty schema scope' do
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["schemas:c"], @user)
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(['schemas:c'], @user)
       expect(scopes).to be_empty
     end
 
@@ -107,8 +107,8 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'returns schemas scopes with non existent permissions' do
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["schemas:c:pg_catalog"], @user)
-      expect(scopes).to eq(["schemas:c:pg_catalog"])
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(['schemas:c:pg_catalog'], @user)
+      expect(scopes).to eq(['schemas:c:pg_catalog'])
     end
 
     it 'returns invalid datasets scopes' do
@@ -420,7 +420,6 @@ describe Carto::OauthProvider::Scopes do
         ]
       end
 
-
       before(:all) do
         @user = mock
         @user.stubs(:database_schema).returns('wadus')
@@ -551,12 +550,12 @@ describe Carto::OauthProvider::Scopes do
       previous_scopes = []
       expected = [
         {
-          description: "User and personal data",
+          description: 'User and personal data',
           icon: nil,
-          scopes: [{ description: "Username and organization name", new: true }]
+          scopes: [{ description: 'Username and organization name', new: true }]
         },
         {
-          description: "Access to your datasets",
+          description: 'Access to your datasets',
           icon: nil,
           scopes: [{ description: "#{@table.name} (read/write access)", new: true }]
         }
@@ -571,12 +570,12 @@ describe Carto::OauthProvider::Scopes do
       previous_scopes = ["datasets:rw:#{@table.name}"]
       expected = [
         {
-          description: "User and personal data",
+          description: 'User and personal data',
           icon: nil,
-          scopes: [{ description: "Username and organization name", new: false }]
+          scopes: [{ description: 'Username and organization name', new: false }]
         },
         {
-          description: "Access to your datasets",
+          description: 'Access to your datasets',
           icon: nil,
           scopes: [{ description: "#{@table.name} (read/write access)", new: false }]
         }
@@ -591,12 +590,12 @@ describe Carto::OauthProvider::Scopes do
       previous_scopes = ["datasets:rw:#{@table.name}"]
       expected = [
         {
-          description: "User and personal data",
+          description: 'User and personal data',
           icon: nil,
-          scopes: [{ description: "Username and organization name", new: false }]
+          scopes: [{ description: 'Username and organization name', new: false }]
         },
         {
-          description: "Access to your datasets",
+          description: 'Access to your datasets',
           icon: nil,
           scopes: [{ description: "#{@table.name} (read/write access)", new: false }]
         }
@@ -611,12 +610,12 @@ describe Carto::OauthProvider::Scopes do
       previous_scopes = ["datasets:r:#{@table.name}"]
       expected = [
         {
-          description: "User and personal data",
+          description: 'User and personal data',
           icon: nil,
-          scopes: [{ description: "Username and organization name", new: false }]
+          scopes: [{ description: 'Username and organization name', new: false }]
         },
         {
-          description: "Access to your datasets",
+          description: 'Access to your datasets',
           icon: nil,
           scopes: [{ description: "#{@table.name} (read/write access)", new: true }]
         }
@@ -627,17 +626,17 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'shows create table permission' do
-      create_scope = ["schemas:c:public"]
+      create_scope = ['schemas:c:public']
       expected = [
         {
-          description: "User and personal data",
+          description: 'User and personal data',
           icon: nil,
-          scopes: [{ description: "Username and organization name", new: true }]
+          scopes: [{ description: 'Username and organization name', new: true }]
         },
         {
-          description: "Create tables",
+          description: 'Create tables',
           icon: nil,
-          scopes: [{ description: "public schema (create tables)", new: true }]
+          scopes: [{ description: 'public schema (create tables)', new: true }]
         }
       ]
 
@@ -646,17 +645,17 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'shows datasets metadata permission' do
-      scope = ["datasets:metadata"]
+      scope = ['datasets:metadata']
       expected = [
         {
-          description: "User and personal data",
+          description: 'User and personal data',
           icon: nil,
-          scopes: [{ description: "Username and organization name", new: true }]
+          scopes: [{ description: 'Username and organization name', new: true }]
         },
         {
-          description: "List your datasets",
+          description: 'List your datasets',
           icon: nil,
-          scopes: [{ description: "Table names", new: true }]
+          scopes: [{ description: 'Table names', new: true }]
         }
       ]
 
@@ -665,17 +664,17 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'shows Data Observatory API permission' do
-      scope = ["apis:do"]
+      scope = ['apis:do']
       expected = [
         {
-          description: "User and personal data",
+          description: 'User and personal data',
           icon: nil,
-          scopes: [{ description: "Username and organization name", new: true }]
+          scopes: [{ description: 'Username and organization name', new: true }]
         },
         {
-          description: "Access to CARTO APIs",
+          description: 'Access to CARTO APIs',
           icon: nil,
-          scopes: [{ description: "Data Observatory API", new: true }]
+          scopes: [{ description: 'Data Observatory API', new: true }]
         }
       ]
 

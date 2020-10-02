@@ -1,8 +1,9 @@
 require 'active_record'
 
 class Carto::ExternalSource < ActiveRecord::Base
+
   # Seconds
-  REFRESH_INTERVAL = 30*24*60*60
+  REFRESH_INTERVAL = 30 * 24 * 60 * 60
 
   has_many :external_data_imports, class_name: Carto::ExternalDataImport, dependent: :destroy
   belongs_to :visualization, inverse_of: :external_source
@@ -31,4 +32,5 @@ class Carto::ExternalSource < ActiveRecord::Base
 
     "{#{array.join(',')}}" == string
   end
+
 end

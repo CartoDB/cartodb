@@ -6,11 +6,14 @@ module CartoDB
   module Synchronizer
     module Factories
       class PGConnection
+
         def initialize
-          raise(
-            "Please configure your database settings " + 
-            "in spec/factories/database.json"
-          ) unless File.exists?(configuration_file)
+          unless File.exist?(configuration_file)
+            raise(
+              'Please configure your database settings ' +
+              'in spec/factories/database.json'
+            )
+          end
 
           @pg_options = ::JSON.parse(File.read(configuration_file))
         end
@@ -26,10 +29,10 @@ module CartoDB
         private
 
         def configuration_file
-          File.join(File.dirname("#{__FILE__}"), 'database.json')
+          File.join(File.dirname(__FILE__.to_s), 'database.json')
         end
+
       end
     end
   end
 end
-

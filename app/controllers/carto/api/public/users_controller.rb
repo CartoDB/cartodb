@@ -2,6 +2,7 @@ module Carto
   module Api
     module Public
       class UsersController < Carto::Api::Public::ApplicationController
+
         ssl_required
 
         def me_public
@@ -13,6 +14,7 @@ module Carto
 
           render(json: presentation)
         end
+
       end
     end
   end

@@ -79,7 +79,7 @@ describe ApplicationController do
       end
 
       it 'does not load the dashboard for an unknown user username' do
-        get dashboard_url, {}, authentication_headers("unknownuser")
+        get dashboard_url, {}, authentication_headers('unknownuser')
         response.status.should == 302
       end
 
@@ -152,12 +152,12 @@ describe ApplicationController do
       end
 
       it 'does not load the dashboard for an unknown user username' do
-        get dashboard_url, {}, authentication_headers("unknownuser")
+        get dashboard_url, {}, authentication_headers('unknownuser')
         response.status.should == 302
       end
 
       it 'does not load the dashboard for an unknown user email' do
-        get dashboard_url, {}, authentication_headers("wadus@wadus.com")
+        get dashboard_url, {}, authentication_headers('wadus@wadus.com')
         response.status.should == 302
       end
     end
@@ -173,7 +173,7 @@ describe ApplicationController do
           response.status.should == 302
           follow_redirect!
           response.status.should == 200
-          response.body.should include("Log in")
+          response.body.should include('Log in')
         end
       end
 
@@ -185,7 +185,7 @@ describe ApplicationController do
         it 'redirects to user creation for unknown emails' do
           get dashboard_url, {}, authentication_headers('unknown@company.com')
           response.status.should == 302
-          response.location.should match /#{signup_http_authentication_path}/
+          response.location.should match(/#{signup_http_authentication_path}/)
         end
 
         # This behaviour allows recreation of deleted users. Related to next one.
@@ -194,7 +194,7 @@ describe ApplicationController do
           FactoryGirl.create(:user_creation, state: 'success', email: email)
           get dashboard_url, {}, authentication_headers(email)
           response.status.should == 302
-          response.location.should match /#{signup_http_authentication_path}/
+          response.location.should match(/#{signup_http_authentication_path}/)
         end
 
         # This behaviour avoids filling `user_creations` table with failed repetitions because of polling

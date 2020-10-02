@@ -25,7 +25,7 @@ module CartoDB
 
         Carto::Overlay.new(
           order: order,
-          type: "logo",
+          type: 'logo',
           template: '',
           options: options,
           visualization_id: member.id
@@ -36,7 +36,7 @@ module CartoDB
         Carto::Overlay.new(
           order: order,
           type: type,
-          template: "",
+          template: '',
           options: options,
           visualization_id: id
         )
@@ -47,7 +47,7 @@ module CartoDB
 
         Carto::Overlay.new(
           order: order,
-          type: "loader",
+          type: 'loader',
           template: '<div class="loader" original-title=""></div>',
           options: options,
           visualization_id: member.id
@@ -59,7 +59,7 @@ module CartoDB
 
         Carto::Overlay.new(
           order: order,
-          type: "zoom",
+          type: 'zoom',
           template: '<a href="#zoom_in" class="zoom_in">+</a> <a href="#zoom_out" class="zoom_out">-</a>',
           options: options,
           visualization_id: member.id
@@ -69,14 +69,15 @@ module CartoDB
       def create_share_overlay(member, order)
         options = { display: true, x: 20, y: 20 }
 
-        generate_overlay(member.id, options, "share", order).save
+        generate_overlay(member.id, options, 'share', order).save
       end
 
       def create_search_overlay(member, order)
         options = { display: true, x: 60, y: 20 }
 
-        generate_overlay(member.id, options, "search", order).save
+        generate_overlay(member.id, options, 'search', order).save
       end
+
     end
   end
 end

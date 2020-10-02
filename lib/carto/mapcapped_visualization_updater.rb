@@ -2,6 +2,7 @@ require_relative '../../app/services/carto/visualizations_export_service_2'
 
 module Carto
   module MapcappedVisualizationUpdater
+
     include VisualizationsExportService2Exporter
 
     # Takes a block |visualization, persisted| in which you should do the modifications
@@ -34,5 +35,6 @@ module Carto
         visualization: export(visualization, user, with_mapcaps: false)
       }
     end
+
   end
 end

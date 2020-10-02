@@ -5,8 +5,8 @@ describe Admin::OrganizationsController do
   include Warden::Test::Helpers
   include_context 'organization with users helper'
 
-  let(:out_of_quota_message) { "Your organization has run out of quota" }
-  let(:out_of_seats_message) { "Your organization has run out of seats" }
+  let(:out_of_quota_message) { 'Your organization has run out of quota' }
+  let(:out_of_seats_message) { 'Your organization has run out of seats' }
 
   before(:all) do
     @org_user_2.org_admin = true
@@ -75,14 +75,14 @@ describe Admin::OrganizationsController do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_settings_update_url(user_domain: @org_user_owner.username), payload
       response.status.should eq 403
-      response.body.should match /Confirmation password sent does not match your current password/
+      response.body.should match(/Confirmation password sent does not match your current password/)
     end
 
     it 'fails to update if wrong password_confirmation' do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_settings_update_url(user_domain: @org_user_owner.username), payload_wrong_password
       response.status.should eq 403
-      response.body.should match /Confirmation password sent does not match your current password/
+      response.body.should match(/Confirmation password sent does not match your current password/)
     end
   end
 
@@ -244,14 +244,14 @@ describe Admin::OrganizationsController do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_auth_update_url(user_domain: @org_user_owner.username), payload
       response.status.should eq 403
-      response.body.should match /Confirmation password sent does not match your current password/
+      response.body.should match(/Confirmation password sent does not match your current password/)
     end
 
     it 'cannot be updated by owner user if wrong password_confirmation' do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_auth_update_url(user_domain: @org_user_owner.username), payload_wrong_password
       response.status.should eq 403
-      response.body.should match /Confirmation password sent does not match your current password/
+      response.body.should match(/Confirmation password sent does not match your current password/)
     end
 
     it 'updates password_expiration_in_d' do
@@ -407,7 +407,7 @@ describe Admin::OrganizationsController do
           user_domain: @admin_user.username
         ), carto_notification: params, password_confirmation: 'prapra'
         response.status.should eq 403
-        response.body.should match /Confirmation password sent does not match your current password/
+        response.body.should match(/Confirmation password sent does not match your current password/)
         notification = @carto_organization.reload.notifications.first
         notification.body.should_not eq params[:body]
       end
@@ -419,7 +419,7 @@ describe Admin::OrganizationsController do
         }
         post new_organization_notification_admin_url(user_domain: @admin_user.username), carto_notification: params
         response.status.should eq 403
-        response.body.should match /Confirmation password sent does not match your current password/
+        response.body.should match(/Confirmation password sent does not match your current password/)
         notification = @carto_organization.reload.notifications.first
         notification.body.should_not eq params[:body]
       end

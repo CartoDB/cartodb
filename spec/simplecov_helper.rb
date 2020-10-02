@@ -14,14 +14,14 @@ unless ENV['PARALLEL'] || ENV['NO_COVERAGE']
 
     SimpleCov.start 'rails' do
       # Default is just 10 mins, else will drop "old" coverage data
-      track_files "{app,lib,services}/**/*.rb"
+      track_files '{app,lib,services}/**/*.rb'
       merge_timeout 7200
       puts ENV['TEST_ENV_NUMBER']
       command_name "specs_#{Process.pid}"
-      add_filter "/spec/"
-      add_filter "/lib/assets/"
-      add_filter "/tmp/"
-      add_filter "/db/"
+      add_filter '/spec/'
+      add_filter '/lib/assets/'
+      add_filter '/tmp/'
+      add_filter '/db/'
     end
   end
 end

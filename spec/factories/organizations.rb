@@ -4,7 +4,6 @@ require 'helpers/unique_names_helper'
 include UniqueNamesHelper
 
 FactoryGirl.define do
-
   factory :organization do
     to_create(&:save)
 
@@ -15,7 +14,7 @@ FactoryGirl.define do
     here_isolines_quota 1000
     obs_snapshot_quota 1000
     obs_general_quota 1000
-    map_view_quota 100000
+    map_view_quota 100_000
     website 'carto.com'
     description 'Lorem ipsum dolor sit amet'
     display_name 'Vizzuality Inc'
@@ -87,7 +86,7 @@ FactoryGirl.define do
       here_isolines_quota 1000
       obs_snapshot_quota 1000
       obs_general_quota 1000
-      map_view_quota 100000
+      map_view_quota 100_000
       website 'carto.com'
       description 'Lorem ipsum dolor sit amet'
       display_name 'Vizzuality Inc'

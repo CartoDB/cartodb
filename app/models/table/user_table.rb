@@ -3,6 +3,7 @@ require 'forwardable'
 
 # This class is intended to deal exclusively with storage
 class UserTable < Sequel::Model
+
   extend Forwardable
 
   INTERFACE = %w{
@@ -51,7 +52,7 @@ class UserTable < Sequel::Model
     partially_dependent_visualizations
     dependent_visualizations
     reload
-  }
+  }.freeze
 
   PRIVACY_PRIVATE = 0
   PRIVACY_PUBLIC = 1
@@ -61,20 +62,20 @@ class UserTable < Sequel::Model
     PRIVACY_PRIVATE => 'private',
     PRIVACY_PUBLIC => 'public',
     PRIVACY_LINK => 'link'
-  }
+  }.freeze
 
   # Associations
   many_to_one  :map
   many_to_many :layers, join_table: :layers_user_tables,
-                        left_key:   :user_table_id,
-                        right_key:  :layer_id,
+                        left_key: :user_table_id,
+                        right_key: :layer_id,
                         reciprocal: :user_tables
   one_to_many  :geocodings, key: :table_id
   many_to_one  :data_import, key: :data_import_id
   many_to_one  :user
 
-  plugin :association_dependencies, map:                  :destroy,
-                                    layers:               :nullify
+  plugin :association_dependencies, map: :destroy,
+                                    layers: :nullify
   plugin :dirty
 
   def_delegators :relator, :affected_visualizations, :synchronization
@@ -102,14 +103,14 @@ class UserTable < Sequel::Model
   def self.find_by_identifier(user_id, identifier)
     col = 'name'
 
-    table = fetch(%Q{
+    table = fetch(%{
       SELECT *
       FROM user_tables
       WHERE user_tables.user_id = ?
       AND user_tables.#{col} = ?},
-      user_id, identifier
-    ).first
+                  user_id, identifier).first
     raise RecordNotFound if table.nil?
+
     table
   end
 
@@ -118,7 +119,7 @@ class UserTable < Sequel::Model
   end
 
   def self.from_map_id(map_id)
-    key = self.from_map_id_key(map_id)
+    key = from_map_id_key(map_id)
     user_table = PerRequestSequelCache.get(key)
     if user_table.nil?
       user_table = self[map_id: map_id]
@@ -126,8 +127,6 @@ class UserTable < Sequel::Model
     end
     user_table
   end
-
-
 
   # Hooks definition -----------------------------------------------------------
   def validate
@@ -145,7 +144,7 @@ class UserTable < Sequel::Model
       errors.add(:name, 'is a reserved keyword, please choose a different one')
     end
 
-    # TODO this kind of check should be moved to the DB
+    # TODO: this kind of check should be moved to the DB
     # privacy setting must be a sane value
     if privacy != PRIVACY_PRIVATE && privacy != PRIVACY_PUBLIC && privacy != PRIVACY_LINK
       errors.add(:privacy, "has an invalid value '#{privacy}'")
@@ -153,9 +152,7 @@ class UserTable < Sequel::Model
 
     unless user.try(:private_tables_enabled)
       # If it's a new table and the user is trying to make it private
-      if new? && privacy == PRIVACY_PRIVATE
-        errors.add(:privacy, 'unauthorized to create private tables')
-      end
+      errors.add(:privacy, 'unauthorized to create private tables') if new? && privacy == PRIVACY_PRIVATE
 
       # if the table exists, is private, but the owner no longer has private privileges
       if !new? && privacy == PRIVACY_PRIVATE && changed_columns.include?(:privacy)
@@ -176,7 +173,7 @@ class UserTable < Sequel::Model
 
   def before_create
     super
-    update_updated_at # TODO move to a DB trigger
+    update_updated_at # TODO: move to a DB trigger
     service.before_create
   end
 
@@ -223,12 +220,12 @@ class UserTable < Sequel::Model
   end
 
   def before_update
-    PerRequestSequelCache.delete(self.class.from_map_id_key(self.map_id))
+    PerRequestSequelCache.delete(self.class.from_map_id_key(map_id))
     super
   end
 
   def delete
-    PerRequestSequelCache.delete(self.class.from_map_id_key(self.map_id))
+    PerRequestSequelCache.delete(self.class.from_map_id_key(map_id))
     super
   end
 
@@ -239,45 +236,47 @@ class UserTable < Sequel::Model
   end
 
   def privacy_text
-    PRIVACY_VALUES_TO_TEXTS[self.privacy].upcase
+    PRIVACY_VALUES_TO_TEXTS[privacy].upcase
   end
 
-  # TODO move privacy to value object
+  # TODO: move privacy to value object
   # enforce standard format for this field
   def privacy=(value)
     case value
-      when 'PUBLIC', PRIVACY_PUBLIC, PRIVACY_PUBLIC.to_s
-        self[:privacy] = PRIVACY_PUBLIC
-      when 'LINK', PRIVACY_LINK, PRIVACY_LINK.to_s
-        self[:privacy] = PRIVACY_LINK
-      when 'PRIVATE', PRIVACY_PRIVATE, PRIVACY_PRIVATE.to_s
-        self[:privacy] = PRIVACY_PRIVATE
-      else
-        raise "Invalid privacy value '#{value}'"
+    when 'PUBLIC', PRIVACY_PUBLIC, PRIVACY_PUBLIC.to_s
+      self[:privacy] = PRIVACY_PUBLIC
+    when 'LINK', PRIVACY_LINK, PRIVACY_LINK.to_s
+      self[:privacy] = PRIVACY_LINK
+    when 'PRIVATE', PRIVACY_PRIVATE, PRIVACY_PRIVATE.to_s
+      self[:privacy] = PRIVACY_PRIVATE
+    else
+      raise "Invalid privacy value '#{value}'"
     end
   end
 
   def private?
-    self.privacy == PRIVACY_PRIVATE
-  end #private?
+    privacy == PRIVACY_PRIVATE
+  end # private?
 
   def public?
-    self.privacy == PRIVACY_PUBLIC
-  end #public?
+    privacy == PRIVACY_PUBLIC
+  end # public?
 
   def public_with_link_only?
-    self.privacy == PRIVACY_LINK
-  end #public_with_link_only?
+    privacy == PRIVACY_LINK
+  end # public_with_link_only?
 
-  # TODO move tags to value object. A set is more appropriate
+  # TODO: move tags to value object. A set is more appropriate
   def tags=(value)
     return unless value
+
     set_tag_array(value.split(','))
   end
 
   def set_tag_array(tag_array)
     return unless tag_array
-    self[:tags] = tag_array.map{ |t| t.strip }.compact.delete_if{ |t| t.blank? }.uniq.join(',')
+
+    self[:tags] = tag_array.map { |t| t.strip }.compact.delete_if { |t| t.blank? }.uniq.join(',')
   end
 
   # Needed by syncs
@@ -296,15 +295,13 @@ class UserTable < Sequel::Model
   def external_source_visualization
     if data_import_id
       Carto::ExternalDataImports.where(data_import_id: data_import_id)&.first&.external_source&.visualization
-    else
-      nil
     end
   end
 
   def table_visualization
     @table_visualization ||= map_id && CartoDB::Visualization::Collection.new.fetch(
       map_id: map_id,
-      type:   CartoDB::Visualization::Member::TYPE_CANONICAL
+      type: CartoDB::Visualization::Member::TYPE_CANONICAL
     ).first
   end
 
@@ -330,6 +327,7 @@ class UserTable < Sequel::Model
 
   def is_owner?(user)
     return false unless user
+
     user_id == user.id
   end
 
@@ -366,16 +364,16 @@ class UserTable < Sequel::Model
     esv = external_source_visualization
 
     member = CartoDB::Visualization::Member.new(
-      name:         name,
-      map_id:       map.id,
-      type:         CartoDB::Visualization::Member::TYPE_CANONICAL,
-      description:  description,
+      name: name,
+      map_id: map.id,
+      type: CartoDB::Visualization::Member::TYPE_CANONICAL,
+      description: description,
       attributions: esv.try(:attributions),
-      source:       esv.try(:source),
-      tags:         (tags.split(',') if tags),
-      privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
-      user_id:      user.id,
-      kind:         kind
+      source: esv.try(:source),
+      tags: (tags.split(',') if tags),
+      privacy: UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
+      user_id: user.id,
+      kind: kind
     )
 
     member.store
@@ -388,4 +386,5 @@ class UserTable < Sequel::Model
   def relator
     @relator ||= CartoDB::TableRelator.new(SequelRails.connection, self)
   end
+
 end

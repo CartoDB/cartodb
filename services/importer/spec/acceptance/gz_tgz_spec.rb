@@ -13,8 +13,8 @@ require_relative 'no_stats_context'
 
 describe 'gz and tgz regression tests' do
   include AcceptanceHelpers
-  include_context "cdb_importer schema"
-  include_context "no stats"
+  include_context 'cdb_importer schema'
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -29,11 +29,11 @@ describe 'gz and tgz regression tests' do
     filepath    = path_to('ok_data.csv.gz')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
     runner.results.first.success?.should eq true
   end
@@ -42,11 +42,11 @@ describe 'gz and tgz regression tests' do
     filepath    = path_to('ok_data.tgz')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
     runner.results.first.success?.should eq true
   end
@@ -55,11 +55,11 @@ describe 'gz and tgz regression tests' do
     filepath    = path_to('ok_and_wrong_data.tgz')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
     first_import = runner.results.first.success?
     last_import = runner.results.last.success?
@@ -70,11 +70,11 @@ describe 'gz and tgz regression tests' do
     filepath    = path_to('wrong_data.csv.gz')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
     runner.results.first.success?.should eq false
     runner.results.first.error_code.should eq 2002

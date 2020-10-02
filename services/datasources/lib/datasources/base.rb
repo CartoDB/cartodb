@@ -3,26 +3,26 @@ module CartoDB
     class Base
 
       # .csv
-      FORMAT_CSV = 'csv'
+      FORMAT_CSV = 'csv'.freeze
       # .xls .xlsx
-      FORMAT_EXCEL = 'xls'
+      FORMAT_EXCEL = 'xls'.freeze
       # .GPX
-      FORMAT_GPX = 'gpx'
+      FORMAT_GPX = 'gpx'.freeze
       # .KML
-      FORMAT_KML = 'kml'
+      FORMAT_KML = 'kml'.freeze
       # .png
-      FORMAT_PNG = 'png'
+      FORMAT_PNG = 'png'.freeze
       # .jpg .jpeg
-      FORMAT_JPG = 'jpg'
+      FORMAT_JPG = 'jpg'.freeze
       # .svg
-      FORMAT_SVG = 'svg'
+      FORMAT_SVG = 'svg'.freeze
       # .zip
-      FORMAT_COMPRESSED = 'zip'
+      FORMAT_COMPRESSED = 'zip'.freeze
 
       # If data size cannot be determined, this will be returned as its size in the item metadata
       NO_CONTENT_SIZE_PROVIDED = 0
 
-      def initialize(*args)
+      def initialize(*_args)
         @logger = nil
       end
 
@@ -36,14 +36,14 @@ module CartoDB
       # Factory method
       # @param config {}
       # @return mixed
-      def get_new(config)
+      def get_new(_config)
         raise 'To be implemented in child classes'
       end
 
       # If will provide a url to download the resource, or requires calling get_resource()
       # @return bool
       def providers_download_url?
-        raise  'To be implemented in child classes'
+        raise 'To be implemented in child classes'
       end
 
       # If will provide the url http response code
@@ -55,20 +55,20 @@ module CartoDB
       # Perform the listing and return results
       # @param filter Array : (Optional) filter to specify which resources to retrieve. Leave empty for all supported.
       # @return [ { :id, :title, :url, :service, :filename, :checksum, :size } ]
-      def get_resources_list(filter={})
+      def get_resources_list(_filter={})
         raise 'To be implemented in child classes'
       end
 
       # Retrieves a resource and returns its contents
       # @param id string
       # @return mixed
-      def get_resource(id)
+      def get_resource(_id)
         raise 'To be implemented in child classes'
       end
 
       # @param id string
       # @return Hash
-      def get_resource_metadata(id)
+      def get_resource_metadata(_id)
         raise 'To be implemented in child classes'
       end
 
@@ -80,7 +80,7 @@ module CartoDB
 
       # Sets current filters
       # @param filter_data {}
-      def filter=(filter_data={})
+      def filter=(_filter_data={})
         raise 'To be implemented in child classes'
       end
 
@@ -108,7 +108,7 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
-      def set_audit_to_completed(table_id = nil)
+      def set_audit_to_completed(_table_id = nil)
         raise 'To be implemented in child classes'
       end
 
@@ -123,14 +123,14 @@ module CartoDB
 
       # Stores the data import item instance to use/manipulate it
       # @param value DataImport
-      def data_import_item=(value)
+      def data_import_item=(_value)
         raise 'To be implemented in child classes'
       end
 
       # If true, a single resource id might return >1 subresources (each one spawning a table)
       # @param id String
       # @return Bool
-      def multi_resource_import_supported?(id)
+      def multi_resource_import_supported?(_id)
         false
       end
 

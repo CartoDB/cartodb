@@ -22,11 +22,11 @@ describe Synchronization::Member do
       member      = Synchronization::Member.new(attributes)
       member.store
 
-      member      = Synchronization::Member.new(id: member.id)
+      member = Synchronization::Member.new(id: member.id)
       member.name.should be_nil
 
       member.fetch
-      member.name             .should == attributes.fetch(:name)
+      member.name .should == attributes.fetch(:name)
     end
 
     it 'fetches attributes from the repository' do
@@ -39,18 +39,18 @@ describe Synchronization::Member do
     end
 
     it 'deletes this member from the repository' do
-      member      = Synchronization::Member.new(random_attributes).store
+      member = Synchronization::Member.new(random_attributes).store
       member.fetch
       member.name.should_not be_nil
 
       member.delete
 
       member.name.should be_nil
-      lambda { member.fetch }.should raise_error KeyError
+      -> { member.fetch }.should raise_error KeyError
     end
   end
 
-  describe "synchronizations" do
+  describe 'synchronizations' do
     before(:all) do
       @user1 = create_user(sync_tables_enabled: true)
       @user2 = create_user(sync_tables_enabled: true)
@@ -67,7 +67,7 @@ describe Synchronization::Member do
     end
 
     describe 'external sources' do
-      it "Authorizes to sync always if from an external source" do
+      it 'Authorizes to sync always if from an external source' do
         member = Synchronization::Member.new(random_attributes(user_id: @user1.id)).store
         member.fetch
 
@@ -86,7 +86,7 @@ describe Synchronization::Member do
       end
     end
 
-    describe "synchronization" do
+    describe 'synchronization' do
       it 'fails if user is inactive' do
         url = 'https://wadus.com/guess_country.csv'
 
@@ -111,7 +111,7 @@ describe Synchronization::Member do
 
         member.fetch.run
 
-        member.log.entries.should match /Can't run a synchronization for inactive user/
+        member.log.entries.should match(/Can't run a synchronization for inactive user/)
         expect(member.state).to eq 'failure'
 
         @user1.state = Carto::User::STATE_ACTIVE
@@ -241,10 +241,10 @@ describe Synchronization::Member do
   def random_attributes(attributes={})
     random = unique_integer
     {
-      name:       attributes.fetch(:name, "name#{random}"),
-      interval:   attributes.fetch(:interval, 15 * 60 + random),
-      state:      attributes.fetch(:state, 'enabled'),
-      user_id:    attributes.fetch(:user_id, nil)
+      name: attributes.fetch(:name, "name#{random}"),
+      interval: attributes.fetch(:interval, 15 * 60 + random),
+      state: attributes.fetch(:state, 'enabled'),
+      user_id: attributes.fetch(:user_id, nil)
     }
   end
 end

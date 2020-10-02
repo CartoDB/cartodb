@@ -6,9 +6,9 @@ class Carto::TagQueryBuilder
 
   DEFAULT_TYPES = %w(table derived remote).freeze
   TYPE_TRANSLATIONS = {
-    "table" => :datasets,
-    "derived" => :maps,
-    "remote" => :data_library
+    'table' => :datasets,
+    'derived' => :maps,
+    'remote' => :data_library
   }.freeze
 
   def initialize
@@ -34,6 +34,7 @@ class Carto::TagQueryBuilder
 
   def with_partial_match(pattern)
     return self unless pattern.present?
+
     clean_pattern = escape_characters_from_pattern(pattern)
     @pattern = clean_pattern.split(' ').map { |word| "%#{word}%" }
     self
@@ -58,7 +59,7 @@ class Carto::TagQueryBuilder
   def total_count
     query = filter_query(query: build, count: true)
     result = run_query(query)
-    result.first["count"].to_i
+    result.first['count'].to_i
   end
 
   private
@@ -76,16 +77,16 @@ class Carto::TagQueryBuilder
   end
 
   def counts_sql
-    @types.map { |type|
+    @types.map do |type|
       "sum(CASE type WHEN '#{type}' THEN 1 ELSE 0 END) AS #{type}_count"
-    }.join(', ')
+    end.join(', ')
   end
 
   def filter_query(query:, count: false, limit: nil, offset: nil)
-    select_clause = count ? "COUNT(tag)" : "*"
-    where_clause = "WHERE tag ILIKE ANY (array[?])" if @pattern
-    limit_clause = "LIMIT ?" if limit
-    offset_clause = "OFFSET ?" if offset
+    select_clause = count ? 'COUNT(tag)' : '*'
+    where_clause = 'WHERE tag ILIKE ANY (array[?])' if @pattern
+    limit_clause = 'LIMIT ?' if limit
+    offset_clause = 'OFFSET ?' if offset
     filter_sql =  %{
       SELECT #{select_clause} FROM (#{query.to_sql}) AS tags #{where_clause} #{limit_clause} #{offset_clause}
     }.squish
@@ -100,15 +101,15 @@ class Carto::TagQueryBuilder
 
   def format_response(result)
     result.map do |row|
-      types_count = @types.map { |type|
+      types_count = @types.map do |type|
         { TYPE_TRANSLATIONS.fetch(type, type) => row["#{type}_count"].to_i }
-      }.inject(:merge)
+      end.inject(:merge)
       { tag: row['tag'] }.merge(types_count)
     end
   end
 
   def escape_characters_from_pattern(pattern)
-    pattern.chars.map { |c| PATTERN_ESCAPE_CHARS.include?(c) ? "\\" + c : c }.join
+    pattern.chars.map { |c| PATTERN_ESCAPE_CHARS.include?(c) ? '\\' + c : c }.join
   end
 
 end

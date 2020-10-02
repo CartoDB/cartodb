@@ -4,6 +4,7 @@ require_dependency 'carto/assets/html_assets_service'
 
 module Carto
   class Asset < ActiveRecord::Base
+
     belongs_to :user, class_name: Carto::User
     belongs_to :organization, class_name: Carto::Organization
     belongs_to :visualization, class_name: Carto::Visualization
@@ -59,7 +60,7 @@ module Carto
       schema = Definition.instance.load_from_file('lib/formats/asset/storage_info.json')
       indifferent_storage_info = storage_info.with_indifferent_access
 
-      errs = JSON::Validator::fully_validate(schema, indifferent_storage_info)
+      errs = JSON::Validator.fully_validate(schema, indifferent_storage_info)
       errors.add(:storage_info, errs.join(', ')) if errs.any?
     end
 
@@ -68,10 +69,10 @@ module Carto
     end
 
     def base_domain
-      if visualization.present?
-        return CartoDB.base_domain_from_name(visualization.user.subdomain)
-      end
+      return CartoDB.base_domain_from_name(visualization.user.subdomain) if visualization.present?
+
       CartoDB.base_domain_from_name(user ? user.subdomain : organization.name)
     end
+
   end
 end

@@ -13,6 +13,7 @@ require_dependency 'carto/gcloud_user_settings'
 require_dependency 'carto/helpers/sessions_invalidations'
 
 module Carto::UserCommons
+
   include Carto::BatchQueriesStatementTimeout
   include Carto::Billing
   include Carto::GoogleMaps
@@ -47,7 +48,7 @@ module Carto::UserCommons
                           mapzen_routing_block_price soft_mapzen_routing_limit no_map_logo org_admin
                           user_render_timeout database_render_timeout frontend_version asset_host
                           state rate_limit_id public_map_quota regular_api_key_quota
-                          maintenance_mode private_map_quota public_dataset_quota]
+                          maintenance_mode private_map_quota public_dataset_quota].freeze
 
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
@@ -91,9 +92,9 @@ module Carto::UserCommons
 
   def unverified?
     (active? || locked?) &&
-    email_verification_token.present? &&
-    email_verification_sent_at.present? &&
-    email_verification_sent_at < 1.hour.ago && !oauth_signin?
+      email_verification_token.present? &&
+      email_verification_sent_at.present? &&
+      email_verification_sent_at < 1.hour.ago && !oauth_signin?
   end
 
   def remove_logo?
@@ -156,7 +157,7 @@ module Carto::UserCommons
   def organization_user?
     organization.present?
   end
-  alias_method :has_organization?, :organization_user?
+  alias has_organization? organization_user?
 
   def organization_owner?
     organization_user? && organization.owner_id == id
@@ -240,7 +241,7 @@ module Carto::UserCommons
 
   def get_database_roles
     api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
-    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
+    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name.nil? }.map(&:effective_ownership_role_name)
     (api_key_roles + oauth_app_owner_roles).uniq
   end
 
@@ -254,13 +255,13 @@ module Carto::UserCommons
 
   # TODO: replace .to_hash with .to_h, and monkeypatch Sequel model to respond to :attributes
   def logging_attrs
-    if self.respond_to?(:attributes)
-      # AR
-      attrs = attributes.symbolize_keys
-    else
-      # Sequel
-      attrs = to_hash
-    end
+    attrs = if respond_to?(:attributes)
+              # AR
+              attributes.symbolize_keys
+            else
+              # Sequel
+              to_hash
+            end
 
     attrs.slice(*LOGGING_ATTRIBUTES)
   end
@@ -268,7 +269,7 @@ module Carto::UserCommons
   def update_do_subscription(attributes)
     return if attributes.nil?
 
-    license_srv = Carto::DoLicensingService.new(self.username)
+    license_srv = Carto::DoLicensingService.new(username)
 
     if attributes[:action] == 'rm'
       license_srv.remove_from_redis(attributes[:do_dataset][:dataset_id])
@@ -288,6 +289,7 @@ module Carto::UserCommons
 
   def update_gcloud_settings(attributes)
     return if attributes.nil?
+
     settings = Carto::GCloudUserSettings.new(self)
     settings.update attributes
   end
@@ -339,11 +341,11 @@ module Carto::UserCommons
   end
 
   def remaining_twitter_quota
-    if active_record_organization.present?
-      remaining = active_record_organization.remaining_twitter_quota
-    else
-      remaining = twitter_datasource_quota - get_twitter_imports_count
-    end
+    remaining = if active_record_organization.present?
+                  active_record_organization.remaining_twitter_quota
+                else
+                  twitter_datasource_quota - get_twitter_imports_count
+                end
     (remaining > 0 ? remaining : 0)
   end
 
@@ -374,11 +376,12 @@ module Carto::UserCommons
 
   def active_record_organization
     if organization.present?
-      if organization.kind_of?(ActiveRecord::Base)
+      if organization.is_a?(ActiveRecord::Base)
         organization
       else
         Carto::Organization.find(organization.id)
       end
     end
   end
+
 end

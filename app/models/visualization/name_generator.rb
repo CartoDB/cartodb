@@ -3,7 +3,8 @@ require_relative './name_checker'
 module CartoDB
   module Visualization
     class NameGenerator
-      PATTERN = 'Untitled map'
+
+      PATTERN = 'Untitled map'.freeze
 
       def initialize(user, checker=nil)
         @user     = user
@@ -21,6 +22,7 @@ module CartoDB
       private
 
       attr_reader :checker, :user
+
     end
   end
 end

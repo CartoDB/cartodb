@@ -8,9 +8,9 @@ RSpec.configure do |config|
 end
 
 # Configure Rails Environment
-ENV["RAILS_ENV"] = "test"
+ENV['RAILS_ENV'] = 'test'
 
-require File.expand_path("../../test/dummy/config/environment.rb", __FILE__)
+require File.expand_path('../test/dummy/config/environment.rb', __dir__)
 
 Rails.backtrace_cleaner.remove_silencers!
 

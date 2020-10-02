@@ -19,7 +19,7 @@ def create_mock_plpython_function(user)
 end
 
 def teardown_mock_plpython_function(user)
-  user.in_database(as: :superuser).execute("DROP FUNCTION hello_world()")
+  user.in_database(as: :superuser).execute('DROP FUNCTION hello_world()')
 end
 
 describe 'UserMigration' do
@@ -344,7 +344,7 @@ describe 'UserMigration' do
       expect(import.log.entries).to include('DB already exists at DB host')
 
       # DB exists, otherwise this would fail
-      user.in_database.run("select 1;")
+      user.in_database.run('select 1;')
 
       user.destroy_cascade
     end
@@ -410,20 +410,22 @@ describe 'UserMigration' do
     end
   end
 
-  context "when user has custom plpython2 functions defined" do
+  context 'when user has custom plpython2 functions defined' do
     before do
-      pending unless user.db_service.execute_in_user_database("select version()").first["version"].include?("PostgreSQL 11")
+      unless user.db_service.execute_in_user_database('select version()').first['version'].include?('PostgreSQL 11')
+        pending
+      end
       create_mock_plpython_function(user)
       export.run_export
     end
 
-    context "for organizations" do
-      include_context "organization with users helper"
+    context 'for organizations' do
+      include_context 'organization with users helper'
 
       let(:user) { @carto_organization.owner }
       let(:export) { create(:user_migration_export, organization_id: @carto_organization.id) }
 
-      it "fails" do
+      it 'fails' do
         expect(export.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
         expect(export.log.entries).to include("Can't migrate custom plpython2 functions")
 
@@ -431,11 +433,11 @@ describe 'UserMigration' do
       end
     end
 
-    context "for individuals" do
+    context 'for individuals' do
       let(:user) { create(:valid_user) }
       let(:export) { create(:user_migration_export, user_id: user.id) }
 
-      it "fails" do
+      it 'fails' do
         expect(export.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
         expect(export.log.entries).to include("Can't migrate custom plpython2 functions")
 

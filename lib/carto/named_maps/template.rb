@@ -1,6 +1,7 @@
 module Carto
   module NamedMaps
     class Template
+
       NAMED_MAPS_VERSION = '0.0.1'.freeze
       MAP_CONFIG_VERSION = '1.5.0'.freeze
       NAME_PREFIX = 'tpl_'.freeze
@@ -44,7 +45,7 @@ module Carto
         end
       end
 
-      def to_json
+      def to_json(*_args)
         to_hash.to_json
       end
 
@@ -169,9 +170,7 @@ module Carto
         interactivity = []
         attributes = {}
 
-        if hover_fields.present?
-          interactivity << hover_fields.map { |hover_field| hover_field.fetch('name') }
-        end
+        interactivity << hover_fields.map { |hover_field| hover_field.fetch('name') } if hover_fields.present?
 
         if click_fields.present?
           interactivity << 'cartodb_id'
@@ -259,11 +258,11 @@ module Carto
         map = @visualization.map
         center_data = map.center_data
         data = {
-            zoom: map.zoom,
-            center: {
-              lng: center_data[1].to_f,
-              lat: center_data[0].to_f
-            }
+          zoom: map.zoom,
+          center: {
+            lng: center_data[1].to_f,
+            lat: center_data[0].to_f
+          }
         }
         bounds_data = map.view_bounds_data
         filter_and_merge_view(bounds_data, data)
@@ -273,17 +272,17 @@ module Carto
         state = @visualization.state.json
         center_data = state[:map][:center]
         center_and_zoom = {
-            zoom: state[:map][:zoom],
-            center: {
-              lng: center_data[1],
-              lat: center_data[0]
-            }
+          zoom: state[:map][:zoom],
+          center: {
+            lng: center_data[1],
+            lat: center_data[0]
+          }
         }
         bounds_data = {
-            west: state[:map][:sw][0],
-            south: state[:map][:sw][1],
-            east: state[:map][:ne][0],
-            north: state[:map][:ne][1]
+          west: state[:map][:sw][0],
+          south: state[:map][:sw][1],
+          east: state[:map][:ne][0],
+          north: state[:map][:ne][1]
         }
         filter_and_merge_view(bounds_data, center_and_zoom)
       end
@@ -296,6 +295,7 @@ module Carto
 
         center_and_zoom.merge!(preview_layers: preview_layers)
       end
+
     end
   end
 end

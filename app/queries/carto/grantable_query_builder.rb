@@ -66,6 +66,7 @@ class Carto::GrantableQueryBuilder
   end
 
   def safe_order(order)
-    order && %w{ id name type avatar_url created_at updated_at organization_id }.include?(order.to_s) ? order.to_s : 'name'
+    order && %w{id name type avatar_url created_at updated_at organization_id}.include?(order.to_s) ? order.to_s : 'name'
   end
+
 end

@@ -1,6 +1,6 @@
 module PerRequestSequelCache
 
-  def self.set(key, obj, ttl)
+  def self.set(key, obj, _ttl)
     # Please note ttl is ignored
     RequestStore.write(key, obj)
   end

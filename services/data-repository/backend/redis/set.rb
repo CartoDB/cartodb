@@ -4,17 +4,18 @@ module DataRepository
   module Backend
     class Redis
       class Set
+
         def initialize(redis=Redis.new)
           @redis = redis
-        end #initialize
+        end # initialize
 
         def store(key, data)
           workaround_until_resque_supports_latest_redis_gem(key, data)
-        end #store
+        end # store
 
         def fetch(key)
           redis.smembers key
-        end #fetch
+        end # fetch
 
         private
 
@@ -24,9 +25,9 @@ module DataRepository
           redis.multi do
             data.to_a.each { |item| redis.sadd(key, item) }
           end
-        end #workaround_until_resque_supports_latest_redis_gem
+        end # workaround_until_resque_supports_latest_redis_gem
+
       end # Set
     end # Redis
   end # Backend
 end # DataRepository
-

@@ -6,14 +6,14 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # Not encrypted
   ENCRYPTION_NONE = nil
   # Encrypted from start
-  ENCRYPTION_SIMPLE_TLS = 'simple_tls'
+  ENCRYPTION_SIMPLE_TLS = 'simple_tls'.freeze
   # Upgrade to encrypted once connected
-  ENCRYPTION_START_TLS = 'start_tls'
+  ENCRYPTION_START_TLS = 'start_tls'.freeze
 
   ENCRYPTION_SSL_VERSION_DEFAULT = nil
-  ENCRYPTION_SSL_VERSION_TLSV1_1 = 'TLSv1_1'
+  ENCRYPTION_SSL_VERSION_TLSV1_1 = 'TLSv1_1'.freeze
 
-  DOMAIN_BASES_SEPARATOR = '||'
+  DOMAIN_BASES_SEPARATOR = '||'.freeze
 
   self.table_name = 'ldap_configurations'
 
@@ -65,12 +65,13 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String password
   def authenticate(username, password)
     return false if username.blank? || password.blank?
+
     ldap_connection = Net::LDAP.new(connect_timeout: CONNECTION_TIMEOUT)
-    ldap_connection.host = self.host
-    ldap_connection.port = self.port
+    ldap_connection.host = host
+    ldap_connection.port = port
     configure_encryption(ldap_connection)
 
-    ldap_connection.auth self.connection_user, self.connection_password
+    ldap_connection.auth connection_user, connection_password
 
     valid_ldap_entry = nil
     domain_bases_list.find do |domain|
@@ -97,28 +98,33 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     else
       { success: false, error: last_operation_result.to_hash }
     end
-  rescue StandardError => exception
-    { success: false, error: { message: exception.message } }
+  rescue StandardError => e
+    { success: false, error: { message: e.message } }
   end
 
-  def users(objectClass = self.user_object_class)
+  def users(objectClass = user_object_class)
     search_in_domain_bases(Net::LDAP::Filter.eq('objectClass', objectClass))
   end
 
-  def groups(objectClass = self.group_object_class)
+  def groups(objectClass = group_object_class)
     search_in_domain_bases(Net::LDAP::Filter.eq('objectClass', objectClass))
   end
 
   def last_authentication_result
-    @last_authentication_result.nil? ? nil : Carto::Ldap::OperationResult.new(
-      @last_authentication_result.code, @last_authentication_result.error_message,
-      @last_authentication_result.matched_dn, @last_authentication_result.message)
+    if @last_authentication_result.nil?
+      nil
+    else
+      Carto::Ldap::OperationResult.new(
+        @last_authentication_result.code, @last_authentication_result.error_message,
+        @last_authentication_result.matched_dn, @last_authentication_result.message
+      )
+    end
   end
 
   def last_operation_result
     ldap_result = ldap_connection.get_operation_result
     Carto::Ldap::OperationResult.new(ldap_result.code, ldap_result.error_message, ldap_result.matched_dn,
-      ldap_result.message)
+                                     ldap_result.message)
   end
 
   private
@@ -135,14 +141,14 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   end
 
   def domain_bases_not_empty
-    errors.add(:domain_bases, "No domain bases set") unless domain_bases.present?
-    errors.add(:domain_bases_list, "Domain bases list empty") unless domain_bases_list.present?
+    errors.add(:domain_bases, 'No domain bases set') unless domain_bases.present?
+    errors.add(:domain_bases_list, 'Domain bases list empty') unless domain_bases_list.present?
   end
 
   def search_in_domain_bases(filter)
-    domain_bases_list.map { |domain|
+    domain_bases_list.map do |domain|
       search(domain, filter)
-    }.flatten.compact
+    end.flatten.compact
   end
 
   # @param String base DC to search at
@@ -165,10 +171,10 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String user full CN, like `CN=test_user, CN=developers, DC=cartodb, DC=COM`
   # @param String password Connection password
   # @throws InvalidConfigurationEncryptionError
-  def connect(user = self.connection_user, password = self.connection_password)
+  def connect(user = connection_user, password = connection_password)
     ldap = Net::LDAP.new(connect_timeout: CONNECTION_TIMEOUT)
-    ldap.host = self.host
-    ldap.port = self.port
+    ldap.host = host
+    ldap.port = port
     configure_encryption(ldap)
     # implicity this does basic/simple auth if no encryption added above
     ldap.auth(user, password)
@@ -178,29 +184,31 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   def configure_encryption(ldap)
     tls_options = OpenSSL::SSL::SSLContext::DEFAULT_PARAMS
 
-    case self.encryption
+    case encryption
     when ENCRYPTION_NONE
       return
     when ENCRYPTION_START_TLS
-      tls_options.merge!(:ca_file => self.ca_file) if self.ca_file
+      tls_options.merge!(ca_file: ca_file) if ca_file
     when ENCRYPTION_SIMPLE_TLS
       # No special value needed
     else
-      raise InvalidConfigurationEncryptionError.new(self.encryption)
+      raise InvalidConfigurationEncryptionError.new(encryption)
     end
 
-    tls_options.merge!(:verify_mode => OpenSSL::SSL::VERIFY_NONE)
+    tls_options.merge!(verify_mode: OpenSSL::SSL::VERIFY_NONE)
 
     # Default value is "SSLv23" at the gem
-    tls_options.merge!(:ssl_version => self.ssl_version) if self.ssl_version
+    tls_options.merge!(ssl_version: ssl_version) if ssl_version
 
-    ldap.encryption(method: self.encryption.to_sym, tls_options: tls_options)
+    ldap.encryption(method: encryption.to_sym, tls_options: tls_options)
   end
 
 end
 
 class InvalidConfigurationEncryptionError < StandardError
+
   def initialize(incorrect_encryption_value)
     super("Invalid encryption value supplied: #{incorrect_encryption_value}. Valid values: [nil, '', '']")
   end
+
 end

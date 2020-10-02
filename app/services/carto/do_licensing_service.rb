@@ -25,7 +25,7 @@ module Carto
     end
 
     def subscription(subscription_id)
-      subscriptions.find{ |s| s['id'] == subscription_id}
+      subscriptions.find { |s| s['id'] == subscription_id}
     end
 
     def add_to_redis(dataset)
@@ -39,7 +39,7 @@ module Carto
     end
 
     def get_sync_status(subscription_id)
-      return @doss.sync(subscription_id)
+      @doss.sync(subscription_id)
     end
 
     private
@@ -48,9 +48,9 @@ module Carto
       parsed_entity_id = @doss.parsed_entity_id(subscription['dataset_id'])
       expires_at = Time.parse(subscription['expires_at']) if subscription['expires_at'].present?
       subscription_data = subscription.merge(parsed_entity_id).merge({
-        id: subscription['dataset_id'],
-        status: (expires_at && (Time.now >= expires_at)) ? 'expired' : subscription['status']
-      })
+                                                                       id: subscription['dataset_id'],
+                                                                       status: expires_at && (Time.now >= expires_at) ? 'expired' : subscription['status']
+                                                                     })
       subscription_data.with_indifferent_access
     end
 
@@ -63,12 +63,10 @@ module Carto
         # Initial sync status
         sync_status = dataset[:sync_status]
         unsyncable_reason = dataset[:unsyncable_reason]
-        entity_info = (dataset[:status] != 'requested') ? get_entity_info(dataset[:dataset_id]) : {}
-        if sync_status.nil? then
-          sync_status, unsyncable_reason = get_initial_sync_status(dataset, entity_info)
-        end
+        entity_info = dataset[:status] != 'requested' ? get_entity_info(dataset[:dataset_id]) : {}
+        sync_status, unsyncable_reason = get_initial_sync_status(dataset, entity_info) if sync_status.nil?
 
-        # Create the new entry
+        #  Create the new entry
         new_value = [{
           dataset_id: dataset[:dataset_id],
           created_at: dataset[:created_at].to_s,
@@ -88,7 +86,7 @@ module Carto
           synchronization_id: dataset[:synchronization_id] || nil
         }]
         # Append to the current one
-        redis_value = redis_value + new_value
+        redis_value += new_value
       end
 
       redis_value.to_json
@@ -96,22 +94,22 @@ module Carto
 
     def remove_redis_value(dataset_id, storage)
       redis_value = JSON.parse($users_metadata.hget(@redis_key, storage) || '[]')
-      redis_value.reject { |dataset| dataset["dataset_id"] == dataset_id }.to_json
+      redis_value.reject { |dataset| dataset['dataset_id'] == dataset_id }.to_json
     end
 
     def get_initial_sync_status(dataset, entity_info)
       sync_info = @doss.check_syncable(dataset) || @doss.check_sync_limits(dataset.merge({
-        estimated_size: entity_info[:estimated_size].to_i || 0,
-        estimated_row_count: entity_info[:estimated_row_count].to_i || 0,
-        estimated_columns_count: entity_info[:estimated_columns_count].to_i || 0,
-        num_bytes: entity_info[:num_bytes].to_i || 0
-      }))
-      if sync_info then
-        return sync_info[:sync_status], sync_info[:unsyncable_reason]
-      elsif dataset[:status] == 'requested' then
-        return 'unsynced', nil
+                                                                                           estimated_size: entity_info[:estimated_size].to_i || 0,
+                                                                                           estimated_row_count: entity_info[:estimated_row_count].to_i || 0,
+                                                                                           estimated_columns_count: entity_info[:estimated_columns_count].to_i || 0,
+                                                                                           num_bytes: entity_info[:num_bytes].to_i || 0
+                                                                                         }))
+      if sync_info
+        [sync_info[:sync_status], sync_info[:unsyncable_reason]]
+      elsif dataset[:status] == 'requested'
+        ['unsynced', nil]
       else
-        return 'syncing', nil
+        ['syncing', nil]
       end
     end
 

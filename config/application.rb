@@ -1,20 +1,19 @@
-require File.expand_path('../boot', __FILE__)
+require File.expand_path('boot', __dir__)
 
-require "action_controller/railtie"
-require "action_mailer/railtie"
-require "active_record/railtie"
+require 'action_controller/railtie'
+require 'action_mailer/railtie'
+require 'active_record/railtie'
 require_relative '../lib/carto/configuration'
 require_relative '../lib/carto/carto_gears_support'
 
 # Forcefully require Coverband config because otherwise it raises an error in the rails console
 require './config/coverband'
 
-if defined?(Bundler)
-  Bundler.require(:default, :assets, Rails.env)
-end
+Bundler.require(:default, :assets, Rails.env) if defined?(Bundler)
 
 module CartoDB
   class Application < Rails::Application
+
     include Carto::Configuration
 
     # Settings in config/environments/* take precedence over those specified here.
@@ -43,7 +42,7 @@ module CartoDB
     # config.action_view.javascript_expansions[:defaults] = %w(jquery rails)
 
     # Configure the default encoding used in templates for Ruby 1.9.
-    config.encoding = "utf-8"
+    config.encoding = 'utf-8'
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
@@ -208,7 +207,7 @@ module CartoDB
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
-    config.action_controller.relative_url_root = "/assets"
+    config.action_controller.relative_url_root = '/assets'
 
     custom_app_views_paths.reverse.each do |custom_views_path|
       config.paths['app/views'].unshift(custom_views_path)
@@ -225,6 +224,7 @@ module CartoDB
     ## Logging
     config.log_level = :info
     config.logger = Carto::Common::Logger.new(Carto::Conf.new.log_file_path("#{Rails.env}.log"))
+
   end
 end
 

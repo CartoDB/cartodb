@@ -1,6 +1,7 @@
 require_relative 'paged_searcher'
 
 class Carto::Api::ApiKeysController < ::Api::ApplicationController
+
   include Carto::UUIDHelper
   include Carto::Api::PagedSearcher
   include Carto::Api::AuthApiAuthentication
@@ -82,7 +83,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def json_for_api_key(api_key)
     Carto::Api::ApiKeyPresenter.new(api_key).to_poro.merge(
       _links: {
-        self: api_key_url(id: CGI::escape(api_key.name))
+        self: api_key_url(id: CGI.escape(api_key.name))
       }
     )
   end
@@ -90,6 +91,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def type_param
     types = (params[:type] || '').split(',').map(&:strip)
     raise Carto::ParamInvalidError.new(:type, VALID_TYPE_PARAMS) unless (types - VALID_TYPE_PARAMS).empty?
+
     types
   end
 
@@ -99,9 +101,14 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     else
       # just org owners or org admins can manage api keys for other users
       raise Carto::UnauthorizedError.new unless current_viewer.organization_admin?
+
       user = Carto::User.where(username: params[:target_user], organization: current_viewer.organization.id).first
-      raise Carto::LoadError.new("User '#{params[:target_user]}' not found in the organization '#{current_viewer.organization.name}'") if user.nil?
+      if user.nil?
+        raise Carto::LoadError.new("User '#{params[:target_user]}' not found in the organization '#{current_viewer.organization.name}'")
+      end
+
       user
     end
   end
+
 end

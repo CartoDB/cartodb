@@ -7,7 +7,7 @@ describe SearchAPI do
   describe '#config_and_params' do
     it 'checks correct params sent to config and as query payload' do
       params = {
-        SearchAPI::PARAM_QUERY      => 'carto has:geo has:profile_geo',
+        SearchAPI::PARAM_QUERY => 'carto has:geo has:profile_geo',
         SearchAPI::PARAM_MAXRESULTS => 10
       }
 
@@ -15,11 +15,10 @@ describe SearchAPI do
         Typhoeus::Response.new(code: 200, body: data_from_file('sample_tweets.json'))
       )
 
-      api = SearchAPI.new({SearchAPI::CONFIG_AUTH_REQUIRED => false,
-                           SearchAPI::CONFIG_AUTH_USERNAME => 'testuser',
-                           SearchAPI::CONFIG_AUTH_PASSWORD => 'testpass',
-                           SearchAPI::CONFIG_SEARCH_URL => 'http://fakeurl.../sample_tweets.json'
-                          })
+      api = SearchAPI.new({ SearchAPI::CONFIG_AUTH_REQUIRED => false,
+                            SearchAPI::CONFIG_AUTH_USERNAME => 'testuser',
+                            SearchAPI::CONFIG_AUTH_PASSWORD => 'testpass',
+                            SearchAPI::CONFIG_SEARCH_URL => 'http://fakeurl.../sample_tweets.json' })
 
       api.params = params
 
@@ -36,11 +35,9 @@ describe SearchAPI do
       data[:next].should eq fixture[:next]
       data[:results].should eq fixture[:results]
     end
-
   end
 
   def data_from_file(filename)
     File.read(File.join(File.dirname(__FILE__), "../fixtures/#{filename}"))
   end
 end
-

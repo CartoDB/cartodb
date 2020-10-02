@@ -1,7 +1,9 @@
 # Support to dynamic CartoGears loading
 # Inspired by BootInquirer at https://github.com/taskrabbit/rails_engines_example/blob/17b5ee5286c2186951312cbe440b8d21738596eb/lib/boot_inquirer.rb
 module Carto
+
   class CartoGearsSupport
+
     # Returns gears found at:
     # - `/gears`. Should be "installed" (added to `Gemfile.lock``)
     # - `/private_gears` (shouldn't be installed)
@@ -23,9 +25,11 @@ module Carto
     def gear_from_gemspec_file(gemspec_file, install)
       Carto::Gear.new(File.basename(gemspec_file, File.extname(gemspec_file)), File.dirname(gemspec_file), install)
     end
+
   end
 
   class Gear
+
     def initialize(gem_name, path, installable)
       @name = gem_name.dup.freeze
       @path = path.dup.freeze
@@ -45,7 +49,7 @@ module Carto
     def gemspec
       pwd = Dir.pwd
       Dir.chdir(path)
-      Gem::Specification::load("#{name}.gemspec")
+      Gem::Specification.load("#{name}.gemspec")
     ensure
       Dir.chdir(pwd)
     end
@@ -53,5 +57,7 @@ module Carto
     def full_path
       Rails.root.join(path)
     end
+
   end
+
 end

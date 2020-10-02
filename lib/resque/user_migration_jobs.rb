@@ -2,7 +2,9 @@ require_relative './base_job'
 
 module Resque
   class UserMigrationJobs < BaseJob
+
     module Export
+
       extend ::LoggerHelper
 
       @queue = :user_migrations
@@ -14,9 +16,11 @@ module Resque
         log_error(exception: e, message: 'Error exporting user data', export: export.attributes)
         raise e
       end
+
     end
 
     module Import
+
       extend ::LoggerHelper
 
       @queue = :user_migrations
@@ -28,6 +32,8 @@ module Resque
         log_error(exception: e, message: 'Error importing user data', import: import.attributes)
         raise e
       end
+
     end
+
   end
 end

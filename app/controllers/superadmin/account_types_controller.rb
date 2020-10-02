@@ -1,4 +1,5 @@
 class Superadmin::AccountTypesController < Superadmin::SuperadminController
+
   respond_to :json
 
   ssl_required :create, :update, :destroy
@@ -50,4 +51,5 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
 
     render json: { error: 'ERROR. rate_limit object is not valid' }, status: 422 unless @rate_limit.valid?
   end
+
 end

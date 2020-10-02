@@ -3,7 +3,6 @@ require_relative '../../geocoder/lib/geocoder_config'
 require_relative 'geocoder_cache'
 require_relative 'abstract_table_geocoder'
 
-
 module CartoDB
   class TableGeocoder < AbstractTableGeocoder
 
@@ -22,14 +21,14 @@ module CartoDB
       @usage_metrics = arguments.fetch(:usage_metrics)
       @log = arguments.fetch(:log)
       @geocoding_model = arguments.fetch(:geocoding_model)
-      @cache       = CartoDB::GeocoderCache.new(
-        connection:  connection,
-        formatter:   clean_formatter,
-        sql_api:     arguments[:cache],
+      @cache = CartoDB::GeocoderCache.new(
+        connection: connection,
+        formatter: clean_formatter,
+        sql_api: arguments[:cache],
         working_dir: @working_dir,
-        table_name:  table_name,
+        table_name: table_name,
         qualified_table_name: @qualified_table_name,
-        max_rows:    @max_rows,
+        max_rows: @max_rows,
         usage_metrics: @usage_metrics,
         log: @log
       )
@@ -39,11 +38,11 @@ module CartoDB
       ensure_georef_status_colummn_valid
       @number_of_rows_pre_cache = calculate_number_of_rows
       cache.run unless cache_disabled?
-      @csv_file = generate_csv()
+      @csv_file = generate_csv
       geocoder.run
       # Sync state because cancel is made synchronous
       @geocoding_model.refresh
-      if not @geocoding_model.cancelled?
+      unless @geocoding_model.cancelled?
         process_results if @geocoding_model.state == 'completed'
         cache.store unless cache_disabled?
       end
@@ -66,8 +65,8 @@ module CartoDB
     end
 
     def process_results
-      download_results # TODO move to HiresBatchGeocoder
-      deflate_results # TODO move to HiresBatchGeocoder
+      download_results # TODO: move to HiresBatchGeocoder
+      deflate_results # TODO: move to HiresBatchGeocoder
       create_temp_table
       import_results_to_temp_table
       load_results_into_original_table
@@ -84,9 +83,8 @@ module CartoDB
       drop_temp_table
     end
 
-
     def used_batch_request?
-      return geocoder.used_batch_request?
+      geocoder.used_batch_request?
     end
 
     def name
@@ -105,7 +103,7 @@ module CartoDB
     end
 
     def calculate_number_of_rows
-      rows = connection.fetch(%Q{
+      rows = connection.fetch(%{
         SELECT count(DISTINCT(#{clean_formatter}))
         FROM #{@qualified_table_name}
         WHERE cartodb_georef_status IS NULL OR cartodb_georef_status IS FALSE
@@ -116,9 +114,9 @@ module CartoDB
 
     # Generate a csv input file from the geocodable rows
     def generate_csv
-      csv_file = File.join(@working_dir, "wadus.csv")
+      csv_file = File.join(@working_dir, 'wadus.csv')
       # INFO: we exclude inputs too short and "just digits" inputs, which will remain as georef_status = false
-      query = %Q{
+      query = %{
         WITH geocodable AS (
           SELECT DISTINCT(#{clean_formatter}) recId, #{clean_formatter} searchText
           FROM #{@qualified_table_name}
@@ -129,8 +127,8 @@ module CartoDB
         WHERE length(searchText) > 3 AND searchText !~ '^[\\d]*$'
       }
       result = connection.copy_table(connection[query], format: :csv, options: 'HEADER')
-      File.write(csv_file, result.force_encoding("UTF-8"))
-      return csv_file
+      File.write(csv_file, result.force_encoding('UTF-8'))
+      csv_file
     end
 
     def clean_formatter
@@ -151,15 +149,14 @@ module CartoDB
     end
 
     def create_temp_table
-      connection.run(%Q{
+      connection.run(%{
         CREATE TABLE #{temp_table_name} (
           recId text,
           SeqNumber int,
           seqLength int,
           displayLatitude float,
           displayLongitude float
-        );}
-      )
+        );})
     end
 
     def drop_temp_table
@@ -171,7 +168,7 @@ module CartoDB
     end
 
     def load_results_into_original_table
-      connection.run(%Q{
+      connection.run(%{
         UPDATE #{@qualified_table_name} AS dest
         SET the_geom = ST_GeomFromText(
             'POINT(' || orig.displayLongitude || ' ' ||
@@ -184,7 +181,7 @@ module CartoDB
     end
 
     def mark_rows_not_geocoded
-      connection.run(%Q{UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE WHERE cartodb_georef_status IS NULL})
+      connection.run(%{UPDATE #{@qualified_table_name} SET cartodb_georef_status = FALSE WHERE cartodb_georef_status IS NULL})
     end
 
     def temp_table_name
@@ -202,5 +199,6 @@ module CartoDB
       @usage_metrics.incr(:geocoder_here, :failed_responses, geocoder.failed_processed_rows)
       @usage_metrics.incr(:geocoder_here, :total_requests, total_requests)
     end
+
   end
 end

@@ -1,7 +1,6 @@
 require_relative '../../spec_helper_min'
 
 describe Carto::Api::MobileAppPresenter do
-
   it "Compares old and new ways of 'presenting' mobile app data" do
     user = FactoryGirl.build(:user, :mobile)
     mobile_app = FactoryGirl.build(:mobile_app)
@@ -12,7 +11,6 @@ describe Carto::Api::MobileAppPresenter do
     compare_data(mobile_app.data(user, fetch_app_types: true), mobile_app.as_json, fetch_app_types: true)
     # Data should return default mobile app data
     compare_data(mobile_app.data(user), mobile_app.as_json)
-
   end
 
   protected

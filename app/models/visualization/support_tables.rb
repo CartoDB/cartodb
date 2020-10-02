@@ -20,9 +20,10 @@ module CartoDB
       # PG12_DEPRECATED in postgis 3+
       def load_actual_list(parent_name=nil)
         return [] if @parent_id.nil? || @parent_kind != Visualization::Member::KIND_RASTER ||
-          !@database.table_exists?('raster_overviews')
-        parent = Visualization::Member.new(id:@parent_id).fetch
-        table_data = @database.fetch(%Q{
+                     !@database.table_exists?('raster_overviews')
+
+        parent = Visualization::Member.new(id: @parent_id).fetch
+        table_data = @database.fetch(%{
           SELECT o_table_catalog AS catalog, o_table_schema AS schema, o_table_name AS name
           FROM raster_overviews
           WHERE r_table_catalog = '#{parent.user.database_name}'
@@ -34,11 +35,11 @@ module CartoDB
       end
 
       def delete_all
-        tables.each { |table|
-          @database.execute(%Q{
+        tables.each do |table|
+          @database.execute(%{
             DROP TABLE "#{table[:schema]}"."#{table[:name]}"
           })
-        }
+        end
       end
 
       # @param existing_parent_name String
@@ -50,44 +51,44 @@ module CartoDB
           schema = nil
           support_tables_new_names = []
           tables_list = tables(seek_parent_name)
-          tables_list.each { |item|
+          tables_list.each do |item|
             schema = item[:schema]
             new_support_table_name = item[:name].dup
             # CONVENTION: support_tables will always end in "_tablename", so we substitute using parent name
             new_support_table_name.slice!(-existing_parent_name.length, existing_parent_name.length)
             new_support_table_name = "#{new_support_table_name}#{new_parent_name}"
 
-            @database.execute(%Q{
+            @database.execute(%{
               ALTER TABLE "#{item[:schema]}"."#{item[:name]}" RENAME TO "#{new_support_table_name}"
             })
 
             support_tables_new_names.push(new_support_table_name)
-          }
+          end
           renamed = true
         rescue StandardError
           renamed = false
         end
 
         if renamed && recreate_relations
-          support_tables_new_names.each { |table_name|
+          support_tables_new_names.each do |table_name|
             recreate_raster_constraints_if_exists(table_name, new_parent_name, schema)
             update_permissions(table_name, @public_user_roles_list, schema)
-          }
+          end
         end
 
         { success: renamed, names: support_tables_new_names }
       end
 
       def change_schema(new_schema, parent_table_name)
-        tables.each { |item|
-          @database.execute(%Q{
+        tables.each do |item|
+          @database.execute(%{
             ALTER TABLE "#{item[:schema]}"."#{item[:name]}"
             SET SCHEMA "#{new_schema}"
           })
           # Constraints are not automatically updated upon schema change or table renaming
           recreate_raster_constraints_if_exists(item[:name], parent_table_name, new_schema)
           update_permissions(item[:name], @public_user_roles_list, new_schema)
-        }
+        end
       end
 
       # For import purposes
@@ -96,7 +97,6 @@ module CartoDB
         @tables_list = new_list
       end
 
-
       private
 
       def tables(seek_parent_name=nil)
@@ -104,7 +104,7 @@ module CartoDB
       end
 
       def update_permissions(overview_table_name, db_roles_list, schema)
-        overviews = @database.fetch(%Q{
+        overviews = @database.fetch(%{
           SELECT o_table_name, o_table_schema
           FROM raster_overviews
           WHERE o_table_name = '#{overview_table_name}'
@@ -113,17 +113,17 @@ module CartoDB
         return if overviews.nil?
 
         @database.transaction do
-          db_roles_list.each { |role_name|
-            @database.execute(%Q{
+          db_roles_list.each do |role_name|
+            @database.execute(%{
               GRANT SELECT ON TABLE "#{overviews[:o_table_schema]}"."#{overviews[:o_table_name]}" TO "#{role_name}"
             })
-          }
+          end
         end
       end
 
       # @see http://postgis.net/docs/manual-dev/using_raster_dataman.html#RT_Raster_Overviews
       def recreate_raster_constraints_if_exists(overview_table_name, raster_table_name, schema)
-        constraint = @database.fetch(%Q{
+        constraint = @database.fetch(%{
           SELECT o_table_name, o_raster_column, r_table_name, r_raster_column, overview_factor
           FROM raster_overviews
           WHERE o_table_name = '#{overview_table_name}'
@@ -133,12 +133,12 @@ module CartoDB
 
         @database.transaction do
           # @see http://postgis.net/docs/RT_DropOverviewConstraints.html
-          @database.execute(%Q{
+          @database.execute(%{
             SELECT DropOverviewConstraints('#{schema}', '#{constraint[:o_table_name]}',
                                            '#{constraint[:o_raster_column]}')
           })
           # @see http://postgis.net/docs/manual-dev/RT_AddOverviewConstraints.html
-          @database.execute(%Q{
+          @database.execute(%{
             SELECT AddOverviewConstraints('#{schema}', '#{constraint[:o_table_name]}',
                                           '#{constraint[:o_raster_column]}', '#{schema}', '#{raster_table_name}',
                                           '#{constraint[:r_raster_column]}', #{constraint[:overview_factor]});

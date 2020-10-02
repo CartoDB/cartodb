@@ -12,8 +12,8 @@ require_relative 'no_stats_context'
 
 describe 'KML regression tests' do
   include AcceptanceHelpers
-  include_context "cdb_importer schema"
-  include_context "no stats"
+  include_context 'cdb_importer schema'
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -28,11 +28,11 @@ describe 'KML regression tests' do
     filepath    = path_to('counties_ny_export.kml')
     downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                   pg: @user.db_service.db_configuration_for,
+                                                   downloader: downloader,
+                                                   log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                   user: @user
+                                                 })
     runner.run
 
     geometry_type_for(runner, @user).should be
@@ -58,11 +58,11 @@ describe 'KML regression tests' do
     filepath    = path_to('usdm130806.kmz')
     downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                   pg: @user.db_service.db_configuration_for,
+                                                   downloader: downloader,
+                                                   log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                   user: @user
+                                                 })
     runner.run
 
     geometry_type_for(runner, @user).should be
@@ -72,11 +72,11 @@ describe 'KML regression tests' do
     filepath    = path_to('multiple_layer.kml')
     downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                   pg: @user.db_service.db_configuration_for,
+                                                   downloader: downloader,
+                                                   log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                   user: @user
+                                                 })
     runner.run
 
     geometry_type_for(runner, @user).should be
@@ -86,11 +86,11 @@ describe 'KML regression tests' do
     filepath    = path_to('abandoned.kml')
     downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                   pg: @user.db_service.db_configuration_for,
+                                                   downloader: downloader,
+                                                   log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                   user: @user
+                                                 })
     runner.run
 
     runner.results.first.error_code.should eq 3202
@@ -101,33 +101,32 @@ describe 'KML regression tests' do
     filepath    = path_to('kml_samples.zip')
     downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                   pg: @user.db_service.db_configuration_for,
+                                                   downloader: downloader,
+                                                   log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                   user: @user
+                                                 })
     runner.run
 
     runner.results.select(&:success?).length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
     runner.results.length.should eq CartoDB::Importer2::Runner::MAX_TABLES_PER_IMPORT
-    runner.results.each { |result|
-      name = @user.in_database[%Q{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
+    runner.results.each do |result|
+      name = @user.in_database[%{ SELECT * FROM pg_class WHERE relname='#{result.table_name}' }].first[:relname]
       name.should eq result.table_name
-    }
+    end
   end
 
   it 'raises exception if KML style tag dont have and ID' do
     filepath    = path_to('style_without_id.kml')
     downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                   pg: @user.db_service.db_configuration_for,
+                                                   downloader: downloader,
+                                                   log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                   user: @user
+                                                 })
     runner.run
 
     runner.results.first.error_code.should eq 2009
   end
-
 end

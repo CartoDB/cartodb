@@ -11,15 +11,15 @@ describe Visualization::Relator do
     @db = SequelRails.connection
     Sequel.extension(:pagination)
 
-    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
   end
 
   before(:all) do
     @user = create_user({
-        email: 'admin@cartotest.com',
-        username: 'admin',
-        password: '000123456'
-      })
+                          email: 'admin@cartotest.com',
+                          username: 'admin',
+                          password: '000123456'
+                        })
     @carto_user = Carto::User.find(@user.id)
   end
 
@@ -34,7 +34,6 @@ describe Visualization::Relator do
   end
 
   describe '#estimated_row_count and #actual_row_count' do
-
     it 'should query Table estimated an actual row count methods' do
       ::Table.any_instance.stubs(:row_count_and_size).returns(row_count: 999)
       ::Table.any_instance.stubs(:actual_row_count).returns(1000)
@@ -43,7 +42,6 @@ describe Visualization::Relator do
       vis.estimated_row_count.should == 999
       vis.actual_row_count.should == 1000
     end
-
   end
 
   before(:each) do
@@ -56,10 +54,9 @@ describe Visualization::Relator do
   end
 
   describe '#related_canonical_visualizations' do
-
     it 'should return the canonical visualizations associated to a derived visualization' do
-      table1 = create_table({:name => 'table1', :user_id => @user.id})
-      table2 = create_table({:name => 'table2', :user_id => @user.id})
+      table1 = create_table({ name: 'table1', user_id: @user.id })
+      table2 = create_table({ name: 'table2', user_id: @user.id })
       vis_table1 = create_vis_from_table(@carto_user, table1)
       create_vis_from_table(@carto_user, table2)
 
@@ -72,36 +69,42 @@ describe Visualization::Relator do
       Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
       parent = Visualization::Member.new(random_attributes_for_vis_member({
-                                                            name:'PARENT',
-                                                            user_id: @user_mock.id,
-                                                            type: Visualization::Member::TYPE_DERIVED }))
+                                                                            name: 'PARENT',
+                                                                            user_id: @user_mock.id,
+                                                                            type: Visualization::Member::TYPE_DERIVED
+                                                                          }))
       parent = parent.store.fetch
 
       # Create unsorted on purpose
       member_d = Visualization::Member.new(random_attributes_for_vis_member({
-                                                              name:'D', type: Visualization::Member::TYPE_SLIDE,
-                                                              user_id: @user_mock.id,
-                                                              parent_id: parent.id }))
+                                                                              name: 'D', type: Visualization::Member::TYPE_SLIDE,
+                                                                              user_id: @user_mock.id,
+                                                                              parent_id: parent.id
+                                                                            }))
       member_d = member_d.store.fetch
       member_c = Visualization::Member.new(random_attributes_for_vis_member({
-                                                              name:'C', type: Visualization::Member::TYPE_SLIDE,
-                                                              user_id: @user_mock.id,
-                                                              parent_id: parent.id }))
+                                                                              name: 'C', type: Visualization::Member::TYPE_SLIDE,
+                                                                              user_id: @user_mock.id,
+                                                                              parent_id: parent.id
+                                                                            }))
       member_c = member_c.store.fetch
       member_b = Visualization::Member.new(random_attributes_for_vis_member({
-                                                              name:'B', type: Visualization::Member::TYPE_SLIDE,
-                                                              user_id: @user_mock.id,
-                                                              parent_id: parent.id }))
+                                                                              name: 'B', type: Visualization::Member::TYPE_SLIDE,
+                                                                              user_id: @user_mock.id,
+                                                                              parent_id: parent.id
+                                                                            }))
       member_b = member_b.store.fetch
       member_e = Visualization::Member.new(random_attributes_for_vis_member({
-                                                              name:'E', type: Visualization::Member::TYPE_SLIDE,
-                                                              user_id: @user_mock.id,
-                                                              parent_id: parent.id }))
+                                                                              name: 'E', type: Visualization::Member::TYPE_SLIDE,
+                                                                              user_id: @user_mock.id,
+                                                                              parent_id: parent.id
+                                                                            }))
       member_e = member_e.store.fetch
       member_a = Visualization::Member.new(random_attributes_for_vis_member({
-                                                              name:'A', type: Visualization::Member::TYPE_SLIDE,
-                                                              user_id: @user_mock.id,
-                                                              parent_id: parent.id }))
+                                                                              name: 'A', type: Visualization::Member::TYPE_SLIDE,
+                                                                              user_id: @user_mock.id,
+                                                                              parent_id: parent.id
+                                                                            }))
       member_a = member_a.store.fetch
 
       # A -> B -> C -> D -> E
@@ -129,21 +132,19 @@ describe Visualization::Relator do
     end
   end
 
-
   private
 
   def create_vis_from_table(user, table)
     blender = Visualization::TableBlender.new(user, [table])
     map = blender.blend
     vis = Visualization::Member.new(
-        name:     'wadus_vis',
-        map_id:   map.id,
-        type:     Visualization::Member::TYPE_DERIVED,
-        privacy:  blender.blended_privacy,
-        user_id:  user.id
+      name: 'wadus_vis',
+      map_id: map.id,
+      type: Visualization::Member::TYPE_DERIVED,
+      privacy: blender.blended_privacy,
+      user_id: user.id
     )
     vis.store
     vis
   end
-
 end

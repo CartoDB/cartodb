@@ -9,7 +9,7 @@ Sequel.migration do
     SequelRails.connection.run(%{
         ALTER TABLE shared_entities ADD PRIMARY KEY (id);
       })
-    end
+  end
 
   down do
     SequelRails.connection.run(%{

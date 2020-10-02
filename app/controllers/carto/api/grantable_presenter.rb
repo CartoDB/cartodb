@@ -30,6 +30,5 @@ module Carto
       end
 
     end
-
   end
 end

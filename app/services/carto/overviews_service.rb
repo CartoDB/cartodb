@@ -39,7 +39,8 @@ module Carto
         []
       end
     rescue Carto::Db::SqlInterface::Error => e
-      raise unless e.to_s.match /relation .does not exist/
+      raise unless e.to_s.match(/relation .does not exist/)
+
       []
     end
 

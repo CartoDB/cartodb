@@ -3,6 +3,7 @@ require_relative './job'
 module CartoDB
   module Importer2
     class FormatLinter
+
       CHARACTER_LIMIT = 1000
 
       def self.supported?(extension)
@@ -10,7 +11,7 @@ module CartoDB
       end
 
       # INFO: importer_config not used but needed for compatibility with other normalizers
-      def initialize(filepath, job = nil, importer_config = nil)
+      def initialize(filepath, job = nil, _importer_config = nil)
         @filepath = filepath
         @job      = job || Job.new
       end
@@ -21,6 +22,7 @@ module CartoDB
         data.close
 
         raise KmlNetworkLinkError if sample =~ /NetworkLink.*href.*NetworkLink/m
+
         self
       end
 
@@ -31,7 +33,7 @@ module CartoDB
       private
 
       attr_reader :filepath, :job
+
     end # FormatLinter
   end # Importer2
 end # CartoDB
-

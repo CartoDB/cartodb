@@ -1,10 +1,11 @@
 class RecordNotFound < StandardError; end
-class NoHTML5Compliant < Exception; end
+class NoHTML5Compliant < RuntimeError; end
 
 module CartoDB
 
   class BaseCartoDBError < StandardError
-    APPENDED_MESSAGE_PREFIX = '. Original Message: '
+
+    APPENDED_MESSAGE_PREFIX = '. Original Message: '.freeze
 
     def initialize(message, parent_exception = nil)
       if parent_exception.nil?
@@ -14,6 +15,7 @@ module CartoDB
         set_backtrace(parent_exception.backtrace)
       end
     end
+
   end
 
   class InvalidUser < StandardError; end
@@ -32,40 +34,52 @@ module CartoDB
   class CartoDBfyError < StandardError; end
 
   class InvalidInterval < StandardError
+
     def detail
       Cartodb.error_codes[:invalid_interval]
     end
+
   end
 
   # importer errors
   class EmptyFile < StandardError
+
     def detail
       Cartodb.error_codes[:empty_file]
     end
+
   end
 
   class InvalidUrl < StandardError
+
     def detail
       Cartodb.error_codes[:url_error]
     end
+
   end
 
   class InvalidFile < StandardError
+
     def detail
       Cartodb.error_codes[:file_error]
     end
+
   end
 
   class TableCopyError < StandardError
+
     def detail
       Cartodb.error_codes[:table_copy_error]
     end
+
   end
 
   class QuotaExceeded < StandardError
+
     def detail
-      Cartodb.error_codes[:quota_error].merge(:raw_error => self.message)
+      Cartodb.error_codes[:quota_error].merge(raw_error: message)
     end
+
   end
 
   class DataSourceError < BaseCartoDBError; end
@@ -74,6 +88,7 @@ module CartoDB
 
   # database errors
   class DbError < StandardError
+
     attr_accessor :message
     def initialize(msg)
       # Example of an error (newline included):
@@ -81,14 +96,19 @@ module CartoDB
       # LINE 1: insert into antantaric_species (name_of_species,family) valu...
 
       # So we suppose everything we need is in the first line
-      @message = msg.split("\n").first.gsub(/pgerror: error:/i,'').strip
+      @message = msg.split("\n").first.gsub(/pgerror: error:/i, '').strip
     end
-    def to_s; @message; end
+
+    def to_s
+      @message
+    end
+
   end
 
   class TableNotExists < DbError; end
   class ColumnNotExists < DbError; end
   class ErrorRunningQuery < DbError
+
     attr_accessor :db_message # the error message from the database
     attr_accessor :syntax_message # the query and a marker where the error is
 
@@ -97,9 +117,11 @@ module CartoDB
       @db_message = message.split("\n")[0]
       @syntax_message = message.split("\n")[1..-1].join("\n")
     end
+
   end
 
   class InvalidType < DbError
+
     attr_accessor :db_message # the error message from the database
     attr_accessor :syntax_message # the query and a marker where the error is
 
@@ -107,27 +129,34 @@ module CartoDB
       @db_message = message.split("\n")[0]
       @syntax_message = message.split("\n")[1..-1].join("\n")
     end
+
   end
 
   class InvalidQuery < StandardError
+
     attr_accessor :message
     def initialize
       @message = 'Only SELECT statement is allowed'
     end
+
   end
 
   class EmptyAttributes < StandardError
+
     attr_accessor :error_message
     def initialize(message)
       @error_message = message
     end
+
   end
 
   class InvalidAttributes < StandardError
+
     attr_accessor :error_message
     def initialize(message)
       @error_message = message
     end
+
   end
 
   class NonConvertibleData < StandardError; end
@@ -152,4 +181,5 @@ module CartoDB
   end
 
   class SharedEntitiesError < StandardError; end
+
 end

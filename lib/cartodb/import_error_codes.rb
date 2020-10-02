@@ -2,12 +2,12 @@ module CartoDB
 
   NO_ERROR_CODE = nil
 
-  ERROR_SOURCE_CARTODB = 'cartodb'
-  ERROR_SOURCE_USER = 'user'
-  ERROR_SOURCE_EXTERNAL = 'external'
+  ERROR_SOURCE_CARTODB = 'cartodb'.freeze
+  ERROR_SOURCE_USER = 'user'.freeze
+  ERROR_SOURCE_EXTERNAL = 'external'.freeze
 
-# @see services/importer/lib/importer/exceptions.rb For mapping between exceptions and errors
-# @see https://github.com/CartoDB/docs/edit/master/cartodb-editor.md Whenever you add a relevant error, add there please
+  # @see services/importer/lib/importer/exceptions.rb For mapping between exceptions and errors
+  # @see https://github.com/CartoDB/docs/edit/master/cartodb-editor.md Whenever you add a relevant error, add there please
   IMPORTER_ERROR_CODES = {
     1 => {
       title: 'Install error',
@@ -16,12 +16,12 @@ module CartoDB
     },
     1000 => {
       title: 'File I/O error',
-      what_about: "Something seems to be wrong with the file you uploaded. Check that it is loading fine locally and try uploading it again.",
+      what_about: 'Something seems to be wrong with the file you uploaded. Check that it is loading fine locally and try uploading it again.',
       source: ERROR_SOURCE_CARTODB
     },
     1001 => {
       title: 'Download error',
-      what_about: "The remote URL returned an error. Please verify your file is available at that URL.",
+      what_about: 'The remote URL returned an error. Please verify your file is available at that URL.',
       source: ERROR_SOURCE_USER
     },
     1002 => {
@@ -36,7 +36,7 @@ module CartoDB
     },
     1004 => {
       title: 'XLS/XLSX Error',
-      what_about: "The XLS/XLSX archive could not be opened or contains data that cannot be imported. Try exporting it into CSV and uploading the CSV instead.",
+      what_about: 'The XLS/XLSX archive could not be opened or contains data that cannot be imported. Try exporting it into CSV and uploading the CSV instead.',
       source: ERROR_SOURCE_USER
     },
     1005 => {
@@ -56,17 +56,17 @@ module CartoDB
     },
     1008 => {
       title: 'GDrive access forbidden',
-      what_about: "Google denied access to GDrive. If you use Google Apps contact your administrator to allow third party Drive applications and try again.",
+      what_about: 'Google denied access to GDrive. If you use Google Apps contact your administrator to allow third party Drive applications and try again.',
       source: ERROR_SOURCE_USER
     },
     1009 => {
       title: 'Twitter Server Error',
-      what_about: "There was an error connecting to Twitter service to retrieve your tweets. The server might be temporally unavaliable, please try again later.",
+      what_about: 'There was an error connecting to Twitter service to retrieve your tweets. The server might be temporally unavaliable, please try again later.',
       source: ERROR_SOURCE_EXTERNAL
     },
     1011 => {
       title: 'Error retrieving data from datasource',
-      what_about: "There was an error retrieving data from the datasource. Check that the file/data is still present.",
+      what_about: 'There was an error retrieving data from the datasource. Check that the file/data is still present.',
       source: ERROR_SOURCE_USER
     },
     1012 => {
@@ -76,22 +76,22 @@ module CartoDB
     },
     1013 => {
       title: 'Invalid ArcGIS version',
-      what_about: "The specified ArcGIS server runs an unsupported version. Supported versions are 10.1 onwards.",
+      what_about: 'The specified ArcGIS server runs an unsupported version. Supported versions are 10.1 onwards.',
       source: ERROR_SOURCE_USER
     },
     1014 => {
       title: 'Invalid name',
-      what_about: "File name is not valid. Maybe too many tables with similar names. Please change file name and try again.",
+      what_about: 'File name is not valid. Maybe too many tables with similar names. Please change file name and try again.',
       source: ERROR_SOURCE_USER
     },
     1015 => {
       title: 'No results',
-      what_about: "Query was correct but returned no results, please change the parameters and run it again.",
+      what_about: 'Query was correct but returned no results, please change the parameters and run it again.',
       source: ERROR_SOURCE_USER
     },
     1016 => {
       title: 'Dropbox permission revoked',
-      what_about: "CARTO has not permission to access your files at Dropbox. Please import file again.",
+      what_about: 'CARTO has not permission to access your files at Dropbox. Please import file again.',
       source: ERROR_SOURCE_USER
     },
     1017 => {
@@ -106,17 +106,17 @@ module CartoDB
     },
     1019 => {
       title: 'Too Many Layers',
-      what_about: "The file has too many layers. It can have 50 as maximum.", # ./services/importer/lib/importer/kml_splitter.rb
+      what_about: 'The file has too many layers. It can have 50 as maximum.', # ./services/importer/lib/importer/kml_splitter.rb
       source: ERROR_SOURCE_USER
     },
     1020 => {
       title: 'Download timeout',
-      what_about: "Data download timed out. Check the source is not running slow and/or try again.",
+      what_about: 'Data download timed out. Check the source is not running slow and/or try again.',
       source: ERROR_SOURCE_USER
     },
     1021 => {
       title: 'Box permission revoked',
-      what_about: "CARTO has not permission to access your files at Box. Please import file again.",
+      what_about: 'CARTO has not permission to access your files at Box. Please import file again.',
       source: ERROR_SOURCE_USER
     },
     1022 => {
@@ -151,12 +151,12 @@ module CartoDB
     },
     1500 => {
       title: 'Connector error',
-      what_about: "The connector used to fetch the resourced failed.",
+      what_about: 'The connector used to fetch the resourced failed.',
       source: ERROR_SOURCE_USER
     },
     1501 => {
       title: 'Connectors disabled',
-      what_about: "The type of connector you were trying to use is not enabled",
+      what_about: 'The type of connector you were trying to use is not enabled',
       source: ERROR_SOURCE_USER
     },
     1502 => {
@@ -176,7 +176,7 @@ module CartoDB
     },
     2003 => {
       title: 'Malformed CSV',
-      what_about: "The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields or multiline cells at Excel files or unquoted CSV.",
+      what_about: 'The CSV or converted XLS/XLSX to CSV file contains malformed or invalid characters. Some reasons for this error can be for example multiline header fields or multiline cells at Excel files or unquoted CSV.',
       source: ERROR_SOURCE_USER
     },
     2004 => {
@@ -196,12 +196,12 @@ module CartoDB
     },
     2007 => {
       title: 'Encoding error',
-      what_about: "The file you tried to import failed due to encoding issues. To fix this, force the encoding of your file using a text editor or a tool like QGis. You just need to export your files in \"UTF-8\" format.",
+      what_about: 'The file you tried to import failed due to encoding issues. To fix this, force the encoding of your file using a text editor or a tool like QGis. You just need to export your files in "UTF-8" format.',
       source: ERROR_SOURCE_USER
     },
     2008 => {
       title: 'Malformed XLS',
-      what_about: "The Excel file has an unsupported format or is corrupt. To fix this, open it and save as CSV or XLSX.",
+      what_about: 'The Excel file has an unsupported format or is corrupt. To fix this, open it and save as CSV or XLSX.',
       source: ERROR_SOURCE_USER
     },
     2009 => {
@@ -216,17 +216,17 @@ module CartoDB
     },
     2011 => {
       title: 'Invalid cartodb_id column',
-      what_about: "The import failed because your table contains an invalid cartodb_id column. If you want to use it as a primary key, its values must be integers, non-null, and unique. Otherwise, try renaming your current cartodb_id column.",
+      what_about: 'The import failed because your table contains an invalid cartodb_id column. If you want to use it as a primary key, its values must be integers, non-null, and unique. Otherwise, try renaming your current cartodb_id column.',
       source: ERROR_SOURCE_USER
     },
     2012 => {
       title: 'Incompatible schemas',
-      what_about: "The import failed because you are trying to overwrite a table but the data you are providing is not compatible with the data that table already has. You may me changing some types or removing a column. Please check and try again",
+      what_about: 'The import failed because you are trying to overwrite a table but the data you are providing is not compatible with the data that table already has. You may me changing some types or removing a column. Please check and try again',
       source: ERROR_SOURCE_USER
     },
     2013 => {
       title: 'Cannot overwrite table',
-      what_about: "The synchronization failed because the destination table could not be overwritten. Please make sure that there are no database objects (e.g: views) that depend on it.",
+      what_about: 'The synchronization failed because the destination table could not be overwritten. Please make sure that there are no database objects (e.g: views) that depend on it.',
       source: ERROR_SOURCE_USER
     },
     2014 => {
@@ -236,7 +236,7 @@ module CartoDB
     },
     3007 => {
       title: 'JSON may not be valid GeoJSON',
-      what_about: "We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.",
+      what_about: 'We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.',
       source: ERROR_SOURCE_USER
     },
     3008 => {
@@ -246,17 +246,17 @@ module CartoDB
     },
     3009 => {
       title: 'SHP Normalization error',
-      what_about: "We were unable to detect the encoding or projection of your Shapefile. Try converting the file to UTF-8 and a 4326 SRID.",
+      what_about: 'We were unable to detect the encoding or projection of your Shapefile. Try converting the file to UTF-8 and a 4326 SRID.',
       source: ERROR_SOURCE_USER
     },
     3101 => {
       title: 'Missing projection (.prj) file',
-      what_about: "CARTO needs a PRJ file for all Shapefile archives uploaded. Contact your data provider to see about aquiring one if it was missing. Otherwise see spatialreference.org to locate the right one if you know it. Remember, the file name for your .prj must be the same as your .shp.",
+      what_about: 'CARTO needs a PRJ file for all Shapefile archives uploaded. Contact your data provider to see about aquiring one if it was missing. Otherwise see spatialreference.org to locate the right one if you know it. Remember, the file name for your .prj must be the same as your .shp.',
       source: ERROR_SOURCE_USER
     },
     3201 => {
       title: 'Geometry Collection not supported',
-      what_about: "We are working to support more formats every day, but currently we cannot take mixed geometry types. Take a look at your data source and see if other formats are available, otherwise, look into tools like OGR to split this file into valid ESRI Shapefiles prior to importing. ",
+      what_about: 'We are working to support more formats every day, but currently we cannot take mixed geometry types. Take a look at your data source and see if other formats are available, otherwise, look into tools like OGR to split this file into valid ESRI Shapefiles prior to importing. ',
       source: ERROR_SOURCE_USER
     },
     3202 => {
@@ -285,14 +285,14 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     8005 => {
-      title: "Max layers per map reached",
+      title: 'Max layers per map reached',
       what_about: "You can't add more layers to your map. Please upgrade your account.",
       source: ERROR_SOURCE_USER
     },
     8006 => {
-      title: "Not enough Twitter credits",
+      title: 'Not enough Twitter credits',
       what_about: "Unfortunately, you don't have enough Twitter credits to proceed. Please contact <a href='mailto:sales@carto.com?subject=Exceeded%20Twitter%20quota'>" \
-                  "Sales</a> if you have questions about how to obtain more credits.",
+                  'Sales</a> if you have questions about how to obtain more credits.',
       source: ERROR_SOURCE_USER
     },
     8007 => {
@@ -302,7 +302,7 @@ module CartoDB
     },
     8008 => {
       title: 'Over account datasets limit or publication is disabled in your account',
-      what_about: "Please contact us at support@carto.com indicating this error code for more information.",
+      what_about: 'Please contact us at support@carto.com indicating this error code for more information.',
       source: ERROR_SOURCE_USER
     },
     6666 => {
@@ -312,12 +312,12 @@ module CartoDB
     },
     6667 => {
       title: 'Import timed out',
-      what_about: "There is been a problem importing your file due to the time is been taking to process it. Please try again and contact us if the problem persist.",
+      what_about: 'There is been a problem importing your file due to the time is been taking to process it. Please try again and contact us if the problem persist.',
       source: ERROR_SOURCE_CARTODB
     },
     6668 => {
       title: 'Too many table rows',
-      what_about: "You cannot import this dataset. The number of rows exceeds the maximum dataset quota permitted " \
+      what_about: 'You cannot import this dataset. The number of rows exceeds the maximum dataset quota permitted ' \
                   "for your account. Please contact <a href='mailto:sales@carto.com?subject=Dataset%20too%20many" \
                   "%20table%20rows%20import%20error'>Sales</a> if you have questions about importing this dataset.",
       source: ERROR_SOURCE_USER
@@ -329,20 +329,20 @@ module CartoDB
     },
     6670 => {
       title: 'Too many named map templates',
-      what_about: "You reached the limit on the number of named map templates.",
+      what_about: 'You reached the limit on the number of named map templates.',
       source: ERROR_SOURCE_USER
     },
     6671 => {
       title: 'Stuck import job',
-      what_about: "The import job was stuck and we marked it as failed. Please try importing again.",
+      what_about: 'The import job was stuck and we marked it as failed. Please try importing again.',
       source: ERROR_SOURCE_CARTODB
     },
-    99999 => {
+    99_999 => {
       title: 'Unknown',
       what_about: "Sorry, something went wrong and we're not sure what. Try
       uploading your file again, or <a href='mailto:support@carto.com?subject=Unknown error'>contact us</a> and we'll try to help you quickly.",
       source: ERROR_SOURCE_CARTODB
     }
-  }
+  }.freeze
 
 end

@@ -3,6 +3,7 @@ require_relative '../../../../lib/carto/file_system/sanitize.rb'
 module Carto
   module FileSystem
     module Sanitize
+
       describe '#sanitize_identifier' do
         it 'should allow for non ascii characters' do
           identifier = 'MæđrÏD, ĘŠPªÑÅ'
@@ -17,6 +18,7 @@ module Carto
           Carto::FileSystem::Sanitize.sanitize_identifier(identifier).should eq sanitized_identifier
         end
       end
+
     end
   end
 end

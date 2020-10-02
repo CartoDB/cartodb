@@ -4,8 +4,9 @@ require_relative './shp_helper'
 module CartoDB
   module Importer2
     class Ogr2ogr
-      ENCODING  = 'UTF-8'
-      SCHEMA    = 'cdb_importer'
+
+      ENCODING  = 'UTF-8'.freeze
+      SCHEMA    = 'cdb_importer'.freeze
 
       PG_COPY_OPTION        = { 'PG_USE_COPY' => 'YES' }.freeze
       OSM_INDEXING_OPTION   = { 'OSM_USE_CUSTOM_INDEXING' => 'NO' }.freeze
@@ -16,12 +17,11 @@ module CartoDB
       DEFAULT_BINARY = 'which ogr2ogr'.freeze
 
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
-        latitud lati decimallatitude decimallat point_latitude }
+                                      latitud lati decimallatitude decimallat point_latitude }.freeze
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
-        longitudedecimal longitud long decimallongitude decimallong point_longitude }
+                                      longitudedecimal longitud long decimallongitude decimallong point_longitude }.freeze
 
-      DEFAULT_TIMEOUT = '1h'
-
+      DEFAULT_TIMEOUT = '1h'.freeze
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
         self.filepath   = filepath
@@ -87,7 +87,7 @@ module CartoDB
         open3_options = {
           rlimit_as: memory_limit
         }
-        stdout, stderr, status  = Open3.capture3(environment, *command, open3_options)
+        stdout, stderr, status = Open3.capture3(environment, *command, open3_options)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i
         self
@@ -106,7 +106,7 @@ module CartoDB
       end
 
       def invalid_dates?
-        command_output =~ /date\/time field value out of range/i
+        command_output =~ %r{date/time field value out of range}i
       end
 
       def duplicate_column?
@@ -134,8 +134,8 @@ module CartoDB
           (exit_code == 256 && command_output =~ /out of memory/i) ||
           (exit_code == 134) ||
           (exit_code == 139) ||
-          (exit_code == 35072 && command_output =~ /Killed/i) ||
-          (exit_code == 32512 && command_output =~ /Cannot allocate memory/i)
+          (exit_code == 35_072 && command_output =~ /Killed/i) ||
+          (exit_code == 32_512 && command_output =~ /Cannot allocate memory/i)
       end
 
       def statement_timeout?
@@ -143,11 +143,11 @@ module CartoDB
       end
 
       def segfault_error?
-        exit_code == 35584 && command_output =~ /Segmentation fault/i
+        exit_code == 35_584 && command_output =~ /Segmentation fault/i
       end
 
       def kml_style_missing?
-        is_kml? && command_output =~/kml Style: No id/i
+        is_kml? && command_output =~ /kml Style: No id/i
       end
 
       attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding,
@@ -203,7 +203,7 @@ module CartoDB
       end
 
       def overwrite_option
-        overwrite ? "-overwrite" : ''
+        overwrite ? '-overwrite' : ''
       end
 
       def client_encoding_option
@@ -253,6 +253,7 @@ module CartoDB
           '-update'
         ]
       end
+
     end
   end
 end

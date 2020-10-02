@@ -12,16 +12,17 @@ require_relative './gpkg_splitter'
 module CartoDB
   module Importer2
     class Unp
-      HIDDEN_FILE_REGEX     = /^(\.|\_{2})/
-      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar .carto }.freeze
+
+      HIDDEN_FILE_REGEX     = /^(\.|\_{2})/.freeze
+      COMPRESSED_EXTENSIONS = %w{.zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar .carto}.freeze
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
         .js .json .tar .gz .tgz .osm .bz2 .geojson .gpkg
         .gpx .tab .tsv .txt .gdb .fgdb
-      }
+      }.freeze
       SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter, FgdbSplitter, GpkgSplitter].freeze
 
-      DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
+      DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'.freeze
 
       attr_reader :source_files, :temporary_directory
 
@@ -47,6 +48,7 @@ module CartoDB
 
       def run(path)
         return without_unpacking(path) unless compressed?(path)
+
         extract(path)
         crawl(temporary_directory).each { |dir_path| process(dir_path) }
         @source_files = split(source_files)
@@ -54,11 +56,11 @@ module CartoDB
       end
 
       def without_unpacking(path)
-        raise NotAFileError if !File.file?(path)
+        raise NotAFileError unless File.file?(path)
 
         local_path = "#{temporary_directory}/#{File.basename(path)}"
         FileUtils.cp(path, local_path)
-        self.source_files.push(source_file_for(normalize(local_path)))
+        source_files.push(source_file_for(normalize(local_path)))
         @source_files = split(source_files)
         self
       end
@@ -81,9 +83,7 @@ module CartoDB
           fullpath = normalize("#{path}/#{subpath}")
           if File.directory?(fullpath)
             gdbpath = normalize("#{fullpath}/gdb")
-            if !(File.file?(gdbpath) && fullpath =~ /\.gdb$/i)
-              crawl(fullpath, files) && next
-            end
+            crawl(fullpath, files) && next unless File.file?(gdbpath) && fullpath =~ /\.gdb$/i
           end
           files.push(fullpath)
         end
@@ -92,11 +92,10 @@ module CartoDB
       end
 
       def extract(path)
-        raise ExtractionError unless File.exists?(path)
+        raise ExtractionError unless File.exist?(path)
 
         local_path = "#{temporary_directory}/#{File.basename(path)}"
         FileUtils.cp(path, local_path)
-
 
         path = normalize(local_path)
         current_directory = Dir.pwd
@@ -135,10 +134,10 @@ module CartoDB
           raise InstallError
         end
         unp_path = stdout.chop
-        puts "Path to 'unp': #{unp_path} -- stderr was #{stderr} and status was #{status}" if (stderr.size > 0)
+        puts "Path to 'unp': #{unp_path} -- stderr was #{stderr} and status was #{status}" if stderr.size > 0
 
         command = [unp_path, path, '--']
-        if !(path.end_with?('.tar.gz') || path.end_with?('.tgz') || path.end_with?('.tar'))
+        unless path.end_with?('.tar.gz') || path.end_with?('.tgz') || path.end_with?('.tar')
           # tar doesn't allows -o, which doesn't makes too much sense as each import comes in a different folder
           command << '-o'
         end
@@ -155,7 +154,7 @@ module CartoDB
       end
 
       def filename_valid_encoding?(filename)
-        filename.force_encoding("UTF-8").valid_encoding?
+        filename.force_encoding('UTF-8').valid_encoding?
       end
 
       def normalize(path)
@@ -167,19 +166,20 @@ module CartoDB
 
       def underscore(filename)
         filename.encode('UTF-8')
-          .gsub(' ', '_')
-          .gsub(/\(/, '')
-          .gsub(/\)/, '')
-          .gsub(/'/, '')
-          .gsub(/"/, '')
-          .gsub(/&/, '')
-          .downcase
-          .gsub(/\.txt/, '.csv')
-          .gsub(/\.tsv/, '.csv')
+                .gsub(' ', '_')
+                .gsub(/\(/, '')
+                .gsub(/\)/, '')
+                .gsub(/'/, '')
+                .gsub(/"/, '')
+                .gsub(/&/, '')
+                .downcase
+                .gsub(/\.txt/, '.csv')
+                .gsub(/\.tsv/, '.csv')
       end
 
       def rename(origin, destination)
         return self if origin == destination
+
         File.rename(origin, destination)
         self
       end
@@ -201,7 +201,7 @@ module CartoDB
         !!(name =~ HIDDEN_FILE_REGEX)
       end
 
-      def unp_failure?(output, exit_code)
+      def unp_failure?(_output, exit_code)
         (exit_code != 0)
       end
 
@@ -217,20 +217,20 @@ module CartoDB
       end
 
       def split(source_files)
-        source_files.flat_map { |source_file|
+        source_files.flat_map do |source_file|
           splitter = splitter_for(source_file)
           if splitter
             splitter.new(source_file, temporary_directory, @ogr2ogr_config)
-              .run.source_files
+                    .run.source_files
           else
             source_file
           end
-        }
+        end
       end
 
       def splitter_for(source_file)
         SPLITTERS.select { |splitter| splitter.support?(source_file) }
-          .first
+                 .first
       end
 
       private
@@ -244,7 +244,7 @@ module CartoDB
           new_path = "#{path}.zip"
           FileUtils.mv(path, new_path)
           begin
-            return yield(new_path)
+            yield(new_path)
           ensure
             FileUtils.mv(new_path, path)
           end
@@ -252,6 +252,7 @@ module CartoDB
           yield(path)
         end
       end
+
     end
   end
 end

@@ -2,6 +2,7 @@ require_relative '../../spec_helper_min.rb'
 require 'carto/google_maps_api'
 
 module Carto
+
   describe GoogleMapsApi do
     let(:url) { 'https://maps.googleapis.com/maps/api/staticmap?center=40.714%2c-73.998&zoom=12&size=400x400' }
 
@@ -30,4 +31,5 @@ module Carto
       end
     end
   end
+
 end

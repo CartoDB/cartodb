@@ -3,6 +3,7 @@ require_dependency 'carto/helpers/frame_options_helper'
 module Carto
   module App
     class VisualizationsController < ApplicationController
+
       include Carto::FrameOptionsHelper
 
       ssl_required
@@ -29,7 +30,7 @@ module Carto
 
         unless @app.password_valid?(submitted_password)
           flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
-          flash[:error] = "Invalid password"
+          flash[:error] = 'Invalid password'
           return app_password_protected
         end
 
@@ -52,9 +53,7 @@ module Carto
 
       def get_app
         @app = Carto::Visualization.find(params[:id])
-        if @app.nil?
-          raise Carto::LoadError.new('App doesn\'t exist', 404)
-        end
+        raise Carto::LoadError.new('App doesn\'t exist', 404) if @app.nil?
       end
 
       def app_password_protected
@@ -64,8 +63,9 @@ module Carto
       def add_cache_headers
         response.headers['X-Cache-Channel'] = "#{@app.varnish_key}:vizjson"
         response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@app.surrogate_key}"
-        response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate,public"
+        response.headers['Cache-Control'] = 'no-cache,max-age=86400,must-revalidate,public'
       end
+
     end
   end
 end

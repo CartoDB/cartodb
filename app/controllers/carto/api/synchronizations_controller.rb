@@ -8,8 +8,8 @@ module Carto
 
       def show
         render_jsonp(@synchronization)
-      rescue StandardError => exception
-        CartoDB.notify_exception(exception)
+      rescue StandardError => e
+        CartoDB.notify_exception(e)
         head(404)
       end
 
@@ -21,22 +21,22 @@ module Carto
           total_entries: synchronizations.count
         }
         render_jsonp(response)
-      rescue StandardError => exception
-        CartoDB.notify_exception(exception)
+      rescue StandardError => e
+        CartoDB.notify_exception(e)
         head(404)
       end
 
       def syncing?
-        render_jsonp( { state: @synchronization.state } )
-      rescue StandardError => exception
-        CartoDB.notify_exception(exception)
+        render_jsonp({ state: @synchronization.state })
+      rescue StandardError => e
+        CartoDB.notify_exception(e)
         head(404)
       end
 
       private
 
       def load_synchronization
-        @synchronization = Carto::Synchronization::where(id: params[:id]).first
+        @synchronization = Carto::Synchronization.where(id: params[:id]).first
         head(404) and return unless @synchronization
         head(401) and return unless @synchronization.authorize?(current_user)
       end

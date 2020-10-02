@@ -1,6 +1,7 @@
 module Carto
   module Api
     class TablePresenter
+
       def initialize(table, current_viewer, context)
         @table = table
         @current_viewer = current_viewer
@@ -40,6 +41,7 @@ module Carto
           @table.name
         end
       end
+
     end
   end
 end

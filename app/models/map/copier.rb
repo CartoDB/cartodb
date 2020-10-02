@@ -1,11 +1,10 @@
 module CartoDB
   module Map
     class Copier
+
       def copy(map, layers=true)
         new_map = new_map_from(map).save
-        if layers
-          copy_layers(map, new_map)
-        end
+        copy_layers(map, new_map) if layers
 
         new_map
       end
@@ -13,9 +12,7 @@ module CartoDB
       def new_map_from(map)
         @new_map ||= map.dup
         # Explicit association assignment to make user itself available, beyond its id, for validations
-        if map.user
-          @new_map.user ||= map.user
-        end
+        @new_map.user ||= map.user if map.user
 
         # Default is to copy all attributes from the canonical map. This overrides it
         @new_map.scrollwheel = true
@@ -54,7 +51,7 @@ module CartoDB
 
         data_layer_copies_from(origin_map, user).map do |layer|
           # Push layers on top if needed
-          if(destination_map.layers.map(&:order).include?(order))
+          if destination_map.layers.map(&:order).include?(order)
             destination_map.layers.select { |l| l.order >= order }.each do |layer|
               layer.order += 1
               # layer must be saved later
@@ -111,6 +108,7 @@ module CartoDB
 
         new_layer
       end
+
     end
   end
 end

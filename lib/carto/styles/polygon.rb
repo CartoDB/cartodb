@@ -3,6 +3,7 @@ require_relative '../definition.rb'
 
 module Carto::Styles
   class Polygon < Style
+
     def initialize(definition: default_definition)
       super(definition)
     end
@@ -33,12 +34,13 @@ module Carto::Styles
       opacity = stroke[:color][:opacity]
 
       [
-        "::outline" => [
+        '::outline' => [
           "line-color: #{color};",
           "line-width: #{width};",
           "line-opacity: #{opacity};"
         ]
       ]
     end
+
   end
 end

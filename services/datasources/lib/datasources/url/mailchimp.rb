@@ -12,11 +12,11 @@ module CartoDB
       class MailChimp < BaseOAuth
 
         # Required for all datasources
-        DATASOURCE_NAME = 'mailchimp'
+        DATASOURCE_NAME = 'mailchimp'.freeze
 
-        AUTHORIZE_URI = 'https://login.mailchimp.com/oauth2/authorize?response_type=code&client_id=%s&redirect_uri=%s'
-        ACCESS_TOKEN_URI = 'https://login.mailchimp.com/oauth2/token'
-        MAILCHIMP_METADATA_URI = 'https://login.mailchimp.com/oauth2/metadata'
+        AUTHORIZE_URI = 'https://login.mailchimp.com/oauth2/authorize?response_type=code&client_id=%s&redirect_uri=%s'.freeze
+        ACCESS_TOKEN_URI = 'https://login.mailchimp.com/oauth2/token'.freeze
+        MAILCHIMP_METADATA_URI = 'https://login.mailchimp.com/oauth2/metadata'.freeze
 
         API_TIMEOUT_SECS = 60
 
@@ -30,7 +30,7 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super(config, user, %w{ app_key app_secret callback_url }, DATASOURCE_NAME)
+          super(config, user, %w{app_key app_secret callback_url}, DATASOURCE_NAME)
 
           @user = user
           @app_key = config.fetch('app_key')
@@ -57,7 +57,7 @@ module CartoDB
         # @param user : ::User
         # @return CartoDB::Datasources::Url::MailChimpLists
         def self.get_new(config, user)
-          return new(config, user)
+          new(config, user)
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -72,7 +72,7 @@ module CartoDB
         # @throws ExternalServiceError
         def get_auth_url(use_callback_flow=true)
           if use_callback_flow
-            AUTHORIZE_URI % [@app_key, Addressable::URI.encode(@callback_url)]
+            format(AUTHORIZE_URI, @app_key, Addressable::URI.encode(@callback_url))
           else
             raise ExternalServiceError.new("This datasource doesn't allows non-callback flows", DATASOURCE_NAME)
           end
@@ -82,7 +82,7 @@ module CartoDB
         # @param auth_code : string
         # @return string : Access token
         # @throws ExternalServiceError
-        def validate_auth_code(auth_code)
+        def validate_auth_code(_auth_code)
           raise ExternalServiceError.new("This datasource doesn't allows non-callback flows", DATASOURCE_NAME)
         end
 
@@ -92,9 +92,7 @@ module CartoDB
         # @throws DataDownloadTimeoutError
         def validate_callback(params)
           code = params.fetch('code')
-          if code.nil? || code == ''
-            raise "Empty callback code"
-          end
+          raise 'Empty callback code' if code.nil? || code == ''
 
           token_call_params = {
             grant_type: 'authorization_code',
@@ -111,26 +109,29 @@ module CartoDB
           unless token_response.code == 200
             raise "Bad token response: #{token_response.body.inspect} (#{token_response.code})"
           end
+
           token_data = ::JSON.parse(token_response.body)
 
           partial_access_token = token_data['access_token']
 
           # Afterwards, must do another call to metadata endpoint to retrieve API details
           # @see https://apidocs.mailchimp.com/oauth2/
-          metadata_response = http_client.get(MAILCHIMP_METADATA_URI,http_options({}, :get, {
-                                             'Authorization' => "OAuth #{partial_access_token}"}))
+          metadata_response = http_client.get(MAILCHIMP_METADATA_URI, http_options({}, :get, {
+                                                                                     'Authorization' => "OAuth #{partial_access_token}"
+                                                                                   }))
 
           raise DataDownloadTimeoutError.new(DATASOURCE_NAME) if metadata_response.timed_out?
 
           unless metadata_response.code == 200
             raise "Bad metadata response: #{metadata_response.body.inspect} (#{metadata_response.code})"
           end
+
           metadata_data = ::JSON.parse(metadata_response.body)
 
           # This specially formed token behaves as an API Key for client calls using API
           @access_token = "#{partial_access_token}-#{metadata_data['dc']}"
-        rescue StandardError => ex
-          raise AuthError.new("validate_callback(#{params.inspect}): #{ex.message}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise AuthError.new("validate_callback(#{params.inspect}): #{e.message}", DATASOURCE_NAME)
         end
 
         # Set the token
@@ -139,11 +140,11 @@ module CartoDB
         def token=(token)
           @access_token = token
           @api_client = Gibbon::API.new(@access_token)
-        rescue Gibbon::MailChimpError => exception
-          raise TokenExpiredOrInvalidError.new("token=() : #{exception.message} (API code: #{exception.code})",
+        rescue Gibbon::MailChimpError => e
+          raise TokenExpiredOrInvalidError.new("token=() : #{e.message} (API code: #{e.code})",
                                                DATASOURCE_NAME)
-        rescue StandardError => exception
-          raise TokenExpiredOrInvalidError.new("token=() : #{exception.inspect}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise TokenExpiredOrInvalidError.new("token=() : #{e.inspect}", DATASOURCE_NAME)
         end
 
         # Retrieve set token
@@ -157,7 +158,7 @@ module CartoDB
         # @return [ { :id, :title, :url, :service } ]
         # @throws UninitializedError
         # @throws DataDownloadError
-        def get_resources_list(filter=[])
+        def get_resources_list(_filter=[])
           raise UninitializedError.new('No API client instantiated', DATASOURCE_NAME) unless @api_client.present?
 
           all_results = []
@@ -165,15 +166,13 @@ module CartoDB
           limit = 100
           total = nil
 
-          begin
+          loop do
             response = @api_client.campaigns.list({
-                                                start: offset,
-                                                limit: limit
-                                              })
+                                                    start: offset,
+                                                    limit: limit
+                                                  })
             errors = response.fetch('errors', [])
-            unless errors.empty?
-              raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
-            end
+            raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME) unless errors.empty?
 
             total = response.fetch('total', 0).to_i if total.nil?
 
@@ -184,14 +183,15 @@ module CartoDB
             end
 
             offset += limit
-          end while offset < total
+            break unless offset < total
+          end
 
           all_results
-        rescue Gibbon::MailChimpError => exception
-          raise DataDownloadError.new("get_resources_list(): #{exception.message} (API code: #{exception.code}",
+        rescue Gibbon::MailChimpError => e
+          raise DataDownloadError.new("get_resources_list(): #{e.message} (API code: #{e.code}",
                                       DATASOURCE_NAME)
-        rescue StandardError => exception
-          raise DataDownloadError.new("get_resources_list(): #{exception.inspect}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise DataDownloadError.new("get_resources_list(): #{e.inspect}", DATASOURCE_NAME)
         end
 
         # Retrieves a resource and returns its contents
@@ -208,30 +208,30 @@ module CartoDB
 
           # 1) Retrieve campaign details
           campaign = get_resource_metadata(id)
-          campaign_details = export_api.list({id: campaign[:list_id]})
+          campaign_details = export_api.list({ id: campaign[:list_id] })
           campaign = nil
 
           # 2) Retrieve subscriber activity
           # https://apidocs.mailchimp.com/export/1.0/campaignsubscriberactivity.func.php
-          subscribers_activity = export_api.campaign_subscriber_activity({id: id})
+          subscribers_activity = export_api.campaign_subscriber_activity({ id: id })
 
-          subscribers_activity.each { |line|
+          subscribers_activity.each do |line|
             store_subscriber_if_opened(line, subscribers)
-          }
+          end
           subscribers_activity = nil
 
           # 3) Update campaign details with subscriber activity results
           # 4) anonymize data (inside list_json_to_csv)
-          campaign_details.each_with_index { |line, index|
+          campaign_details.each_with_index do |line, index|
             contents.write list_json_to_csv(line, subscribers, index == 0)
-          }
+          end
 
           contents.string
-        rescue Gibbon::MailChimpError => exception
-          raise DataDownloadError.new("get_resource(): #{exception.message} (API code: #{exception.code}",
+        rescue Gibbon::MailChimpError => e
+          raise DataDownloadError.new("get_resource(): #{e.message} (API code: #{e.code}",
                                       DATASOURCE_NAME)
-        rescue StandardError => exception
-          raise DataDownloadError.new("get_resource(): #{exception.inspect}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise DataDownloadError.new("get_resource(): #{e.inspect}", DATASOURCE_NAME)
         end
 
         # @param id string
@@ -248,23 +248,20 @@ module CartoDB
           response = @api_client.campaigns.list({ filters: { campaign_id: id } })
 
           errors = response.fetch('errors', [])
-          unless errors.empty?
-            raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME)
-          end
+          raise DataDownloadError.new("get_resources_list(): #{errors.inspect}", DATASOURCE_NAME) unless errors.empty?
+
           response_data = response.fetch('data', [])
 
           response_data.each do |item|
-            if item.fetch('id') == id
-              item_data = format_activity_item_data(item)
-            end
+            item_data = format_activity_item_data(item) if item.fetch('id') == id
           end
 
           item_data
-        rescue Gibbon::MailChimpError => exception
-          raise DataDownloadError.new("get_resource_metadata(): #{exception.message} (API code: #{exception.code}",
+        rescue Gibbon::MailChimpError => e
+          raise DataDownloadError.new("get_resource_metadata(): #{e.message} (API code: #{e.code}",
                                       DATASOURCE_NAME)
-        rescue StandardError => exception
-          raise DataDownloadError.new("get_resource_metadata(): #{exception.inspect}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise DataDownloadError.new("get_resource_metadata(): #{e.inspect}", DATASOURCE_NAME)
         end
 
         # Retrieves current filters
@@ -275,8 +272,7 @@ module CartoDB
 
         # Sets current filters
         # @param filter_data {}
-        def filter=(filter_data=[])
-        end
+        def filter=(filter_data=[]); end
 
         # Just return datasource name
         # @return string
@@ -292,7 +288,7 @@ module CartoDB
 
         # Stores the data import item instance to use/manipulate it
         # @param value DataImport
-        def data_import_item=(value)
+        def data_import_item=(_value)
           nil
         end
 
@@ -307,8 +303,8 @@ module CartoDB
           response = @api_client.users.profile
           # 'errors' only appears in failure scenarios, while 'username' only if went ok
           response.fetch('errors', nil).nil? && !response.fetch('username', nil).nil?
-        rescue StandardError => ex
-          CartoDB.notify_exception(ex)
+        rescue StandardError => e
+          CartoDB.notify_exception(e)
           false
         end
 
@@ -325,17 +321,17 @@ module CartoDB
 
         def http_options(params={}, method=:get, extra_headers={})
           {
-            method:           method,
-            params:           method == :get ? params : {},
-            body:             method == :post ? params : {},
-            followlocation:   true,
-            ssl_verifypeer:   false,
-            headers:          {
-                                'Accept' => 'application/json'
-                              }.merge(extra_headers),
-            ssl_verifyhost:   0,
-            connecttimeout:  @http_connect_timeout,
-            timeout:          @http_timeout
+            method: method,
+            params: method == :get ? params : {},
+            body: method == :post ? params : {},
+            followlocation: true,
+            ssl_verifypeer: false,
+            headers: {
+              'Accept' => 'application/json'
+            }.merge(extra_headers),
+            ssl_verifyhost: 0,
+            connecttimeout: @http_connect_timeout,
+            timeout: @http_timeout
           }
         end
 
@@ -345,29 +341,27 @@ module CartoDB
         def format_activity_item_data(item_data)
           filename = item_data.fetch('title').gsub(' ', '_')
           {
-            id:       item_data.fetch('id'),
-            list_id:  item_data.fetch('list_id'),
-            title:    "#{item_data.fetch('title')}",
+            id: item_data.fetch('id'),
+            list_id: item_data.fetch('list_id'),
+            title: item_data.fetch('title').to_s,
             filename: "#{filename}.csv",
-            service:  DATASOURCE_NAME,
+            service: DATASOURCE_NAME,
             checksum: '',
             member_count: item_data.fetch('emails_sent'),
-            size:     NO_CONTENT_SIZE_PROVIDED
+            size: NO_CONTENT_SIZE_PROVIDED
           }
         end
 
         def store_subscriber_if_opened(input_fields='[]', subscribers)
           contents = ::JSON.parse(input_fields)
-          contents.each { |subject, actions|
-            unless actions.length == 0
-              actions.each { |action|
-                if action["action"] == "open"
-                  subscribers[subject] = true
-                end
-                opened_action = true
-              }
+          contents.each do |subject, actions|
+            next if actions.length == 0
+
+            actions.each do |action|
+              subscribers[subject] = true if action['action'] == 'open'
+              opened_action = true
             end
-          }
+          end
         end
 
         # @param contents String containing a JSON array of fields (data of campaign user/target)
@@ -376,16 +370,16 @@ module CartoDB
         # @return String Containing a CSV ready to dump to a file
         def list_json_to_csv(contents='[]', subscribers={}, header_row=false)
           # shorcut: Remove newlines and Anonymize email addresses before parsing to speed up
-          contents = ::JSON.parse(contents.gsub("\n", ' ').gsub(/(\w|\.|\-)+@/, ""))
+          contents = ::JSON.parse(contents.gsub("\n", ' ').gsub(/(\w|\.|\-)+@/, ''))
 
           opened_mail = !subscribers[contents[0]].nil?
 
           cleaned_contents = []
-          #Once parsed, each row contains data like account code, company name, email, first name...
-          contents.each_with_index { |field, index|
+          # Once parsed, each row contains data like account code, company name, email, first name...
+          contents.each_with_index do |field, index|
             # Remove double quotes to avoid CSV errors
             cleaned_contents[index] = "\"#{field.to_s.gsub('"', '""')}\""
-          }
+          end
           cleaned_contents.push("\"#{header_row ? 'Opened' : opened_mail.to_s}\"")
           data = cleaned_contents.join(',')
           data << "\n"

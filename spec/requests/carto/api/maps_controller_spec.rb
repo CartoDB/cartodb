@@ -25,12 +25,12 @@ describe Carto::Api::MapsController do
 
     let(:payload) do
       {
-        bounding_box_ne: "[85.0511, 179]",
-        bounding_box_sw: "[-85.0511, -179]",
-        center: "[28.483177058570757, -82.825927734375]",
-        provider: "leaflet",
-        view_bounds_ne: "[32.30570601389429, -76.32202148437499]",
-        view_bounds_sw: "[24.51713945052515, -89.329833984375]",
+        bounding_box_ne: '[85.0511, 179]',
+        bounding_box_sw: '[-85.0511, -179]',
+        center: '[28.483177058570757, -82.825927734375]',
+        provider: 'leaflet',
+        view_bounds_ne: '[32.30570601389429, -76.32202148437499]',
+        view_bounds_sw: '[24.51713945052515, -89.329833984375]',
         zoom: 7,
         options: {
           dashboard_menu: false,

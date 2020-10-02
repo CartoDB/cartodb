@@ -5,16 +5,15 @@ require_relative '../../factories/carto_visualizations'
 
 def app
   CartoDB::Application.new
-end #app
+end # app
 
 describe Admin::PagesController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
-  JSON_HEADER = {'CONTENT_TYPE' => 'application/json'}
+  JSON_HEADER = { 'CONTENT_TYPE' => 'application/json' }.freeze
 
   before(:all) do
-
     @non_org_user_name = 'development'
 
     @org_name = 'foobar'
@@ -73,7 +72,7 @@ describe Admin::PagesController do
       user = prepare_user(@org_user_name, @user_org, @belongs_to_org)
 
       host! "#{@org_user_name}.localhost.lan"
-      get "", {}, JSON_HEADER
+      get '', {}, JSON_HEADER
 
       last_response.status.should == 302
       follow_redirect!
@@ -238,7 +237,7 @@ describe Admin::PagesController do
 
       uri = URI.parse(last_response.location)
       uri.host.should == 'localhost.lan'
-      uri.path.should == "/login"
+      uri.path.should == '/login'
     end
   end
 
@@ -276,7 +275,7 @@ describe Admin::PagesController do
         url_and_dates.count.should eq 1
 
         url1 = public_visualizations_public_map_url(user_domain: @carto_org_user_1.username, id: visualization.id)
-        url_and_dates.map { |url_and_date| url_and_date[0] }.should eq [url1.gsub(/\/user\/[^\/]*\//, '/')]
+        url_and_dates.map { |url_and_date| url_and_date[0] }.should eq [url1.gsub(%r{/user/[^/]*/}, '/')]
       end
     end
 
@@ -301,7 +300,7 @@ describe Admin::PagesController do
         url_and_dates.count.should eq 1
 
         url1 = public_visualizations_public_map_url(id: visualization.id)
-        url_and_dates.map { |url_and_date| url_and_date[0] }.should eq [url1.gsub(/\/user\/[^\/]*\//, '/')]
+        url_and_dates.map { |url_and_date| url_and_date[0] }.should eq [url1.gsub(%r{/user/[^/]*/}, '/')]
       end
     end
   end
@@ -330,8 +329,8 @@ describe Admin::PagesController do
   def mock_explore_feature_flag
     anyuser = prepare_user('anyuser')
     ::User.any_instance.stubs(:has_feature_flag?)
-                          .with('explore_site')
-                          .returns(true)
+          .with('explore_site')
+          .returns(true)
     ::User.stubs(:where).returns(anyuser)
     anyuser.stubs(:first).returns(anyuser)
     anyuser
@@ -340,13 +339,13 @@ describe Admin::PagesController do
   def prepare_user(user_name, org_user=false, belongs_to_org=false)
     user = create_user(
       username: user_name,
-      email:    "#{user_name}@example.com",
+      email: "#{user_name}@example.com",
       password: 'longer_than_MIN_PASSWORD_LENGTH',
       fake_user: true,
-      quota_in_bytes: 10000000
+      quota_in_bytes: 10_000_000
     )
 
-    user.stubs(:username => user_name, :organization_user? => org_user)
+    user.stubs(username: user_name, organization_user?: org_user)
 
     if org_user
       org = mock
@@ -360,5 +359,4 @@ describe Admin::PagesController do
 
     user
   end
-
 end

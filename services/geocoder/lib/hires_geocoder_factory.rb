@@ -2,7 +2,6 @@ require_relative 'hires_geocoder'
 require_relative 'hires_batch_geocoder'
 require_relative 'geocoder_config'
 
-
 module CartoDB
   class HiresGeocoderFactory
 
@@ -10,17 +9,14 @@ module CartoDB
 
     def self.get(input_csv_file, working_dir, log, geocoding_model, number_of_rows = 0)
       geocoder_class = nil
-      if use_batch_process?(input_csv_file, geocoding_model, number_of_rows)
-        geocoder_class = HiresBatchGeocoder
-      else
-        geocoder_class = HiresGeocoder
-      end
+      geocoder_class = if use_batch_process?(input_csv_file, geocoding_model, number_of_rows)
+                         HiresBatchGeocoder
+                       else
+                         HiresGeocoder
+                       end
 
       geocoder_class.new(input_csv_file, working_dir, log, geocoding_model)
     end
-
-
-    private
 
     def self.use_batch_process?(input_csv_file, geocoding_model, number_of_rows)
       # Due we could check this condition to create the geocoder class and we don't
@@ -28,9 +24,9 @@ module CartoDB
       # multiples conditions. It's sorted by priority
       if force_batch? || geocoding_model.batched
         true
-      elsif (not input_csv_file.nil?) && (input_rows(input_csv_file) > BATCH_FILES_OVER)
+      elsif !input_csv_file.nil? && (input_rows(input_csv_file) > BATCH_FILES_OVER)
         true
-      elsif (not number_of_rows.nil?) && (number_of_rows > BATCH_FILES_OVER)
+      elsif !number_of_rows.nil? && (number_of_rows > BATCH_FILES_OVER)
         true
       else
         false

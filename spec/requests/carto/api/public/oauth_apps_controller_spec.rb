@@ -394,7 +394,7 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 422 if a required parameter is missing' do
       post_json api_v4_oauth_apps_url(@params), @payload.except(:name) do |response|
         expect(response.status).to eq(422)
-        expect(response.body[:errors]).to eq ({ name: ["can't be blank"] })
+        expect(response.body[:errors]).to eq({ name: ["can't be blank"] })
       end
     end
 

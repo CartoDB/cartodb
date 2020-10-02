@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe 'PasswordValidator' do
     PASSWORD = '2{Patrañas}'.freeze
 
@@ -22,7 +23,7 @@ module Carto
 
       errors = validator.validate(PASSWORD, PASSWORD, user)
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "must be different than the user name"
+      validator.formatted_error_message(errors).should == 'must be different than the user name'
     end
 
     it 'should check strong passwords for org users with strong_passwords_enabled' do
@@ -66,7 +67,7 @@ module Carto
 
       errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "must contain at least 9 letters"
+      validator.formatted_error_message(errors).should == 'must contain at least 9 letters'
     end
 
     it 'should be invalid when password does not have enough numbers or symbols' do
@@ -75,7 +76,7 @@ module Carto
 
       errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "must contain at least 3 symbols or 2 numbers"
+      validator.formatted_error_message(errors).should == 'must contain at least 3 symbols or 2 numbers'
     end
 
     it 'should be valid when password has enough numbers but not enough symbols' do
@@ -140,4 +141,5 @@ module Carto
       validator.formatted_error_message(errors).should be_nil
     end
   end
+
 end

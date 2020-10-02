@@ -26,6 +26,11 @@ AllCops:
 Layout/LineLength:
   Description: Checks that line length does not exceed the configured limit.
   Max: 120
+  inherit_mode:
+    merge:
+      - Exclude
+  Exclude:
+    - gears/carto_gears_api/lib/carto_gears_api/users/user.rb
 
 Layout/EmptyLinesAroundClassBody:
   Description: Keeps track of empty lines around class bodies.

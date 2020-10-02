@@ -8,7 +8,7 @@ describe Carto::Api::ImportsController do
   it_behaves_like 'imports controllers' do
   end
 
-  @headers = { 'CONTENT_TYPE'  => 'application/json' }
+  @headers = { 'CONTENT_TYPE' => 'application/json' }
 
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
@@ -68,7 +68,7 @@ describe Carto::Api::ImportsController do
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
-    get api_v1_imports_show_url(:id => item_queue_id), params
+    get api_v1_imports_show_url(id: item_queue_id), params
 
     response.code.should be == '200'
 
@@ -87,7 +87,7 @@ describe Carto::Api::ImportsController do
     last_import.created_at -= 5.years
     last_import.save
 
-    get api_v1_imports_show_url(:id => last_import.id), params
+    get api_v1_imports_show_url(id: last_import.id), params
 
     response.code.should be == '200'
 
@@ -97,13 +97,12 @@ describe Carto::Api::ImportsController do
   end
 
   it 'tries to import a tgz' do
-
     post api_v1_imports_create_url,
          params.merge(filename: upload_file('spec/support/data/Weird Filename (2).tgz', 'application/octet-stream'))
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
-    get api_v1_imports_show_url(:id => item_queue_id), params
+    get api_v1_imports_show_url(id: item_queue_id), params
 
     response.code.should be == '200'
     import = JSON.parse(response.body)
@@ -117,7 +116,7 @@ describe Carto::Api::ImportsController do
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
-    get api_v1_imports_show_url(:id => item_queue_id), params
+    get api_v1_imports_show_url(id: item_queue_id), params
 
     response.code.should be == '200'
     import = JSON.parse(response.body)
@@ -130,7 +129,7 @@ describe Carto::Api::ImportsController do
 
     item_queue_id = JSON.parse(response.body)['item_queue_id']
 
-    get api_v1_imports_show_url(:id => item_queue_id), params
+    get api_v1_imports_show_url(id: item_queue_id), params
 
     response.code.should be == '200'
     import = JSON.parse(response.body)
@@ -144,10 +143,9 @@ describe Carto::Api::ImportsController do
     response.code.should be == '200'
 
     @table_from_import = UserTable.all.last.service
-    post api_v1_imports_create_url(:api_key    => @user.api_key,
-                        table_name: 'wadus_2',
-                        :sql        => "SELECT * FROM #{@table_from_import.name}")
-
+    post api_v1_imports_create_url(api_key: @user.api_key,
+                                   table_name: 'wadus_2',
+                                   sql: "SELECT * FROM #{@table_from_import.name}")
 
     response.code.should be == '200'
 
@@ -164,8 +162,8 @@ describe Carto::Api::ImportsController do
   it 'returns derived visualization id if created with create_vis flag' do
     @user.update private_tables_enabled: false
     post api_v1_imports_create_url,
-         params.merge({filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'),
-                       create_vis: true})
+         params.merge({ filename: upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'),
+                        create_vis: true })
     response.code.should be == '200'
 
     item_queue_id = ::JSON.parse(response.body)['item_queue_id']
@@ -247,25 +245,23 @@ describe Carto::Api::ImportsController do
       SynchronizationOauth.where(id: synchronization_oauth.id).first.should eq nil
       synchronization_oauth.destroy
     end
-
   end
 
   describe 'list_files_for_service' do
-
     def fake_item_data(datasource_name = 'fake_datasource')
       id = unique_integer
       {
-        id:       id,
-        title:    "title_#{id}",
+        id: id,
+        title: "title_#{id}",
         filename: "filename_#{id}",
-        service:  datasource_name,
+        service: datasource_name,
         checksum: id,
-        size:     rand(50)
+        size: rand(50)
       }
     end
 
     def fake_resource_list(datasource_name = 'fake_datasource')
-      [ fake_item_data(datasource_name), fake_item_data(datasource_name) ]
+      [fake_item_data(datasource_name), fake_item_data(datasource_name)]
     end
 
     it 'returns datasource resources list for known, valid tokens' do
@@ -293,11 +289,9 @@ describe Carto::Api::ImportsController do
       SynchronizationOauth.where(id: synchronization_oauth.id).first.should eq nil
       synchronization_oauth.destroy
     end
-
   end
 
   describe 'auth_url' do
-
     it 'returns 400 for existing tokens services' do
       service = 'mailchimp'
       synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
@@ -330,7 +324,6 @@ describe Carto::Api::ImportsController do
   end
 
   describe 'validate_service_oauth_code' do
-
     it 'returns 400 for existing tokens services' do
       service = 'mailchimp'
       synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
@@ -391,11 +384,9 @@ describe Carto::Api::ImportsController do
       synchronization_oauth.user_id.should eq @user.id
       synchronization_oauth.destroy
     end
-
   end
 
   describe 'service_oauth_callback' do
-
     it 'returns 400 for existing tokens services' do
       service = 'mailchimp'
       synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
@@ -428,7 +419,5 @@ describe Carto::Api::ImportsController do
       synchronization_oauth.user_id.should eq @user.id
       synchronization_oauth.destroy
     end
-
   end
-
 end

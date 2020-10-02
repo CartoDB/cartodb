@@ -1,6 +1,7 @@
 module Carto
   module Api
     class OrganizationNotificationsController < ::Api::ApplicationController
+
       extend Carto::DefaultRescueFroms
 
       ssl_required :create, :destroy
@@ -39,6 +40,7 @@ module Carto
       def load_notification
         @notification = @organization.notifications.find(params[:id])
       end
+
     end
   end
 end

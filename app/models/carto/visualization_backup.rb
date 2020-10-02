@@ -17,5 +17,6 @@ module Carto
 
     CATEGORY_VISUALIZATION = 'visualization'.freeze
     CATEGORY_LAYER = 'layer'.freeze
+
   end
 end

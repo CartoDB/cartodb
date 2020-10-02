@@ -1,6 +1,7 @@
 module Carto
   module Api
     class MultifactorAuthPresenter
+
       def initialize(multifactor_auth)
         @multifactor_auth = multifactor_auth
       end
@@ -23,6 +24,7 @@ module Carto
           qrcode: @multifactor_auth.qr_code
         )
       end
+
     end
   end
 end

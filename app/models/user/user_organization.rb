@@ -2,25 +2,26 @@ module CartoDB
   class UserOrganization
 
     def initialize(org_id, owner_id)
-      @owner = ::User.where(:id => owner_id).first
-      raise "The organization needs a owner" if @owner.nil?
+      @owner = ::User.where(id: owner_id).first
+      raise 'The organization needs a owner' if @owner.nil?
       if !@owner.organization_id.nil? && @owner.organization_id != org_id
         raise "The user already has a organization and it's not #{org_id}"
       end
-      @organization = Organization.where(:id => org_id).first
-      raise "The user needs a organization" if @organization.nil?
+
+      @organization = Organization.where(id: org_id).first
+      raise 'The user needs a organization' if @organization.nil?
       if !@organization.owner_id.nil? && @organization.owner_id != owner_id
         raise "The organization already has a owner and it's not #{owner_id}"
       end
-      @users = ::User.where(:organization_id => org_id)
+
+      @users = ::User.where(organization_id: org_id)
       @active = false
-      if !@organization.owner_id.nil?
-        @active = true
-      end
+      @active = true unless @organization.owner_id.nil?
     end
 
     def promote_user_to_admin
       raise "Organization is already active. You can't assign an admin" if @active
+
       @owner.organization_id = @organization.id
       @owner.db_service.move_to_own_schema
       @organization.owner_id = @owner.id
@@ -38,30 +39,25 @@ module CartoDB
       @active = true
     end
 
-    def owner
-      @owner
-    end
+    attr_reader :owner
 
-    def organization
-      @organization
-    end
+    attr_reader :organization
 
-    def users
-      @users
-    end
+    attr_reader :users
 
     def self.from_org_id(organization_id)
-      organization = Organization.where(:id => organization_id).first
+      organization = Organization.where(id: organization_id).first
       raise "Organization with id #{org_id} does not exist" if organization.nil?
-      return CartoDB::UserOrganization.new(organization.id, organization.owner_id)
+
+      CartoDB::UserOrganization.new(organization.id, organization.owner_id)
     end
 
     def self.user?(name)
-      return ::User.where(:username => name).count > 0 ? true : false
+      ::User.where(username: name).count > 0
     end
 
     def self.organization?(name)
-      return Organization.where(:username => name).count > 0 ? true : false
+      Organization.where(username: name).count > 0
     end
 
     def self.user_belongs_to_organization?(name)

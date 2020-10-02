@@ -66,5 +66,4 @@ FactoryGirl.define do
       password 'test'
     end
   end
-
 end

@@ -16,15 +16,15 @@ class ThreadPool
         Thread.current[:id] = i
         catch(:exit) do
           loop do
-            unless @workers_queue.empty?
-              @workers_queue.synchronize do
-                @mutex.wait_while { @workers_queue.empty? }
-              end
-              job, args = @workers_queue.pop
-              job.call(*args)
-              job = nil
-              args = nil
+            next if @workers_queue.empty?
+
+            @workers_queue.synchronize do
+              @mutex.wait_while { @workers_queue.empty? }
             end
+            job, args = @workers_queue.pop
+            job.call(*args)
+            job = nil
+            args = nil
           end
         end
       end
@@ -33,7 +33,7 @@ class ThreadPool
 
   def schedule(*args, &block)
     enqueued = false
-    begin
+    loop do
       if @workers_queue.length < @size
         @workers_queue.synchronize do
           @workers_queue << [block, args]
@@ -43,7 +43,8 @@ class ThreadPool
       else
         sleep(@sleep_time)
       end
-    end while (!enqueued)
+      break if enqueued
+    end
   end
 
   def shutdown

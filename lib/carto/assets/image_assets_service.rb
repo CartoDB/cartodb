@@ -4,6 +4,7 @@ require_relative '../../cartodb/image_metadata'
 
 module Carto
   class ImageAssetsService < AssetsService
+
     VALID_EXTENSIONS = %w{.jpeg .jpg .gif .png .svg}.freeze
 
     def fetch_file(resource)
@@ -39,7 +40,8 @@ module Carto
       filename = resource.respond_to?(:original_filename) ? resource.original_filename : resource
       extension = File.extname(filename).downcase
 
-      raise UnprocesableEntityError.new("extension not accepted") unless VALID_EXTENSIONS.include?(extension)
+      raise UnprocesableEntityError.new('extension not accepted') unless VALID_EXTENSIONS.include?(extension)
+
       extension
     end
 
@@ -51,5 +53,6 @@ module Carto
         raise UnprocesableEntityError.new("file is too big, #{MAX_IMAGE_SIDE}x#{MAX_IMAGE_SIDE} max")
       end
     end
+
   end
 end

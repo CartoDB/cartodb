@@ -3,6 +3,7 @@ require_dependency 'carto/controller_helper'
 module Carto
   module Api
     class TagsController < ::Api::ApplicationController
+
       include PagedSearcher
 
       ssl_required
@@ -30,6 +31,7 @@ module Carto
                                               .with_partial_match(@pattern)
 
         return query_builder.with_owned_by_or_shared_with_user_id(current_viewer.id) if @include_shared
+
         query_builder.with_owned_by_user_id(current_viewer.id)
       end
 
@@ -39,7 +41,7 @@ module Carto
         @pattern = params[:q]
         @include_shared = params[:include_shared] == 'true'
 
-        @types = params.fetch(:types, "").split(',')
+        @types = params.fetch(:types, '').split(',')
         if (@types - Carto::Visualization::VALID_TYPES).present?
           raise Carto::ParamCombinationInvalidError.new(:types, Carto::Visualization::VALID_TYPES)
         end

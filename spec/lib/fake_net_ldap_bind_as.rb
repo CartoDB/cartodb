@@ -4,6 +4,7 @@
 # Incomplete fake:
 # https://github.com/roovo/fake_net_ldap/blob/a1d20013103c70ed0bb66792286c7657d51c6cf9/lib/fake_net_ldap/ext/net_ldap.rb
 class Net::LDAP
+
   def bind_as(args)
     rs = search(args)
     if rs && rs.first && dn = rs.first[:dn]
@@ -14,4 +15,5 @@ class Net::LDAP
       rs if bind
     end
   end
+
 end

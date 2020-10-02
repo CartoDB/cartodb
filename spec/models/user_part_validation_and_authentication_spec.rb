@@ -6,7 +6,7 @@ describe User do
   include UserPartHelper
   include_context 'user spec configuration'
 
-  it "should only allow legal usernames" do
+  it 'should only allow legal usernames' do
     illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine SIMON Simon jose.rilla -rilla rilla-)
     legal_usernames   = %w(simon javier-de-la-torre sergio-leiva sergio99)
 
@@ -23,7 +23,7 @@ describe User do
     end
   end
 
-  it "should not allow a username in use by an organization" do
+  it 'should not allow a username in use by an organization' do
     org = create_org('testusername', 10.megabytes, 1)
     @user.username = org.name
     @user.valid?.should be_false
@@ -31,7 +31,7 @@ describe User do
     @user.valid?.should be_true
   end
 
-  describe "email validation" do
+  describe 'email validation' do
     before(:all) do
       EmailAddress::Config.configure(local_format: :conventional, host_validation: :mx)
     end
@@ -40,7 +40,7 @@ describe User do
       EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
     end
 
-    it "disallows wrong domains" do
+    it 'disallows wrong domains' do
       invalid_emails = ['pimpam@example.com',
                         'pimpam@ageval.dr',
                         'pimpam@qq.ocm',
@@ -78,15 +78,15 @@ describe User do
     end
   end
 
-  it "should validate that password is present if record is new and crypted_password is blank" do
+  it 'should validate that password is present if record is new and crypted_password is blank' do
     user = ::User.new
-    user.username = "adminipop"
-    user.email = "adminipop@example.com"
+    user.username = 'adminipop'
+    user.email = 'adminipop@example.com'
 
     user.valid?.should be_false
     user.errors[:password].should be_present
 
-    another_user = new_user(user.values.merge(:password => "admin123"))
+    another_user = new_user(user.values.merge(password: 'admin123'))
     user.crypted_password = another_user.crypted_password
     user.valid?.should be_true
     user.save
@@ -101,10 +101,10 @@ describe User do
     user.destroy
   end
 
-  it "should validate password presence and length" do
+  it 'should validate password presence and length' do
     user = ::User.new
-    user.username = "adminipop"
-    user.email = "adminipop@example.com"
+    user.username = 'adminipop'
+    user.email = 'adminipop@example.com'
 
     user.valid?.should be_false
     user.errors[:password].should be_present
@@ -118,27 +118,27 @@ describe User do
     user.errors[:password].should be_present
   end
 
-  it "should validate password is different than username" do
+  it 'should validate password is different than username' do
     user = ::User.new
-    user.username = "adminipop"
-    user.email = "adminipop@example.com"
-    user.password = user.password_confirmation = "adminipop"
+    user.username = 'adminipop'
+    user.email = 'adminipop@example.com'
+    user.password = user.password_confirmation = 'adminipop'
 
     user.valid?.should be_false
     user.errors[:password].should be_present
   end
 
-  it "should validate password is not a common one" do
+  it 'should validate password is not a common one' do
     user = ::User.new
-    user.username = "adminipop"
-    user.email = "adminipop@example.com"
+    user.username = 'adminipop'
+    user.email = 'adminipop@example.com'
     user.password = user.password_confirmation = '123456'
 
     user.valid?.should be_false
     user.errors[:password].should be_present
   end
 
-  describe "#change_password" do
+  describe '#change_password' do
     before(:all) do
       @new_valid_password = '000123456'
       @user3 = create_user(password: @user_password)
@@ -148,7 +148,7 @@ describe User do
       @user3.destroy
     end
 
-    it "updates crypted_password" do
+    it 'updates crypted_password' do
       initial_crypted_password = @user3.crypted_password
       @user3.change_password(@user_password, @new_valid_password, @new_valid_password)
       @user3.valid?.should eq true
@@ -159,80 +159,80 @@ describe User do
       @user3.save(raise_on_failure: true)
     end
 
-    it "checks old password" do
+    it 'checks old password' do
       @user3.change_password('aaabbb', @new_valid_password, @new_valid_password)
       @user3.valid?.should eq false
       @user3.errors.fetch(:old_password).nil?.should eq false
-      expect {
+      expect do
         @user3.save(raise_on_failure: true)
-      }.to raise_exception(Sequel::ValidationFailed, /old_password Old password not valid/)
+      end.to raise_exception(Sequel::ValidationFailed, /old_password Old password not valid/)
     end
 
-    it "checks password confirmation" do
+    it 'checks password confirmation' do
       @user3.change_password(@user_password, 'aaabbb', 'bbbaaa')
       @user3.valid?.should eq false
       @user3.errors.fetch(:new_password).nil?.should eq false
-      expect {
+      expect do
         @user3.save(raise_on_failure: true)
-      }.to raise_exception(Sequel::ValidationFailed, "new_password doesn't match confirmation")
+      end.to raise_exception(Sequel::ValidationFailed, "new_password doesn't match confirmation")
     end
 
-    it "can throw several errors" do
+    it 'can throw several errors' do
       @user3.change_password('aaaaaa', 'aaabbb', 'bbbaaa')
       @user3.valid?.should eq false
       @user3.errors.fetch(:old_password).nil?.should eq false
       @user3.errors.fetch(:new_password).nil?.should eq false
       expected_errors = "old_password Old password not valid, new_password doesn't match confirmation"
-      expect {
+      expect do
         @user3.save(raise_on_failure: true)
-      }.to raise_exception(Sequel::ValidationFailed, expected_errors)
+      end.to raise_exception(Sequel::ValidationFailed, expected_errors)
     end
 
-    it "checks minimal length" do
+    it 'checks minimal length' do
       @user3.change_password(@user_password, 'tiny', 'tiny')
       @user3.valid?.should eq false
       @user3.errors.fetch(:new_password).nil?.should eq false
-      expect {
+      expect do
         @user3.save(raise_on_failure: true)
-      }.to raise_exception(Sequel::ValidationFailed, "new_password must be at least 6 characters long")
+      end.to raise_exception(Sequel::ValidationFailed, 'new_password must be at least 6 characters long')
     end
 
-    it "checks maximal length" do
+    it 'checks maximal length' do
       long_password = 'long' * 20
       @user3.change_password(@user_password, long_password, long_password)
       @user3.valid?.should eq false
       @user3.errors.fetch(:new_password).nil?.should eq false
-      expect {
+      expect do
         @user3.save(raise_on_failure: true)
-      }.to raise_exception(Sequel::ValidationFailed, "new_password must be at most 64 characters long")
+      end.to raise_exception(Sequel::ValidationFailed, 'new_password must be at most 64 characters long')
     end
 
-    it "checks that the new password is not nil" do
+    it 'checks that the new password is not nil' do
       @user3.change_password(@user_password, nil, nil)
       @user3.valid?.should eq false
       @user3.errors.fetch(:new_password).nil?.should eq false
-      expect {
+      expect do
         @user3.save(raise_on_failure: true)
-      }.to raise_exception(Sequel::ValidationFailed, "new_password can't be blank")
+      end.to raise_exception(Sequel::ValidationFailed, "new_password can't be blank")
     end
   end
 
   describe '#needs_password_confirmation?' do
     it 'is true for a normal user' do
-      user = FactoryGirl.build(:carto_user, :google_sign_in => nil)
+      user = FactoryGirl.build(:carto_user, google_sign_in: nil)
       user.needs_password_confirmation?.should == true
 
-      user = FactoryGirl.build(:user, :google_sign_in => false)
+      user = FactoryGirl.build(:user, google_sign_in: false)
       user.needs_password_confirmation?.should == true
     end
 
     it 'is false for users that signed in with Google' do
-      user = FactoryGirl.build(:user, :google_sign_in => true)
+      user = FactoryGirl.build(:user, google_sign_in: true)
       user.needs_password_confirmation?.should == false
     end
 
     it 'is true for users that signed in with Google but changed the password' do
-      user = FactoryGirl.build(:user, :google_sign_in => true, :last_password_change_date => Time.now)
+      user = FactoryGirl.build(:user, google_sign_in: true, last_password_change_date: Time.now)
       user.needs_password_confirmation?.should == true
     end
 
@@ -253,7 +253,7 @@ describe User do
     end
 
     before(:each) do
-      @github_user = FactoryGirl.build(:valid_user, github_user_id: 932847)
+      @github_user = FactoryGirl.build(:valid_user, github_user_id: 932_847)
       @google_user = FactoryGirl.build(:valid_user, google_sign_in: true)
       @password_user = FactoryGirl.build(:valid_user)
       @org_user = FactoryGirl.create(:valid_user,
@@ -378,7 +378,7 @@ describe User do
     end
 
     describe 'create api keys on user creation' do
-      it "creates master api key on user creation" do
+      it 'creates master api key on user creation' do
         api_keys = Carto::ApiKey.where(user_id: @auth_api_user.id)
         api_keys.should_not be_empty
 

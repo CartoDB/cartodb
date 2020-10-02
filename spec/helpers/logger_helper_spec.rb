@@ -2,7 +2,6 @@ require 'spec_helper'
 require './app/helpers/logger_helper'
 
 describe LoggerHelper do
-
   class MockObject; include LoggerHelper end
 
   before { User.any_instance.stubs(:update_in_central).returns(true) }
@@ -89,5 +88,4 @@ describe LoggerHelper do
       mock_object.log_error(message: 'Message', exception: exception)
     end
   end
-
 end

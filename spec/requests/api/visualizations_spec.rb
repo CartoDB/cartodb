@@ -26,9 +26,9 @@ describe Carto::Api::VisualizationsController do
 
     begin
       delete_user_data @user
-    rescue StandardError => exception
+    rescue StandardError => e
       # Silence named maps problems only here upon data cleaning, not in specs
-      raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
+      raise unless e.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
     end
 
     @headers = {
@@ -60,7 +60,7 @@ describe Carto::Api::VisualizationsController do
       last_response.status.should == 200
 
       response = JSON.parse(last_response.body)
-      response.fetch('name')        .should_not == nil
+      response.fetch('name')        .should_not.nil?
       response.fetch('tags')        .should_not == payload.fetch(:tags).to_json
       response.keys.should_not include 'related'
     end
@@ -134,8 +134,8 @@ describe Carto::Api::VisualizationsController do
       visualization_name  = visualization.fetch('name')
 
       payload = {
-        source_visualization_id:  visualization.fetch('id'),
-        name:                     visualization_name
+        source_visualization_id: visualization.fetch('id'),
+        name: visualization_name
       }
 
       post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
@@ -209,7 +209,7 @@ describe Carto::Api::VisualizationsController do
     it 'deletes the visualization' do
       payload = factory
       post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
+           payload.to_json, @headers
 
       id = JSON.parse(last_response.body).fetch('id')
       get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
@@ -243,17 +243,17 @@ describe Carto::Api::VisualizationsController do
   # Visualizations are always created with default_privacy
   def factory(attributes={})
     {
-      name:                     attributes.fetch(:name, unique_name('viz')),
-      tags:                     attributes.fetch(:tags, ['foo', 'bar']),
-      map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: @user.id).id),
-      description:              attributes.fetch(:description, 'bogus'),
-      type:                     attributes.fetch(:type, 'derived'),
-      privacy:                  attributes.fetch(:privacy, 'public'),
-      source_visualization_id:  attributes.fetch(:source_visualization_id, nil),
-      parent_id:                attributes.fetch(:parent_id, nil),
-      locked:                   attributes.fetch(:locked, false),
-      prev_id:                  attributes.fetch(:prev_id, nil),
-      next_id:                  attributes.fetch(:next_id, nil)
+      name: attributes.fetch(:name, unique_name('viz')),
+      tags: attributes.fetch(:tags, ['foo', 'bar']),
+      map_id: attributes.fetch(:map_id, ::Map.create(user_id: @user.id).id),
+      description: attributes.fetch(:description, 'bogus'),
+      type: attributes.fetch(:type, 'derived'),
+      privacy: attributes.fetch(:privacy, 'public'),
+      source_visualization_id: attributes.fetch(:source_visualization_id, nil),
+      parent_id: attributes.fetch(:parent_id, nil),
+      locked: attributes.fetch(:locked, false),
+      prev_id: attributes.fetch(:prev_id, nil),
+      next_id: attributes.fetch(:next_id, nil)
     }
   end
 
@@ -262,13 +262,13 @@ describe Carto::Api::VisualizationsController do
 
     name    = unique_name('table')
     payload = {
-      name:         name,
-      description:  "#{name} description"
+      name: name,
+      description: "#{name} description"
     }
     post "/api/v1/tables?api_key=#{@api_key}", payload.to_json, @headers
 
     table_attributes  = JSON.parse(last_response.body)
-    table_id          = table_attributes.fetch('table_visualization').fetch("id")
+    table_id          = table_attributes.fetch('table_visualization').fetch('id')
 
     put "/api/v1/viz/#{table_id}?api_key=#{@api_key}", { privacy: privacy }.to_json, @headers
 

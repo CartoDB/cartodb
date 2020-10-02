@@ -5,14 +5,14 @@ namespace :cartodb do
   desc 'Import a file to CartoDB. "times" parameter is there for load test purposes. Defaults to 1.'
   task :import, [:username, :filepath, :times] => [:environment] do |_task, args|
     times = (args[:times] || 1).to_i
-    user        = ::User.where(username: args[:username]).first
-    filepath    = File.expand_path(args[:filepath])
+    user = ::User.where(username: args[:username]).first
+    filepath = File.expand_path(args[:filepath])
 
     data_import = DataImport.create(
-      :user_id       => user.id,
-      :data_source   => filepath,
-      :updated_at    => Time.now,
-      :append        => false
+      user_id: user.id,
+      data_source: filepath,
+      updated_at: Time.now,
+      append: false
     )
     data_import.values[:data_source] = filepath
 
@@ -21,7 +21,6 @@ namespace :cartodb do
       puts data_import.log
     end
   end
-
 
   desc 'Uploads a single data import enqueued file to S3, triggering the normal flow afterwards'
   task upload_to_s3: [:environment] do
@@ -34,7 +33,11 @@ namespace :cartodb do
 
     unless data_import_item.nil?
       # be 100% safe in rescue blocks when trying to log the failed id
-      data_import_item_id = data_import_item.id rescue nil
+      data_import_item_id = begin
+                              data_import_item.id
+                            rescue StandardError
+                              nil
+                            end
 
       begin
         puts "Retrieved #{data_import_item.id}"
@@ -55,10 +58,10 @@ namespace :cartodb do
           File.delete(filepath)
           folder = filepath.slice(0, filepath.rindex('/')).gsub('..', '')
           FileUtils.rm_rf(folder) unless folder.length < uploads_path.to_s.length
-        rescue StandardError => exception
-          puts "Errored #{data_import_item_id} : #{exception}"
-          CartoDB::notify_error(
-            exception,
+        rescue StandardError => e
+          puts "Errored #{data_import_item_id} : #{e}"
+          CartoDB.notify_error(
+            e,
             task: 'cartodb:upload_to_s3 Rake',
             import_id: data_import_item_id,
             item: data_import_item.inspect
@@ -71,11 +74,11 @@ namespace :cartodb do
         Resque.enqueue(Resque::ImporterJobs, job_id: data_import_item.id)
 
         puts "Uploaded #{data_import_item.id}"
-      rescue StandardError => exception
-        puts "Errored #{data_import_item_id} : #{exception}"
+      rescue StandardError => e
+        puts "Errored #{data_import_item_id} : #{e}"
 
-        CartoDB::notify_error(
-          exception,
+        CartoDB.notify_error(
+          e,
           task: 'cartodb:upload_to_s3 Rake',
           import_id: data_import_item_id,
           item: data_import_item.inspect

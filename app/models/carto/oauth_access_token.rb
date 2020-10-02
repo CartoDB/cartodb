@@ -3,6 +3,7 @@ require_dependency 'carto/oauth_provider/scopes/scopes'
 
 module Carto
   class OauthAccessToken < ActiveRecord::Base
+
     include OauthProvider::Scopes
 
     ACCESS_TOKEN_EXPIRATION_TIME = 1.hour
@@ -53,5 +54,6 @@ module Carto
       # Rename after creation so we have the ID
       api_key.update!(name: "oauth_authorization #{id}")
     end
+
   end
 end

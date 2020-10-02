@@ -1,6 +1,6 @@
 class PasswordResetsController < ApplicationController
 
-  layout "frontend"
+  layout 'frontend'
 
   before_action :load_organization_from_request, only: [:new, :create, :sent, :changed]
   before_action :load_user_and_organization, only: [:edit, :update]
@@ -12,7 +12,7 @@ class PasswordResetsController < ApplicationController
     email = params[:email]
 
     if email.blank?
-      @error = "Email cannot be blank"
+      @error = 'Email cannot be blank'
       render :new
       return
     end
@@ -21,7 +21,7 @@ class PasswordResetsController < ApplicationController
     @user.try(:send_password_reset!)
 
     respond_to do |format|
-      format.html { redirect_to CartoDB.path(self, "sent_password_reset") }
+      format.html { redirect_to CartoDB.path(self, 'sent_password_reset') }
       format.js   { head :ok }
     end
   end
@@ -31,7 +31,7 @@ class PasswordResetsController < ApplicationController
   def update
     # check if it's valid token
     if @user.password_reset_sent_at < 48.hours.ago
-      redirect_to(new_password_reset_path, alert: "Password reset has expired")
+      redirect_to(new_password_reset_path, alert: 'Password reset has expired')
       return
     end
 
@@ -40,8 +40,8 @@ class PasswordResetsController < ApplicationController
     pwc = params[:carto_user][:password_confirmation]
 
     if (pw.blank? || pwc.blank?) || (pw != pwc)
-      @user.errors.add(:password, "Please ensure your passwords match")
-      @user.errors.add(:password_confirmation, "Please ensure your passwords match")
+      @user.errors.add(:password, 'Please ensure your passwords match')
+      @user.errors.add(:password_confirmation, 'Please ensure your passwords match')
       render :edit
       return
     end
@@ -84,4 +84,5 @@ class PasswordResetsController < ApplicationController
   def set_referrer_policy
     headers['Referrer-Policy'] = 'origin'
   end
+
 end

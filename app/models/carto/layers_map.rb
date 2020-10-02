@@ -3,6 +3,7 @@ require_dependency 'carto/visualization_backup_service'
 
 module Carto
   class LayersMap < ActiveRecord::Base
+
     include Carto::VisualizationBackupService
 
     belongs_to :layer, class_name: Carto::Layer
@@ -22,16 +23,19 @@ module Carto
       # This is a workaround for a bug in Rails 4 (https://github.com/rails/rails/issues/13609)
       # A better way to do this is with `dependent: :destroy` on the association
       return if @layer_destroyed || layer.destroyed?
+
       @layer_destroyed = true
       layer.destroy
     end
 
     def backup_visualization
       return if !map.visualization || map.visualization.destroyed? || @layer_destroyed || layer.destroyed?
+
       create_visualization_backup(
         visualization: map.visualization,
         category: Carto::VisualizationBackup::CATEGORY_LAYER
       )
     end
+
   end
 end

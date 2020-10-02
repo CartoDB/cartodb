@@ -8,27 +8,27 @@
 require_relative '../spec_helper'
 
 def check_schema(table, expected_schema, options={})
-  table_schema = table.schema(:cartodb_types => options[:cartodb_types] || false)
+  table_schema = table.schema(cartodb_types: options[:cartodb_types] || false)
   schema_differences = (expected_schema - table_schema) + (table_schema - expected_schema)
 
   # Filter out timestamp columns for backwards compatibility with new CDB_CartodbfyTable
-  schema_differences.reject! {|x| [:created_at, :updated_at].include?(x[0]) }
+  schema_differences.reject! { |x| [:created_at, :updated_at].include?(x[0]) }
 
   schema_differences.should be_empty, "difference: #{schema_differences.inspect}"
 end
 
-def create_import(user, file_name, name=nil)
-  @data_import  = DataImport.create(
-    user_id:      @user.id,
-    data_source:  file_name,
-    table_name:   name
+def create_import(_user, file_name, name=nil)
+  @data_import = DataImport.create(
+    user_id: @user.id,
+    data_source: file_name,
+    table_name: name
   )
   def @data_import.data_source=(filepath)
-    self.values[:data_type] = 'file'
-    self.values[:data_source] = filepath
+    values[:data_type] = 'file'
+    values[:data_source] = filepath
   end
 
-  @data_import.data_source =  file_name
+  @data_import.data_source = file_name
   @data_import.send :dispatch
   @data_import
 end
@@ -43,17 +43,17 @@ end
 
 describe Table do
   shared_examples_for 'table service' do
-    context "table setups" do
-      it "should set a default name different than the previous" do
+    context 'table setups' do
+      it 'should set a default name different than the previous' do
         table = Table.new
         table.user_id = @user.id
         table.save.reload
-        table.name.should == "untitled_table"
+        table.name.should == 'untitled_table'
 
         table2 = Table.new
         table2.user_id = @user.id
         table2.save.reload
-        table2.name.should == "untitled_table_1"
+        table2.name.should == 'untitled_table_1'
       end
 
       it 'is renames "layergroup" to "layergroup_t"' do
@@ -90,11 +90,11 @@ describe Table do
         table.valid?.should == true
       end
 
-      it "should set a valid table_id value (OID)" do
+      it 'should set a valid table_id value (OID)' do
         table = create_table(name: 'this_is_a_table', user_id: @user.id)
         table.table_id.should be_a(Integer)
 
-        oid = table.owner.in_database.fetch(%Q{SELECT '#{table.qualified_table_name}'::regclass::oid}).first[:oid].to_i
+        oid = table.owner.in_database.fetch(%{SELECT '#{table.qualified_table_name}'::regclass::oid}).first[:oid].to_i
         table.table_id.should == oid
       end
 
@@ -104,9 +104,9 @@ describe Table do
         table.get_table_id.should be_nil
       end
 
-      it "should not allow to create tables using system names" do
-        table = create_table(name: "cdb_tablemetadata", user_id: @user.id)
-        table.name.should == "cdb_tablemetadata_t"
+      it 'should not allow to create tables using system names' do
+        table = create_table(name: 'cdb_tablemetadata', user_id: @user.id)
+        table.name.should == 'cdb_tablemetadata_t'
       end
 
       it 'propagates name changes to table visualization' do
@@ -176,7 +176,7 @@ describe Table do
         visualization_id = table.table_visualization.id
         # TODO: should this model be also "dynamic"?
         visualization = CartoDB::Visualization::Member.new(id: visualization_id)
-          .fetch
+                                                      .fetch
         visualization.name = 'bogus name 3'
         visualization.store
         table.reload
@@ -184,7 +184,7 @@ describe Table do
 
         # TODO: should this model be also "dynamic"?
         visualization = CartoDB::Visualization::Member.new(id: visualization.id)
-          .fetch
+                                                      .fetch
         visualization.name.should == 'bogus_name_3'
         table.reload
         table.name.should == 'bogus_name_3'
@@ -203,27 +203,26 @@ describe Table do
         layer.options.fetch('table_name').should == table.name
       end
 
-      it "should create default associated map and layers" do
+      it 'should create default associated map and layers' do
         Cartodb.with_config(
           basemaps: {
             CartoDB: {
-              "waduson" => {
-                "default" => true,
-                "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-                "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png",
-                "subdomains" => "abcd",
-                "minZoom" => "0",
-                "maxZoom" => "18",
-                "name" => "Waduson",
-                "className" => "waduson",
-                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>"
+              'waduson' => {
+                'default' => true,
+                'urlTemplate' => 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
+                'urlTemplate2x' => 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png',
+                'subdomains' => 'abcd',
+                'minZoom' => '0',
+                'maxZoom' => '18',
+                'name' => 'Waduson',
+                'className' => 'waduson',
+                'attribution' => '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/about-carto/">CARTO</a>'
               }
             }
           }
         ) do
-
           visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
-          table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
+          table = create_table(name: 'epaminondas_pantulis', user_id: @user.id)
           CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
           map = table.map
@@ -235,89 +234,88 @@ describe Table do
           map.provider.should eq 'leaflet'
           map.layers.count.should == 2
           map.layers.map(&:kind).should == ['tiled', 'carto']
-          map.data_layers.first.infowindow["fields"].should == []
-          map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
+          map.data_layers.first.infowindow['fields'].should == []
+          map.data_layers.first.options['table_name'].should == 'epaminondas_pantulis'
 
-          map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-          map.layers[0].options["urlTemplate2x"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png"
-          map.layers[0].options["subdomains"].should == "abcd"
-          map.layers[0].options["minZoom"].should == "0"
-          map.layers[0].options["maxZoom"].should == "18"
-          map.layers[0].options["name"].should == "Waduson"
-          map.layers[0].options["className"].should == "waduson"
-          map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>"
+          map.layers[0].options['urlTemplate'].should == 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+          map.layers[0].options['urlTemplate2x'].should == 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png'
+          map.layers[0].options['subdomains'].should == 'abcd'
+          map.layers[0].options['minZoom'].should == '0'
+          map.layers[0].options['maxZoom'].should == '18'
+          map.layers[0].options['name'].should == 'Waduson'
+          map.layers[0].options['className'].should == 'waduson'
+          map.layers[0].options['attribution'].should == '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/about-carto/">CARTO</a>'
           map.layers[0].order.should == 0
 
           map.visualization.overlays.count.should eq 5
         end
       end
 
-      it "should add a layer with labels if the baselayer has that option enabled" do
+      it 'should add a layer with labels if the baselayer has that option enabled' do
         Cartodb.with_config(
           basemaps: {
             CartoDB: {
-              "waduson" => {
-                "default" => true,
-                "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-                "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png",
-                "subdomains" => "abcd",
-                "minZoom" => "0",
-                "maxZoom" => "18",
-                "name" => "Waduson",
-                "className" => "waduson",
-                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>",
-                "labels" => {
-                  "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
-                  "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png"
+              'waduson' => {
+                'default' => true,
+                'urlTemplate' => 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
+                'urlTemplate2x' => 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png',
+                'subdomains' => 'abcd',
+                'minZoom' => '0',
+                'maxZoom' => '18',
+                'name' => 'Waduson',
+                'className' => 'waduson',
+                'attribution' => '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/about-carto/">CARTO</a>',
+                'labels' => {
+                  'urlTemplate' => 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
+                  'urlTemplate2x' => 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png'
                 }
               }
             }
           }
         ) do
-
           visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
-          table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
+          table = create_table(name: 'epaminondas_pantulis', user_id: @user.id)
           CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
           table.map.layers.count.should == 3
           table.map.layers.map(&:kind).should == ['tiled', 'carto', 'tiled']
 
-          table.map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-          table.map.layers[0].options["urlTemplate2x"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png"
-          table.map.layers[0].options["subdomains"].should == "abcd"
-          table.map.layers[0].options["minZoom"].should == "0"
-          table.map.layers[0].options["maxZoom"].should == "18"
-          table.map.layers[0].options["name"].should == "Waduson"
-          table.map.layers[0].options["className"].should == "waduson"
-          table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>"
+          table.map.layers[0].options['urlTemplate'].should == 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
+          table.map.layers[0].options['urlTemplate2x'].should == 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png'
+          table.map.layers[0].options['subdomains'].should == 'abcd'
+          table.map.layers[0].options['minZoom'].should == '0'
+          table.map.layers[0].options['maxZoom'].should == '18'
+          table.map.layers[0].options['name'].should == 'Waduson'
+          table.map.layers[0].options['className'].should == 'waduson'
+          table.map.layers[0].options['attribution'].should == '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/about-carto/">CARTO</a>'
           table.map.layers[0].order.should == 0
 
-          table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
-          table.map.layers[2].options["urlTemplate2x"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png"
-          table.map.layers[2].options["subdomains"].should == "abcd"
-          table.map.layers[2].options["minZoom"].should == "0"
-          table.map.layers[2].options["maxZoom"].should == "18"
-          table.map.layers[2].options["name"].should == "Waduson Labels"
-          table.map.layers[2].options["className"].should be_nil
-          table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/about-carto/\">CARTO</a>"
-          table.map.layers[2].options["type"].should == "Tiled"
-          table.map.layers[2].options["labels"].should be_nil
+          table.map.layers[2].options['urlTemplate'].should == 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
+          table.map.layers[2].options['urlTemplate2x'].should == 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png'
+          table.map.layers[2].options['subdomains'].should == 'abcd'
+          table.map.layers[2].options['minZoom'].should == '0'
+          table.map.layers[2].options['maxZoom'].should == '18'
+          table.map.layers[2].options['name'].should == 'Waduson Labels'
+          table.map.layers[2].options['className'].should be_nil
+          table.map.layers[2].options['attribution'].should == '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/about-carto/">CARTO</a>'
+          table.map.layers[2].options['type'].should == 'Tiled'
+          table.map.layers[2].options['labels'].should be_nil
           table.map.layers[2].order.should == 2
         end
       end
 
-      it "should return a sequel interface" do
-        table = create_table :user_id => @user.id
+      it 'should return a sequel interface' do
+        table = create_table user_id: @user.id
         table.sequel.is_a?(Sequel::Postgres::Dataset).should be_true
       end
 
-      it "should have a privacy associated and it should be private by default" do
-        table = create_table :user_id => @user.id
+      it 'should have a privacy associated and it should be private by default' do
+        table = create_table user_id: @user.id
         table.should be_private
       end
 
       it 'changes to and from public-with-link privacy' do
-        table = create_table :user_id => @user.id
+        table = create_table user_id: @user.id
 
         table.privacy = UserTable::PRIVACY_LINK
         table.save
@@ -393,46 +391,46 @@ describe Table do
       it "should be public if the creating user doesn't have the ability to make private tables" do
         @user.private_tables_enabled = false
         @user.save
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.privacy.should == UserTable::PRIVACY_PUBLIC
       end
 
       it "should be private if it's creating user has the ability to make private tables" do
         @user.private_tables_enabled = true
         @user.save
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.privacy.should == UserTable::PRIVACY_PRIVATE
       end
 
-      it "should be able to make private tables if the user gets the ability to do it" do
+      it 'should be able to make private tables if the user gets the ability to do it' do
         @user.private_tables_enabled = false
         @user.save
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.privacy.should == UserTable::PRIVACY_PUBLIC
 
         @user.private_tables_enabled = true
         @user.save
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.privacy.should == UserTable::PRIVACY_PRIVATE
       end
 
-      it "should only be able to make public tables if the user is stripped of permissions" do
+      it 'should only be able to make public tables if the user is stripped of permissions' do
         @user.private_tables_enabled = true
         @user.save
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.privacy.should == UserTable::PRIVACY_PRIVATE
 
         @user.private_tables_enabled = false
         @user.save
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.privacy.should == UserTable::PRIVACY_PUBLIC
       end
 
-      it "should still be able to edit the private table if the user is stripped of permissions" do
+      it 'should still be able to edit the private table if the user is stripped of permissions' do
         @user.private_tables_enabled = true
         @user.save
 
@@ -443,15 +441,15 @@ describe Table do
         @user.private_tables_enabled = false
         @user.save
 
-        table.name = "my_super_test"
+        table.name = 'my_super_test'
         table.save.should be_true
       end
 
-      it "should be able to convert to public table if the user is stripped of permissions" do
+      it 'should be able to convert to public table if the user is stripped of permissions' do
         @user.private_tables_enabled = true
         @user.save
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.privacy.should == UserTable::PRIVACY_PRIVATE
 
         @user.private_tables_enabled = false
@@ -461,22 +459,22 @@ describe Table do
         table.save.should be_true
       end
 
-      it "should not be able to convert to public table if the user has no permissions" do
+      it 'should not be able to convert to public table if the user has no permissions' do
         @user.private_tables_enabled = false
         @user.save
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.privacy.should == UserTable::PRIVACY_PUBLIC
 
         table.privacy = UserTable::PRIVACY_PRIVATE
         expect_save_to_fail_validation(table)
       end
 
-      it "should not be able to convert to public table if the user is stripped of " do
+      it 'should not be able to convert to public table if the user is stripped of ' do
         @user.private_tables_enabled = true
         @user.save
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.privacy.should == UserTable::PRIVACY_PRIVATE
 
         @user.private_tables_enabled = false
@@ -490,37 +488,37 @@ describe Table do
         expect_save_to_fail_validation(table)
       end
 
-      it "should not allow public user access to a table when it is private" do
+      it 'should not allow public user access to a table when it is private' do
         @user.private_tables_enabled = true
         @user.save
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.should be_private
 
-        expect {
-          @user.in_database(:as => :public_user).run("select * from #{table.name}")
-        }.to raise_error(Sequel::DatabaseError)
+        expect do
+          @user.in_database(as: :public_user).run("select * from #{table.name}")
+        end.to raise_error(Sequel::DatabaseError)
       end
 
-      it "should allow public user access when the table is public" do
+      it 'should allow public user access when the table is public' do
         @user.private_tables_enabled = true
         @user.save
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
 
         table.should be_private
 
         table.privacy = UserTable::PRIVACY_PUBLIC
         table.save
 
-        expect {
-          @user.in_database(:as => :public_user).run("select * from #{table.name}")
-        }.to_not raise_error
+        expect do
+          @user.in_database(as: :public_user).run("select * from #{table.name}")
+        end.to_not raise_error
       end
 
-      it "should be associated to a database table" do
+      it 'should be associated to a database table' do
         @user.private_tables_enabled = false
         @user.save
-        table = create_table({:name => 'Wadus table', :user_id => @user.id})
+        table = create_table({ name: 'Wadus table', user_id: @user.id })
 
         SequelRails.connection.table_exists?(table.name.to_sym).should be_false
 
@@ -529,15 +527,15 @@ describe Table do
         end
       end
 
-      it "should store the name of its database" do
+      it 'should store the name of its database' do
         @user.private_tables_enabled = false
         @user.save
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
 
         table.owner.database_name.should == @user.database_name
       end
 
-      it "should rename a database table when the attribute name is modified" do
+      it 'should rename a database table when the attribute name is modified' do
         delete_user_data @user
         @user.private_tables_enabled = false
         @user.save
@@ -552,7 +550,7 @@ describe Table do
         table.name = 'Wadus table #23'
         table.save
         table.reload
-        table.name.should == CartoDB::Importer2::StringSanitizer.sanitize("Wadus table #23")
+        table.name.should == CartoDB::Importer2::StringSanitizer.sanitize('Wadus table #23')
         @user.in_database do |user_database|
           user_database.table_exists?('wadus_table'.to_sym).should be_false
           user_database.table_exists?('wadus_table_23'.to_sym).should be_true
@@ -561,7 +559,7 @@ describe Table do
         table.name = ''
         table.save
         table.reload
-        table.name.should == CartoDB::Importer2::StringSanitizer.sanitize("Wadus table #23")
+        table.name.should == CartoDB::Importer2::StringSanitizer.sanitize('Wadus table #23')
         @user.in_database do |user_database|
           user_database.table_exists?('wadus_table_23'.to_sym).should be_true
         end
@@ -572,7 +570,7 @@ describe Table do
         @user.private_tables_enabled = false
         @user.save
 
-        table = create_table({:name => 'Wadus table', :user_id => @user.id})
+        table = create_table({ name: 'Wadus table', user_id: @user.id })
         table.name.should == 'wadus_table'
 
         SequelRails.connection.table_exists?(table.name.to_sym).should be_false
@@ -584,7 +582,7 @@ describe Table do
         table.name.should == 'wadus_table'
       end
 
-      it "should invoke update_cdb_tablemetadata when the table is renamed" do
+      it 'should invoke update_cdb_tablemetadata when the table is renamed' do
         delete_user_data @user
         @user.private_tables_enabled = false
         @user.save
@@ -597,7 +595,7 @@ describe Table do
         table.save
       end
 
-      it "should rename the pk sequence when renaming the table" do
+      it 'should rename the pk sequence when renaming the table' do
         table1 = new_table(name: 'table 1', user_id: @user.id)
         table1.stubs(:update_cdb_tablemetadata)
 
@@ -639,28 +637,28 @@ describe Table do
       end
 
       it 'raises QuotaExceeded when trying to create a table while over quota' do
-        pending "Deactivated until table creation paths are unified - Issue 2974"
-        quota_in_bytes  = 524288000
+        pending 'Deactivated until table creation paths are unified - Issue 2974'
+        quota_in_bytes  = 524_288_000
         table_quota     = 5
         new_user        = new_user
         user            = create_user(quota_in_bytes: quota_in_bytes, table_quota: table_quota)
 
         5.times { |t| create_table(name: "table #{t}", user_id: user.id) }
 
-        expect {
-          create_table(name: "table 6", user_id: user.id)
-        }.to raise_error(CartoDB::QuotaExceeded)
+        expect do
+          create_table(name: 'table 6', user_id: user.id)
+        end.to raise_error(CartoDB::QuotaExceeded)
 
         user.destroy
       end
     end
 
-    it "should remove varnish cache when updating the table privacy" do
+    it 'should remove varnish cache when updating the table privacy' do
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       @user.private_tables_enabled = true
       @user.save
-      table = create_table(user_id: @user.id, name: "varnish_privacy", privacy: UserTable::PRIVACY_PRIVATE)
+      table = create_table(user_id: @user.id, name: 'varnish_privacy', privacy: UserTable::PRIVACY_PRIVATE)
 
       id = table.table_visualization.id
 
@@ -674,7 +672,7 @@ describe Table do
       table.save
     end
 
-    context "when removing the table" do
+    context 'when removing the table' do
       before(:all) do
         bypass_named_maps
 
@@ -687,26 +685,26 @@ describe Table do
         bypass_named_maps
       end
 
-      it "should remove the table from the user database" do
-        expect {
+      it 'should remove the table from the user database' do
+        expect do
           @user.in_database["select * from #{@doomed_table.name}"].all
-        }.to raise_error
+        end.to raise_error
       end
 
-      it "should not remove the table from the user database if specified" do
+      it 'should not remove the table from the user database if specified' do
         table = create_table(user_id: @user.id)
         table.keep_user_database_table = true
         table.destroy
         @user.in_database["select * from #{table.name}"].all.should == []
       end
 
-      it "should update denormalized counters" do
+      it 'should update denormalized counters' do
         @user.reload
         Carto::Tag.count.should == 0
         UserTable.count == 0
       end
 
-      it "should remove the metadata table even when the physical table does not exist" do
+      it 'should remove the metadata table even when the physical table does not exist' do
         table = create_table(user_id: @user.id)
         @user.in_database.drop_table(table.name.to_sym)
 
@@ -717,15 +715,15 @@ describe Table do
 
     context 'schema and columns' do
       it 'has a default schema' do
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
         table.reload
-        table.schema(:cartodb_types => false).should be_equal_to_default_db_schema
+        table.schema(cartodb_types: false).should be_equal_to_default_db_schema
         table.schema.should be_equal_to_default_cartodb_schema
       end
 
-      it "can be associated to many tags" do
+      it 'can be associated to many tags' do
         delete_user_data @user
-        table = create_table :user_id => @user.id, :tags => "tag 1, tag 2,tag 3, tag 3"
+        table = create_table user_id: @user.id, tags: 'tag 1, tag 2,tag 3, tag 3'
 
         Carto::Tag.count.should == 3
 
@@ -741,7 +739,7 @@ describe Table do
         tag3.user_id.should  == @user.id
         tag3.table_id.should == table.id
 
-        table.tags = "tag 1"
+        table.tags = 'tag 1'
         table.save_changes
 
         Carto::Tag.count.should == 1
@@ -749,277 +747,277 @@ describe Table do
         tag1.user_id.should  == @user.id
         tag1.table_id.should == table.id
 
-        table.tags = "    "
+        table.tags = '    '
         table.save_changes
         Carto::Tag.count.should == 0
       end
 
-      it "can add a column of a CartoDB::TYPE type" do
-        table = create_table(:user_id => @user.id)
-        table.schema(:cartodb_types => false).should be_equal_to_default_db_schema
+      it 'can add a column of a CartoDB::TYPE type' do
+        table = create_table(user_id: @user.id)
+        table.schema(cartodb_types: false).should be_equal_to_default_db_schema
 
-        resp = table.add_column!(:name => "my new column", :type => "number")
-        resp.should == {:name => "my_new_column", :type => "double precision", :cartodb_type => "number"}
+        resp = table.add_column!(name: 'my new column', type: 'number')
+        resp.should == { name: 'my_new_column', type: 'double precision', cartodb_type: 'number' }
         table.reload
-        table.schema(:cartodb_types => false).should include([:my_new_column, "double precision"])
+        table.schema(cartodb_types: false).should include([:my_new_column, 'double precision'])
       end
 
-      it "can modify a column using a CartoDB::TYPE type" do
+      it 'can modify a column using a CartoDB::TYPE type' do
         table = create_table(user_id: @user.id)
 
-        resp = table.modify_column!(name: "name", type: "number")
-        resp.should == { name: "name", type: "double precision", cartodb_type: "number" }
+        resp = table.modify_column!(name: 'name', type: 'number')
+        resp.should == { name: 'name', type: 'double precision', cartodb_type: 'number' }
       end
 
-      it "can modify a column using a CartoDB::TYPE type" do
-        table = create_table(:user_id => @user.id)
+      it 'can modify a column using a CartoDB::TYPE type' do
+        table = create_table(user_id: @user.id)
 
-        resp = table.modify_column!(:name => "name", :type => "number")
-        resp.should == {:name => "name", :type => "double precision", :cartodb_type => "number"}
+        resp = table.modify_column!(name: 'name', type: 'number')
+        resp.should == { name: 'name', type: 'double precision', cartodb_type: 'number' }
       end
 
-      it "should not modify the name of a column to a number, sanitizing it to make it valid" do
-        table = create_table(:user_id => @user.id)
-        resp = table.modify_column!(:name => "name", :new_name => "1")
-        resp.should == {:name => "_1", :type => "text", :cartodb_type => "string"}
+      it 'should not modify the name of a column to a number, sanitizing it to make it valid' do
+        table = create_table(user_id: @user.id)
+        resp = table.modify_column!(name: 'name', new_name: '1')
+        resp.should == { name: '_1', type: 'text', cartodb_type: 'string' }
       end
 
-      it "should invoke update_cdb_tablemetadata after modifying a column" do
+      it 'should invoke update_cdb_tablemetadata after modifying a column' do
         table = create_table(user_id: @user.id)
 
         table.expects(:update_cdb_tablemetadata)
         table.modify_column!(name: 'name', type: 'number')
       end
 
-      it "should update public.cdb_tablemetadata after modifying a column" do
-        table = create_table(:user_id => @user.id)
+      it 'should update public.cdb_tablemetadata after modifying a column' do
+        table = create_table(user_id: @user.id)
         table.expects(:update_cdb_tablemetadata).once
-        table.modify_column!(:name => "name", :type => "number")
+        table.modify_column!(name: 'name', type: 'number')
       end
 
-      it "can modify its schema" do
+      it 'can modify its schema' do
         table = create_table(user_id: @user.id)
         table.schema(cartodb_types: false).should be_equal_to_default_db_schema
 
         lambda {
-          table.add_column!(name: "my column with bad type", type: "textttt")
+          table.add_column!(name: 'my column with bad type', type: 'textttt')
         }.should raise_error(CartoDB::InvalidType)
 
-        resp = table.add_column!(name: "my new column", type: "integer")
-        resp.should == { name: 'my_new_column', type: 'integer', cartodb_type: 'number'}
+        resp = table.add_column!(name: 'my new column', type: 'integer')
+        resp.should == { name: 'my_new_column', type: 'integer', cartodb_type: 'number' }
         table.reload
-        table.schema(cartodb_types: false).should include([:my_new_column, "integer"])
+        table.schema(cartodb_types: false).should include([:my_new_column, 'integer'])
 
-        resp = table.modify_column!(name: "my_new_column", new_name: "my new column new name", type: "text")
+        resp = table.modify_column!(name: 'my_new_column', new_name: 'my new column new name', type: 'text')
         resp.should == { name: 'my_new_column_new_name', type: 'text', cartodb_type: 'string' }
         table.reload
-        table.schema(cartodb_types: false).should include([:my_new_column_new_name, "text"])
+        table.schema(cartodb_types: false).should include([:my_new_column_new_name, 'text'])
 
-        resp = table.modify_column!(name: "my_new_column_new_name", new_name: "my new column")
-        resp.should == { name: 'my_new_column', type: "text", cartodb_type: "string"}
+        resp = table.modify_column!(name: 'my_new_column_new_name', new_name: 'my new column')
+        resp.should == { name: 'my_new_column', type: 'text', cartodb_type: 'string' }
         table.reload
-        table.schema(cartodb_types: false).should include([:my_new_column, "text"])
+        table.schema(cartodb_types: false).should include([:my_new_column, 'text'])
 
-        resp = table.modify_column!(:name => "my_new_column", :type => "text")
-        resp.should == {:name => 'my_new_column', :type => 'text', :cartodb_type => 'string'}
+        resp = table.modify_column!(name: 'my_new_column', type: 'text')
+        resp.should == { name: 'my_new_column', type: 'text', cartodb_type: 'string' }
         table.reload
-        table.schema(:cartodb_types => false).should include([:my_new_column, "text"])
+        table.schema(cartodb_types: false).should include([:my_new_column, 'text'])
 
-        table.drop_column!(:name => "description")
+        table.drop_column!(name: 'description')
         table.reload
-        table.schema(:cartodb_types => false).should_not include([:description, "text"])
+        table.schema(cartodb_types: false).should_not include([:description, 'text'])
 
         lambda {
-          table.drop_column!(:name => "description")
+          table.drop_column!(name: 'description')
         }.should raise_error
       end
 
-      it "cannot modify :cartodb_id column" do
-        table = create_table(:user_id => @user.id)
-        original_schema = table.schema(:cartodb_types => false)
+      it 'cannot modify :cartodb_id column' do
+        table = create_table(user_id: @user.id)
+        original_schema = table.schema(cartodb_types: false)
 
         lambda {
-          table.modify_column!(:name => "cartodb_id", :new_name => "new_id", :type => "integer")
+          table.modify_column!(name: 'cartodb_id', new_name: 'new_id', type: 'integer')
         }.should raise_error
         table.reload
-        table.schema(:cartodb_types => false).should == original_schema
+        table.schema(cartodb_types: false).should == original_schema
 
         lambda {
-          table.modify_column!(:name => "cartodb_id", :new_name => "cartodb_id", :type => "float")
+          table.modify_column!(name: 'cartodb_id', new_name: 'cartodb_id', type: 'float')
         }.should raise_error
         table.reload
-        table.schema(:cartodb_types => false).should == original_schema
+        table.schema(cartodb_types: false).should == original_schema
 
         lambda {
-          table.drop_column!(:name => "cartodb_id")
+          table.drop_column!(name: 'cartodb_id')
         }.should raise_error
         table.reload
-        table.schema(:cartodb_types => false).should == original_schema
+        table.schema(cartodb_types: false).should == original_schema
       end
 
       it "should be able to modify it's schema with castings the DB engine doesn't support" do
         table = create_table(user_id: @user.id)
-        table.add_column!(name: "my new column", type: "text")
+        table.add_column!(name: 'my new column', type: 'text')
         table.reload
 
-        table.schema(:cartodb_types => false)
-          .should include([:my_new_column, "text"])
+        table.schema(cartodb_types: false)
+             .should include([:my_new_column, 'text'])
 
-        pk = table.insert_row!(name: "Text", my_new_column: "1")
+        pk = table.insert_row!(name: 'Text', my_new_column: '1')
         table.modify_column!(
-          name:     "my_new_column",
-          new_name:     "my new column new name",
-          type:         "integer",
-          force_value:  "NULL"
+          name: 'my_new_column',
+          new_name: 'my new column new name',
+          type: 'integer',
+          force_value: 'NULL'
         )
         table.reload
 
         table.schema(cartodb_types: false)
-          .should include([:my_new_column_new_name, "integer"])
+             .should include([:my_new_column_new_name, 'integer'])
 
         rows = table.records
         rows[:rows][0][:my_new_column_new_name].should == 1
       end
 
-      it "can be created with a given schema if it is valid" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+      it 'can be created with a given schema if it is valid' do
+        table = new_table(user_id: @user.id)
+        table.force_schema = 'code char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)'
         table.save
         check_schema(table, [
-          [:cartodb_id, "integer"],
-          [:code, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
-          [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
-        ])
+                       [:cartodb_id, 'integer'],
+                       [:code, 'character(5)'], [:title, 'character varying(40)'], [:did, 'integer'], [:date_prod, 'date'],
+                       [:kind, 'character varying(10)'], [:the_geom, 'geometry', 'geometry', 'geometry']
+                     ])
       end
 
-      it "should sanitize columns from a given schema" do
+      it 'should sanitize columns from a given schema' do
         delete_user_data @user
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "\"code wadus\" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)"
+        table = new_table(user_id: @user.id)
+        table.force_schema = '"code wadus" char(5) CONSTRAINT firstkey PRIMARY KEY, title  varchar(40) NOT NULL, did  integer NOT NULL, date_prod date, kind varchar(10)'
         table.save
         check_schema(table, [
-          [:cartodb_id, "integer"],
-          [:code_wadus, "character(5)"], [:title, "character varying(40)"], [:did, "integer"], [:date_prod, "date"],
-          [:kind, "character varying(10)"], [:the_geom, "geometry", "geometry", "geometry"]
-        ])
+                       [:cartodb_id, 'integer'],
+                       [:code_wadus, 'character(5)'], [:title, 'character varying(40)'], [:did, 'integer'], [:date_prod, 'date'],
+                       [:kind, 'character varying(10)'], [:the_geom, 'geometry', 'geometry', 'geometry']
+                     ])
       end
 
-      it "should alter the schema automatically to a a wide range of numbers when inserting" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "name varchar, age integer"
+      it 'should alter the schema automatically to a a wide range of numbers when inserting' do
+        table = new_table(user_id: @user.id)
+        table.force_schema = 'name varchar, age integer'
         table.save
 
-        pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+        pk_row1 = table.insert_row!(name: 'Fernando Blat', age: '29')
         table.rows_counted.should == 1
 
-        pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.3")
+        pk_row2 = table.insert_row!(name: 'Javi Jam', age: '30.3')
         table.rows_counted.should == 2
 
-        table.schema(:cartodb_types => false).should include([:age, "double precision"])
-        table.schema.should include([:age, "number"])
+        table.schema(cartodb_types: false).should include([:age, 'double precision'])
+        table.schema.should include([:age, 'number'])
       end
 
-      it "should alter the schema automatically to a a wide range of numbers when inserting a number with 0" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "name varchar, age integer"
+      it 'should alter the schema automatically to a a wide range of numbers when inserting a number with 0' do
+        table = new_table(user_id: @user.id)
+        table.force_schema = 'name varchar, age integer'
         table.save
 
-        pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+        pk_row1 = table.insert_row!(name: 'Fernando Blat', age: '29')
         table.rows_counted.should == 1
 
-        pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.0")
+        pk_row2 = table.insert_row!(name: 'Javi Jam', age: '30.0')
         table.rows_counted.should == 2
 
-        table.schema(:cartodb_types => false).should include([:age, "double precision"])
-        table.schema.should include([:age, "number"])
+        table.schema(cartodb_types: false).should include([:age, 'double precision'])
+        table.schema.should include([:age, 'number'])
       end
 
-      it "should alter the schema automatically to a a wide range of numbers when updating" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "name varchar, age integer"
+      it 'should alter the schema automatically to a a wide range of numbers when updating' do
+        table = new_table(user_id: @user.id)
+        table.force_schema = 'name varchar, age integer'
         table.save
 
-        pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
+        pk_row1 = table.insert_row!(name: 'Fernando Blat', age: '29')
         table.rows_counted.should == 1
 
-        pk_row2 = table.update_row!(pk_row1, :name => 'Javi Jam', :age => "25.4")
+        pk_row2 = table.update_row!(pk_row1, name: 'Javi Jam', age: '25.4')
         table.rows_counted.should == 1
 
-        table.schema(:cartodb_types => false).should include([:age, "double precision"])
-        table.schema.should include([:age, "number"])
+        table.schema(cartodb_types: false).should include([:age, 'double precision'])
+        table.schema.should include([:age, 'number'])
       end
 
-      pending "should alter the schema automatically when trying to insert a big string (greater than 200 chars)" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "name varchar(40)"
+      pending 'should alter the schema automatically when trying to insert a big string (greater than 200 chars)' do
+        table = new_table(user_id: @user.id)
+        table.force_schema = 'name varchar(40)'
         table.save
 
-        table.schema(:cartodb_types => false).should_not include([:name, "text"])
+        table.schema(cartodb_types: false).should_not include([:name, 'text'])
 
-        pk_row1 = table.insert_row!(:name => 'f'*201)
+        pk_row1 = table.insert_row!(name: 'f' * 201)
         table.rows_counted.should == 1
 
         table.reload
-        table.schema(:cartodb_types => false).should include([:name, "text"])
+        table.schema(cartodb_types: false).should include([:name, 'text'])
       end
 
-      it "should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception" do
-        table = new_table({:name => 'table1', :user_id => @user.id})
+      it 'should not remove an existing table when the creation of a new table with default schema and the same name has raised an exception' do
+        table = new_table({ name: 'table1', user_id: @user.id })
         table.save
-        pk = table.insert_row!({:name => "name #1", :description => "description #1"})
+        pk = table.insert_row!({ name: 'name #1', description: 'description #1' })
 
         Table.any_instance.stubs(:the_geom_type=).raises(CartoDB::InvalidGeomType)
 
-        table = new_table({:name => 'table1', :user_id => @user.id})
+        table = new_table({ name: 'table1', user_id: @user.id })
         lambda {
           table.save
         }.should raise_error(CartoDB::InvalidGeomType)
 
-        table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
+        table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == 'name #1'
       end
 
-      it "should not remove an existing table when the creation of a new table from a file with the same name has raised an exception" do
-        table = new_table({:name => 'table1', :user_id => @user.id})
+      it 'should not remove an existing table when the creation of a new table from a file with the same name has raised an exception' do
+        table = new_table({ name: 'table1', user_id: @user.id })
         table.save
 
-        pk = table.insert_row!({:name => "name #1", :description => "description #1"})
+        pk = table.insert_row!({ name: 'name #1', description: 'description #1' })
 
         Table.any_instance.stubs(:schema).raises(CartoDB::QueryNotAllowed)
 
-        data_import = DataImport.create( :user_id       => @user.id,
-                                      :table_name    => 'rescol',
-                                      :data_source   => fake_data_path('reserved_columns.csv') )
+        data_import = DataImport.create(user_id: @user.id,
+                                        table_name: 'rescol',
+                                        data_source: fake_data_path('reserved_columns.csv'))
         data_import.run_import!
-        table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
+        table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == 'name #1'
       end
 
       it "can add a column called 'action' but gets renamed" do
-        column_name = "action"
-        sanitized_column_name = "_action"
+        column_name = 'action'
+        sanitized_column_name = '_action'
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
 
-        resp = table.add_column!(:name => column_name, :type => "number")
-        resp.should == {:name => sanitized_column_name, :type => "double precision", :cartodb_type => "number"}
+        resp = table.add_column!(name: column_name, type: 'number')
+        resp.should == { name: sanitized_column_name, type: 'double precision', cartodb_type: 'number' }
         table.reload
-        table.schema(:cartodb_types => false).should include([sanitized_column_name.to_sym, "double precision"])
+        table.schema(cartodb_types: false).should include([sanitized_column_name.to_sym, 'double precision'])
       end
 
-      it "can have a column with a reserved psql word as its name" do
-        column_name = "where"
-        sanitized_column_name = "_where"
+      it 'can have a column with a reserved psql word as its name' do
+        column_name = 'where'
+        sanitized_column_name = '_where'
 
-        table = create_table(:user_id => @user.id)
+        table = create_table(user_id: @user.id)
 
-        resp = table.add_column!(:name => column_name, :type => "number")
-        resp.should == {:name => sanitized_column_name, :type => "double precision", :cartodb_type => "number"}
+        resp = table.add_column!(name: column_name, type: 'number')
+        resp.should == { name: sanitized_column_name, type: 'double precision', cartodb_type: 'number' }
         table.reload
-        table.schema(:cartodb_types => false).should include([sanitized_column_name.to_sym, "double precision"])
+        table.schema(cartodb_types: false).should include([sanitized_column_name.to_sym, 'double precision'])
       end
 
       it 'nullifies the collumn when converting from boolean to date' do
-        column_name = "new"
-        sanitized_column_name = "_new"
+        column_name = 'new'
+        sanitized_column_name = '_new'
         table = create_table(user_id: @user.id)
 
         table.add_column!(name: column_name, type: 'boolean')
@@ -1039,14 +1037,14 @@ describe Table do
       it 'nullifies the collumn when converting from number to date' do
         table = create_table(user_id: @user.id)
         table.add_column!(name: 'numeric_col', type: 'double precision')
-        table.insert_row!(numeric_col: 12345.67)
+        table.insert_row!(numeric_col: 12_345.67)
         table.modify_column!(name: 'numeric_col', type: 'date')
 
         table.records[:rows][0][:numeric_col].should be_nil
 
         table = create_table(user_id: @user.id)
         table.add_column!(name: 'numeric_col', type: 'double precision')
-        table.insert_row!(numeric_col: 12345)
+        table.insert_row!(numeric_col: 12_345)
         table.modify_column!(name: 'numeric_col', type: 'date')
 
         table.records[:rows][0][:numeric_col].should be_nil
@@ -1063,13 +1061,13 @@ describe Table do
         table.add_column!(name: 'balance', type: 'text')
         table.insert_row!(balance: '123.456,789')
         table.modify_column!(name: 'balance', type: 'double precision')
-        table.records[:rows][0][:balance].should == 123456.789
+        table.records[:rows][0][:balance].should == 123_456.789
 
         table = create_table(user_id: @user.id)
         table.add_column!(name: 'balance', type: 'text')
         table.insert_row!(balance: '9.123.456,789')
         table.modify_column!(name: 'balance', type: 'double precision')
-        table.records[:rows][0][:balance].should == 9123456.789
+        table.records[:rows][0][:balance].should == 9_123_456.789
 
         table = create_table(user_id: @user.id)
         table.add_column!(name: 'balance', type: 'text')
@@ -1081,25 +1079,25 @@ describe Table do
         table.add_column!(name: 'balance', type: 'text')
         table.insert_row!(balance: '123,456.789')
         table.modify_column!(name: 'balance', type: 'double precision')
-        table.records[:rows][0][:balance].should == 123456.789
+        table.records[:rows][0][:balance].should == 123_456.789
 
         table = create_table(user_id: @user.id)
         table.add_column!(name: 'balance', type: 'text')
         table.insert_row!(balance: '9,123,456.789')
         table.modify_column!(name: 'balance', type: 'double precision')
-        table.records[:rows][0][:balance].should == 9123456.789
+        table.records[:rows][0][:balance].should == 9_123_456.789
       end
 
       it 'does not raise error when tables with the same name exist on separate schemas' do
-        @user.in_database.run("CREATE TABLE cdb_importer.repeated_table (id integer)")
+        @user.in_database.run('CREATE TABLE cdb_importer.repeated_table (id integer)')
         expect { create_table(user_id: @user.id, name: 'repeated_table') }.to_not raise_error
       end
 
       it 'correctly returns dates' do
         table = create_table(user_id: @user.id)
-        table.add_column!(name: "without_tz", type: "timestamp without time zone")
-        table.add_column!(name: "with_tz", type: "timestamp with time zone")
-        table.add_column!(name: "date", type: "date ") # Add a space to avoid auto-conversion to timestampz
+        table.add_column!(name: 'without_tz', type: 'timestamp without time zone')
+        table.add_column!(name: 'with_tz', type: 'timestamp with time zone')
+        table.add_column!(name: 'date', type: 'date ') # Add a space to avoid auto-conversion to timestampz
 
         table.insert_row!(
           with_tz: '2016-12-02T10:10:10+01:00',
@@ -1119,33 +1117,32 @@ describe Table do
       end
     end
 
-    context "insert and update rows" do
-
-      it "should be able to insert a new row" do
-        table = create_table(:user_id => @user.id)
+    context 'insert and update rows' do
+      it 'should be able to insert a new row' do
+        table = create_table(user_id: @user.id)
         table.rows_counted.should == 0
-        primary_key = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
+        primary_key = table.insert_row!({ name: String.random(10), description: 'bla bla bla' })
         table.reload
         table.rows_counted.should == 1
-        primary_key.should == table.records(:rows_per_page => 1)[:rows].first[:cartodb_id]
+        primary_key.should == table.records(rows_per_page: 1)[:rows].first[:cartodb_id]
 
         lambda {
           table.insert_row!({})
         }.should_not raise_error(CartoDB::EmptyAttributes)
 
         lambda {
-          table.insert_row!({:non_existing => "bad value"})
+          table.insert_row!({ non_existing: 'bad value' })
         }.should raise_error(CartoDB::InvalidAttributes)
       end
 
-      it "fails with long values" do
+      it 'fails with long values' do
         table = create_table(user_id: @user.id)
         table.add_column!(name: 'text_col', type: 'varchar(3)')
         expect { table.insert_row!(text_col: 'hola') }.to raise_error(Sequel::DatabaseError, /value too long for type/)
       end
 
-      it "updates data_last_modified when changing data" do
-        table = create_table(:user_id => @user.id)
+      it 'updates data_last_modified when changing data' do
+        table = create_table(user_id: @user.id)
 
         table.insert_row!({})
         time1 = table.data_last_modified.to_f
@@ -1157,168 +1154,168 @@ describe Table do
         (time2 > time1).should be_true
       end
 
-      it "should be able to insert a row with a geometry value" do
-        table = new_table(:user_id => @user.id)
+      it 'should be able to insert a row with a geometry value' do
+        table = new_table(user_id: @user.id)
         table.save.reload
 
         lat = -43.941
         lon = 3.429
-        the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
-        pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+        the_geom = %{{"type":"Point","coordinates":[#{lon},#{lat}]}}
+        pk = table.insert_row!({ name: 'First check_in', the_geom: the_geom })
 
         query_result = @user.db_service.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
-        ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
-        ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+        ('%.3f' % query_result[:rows][0][:lon]).should == ('%.3f' % lon)
+        ('%.3f' % query_result[:rows][0][:lat]).should == ('%.3f' % lat)
       end
 
-      it "should update null value to nil when inserting and updating" do
-        table = new_table(:user_id => @user.id)
-        table.force_schema = "valid boolean"
+      it 'should update null value to nil when inserting and updating' do
+        table = new_table(user_id: @user.id)
+        table.force_schema = 'valid boolean'
         table.save.reload
 
-        pk = table.insert_row!({:valid => "null"})
+        pk = table.insert_row!({ valid: 'null' })
         table.record(pk)[:valid].should be_nil
 
-        pk = table.insert_row!({:valid => true})
-        table.update_row!(pk, {:valid => "null"})
+        pk = table.insert_row!({ valid: true })
+        table.update_row!(pk, { valid: 'null' })
         table.record(pk)[:valid].should be_nil
       end
 
-      it "should be able to update a row" do
-        table = create_table(:user_id => @user.id)
+      it 'should be able to update a row' do
+        table = create_table(user_id: @user.id)
 
-        pk = table.insert_row!({:name => String.random(10), :description => ""})
-        table.update_row!(pk, :description => "Description 123")
+        pk = table.insert_row!({ name: String.random(10), description: '' })
+        table.update_row!(pk, description: 'Description 123')
 
-        row = table.records(:rows_per_page => 1, :page => 0)[:rows].first
-        row[:description].should == "Description 123"
+        row = table.records(rows_per_page: 1, page: 0)[:rows].first
+        row[:description].should == 'Description 123'
 
         lambda {
-          table.update_row!(pk, :non_existing => 'ignore it, please', :description => "Description 123")
+          table.update_row!(pk, non_existing: 'ignore it, please', description: 'Description 123')
         }.should raise_error(CartoDB::InvalidAttributes)
       end
 
-      it "should be able to update a row with a geometry value" do
-        table = new_table(:user_id => @user.id)
+      it 'should be able to update a row with a geometry value' do
+        table = new_table(user_id: @user.id)
         table.save.reload
 
         lat = -43.941
         lon = 3.429
-        pk = table.insert_row!({:name => "First check_in"})
+        pk = table.insert_row!({ name: 'First check_in' })
 
-        the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
-        table.update_row!(pk, {:the_geom => the_geom})
+        the_geom = %{{"type":"Point","coordinates":[#{lon},#{lat}]}}
+        table.update_row!(pk, { the_geom: the_geom })
 
         query_result = @user.db_service.run_pg_query("select ST_X(the_geom) as lon, ST_Y(the_geom) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
-        ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
-        ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+        ('%.3f' % query_result[:rows][0][:lon]).should == ('%.3f' % lon)
+        ('%.3f' % query_result[:rows][0][:lat]).should == ('%.3f' % lat)
       end
 
-      it "can insert and update records in a table with a reserved word as its name" do
-        table = create_table(:name => 'where', :user_id => @user.id)
-        pk1 = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
-        pk2 = table.insert_row!({:name => String.random(10), :description => "bla bla bla"})
+      it 'can insert and update records in a table with a reserved word as its name' do
+        table = create_table(name: 'where', user_id: @user.id)
+        pk1 = table.insert_row!({ name: String.random(10), description: 'bla bla bla' })
+        pk2 = table.insert_row!({ name: String.random(10), description: 'bla bla bla' })
 
         table.records[:rows].should have(2).rows
 
-        table.update_row!(pk1, :description => "Description 123")
-        table.records[:rows].first[:description].should be == "Description 123"
+        table.update_row!(pk1, description: 'Description 123')
+        table.records[:rows].first[:description].should be == 'Description 123'
       end
 
-      it "should be able to update data in rows with column names with multiple underscores" do
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :table_name    => 'elecciones2008',
-                                         :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
+      it 'should be able to update data in rows with column names with multiple underscores' do
+        data_import = DataImport.create(user_id: @user.id,
+                                        table_name: 'elecciones2008',
+                                        data_source: Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
         data_import.run_import!
 
         table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
         table.should_not be_nil, "Import failure: #{data_import.log}"
-        update_data = {:upo_nombre_partido=>"PSOEE"}
+        update_data = { upo_nombre_partido: 'PSOEE' }
         id = 5
 
         lambda {
           table.update_row!(id, update_data)
         }.should_not raise_error
 
-        res = table.sequel.where(:cartodb_id => 5).first
-        res[:upo_nombre_partido].should == "PSOEE"
+        res = table.sequel.where(cartodb_id: 5).first
+        res[:upo_nombre_partido].should == 'PSOEE'
       end
 
-      it "should be able to insert data in rows with column names with multiple underscores" do
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
+      it 'should be able to insert data in rows with column names with multiple underscores' do
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
         data_import.run_import!
 
         table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
         table.should_not be_nil, "Import failure: #{data_import.log}"
 
         pk = nil
-        insert_data = {:upo_nombre_partido=>"PSOEE"}
+        insert_data = { upo_nombre_partido: 'PSOEE' }
 
         lambda {
           pk = table.insert_row!(insert_data)
         }.should_not raise_error
 
-        res = table.sequel.where(:cartodb_id => pk).first
-        res[:upo_nombre_partido].should == "PSOEE"
+        res = table.sequel.where(cartodb_id: pk).first
+        res[:upo_nombre_partido].should == 'PSOEE'
       end
 
       # No longer used, now we automatically rename reserved word columns
-      #it "can insert and update records in a table which one of its columns uses a reserved word as its name" do
-        #table = create_table(:name => 'where', :user_id => @user.id)
-        #table.add_column!(:name => 'where', :type => 'string')
+      # it "can insert and update records in a table which one of its columns uses a reserved word as its name" do
+      # table = create_table(:name => 'where', :user_id => @user.id)
+      # table.add_column!(:name => 'where', :type => 'string')
 
-        #pk1 = table.insert_row!({:_where => 'random string'})
+      # pk1 = table.insert_row!({:_where => 'random string'})
 
-        #table.records[:rows].should have(1).rows
-        #table.records[:rows].first[:_where].should be == 'random string'
-      #end
+      # table.records[:rows].should have(1).rows
+      # table.records[:rows].first[:_where].should be == 'random string'
+      # end
     end
 
-    context "preimport tests" do
-      it "rename a table to a name that exists should add a _1 to the new name" do
-        table = new_table :name => 'empty_file', :user_id => @user.id
+    context 'preimport tests' do
+      it 'rename a table to a name that exists should add a _1 to the new name' do
+        table = new_table name: 'empty_file', user_id: @user.id
         table.save.reload
         table.name.should == 'empty_file'
 
-        table2 = new_table :name => 'empty_file', :user_id => @user.id
+        table2 = new_table name: 'empty_file', user_id: @user.id
         table2.save.reload
         table2.name.should == 'empty_file_1'
       end
 
-      it "should escape table names starting with numbers" do
-        table = new_table :user_id => @user.id, :name => '123_table_name'
+      it 'should escape table names starting with numbers' do
+        table = new_table user_id: @user.id, name: '123_table_name'
         table.save.reload
 
-        table.name.should == "table_123_table_name"
+        table.name.should == 'table_123_table_name'
       end
 
-      it "should get a valid name when a table when a name containing the current name exists" do
-        table = create_table :name => 'Table #20', :user_id => @user.id
-        table2 = create_table :name => 'Table #2', :user_id => @user.id
+      it 'should get a valid name when a table when a name containing the current name exists' do
+        table = create_table name: 'Table #20', user_id: @user.id
+        table2 = create_table name: 'Table #2', user_id: @user.id
         table2.reload
         table2.name.should == 'table_2'
 
-        table3 = create_table :name => nil, :user_id => @user.id
-        table4 = create_table :name => nil, :user_id => @user.id
-        table5 = create_table :name => nil, :user_id => @user.id
-        table6 = create_table :name => nil, :user_id => @user.id
+        table3 = create_table name: nil, user_id: @user.id
+        table4 = create_table name: nil, user_id: @user.id
+        table5 = create_table name: nil, user_id: @user.id
+        table6 = create_table name: nil, user_id: @user.id
       end
 
-      it "should allow creating multiple tables with the same name by adding a number at the and and incrementing it" do
-        table = create_table :name => 'Wadus The Table', :user_id => @user.id
-        table.name.should == "wadus_the_table"
+      it 'should allow creating multiple tables with the same name by adding a number at the and and incrementing it' do
+        table = create_table name: 'Wadus The Table', user_id: @user.id
+        table.name.should == 'wadus_the_table'
 
         # Renaming starts at 1
         1.upto(25) do |n|
-          table = create_table :name => 'Wadus The Table', :user_id => @user.id
+          table = create_table name: 'Wadus The Table', user_id: @user.id
           table.should_not be_nil
           table.name.should == "wadus_the_table_#{n}"
         end
       end
     end
 
-    context "post import processing tests" do
+    context 'post import processing tests' do
       before(:all) do
         @old_user_timeout = @user.user_timeout
         @old_user_db_timeout = @user.database_timeout
@@ -1330,22 +1327,22 @@ describe Table do
         @user.save
       end
 
-      it "should optimize the table" do
-        fixture = fake_data_path("SHP1.zip")
+      it 'should optimize the table' do
+        fixture = fake_data_path('SHP1.zip')
         Table.any_instance.expects(:optimize).once
         data_import = create_import(@user, fixture)
       end
 
-      it "should assign table_id" do
-        fixture = fake_data_path("SHP1.zip")
+      it 'should assign table_id' do
+        fixture = fake_data_path('SHP1.zip')
         data_import = create_import(@user, fixture)
         data_import.table_id.should_not be_nil
       end
 
-      it "should add a the_geom column after importing a CSV" do
+      it 'should add a the_geom column after importing a CSV' do
         delete_user_data @user
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :data_source   => fake_data_path('twitters.csv') )
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('twitters.csv'))
         data_import.run_import!
 
         table = Table.new(user_table: UserTable[data_import.table_id])
@@ -1353,11 +1350,12 @@ describe Table do
         table.name.should match(/^twitters/)
         table.rows_counted.should == 7
 
-        table.schema.should include([:the_geom, "geometry", "geometry", "geometry"])
+        table.schema.should include([:the_geom, 'geometry', 'geometry', 'geometry'])
       end
 
-      it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a PG::UndefinedColumn" do
+      it 'should not fail when the analyze is executed in update_table_geom_pg_stats and raises a PG::UndefinedColumn' do
         next unless @user.in_database.table_exists?('raster_overviews')
+
         delete_user_data @user
         data_import = DataImport.create(user_id: @user.id,
                                         data_source: fake_data_path('import_raster.tif.zip'))
@@ -1370,14 +1368,14 @@ describe Table do
         table.update_table_geom_pg_stats
       end
 
-      it "should not drop a table that exists when upload fails" do
+      it 'should not drop a table that exists when upload fails' do
         delete_user_data @user
-        table = new_table :name => 'empty_file', :user_id => @user.id
+        table = new_table name: 'empty_file', user_id: @user.id
         table.should_not be_nil
         table.save.reload
         table.name.should == 'empty_file'
 
-        fixture = fake_data_path("empty_file.csv")
+        fixture = fake_data_path('empty_file.csv')
         data_import = create_import(@user, fixture, table.name)
 
         @user.in_database do |user_database|
@@ -1385,14 +1383,14 @@ describe Table do
         end
       end
 
-      it "should not drop a table that exists when upload does not fail" do
+      it 'should not drop a table that exists when upload does not fail' do
         delete_user_data @user
-        table = new_table :name => 'empty_file', :user_id => @user.id
+        table = new_table name: 'empty_file', user_id: @user.id
         table.save.reload
         table.name.should == 'empty_file'
 
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :data_source   => fake_data_path('csv_no_quotes.csv') )
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('csv_no_quotes.csv'))
         data_import.run_import!
 
         table2 = Table.new(user_table: UserTable[data_import.table_id])
@@ -1405,46 +1403,46 @@ describe Table do
         end
       end
 
-      it "should raise an error when creating a column with reserved name" do
+      it 'should raise an error when creating a column with reserved name' do
         table = create_table(user_id: @user.id)
         lambda {
-          table.add_column!(:name => "xmin", :type => "number")
+          table.add_column!(name: 'xmin', type: 'number')
         }.should raise_error(CartoDB::InvalidColumnName)
       end
 
-      it "should raise an error when renaming a column with reserved name" do
-        table = create_table(:user_id => @user.id)
+      it 'should raise an error when renaming a column with reserved name' do
+        table = create_table(user_id: @user.id)
         lambda {
           table.rename_column('name', 'xmin')
         }.should raise_error(CartoDB::InvalidColumnName)
       end
 
-      it "should not raise an error when renaming a column with reserved name" do
-        table = create_table(:user_id => @user.id)
-        resp = table.modify_column!(:name => "name", :new_name => "xmin")
-        resp.should == {:name => "_xmin", :type => "text", :cartodb_type => "string"}
+      it 'should not raise an error when renaming a column with reserved name' do
+        table = create_table(user_id: @user.id)
+        resp = table.modify_column!(name: 'name', new_name: 'xmin')
+        resp.should == { name: '_xmin', type: 'text', cartodb_type: 'string' }
       end
 
-      it "should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id" do
-        fixture       = fake_data_path("gadm4_export.csv")
+      it 'should add a cartodb_id serial column as primary key when importing a file without a column with name cartodb_id' do
+        fixture       = fake_data_path('gadm4_export.csv')
         data_import   = create_import(@user, fixture)
         table         = Table.new(user_table: UserTable[data_import.table_id])
         table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
-        table_schema  = @user.in_database.schema(table.name)
+        table_schema = @user.in_database.schema(table.name)
 
-        cartodb_id_schema = table_schema.detect {|s| s[0].to_s == "cartodb_id"}
+        cartodb_id_schema = table_schema.detect { |s| s[0].to_s == 'cartodb_id'}
         cartodb_id_schema.should be_present
         cartodb_id_schema = cartodb_id_schema[1]
-        cartodb_id_schema[:db_type].should == "integer"
+        cartodb_id_schema[:db_type].should == 'integer'
         cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
         cartodb_id_schema[:primary_key].should == true
         cartodb_id_schema[:allow_null].should == false
       end
 
-      it "should return geometry types when guessing is enabled" do
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :data_source   => fake_data_path('gadm4_export.csv'),
-                                         :type_guessing  => true )
+      it 'should return geometry types when guessing is enabled' do
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('gadm4_export.csv'),
+                                        type_guessing: true)
         data_import.run_import!
 
         table = Table.new(user_table: UserTable[data_import.table_id])
@@ -1453,24 +1451,24 @@ describe Table do
         table.geometry_types.should == ['ST_Point']
 
         # Now remove the_geom and should not break
-        @user.in_database.run(%Q{
+        @user.in_database.run(%{
                                   ALTER TABLE #{table.name} DROP COLUMN the_geom CASCADE;
                                 })
         # Schema gets cached, force reload
         table.reload
-        table.schema(reload:true)
+        table.schema(reload: true)
 
         # This is no longer true: it should be considered a stat or guessing
         # for the UI to plot icons on table listings and similar stuff and will
         # not be invalidated from the editor.
-        #table.geometry_types.should == []
+        # table.geometry_types.should == []
 
         table.destroy
       end
 
-      it "returns null values at the end when ordering desc" do
+      it 'returns null values at the end when ordering desc' do
         table = create_table(user_id: @user.id)
-        resp = table.add_column!(name: "numbercolumn", type: "number")
+        resp = table.add_column!(name: 'numbercolumn', type: 'number')
         table.insert_row!(numbercolumn: 1)
         table.insert_row!(numbercolumn: nil)
         table.insert_row!(numbercolumn: 2)
@@ -1479,90 +1477,90 @@ describe Table do
         rows.first[:numbercolumn].should eq 2
       end
 
-      it "should normalize strings if there is a non-convertible entry when converting string to number" do
-        fixture = fake_data_path("short_clubbing.csv")
+      it 'should normalize strings if there is a non-convertible entry when converting string to number' do
+        fixture = fake_data_path('short_clubbing.csv')
         data_import = create_import(@user, fixture)
         table       = Table.new(user_table: UserTable[data_import.table_id])
 
-        table.modify_column! :name=> "club_id", :type=>"number"
+        table.modify_column! name: 'club_id', type: 'number'
 
-        table.sequel.where(:cartodb_id => '1').first[:club_id].should == 709
-        table.sequel.where(:cartodb_id => '2').first[:club_id].should == 892
-        table.sequel.where(:cartodb_id => '3').first[:club_id].should == 992
-        table.sequel.where(:cartodb_id => '4').first[:club_id].should == nil
-        table.sequel.where(:cartodb_id => '5').first[:club_id].should == 941
+        table.sequel.where(cartodb_id: '1').first[:club_id].should == 709
+        table.sequel.where(cartodb_id: '2').first[:club_id].should == 892
+        table.sequel.where(cartodb_id: '3').first[:club_id].should == 992
+        table.sequel.where(cartodb_id: '4').first[:club_id].should.nil?
+        table.sequel.where(cartodb_id: '5').first[:club_id].should == 941
       end
 
-      it "should normalize string if there is a non-convertible entry when converting string to boolean" do
-        fixture = fake_data_path("column_string_to_boolean.csv")
+      it 'should normalize string if there is a non-convertible entry when converting string to boolean' do
+        fixture = fake_data_path('column_string_to_boolean.csv')
         data_import = create_import(@user, fixture)
         table       = Table.new(user_table: UserTable[data_import.table_id])
 
         # configure nil column
-        table.sequel.where(:test_id => '4').update(:f1 => '0')
+        table.sequel.where(test_id: '4').update(f1: '0')
 
         # configure nil column
-        table.sequel.where(:test_id => '11').update(:f1 => nil)
+        table.sequel.where(test_id: '11').update(f1: nil)
 
         # configure blank column
-        table.sequel.insert(:test_id => '12', :f1 => "")
+        table.sequel.insert(test_id: '12', f1: '')
 
         # update datatype
-        table.modify_column! :type=>"boolean", :name=>"f1", :new_name=>nil
+        table.modify_column! type: 'boolean', name: 'f1', new_name: nil
 
         # test
-        table.sequel.where(:cartodb_id => '1').first[:f1].should == true
-        table.sequel.select(:f1).where(:cartodb_id => '2').first[:f1].should == true
-        table.sequel.select(:f1).where(:cartodb_id => '3').first[:f1].should == true
-        table.sequel.select(:f1).where(:cartodb_id => '4').first[:f1].should == false
-        table.sequel.select(:f1).where(:cartodb_id => '5').first[:f1].should == true
-        table.sequel.select(:f1).where(:cartodb_id => '6').first[:f1].should == true
-        table.sequel.select(:f1).where(:cartodb_id => '7').first[:f1].should == true
-        table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == false
-        table.sequel.select(:f1).where(:test_id => '9').first[:f1].should == false
-        table.sequel.select(:f1).where(:test_id => '10').first[:f1].should == false
-        table.sequel.select(:f1).where(:test_id => '11').first[:f1].should == nil
-        table.sequel.select(:f1).where(:test_id => '12').first[:f1].should == nil
+        table.sequel.where(cartodb_id: '1').first[:f1].should == true
+        table.sequel.select(:f1).where(cartodb_id: '2').first[:f1].should == true
+        table.sequel.select(:f1).where(cartodb_id: '3').first[:f1].should == true
+        table.sequel.select(:f1).where(cartodb_id: '4').first[:f1].should == false
+        table.sequel.select(:f1).where(cartodb_id: '5').first[:f1].should == true
+        table.sequel.select(:f1).where(cartodb_id: '6').first[:f1].should == true
+        table.sequel.select(:f1).where(cartodb_id: '7').first[:f1].should == true
+        table.sequel.select(:f1).where(test_id: '8').first[:f1].should == false
+        table.sequel.select(:f1).where(test_id: '9').first[:f1].should == false
+        table.sequel.select(:f1).where(test_id: '10').first[:f1].should == false
+        table.sequel.select(:f1).where(test_id: '11').first[:f1].should.nil?
+        table.sequel.select(:f1).where(test_id: '12').first[:f1].should.nil?
       end
 
-      it "should normalize boolean if there is a non-convertible entry when converting boolean to string" do
-        fixture = fake_data_path("column_string_to_boolean.csv")
+      it 'should normalize boolean if there is a non-convertible entry when converting boolean to string' do
+        fixture = fake_data_path('column_string_to_boolean.csv')
         data_import = create_import(@user, fixture)
         table       = Table.new(user_table: UserTable[data_import.table_id])
-        table.modify_column! :name=>"f1", :type=>"boolean"
-        table.modify_column! :name=>"f1", :type=>"string"
+        table.modify_column! name: 'f1', type: 'boolean'
+        table.modify_column! name: 'f1', type: 'string'
 
-        table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 'true'
-        table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == 'false'
+        table.sequel.select(:f1).where(test_id: '1').first[:f1].should == 'true'
+        table.sequel.select(:f1).where(test_id: '8').first[:f1].should == 'false'
       end
 
-      it "should normalize boolean if there is a non-convertible entry when converting boolean to number" do
-        fixture = fake_data_path("column_string_to_boolean.csv")
+      it 'should normalize boolean if there is a non-convertible entry when converting boolean to number' do
+        fixture = fake_data_path('column_string_to_boolean.csv')
         data_import = create_import(@user, fixture)
         table       = Table.new(user_table: UserTable[data_import.table_id])
-        table.modify_column! :name=>"f1", :type=>"boolean"
-        table.modify_column! :name=>"f1", :type=>"number"
+        table.modify_column! name: 'f1', type: 'boolean'
+        table.modify_column! name: 'f1', type: 'number'
 
-        table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == 1
-        table.sequel.select(:f1).where(:test_id => '8').first[:f1].should == 0
+        table.sequel.select(:f1).where(test_id: '1').first[:f1].should == 1
+        table.sequel.select(:f1).where(test_id: '8').first[:f1].should == 0
       end
 
       it "should normalize number if there is a non-convertible entry when
       converting number to boolean" do
-        fixture = fake_data_path("column_number_to_boolean.csv")
+        fixture = fake_data_path('column_number_to_boolean.csv')
         data_import = create_import(@user, fixture)
         table       = Table.new(user_table: UserTable[data_import.table_id])
 
-        table.modify_column! :name=>"f1", :type=>"number"
-        table.modify_column! :name=>"f1", :type=>"boolean"
+        table.modify_column! name: 'f1', type: 'number'
+        table.modify_column! name: 'f1', type: 'boolean'
 
-        table.sequel.select(:f1).where(:test_id => '1').first[:f1].should == true
-        table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == false
-        table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == true
-        table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == true
+        table.sequel.select(:f1).where(test_id: '1').first[:f1].should == true
+        table.sequel.select(:f1).where(test_id: '2').first[:f1].should == false
+        table.sequel.select(:f1).where(test_id: '3').first[:f1].should == true
+        table.sequel.select(:f1).where(test_id: '4').first[:f1].should == true
       end
 
-      it "should not fail when the analyze is executed in update_table_pg_stats and raises a timeout" do
+      it 'should not fail when the analyze is executed in update_table_pg_stats and raises a timeout' do
         delete_user_data @user
         old_user_timeout = @user.user_timeout
         old_user_db_timeout = @user.database_timeout
@@ -1583,7 +1581,7 @@ describe Table do
         table.rows_counted.should == 7
       end
 
-      it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a timeout" do
+      it 'should not fail when the analyze is executed in update_table_geom_pg_stats and raises a timeout' do
         delete_user_data @user
         old_user_timeout = @user.user_timeout
         old_user_db_timeout = @user.database_timeout
@@ -1607,161 +1605,157 @@ describe Table do
       end
     end
 
-    context "geoms and projections" do
-      it "should set valid geometry types" do
-        table = new_table :user_id => @user.id
-        table.force_schema = "address varchar, the_geom geometry"
-        table.the_geom_type = "line"
+    context 'geoms and projections' do
+      it 'should set valid geometry types' do
+        table = new_table user_id: @user.id
+        table.force_schema = 'address varchar, the_geom geometry'
+        table.the_geom_type = 'line'
         table.save
         table.reload
-        table.the_geom_type.should == "multilinestring"
+        table.the_geom_type.should == 'multilinestring'
       end
 
-      it "should create a the_geom_webmercator column with the_geom projected to 3785" do
-        table = new_table :user_id => @user.id
+      it 'should create a the_geom_webmercator column with the_geom projected to 3785' do
+        table = new_table user_id: @user.id
         table.save.reload
 
         lat = -43.941
         lon = 3.429
-        pk = table.insert_row!({:name => "First check_in"})
+        pk = table.insert_row!({ name: 'First check_in' })
 
-        the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
-        table.update_row!(pk, {:the_geom => the_geom})
+        the_geom = %{{"type":"Point","coordinates":[#{lon},#{lat}]}}
+        table.update_row!(pk, { the_geom: the_geom })
 
         query_result = @user.db_service.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
-        ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
-        ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+        ('%.3f' % query_result[:rows][0][:lon]).should == ('%.3f' % lon)
+        ('%.3f' % query_result[:rows][0][:lat]).should == ('%.3f' % lat)
       end
 
-      it "should create a the_geom_webmercator column with the_geom projected to 3785 even when schema is forced" do
-        table = new_table :user_id => @user.id
-        table.force_schema = "name varchar, the_geom geometry"
+      it 'should create a the_geom_webmercator column with the_geom projected to 3785 even when schema is forced' do
+        table = new_table user_id: @user.id
+        table.force_schema = 'name varchar, the_geom geometry'
         table.save.reload
 
         lat = -43.941
         lon = 3.429
-        pk = table.insert_row!({:name => "First check_in"})
+        pk = table.insert_row!({ name: 'First check_in' })
 
-        the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
-        table.update_row!(pk, {:the_geom => the_geom})
+        the_geom = %{{"type":"Point","coordinates":[#{lon},#{lat}]}}
+        table.update_row!(pk, { the_geom: the_geom })
 
         query_result = @user.db_service.run_pg_query("select ST_X(ST_TRANSFORM(the_geom_webmercator,4326)) as lon, ST_Y(ST_TRANSFORM(the_geom_webmercator,4326)) as lat from #{table.name} where cartodb_id = #{pk} limit 1")
-        ("%.3f" % query_result[:rows][0][:lon]).should == ("%.3f" % lon)
-        ("%.3f" % query_result[:rows][0][:lat]).should == ("%.3f" % lat)
+        ('%.3f' % query_result[:rows][0][:lon]).should == ('%.3f' % lon)
+        ('%.3f' % query_result[:rows][0][:lat]).should == ('%.3f' % lat)
       end
 
-      it "should be able to set a the_geom column from numeric latitude column and a longitude column" do
+      it 'should be able to set a the_geom column from numeric latitude column and a longitude column' do
         table = Table.new
         table.user_id = @user.id
         table.name = 'Madrid Bars'
-        table.force_schema = "name varchar, address varchar, latitude float, longitude float"
+        table.force_schema = 'name varchar, address varchar, latitude float, longitude float'
         table.save
-        table.insert_row!({:name => "Hawai",
-                           :address => "Calle de Pérez Galdós 9, Madrid, Spain",
-                           :latitude => 40.423012,
-                           :longitude => -3.699732})
+        table.insert_row!({ name: 'Hawai',
+                            address: 'Calle de Pérez Galdós 9, Madrid, Spain',
+                            latitude: 40.423012,
+                            longitude: -3.699732 })
 
-        table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+        table.georeference_from!(latitude_column: :latitude, longitude_column: :longitude)
 
         # Check if the schema stored in memory is fresh and contains latitude and longitude still
         check_schema(table, [
-          [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-          [:the_geom, "geometry", "geometry", "point"],
-          [:latitude, "number"], [:longitude, "number"]
-        ], :cartodb_types => true)
+                       [:cartodb_id, 'number'], [:name, 'string'], [:address, 'string'],
+                       [:the_geom, 'geometry', 'geometry', 'point'],
+                       [:latitude, 'number'], [:longitude, 'number']
+                     ], cartodb_types: true)
 
         # confirm coords are correct
-        res = table.sequel.select{[st_x(the_geom),st_y(the_geom)]}.first
-        res.should == {:st_x=>-3.699732, :st_y=>40.423012}
+        res = table.sequel.select {[st_x(the_geom), st_y(the_geom)]}.first
+        res.should == { st_x: -3.699732, st_y: 40.423012 }
       end
 
-      it "should be able to set a the_geom column from dirty string latitude and longitude columns" do
+      it 'should be able to set a the_geom column from dirty string latitude and longitude columns' do
         table = Table.new
         table.user_id = @user.id
         table.name = 'Madrid Bars'
-        table.force_schema = "name varchar, address varchar, latitude varchar, longitude varchar"
+        table.force_schema = 'name varchar, address varchar, latitude varchar, longitude varchar'
         table.save
 
-        table.insert_row!({:name => "Hawai",
-                           :address => "Calle de Pérez Galdós 9, Madrid, Spain",
-                           :latitude => "40.423012",
-                           :longitude => " -3.699732 "})
+        table.insert_row!({ name: 'Hawai',
+                            address: 'Calle de Pérez Galdós 9, Madrid, Spain',
+                            latitude: '40.423012',
+                            longitude: ' -3.699732 ' })
 
-        table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+        table.georeference_from!(latitude_column: :latitude, longitude_column: :longitude)
 
         # Check if the schema stored in memory is fresh and contains latitude and longitude still
         check_schema(table, [
-          [:cartodb_id, "number"], [:name, "string"], [:address, "string"],
-          [:the_geom, "geometry", "geometry", "point"],
-          [:latitude, "string"], [:longitude, "string"]
-        ], :cartodb_types => true)
+                       [:cartodb_id, 'number'], [:name, 'string'], [:address, 'string'],
+                       [:the_geom, 'geometry', 'geometry', 'point'],
+                       [:latitude, 'string'], [:longitude, 'string']
+                     ], cartodb_types: true)
 
         # confirm coords are correct
-        res = table.sequel.select{[st_x(the_geom),st_y(the_geom)]}.first
-        res.should == {:st_x=>-3.699732, :st_y=>40.423012}
+        res = table.sequel.select {[st_x(the_geom), st_y(the_geom)]}.first
+        res.should == { st_x: -3.699732, st_y: 40.423012 }
       end
 
-      context "geojson tests" do
-        it "should return a geojson for the_geom if it is a point" do
-          table = new_table :user_id => @user.id
-          table.the_geom_type = "point"
+      context 'geojson tests' do
+        it 'should return a geojson for the_geom if it is a point' do
+          table = new_table user_id: @user.id
+          table.the_geom_type = 'point'
           table.save.reload
 
           lat = -43.941
           lon = 3.429
-          the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
-          pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+          the_geom = %{{"type":"Point","coordinates":[#{lon},#{lat}]}}
+          pk = table.insert_row!({ name: 'First check_in', the_geom: the_geom })
 
+          # update
+          the_geom = %{{"type":"Point","coordinates":[0,0]}}
+          table.send :update_the_geom!, { the_geom: the_geom }, 1
 
-
-          #update
-          the_geom = %Q{{"type":"Point","coordinates":[0,0]}}
-          table.send :update_the_geom!, { :the_geom => the_geom }, 1
-
-          records = table.records(:page => 0, :rows_per_page => 1)
-          records[:rows][0][:the_geom].should == "{\"type\":\"Point\",\"coordinates\":[0,0]}"
+          records = table.records(page: 0, rows_per_page: 1)
+          records[:rows][0][:the_geom].should == '{"type":"Point","coordinates":[0,0]}'
         end
 
-        it "should raise an error when the geojson provided is invalid" do
-          table = new_table :user_id => @user.id
+        it 'should raise an error when the geojson provided is invalid' do
+          table = new_table user_id: @user.id
           table.save.reload
 
           lat = -43.941
           lon = 3.429
-          the_geom = %Q{{"type":""""Point","coordinates":[#{lon},#{lat}]I}}
+          the_geom = %{{"type":""""Point","coordinates":[#{lon},#{lat}]I}}
           lambda {
-            table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+            table.insert_row!({ name: 'First check_in', the_geom: the_geom })
           }.should raise_error(CartoDB::InvalidGeoJSONFormat)
         end
 
-        it "should return new geojson even if geojson provided had other projection" do
-          table = new_table :user_id => @user.id
-          table.the_geom_type = "point"
+        it 'should return new geojson even if geojson provided had other projection' do
+          table = new_table user_id: @user.id
+          table.the_geom_type = 'point'
           table.save.reload
 
           lat = -43.941
           lon = 3.429
-          the_geom = %Q{{"type":"Point","coordinates":[#{lon},#{lat}]}}
-          pk = table.insert_row!({:name => "First check_in", :the_geom => the_geom})
+          the_geom = %{{"type":"Point","coordinates":[#{lon},#{lat}]}}
+          pk = table.insert_row!({ name: 'First check_in', the_geom: the_geom })
 
+          # update
+          the_geom = %{{"type":"Point","coordinates":[0,0], "crs":{"type":"name","properties":{"name":"EPSG:232323"}} }}
+          table.send :update_the_geom!, { the_geom: the_geom }, 1
 
-          #update
-          the_geom = %Q{{"type":"Point","coordinates":[0,0], "crs":{"type":"name","properties":{"name":"EPSG:232323"}} }}
-          table.send :update_the_geom!, { :the_geom => the_geom }, 1
-
-          records = table.records(:page => 0, :rows_per_page => 1)
-          records[:rows][0][:the_geom].should == "{\"type\":\"Point\",\"coordinates\":[0,0]}"
+          records = table.records(page: 0, rows_per_page: 1)
+          records[:rows][0][:the_geom].should == '{"type":"Point","coordinates":[0,0]}'
         end
-
       end
     end
 
-    context "migrate existing postgresql tables into cartodb" do
-      it "create table via SQL statement and then migrate table into CartoDB" do
-        table = new_table :name => nil, :user_id => @user.id
-        table.migrate_existing_table = "exttable"
+    context 'migrate existing postgresql tables into cartodb' do
+      it 'create table via SQL statement and then migrate table into CartoDB' do
+        table = new_table name: nil, user_id: @user.id
+        table.migrate_existing_table = 'exttable'
 
-        @user.db_service.run_pg_query("CREATE TABLE exttable (go VARCHAR, ttoo INT, bed VARCHAR)")
+        @user.db_service.run_pg_query('CREATE TABLE exttable (go VARCHAR, ttoo INT, bed VARCHAR)')
         @user.db_service.run_pg_query("INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 1, 'p');
                             INSERT INTO exttable (go, ttoo, bed) VALUES ( 'c', 2, 'p')")
         table.save
@@ -1769,12 +1763,12 @@ describe Table do
         table.rows_counted.should == 2
       end
 
-      it "create and migrate a table containing a the_geom and cartodb_id" do
+      it 'create and migrate a table containing a the_geom and cartodb_id' do
         delete_user_data @user
-        table = new_table :name => nil, :user_id => @user.id
-        table.migrate_existing_table = "exttable"
+        table = new_table name: nil, user_id: @user.id
+        table.migrate_existing_table = 'exttable'
 
-        @user.db_service.run_pg_query("CREATE TABLE exttable (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)")
+        @user.db_service.run_pg_query('CREATE TABLE exttable (the_geom VARCHAR, cartodb_id INT, bed VARCHAR)')
         @user.db_service.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 1, 'p');
                            INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( 'c', 2, 'p')")
         table.save
@@ -1783,27 +1777,27 @@ describe Table do
       end
     end
 
-    context "imports" do
-      it "file twitters.csv" do
-        fixture = fake_data_path("twitters.csv")
+    context 'imports' do
+      it 'file twitters.csv' do
+        fixture = fake_data_path('twitters.csv')
         data_import = create_import(@user, fixture)
 
         data_import.table_name.should match(/^twitters/)
         Table.new(user_table: UserTable[data_import.table_id]).rows_counted.should == 7
       end
 
-      it "file SHP1.zip" do
-        fixture = fake_data_path("SHP1.zip")
+      it 'file SHP1.zip' do
+        fixture = fake_data_path('SHP1.zip')
         data_import = create_import(@user, fixture)
 
-        data_import.table_name.should == "esp_adm1"
+        data_import.table_name.should == 'esp_adm1'
         Table.new(user_table: UserTable[data_import.table_id]).rows_counted.should == 18
       end
     end
 
-    context "retrieving tables from ids" do
-      it "should be able to find a table by name or by identifier" do
-        table = new_table :user_id => @user.id
+    context 'retrieving tables from ids' do
+      it 'should be able to find a table by name or by identifier' do
+        table = new_table user_id: @user.id
         table.name = 'awesome name'
         table.save.reload
 
@@ -1919,7 +1913,7 @@ describe Table do
         user_table.stubs(:user).returns(user_mock)
         user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PUBLIC
       end
-    end #validation_for_link_privacy
+    end # validation_for_link_privacy
 
     describe '#the_geom_conversions' do
       it 'tests the_geom conversions and expected results' do
@@ -1934,60 +1928,60 @@ describe Table do
         end
 
         # Empty table/default schema (no conversion)
-        table = new_table(:name => 'one', :user_id => @user.id)
+        table = new_table(name: 'one', user_id: @user.id)
         table.save
         check_schema(table, [
-            [:cartodb_id, 'integer'],
-            [:description, 'text'], [:name, 'text'],
-            [:the_geom, 'geometry', 'geometry', 'geometry']
-        ])
+                       [:cartodb_id, 'integer'],
+                       [:description, 'text'], [:name, 'text'],
+                       [:the_geom, 'geometry', 'geometry', 'geometry']
+                     ])
 
         # latlong projection
         check_query_geometry('SELECT CDB_LatLng(0,0) AS the_geom', [
-            [:cartodb_id, 'bigint'],
-            [:the_geom, 'geometry', 'geometry', 'point']
-        ])
+                               [:cartodb_id, 'bigint'],
+                               [:the_geom, 'geometry', 'geometry', 'point']
+                             ])
 
         # single multipoint, without srid
         check_query_geometry('SELECT ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)) AS the_geom;', [
-            [:cartodb_id, 'bigint'],
-            [:the_geom, 'geometry', 'geometry', 'point'],
-        ])
+                               [:cartodb_id, 'bigint'],
+                               [:the_geom, 'geometry', 'geometry', 'point']
+                             ])
 
         # same as above (single multipoint), but with a SRID=4326 (latlong)
         check_query_geometry('SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom', [
-            [:cartodb_id, 'bigint'],
-            [:the_geom, 'geometry', 'geometry', 'point']
-        ])
+                               [:cartodb_id, 'bigint'],
+                               [:the_geom, 'geometry', 'geometry', 'point']
+                             ])
 
         # single polygon
         check_query_geometry('SELECT ST_SetSRID(ST_Buffer(ST_MakePoint(0,0),10), 4326) AS the_geom', [
-            [:cartodb_id, 'bigint'],
-            [:the_geom, 'geometry', 'geometry', 'multipolygon']
-        ])
+                               [:cartodb_id, 'bigint'],
+                               [:the_geom, 'geometry', 'geometry', 'multipolygon']
+                             ])
 
         # single line
         check_query_geometry('SELECT ST_SetSRID(ST_Boundary(ST_Buffer(ST_MakePoint(0,0),10,1)), 4326) AS the_geom', [
-            [:cartodb_id, 'bigint'],
-            [:the_geom, 'geometry', 'geometry', 'multilinestring']
-        ])
+                               [:cartodb_id, 'bigint'],
+                               [:the_geom, 'geometry', 'geometry', 'multilinestring']
+                             ])
 
         # field named "the_geom" being _not_ of type geometry
         check_query_geometry("SELECT 'wadus' AS the_geom;", [
-            [:cartodb_id, 'bigint'],
-            [:the_geom, 'geometry', 'geometry', 'geometry'],
-            [:the_geom_str, 'text']
-        ])
+                               [:cartodb_id, 'bigint'],
+                               [:the_geom, 'geometry', 'geometry', 'geometry'],
+                               [:the_geom_str, 'text']
+                             ])
 
         # geometrycollection (concrete type) Unsupported
-        table = new_table(:name => nil, :user_id => @user.id)
+        table = new_table(name: nil, user_id: @user.id)
         table.migrate_existing_table = 'eight'
         @user.db_service.run_pg_query('
           CREATE TABLE eight AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0), ST_Buffer(ST_MakePoint(10,0),1)), 4326) AS the_geom
         ')
-        expect {
+        expect do
           table.save
-        }.to raise_exception
+        end.to raise_exception
       end
     end
 
@@ -2003,12 +1997,12 @@ describe Table do
         description_1 = 'blabla'
         description_2 = 'blablabla'
 
-        table = new_table :name => nil, :user_id => @user.id
+        table = new_table name: nil, user_id: @user.id
         table.migrate_existing_table = 'only_ogc_fid'
-        @user.db_service.run_pg_query(%Q{
+        @user.db_service.run_pg_query(%{
           CREATE TABLE #{table.migrate_existing_table} (#{ogc_fid_field} INT, description VARCHAR)
         })
-        @user.db_service.run_pg_query(%Q{
+        @user.db_service.run_pg_query(%{
           INSERT INTO #{table.migrate_existing_table} (#{ogc_fid_field}, description)
           VALUES  (#{imported_id_1}, '#{description_1}'),
                   (#{imported_id_2}, '#{description_2}')
@@ -2016,9 +2010,9 @@ describe Table do
         table.save
 
         check_schema(table, [
-            [:cartodb_id, 'integer'],
-            [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
-        ])
+                       [:cartodb_id, 'integer'],
+                       [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
+                     ])
 
         rows = table.records
         rows[:rows][0][:cartodb_id].should eq imported_id_1
@@ -2026,13 +2020,12 @@ describe Table do
         rows[:rows][0][:description].should eq description_1
         rows[:rows][1][:description].should eq description_2
 
-
-        table = new_table :name => nil, :user_id => @user.id
+        table = new_table name: nil, user_id: @user.id
         table.migrate_existing_table = 'only_gid'
-        @user.db_service.run_pg_query(%Q{
+        @user.db_service.run_pg_query(%{
           CREATE TABLE #{table.migrate_existing_table} (#{gid_field} INT, description VARCHAR)
         })
-        @user.db_service.run_pg_query(%Q{
+        @user.db_service.run_pg_query(%{
           INSERT INTO #{table.migrate_existing_table} (#{gid_field}, description)
           VALUES  (#{imported_id_1}, '#{description_1}'),
                   (#{imported_id_2}, '#{description_2}')
@@ -2040,9 +2033,9 @@ describe Table do
         table.save
 
         check_schema(table, [
-            [:cartodb_id, 'integer'],
-            [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
-        ])
+                       [:cartodb_id, 'integer'],
+                       [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
+                     ])
 
         rows = table.records
         rows[:rows][0][:cartodb_id].should eq imported_id_1
@@ -2050,13 +2043,12 @@ describe Table do
         rows[:rows][0][:description].should eq description_1
         rows[:rows][1][:description].should eq description_2
 
-
-        table = new_table :name => nil, :user_id => @user.id
+        table = new_table name: nil, user_id: @user.id
         table.migrate_existing_table = 'cartodb_id_and_ogc_fid'
-        @user.db_service.run_pg_query(%Q{
+        @user.db_service.run_pg_query(%{
           CREATE TABLE #{table.migrate_existing_table} (cartodb_id INT, #{ogc_fid_field} INT, description VARCHAR)
         })
-        @user.db_service.run_pg_query(%Q{
+        @user.db_service.run_pg_query(%{
           INSERT INTO #{table.migrate_existing_table} (cartodb_id, #{ogc_fid_field}, description)
           VALUES  (#{cartodb_id_1}, #{imported_id_1}, '#{description_1}'),
                   (#{cartodb_id_2}, #{imported_id_2}, '#{description_2}')
@@ -2064,9 +2056,9 @@ describe Table do
         table.save
 
         check_schema(table, [
-            [:cartodb_id, 'integer'],
-            [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
-        ])
+                       [:cartodb_id, 'integer'],
+                       [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
+                     ])
 
         rows = table.records
         rows[:rows][0][:cartodb_id].should eq cartodb_id_1
@@ -2074,13 +2066,12 @@ describe Table do
         rows[:rows][0][:description].should eq description_1
         rows[:rows][1][:description].should eq description_2
 
-
-        table = new_table :name => nil, :user_id => @user.id
+        table = new_table name: nil, user_id: @user.id
         table.migrate_existing_table = 'cartodb_id_and_gid'
-        @user.db_service.run_pg_query(%Q{
+        @user.db_service.run_pg_query(%{
           CREATE TABLE #{table.migrate_existing_table} (cartodb_id INT, #{gid_field} INT, description VARCHAR)
         })
-        @user.db_service.run_pg_query(%Q{
+        @user.db_service.run_pg_query(%{
           INSERT INTO #{table.migrate_existing_table} (cartodb_id, #{gid_field}, description)
           VALUES  (#{cartodb_id_1}, #{imported_id_1}, '#{description_1}'),
                   (#{cartodb_id_2}, #{imported_id_2}, '#{description_2}')
@@ -2088,9 +2079,9 @@ describe Table do
         table.save
 
         check_schema(table, [
-            [:cartodb_id, 'integer'],
-            [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
-        ])
+                       [:cartodb_id, 'integer'],
+                       [:the_geom, 'geometry', 'geometry', 'geometry'], [:description, 'text']
+                     ])
 
         rows = table.records
         rows[:rows][0][:cartodb_id].should eq cartodb_id_1
@@ -2102,7 +2093,7 @@ describe Table do
 
     describe '#key' do
       it 'computes a suitable key for a table' do
-        table = create_table(name: "any_name", user_id: @user.id)
+        table = create_table(name: 'any_name', user_id: @user.id)
         table.redis_key.should == "rails:table:#{table.id}"
       end
 
@@ -2125,23 +2116,23 @@ describe Table do
       it "returns an empty array and does not cache if there's no column the_geom" do
         table = create_table(user_id: @user.id)
 
-        cache = mock()
+        cache = mock
         cache.expects(:get).once
         cache.expects(:setex).once
 
         table.stubs(:cache).returns(cache)
 
         # A bit extreme way of getting a table without the_geom
-        table.owner.in_database.run(%Q{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
+        table.owner.in_database.run(%{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
         table.schema(reload: true)
 
         table.geometry_types.should == []
       end
 
-      it "returns an empty array and does not cache if there are no geometries in the query" do
+      it 'returns an empty array and does not cache if there are no geometries in the query' do
         table = create_table(user_id: @user.id)
 
-        cache = mock()
+        cache = mock
         cache.expects(:get).once.returns(nil)
         cache.expects(:setex).once
 
@@ -2150,15 +2141,15 @@ describe Table do
         table.geometry_types.should == []
       end
 
-      it "caches if there are geometries" do
+      it 'caches if there are geometries' do
         table = create_table(user_id: @user.id)
 
-        cache = mock()
+        cache = mock
         cache.expects(:get).once
         cache.expects(:setex).once
 
         table.stubs(:cache).returns(cache)
-        table.owner.in_database.run(%Q{
+        table.owner.in_database.run(%{
           INSERT INTO #{table.name}(the_geom)
           VALUES(ST_GeomFromText('POINT(-71.060316 48.432044)', 4326))
         })
@@ -2166,32 +2157,32 @@ describe Table do
         table.geometry_types.should == ['ST_Point']
       end
 
-      it "returns the value from the cache if it is there" do
+      it 'returns the value from the cache if it is there' do
         table = create_table(user_id: @user.id)
         any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
         table.expects(:query_geometry_types).once.returns(any_types)
 
-        table.geometry_types.should eq(any_types), "cache miss failure"
-        table.geometry_types.should eq(any_types), "cache hit failure"
-        $tables_metadata.get(table.geometry_types_key).should eq(any_types.to_s), "it should be actually cached"
+        table.geometry_types.should eq(any_types), 'cache miss failure'
+        table.geometry_types.should eq(any_types), 'cache hit failure'
+        $tables_metadata.get(table.geometry_types_key).should eq(any_types.to_s), 'it should be actually cached'
       end
     end
 
     describe 'self.table_and_schema' do
       it 'returns nil schema if schema is "public"' do
-        Table.table_and_schema("public.sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
+        Table.table_and_schema('public.sm_org_line_cartotest').should == ['sm_org_line_cartotest', nil]
       end
 
       it 'returns the schema if it is different from "public"' do
-        Table.table_and_schema("manolito.sm_org_line_cartotest").should == ["sm_org_line_cartotest", "manolito"]
+        Table.table_and_schema('manolito.sm_org_line_cartotest').should == ['sm_org_line_cartotest', 'manolito']
       end
 
       it 'returns the table name when there is no schema' do
-        Table.table_and_schema("sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
+        Table.table_and_schema('sm_org_line_cartotest').should == ['sm_org_line_cartotest', nil]
       end
 
       it 'returns schema without quotes' do
-        Table.table_and_schema("\"user-hyphen\".table").should == ["table", "user-hyphen"]
+        Table.table_and_schema('"user-hyphen".table').should == ['table', 'user-hyphen']
       end
     end
 
@@ -2221,15 +2212,14 @@ describe Table do
           version
         ).should == '_column_1'
       end
-
     end
 
     describe '#estimated_row_count and #actual_row_count' do
-      it "should return row counts" do
-        table = new_table(:user_id => @user.id)
+      it 'should return row counts' do
+        table = new_table(user_id: @user.id)
         table.save
 
-        pk_row1 = table.insert_row!(:name => 'name1')
+        pk_row1 = table.insert_row!(name: 'name1')
         table.actual_row_count.should == 1
         [0, 1].should include(table.estimated_row_count)
       end
@@ -2321,12 +2311,12 @@ describe Table do
           vis.public?.should eq vis.derived?         # Derived kept public
           vis.private?.should eq false               # None changed to private
           vis.password_protected?.should eq false    # None changed to password protected
-          vis.public_with_link?.should eq (vis.type == Carto::Visualization::TYPE_CANONICAL) # Table/canonical changed
+          vis.public_with_link?.should eq(vis.type == Carto::Visualization::TYPE_CANONICAL) # Table/canonical changed
         end
       end
     end
 
-    context "when removing the table" do
+    context 'when removing the table' do
       before(:all) do
         bypass_named_maps
 
@@ -2348,9 +2338,9 @@ describe Table do
         table.reload
 
         table.destroy
-        expect {
+        expect do
           CartoDB::Visualization::Member.new(id: derived.id).fetch
-        }.to raise_error KeyError
+        end.to raise_error KeyError
       end
 
       it 'deletes layers from derived visualizations that partially depend on this table' do
@@ -2370,7 +2360,7 @@ describe Table do
     end
 
     describe '#destroy' do
-      it "invalidates geometry_types cache entry" do
+      it 'invalidates geometry_types cache entry' do
         table = create_table(user_id: @user.id)
         any_types = ['ST_Any_Type', 'ST_Any_Other_Type']
         table.expects(:query_geometry_types).once.returns(any_types)
@@ -2379,7 +2369,7 @@ describe Table do
         key = table.geometry_types_key
         table.destroy
 
-        $tables_metadata.get(key).should eq(nil), "the geometry types cache should be invalidated upon table removal"
+        $tables_metadata.get(key).should eq(nil), 'the geometry types cache should be invalidated upon table removal'
       end
     end
 
@@ -2494,7 +2484,7 @@ describe Table do
 
   describe 'with Carto::UserTable model' do
     before(:all) do
-      @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+      @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524_288_000, table_quota: 500, private_tables_enabled: true)
     end
 
     before(:each) do

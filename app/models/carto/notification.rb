@@ -2,6 +2,7 @@ require_dependency 'carto/notifications_markdown_renderer'
 
 module Carto
   class Notification < ActiveRecord::Base
+
     MAX_BODY_LENGTH = 140
 
     # Update CartoGearsAPI::Notifications::Notification when adding constants here
@@ -29,6 +30,7 @@ module Carto
       return unless organization
       # This avoids resending an already sent notification. Example: importing notifications
       return unless received_notifications.empty?
+
       users = if recipients == 'builders'
                 organization.builder_users
               elsif recipients == 'viewers'
@@ -41,10 +43,12 @@ module Carto
 
     def valid_markdown
       return unless body.present?
+
       text = Redcarpet::Markdown.new(NotificationsMarkdownRenderer).render(body).strip
       errors.add(:body, "cannot be longer than #{MAX_BODY_LENGTH} characters") if text.length > MAX_BODY_LENGTH
     rescue RuntimeError => e
       errors.add(:body, e.message)
     end
+
   end
 end

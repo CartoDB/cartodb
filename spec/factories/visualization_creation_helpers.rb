@@ -20,13 +20,13 @@ def create_random_table(user, name = unique_name('viz'), privacy = nil)
   create_table(options)
 end
 
-def create_table_with_options(user, headers = { 'CONTENT_TYPE'  => 'application/json' }, options = {})
+def create_table_with_options(user, headers = { 'CONTENT_TYPE' => 'application/json' }, options = {})
   privacy = options.fetch(:privacy, UserTable::PRIVACY_PUBLIC)
 
   name    = unique_name('table')
   payload = {
-    name:         name,
-    description:  "#{name} description"
+    name: name,
+    description: "#{name} description"
   }
 
   table_attributes = nil
@@ -57,15 +57,12 @@ shared_context 'visualization creation helpers' do
 
   def create_layer(table_name, user_name, order = 1, kind = 'carto', infowindow = nil)
     options = JSON.parse(CARTO_OPTIONS)
-    options["table_name"] = table_name
-    options["user_name"] = user_name
+    options['table_name'] = table_name
+    options['user_name'] = user_name
     FactoryGirl.build(:carto_layer, kind: kind, options: options, order: order, infowindow: infowindow)
   end
 
   before(:each) do
     bypass_named_maps
   end
-
-  private
-
 end

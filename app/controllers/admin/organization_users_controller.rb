@@ -2,6 +2,7 @@ require_dependency 'carto/controller_helper'
 require_dependency 'dummy_password_generator'
 
 class Admin::OrganizationUsersController < Admin::AdminController
+
   include OrganizationUsersHelper
   include DummyPasswordGenerator
 
@@ -80,9 +81,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     valid_password_confirmation
     unless model_validation_ok
-      raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
+      raise Sequel::ValidationFailed, "Validation failed: #{@user.errors.full_messages.join(', ')}"
     end
-    raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
+    raise Carto::UnprocesableEntityError, 'Soft limits validation error' if validation_failure
 
     @user.save(raise_on_failure: true)
     @user.create_in_central
@@ -96,9 +97,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
       )
     )
     redirect_to CartoDB.url(self, 'organization', user: current_user),
-                flash: { success: "New user created successfully" }
+                flash: { success: 'New user created successfully' }
   rescue Carto::UnprocesableEntityError => e
-    log_error(message: "Validation error", exception: e)
+    log_error(message: 'Validation error', exception: e)
     set_flash_flags
     flash.now[:error] = e.user_message
     render 'new', status: 422
@@ -106,8 +107,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     CartoDB.report_exception(e)
     begin
       @user.destroy
-    rescue StandardError => ee
-      CartoDB.report_exception(ee)
+    rescue StandardError => e
+      CartoDB.report_exception(e)
     end
     set_flash_flags
     flash.now[:error] = e.user_message
@@ -148,12 +149,22 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.password = attributes[:password] if attributes[:password].present?
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
     @user.soft_geocoding_limit = attributes[:soft_geocoding_limit] if attributes[:soft_geocoding_limit].present?
-    @user.soft_here_isolines_limit = attributes[:soft_here_isolines_limit] if attributes[:soft_here_isolines_limit].present?
-    @user.soft_obs_snapshot_limit = attributes[:soft_obs_snapshot_limit] if attributes[:soft_obs_snapshot_limit].present?
+    if attributes[:soft_here_isolines_limit].present?
+      @user.soft_here_isolines_limit = attributes[:soft_here_isolines_limit]
+    end
+    if attributes[:soft_obs_snapshot_limit].present?
+      @user.soft_obs_snapshot_limit = attributes[:soft_obs_snapshot_limit]
+    end
     @user.soft_obs_general_limit = attributes[:soft_obs_general_limit] if attributes[:soft_obs_general_limit].present?
-    @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
-    @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
-    @user.soft_mapzen_routing_limit = attributes[:soft_mapzen_routing_limit] if attributes[:soft_mapzen_routing_limit].present?
+    if attributes[:twitter_datasource_enabled].present?
+      @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled]
+    end
+    if attributes[:soft_twitter_datasource_limit].present?
+      @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit]
+    end
+    if attributes[:soft_mapzen_routing_limit].present?
+      @user.soft_mapzen_routing_limit = attributes[:soft_mapzen_routing_limit]
+    end
 
     model_validation_ok = @user.valid_update?(current_user)
     if attributes[:password].present? || attributes[:password_confirmation].present?
@@ -161,10 +172,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
     end
 
     unless model_validation_ok
-      raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
+      raise Sequel::ValidationFailed, "Validation failed: #{@user.errors.full_messages.join(', ')}"
     end
 
-    raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
+    raise Carto::UnprocesableEntityError, 'Soft limits validation error' if validation_failure
 
     ActiveRecord::Base.transaction do
       if attributes[:mfa].present?
@@ -183,7 +194,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     end
 
     redirect_to CartoDB.url(self, 'edit_organization_user', params: { id: @user.username }, user: current_user),
-                flash: { success: "Your changes have been saved correctly." }
+                flash: { success: 'Your changes have been saved correctly.' }
   rescue Carto::UnprocesableEntityError => e
     log_error(message: 'Validation error', exception: e)
     set_flash_flags
@@ -207,11 +218,11 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     @user.destroy
     @user.delete_in_central
-    flash[:success] = "User was successfully deleted."
+    flash[:success] = 'User was successfully deleted.'
     redirect_to CartoDB.url(self, 'organization', user: current_user)
   rescue CartoDB::CentralCommunicationFailure => e
     if e.user_message =~ /No organization user found with username/
-      flash[:success] = "User was successfully deleted."
+      flash[:success] = 'User was successfully deleted.'
       redirect_to CartoDB.url(self, 'organization', user: current_user)
     else
       log_error(message: 'Error deleting organizational user from central', exception: e, target_user: @user)
@@ -230,15 +241,15 @@ class Admin::OrganizationUsersController < Admin::AdminController
   def regenerate_api_key
     valid_password_confirmation
     @user.regenerate_all_api_keys
-    flash[:success] = "User API key regenerated successfully"
+    flash[:success] = 'User API key regenerated successfully'
     redirect_to CartoDB.url(self, 'edit_organization_user', params: { id: @user.username }, user: current_user),
-                flash: { success: "Your changes have been saved correctly." }
+                flash: { success: 'Your changes have been saved correctly.' }
   rescue Carto::PasswordConfirmationError => e
     flash[:error] = e.message
     render action: 'edit', status: e.status
   rescue StandardError => e
     CartoDB.notify_exception(e, { user_id: @user.id, current_user: current_user.id })
-    flash[:error] = "There was an error regenerating the API key. Please, try again and contact us if the problem persists"
+    flash[:error] = 'There was an error regenerating the API key. Please, try again and contact us if the problem persists'
     render 'edit'
   end
 
@@ -301,4 +312,5 @@ class Admin::OrganizationUsersController < Admin::AdminController
   def ensure_edit_permissions
     render_403 unless @user.editable_by?(current_user)
   end
+
 end

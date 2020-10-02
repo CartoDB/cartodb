@@ -7,12 +7,12 @@ describe Carto::VisualizationQuerySearcher do
                                                description: 'Polution by traffic and industry')
     Delorean.jump(1.day)
     FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'New industries in York',
-                                               tags: ["traffic"])
+                                               tags: ['traffic'])
     Delorean.jump(1.day)
     FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'Madrid traffic and polution')
     Delorean.back_to_the_present
 
-    query = Carto::Visualization.all.select("visualizations.*").where(user_id: @user.id)
+    query = Carto::Visualization.all.select('visualizations.*').where(user_id: @user.id)
     @searcher = Carto::VisualizationQuerySearcher.new(query)
   end
 
@@ -101,5 +101,4 @@ describe Carto::VisualizationQuerySearcher do
       expect(result.second.name).to eql 'New industries in York'
     end
   end
-
 end

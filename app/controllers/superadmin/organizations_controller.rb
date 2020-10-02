@@ -1,4 +1,5 @@
 class Superadmin::OrganizationsController < Superadmin::SuperadminController
+
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index
@@ -29,9 +30,9 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   rescue StandardError => e
     begin
       @organization.delete if @organization && @organization.id
-    rescue StandardError => ee
+    rescue StandardError => e
       # Avoid shadowing original error
-      CartoDB.notify_error('Cleaning failed creation', error: ee.inspect, organization: @organization)
+      CartoDB.notify_error('Cleaning failed creation', error: e.inspect, organization: @organization)
     end
     CartoDB.notify_error('Error creating organization', error: e.inspect, organization: @organization)
     respond_with(:superadmin, @organization, errors: [e.inspect], status: 500)

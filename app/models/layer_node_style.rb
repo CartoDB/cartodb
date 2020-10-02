@@ -1,4 +1,5 @@
 class LayerNodeStyle < Sequel::Model
+
   many_to_one :layer
 
   plugin :serialization, :json, :options, :infowindow, :tooltip
@@ -10,4 +11,5 @@ class LayerNodeStyle < Sequel::Model
     self.tooltip = layer.tooltip || {}
     self.options = layer.options.symbolize_keys.slice(*OPTIONS_TO_COPY)
   end
+
 end

@@ -6,6 +6,7 @@ require_relative '../../models/visualization/member'
 require_relative '../../models/visualization/collection'
 
 class Admin::PagesController < Admin::AdminController
+
   include Carto::HtmlSafe
 
   include CartoDB
@@ -14,24 +15,23 @@ class Admin::PagesController < Admin::AdminController
   DATASETS_PER_PAGE = 9
   MAPS_PER_PAGE = 9
   USER_TAGS_LIMIT = 100
-  PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'
+  PAGE_NUMBER_PLACEHOLDER = 'PAGENUMBERPLACEHOLDER'.freeze
 
-  # TODO logic as done client-side, how and where to encapsulate this better?
+  # TODO: logic as done client-side, how and where to encapsulate this better?
   GEOMETRY_MAPPING = {
-    'st_multipolygon'    => 'polygon',
-    'st_polygon'         => 'polygon',
+    'st_multipolygon' => 'polygon',
+    'st_polygon' => 'polygon',
     'st_multilinestring' => 'line',
-    'st_linestring'      => 'line',
-    'st_multipoint'      => 'point',
-    'st_point'           => 'point'
-  }
-
+    'st_linestring' => 'line',
+    'st_multipoint' => 'point',
+    'st_point' => 'point'
+  }.freeze
 
   ssl_required :common_data, :public, :datasets, :maps, :user_feed
   ssl_allowed :index, :sitemap, :datasets_for_user, :datasets_for_organization, :maps_for_user, :maps_for_organization,
               :render_not_found
 
-  before_filter :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
+  before_filter :login_required, except: [:public, :datasets, :maps, :sitemap, :index, :user_feed]
   before_filter :load_viewed_entity
   before_filter :set_new_dashboard_flag
   before_filter :ensure_organization_correct
@@ -67,6 +67,7 @@ class Admin::PagesController < Admin::AdminController
       username = CartoDB.extract_subdomain(request)
       org = get_organization_if_exists(username)
       render_404 and return if org.nil?
+
       visualizations = public_builder(organization_id: org.id).build
     else
       # Redirect to org url if has only user
@@ -77,33 +78,33 @@ class Admin::PagesController < Admin::AdminController
       visualizations = public_builder(user_id: @viewed_user.id).with_prefetch_user(true).build
     end
 
-    @urls = visualizations.map { |vis|
+    @urls = visualizations.map do |vis|
       case vis.type
       when Carto::Visualization::TYPE_DERIVED
         {
           loc: CartoDB.url(self, 'public_visualizations_public_map', params: { id: vis.id }, user: vis.user),
-          lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
+          lastfreq: vis.updated_at.strftime('%Y-%m-%dT%H:%M:%S%:z')
         }
       when Carto::Visualization::TYPE_CANONICAL
         {
           loc: CartoDB.url(self, 'public_table', params: { id: vis.name }, user: vis.user),
-          lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
+          lastfreq: vis.updated_at.strftime('%Y-%m-%dT%H:%M:%S%:z')
         }
       end
-    }.compact
-    render :formats => [:xml]
+    end.compact
+    render formats: [:xml]
   end
 
   def datasets
     datasets = CartoDB::ControllerFlows::Public::Datasets.new(self)
     content = CartoDB::ControllerFlows::Public::Content.new(self, request, datasets)
-    content.render()
+    content.render
   end
 
   def maps
     maps = CartoDB::ControllerFlows::Public::Maps.new(self)
     content = CartoDB::ControllerFlows::Public::Content.new(self, request, maps)
-    content.render()
+    content.render
   end
 
   def public
@@ -120,9 +121,8 @@ class Admin::PagesController < Admin::AdminController
     if @viewed_user.nil?
       username = CartoDB.extract_subdomain(request).strip.downcase
       org = get_organization_if_exists(username)
-      unless org.nil?
-        redirect_to CartoDB.url(self, 'public_maps_home') and return
-      end
+      redirect_to CartoDB.url(self, 'public_maps_home') and return unless org.nil?
+
       render_404
     else
 
@@ -136,33 +136,27 @@ class Admin::PagesController < Admin::AdminController
       @tables_num          = dataset_builder.count
       @maps_count          = maps_builder.count
       @website             = website_url(@viewed_user.website)
-      @website_clean       = @website ? @website.gsub(/https?:\/\//, "") : ""
+      @website_clean       = @website ? @website.gsub(%r{https?://}, '') : ''
 
       if eligible_for_redirect?(@viewed_user)
         # redirect username.host.ext => org-name.host.ext/u/username
         redirect_to CartoDB.base_url(@viewed_user.organization.name, @viewed_user.username) <<
-                            CartoDB.path(self, 'public_user_feed_home') and return
+                    CartoDB.path(self, 'public_user_feed_home') and return
       end
 
       description = @name.dup
 
       # TODO: move to helper
       if @maps_count == 0 && @tables_num == 0
-        description << " uses CARTO to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
+        description << ' uses CARTO to transform location intelligence into dynamic renderings that enable discovery of trends and patterns'
       else
-        description << " has"
+        description << ' has'
 
-        unless @maps_count == 0
-          description << " created #{@maps_count} #{'map'.pluralize(@maps_count)}"
-        end
+        description << " created #{@maps_count} #{'map'.pluralize(@maps_count)}" unless @maps_count == 0
 
-        unless @maps_count == 0 || @tables_num == 0
-          description << " and"
-        end
+        description << ' and' unless @maps_count == 0 || @tables_num == 0
 
-        unless @tables_num == 0
-          description << " published #{@tables_num} public #{'dataset'.pluralize(@tables_num)}"
-        end
+        description << " published #{@tables_num} public #{'dataset'.pluralize(@tables_num)}" unless @tables_num == 0
 
         description << " · View #{@name} CARTO profile for the latest activity and contribute to Open Data by creating an account in CARTO"
       end
@@ -203,6 +197,7 @@ class Admin::PagesController < Admin::AdminController
 
   def eligible_for_redirect?(user)
     return false if CartoDB.subdomainless_urls?
+
     user.has_organization? && CartoDB.subdomain_from_request(request) != user.organization.name
   end
 
@@ -229,7 +224,7 @@ class Admin::PagesController < Admin::AdminController
 
     # TODO: move to helper
     if @datasets.size == 0
-      description << " uses CARTO to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
+      description << ' uses CARTO to transform location intelligence into dynamic renderings that enable discovery of trends and patterns'
     else
       description << " has published #{@datasets.size} public #{'dataset'.pluralize(@datasets.size)}"
     end
@@ -243,10 +238,10 @@ class Admin::PagesController < Admin::AdminController
     end
   end
 
-  def render_maps(vis_query_builder, user=nil)
+  def render_maps(vis_query_builder, user = nil)
     set_pagination_vars(
       total_count: vis_query_builder.count,
-      per_page:    MAPS_PER_PAGE,
+      per_page: MAPS_PER_PAGE,
       first_page_url: CartoDB.url(self, 'public_maps_home', user: user),
       numbered_page_url: CartoDB.url(self, 'public_maps_home', params: { page: PAGE_NUMBER_PLACEHOLDER }, user: user)
     )
@@ -266,21 +261,17 @@ class Admin::PagesController < Admin::AdminController
 
     # TODO: move to helper
     if @visualizations.size == 0 && @tables_num == 0
-      description << " uses CARTO to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
+      description << ' uses CARTO to transform location intelligence into dynamic renderings that enable discovery of trends and patterns'
     else
-      description << " has"
+      description << ' has'
 
       unless @visualizations.size == 0
         description << " created #{@visualizations.size} #{'map'.pluralize(@visualizations.size)}"
       end
 
-      unless @visualizations.size == 0 || @tables_num == 0
-        description << " and"
-      end
+      description << ' and' unless @visualizations.size == 0 || @tables_num == 0
 
-      unless @tables_num == 0
-        description << " published #{@tables_num} public #{'dataset'.pluralize(@tables_num)}"
-      end
+      description << " published #{@tables_num} public #{'dataset'.pluralize(@tables_num)}" unless @tables_num == 0
 
       description << " · View #{@name} CARTO profile for the latest activity and contribute to Open Data by creating an account in CARTO"
     end
@@ -295,9 +286,7 @@ class Admin::PagesController < Admin::AdminController
   def set_new_dashboard_flag
     ff_user = @viewed_user || @viewed_org.try(:owner)
 
-    unless ff_user.nil?
-      @has_new_dashboard = ff_user.builder_enabled?
-    end
+    @has_new_dashboard = ff_user.builder_enabled? unless ff_user.nil?
   end
 
   def set_layout_vars_for_user(user, content_type)
@@ -305,20 +294,20 @@ class Admin::PagesController < Admin::AdminController
     most_viewed = builder.with_order(:mapviews, :desc).build_paged(1, 1).first
 
     set_layout_vars({
-        most_viewed_vis_map: most_viewed ? Carto::Admin::VisualizationPublicMapAdapter.new(most_viewed, current_user, self) : nil,
-        content_type: content_type,
-        default_fallback_basemap: user.default_basemap,
-        user: user,
-        base_url: user.public_url(nil, request.protocol == "https://" ? "https" : "http")
-      })
+                      most_viewed_vis_map: most_viewed ? Carto::Admin::VisualizationPublicMapAdapter.new(most_viewed, current_user, self) : nil,
+                      content_type: content_type,
+                      default_fallback_basemap: user.default_basemap,
+                      user: user,
+                      base_url: user.public_url(nil, request.protocol == 'https://' ? 'https' : 'http')
+                    })
     set_shared_layout_vars(user, {
-        name:       user.name_or_username,
-        avatar_url: user.avatar,
-      }, {
-        available_for_hire: user.available_for_hire,
-        email:              user.email,
-        user: user
-      })
+                             name: user.name_or_username,
+                             avatar_url: user.avatar
+                           }, {
+                             available_for_hire: user.available_for_hire,
+                             email: user.email,
+                             user: user
+                           })
   end
 
   def set_layout_vars_for_organization(org, content_type)
@@ -343,7 +332,7 @@ class Admin::PagesController < Admin::AdminController
     @maps_url            = CartoDB.url(view_context, 'public_maps_home', user: required.fetch(:user, nil))
     @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', user: required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
-    @base_url            = required.fetch(:base_url, {})
+    @base_url = required.fetch(:base_url, {})
   end
 
   def set_pagination_vars(required)
@@ -363,7 +352,7 @@ class Admin::PagesController < Admin::AdminController
     @location           = model.location
     @description        = model.description
     @website            = website_url(model.website)
-    @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
+    @website_clean      = @website ? @website.gsub(%r{https?://}, '') : ''
     @name               = required.fetch(:name)
     @avatar_url         = required.fetch(:avatar_url)
     @email              = optional.fetch(:email, nil)
@@ -441,7 +430,7 @@ class Admin::PagesController < Admin::AdminController
     user = ::User.where(username: user_domain).first
 
     unless user.nil?
-      if user.username != user_or_org_domain and not user.belongs_to_organization?(get_organization_if_exists(user_or_org_domain))
+      if (user.username != user_or_org_domain) && !user.belongs_to_organization?(get_organization_if_exists(user_or_org_domain))
         render_404
       end
     end
@@ -472,14 +461,14 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def vis_item(vis)
-    return {
-      id:          vis.id,
-      title:       vis.name,
+    {
+      id: vis.id,
+      title: vis.name,
       description: markdown_html_safe(vis.description),
-      tags:        vis.tags,
-      updated_at:  vis.updated_at,
-      owner:       vis.user,
-      map_zoom:    vis.map.zoom
+      tags: vis.tags,
+      updated_at: vis.updated_at,
+      owner: vis.user,
+      map_zoom: vis.map.zoom
     }
   end
 
@@ -493,12 +482,11 @@ class Admin::PagesController < Admin::AdminController
     end
   end
 
-
   def website_url(url)
     if url.blank?
-      ""
+      ''
     else
-      !url.blank? && url[/^https?:\/\//].nil? ? "http://#{url}" : url
+      !url.blank? && url[%r{^https?://}].nil? ? "http://#{url}" : url
     end
   end
 

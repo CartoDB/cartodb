@@ -12,7 +12,7 @@ module Carto
       return false if authorized?
 
       new_attributes = { user: user, authorized_at: Time.now }
-      new_attributes[:verifier] = OAuth::Helper.generate_key(20)[0,20] unless oauth10?
+      new_attributes[:verifier] = OAuth::Helper.generate_key(20)[0, 20] unless oauth10?
 
       update!(new_attributes)
     end

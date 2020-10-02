@@ -1,7 +1,6 @@
 require 'spec_helper_min'
 
 describe Carto::UserMultifactorAuth do
-
   def totp_code(mfa)
     ROTP::TOTP.new(mfa.shared_secret).now
   end
@@ -32,9 +31,9 @@ describe Carto::UserMultifactorAuth do
     end
 
     it 'creates a new multifactor auth for a user' do
-      expect {
+      expect do
         Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      }.to_not raise_error
+      end.to_not raise_error
     end
 
     it 'populates shared_secret' do
@@ -117,19 +116,19 @@ describe Carto::UserMultifactorAuth do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
       code = totp_code(mfa)
       mfa.verify!(code)
-      expect { mfa.verify!(code) }.to raise_error("The code is not valid")
+      expect { mfa.verify!(code) }.to raise_error('The code is not valid')
     end
 
     it 'does not verify an invalid code' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
       totp = ROTP::TOTP.new(ROTP::Base32.random_base32)
-      expect { mfa.verify!(totp.now) }.to raise_error("The code is not valid")
+      expect { mfa.verify!(totp.now) }.to raise_error('The code is not valid')
     end
 
     it 'does not allow use of future/past tokens' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
       totp = ROTP::TOTP.new(mfa.shared_secret)
-      expect { mfa.verify!(totp.at(Time.now - 90.seconds)) }.to raise_error("The code is not valid")
+      expect { mfa.verify!(totp.at(Time.now - 90.seconds)) }.to raise_error('The code is not valid')
     end
 
     it 'verifies a code taking into account 30 seconds drift' do

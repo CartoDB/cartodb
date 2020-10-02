@@ -5,9 +5,10 @@ require_relative '../../lib/carto/http/client'
 module CartoDB
   module WMS
     class Proxy
-      SERVER_XPATH  = "//OnlineResource[1]"
-      FORMATS_XPATH = "//GetMap/Format"
-      LAYERS_XPATH  = "//Layer/Layer[BoundingBox or LatLonBoundingBox]"
+
+      SERVER_XPATH  = '//OnlineResource[1]'.freeze
+      FORMATS_XPATH = '//GetMap/Format'.freeze
+      LAYERS_XPATH  = '//Layer/Layer[BoundingBox or LatLonBoundingBox]'.freeze
 
       def initialize(url, preloaded_xml=nil)
         @url        = url
@@ -22,15 +23,16 @@ module CartoDB
       def run
         request_capabilities unless response
         self
-      end 
+      end
 
       def request_capabilities
         http_client = Carto::Http::Client.get('wmsproxy')
         response = http_client.get(url, followlocation: true)
         raise URI::InvalidURIError unless [200, 201].include?(response.code)
+
         @response = response.response_body
         nil
-      end 
+      end
 
       def document
         Nokogiri::XML::Document.parse(response).remove_namespaces!
@@ -45,41 +47,40 @@ module CartoDB
       end
 
       def layers
-
-        document.xpath(LAYERS_XPATH).map { |element| 
-          name  = element.xpath("./Name").first
-          title = element.xpath("./Title").first
-          { 
-            name:           (name.text if name),
-            title:          (title.text if title),
-            crs:            crs_for_element(element),
-            srs:            srs_for_element(element),
+        document.xpath(LAYERS_XPATH).map do |element|
+          name  = element.xpath('./Name').first
+          title = element.xpath('./Title').first
+          {
+            name: (name.text if name),
+            title: (title.text if title),
+            crs: crs_for_element(element),
+            srs: srs_for_element(element),
             bounding_boxes: bounding_boxes_for(element),
-            attribution:    nil
-          } 
-        }
+            attribution: nil
+          }
+        end
       end
 
       def crs_for_element(element)
-        crs = element.xpath("./CRS").map { |element|
+        crs = element.xpath('./CRS').map do |element|
           element.text
-        }.compact
+        end.compact
       end
 
       def srs_for_element(element)
-        srs = element.xpath("./SRS").map { |element|
+        srs = element.xpath('./SRS').map do |element|
           element.text
-        }.compact
+        end.compact
       end
 
       def bounding_boxes_for(element)
-        bounding_boxes = element.xpath("./BoundingBox").map { |element|
-          srs   = element.xpath("./@SRS").first
-          crs   = element.xpath("./@CRS").first
-          minx  = element.xpath("./@minx").first
-          miny  = element.xpath("./@miny").first
-          maxx  = element.xpath("./@maxx").first
-          maxy  = element.xpath("./@maxy").first
+        bounding_boxes = element.xpath('./BoundingBox').map do |element|
+          srs   = element.xpath('./@SRS').first
+          crs   = element.xpath('./@CRS').first
+          minx  = element.xpath('./@minx').first
+          miny  = element.xpath('./@miny').first
+          maxx  = element.xpath('./@maxx').first
+          maxy  = element.xpath('./@maxy').first
 
           {
             srs: (srs.value if srs),
@@ -87,16 +88,17 @@ module CartoDB
             minx: (minx.value if minx),
             miny: (miny.value if miny),
             maxx: (maxx.value if maxx),
-            maxy: (maxy.value if maxy),
+            maxy: (maxy.value if maxy)
           }
-        }
+        end
       end
 
       attr_reader :response
 
       private
+
       attr_reader :url
+
     end # Proxy
   end # WMS
 end # CartoDB
-

@@ -3,13 +3,13 @@ module Carto
 
     include ::LoggerHelper
 
-    AUTO_INDEX_TTL_MS = 600000
+    AUTO_INDEX_TTL_MS = 600_000
     AUTO_INDEX_PREFIX = '_auto_idx_'.freeze
     INDEXABLE_WIDGET_TYPES = %w(histogram category time-series).freeze
 
     # Not worth it to create indices on small tables, where a full scan is cheap.
     # Maybe better to use number of pages instead of rows instead.
-    MINIMUM_ROW_COUNT_TO_INDEX = 10000
+    MINIMUM_ROW_COUNT_TO_INDEX = 10_000
     # Number of categories (most common) shown by default in widgets, used to determine the number
     # of categories likely to be used for filtering.
     CATEGORIES_SHOWN_IN_WIDGET = 5
@@ -37,7 +37,7 @@ module Carto
         @table.drop_index(idx[:column], AUTO_INDEX_PREFIX, concurrent: true)
       end
 
-      widget_columns = (@table.estimated_row_count > MINIMUM_ROW_COUNT_TO_INDEX) ? columns_with_widgets : []
+      widget_columns = @table.estimated_row_count > MINIMUM_ROW_COUNT_TO_INDEX ? columns_with_widgets : []
       columns_to_index = widget_columns.select { |c| indexable_column?(c) }
 
       indexed_columns = valid_indices.map { |i| i[:column] }
@@ -65,9 +65,7 @@ module Carto
       common_freqs = stats[:most_common_freqs] || stats[:most_common_elem_freqs]
       if common_freqs.present?
         check_common_freq = common_freqs[CATEGORIES_SHOWN_IN_WIDGET - 1] || common_freqs.last
-        if check_common_freq < (1.0 / MINIMUM_COLUMN_VALUES_TO_INDEX)
-          return true
-        end
+        return true if check_common_freq < (1.0 / MINIMUM_COLUMN_VALUES_TO_INDEX)
       else
         # No histogram, rely on distinct values. Note: Values < 0 represent a proportion over the number of rows.
         # They are generated when the analyzer gives up counting or identifies the value as a continuous magnitude
@@ -76,9 +74,7 @@ module Carto
       end
 
       # Accept columns with high correlation (values related to physical row order)
-      if stats[:correlation].abs > MINIMUM_CORRELATION_TO_INDEX
-        return true
-      end
+      return true if stats[:correlation].abs > MINIMUM_CORRELATION_TO_INDEX
 
       # Default
       false
@@ -129,5 +125,6 @@ module Carto
         {}
       end
     end
+
   end
 end

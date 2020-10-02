@@ -1,5 +1,6 @@
 module Carto
   class VisualizationFactory
+
     def self.create_canonical_visualization(user_table)
       kind = user_table.raster? ? Carto::Visualization::KIND_RASTER : Carto::Visualization::KIND_GEOM
       esv = user_table.external_source_visualization
@@ -56,5 +57,6 @@ module Carto
       layers
     end
     private_class_method :build_canonical_layers
+
   end
 end

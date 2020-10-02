@@ -72,7 +72,7 @@ describe Carto::User do
     end
   end
 
-  describe "#send_password_reset!" do
+  describe '#send_password_reset!' do
     before(:all) do
       @user = FactoryGirl.create(:carto_user)
     end

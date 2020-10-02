@@ -1,5 +1,6 @@
 module Carto
   module FilenameGenerator
+
     def filename_from_url(url, supported_extensions)
       filename = CGI.unescape(File.basename(URI(url).path))
 
@@ -22,10 +23,11 @@ module Carto
     end
 
     def supported_extensions_match(supported_extensions)
-      supported_extensions.map { |ext|
+      supported_extensions.map do |ext|
         ext = ext.gsub('.', '\\.')
         [/#{ext}$/i, /#{ext}(?=\.)/i, /#{ext}(?=\?)/i, /#{ext}(?=&)/i]
-      }.flatten
+      end.flatten
     end
+
   end
 end

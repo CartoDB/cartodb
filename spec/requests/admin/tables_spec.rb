@@ -5,7 +5,7 @@ require_relative '../../spec_helper'
 
 def app
   CartoDB::Application.new
-end #app
+end # app
 
 describe Admin::TablesController do
   include Rack::Test::Methods
@@ -30,7 +30,7 @@ describe Admin::TablesController do
     @db = SequelRails.connection
     delete_user_data @user
     @headers = {
-      'CONTENT_TYPE'  => 'application/json',
+      'CONTENT_TYPE' => 'application/json'
     }
     host! "#{@user.username}.localhost.lan"
   end
@@ -48,7 +48,7 @@ describe Admin::TablesController do
 
       login_as(@user, scope: @user.username)
 
-      get "/dashboard", {}, @headers
+      get '/dashboard', {}, @headers
       last_response.status.should == 200
     end
   end # GET /tables
@@ -65,6 +65,5 @@ describe Admin::TablesController do
 
   def factory
     new_table(user_id: @user.id).save.reload
-  end #table_attributes
-
+  end # table_attributes
 end # Admin::TablesController

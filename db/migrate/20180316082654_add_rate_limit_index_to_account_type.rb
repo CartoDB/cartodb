@@ -3,10 +3,10 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     add_index :account_types, [:rate_limit_id]
   end,
-  Proc.new do
+  proc do
     drop_index :account_types, [:rate_limit_id]
   end
 )

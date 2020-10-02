@@ -1,4 +1,5 @@
 module VisualizationDestructionHelper
+
   def expect_visualization_to_be_destroyed(visualization)
     visualization_id = visualization.id
     map_id = visualization.map.id
@@ -28,4 +29,5 @@ module VisualizationDestructionHelper
     mapcaps_ids.each { |id| expect(Carto::Mapcap.exists?(id)).to be_false }
     snapshots_ids.each { |id| expect(Carto::Snapshot.exists?(id)).to be_false }
   end
+
 end

@@ -15,6 +15,7 @@
 module Carto
   class Connector
     class Provider
+
       # Provider identifier (internal name, used in APIs, etc)
       def self.provider_id
         must_be_defined_in_derived_class
@@ -67,11 +68,11 @@ module Carto
         must_be_defined_in_derived_class
       end
 
-      def list_project_datasets(project_id)
+      def list_project_datasets(_project_id)
         must_be_defined_in_derived_class
       end
 
-      def list_project_dataset_tables(project_id, dataset_id)
+      def list_project_dataset_tables(_project_id, _dataset_id)
         must_be_defined_in_derived_class
       end
 
@@ -154,21 +155,26 @@ module Carto
         id: :provider_id,
         name: :friendly_name,
         public: :public?
-      }
+      }.freeze
       class <<self
+
         def metadata(options)
           options.each do |key, value|
             method = METADATA_KEYS[key]
             raise "Invalid Provider metadata key: #{key.inspect}" unless method
+
             define_singleton_method(method) { value.freeze }
           end
         end
+
         def optional_parameters(params)
           define_method(:optional_parameters) { params.freeze }
         end
+
         def required_parameters(params)
           define_method(:required_parameters) { params.freeze }
         end
+
       end
 
       def log(message, truncate = true)
@@ -184,7 +190,7 @@ module Carto
       def self.must_be_defined_in_derived_class(*_)
         raise NotImplementedError, "Class method \"#{caller_locations(1, 1)[0].label}\" must be defined in derived class"
       end
-    end
 
+    end
   end
 end

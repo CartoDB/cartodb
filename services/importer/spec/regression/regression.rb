@@ -8,20 +8,20 @@ require_relative '../../../../services/importer/spec/acceptance/cdb_importer_con
 include CartoDB::Importer2
 
 describe 'Importer regression test' do
-  include_context "cdb_importer schema"
+  include_context 'cdb_importer schema'
 
   folder = ENV['TEST_FILES'] || File.join(File.dirname(__FILE__), 'failing/')
   Dir[File.join(folder, '/*')].each do |file|
     it "correctly imports file #{file}" do
-      #INFO: this test depends on 'which raster2pgsql'
+      # INFO: this test depends on 'which raster2pgsql'
 
       filepath    = file
-      downloader  = Downloader.new(File.expand_path filepath)
+      downloader  = Downloader.new(File.expand_path(filepath))
       runner      = Runner.new({
                                  pg: @pg_options,
                                  downloader: downloader,
                                  log: Doubles::Log.new,
-                                 user:Doubles::User.new
+                                 user: Doubles::User.new
                                })
       runner.run
 

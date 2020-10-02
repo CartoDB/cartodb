@@ -17,7 +17,7 @@ class Carto::VisualizationQuerySearcher
   private
 
   def escape_characters_from_pattern(pattern)
-    pattern.chars.map { |c| PATTERN_ESCAPE_CHARS.include?(c) ? "\\" + c : c }.join
+    pattern.chars.map { |c| PATTERN_ESCAPE_CHARS.include?(c) ? '\\' + c : c }.join
   end
 
   def tsvector

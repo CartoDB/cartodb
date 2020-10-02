@@ -19,16 +19,16 @@ module CartoDB
         include ::LoggerHelper
 
         # Required for all datasources
-        DATASOURCE_NAME = 'dropbox'
+        DATASOURCE_NAME = 'dropbox'.freeze
 
         # Specific of this datasource
         FORMATS_TO_SEARCH_QUERIES = {
-            FORMAT_CSV =>         %W( .csv ),
-            FORMAT_EXCEL =>       %W( .xls .xlsx ),
-            FORMAT_GPX =>         %W( .gpx ),
-            FORMAT_KML =>         %W( .kml ),
-            FORMAT_COMPRESSED =>  %W( .zip )
-        }
+          FORMAT_CSV => %w(.csv),
+          FORMAT_EXCEL => %w(.xls .xlsx),
+          FORMAT_GPX => %w(.gpx),
+          FORMAT_KML => %w(.kml),
+          FORMAT_COMPRESSED => %w(.zip)
+        }.freeze
 
         # Constructor
         # @param config Array
@@ -41,7 +41,7 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super(config, user, %w{ app_key app_secret callback_url }, DATASOURCE_NAME)
+          super(config, user, %w{app_key app_secret callback_url}, DATASOURCE_NAME)
 
           @user               = user
           @app_key            = config.fetch('app_key')
@@ -59,7 +59,7 @@ module CartoDB
         # @param user : ::User
         # @return CartoDB::Datasources::Url::Dropbox
         def self.get_new(config, user)
-          return new(config, user)
+          new(config, user)
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -73,21 +73,22 @@ module CartoDB
         # @throws AuthError
         def get_auth_url
           authenticator.authorize_url redirect_uri: @callback_url, state: state
-        rescue StandardError => ex
-          raise AuthError.new("get_auth_url(#{use_callback_flow}): #{ex.message}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise AuthError.new("get_auth_url(#{use_callback_flow}): #{e.message}", DATASOURCE_NAME)
         end
 
         # Validates the authorization callback
         # @param params : mixed
         def validate_callback(params)
           raise "state doesn't match" unless params[:state] == state
+
           auth_bearer = authenticator.get_token(params[:code], redirect_uri: @callback_url)
           @access_token = auth_bearer.token
 
           @client = DropboxApi::Client.new(@access_token)
           @access_token
-        rescue StandardError => ex
-          raise AuthError.new("validate_callback(#{params.inspect}): #{ex.message}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise AuthError.new("validate_callback(#{params.inspect}): #{e.message}", DATASOURCE_NAME)
         end
 
         # Set the token
@@ -97,8 +98,8 @@ module CartoDB
         def token=(token)
           @access_token = token
           @client = DropboxApi::Client.new(@access_token)
-        rescue StandardError => ex
-          handle_error(ex, "token= : #{ex.message}")
+        rescue StandardError => e
+          handle_error(e, "token= : #{e.message}")
         end
 
         # Retrieve set token
@@ -125,12 +126,13 @@ module CartoDB
                 all_results.push(format_item_data(item.resource))
               end
               break unless response.has_more?
+
               start += SEARCH_BATCH_SIZE
             end
           end
           all_results
-        rescue StandardError => ex
-          handle_error(ex, "get_resources_list(): #{ex.message}")
+        rescue StandardError => e
+          handle_error(e, "get_resources_list(): #{e.message}")
         end
 
         # Retrieves a resource and returns its contents
@@ -145,8 +147,8 @@ module CartoDB
             file_contents << chunk
           end
           file_contents
-        rescue StandardError => ex
-          handle_error(ex, "get_resource() #{id}: #{ex.message}")
+        rescue StandardError => e
+          handle_error(e, "get_resource() #{id}: #{e.message}")
         end
 
         # @param id string
@@ -161,8 +163,8 @@ module CartoDB
           item_data = format_item_data(response)
 
           item_data.to_hash
-        rescue StandardError => ex
-          handle_error(ex, "get_resource_metadata() #{id}: #{ex.message}")
+        rescue StandardError => e
+          handle_error(e, "get_resource_metadata() #{id}: #{e.message}")
         end
 
         # Retrieves current filters
@@ -176,10 +178,10 @@ module CartoDB
         def filter=(filter_data=[])
           @formats = []
           FORMATS_TO_SEARCH_QUERIES.each do |id, queries|
-            if filter_data.empty? || filter_data.include?(id)
-              queries.each do |query|
-                @formats = @formats.push(query)
-              end
+            next unless filter_data.empty? || filter_data.include?(id)
+
+            queries.each do |query|
+              @formats = @formats.push(query)
             end
           end
         end
@@ -198,7 +200,7 @@ module CartoDB
 
         # Stores the data import item instance to use/manipulate it
         # @param value DataImport
-        def data_import_item=(value)
+        def data_import_item=(_value)
           nil
         end
 
@@ -217,11 +219,11 @@ module CartoDB
         def revoke_token
           @client.revoke
           true
-        rescue DropboxApi::Errors::HttpError => ex
-          log_info(message: 'Error revoking Dropbox token: already invalid', exception: ex, current_user: @user)
+        rescue DropboxApi::Errors::HttpError => e
+          log_info(message: 'Error revoking Dropbox token: already invalid', exception: e, current_user: @user)
           true
-        rescue StandardError => ex
-          raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise AuthError.new("revoke_token: #{e.message}", DATASOURCE_NAME)
         end
 
         private
@@ -259,12 +261,12 @@ module CartoDB
           filename = path.split('/').last
 
           {
-            id:       path,
-            title:    filename,
+            id: path,
+            title: filename,
             filename: filename,
-            service:  DATASOURCE_NAME,
+            service: DATASOURCE_NAME,
             checksum: checksum_of(resource.rev),
-            size:     resource.size
+            size: resource.size
           }
         end
 
@@ -276,6 +278,7 @@ module CartoDB
           service_name = service_name_for_user(DATASOURCE_NAME, @user)
           CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)
         end
+
       end
     end
   end

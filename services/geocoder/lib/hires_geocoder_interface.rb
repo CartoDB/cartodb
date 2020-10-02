@@ -1,5 +1,6 @@
 module CartoDB
   class HiresGeocoderInterface
+
     def run
       raise 'Not implemented'
     end
@@ -7,5 +8,6 @@ module CartoDB
     def cancel
       raise 'Not implemented'
     end
+
   end
 end

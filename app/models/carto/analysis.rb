@@ -4,6 +4,7 @@ require_relative './carto_json_serializer'
 require_dependency 'carto/table_utils'
 
 class Carto::Analysis < ActiveRecord::Base
+
   extend Carto::TableUtils
 
   serialize :analysis_definition, ::Carto::CartoJsonSymbolizerSerializer
@@ -66,11 +67,13 @@ class Carto::Analysis < ActiveRecord::Base
   def natural_id
     pj = analysis_definition
     return nil unless pj
+
     pj[:id]
   end
 
   def map
     return nil unless visualization
+
     visualization.map
   end
 
@@ -104,7 +107,8 @@ class Carto::Analysis < ActiveRecord::Base
   def validate_user_not_viewer
     if user.viewer
       errors.add(:user, "Viewer users can't edit analyses")
-      return false
+      false
     end
   end
+
 end

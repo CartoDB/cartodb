@@ -2,6 +2,7 @@ require 'json'
 require_relative './carto_json_serializer'
 
 class Carto::State < ActiveRecord::Base
+
   belongs_to :visualization, class_name: Carto::Visualization
 
   serialize :json, ::Carto::CartoJsonSymbolizerSerializer
@@ -16,6 +17,7 @@ class Carto::State < ActiveRecord::Base
   private
 
   def ensure_json
-    self.json ||= Hash.new
+    self.json ||= {}
   end
+
 end

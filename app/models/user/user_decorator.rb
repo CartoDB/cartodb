@@ -1,5 +1,6 @@
 module CartoDB
   module UserDecorator
+
     include AccountTypeHelper
 
     def activity(options = {})
@@ -73,49 +74,49 @@ module CartoDB
         api_calls_quota: organization_user? ? organization.map_view_quota : map_view_quota,
         api_calls_block_price: organization_user? ? organization.map_view_block_price : map_view_block_price,
         geocoding: {
-          quota:       organization_user? ? organization.geocoding_quota : geocoding_quota,
+          quota: organization_user? ? organization.geocoding_quota : geocoding_quota,
           block_price: organization_user? ? organization.geocoding_block_price : geocoding_block_price,
           monthly_use: organization_user? ? organization.get_geocoding_calls : get_geocoding_calls,
-          hard_limit:  hard_geocoding_limit?
+          hard_limit: hard_geocoding_limit?
         },
         here_isolines: {
-          quota:       organization_user? ? organization.here_isolines_quota : here_isolines_quota,
+          quota: organization_user? ? organization.here_isolines_quota : here_isolines_quota,
           block_price: organization_user? ? organization.here_isolines_block_price : here_isolines_block_price,
           monthly_use: organization_user? ? organization.get_here_isolines_calls : get_here_isolines_calls,
-          hard_limit:  hard_here_isolines_limit?
+          hard_limit: hard_here_isolines_limit?
         },
         geocoder_provider: geocoder_provider,
         isolines_provider: isolines_provider,
         routing_provider: routing_provider,
         obs_snapshot: {
-          quota:       organization_user? ? organization.obs_snapshot_quota : obs_snapshot_quota,
+          quota: organization_user? ? organization.obs_snapshot_quota : obs_snapshot_quota,
           block_price: organization_user? ? organization.obs_snapshot_block_price : obs_snapshot_block_price,
           monthly_use: organization_user? ? organization.get_obs_snapshot_calls : get_obs_snapshot_calls,
-          hard_limit:  hard_obs_snapshot_limit?
+          hard_limit: hard_obs_snapshot_limit?
         },
         obs_general: {
-          quota:       organization_user? ? organization.obs_general_quota : obs_general_quota,
+          quota: organization_user? ? organization.obs_general_quota : obs_general_quota,
           block_price: organization_user? ? organization.obs_general_block_price : obs_general_block_price,
           monthly_use: organization_user? ? organization.get_obs_general_calls : get_obs_general_calls,
-          hard_limit:  hard_obs_general_limit?
+          hard_limit: hard_obs_general_limit?
         },
         twitter: {
-          enabled:     organization_user? ? organization.twitter_datasource_enabled : twitter_datasource_enabled,
-          quota:       organization_user? ? organization.twitter_datasource_quota : twitter_datasource_quota,
+          enabled: organization_user? ? organization.twitter_datasource_enabled : twitter_datasource_enabled,
+          quota: organization_user? ? organization.twitter_datasource_quota : twitter_datasource_quota,
           block_price: organization_user? ? organization.twitter_datasource_block_price : twitter_datasource_block_price,
-          block_size:  organization_user? ? organization.twitter_datasource_block_size : twitter_datasource_block_size,
+          block_size: organization_user? ? organization.twitter_datasource_block_size : twitter_datasource_block_size,
           monthly_use: organization_user? ? organization.get_twitter_imports_count : get_twitter_imports_count,
-          hard_limit:  hard_twitter_datasource_limit,
+          hard_limit: hard_twitter_datasource_limit,
           customized_config: CartoDB::Datasources::DatasourcesFactory.customized_config?(CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME, self)
         },
         mailchimp: {
           enabled: Carto::AccountType.new.mailchimp?(self)
         },
         mapzen_routing: {
-          quota:       organization_user? ? organization.mapzen_routing_quota : mapzen_routing_quota,
+          quota: organization_user? ? organization.mapzen_routing_quota : mapzen_routing_quota,
           block_price: organization_user? ? organization.mapzen_routing_block_price : mapzen_routing_block_price,
           monthly_use: organization_user? ? organization.get_mapzen_routing_calls : get_mapzen_routing_calls,
-          hard_limit:  hard_mapzen_routing_limit?
+          hard_limit: hard_mapzen_routing_limit?
         },
         salesforce: {
           enabled: organization_user? ? organization.salesforce_datasource_enabled : salesforce_datasource_enabled
@@ -176,9 +177,7 @@ module CartoDB
         data[:organization][:available_quota_for_user] = organization.unassigned_quota + quota_in_bytes
       end
 
-      if !groups.nil?
-        data[:groups] = groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
-      end
+      data[:groups] = groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } unless groups.nil?
 
       if options[:extended]
         data.merge(
@@ -189,5 +188,6 @@ module CartoDB
         data
       end
     end
+
   end
 end

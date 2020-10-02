@@ -16,6 +16,7 @@
 #
 
 module PostgreSQLAutoReconnectionPatch
+
   # Queries the database and returns the results in an Array-like object
   def query(sql, name = nil) #:nodoc:
     with_auto_reconnect do
@@ -63,12 +64,15 @@ module PostgreSQLAutoReconnectionPatch
     reconnect!
     yield
   end
+
 end
 
 module ActiveRecord
   module ConnectionAdapters
     class PostgreSQLAdapter
+
       prepend PostgreSQLAutoReconnectionPatch
+
     end
   end
 end

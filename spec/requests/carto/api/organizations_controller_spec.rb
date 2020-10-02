@@ -9,7 +9,6 @@ describe Carto::Api::OrganizationsController do
   include Warden::Test::Helpers
 
   describe 'users unauthenticated behaviour' do
-
     it 'returns 401 for not logged users' do
       get api_v1_organization_users_url(id: @organization.id), @headers
       last_response.status.should == 401
@@ -17,7 +16,6 @@ describe Carto::Api::OrganizationsController do
   end
 
   describe 'users' do
-
     before(:all) do
       @org_user_3 = create_test_user(unique_name('user'), @organization)
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
@@ -58,7 +56,7 @@ describe Carto::Api::OrganizationsController do
       displayed_ids = []
       total_count = @organization.users.count
 
-      while page * per_page < total_count do
+      while page * per_page < total_count
         page += 1
         get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, page: page, per_page: per_page), @headers
 
@@ -82,26 +80,26 @@ describe Carto::Api::OrganizationsController do
 
     it 'returns users matching username query' do
       username = @org_user_2.username
-      [username, username[1, 10], username[-4, 10]].each { |q|
+      [username, username[1, 10], username[-4, 10]].each do |q|
         get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, q: q), @headers
         last_response.status.should == 200
         json_body = JSON.parse(last_response.body)
         ids = json_body['users'].map { |u| u['id'] }
         ids.count.should >= 1
         ids.should include(@org_user_2.id)
-      }
+      end
     end
 
     it 'returns users matching email query' do
       email = @org_user_2.email
-      [email].each { |q|
+      [email].each do |q|
         get api_v1_organization_users_url(id: @organization.id, api_key: @org_user_1.api_key, q: q), @headers
         last_response.status.should == 200
         json_body = JSON.parse(last_response.body)
         ids = json_body['users'].map { |u| u['id'] }
         ids.count.should == 1
         ids[0].should == @org_user_2.id
-      }
+      end
     end
 
     it 'return users with matching group_id' do
@@ -155,5 +153,4 @@ describe Carto::Api::OrganizationsController do
       end
     end
   end
-
 end

@@ -41,6 +41,7 @@ describe Carto::VisualizationExport do
   include Carto::Factories::Visualizations
 
   class FakeCartoHttpClientFileToucher
+
     attr_reader :touched_files
 
     def initialize
@@ -66,6 +67,7 @@ describe Carto::VisualizationExport do
     def touch(path)
       FileUtils.touch(path).first
     end
+
   end
 
   let(:base_dir) { ensure_clean_folder('/tmp/exporter_test') }
@@ -91,18 +93,19 @@ describe Carto::VisualizationExport do
         visualization,
         @carto_user1,
         base_dir: base_dir,
-        data_exporter: Carto::DataExporter.new(fake_carto_http_client_toucher))
+        data_exporter: Carto::DataExporter.new(fake_carto_http_client_toucher)
+      )
 
       touched_files = fake_carto_http_client_toucher.touched_files
       CartoDB::Importer2::Unp.new.open(exported_file) do |files|
-        files.length.should eq (map.layers.count + 1)
+        files.length.should eq(map.layers.count + 1)
         names = files.map(&:path)
         names.count { |f| f =~ /\.carto\.json$/ }.should eq 1
         names.should include(touched_files[0].split('/').last)
         names.should include(touched_files[1].split('/').last)
       end
 
-      ([exported_file] + touched_files).map { |f| File.delete(f) if File.exists?(f) }
+      ([exported_file] + touched_files).map { |f| File.delete(f) if File.exist?(f) }
 
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
@@ -125,7 +128,8 @@ describe Carto::VisualizationExport do
         visualization,
         @carto_user2,
         base_dir: base_dir,
-        data_exporter: Carto::DataExporter.new(fake_carto_http_client_toucher))
+        data_exporter: Carto::DataExporter.new(fake_carto_http_client_toucher)
+      )
 
       touched_files = fake_carto_http_client_toucher.touched_files
       CartoDB::Importer2::Unp.new.open(exported_file) do |files|
@@ -134,7 +138,7 @@ describe Carto::VisualizationExport do
         names.count { |f| f =~ /\.carto\.json$/ }.should eq 1
       end
 
-      ([exported_file] + touched_files).map { |f| File.delete(f) if File.exists?(f) }
+      ([exported_file] + touched_files).map { |f| File.delete(f) if File.exist?(f) }
 
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
@@ -160,18 +164,19 @@ describe Carto::VisualizationExport do
         @carto_user1,
         user_tables_ids: [table1.id],
         base_dir: base_dir,
-        data_exporter: Carto::DataExporter.new(fake_carto_http_client_toucher))
+        data_exporter: Carto::DataExporter.new(fake_carto_http_client_toucher)
+      )
 
       touched_files = fake_carto_http_client_toucher.touched_files
       CartoDB::Importer2::Unp.new.open(exported_file) do |files|
-        files.length.should eq (1 + 1) # selected user_table + metadata
+        files.length.should eq(1 + 1) # selected user_table + metadata
         names = files.map(&:path)
         names.count { |f| f =~ /\.carto\.json$/ }.should eq 1
         names.should include(touched_files[0].split('/').last)
         touched_files.length.should eq 1
       end
 
-      ([exported_file] + touched_files).map { |f| File.delete(f) if File.exists?(f) }
+      ([exported_file] + touched_files).map { |f| File.delete(f) if File.exist?(f) }
 
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
@@ -183,7 +188,7 @@ describe Carto::VisualizationExport do
       visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1)
       ve = FactoryGirl.create(:visualization_export, user: @carto_user1, visualization: visualization)
 
-      fake_path = "/tmp/fakepath"
+      fake_path = '/tmp/fakepath'
       touch(fake_path)
       ve.expects(:export).returns(fake_path)
       file_upload_helper_mock = mock
@@ -192,7 +197,7 @@ describe Carto::VisualizationExport do
       ve.run_export!(file_upload_helper: file_upload_helper_mock)
 
       visualization.destroy
-      File.delete(fake_path) if File.exists?(fake_path)
+      File.delete(fake_path) if File.exist?(fake_path)
     end
 
     describe 'with S3' do

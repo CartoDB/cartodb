@@ -6,8 +6,9 @@ module Carto
   module Tracking
     module Formats
       class Internal
+
         def initialize(hash)
-          @hash = hash ? hash.with_indifferent_access : Hash.new
+          @hash = hash ? hash.with_indifferent_access : {}
         end
 
         # Symbol should be provided as a snake-case'd version the record's model class name.
@@ -47,10 +48,10 @@ module Carto
           event_version = fetch_record!(:event_version)
 
           Carto::Tracking::Formats::PubSub.new(user: user,
-                                                visualization: visualization,
-                                                widget: widget,
-                                                event_version: event_version,
-                                                hash: @hash).to_hash
+                                               visualization: visualization,
+                                               widget: widget,
+                                               event_version: event_version,
+                                               hash: @hash).to_hash
         end
 
         def to_hubspot
@@ -58,6 +59,7 @@ module Carto
 
           Carto::Tracking::Formats::Hubspot.new(email: user.email).to_hash
         end
+
       end
     end
   end

@@ -7,6 +7,7 @@ require_relative '../../lib/carto/form'
 
 module ModelFactories
   class LayerFactory
+
     def self.get_new(options)
       ::Layer.new(options)
     end
@@ -32,9 +33,7 @@ module ModelFactories
       data_layer.tooltip ||= {}
       data_layer.tooltip['fields'] = []
 
-      if user.builder_enabled?
-        data_layer.options['style_properties'] = style_properties(geometry_type)
-      end
+      data_layer.options['style_properties'] = style_properties(geometry_type) if user.builder_enabled?
 
       data_layer
     end
@@ -70,5 +69,6 @@ module ModelFactories
     def self.legacy_tile_style(geometry_type)
       "#layer #{Cartodb.get_config(:layer_opts, 'default_tile_styles', geometry_type)}"
     end
+
   end
 end

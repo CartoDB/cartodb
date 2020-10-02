@@ -35,7 +35,10 @@ require_relative '../helpers/quota_check_helpers.rb'
 module CartoDB
   module Importer2
     class Downloader
-      include CartoDB::Importer2::QuotaCheckHelpers, Carto::UrlValidator, Carto::FilenameGenerator
+
+      include Carto::FilenameGenerator
+      include Carto::UrlValidator
+      include CartoDB::Importer2::QuotaCheckHelpers
 
       def self.supported_extensions
         @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
@@ -152,9 +155,7 @@ module CartoDB
         translator = supported_translator(url)
 
         raw_url = if translator
-                    if translator.respond_to?(:rename_destination)
-                      @custom_filename = translator.rename_destination(url)
-                    end
+                    @custom_filename = translator.rename_destination(url) if translator.respond_to?(:rename_destination)
 
                     translator.translate(url)
                   else
@@ -203,15 +204,15 @@ module CartoDB
         cookiejar = Tempfile.new('cookiejar_', tmp_file_directory).path
 
         {
-          cookiefile:       cookiejar,
-          cookiejar:        cookiejar,
-          followlocation:   true,
-          ssl_verifypeer:   verify_ssl,
-          ssl_verifyhost:   (verify_ssl ? 2 : 0),
-          forbid_reuse:     true,
-          connecttimeout:   HTTP_CONNECT_TIMEOUT_SECONDS,
-          timeout:          @http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT_SECONDS),
-          maxredirs:        MAX_REDIRECTS
+          cookiefile: cookiejar,
+          cookiejar: cookiejar,
+          followlocation: true,
+          ssl_verifypeer: verify_ssl,
+          ssl_verifyhost: (verify_ssl ? 2 : 0),
+          forbid_reuse: true,
+          connecttimeout: HTTP_CONNECT_TIMEOUT_SECONDS,
+          timeout: @http_options.fetch(:http_timeout, DEFAULT_HTTP_REQUEST_TIMEOUT_SECONDS),
+          maxredirs: MAX_REDIRECTS
         }
       end
 
@@ -278,7 +279,7 @@ module CartoDB
         elsif response.code == 404
           raise NotFoundDownloadError.new(response.body)
         elsif response.return_code == :partial_file
-          raise PartialDownloadError.new("DOWNLOAD ERROR: A file transfer was shorter or larger than expected")
+          raise PartialDownloadError.new('DOWNLOAD ERROR: A file transfer was shorter or larger than expected')
         else
           raise DownloadError.new("DOWNLOAD ERROR: Code:#{response.code} Body:#{response.body}")
         end
@@ -321,13 +322,14 @@ module CartoDB
         URL_TRANSLATORS.map(&:new).find { |translator| translator.supported?(url) }
       end
 
-      CONTENT_DISPOSITION_RE = %r{;\s*filename=(.*;|.*)}
+      CONTENT_DISPOSITION_RE = /;\s*filename=(.*;|.*)/.freeze
 
       def filename_from_headers
         return nil unless headers
 
         disposition = headers['Content-Disposition']
         return false unless disposition
+
         filename = disposition.match(CONTENT_DISPOSITION_RE).to_a[1]
         return false unless filename
 
@@ -396,9 +398,7 @@ module CartoDB
           item[:content_types].include?(downcased_content_type)
         end
 
-        if extensions_from_headers_item
-          @extensions_from_headers ||= extensions_from_headers_item[:extensions]
-        end
+        @extensions_from_headers ||= extensions_from_headers_item[:extensions] if extensions_from_headers_item
       end
 
       def filename_with_extension(filename)
@@ -413,6 +413,7 @@ module CartoDB
           "#{pathname.basename('.*')}#{extensions_from_headers.first}"
         end
       end
+
     end
   end
 end

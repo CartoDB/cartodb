@@ -12,11 +12,11 @@ describe 'UUIDHelper' do
   end
 
   it 'fails if content prepended' do
-    Carto::UUIDHelper.uuid?("hi" + Carto::UUIDHelper.random_uuid).should be(false)
+    Carto::UUIDHelper.uuid?('hi' + Carto::UUIDHelper.random_uuid).should be(false)
   end
 
   it 'fails if content appended' do
-    Carto::UUIDHelper.uuid?(Carto::UUIDHelper.random_uuid + "hola").should be(false)
+    Carto::UUIDHelper.uuid?(Carto::UUIDHelper.random_uuid + 'hola').should be(false)
   end
 
   it 'fails if content prepended with newlines' do

@@ -6,7 +6,7 @@ describe User do
   include UserPartHelper
   include_context 'user spec configuration'
 
-  it "should only allow legal usernames" do
+  it 'should only allow legal usernames' do
     illegal_usernames = %w(si$mon 'sergio estella' j@vi sergio£££ simon_tokumine SIMON Simon jose.rilla -rilla rilla-)
     legal_usernames   = %w(simon javier-de-la-torre sergio-leiva sergio99)
 
@@ -23,7 +23,7 @@ describe User do
     end
   end
 
-  it "should not allow a username in use by an organization" do
+  it 'should not allow a username in use by an organization' do
     org = create_org('testusername', 10.megabytes, 1)
     @user.username = org.name
     @user.valid?.should be_false
@@ -31,18 +31,18 @@ describe User do
     @user.valid?.should be_true
   end
 
-  it "should have a default dashboard_viewed? false" do
+  it 'should have a default dashboard_viewed? false' do
     user = ::User.new
     user.dashboard_viewed?.should be_false
   end
 
-  it "should reset dashboard_viewed when dashboard gets viewed" do
+  it 'should reset dashboard_viewed when dashboard gets viewed' do
     user = ::User.new
     user.view_dashboard
     user.dashboard_viewed?.should be_true
   end
 
-  describe "avatar checks" do
+  describe 'avatar checks' do
     let(:user1) do
       User.where(username: 'u1').first&.destroy
       create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
@@ -52,8 +52,8 @@ describe User do
       user1.destroy
     end
 
-    it "should load a cartodb avatar url if no gravatar associated" do
-      gravatar_url = %r{gravatar.com}
+    it 'should load a cartodb avatar url if no gravatar associated' do
+      gravatar_url = /gravatar.com/
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 404))
       user1.stubs(:gravatar_enabled?).returns(true)
       user1.avatar_url = nil
@@ -61,13 +61,13 @@ describe User do
       user1.reload_avatar
       kind_regex = "(#{Cartodb.config[:avatars]['kinds'].join('|')})"
       color_regex = "(#{Cartodb.config[:avatars]['colors'].join('|')})"
-      expected_url = /#{Cartodb.config[:avatars]['base_url']}\/avatar_#{kind_regex}_#{color_regex}\.png/
+      expected_url = %r{#{Cartodb.config[:avatars]['base_url']}/avatar_#{kind_regex}_#{color_regex}\.png}
 
       expect(user1.avatar_url).to match(expected_url)
     end
 
-    it "should load a cartodb avatar url if gravatar disabled" do
-      gravatar_url = %r{gravatar.com}
+    it 'should load a cartodb avatar url if gravatar disabled' do
+      gravatar_url = /gravatar.com/
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
       user1.stubs(:gravatar_enabled?).returns(false)
       user1.avatar_url = nil
@@ -75,13 +75,13 @@ describe User do
       user1.reload_avatar
       kind_regex = "(#{Cartodb.config[:avatars]['kinds'].join('|')})"
       color_regex = "(#{Cartodb.config[:avatars]['colors'].join('|')})"
-      expected_url = /#{Cartodb.config[:avatars]['base_url']}\/avatar_#{kind_regex}_#{color_regex}\.png/
+      expected_url = %r{#{Cartodb.config[:avatars]['base_url']}/avatar_#{kind_regex}_#{color_regex}\.png}
 
       expect(user1.avatar_url).to match(expected_url)
     end
 
-    it "should load a the user gravatar url" do
-      gravatar_url = %r{gravatar.com}
+    it 'should load a the user gravatar url' do
+      gravatar_url = /gravatar.com/
       Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
       user1.stubs(:gravatar_enabled?).returns(true)
       user1.reload_avatar
@@ -133,36 +133,35 @@ describe User do
     end
   end
 
-  describe "#purge_redis_vizjson_cache" do
+  describe '#purge_redis_vizjson_cache' do
     it "shall iterate on the user's visualizations and purge their redis cache" do
       # Create a few tables with their default vizs
-      (1..3).each do |i|
+      (1..3).each do |_i|
         t = Table.new
         t.user_id = @user.id
         t.save
       end
 
-      collection = CartoDB::Visualization::Collection.new.fetch({user_id: @user.id})
+      collection = CartoDB::Visualization::Collection.new.fetch({ user_id: @user.id })
       redis_spy = RedisDoubles::RedisSpy.new
-      redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new()
-      redis_embed_cache = EmbedRedisCache.new()
+      redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new
+      redis_embed_cache = EmbedRedisCache.new
       CartoDB::Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_spy)
       EmbedRedisCache.any_instance.stubs(:redis).returns(redis_spy)
 
-
-      redis_vizjson_keys = collection.map { |v|
+      redis_vizjson_keys = collection.map do |v|
         [
           redis_vizjson_cache.key(v.id, false), redis_vizjson_cache.key(v.id, true),
           redis_vizjson_cache.key(v.id, false, 3), redis_vizjson_cache.key(v.id, true, 3),
           redis_vizjson_cache.key(v.id, false, '3n'), redis_vizjson_cache.key(v.id, true, '3n'),
-          redis_vizjson_cache.key(v.id, false, '3a'), redis_vizjson_cache.key(v.id, true, '3a'),
+          redis_vizjson_cache.key(v.id, false, '3a'), redis_vizjson_cache.key(v.id, true, '3a')
         ]
-      }.flatten
+      end.flatten
       redis_vizjson_keys.should_not be_empty
 
-      redis_embed_keys = collection.map { |v|
+      redis_embed_keys = collection.map do |v|
         [redis_embed_cache.key(v.id, false), redis_embed_cache.key(v.id, true)]
-      }.flatten
+      end.flatten
       redis_embed_keys.should_not be_empty
 
       @user.purge_redis_vizjson_cache
@@ -175,9 +174,9 @@ describe User do
       redis_spy.invokes(:del).map(&:sort).should include(redis_embed_keys.sort)
     end
 
-    it "shall not fail if the user does not have visualizations" do
+    it 'shall not fail if the user does not have visualizations' do
       user = create_user
-      collection = CartoDB::Visualization::Collection.new.fetch({user_id: user.id})
+      collection = CartoDB::Visualization::Collection.new.fetch({ user_id: user.id })
       # 'http' keys
       redis_keys = collection.map(&:redis_vizjson_key)
       redis_keys.should be_empty

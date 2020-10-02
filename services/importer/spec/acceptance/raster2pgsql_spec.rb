@@ -14,12 +14,12 @@ include CartoDB::Importer2
 
 describe 'raster2pgsql acceptance tests' do
   include AcceptanceHelpers
-  include_context "cdb_importer schema"
-  include_context "no stats"
+  include_context 'cdb_importer schema'
+  include_context 'no stats'
 
   before(:all) do
     @table_name = 'raster_test'
-    @filepath = File.expand_path(File.join(File.dirname(__FILE__), "../fixtures/raster_simple.tif"))
+    @filepath = File.expand_path(File.join(File.dirname(__FILE__), '../fixtures/raster_simple.tif'))
     @user = create_user
     @user.save
   end
@@ -29,7 +29,6 @@ describe 'raster2pgsql acceptance tests' do
   end
 
   # TODO: TempFile for other tests who operate with the file
-
 
   it 'tests extracting size from a tif' do
     expected_size = [2052, 1780]
@@ -43,18 +42,18 @@ describe 'raster2pgsql acceptance tests' do
   it 'tests calculating overviews' do
     # PG12_DEPRECATED
     if @user.in_database.table_exists?('raster_overviews')
-      raster_1_size = [16200, 8100]
+      raster_1_size = [16_200, 8100]
       expected_overviews_1 = '2,4,8,16,32,64,128'
-      expected_additional_tables_1 = [ "o_2_raster_test", "o_4_raster_test", "o_8_raster_test", "o_16_raster_test", \
-                                      "o_32_raster_test", "o_64_raster_test", "o_128_raster_test" ]
+      expected_additional_tables_1 = ['o_2_raster_test', 'o_4_raster_test', 'o_8_raster_test', 'o_16_raster_test', \
+                                      'o_32_raster_test', 'o_64_raster_test', 'o_128_raster_test']
       raster_2_size = [1024, 32]
       expected_overviews_2 = '2,4,8'
-      expected_additional_tables_2 = [ "o_2_raster_test", "o_4_raster_test", "o_8_raster_test" ]
-      raster_3_size = [1620000, 810000]
+      expected_additional_tables_2 = ['o_2_raster_test', 'o_4_raster_test', 'o_8_raster_test']
+      raster_3_size = [1_620_000, 810_000]
       expected_overviews_3 = '2,4,8,16,32,64,128,256,512'
-      expected_additional_tables_3 = [ "o_2_raster_test", "o_4_raster_test", "o_8_raster_test", "o_16_raster_test", \
-                                      "o_32_raster_test", "o_64_raster_test", "o_128_raster_test", \
-                                      "o_256_raster_test", "o_512_raster_test" ]
+      expected_additional_tables_3 = ['o_2_raster_test', 'o_4_raster_test', 'o_8_raster_test', 'o_16_raster_test', \
+                                      'o_32_raster_test', 'o_64_raster_test', 'o_128_raster_test', \
+                                      'o_256_raster_test', 'o_512_raster_test']
 
       rasterizer = Raster2Pgsql.new(@table_name, @filepath, {}, @user.db)
 
@@ -83,32 +82,32 @@ describe 'raster2pgsql acceptance tests' do
   end
 
   it 'if there are some problem while importing should clean the temporary tables' do
-      filepath    = path_to('raster_simple.tif')
-      downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
-      log         = CartoDB::Importer2::Doubles::Log.new(@user)
-      job         = Job.new({ logger: log, pg_options: @user.db_service.db_configuration_for })
-      runner      = CartoDB::Importer2::Runner.new({
-                       pg: @user.db_service.db_configuration_for,
-                       downloader: downloader,
-                       log: CartoDB::Importer2::Doubles::Log.new(@user),
-                       user: @user,
-                       job: job
-                     })
-      CartoDB::Importer2::Raster2Pgsql.any_instance.stubs(:exit_code).returns(256)
-      CartoDB::Importer2::Raster2Pgsql.any_instance.stubs(:command_output).returns('no space left on device')
+    filepath = path_to('raster_simple.tif')
+    downloader = CartoDB::Importer2::Downloader.new(@user.id, filepath)
+    log = CartoDB::Importer2::Doubles::Log.new(@user)
+    job = Job.new({ logger: log, pg_options: @user.db_service.db_configuration_for })
+    runner = CartoDB::Importer2::Runner.new({
+                                              pg: @user.db_service.db_configuration_for,
+                                              downloader: downloader,
+                                              log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                              user: @user,
+                                              job: job
+                                            })
+    CartoDB::Importer2::Raster2Pgsql.any_instance.stubs(:exit_code).returns(256)
+    CartoDB::Importer2::Raster2Pgsql.any_instance.stubs(:command_output).returns('no space left on device')
 
-      runner.run
+    runner.run
 
-      table_exists = @db.execute(%Q{SELECT *
+    table_exists = @db.execute(%{SELECT *
                       FROM   information_schema.tables
                       WHERE  table_schema = '#{job.schema}'
                       AND    table_name = '#{job.table_name}'})
-      table_exists.should be 0
+    table_exists.should be 0
 
-      raster_tables = @db.execute(%Q{SELECT *
+    raster_tables = @db.execute(%{SELECT *
                       FROM   information_schema.tables
                       WHERE  table_schema = '#{job.schema}'
                       AND    table_name LIKE 'o_%_#{job.table_name}'})
-      raster_tables.should be 0
+    raster_tables.should be 0
   end
 end

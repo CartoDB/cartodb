@@ -5,13 +5,13 @@ require 'helpers/unique_names_helper'
 describe CartoDB::Stats::APICalls do
   include UniqueNamesHelper
 
-  describe "Stats API Calls" do
+  describe 'Stats API Calls' do
     before(:all) do
       @api_calls = CartoDB::Stats::APICalls.new
 
       @default_date_to = Date.today
       @default_date_from = @default_date_to - 29.days
-      @dates = @default_date_to.downto(@default_date_from).map {|d| d.strftime("%Y%m%d")}
+      @dates = @default_date_to.downto(@default_date_from).map { |d| d.strftime('%Y%m%d')}
       @dates_example_values = {}
       @dates.each do |d|
         @dates_example_values[d] = rand(50)
@@ -19,15 +19,14 @@ describe CartoDB::Stats::APICalls do
       @redis_sources_count = CartoDB::Stats::APICalls::REDIS_SOURCES.length
     end
 
-    it "should sum correctly api calls from all sources and return array without date" do
+    it 'should sum correctly api calls from all sources and return array without date' do
       @api_calls.stubs(:get_old_api_calls).returns(@dates_example_values.values)
       @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
-      expected_total_calls = @dates_example_values.values.map {|v| v * (@redis_sources_count + 1)}
-      @api_calls.get_api_calls_without_dates('wadus', {old_api_calls: true}).should == expected_total_calls
-
+      expected_total_calls = @dates_example_values.values.map { |v| v * (@redis_sources_count + 1)}
+      @api_calls.get_api_calls_without_dates('wadus', { old_api_calls: true }).should == expected_total_calls
     end
 
-    it "should sum correctly api calls from all redis sources and return hash with dates" do
+    it 'should sum correctly api calls from all redis sources and return hash with dates' do
       @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
       expected_total_calls = {}
       @dates_example_values.each do |d, value|
@@ -36,15 +35,15 @@ describe CartoDB::Stats::APICalls do
       @api_calls.get_api_calls_with_dates('wadus').should == expected_total_calls
     end
 
-    it "should sum correctly api calls from all redis sources and return absolute value" do
+    it 'should sum correctly api calls from all redis sources and return absolute value' do
       api_calls_value = 3
       @api_calls.stubs(:get_total_api_calls_from_redis_source).returns(api_calls_value)
       expected_total_calls = @redis_sources_count * api_calls_value
       @api_calls.get_total_api_calls('wadus', '123456').should == expected_total_calls
     end
 
-    it "should sum correctly api calls with custom dates from all redis sources and return hash with dates" do
-      pending "Find a way to stub only redis call"
+    it 'should sum correctly api calls with custom dates from all redis sources and return hash with dates' do
+      pending 'Find a way to stub only redis call'
 
       @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
       expected_total_calls = {}
@@ -62,7 +61,6 @@ describe CartoDB::Stats::APICalls do
   end
 
   describe 'get_api_calls_from_redis_source' do
-
     before(:each) do
       @api_calls = CartoDB::Stats::APICalls.new
       @username = unique_name('user')
@@ -76,9 +74,9 @@ describe CartoDB::Stats::APICalls do
       last_expected_day = today.strftime('%Y%m%d')
       calls = @api_calls.get_api_calls_from_redis_source('nonexisting_user', 'nonexisting_api_call_type')
       calls.count.should == 30
-      calls.each { |day, count|
+      calls.each do |_day, count|
         count.should == 0
-      }
+      end
       calls.first[0] = last_expected_day
       calls[last_expected_day].should == 0
       calls[first_expected_day].should == 0
@@ -95,7 +93,7 @@ describe CartoDB::Stats::APICalls do
       score = 0
       scores = {}
       date_to.downto(date_from) do |date|
-        stat_date = date.strftime("%Y%m%d")
+        stat_date = date.strftime('%Y%m%d')
         score += 1
         $users_metadata.ZADD(key, score, stat_date).to_i
         scores[stat_date] = score
@@ -109,7 +107,7 @@ describe CartoDB::Stats::APICalls do
       date_to = today
       date_from = today - 29.days
       date_to.downto(date_from) do |date|
-        stat_date = date.strftime("%Y%m%d")
+        stat_date = date.strftime('%Y%m%d')
         calls[stat_date].should eq(scores[stat_date]), "Failed day #{stat_date}, it was #{calls[stat_date]} instead of #{scores[stat_date]}"
       end
     end
@@ -121,14 +119,14 @@ describe CartoDB::Stats::APICalls do
 
       random_data = {}
       (0..365).each do |n|
-        $users_metadata.ZADD(key, 1, (today - n.days).strftime("%Y%m%d")).to_i
+        $users_metadata.ZADD(key, 1, (today - n.days).strftime('%Y%m%d')).to_i
       end
 
       requested_days = 60
       date_to = today
       date_from = today - (requested_days - 1).days
 
-      calls = @api_calls.get_api_calls_from_redis_source(@username, @type, @options.merge({from: date_from, to: date_to}))
+      calls = @api_calls.get_api_calls_from_redis_source(@username, @type, @options.merge({ from: date_from, to: date_to }))
       calls.count.should == requested_days
       calls.values.reduce(:+).to_i.should == 60
     end
@@ -139,8 +137,8 @@ describe CartoDB::Stats::APICalls do
       today = Date.today
 
       random_data = {}
-      random_data[(today - 2.days).strftime("%Y%m%d")] = 7
-      random_data[(today - 1.days).strftime("%Y%m%d")] = 13
+      random_data[(today - 2.days).strftime('%Y%m%d')] = 7
+      random_data[(today - 1.days).strftime('%Y%m%d')] = 13
 
       random_data.each do |date, score|
         $users_metadata.ZADD(key, score, date).to_i
@@ -148,10 +146,10 @@ describe CartoDB::Stats::APICalls do
 
       chose_date = Date.today - 1.days
 
-      calls = @api_calls.get_api_calls_from_redis_source(@username, @type, @options.merge({from: chose_date, to: chose_date}))
+      calls = @api_calls.get_api_calls_from_redis_source(@username, @type, @options.merge({ from: chose_date, to: chose_date }))
       calls.count.should == 1
 
-      chose_date_key = chose_date.strftime("%Y%m%d")
+      chose_date_key = chose_date.strftime('%Y%m%d')
       calls[chose_date_key].should eq(random_data.fetch(chose_date_key, 0)), "Failed day #{chose_date_key}, it was #{calls[chose_date_key]} instead of #{random_data[chose_date_key]}"
     end
 

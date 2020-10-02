@@ -14,11 +14,9 @@ require_relative '../doubles/user'
 require_relative 'acceptance_helpers'
 require_relative 'no_stats_context'
 
-
-
 describe 'geojson regression tests' do
   include AcceptanceHelpers
-  include_context "no stats"
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -33,11 +31,11 @@ describe 'geojson regression tests' do
     filepath    = path_to('tm_world_borders_simpl_0_8.geojson')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
   end
 
@@ -46,11 +44,11 @@ describe 'geojson regression tests' do
                   '/bars.geojson?foo=bar'
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
   end
 
@@ -58,15 +56,13 @@ describe 'geojson regression tests' do
     filepath    = path_to('invalid.geojson')
     downloader  = ::CartoDB::Importer2::Downloader.new(@user.id, filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @user.db_service.db_configuration_for,
-                               downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new(@user),
-                               user: @user
-                             })
+                                                     pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user
+                                                   })
     runner.run
 
     runner.results.first.error_code.should eq 1002
   end
-
 end
-

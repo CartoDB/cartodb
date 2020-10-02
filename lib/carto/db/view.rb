@@ -1,6 +1,7 @@
 module Carto
   module Db
     class View
+
       attr_reader :database_name, :database_schema, :name, :relkind
 
       def initialize(database_name:, database_schema:, name:, relkind:)
@@ -20,6 +21,7 @@ module Carto
           @name == other.name &&
           @relkind == other.relkind
       end
+
     end
   end
 end

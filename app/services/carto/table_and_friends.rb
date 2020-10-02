@@ -4,12 +4,13 @@ module Carto
   # This is a utility to apply changes (e.g. privilege modifications) to all
   # the tables than comprise the dataset.
   module TableAndFriends
+
     def self.apply(db_connection, schema, table_name, &block)
       qualified_name = qualified_table_name(schema, table_name)
       block[schema, table_name, qualified_name]
       overviews_service = Carto::OverviewsService.new(db_connection)
       overviews_service.overview_tables(qualified_name).each do |overview_table|
-        table, _ = Table.table_and_schema(overview_table)
+        table, = Table.table_and_schema(overview_table)
         block[schema, table, qualified_table_name(schema, table)]
       end
       # TODO: should we apply also to raster overview tables?
@@ -21,5 +22,6 @@ module Carto
     def self.qualified_table_name(schema, table_name)
       %{"#{schema.gsub('"', '""')}"."#{table_name.gsub('"', '""')}"}
     end
+
   end
 end

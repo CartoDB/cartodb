@@ -29,22 +29,16 @@ class Carto::DataImportQueryBuilder
   def build
     query = Carto::DataImport.all
 
-    if @user_id
-      query = query.where(user_id: @user_id)
-    end
+    query = query.where(user_id: @user_id) if @user_id
 
-    if @excluded_states
-      query = query.where('state not in (?)', @excluded_states)
-    end
+    query = query.where('state not in (?)', @excluded_states) if @excluded_states
 
-    if @created_at_after
-      query = query.where('created_at >= ?', @created_at_after)
-    end
+    query = query.where('created_at >= ?', @created_at_after) if @created_at_after
 
-    @order.each { |k, v|
+    @order.each do |k, v|
       query = query.order(k)
       query = query.reverse_order if v == :desc
-    }
+    end
 
     query
   end

@@ -4,13 +4,12 @@ require_relative '../../lib/synchronizer/collection'
 require_relative '../factories/pg_connection'
 require_relative '../../../data-repository/backend/sequel'
 
-
 include CartoDB::Synchronizer
 
 describe Collection do
   before do
-    @stop       = lambda { |result| EventMachine.stop }
-    @run_call   = lambda { |records| records.process; EventMachine.stop }
+    @stop       = ->(_result) { EventMachine.stop }
+    @run_call   = ->(records) { records.process; EventMachine.stop }
     db          = Factories::PGConnection.new
     @connection = db.connection
     @options    = db.pg_options
@@ -18,7 +17,7 @@ describe Collection do
 
   describe '#fetch' do
     it 'fetchs all pending jobs from the synchronizations relation' do
-      repository  = 
+      repository =
         DataRepository::Backend::Sequel.new(@connection, :synchronizations)
 
       ensure_table_created_in(@connection)
@@ -48,11 +47,11 @@ describe Collection do
 
   def synchronization(id)
     {
-      id:         id,
-      url:        'foo',
-      user_id:    1,
-      interval:   3600,
-      run_at:     Time.now.utc - 2,
+      id: id,
+      url: 'foo',
+      user_id: 1,
+      interval: 3600,
+      run_at: Time.now.utc - 2,
       created_at: Time.now.utc,
       updated_at: Time.now.utc
     }
@@ -60,12 +59,11 @@ describe Collection do
 
   def fake_member
     member = Object.new
-    def member.run; self; end
+    def member.run
+      self
+    end
     member
   end
 
-
-  def ensure_table_created_in(connection)
-  end
+  def ensure_table_created_in(connection); end
 end
-

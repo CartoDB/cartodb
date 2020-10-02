@@ -6,7 +6,7 @@ module CartoDB
 
       include ::LoggerHelper
 
-      STATEMENT_TIMEOUT = (1.hour * 1000).freeze
+      STATEMENT_TIMEOUT = (1.hour * 1000)
       DESTINATION_SCHEMA = 'public'.freeze
       THE_GEOM = 'the_geom'.freeze
       OVERWRITE_ERROR = 2013
@@ -17,7 +17,7 @@ module CartoDB
         @database     = database
         @user         = user
         @overviews_creator = overviews_creator
-        @failed       = false
+        @failed = false
         @table_setup = ::Carto::Importer::TableSetup.new(
           user: user,
           overviews_creator: overviews_creator,
@@ -33,16 +33,16 @@ module CartoDB
 
         if runner.remote_data_updated?
           if result.nil?
-            data_for_exception = "Expecting success data for table '#{table_name}'\nResults:#{runner.results.to_s}\n"
+            data_for_exception = "Expecting success data for table '#{table_name}'\nResults:#{runner.results}\n"
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
 
           Carto::GhostTablesManager.run_synchronized(
             user.id, attempts: 10, timeout: 3000,
-            message: "Couldn't acquire bolt to register. Registering sync without bolt",
-            user: user,
-            synchronization_id: @synchronization_id
+                     message: "Couldn't acquire bolt to register. Registering sync without bolt",
+                     user: user,
+                     synchronization_id: @synchronization_id
           ) do
             move_to_schema(result)
             geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
@@ -54,19 +54,17 @@ module CartoDB
           end
         end
         self
-      rescue StandardError => exception
+      rescue StandardError => e
         @failed = true
         puts '=================='
-        puts exception.to_s
-        puts exception.backtrace
+        puts e.to_s
+        puts e.backtrace
         puts '=================='
         drop(result.table_name) if result && exists?(result.table_name)
-        raise exception
+        raise e
       end
 
-      def user
-        @user
-      end
+      attr_reader :user
 
       def overwrite(schema, table_name, result, geo_type)
         # Determine what kind of overwrite to perform
@@ -120,19 +118,19 @@ module CartoDB
 
         drop(result.table_name) if exists?(result.table_name)
 
-        # TODO not sure whether these two are needed
+        # TODO: not sure whether these two are needed
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
-      rescue StandardError => exception
+      rescue StandardError => e
         @error_code = OVERWRITE_ERROR
-        puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
+        puts "Sync overwrite ERROR: #{e.message}: #{e.backtrace.join}"
 
         # Gets all attributes in the result except for 'log_trace', as it is too long for Rollbar
         result_hash = CartoDB::Importer2::Result::ATTRIBUTES.map { |m| [m, result.send(m)] if m != 'log_trace' }
                                                             .compact.to_h
-        log_error(message: 'Error in sync overwrite', exception: exception, result: result_hash)
+        log_error(message: 'Error in sync overwrite', exception: e, result: result_hash)
         drop(result.table_name) if exists?(result.table_name)
-        raise exception
+        raise e
       end
 
       def overwrite_replace(schema, table_name, result)
@@ -150,16 +148,16 @@ module CartoDB
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
         @table_setup.run_index_statements(index_statements, @database)
-      rescue StandardError => exception
+      rescue StandardError => e
         @error_code = OVERWRITE_ERROR
-        puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
+        puts "Sync overwrite ERROR: #{e.message}: #{e.backtrace.join}"
 
         # Gets all attributes in the result except for 'log_trace', as it is too long for Rollbar
         result_hash = CartoDB::Importer2::Result::ATTRIBUTES.map { |m| [m, result.send(m)] if m != 'log_trace' }
                                                             .compact.to_h
-        log_error(message: 'Error in sync overwrite', exception: exception, result: result_hash)
+        log_error(message: 'Error in sync overwrite', exception: e, result: result_hash)
         drop(result.table_name) if exists?(result.table_name)
-        raise exception
+        raise e
       end
 
       def setup_table(table_name, geo_type)
@@ -203,7 +201,7 @@ module CartoDB
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
         type = nil
-        the_geom_data = user.in_database[%Q{
+        the_geom_data = user.in_database[%{
           SELECT a.attname, t.typname
           FROM pg_attribute a, pg_type t
           WHERE attrelid = '#{qualified_table_name}'::regclass
@@ -221,7 +219,7 @@ module CartoDB
           return nil
         end
 
-        geom_type = user.in_database[%Q{
+        geom_type = user.in_database[%{
           SELECT GeometryType(#{THE_GEOM})
           FROM #{qualified_table_name}
           WHERE #{THE_GEOM} IS NOT null
@@ -243,7 +241,7 @@ module CartoDB
           user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
             user_database.run("UPDATE #{qualified_table_name} SET the_geom = ST_Multi(the_geom);")
 
-            type = user_database[%Q{
+            type = user_database[%{
               SELECT GeometryType(#{THE_GEOM})
               FROM #{qualified_table_name}
               WHERE #{THE_GEOM} IS NOT null
@@ -260,7 +258,6 @@ module CartoDB
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
         user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
-
           # For consistency with regular imports, also eases testing
           # The sanitization of @table_name is applied to the newly imported table_name
           # This should not be necessary, since setup_table, called after cartodbfication
@@ -281,19 +278,21 @@ module CartoDB
           end
 
           # Remove primary key
-          existing_pk = user_database[%Q{
+          existing_pk = user_database[%{
             SELECT c.conname AS pk_name
             FROM pg_class r, pg_constraint c, pg_namespace n
             WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{table_name}'
             AND r.relnamespace = n.oid and n.nspname= '#{schema_name}'
           }].first
           existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
-          user_database.run(%Q{
-            ALTER TABLE #{qualified_table_name} DROP CONSTRAINT "#{existing_pk}"
-          }) unless existing_pk.nil?
+          unless existing_pk.nil?
+            user_database.run(%{
+              ALTER TABLE #{qualified_table_name} DROP CONSTRAINT "#{existing_pk}"
+            })
+          end
 
           # All normal fields casted to text
-          varchar_columns = user_database[%Q{
+          varchar_columns = user_database[%{
             SELECT a.attname, t.typname
             FROM pg_attribute a, pg_type t
             WHERE attrelid = '#{qualified_table_name}'::regclass
@@ -302,35 +301,34 @@ module CartoDB
           }].all
 
           varchar_columns.each do |column|
-            user_database.run(%Q{ALTER TABLE #{qualified_table_name} ALTER COLUMN "#{column[:attname]}" TYPE text})
+            user_database.run(%{ALTER TABLE #{qualified_table_name} ALTER COLUMN "#{column[:attname]}" TYPE text})
           end
 
           # If there's an auxiliary column, copy to cartodb_id and restart the sequence to the max(cartodb_id)+1
           if aux_cartodb_id_column.present?
             begin
               already_had_cartodb_id = false
-              user_database.run(%Q{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
+              user_database.run(%{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
             rescue StandardError
               already_had_cartodb_id = true
             end
             unless already_had_cartodb_id
-              user_database.run(%Q{UPDATE #{qualified_table_name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
+              user_database.run(%{UPDATE #{qualified_table_name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
               cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{schema_name}.#{table_name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-              max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
+              max_cartodb_id = user_database[%{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
               # only reset the sequence on real imports.
 
               if max_cartodb_id
                 user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id + 1}")
               end
             end
-            user_database.run(%Q{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
+            user_database.run(%{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
           end
-
         end
       end
 
       def success?
-        (!@failed  && runner.success?)
+        (!@failed && runner.success?)
       end
 
       def etag
@@ -349,21 +347,22 @@ module CartoDB
         # The new table to sync is moved to user schema to allow CartoDBfication.
         # This temporary table should not be registered (check ghost_tables_manager.rb)
         return self if schema == result.schema
-        database.execute(%Q{
+
+        database.execute(%{
           ALTER TABLE "#{result.schema}"."#{result.table_name}"
           SET SCHEMA "#{user.database_schema}"
         })
       end
 
       def rename(current_name, new_name)
-        database.execute(%Q{
+        database.execute(%{
           ALTER TABLE "#{user.database_schema}"."#{current_name}"
           RENAME TO #{new_name}
         })
       end
 
       def drop(table_name)
-        database.execute(%Q(DROP TABLE "#{user.database_schema}"."#{table_name}"))
+        database.execute(%(DROP TABLE "#{user.database_schema}"."#{table_name}"))
       end
 
       def exists?(table_name)
@@ -394,6 +393,7 @@ module CartoDB
 
       def valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col_name)
         return false unless column_names(user, table_name).include?(col_name)
+
         user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |db|
           return db["SELECT 1 FROM #{qualified_table_name} WHERE #{col_name} IS NULL LIMIT 1"].first.nil?
         end
@@ -411,6 +411,7 @@ module CartoDB
       def log_context
         super.merge(table: { name: table_name }, current_user: user)
       end
+
     end
   end
 end

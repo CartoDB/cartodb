@@ -10,7 +10,6 @@ require_relative '../../../services/data-repository/repository'
 include CartoDB
 
 describe Visualization::Overlays do
-
   before(:each) do
     @db = SequelRails.connection
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)

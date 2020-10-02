@@ -15,7 +15,7 @@ module Carto
       query
         .where('search_tweets.state' => STATE_COMPLETE)
         .where('search_tweets.created_at >= ? AND search_tweets.created_at <= ?', date_from, date_to + 1.days)
-        .sum("search_tweets.retrieved_items").to_i
+        .sum('search_tweets.retrieved_items').to_i
     end
 
     def self.twitter_imports_count_by_date(query, date_from, date_to)
@@ -42,9 +42,9 @@ module Carto
     end
 
     def calculate_used_credits
-      return 0 unless self.state == Carto::SearchTweet::STATE_COMPLETE
+      return 0 unless state == Carto::SearchTweet::STATE_COMPLETE
 
-      total_rows = self.retrieved_items
+      total_rows = retrieved_items
       quota = user.effective_twitter_total_quota
 
       remaining_quota  = quota + total_rows - user.effective_get_twitter_imports_count
@@ -54,7 +54,7 @@ module Carto
     end
 
     def price
-      return 0 unless self.retrieved_items > 0
+      return 0 unless retrieved_items > 0
 
       if [user.effective_twitter_block_price, calculate_used_credits, user.effective_twitter_datasource_block_size].any?(&:nil?)
         log_error('Uncomplete twitter configuration', current_user: user)
@@ -64,5 +64,6 @@ module Carto
         (user.effective_twitter_block_price * calculate_used_credits) / user.effective_twitter_datasource_block_size.to_f
       end
     end
+
   end
 end

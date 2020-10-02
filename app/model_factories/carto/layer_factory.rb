@@ -1,5 +1,6 @@
 module Carto
   class LayerFactory
+
     def self.build_default_base_layer(user)
       basemap = user.default_basemap.except('default')
       options = if basemap['className'] === 'googlemaps'
@@ -37,9 +38,7 @@ module Carto
       data_layer.tooltip ||= {}
       data_layer.tooltip['fields'] = []
 
-      if user.builder_enabled?
-        data_layer.options['style_properties'] = style_properties(geometry_type)
-      end
+      data_layer.options['style_properties'] = style_properties(geometry_type) if user.builder_enabled?
 
       data_layer
     end
@@ -70,5 +69,6 @@ module Carto
       "#layer #{Cartodb.get_config(:layer_opts, 'default_tile_styles', geometry_type)}"
     end
     private_class_method :legacy_tile_style
+
   end
 end

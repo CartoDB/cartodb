@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe OauthApp do
     describe '#validation' do
       before(:all) do
@@ -29,7 +30,7 @@ module Carto
         app = OauthApp.new
         app.icon_url = 'carto.com'
         expect(app).to_not(be_valid)
-        expect(app.errors[:icon_url]).to(include("must be a valid URL"))
+        expect(app.errors[:icon_url]).to(include('must be a valid URL'))
       end
 
       describe 'redirection uri' do
@@ -146,50 +147,49 @@ module Carto
                           .returns({})
                           .once
 
-          expect {
+          expect do
             @oauth_app2 = OauthApp.new(params.merge(user: @user_oauth))
             @oauth_app2.id = params[:id]
             @oauth_app2.save!
-          }.to change { OauthApp.count }.by(1)
+          end.to change { OauthApp.count }.by(1)
         end
 
         it 'creates app if user not present and avoid_sync_central' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
           Cartodb::Central.any_instance.expects(:create_oauth_app).never
 
-          expect {
+          expect do
             @oauth_app2 = OauthApp.create!(name: 'name1',
                                            redirect_uris: ['https://re.dir'],
                                            icon_url: 'http://localhost/some.png',
                                            website_url: 'http://localhost',
                                            avoid_sync_central: true)
-          }.to change { OauthApp.count }.by(1)
+          end.to change { OauthApp.count }.by(1)
         end
 
         it 'creates app if Central is disabled' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.expects(:create_oauth_app).never
 
-          expect {
+          expect do
             @oauth_app2 = OauthApp.create!(user: @user_oauth,
                                            name: 'name1',
                                            redirect_uris: ['https://re.dir'],
                                            website_url: 'http://localhost',
                                            icon_url: 'http://localhost/some.png')
-          }.to change { OauthApp.count }.by(1)
-
+          end.to change { OauthApp.count }.by(1)
         end
 
         it 'raises error if Central is disabled and no user' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.expects(:create_oauth_app).never
 
-          expect {
+          expect do
             @oauth_app2 = OauthApp.create!(name: 'name1',
                                            redirect_uris: ['https://re.dir'],
                                            website_url: 'http://localhost',
                                            icon_url: 'http://localhost/some.png')
-          }.to raise_error
+          end.to raise_error
         end
       end
 
@@ -212,10 +212,10 @@ module Carto
                           .returns({})
                           .once
 
-          expect {
+          expect do
             @oauth_app.name = 'updated'
             @oauth_app.save!
-          }.to_not raise_error
+          end.to_not raise_error
 
           @oauth_app.reload.name.should eq 'updated'
         end
@@ -224,10 +224,10 @@ module Carto
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.expects(:update_oauth_app).never
 
-          expect {
+          expect do
             @oauth_app.name = 'updated'
             @oauth_app.save!
-          }.to_not raise_error
+          end.to_not raise_error
 
           @oauth_app.reload.name.should eq 'updated'
         end
@@ -238,10 +238,10 @@ module Carto
 
           @oauth_app.avoid_sync_central = true
 
-          expect {
+          expect do
             @oauth_app.name = 'updated'
             @oauth_app.save!
-          }.to_not raise_error
+          end.to_not raise_error
 
           @oauth_app.reload.name.should eq 'updated'
         end
@@ -252,10 +252,10 @@ module Carto
 
           @oauth_app.avoid_sync_central = true
 
-          expect {
+          expect do
             @oauth_app.user = nil
             @oauth_app.save!
-          }.to_not raise_error
+          end.to_not raise_error
 
           @oauth_app.reload.user.should be_nil
         end
@@ -272,9 +272,9 @@ module Carto
                   .with(::Resque::UserJobs::Notifications::Send, anything, anything)
                   .never
 
-          expect {
+          expect do
             @oauth_app.destroy!
-          }.to change { OauthApp.count }.by(-1)
+          end.to change { OauthApp.count }.by(-1)
         end
 
         it 'sends notification if destroying app with users' do
@@ -284,9 +284,9 @@ module Carto
                   .with(::Resque::UserJobs::Notifications::Send, [@app_user.user.id], anything)
                   .once
 
-          expect {
+          expect do
             @oauth_app.destroy!
-          }.to change { OauthApp.count }.by(-1)
+          end.to change { OauthApp.count }.by(-1)
         end
 
         it 'does not send notification if avoid_send_notification' do
@@ -296,10 +296,10 @@ module Carto
                   .with(::Resque::UserJobs::Notifications::Send, [@app_user.user.id], anything)
                   .never
 
-          expect {
+          expect do
             @oauth_app.avoid_send_notification = true
             @oauth_app.destroy!
-          }.to change { OauthApp.count }.by(-1)
+          end.to change { OauthApp.count }.by(-1)
         end
 
         it 'logs notification errors on destroy' do
@@ -311,9 +311,9 @@ module Carto
             has_entry('message' => "Couldn't notify users about oauth_app deletion")
           )
 
-          expect {
+          expect do
             @oauth_app.destroy!
-          }.to raise_error(/unknown error/)
+          end.to raise_error(/unknown error/)
         end
 
         it 'deletes app in clouds from Central' do
@@ -324,18 +324,18 @@ module Carto
                           .returns({})
                           .once
 
-          expect {
+          expect do
             @oauth_app.destroy!
-          }.to change { OauthApp.count }.by(-1)
+          end.to change { OauthApp.count }.by(-1)
         end
 
         it 'deletes app if Central is disabled' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.expects(:delete_oauth_app).never
 
-          expect {
+          expect do
             @oauth_app.destroy!
-          }.to change { OauthApp.count }.by(-1)
+          end.to change { OauthApp.count }.by(-1)
         end
       end
     end
@@ -348,4 +348,5 @@ module Carto
       expect(app.client_secret).to(be_present)
     end
   end
+
 end

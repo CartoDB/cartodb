@@ -9,9 +9,7 @@ namespace :carto do
         errored = []
         puts "#{html_legends_count} html type legends..."
         html_legends.each_with_index do |legend, index|
-          if Carto::Layer.exists?(legend.layer_id) && !legend.update_attributes(type: 'custom')
-            errored << legend
-          end
+          errored << legend if Carto::Layer.exists?(legend.layer_id) && !legend.update_attributes(type: 'custom')
 
           printf "(#{index}/#{html_legends_count})"
         end
@@ -30,10 +28,10 @@ namespace :carto do
       task migrate_custom_image: :environment do
         include Carto::MapcappedVisualizationUpdater
 
-        CSS_URL_REGEX = /^(?:url\(['"]?)(.*?)(?:['"]?\))$/
-        STATIC_ASSETS_REGEX = /http:\/\/com.cartodb.users-assets.production.s3.amazonaws.com(.*)/
+        CSS_URL_REGEX = /^(?:url\(['"]?)(.*?)(?:['"]?\))$/.freeze
+        STATIC_ASSETS_REGEX = %r{http://com.cartodb.users-assets.production.s3.amazonaws.com(.*)}.freeze
 
-        puts "Updating base layer urls"
+        puts 'Updating base layer urls'
         layers = Carto::Layer.joins(:legends).where(legends: { type: 'custom' })
 
         total = layers.count
@@ -89,7 +87,7 @@ namespace :carto do
             raise 'MapcappedVisualizationUpdater returned false' unless success
           rescue StandardError => e
             errors += 1
-            STDERR.puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
+            warn "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
           end
         end
 

@@ -3,11 +3,11 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     drop_table :automatic_geocodings
     drop_column :geocodings, :automatic_geocoding_id
   end,
-  Proc.new do
+  proc do
     create_table :automatic_geocodings do
       Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       Integer     :table_id

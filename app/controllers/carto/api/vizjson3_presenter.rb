@@ -7,22 +7,28 @@ require_dependency 'carto/html_safe'
 
 module Carto
   module Api
+
     module ApiTemplates
+
       API_TEMPLATE_PUBLIC = 'public'.freeze
       API_TEMPLATE_PRIVATE = 'private'.freeze
 
       def api_templates_type(options)
         options.fetch(:https_request, false) ? API_TEMPLATE_PRIVATE : API_TEMPLATE_PUBLIC
       end
+
     end
 
     module DisplayVizjsonMode
+
       def display_named_map?(visualization, forced_privacy_version)
         forced_privacy_version != :force_anonymous && (visualization.retrieve_named_map? || forced_privacy_version == :force_named)
       end
+
     end
 
     class VizJSON3Presenter
+
       include ApiTemplates
       include DisplayVizjsonMode
       include Carto::HtmlSafe
@@ -78,21 +84,21 @@ module Carto
         map = @visualization.map
 
         vizjson = {
-          bounds:         bounds_from(map),
-          center:         map.center,
-          datasource:     datasource_vizjson(options, forced_privacy_version),
-          description:    markdown_html_safe(@visualization.description),
-          options:        map_options(@visualization),
-          id:             @visualization.id,
-          layers:         layers_vizjson(forced_privacy_version),
-          map_provider:   map.provider,
-          overlays:       overlays_vizjson(@visualization),
-          title:          @visualization.qualified_name(user),
-          updated_at:     @visualization.updated_at,
-          user:           user_info_vizjson(user),
-          version:        VIZJSON_VERSION,
-          widgets:        widgets_vizjson,
-          zoom:           map.zoom
+          bounds: bounds_from(map),
+          center: map.center,
+          datasource: datasource_vizjson(options, forced_privacy_version),
+          description: markdown_html_safe(@visualization.description),
+          options: map_options(@visualization),
+          id: @visualization.id,
+          layers: layers_vizjson(forced_privacy_version),
+          map_provider: map.provider,
+          overlays: overlays_vizjson(@visualization),
+          title: @visualization.qualified_name(user),
+          updated_at: @visualization.updated_at,
+          user: user_info_vizjson(user),
+          version: VIZJSON_VERSION,
+          widgets: widgets_vizjson,
+          zoom: map.zoom
         }
 
         visualization_analyses = @visualization.analyses
@@ -202,13 +208,15 @@ module Carto
       end
 
       def overlays_vizjson(visualization)
-        visualization.overlays.
-          reject { |o| o.type == 'layer_selector' }.
-          map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson }
+        visualization.overlays
+                     .reject { |o| o.type == 'layer_selector' }
+                     .map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson }
       end
+
     end
 
     class VizJSON3NamedMapLayerPresenter
+
       include ApiTemplates
 
       def initialize(layer, configuration)
@@ -249,32 +257,26 @@ module Carto
           }
         }
 
-        if layer_options && layer_options[:source]
-          data[:options][:source] = layer_options[:source]
-        end
+        data[:options][:source] = layer_options[:source] if layer_options && layer_options[:source]
 
         infowindow = layer_vizjson[:infowindow]
-        if infowindow && infowindow['fields'] && !infowindow['fields'].empty?
-          data[:infowindow] = infowindow
-        end
+        data[:infowindow] = infowindow if infowindow && infowindow['fields'] && !infowindow['fields'].empty?
 
         tooltip = layer_vizjson[:tooltip]
-        if tooltip && tooltip['fields'] && !tooltip['fields'].empty?
-          data[:tooltip] = tooltip
-        end
+        data[:tooltip] = tooltip if tooltip && tooltip['fields'] && !tooltip['fields'].empty?
 
         legend = layer_vizjson[:legend]
-        if legend && legend['type'] != 'none'
-          data[:legend] = legend
-        end
+        data[:legend] = legend if legend && legend['type'] != 'none'
 
         data[:legends] = layer_vizjson[:legends] || []
 
         data
       end
+
     end
 
     class VizJSON3LayerPresenter
+
       include ApiTemplates
       include InfowindowMigrator
 
@@ -360,9 +362,7 @@ module Carto
         torque[:cartocss_version] = layer_options[:style_version]
         torque[:sql] = sql_from(@layer)
 
-        if @layer.options['source'].present?
-          torque[:source] = @layer.options['source']
-        end
+        torque[:source] = @layer.options['source'] if @layer.options['source'].present?
 
         sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
         torque[:sql_wrap] = sql_wrap if sql_wrap
@@ -372,27 +372,27 @@ module Carto
 
       def as_carto
         {
-          type:       'CartoDB',
+          type: 'CartoDB',
           infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
-          tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
-          visible:    @layer.options['visible'],
-          options:    options_data
+          tooltip: whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
+          visible: @layer.options['visible'],
+          options: options_data
         }
       end
 
       def as_base
         {
-          type:    @layer.kind,
+          type: @layer.kind,
           options: @layer.options
         }
       end
 
       def options_data
         data = {
-          layer_name:         layer_name,
-          cartocss:           css_from(@layer.options),
-          cartocss_version:   @layer.options.fetch('style_version'),
-          attribution:        attribution
+          layer_name: layer_name,
+          cartocss: css_from(@layer.options),
+          cartocss_version: @layer.options.fetch('style_version'),
+          attribution: attribution
         }
         source = @layer.options['source']
         if source
@@ -423,12 +423,13 @@ module Carto
 
       def css_from(options)
         style = options.include?('tile_style') ? options['tile_style'] : nil
-        (style.nil? || style.strip.empty?) ? EMPTY_CSS : options.fetch('tile_style')
+        style.nil? || style.strip.empty? ? EMPTY_CSS : options.fetch('tile_style')
       end
 
       def public_options
         return @configuration if @configuration.empty?
-        @configuration.fetch(:layer_opts).fetch("public_opts")
+
+        @configuration.fetch(:layer_opts).fetch('public_opts')
       end
 
       def whitelisted_attrs(infowindow_or_tooltip)
@@ -438,6 +439,8 @@ module Carto
           end
         end
       end
+
     end
+
   end
 end

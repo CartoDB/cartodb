@@ -1,23 +1,24 @@
 require_dependency 'helpers/avatar_helper'
 
 module FrontendConfigHelper
+
   include AvatarHelper
   include FullstoryHelper
 
   def frontend_config_hash(user = current_user)
     config = {
-      app_assets_base_url:        app_assets_base_url,
-      maps_api_template:          maps_api_template,
-      sql_api_template:           sql_api_template,
-      user_name:                  CartoDB.extract_subdomain(request),
-      cartodb_com_hosted:         Cartodb.get_config(:cartodb_com_hosted),
-      account_host:               CartoDB.account_host,
-      trackjs_customer:           Cartodb.get_config(:trackjs, 'customer'),
-      trackjs_enabled:            Cartodb.get_config(:trackjs, 'enabled'),
-      trackjs_app_key:            Cartodb.get_config(:trackjs, 'app_keys', 'editor'),
-      google_tag_manager_id:      Cartodb.get_config(:google_tag_manager, 'primary'),
-      intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
-      upgrade_url:                cartodb_com_hosted? || user.nil? ? false : user.try(:upgrade_url, request.protocol).to_s,
+      app_assets_base_url: app_assets_base_url,
+      maps_api_template: maps_api_template,
+      sql_api_template: sql_api_template,
+      user_name: CartoDB.extract_subdomain(request),
+      cartodb_com_hosted: Cartodb.get_config(:cartodb_com_hosted),
+      account_host: CartoDB.account_host,
+      trackjs_customer: Cartodb.get_config(:trackjs, 'customer'),
+      trackjs_enabled: Cartodb.get_config(:trackjs, 'enabled'),
+      trackjs_app_key: Cartodb.get_config(:trackjs, 'app_keys', 'editor'),
+      google_tag_manager_id: Cartodb.get_config(:google_tag_manager, 'primary'),
+      intercom_app_id: Cartodb.get_config(:intercom, 'app_id'),
+      upgrade_url: cartodb_com_hosted? || user.nil? ? false : user.try(:upgrade_url, request.protocol).to_s
     }
 
     if user.present?
@@ -69,20 +70,18 @@ module FrontendConfigHelper
         config[:static_image_upload_endpoint] = Cartodb.get_config(:static_image_upload_endpoint)
       end
 
-      if !Cartodb.get_config(:dataservices, 'enabled').nil?
+      unless Cartodb.get_config(:dataservices, 'enabled').nil?
         config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
       end
 
-      if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
-        config[:hubspot_token] = CartoDB::Hubspot::instance.token
-        config[:hubspot_ids] = CartoDB::Hubspot::instance.event_ids.to_json.html_safe
-        config[:hubspot_form_ids] = CartoDB::Hubspot::instance.form_ids
+      if CartoDB::Hubspot.instance.enabled? && !CartoDB::Hubspot.instance.token.blank?
+        config[:hubspot_token] = CartoDB::Hubspot.instance.token
+        config[:hubspot_ids] = CartoDB::Hubspot.instance.event_ids.to_json.html_safe
+        config[:hubspot_form_ids] = CartoDB::Hubspot.instance.form_ids
       end
     end
 
-    if Cartodb.get_config(:cdn_url)
-      config[:cdn_url] = Cartodb.get_config(:cdn_url)
-    end
+    config[:cdn_url] = Cartodb.get_config(:cdn_url) if Cartodb.get_config(:cdn_url)
 
     config
   end
@@ -90,4 +89,5 @@ module FrontendConfigHelper
   def frontend_config
     frontend_config_hash.to_json
   end
+
 end

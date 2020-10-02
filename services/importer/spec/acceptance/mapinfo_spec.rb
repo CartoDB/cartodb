@@ -13,8 +13,8 @@ include CartoDB::Importer2
 
 describe 'Mapinfo regression tests' do
   include AcceptanceHelpers
-  include_context "cdb_importer schema"
-  include_context "no stats"
+  include_context 'cdb_importer schema'
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -27,7 +27,7 @@ describe 'Mapinfo regression tests' do
 
   it 'imports Mapinfo files' do
     # Rails.root not loaded yet. This is a workaround
-    filepath    = "#{File.expand_path('../..', __FILE__)}/fixtures/Ivanovo.zip"
+    filepath    = "#{File.expand_path('..', __dir__)}/fixtures/Ivanovo.zip"
     downloader  = Downloader.new(@user.id, filepath)
     runner      = Runner.new({
                                pg: @user.db_service.db_configuration_for,
@@ -39,5 +39,4 @@ describe 'Mapinfo regression tests' do
 
     geometry_type_for(runner, @user).should be
   end
-
 end

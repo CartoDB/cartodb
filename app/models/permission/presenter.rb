@@ -4,6 +4,7 @@ require_relative 'permission_group_presenter'
 
 module CartoDB
   class PermissionPresenter
+
     def initialize(permission)
       @permission = permission
       @user_presenter = CartoDB::PermissionUserPresenter.new
@@ -12,24 +13,24 @@ module CartoDB
 
     def to_poro
       {
-        id:         @permission.id,
-        owner:      @user_presenter.decorate_user(@permission.owner),
+        id: @permission.id,
+        owner: @user_presenter.decorate_user(@permission.owner),
         entity: {
-          id:       @permission.entity_id,
-          type:     @permission.entity_type
+          id: @permission.entity_id,
+          type: @permission.entity_type
         },
-        acl:        @permission.acl.map { |entry|
+        acl: @permission.acl.map do |entry|
           entity = entity_decoration(entry)
           if entity.blank?
             nil
           else
             {
-              type:   entry[:type],
+              type: entry[:type],
               entity: entity,
               access: entry[:access]
             }
           end
-        }.reject(&:nil?),
+        end.reject(&:nil?),
         created_at: @permission.created_at,
         updated_at: @permission.updated_at
       }
@@ -52,4 +53,3 @@ module CartoDB
 
   end
 end
-

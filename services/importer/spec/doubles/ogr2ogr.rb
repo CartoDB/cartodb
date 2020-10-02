@@ -2,13 +2,15 @@ module CartoDB
   module Importer2
     module Doubles
       class Ogr2ogr
+
         attr_accessor :exit_code, :command, :command_output, :csv_guessing, :overwrite, :encoding, :shape_encoding
         def initialize
           self.exit_code = 0
-          self.command = String.new
-          self.command_output = String.new
+          self.command = ''
+          self.command_output = ''
         end
-        def run(append_mode=false)
+
+        def run(_append_mode=false)
           Object.new
         end
 
@@ -39,6 +41,7 @@ module CartoDB
         def missing_srs?; end
 
         def geometry_validity_error?; end
+
       end
     end
   end

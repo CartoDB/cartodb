@@ -90,7 +90,7 @@ describe Carto::UserTableIndexService do
 
     it 'creates indices for all widgets' do
       @table1.service.stubs(:pg_indexes).returns([])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      @table1.service.stubs(:estimated_row_count).returns(100_000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
 
@@ -112,7 +112,7 @@ describe Carto::UserTableIndexService do
 
     it 'does not create indices for formula widgets' do
       @table1.service.stubs(:pg_indexes).returns([])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      @table1.service.stubs(:estimated_row_count).returns(100_000)
       create_widget(@analysis1, column: 'number', type: 'formula')
 
       stub_create_index('number').never
@@ -121,7 +121,7 @@ describe Carto::UserTableIndexService do
 
     it 'does not create indices for indexed columns' do
       @table1.service.stubs(:pg_indexes).returns([{ name: 'wadus', column: 'number', valid: true }])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      @table1.service.stubs(:estimated_row_count).returns(100_000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
 
@@ -133,7 +133,7 @@ describe Carto::UserTableIndexService do
     it 'does not create indices for indexed columns (in multi-column indexes)' do
       @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number', valid: true },
                                                   { name: 'idx', column: 'date', valid: true }])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      @table1.service.stubs(:estimated_row_count).returns(100_000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
 
@@ -144,7 +144,7 @@ describe Carto::UserTableIndexService do
 
     it 'drops unneeded indices' do
       @table1.service.stubs(:pg_indexes).returns([automatic_index_record(@table1, 'number')])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      @table1.service.stubs(:estimated_row_count).returns(100_000)
 
       stub_drop_index('number').once
       Carto::UserTableIndexService.new(@table1).send(:generate_indices)
@@ -171,7 +171,7 @@ describe Carto::UserTableIndexService do
 
     it 'drops and recreates invalid auto indices' do
       @table1.service.stubs(:pg_indexes).returns([automatic_index_record(@table1, 'number', valid: false)])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      @table1.service.stubs(:estimated_row_count).returns(100_000)
       create_widget(@analysis1, column: 'number')
 
       stub_drop_index('number').once

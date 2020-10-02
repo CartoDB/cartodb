@@ -1,10 +1,11 @@
 module HttpAuthenticationHelper
+
   def authenticated_header
     'auth_header'
   end
 
   def authentication_headers(value)
-    { "#{authenticated_header}" => value }
+    { authenticated_header.to_s => value }
   end
 
   def stub_http_header_authentication_configuration(field: 'email', autocreation: false, enabled: true)
@@ -23,4 +24,5 @@ module HttpAuthenticationHelper
 
     config
   end
+
 end

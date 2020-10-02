@@ -1,7 +1,7 @@
-
 module Carto
   module Admin
     class UserPublicMapAdapter
+
       extend Forwardable
 
       delegate [:id, :name, :username, :disqus_shortname, :avatar, :avatar_url, :remove_logo?, :has_organization?,

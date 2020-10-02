@@ -3,6 +3,7 @@ require_relative '../../../../lib/carto/db/sanitize.rb'
 module Carto
   module DB
     module Sanitize
+
       describe '#sanitize_identifier' do
         it 'should prepend table_ to identifiers starting with numbers' do
           identifier = '13102016manolo'
@@ -108,6 +109,7 @@ module Carto
           expect { Carto::DB::Sanitize.append_with_truncate_and_sanitize(identifier, identifier) }.to raise_error
         end
       end
+
     end
   end
 end

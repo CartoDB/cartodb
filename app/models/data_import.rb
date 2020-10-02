@@ -34,46 +34,45 @@ require_dependency 'carto/uuidhelper'
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
+
   include Carto::DataImportConstants
   include Carto::Configuration
   include Carto::UUIDHelper
 
-  MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
+  MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/.freeze
   DIRECT_STATEMENT_TIMEOUT = 1.hour * 1000
 
-  attr_accessor   :log, :results
+  attr_accessor :log, :results
 
   many_to_one :user
 
   # Not all constants are used, but so that we keep track of available states
-  STATE_ENQUEUED  = 'enqueued'  # Default state for imports whose files are not yet at "import source"
-  STATE_PENDING   = 'pending'   # Default state for files already at "import source" (e.g. S3 bucket)
-  STATE_UNPACKING = 'unpacking'
-  STATE_IMPORTING = 'importing'
-  STATE_COMPLETE  = 'complete'
-  STATE_UPLOADING = 'uploading'
-  STATE_FAILURE   = 'failure'
-  STATE_STUCK     = 'stuck'
+  STATE_ENQUEUED  = 'enqueued'.freeze  # Default state for imports whose files are not yet at "import source"
+  STATE_PENDING   = 'pending'.freeze   # Default state for files already at "import source" (e.g. S3 bucket)
+  STATE_UNPACKING = 'unpacking'.freeze
+  STATE_IMPORTING = 'importing'.freeze
+  STATE_COMPLETE  = 'complete'.freeze
+  STATE_UPLOADING = 'uploading'.freeze
+  STATE_FAILURE   = 'failure'.freeze
+  STATE_STUCK     = 'stuck'.freeze
 
-  TYPE_EXTERNAL_TABLE = 'external_table'
-  TYPE_FILE           = 'file'
-  TYPE_URL            = 'url'
-  TYPE_QUERY          = 'query'
-  TYPE_DATASOURCE     = 'datasource'
+  TYPE_EXTERNAL_TABLE = 'external_table'.freeze
+  TYPE_FILE           = 'file'.freeze
+  TYPE_URL            = 'url'.freeze
+  TYPE_QUERY          = 'query'.freeze
+  TYPE_DATASOURCE     = 'datasource'.freeze
 
   def after_initialize
     instantiate_log
-    self.results  = []
-    self.state    ||= STATE_PENDING
+    self.results = []
+    self.state ||= STATE_PENDING
   end
 
   # This before_create should be only necessary to track old dashboard data imports.
   # New ones are already tracked during the data_import create inside the controller
   # For the old dashboard
   def before_create
-    if from_common_data?
-      self.extra_options = extra_options.merge(common_data: true)
-    end
+    self.extra_options = extra_options.merge(common_data: true) if from_common_data?
     self.extra_options = extra_options.merge(column_sanitization_version: CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION)
   end
 
@@ -104,18 +103,17 @@ class DataImport < Sequel::Model
   end
 
   def extra_options
-    return {} if self.import_extra_options.nil?
-    ::JSON.parse(self.import_extra_options).symbolize_keys
+    return {} if import_extra_options.nil?
+
+    ::JSON.parse(import_extra_options).symbolize_keys
   end
 
   def extra_options=(value)
-    if !value.nil?
-      self.import_extra_options = ::JSON.dump(value)
-    end
+    self.import_extra_options = ::JSON.dump(value) unless value.nil?
   end
 
   def dataimport_logger
-    @@dataimport_logger ||= CartoDB.unformatted_logger(log_file_path("imports.log"))
+    @@dataimport_logger ||= CartoDB.unformatted_logger(log_file_path('imports.log'))
   end
 
   def run_import!
@@ -125,13 +123,13 @@ class DataImport < Sequel::Model
 
     begin
       success = !!dispatch
-    rescue TokenExpiredOrInvalidError => ex
+    rescue TokenExpiredOrInvalidError => e
       success = false
       begin
-        current_user.oauths.remove(ex.service_name)
-      rescue StandardError => ex2
-        log.append("Exception removing OAuth: #{ex2.message}")
-        log.append(ex2.backtrace)
+        current_user.oauths.remove(e.service_name)
+      rescue StandardError => e
+        log.append("Exception removing OAuth: #{e.message}")
+        log.append(e.backtrace)
       end
     end
 
@@ -148,23 +146,23 @@ class DataImport < Sequel::Model
       save
     end
 
-    self.cartodbfy_time = CartoDB::Importer2::CartodbfyTime::instance(id).get
+    self.cartodbfy_time = CartoDB::Importer2::CartodbfyTime.instance(id).get
     success ? handle_success : handle_failure
     log.store
     Rails.logger.debug log.to_s
 
     self
-  rescue CartoDB::QuotaExceeded => quota_exception
+  rescue CartoDB::QuotaExceeded => e
     current_user_id = current_user.id
     Carto::Tracking::Events::ExceededQuota.new(current_user_id, user_id: current_user_id).report
 
-    CartoDB::notify_warning_exception(quota_exception)
-    handle_failure(quota_exception)
+    CartoDB.notify_warning_exception(e)
+    handle_failure(e)
     self
   rescue CartoDB::CartoDBfyInvalidID
     invalid_cartodb_id_exception = CartoDB::Importer2::CartoDBfyInvalidID.new
     log.append("Exception: #{invalid_cartodb_id_exception}")
-    CartoDB::notify_warning_exception(invalid_cartodb_id_exception)
+    CartoDB.notify_warning_exception(invalid_cartodb_id_exception)
     handle_failure(invalid_cartodb_id_exception)
     self
   rescue Carto::UnauthorizedError => e
@@ -175,31 +173,31 @@ class DataImport < Sequel::Model
     error = CartoDB::Importer2::MapQuotaExceededError.new
     handle_failure(error)
     raise error
-  rescue StandardError => exception
-    log.append("Exception: #{exception.to_s}")
-    log.append(exception.backtrace, false)
-    stacktrace = exception.to_s + exception.backtrace.join
-    CartoDB.report_exception(exception, 'Import error', error_info: stacktrace)
-    handle_failure(exception)
-    raise exception
+  rescue StandardError => e
+    log.append("Exception: #{e}")
+    log.append(e.backtrace, false)
+    stacktrace = e.to_s + e.backtrace.join
+    CartoDB.report_exception(e, 'Import error', error_info: stacktrace)
+    handle_failure(e)
+    raise e
     self
   end
 
   # Notice that this returns the entire error hash, not just the text
   # It seems that it's only used for the rollbar reporting
   def get_error_text
-    if self.error_code == CartoDB::NO_ERROR_CODE
+    if error_code == CartoDB::NO_ERROR_CODE
       CartoDB::NO_ERROR_CODE
     else
-      self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+      error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99_999] : CartoDB::IMPORTER_ERROR_CODES[error_code]
     end
   end
 
   def get_error_source
-    if self.error_code == CartoDB::NO_ERROR_CODE
+    if error_code == CartoDB::NO_ERROR_CODE
       CartoDB::NO_ERROR_CODE
     else
-      self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999][:source] : CartoDB::IMPORTER_ERROR_CODES[self.error_code][:source]
+      error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99_999][:source] : CartoDB::IMPORTER_ERROR_CODES[error_code][:source]
     end
   end
 
@@ -215,11 +213,11 @@ class DataImport < Sequel::Model
   def mark_as_failed_if_stuck!
     return false unless stuck?
 
-    log.append("Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}")
+    log.append("Import timed out. Id:#{id} State:#{self.state} Created at:#{created_at} Running imports:#{running_import_ids}")
 
     handle_failure(CartoDB::Importer2::StuckImportJobError.new)
 
-    CartoDB::notify_exception(
+    CartoDB.notify_exception(
       CartoDB::Importer2::GenericImportError.new('Import timed out or got stuck'),
       user: current_user
     )
@@ -230,7 +228,7 @@ class DataImport < Sequel::Model
     if data_source.nil?
       values[:data_type] = TYPE_DATASOURCE
       values[:data_source] = ''
-    elsif self.data_type != TYPE_QUERY
+    elsif data_type != TYPE_QUERY
       begin
         path = uploaded_file_path(data_source)
         if File.exist?(path) && !File.directory?(path)
@@ -246,7 +244,7 @@ class DataImport < Sequel::Model
       end
     end
 
-    self.original_url = self.values[:data_source] if (self.original_url.to_s.length == 0)
+    self.original_url = values[:data_source] if original_url.to_s.length == 0
 
     # else SQL-based import
   end
@@ -256,13 +254,13 @@ class DataImport < Sequel::Model
 
     file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:importer, 'uploads_path'))
     path = file_upload_helper.get_uploads_path.join(uploaded_file[1])
-    FileUtils.rm_rf(path) if Dir.exists?(path)
+    FileUtils.rm_rf(path) if Dir.exist?(path)
   end
 
   def handle_success
     self.success  = true
     self.state    = STATE_COMPLETE
-    table_names = results.map { |result| result.name }.select { |name| name != nil}.sort
+    table_names = results.map { |result| result.name }.select { |name| !name.nil?}.sort
     self.table_names = table_names.join(' ')
     self.tables_created_count = table_names.size
     log.append("Import finished\n")
@@ -271,14 +269,14 @@ class DataImport < Sequel::Model
 
     begin
       CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
-                                                                             user: current_user,
-                                                                             redis: {
-                                                                               db: $users_metadata
-                                                                             }
+                                                                           user: current_user,
+                                                                           redis: {
+                                                                             db: $users_metadata
+                                                                           }
                                                                          })
                                                                     .decrement!
-    rescue StandardError => exception
-      log_info('Error decreasing concurrent import limit', exception: exception)
+    rescue StandardError => e
+      log_info('Error decreasing concurrent import limit', exception: e)
     end
     notify(results, id)
 
@@ -293,7 +291,7 @@ class DataImport < Sequel::Model
     end
     log.append("ERROR!\n")
     log.store
-    self.save
+    save
     begin
       CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
                                                                            user: current_user,
@@ -301,15 +299,15 @@ class DataImport < Sequel::Model
                                                                              db: $users_metadata
                                                                            }
                                                                          })
-      .decrement!
-    rescue StandardError => exception
-      log_info('Error decreasing concurrent import limit', exception: exception)
+                                                                    .decrement!
+    rescue StandardError => e
+      log_info('Error decreasing concurrent import limit', exception: e)
     end
     notify(results)
     self
-  rescue StandardError => exception
-    log.append("Exception: #{exception.to_s}")
-    log.append(exception.backtrace, false)
+  rescue StandardError => e
+    log.append("Exception: #{e}")
+    log.append(e.backtrace, false)
     log.store
     self
   end
@@ -317,14 +315,12 @@ class DataImport < Sequel::Model
   # Calculates the maximum timeout in seconds for a given user, to be used when performing HTTP requests
   # TODO: Candidate for being private if we join syncs and data imports someday
   # TODO: Add timeout config (if we need to change this)
-  def self.http_timeout_for(user, assumed_kb_sec = 75*1024)
+  def self.http_timeout_for(user, assumed_kb_sec = 75 * 1024)
     if user.nil? || !user.respond_to?(:quota_in_bytes)
       raise ArgumentError.new('Need a User object to calculate its download speed')
     end
 
-    if assumed_kb_sec < 1
-      raise ArgumentError.new('KB per second must be > 0')
-    end
+    raise ArgumentError.new('KB per second must be > 0') if assumed_kb_sec < 1
 
     (user.quota_in_bytes / assumed_kb_sec).round
   end
@@ -346,17 +342,15 @@ class DataImport < Sequel::Model
   private
 
   def get_provider_name_from_id(service_item_id)
-    begin
-      connector_params = JSON.parse(service_item_id)
-      return connector_params['provider']
-    rescue StandardError
-      return nil
-    end
+    connector_params = JSON.parse(service_item_id)
+    connector_params['provider']
+  rescue StandardError
+    nil
   end
 
   def dispatch
     self.state = STATE_UPLOADING
-    return from_table         if table_copy.present? || from_query.present?
+    return from_table if table_copy.present? || from_query.present?
 
     if service_name == 'connector'
       importer, runner, datasource_provider, manual_fields = new_importer_with_connector
@@ -369,34 +363,40 @@ class DataImport < Sequel::Model
   def running_import_ids
     Resque::Worker.all.map do |worker|
       next unless worker.job['queue'] == 'imports'
-      worker.job['payload']['args'].first['job_id'] rescue nil
+
+      begin
+        worker.job['payload']['args'].first['job_id']
+      rescue StandardError
+        nil
+      end
     end.compact
   end
 
   def public_url
     return data_source unless uploaded_file
+
     "https://#{current_user.username}.carto.com/#{uploaded_file[0]}"
   end
 
   def before_destroy
-    self.remove_uploaded_resources
+    remove_uploaded_resources
   end
 
   def instantiate_log
     uuid = logger
 
-    if uuid?(uuid)
-      self.log = CartoDB::Log.where(id: uuid.to_s).first
-    else
-      self.log = CartoDB::Log.new(
-        type:     CartoDB::Log::TYPE_DATA_IMPORT,
-        user_id:  user_id
-      )
-    end
+    self.log = if uuid?(uuid)
+                 CartoDB::Log.where(id: uuid.to_s).first
+               else
+                 CartoDB::Log.new(
+                   type: CartoDB::Log::TYPE_DATA_IMPORT,
+                   user_id: user_id
+                 )
+               end
   end
 
   def uploaded_file
-    data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
+    data_source.to_s.match(%r{uploads/([a-z0-9]{20})/.*})
   end
 
   # A stuck job should've started but not be finished, so it's state should not be complete nor failed, it should
@@ -413,9 +413,7 @@ class DataImport < Sequel::Model
 
     number_of_tables = 1
     quota_checker = CartoDB::QuotaChecker.new(current_user)
-    if quota_checker.will_be_over_table_quota?(number_of_tables)
-      raise_over_table_quota_error
-    end
+    raise_over_table_quota_error if quota_checker.will_be_over_table_quota?(number_of_tables)
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
     new_table_name = import_from_query(table_name, query)
@@ -423,15 +421,15 @@ class DataImport < Sequel::Model
 
     sanitize_columns(new_table_name)
 
-    self.update(table_names: new_table_name, service_name: nil)
+    update(table_names: new_table_name, service_name: nil)
     migrate_existing(new_table_name)
 
-    self.results.push CartoDB::Importer2::Result.new(success: true, error: nil)
-  rescue Sequel::DatabaseError => exception
-    if exception.to_s =~ MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE
-      set_merge_error(8004, exception.to_s)
+    results.push CartoDB::Importer2::Result.new(success: true, error: nil)
+  rescue Sequel::DatabaseError => e
+    if e.to_s =~ MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE
+      set_merge_error(8004, e.to_s)
     else
-      set_merge_error(8003, exception.to_s)
+      set_merge_error(8003, e.to_s)
     end
     false
   end
@@ -492,7 +490,6 @@ class DataImport < Sequel::Model
     collision_strategy == Carto::DataImportConstants::COLLISION_STRATEGY_OVERWRITE
   end
 
-
   def sanitize_columns(table_name)
     # TODO: is this called before table is registered? otherwise we should use Table#sanitize_columns
     Table.sanitize_columns(
@@ -512,7 +509,7 @@ class DataImport < Sequel::Model
     table.user_id = user_id
     table.name    = imported_name
     table.migrate_existing_table = imported_name
-    table.data_import_id = self.id
+    table.data_import_id = id
 
     if table.valid?
       log.append('Table valid')
@@ -542,12 +539,12 @@ class DataImport < Sequel::Model
 
   def pg_options
     SequelRails.configuration.environment_for(Rails.env)
-      .merge(
-        username: current_user.database_username,
-        password: current_user.database_password,
-        database: current_user.database_name,
-        host:     current_user.database_host
-      ) {|key, o, n| n.nil? || n.empty? ? o : n}
+               .merge(
+                 username: current_user.database_username,
+                 password: current_user.database_password,
+                 database: current_user.database_name,
+                 host: current_user.database_host
+               ) { |_key, o, n| n.nil? || n.empty? ? o : n}
   end
 
   def ogr2ogr_options
@@ -556,21 +553,19 @@ class DataImport < Sequel::Model
       {}
     else
       ogr_options = {
-        ogr2ogr_binary:         options['binary'],
-        ogr2ogr_csv_guessing:   options['csv_guessing'] && self.type_guessing,
-        quoted_fields_guessing: self.quoted_fields_guessing
+        ogr2ogr_binary: options['binary'],
+        ogr2ogr_csv_guessing: options['csv_guessing'] && type_guessing,
+        quoted_fields_guessing: quoted_fields_guessing
       }
-      if options['memory_limit'].present?
-        ogr_options.merge!(ogr2ogr_memory_limit: options['memory_limit'])
-      end
-      return ogr_options
+      ogr_options.merge!(ogr2ogr_memory_limit: options['memory_limit']) if options['memory_limit'].present?
+      ogr_options
     end
   end
 
   def content_guessing_options
     guessing_config = Cartodb.config.fetch(:importer, {}).deep_symbolize_keys.fetch(:content_guessing, {})
     geocoder_config = Cartodb.config.fetch(:geocoder, {}).deep_symbolize_keys
-    if guessing_config[:enabled] and self.content_guessing and geocoder_config
+    if guessing_config[:enabled] && content_guessing && geocoder_config
       { guessing: guessing_config, geocoder: geocoder_config }
     else
       { guessing: { enabled: false } }
@@ -593,65 +588,65 @@ class DataImport < Sequel::Model
     # If retrieving metadata we get an error, fail early
     begin
       downloader = get_downloader(datasource_provider)
-    rescue DataDownloadError => ex
+    rescue DataDownloadError => e
       had_errors = true
       manual_fields = {
         error_code: 1012,
-        log_info: ex.to_s
+        log_info: e.to_s
       }
-    rescue ExternalServiceError => ex
+    rescue ExternalServiceError => e
       had_errors = true
       manual_fields = {
         error_code: 1012,
-        log_info: ex.to_s
+        log_info: e.to_s
       }
-    rescue ExternalServiceTimeoutError => ex
+    rescue ExternalServiceTimeoutError => e
       had_errors = true
       manual_fields = {
         error_code: 1020,
-        log_info: ex.to_s
+        log_info: e.to_s
       }
-    rescue DataDownloadTimeoutError => ex
+    rescue DataDownloadTimeoutError => e
       had_errors = true
       manual_fields = {
         error_code: 1020,
-        log_info: ex.to_s
+        log_info: e.to_s
       }
-    rescue ResponseError => ex
+    rescue ResponseError => e
       had_errors = true
       manual_fields = {
         error_code: 1011,
-        log_info: ex.to_s
+        log_info: e.to_s
       }
-    rescue InvalidServiceError => ex
+    rescue InvalidServiceError => e
       had_errors = true
       manual_fields = {
         error_code: 1013,
-        log_info: ex.to_s
+        log_info: e.to_s
       }
-    rescue InvalidInputDataError => ex
+    rescue InvalidInputDataError => e
       had_errors = true
       manual_fields = {
         error_code: 1012,
-        log_info: ex.to_s
+        log_info: e.to_s
       }
-    rescue UnsupportedOperationError => ex
+    rescue UnsupportedOperationError => e
       had_errors = true
       manual_fields = {
         error_code: 1023,
-        log_info: ex.to_s
+        log_info: e.to_s
       }
-    rescue CartoDB::Importer2::FileTooBigError => ex
+    rescue CartoDB::Importer2::FileTooBigError => e
       had_errors = true
       manual_fields = {
-        error_code: ex.error_code,
-        log_info: CartoDB::IMPORTER_ERROR_CODES[ex.error_code]
+        error_code: e.error_code,
+        log_info: CartoDB::IMPORTER_ERROR_CODES[e.error_code]
       }
-    rescue StandardError => ex
+    rescue StandardError => e
       had_errors = true
       manual_fields = {
-        error_code: 99999,
-        log_info: ex.to_s
+        error_code: 99_999,
+        log_info: e.to_s
       }
     end
 
@@ -660,10 +655,10 @@ class DataImport < Sequel::Model
     else
       post_import_handler = CartoDB::Importer2::PostImportHandler.new
       case datasource_provider.class::DATASOURCE_NAME
-        when Url::ArcGIS::DATASOURCE_NAME
-          post_import_handler.add_fix_geometries_task
-        when Search::Twitter::DATASOURCE_NAME
-          post_import_handler.add_transform_geojson_geom_column
+      when Url::ArcGIS::DATASOURCE_NAME
+        post_import_handler.add_fix_geometries_task
+      when Search::Twitter::DATASOURCE_NAME
+        post_import_handler.add_transform_geojson_geom_column
       end
 
       database_options = pg_options
@@ -781,9 +776,7 @@ class DataImport < Sequel::Model
   rescue StandardError => e
     # Note: If this exception is not treated, results will not be defined
     # and the import will finish with a null error_code
-    if manual_fields
-      set_error(manual_fields.fetch(:error_code, 99999))
-    end
+    set_error(manual_fields.fetch(:error_code, 99_999)) if manual_fields
     raise e
   end
 
@@ -794,12 +787,12 @@ class DataImport < Sequel::Model
   # @param manual_fields Hash
   def store_results(importer=nil, runner=nil, datasource_provider=nil, manual_fields={})
     if importer.nil?
-      set_error(manual_fields.fetch(:error_code, 99999), manual_fields.fetch(:log_info, nil))
+      set_error(manual_fields.fetch(:error_code, 99_999), manual_fields.fetch(:log_info, nil))
     else
       self.results    = importer.results
       self.error_code = importer.error_code
-      self.rejected_layers = importer.rejected_layers.join(',') if !importer.rejected_layers.empty?
-      self.runner_warnings = runner.warnings.to_json if !runner.warnings.empty?
+      self.rejected_layers = importer.rejected_layers.join(',') unless importer.rejected_layers.empty?
+      self.runner_warnings = runner.warnings.to_json unless runner.warnings.empty?
 
       # http_response_code is only relevant if a direct download is performed
       if runner && datasource_provider && datasource_provider.providers_download_url?
@@ -810,25 +803,22 @@ class DataImport < Sequel::Model
       self.table_name = importer.table.name if importer.success? && importer.table
       self.table_id   = importer.table.id if importer.success? && importer.table
 
-      if importer.success?
-        update_visualization_id(importer)
-      end
+      update_visualization_id(importer) if importer.success?
       update_synchronization(importer)
 
-      importer.success? ? set_datasource_audit_to_complete(datasource_provider,
-                                                         importer.success? && importer.table ? importer.table.id : nil)
-      : set_datasource_audit_to_failed(datasource_provider)
+      if importer.success?
+        set_datasource_audit_to_complete(datasource_provider,
+                                         importer.success? && importer.table ? importer.table.id : nil)
+      else
+        set_datasource_audit_to_failed(datasource_provider)
+      end
     end
 
-    unless runner.nil?
-      self.stats = ::JSON.dump(runner.stats)
-    end
+    self.stats = ::JSON.dump(runner.stats) unless runner.nil?
   end
 
   def update_visualization_id(importer)
-    if importer.data_import.create_visualization
-      self.visualization_id = importer.data_import.visualization_id
-    end
+    self.visualization_id = importer.data_import.visualization_id if importer.data_import.create_visualization
   end
 
   def update_synchronization(importer)
@@ -837,11 +827,11 @@ class DataImport < Sequel::Model
       log.store
       log.append("synchronization_id: #{synchronization_id}")
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
-      synchronization.name    = self.table_name
+      synchronization.name    = table_name
       synchronization.log_id  = log.id
 
       if importer.success?
-        imported_table = ::Table.get_by_table_id(self.table_id)
+        imported_table = ::Table.get_by_table_id(table_id)
         if !imported_table.nil? && imported_table.table_visualization
           synchronization.visualization_id = imported_table.table_visualization.id
         end
@@ -861,10 +851,9 @@ class DataImport < Sequel::Model
 
   def get_datasource_provider
     return nil if service_name == 'connector'
-    datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
-    if service_item_id.nil? || service_item_id.size == 0
-      self.service_item_id = data_source
-    end
+
+    datasource_name = service_name.nil? || service_name.size == 0 ? Url::PublicUrl::DATASOURCE_NAME : service_name
+    self.service_item_id = data_source if service_item_id.nil? || service_item_id.size == 0
 
     get_datasource(datasource_name, service_item_id)
   end
@@ -880,7 +869,7 @@ class DataImport < Sequel::Model
 
     if datasource_provider.providers_download_url?
       metadata_url = metadata[:url]
-      resource_url = (metadata_url.present? && datasource_provider.providers_download_url?) ? metadata_url : data_source
+      resource_url = metadata_url.present? && datasource_provider.providers_download_url? ? metadata_url : data_source
 
       log.append("File will be downloaded from #{resource_url}")
 
@@ -917,8 +906,8 @@ class DataImport < Sequel::Model
   end
 
   def notify(results, import_id=nil)
-    owner = ::User.where(:id => self.user_id).first
-    imported_tables = results.select {|r| r.success }.length
+    owner = ::User.where(id: user_id).first
+    imported_tables = results.select { |r| r.success }.length
     failed_tables = results.length - imported_tables
 
     # Calculate total size out of stats
@@ -926,36 +915,33 @@ class DataImport < Sequel::Model
     ::JSON.parse(stats).each { |stat| total_size += stat ? stat['size'] : 0 }
     importer_stats_aggregator.update_counter('total_size', total_size)
 
-    import_time = self.updated_at - self.created_at
+    import_time = updated_at - created_at
     cartodbfy_throughtput = (cartodbfy_time == 0.0 ? nil : (total_size / cartodbfy_time))
 
-    import_log = {'user'                   => owner.username,
-                  'state'                  => self.state,
-                  'tables'                 => results.length,
-                  'imported_tables'        => imported_tables,
-                  'failed_tables'          => failed_tables,
-                  'error_code'             => self.error_code,
-                  'import_timestamp'       => Time.now,
-                  'queue_server'           => `hostname`.strip,
-                  'database_host'          => owner.database_host,
-                  'service_name'           => self.service_name,
-                  'data_type'              => self.data_type,
-                  'is_sync_import'         => sync?,
-                  'import_time'            => import_time,
-                  'file_stats'             => ::JSON.parse(self.stats),
-                  'resque_ppid'            => self.resque_ppid,
-                  'user_timeout'           => ::DataImport.http_timeout_for(current_user),
-                  'error_source'           => get_error_source,
-                  'id'                     => self.id,
-                  'total_size'             => total_size,
-                  'cartodbfy_time'         => self.cartodbfy_time,
-                  'import_throughput'      => (total_size / import_time),
-                  'cartodbfy_throughtput'  => cartodbfy_throughtput,
-                  'cartodbfy_import_ratio' => (self.cartodbfy_time / import_time)
-                 }
-    if !self.extra_options.nil?
-      import_log['extra_options'] = self.extra_options
-    end
+    import_log = { 'user' => owner.username,
+                   'state' => self.state,
+                   'tables' => results.length,
+                   'imported_tables' => imported_tables,
+                   'failed_tables' => failed_tables,
+                   'error_code' => error_code,
+                   'import_timestamp' => Time.now,
+                   'queue_server' => `hostname`.strip,
+                   'database_host' => owner.database_host,
+                   'service_name' => service_name,
+                   'data_type' => data_type,
+                   'is_sync_import' => sync?,
+                   'import_time' => import_time,
+                   'file_stats' => ::JSON.parse(stats),
+                   'resque_ppid' => resque_ppid,
+                   'user_timeout' => ::DataImport.http_timeout_for(current_user),
+                   'error_source' => get_error_source,
+                   'id' => id,
+                   'total_size' => total_size,
+                   'cartodbfy_time' => cartodbfy_time,
+                   'import_throughput' => (total_size / import_time),
+                   'cartodbfy_throughtput' => cartodbfy_throughtput,
+                   'cartodbfy_import_ratio' => (cartodbfy_time / import_time) }
+    import_log['extra_options'] = extra_options unless extra_options.nil?
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
@@ -969,7 +955,7 @@ class DataImport < Sequel::Model
         sync: sync?,
         import_time: import_time,
         data_size: total_size,
-        error_code: self.error_code
+        error_code: error_code
       }
     }
 
@@ -1006,9 +992,7 @@ class DataImport < Sequel::Model
     if data_import.success && data_import.table_id && data_import.from_query.nil? &&
        data_import.table_copy.nil?
       datasource = get_datasource_provider
-      if datasource && datasource.persists_state_via_data_import?
-        decoration = datasource.get_audit_stats
-      end
+      decoration = datasource.get_audit_stats if datasource && datasource.persists_state_via_data_import?
     end
     decoration
   end
@@ -1016,23 +1000,31 @@ class DataImport < Sequel::Model
   def payload_for(result=nil)
     log.store
     payload = {
-      file_url:       public_url,
-      distinct_id:    current_user.username,
-      username:       current_user.username,
-      account_type:   current_user.account_type,
-      database:       current_user.database_name,
-      email:          current_user.email,
-      log:            log.to_s
+      file_url: public_url,
+      distinct_id: current_user.username,
+      username: current_user.username,
+      account_type: current_user.account_type,
+      database: current_user.database_name,
+      email: current_user.email,
+      log: log.to_s
     }
-    payload.merge!(
-      name:           result.name,
-      extension:      result.extension,
-      success:        result.success,
-      error_code:     result.error_code,
-    ) if result
-    payload.merge!(
-      file_url_hostname: URI.parse(public_url).hostname
-    ) if public_url rescue nil
+    if result
+      payload.merge!(
+        name: result.name,
+        extension: result.extension,
+        success: result.success,
+        error_code: result.error_code
+      )
+    end
+    begin
+      if public_url
+        payload.merge!(
+          file_url_hostname: URI.parse(public_url).hostname
+        )
+      end
+    rescue StandardError
+      nil
+    end
     payload.merge!(error_title: get_error_text[:title]) if state == STATE_FAILURE
     payload
   end
@@ -1047,24 +1039,21 @@ class DataImport < Sequel::Model
       # Tables metadata DB also store resque data
       datasource = DatasourcesFactory.get_datasource(
         datasource_name, current_user, {
-                                          http_timeout: ::DataImport.http_timeout_for(current_user),
-                                          redis_storage: $tables_metadata,
-                                          user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
-                                       })
+          http_timeout: ::DataImport.http_timeout_for(current_user),
+          redis_storage: $tables_metadata,
+          user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
+        }
+      )
       datasource.token = oauth.token unless oauth.nil?
-    rescue StandardError => ex
-      log.append("Exception: #{ex.message}")
-      log.append(ex.backtrace, false)
-      CartoDB.report_exception(ex, 'Import error: ', error_info: ex.message + ex.backtrace.join)
+    rescue StandardError => e
+      log.append("Exception: #{e.message}")
+      log.append(e.backtrace, false)
+      CartoDB.report_exception(e, 'Import error: ', error_info: e.message + e.backtrace.join)
       raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
     end
-    if service_item_id.nil?
-      raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id")
-    end
+    raise CartoDB::DataSourceError.new("Datasource #{datasource_name} without item id") if service_item_id.nil?
 
-    if datasource.persists_state_via_data_import?
-      datasource.data_import_item = self
-    end
+    datasource.data_import_item = self if datasource.persists_state_via_data_import?
 
     datasource
   end
@@ -1072,8 +1061,8 @@ class DataImport < Sequel::Model
   def set_error(error_code, log_info='')
     log.append("Additional error info: #{log_info}") unless log_info.empty?
     self.results = [CartoDB::Importer2::Result.new(
-                      success: false, error_code: error_code
-                    )]
+      success: false, error_code: error_code
+    )]
     self.error_code = error_code
     self.state = STATE_FAILURE
   end
@@ -1103,9 +1092,10 @@ class DataImport < Sequel::Model
 
     if visualization_id
       Carto::Tracking::Events::CreatedMap.new(current_user_id, import_properties.merge(
-                                              user_id: current_user_id,
-                                              visualization_id: visualization_id,
-                                              origin: 'import')).report
+                                                                 user_id: current_user_id,
+                                                                 visualization_id: visualization_id,
+                                                                 origin: 'import'
+                                                               )).report
     end
 
     results.select(&:success?).each do |result|
@@ -1118,14 +1108,15 @@ class DataImport < Sequel::Model
 
       user_table = ::UserTable.where(condition).first
       map = user_table.map if user_table
-      if map
-        vis = Carto::Visualization.where(map_id: map.id).first
+      next unless map
 
-        Carto::Tracking::Events::CreatedDataset.new(current_user_id, import_properties.merge(
-                                                    user_id: current_user_id,
-                                                    visualization_id: vis.id,
-                                                    origin: origin)).report
-      end
+      vis = Carto::Visualization.where(map_id: map.id).first
+
+      Carto::Tracking::Events::CreatedDataset.new(current_user_id, import_properties.merge(
+                                                                     user_id: current_user_id,
+                                                                     visualization_id: vis.id,
+                                                                     origin: origin
+                                                                   )).report
     end
   rescue StandardError => e
     log_warning(message: "Carto::Tracking: Couldn't report event", exception: e)
@@ -1134,4 +1125,5 @@ class DataImport < Sequel::Model
   def sync?
     synchronization_id.present?
   end
+
 end

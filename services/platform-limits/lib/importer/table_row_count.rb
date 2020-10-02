@@ -1,7 +1,6 @@
 module CartoDB
   module PlatformLimits
     module Importer
-
       # This limit uses User.max_import_table_row_count attribute to limit table size regarding row count.
       # Has no storage.
       #
@@ -13,7 +12,7 @@ module CartoDB
       class TableRowCount < AbstractLimit
 
         # Where to search for the table if no schema specified at context
-        DEFAULT_SCHEMA = 'cdb_importer'
+        DEFAULT_SCHEMA = 'cdb_importer'.freeze
 
         # This limit needs additional fields present at options Hash:
         # :db
@@ -30,6 +29,7 @@ module CartoDB
           unless user.max_import_table_row_count.is_a?(Integer) && user.max_import_file_size > 0
             raise ArgumentError.new('invalid user max_import_table_row_count (must be positive integer)')
           end
+
           self.max_value = user.max_import_table_row_count
 
           @db = options.fetch(:db, nil)
@@ -63,9 +63,10 @@ module CartoDB
 
           table_name = context.fetch(:table_name, nil)
           raise ArgumentError.new('context must be a hash') if table_name.nil?
+
           schema_name = context.fetch(:tables_schema, DEFAULT_SCHEMA)
 
-          db.fetch(%Q{
+          db.fetch(%{
                       SELECT reltuples::bigint AS row_count
                         FROM pg_class
                         WHERE oid='#{schema_name}.#{table_name}'::regclass;
@@ -76,14 +77,14 @@ module CartoDB
         # Gets the maximum limit value
         # @param context mixed
         # @return mixed
-        def get_maximum(context)
+        def get_maximum(_context)
           max_value
         end
 
         # Gets when the limit expires
         # @param context mixed
         # @return integer|nil Timestamp
-        def get_time_period(context)
+        def get_time_period(_context)
           nil
         end
 

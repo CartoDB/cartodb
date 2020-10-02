@@ -9,51 +9,51 @@ describe User do
   include AccountTypesHelper
   include_context 'user spec configuration'
 
-  it "should set default statement timeout values" do
-    @user.in_database["show statement_timeout"].first[:statement_timeout].should == "5min"
-    @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "5min"
+  it 'should set default statement timeout values' do
+    @user.in_database['show statement_timeout'].first[:statement_timeout].should == '5min'
+    @user.in_database(as: :public_user)['show statement_timeout'].first[:statement_timeout].should == '5min'
   end
 
-  it "should keep in sync user statement_timeout" do
-    @user.user_timeout = 1000000
-    @user.database_timeout = 300000
+  it 'should keep in sync user statement_timeout' do
+    @user.user_timeout = 1_000_000
+    @user.database_timeout = 300_000
     @user.save
-    @user.in_database["show statement_timeout"].first[:statement_timeout].should == "1000s"
-    @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "5min"
+    @user.in_database['show statement_timeout'].first[:statement_timeout].should == '1000s'
+    @user.in_database(as: :public_user)['show statement_timeout'].first[:statement_timeout].should == '5min'
   end
 
-  it "should keep in sync database statement_timeout" do
-    @user.user_timeout = 300000
-    @user.database_timeout = 1000000
+  it 'should keep in sync database statement_timeout' do
+    @user.user_timeout = 300_000
+    @user.database_timeout = 1_000_000
     @user.save
-    @user.in_database["show statement_timeout"].first[:statement_timeout].should == "5min"
-    @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "1000s"
+    @user.in_database['show statement_timeout'].first[:statement_timeout].should == '5min'
+    @user.in_database(as: :public_user)['show statement_timeout'].first[:statement_timeout].should == '1000s'
   end
 
-  it "should has their own database, created when the account is created" do
+  it 'should has their own database, created when the account is created' do
     @user.database_name.should == "cartodb_test_user_#{@user.id}_db"
     @user.database_username.should == "test_cartodb_user_#{@user.id}"
     @user.in_database.test_connection.should == true
   end
 
   it 'creates an importer schema in the user database' do
-    @user.in_database[%Q(SELECT * FROM pg_namespace)]
-      .map { |record| record.fetch(:nspname) }
-      .should include 'cdb_importer'
+    @user.in_database[%(SELECT * FROM pg_namespace)]
+         .map { |record| record.fetch(:nspname) }
+         .should include 'cdb_importer'
   end
 
   it 'creates a cdb schema in the user database' do
-    pending "I believe cdb schema was never used"
-    @user.in_database[%Q(SELECT * FROM pg_namespace)]
-      .map { |record| record.fetch(:nspname) }
-      .should include 'cdb'
+    pending 'I believe cdb schema was never used'
+    @user.in_database[%(SELECT * FROM pg_namespace)]
+         .map { |record| record.fetch(:nspname) }
+         .should include 'cdb'
   end
 
   it 'allows access to the importer schema by the owner' do
-    @user.in_database.run(%Q{
+    @user.in_database.run(%{
       CREATE TABLE cdb_importer.bogus ( bogus varchar(40) )
     })
-    query = %Q(SELECT * FROM cdb_importer.bogus)
+    query = %(SELECT * FROM cdb_importer.bogus)
 
     expect { @user.in_database(as: :public_user)[query].to_a }
       .to raise_error(Sequel::DatabaseError)
@@ -62,11 +62,11 @@ describe User do
   end
 
   it 'allows access to the cdb schema by the owner' do
-    pending "I believe cdb schema was never used"
-    @user.in_database.run(%Q{
+    pending 'I believe cdb schema was never used'
+    @user.in_database.run(%{
       CREATE TABLE cdb.bogus ( bogus varchar(40) )
     })
-    query = %Q(SELECT * FROM cdb.bogus)
+    query = %(SELECT * FROM cdb.bogus)
 
     expect { @user.in_database(as: :public_user)[query].to_a }
       .to raise_error(Sequel::DatabaseError)
@@ -75,7 +75,6 @@ describe User do
   end
 
   it "should create a dabase user that only can read it's own database" do
-
     connection = ::Sequel.connect(
       ::SequelRails.configuration.environment_for(Rails.env).merge(
         'database' => @user.database_name, :logger => ::Rails.logger,
@@ -126,15 +125,15 @@ describe User do
     end
   end
 
-  it "should run valid queries against their database" do
+  it 'should run valid queries against their database' do
     # initial select tests
     query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
     query_result[:rows].first.keys.sort.should == [:cartodb_id, :the_geom, :the_geom_webmercator, :id, :name_of_species, :kingdom, :family, :lat, :lon, :views].sort
-    query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
-    query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
+    query_result[:rows][0][:name_of_species].should == 'Barrukia cristata'
+    query_result[:rows][1][:name_of_species].should == 'Eulagisca gigantea'
 
     # update and reselect
     query_result = @user.db_service.run_pg_query("update import_csv_1 set family='polynoidae' where family='Polynoidae'")
@@ -149,24 +148,24 @@ describe User do
     query_result = @user.db_service.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
     query_result[:total_rows].should == 10
     query_result[:rows].first.keys.should == [:fam, :login]
-    query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
+    query_result[:rows][0].should == { fam: 'polynoidae', login: 'vzlaturistica ' }
 
     # test counts
     query_result = @user.db_service.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
-    query_result[:rows].first.keys.should ==  [:count]
-    query_result[:rows][0].should == {:count => 2}
+    query_result[:rows].first.keys.should == [:count]
+    query_result[:rows][0].should == { count: 2 }
   end
 
-  it "should raise errors when running invalid queries against their database" do
+  it 'should raise errors when running invalid queries against their database' do
     lambda {
       @user.db_service.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
-  it "should run valid queries against their database in pg mode" do
+  it 'should run valid queries against their database in pg mode' do
     reload_user_data(@user) && @user.reload
 
     # initial select tests
@@ -176,8 +175,8 @@ describe User do
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
     query_result[:rows].first.keys.sort.should == [:cartodb_id, :the_geom, :the_geom_webmercator, :id, :name_of_species, :kingdom, :family, :lat, :lon, :views].sort
-    query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
-    query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
+    query_result[:rows][0][:name_of_species].should == 'Barrukia cristata'
+    query_result[:rows][1][:name_of_species].should == 'Eulagisca gigantea'
     query_result[:results].should  == true
     query_result[:modified].should == false
 
@@ -200,72 +199,72 @@ describe User do
     query_result = @user.db_service.run_pg_query("select import_csv_1.family as fam, twitters.login as login from import_csv_1, twitters where family='polynoidae' limit 10")
     query_result[:total_rows].should == 10
     query_result[:rows].first.keys.should == [:fam, :login]
-    query_result[:rows][0].should == { :fam=>"polynoidae", :login=>"vzlaturistica " }
+    query_result[:rows][0].should == { fam: 'polynoidae', login: 'vzlaturistica ' }
 
     # test counts
     query_result = @user.db_service.run_pg_query("select count(*) from import_csv_1 where family='polynoidae' ")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 1
-    query_result[:rows].first.keys.should ==  [:count]
-    query_result[:rows][0].should == {:count => 2}
+    query_result[:rows].first.keys.should == [:count]
+    query_result[:rows][0].should == { count: 2 }
   end
 
-  it "should raise errors when running invalid queries against their database in pg mode" do
+  it 'should raise errors when running invalid queries against their database in pg mode' do
     lambda {
       @user.db_service.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
-  it "should raise errors when invalid table name used in pg mode" do
+  it 'should raise errors when invalid table name used in pg mode' do
     lambda {
       @user.db_service.run_pg_query("select * from this_table_is_not_here where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::TableNotExists)
   end
 
-  it "should raise errors when invalid column used in pg mode" do
+  it 'should raise errors when invalid column used in pg mode' do
     lambda {
       @user.db_service.run_pg_query("select not_a_col from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ColumnNotExists)
   end
 
-  it "should invalidate all their vizjsons when their account type changes" do
+  it 'should invalidate all their vizjsons when their account type changes' do
     @account_type = create_account_type_fg('WADUS')
     @user.account_type = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
+                    .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
     @user.save
   end
 
-  it "should return the result from the last select query if multiple selects" do
+  it 'should return the result from the last select query if multiple selects' do
     reload_user_data(@user) && @user.reload
 
     query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 1; select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
     query_result[:time].to_s.match(/^\d+\.\d+$/).should be_true
     query_result[:total_rows].should == 2
-    query_result[:rows][0][:name_of_species].should == "Barrukia cristata"
-    query_result[:rows][1][:name_of_species].should == "Eulagisca gigantea"
+    query_result[:rows][0][:name_of_species].should == 'Barrukia cristata'
+    query_result[:rows][1][:name_of_species].should == 'Eulagisca gigantea'
   end
 
-  it "should allow multiple queries in the format: insert_query; select_query" do
+  it 'should allow multiple queries in the format: insert_query; select_query' do
     query_result = @user.db_service.run_pg_query("insert into import_csv_1 (name_of_species,family) values ('cristata barrukia','Polynoidae'); select * from import_csv_1 where family='Polynoidae' ORDER BY name_of_species ASC limit 10")
     query_result[:total_rows].should == 3
-    query_result[:rows].map { |i| i[:name_of_species] }.should =~ ["Barrukia cristata", "Eulagisca gigantea", "cristata barrukia"]
+    query_result[:rows].map { |i| i[:name_of_species] }.should =~ ['Barrukia cristata', 'Eulagisca gigantea', 'cristata barrukia']
   end
 
   it "should fail with error if table doesn't exist" do
     reload_user_data(@user) && @user.reload
     lambda {
-      @user.db_service.run_pg_query("select * from wadus")
+      @user.db_service.run_pg_query('select * from wadus')
     }.should raise_error(CartoDB::TableNotExists)
   end
 
-  it "should have a method that generates users redis users_metadata key" do
+  it 'should have a method that generates users redis users_metadata key' do
     @user.key.should == "rails:users:#{@user.username}"
   end
 
-  it "replicates some user metadata in redis after saving" do
+  it 'replicates some user metadata in redis after saving' do
     @user.stubs(:database_name).returns('wadus')
     @user.save
     $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
@@ -275,7 +274,7 @@ describe User do
     $users_metadata.HGET(@user.key, 'map_key').should == @user.api_key
   end
 
-  it "should store its metadata automatically after creation" do
+  it 'should store its metadata automatically after creation' do
     user = FactoryGirl.create :user
     $users_metadata.HGET(user.key, 'id').should == user.id.to_s
     $users_metadata.HGET(user.key, 'database_name').should == user.database_name
@@ -285,13 +284,13 @@ describe User do
     user.destroy
   end
 
-  it "should have a method that generates users redis limits metadata key" do
+  it 'should have a method that generates users redis limits metadata key' do
     @user.timeout_key.should == "limits:timeout:#{@user.username}"
   end
 
-  it "replicates db timeout limits in redis after saving and applies them to db" do
-    @user.user_timeout = 200007
-    @user.database_timeout = 100007
+  it 'replicates db timeout limits in redis after saving and applies them to db' do
+    @user.user_timeout = 200_007
+    @user.database_timeout = 100_007
     @user.save
     $users_metadata.HGET(@user.timeout_key, 'db').should == '200007'
     $users_metadata.HGET(@user.timeout_key, 'db_public').should == '100007'
@@ -303,18 +302,18 @@ describe User do
     end
   end
 
-  it "replicates render timeout limits in redis after saving" do
-    @user.user_render_timeout = 200001
-    @user.database_render_timeout = 100001
+  it 'replicates render timeout limits in redis after saving' do
+    @user.user_render_timeout = 200_001
+    @user.database_render_timeout = 100_001
     @user.save
     $users_metadata.HGET(@user.timeout_key, 'render').should == '200001'
     $users_metadata.HGET(@user.timeout_key, 'render_public').should == '100001'
   end
 
-  it "should store db timeout limits in redis after creation" do
-    user = FactoryGirl.create :user, user_timeout: 200002, database_timeout: 100002
-    user.user_timeout.should == 200002
-    user.database_timeout.should == 100002
+  it 'should store db timeout limits in redis after creation' do
+    user = FactoryGirl.create :user, user_timeout: 200_002, database_timeout: 100_002
+    user.user_timeout.should == 200_002
+    user.database_timeout.should == 100_002
     $users_metadata.HGET(user.timeout_key, 'db').should == '200002'
     $users_metadata.HGET(user.timeout_key, 'db_public').should == '100002'
     user.in_database do |db|
@@ -326,17 +325,17 @@ describe User do
     user.destroy
   end
 
-  it "should store render timeout limits in redis after creation" do
-    user = FactoryGirl.create :user, user_render_timeout: 200003, database_render_timeout: 100003
+  it 'should store render timeout limits in redis after creation' do
+    user = FactoryGirl.create :user, user_render_timeout: 200_003, database_render_timeout: 100_003
     user.reload
-    user.user_render_timeout.should == 200003
-    user.database_render_timeout.should == 100003
+    user.user_render_timeout.should == 200_003
+    user.database_render_timeout.should == 100_003
     $users_metadata.HGET(user.timeout_key, 'render').should == '200003'
     $users_metadata.HGET(user.timeout_key, 'render_public').should == '100003'
     user.destroy
   end
 
-  it "should have valid non-zero db timeout limits by default" do
+  it 'should have valid non-zero db timeout limits by default' do
     user = FactoryGirl.create :user
     user.user_timeout.should > 0
     user.database_timeout.should > 0
@@ -353,7 +352,7 @@ describe User do
     user.destroy
   end
 
-  it "should have zero render timeout limits by default" do
+  it 'should have zero render timeout limits by default' do
     user = FactoryGirl.create :user
     user.user_render_timeout.should eq 0
     user.database_render_timeout.should eq 0
@@ -362,8 +361,8 @@ describe User do
     user.destroy
   end
 
-  it "should remove its metadata from redis after deletion" do
-    doomed_user = create_user :email => 'doomed@example.com', :username => 'doomed', :password => 'doomed123'
+  it 'should remove its metadata from redis after deletion' do
+    doomed_user = create_user email: 'doomed@example.com', username: 'doomed', password: 'doomed123'
     $users_metadata.HGET(doomed_user.key, 'id').should == doomed_user.id.to_s
     $users_metadata.HGET(doomed_user.timeout_key, 'db').should_not be_nil
     $users_metadata.HGET(doomed_user.timeout_key, 'db_public').should_not be_nil
@@ -377,38 +376,38 @@ describe User do
     $users_metadata.HGET(timeout_key, 'render_public').should be_nil
   end
 
-  it "should remove its database and database user after deletion" do
-    doomed_user = create_user :email => 'doomed1@example.com', :username => 'doomed1', :password => 'doomed123'
-    create_table :user_id => doomed_user.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC
+  it 'should remove its database and database user after deletion' do
+    doomed_user = create_user email: 'doomed1@example.com', username: 'doomed1', password: 'doomed123'
+    create_table user_id: doomed_user.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC
     doomed_user.reload
     SequelRails.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
-      .first[:count].should == 1
+               .first[:count].should == 1
     SequelRails.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
-      .first[:count].should == 1
+               .first[:count].should == 1
 
     doomed_user.destroy
 
     SequelRails.connection["select count(*) from pg_catalog.pg_database where datname = '#{doomed_user.database_name}'"]
-      .first[:count].should == 0
+               .first[:count].should == 0
     SequelRails.connection["select count(*) from pg_catalog.pg_user where usename = '#{doomed_user.database_username}'"]
-      .first[:count].should == 0
+               .first[:count].should == 0
   end
 
-  it "should invalidate its Varnish cache after deletion" do
-    doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
+  it 'should invalidate its Varnish cache after deletion' do
+    doomed_user = create_user email: 'doomed2@example.com', username: 'doomed2', password: 'doomed123'
     CartoDB::Varnish.any_instance.expects(:purge).with("#{doomed_user.database_name}.*").at_least(2).returns(true)
 
     doomed_user.destroy
   end
 
-  it "should invalidate all their vizjsons when their disqus_shortname changes" do
+  it 'should invalidate all their vizjsons when their disqus_shortname changes' do
     @user.disqus_shortname = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
+                    .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
     @user.save
   end
 
-  it "should not invalidate anything when their quota_in_bytes changes" do
+  it 'should not invalidate anything when their quota_in_bytes changes' do
     @user.quota_in_bytes = @user.quota_in_bytes + 1.megabytes
     CartoDB::Varnish.any_instance.expects(:purge).times(0)
     @user.save
@@ -417,23 +416,23 @@ describe User do
   describe '#cartodb_postgresql_extension_versioning' do
     it 'should report pre multi user for known <0.3.0 versions' do
       before_mu_known_versions = %w(0.1.0 0.1.1 0.2.0 0.2.1)
-      before_mu_known_versions.each { |version|
+      before_mu_known_versions.each do |version|
         stub_and_check_version_pre_mu(version, true)
-      }
+      end
     end
 
     it 'should report post multi user for >=0.3.0 versions' do
       after_mu_known_versions = %w(0.3.0 0.3.1 0.3.2 0.3.3 0.3.4 0.3.5 0.4.0 0.5.5 0.10.0)
-      after_mu_known_versions.each { |version|
+      after_mu_known_versions.each do |version|
         stub_and_check_version_pre_mu(version, false)
-      }
+      end
     end
 
     it 'should report post multi user for versions with minor<3 but major>0' do
       minor_version_edge_cases = %w(1.0.0 1.0.1 1.2.0 1.2.1 1.3.0 1.4.4)
-      minor_version_edge_cases.each { |version|
+      minor_version_edge_cases.each do |version|
         stub_and_check_version_pre_mu(version, false)
-      }
+      end
     end
 
     it 'should report correct version with old version strings' do
@@ -443,9 +442,9 @@ describe User do
         '0.2.0 0.2.0',
         '0.2.1 0.2.1'
       ]
-      before_mu_old_known_versions.each { |version|
+      before_mu_old_known_versions.each do |version|
         stub_and_check_version_pre_mu(version, true)
-      }
+      end
     end
 
     it 'should report correct version with old version strings' do
@@ -460,22 +459,21 @@ describe User do
         '0.5.5 0.5.5',
         '0.10.0 0.10.0'
       ]
-      after_mu_old_known_versions.each { |version|
+      after_mu_old_known_versions.each do |version|
         stub_and_check_version_pre_mu(version, false)
-      }
+      end
     end
 
     it 'should report correct version with `git describe` not being a tag' do
-
       stub_and_check_version_pre_mu('0.2.1 0.2.0-8-g7840e7c', true)
 
       after_mu_old_known_versions = [
         '0.3.6 0.3.5-8-g7840e7c',
         '0.4.0 0.3.6-8-g7840e7c'
       ]
-      after_mu_old_known_versions.each { |version|
+      after_mu_old_known_versions.each do |version|
         stub_and_check_version_pre_mu(version, false)
-      }
+      end
     end
 
     def stub_and_check_version_pre_mu(version, is_pre_mu)
@@ -504,9 +502,9 @@ describe User do
       user.private_maps_enabled = true
       user.enabled = true
       user.table_quota = 500
-      user.quota_in_bytes = 1234567890
+      user.quota_in_bytes = 1_234_567_890
       user.user_timeout = user_timeout_secs * 1000
-      user.database_timeout = 123000
+      user.database_timeout = 123_000
       user.geocoding_quota = 1000
       user.geocoding_block_price = 1500
       user.sync_tables_enabled = false
@@ -529,7 +527,7 @@ describe User do
       user.database_schema.should eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC
       user.database_schema.should_not eq user.username
 
-      test_table_name = "table_perm_test"
+      test_table_name = 'table_perm_test'
 
       # Safety check
       user.in_database.fetch(%{
@@ -705,10 +703,10 @@ describe User do
         enable_remote_db_user: nil
       )
 
-      disk_quota = 1234567890
+      disk_quota = 1_234_567_890
       user_timeout_secs = 666
-      max_import_file_size = 6666666666
-      max_import_table_row_count = 55555555
+      max_import_file_size = 6_666_666_666
+      max_import_table_row_count = 55_555_555
       max_concurrent_import_count = 44
       max_layers = 11
 
@@ -741,7 +739,7 @@ describe User do
       user.table_quota = 500
       user.quota_in_bytes = disk_quota
       user.user_timeout = user_timeout_secs * 1000
-      user.database_timeout = 123000
+      user.database_timeout = 123_000
       user.geocoding_quota = 1000
       user.geocoding_block_price = 1500
       user.sync_tables_enabled = false
@@ -770,7 +768,7 @@ describe User do
       user.database_schema.should_not eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC
       user.database_schema.should eq user.username
 
-      test_table_name = "table_perm_test"
+      test_table_name = 'table_perm_test'
 
       # Safety check
       user.in_database.fetch(%{
@@ -906,8 +904,8 @@ describe User do
     end
   end
 
-  describe "Write locking" do
-    it "detects locking properly" do
+  describe 'Write locking' do
+    it 'detects locking properly' do
       @user.db_service.writes_enabled?.should eq true
       @user.db_service.disable_writes
       @user.db_service.terminate_database_connections
@@ -917,16 +915,16 @@ describe User do
       @user.db_service.writes_enabled?.should eq true
     end
 
-    it "enables and disables writes in user database" do
-      @user.db_service.run_pg_query("create table foo_1(a int);")
+    it 'enables and disables writes in user database' do
+      @user.db_service.run_pg_query('create table foo_1(a int);')
       @user.db_service.disable_writes
       @user.db_service.terminate_database_connections
       lambda {
-        @user.db_service.run_pg_query("create table foo_2(a int);")
+        @user.db_service.run_pg_query('create table foo_2(a int);')
       }.should raise_error(CartoDB::ErrorRunningQuery)
       @user.db_service.enable_writes
       @user.db_service.terminate_database_connections
-      @user.db_service.run_pg_query("create table foo_3(a int);")
+      @user.db_service.run_pg_query('create table foo_3(a int);')
     end
   end
 

@@ -3,6 +3,7 @@ require 'singleton'
 module CartoGearsApi
   module Events
     class EventManager
+
       include Singleton
       include ::LoggerHelper
 
@@ -20,6 +21,7 @@ module CartoGearsApi
       def subscribe(event_type, &block)
         raise ArgumentError.new('block is mandatory') unless block
         raise ArgumentError.new('event_type must be a subclass of BaseEvent') unless event_type < BaseEvent
+
         listeners_for(event_type).append(block)
         [event_type, block]
       end
@@ -33,15 +35,13 @@ module CartoGearsApi
       # @api private
       def notify(event)
         listeners_for(event.class).each do |listener|
-          begin
-            listener.call(event)
-          rescue StandardError => exception
-            log_error(
-              message: 'Error while running Gears event listeners',
-              exception: exception,
-              event: { class: event.class.name }
-            )
-          end
+          listener.call(event)
+        rescue StandardError => e
+          log_error(
+            message: 'Error while running Gears event listeners',
+            exception: e,
+            event: { class: event.class.name }
+          )
         end
       end
 
@@ -50,6 +50,7 @@ module CartoGearsApi
       def listeners_for(event_type)
         @event_listeners[event_type] ||= []
       end
+
     end
   end
 end

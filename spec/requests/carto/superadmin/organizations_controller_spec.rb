@@ -12,14 +12,14 @@ describe Carto::Superadmin::OrganizationsController do
         credentials['username'],
         credentials['password']
       ),
-      'HTTP_ACCEPT' => "application/json"
+      'HTTP_ACCEPT' => 'application/json'
     }
   end
 
   let(:invalid_headers) do
     {
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials('not', 'trusworthy'),
-      'HTTP_ACCEPT' => "application/json"
+      'HTTP_ACCEPT' => 'application/json'
     }
   end
 
@@ -226,10 +226,10 @@ describe Carto::Superadmin::OrganizationsController do
 
     it 'returns mapviews' do
       key = CartoDB::Stats::APICalls.new.redis_api_call_key(@org_user_owner.username, 'mapviews')
-      $users_metadata.ZADD(key, 23, "20160915")
+      $users_metadata.ZADD(key, 23, '20160915')
       get_json(usage_superadmin_organization_url(@organization.id), { from: '2016-09-14' }, superadmin_headers) do |response|
         mapviews = response.body[:mapviews][:total_views]
-        mapviews.find { |h| h[:date] == "2016-09-15" }[:value].should eq 23
+        mapviews.find { |h| h[:date] == '2016-09-15' }[:value].should eq 23
       end
     end
 
@@ -262,7 +262,7 @@ describe Carto::Superadmin::OrganizationsController do
 
     it 'does not return data outside the date range' do
       key = CartoDB::Stats::APICalls.new.redis_api_call_key(@org_user_owner.username, 'mapviews')
-      $users_metadata.ZADD(key, 23, "20160915")
+      $users_metadata.ZADD(key, 23, '20160915')
       get_json(usage_superadmin_organization_url(@organization.id), { from: '2016-09-16' }, superadmin_headers) do |response|
         mapviews = response.body[:mapviews][:total_views]
         mapviews.should_not include :"2016-09-15"

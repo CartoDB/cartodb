@@ -2,6 +2,7 @@ require 'active_record'
 
 module Carto
   class Overlay < ActiveRecord::Base
+
     # INFO: disable ActiveRecord inheritance column
     self.inheritance_column = :_type
 
@@ -48,9 +49,7 @@ module Carto
         other_overlay = Carto::Overlay.where(visualization_id: visualization_id, type: type)
         other_overlay = other_overlay.where('id != ?', id) unless new_record?
 
-        unless other_overlay.first.nil?
-          errors.add(:base, "Unique overlay of type #{type} already exists")
-        end
+        errors.add(:base, "Unique overlay of type #{type} already exists") unless other_overlay.first.nil?
       end
     end
 
@@ -62,7 +61,7 @@ module Carto
       # be removed, as an `Overlay` must have a `Visualization`.
       if visualization && visualization.user.viewer
         errors.add(:visualization, "Viewer users can't edit overlays")
-        return false
+        false
       end
     end
 
@@ -71,5 +70,6 @@ module Carto
       # Visualization might not exist during creation, as the overlays are created before the visualization
       visualization.try(:invalidate_after_commit)
     end
+
   end
 end

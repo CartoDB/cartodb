@@ -5,6 +5,7 @@ module Carto
   module Api
     module Public
       class OauthAppsController < Carto::Api::Public::ApplicationController
+
         include Carto::Api::PagedSearcher
         extend Carto::DefaultRescueFroms
 
@@ -136,6 +137,7 @@ module Carto
           event_class = "Carto::Tracking::Events::#{event_name}".constantize
           event_class.new(@user.id, properties).report
         end
+
       end
     end
   end

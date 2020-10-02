@@ -3,10 +3,10 @@ require_relative '../../lib/cartodb/image_metadata.rb'
 require_relative '../../spec/rspec_configuration.rb'
 
 describe CartoDB::ImageMetadata do
-  let(:png_path) { File.expand_path('../../support/data/images/pattern.png', __FILE__) }
-  let(:jpg_path) { File.expand_path('../../support/data/images/pattern.jpg', __FILE__) }
-  let(:svg_path) { File.expand_path('../../support/data/images/pattern.svg', __FILE__) }
-  let(:svg_no_xml_header_path) { File.expand_path('../../support/data/images/svg_without_xml_header', __FILE__) }
+  let(:png_path) { File.expand_path('../support/data/images/pattern.png', __dir__) }
+  let(:jpg_path) { File.expand_path('../support/data/images/pattern.jpg', __dir__) }
+  let(:svg_path) { File.expand_path('../support/data/images/pattern.svg', __dir__) }
+  let(:svg_no_xml_header_path) { File.expand_path('../support/data/images/svg_without_xml_header', __dir__) }
 
   describe '#extract_metadata' do
     let(:metadata) { CartoDB::ImageMetadata.new(png_path) }

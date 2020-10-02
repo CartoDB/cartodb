@@ -1,6 +1,5 @@
 module CartoDB
   module Importer2
-
     class CartodbfyTime
 
       @@instances = {}
@@ -19,10 +18,9 @@ module CartoDB
       end
 
       def get
-        return @cartodbfy_time
+        @cartodbfy_time
       end
 
     end
-
   end
 end

@@ -3,18 +3,20 @@ require_relative './job'
 module CartoDB
   module Importer2
     class Json2Csv
+
       def self.supported?(extension)
         extension == '.json'
       end
 
       def initialize(filepath, job=nil, logger=nil)
         @filepath = filepath
-        @job      = job || Job.new({logger: logger})
+        @job      = job || Job.new({ logger: logger })
       end
 
       def run
         data = parse(filepath)
         return self if complex?(data)
+
         File.open(converted_filepath, 'w') { |file| file.write csv_from(data) }
         job.log 'Converting JSON to CSV'
         self
@@ -35,8 +37,8 @@ module CartoDB
       end
 
       def transform(row)
-        row.values.map { |value| value.to_s.gsub(/,/, '').gsub(/"/, "\"") }
-          .join(',')
+        row.values.map { |value| value.to_s.gsub(/,/, '').gsub(/"/, '"') }
+           .join(',')
       end
 
       def complex?(data)
@@ -45,6 +47,7 @@ module CartoDB
 
       def converted_filepath
         return filepath if complex?(parse(filepath))
+
         File.join(
           File.dirname(filepath),
           File.basename(filepath, File.extname(filepath))
@@ -52,7 +55,8 @@ module CartoDB
       end
 
       def parse(filepath)
-        return {} unless File.exists?(filepath)
+        return {} unless File.exist?(filepath)
+
         file  = File.open(filepath)
         data  = ::JSON.parse(file.read.force_encoding('UTF-8'))
         file.close
@@ -62,6 +66,7 @@ module CartoDB
       private
 
       attr_reader :filepath, :job
+
     end
   end
 end

@@ -3,19 +3,18 @@ require_relative '../../../importer/lib/importer/query_batcher'
 
 module CartoDB
   module InternalGeocoder
-
     class AbstractQueryGenerator
 
       def initialize(internal_geocoder)
         @internal_geocoder = internal_geocoder
       end
 
-      #TODO custom exception
-      def search_terms_query(page)
+      # TODO: custom exception
+      def search_terms_query(_page)
         raise 'Not implemented'
       end
 
-      def dataservices_query(search_terms)
+      def dataservices_query(_search_terms)
         raise 'Not implemented'
       end
 
@@ -25,12 +24,13 @@ module CartoDB
 
       def country
         country = @internal_geocoder.countries
-        (country == %Q{'world'} || country.blank?) ? 'null' : country
+        country == %{'world'} || country.blank? ? 'null' : country
       end
 
       def region
         region = @internal_geocoder.regions
         return 'null' if region.blank?
+
         region
       end
 
@@ -39,6 +39,5 @@ module CartoDB
       end
 
     end # AbstractQueryGenerator
-
   end # InternalGeocoder
-end #CartoDB
+end # CartoDB

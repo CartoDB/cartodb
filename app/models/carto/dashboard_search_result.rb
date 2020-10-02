@@ -8,5 +8,6 @@ module Carto
       @visualizations = visualizations
       @total_count = total_count
     end
+
   end
 end

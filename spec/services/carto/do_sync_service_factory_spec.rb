@@ -1,7 +1,6 @@
 require 'spec_helper_min'
 
 describe Carto::DoSyncServiceFactory do
-
   before(:all) do
     @user = FactoryGirl.create(:valid_user, username: 'fulano')
     @service = Carto::DoSyncServiceFactory.get_for_user(@user)
@@ -55,7 +54,7 @@ describe Carto::DoSyncServiceFactory do
     metadata_gcloud_settings = {
       service_account: 'metadata-service-account'
     }
-    @metadata_settings_redis_key = "do_settings:__metadata_reader"
+    @metadata_settings_redis_key = 'do_settings:__metadata_reader'
     $users_metadata.hmset(@metadata_settings_redis_key, *metadata_gcloud_settings.to_a)
 
     @synced_sync = FactoryGirl.create(
@@ -103,7 +102,7 @@ describe Carto::DoSyncServiceFactory do
       data_import_id: @syncing_import.id
     )
 
-    @import_error_code = 12345
+    @import_error_code = 12_345
     @error_sync = FactoryGirl.create(
       :carto_synchronization,
       user_id: @user.id,
@@ -145,7 +144,7 @@ describe Carto::DoSyncServiceFactory do
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
-          fields: [stub(name: 'colname1', type: 'STRING'), stub(name: 'colname2', type: 'STRING'), ]
+          fields: [stub(name: 'colname1', type: 'STRING'), stub(name: 'colname2', type: 'STRING')]
         )
       )
       bq_mock = mock
@@ -174,7 +173,7 @@ describe Carto::DoSyncServiceFactory do
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
-          fields: [stub(name: 'colname1', type: 'STRING'), stub(name: 'geom', type: 'GEOGRAPHY'), ]
+          fields: [stub(name: 'colname1', type: 'STRING'), stub(name: 'geom', type: 'GEOGRAPHY')]
         )
       )
       bq_mock = mock
@@ -208,7 +207,7 @@ describe Carto::DoSyncServiceFactory do
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
-          fields: [stub(name: 'colname1', type: 'STRING'), stub(name: 'colname2', type: 'STRING'), ]
+          fields: [stub(name: 'colname1', type: 'STRING'), stub(name: 'colname2', type: 'STRING')]
         )
       )
       bq_geography_metadata = stub(
@@ -245,7 +244,7 @@ describe Carto::DoSyncServiceFactory do
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
-        data_view: "bq-project.bq-dataset.view_abc_table2",
+        data_view: 'bq-project.bq-dataset.view_abc_table2',
         data: @subscribed_dataset_id,
         geography: nil,
         geography_view: nil
@@ -263,9 +262,9 @@ describe Carto::DoSyncServiceFactory do
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
-        data_view: "bq-project.bq-dataset.view_abc_table2",
+        data_view: 'bq-project.bq-dataset.view_abc_table2',
         data: @subscribed_dataset_id,
-        geography_view: "bq-project.bq-dataset.view_abc_geography_table",
+        geography_view: 'bq-project.bq-dataset.view_abc_geography_table',
         geography: @subscribed_geography_id
       }
       @service.subscription_views(subscription).should eq expected_views
@@ -279,7 +278,7 @@ describe Carto::DoSyncServiceFactory do
       expected_views = {
         data_view: nil,
         data: nil,
-        geography_view: "bq-project.bq-dataset.view_abc_geography_table",
+        geography_view: 'bq-project.bq-dataset.view_abc_geography_table',
         geography: @subscribed_geography_id
       }
       @service.subscription_views(subscription).should eq expected_views
@@ -287,12 +286,12 @@ describe Carto::DoSyncServiceFactory do
 
     it 'returns error message for expired dataset' do
       subscription = @user.do_subscription(@subscribed_expired_dataset_id)
-      @service.subscription_views(subscription)[:error].should match /expired/i
+      @service.subscription_views(subscription)[:error].should match(/expired/i)
     end
 
     it 'returns error message for invalid dataset' do
       subscription = @user.do_subscription(@non_subscribed_dataset_id)
-      @service.subscription_views(subscription)[:error].should match /invalid/i
+      @service.subscription_views(subscription)[:error].should match(/invalid/i)
     end
 
     it 'returns the geography dataset instead of a view if it is public and not subscribed' do
@@ -304,7 +303,7 @@ describe Carto::DoSyncServiceFactory do
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
-        data_view: "bq-project.bq-dataset.view_abc_table2",
+        data_view: 'bq-project.bq-dataset.view_abc_table2',
         data: @subscribed_dataset_id,
         geography_view: @unsubscribed_geography_id,
         geography: @unsubscribed_geography_id
@@ -321,7 +320,7 @@ describe Carto::DoSyncServiceFactory do
 
       subscription = @user.do_subscription(@subscribed_dataset_id)
       expected_views = {
-        data_view: "bq-project.bq-dataset.view_abc_table2",
+        data_view: 'bq-project.bq-dataset.view_abc_table2',
         data: @subscribed_dataset_id,
         geography_view: nil,
         geography: nil
@@ -339,7 +338,7 @@ describe Carto::DoSyncServiceFactory do
     it 'returns unsyncable for expired subscription' do
       sync_info = @service.sync(@subscribed_expired_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
-      sync_info['unsyncable_reason'].should match /Subscription #{@subscribed_expired_dataset_id} expired/
+      sync_info['unsyncable_reason'].should match(/Subscription #{@subscribed_expired_dataset_id} expired/)
     end
 
     it 'returns unsyncable for dataset too big' do
@@ -360,7 +359,7 @@ describe Carto::DoSyncServiceFactory do
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
-      sync_info['unsyncable_reason'].should match /Number of bytes \(#{max_bytes + 1}\) exceeds the maximum/im
+      sync_info['unsyncable_reason'].should match(/Number of bytes \(#{max_bytes + 1}\) exceeds the maximum/im)
     end
 
     it 'returns unsyncable for dataset with too many rows' do
@@ -368,7 +367,7 @@ describe Carto::DoSyncServiceFactory do
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
-        num_rows: 1000000000000,
+        num_rows: 1_000_000_000_000,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
         )
@@ -379,7 +378,7 @@ describe Carto::DoSyncServiceFactory do
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
-      sync_info['unsyncable_reason'].should match /Number of rows \(1000000000000\) exceeds the maximum/im
+      sync_info['unsyncable_reason'].should match(/Number of rows \(1000000000000\) exceeds the maximum/im)
     end
 
     it 'returns unsyncable for dataset with too many columns' do
@@ -389,7 +388,7 @@ describe Carto::DoSyncServiceFactory do
         num_bytes: 1000,
         num_rows: 100,
         schema: stub(
-          fields: [stub(name: 'colname', type: 'STRING')]*1600
+          fields: [stub(name: 'colname', type: 'STRING')] * 1600
         )
       )
       @user.stubs(:remaining_quota).returns(1000)
@@ -398,36 +397,36 @@ describe Carto::DoSyncServiceFactory do
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
-      sync_info['unsyncable_reason'].should match /Number of columns \(1600\) exceeds the maximum/im
+      sync_info['unsyncable_reason'].should match(/Number of columns \(1600\) exceeds the maximum/im)
     end
 
     it 'returns unsyncable if user quota is exceeded' do
-    @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
-     bq_mock = mock
-     table_mock = stub(
-       num_bytes: 1000,
-       num_rows: 100,
-       schema: stub(
-         fields: [stub(name: 'colname', type: 'STRING')]*1600
-       )
-     )
-     @user.stubs(:remaining_quota).returns(999)
-     bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
-     @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
-
-     sync_info = @service.sync(@subscribed_dataset_id)
-     sync_info['sync_status'].should eq 'unsyncable'
-     sync_info['unsyncable_reason'].should match /Number of columns \(1600\) exceeds the maximum/im
-   end
-
-    it 'reports all limits exceeded' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        num_bytes: 1000000000000,
-        num_rows: 1000000000000,
+        num_bytes: 1000,
+        num_rows: 100,
         schema: stub(
-          fields: [stub(name: 'colname', type: 'STRING')]*1600
+          fields: [stub(name: 'colname', type: 'STRING')] * 1600
+        )
+      )
+      @user.stubs(:remaining_quota).returns(999)
+      bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
+      @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
+
+      sync_info = @service.sync(@subscribed_dataset_id)
+      sync_info['sync_status'].should eq 'unsyncable'
+      sync_info['unsyncable_reason'].should match(/Number of columns \(1600\) exceeds the maximum/im)
+    end
+
+    it 'reports all limits exceeded' do
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      bq_mock = mock
+      table_mock = stub(
+        num_bytes: 1_000_000_000_000,
+        num_rows: 1_000_000_000_000,
+        schema: stub(
+          fields: [stub(name: 'colname', type: 'STRING')] * 1600
         )
       )
       @user.stubs(:remaining_quota).returns(1000)
@@ -436,9 +435,9 @@ describe Carto::DoSyncServiceFactory do
 
       sync_info = @service.sync(@subscribed_dataset_id)
       sync_info['sync_status'].should eq 'unsyncable'
-      sync_info['unsyncable_reason'].should match /Number of bytes \(1000000000000\) exceeds the maximum/im
-      sync_info['unsyncable_reason'].should match /Number of rows \(1000000000000\) exceeds the maximum/im
-      sync_info['unsyncable_reason'].should match /Number of columns \(1600\) exceeds the maximum/im
+      sync_info['unsyncable_reason'].should match(/Number of bytes \(1000000000000\) exceeds the maximum/im)
+      sync_info['unsyncable_reason'].should match(/Number of rows \(1000000000000\) exceeds the maximum/im)
+      sync_info['unsyncable_reason'].should match(/Number of columns \(1600\) exceeds the maximum/im)
     end
 
     it 'returns unsynced for valid subscription' do
@@ -462,7 +461,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns synced for valid subscription imported' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -522,7 +521,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns syncing for valid subscription being imported' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -539,7 +538,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns unsynced for valid subscription failed importing' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_sync_error_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_sync_error_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -578,7 +577,7 @@ describe Carto::DoSyncServiceFactory do
 
   describe '#remove_sync!' do
     it 'removes syncs' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -591,16 +590,16 @@ describe Carto::DoSyncServiceFactory do
       bq_mock.stubs(:table).with(@subscribed_synced_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
-      expect{
-        expect {
+      expect do
+        expect do
           @service.remove_sync!(@subscribed_synced_dataset_id)
-        }.to change { Carto::UserTable.count }.by(-1)
-      }.to change { Carto::Synchronization.count }.by(-1)
+        end.to change { Carto::UserTable.count }.by(-1)
+      end.to change { Carto::Synchronization.count }.by(-1)
       @service.sync(@subscribed_synced_dataset_id)['sync_status'].should eq 'unsynced'
     end
 
     it 'does nothing for unsynced subscription' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -613,29 +612,29 @@ describe Carto::DoSyncServiceFactory do
       bq_mock.stubs(:table).with(@subscribed_dataset_id).returns(table_mock)
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
-      expect{
+      expect do
         @service.remove_sync!(@subscribed_dataset_id)
-      }.to change { Carto::Synchronization.count }.by(0)
+      end.to change { Carto::Synchronization.count }.by(0)
     end
 
     it 'raises error for syncinc subscription' do
       # TODO: should unsync in this case too?
-      expect {
+      expect do
         @service.remove_sync!(@subscribed_syncing_dataset_id)
-      }.to raise_exception StandardError
+      end.to raise_exception StandardError
     end
 
     it 'does nothing for invalid subscription' do
       # TODO: should raise exception?
-      expect{
+      expect do
         @service.remove_sync!(@non_subscribed_dataset_id)
-      }.to change { Carto::Synchronization.count }.by(0)
+      end.to change { Carto::Synchronization.count }.by(0)
     end
   end
 
   describe '#create_sync!' do
     it 'creates a synchronization and enqueues a import job' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -650,11 +649,11 @@ describe Carto::DoSyncServiceFactory do
 
       Resque::ImporterJobs.expects(:perform).once
       sync = nil
-      expect{
-        expect {
+      expect do
+        expect do
           sync = @service.create_sync!(@subscribed_dataset_id)
-        }.to change { Carto::Synchronization.count }.by(1)
-      }.to change { Carto::DataImport.count }.by(1)
+        end.to change { Carto::Synchronization.count }.by(1)
+      end.to change { Carto::DataImport.count }.by(1)
       sync['sync_status'].should eq 'syncing'
 
       data_import = Carto::DataImport.where(user_id: @user.id).find do |data_import|
@@ -676,7 +675,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'does nothing for synced subscriptions' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -690,16 +689,16 @@ describe Carto::DoSyncServiceFactory do
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync = nil
-      expect{
-        expect {
+      expect do
+        expect do
           sync = @service.create_sync!(@subscribed_synced_dataset_id)
-        }.to change { Carto::Synchronization.count }.by(0)
-      }.to change { Carto::DataImport.count }.by(0)
+        end.to change { Carto::Synchronization.count }.by(0)
+      end.to change { Carto::DataImport.count }.by(0)
       sync['sync_status'].should eq 'synced'
     end
 
     it 'does nothing for syncing subscriptions' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -713,39 +712,39 @@ describe Carto::DoSyncServiceFactory do
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync = nil
-      expect{
-        expect {
+      expect do
+        expect do
           sync = @service.create_sync!(@subscribed_syncing_dataset_id)
-        }.to change { Carto::Synchronization.count }.by(0)
-      }.to change { Carto::DataImport.count }.by(0)
+        end.to change { Carto::Synchronization.count }.by(0)
+      end.to change { Carto::DataImport.count }.by(0)
       sync['sync_status'].should eq 'syncing'
     end
 
     it 'does nothing for expired subscriptions' do
       # TODO: should raise exception?
-      expect{
-        expect {
+      expect do
+        expect do
           sync = @service.create_sync!(@subscribed_expired_dataset_id)
-        }.to change { Carto::Synchronization.count }.by(0)
-      }.to change { Carto::DataImport.count }.by(0)
+        end.to change { Carto::Synchronization.count }.by(0)
+      end.to change { Carto::DataImport.count }.by(0)
     end
 
     it 'does nothing for invalid subscriptions' do
       # TODO: should raise exception?
-      expect{
-        expect {
+      expect do
+        expect do
           sync = @service.create_sync!(@non_subscribed_dataset_id)
-        }.to change { Carto::Synchronization.count }.by(0)
-      }.to change { Carto::DataImport.count }.by(0)
+        end.to change { Carto::Synchronization.count }.by(0)
+      end.to change { Carto::DataImport.count }.by(0)
     end
 
     it 'does nothing for subscriptions over limits' do
       # TODO: should raise exception?
 
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
-        num_bytes: 1000000000000,
+        num_bytes: 1_000_000_000_000,
         num_rows: 100,
         schema: stub(
           fields: [stub(name: 'colname', type: 'STRING')]
@@ -756,11 +755,11 @@ describe Carto::DoSyncServiceFactory do
       @bq_client_class.stubs(:new).with(key: 'metadata-service-account').returns(bq_mock)
 
       sync = nil
-      expect{
-        expect {
+      expect do
+        expect do
           sync = @service.create_sync!(@subscribed_dataset_id)
-        }.to change { Carto::Synchronization.count }.by(0)
-      }.to change { Carto::DataImport.count }.by(0)
+        end.to change { Carto::Synchronization.count }.by(0)
+      end.to change { Carto::DataImport.count }.by(0)
       sync['sync_status'].should eq 'unsyncable'
     end
   end

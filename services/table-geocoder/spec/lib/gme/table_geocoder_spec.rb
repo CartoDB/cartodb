@@ -47,7 +47,7 @@ describe Carto::Gme::TableGeocoder do
       @mandatory_args.each do |arg|
         args_missing_one = @mandatory_args.dup
         args_missing_one.delete(arg[0])
-        lambda { Carto::Gme::TableGeocoder.new(args_missing_one) }.should raise_error(KeyError)
+        -> { Carto::Gme::TableGeocoder.new(args_missing_one) }.should raise_error(KeyError)
       end
     end
 
@@ -98,7 +98,7 @@ describe Carto::Gme::TableGeocoder do
       @geocoding_model.state.should == 'failed'
     end
 
-    it "processes 1 block at a time, keeping track of processed rows in each block" do
+    it 'processes 1 block at a time, keeping track of processed rows in each block' do
       # TODO: there's something weird that needs review here
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 4)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 4)
@@ -120,7 +120,7 @@ describe Carto::Gme::TableGeocoder do
       @table_geocoder.processed_rows.should == 4
     end
 
-    it "processes empty response" do
+    it 'processes empty response' do
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 1)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 1)
@@ -139,7 +139,7 @@ describe Carto::Gme::TableGeocoder do
       @table_geocoder.processed_rows.should == 1
     end
 
-    it "processes error rows response" do
+    it 'processes error rows response' do
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 1)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
@@ -158,7 +158,7 @@ describe Carto::Gme::TableGeocoder do
       @table_geocoder.processed_rows.should == 1
     end
 
-    it "processes error with message response" do
+    it 'processes error with message response' do
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 1)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
       @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
@@ -190,6 +190,7 @@ describe Carto::Gme::TableGeocoder do
       filename = 'populated_places_short.csv'
       _stdout, stderr, _status = Open3.capture3("cp #{path_to(filename)} /tmp/#{filename}")
       raise if stderr != ''
+
       load_csv "/tmp/#{filename}"
 
       params = {
@@ -197,7 +198,7 @@ describe Carto::Gme::TableGeocoder do
         table_name: @table_name,
         qualified_table_name: @table_name,
         sequel_qualified_table_name: @table_name,
-        original_formatter: "{name}, {iso3}",
+        original_formatter: '{name}, {iso3}',
         client_id: 'my_client_id',
         private_key: 'my_private_key',
         max_block_size: 4,

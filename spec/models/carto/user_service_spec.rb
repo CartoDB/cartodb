@@ -15,8 +15,8 @@ describe Carto::UserService do
     @user.destroy
   end
 
-  describe "#in_database" do
-    it "initializes the connection with the expected options" do
+  describe '#in_database' do
+    it 'initializes the connection with the expected options' do
       carto_user = Carto::User.find(@user.id)
       default_opts = {
         username: carto_user.database_username,
@@ -30,8 +30,8 @@ describe Carto::UserService do
       carto_user.in_database
     end
 
-    it "sets statement timeout option" do
-      custom_timeout = 123456
+    it 'sets statement timeout option' do
+      custom_timeout = 123_456
       expected_returned_custom_timeout = { statement_timeout: "#{custom_timeout}ms" }
 
       @returned_timeout = nil
@@ -81,7 +81,7 @@ describe Carto::UserService do
       @default_timeout_new.should eq @default_timeout
     end
 
-    it "sets search_path correctly" do
+    it 'sets search_path correctly' do
       expected_returned_normal_search_path = {
         search_path: "#{@user.database_schema}, cartodb, cdb_dataservices_client, public"
       }
@@ -104,18 +104,18 @@ describe Carto::UserService do
       @normal_search_path_new.should eq @normal_search_path
     end
 
-    it "only allows superadmin operations to the expected roles" do
+    it 'only allows superadmin operations to the expected roles' do
       carto_user = Carto::User.find(@user.id)
-      expect {
+      expect do
         @user.in_database do |conn|
           conn.execute(%{SELECT set_config('log_statement_stats', 'off', false)})
         end
-      }.to raise_exception(Sequel::DatabaseError, /permission denied to set parameter "log_statement_stats"/)
-      expect {
+      end.to raise_exception(Sequel::DatabaseError, /permission denied to set parameter "log_statement_stats"/)
+      expect do
         carto_user.in_database do |conn|
           conn.execute(%{SELECT set_config('log_statement_stats', 'off', false)})
         end
-      }.to raise_exception(ActiveRecord::StatementInvalid, /permission denied to set parameter "log_statement_stats"/)
+      end.to raise_exception(ActiveRecord::StatementInvalid, /permission denied to set parameter "log_statement_stats"/)
       @user.in_database(as: :superuser) do |conn|
         conn.execute(%{SELECT set_config('log_statement_stats', 'off', false)})
       end

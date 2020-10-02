@@ -6,7 +6,7 @@ describe 'cartodb:fix_unique_legends' do
   include Carto::Factories::Visualizations
 
   before(:each) do
-    Rake.application.rake_require "tasks/fix_unique_legends"
+    Rake.application.rake_require 'tasks/fix_unique_legends'
     Rake::Task.define_task(:environment)
     Rake.application['cartodb:fix_unique_legends'].reenable
 
@@ -14,18 +14,18 @@ describe 'cartodb:fix_unique_legends' do
     _, _, _, visualization = create_full_visualization(user)
     @layer = visualization.layers.find(&:data_layer?)
     @legend = Carto::Legend.create!(layer: @layer,
-                                    title: "bird_name",
-                                    pre_html: "",
-                                    post_html: "",
-                                    type: "torque",
+                                    title: 'bird_name',
+                                    pre_html: '',
+                                    post_html: '',
+                                    type: 'torque',
                                     definition: {
-                                      "categories" => [
-                                        { "title" => "Perico", "color"=>"#ff382a", "icon"=>"" },
-                                        { "title" => "Palotes", "color"=>"#0038d1", "icon"=>"" },
-                                        { "title" => "Jr", "color"=>"#d4cf34", "icon"=>"" }
+                                      'categories' => [
+                                        { 'title' => 'Perico', 'color' => '#ff382a', 'icon' => '' },
+                                        { 'title' => 'Palotes', 'color' => '#0038d1', 'icon' => '' },
+                                        { 'title' => 'Jr', 'color' => '#d4cf34', 'icon' => '' }
                                       ]
                                     },
-                                    conf: { "columns" => [] })
+                                    conf: { 'columns' => [] })
   end
 
   it 'deletes duplicate legend of unique type' do

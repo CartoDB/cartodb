@@ -1,6 +1,7 @@
 module CartoDB
   module Importer2
     module QuotaCheckHelpers
+
       def raise_if_over_storage_quota(requested_quota: 0, available_quota: 0, user_id: nil)
         quota_overage = requested_quota - available_quota
 
@@ -16,6 +17,7 @@ module CartoDB
                                                    user_id: user_id,
                                                    quota_overage: quota_overage).report
       end
+
     end
   end
 end

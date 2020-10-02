@@ -17,7 +17,7 @@ describe Api::Json::SynchronizationsController do
   describe '#create' do
     let(:params) do
       {
-        url: "fake_url",
+        url: 'fake_url',
         interval: 3600,
         content_guessing: true,
         type_guessing: true,
@@ -38,34 +38,32 @@ describe Api::Json::SynchronizationsController do
       end
 
       it 'creates a synchronization and enqueues a import job for external sources' do
-        begin
-          Resque::ImporterJobs.expects(:perform).once
-          carto_visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id)
-          external_source = FactoryGirl.create(:external_source, visualization: carto_visualization)
-          remote_id = external_source.visualization_id
+        Resque::ImporterJobs.expects(:perform).once
+        carto_visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id)
+        external_source = FactoryGirl.create(:external_source, visualization: carto_visualization)
+        remote_id = external_source.visualization_id
 
-          expect {
-            post_json api_v1_synchronizations_create_url(params.merge(remote_visualization_id: remote_id)) do |r|
-              r.status.should eq 200
-              Carto::Synchronization.find(r.body[:id]).state.should eq Carto::Synchronization::STATE_QUEUED
-            end
-          }.to change { Carto::Synchronization.count }.by 1
-        ensure
-          external_source.external_data_imports.each(&:destroy)
-          external_source.destroy
-          carto_visualization.destroy
-        end
+        expect do
+          post_json api_v1_synchronizations_create_url(params.merge(remote_visualization_id: remote_id)) do |r|
+            r.status.should eq 200
+            Carto::Synchronization.find(r.body[:id]).state.should eq Carto::Synchronization::STATE_QUEUED
+          end
+        end.to change { Carto::Synchronization.count }.by 1
+      ensure
+        external_source.external_data_imports.each(&:destroy)
+        external_source.destroy
+        carto_visualization.destroy
       end
     end
 
     it 'creates a synchronization and enqueues a import job' do
       Resque::ImporterJobs.expects(:perform).once
-      expect {
+      expect do
         post_json api_v1_synchronizations_create_url(params) do |r|
           r.status.should eq 200
           Carto::Synchronization.find(r.body[:id]).state.should eq Carto::Synchronization::STATE_QUEUED
         end
-      }.to change { Carto::Synchronization.count }.by 1
+      end.to change { Carto::Synchronization.count }.by 1
     end
   end
 
@@ -105,4 +103,3 @@ describe Api::Json::SynchronizationsController do
     end
   end
 end
-

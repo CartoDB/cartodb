@@ -1,7 +1,9 @@
 module Carto
   module OauthProvider
     module GrantStrategies
+
       module AuthorizationCodeStrategy
+
         def self.authorize!(oauth_app, params)
           authorization_code = OauthAuthorizationCode.find_by_code!(params[:code])
           raise OauthProvider::Errors::InvalidGrant.new unless authorization_code.oauth_app == oauth_app
@@ -19,9 +21,11 @@ module Carto
         def self.required_params
           ['code']
         end
+
       end
 
       module RefreshTokenStrategy
+
         def self.authorize!(oauth_app, params)
           refresh_token = OauthRefreshToken.find_by_token!(params[:refresh_token])
           raise OauthProvider::Errors::InvalidGrant.new unless refresh_token.oauth_app == oauth_app
@@ -38,7 +42,9 @@ module Carto
         def self.required_params
           ['refresh_token']
         end
+
       end
+
     end
   end
 end

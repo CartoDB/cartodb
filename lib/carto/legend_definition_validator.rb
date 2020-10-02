@@ -4,6 +4,7 @@ require_dependency 'carto/definition'
 
 module Carto
   class LegendDefinitionValidator
+
     def initialize(type, definition)
       @type = type
       @definition = definition.with_indifferent_access if definition
@@ -23,9 +24,11 @@ module Carto
 
     def location
       return @location if @location
+
       location = "#{Rails.root}/#{LEGEND_FORMATS_LOCATION}/#{@type}.json"
 
-      @location = location if File.exists?(location)
+      @location = location if File.exist?(location)
     end
+
   end
 end

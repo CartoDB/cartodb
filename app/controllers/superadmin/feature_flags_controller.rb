@@ -1,4 +1,5 @@
 class Superadmin::FeatureFlagsController < Superadmin::SuperadminController
+
   respond_to :json
 
   ssl_required :create, :update, :destroy

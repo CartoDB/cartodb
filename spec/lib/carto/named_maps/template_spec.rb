@@ -3,6 +3,7 @@ require_relative '../../../../lib/carto/named_maps/template'
 
 module Carto
   module NamedMaps
+
     describe Template do
       include Carto::Factories::Visualizations
 
@@ -85,33 +86,35 @@ module Carto
           describe 'with popups' do
             let(:dummy_infowindow) do
               {
-                "fields" => [
+                'fields' => [
                   {
-                    "name" => "click_status",
-                    "title" => true,
-                    "position" => 8
-                  }],
-                "template_name" => "table/views/infowindow_light",
-                "template" => "",
-                "alternative_names" => {},
-                "width" => 226,
-                "maxHeight" => 180
+                    'name' => 'click_status',
+                    'title' => true,
+                    'position' => 8
+                  }
+                ],
+                'template_name' => 'table/views/infowindow_light',
+                'template' => '',
+                'alternative_names' => {},
+                'width' => 226,
+                'maxHeight' => 180
               }
             end
 
             let(:dummy_tooltip) do
               {
-                "fields" => [
+                'fields' => [
                   {
-                    "name" => "hover_status",
-                    "title" => true,
-                    "position" => 8
-                  }],
-                "template_name" => "table/views/infowindow_light",
-                "template" => "",
-                "alternative_names" => {},
-                "width" => 226,
-                "maxHeight" => 180
+                    'name' => 'hover_status',
+                    'title' => true,
+                    'position' => 8
+                  }
+                ],
+                'template_name' => 'table/views/infowindow_light',
+                'template' => '',
+                'alternative_names' => {},
+                'width' => 226,
+                'maxHeight' => 180
               }
             end
 
@@ -634,8 +637,8 @@ module Carto
       end
 
       describe '#layergroup' do
-        before (:all) { @layergroup_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup] }
-        after  (:all) { @layergroup_hash = nil }
+        before(:all) { @layergroup_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup] }
+        after(:all) { @layergroup_hash = nil }
 
         it 'should have version according to Map Config' do
           @layergroup_hash[:version].should eq Carto::NamedMaps::Template::MAP_CONFIG_VERSION
@@ -747,8 +750,8 @@ module Carto
           it 'should use the state info for the view when instantiating a named map' do
             @template_hash[:view][:zoom].should eq 4
             template_center = @template_hash[:view][:center]
-            template_center[:lat].should eq -16.2
-            template_center[:lng].should eq -51.1
+            template_center[:lat].should eq(-16.2)
+            template_center[:lng].should eq(-51.1)
             expected_bounds = { west: 37.4, south: 41.6, east: -58.9, north: -143.9 }
             @template_hash[:view][:bounds].should eq expected_bounds
           end
@@ -800,5 +803,6 @@ module Carto
         end
       end
     end
+
   end
 end

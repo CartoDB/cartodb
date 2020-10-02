@@ -1,7 +1,6 @@
 namespace :cartodb do
   namespace :connectors do
-
-    desc "Create Connector Providers for Provider Classes"
+    desc 'Create Connector Providers for Provider Classes'
     task create_providers: :environment do
       Carto::Connector.providers(all: true).keys.each do |provider_name|
         unless Carto::ConnectorProvider.where(name: provider_name).exists?
@@ -71,32 +70,32 @@ namespace :cartodb do
       max_rows.to_i == 0 ? '(unlimited)' : max_rows.to_s
     end
 
-    desc "Check user connector configuration"
+    desc 'Check user connector configuration'
     task :show_user_config, [:provider, :user] => :environment do |_task, args|
       with_provider_user_config(args) do |provider, user, config, user_config, org_config, provider_config|
         puts "Connector #{provider.name} configuration for user #{user.username}:"
         puts "  Enabled: #{config.enabled?}"
         puts "  Max. Rows: #{max_rows_description config.max_rows}"
         if user_config
-          puts "Using user-specific configuration"
+          puts 'Using user-specific configuration'
         elsif org_config
           puts "Using organization #{org_config.organization.name} configuration"
         elsif provider_config
           puts "Using #{provider_config.connector_provider.name} defaults"
         else
-          puts "Using default configuration"
+          puts 'Using default configuration'
         end
       end
     end
 
-    desc "Set user connector configuration"
+    desc 'Set user connector configuration'
     task :set_user_config, [:provider, :user, :enabled, :max_rows] => :environment do |_task, args|
       with_provider_user_config(args) do |provider, user, _config, user_config, _org_config, _provider_config|
         if args.enabled.casecmp('default').zero? && !args.max_rows
           # rake cartodb:connectors:user_config[provider,user,default] will reset to the default configuration
           puts "Will reset configuration for #{provider.name} and user #{user.username}"
           if user_config
-            puts "  Removing existing configuration:"
+            puts '  Removing existing configuration:'
             puts "    Enabled: #{user_config.enabled.inspect}"
             puts "    Max. Rows: #{max_rows_description user_config.max_rows}"
             user_config.destroy
@@ -109,16 +108,16 @@ namespace :cartodb do
           max_rows = nil if max_rows == 0
           if user_config
             puts "Will update configuration for #{provider.name} and user #{user.username}"
-            puts "  New configuration:"
+            puts '  New configuration:'
             puts "    Enabled: #{enabled.inspect}"
             puts "    Max. Rows: #{max_rows_description max_rows}"
-            puts "  Existing configuration:"
+            puts '  Existing configuration:'
             puts "    Enabled: #{user_config.enabled.inspect}"
             puts "    Max. Rows: #{max_rows_description user_config.max_rows}"
             user_config.update_attributes! enabled: enabled, max_rows: max_rows
           else
             puts "Will create a new configuration for #{provider.name} and user #{user.username}"
-            puts "  New configuration: enabled:"
+            puts '  New configuration: enabled:'
             puts "    Enabled: #{enabled.inspect}"
             puts "    Max. Rows: #{max_rows_description max_rows}"
             Carto::ConnectorConfiguration.create!(
@@ -132,12 +131,12 @@ namespace :cartodb do
       end
     end
 
-    desc "Check organization connector configuration"
+    desc 'Check organization connector configuration'
     task :show_org_config, [:provider, :org] => :environment do |_task, args|
       with_provider_org_config(args) do |provider, org, org_config, provider_config|
         puts "Connector #{provider.name} configuration for organization #{org.name}:"
         if org_config
-          puts "Using organization-specific configuration:"
+          puts 'Using organization-specific configuration:'
           puts "  Enabled: #{org_config.enabled?}"
           puts "  Max. Rows: #{max_rows_description org_config.max_rows}"
         elsif provider_config
@@ -145,19 +144,19 @@ namespace :cartodb do
           puts "  Enabled: #{provider_config.enabled?}"
           puts "  Max. Rows: #{max_rows_description provider_config.max_rows}"
         else
-          puts "Using default configuration"
+          puts 'Using default configuration'
         end
       end
     end
 
-    desc "Set organization connector configuration"
+    desc 'Set organization connector configuration'
     task :set_org_config, [:provider, :org, :enabled, :max_rows] => :environment do |_task, args|
-      with_provider_org_config(args) do |provider, org, org_config, provider_config|
+      with_provider_org_config(args) do |provider, org, org_config, _provider_config|
         if args.enabled.casecmp('default').zero? && !args.max_rows
           # rake cartodb:connectors:org_config[provider,org,default] will reset to the default configuration
           puts "Will reset configuration for #{provider.name} and user #{org.name}"
           if org_config
-            puts "  Removing existing configuration:"
+            puts '  Removing existing configuration:'
             puts "    Enabled: #{org_config.enabled?}"
             puts "    Max. Rows: #{max_rows_description org_config.max_rows}"
             org_config.destroy
@@ -170,16 +169,16 @@ namespace :cartodb do
           max_rows = nil if max_rows == 0
           if org_config
             puts "Will update configuration for #{provider.name} and org. #{org.name}"
-            puts "  New configuration: enabled:"
+            puts '  New configuration: enabled:'
             puts "    Enabled: #{enabled.inspect}"
             puts "    Max. Rows: #{max_rows_description max_rows}"
-            puts "  Existing configuration: enabled:"
+            puts '  Existing configuration: enabled:'
             puts "    Enabled: #{org_config.enabled?}"
             puts "    Max. Rows: #{max_rows_description org_config.max_rows}"
             org_config.update_attributes! enabled: enabled, max_rows: max_rows
           else
             puts "Will create a new configuration for #{provider.name} and org. #{org.name}"
-            puts "  New configuration: enabled:"
+            puts '  New configuration: enabled:'
             puts "    Enabled: #{enabled.inspect}"
             puts "    Max. Rows: #{max_rows_description max_rows}"
             Carto::ConnectorConfiguration.create!(
@@ -193,7 +192,7 @@ namespace :cartodb do
       end
     end
 
-    desc "Check connector configuration"
+    desc 'Check connector configuration'
     task :show_config, [:provider] => :environment do |_task, args|
       with_provider_config(args) do |provider, provider_config|
         puts "Connector #{provider.name} configuration:"
@@ -202,14 +201,13 @@ namespace :cartodb do
           puts "  Enabled: #{provider_config.enabled?}"
           puts "  Max. Rows: #{max_rows_description provider_config.max_rows}"
         else
-          puts "Using default configuration"
+          puts 'Using default configuration'
         end
       end
     end
 
     desc 'Adapt connector synchronizations to the new API'
     task adapt_api: :environment do
-
       def get_ignoring_case(hash, key)
         _k, v = hash.find { |k, _v| k.to_s.casecmp(key.to_s) == 0 }
         v
@@ -221,10 +219,14 @@ namespace :cartodb do
       # No attempt is done to avoid changing 'dead' syncs (left 'created' or retried too many times).
       # This is idempotent and will do no harm to connectors that use the new API.
       Carto::Synchronization.where(service_name: 'connector').find_each do |sync|
-        parameters = JSON.load(sync.service_item_id) rescue nil
+        parameters = begin
+                       JSON.load(sync.service_item_id)
+                     rescue StandardError
+                       nil
+                     end
         if parameters
           provider = get_ignoring_case(parameters, 'provider')
-          if !provider
+          unless provider
             puts "Adapting #{sync.id}"
             parameters['provider'] = 'odbc'
             sync.service_item_id = parameters.to_json

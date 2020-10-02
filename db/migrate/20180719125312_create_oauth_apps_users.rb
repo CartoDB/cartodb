@@ -3,7 +3,7 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     create_table :oauth_app_users do
       Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :oauth_app_id, :oauth_apps, type: :uuid, null: false, index: true, on_delete: :cascade
@@ -14,7 +14,7 @@ migration(
       unique      [:oauth_app_id, :user_id]
     end
   end,
-  Proc.new do
+  proc do
     drop_table :oauth_app_users
   end
 )

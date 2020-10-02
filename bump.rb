@@ -4,26 +4,28 @@ require 'date'
 
 Dir.chdir(File.dirname(__FILE__))
 
-NEWS_HEADER_REGEX = /^(\d+)\.(\d+)\.(\d+) \(\d{4}-\d{2}-\d{2}\)$\n-+/
+NEWS_HEADER_REGEX = /^(\d+)\.(\d+)\.(\d+) \(\d{4}-\d{2}-\d{2}\)$\n-+/.freeze
 PARTS = ['major', 'minor', 'patch'].freeze
-NEWS_HEADER = <<-NEWS
-Development
------------
-
-### NOTICES
-- None yet
-
-### Features
-- None yet
-
-### Bug fixes / enhancements
-- None yet
-
+NEWS_HEADER = <<~NEWS.freeze
+  Development
+  -----------
+  
+  ### NOTICES
+  - None yet
+  
+  ### Features
+  - None yet
+  
+  ### Bug fixes / enhancements
+  - None yet
+  
 NEWS
 
 class Version < Array
+
   def initialize(parts)
-    raise "Expected three version parts" unless parts.count == 3
+    raise 'Expected three version parts' unless parts.count == 3
+
     super(parts.map(&:to_i))
   end
 
@@ -35,6 +37,7 @@ class Version < Array
   def to_s
     join('.')
   end
+
 end
 
 def version_from_tag(tag)
@@ -46,7 +49,7 @@ end
 
 def version_from_news(news)
   m = news.match(NEWS_HEADER_REGEX)
-  raise "Could not find NEWS version" unless m
+  raise 'Could not find NEWS version' unless m
 
   Version.new(m[1..3])
 end
@@ -67,11 +70,9 @@ def clean_development(news)
   development_lines.delete('-----------')
 
   # Write non-empty sections
-  news_sections(development_lines).map { |name, lines|
-    if name && lines.any? { |l| !l.strip.empty? }
-      "### #{name}\n#{lines.join("\n")}\n"
-    end
-  }.compact.join('') + "\n#{header}#{rest}"
+  news_sections(development_lines).map do |name, lines|
+    "### #{name}\n#{lines.join("\n")}\n" if name && lines.any? { |l| !l.strip.empty? }
+  end.compact.join('') + "\n#{header}#{rest}"
 end
 
 def news_sections(lines)
@@ -80,9 +81,7 @@ def news_sections(lines)
   section_name = nil
   lines.each do |line|
     if line.start_with?('###')
-      if section_name
-        sections << [section_name, section_lines]
-      end
+      sections << [section_name, section_lines] if section_name
       section_lines = []
       section_name = line[4..-1]
     elsif line != '- None yet'
@@ -104,7 +103,7 @@ end
 ARGV << 'patch' if ARGV.empty?
 help unless ARGV.count == 1
 
-# raise 'Not in master branch' unless `git rev-parse --abbrev-ref HEAD`.strip == 'master'
+#  raise 'Not in master branch' unless `git rev-parse --abbrev-ref HEAD`.strip == 'master'
 
 puts 'Pulling and fetching tags...'
 `git pull --tags`

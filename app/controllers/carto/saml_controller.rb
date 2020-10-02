@@ -22,5 +22,6 @@ module Carto
     def ensure_saml_enabled
       raise UnauthorizedError.new('SAML not enabled') unless @organization.auth_saml_enabled?
     end
+
   end
 end

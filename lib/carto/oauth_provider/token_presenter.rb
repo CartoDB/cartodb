@@ -1,6 +1,7 @@
 module Carto
   module OauthProvider
     class TokenPresenter
+
       def initialize(access_token, refresh_token: nil)
         @access_token = access_token
         @refresh_token = refresh_token
@@ -20,6 +21,7 @@ module Carto
 
         token
       end
+
     end
   end
 end

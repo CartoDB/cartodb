@@ -1,6 +1,5 @@
 module CartoDB
   module Importer2
-
     # Take a sample from a database table.
     # It uses an ids_column that must have an index created on it,
     # in order to use just index scans instead of seq scans.
@@ -26,14 +25,13 @@ module CartoDB
         raise CartoDB::Importer2::TooManyColumnsProcessingError.new
       end
 
-
       private
 
       def sample_query
         if ids_count <= sample_size
-          %Q[SELECT * FROM #{qualified_table_name}]
+          %[SELECT * FROM #{qualified_table_name}]
         else
-          %Q[SELECT * FROM #{qualified_table_name} WHERE #{ids_column} IN (#{sample_indices.to_a.join(',')})]
+          %[SELECT * FROM #{qualified_table_name} WHERE #{ids_column} IN (#{sample_indices.to_a.join(',')})]
         end
       end
 
@@ -68,7 +66,7 @@ module CartoDB
 
       def ids_count
         @ids_count ||=
-          if max_id && min_id then
+          if max_id && min_id
             max_id - min_id + 1
           else
             0
@@ -88,7 +86,7 @@ module CartoDB
       end
 
       def min_max_ids_query
-        %Q(SELECT min(#{ids_column}), max(#{ids_column}) FROM #{qualified_table_name})
+        %(SELECT min(#{ids_column}), max(#{ids_column}) FROM #{qualified_table_name})
       end
 
     end

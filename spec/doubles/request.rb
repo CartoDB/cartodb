@@ -11,4 +11,3 @@ module Doubles
 
   end
 end
-

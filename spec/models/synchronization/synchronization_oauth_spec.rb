@@ -1,9 +1,8 @@
 require 'spec_helper'
 
 describe SynchronizationOauth do
-
   before(:all) do
-    @user = create_user(:quota_in_bytes => 500.megabytes, :table_quota => 500)
+    @user = create_user(quota_in_bytes: 500.megabytes, table_quota: 500)
     @user.reload
   end
 
@@ -13,7 +12,7 @@ describe SynchronizationOauth do
   end
 
   after(:each) do
-    @user.synchronization_oauths.map &:destroy
+    @user.synchronization_oauths.map(&:destroy)
     @user.reload
   end
 
@@ -26,9 +25,9 @@ describe SynchronizationOauth do
       SynchronizationOauth.all.size.should eq 0
 
       oauth_entry = SynchronizationOauth.create(
-          user_id: @user.id,
-          service: service_name,
-          token: token_value
+        user_id: @user.id,
+        service: service_name,
+        token: token_value
       ).reload
 
       oauth_entry.nil?.should eq false
@@ -50,40 +49,40 @@ describe SynchronizationOauth do
       oauth_entry.save.reload
       oauth_entry.token.should eq token_value_2
 
-      expect {
+      expect do
         oauth_entry.service = 'another_service_name'
         oauth_entry.save
-      }.to raise_exception Sequel::ValidationFailed
+      end.to raise_exception Sequel::ValidationFailed
       oauth_entry.service = service_name
 
-      expect {
+      expect do
         oauth_entry.user_id = Carto::UUIDHelper.random_uuid
         oauth_entry.save
-      }.to raise_exception Sequel::ValidationFailed
+      end.to raise_exception Sequel::ValidationFailed
 
-      expect {
+      expect do
         SynchronizationOauth.create(
-            user_id: @user.id,
-            service: service_name,
-            token: Carto::UUIDHelper.random_uuid
+          user_id: @user.id,
+          service: service_name,
+          token: Carto::UUIDHelper.random_uuid
         )
-      }.to raise_exception Sequel::ValidationFailed
+      end.to raise_exception Sequel::ValidationFailed
 
-      expect {
+      expect do
         SynchronizationOauth.create(
           user_id: @user_id,
           service: service_name,
           token: nil
         )
-      }.to raise_exception Sequel::ValidationFailed
+      end.to raise_exception Sequel::ValidationFailed
 
-      expect {
+      expect do
         SynchronizationOauth.create(
           user_id: @user_id,
           service: service_name,
           token: ''
         )
-      }.to raise_exception Sequel::ValidationFailed
+      end.to raise_exception Sequel::ValidationFailed
     end
   end
 
@@ -96,19 +95,19 @@ describe SynchronizationOauth do
       token_value_2 = 'aaaaaaaaaaaaaaaaaaaaaaaa'
 
       SynchronizationOauth.create(
-          user_id: @user.id,
-          service: service_name,
-          token: token_value
+        user_id: @user.id,
+        service: service_name,
+        token: token_value
       )
       SynchronizationOauth.create(
-          user_id: @user.id,
-          service: service_name_2,
-          token: token_value_2
+        user_id: @user.id,
+        service: service_name_2,
+        token: token_value_2
       )
       SynchronizationOauth.create(
-          user_id: another_uuid,
-          service: service_name_2,
-          token: token_value_2
+        user_id: another_uuid,
+        service: service_name_2,
+        token: token_value_2
       )
 
       @user.synchronization_oauths.size.should eq 2
@@ -133,9 +132,9 @@ describe SynchronizationOauth do
       @user.synchronization_oauths.size.should eq 0
 
       SynchronizationOauth.create(
-          user_id: @user.id,
-          service: service_name,
-          token: token_value
+        user_id: @user.id,
+        service: service_name,
+        token: token_value
       )
       @user.reload
       @user.synchronization_oauths.size.should eq 1
@@ -150,11 +149,9 @@ describe SynchronizationOauth do
       @user.add_synchronization_oauth(service: service_name, token: token_value)
       @user.synchronization_oauths.size.should eq 1
 
-      expect {
+      expect do
         @user.add_synchronization_oauth(service: service_name, token: token_value)
-      }.to raise_exception Sequel::ValidationFailed
-
+      end.to raise_exception Sequel::ValidationFailed
     end
   end
-
 end

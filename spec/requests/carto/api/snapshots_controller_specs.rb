@@ -61,7 +61,7 @@ describe Carto::Api::SnapshotsController do
                           .stubs(:is_publically_accesible?)
                           .returns(false)
 
-      get_json(snapshots_index_url(api_key: nil), Hash.new) do |response|
+      get_json(snapshots_index_url(api_key: nil), {}) do |response|
         response.status.should eq 401
       end
     end
@@ -73,14 +73,14 @@ describe Carto::Api::SnapshotsController do
 
       intruder_url = snapshots_index_url(user_domain: @intruder.subdomain,
                                          api_key: @intruder.api_key)
-      get_json(intruder_url, Hash.new) do |response|
+      get_json(intruder_url, {}) do |response|
         response.status.should eq 403
       end
     end
 
     it 'returns 404 for non existent visualizations' do
       not_found_url = snapshots_index_url(visualization_id: random_uuid)
-      get_json(not_found_url, Hash.new) do |response|
+      get_json(not_found_url, {}) do |response|
         response.status.should eq 404
       end
     end
@@ -94,7 +94,7 @@ describe Carto::Api::SnapshotsController do
                                    .map(&:id)
                                    .sort
 
-      get_json(buddy_url, Hash.new) do |response|
+      get_json(buddy_url, {}) do |response|
         response.status.should eq 200
 
         response_ids = response.body
@@ -134,7 +134,7 @@ describe Carto::Api::SnapshotsController do
                           .stubs(:is_publically_accesible?)
                           .returns(false)
 
-      get_json(snapshots_show_url(api_key: nil), Hash.new) do |response|
+      get_json(snapshots_show_url(api_key: nil), {}) do |response|
         response.status.should eq 401
       end
     end
@@ -146,14 +146,14 @@ describe Carto::Api::SnapshotsController do
 
       intruder_url = snapshots_show_url(user_domain: @intruder.subdomain,
                                         api_key: @intruder.api_key)
-      get_json(intruder_url, Hash.new) do |response|
+      get_json(intruder_url, {}) do |response|
         response.status.should eq 403
       end
     end
 
     it 'returns 404 for non existent visualizations' do
       not_found_url = snapshots_show_url(visualization_id: random_uuid)
-      get_json(not_found_url, Hash.new) do |response|
+      get_json(not_found_url, {}) do |response|
         response.status.should eq 404
       end
     end
@@ -161,7 +161,7 @@ describe Carto::Api::SnapshotsController do
     it 'returns 404 for inexistent snapshots' do
       not_found_url = snapshots_show_url(snapshot_id: random_uuid)
 
-      get_json(not_found_url, Hash.new) do |response|
+      get_json(not_found_url, {}) do |response|
         response.status.should eq 404
       end
     end
@@ -169,13 +169,13 @@ describe Carto::Api::SnapshotsController do
     it 'only accepts owners of snapshots' do
       intruder_url = snapshots_show_url(user_domain: @intruder.subdomain,
                                         api_key: @intruder.api_key)
-      get_json(intruder_url, Hash.new) do |response|
+      get_json(intruder_url, {}) do |response|
         response.status.should eq 403
       end
     end
 
     it 'shows a snapshot' do
-      get_json(snapshots_show_url, Hash.new) do |response|
+      get_json(snapshots_show_url, {}) do |response|
         response.status.should eq 200
         response.body[:id].should eq @snapshot.id
       end
@@ -269,7 +269,7 @@ describe Carto::Api::SnapshotsController do
                           .stubs(:is_publically_accesible?)
                           .returns(false)
 
-      put_json(snapshots_update_url(api_key: nil), Hash.new) do |response|
+      put_json(snapshots_update_url(api_key: nil), {}) do |response|
         response.status.should eq 401
       end
     end
@@ -281,14 +281,14 @@ describe Carto::Api::SnapshotsController do
 
       intruder_url = snapshots_update_url(user_domain: @intruder.subdomain,
                                           api_key: @intruder.api_key)
-      put_json(intruder_url, Hash.new) do |response|
+      put_json(intruder_url, {}) do |response|
         response.status.should eq 403
       end
     end
 
     it 'returns 404 for non existent visualizations' do
       not_found_url = snapshots_update_url(visualization_id: random_uuid)
-      put_json(not_found_url, Hash.new) do |response|
+      put_json(not_found_url, {}) do |response|
         response.status.should eq 404
       end
     end
@@ -296,7 +296,7 @@ describe Carto::Api::SnapshotsController do
     it 'returns 404 for inexistent snapshots' do
       not_found_url = snapshots_update_url(snapshot_id: random_uuid)
 
-      put_json(not_found_url, Hash.new) do |response|
+      put_json(not_found_url, {}) do |response|
         response.status.should eq 404
       end
     end
@@ -304,7 +304,7 @@ describe Carto::Api::SnapshotsController do
     it 'only accepts owners of snapshots' do
       intruder_url = snapshots_update_url(user_domain: @intruder.subdomain,
                                           api_key: @intruder.api_key)
-      put_json(intruder_url, Hash.new) do |response|
+      put_json(intruder_url, {}) do |response|
         response.status.should eq 403
       end
     end
@@ -346,7 +346,7 @@ describe Carto::Api::SnapshotsController do
                           .stubs(:is_publically_accesible?)
                           .returns(false)
 
-      delete_json(snapshots_delete_url(api_key: nil), Hash.new) do |response|
+      delete_json(snapshots_delete_url(api_key: nil), {}) do |response|
         response.status.should eq 401
       end
     end
@@ -358,14 +358,14 @@ describe Carto::Api::SnapshotsController do
 
       intruder_url = snapshots_delete_url(user_domain: @intruder.subdomain,
                                           api_key: @intruder.api_key)
-      delete_json(intruder_url, Hash.new) do |response|
+      delete_json(intruder_url, {}) do |response|
         response.status.should eq 403
       end
     end
 
     it 'returns 404 for non existent visualizations' do
       not_found_url = snapshots_delete_url(visualization_id: random_uuid)
-      delete_json(not_found_url, Hash.new) do |response|
+      delete_json(not_found_url, {}) do |response|
         response.status.should eq 404
       end
     end
@@ -373,7 +373,7 @@ describe Carto::Api::SnapshotsController do
     it 'returns 404 for inexistent snapshots' do
       not_found_url = snapshots_delete_url(snapshot_id: random_uuid)
 
-      delete_json(not_found_url, Hash.new) do |response|
+      delete_json(not_found_url, {}) do |response|
         response.status.should eq 404
       end
     end
@@ -381,13 +381,13 @@ describe Carto::Api::SnapshotsController do
     it 'only accepts owners of snapshots' do
       intruder_url = snapshots_delete_url(user_domain: @intruder.subdomain,
                                           api_key: @intruder.api_key)
-      delete_json(intruder_url, Hash.new) do |response|
+      delete_json(intruder_url, {}) do |response|
         response.status.should eq 403
       end
     end
 
     it 'destroys a snapshot' do
-      delete_json(snapshots_delete_url, Hash.new) do |response|
+      delete_json(snapshots_delete_url, {}) do |response|
         response.status.should eq 204
       end
     end

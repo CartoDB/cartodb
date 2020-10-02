@@ -1,5 +1,6 @@
 module CartoDB
   class QuotaChecker
+
     def initialize(user)
       @user = user
     end
@@ -75,5 +76,6 @@ module CartoDB
     end
 
     attr_reader :user
+
   end
 end

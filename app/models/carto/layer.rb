@@ -5,16 +5,20 @@ require_dependency 'carto/table_utils'
 require_dependency 'carto/query_rewriter'
 
 module Carto
+
   module LayerTableDependencies
+
     private
 
     def affected_tables
       return [] unless maps.first.present? && options.present?
+
       node_id = options.symbolize_keys[:source]
       if node_id.present?
         visualization_id = map.visualization.id
         node = AnalysisNode.find_by_natural_id(visualization_id, node_id)
         return [] unless node
+
         dependencies = node.source_descendants.map do |source_node|
           tables_by_query = tables_from_query(source_node.params[:query])
           table_name = source_node.options[:table_name]
@@ -47,15 +51,18 @@ module Carto
 
     def tables_from_table_name_option
       return [] if options.empty?
+
       sym_options = options.symbolize_keys
       user_name = sym_options[:user_name]
       table_name = sym_options[:table_name]
       schema_prefix = user_name.present? && table_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
       tables_from_names(["#{schema_prefix}#{table_name}"], user)
     end
+
   end
 
   class Layer < ActiveRecord::Base
+
     include Carto::TableUtils
     include LayerTableDependencies
     include Carto::QueryRewriter
@@ -92,13 +99,13 @@ module Carto
     validate :validate_not_viewer
 
     TEMPLATES_MAP = {
-      'table/views/infowindow_light' =>               'infowindow_light',
-      'table/views/infowindow_dark' =>                'infowindow_dark',
-      'table/views/infowindow_light_header_blue' =>   'infowindow_light_header_blue',
+      'table/views/infowindow_light' => 'infowindow_light',
+      'table/views/infowindow_dark' => 'infowindow_dark',
+      'table/views/infowindow_light_header_blue' => 'infowindow_light_header_blue',
       'table/views/infowindow_light_header_yellow' => 'infowindow_light_header_yellow',
       'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
-      'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
-      'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
+      'table/views/infowindow_light_header_green' => 'infowindow_light_header_green',
+      'table/views/infowindow_header_with_image' => 'infowindow_header_with_image'
     }.freeze
 
     def set_default_order(parent)
@@ -106,6 +113,7 @@ module Carto
       maps.reload if persisted?
 
       return unless order.nil?
+
       max_order = parent.layers.map(&:order).compact.max || -1
       self.order = max_order + 1
       save if persisted?
@@ -200,7 +208,7 @@ module Carto
     end
 
     def supports_labels_layer?
-      basemap? && options["labels"] && options["labels"]["urlTemplate"]
+      basemap? && options['labels'] && options['labels']['urlTemplate']
     end
 
     def map
@@ -279,6 +287,7 @@ module Carto
 
     def rename_table(current_table_name, new_table_name)
       return self unless data_layer?
+
       target_keys = %w{table_name tile_style query}
 
       targets = options.select { |key, _| target_keys.include?(key) }
@@ -325,6 +334,7 @@ module Carto
 
     def rename_in(target, anchor, substitution)
       return if target.blank?
+
       regex = /(\A|\W+)(#{anchor})(\W+|\z)/
       target.gsub(regex) { |match| match.gsub(anchor, substitution) }
     end
@@ -368,7 +378,10 @@ module Carto
 
     def current_layer_node_style
       return nil unless source_id
+
       layer_node_styles.where(source_id: source_id).first || LayerNodeStyle.new(layer: self, source_id: source_id)
     end
+
   end
+
 end

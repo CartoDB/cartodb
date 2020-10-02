@@ -1,4 +1,5 @@
 class Carto::Api::NotificationPresenter
+
   extend Forwardable
   include Carto::HtmlSafe
 
@@ -22,4 +23,5 @@ class Carto::Api::NotificationPresenter
       created_at: @notification.created_at
     }
   end
+
 end

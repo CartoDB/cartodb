@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe ReceivedNotification do
     before(:all) do
       @user = FactoryGirl.create(:carto_user)
@@ -45,4 +46,5 @@ module Carto
       end
     end
   end
+
 end

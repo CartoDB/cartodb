@@ -4,7 +4,7 @@ shared_examples_for 'permission models' do
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     ::User.any_instance.stubs(:gravatar).returns(nil)
-    @user = create_user(quota_in_bytes: 524288000, table_quota: 500)
+    @user = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
     @carto_user = Carto::User.find(@user.id)
 
     @user2 = create_user
@@ -52,7 +52,7 @@ shared_examples_for 'permission models' do
       acl_with_data_expected = [
         {
           type: acl_with_data[0][:type],
-          id:   acl_with_data[0][:entity][:id],
+          id: acl_with_data[0][:entity][:id],
           access: acl_with_data[0][:access]
         }
       ]
@@ -67,9 +67,9 @@ shared_examples_for 'permission models' do
 
       # Missing owner
       permission2 = permission_klass.new
-      expect {
+      expect do
         permission2.save
-      }.to raise_exception
+      end.to raise_exception
 
       # Owner helper methods
       permission2 = permission_klass.new
@@ -86,30 +86,30 @@ shared_examples_for 'permission models' do
       permission2 = permission_from_visualization_id(visualization2.id)
 
       # invalid ACL formats
-      expect {
+      expect do
         permission2.acl = 'not an array!'
-      }.to raise_exception CartoDB::PermissionError
+      end.to raise_exception CartoDB::PermissionError
 
-      expect {
+      expect do
         permission2.acl = [
           'aaa'
         ]
-      }.to raise_exception CartoDB::PermissionError
+      end.to raise_exception CartoDB::PermissionError
 
-      expect {
+      expect do
         permission2.acl = [
           {}
         ]
-      }.to raise_exception CartoDB::PermissionError
+      end.to raise_exception CartoDB::PermissionError
 
-      expect {
+      expect do
         permission2.acl = [
           {
             # missing fields
             wadus: 'aaa'
           }
         ]
-      }.to raise_exception CartoDB::PermissionError
+      end.to raise_exception CartoDB::PermissionError
 
       permission2.acl = [
         {
@@ -125,7 +125,7 @@ shared_examples_for 'permission models' do
       ]
 
       # Wrong permission access
-      expect {
+      expect do
         permission2.acl = [
           {
             type: Permission::TYPE_USER,
@@ -136,7 +136,7 @@ shared_examples_for 'permission models' do
             access: '123'
           }
         ]
-      }.to raise_exception CartoDB::PermissionError
+      end.to raise_exception CartoDB::PermissionError
 
       visualization.destroy
       visualization2.destroy
@@ -201,9 +201,9 @@ shared_examples_for 'permission models' do
         }
       ]
 
-      expect {
+      expect do
         save_permission(permission)
-      }.to raise_error(validation_error_klass, /grants write to viewers: #{@viewer_user.username}/)
+      end.to raise_error(validation_error_klass, /grants write to viewers: #{@viewer_user.username}/)
 
       visualization.destroy
     end
@@ -292,7 +292,7 @@ shared_examples_for 'permission models' do
       acl_with_data_expected = [
         {
           type: acl_with_data[0][:type],
-          id:   acl_with_data[0][:entity][:id],
+          id: acl_with_data[0][:entity][:id],
           access: acl_with_data[0][:access]
         }
       ]
@@ -454,7 +454,6 @@ shared_examples_for 'permission models' do
       destroy_full_visualization(map, table, table_visualization, visualization)
       organization.destroy_cascade
     end
-
   end
 
   describe '#shared_entities' do
@@ -471,16 +470,16 @@ shared_examples_for 'permission models' do
       permission = permission_from_visualization_id(entity_id)
       # Create old entries
       CartoDB::SharedEntity.new(
-        recipient_id:   @user.id,
+        recipient_id: @user.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      entity_id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: entity_id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
       CartoDB::SharedEntity.new(
-        recipient_id:   @user2.id,
+        recipient_id: @user2.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      entity_id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: entity_id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
 
       CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 2
@@ -561,10 +560,10 @@ shared_examples_for 'permission models' do
       permission = permission_from_visualization_id(entity_id)
 
       CartoDB::SharedEntity.new(
-        recipient_id:   @user.id,
+        recipient_id: @user.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      entity_id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: entity_id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
 
       permission.acl = [
@@ -583,18 +582,18 @@ shared_examples_for 'permission models' do
     end
   end
 
-  describe "permissions diffs" do
-    it "should enqueue the right notification email" do
+  describe 'permissions diffs' do
+    it 'should enqueue the right notification email' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user)
       entity_id = visualization.id
       permission = permission_from_visualization_id(entity_id)
 
-      user2_id = "17d5b1e6-0d14-11e4-a3ef-0800274a1928"
-      user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
+      user2_id = '17d5b1e6-0d14-11e4-a3ef-0800274a1928'
+      user3_id = '28d09bc0-0d14-11e4-a3ef-0800274a1928'
       permissions_changes = {
-        "user" => {
-          user2_id => [{ "action" => "grant", "type" => "r" }],
-          user3_id => [{ "action" => "revoke", "type" => "r" }]
+        'user' => {
+          user2_id => [{ 'action' => 'grant', 'type' => 'r' }],
+          user3_id => [{ 'action' => 'revoke', 'type' => 'r' }]
         }
       }
 
@@ -608,17 +607,17 @@ shared_examples_for 'permission models' do
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
-    it "enqueues notifications for kuviz" do
+    it 'enqueues notifications for kuviz' do
       visualization = FactoryGirl.create(:kuviz_visualization, user: @carto_user)
       entity_id = visualization.id
       permission = permission_from_visualization_id(entity_id)
 
-      user2_id = "17d5b1e6-0d14-11e4-a3ef-0800274a1928"
-      user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
+      user2_id = '17d5b1e6-0d14-11e4-a3ef-0800274a1928'
+      user3_id = '28d09bc0-0d14-11e4-a3ef-0800274a1928'
       permissions_changes = {
-        "user" => {
-          user2_id => [{ "action" => "grant", "type" => "r" }],
-          user3_id => [{ "action" => "revoke", "type" => "r" }]
+        'user' => {
+          user2_id => [{ 'action' => 'grant', 'type' => 'r' }],
+          user3_id => [{ 'action' => 'revoke', 'type' => 'r' }]
         }
       }
 
@@ -632,17 +631,17 @@ shared_examples_for 'permission models' do
       visualization.destroy
     end
 
-    it "enqueues notifications for app" do
+    it 'enqueues notifications for app' do
       visualization = FactoryGirl.create(:app_visualization, user: @carto_user)
       entity_id = visualization.id
       permission = permission_from_visualization_id(entity_id)
 
-      user2_id = "17d5b1e6-0d14-11e4-a3ef-0800274a1928"
-      user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
+      user2_id = '17d5b1e6-0d14-11e4-a3ef-0800274a1928'
+      user3_id = '28d09bc0-0d14-11e4-a3ef-0800274a1928'
       permissions_changes = {
-        "user" => {
-          user2_id => [{ "action" => "grant", "type" => "r" }],
-          user3_id => [{ "action" => "revoke", "type" => "r" }]
+        'user' => {
+          user2_id => [{ 'action' => 'grant', 'type' => 'r' }],
+          user3_id => [{ 'action' => 'revoke', 'type' => 'r' }]
         }
       }
 
@@ -656,7 +655,7 @@ shared_examples_for 'permission models' do
       visualization.destroy
     end
 
-    it "should call the permissions comparison function with correct values" do
+    it 'should call the permissions comparison function with correct values' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user)
       entity_id = visualization.id
       permission = permission_from_visualization_id(entity_id)
@@ -712,20 +711,20 @@ shared_examples_for 'permission models' do
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
-    it "permission comparisson function should return right diff hash" do
+    it 'permission comparisson function should return right diff hash' do
       acl1 = [
-        { type: "user", id: "17d09bc0-0d14-11e4-a3ef-0800274a1928", access: "r" },
-        { type: "user", id: "28d09bc0-0d14-11e4-a3ef-0800274a1928", access: "r" }
+        { type: 'user', id: '17d09bc0-0d14-11e4-a3ef-0800274a1928', access: 'r' },
+        { type: 'user', id: '28d09bc0-0d14-11e4-a3ef-0800274a1928', access: 'r' }
       ]
       acl2 = [
-        { type: "user", id: "17d09bc0-0d14-11e4-a3ef-0800274a1928", access: "r" },
-        { type: "user", id: "17d5b1e6-0d14-11e4-a3ef-0800274a1928", access: "r" }
+        { type: 'user', id: '17d09bc0-0d14-11e4-a3ef-0800274a1928', access: 'r' },
+        { type: 'user', id: '17d5b1e6-0d14-11e4-a3ef-0800274a1928', access: 'r' }
       ]
 
       expected_diff = {
-        "user" => {
-          "17d5b1e6-0d14-11e4-a3ef-0800274a1928" => [{ "action" => "grant", "type" => "r" }],
-          "28d09bc0-0d14-11e4-a3ef-0800274a1928" => [{ "action" => "revoke", "type" => "r" }]
+        'user' => {
+          '17d5b1e6-0d14-11e4-a3ef-0800274a1928' => [{ 'action' => 'grant', 'type' => 'r' }],
+          '28d09bc0-0d14-11e4-a3ef-0800274a1928' => [{ 'action' => 'revoke', 'type' => 'r' }]
         }
       }
 

@@ -3,9 +3,8 @@ require_relative '../../spec_helper'
 include CartoDB
 
 describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
-
   before(:all) do
-    @user = create_user( :quota_in_bytes => 524288000, :table_quota => 100 )
+    @user = create_user(quota_in_bytes: 524_288_000, table_quota: 100)
   end
 
   before(:each) do
@@ -25,13 +24,12 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
 
       # Set TTL threshold to 0 to ease calculations
       limit = CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount.new({
-                                                                           user: @user,
-                                                                           redis: {
-                                                                             db: $users_metadata,
-                                                                             expire_ttl_threshold_percent: 0
-                                                                           }
-                                                                         })
-
+                                                                                   user: @user,
+                                                                                   redis: {
+                                                                                     db: $users_metadata,
+                                                                                     expire_ttl_threshold_percent: 0
+                                                                                   }
+                                                                                 })
 
       limit.peek.should eq 0
       limit.is_over_limit?.should eq false
@@ -46,7 +44,7 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
 
       limit.peek.should eq 1
 
-      limit.remaining_limit?.should eq new_limit_max-1
+      limit.remaining_limit?.should eq new_limit_max - 1
 
       limit.is_over_limit?.should eq false
       limit.is_over_limit!.should eq false
@@ -61,7 +59,7 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
 
       ttl = end_datetime - start_datetime
       # We redis won't take more than 2 seconds on performing key creation + retrieval of TTL
-      (ttl -  (@user.database_timeout/1000)).should be_within(2.0).of(0.0)
+      (ttl - (@user.database_timeout / 1000)).should be_within(2.0).of(0.0)
 
       limit.decrement!
       limit.decrement!
@@ -79,9 +77,7 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentImportsAmount do
       limit.is_within_limit?.should eq false
       limit.peek.should eq 3
 
-
       @user.update max_concurrent_import_count: old_concurrent_import_count
     end
   end
-
 end

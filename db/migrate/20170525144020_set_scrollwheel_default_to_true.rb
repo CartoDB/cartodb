@@ -3,10 +3,10 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     set_column_default :maps, :scrollwheel, true
   end,
-  Proc.new do
+  proc do
     set_column_default :maps, :scrollwheel, false
   end
 )

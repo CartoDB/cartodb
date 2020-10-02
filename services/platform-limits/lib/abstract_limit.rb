@@ -1,16 +1,15 @@
 module CartoDB
   module PlatformLimits
-
     # Abstract limit class, providing scaffolding and common logic.
     #
     # Each limit should specify here the usage and expected contents of 'context' parameter used in most methods.
     class AbstractLimit
 
-      TYPE_USER = 'u'
-      TYPE_IP = 'i'
+      TYPE_USER = 'u'.freeze
+      TYPE_IP = 'i'.freeze
 
       def self.classname
-        self.name.gsub(/.*::/, '').to_sym
+        name.gsub(/.*::/, '').to_sym
       end
 
       # Class constructor
@@ -28,6 +27,7 @@ module CartoDB
         @ip = options.fetch(:ip, nil)
         raise ArgumentError.new('options must be a Hash') unless options.is_a?(Hash)
         raise ArgumentError.new('Must supply at least a user or an IP address') if @user.nil? && @ip.nil?
+
         unless @user.nil?
           raise ArgumentError.new('Supplied user object must have :username') unless @user.respond_to?(:username)
         end
@@ -94,7 +94,7 @@ module CartoDB
       def remaining_limit?(context=nil)
         max = get_maximum(context)
         current = get(context)
-        (max.nil? || current.nil?) ? nil : max - current
+        max.nil? || current.nil? ? nil : max - current
       end
 
       # Gets (where proceeds) the maximum value until hitting the limit
@@ -130,53 +130,53 @@ module CartoDB
       # Must have format 'xxx:yyy' Where xxx is the limit group and yyy the limit name.
       # e.g. Importer:InputFileSize
       def subkey
-        raise "Implement at child classes"
+        raise 'Implement at child classes'
       end
 
       # @param context mixed
       # @return bool
-      def is_over_limit(context)
-        raise "Implement at child classes"
+      def is_over_limit(_context)
+        raise 'Implement at child classes'
       end
 
       # Gets current value of the limit
       # @param context mixed
       # @return mixed
-      def get(context)
-        raise "Implement at child classes"
+      def get(_context)
+        raise 'Implement at child classes'
       end
 
       # Gets the maximum limit value
       # @param context mixed
       # @return mixed
-      def get_maximum(context)
-        raise "Implement at child classes"
+      def get_maximum(_context)
+        raise 'Implement at child classes'
       end
 
       # Gets when the limit expires
       # @param context mixed
       # @return integer|nil Timestamp
-      def get_time_period(context)
-        raise "Implement at child classes"
+      def get_time_period(_context)
+        raise 'Implement at child classes'
       end
 
       # Increases the limit
       # @param context mixed
       # @param amount integer
-      def increase(context, amount=1)
-        raise "Implement at child classes"
+      def increase(_context, _amount=1)
+        raise 'Implement at child classes'
       end
 
       # Decreases the limit
       # @param context mixed
       # @param amount integer
-      def decrease(context, amount=1)
-        raise "Implement at child classes"
+      def decrease(_context, _amount=1)
+        raise 'Implement at child classes'
       end
 
       # Resets the limit
       def expire
-        raise "Implement at child classes"
+        raise 'Implement at child classes'
       end
 
       private
@@ -199,6 +199,5 @@ module CartoDB
       end
 
     end
-
   end
 end

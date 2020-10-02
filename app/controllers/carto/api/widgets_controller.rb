@@ -1,6 +1,7 @@
 module Carto
   module Api
     class WidgetsController < ::Api::ApplicationController
+
       ssl_required :show, :create, :update, :destroy, :update_many
 
       before_filter :load_map
@@ -29,7 +30,8 @@ module Carto
           title: params[:title],
           options: params[:options],
           style: params[:style],
-          source_id: source_id_from_params)
+          source_id: source_id_from_params
+        )
         widget.save!
 
         Carto::Tracking::Events::CreatedWidget.new(current_viewer.id,
@@ -41,7 +43,7 @@ module Carto
       rescue ActiveRecord::RecordInvalid
         render json: { errors: widget.errors }, status: 422
       rescue StandardError => e
-        log_error(exception: e, message: "Error creating widget")
+        log_error(exception: e, message: 'Error creating widget')
         render json: { errors: e.message }, status: 500
       end
 
@@ -50,7 +52,7 @@ module Carto
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue StandardError => e
-        log_error(exception: e, message: "Error updating widget")
+        log_error(exception: e, message: 'Error updating widget')
         render json: { errors: e.message }, status: 500
       end
 
@@ -69,7 +71,7 @@ module Carto
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue StandardError => e
-        log_error(exception: e, message: "Error destroying widget")
+        log_error(exception: e, message: 'Error destroying widget')
         render json: { errors: e.message }, status: 500
       end
 
@@ -89,7 +91,9 @@ module Carto
         @map_id = params[:map_id]
         @map = Carto::Map.where(id: @map_id).first
         raise LoadError.new("Map not found: #{@map_id}") unless @map
-        raise Carto::UnauthorizedError.new("Not authorized for map #{@map.id}") unless @map.writable_by_user?(current_user)
+        unless @map.writable_by_user?(current_user)
+          raise Carto::UnauthorizedError.new("Not authorized for map #{@map.id}")
+        end
       end
 
       def load_layer
@@ -103,7 +107,9 @@ module Carto
         @layer = Carto::Layer.where(id: @layer_id).first
         raise LoadError.new("Layer not found: #{@layer_id}") unless @layer
 
-        raise UnprocesableEntityError.new("Layer #{@layer_id} doesn't belong to map #{@map_id}") unless @map.contains_layer?(@layer)
+        unless @map.contains_layer?(@layer)
+          raise UnprocesableEntityError.new("Layer #{@layer_id} doesn't belong to map #{@map_id}")
+        end
       end
 
       def load_widget_id
@@ -126,9 +132,7 @@ module Carto
 
         raise Carto::LoadError.new("Widget not found: #{@widget_id}") unless widget
 
-        if layer_id && widget.layer_id != layer_id
-          raise Carto::LoadError.new("Widget not found: #{@widget_id}")
-        end
+        raise Carto::LoadError.new("Widget not found: #{@widget_id}") if layer_id && widget.layer_id != layer_id
 
         unless widget.belongs_to_map?(@map_id)
           raise Carto::LoadError.new("Widget not found: #{@widget_id} for that map (#{@map_id})")

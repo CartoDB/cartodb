@@ -11,9 +11,9 @@ FactoryGirl.define do
     source_id 'a0'
     options do
       {
-        type: "formula",
+        type: 'formula',
         column: column_name,
-        operation: "min"
+        operation: 'min'
       }
     end
     style do

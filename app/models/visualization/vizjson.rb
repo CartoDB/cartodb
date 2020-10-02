@@ -7,9 +7,10 @@ require_relative '../named_map/presenter'
 module CartoDB
   module Visualization
     class VizJSON
+
       include Carto::HtmlSafe
 
-      VIZJSON_VERSION = '0.1.0'
+      VIZJSON_VERSION = '0.1.0'.freeze
 
       def initialize(visualization, options = {}, configuration = {}, logger = nil)
         @visualization    = visualization
@@ -22,29 +23,29 @@ module CartoDB
 
       def to_export_poro(version = 1)
         description = if visualization.description.blank?
-                        ""
+                        ''
                       else
                         clean_description(markdown_html_safe(visualization.description))
                       end
 
         {
-          id:             visualization.id,
-          version:        VIZJSON_VERSION,
-          title:          visualization.qualified_name(@user),
-          description:    description,
-          scrollwheel:    map.scrollwheel,
-          legends:        map.legends,
-          url:            options.delete(:url),
-          map_provider:   map.provider,
-          bounds:         bounds_from(map),
-          center:         map.center,
-          zoom:           map.zoom,
-          layers:         all_layers_for(visualization),
-          overlays:       overlays_for(visualization),
+          id: visualization.id,
+          version: VIZJSON_VERSION,
+          title: visualization.qualified_name(@user),
+          description: description,
+          scrollwheel: map.scrollwheel,
+          legends: map.legends,
+          url: options.delete(:url),
+          map_provider: map.provider,
+          bounds: bounds_from(map),
+          center: map.center,
+          zoom: map.zoom,
+          layers: all_layers_for(visualization),
+          overlays: overlays_for(visualization),
           # Fields specific for this export
           export_version: version,
           # TODO: bug? @user is _viewer_user_, who might not be the owner
-          owner:          { id: @user.id }
+          owner: { id: @user.id }
         }
       end
 
@@ -52,22 +53,22 @@ module CartoDB
       # @see https://github.com/CartoDB/carto.js/blob/privacy-maps/doc/vizjson_format.md
       def to_poro
         poro_data = {
-          id:             visualization.id,
-          version:        VIZJSON_VERSION,
-          title:          visualization.qualified_name(@user),
-          description:    markdown_html_safe(visualization.description),
-          scrollwheel:    map.scrollwheel,
-          legends:        map.legends,
-          url:            options.delete(:url),
-          map_provider:   map.provider,
-          bounds:         bounds_from(map),
-          center:         map.center,
-          zoom:           map.zoom,
-          updated_at:     map.viz_updated_at,
-          layers:         layers_for(visualization),
-          overlays:       overlays_for(visualization),
-          prev:           visualization.prev_id,
-          next:           visualization.next_id,
+          id: visualization.id,
+          version: VIZJSON_VERSION,
+          title: visualization.qualified_name(@user),
+          description: markdown_html_safe(visualization.description),
+          scrollwheel: map.scrollwheel,
+          legends: map.legends,
+          url: options.delete(:url),
+          map_provider: map.provider,
+          bounds: bounds_from(map),
+          center: map.center,
+          zoom: map.zoom,
+          updated_at: map.viz_updated_at,
+          layers: layers_for(visualization),
+          overlays: overlays_for(visualization),
+          prev: visualization.prev_id,
+          next: visualization.next_id,
           transition_options: visualization.transition_options
         }
 
@@ -94,11 +95,11 @@ module CartoDB
         layer_index = visualization.layers(:cartodb).size
 
         visualization.layers(:others).map do |layer|
-          if named_maps_presenter.nil?
-            decoration_data_to_apply = {}
-          else
-            decoration_data_to_apply = named_maps_presenter.get_decoration_for_layer(layer.kind, layer_index)
-          end
+          decoration_data_to_apply = if named_maps_presenter.nil?
+                                       {}
+                                     else
+                                       named_maps_presenter.get_decoration_for_layer(layer.kind, layer_index)
+                                     end
           layer_index += 1
           CartoDB::LayerModule::Presenter.new(layer, options, configuration, decoration_data_to_apply).to_vizjson_v2
         end
@@ -110,7 +111,7 @@ module CartoDB
 
       # Redcarpet markdown renderer adds "garbage" that would otherwise get reimported
       def clean_description(description)
-        description.sub(/^<p>/, "").sub(/<\/p> ?(\n)?$/, "")
+        description.sub(/^<p>/, '').sub(%r{</p> ?(\n)?$}, '')
       end
 
       def bounds_from(map)
@@ -170,14 +171,13 @@ module CartoDB
         # If there is *only* a torque layer, there is no layergroup
         return {} if layer_group_poro.nil?
 
-        layers_data = Array.new
+        layers_data = []
         layer_num = 0
         layer_group_poro[:options][:layer_definition][:layers].each do |layer|
-          layers_data.push(type:       layer[:type],
-                           options:    layer[:options],
-                           visible:    layer[:visible],
-                           index:      layer_num
-                          )
+          layers_data.push(type: layer[:type],
+                           options: layer[:options],
+                           visible: layer[:visible],
+                           index: layer_num)
           layer_num += 1
         end
         layers_data

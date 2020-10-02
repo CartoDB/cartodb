@@ -2,6 +2,7 @@ module Carto
   module Tracking
     module Formats
       class Segment
+
         def initialize(user: nil, visualization: nil, widget: nil, hash: {})
           @user = user
           @visualization = visualization
@@ -114,6 +115,7 @@ module Carto
         def now
           @now ||= Time.now.utc
         end
+
       end
     end
   end

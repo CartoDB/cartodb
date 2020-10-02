@@ -25,29 +25,28 @@ module Carto
                                         fetch_groups: fetch_user_groups,
                                         current_viewer: current_viewer,
                                         fetch_profile: false,
-                                        fetch_db_size: @fetch_db_size
-                                        )
+                                        fetch_db_size: @fetch_db_size)
         end
 
         {
-          id:         @permission.id,
-          owner:      owner,
+          id: @permission.id,
+          owner: owner,
           entity: {
-            id:       @permission.visualization.id,
-            type:     'vis'
+            id: @permission.visualization.id,
+            type: 'vis'
           },
-          acl:        @permission.acl.map { |entry|
+          acl: @permission.acl.map do |entry|
             entity = entity_decoration(entry)
             if entity.blank?
               nil
             else
               {
-                type:   entry[:type],
+                type: entry[:type],
                 entity: entity,
                 access: entry[:access]
               }
             end
-          }.reject(&:nil?),
+          end.reject(&:nil?),
           created_at: @permission.created_at,
           updated_at: @permission.updated_at
         }
@@ -60,8 +59,8 @@ module Carto
         end
 
         {
-          id:         @permission.id,
-          owner:      owner
+          id: @permission.id,
+          owner: owner
         }
       end
 
@@ -80,31 +79,35 @@ module Carto
       def user_decoration(user_id)
         user = ::User.where(id: user_id).first
         return {} if user.nil?
+
         Carto::Api::UserPresenter.new(user, fetch_groups: fetch_user_groups).to_public_poro
       end
 
       def organization_decoration(org_id)
         org = Carto::Organization.where(id: org_id).first
         return {} if org.nil?
+
         {
-            id:         org.id,
-            name:       org.name,
-            avatar_url: org.avatar_url
+          id: org.id,
+          name: org.name,
+          avatar_url: org.avatar_url
         }
       end
 
       def group_decoration(group_id)
         group = Carto::Group.where(id: group_id).first
         return {} if group.nil?
+
         {
-            id:         group.id,
-            name:       group.name
+          id: group.id,
+          name: group.name
         }
       end
 
       private
 
       attr_reader :current_viewer, :fetch_user_groups
+
     end
   end
 end

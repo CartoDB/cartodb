@@ -11,14 +11,14 @@ describe Carto::Template do
     delete_user_data(@org_user_owner)
   end
 
-  it "Tests basic creation and FKs" do
+  it 'Tests basic creation and FKs' do
     expected_title = 'my_first_template'
     expected_min_supported_version = '3.12.0'
     expected_max_supported_version = '3.99.0'
     expected_description = 'example description blablabla'
     expected_code = '{ fake = function(e){}; }'
-    expected_required_tables = [ "#{@org_user_owner.database_schema}.table_1",
-                                "#{@org_user_owner.database_schema}.table_2-1" ]
+    expected_required_tables = ["#{@org_user_owner.database_schema}.table_1",
+                                "#{@org_user_owner.database_schema}.table_2-1"]
 
     new_template = Carto::Template.new
 
@@ -44,8 +44,8 @@ describe Carto::Template do
     another_table = create_table({ privacy: UserTable::PRIVACY_PRIVATE, name: 'some_other_table_name',
                                    user_id: @org_user_owner.id })
 
-    expected_required_tables = [ "#{@org_user_owner.database_schema}.#{table.name}",
-                                "#{@org_user_owner.database_schema}.#{another_table.name}" ]
+    expected_required_tables = ["#{@org_user_owner.database_schema}.#{table.name}",
+                                "#{@org_user_owner.database_schema}.#{another_table.name}"]
 
     new_template.source_visualization_id = table.table_visualization.id
     new_template.valid?.should eq true
@@ -72,15 +72,15 @@ describe Carto::Template do
     template.code.should eq new_template.code
     template.required_tables.should eq new_template.required_tables
 
-    template.required_tables = [ 1 ]
+    template.required_tables = [1]
     template.valid?.should eq false
     (template.errors.messages.keys - [:required_tables]).should eq []
 
-    template.required_tables = [ 'invalid name!' ]
+    template.required_tables = ['invalid name!']
     template.valid?.should eq false
     (template.errors.messages.keys - [:required_tables]).should eq []
 
-    template.required_tables = [ 'not_qualified' ]
+    template.required_tables = ['not_qualified']
     template.valid?.should eq false
     (template.errors.messages.keys - [:required_tables]).should eq []
   end
@@ -91,14 +91,14 @@ describe Carto::Template do
     other_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: @org_user_owner.id)
 
     template = Carto::Template.new({
-        title: 'title',
-        code: '',
-        min_supported_version: '1.2.3',
-        max_supported_version: '2.0.0',
-        source_visualization_id: table_vis.id,
-        organization_id: @org_user_owner.organization.id,
-        required_tables: [ "#{@org_user_owner.database_schema}.#{table.name}" ]
-        })
+                                     title: 'title',
+                                     code: '',
+                                     min_supported_version: '1.2.3',
+                                     max_supported_version: '2.0.0',
+                                     source_visualization_id: table_vis.id,
+                                     organization_id: @org_user_owner.organization.id,
+                                     required_tables: ["#{@org_user_owner.database_schema}.#{table.name}"]
+                                   })
     template.save.should eq true
 
     template.relates_to_table?(table).should eq true
@@ -110,27 +110,27 @@ describe Carto::Template do
     other_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: @org_user_owner.id)
 
     template = Carto::Template.new({
-        title: 'title',
-        code: '',
-        min_supported_version: '1.2.3',
-        max_supported_version: '2.0.0',
-        source_visualization_id: table.table_visualization.id,
-        organization_id: @org_user_owner.organization.id,
-        required_tables: [ "#{@org_user_owner.database_schema}.#{table.name}" ]
-        })
+                                     title: 'title',
+                                     code: '',
+                                     min_supported_version: '1.2.3',
+                                     max_supported_version: '2.0.0',
+                                     source_visualization_id: table.table_visualization.id,
+                                     organization_id: @org_user_owner.organization.id,
+                                     required_tables: ["#{@org_user_owner.database_schema}.#{table.name}"]
+                                   })
     template.save.should eq true
 
     another_template_from_user = Carto::Template.new({
-        title: 'title',
-        code: '',
-        min_supported_version: '1.2.3',
-        max_supported_version: '2.0.0',
-        source_visualization_id: other_table.table_visualization.id,
-        organization_id: @org_user_owner.organization.id,
-        required_tables: [ "#{@org_user_owner.database_schema}.#{other_table.name}" ]
-      })
+                                                       title: 'title',
+                                                       code: '',
+                                                       min_supported_version: '1.2.3',
+                                                       max_supported_version: '2.0.0',
+                                                       source_visualization_id: other_table.table_visualization.id,
+                                                       organization_id: @org_user_owner.organization.id,
+                                                       required_tables: ["#{@org_user_owner.database_schema}.#{other_table.name}"]
+                                                     })
 
-    expected_templates = [ template ]
+    expected_templates = [template]
 
     related_vis = Carto::Visualization.where(id: table.table_visualization.id).first
                                       .related_templates.should eq expected_templates
@@ -157,38 +157,37 @@ describe Carto::Template do
     o2_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table2', user_id: org2_user_owner.id)
 
     template = Carto::Template.new({
-        title: 'title',
-        code: '',
-        min_supported_version: '1.2.3',
-        max_supported_version: '2.0.0',
-        source_visualization_id: o_table.table_visualization.id,
-        organization_id: @org_user_owner.organization.id,
-        required_tables: [ "#{org2_user_owner.database_schema}.#{o2_table.name}" ]
-        })
+                                     title: 'title',
+                                     code: '',
+                                     min_supported_version: '1.2.3',
+                                     max_supported_version: '2.0.0',
+                                     source_visualization_id: o_table.table_visualization.id,
+                                     organization_id: @org_user_owner.organization.id,
+                                     required_tables: ["#{org2_user_owner.database_schema}.#{o2_table.name}"]
+                                   })
     template.save.should eq false
     (template.errors.messages.keys - [:required_tables]).should eq []
 
     template.organization_id = org2.id
-    template.required_tables = [ "#{@org_user_owner.database_schema}.#{o_table.name}" ]
+    template.required_tables = ["#{@org_user_owner.database_schema}.#{o_table.name}"]
     template.save.should eq false
     # Because organization_id has changed, it must match with source_visualization_id or won't let you save
     (template.errors.messages.keys - [:required_tables, :source_visualization_id]).should eq []
 
     # But setting all ok should go ahead
     template = Carto::Template.new({
-        title: 'title',
-        code: '',
-        min_supported_version: '1.2.3',
-        max_supported_version: '2.0.0',
-        source_visualization_id: o2_table.table_visualization.id,
-        organization_id: org2.id,
-        required_tables: [ "#{org2_user_owner.database_schema}.#{o2_table.name}" ]
-        })
+                                     title: 'title',
+                                     code: '',
+                                     min_supported_version: '1.2.3',
+                                     max_supported_version: '2.0.0',
+                                     source_visualization_id: o2_table.table_visualization.id,
+                                     organization_id: org2.id,
+                                     required_tables: ["#{org2_user_owner.database_schema}.#{o2_table.name}"]
+                                   })
     template.save.should eq true
 
     template.destroy
     delete_user_data org2_user_owner
     org2.destroy_cascade
   end
-
 end

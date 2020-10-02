@@ -1,6 +1,7 @@
 module Carto
   module Api
     class ReceivedNotificationsController < ::Api::ApplicationController
+
       extend Carto::DefaultRescueFroms
 
       ssl_required :update
@@ -19,7 +20,6 @@ module Carto
         end
 
         render_jsonp ReceivedNotificationPresenter.new(@received_notification).to_hash
-
       rescue ArgumentError => e
         render_jsonp({ errors: { read_at: 'invalid date format' } }, 422)
         log_warning(exception: e)
@@ -35,6 +35,7 @@ module Carto
       def load_notification
         @received_notification = @user.received_notifications.find(params[:id])
       end
+
     end
   end
 end

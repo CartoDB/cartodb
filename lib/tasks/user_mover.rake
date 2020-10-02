@@ -28,7 +28,7 @@ namespace :cartodb do
           job_args[:data] = false
           job_args[:metadata] = true
         end
-        job_args[:split_user_schemas] = job_args[:split_user_schemas] == 'true' ? true : false
+        job_args[:split_user_schemas] = job_args[:split_user_schemas] == 'true'
         CartoDB::DataMover::ExportJob.new(job_args)
       end
     end

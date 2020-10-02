@@ -4,10 +4,11 @@ require 'carto/storage_options/local'
 
 module Carto
   class Storage
+
     include Singleton
 
     def initialize
-      @storages = Hash.new
+      @storages = {}
     end
 
     def for(location, preferred_type: nil)
@@ -27,11 +28,7 @@ module Carto
 
     def get_or_set_location(location)
       existing_location = @storages[location]
-      if existing_location
-        existing_location
-      else
-        @storages[location] = available_storage_option.new(location)
-      end
+      existing_location || []=(location, available_storage_option.new(location))
     end
 
     def available_storage_option
@@ -41,5 +38,6 @@ module Carto
     def s3_enabled?
       @s3_enabled ||= Carto::StorageOptions::S3.enabled?
     end
+
   end
 end

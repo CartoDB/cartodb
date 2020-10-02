@@ -7,6 +7,7 @@ require_dependency 'carto/ghost_tables_manager'
 
 module Carto
   class UserMigrationExport < ::ActiveRecord::Base
+
     belongs_to :organization, class_name: Carto::Organization
     belongs_to :user, class_name: Carto::User
     belongs_to :log, class_name: Carto::Log
@@ -42,7 +43,7 @@ module Carto
 
       run_metadata_export(package.meta_dir) if export_metadata?
 
-      log.append("=== Uploading ===")
+      log.append('=== Uploading ===')
       update_attributes(
         state: STATE_UPLOADING,
         json_file: export_data? ? "#{id}/#{export_job.json_file}" : 'no_data_exported'
@@ -141,7 +142,9 @@ module Carto
     end
 
     def validate_export_data
-      errors.add(:export_metadata, 'needs to be true if export_data is set to false') if !export_data? && !export_metadata?
+      if !export_data? && !export_metadata?
+        errors.add(:export_metadata, 'needs to be true if export_data is set to false')
+      end
     end
 
     def set_defaults
@@ -149,5 +152,6 @@ module Carto
       self.state = STATE_PENDING unless state
       save
     end
+
   end
 end

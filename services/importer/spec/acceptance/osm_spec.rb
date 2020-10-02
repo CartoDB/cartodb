@@ -15,7 +15,7 @@ include CartoDB::Importer2
 describe 'OSM regression tests' do
   include AcceptanceHelpers
   include_context 'cdb_importer schema'
-  include_context "no stats"
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -55,6 +55,4 @@ describe 'OSM regression tests' do
     result = runner.results.first
     result.error_code.should eq 1007
   end
-
-
 end

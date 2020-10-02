@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe LegendDefinitionValidator do
     let(:random_definition) do
       {
@@ -63,8 +64,8 @@ module Carto
     describe '#choropleth' do
       let(:definition) do
         {
-          prefix: "123",
-          suffix: "foo"
+          prefix: '123',
+          suffix: 'foo'
         }
       end
 
@@ -256,4 +257,5 @@ module Carto
       end
     end
   end
+
 end

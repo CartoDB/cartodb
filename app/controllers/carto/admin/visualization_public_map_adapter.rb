@@ -4,16 +4,17 @@ require_dependency 'carto/api/vizjson_presenter'
 module Carto
   module Admin
     class VisualizationPublicMapAdapter
+
       extend Forwardable
       include Carto::HtmlSafe
-          GEOMETRY_MAPPING = {
-            'st_multipolygon'    => 'polygon',
-            'st_polygon'         => 'polygon',
-            'st_multilinestring' => 'line',
-            'st_linestring'      => 'line',
-            'st_multipoint'      => 'point',
-            'st_point'           => 'point'
-          }
+      GEOMETRY_MAPPING = {
+        'st_multipolygon' => 'polygon',
+        'st_polygon' => 'polygon',
+        'st_multilinestring' => 'line',
+        'st_linestring' => 'line',
+        'st_multipoint' => 'point',
+        'st_point' => 'point'
+      }.freeze
 
       delegate [
         :type_slide?, :derived?, :organization, :organization?, :id,
@@ -40,7 +41,7 @@ module Carto
         @visualization.owner?(user)
       end
 
-      def to_hash(options={})
+      def to_hash(options = {})
         # TODO: using an Api presenter here smells, refactor
         presenter = Carto::Api::VisualizationPresenter.new(@visualization, @current_viewer, @context, options.merge(show_stats: false))
         options.delete(:public_fields_only) === true ? presenter.to_public_poro : presenter.to_poro
@@ -60,9 +61,9 @@ module Carto
       end
 
       def related_canonical_visualizations
-        @visualization.related_canonical_visualizations.map { |rv|
+        @visualization.related_canonical_visualizations.map do |rv|
           Carto::Admin::VisualizationPublicMapAdapter.new(rv, @current_viewer, @context) if rv.public?
-        }.compact
+        end.compact
       end
 
       def related_visualizations_geometry_types

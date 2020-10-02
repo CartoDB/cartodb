@@ -2,15 +2,15 @@ require 'helpers/account_types_helper'
 require 'helpers/unique_names_helper'
 
 module CartoDB
+
   @default_test_user = nil
   module Factories
+
     include UniqueNamesHelper
     include AccountTypesHelper
     def default_user(attributes = {})
       user = nil
-      unless @default_test_username.nil?
-        user = ::User.find(username: @default_test_username)
-      end
+      user = ::User.find(username: @default_test_username) unless @default_test_username.nil?
       if user.nil?
         user = new_user(attributes)
         @default_test_username = user.username
@@ -49,12 +49,12 @@ module CartoDB
       user.email                 = attributes[:email]    || unique_email
       user.password              = attributes[:password] || user.email.split('@').first
       user.password_confirmation = user.password
-      user.session_salt          = attributes[:session_salt] || "123456789f"
-      user.admin                 = attributes[:admin] == false ? false : true
-      user.private_tables_enabled = attributes[:private_tables_enabled] == true ? true : false
-      user.private_maps_enabled  = attributes[:private_maps_enabled] == true ? true : false
-      user.enabled               = attributes[:enabled] == false ? false : true
-      user.table_quota           = attributes[:table_quota]     if attributes[:table_quota]
+      user.session_salt          = attributes[:session_salt] || '123456789f'
+      user.admin                 = !(attributes[:admin] == false)
+      user.private_tables_enabled = attributes[:private_tables_enabled] == true
+      user.private_maps_enabled  = attributes[:private_maps_enabled] == true
+      user.enabled               = !(attributes[:enabled] == false)
+      user.table_quota           = attributes[:table_quota] if attributes[:table_quota]
       user.public_map_quota      = attributes[:public_map_quota] if attributes[:public_map_quota]
       user.public_dataset_quota  = attributes[:public_dataset_quota] if attributes[:public_dataset_quota]
       user.private_map_quota     = attributes[:private_map_quota] if attributes[:private_map_quota]
@@ -62,10 +62,10 @@ module CartoDB
       user.quota_in_bytes        = attributes[:quota_in_bytes]  if attributes[:quota_in_bytes]
       user.account_type          = attributes[:account_type]    if attributes[:account_type]
       user.map_view_quota        = attributes[:map_view_quota]  if attributes.has_key?(:map_view_quota)
-      user.map_view_block_price  = attributes[:map_view_block_price]  if attributes.has_key?(:map_view_block_price)
+      user.map_view_block_price  = attributes[:map_view_block_price] if attributes.has_key?(:map_view_block_price)
       user.period_end_date       = attributes[:period_end_date] if attributes.has_key?(:period_end_date)
-      user.user_timeout          = attributes[:user_timeout] || 300000
-      user.database_timeout      = attributes[:database_timeout] || 300000
+      user.user_timeout          = attributes[:user_timeout] || 300_000
+      user.database_timeout      = attributes[:database_timeout] || 300_000
       user.geocoder_provider     = attributes[:geocoder_provider] || nil
       user.geocoding_quota       = attributes[:geocoding_quota] || 1000
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
@@ -83,11 +83,9 @@ module CartoDB
       user.organization          = attributes[:organization] || nil
       user.viewer                = attributes[:viewer] || false
       user.builder_enabled       = attributes[:builder_enabled] # nil by default, for old tests
-      if attributes[:organization_id]
-        user.organization_id = attributes[:organization_id]
-      end
+      user.organization_id = attributes[:organization_id] if attributes[:organization_id]
       user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
-      user.avatar_url            = user.default_avatar
+      user.avatar_url = user.default_avatar
 
       user
     end
@@ -95,6 +93,7 @@ module CartoDB
     def create_user(attributes = {})
       user = new_user(attributes)
       raise "User not valid: #{user.errors}" unless user.valid?
+
       # INFO: avoiding enable_remote_db_user
       create_account_type(user.account_type)
       user.save
@@ -108,9 +107,7 @@ module CartoDB
       # INFO: avoiding enable_remote_db_user
       create_account_type(user.account_type)
       user.save
-      if user.valid?
-        load_user_functions(user)
-      end
+      load_user_functions(user) if user.valid?
       user
     end
 
@@ -138,7 +135,7 @@ module CartoDB
         username: username,
         email: "#{username}@example.com",
         password: "000#{username}",
-        session_salt: "123456789f",
+        session_salt: '123456789f',
         private_tables_enabled: true,
         database_schema: organization.nil? ? 'public' : username,
         organization: organization,
@@ -186,14 +183,14 @@ module CartoDB
     end
 
     def create_import(user, file_name, name=nil)
-      data_import  = DataImport.create(
-        user_id:      user.id,
-        data_source:  file_name,
-        table_name:   name
+      data_import = DataImport.create(
+        user_id: user.id,
+        data_source: file_name,
+        table_name: name
       )
       def data_import.data_source=(filepath)
-        self.values[:data_type] = 'file'
-        self.values[:data_source] = filepath
+        values[:data_type] = 'file'
+        values[:data_source] = filepath
       end
 
       data_import.data_source = file_name
@@ -220,5 +217,7 @@ module CartoDB
       user.db_service.load_cartodb_functions
       user.db_service.rebuild_quota_trigger
     end
+
   end
+
 end

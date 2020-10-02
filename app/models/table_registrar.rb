@@ -1,5 +1,6 @@
 module CartoDB
   class TableRegistrar
+
     def initialize(user, table_klass=nil)
       @user         = user
       @table_klass  = table_klass
@@ -10,8 +11,8 @@ module CartoDB
       table.user_id = user.id unless user_table.present?
       # INFO: we're not creating but registering an existent table, so we want fixed, known name
       table.instance_eval { self[:name] = table_name }
-      table.migrate_existing_table  = table_name
-      table.data_import_id  = data_import_id
+      table.migrate_existing_table = table_name
+      table.data_import_id = data_import_id
       set_metadata_from_data_import_id(table, data_import_id)
       table.save
       table.optimize
@@ -40,5 +41,6 @@ module CartoDB
       CartoDB.notify_exception(e)
       raise e
     end
+
   end # TableRegistrar
 end # CartoDB

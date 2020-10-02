@@ -2,6 +2,7 @@ require 'spec_helper_min'
 require 'factories/carto_visualizations'
 
 module Carto
+
   describe Legend do
     include Carto::Factories::Visualizations
 
@@ -178,4 +179,5 @@ module Carto
       end
     end
   end
+
 end

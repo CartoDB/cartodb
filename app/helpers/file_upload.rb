@@ -1,15 +1,16 @@
 require 'aws-sdk-s3'
 
 module CartoDB
+
   class FileUpload
 
-    DEFAULT_UPLOADS_PATH = 'public/uploads'
-    FILE_ENCODING = 'utf-8'
-    MAX_SYNC_UPLOAD_S3_FILE_SIZE = 52428800 # bytes
+    DEFAULT_UPLOADS_PATH = 'public/uploads'.freeze
+    FILE_ENCODING = 'utf-8'.freeze
+    MAX_SYNC_UPLOAD_S3_FILE_SIZE = 52_428_800 # bytes
 
     def initialize(uploads_path = nil)
       @uploads_path = uploads_path || DEFAULT_UPLOADS_PATH
-      @uploads_path = if @uploads_path[0] == "/"
+      @uploads_path = if @uploads_path[0] == '/'
                         Pathname.new(@uploads_path)
                       else
                         Rails.root.join(@uploads_path)
@@ -31,13 +32,17 @@ module CartoDB
                                random_token: nil)
       results = {
         file_uri: nil,
-        enqueue:  true
+        enqueue: true
       }
 
       load_file_from_request_body = false
       case
       when filename_param.present? && request_body.present?
-        filename = filename_param.original_filename rescue filename_param.to_s
+        filename = begin
+                     filename_param.original_filename
+                   rescue StandardError
+                     filename_param.to_s
+                   end
         begin
           filepath = filename_param.path
         rescue StandardError
@@ -45,8 +50,16 @@ module CartoDB
           load_file_from_request_body = true
         end
       when file_param.present?
-        filename = file_param.original_filename rescue file_param.to_s
-        filepath = file_param.path rescue ''
+        filename = begin
+                     file_param.original_filename
+                   rescue StandardError
+                     file_param.to_s
+                   end
+        filepath = begin
+                     file_param.path
+                   rescue StandardError
+                     ''
+                   end
       else
         return results
       end
@@ -65,14 +78,12 @@ module CartoDB
       end
 
       do_long_upload = s3_config && s3_config['async_long_uploads'].present? && s3_config['async_long_uploads'] &&
-        File.size(filepath) > MAX_SYNC_UPLOAD_S3_FILE_SIZE
+                       File.size(filepath) > MAX_SYNC_UPLOAD_S3_FILE_SIZE
 
       if use_s3 && (!do_long_upload || force_s3_upload)
         file_url = upload_file_to_s3(filepath, filename, random_token, s3_config)
 
-        if load_file_from_request_body
-          File.delete(file.path)
-        end
+        File.delete(file.path) if load_file_from_request_body
 
         results[:file_uri] = file_url
       else
@@ -83,10 +94,10 @@ module CartoDB
         results[:file_path] = file.path
 
         if use_s3 && do_long_upload
-          results[:file_uri] = file.path[/(\/uploads\/.*)/, 1]
+          results[:file_uri] = file.path[%r{(/uploads/.*)}, 1]
           results[:enqueue] = false
         else
-          results[:file_uri] = file.path[/(\/uploads\/.*)/, 1]
+          results[:file_uri] = file.path[%r{(/uploads/.*)}, 1]
         end
       end
 
@@ -152,18 +163,20 @@ module CartoDB
     end
 
     def save_using_streaming(filedata, random_token, filename)
-      src = File.open(filedata.tempfile.path, "r:UTF-8")
+      src = File.open(filedata.tempfile.path, 'r:UTF-8')
       file = File.new(get_uploads_path.join(random_token).join(File.basename(filename)), 'w:UTF-8')
       IO.copy_stream(src, file)
       file.close
       src.close
       file
     end
+
   end
 
   # CartoDB::FileUpload was originally designed for Rails' UploadedFile.
   # In order to avoid this need this class provides the needed interface.
   class FileUploadFile
+
     attr_reader :path, :original_filename, :filename, :tempfile
 
     def initialize(filepath)
@@ -172,5 +185,7 @@ module CartoDB
       @filename = @original_filename
       @tempfile = File.new(filepath)
     end
+
   end
+
 end

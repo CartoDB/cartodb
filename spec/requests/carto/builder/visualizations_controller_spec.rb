@@ -202,7 +202,7 @@ describe Carto::Builder::VisualizationsController do
       get builder_visualization_url(id: @visualization.id)
 
       response.status.should == 200
-      response.body.should_not include("maps.googleapis.com/maps/api/js")
+      response.body.should_not include('maps.googleapis.com/maps/api/js')
     end
 
     it 'includes the google maps client id if configured' do
@@ -214,7 +214,7 @@ describe Carto::Builder::VisualizationsController do
       get builder_visualization_url(id: @visualization.id)
 
       response.status.should == 200
-      response.body.should include("maps.googleapis.com/maps/api/js?v=3.32&client=wadus_cid")
+      response.body.should include('maps.googleapis.com/maps/api/js?v=3.32&client=wadus_cid')
     end
   end
 end

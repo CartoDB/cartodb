@@ -14,18 +14,18 @@ describe Carto::Api::GroupsController do
   shared_examples_for 'Groups editor management' do
     before(:all) do
       @org_user_1_json = {
-        "id" => @org_user_1.id,
-        "name" => @org_user_1.name,
-        "last_name" => @org_user_1.last_name,
-        "username" => @org_user_1.username,
-        "avatar_url" => @org_user_1.avatar_url,
-        "base_url" => @org_user_1.public_url,
-        "disqus_shortname" => @org_user_1.disqus_shortname,
-        "viewer" => @org_user_1.viewer,
-        "org_admin" => false,
-        "org_user" => true,
-        "remove_logo" => @org_user_1.remove_logo?,
-        "google_maps_query_string" => @org_user_1.google_maps_query_string
+        'id' => @org_user_1.id,
+        'name' => @org_user_1.name,
+        'last_name' => @org_user_1.last_name,
+        'username' => @org_user_1.username,
+        'avatar_url' => @org_user_1.avatar_url,
+        'base_url' => @org_user_1.public_url,
+        'disqus_shortname' => @org_user_1.disqus_shortname,
+        'viewer' => @org_user_1.viewer,
+        'org_admin' => false,
+        'org_user' => true,
+        'remove_logo' => @org_user_1.remove_logo?,
+        'google_maps_query_string' => @org_user_1.google_maps_query_string
       }
 
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
@@ -34,7 +34,7 @@ describe Carto::Api::GroupsController do
       @group_2_json = { 'id' => @group_2.id, 'organization_id' => @group_2.organization_id, 'name' => @group_2.name, 'display_name' => @group_2.display_name }
       @group_3 = FactoryGirl.create(:random_group, display_name: 'g_3', organization: @carto_organization)
       @group_3_json = { 'id' => @group_3.id, 'organization_id' => @group_3.organization_id, 'name' => @group_3.name, 'display_name' => @group_3.display_name }
-      @headers = { 'CONTENT_TYPE' => 'application/json', :format => "json", 'Accept' => 'application/json' }
+      @headers = { 'CONTENT_TYPE' => 'application/json', :format => 'json', 'Accept' => 'application/json' }
     end
 
     after(:all) do
@@ -48,7 +48,6 @@ describe Carto::Api::GroupsController do
     end
 
     describe '#index' do
-
       it 'returns 401 without authentication' do
         get_json api_v1_organization_groups_url(user_domain: @admin_user.username, organization_id: @carto_organization.id), {}, @headers do |response|
           response.status.should == 401
@@ -59,7 +58,7 @@ describe Carto::Api::GroupsController do
         get_json api_v1_organization_groups_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, api_key: @admin_user.api_key), {}, @headers do |response|
           response.status.should == 200
           expected_response = {
-            groups: [ @group_1_json, @group_2_json, @group_3_json ],
+            groups: [@group_1_json, @group_2_json, @group_3_json],
             total_entries: 3
           }
           response.body.should == expected_response.deep_symbolize_keys
@@ -70,7 +69,7 @@ describe Carto::Api::GroupsController do
         get_json api_v1_organization_groups_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, api_key: @admin_user.api_key), { page: 2, per_page: 1, order: 'display_name' }, @headers do |response|
           response.status.should == 200
           expected_response = {
-            groups: [ @group_2_json ],
+            groups: [@group_2_json],
             total_entries: 3
           }
           response.body.should == expected_response.deep_symbolize_keys
@@ -81,7 +80,7 @@ describe Carto::Api::GroupsController do
         get_json api_v1_organization_groups_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, api_key: @admin_user.api_key, q: @group_2.name), { page: 1, per_page: 1, order: 'display_name' }, @headers do |response|
           response.status.should == 200
           expected_response = {
-            groups: [ @group_2_json ],
+            groups: [@group_2_json],
             total_entries: 1
           }
           response.body.should == expected_response.deep_symbolize_keys
@@ -111,8 +110,7 @@ describe Carto::Api::GroupsController do
         end
       end
 
-      describe "users groups" do
-
+      describe 'users groups' do
         before(:each) do
           @group_1.add_user(@org_user_1.username)
         end
@@ -125,7 +123,7 @@ describe Carto::Api::GroupsController do
           get_json api_v1_user_groups_url(user_domain: @org_user_1.username, user_id: @org_user_1.id, api_key: @org_user_1.api_key), {}, @headers do |response|
             response.status.should == 200
             expected_response = {
-              groups: [ @group_1_json ],
+              groups: [@group_1_json],
               total_entries: 1
             }
             response.body.should == expected_response.deep_symbolize_keys
@@ -149,10 +147,10 @@ describe Carto::Api::GroupsController do
             expected_response = {
               groups: [
                 @group_1_json.merge({
-                  'shared_tables_count' => 0,
-                  'shared_maps_count' => 0,
-                  'users' => [ @org_user_1_json ]
-                })
+                                      'shared_tables_count' => 0,
+                                      'shared_maps_count' => 0,
+                                      'users' => [@org_user_1_json]
+                                    })
               ],
               total_entries: 1
             }
@@ -171,31 +169,29 @@ describe Carto::Api::GroupsController do
             response.status.should == 200
             expected_response = {
               groups: [
-               @group_1_json.merge({
-                  'shared_tables_count' => 1,
-                  'shared_maps_count' => 0,
-                  'users' => [ @org_user_1_json ]
-                })
+                @group_1_json.merge({
+                                      'shared_tables_count' => 1,
+                                      'shared_maps_count' => 0,
+                                      'users' => [@org_user_1_json]
+                                    })
               ],
               total_entries: 1
             }
             response.body.should == expected_response.deep_symbolize_keys
           end
         end
-
       end
-
     end
 
     it '#show returns a group' do
-      get_json api_v1_organization_groups_show_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, group_id: @group_1.id, api_key: @admin_user.api_key), { }, @headers do |response|
+      get_json api_v1_organization_groups_show_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, group_id: @group_1.id, api_key: @admin_user.api_key), {}, @headers do |response|
         response.status.should == 200
         response.body.should == @group_1_json.symbolize_keys
       end
     end
 
     it '#show support fetch_shared_maps_count, fetch_shared_tables_count and fetch_users' do
-      get_json api_v1_organization_groups_show_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, group_id: @group_1.id, api_key: @admin_user.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_users: true), { }, @headers do |response|
+      get_json api_v1_organization_groups_show_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, group_id: @group_1.id, api_key: @admin_user.api_key, fetch_shared_tables_count: true, fetch_shared_maps_count: true, fetch_users: true), {}, @headers do |response|
         response.status.should == 200
         response.body[:shared_tables_count].should_not be_nil
         response.body[:shared_maps_count].should_not be_nil
@@ -268,7 +264,7 @@ describe Carto::Api::GroupsController do
 
       put_json api_v1_organization_groups_update_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @admin_user.api_key), { display_name: group_2.display_name }, @headers do |response|
         response.status.should == 409
-        response.body[:errors][0].should match /A group with that name already exists/
+        response.body[:errors][0].should match(/A group with that name already exists/)
       end
     end
 
@@ -285,7 +281,7 @@ describe Carto::Api::GroupsController do
         api_key: @admin_user.api_key
       ), {
         user_id: user.id,
-        password_confirmation:  '00012345678'
+        password_confirmation: '00012345678'
       }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
@@ -303,10 +299,10 @@ describe Carto::Api::GroupsController do
         api_key: @admin_user.api_key
       ), {
         user_id: user.id,
-        password_confirmation:  'wrong'
+        password_confirmation: 'wrong'
       }, @headers do |response|
         response.status.should == 403
-        response.body[:errors].should include "Confirmation password sent does not match your current password"
+        response.body[:errors].should include 'Confirmation password sent does not match your current password'
       end
     end
 
@@ -352,7 +348,7 @@ describe Carto::Api::GroupsController do
         password_confirmation: 'wrong'
       }, @headers do |response|
         response.status.should == 403
-        response.body[:errors].should include "Confirmation password sent does not match your current password"
+        response.body[:errors].should include 'Confirmation password sent does not match your current password'
       end
     end
 
@@ -437,7 +433,7 @@ describe Carto::Api::GroupsController do
         password_confirmation: 'wrong'
       }, @headers do |response|
         response.status.should == 403
-        response.body[:errors].should include "Confirmation password sent does not match your current password"
+        response.body[:errors].should include 'Confirmation password sent does not match your current password'
       end
     end
   end

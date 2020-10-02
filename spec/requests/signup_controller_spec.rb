@@ -21,7 +21,7 @@ describe SignupController do
       CartoDB.stubs(:subdomainless_urls?).returns(true)
       CartoDB.stubs(:session_domain).returns('localhost.lan')
       Organization.stubs(:where).returns([@fake_organization])
-      host! "localhost.lan"
+      host! 'localhost.lan'
       get signup_subdomainless_url(user_domain: 'organization')
       response.status.should == 200
     end
@@ -31,7 +31,7 @@ describe SignupController do
       CartoDB.stubs(:subdomainless_urls?).returns(true)
       CartoDB.stubs(:session_domain).returns('localhost.lan')
       Organization.stubs(:where).returns([@fake_organization])
-      host! "localhost.lan"
+      host! 'localhost.lan'
       get signup_url
       response.status.should == 404
     end
@@ -83,9 +83,9 @@ describe SignupController do
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
-      response.body.should include("organization not enough seats")
+      response.body.should include('organization not enough seats')
       response.body.should include("contact the administrator of #{@fake_organization.name}</a>")
-      response.body.should match(Regexp.new @fake_organization.owner.email)
+      response.body.should match(Regexp.new(@fake_organization.owner.email))
     end
 
     it 'does not return an error if organization has no unassigned_quota left but the invited user is a viewer' do
@@ -104,10 +104,10 @@ describe SignupController do
                                        user: { username: 'viewer-user',
                                                email: email,
                                                password: '2{Patrañas}' },
-                                               invitation_token: token)
+                                       invitation_token: token)
 
       response.status.should == 200
-      response.body.should_not include("quota_in_bytes not enough disk quota")
+      response.body.should_not include('quota_in_bytes not enough disk quota')
     end
 
     it 'returns an error if organization has no unassigned_quota and invited user is not a viewer' do
@@ -127,10 +127,10 @@ describe SignupController do
                                        user: { username: 'viewer-user',
                                                email: email,
                                                password: '2{Patrañas}' },
-                                               invitation_token: token)
+                                       invitation_token: token)
 
       response.status.should == 200
-      response.body.should include("quota_in_bytes not enough disk quota")
+      response.body.should include('quota_in_bytes not enough disk quota')
     end
 
     it 'signs user up as viewer even if all non-viewer seats are taken' do
@@ -159,7 +159,7 @@ describe SignupController do
     end
 
     before(:each) do
-      @organization.whitelisted_email_domains = ['carto.com']      
+      @organization.whitelisted_email_domains = ['carto.com']
       @organization.auth_username_password_enabled = true
       @organization.auth_google_enabled = true
       @organization.strong_passwords_enabled = true
@@ -241,7 +241,7 @@ describe SignupController do
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
                                       instance_of(String), anything, instance_of(FalseClass)).returns(true)
       username = 'testusername'
-      email = "testemail@a.carto.com"
+      email = 'testemail@a.carto.com'
       password = '2{Patrañas}'
       host! "#{@organization.name}.localhost.lan"
       post signup_organization_user_url(user_domain: @organization.name, user: { username: username, email: email, password: password })
@@ -384,7 +384,6 @@ describe SignupController do
     end
 
     describe 'ldap signup' do
-
       before(:all) do
         @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: @organization.id })
       end
@@ -394,14 +393,12 @@ describe SignupController do
       end
 
       it 'returns 404 if ldap is enabled' do
-
         get signup_organization_user_url(user_domain: @organization.name)
         response.status.should == 404
 
         post signup_organization_user_url(user_domain: @organization.name, user: { username: 'whatever', email: 'whatever@carto.com', password: 'whatever' })
         response.status.should == 404
       end
-
     end
 
     describe 'http authentication signup' do
@@ -457,13 +454,13 @@ describe SignupController do
             response.status.should == 200
 
             last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
-            last_user_creation.organization_id.should == nil
+            last_user_creation.organization_id.should.nil?
             last_user_creation.requires_validation_email?.should == false
           end
 
           it 'triggers user creation with organization' do
             Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-            username = "authenticated"
+            username = 'authenticated'
             email = "#{username}@#{@organization.whitelisted_email_domains.first}"
 
             ::Resque.expects(:enqueue).

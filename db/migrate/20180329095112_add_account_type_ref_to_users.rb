@@ -3,7 +3,7 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     run "DO $$
          DECLARE
          missing_accounts text[] := (
@@ -84,7 +84,7 @@ migration(
       add_foreign_key [:account_type], :account_types, on_delete: :restrict, null: false
     end
   end,
-  Proc.new do
+  proc do
     alter_table :users do
       drop_constraint :users_account_type_fkey
       drop_index :account_type

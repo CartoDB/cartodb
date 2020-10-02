@@ -2,7 +2,6 @@ require_relative '../spec_helper'
 require_relative '../factories/organizations_contexts'
 
 describe Carto::Api::UserPresenter do
-
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
@@ -38,30 +37,30 @@ describe Carto::Api::UserPresenter do
 
     # Non-org user
     user = create_user({
-        email: 'example@carto.com',
-        username: 'example',
-        password: 'example123',
-        name: "my example name",
-        sync_tables_enabled: true,
-        private_tables_enabled: true,
-        twitter_datasource_enabled: true,
-        twitter_datasource_block_size: 1000,
-        twitter_datasource_block_price: 10,
-        twitter_datasource_quota: 70000,
-        soft_twitter_datasource_limit: true,
-        public_visualization_count: 1,
-        all_visualization_count: 2,
-        job_role: "Developer",
-        company: "test",
-        phone: "123",
-        industry: "Academic and Education",
-        period_end_date: Time.parse('2018-01-01'),
-        account_type: 'ENTERPRISE LUMP-SUM'
-      })
+                         email: 'example@carto.com',
+                         username: 'example',
+                         password: 'example123',
+                         name: 'my example name',
+                         sync_tables_enabled: true,
+                         private_tables_enabled: true,
+                         twitter_datasource_enabled: true,
+                         twitter_datasource_block_size: 1000,
+                         twitter_datasource_block_price: 10,
+                         twitter_datasource_quota: 70_000,
+                         soft_twitter_datasource_limit: true,
+                         public_visualization_count: 1,
+                         all_visualization_count: 2,
+                         job_role: 'Developer',
+                         company: 'test',
+                         phone: '123',
+                         industry: 'Academic and Education',
+                         period_end_date: Time.parse('2018-01-01'),
+                         account_type: 'ENTERPRISE LUMP-SUM'
+                       })
 
     # Some sample data
     data_import_id = '11111111-1111-1111-1111-111111111111'
-    SequelRails.connection.run(%Q{
+    SequelRails.connection.run(%{
       INSERT INTO data_imports("data_source","data_type","table_name","state","success","logger","updated_at",
         "created_at","tables_created_count",
         "table_names","append","id","table_id","user_id",
@@ -73,7 +72,7 @@ describe Carto::Api::UserPresenter do
           '#{user.id}','public_url', 'test',
           '[{"type":".csv","size":5015}]','t','f','t','test','0.0.0.0','13204','test','f','{"twitter_credits_limit":0}');
       })
-    SequelRails.connection.run(%Q{
+    SequelRails.connection.run(%{
       INSERT INTO geocodings("table_name","processed_rows","created_at","updated_at","formatter","state",
         "id","user_id",
         "cache_hits","kind","geometry_type","processable_rows","real_rows","used_credits",
@@ -83,12 +82,12 @@ describe Carto::Api::UserPresenter do
           '#{data_import_id}');
       })
 
-    create_table( { user_id: user.id, name: 'table1' } )
-    create_table( { user_id: user.id, name: 'table2', privacy: Carto::UserTable::PRIVACY_PUBLIC } )
+    create_table({ user_id: user.id, name: 'table1' })
+    create_table({ user_id: user.id, name: 'table2', privacy: Carto::UserTable::PRIVACY_PUBLIC })
 
     feature_flag1 = FactoryGirl.create(:feature_flag, id: 1, name: 'ff1')
     feature_flag2 = FactoryGirl.create(:feature_flag, id: 2, name: 'ff2')
-    user.update_feature_flags([ feature_flag1.id.to_s, feature_flag2.id.to_s ])
+    user.update_feature_flags([feature_flag1.id.to_s, feature_flag2.id.to_s])
     user.save.reload
 
     compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.find(user.id)).data, false, false)
@@ -96,26 +95,26 @@ describe Carto::Api::UserPresenter do
     # Now org user, organization and another member
 
     owner = create_user({
-        email: 'owner@carto.com',
-        username: 'owner',
-        password: 'owner123',
-        name: "owner name",
-        sync_tables_enabled: true,
-        private_tables_enabled: true,
-        twitter_datasource_enabled: true,
-        twitter_datasource_block_size: 1000,
-        twitter_datasource_block_price: 10,
-        twitter_datasource_quota: 70000,
-        soft_twitter_datasource_limit: true,
-        public_visualization_count: 1,
-        all_visualization_count: 2,
-        job_role: "Developer",
-        company: "test",
-        phone: "123",
-        industry: "Academic and Education",
-        period_end_date: Time.parse('2018-01-01'),
-        account_type: 'ENTERPRISE LUMP-SUM'
-      })
+                          email: 'owner@carto.com',
+                          username: 'owner',
+                          password: 'owner123',
+                          name: 'owner name',
+                          sync_tables_enabled: true,
+                          private_tables_enabled: true,
+                          twitter_datasource_enabled: true,
+                          twitter_datasource_block_size: 1000,
+                          twitter_datasource_block_price: 10,
+                          twitter_datasource_quota: 70_000,
+                          soft_twitter_datasource_limit: true,
+                          public_visualization_count: 1,
+                          all_visualization_count: 2,
+                          job_role: 'Developer',
+                          company: 'test',
+                          phone: '123',
+                          industry: 'Academic and Education',
+                          period_end_date: Time.parse('2018-01-01'),
+                          account_type: 'ENTERPRISE LUMP-SUM'
+                        })
 
     organization = ::Organization.new(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5).save
     user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -124,11 +123,11 @@ describe Carto::Api::UserPresenter do
     owner.reload
 
     user2 = create_user({
-        email: 'example2@carto.com',
-        username: 'example2',
-        password: 'example123',
-        account_type: 'ORGANIZATION USER'
-      })
+                          email: 'example2@carto.com',
+                          username: 'example2',
+                          password: 'example123',
+                          account_type: 'ORGANIZATION USER'
+                        })
 
     user2.organization = organization
     user2.save
@@ -137,8 +136,8 @@ describe Carto::Api::UserPresenter do
 
     compare_data(owner.data, Carto::Api::UserPresenter.new(Carto::User.find(owner.id)).data, true)
 
-    SequelRails.connection.run( %Q{ DELETE FROM geocodings } )
-    SequelRails.connection.run( %Q{ DELETE FROM data_imports } )
+    SequelRails.connection.run(%{ DELETE FROM geocodings })
+    SequelRails.connection.run(%{ DELETE FROM data_imports })
     user.destroy
     organization.destroy
     Delorean.back_to_the_present
@@ -152,7 +151,7 @@ describe Carto::Api::UserPresenter do
     old_data[:organization].delete(:users) if old_data[:organization]
 
     # TODO: This fails at CI server, until there's time to research...
-    #new_data.should eq old_data
+    # new_data.should eq old_data
 
     # To detect deltas not migrated to new presenter
     new_data.keys.sort.should == old_data.keys.sort
@@ -254,7 +253,7 @@ describe Carto::Api::UserPresenter do
       # Same as [:organization][:created_at] issue above
       # TODO Skipped organization.created_at due to Rails 4 TZ issues
       # new_data[:organization][:updated_at].to_s.should == old_data[:organization][:updated_at].to_s
-      #owner is excluded from the users list
+      # owner is excluded from the users list
       new_data[:organization][:website].should == old_data[:organization][:website]
       new_data[:organization][:avatar_url].should == old_data[:organization][:avatar_url]
       new_data[:geocoder_provider].should == old_data[:geocoder_provider]
@@ -274,7 +273,6 @@ describe Carto::Api::UserPresenter do
     end
 
     # TODO: Pending migration and testing of :real_table_count & :last_active_time
-
   end
 
   def add_new_keys(user_poro)
@@ -295,5 +293,4 @@ describe Carto::Api::UserPresenter do
     organization.save!
     organization
   end
-
 end

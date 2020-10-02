@@ -4,6 +4,7 @@ require_dependency 'carto/bounding_box_utils'
 require_dependency 'common/map_common'
 
 class Map < Sequel::Model
+
   include Carto::MapBoundaries
 
   self.raise_on_save_failure = false
@@ -24,7 +25,7 @@ class Map < Sequel::Model
   many_to_many :carto_layers,
                clone: :layers,
                right_key: :layer_id,
-               conditions: { kind: "carto" }
+               conditions: { kind: 'carto' }
 
   many_to_many :data_layers,
                clone: :layers,
@@ -39,7 +40,7 @@ class Map < Sequel::Model
   many_to_many :torque_layers,
                clone: :layers,
                right_key: :layer_id,
-               conditions: { kind: "torque" }
+               conditions: { kind: 'torque' }
 
   many_to_many :other_layers,
                clone: :layers,
@@ -54,18 +55,18 @@ class Map < Sequel::Model
   plugin :association_dependencies, layers: :nullify
 
   PUBLIC_ATTRIBUTES = %w{ id user_id provider bounding_box_sw
-                          bounding_box_ne center zoom view_bounds_sw view_bounds_ne legends scrollwheel }
+                          bounding_box_ne center zoom view_bounds_sw view_bounds_ne legends scrollwheel }.freeze
 
   # FE code, so (lat,lon)
   DEFAULT_OPTIONS = {
-    zoom:            3,
+    zoom: 3,
     bounding_box_sw: [Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:miny],
                       Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:minx]],
     bounding_box_ne: [Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:maxy],
                       Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:maxx]],
-    provider:        'leaflet',
-    center:          [30, 0]
-  }
+    provider: 'leaflet',
+    center: [30, 0]
+  }.freeze
 
   attr_accessor :table_id,
                 # Flag to detect if being destroyed by whom so invalidate_vizjson_varnish_cache skips it
@@ -95,6 +96,7 @@ class Map < Sequel::Model
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy maps") if user && user.viewer
+
     layers.each(&:destroy)
     super
     invalidate_vizjson_varnish_cache
@@ -177,11 +179,11 @@ class Map < Sequel::Model
 
     {
       # LowerCorner longitude, in decimal degrees
-      west:  bbox_sw[1],
+      west: bbox_sw[1],
       # LowerCorner latitude, in decimal degrees
       south: bbox_sw[0],
       # UpperCorner longitude, in decimal degrees
-      east:  bbox_ne[1],
+      east: bbox_ne[1],
       # UpperCorner latitude, in decimal degrees
       north: bbox_ne[0]
     }
@@ -241,6 +243,7 @@ class Map < Sequel::Model
   def admits_more_base_layers?(layer)
     # no basemap layer, always allow
     return true if user_layers.length < 1
+
     # have basemap? then allow only if comes on top (for labels)
     layer.order >= layers.last.order && user_layers.length >= 1
   end
@@ -248,4 +251,5 @@ class Map < Sequel::Model
   def table_name
     tables.first.nil? ? nil : tables.first.name
   end
+
 end

@@ -2,6 +2,7 @@ module Carto
   module Api
     module Public
       class OrganizationPublicProfilePresenter
+
         def initialize(organization)
           @organization = organization
         end
@@ -13,6 +14,7 @@ module Carto
             }
           }
         end
+
       end
     end
   end

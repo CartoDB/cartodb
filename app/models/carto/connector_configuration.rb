@@ -1,6 +1,7 @@
 require 'carto/connector'
 
 class Carto::ConnectorConfiguration < ActiveRecord::Base
+
   belongs_to :connector_provider, class_name: Carto::ConnectorProvider
   belongs_to :user, class_name: Carto::User, inverse_of: :connector_configurations
   belongs_to :organization, class_name: Carto::Organization, inverse_of: :connector_configurations
@@ -30,23 +31,18 @@ class Carto::ConnectorConfiguration < ActiveRecord::Base
   def self.default(provider)
     # Look for default provider configration
     config = where(user_id: nil, organization_id: nil, connector_provider_id: provider.id).first
-    if !config
-      # Create in memory record using app_config defaults
-      config = new(
-        connector_provider: provider,
-        enabled:  Cartodb.get_config(:connectors, provider.name, 'enabled') || false,
-        max_rows: Cartodb.get_config(:connectors, provider.name, 'max_rows')
-      )
-    end
+    config ||= new(
+      connector_provider: provider,
+      enabled: Cartodb.get_config(:connectors, provider.name, 'enabled') || false,
+      max_rows: Cartodb.get_config(:connectors, provider.name, 'max_rows')
+    )
     config
   end
 
   def self.for_organization(organization, provider)
     if provider
       config = where(organization_id: organization.id, connector_provider_id: provider.id).first
-      if config.blank?
-        config = default(provider)
-      end
+      config = default(provider) if config.blank?
       config
     end
   end
@@ -54,12 +50,8 @@ class Carto::ConnectorConfiguration < ActiveRecord::Base
   def self.for_user(user, provider)
     if provider
       config = where(user_id: user.id, connector_provider_id: provider.id).first
-      if config.blank? && user.organization_id.present?
-        config = for_organization(user.organization, provider)
-      end
-      if config.blank?
-        config = default(provider)
-      end
+      config = for_organization(user.organization, provider) if config.blank? && user.organization_id.present?
+      config = default(provider) if config.blank?
       config
     end
   end
@@ -74,4 +66,5 @@ class Carto::ConnectorConfiguration < ActiveRecord::Base
     # this is currently not in the connector_configurations table and is taken from global app configuration
     Cartodb.get_config(:connectors, connector_provider.name, 'timeout') || DEFAULT_CONNECTOR_TIMEOUT
   end
+
 end

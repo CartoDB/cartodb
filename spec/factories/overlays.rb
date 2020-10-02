@@ -1,5 +1,4 @@
 FactoryGirl.define do
-
   factory :carto_overlay, class: Carto::Overlay do
     to_create(&:save!)
 
@@ -15,5 +14,4 @@ FactoryGirl.define do
       template '<a href="#zoom_in" class="zoom_in">+</a> <a href="#zoom_out" class="zoom_out">-</a>'
     end
   end
-
 end

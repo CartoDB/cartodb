@@ -1,7 +1,7 @@
-
 module Carto
   module Api
     class UserTablePresenter
+
       # options:
       # - accessible_dependent_derived_maps
 
@@ -13,7 +13,7 @@ module Carto
         PRIVACY_PRIVATE => 'private',
         PRIVACY_PUBLIC => 'public',
         PRIVACY_LINK => 'link'
-      }
+      }.freeze
 
       MAX_DERIVED_MAPS_SHOWN = 3
 
@@ -57,15 +57,13 @@ module Carto
           poro[:accessible_dependent_derived_maps_count] = @user_table.accessible_dependent_derived_maps.count
         end
 
-        if show_permission
-          poro[:permission] = permission_presentation
-        end
+        poro[:permission] = permission_presentation if show_permission
 
         poro
       end
 
       def privacy_text(privacy)
-        #TODO: This came from UserTable
+        # TODO: This came from UserTable
         privacy == PRIVACY_LINK ? 'PUBLIC' : PRIVACY_VALUES_TO_TEXTS[privacy]
       end
 
@@ -86,6 +84,7 @@ module Carto
                                        .with_presenter_cache(@presenter_cache)
                                        .to_poro
       end
+
     end
   end
 end

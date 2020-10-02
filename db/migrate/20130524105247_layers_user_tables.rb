@@ -6,7 +6,7 @@ Sequel.migration do
       foreign_key :user_table_id, :user_tables
     end
   end
-  
+
   down do
     drop_table :layers_user_tables
   end

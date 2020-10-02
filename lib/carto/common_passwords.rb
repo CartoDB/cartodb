@@ -1,5 +1,6 @@
 module Carto
   module CommonPasswords
+
     COMMON_PASSWORDS = ['123456',
                         'password',
                         '12345678',
@@ -1000,5 +1001,6 @@ module Carto
                         'wildcat',
                         'polina',
                         'freepass'].freeze
+
   end
 end

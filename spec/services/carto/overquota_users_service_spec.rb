@@ -21,7 +21,7 @@ describe 'Carto::OverquotaUsersService' do
     users
   end
 
-  it "should return users near their geocoding quota" do
+  it 'should return users near their geocoding quota' do
     ::User.any_instance.stubs(:get_api_calls).returns([0])
     ::User.any_instance.stubs(:map_view_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(81)
@@ -32,7 +32,7 @@ describe 'Carto::OverquotaUsersService' do
     overquota(0.10).should be_empty
   end
 
-  it "should return users near their here isolines quota" do
+  it 'should return users near their here isolines quota' do
     ::User.any_instance.stubs(:get_api_calls).returns([0])
     ::User.any_instance.stubs(:map_view_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
@@ -45,7 +45,7 @@ describe 'Carto::OverquotaUsersService' do
     overquota(0.10).should be_empty
   end
 
-  it "should return users near their data observatory snapshot quota" do
+  it 'should return users near their data observatory snapshot quota' do
     ::User.any_instance.stubs(:get_api_calls).returns([0])
     ::User.any_instance.stubs(:map_view_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
@@ -62,7 +62,7 @@ describe 'Carto::OverquotaUsersService' do
     overquota(0.10).should be_empty
   end
 
-  it "should return users near their data observatory general quota" do
+  it 'should return users near their data observatory general quota' do
     ::User.any_instance.stubs(:get_api_calls).returns([0])
     ::User.any_instance.stubs(:map_view_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
@@ -78,7 +78,7 @@ describe 'Carto::OverquotaUsersService' do
     overquota(0.20).size.should == 2
     overquota(0.10).should be_empty
   end
-  it "should return users near their twitter quota" do
+  it 'should return users near their twitter quota' do
     ::User.any_instance.stubs(:get_api_calls).returns([0])
     ::User.any_instance.stubs(:map_view_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
@@ -92,8 +92,8 @@ describe 'Carto::OverquotaUsersService' do
     overquota(0.10).should be_empty
   end
 
-  it "should not return organization users" do
-    ::User.any_instance.stubs(:organization_id).returns("organization-id")
+  it 'should not return organization users' do
+    ::User.any_instance.stubs(:organization_id).returns('organization-id')
     ::User.any_instance.stubs(:organization).returns(Organization.new)
     overquota.should be_empty
   end

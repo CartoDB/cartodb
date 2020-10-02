@@ -20,9 +20,9 @@ module CartoDB
     ].freeze
 
     ROUTING_KEYS = {
-      "mapzen" => :routing_mapzen,
-      "mapbox" => :routing_mapbox,
-      "tomtom" => :routing_tomtom
+      'mapzen' => :routing_mapzen,
+      'mapbox' => :routing_mapbox,
+      'tomtom' => :routing_tomtom
     }.freeze
 
     def initialize(username, orgname = nil, redis = $geocoder_metrics)
@@ -35,5 +35,6 @@ module CartoDB
       raise ArgumentError.new('Invalid service') unless VALID_SERVICES.include?(service)
       raise ArgumentError.new('Invalid metric') unless VALID_METRICS.include?(metric)
     end
+
   end
 end

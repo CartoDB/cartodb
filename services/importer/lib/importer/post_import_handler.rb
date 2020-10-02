@@ -26,22 +26,24 @@ module CartoDB
       end
 
       def has_transform_geojson_geom_column?
-       has_task?(TYPE_TRANSFORM_GEOJSON_GEOMETRY_COLUMN)
+        has_task?(TYPE_TRANSFORM_GEOJSON_GEOMETRY_COLUMN)
       end
 
       private
 
       def add_task(task_type, task_params={})
-        @tasks.push({
-                     type:   task_type,
-                     params: task_params
-                   }) unless has_task?(task_type)
+        unless has_task?(task_type)
+          @tasks.push({
+                        type: task_type,
+                        params: task_params
+                      })
+        end
       end
 
       def has_task?(task_type)
-        @tasks.select{ |task|
+        @tasks.select do |task|
           task[:type] == task_type
-        }.count > 0
+        end.count > 0
       end
 
       attr_accessor :tasks
@@ -49,4 +51,3 @@ module CartoDB
     end
   end
 end
-

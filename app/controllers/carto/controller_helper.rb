@@ -3,7 +3,9 @@ require_dependency 'carto/errors'
 require_dependency 'carto/current_request'
 
 module Carto
+
   module ControllerHelper
+
     include Carto::UUIDHelper
 
     def set_request_id
@@ -51,7 +53,7 @@ module Carto
 
       respond_to do |format|
         format.html { render text: message, status: status }
-        format.json {
+        format.json do
           errors_cause = error.errors_cause
 
           visualization = error.visualization
@@ -63,7 +65,7 @@ module Carto
           }
           render json: { errors: message, errors_cause: errors_cause, visualization: visualization_info },
                  status: status
-        }
+        end
       end
     end
 
@@ -92,9 +94,11 @@ module Carto
       log_rescue_from(__method__, error)
       render_jsonp({ errors: 'Error while updating data in Central' }, 500)
     end
+
   end
 
   module DefaultRescueFroms
+
     def setup_default_rescues
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from CartoError, with: :rescue_from_carto_error
@@ -102,5 +106,7 @@ module Carto
       rescue_from ActiveRecord::RecordInvalid, with: :rescue_from_validation_error
       rescue_from CartoDB::CentralCommunicationFailure, with: :rescue_from_central_error
     end
+
   end
+
 end

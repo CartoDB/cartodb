@@ -1,5 +1,6 @@
 module Carto
   class UserMigrationPackage
+
     private_class_method :new
 
     def self.for_export(id, log)
@@ -126,5 +127,6 @@ module Carto
     def file_upload_helper
       CartoDB::FileUpload.new(@config[:uploads_path])
     end
+
   end
 end

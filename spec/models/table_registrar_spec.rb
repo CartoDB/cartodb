@@ -11,10 +11,10 @@ describe CartoDB::TableRegistrar do
   end
 
   describe '#register' do
-    let(:description) { "Table registrar test description" }
-    let(:tags) { ["Administrative regions", "Historic"] }
-    let(:source) { "Table registrar test source" }
-    let(:attributions) { "Table registrar test attributions" }
+    let(:description) { 'Table registrar test description' }
+    let(:tags) { ['Administrative regions', 'Historic'] }
+    let(:source) { 'Table registrar test source' }
+    let(:attributions) { 'Table registrar test attributions' }
 
     before(:each) do
       bypass_named_maps

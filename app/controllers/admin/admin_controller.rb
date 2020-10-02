@@ -1,4 +1,5 @@
 class Admin::AdminController < ApplicationController
+
   protected
 
   def invalidate_browser_cache
@@ -9,7 +10,8 @@ class Admin::AdminController < ApplicationController
 
   def valid_password_confirmation
     unless current_user.valid_password_confirmation(params[:password_confirmation])
-      raise Carto::PasswordConfirmationError.new
+      raise Carto::PasswordConfirmationError
     end
   end
+
 end

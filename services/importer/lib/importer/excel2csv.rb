@@ -8,10 +8,10 @@ module CartoDB
   module Importer2
     class Excel2Csv
 
-      NEWLINE_REMOVER_RELPATH = "../../../../../lib/importer/misc/csv_remove_newlines.py"
+      NEWLINE_REMOVER_RELPATH = '../../../../../lib/importer/misc/csv_remove_newlines.py'.freeze
 
-      IN2CSV_WARNINGS = [ "WARNING *** OLE2 inconsistency: SSCS size is 0 but SSAT size is non-zero",
-        "*** No CODEPAGE record, no encoding_override: will use 'ascii'"]
+      IN2CSV_WARNINGS = ['WARNING *** OLE2 inconsistency: SSCS size is 0 but SSAT size is non-zero',
+                         "*** No CODEPAGE record, no encoding_override: will use 'ascii'"].freeze
 
       class UnsupportedOrCorruptFile < StandardError; end
 
@@ -20,7 +20,7 @@ module CartoDB
       end
 
       def initialize(supported_format, filepath, job=nil, csv_normalizer=nil, importer_config = nil)
-        @format = "#{supported_format.downcase}"
+        @format = supported_format.downcase.to_s
         @filepath = filepath
         @job      = job || Job.new
         @importer_config = importer_config
@@ -30,11 +30,11 @@ module CartoDB
       def run
         job.log "Converting #{@format.upcase} to CSV"
 
-        Open3.popen3('file', '-b', '--mime-type', filepath) do |stdin, stdout, stderr, process|
+        Open3.popen3('file', '-b', '--mime-type', filepath) do |_stdin, stdout, _stderr, process|
           file_mime_type = stdout.read.delete("\n")
           job.log "Can't get the mime type of the file" unless process.value.to_s =~ /exit 0/
           # CSV files with XLS extensions are considered malformed files
-          raise CartoDB::Importer2::MalformedXLSException.new if file_mime_type == "text/plain"
+          raise CartoDB::Importer2::MalformedXLSException.new if file_mime_type == 'text/plain'
         end
 
         err_r, err_w = IO.pipe
@@ -43,7 +43,8 @@ module CartoDB
                              err: err_w, out: output) do
           err_w.close
           raise CartoDB::Importer2::MalformedXLSException.new if err_r.read =~ /Unsupported format, or corrupt file:/
-          job.log "done executing in2csv."
+
+          job.log 'done executing in2csv.'
         end
 
         # Can be check locally using wc -l ... (converted_filepath)
@@ -68,7 +69,7 @@ module CartoDB
       end
 
       def in2csv_warning_filter
-        IN2CSV_WARNINGS.map { |w| ['grep', '-v', w.gsub('*', "\\*")] }
+        IN2CSV_WARNINGS.map { |w| ['grep', '-v', w.gsub('*', '\\*')] }
       end
 
       def newline_remover_command
@@ -78,13 +79,14 @@ module CartoDB
       def in2csv_command
         python_path = CartoDB.python_path
         if python_path.empty?
-          "in2csv"
+          'in2csv'
         else
           "#{python_path}/in2csv"
         end
       end
 
       attr_reader :filepath, :job
+
     end
   end
 end

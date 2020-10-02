@@ -1,7 +1,7 @@
 module Carto
-
   class GCloudUserSettings
-    REDIS_PREFIX = 'do_settings'
+
+    REDIS_PREFIX = 'do_settings'.freeze
 
     REDIS_KEYS = %i(service_account bq_public_project
                     gcp_execution_project bq_project bq_dataset
@@ -40,5 +40,6 @@ module Carto
     def key
       "#{REDIS_PREFIX}:#{@username}"
     end
+
   end
 end

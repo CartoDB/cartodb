@@ -1,6 +1,7 @@
 module Carto
   module Api
     class StatePresenter
+
       def initialize(state)
         @state = state
       end
@@ -14,6 +15,7 @@ module Carto
           json: @state.json
         }
       end
+
     end
   end
 end

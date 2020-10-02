@@ -3,6 +3,7 @@ require_dependency 'carto/oauth_provider/scopes/scopes'
 
 module Carto
   class OauthRefreshToken < ActiveRecord::Base
+
     include OauthProvider::Scopes
 
     # Multiple of 3 for pretty base64
@@ -25,6 +26,7 @@ module Carto
 
     def exchange!(requested_scopes: scopes)
       raise OauthProvider::Errors::InvalidGrant.new if expired?
+
       invalid_scopes = Carto::OauthProvider::Scopes.subtract_scopes(requested_scopes, scopes, oauth_app_user.user.database_schema)
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
 
@@ -60,5 +62,6 @@ module Carto
     def regenerate_token
       self.token = SecureRandom.urlsafe_base64(TOKEN_RANDOM_BYTES)
     end
+
   end
 end

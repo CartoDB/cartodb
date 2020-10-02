@@ -3,7 +3,7 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     create_table :api_keys do
       Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       String      :token, null: false
@@ -23,7 +23,7 @@ migration(
       add_index :user_id
     end
   end,
-  Proc.new do
+  proc do
     drop_table :api_keys
   end
 )

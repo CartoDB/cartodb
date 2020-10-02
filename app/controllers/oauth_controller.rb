@@ -2,6 +2,7 @@ require 'oauth/controllers/provider_controller'
 require_dependency 'carto/user_authenticator'
 
 class OauthController < ApplicationController
+
   layout 'front_layout'
   include OAuth::Controllers::ProviderController
   include Carto::UserAuthenticator
@@ -21,10 +22,12 @@ class OauthController < ApplicationController
     if params[:x_auth_mode] == 'client_auth'
       if user = authenticate(params[:x_auth_username], params[:x_auth_password])
         @token = user.tokens.find_by(client_application: current_client_application, invalidated_at: nil)
-        @token = Carto::AccessToken.create(user: user.carto_user, client_application_id: current_client_application.id) if @token.blank?
+        if @token.blank?
+          @token = Carto::AccessToken.create(user: user.carto_user, client_application_id: current_client_application.id)
+        end
 
         if @token
-          render :text => @token.to_query
+          render text: @token.to_query
         else
           render_unauthorized
         end
@@ -37,10 +40,10 @@ class OauthController < ApplicationController
   end
   alias_method_chain :access_token, :xauth
 
-
   protected
 
   def render_unauthorized
     head :unauthorized
   end
+
 end

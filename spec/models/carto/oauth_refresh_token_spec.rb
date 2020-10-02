@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe OauthRefreshToken do
     describe '#validation' do
       before(:all) do
@@ -19,13 +20,13 @@ module Carto
       it 'requires offline scope' do
         refresh_token = OauthRefreshToken.new
         expect(refresh_token).not_to(be_valid)
-        expect(refresh_token.errors[:scopes]).to(include("must contain `offline`"))
+        expect(refresh_token.errors[:scopes]).to(include('must contain `offline`'))
       end
 
       it 'does not accept invalid scopes' do
         refresh_token = OauthRefreshToken.new(scopes: ['wadus'])
         expect(refresh_token).to_not(be_valid)
-        expect(refresh_token.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
+        expect(refresh_token.errors[:scopes]).to(include('contains unsupported scopes: wadus'))
       end
 
       it 'validates with offline scope' do
@@ -148,4 +149,5 @@ module Carto
       end
     end
   end
+
 end

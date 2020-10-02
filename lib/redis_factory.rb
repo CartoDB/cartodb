@@ -1,4 +1,5 @@
 class RedisFactory
+
   # db_id: configuration databases entry key (:tables_metadata, :api_credentials...)
   def self.new_connection(db_id: nil, secondary: false)
     configuration = get_conf(secondary)
@@ -18,9 +19,7 @@ class RedisFactory
     if redis_conf[:tcp_keepalive] && redis_conf[:tcp_keepalive].is_a?(Hash)
       redis_conf[:tcp_keepalive] = redis_conf[:tcp_keepalive].symbolize_keys
     end
-    if redis_conf[:driver] && redis_conf[:driver].is_a?(String)
-      redis_conf[:driver] = redis_conf[:driver].to_sym
-    end
+    redis_conf[:driver] = redis_conf[:driver].to_sym if redis_conf[:driver] && redis_conf[:driver].is_a?(String)
 
     redis_conf
   end
@@ -34,11 +33,11 @@ class RedisFactory
   end
 
   @@default_databases = {
-    tables_metadata:     0,
-    api_credentials:     3,
-    users_metadata:      5,
+    tables_metadata: 0,
+    api_credentials: 3,
+    users_metadata: 5,
     redis_migrator_logs: 6,
-    limits_metadata:     8
+    limits_metadata: 8
   }.freeze
 
   def self.conf
@@ -54,4 +53,5 @@ class RedisFactory
   private_class_method :secondary_conf
   private_class_method :get_conf
   private_class_method :databases
+
 end

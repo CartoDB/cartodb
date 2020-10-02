@@ -1,9 +1,10 @@
 module Carto
   class FederatedTablesService
+
     def initialize(user:)
       @user = user
       @superuser_db_connection = @user.in_database(as: :superuser)
-      @user_db_connection = @user.in_database()
+      @user_db_connection = @user.in_database
     end
 
     # Federated Servers
@@ -132,6 +133,7 @@ module Carto
         )
       ].first
       return unless remote_table
+
       remote_table.merge(columns: JSON.parse(remote_table[:columns], symbolize_names: true))
     end
 
@@ -203,16 +205,16 @@ module Carto
       password: nil
     )
       config_server = {}
-      config_server["dbname"] = dbname if dbname.present?
-      config_server["host"] = host if host.present?
-      config_server["port"] = port if port.present?
-      config_server["extensions"] = "postgis"
-      config_server["updatable"] = mode != 'read-write' ? "false" : "write"
-      config_server["use_remote_estimate"] = "true"
-      config_server["fetch_size"] = "1000"
+      config_server['dbname'] = dbname if dbname.present?
+      config_server['host'] = host if host.present?
+      config_server['port'] = port if port.present?
+      config_server['extensions'] = 'postgis'
+      config_server['updatable'] = mode != 'read-write' ? 'false' : 'write'
+      config_server['use_remote_estimate'] = 'true'
+      config_server['fetch_size'] = '1000'
       config_credentials = {}
-      config_credentials["username"] = username if username.present?
-      config_credentials["password"] = password if password.present?
+      config_credentials['username'] = username if username.present?
+      config_credentials['password'] = password if password.present?
 
       config = { server: config_server, credentials: config_credentials }
 
@@ -322,7 +324,8 @@ module Carto
     end
 
     def literal_attribute_or_null(attribute)
-      return "NULL" if attribute.blank?
+      return 'NULL' if attribute.blank?
+
       @user_db_connection.literal(attribute)
     end
 
@@ -385,5 +388,6 @@ module Carto
           )
       }.squish
     end
+
   end
 end

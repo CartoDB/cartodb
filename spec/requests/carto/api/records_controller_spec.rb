@@ -2,7 +2,6 @@ require_relative '../../../spec_helper'
 
 describe Carto::Api::RecordsController do
   describe '#show legacy tests' do
-
     before(:all) do
       @user = FactoryGirl.create(:valid_user)
     end
@@ -20,10 +19,10 @@ describe Carto::Api::RecordsController do
 
     let(:params) { { api_key: @user.api_key, table_id: @table.name, user_domain: @user.username } }
 
-    it "Insert a new row and get the record" do
+    it 'Insert a new row and get the record' do
       payload = {
-        name: "Name 123",
-        description: "The description"
+        name: 'Name 123',
+        description: 'The description'
       }
 
       post_json api_v1_tables_records_create_url(params.merge(payload)) do |response|
@@ -45,7 +44,7 @@ describe Carto::Api::RecordsController do
       end
     end
 
-    it "Update a row" do
+    it 'Update a row' do
       pk = @table.insert_row!(
         name: String.random(10),
         description: String.random(50),
@@ -53,10 +52,10 @@ describe Carto::Api::RecordsController do
       )
 
       payload = {
-        cartodb_id:   pk,
-        name:         "Name updated",
-        description:  "Description updated",
-        the_geom:     "{\"type\":\"Point\",\"coordinates\":[-3.010254,55.973798]}"
+        cartodb_id: pk,
+        name: 'Name updated',
+        description: 'Description updated',
+        the_geom: '{"type":"Point","coordinates":[-3.010254,55.973798]}'
       }
 
       put_json api_v1_tables_record_update_url(params.merge(payload)) do |response|
@@ -70,9 +69,9 @@ describe Carto::Api::RecordsController do
 
     it "Update a row that doesn't exist" do
       payload = {
-        cartodb_id:  1,
-        name:        "Name updated",
-        description: "Description updated"
+        cartodb_id: 1,
+        name: 'Name updated',
+        description: 'Description updated'
       }
 
       put_json api_v1_tables_record_update_url(params.merge(payload)) do |response|
@@ -80,7 +79,7 @@ describe Carto::Api::RecordsController do
       end
     end
 
-    it "Updates a row with id column" do
+    it 'Updates a row with id column' do
       @table.add_column!(name: 'id', type: 'integer')
       pk = @table.insert_row!(
         name: String.random(10),
@@ -90,11 +89,11 @@ describe Carto::Api::RecordsController do
       )
 
       payload = {
-        cartodb_id:   pk,
-        name:         "Name updated",
-        description:  "Description updated",
-        the_geom:     "{\"type\":\"Point\",\"coordinates\":[-3.010254,55.973798]}",
-        id:           5511
+        cartodb_id: pk,
+        name: 'Name updated',
+        description: 'Description updated',
+        the_geom: '{"type":"Point","coordinates":[-3.010254,55.973798]}',
+        id: 5511
       }
 
       put_json api_v1_tables_record_update_url(params.merge(payload)) do |response|
@@ -107,7 +106,7 @@ describe Carto::Api::RecordsController do
       end
     end
 
-    it "Remove a row" do
+    it 'Remove a row' do
       pk = @table.insert_row!(
         name: String.random(10),
         description: String.random(50),
@@ -120,32 +119,32 @@ describe Carto::Api::RecordsController do
       end
     end
 
-    it "Remove multiple rows" do
+    it 'Remove multiple rows' do
       the_geom = %{
         \{"type":"Point","coordinates":[#{Float.random_longitude},#{Float.random_latitude}]\}
       }
       @table.insert_row!(
-        name:         String.random(10),
-        description:  String.random(50),
-        the_geom:     the_geom
+        name: String.random(10),
+        description: String.random(50),
+        the_geom: the_geom
       )
 
       pk1 = @table.insert_row!(
-        name:         String.random(10),
-        description:  String.random(50),
-        the_geom:     the_geom
+        name: String.random(10),
+        description: String.random(50),
+        the_geom: the_geom
       )
 
       pk2 = @table.insert_row!(
-        name:         String.random(10),
-        description:  String.random(50),
-        the_geom:     the_geom
+        name: String.random(10),
+        description: String.random(50),
+        the_geom: the_geom
       )
 
       pk3 = @table.insert_row!(
-        name:         String.random(10),
-        description:  String.random(50),
-        the_geom:     the_geom
+        name: String.random(10),
+        description: String.random(50),
+        the_geom: the_geom
       )
 
       @table.rows_counted.should == 4
@@ -168,7 +167,7 @@ describe Carto::Api::RecordsController do
 
     it 'Create a new row of type number and insert float values' do
       payload = {
-        name:   'My new imported table',
+        name: 'My new imported table',
         schema: 'name varchar, age integer'
       }
 
@@ -206,14 +205,14 @@ describe Carto::Api::RecordsController do
       end
     end
 
-    it "Create a new row including the_geom field" do
+    it 'Create a new row including the_geom field' do
       lat = Float.random_latitude
       lon = Float.random_longitude
 
       payload = {
-        name:         "Fernando Blat",
-        description:  "Geolocated programmer",
-        the_geom:     %{\{"type":"Point","coordinates":[#{lon.to_f},#{lat.to_f}]\}}
+        name: 'Fernando Blat',
+        description: 'Geolocated programmer',
+        the_geom: %{\{"type":"Point","coordinates":[#{lon.to_f},#{lat.to_f}]\}}
       }
 
       post_json api_v1_tables_records_create_url(params.merge(payload)) do |response|
@@ -226,14 +225,14 @@ describe Carto::Api::RecordsController do
       end
     end
 
-    it "Update a row including the_geom field" do
+    it 'Update a row including the_geom field' do
       lat = Float.random_latitude
       lon = Float.random_longitude
 
       payload = {
-        name:         "Fernando Blat",
-        description:  "Geolocated programmer",
-        the_geom:     %{\{"type":"Point","coordinates":[#{lon.to_f},#{lat.to_f}]\}}
+        name: 'Fernando Blat',
+        description: 'Geolocated programmer',
+        the_geom: %{\{"type":"Point","coordinates":[#{lon.to_f},#{lat.to_f}]\}}
       }
 
       pk = post_json api_v1_tables_records_create_url(params.merge(payload)) do |response|
@@ -244,8 +243,8 @@ describe Carto::Api::RecordsController do
       lat = Float.random_latitude
       lon = Float.random_longitude
       payload = {
-        cartodb_id:   pk,
-        the_geom:     %{\{"type":"Point","coordinates":[#{lon.to_f},#{lat.to_f}]\}}
+        cartodb_id: pk,
+        the_geom: %{\{"type":"Point","coordinates":[#{lon.to_f},#{lat.to_f}]\}}
       }
 
       put_json api_v1_tables_record_update_url(params.merge(payload)) do |response|

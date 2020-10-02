@@ -22,6 +22,7 @@ module ActionDispatch
       self.perform_deep_munge = true
 
       class << self
+
         # Remove nils from the params hash
         def deep_munge(hash, keys = [])
           return hash unless perform_deep_munge
@@ -45,7 +46,9 @@ module ActionDispatch
 
           hash
         end
+
       end
+
     end
   end
 end

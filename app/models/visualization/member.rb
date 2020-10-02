@@ -20,6 +20,7 @@ require_dependency 'carto/visualization'
 module CartoDB
   module Visualization
     class Member
+
       extend Forwardable
       include Virtus.model
       include CacheHelper
@@ -86,8 +87,8 @@ module CartoDB
       attribute :auth_token,          String, default: nil
       attribute :version,             Integer
       # Don't use directly, use instead getter/setter "transition_options"
-      attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
-      attribute :active_child,        String, default: nil
+      attribute :slide_transition_options, String, default: DEFAULT_OPTIONS_VALUE
+      attribute :active_child, String, default: nil
 
       def_delegators :validator,    :errors, :full_errors
       def_delegators :relator,      *Relator::INTERFACE
@@ -95,33 +96,34 @@ module CartoDB
       # This get called not only when creating a new but also when populating from the Collection
       def initialize(attributes={}, repository=Visualization.repository, name_checker=nil)
         super(attributes)
-        @repository     = repository
-        self.id         ||= @repository.next_id
-        @name_checker   = name_checker
-        @validator      = MinimalValidator::Validator.new
-        self.permission_change_valid = true   # Changes upon set of different permission_id
+        @repository = repository
+        self.id ||= @repository.next_id
+        @name_checker = name_checker
+        @validator = MinimalValidator::Validator.new
+        self.permission_change_valid = true # Changes upon set of different permission_id
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
         self.register_table_only = false
-        @redis_vizjson_cache = RedisVizjsonCache.new()
+        @redis_vizjson_cache = RedisVizjsonCache.new
         @old_privacy = @privacy
       end
 
       def self.remote_member(name, user_id, privacy, description, tags, license, source, attributions, display_name)
         Member.new({
-          name: name,
-          user_id: user_id,
-          privacy: privacy,
-          description: description,
-          tags: tags,
-          license: license,
-          source: source,
-          attributions: attributions,
-          display_name: display_name,
-          type: TYPE_REMOTE})
+                     name: name,
+                     user_id: user_id,
+                     privacy: privacy,
+                     description: description,
+                     tags: tags,
+                     license: license,
+                     source: source,
+                     attributions: attributions,
+                     display_name: display_name,
+                     type: TYPE_REMOTE
+                   })
       end
 
       def transition_options
-        ::JSON.parse(self.slide_transition_options).symbolize_keys
+        ::JSON.parse(slide_transition_options).symbolize_keys
       end
 
       def transition_options=(value)
@@ -137,7 +139,8 @@ module CartoDB
       end
 
       def store
-        raise CartoDB::InvalidMember.new(validator.errors) unless self.valid?
+        raise CartoDB::InvalidMember.new(validator.errors) unless valid?
+
         do_store
 
         self
@@ -155,7 +158,7 @@ module CartoDB
       end
 
       def valid?
-        validator.errors.store(:type, "Visualization type is not valid") unless valid_type?
+        validator.errors.store(:type, 'Visualization type is not valid') unless valid_type?
         validator.errors.store(:user, "Viewer users can't store visualizations") if user.viewer
 
         validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)
@@ -166,7 +169,8 @@ module CartoDB
         if privacy == PRIVACY_PROTECTED
           validator.validate_presence_of_with_custom_message(
             { encrypted_password: encrypted_password },
-            "password can't be blank")
+            "password can't be blank"
+          )
         end
 
         # Allow only "maintaining" privacy link for everyone but not setting it
@@ -183,7 +187,7 @@ module CartoDB
             validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} must have a parent") if parent_id.nil?
           else
             begin
-              parent_member = Member.new(id:parent_id).fetch
+              parent_member = Member.new(id: parent_id).fetch
               if parent_member.type != TYPE_DERIVED
                 validator.errors.store(:parent_id, "Type #{TYPE_SLIDE} must have parent of type #{TYPE_DERIVED}")
               end
@@ -213,6 +217,7 @@ module CartoDB
       def fetch
         data = repository.fetch(id)
         raise KeyError if data.nil?
+
         self.attributes = data
         self.name_changed = false
         @old_privacy = @privacy
@@ -236,12 +241,14 @@ module CartoDB
           support_tables.delete_all
 
           overlays.map(&:destroy)
-          safe_sequel_delete do
-            # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
-            related_map = map
-            related_map.being_destroyed_by_vis_id = id
-            related_map.destroy
-          end if map
+          if map
+            safe_sequel_delete do
+              # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
+              related_map = map
+              related_map.being_destroyed_by_vis_id = id
+              related_map.destroy
+            end
+          end
           safe_sequel_delete { table.destroy } if type == TYPE_CANONICAL && table && !from_table_deletion
           safe_sequel_delete do
             children.map do |child|
@@ -294,7 +301,7 @@ module CartoDB
 
       def permission_id=(permission_id)
         self.permission_change_valid = false
-        self.permission_change_valid = true if (@permission_id.nil? || @permission_id == permission_id)
+        self.permission_change_valid = true if @permission_id.nil? || @permission_id == permission_id
         super(permission_id)
       end
 
@@ -326,7 +333,7 @@ module CartoDB
       end
 
       def private?
-        privacy == PRIVACY_PRIVATE and not organization?
+        privacy == PRIVACY_PRIVATE and !organization?
       end
 
       def is_privacy_private?
@@ -370,6 +377,7 @@ module CartoDB
       def has_permission?(user, permission_type)
         return false if user.viewer && permission_type == PERMISSION_READWRITE
         return is_owner?(user) if permission_id.nil?
+
         is_owner?(user) || permission.permitted?(user, permission_type)
       end
 
@@ -386,11 +394,11 @@ module CartoDB
       end
 
       def varnish_key
-        sorted_table_names = related_tables.map{ |table|
+        sorted_table_names = related_tables.map do |table|
           "#{user.database_schema}.#{table.name}"
-        }.sort { |i, j|
+        end.sort do |i, j|
           i <=> j
-        }.join(',')
+        end.join(',')
         "#{user.database_name}:#{sorted_table_names},#{id}"
       end
 
@@ -410,7 +418,7 @@ module CartoDB
         type == TYPE_CANONICAL
       end
       # Used at Carto::Api::VisualizationPresenter
-      alias :canonical? :table?
+      alias canonical? table?
 
       def type_slide?
         type == TYPE_SLIDE
@@ -433,9 +441,9 @@ module CartoDB
 
       def has_private_tables?
         has_private_tables = false
-        related_tables.each { |table|
+        related_tables.each do |table|
           has_private_tables |= table.private?
-        }
+        end
         has_private_tables
       end
 
@@ -446,7 +454,7 @@ module CartoDB
 
       def password=(value)
         if value && value.size > 0
-          @password_salt = ""
+          @password_salt = ''
           @encrypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                          secret: Cartodb.config[:password_secret])
           self.dirty = true
@@ -454,7 +462,7 @@ module CartoDB
       end
 
       def has_password?
-        ( !@password_salt.nil? && !@encrypted_password.nil? )
+        (!@password_salt.nil? && !@encrypted_password.nil?)
       end
 
       def password_valid?(password)
@@ -504,10 +512,10 @@ module CartoDB
 
           # Now insert other_vis after self
           unless other_vis.nil?
-            if self.next_id.nil?
+            if next_id.nil?
               other_vis.next_id = nil
             else
-              other_vis.next_id = self.next_id
+              other_vis.next_id = next_id
               next_item = next_list_item
               next_item.prev_id = other_vis.id
               next_item.store
@@ -532,10 +540,10 @@ module CartoDB
 
           # Now insert other_vis after self
           unless other_vis.nil?
-            if self.prev_id.nil?
+            if prev_id.nil?
               other_vis.prev_id = nil
             else
-              other_vis.prev_id = self.prev_id
+              other_vis.prev_id = prev_id
               prev_item = prev_list_item
               prev_item.next_id = other_vis.id
               prev_item.store
@@ -553,14 +561,14 @@ module CartoDB
 
       def unlink_self_from_list!
         repository.transaction do
-          unless self.prev_id.nil?
+          unless prev_id.nil?
             prev_item = prev_list_item
-            prev_item.next_id = self.next_id
+            prev_item.next_id = next_id
             prev_item.store
           end
-          unless self.next_id.nil?
+          unless next_id.nil?
             next_item = next_list_item
-            next_item.prev_id = self.prev_id
+            next_item.prev_id = prev_id
             next_item.store
           end
           self.prev_id = nil
@@ -609,13 +617,11 @@ module CartoDB
       end
 
       def license_info
-        if !license.nil?
-          Carto::License.find(license.to_sym)
-        end
+        Carto::License.find(license.to_sym) unless license.nil?
       end
 
       def attributions_from_derived_visualizations
-        related_canonical_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
+        related_canonical_visualizations.map(&:attributions).reject { |attribution| attribution.blank?}
       end
 
       def map
@@ -727,9 +733,9 @@ module CartoDB
 
         propagate_attribution_change if table
         if type == TYPE_REMOTE || type == TYPE_CANONICAL
-          propagate_privacy_and_name_to(table) if table and propagate_changes
+          propagate_privacy_and_name_to(table) if table && propagate_changes
         else
-          propagate_name_to(table) if table and propagate_changes
+          propagate_name_to(table) if table && propagate_changes
         end
       end
 
@@ -739,17 +745,15 @@ module CartoDB
           attributes[:privacy] = @old_privacy
           repository.store(id, attributes.to_hash)
         end
-      rescue StandardError => exception
-        CartoDB.notify_exception(exception, user: user, message: "Error restoring previous visualization privacy")
-        raise exception
+      rescue StandardError => e
+        CartoDB.notify_exception(e, user: user, message: 'Error restoring previous visualization privacy')
+        raise e
       end
 
       def perform_invalidations(table_privacy_changed)
         # previously we used 'invalidate_cache' but due to public_map displaying all the user public visualizations,
         # now we need to purgue everything to avoid cached stale data or public->priv still showing scenarios
-        if name_changed || privacy_changed || table_privacy_changed || dirty
-          invalidate_cache
-        end
+        invalidate_cache if name_changed || privacy_changed || table_privacy_changed || dirty
 
         # When a table's relevant data is changed, propagate to all who use it or relate to it
         if dirty && table
@@ -761,6 +765,7 @@ module CartoDB
 
       def create_named_map
         return unless map
+
         Carto::NamedMaps::Api.new(carto_visualization).create
       end
 
@@ -781,7 +786,8 @@ module CartoDB
       end
 
       def propagate_privacy_and_name_to(table)
-        raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
+        raise 'Empty table sent to Visualization::Member propagate_privacy_and_name_to()' unless table
+
         propagate_privacy_to(table) if privacy_changed
         propagate_name_to(table)    if name_changed
       end
@@ -800,15 +806,11 @@ module CartoDB
         table.register_table_only = register_table_only
         table.name = name
         table.update(name: name)
-        if name_changed
-          support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
-        end
+        support_tables.rename(old_name, name, recreate_constraints = true, seek_parent_name = old_name) if name_changed
         self
-      rescue StandardError => exception
-        if name_changed && !(exception.to_s =~ /relation.*does not exist/)
-          revert_name_change(old_name)
-        end
-        raise CartoDB::InvalidMember.new(exception.to_s)
+      rescue StandardError => e
+        revert_name_change(old_name) if name_changed && !(e.to_s =~ /relation.*does not exist/)
+        raise CartoDB::InvalidMember.new(e.to_s)
       end
 
       def propagate_attribution_change
@@ -820,8 +822,8 @@ module CartoDB
       def revert_name_change(previous_name)
         self.name = previous_name
         store
-      rescue StandardError => exception
-        raise CartoDB::InvalidMember.new(exception.to_s)
+      rescue StandardError => e
+        raise CartoDB::InvalidMember.new(e.to_s)
       end
 
       def set_timestamps
@@ -840,6 +842,7 @@ module CartoDB
 
       def available_name?
         return true unless user && name_changed
+
         name_checker.available?(name)
       end
 
@@ -864,19 +867,21 @@ module CartoDB
 
       def configuration
         return {} unless defined?(Cartodb)
+
         Cartodb.config
       end
 
       def safe_sequel_delete
         yield
-      rescue Sequel::NoExistingObject => exception
+      rescue Sequel::NoExistingObject => e
         # INFO: don't fail on nonexistant object delete
-        CartoDB.notify_exception(exception)
+        CartoDB.notify_exception(e)
       end
 
       def carto_visualization
         Carto::Visualization.where(id: id).first
       end
+
     end
   end
 end

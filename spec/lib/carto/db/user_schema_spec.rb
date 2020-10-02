@@ -3,6 +3,7 @@ require 'carto/db/user_schema'
 
 module Carto
   module Db
+
     describe UserSchema do
       before(:all) do
         @user = ::User[FactoryGirl.create(:carto_user).id]
@@ -46,5 +47,6 @@ module Carto
         end
       end
     end
+
   end
 end

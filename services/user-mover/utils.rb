@@ -4,20 +4,23 @@ require 'tempfile'
 module CartoDB
   module DataMover
     module Utils
+
       def conn_string(user, host, port, name)
         %{#{!user ? '' : '-U ' + user} -h #{host} -p #{port} -d #{name} }
       end
 
       def database_name_prefix
-        return "cartodb_user_" if CartoDB::DataMover::Config[:rails_env] == 'production'
-        return "cartodb_dev_user_" if CartoDB::DataMover::Config[:rails_env] == 'development'
+        return 'cartodb_user_' if CartoDB::DataMover::Config[:rails_env] == 'production'
+        return 'cartodb_dev_user_' if CartoDB::DataMover::Config[:rails_env] == 'development'
+
         "cartodb_#{CartoDB::DataMover::Config[:rails_env]}_user_"
       end
 
       def db_username_prefix
-        return "cartodb_user_" if CartoDB::DataMover::Config[:rails_env] == 'production'
-        return "development_cartodb_user_" if CartoDB::DataMover::Config[:rails_env] == 'development'
-        return "test_cartodb_user_" if CartoDB::DataMover::Config[:rails_env] == 'test'
+        return 'cartodb_user_' if CartoDB::DataMover::Config[:rails_env] == 'production'
+        return 'development_cartodb_user_' if CartoDB::DataMover::Config[:rails_env] == 'development'
+        return 'test_cartodb_user_' if CartoDB::DataMover::Config[:rails_env] == 'test'
+
         "cartodb_#{CartoDB::DataMover::Config[:rails_env]}_user_"
       end
 
@@ -60,11 +63,9 @@ module CartoDB
       def run_command(cmd)
         logger.debug "Running command: \"#{cmd}\""
         Tempfile.open('datamover') do |f|
-          begin
-            run_command_with_log(cmd, f)
-          ensure
-            f.close(true)
-          end
+          run_command_with_log(cmd, f)
+        ensure
+          f.close(true)
         end
       end
 
@@ -100,7 +101,7 @@ module CartoDB
       end
 
       def get_database_version(conn)
-        version = conn.query("SELECT version()").first['version']
+        version = conn.query('SELECT version()').first['version']
         version_match = version.match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
         version_match[2] if version_match
       end
@@ -115,6 +116,7 @@ module CartoDB
         my_logger.formatter = ::Logger::Formatter.new
         my_logger
       end
+
     end
   end
 end

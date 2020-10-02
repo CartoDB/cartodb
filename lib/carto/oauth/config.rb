@@ -3,6 +3,7 @@ require_dependency 'carto/oauth/client'
 module Carto
   module Oauth
     class Config
+
       attr_reader :client
 
       def self.api_class
@@ -44,7 +45,7 @@ module Carto
         user.organization.nil? || auth_enabled?(user.organization)
       end
 
-      def auth_enabled?(organization)
+      def auth_enabled?(_organization)
         raise 'Subclass must override auth_enabled?'
       end
 
@@ -79,6 +80,7 @@ module Carto
       def button_template
         raise 'Subclass must override button_template'
       end
+
     end
   end
 end

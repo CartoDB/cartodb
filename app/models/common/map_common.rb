@@ -1,14 +1,15 @@
 require_dependency 'carto/bounding_box_service'
 
 module Carto::MapBoundaries
+
   MAXIMUM_ZOOM = 18
 
   def set_default_boundaries!
     bounds = get_map_bounds
     bounds ? set_viewport_from_bounds(bounds) : set_default_viewport
     save
-  rescue StandardError => exception
-    log_error(exception: exception, message: 'Error setting default bounds')
+  rescue StandardError => e
+    log_error(exception: e, message: 'Error setting default bounds')
   end
 
   def recalculate_bounds!
@@ -59,4 +60,5 @@ module Carto::MapBoundaries
     # (lon,lat) as comes out from postgis
     Carto::BoundingBoxService.new(user, table_name).table_bounds
   end
+
 end

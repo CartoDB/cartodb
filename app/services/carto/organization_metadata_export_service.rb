@@ -13,7 +13,9 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.3: export oauth_app_organizations
 # 1.0.4: export inherit_owner_ffs
 module Carto
+
   module OrganizationMetadataExportServiceConfiguration
+
     CURRENT_VERSION = '1.0.4'.freeze
     EXPORTED_ORGANIZATION_ATTRIBUTES = [
       :id, :seats, :quota_in_bytes, :created_at, :updated_at, :name, :avatar_url, :owner_id, :website, :description,
@@ -31,9 +33,11 @@ module Carto
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
     end
+
   end
 
   module OrganizationMetadataExportServiceImporter
+
     include OrganizationMetadataExportServiceConfiguration
     include LayerImporter
     include ConnectorConfigurationImporter
@@ -127,9 +131,11 @@ module Carto
         updated_at: oao_hash[:updated_at]
       )
     end
+
   end
 
   module OrganizationMetadataExportServiceExporter
+
     include OrganizationMetadataExportServiceConfiguration
     include LayerExporter
     include ConnectorConfigurationExporter
@@ -209,12 +215,14 @@ module Carto
         updated_at: oao.updated_at
       }
     end
+
   end
 
   class OrganizationAlreadyExists < RuntimeError; end
   # Both String and Hash versions are provided because `deep_symbolize_keys` won't symbolize through arrays
   # and having separated methods make handling and testing much easier.
   class OrganizationMetadataExportService
+
     include OrganizationMetadataExportServiceImporter
     include OrganizationMetadataExportServiceExporter
 
@@ -324,5 +332,7 @@ module Carto
 
       organization
     end
+
   end
+
 end

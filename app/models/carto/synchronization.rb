@@ -8,25 +8,24 @@ class Carto::Synchronization < ActiveRecord::Base
 
   has_many :external_data_imports, class_name: Carto::ExternalDataImport
 
-  STATE_CREATED   = 'created'
+  STATE_CREATED = 'created'.freeze
   # Already at resque, waiting for slot
-  STATE_QUEUED   = 'queued'
+  STATE_QUEUED = 'queued'.freeze
   # Actually syncing
-  STATE_SYNCING   = 'syncing'
-  STATE_SUCCESS   = 'success'
-  STATE_FAILURE   = 'failure'
-
+  STATE_SYNCING   = 'syncing'.freeze
+  STATE_SUCCESS   = 'success'.freeze
+  STATE_FAILURE   = 'failure'.freeze
 
   def authorize?(user)
     user.id == user_id && (!!user.sync_tables_enabled || from_external_source?)
   end
 
   def to_json(*args)
-    attributes.merge({from_external_source: from_external_source?}).to_json(*args)
+    attributes.merge({ from_external_source: from_external_source? }).to_json(*args)
   end
 
   def to_hash
-    attributes.merge({from_external_source: from_external_source?}).to_hash
+    attributes.merge({ from_external_source: from_external_source? }).to_hash
   end
 
   def success?
@@ -34,6 +33,7 @@ class Carto::Synchronization < ActiveRecord::Base
   end
 
   def from_external_source?
-    Carto::ExternalDataImport.where(synchronization_id: self.id).first != nil
+    Carto::ExternalDataImport.where(synchronization_id: id).first != nil
   end
+
 end

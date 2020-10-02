@@ -7,6 +7,7 @@ require_dependency 'carto/organization_metadata_export_service'
 
 module Carto
   class UserMigrationImport < ::ActiveRecord::Base
+
     belongs_to :organization, class_name: Carto::Organization
     belongs_to :user, class_name: Carto::User
     belongs_to :log, class_name: Carto::Log
@@ -73,13 +74,15 @@ module Carto
     end
 
     def validate_import_data
-      errors.add(:import_metadata, 'needs to be true if export_data is set to false') if !import_data? && !import_metadata?
+      if !import_data? && !import_metadata?
+        errors.add(:import_metadata, 'needs to be true if export_data is set to false')
+      end
     end
 
     def import(service, package)
       if import_data?
         import_job = CartoDB::DataMover::ImportJob.new(import_job_arguments(package.data_dir))
-        raise "DB already exists at DB host" if import_job.db_exists?
+        raise 'DB already exists at DB host' if import_job.db_exists?
       end
 
       imported = do_import_metadata(package, service) if import_metadata?
@@ -141,7 +144,7 @@ module Carto
       rescue StandardError => e
         log_error(
           message: 'Error refreshing aggregation tables', exception: e,
-          current_user: u, organization: u.organization, user_migration_import: self.attributes.slice(:id)
+          current_user: u, organization: u.organization, user_migration_import: attributes.slice(:id)
         )
       end
     end
@@ -223,5 +226,6 @@ module Carto
       self.state = STATE_PENDING unless state
       save
     end
+
   end
 end

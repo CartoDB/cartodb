@@ -10,9 +10,9 @@ describe UserOrganization do
     before(:each) do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
-      @organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      @organization = Organization.new(quota_in_bytes: 1_234_567_890, name: 'wadus', seats: 5).save
 
-      @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+      @owner = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
     end
 
     after(:each) do
@@ -84,8 +84,8 @@ describe UserOrganization do
 
       triggers_after = @owner.db_service.triggers
       triggers_after.map { |t| [t.database_name, t.table_name, t.trigger_name] } \
-        .should =~ \
-      triggers_before.map { |t| [t.database_name, t.table_name, t.trigger_name] }
+                    .should =~ \
+        triggers_before.map { |t| [t.database_name, t.table_name, t.trigger_name] }
 
       @owner.db_service.triggers('public').should be_empty
     end
@@ -191,8 +191,8 @@ describe UserOrganization do
   it 'can assign an owner user having non-cartodbfied tables' do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
-    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'non-cartodbfied-org', seats: 5).save
-    @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+    @organization = Organization.new(quota_in_bytes: 1_234_567_890, name: 'non-cartodbfied-org', seats: 5).save
+    @owner = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
     @owner.in_database.run('create table no_cartodbfied_table (test integer)')
 
     @owner.real_tables.count.should == 1
@@ -211,11 +211,11 @@ describe UserOrganization do
     ::User.any_instance.stubs(:update_in_central).returns(true)
 
     # This is coupled to DBService#move_tables_to_schema implementation, but we need a way to simulate a failure
-    Carto::UserTable.stubs(:find_by_user_id_and_name).raises(StandardError.new("Simulation of table movement failure"))
-    CartoDB::UserModule::DBService.any_instance.stubs(:move_schema_content_by_renaming).raises(StandardError.new("Simulation of table movement failure"))
+    Carto::UserTable.stubs(:find_by_user_id_and_name).raises(StandardError.new('Simulation of table movement failure'))
+    CartoDB::UserModule::DBService.any_instance.stubs(:move_schema_content_by_renaming).raises(StandardError.new('Simulation of table movement failure'))
 
-    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail', seats: 5).save
-    @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+    @organization = Organization.new(quota_in_bytes: 1_234_567_890, name: 'org-that-will-fail', seats: 5).save
+    @owner = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
     @owner.in_database.run('create table no_cartodbfied_table (test integer)')
 
     # Checks that should also be met afterwards
@@ -239,8 +239,8 @@ describe UserOrganization do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
 
-    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail-2', seats: 5).save
-    @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
+    @organization = Organization.new(quota_in_bytes: 1_234_567_890, name: 'org-that-will-fail-2', seats: 5).save
+    @owner = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
     @owner.in_database.run('create table no_cartodbfied_table (test integer)')
 
     # Checks that should also be met afterwards
@@ -249,7 +249,7 @@ describe UserOrganization do
 
     @owner.db_service.schema_exists?(@owner.username).should == false
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:rebuild_quota_trigger_with_database).raises(StandardError.new("Failure simulation"))
+    CartoDB::UserModule::DBService.any_instance.stubs(:rebuild_quota_trigger_with_database).raises(StandardError.new('Failure simulation'))
 
     # Promote
     owner_org = CartoDB::UserOrganization.new(@organization.id, @owner.id)
@@ -268,8 +268,8 @@ describe UserOrganization do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
 
-    @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
-    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail-3', seats: 5, owner_id: @owner.id).save
+    @owner = create_user(quota_in_bytes: 524_288_000, table_quota: 500)
+    @organization = Organization.new(quota_in_bytes: 1_234_567_890, name: 'org-that-will-fail-3', seats: 5, owner_id: @owner.id).save
 
     @owner.in_database.run('create table no_cartodbfied_table (test integer)')
 

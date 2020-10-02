@@ -1,6 +1,7 @@
 module Carto
   module Db
     module MigrationHelper
+
       LOCK_TIMEOUT_MS = 1000
       MAX_RETRIES = 3
       WAIT_BETWEEN_RETRIES_S = 2
@@ -30,26 +31,25 @@ module Carto
         # to start a "sub-transaction" that we can rollback without affecting Sequel
         run 'SAVEPOINT before_migration'
         (1..MAX_RETRIES).each do
-          begin
-            instance_eval &block
-            return
-          rescue Sequel::DatabaseError => e
-            if e.message.include?('lock timeout')
-              # In case of timeout, we retry by reexecuting the code since the SAVEPOINT
-              run 'ROLLBACK TO SAVEPOINT before_migration'
-              sleep WAIT_BETWEEN_RETRIES_S
-            else
-              puts e.message
-              raise e
-            end
+          instance_eval(&block)
+          return
+        rescue Sequel::DatabaseError => e
+          if e.message.include?('lock timeout')
+            # In case of timeout, we retry by reexecuting the code since the SAVEPOINT
+            run 'ROLLBACK TO SAVEPOINT before_migration'
+            sleep WAIT_BETWEEN_RETRIES_S
+          else
+            puts e.message
+            raise e
           end
         end
 
         # Raising an exception forces Sequel to rollback the entire transaction
         raise 'Retries exceeded during database migration'
       ensure
-        run "SET lock_timeout TO DEFAULT"
+        run 'SET lock_timeout TO DEFAULT'
       end
+
     end
   end
 end

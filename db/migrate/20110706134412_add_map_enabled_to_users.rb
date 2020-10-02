@@ -1,7 +1,7 @@
 class AddMapEnabledToUsersMigration < Sequel::Migration
 
   def up
-    add_column :users, :map_enabled, :boolean, :default => true
+    add_column :users, :map_enabled, :boolean, default: true
   end
 
   def down

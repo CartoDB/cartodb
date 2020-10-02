@@ -1,13 +1,14 @@
 require_relative '../../../spec_helper_min'
 
 module UserMigrationHelper
+
   records =
     [
       { name: 'carto', description: 'awesome' },
       { name: 'user-mover', description: 'insanity' }
     ]
 
-  agg_ds_config = 
+  agg_ds_config =
     {
       aggregation_tables: {
         'host' => 'localhost',
@@ -94,15 +95,14 @@ module UserMigrationHelper
           @user.in_database(as: :superuser) do |db|
             ds_config = db.fetch("SELECT * from cdb_conf where key = 'geocoder_server_config'").first[:value]
             fdws_config = db.fetch("SELECT * from cdb_conf where key = 'fdws'").first[:value]
-            expect(ds_config).to match /dbname=test_migration/
-            expect(fdws_config).to match /\"dbname\":\"test_migration\"/
+            expect(ds_config).to match(/dbname=test_migration/)
+            expect(fdws_config).to match(/\"dbname\":\"test_migration\"/)
           end
         else
           expect(@carto_user.attributes).to eq(@user_attributes)
         end
 
         records.each.with_index { |row, index| @table1.record(index + 1).should include(row) }
-
       end
     end
   end
@@ -119,13 +119,21 @@ module UserMigrationHelper
     WITH TEMPLATE = template_postgis
     ENCODING = 'UTF8'
     CONNECTION LIMIT=-1"
-    conn.run(sql) rescue conn.exec_query(sql)
+    begin
+      conn.run(sql)
+    rescue StandardError
+      conn.exec_query(sql)
+    end
   end
 
   def drop_database(name, user)
     conn = user.in_database(as: :cluster_admin)
     sql = "DROP DATABASE \"#{name}\""
-    conn.run(sql) rescue conn.exec_query(sql)
+    begin
+      conn.run(sql)
+    rescue StandardError
+      conn.exec_query(sql)
+    end
   end
 
   def attributes_to_test(user_attributes)
@@ -183,4 +191,5 @@ module UserMigrationHelper
     @carto_user.client_applications.each(&:destroy)
     @user.destroy
   end
+
 end

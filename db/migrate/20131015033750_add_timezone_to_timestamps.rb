@@ -1,5 +1,4 @@
 Sequel.migration do
-
   TABLE_LIST = {
     'client_applications' => ['created_at', 'updated_at'],
     'data_imports' => ['created_at', 'updated_at'],
@@ -12,14 +11,14 @@ Sequel.migration do
     'user_tables' => ['updated_at'],
     'users' => ['period_end_date', 'upgraded_at', 'dashboard_viewed_at'],
     'visualizations' => ['created_at', 'updated_at']
-  }
+  }.freeze
 
   up do
-    TABLE_LIST.each do |table_name,columns|
+    TABLE_LIST.each do |table_name, columns|
       columns.each do |column|
-        SequelRails.connection.run(%Q{
+        SequelRails.connection.run(%{
           ALTER TABLE #{table_name}
-          ALTER COLUMN #{column} 
+          ALTER COLUMN #{column}
           TYPE timestamptz
         })
       end
@@ -27,11 +26,11 @@ Sequel.migration do
   end
 
   down do
-    TABLE_LIST.each do |table_name,columns|
+    TABLE_LIST.each do |table_name, columns|
       columns.each do |column|
-        SequelRails.connection.run(%Q{
+        SequelRails.connection.run(%{
           ALTER TABLE #{table_name}
-          ALTER COLUMN #{column} 
+          ALTER COLUMN #{column}
           TYPE timestamp
         })
       end

@@ -281,11 +281,11 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name do |response|
         expect(response.status).to eq(400)
-        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
+        expect(response.body[:error]).to eq('Validation failed: Name has already been taken')
       end
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name, if_exists: 'fail' do |response|
         expect(response.status).to eq(400)
-        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
+        expect(response.body[:error]).to eq('Validation failed: Name has already been taken')
       end
     end
 
@@ -358,13 +358,13 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @kuviz2 = FactoryGirl.create(:kuviz_visualization, user: @user, name: 'kuviz2')
       @kuviz2.save!
       @asset2 = Carto::Asset.for_visualization(visualization: @kuviz,
-                                              resource: StringIO.new('<html><body>test</body></html>'))
+                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset2.save
 
       @kuviz_other_user = FactoryGirl.create(:kuviz_visualization)
       @kuviz_other_user.save!
       @asset_other_user = Carto::Asset.for_visualization(visualization: @kuviz_other_user,
-                                               resource: StringIO.new('<html><body>test</body></html>'))
+                                                         resource: StringIO.new('<html><body>test</body></html>'))
       @asset_other_user.save
     end
 
@@ -408,7 +408,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'should update an existing kuviz data' do
       get kuviz_show_url(id: @kuviz.id) do |response|
         response.status.should eq 200
-        response.body.scan(/<body>test<\/body>/).present?.should == true
+        response.body.scan(%r{<body>test</body>}).present?.should == true
       end
 
       new_html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>new data uploaded</body></html>')
@@ -418,7 +418,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
       get kuviz_show_url(id: @kuviz.id) do |response|
         response.status.should eq 200
-        response.body.scan(/<body>new data uploaded<\/body>/).present?.should == true
+        response.body.scan(%r{<body>new data uploaded</body>}).present?.should == true
       end
     end
 
@@ -482,7 +482,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'works if name already exists and if_exists is replace' do
-        put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name, if_exists: 'replace' do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name, if_exists: 'replace' do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
 
@@ -498,7 +498,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'rejects if name already exists and if_exists is fail' do
       put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name, if_exists: 'fail' do |response|
         expect(response.status).to eq(400)
-        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
+        expect(response.body[:error]).to eq('Validation failed: Name has already been taken')
       end
     end
 
@@ -548,7 +548,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @kuviz_other_user = FactoryGirl.create(:kuviz_visualization)
       @kuviz_other_user.save
       @asset_other_user = Carto::Asset.for_visualization(visualization: @kuviz_other_user,
-                                               resource: StringIO.new('<html><body>test</body></html>'))
+                                                         resource: StringIO.new('<html><body>test</body></html>'))
       @asset_other_user.save
     end
 

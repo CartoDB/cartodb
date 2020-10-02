@@ -5,7 +5,6 @@ include CartoDB::Datasources
 include FileServerHelper
 
 describe Url::PublicUrl do
-
   describe '#basic_tests' do
     it 'Some basic download flows of this file provider, including error handling' do
       url_provider = Url::PublicUrl.get_new
@@ -15,9 +14,9 @@ describe Url::PublicUrl do
 
         data = url_provider.get_resource(url)
         data.empty?.should eq false
-        expect {
+        expect do
           url_provider.get_resource(invalid_url)
-        }.to raise_exception DataDownloadError
+        end.to raise_exception DataDownloadError
 
         url_provider.fetch_headers(url)
         url_provider.etag_header.empty?.should eq false
@@ -32,5 +31,4 @@ describe Url::PublicUrl do
       end
     end
   end
-
 end

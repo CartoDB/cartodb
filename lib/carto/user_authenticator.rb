@@ -2,13 +2,14 @@ require 'cartodb-common'
 
 module Carto
   module UserAuthenticator
+
     def authenticate(email, password)
       sanitized_input = email.strip.downcase
-      if candidate = ::User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
+      if candidate = ::User.filter('email = ? OR username = ?', sanitized_input, sanitized_input).first
         login_attempt(candidate)
         if valid_password?(candidate, password)
           reencrypt_password(candidate, password)
-          return candidate
+          candidate
         end
       end
     end
@@ -33,5 +34,6 @@ module Carto
       candidate.update_in_central
       candidate.save
     end
+
   end
 end

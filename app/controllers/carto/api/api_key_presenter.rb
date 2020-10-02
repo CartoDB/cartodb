@@ -3,6 +3,7 @@ require 'json'
 module Carto
   module Api
     class ApiKeyPresenter
+
       def initialize(api_key)
         @api_key = api_key
       end
@@ -37,9 +38,7 @@ module Carto
           schemas: schema_permissions_for_api_key
         }
 
-        if @api_key.dataset_metadata_permissions
-          type_database['table_metadata'] = []
-        end
+        type_database['table_metadata'] = [] if @api_key.dataset_metadata_permissions
 
         grants << type_database
 
@@ -76,6 +75,7 @@ module Carto
           }
         end
       end
+
     end
   end
 end

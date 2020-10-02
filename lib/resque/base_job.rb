@@ -3,6 +3,7 @@ require 'resque-metrics'
 
 module Resque
   class BaseJob
+
     extend ::Resque::Metrics
     include Carto::Common::JobLogger
     MAX_RETRIES = 3
@@ -10,7 +11,7 @@ module Resque
     @@queue = ''
     @@retries = 0
 
-    def self.perform(options = {})
+    def self.perform(_options = {})
       raise NotImplementedError("This class shouldn't be directly instantiated")
     end
 
@@ -21,12 +22,12 @@ module Resque
       rescue Sequel::DatabaseDisconnectError => e
         puts "DatabaseDisconnectError: #{e.message}"
 
-        regexps = [ /server has gone away/, /decryption failed or bad record mac/, /SSL SYSCALL error: EOF detected/ ]
+        regexps = [/server has gone away/, /decryption failed or bad record mac/, /SSL SYSCALL error: EOF detected/]
         match_found = regexps.map { |regexp| regexp.match(e.message) }.any? { |matches| matches }
 
-        if (match_found)
+        if match_found
           @@retries += 1
-          if (@@retries < MAX_RETRIES)
+          if @@retries < MAX_RETRIES
             puts 'Retrying'
             retry
           else
@@ -39,7 +40,7 @@ module Resque
         CartoDB.notify_exception(e)
         raise e
       end
-    end #self.perform
+    end # self.perform
 
-  end #BaseJobs
+  end # BaseJobs
 end

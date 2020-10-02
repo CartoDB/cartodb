@@ -1,6 +1,7 @@
 require 'zip'
 
 module InMemZipper
+
   module_function
 
   def zip(entries)
@@ -25,4 +26,5 @@ module InMemZipper
     end
     entries
   end
+
 end

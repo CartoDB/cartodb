@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
+    SequelRails.connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :invitations do
       Uuid :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')

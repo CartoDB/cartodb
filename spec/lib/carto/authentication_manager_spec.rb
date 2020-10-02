@@ -2,8 +2,8 @@ require_relative '../../spec_helper_min.rb'
 require_relative '../../../lib/carto/authentication_manager.rb'
 
 module Carto
-  describe AuthenticationManager do
 
+  describe AuthenticationManager do
     describe '::validate_session' do
       subject { described_class.validate_session(warden_context, request, user) }
 
@@ -46,6 +46,6 @@ module Carto
         it { should be_false }
       end
     end
-
   end
+
 end

@@ -4,6 +4,7 @@ module Carto
   module Oauth
     module Google
       class Config < Carto::Oauth::Config
+
         def self.config
           Cartodb.get_config(:oauth, 'google_plus') || {}
         end
@@ -31,6 +32,7 @@ module Carto
         def auth_enabled?(organization)
           organization.auth_google_enabled
         end
+
       end
     end
   end

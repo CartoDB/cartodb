@@ -28,7 +28,7 @@ module Carto
     RATE_LIMIT_ATTRIBUTES.each { |attr| serialize attr, RateLimitValues }
     RATE_LIMIT_ATTRIBUTES.each { |attr| validates attr, presence: true }
 
-    # FIXME remove this after syncing rate_limits
+    # FIXME: remove this after syncing rate_limits
     RATE_LIMIT_DEFAULTS = {
       sql_copy_from: [1, 1, 60],
       sql_copy_to: [1, 1, 60]
@@ -51,6 +51,7 @@ module Carto
 
     def save_to_redis(user)
       raise ActiveRecord::RecordInvalid.new(self) unless valid?
+
       to_redis.each do |key, value|
         $limits_metadata.DEL "limits:rate:store:#{user.username}:#{key}"
         $limits_metadata.RPUSH "limits:rate:store:#{user.username}:#{key}", value
@@ -74,7 +75,7 @@ module Carto
 
     def rate_limit_attributes(attrs = attributes)
       attrs.with_indifferent_access.slice(*Carto::RateLimit::RATE_LIMIT_ATTRIBUTES)
-           .reverse_merge!(RATE_LIMIT_DEFAULTS) # FIXME remove this after syncing rate_limits
+           .reverse_merge!(RATE_LIMIT_DEFAULTS) # FIXME: remove this after syncing rate_limits
     end
 
     def ==(rate_limit)
@@ -83,5 +84,6 @@ module Carto
           x == y
         end
     end
+
   end
 end

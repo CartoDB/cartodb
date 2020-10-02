@@ -7,7 +7,6 @@ require_relative '../doubles/user'
 include CartoDB::Datasources
 
 describe Url::ArcGIS do
-
   before(:all) do
     @url = 'http://myserver/arcgis/rest/services/MyFakeService/featurename'
     @invalid_url = 'http://myserver/mysite/rest/myfakefolder/MyFakeService/featurename'
@@ -40,12 +39,12 @@ describe Url::ArcGIS do
 
       arcgis = Url::ArcGIS.get_new(@user)
 
-      expect {
+      expect do
         arcgis.send(:sanitize_id, invalid_1)
-      }.to raise_error InvalidInputDataError
-      expect {
+      end.to raise_error InvalidInputDataError
+      expect do
         arcgis.send(:sanitize_id, invalid_2)
-      }.to raise_error InvalidInputDataError
+      end.to raise_error InvalidInputDataError
 
       arcgis.send(:sanitize_id, test1).should eq valid_map
       arcgis.send(:sanitize_id, test2).should eq valid_map_trailing_slash
@@ -64,7 +63,7 @@ describe Url::ArcGIS do
       sub_id = '0'
 
       # 'general http error (non-200)'
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do
+      Typhoeus.stub(%r{/arcgis/rest/services/MyFakeService/featurename/layers}) do
         Typhoeus::Response.new(
           code: 400,
           headers: { 'Content-Type' => 'application/json' },
@@ -72,13 +71,13 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
+      expect do
         arcgis.get_resource_metadata(@url)
-      }.to raise_error DataDownloadError
+      end.to raise_error DataDownloadError
 
       # Stub layers request (so now works)
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_layers.json"))
+      Typhoeus.stub(%r{/arcgis/rest/services/MyFakeService/featurename/layers}) do |_request|
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_layers.json'))
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
@@ -88,7 +87,7 @@ describe Url::ArcGIS do
 
       layers_data = arcgis.get_resource_metadata(@url)
       layers_data_expected = {
-        id:           @url,
+        id: @url,
         subresources: [{
           id: "#{@url}/#{sub_id}",
           title: 'first layer'
@@ -97,8 +96,8 @@ describe Url::ArcGIS do
       layers_data.should eq layers_data_expected
 
       # 'fields' part
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
+      Typhoeus.stub(%r{/arcgis/rest/services/MyFakeService/featurename/0}) do |_request|
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_metadata_minimal.json'))
 
         body = ::JSON.parse(body)
         body.delete('fields')
@@ -109,13 +108,13 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
+      expect do
         arcgis.send(:get_subresource_metadata, @url, sub_id)
-      }.to raise_error ResponseError
+      end.to raise_error ResponseError
 
       # Another required field
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
+      Typhoeus.stub(%r{/arcgis/rest/services/MyFakeService/featurename/0}) do |_request|
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_metadata_minimal.json'))
 
         body = ::JSON.parse(body)
         body.delete('name')
@@ -126,13 +125,13 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
+      expect do
         arcgis.send(:get_subresource_metadata, @url, sub_id)
-      }.to raise_error ResponseError
+      end.to raise_error ResponseError
 
       # Invalid ArcGIS version
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
+      Typhoeus.stub(%r{/arcgis/rest/services/MyFakeService/featurename/0}) do |_request|
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_metadata_minimal.json'))
 
         body = ::JSON.parse(body)
         body['currentVersion'] = 9.0
@@ -143,22 +142,22 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
+      expect do
         arcgis.send(:get_subresource_metadata, @url, sub_id)
-      }.to raise_error InvalidServiceError
+      end.to raise_error InvalidServiceError
 
       # Invalid ArcGIS URL
-      expect {
+      expect do
         arcgis.send(:get_resource_metadata, @invalid_url)
-      }.to raise_error InvalidInputDataError
+      end.to raise_error InvalidInputDataError
     end
 
     it 'tests metadata retrieval' do
       arcgis = Url::ArcGIS.get_new(@user)
 
       # Stub layers request (so now works)
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_layers.json"))
+      Typhoeus.stub(%r{/arcgis/rest/services/MyFakeService/featurename/layers}) do |_request|
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_layers.json'))
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
@@ -166,11 +165,11 @@ describe Url::ArcGIS do
         )
       end
 
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
-        accept = (request.options[:headers]||{})['Accept'] || 'application/json'
+      Typhoeus.stub(%r{/arcgis/rest/services/MyFakeService/featurename/0}) do |request|
+        accept = (request.options[:headers] || {})['Accept'] || 'application/json'
         format = accept.split(',').first
 
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_metadata_minimal.json'))
 
         Typhoeus::Response.new(
           code: 200,
@@ -180,34 +179,34 @@ describe Url::ArcGIS do
       end
 
       expected_metadata = {
-        :arcgis_version=>10.22,
-        :name=>"Test Feature",
-        :description=>"Sample metadata payload",
-        :type=>"Feature Layer",
-        :geometry_type=>"esriGeometryPolygon",
-        :copyright=>"CartoDB",
-        :fields=>[
+        arcgis_version: 10.22,
+        name: 'Test Feature',
+        description: 'Sample metadata payload',
+        type: 'Feature Layer',
+        geometry_type: 'esriGeometryPolygon',
+        copyright: 'CartoDB',
+        fields: [
           {
-            :name => "OBJECTID",
-            :type => "esriFieldTypeOID"
+            name: 'OBJECTID',
+            type: 'esriFieldTypeOID'
           },
           {
-            :name => "NAME",
-            :type => "esriFieldTypeString"
+            name: 'NAME',
+            type: 'esriFieldTypeString'
           }
         ],
-        :max_records_per_query=>1000,
-        :supported_formats=>["JSON", "AMF"],
-        :advanced_queries_supported=>true
+        max_records_per_query: 1000,
+        supported_formats: ['JSON', 'AMF'],
+        advanced_queries_supported: true
       }
 
       expected_metadata_response = {
-        id:       @url + '/0',
-        title:    'Test Feature',
-        url:      nil,
-        service:  Url::ArcGIS::DATASOURCE_NAME,
+        id: @url + '/0',
+        title: 'Test Feature',
+        url: nil,
+        service: Url::ArcGIS::DATASOURCE_NAME,
         checksum: nil,
-        size:     0,
+        size: 0,
         filename: 'test_feature.json'
       }
 
@@ -228,7 +227,7 @@ describe Url::ArcGIS do
       id = arcgis.send(:sanitize_id, @url)
 
       # 'general http error (non-200)'
-      Typhoeus.stub(/\/arcgis\/rest\//) do
+      Typhoeus.stub(%r{/arcgis/rest/}) do
         Typhoeus::Response.new(
           code: 400,
           headers: { 'Content-Type' => 'application/json' },
@@ -236,14 +235,14 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
+      expect do
         arcgis.send(:get_ids_list, id)
-      }.to raise_error DataDownloadError
+      end.to raise_error DataDownloadError
 
       # 'objectIds' not present
       Typhoeus::Expectation.clear
-      Typhoeus.stub(/\/arcgis\/rest\//) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
+      Typhoeus.stub(%r{/arcgis/rest/}) do
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_ids_list.json'))
 
         body = ::JSON.parse(body)
         body.delete('objectIds')
@@ -254,14 +253,14 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
+      expect do
         arcgis.send(:get_ids_list, id)
-      }.to raise_error ResponseError
+      end.to raise_error ResponseError
 
       # 'objectIds' empty
       Typhoeus::Expectation.clear
-      Typhoeus.stub(/\/arcgis\/rest\//) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
+      Typhoeus.stub(%r{/arcgis/rest/}) do
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_ids_list.json'))
 
         body = ::JSON.parse(body)
         body['objectIds'] = []
@@ -272,10 +271,9 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
+      expect do
         arcgis.send(:get_ids_list, id)
-      }.to raise_error ResponseError
-
+      end.to raise_error ResponseError
     end
 
     it 'tests the get_ids_list() private method' do
@@ -283,8 +281,8 @@ describe Url::ArcGIS do
 
       id = arcgis.send(:sanitize_id, @url)
 
-      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
+      Typhoeus.stub(%r{/arcgis/rest/}) do |_request|
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_ids_list.json'))
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
@@ -292,7 +290,7 @@ describe Url::ArcGIS do
         )
       end
 
-      expected_ids = [1,2,3,4,5,6,7,8,9,10]
+      expected_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
       respose_ids = arcgis.send(:get_ids_list, id)
 
@@ -305,8 +303,8 @@ describe Url::ArcGIS do
 
       id = arcgis.send(:sanitize_id, @url)
 
-      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_unordered_ids_list.json"))
+      Typhoeus.stub(%r{/arcgis/rest/}) do |_request|
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_unordered_ids_list.json'))
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
@@ -314,7 +312,7 @@ describe Url::ArcGIS do
         )
       end
 
-      expected_ids = [1,2,3,4,5,6,7,8,9,10]
+      expected_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
       respose_ids = arcgis.send(:get_ids_list, id)
 
@@ -328,18 +326,17 @@ describe Url::ArcGIS do
       id = arcgis.send(:sanitize_id, @url)
 
       # Empty ids
-      expect {
+      expect do
         arcgis.send(:get_by_ids, id, [], [{ key: 'value' }])
-      }.to raise_error InvalidInputDataError
+      end.to raise_error InvalidInputDataError
 
       # Empty fields
-      expect {
+      expect do
         arcgis.send(:get_by_ids, id, [1], [])
-      }.to raise_error InvalidInputDataError
-
+      end.to raise_error InvalidInputDataError
 
       # 'general http error (non-200)'
-      Typhoeus.stub(/\/arcgis\/rest\//) do
+      Typhoeus.stub(%r{/arcgis/rest/}) do
         Typhoeus::Response.new(
           code: 400,
           headers: { 'Content-Type' => 'application/json' },
@@ -347,9 +344,9 @@ describe Url::ArcGIS do
         )
       end
 
-      expect {
+      expect do
         arcgis.send(:get_by_ids, id, [1], [{ key: 'value' }])
-      }.to raise_error DataDownloadError
+      end.to raise_error DataDownloadError
     end
 
     it 'tests the get_by_ids() private method' do
@@ -357,8 +354,8 @@ describe Url::ArcGIS do
 
       id = arcgis.send(:sanitize_id, @url)
 
-      Typhoeus.stub(/\/arcgis\/rest\//) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
+      Typhoeus.stub(%r{/arcgis/rest/}) do
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_data_01.json'))
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
@@ -367,42 +364,42 @@ describe Url::ArcGIS do
       end
 
       expected_response_data = {
-        geometryType: "esriGeometryPolygon",
+        geometryType: 'esriGeometryPolygon',
         spatialReference: {
-          "wkid" => 4326,
-          "latestWkid" => 4326
+          'wkid' => 4326,
+          'latestWkid' => 4326
         },
         fields: [
           {
-            "name" => "OBJECTID",
-            "type" => "esriFieldTypeOID",
-            "alias" => "OBJECTID"
+            'name' => 'OBJECTID',
+            'type' => 'esriFieldTypeOID',
+            'alias' => 'OBJECTID'
           },
           {
-            "name" => "WDPAID",
-            "type" => "esriFieldTypeInteger",
-            "alias" => "WDPAID"
+            'name' => 'WDPAID',
+            'type' => 'esriFieldTypeInteger',
+            'alias' => 'WDPAID'
           },
           {
-            "name" => "NAME",
-            "type" => "esriFieldTypeString",
-            "alias" => "NAME",
-            "length" => 254
+            'name' => 'NAME',
+            'type' => 'esriFieldTypeString',
+            'alias' => 'NAME',
+            'length' => 254
           }
         ],
         features: [
-          {"attributes"=>{"OBJECTID"=>1, "NAME"=>"Name of object 1"}, "geometry"=>{"fake"=>"geom"}},
-          {"attributes"=>{"OBJECTID"=>2, "NAME"=>"Name of object 2"}, "geometry"=>{"fake"=>"geom"}},
-          {"attributes"=>{"OBJECTID"=>3, "NAME"=>"Name of object 3"}, "geometry"=>{"fake"=>"geom"}}
+          { 'attributes' => { 'OBJECTID' => 1, 'NAME' => 'Name of object 1' }, 'geometry' => { 'fake' => 'geom' } },
+          { 'attributes' => { 'OBJECTID' => 2, 'NAME' => 'Name of object 2' }, 'geometry' => { 'fake' => 'geom' } },
+          { 'attributes' => { 'OBJECTID' => 3, 'NAME' => 'Name of object 3' }, 'geometry' => { 'fake' => 'geom' } }
         ]
       }
 
-      ids_to_retrieve = [1,2,3]
+      ids_to_retrieve = [1, 2, 3]
       # WDPAID also present, but left on purpose untouched
       fields_to_retrieve = [{
-                              name: 'OBJECTID',
-                              type: 'esriFieldTypeOID'
-                            },
+        name: 'OBJECTID',
+        type: 'esriFieldTypeOID'
+      },
                             {
                               name: 'NAME',
                               type: 'esriFieldTypeString'
@@ -414,7 +411,6 @@ describe Url::ArcGIS do
       response_data[:features].length.should eq 3
 
       response_data.should eq expected_response_data
-
     end
 
     it 'tests retrieval of data' do
@@ -423,8 +419,8 @@ describe Url::ArcGIS do
       feature_names = []
 
       # Layers request
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_layers.json"))
+      Typhoeus.stub(%r{/arcgis/rest/services/MyFakeService/featurename/layers}) do |_request|
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_layers.json'))
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
@@ -433,8 +429,8 @@ describe Url::ArcGIS do
       end
 
       # Metadata of a layer
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0\?f=json/) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
+      Typhoeus.stub(%r{/arcgis/rest/services/MyFakeService/featurename/0\?f=json}) do
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_metadata_minimal.json'))
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
@@ -443,8 +439,8 @@ describe Url::ArcGIS do
       end
 
       # IDs list of a layer
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
-        body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list_01.json"))
+      Typhoeus.stub(%r{/arcgis/rest/(.*)query\?where=}) do
+        body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_ids_list_01.json'))
         Typhoeus::Response.new(
           code: 200,
           headers: { 'Content-Type' => 'application/json' },
@@ -452,22 +448,22 @@ describe Url::ArcGIS do
         )
       end
 
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |response|
+      Typhoeus.stub(%r{/arcgis/rest/(.*)query$}) do |response|
         if response.options[:body][:objectIds].to_i == 1
           # First item fetch of a layer
-          body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
+          body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_data_01.json'))
           body = ::JSON.parse(body)
 
           feature_names.push body['features'][0]['attributes']['NAME']
-          body['features'] = [ body['features'][0] ]
+          body['features'] = [body['features'][0]]
         else
           # Remaining items fetch of a layer, will not use :objectIds
-          body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
+          body = File.read(File.join(File.dirname(__FILE__), '../fixtures/arcgis_data_01.json'))
           body = ::JSON.parse(body)
 
           feature_names.push body['features'][1]['attributes']['NAME']
           feature_names.push body['features'][2]['attributes']['NAME']
-          body['features'] = [ body['features'][1], body['features'][2] ]
+          body['features'] = [body['features'][1], body['features'][2]]
         end
 
         Typhoeus::Response.new(
@@ -486,7 +482,7 @@ describe Url::ArcGIS do
       item_metadata.nil?.should eq false
       # No more checks as will fail later if missing something
 
-      spatial_ref_expectation = {"wkid"=>4326, "latestWkid"=>4326}
+      spatial_ref_expectation = { 'wkid' => 4326, 'latestWkid' => 4326 }
 
       initial_stream_data = arcgis.initial_stream(item_metadata[:id])
 
@@ -516,7 +512,6 @@ describe Url::ArcGIS do
       streamed_data['features'].count.should eq 2
       streamed_data['features'][0]['attributes']['NAME'].should eq feature_names[1]
       streamed_data['features'][1]['attributes']['NAME'].should eq feature_names[2]
-
     end
   end
 end

@@ -1,6 +1,7 @@
 module Carto
   module Api
     class SnapshotsController < ::Api::ApplicationController
+
       include ControllerHelper
 
       ssl_required :index, :show, :create, :update, :destroy
@@ -34,8 +35,8 @@ module Carto
                                     state: params[:state])
 
         render json: SnapshotPresenter.new(snapshot).to_hash, status: :created
-      rescue ActiveRecord::RecordInvalid => exception
-        message = exception.record.errors.full_messages.join(', ')
+      rescue ActiveRecord::RecordInvalid => e
+        message = e.record.errors.full_messages.join(', ')
         raise UnprocesableEntityError.new(message)
       end
 
@@ -43,15 +44,15 @@ module Carto
         @snapshot.update_attributes!(state: params[:state])
 
         render json: SnapshotPresenter.new(@snapshot).to_hash
-      rescue ActiveRecord::RecordInvalid => exception
-        message = exception.record.errors.full_messages.join(', ')
+      rescue ActiveRecord::RecordInvalid => e
+        message = e.record.errors.full_messages.join(', ')
         raise UnprocesableEntityError.new(message)
       end
 
       def destroy
         @snapshot.destroy
 
-        render json: Hash.new, status: :no_content
+        render json: {}, status: :no_content
       end
 
       private
@@ -63,9 +64,7 @@ module Carto
       end
 
       def check_visualization_viewable
-        unless @visualization.is_viewable_by_user?(current_viewer)
-          raise UnauthorizedError.new
-        end
+        raise UnauthorizedError.new unless @visualization.is_viewable_by_user?(current_viewer)
       end
 
       def load_snapshot
@@ -75,10 +74,9 @@ module Carto
       end
 
       def owners_only
-        unless @snapshot.user_id == current_viewer.id
-          raise UnauthorizedError.new
-        end
+        raise UnauthorizedError.new unless @snapshot.user_id == current_viewer.id
       end
+
     end
   end
 end

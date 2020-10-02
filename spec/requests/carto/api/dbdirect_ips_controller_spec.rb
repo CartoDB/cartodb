@@ -151,7 +151,7 @@ describe Carto::Api::DbdirectIpsController do
       invalid_ips = [
         ['0.0.0.0'], ['10.20.30.40'], ['127.0.0.1'], ['192.168.1.1'],
         ['120.120.120.120/20'], ['100.100.100.300'], ['not-an-ip'],
-        [11223344],
+        [11_223_344],
         '100.20.30.40'
       ]
       invalid_ips.each do |ips|
@@ -171,7 +171,6 @@ describe Carto::Api::DbdirectIpsController do
             end
           end
         end
-
       end
     end
 

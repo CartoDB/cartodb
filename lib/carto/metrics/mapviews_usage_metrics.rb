@@ -2,6 +2,7 @@ require_relative 'usage_metrics_interface'
 
 module Carto::Metrics
   class MapviewsUsageMetrics < UsageMetricsInterface
+
     VALID_METRICS = [
       :total_views
     ].freeze
@@ -37,10 +38,10 @@ module Carto::Metrics
 
       # Return a hash of {Date => Number} pairs instead of { String => Number }
       # in order to abide to the interface.
-      map_views.reduce({}) do |new_hash, (date_str_key, value)|
+      map_views.each_with_object({}) do |(date_str_key, value), new_hash|
         new_hash[Date.parse(date_str_key)] = value
-        new_hash
       end
     end
+
   end
 end

@@ -73,18 +73,18 @@ describe Carto::UserMetadataExportService do
 
     # Client Application tokens
     sequel_user.client_application.access_tokens << Carto::AccessToken.new(
-      token: "access_token",
-      secret: "access_secret",
-      callback_url: "http://callback2",
-      verifier: "v2",
+      token: 'access_token',
+      secret: 'access_secret',
+      callback_url: 'http://callback2',
+      verifier: 'v2',
       scope: nil,
       client_application_id: sequel_user.client_application.id
     ).save
     sequel_user.client_application.oauth_tokens << Carto::OauthToken.create!(
-      token: "oauth_token",
-      secret: "oauth_secret",
-      callback_url: "http//callback.com",
-      verifier: "v1",
+      token: 'oauth_token',
+      secret: 'oauth_secret',
+      callback_url: 'http//callback.com',
+      verifier: 'v1',
       scope: nil,
       client_application_id: sequel_user.client_application.id
     )
@@ -175,11 +175,11 @@ describe Carto::UserMetadataExportService do
       ClientApplication.where(user_id: @user.id).each(&:destroy)
 
       @user.oauth_app_users.each do |oau|
-        unless oau.oauth_access_tokens.blank?
-          oau.oauth_access_tokens.each do |oat|
-            oat.api_key.skip_role_setup = true
-            oat.api_key.skip_cdb_conf_info = true
-          end
+        next if oau.oauth_access_tokens.blank?
+
+        oau.oauth_access_tokens.each do |oat|
+          oat.api_key.skip_role_setup = true
+          oat.api_key.skip_cdb_conf_info = true
         end
       end
 
@@ -379,7 +379,6 @@ describe Carto::UserMetadataExportService do
         @user.visualizations.find { |v| !v.remote? }.map.delete
 
         full_export_import(path)
-
       end
     end
 
@@ -529,6 +528,7 @@ describe Carto::UserMetadataExportService do
     rate_limit.api_attributes.each do |k, v|
       # versions older than 1.0.6 don't include sql_copy rate limits so avoid checking them
       next if [:sql_copy_from, :sql_copy_to].include?(k) && !exported_rate_limit[:limits].key?(k)
+
       expect(exported_rate_limit[:limits][k]).to eq v
     end
   end

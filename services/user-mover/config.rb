@@ -5,8 +5,9 @@ require 'redis_factory'
 module CartoDB
   module DataMover
     class Config
+
       def self.load_config
-        root = File.expand_path(File.dirname(__FILE__))
+        root = __dir__
         carto_config = Carto::Conf.new
         config = carto_config.app_config
         # get_conf should be private, but this class manages its own exceptions
@@ -31,12 +32,14 @@ module CartoDB
 
       def self.config
         return @config if @config
+
         load_config
       end
 
       def self.[](args)
         config[args]
       end
+
     end
   end
 end

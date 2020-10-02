@@ -7,8 +7,8 @@ describe Carto::Api::GeocodingsController do
   it_behaves_like 'geocoding controllers' do
   end
 
-describe 'legacy behaviour tests' do
-    let(:params) { { :api_key => @user.api_key } }
+  describe 'legacy behaviour tests' do
+    let(:params) { { api_key: @user.api_key } }
 
     before(:all) do
       @user = create_user
@@ -27,7 +27,6 @@ describe 'legacy behaviour tests' do
     end
 
     describe 'GET /api/v1/geocodings' do
-
       it 'returns every geocoding belonging to current_user' do
         FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user, state: 'wadus')
         FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user_id: Carto::UUIDHelper.random_uuid)
@@ -39,7 +38,6 @@ describe 'legacy behaviour tests' do
     end
 
     describe 'GET /api/v1/geocodings/:id' do
-
       it 'returns a geocoding' do
         @user.geocoder_provider = 'heremaps'
         @user.save.reload
@@ -68,26 +66,25 @@ describe 'legacy behaviour tests' do
     end
 
     describe 'GET /api/v1/geocodings/estimation_for' do
-
       it 'returns the estimated geocoding cost for the specified table' do
         table = create_table(user_id: @user.id)
         Geocoding.stubs(:processable_rows).returns(2)
         Carto::Geocoding.stubs(:processable_rows).returns(2)
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
           response.status.should be_success
-          response.body.should == {:rows=>2, :estimation=>0}
+          response.body.should == { rows: 2, estimation: 0 }
         end
         Geocoding.stubs(:processable_rows).returns(1400)
         Carto::Geocoding.stubs(:processable_rows).returns(1400)
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
           response.status.should be_success
-          response.body.should == {:rows=>1400, :estimation=>600}
+          response.body.should == { rows: 1400, estimation: 600 }
         end
         Geocoding.stubs(:processable_rows).returns(1001)
         Carto::Geocoding.stubs(:processable_rows).returns(1001)
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
           response.status.should be_success
-          response.body.should == {:rows=>1001, :estimation=>1.5}
+          response.body.should == { rows: 1001, estimation: 1.5 }
         end
       end
 
@@ -111,21 +108,18 @@ describe 'legacy behaviour tests' do
         expected_estimation = expected_rows * @user.geocoding_block_price / Carto::Geocoding::GEOCODING_BLOCK_SIZE
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: false)) do |response|
           response.status.should be_success
-          response.body.should == {rows: expected_rows, estimation: expected_estimation}
+          response.body.should == { rows: expected_rows, estimation: expected_estimation }
         end
 
         expected_rows = 3
         expected_estimation = expected_rows * @user.geocoding_block_price / Carto::Geocoding::GEOCODING_BLOCK_SIZE
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name, force_all_rows: true)) do |response|
           response.status.should be_success
-          response.body.should == {rows: expected_rows, estimation: expected_estimation}
+          response.body.should == { rows: expected_rows, estimation: expected_estimation }
         end
-
       end
-
     end
   end
-
 
   describe 'available_geometries' do
     include_context 'users helper'
@@ -136,53 +130,53 @@ describe 'legacy behaviour tests' do
     end
 
     it 'returns 400 if kind is not admin1, namedplace or postalcode' do
-      get api_v1_geocodings_available_geometries_url, { kind: 'kk'}
+      get api_v1_geocodings_available_geometries_url, { kind: 'kk' }
       last_response.status.should == 400
     end
 
     it 'returns "polygon" for "admin1" kind' do
-      get api_v1_geocodings_available_geometries_url, { kind: 'admin1'}
+      get api_v1_geocodings_available_geometries_url, { kind: 'admin1' }
       last_response.status.should == 200
       JSON.parse(last_response.body).should eq ['polygon']
     end
 
     it 'returns "point" for "namedplace" kind' do
-      get api_v1_geocodings_available_geometries_url, { kind: 'namedplace'}
+      get api_v1_geocodings_available_geometries_url, { kind: 'namedplace' }
       last_response.status.should == 200
       JSON.parse(last_response.body).should eq ['point']
     end
 
     it 'returns 400 for postal code if "free_text" or "column_name" and "table_name" are not set' do
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode'}
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode' }
       last_response.status.should == 400
     end
 
     it 'returns empty json for postalcode if free text is empty or has non alphanumeric characters' do
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: ''}
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: '' }
       last_response.status.should == 200
       JSON.parse(last_response.body).should eq []
 
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: ' '}
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: ' ' }
       last_response.status.should == 200
       JSON.parse(last_response.body).should eq []
 
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: '--%'}
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: '--%' }
       last_response.status.should == 200
       JSON.parse(last_response.body).should eq []
     end
 
     it 'returns point and polygon if SQLApi says there are the same amount of points and polygons services, or the one with more data if they are not equal' do
       # INFO: this expectation is bound to implementation because it's used in a refactor
-      CartoDB::SQLApi.any_instance.expects(:fetch).with("SELECT (admin0_available_services(Array['myfreetext'])).*").returns([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }])
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text'}
+      CartoDB::SQLApi.any_instance.expects(:fetch).with("SELECT (admin0_available_services(Array['myfreetext'])).*").returns([{ 'postal_code_points' => 1, 'postal_code_polygons' => 1 }])
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text' }
       JSON.parse(last_response.body).should eq ['point', 'polygon']
 
-      CartoDB::SQLApi.any_instance.stubs(:fetch).returns([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_points' => 1 }])
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text'}
+      CartoDB::SQLApi.any_instance.stubs(:fetch).returns([{ 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_points' => 1 }])
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text' }
       JSON.parse(last_response.body).should eq ['point']
 
-      CartoDB::SQLApi.any_instance.stubs(:fetch).returns([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_polygons' => 1 }])
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text'}
+      CartoDB::SQLApi.any_instance.stubs(:fetch).returns([{ 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_polygons' => 1 }])
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text' }
       JSON.parse(last_response.body).should eq ['polygon']
     end
 
@@ -195,25 +189,24 @@ describe 'legacy behaviour tests' do
         with("SELECT (admin0_available_services(Array['Cote d''Ivore'])).*").
         returns([{ 'postal_code_points' => 1, 'postal_code_polygons' => 0 }])
       get api_v1_geocodings_available_geometries_url,
-        { kind: 'postalcode', column_name: 'country', table_name: table.name }
+          { kind: 'postalcode', column_name: 'country', table_name: table.name }
       last_response.status.should == 200
     end
 
     it 'returns 400 if table name does not exist' do
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', column_name: 'my_column', table_name: 'my_table'}
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', column_name: 'my_column', table_name: 'my_table' }
       last_response.status.should eq 400
     end
 
     it 'Queries SQL API with table columns' do
-      cp = 12345
+      cp = 12_345
       table = create_random_table(@user1)
-      table.insert_row!({name: cp})
+      table.insert_row!({ name: cp })
 
       # INFO: this expectation is bound to implementation because it's used in a refactor
-      CartoDB::SQLApi.any_instance.expects(:fetch).with("SELECT (admin0_available_services(Array['#{cp}'])).*").returns([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_polygons' => 1 }])
-      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', column_name: 'name', table_name: table.name}
+      CartoDB::SQLApi.any_instance.expects(:fetch).with("SELECT (admin0_available_services(Array['#{cp}'])).*").returns([{ 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_polygons' => 1 }])
+      get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', column_name: 'name', table_name: table.name }
     end
-
   end
 
   describe 'estimation_for' do
@@ -226,14 +219,13 @@ describe 'legacy behaviour tests' do
 
     it 'returns estimation and price' do
       table = create_random_table(@user1)
-      table.insert_row!({name: 'estimation'})
+      table.insert_row!({ name: 'estimation' })
 
       get api_v1_geocodings_estimation_url(table_name: table.name)
       last_response.status.should eq 200
       body = JSON.parse(last_response.body)
       body.should == { 'rows' => 1, 'estimation' => 0 }
     end
-
   end
 
   def remove_dates(geocoding_hash)
@@ -249,27 +241,26 @@ describe 'legacy behaviour tests' do
 
     it 'returns started geocodings but not finished' do
       geocoding1 = FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
-                                      processed_rows: 1, state: 'started', formatter: 'foo')
+                                                  processed_rows: 1, state: 'started', formatter: 'foo')
       FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
-                         processed_rows: 1, state: 'finished', formatter: 'foo')
+                                     processed_rows: 1, state: 'finished', formatter: 'foo')
 
       get api_v1_geocodings_index_url
       last_response.status.should eq 200
 
-      expected = {"geocodings"=>[{"table_name" => nil, "processed_rows" => 1, "remote_id" => nil, "formatter" => 'foo',
-                                  "geocoder_type" => nil, "state" => "started", "cache_hits" => 0,
-                                  "id" => geocoding1.id, "user_id" => @user1.id,"table_id" => nil,
-                                  "kind" => "high-resolution", "country_code" => nil,
-                                  "geometry_type" => nil, "processable_rows" => nil, "real_rows" => nil,
-                                  "used_credits" => nil, "country_column" => nil, "data_import_id" => nil,
-                                  "region_code" => nil, "region_column" => nil, "batched" => nil, "error_code" => nil,
-                                  "force_all_rows" => false, "log_id" => nil, "pid" => nil}]}
+      expected = { 'geocodings' => [{ 'table_name' => nil, 'processed_rows' => 1, 'remote_id' => nil, 'formatter' => 'foo',
+                                      'geocoder_type' => nil, 'state' => 'started', 'cache_hits' => 0,
+                                      'id' => geocoding1.id, 'user_id' => @user1.id, 'table_id' => nil,
+                                      'kind' => 'high-resolution', 'country_code' => nil,
+                                      'geometry_type' => nil, 'processable_rows' => nil, 'real_rows' => nil,
+                                      'used_credits' => nil, 'country_column' => nil, 'data_import_id' => nil,
+                                      'region_code' => nil, 'region_column' => nil, 'batched' => nil, 'error_code' => nil,
+                                      'force_all_rows' => false, 'log_id' => nil, 'pid' => nil }] }
       received_without_dates = {
         'geocodings' => JSON.parse(last_response.body)['geocodings'].map { |g| remove_dates(g) }
       }
       received_without_dates.should == expected
     end
-
   end
 
   describe 'show' do
@@ -293,16 +284,15 @@ describe 'legacy behaviour tests' do
       get api_v1_geocodings_show_url(id: geocoding.id)
       last_response.status.should eq 200
 
-      expected = {"id" => geocoding.id, "table_id" => nil, "table_name" => nil, "state" => "started",
-                  "kind" => "high-resolution", "country_code" => nil, "region_code" => nil, "formatter" => 'foo',
-                  "geocoder_type" => nil, "geometry_type" => nil, "error" => {"title" => "Geocoding error",
-                  "description" => ""}, "processed_rows" => 1, "cache_hits" => 0, "processable_rows" => nil,
-                  "real_rows" => nil, "price" => 0, "used_credits" => nil, "remaining_quota" => 0,
-                  "country_column" => nil, "region_column" => nil, "data_import_id" => nil, "error_code" => nil}
+      expected = { 'id' => geocoding.id, 'table_id' => nil, 'table_name' => nil, 'state' => 'started',
+                   'kind' => 'high-resolution', 'country_code' => nil, 'region_code' => nil, 'formatter' => 'foo',
+                   'geocoder_type' => nil, 'geometry_type' => nil, 'error' => { 'title' => 'Geocoding error',
+                                                                                'description' => '' }, 'processed_rows' => 1, 'cache_hits' => 0, 'processable_rows' => nil,
+                   'real_rows' => nil, 'price' => 0, 'used_credits' => nil, 'remaining_quota' => 0,
+                   'country_column' => nil, 'region_column' => nil, 'data_import_id' => nil, 'error_code' => nil }
       received_without_dates = remove_dates(JSON.parse(last_response.body))
       received_without_dates.should == expected
     end
-
   end
 
   include Rack::Test::Methods

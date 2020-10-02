@@ -5,6 +5,7 @@ module Carto
   module Api
     module Public
       class DatasetsController < Carto::Api::Public::ApplicationController
+
         include Carto::Api::PagedSearcher
         extend Carto::DefaultRescueFroms
 
@@ -42,7 +43,7 @@ module Carto
         end
 
         def check_permissions
-          api_key = Carto::ApiKey.find_by_token(params["api_key"])
+          api_key = Carto::ApiKey.find_by_token(params['api_key'])
           raise UnauthorizedError unless api_key.master? || api_key.dataset_metadata_permissions
         end
 
@@ -129,6 +130,7 @@ module Carto
 
           render json: { errors: exception.parameters[:error_description] }, status: 500
         end
+
       end
     end
   end

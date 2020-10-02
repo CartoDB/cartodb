@@ -6,8 +6,8 @@ require './app/helpers/logger_helper'
 
 module Carto
   module Http
-
     class Client
+
       include ::LoggerHelper
 
       private_class_method :new
@@ -21,7 +21,7 @@ module Carto
         if extra_options[:log_requests] && ResponseLogger.enabled?
           ResponseLogger.new(tag)
         else
-          NullLogger.new()
+          NullLogger.new
         end
       end
 
@@ -68,6 +68,7 @@ module Carto
           unless response.success?
             raise "Request failed. URL: #{url}. File path: #{file_path}. Code: #{response.code}. Body: #{response.body}"
           end
+
           downloaded_file.close
         end
         request.run
@@ -103,6 +104,5 @@ module Carto
       end
 
     end
-
   end
 end

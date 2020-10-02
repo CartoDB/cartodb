@@ -40,12 +40,12 @@ describe CartoDB::Importer2::Runner do
 
   describe '#initialize' do
     it 'requires postgres options and a downloader object' do
-      expect {
+      expect do
         CartoDB::Importer2::Runner.new({ log: @fake_log })
-      }.to raise_error KeyError
-      expect {
+      end.to raise_error KeyError
+      expect do
         CartoDB::Importer2::Runner.new({ log: @fake_log, pg: nil })
-      }.to raise_error KeyError
+      end.to raise_error KeyError
     end
   end
 
@@ -53,16 +53,16 @@ describe CartoDB::Importer2::Runner do
     it 'calls import for each file to process' do
       source_file = CartoDB::Importer2::SourceFile.new(@filepath)
 
-      fake_loader = self.fake_loader_for(nil, source_file)
+      fake_loader = fake_loader_for(nil, source_file)
       def fake_loader.run(args); end
 
       runner = CartoDB::Importer2::Runner.new({
-                            pg: @pg_options,
-                            downloader: @downloader,
-                            log: @fake_log,
-                            user: @user,
-                            unpacker: fake_loader
-                          })
+                                                pg: @pg_options,
+                                                downloader: @downloader,
+                                                log: @fake_log,
+                                                user: @user,
+                                                unpacker: fake_loader
+                                              })
 
       runner.stubs(:import)
 
@@ -73,12 +73,12 @@ describe CartoDB::Importer2::Runner do
 
     it 'logs the file path to be imported' do
       runner = CartoDB::Importer2::Runner.new({
-                           pg: @pg_options,
-                           downloader: @downloader,
-                           log: @fake_log,
-                           user: @user,
-                           unpacker: fake_unpacker
-                         })
+                                                pg: @pg_options,
+                                                downloader: @downloader,
+                                                log: @fake_log,
+                                                user: @user,
+                                                unpacker: fake_unpacker
+                                              })
       runner.run
       (runner.report =~ /#{@filepath.path}/).should_not eq nil
     end
@@ -88,16 +88,16 @@ describe CartoDB::Importer2::Runner do
     it 'returns the block passed at initialization' do
       data_import = OpenStruct.new
       runner = CartoDB::Importer2::Runner.new({
-                            pg: @pg_options,
-                            downloader: @downloader,
-                            log: @fake_log,
-                            user: @user,
-                            unpacker: fake_unpacker
-                          })
+                                                pg: @pg_options,
+                                                downloader: @downloader,
+                                                log: @fake_log,
+                                                user: @user,
+                                                unpacker: fake_unpacker
+                                              })
 
       def runner.import(*args); end
 
-      runner.run { |state| data_import.state = 'bogus_state' }
+      runner.run { |_state| data_import.state = 'bogus_state' }
       data_import.state.should eq 'bogus_state'
     end
   end
@@ -107,16 +107,18 @@ describe CartoDB::Importer2::Runner do
       source_file = CartoDB::Importer2::SourceFile.new(@filepath)
 
       job = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
-      def job.success_status; true; end
+      def job.success_status
+        true
+      end
 
       runner = CartoDB::Importer2::Runner.new({
-                            pg: @pg_options,
-                            downloader: Object.new,
-                            log: @fake_log,
-                            user: @user,
-                            job: job
-                          })
-      fake_loader = self.fake_loader_for(job, source_file)
+                                                pg: @pg_options,
+                                                downloader: Object.new,
+                                                log: @fake_log,
+                                                user: @user,
+                                                job: job
+                                              })
+      fake_loader = fake_loader_for(job, source_file)
       def fake_loader.run; end
 
       runner.send(:import, source_file, nil, fake_loader)
@@ -129,15 +131,17 @@ describe CartoDB::Importer2::Runner do
       job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       runner      = CartoDB::Importer2::Runner.new({
-                                 pg: @pg_options,
-                                 downloader: Object.new,
-                                 log: @fake_log,
-                                 user: @user,
-                                 job: job
-                               })
+                                                     pg: @pg_options,
+                                                     downloader: Object.new,
+                                                     log: @fake_log,
+                                                     user: @user,
+                                                     job: job
+                                                   })
 
-      fake_loader = self.fake_loader_for(job, source_file)
-      def fake_loader.run; raise 'Unleash the Kraken!!!!'; end
+      fake_loader = fake_loader_for(job, source_file)
+      def fake_loader.run
+        raise 'Unleash the Kraken!!!!'
+      end
 
       runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
@@ -152,41 +156,41 @@ describe CartoDB::Importer2::Runner do
                                                   logger: @fake_log
                                                 })
 
-      fake_loader = self.fake_loader_for(job, source_file)
+      fake_loader = fake_loader_for(job, source_file)
       def fake_loader.run(arg=nil); end
 
       # File is 5 bytes long, should allow
-      input_file_size_limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({max_size:5})
+      input_file_size_limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({ max_size: 5 })
       table_row_count_limit_checker = CartoDB::Importer2::Doubles::TableRowCountLimit.new
-      runner      = CartoDB::Importer2::Runner.new({
-                                                     pg: @pg_options,
-                                                     downloader: Object.new,
-                                                     log: @fake_log,
-                                                     user: @user,
-                                                     limits: {
-                                                       import_file_size_instance: input_file_size_limit_checker,
-                                                       table_row_count_limit_instance: table_row_count_limit_checker
-                                                     },
-                                                     job: job
-                                                   })
+      runner = CartoDB::Importer2::Runner.new({
+                                                pg: @pg_options,
+                                                downloader: Object.new,
+                                                log: @fake_log,
+                                                user: @user,
+                                                limits: {
+                                                  import_file_size_instance: input_file_size_limit_checker,
+                                                  table_row_count_limit_instance: table_row_count_limit_checker
+                                                },
+                                                job: job
+                                              })
 
       runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
       result.success?.should eq true
 
       # File is 3 bytes long, should fail
-      input_file_size_limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({max_size:2})
-      runner      = CartoDB::Importer2::Runner.new({
-                                                     pg: @pg_options,
-                                                     downloader: Object.new,
-                                                     log: @fake_log,
-                                                     user: @user,
-                                                     limits: {
-                                                       import_file_size_instance: input_file_size_limit_checker,
-                                                       table_row_count_limit_instance: table_row_count_limit_checker
-                                                     },
-                                                     job: job
-                                                   })
+      input_file_size_limit_checker = CartoDB::Importer2::Doubles::InputFileSizeLimit.new({ max_size: 2 })
+      runner = CartoDB::Importer2::Runner.new({
+                                                pg: @pg_options,
+                                                downloader: Object.new,
+                                                log: @fake_log,
+                                                user: @user,
+                                                limits: {
+                                                  import_file_size_instance: input_file_size_limit_checker,
+                                                  table_row_count_limit_instance: table_row_count_limit_checker
+                                                },
+                                                job: job
+                                              })
 
       runner.send(:import, source_file, nil, fake_loader)
       result = runner.results.first
@@ -219,21 +223,19 @@ describe CartoDB::Importer2::Runner do
     end
   end
 
-
   describe 'stats logger' do
-
     before(:each) do
       @importer_stats_spy = CartoDB::Doubles::Stats::Importer.instance
     end
 
     it 'logs total import time' do
       runner = CartoDB::Importer2::Runner.new({
-                             pg: @pg_options,
-                             downloader: @downloader,
-                             log: @fake_log,
-                             user: @user,
-                             unpacker: fake_unpacker
-                          })
+                                                pg: @pg_options,
+                                                downloader: @downloader,
+                                                log: @fake_log,
+                                                user: @user,
+                                                unpacker: fake_unpacker
+                                              })
 
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
@@ -246,16 +248,16 @@ describe CartoDB::Importer2::Runner do
       source_file = CartoDB::Importer2::SourceFile.new(@filepath)
       job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
-      runner      = CartoDB::Importer2::Runner.new({
-                                 pg: @pg_options,
-                                 downloader: Object.new,
-                                 log: @fake_log,
-                                 user: @user,
-                                 job: job,
-                                 limits: {
-                                   table_row_count_limit_instance: table_row_count_limit_checker
-                                 }
-                               })
+      runner = CartoDB::Importer2::Runner.new({
+                                                pg: @pg_options,
+                                                downloader: Object.new,
+                                                log: @fake_log,
+                                                user: @user,
+                                                job: job,
+                                                limits: {
+                                                  table_row_count_limit_instance: table_row_count_limit_checker
+                                                }
+                                              })
       spy_runner_importer_stats(runner, @importer_stats_spy)
 
       fake_loader = CartoDB::Importer2::Doubles::Loader.new
@@ -265,12 +267,12 @@ describe CartoDB::Importer2::Runner do
 
     it 'logs single resource import flow time' do
       runner = CartoDB::Importer2::Runner.new({
-                            pg: @pg_options,
-                            downloader: @downloader,
-                            log: @fake_log,
-                            user: @user,
-                            unpacker: fake_unpacker
-                          })
+                                                pg: @pg_options,
+                                                downloader: @downloader,
+                                                log: @fake_log,
+                                                user: @user,
+                                                unpacker: fake_unpacker
+                                              })
 
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
@@ -309,35 +311,33 @@ describe CartoDB::Importer2::Runner do
   end
 
   def spy_runner_importer_stats(runner, importer_stats_spy)
-    runner.instance_eval {
+    runner.instance_eval do
       @importer_stats = importer_stats_spy
-    }
+    end
   end
 
   def fake_loader_for(job, source_file)
     OpenStruct.new(
-      job:                job,
-      source_file:        source_file,
-      source_files:       [source_file],
-      valid_table_names:  []
+      job: job,
+      source_file: source_file,
+      source_files: [source_file],
+      valid_table_names: []
     )
   end
 
   def fake_unpacker
-    Class.new {
+    Class.new do
       def initialize
         @sourcefile = CartoDB::Importer2::SourceFile.new('/var/tmp/foo.txt')
       end
-      def run(*args)
-      end
+
+      def run(*args); end
 
       def source_files
         [@sourcefile]
       end
 
-      def clean_up
-      end
-    }.new
+      def clean_up; end
+    end.new
   end
-
 end

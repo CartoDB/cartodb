@@ -11,7 +11,6 @@ describe Api::Json::GeocodingsController do
   include CacheHelper
 
   describe 'POST api/v1/geocodings' do
-
     before(:all) do
       @user = create_user
     end
@@ -37,9 +36,9 @@ describe Api::Json::GeocodingsController do
       geocoding_id = nil
 
       post_json api_v1_geocodings_create_url(params.merge({
-            table_name: table.name,
-            force_all_rows: true
-          })) do |response|
+                                                            table_name: table.name,
+                                                            force_all_rows: true
+                                                          })) do |response|
         response.status.should be_success
         response.body[:force_all_rows].should == true
         geocoding_id = response.body[:id]
@@ -55,8 +54,8 @@ describe Api::Json::GeocodingsController do
       geocoding_id = nil
 
       post_json api_v1_geocodings_create_url(params.merge({
-            table_name: table.name,
-          })) do |response|
+                                                            table_name: table.name
+                                                          })) do |response|
         response.status.should be_success
         response.body[:force_all_rows].should == false
         geocoding_id = response.body[:id]
@@ -64,6 +63,5 @@ describe Api::Json::GeocodingsController do
 
       Geocoding[geocoding_id].force_all_rows == false
     end
-
   end
 end

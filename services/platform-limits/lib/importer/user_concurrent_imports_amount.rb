@@ -2,7 +2,7 @@ module CartoDB
   module PlatformLimits
     module Importer
 
-      UNLIMITED_STATEMENT_TIMEOUT_TTL = 30*24*60*60*1000
+      UNLIMITED_STATEMENT_TIMEOUT_TTL = 30 * 24 * 60 * 60 * 1000
 
       # If unspecified at constructor, will default to this value to add a threshold to the key TTL
       DEFAULT_EXPIRE_TTL_THRESHOLD_PERCENT = 0.2
@@ -33,6 +33,7 @@ module CartoDB
           unless user.max_concurrent_import_count.is_a?(Integer) && user.max_concurrent_import_count > 0
             raise ArgumentError.new('invalid user max_concurrent_import_count (must be positive integer)')
           end
+
           self.max_value = user.max_concurrent_import_count
 
           unless user.respond_to?(:database_timeout)
@@ -48,8 +49,8 @@ module CartoDB
           @redis = redis_options.fetch(:db, nil)
           raise ArgumentError.new('Must supply redis connection object') if @redis.nil?
 
-          @expire_ttl = ( timeout_to_use / 1000 *
-            (1.0 + redis_options.fetch(:expire_ttl_threshold_percent, DEFAULT_EXPIRE_TTL_THRESHOLD_PERCENT)) ).to_i
+          @expire_ttl = (timeout_to_use / 1000 *
+            (1.0 + redis_options.fetch(:expire_ttl_threshold_percent, DEFAULT_EXPIRE_TTL_THRESHOLD_PERCENT))).to_i
         end
 
         protected
@@ -70,21 +71,21 @@ module CartoDB
         # @param context mixed
         # @return mixed
         # @throws ArgumentError
-        def get(context)
+        def get(_context)
           redis.llen(key)
         end
 
         # Gets the maximum limit value
         # @param context mixed
         # @return mixed
-        def get_maximum(context)
+        def get_maximum(_context)
           max_value
         end
 
         # Gets when the limit expires
         # @param context mixed
         # @return integer|nil Timestamp
-        def get_time_period(context)
+        def get_time_period(_context)
           remaining_secs = redis.ttl(key)
           remaining_secs.seconds.from_now
         end
@@ -93,37 +94,39 @@ module CartoDB
         # @remark Will always increment by 1, no matter the value of the parameter
         # @param context mixed
         # @param amount integer
-        def increase(context, amount=1)
+        def increase(_context, amount=1)
           if redis.exists(key)
             redis.rpushx(key, user.username)
 
-            redis.multi do
-              (amount-1).times do
-                redis.rpushx(key, user.username)
+            if amount > 1
+              redis.multi do
+                (amount - 1).times do
+                  redis.rpushx(key, user.username)
+                end
               end
-            end if amount > 1
+            end
           else
             redis.multi do
               redis.rpush(key, user.username)
               redis.expire(key, expire_ttl)
             end
 
-            redis.multi do
-              (amount-1).times do
-                redis.rpushx(key, user.username)
+            if amount > 1
+              redis.multi do
+                (amount - 1).times do
+                  redis.rpushx(key, user.username)
+                end
               end
-            end if amount > 1
+            end
           end
         end
 
         # Decreases the limit
         # @param context mixed
         # @param amount integer
-        def decrease(context, amount=1)
+        def decrease(_context, amount=1)
           amount.times do
-            if redis.exists(key)
-              redis.rpop(key)
-            end
+            redis.rpop(key) if redis.exists(key)
           end
         end
 
@@ -132,8 +135,8 @@ module CartoDB
           redis.del(key)
         end
 
-        private
       end
+
     end
   end
 end

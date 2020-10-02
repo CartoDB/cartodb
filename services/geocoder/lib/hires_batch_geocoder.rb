@@ -26,8 +26,8 @@ module CartoDB
       outdelim: ',',
       header: false,
       outputCombined: false,
-      outcols: "displayLatitude,displayLongitude"
-    }
+      outcols: 'displayLatitude,displayLongitude'
+    }.freeze
 
     # INFO: the request_id is the most important thing to care for batch requests
     # INFO: it is called remote_id in upper layers
@@ -36,7 +36,6 @@ module CartoDB
                 :empty_processed_rows, :total_rows, :dir, :input_file
 
     class ServiceDisabled < StandardError; end
-
 
     def initialize(input_csv_file, working_dir, log, geocoding_model)
       @input_file = input_csv_file
@@ -57,20 +56,20 @@ module CartoDB
 
     def run
       init_rows_count
-      @log.append_and_store "Started batched Here geocoding job"
+      @log.append_and_store 'Started batched Here geocoding job'
       @started_at = Time.now
       change_status('running')
       upload
 
       # INFO: this loop polls for the state of the table_geocoder batch process
       update_status
-      until ['completed', 'cancelled'].include? @geocoding_model.state do
+      until ['completed', 'cancelled'].include? @geocoding_model.state
         if timeout?
           begin
             change_status('timeout')
             cancel
           ensure
-            @log.append_and_store "Proceding to cancel job due timeout"
+            @log.append_and_store 'Proceding to cancel job due timeout'
           end
         end
 
@@ -84,7 +83,7 @@ module CartoDB
       update_status
       update_log_stats
       change_status('completed')
-      @log.append_and_store "Geocoding Hires job has finished"
+      @log.append_and_store 'Geocoding Hires job has finished'
     ensure
       # Processed data at the end of the job
       update_status
@@ -96,14 +95,15 @@ module CartoDB
       @used_batch_request = true
       response = http_client.post(
         api_url(UPLOAD_OPTIONS),
-        body: File.open(input_file, "r").read,
-        headers: { "Content-Type" => "text/plain" },
+        body: File.open(input_file, 'r').read,
+        headers: { 'Content-Type' => 'text/plain' },
         timeout: 5.hours # more than generous timeout for big file upload
       )
       handle_api_error(response)
       @request_id = extract_response_field(response.body, '//Response/MetaInfo/RequestId')
       # TODO: this is a critical error, deal with it appropriately
       raise 'Could not get the request ID' unless @request_id
+
       # Update geocodings model with needed data
       @geocoding_model.remote_id = @request_id
       @geocoding_model.batched = true
@@ -121,17 +121,17 @@ module CartoDB
       if @geocoding_model.remote_id.nil?
         @log.append_and_store "Can't cancel a HERE geocoder job without the request id"
       else
-        @log.append_and_store "Trying to cancel a batch job sent to HERE"
+        @log.append_and_store 'Trying to cancel a batch job sent to HERE'
         assert_batch_api_enabled
         response = http_client.put(api_url(action: 'cancel'),
                                    connecttimeout: HTTP_CONNECTION_TIMEOUT,
                                    timeout: HTTP_REQUEST_TIMEOUT)
         if is_cancellable?(response)
-          @log.append_and_store "Job was already cancelled"
+          @log.append_and_store 'Job was already cancelled'
         else
           handle_api_error(response)
           update_stats(response)
-          @log.append_and_store "Job sent to HERE has been cancelled"
+          @log.append_and_store 'Job sent to HERE has been cancelled'
         end
         change_status('cancelled')
       end
@@ -154,12 +154,13 @@ module CartoDB
       return @result unless @result.nil?
 
       raise 'No request_id provided' unless @geocoding_model.remote_id
+
       results_filename = File.join(dir, "#{@geocoding_model.remote_id}.zip")
       download_url = api_url({}, 'result')
       download_status_code = nil
       retries = 0
-      while true
-        if(!download_status_code.nil? && download_status_code == 200)
+      loop do
+        if !download_status_code.nil? && download_status_code == 200
           break
         elsif !download_status_code.nil? && download_status_code == 404
           # 404 means that the results file is not ready yet
@@ -170,40 +171,38 @@ module CartoDB
         elsif !download_status_code.nil? && download_status_code > 200 && download_status_code != 404
           raise "Download request failed: Http status code #{download_status_code}"
         end
+
         download_status_code = execute_results_request(download_url, results_filename)
       end
       @result = results_filename
     end
 
-
     private
 
     def execute_results_request(download_url, results_filename)
-        download_status_code = nil
-        # generous timeout for download of results
-        request = http_client.request(download_url,
+      download_status_code = nil
+      # generous timeout for download of results
+      request = http_client.request(download_url,
                                     method: :get,
                                     timeout: 5.hours)
 
-        File.open(results_filename, 'wb') do |download_file|
-          request.on_headers do |response|
-            download_status_code = response.response_code
-          end
-
-          request.on_body do |chunk|
-            if download_status_code == 200
-              download_file.write(chunk)
-            end
-          end
-
-          request.on_complete do |response|
-            download_status_code = response.response_code
-          end
-
-          request.run
+      File.open(results_filename, 'wb') do |download_file|
+        request.on_headers do |response|
+          download_status_code = response.response_code
         end
 
-        return download_status_code
+        request.on_body do |chunk|
+          download_file.write(chunk) if download_status_code == 200
+        end
+
+        request.on_complete do |response|
+          download_status_code = response.response_code
+        end
+
+        request.run
+      end
+
+      download_status_code
     end
 
     def config
@@ -227,7 +226,7 @@ module CartoDB
     end
 
     def extract_response_field(response, query)
-      Nokogiri::XML(response).xpath("#{query}").first.content
+      Nokogiri::XML(response).xpath(query.to_s).first.content
     rescue NoMethodError => e
       CartoDB.notify_exception(e)
       nil
@@ -236,16 +235,17 @@ module CartoDB
     def extract_numeric_response_field(response, query)
       value = extract_response_field(response, query)
       return nil if value.blank?
+
       Integer(value)
     rescue ArgumentError => e
-      CartoDB.notify_error("Batch geocoder value error", error: e.message, value: value)
+      CartoDB.notify_error('Batch geocoder value error', error: e.message, value: value)
       nil
     end
 
     def handle_api_error(response)
       if response.success? == false
         message = extract_response_field(response.body, '//Details')
-        @failed_processed_rows = number_of_input_file_rows if not input_file.nil?
+        @failed_processed_rows = number_of_input_file_rows unless input_file.nil?
         change_status('failed')
         raise "Geocoding API communication failure: #{message}"
       end
@@ -288,8 +288,8 @@ module CartoDB
       @last_logging_time ||= Time.now
       # We don't want to log every few seconds because this kind
       # of jobs could last for hours
-      if (not spaced_by_time) || (Time.now - @last_logging_time) > LOGGING_TIME
-        @log.append_and_store "Geocoding job status update. "\
+      if !spaced_by_time || (Time.now - @last_logging_time) > LOGGING_TIME
+        @log.append_and_store 'Geocoding job status update. '\
           "Status: #{@geocoding_model.state} --- Processed rows: #{@processed_rows} "\
           "--- Success: #{@successful_processed_rows} --- Empty: #{@empty_processed_rows} "\
           "--- Failed: #{@failed_processed_rows}"
@@ -305,7 +305,7 @@ module CartoDB
       @status = status
       # The cancelled status should prevail to abort the job
       @geocoding_model.refresh
-      if status != @geocoding_model.state && (not (@geocoding_model.cancelled? || @geocoding_model.timeout?))
+      if status != @geocoding_model.state && !(@geocoding_model.cancelled? || @geocoding_model.timeout?)
         @geocoding_model.state = status
         @geocoding_model.save
       end

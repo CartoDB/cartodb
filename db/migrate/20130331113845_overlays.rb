@@ -1,4 +1,5 @@
 class OverlaysMigration < Sequel::Migration
+
   def up
     create_table :overlays do
       String      :id,                null: false, primary_key: true
@@ -6,10 +7,10 @@ class OverlaysMigration < Sequel::Migration
       String      :options,           text: true
       String      :visualization_id,  index: true
     end
-  end #up
-  
+  end # up
+
   def down
     drop_table :overlays
-  end #down
-end # OverlaysMigration
+  end # down
 
+end # OverlaysMigration

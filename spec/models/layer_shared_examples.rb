@@ -1,19 +1,19 @@
 shared_examples_for 'Layer model' do
-  context "setups" do
-    it "should be preloaded with the correct default values" do
-      l = layer_class.create(Cartodb.config[:layer_opts]["data"]).reload
+  context 'setups' do
+    it 'should be preloaded with the correct default values' do
+      l = layer_class.create(Cartodb.config[:layer_opts]['data']).reload
       l.kind.should == 'carto'
-      l.options.should == Cartodb.config[:layer_opts]["data"]["options"]
-      l = layer_class.create(Cartodb.config[:layer_opts]["background"]).reload
+      l.options.should == Cartodb.config[:layer_opts]['data']['options']
+      l = layer_class.create(Cartodb.config[:layer_opts]['background']).reload
       l.kind.should == 'background'
-      l.options.should == Cartodb.config[:layer_opts]["background"]["options"]
+      l.options.should == Cartodb.config[:layer_opts]['background']['options']
     end
 
-    it "should not allow to create layers of unkown types" do
-      expect { layer_class.create(kind: "wadus").save! }.to raise_error
+    it 'should not allow to create layers of unkown types' do
+      expect { layer_class.create(kind: 'wadus').save! }.to raise_error
     end
 
-    it "should allow to be linked to many maps" do
+    it 'should allow to be linked to many maps' do
       table2 = Table.new
       table2.user_id = @user.id
       table2.save
@@ -30,7 +30,7 @@ shared_examples_for 'Layer model' do
       layer.maps.should include(map, map2)
     end
 
-    it "should allow to be linked to many users" do
+    it 'should allow to be linked to many users' do
       layer = layer_class.create(kind: 'carto')
       add_layer_to_entity(@user, layer)
 
@@ -38,7 +38,7 @@ shared_examples_for 'Layer model' do
       layer.users.map(&:id).should include(@user.id)
     end
 
-    it "should set default order when adding layers to a map" do
+    it 'should set default order when adding layers to a map' do
       map = create_map(user_id: @user.id, table_id: @table.id)
       5.times do |i|
         layer = layer_class.create(kind: 'carto')
@@ -47,7 +47,7 @@ shared_examples_for 'Layer model' do
       end
     end
 
-    it "should set default order when adding layers to a user" do
+    it 'should set default order when adding layers to a user' do
       @user.layers.each(&:destroy)
       @user.reload
       5.times do |i|
@@ -57,14 +57,14 @@ shared_examples_for 'Layer model' do
       end
     end
 
-    context "when the type is cartodb and the layer is updated" do
+    context 'when the type is cartodb and the layer is updated' do
       before do
         @map = create_map(user_id: @user.id, table_id: @table.id)
         @layer = layer_class.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
         add_layer_to_entity(@map, @layer)
       end
 
-      it "should invalidate its maps" do
+      it 'should invalidate its maps' do
         CartoDB::Varnish.any_instance.stubs(:purge).returns(true)
 
         @layer.maps.count.should eq 1
@@ -76,14 +76,14 @@ shared_examples_for 'Layer model' do
       end
     end
 
-    context "when the type is not cartodb" do
+    context 'when the type is not cartodb' do
       before do
         @map = create_map(user_id: @user.id, table_id: @table.id)
         @layer = layer_class.create(kind: 'tiled')
         add_layer_to_entity(@map, @layer)
       end
 
-      it "should not invalidate its related tables varnish cache" do
+      it 'should not invalidate its related tables varnish cache' do
         @layer.maps.each do |map|
           map.expects(:notify_map_change).times(1)
         end
@@ -96,7 +96,7 @@ shared_examples_for 'Layer model' do
       end
     end
 
-    it "should update updated_at after saving" do
+    it 'should update updated_at after saving' do
       layer = layer_class.create(kind: 'carto')
       after = layer.updated_at
       Delorean.jump(1.minute)
@@ -106,7 +106,7 @@ shared_examples_for 'Layer model' do
       Delorean.back_to_the_present
     end
 
-    it "should correctly identify affected tables" do
+    it 'should correctly identify affected tables' do
       table2 = Table.new
       table2.user_id = @user.id
       table2.save
@@ -121,11 +121,11 @@ shared_examples_for 'Layer model' do
       layer.send(:affected_tables).map(&:name).should =~ [table2.name, @table.name]
     end
 
-    it "should return empty affected tables when no tables are involved" do
+    it 'should return empty affected tables when no tables are involved' do
       map = create_map(user_id: @user.id, table_id: @table.id)
       layer = layer_class.create(
         kind: 'carto',
-        options: { query: "select 1" }
+        options: { query: 'select 1' }
       )
       add_layer_to_entity(map, layer)
 
@@ -136,7 +136,7 @@ shared_examples_for 'Layer model' do
       map = create_map(user_id: @user.id, table_id: @table.id)
       layer = layer_class.create(
         kind: 'carto',
-        options: { query: "select 1", table_name: @table.name }
+        options: { query: 'select 1', table_name: @table.name }
       )
       add_layer_to_entity(map, layer)
       layer.reload
@@ -165,11 +165,11 @@ shared_examples_for 'Layer model' do
       new_table_name  = 'changed_name'
 
       tile_style      = "##{table_name} { color:red; }"
-      query           = "SELECT * FROM table_name, other_table"
+      query           = 'SELECT * FROM table_name, other_table'
       options = {
         table_name: table_name,
         tile_style: tile_style,
-        query:      query
+        query: query
       }
 
       layer = layer_class.create(kind: 'carto', options: options)
@@ -191,11 +191,11 @@ shared_examples_for 'Layer model' do
       new_table_name  = 'changed_name'
 
       tile_style      = "##{table_name} { color:red; }"
-      query           = "SELECT * FROM foo"
+      query           = 'SELECT * FROM foo'
       options = {
         table_name: table_name,
         tile_style: tile_style,
-        query:      query
+        query: query
       }
       layer = layer_class.create(kind: 'carto', options: options)
       layer.rename_table(table_name, new_table_name)

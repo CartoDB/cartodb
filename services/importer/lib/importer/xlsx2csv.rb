@@ -4,7 +4,7 @@ module CartoDB
   module Importer2
     class Xlsx2Csv < Excel2Csv
 
-      SUPPORTED_EXTENSION = 'xlsx'
+      SUPPORTED_EXTENSION = 'xlsx'.freeze
 
       def self.supported?(extension)
         extension == ".#{SUPPORTED_EXTENSION}"

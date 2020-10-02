@@ -3,6 +3,7 @@ require_dependency 'map/copier'
 module CartoDB
   module Visualization
     class TableBlender
+
       def initialize(user, tables=[])
         @user   = user
         @tables = tables
@@ -36,12 +37,14 @@ module CartoDB
       def blended_privacy
         return Carto::Visualization::PRIVACY_PRIVATE if tables.any?(&:private?)
         return Carto::Visualization::PRIVACY_LINK if tables.any?(&:public_with_link_only?)
+
         Carto::Visualization::PRIVACY_PUBLIC
       end
 
       private
 
       attr_reader :tables, :user
+
     end
   end
 end

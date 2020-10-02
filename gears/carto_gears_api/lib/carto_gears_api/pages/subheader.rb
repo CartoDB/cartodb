@@ -2,6 +2,7 @@ require 'values'
 
 module CartoGearsApi
   module Pages
+
     # Link for subheader menu. It's a `Value`, so it must be created with `with`. Example:
     #
     #   CartoGearsApi::Pages::SubheaderLink.with(
@@ -16,6 +17,7 @@ module CartoGearsApi
     end
 
     class Subheader
+
       include Singleton
 
       attr_accessor :links_generators
@@ -27,6 +29,8 @@ module CartoGearsApi
       def links(context)
         @links_generators.flat_map { |generator| generator.call(context) }.compact
       end
+
     end
+
   end
 end

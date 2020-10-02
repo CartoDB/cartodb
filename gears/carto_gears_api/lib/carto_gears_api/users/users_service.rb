@@ -1,6 +1,7 @@
 module CartoGearsApi
   module Users
     class UsersService
+
       # Returns the logged user at the request.
       #
       # @param request [ActionDispatch::Request] CARTO request, as received in any controller.
@@ -22,6 +23,7 @@ module CartoGearsApi
 
         user.viewer = true
         raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.save
+
         user.update_in_central
 
         CartoGearsApi::Users::User.from_model(user)
@@ -48,6 +50,7 @@ module CartoGearsApi
         user.soft_mapzen_routing_limit = user.organization.owner.soft_mapzen_routing_limit
 
         raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.save
+
         user.update_in_central
 
         CartoGearsApi::Users::User.from_model(user)
@@ -65,7 +68,7 @@ module CartoGearsApi
         user = find_user(user_id)
 
         unless user.password_set?
-          user.errors.add(:password, "User has no password set")
+          user.errors.add(:password, 'User has no password set')
           raise CartoGearsApi::Errors::ValidationFailed.new(user.errors)
         end
 
@@ -100,8 +103,10 @@ module CartoGearsApi
       def find_user(user_id)
         user = ::User.find(id: user_id)
         raise CartoGearsApi::Errors::RecordNotFound.new('User', user_id) unless user
+
         user
       end
+
     end
   end
 end

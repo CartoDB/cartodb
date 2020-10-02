@@ -61,5 +61,6 @@ module Carto
     def numbers_in(string)
       string.scan(/\d/).size
     end
+
   end
 end

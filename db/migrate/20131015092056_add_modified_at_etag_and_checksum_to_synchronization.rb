@@ -1,4 +1,5 @@
 class AddModifiedAtEtagAndChecksumToSynchronization < Sequel::Migration
+
   def up
     alter_table :synchronizations do
       add_column :modified_at, DateTime
@@ -14,5 +15,5 @@ class AddModifiedAtEtagAndChecksumToSynchronization < Sequel::Migration
       drop_column :checksum
     end
   end
-end
 
+end

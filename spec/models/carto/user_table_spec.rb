@@ -28,8 +28,8 @@ describe Carto::UserTable do
 
   describe 'table_id column' do
     it 'supports values larger than 2^31-1' do
-      column = Carto::UserTable.columns.find{|c| c.name=='table_id'}
-      expect { column.type_cast_for_database(2164557046) }.to_not raise_error
+      column = Carto::UserTable.columns.find { |c| c.name == 'table_id'}
+      expect { column.type_cast_for_database(2_164_557_046) }.to_not raise_error
     end
   end
 
@@ -75,7 +75,7 @@ describe Carto::UserTable do
     include TableSharing
 
     it 'returns true for shared tables' do
-      @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "a_table_name", user_id: @org_user_1.id)
+      @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'a_table_name', user_id: @org_user_1.id)
       user_table = Carto::UserTable.find(@table.id)
       share_table_with_user(@table, @org_user_2)
 

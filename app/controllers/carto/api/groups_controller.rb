@@ -3,8 +3,8 @@ require_dependency 'cartodb/errors'
 
 module Carto
   module Api
-
     class GroupsController < ::Api::ApplicationController
+
       include PagedSearcher
 
       ssl_required :index, :show, :create, :update, :destroy, :add_users, :remove_users
@@ -34,9 +34,9 @@ module Carto
         groups = Carto::PagedModel.paged_association(groups, page, per_page, order)
 
         render_jsonp({
-          groups: groups.map { |g| Carto::Api::GroupPresenter.new(g, @fetching_options).to_poro },
-          total_entries: total_entries
-        }, 200)
+                       groups: groups.map { |g| Carto::Api::GroupPresenter.new(g, @fetching_options).to_poro },
+                       total_entries: total_entries
+                     }, 200)
       end
 
       def show
@@ -47,7 +47,7 @@ module Carto
         @group = @organization.create_group(params['display_name'])
         render_jsonp(Carto::Api::GroupPresenter.full(@group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
-        render json: { errors: ["A group with that name already exists"] }, status: 409
+        render json: { errors: ['A group with that name already exists'] }, status: 409
       rescue ActiveRecord::StatementInvalid => e
         handle_statement_invalid_error(e, @group)
       rescue StandardError => e
@@ -59,7 +59,7 @@ module Carto
         @group.rename_group_with_extension(params['display_name'])
         render_jsonp(Carto::Api::GroupPresenter.full(@group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
-        render json: { errors: ["A group with that name already exists"] }, status: 409
+        render json: { errors: ['A group with that name already exists'] }, status: 409
       rescue ActiveRecord::StatementInvalid => e
         handle_statement_invalid_error(e, @group)
       rescue StandardError => e
@@ -109,6 +109,7 @@ module Carto
 
       def load_organization
         return unless params['organization_id'].present?
+
         @organization = Carto::Organization.where(id: params['organization_id']).first
         render json: { errors: ["Org. #{params['organization_id']} not found"] }, status: 404 unless @organization
       end
@@ -131,19 +132,17 @@ module Carto
       end
 
       def validate_organization_or_user_loaded
-        render json: { errors: ["You must set user_id or organization_id"] }, status: 404 unless @organization || @user
+        render json: { errors: ['You must set user_id or organization_id'] }, status: 404 unless @organization || @user
       end
 
       def org_users_only
         unless @organization.id == current_user.organization_id
-          render json: { errors: ["Not organization user"] }, status: 400
+          render json: { errors: ['Not organization user'] }, status: 400
         end
       end
 
       def org_admin_only
-        unless @organization.admin?(current_user)
-          render json: { errors: ["Not org. admin"] }, status: 400
-        end
+        render json: { errors: ['Not org. admin'] }, status: 400 unless @organization.admin?(current_user)
       end
 
       def load_group
@@ -152,12 +151,12 @@ module Carto
       end
 
       def load_organization_users
-        ids = params['users'].present? ? params['users'] : [ params['user_id'] ]
+        ids = params['users'].present? ? params['users'] : [params['user_id']]
         @organization_users = ids.map { |id| @organization.users.where(id: id).first }
         render json: { errors: ["Users #{ids} not found"] }, status: 404 if @organization_users.empty?
       end
 
-      def handle_statement_invalid_error(e, group)
+      def handle_statement_invalid_error(e, _group)
         err_regexp = /ERROR:  (.*)\n/
         if e.message =~ err_regexp
           render json: { errors: [err_regexp.match(e.message)[1]] }, status: 422
@@ -170,12 +169,13 @@ module Carto
       def rescue_from_password_confirmation_error(error)
         log_rescue_from(__method__, error)
 
-        render_jsonp({ message: "Error modifying groups", errors: [error.message] }, 403)
+        render_jsonp({ message: 'Error modifying groups', errors: [error.message] }, 403)
       end
 
       def log_context
         super.merge(params: params, group: @group, organization: @organization)
       end
+
     end
   end
 end

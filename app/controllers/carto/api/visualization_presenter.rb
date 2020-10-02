@@ -135,30 +135,30 @@ module Carto
 
       def to_public_poro
         {
-          id:               @visualization.id,
-          name:             @visualization.name,
-          display_name:     @visualization.display_name,
-          attributions:     @visualization.attributions,
-          source:           @visualization.source,
-          license:          @visualization.license,
-          type:             @visualization.type,
-          tags:             @visualization.tags,
-          description:      @visualization.description,
-          created_at:       @visualization.created_at,
-          updated_at:       @visualization.updated_at,
-          title:            @visualization.title,
-          kind:             @visualization.kind,
-          privacy:          @visualization.privacy.upcase,
+          id: @visualization.id,
+          name: @visualization.name,
+          display_name: @visualization.display_name,
+          attributions: @visualization.attributions,
+          source: @visualization.source,
+          license: @visualization.license,
+          type: @visualization.type,
+          tags: @visualization.tags,
+          description: @visualization.description,
+          created_at: @visualization.created_at,
+          updated_at: @visualization.updated_at,
+          title: @visualization.title,
+          kind: @visualization.kind,
+          privacy: @visualization.privacy.upcase
         }
       end
 
       # For dependent visualizations
       def to_summarized_poro
         {
-          id:          @visualization.id,
-          name:        @visualization.name,
-          updated_at:  @visualization.updated_at,
-          permission:  permission.slice(:id, :owner),
+          id: @visualization.id,
+          name: @visualization.name,
+          updated_at: @visualization.updated_at,
+          permission: permission.slice(:id, :owner),
           auth_tokens: auth_tokens
         }
       end
@@ -314,6 +314,7 @@ module Carto
         sorted_dependencies = dependencies.sort_by(&:updated_at).reverse
         sorted_dependencies.first(limit)
       end
+
     end
   end
 end

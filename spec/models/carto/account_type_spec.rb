@@ -22,13 +22,13 @@ describe Carto::AccountType do
       account_type = Carto::AccountType.find(@account_type.account_type)
       account_type.destroy
 
-      expect {
+      expect do
         Carto::AccountType.find(@account_type.account_type)
-      }.to raise_error(ActiveRecord::RecordNotFound)
+      end.to raise_error(ActiveRecord::RecordNotFound)
 
-      expect {
+      expect do
         Carto::RateLimit.find(@account_type.rate_limit_id)
-      }.to raise_error(ActiveRecord::RecordNotFound)
+      end.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it 'updates the rate limits of an account_type' do

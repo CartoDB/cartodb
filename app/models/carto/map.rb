@@ -5,12 +5,13 @@ require_dependency 'common/map_common'
 require_dependency 'carto/bounding_box_utils'
 
 class Carto::Map < ActiveRecord::Base
+
   include Carto::MapBoundaries
 
   has_many :layers_maps, dependent: :destroy
   has_many :layers, -> { order(:order) }, class_name: 'Carto::Layer',
                                           through: :layers_maps,
-                                          after_add: Proc.new { |map, layer| layer.after_added_to_map(map) }
+                                          after_add: proc { |map, layer| layer.after_added_to_map(map) }
 
   has_many :base_layers, -> { order(:order) }, class_name: 'Carto::Layer',
                                                through: :layers_maps,
@@ -29,13 +30,13 @@ class Carto::Map < ActiveRecord::Base
   # However, many callers expect to get an string (and do the JSON deserialization themselves), mainly in presenters
   # So for now, we are just treating them as strings (see the .to_s in the constant below), but this could be improved
   DEFAULT_OPTIONS = {
-    zoom:            3,
+    zoom: 3,
     bounding_box_sw: [Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:miny],
                       Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:minx]].to_s,
     bounding_box_ne: [Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:maxy],
                       Carto::BoundingBoxUtils::DEFAULT_BOUNDS[:maxx]].to_s,
-    provider:        'leaflet',
-    center:          [30, 0].to_s
+    provider: 'leaflet',
+    center: [30, 0].to_s
   }.freeze
 
   serialize :options, ::Carto::CartoJsonSerializer
@@ -87,28 +88,28 @@ class Carto::Map < ActiveRecord::Base
 
   # (lat,lon) points on all map data
   def center_data
-    (center.nil? || center == '') ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
+    center.nil? || center == '' ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
   end
 
   def view_bounds_data
-    if view_bounds_sw.nil? || view_bounds_sw == ''
-      bbox_sw = DEFAULT_OPTIONS[:bounding_box_sw]
-    else
-      bbox_sw = view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-    end
-    if view_bounds_ne.nil? || view_bounds_ne == ''
-      bbox_ne = DEFAULT_OPTIONS[:bounding_box_ne]
-    else
-      bbox_ne = view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-    end
+    bbox_sw = if view_bounds_sw.nil? || view_bounds_sw == ''
+                DEFAULT_OPTIONS[:bounding_box_sw]
+              else
+                view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+              end
+    bbox_ne = if view_bounds_ne.nil? || view_bounds_ne == ''
+                DEFAULT_OPTIONS[:bounding_box_ne]
+              else
+                view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
+              end
 
     {
       # LowerCorner longitude, in decimal degrees
-      west:  bbox_sw[1],
+      west: bbox_sw[1],
       # LowerCorner latitude, in decimal degrees
       south: bbox_sw[0],
       # UpperCorner longitude, in decimal degrees
-      east:  bbox_ne[1],
+      east: bbox_ne[1],
       # UpperCorner latitude, in decimal degrees
       north: bbox_ne[0]
     }
@@ -127,7 +128,7 @@ class Carto::Map < ActiveRecord::Base
   def notify_map_change
     visualization.try(:invalidate_after_commit)
   end
-  alias :force_notify_map_change :notify_map_change
+  alias force_notify_map_change notify_map_change
 
   def update_dataset_dependencies
     data_layers.each(&:register_table_dependencies)
@@ -189,6 +190,7 @@ class Carto::Map < ActiveRecord::Base
   def admits_more_base_layers?(layer)
     # no basemap layer, always allow
     return true if user_layers.empty?
+
     # have basemap? then allow only if comes on top (for labels)
     layer.order >= layers.last.order
   end
@@ -227,4 +229,5 @@ class Carto::Map < ActiveRecord::Base
   def table_name
     user_table.try(:name)
   end
+
 end

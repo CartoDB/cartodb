@@ -2,6 +2,7 @@ require_relative '../../spec_helper_min.rb'
 require_relative '../../../lib/carto/bolt.rb'
 
 module Carto
+
   describe Bolt do
     before(:each) do
       @bolt = Carto::Bolt.new('manolo_bolt_locked')
@@ -16,7 +17,7 @@ module Carto
     end
 
     it 'should allow access in block if locked and unlocked automatically' do
-      bolt = Carto::Bolt.new('manolo_bolt_locked', ttl_ms: 60000)
+      bolt = Carto::Bolt.new('manolo_bolt_locked', ttl_ms: 60_000)
 
       bolt.run_locked {}.should be_true
       bolt.run_locked {}.should be_true
@@ -30,9 +31,9 @@ module Carto
 
     it 'should wait for execution if we pass attempts parameters' do
       main = Thread.new do
-        @bolt.run_locked {
+        @bolt.run_locked do
           sleep(2)
-        }.should be_true
+        end.should be_true
       end
       sleep(0.5)
       thr = Thread.new do
@@ -46,9 +47,9 @@ module Carto
 
     it 'should wait for execution and exit without complete it if timeout and retries reach the limit' do
       main = Thread.new do
-        @bolt.run_locked {
+        @bolt.run_locked do
           sleep(2)
-        }.should be_true
+        end.should be_true
       end
       sleep(0.5)
       thr = Thread.new do
@@ -62,12 +63,12 @@ module Carto
 
     it 'should retry an execution when other process tries to acquire bolt and has retriable flag set' do
       flag = 0
-      rerun_func = lambda { flag += 1 }
+      rerun_func = -> { flag += 1 }
       main = Thread.new do
-        @bolt.run_locked(fail_function: rerun_func) {
+        @bolt.run_locked(fail_function: rerun_func) do
           flag += 1
           sleep(2)
-        }.should be_true
+        end.should be_true
       end
       sleep(0.5)
       thr = Thread.new do
@@ -84,10 +85,10 @@ module Carto
         flag += 1
       end
       main = Thread.new do
-        @bolt.run_locked(fail_function: rerun_func) {
+        @bolt.run_locked(fail_function: rerun_func) do
           flag += 1
           sleep(2)
-        }.should be_true
+        end.should be_true
       end
       sleep(0.5)
       10.times do
@@ -102,9 +103,9 @@ module Carto
     end
 
     it 'should raise error if fail_function is not a lambda' do
-      expect {
-        @bolt.run_locked(fail_function: "lala") {}.should_raise
-      }.to raise_error('no proc/lambda passed as fail_function')
+      expect do
+        @bolt.run_locked(fail_function: 'lala') {}.should_raise
+      end.to raise_error('no proc/lambda passed as fail_function')
     end
 
     it 'should expire a lock after ttl_ms' do
@@ -119,4 +120,5 @@ module Carto
       end
     end
   end
+
 end

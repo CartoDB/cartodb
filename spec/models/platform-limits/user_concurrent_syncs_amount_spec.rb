@@ -16,11 +16,11 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount do
       syncs_limit = CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER
 
       limit = CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({
-                                                                           user: @user,
-                                                                           redis: {
-                                                                             db: $users_metadata
-                                                                           }
-                                                                         })
+                                                                                 user: @user,
+                                                                                 redis: {
+                                                                                   db: $users_metadata
+                                                                                 }
+                                                                               })
 
       limit.peek.should eq 0
       limit.is_over_limit?.should eq false
@@ -32,7 +32,7 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount do
       limit.is_over_limit!.should eq false
       limit.peek.should eq 1
 
-      limit.remaining_limit?.should eq syncs_limit-1
+      limit.remaining_limit?.should eq syncs_limit - 1
 
       limit.is_over_limit?.should eq false
       limit.is_over_limit!.should eq false
@@ -66,5 +66,4 @@ describe CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount do
       limit.peek.should eq 3
     end
   end
-
 end

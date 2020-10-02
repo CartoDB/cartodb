@@ -24,7 +24,7 @@ module Carto
         poro
       end
 
-      alias_method :to_vizjson, :to_poro
+      alias to_vizjson to_poro
 
     end
   end

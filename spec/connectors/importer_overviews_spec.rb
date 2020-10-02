@@ -70,11 +70,11 @@ describe CartoDB::Importer2::Overviews do
       # cities_box is a ~900 points dataset
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        user_id:     @user.id,
+        user_id: @user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -95,11 +95,11 @@ describe CartoDB::Importer2::Overviews do
       # cities_box is a ~900 points dataset
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        user_id:     @user.id,
+        user_id: @user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -120,11 +120,11 @@ describe CartoDB::Importer2::Overviews do
       # countries_simplified is a ~200 polygons dataset
       filepath = "#{Rails.root}/spec/support/data/countries_simplified.zip"
       data_import = DataImport.create(
-        user_id:     @user.id,
+        user_id: @user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -145,11 +145,11 @@ describe CartoDB::Importer2::Overviews do
       # cities_box is a ~900 points dataset
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        user_id:     @user.id,
+        user_id: @user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -170,11 +170,11 @@ describe CartoDB::Importer2::Overviews do
       # cities_box is a ~900 points dataset
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        user_id:     @user.id,
+        user_id: @user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -202,11 +202,11 @@ describe CartoDB::Importer2::Overviews do
       # cities_box is a ~900 points dataset
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        user_id:     @user.id,
+        user_id: @user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -242,11 +242,11 @@ describe CartoDB::Importer2::Overviews do
 
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        user_id:     user.id,
+        user_id: user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     private_privacy
+        updated_at: Time.now,
+        append: false,
+        privacy: private_privacy
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -280,11 +280,11 @@ describe CartoDB::Importer2::Overviews do
       # cities_box is a ~900 points dataset
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
       data_import = DataImport.create(
-        user_id:     @user.id,
+        user_id: @user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
       )
       data_import.values[:data_source] = filepath
 
@@ -319,11 +319,11 @@ describe CartoDB::Importer2::Overviews do
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
 
       data_import = DataImport.create(
-        user_id:     user1.id,
+        user_id: user1.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_PRIVATE
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_PRIVATE
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -339,14 +339,14 @@ describe CartoDB::Importer2::Overviews do
         connection.execute("select count(1) from #{user1.database_schema}.#{ov_tables.first}")
       rescue Sequel::DatabaseError => e
         failed = true
-        e.message.should match /permission denied .* #{ov_tables.first}/
+        e.message.should match(/permission denied .* #{ov_tables.first}/)
       end
       failed.should be_true
     end
 
     # Share table with user2
     p = table.table_visualization.permission
-    p.acl = [{ type: 'user', entity: {id: user2.id, username: user2.username}, access: 'r' }]
+    p.acl = [{ type: 'user', entity: { id: user2.id, username: user2.username }, access: 'r' }]
     p.save
 
     # Now user2 has access to overview tables
@@ -370,11 +370,11 @@ describe CartoDB::Importer2::Overviews do
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
 
       data_import = DataImport.create(
-        user_id:     user.id,
+        user_id: user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_PRIVATE
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_PRIVATE
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -384,11 +384,11 @@ describe CartoDB::Importer2::Overviews do
       ov_tables1 = overview_tables(user, table1.name)
 
       data_import = DataImport.create(
-        user_id:     user.id,
+        user_id: user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_PRIVATE
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_PRIVATE
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -423,7 +423,7 @@ describe CartoDB::Importer2::Overviews do
         connection.execute("select count(1) from #{ov_table2}")
       rescue Sequel::DatabaseError => e
         failed = true
-        e.message.should match /permission denied .* #{ov_table2}/
+        e.message.should match(/permission denied .* #{ov_table2}/)
       end
       failed.should be_true
 
@@ -445,11 +445,11 @@ describe CartoDB::Importer2::Overviews do
       filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
 
       data_import = DataImport.create(
-        user_id:     user.id,
+        user_id: user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_PRIVATE
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_PRIVATE
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -459,11 +459,11 @@ describe CartoDB::Importer2::Overviews do
       ov_tables1 = overview_tables(user, table1.name)
 
       data_import = DataImport.create(
-        user_id:     user.id,
+        user_id: user.id,
         data_source: filepath,
-        updated_at:  Time.now,
-        append:      false,
-        privacy:     ::UserTable::PRIVACY_PRIVATE
+        updated_at: Time.now,
+        append: false,
+        privacy: ::UserTable::PRIVACY_PRIVATE
       )
       data_import.values[:data_source] = filepath
       data_import.run_import!
@@ -498,7 +498,7 @@ describe CartoDB::Importer2::Overviews do
         connection.execute("select count(1) from #{ov_table2}")
       rescue Sequel::DatabaseError => e
         failed = true
-        e.message.should match /permission denied .* #{ov_table2}/
+        e.message.should match(/permission denied .* #{ov_table2}/)
       end
       failed.should be_true
 

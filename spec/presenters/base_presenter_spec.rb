@@ -7,10 +7,7 @@ describe BasePresenter do
       Carto::Organization
     end
 
-    # rubocop:disable Style/AccessModifierDeclarations
     private(*delegate(*delegated_methods, to: :object))
-    # rubocop:enable Style/AccessModifierDeclarations
-
     def data
       { id: id }
     end

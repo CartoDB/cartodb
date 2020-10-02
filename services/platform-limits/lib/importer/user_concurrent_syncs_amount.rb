@@ -1,7 +1,6 @@
 module CartoDB
   module PlatformLimits
     module Importer
-
       # This limit controls how many synchronizations a user can have at once.
       # Uses Redis storage.
       #
@@ -9,7 +8,7 @@ module CartoDB
       class UserConcurrentSyncsAmount < AbstractLimit
 
         # In seconds
-        KEY_TTL = 2*60*60
+        KEY_TTL = 2 * 60 * 60
 
         MAX_SYNCS_PER_USER = 3
 
@@ -52,21 +51,21 @@ module CartoDB
         # @param context mixed
         # @return mixed
         # @throws ArgumentError
-        def get(context)
+        def get(_context)
           redis.llen(key)
         end
 
         # Gets the maximum limit value
         # @param context mixed
         # @return mixed
-        def get_maximum(context)
+        def get_maximum(_context)
           max_value
         end
 
         # Gets when the limit expires
         # @param context mixed
         # @return integer|nil Timestamp
-        def get_time_period(context)
+        def get_time_period(_context)
           remaining_secs = redis.ttl(key)
           remaining_secs.seconds.from_now
         end
@@ -81,22 +80,26 @@ module CartoDB
           if redis.exists(key)
             redis.rpushx(key, user.username)
 
-            redis.multi do
-              (actual_amount-1).times do
-                redis.rpushx(key, user.username)
+            if actual_amount > 1
+              redis.multi do
+                (actual_amount - 1).times do
+                  redis.rpushx(key, user.username)
+                end
               end
-            end if actual_amount > 1
+            end
           else
             redis.multi do
               redis.rpush(key, user.username)
               redis.expire(key, expire_ttl)
             end
 
-            redis.multi do
-              (actual_amount-1).times do
-                redis.rpushx(key, user.username)
+            if actual_amount > 1
+              redis.multi do
+                (actual_amount - 1).times do
+                  redis.rpushx(key, user.username)
+                end
               end
-            end if actual_amount > 1
+            end
           end
         end
 
@@ -111,9 +114,7 @@ module CartoDB
           return if actual_amount <= 0
 
           actual_amount.times do
-            if redis.exists(key)
-              redis.rpop(key)
-            end
+            redis.rpop(key) if redis.exists(key)
           end
         end
 
@@ -122,7 +123,6 @@ module CartoDB
           redis.del(key)
         end
 
-        private
       end
     end
   end

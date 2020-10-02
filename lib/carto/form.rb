@@ -2,6 +2,7 @@ require_relative './definition'
 
 module Carto
   class Form
+
     DEFAULT_FORMS_DEFINITION_LOCATION =
       "#{Rails.root}/lib/assets/javascripts/builder/data/default-form-styles.json".freeze
 
@@ -44,5 +45,6 @@ module Carto
     def style
       @style ||= style_class.new
     end
+
   end
 end

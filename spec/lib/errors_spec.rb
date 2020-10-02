@@ -6,23 +6,21 @@ describe CartoDB do
       error_message = 'something !!!'
       nested_exception = StandardError.new('123456 cartodb')
 
-      expect {
-        begin
-          raise nested_exception
-        rescue StandardError => exc
-          raise CartoDB::BaseCartoDBError.new(error_message, exc)
-        end
-      }.to raise_exception CartoDB::BaseCartoDBError
+      expect do
+        raise nested_exception
+      rescue StandardError => e
+        raise CartoDB::BaseCartoDBError.new(error_message, e)
+      end.to raise_exception CartoDB::BaseCartoDBError
 
       begin
         begin
           raise nested_exception
-        rescue StandardError => exc
-          raise CartoDB::BaseCartoDBError.new(error_message, exc)
+        rescue StandardError => e
+          raise CartoDB::BaseCartoDBError.new(error_message, e)
         end
-      rescue CartoDB::BaseCartoDBError => our_exception
-        our_exception.backtrace.should eq nested_exception.backtrace
-        our_exception.message.should eq (error_message + CartoDB::BaseCartoDBError::APPENDED_MESSAGE_PREFIX + nested_exception.message)
+      rescue CartoDB::BaseCartoDBError => e
+        e.backtrace.should eq nested_exception.backtrace
+        e.message.should eq(error_message + CartoDB::BaseCartoDBError::APPENDED_MESSAGE_PREFIX + nested_exception.message)
       end
     end
   end
@@ -41,9 +39,9 @@ describe CartoDB do
       it 'supports multiple error JSON messages' do
         response = mock
         response.stubs(:code).returns(403)
-        response.stubs(:body).returns("{\"errors\":[\"A\", \"B\"]}")
+        response.stubs(:body).returns('{"errors":["A", "B"]}')
         e = CartoDB::CentralCommunicationFailure.new(response)
-        e.user_message.should eq "There was a problem with authentication server. A ; B"
+        e.user_message.should eq 'There was a problem with authentication server. A ; B'
       end
     end
   end

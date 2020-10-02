@@ -5,9 +5,9 @@ namespace :cartodb do
   namespace :trending_maps do
     desc "Search for yesterday's trending maps to notify"
     task :notify, [:simulation] => :environment do |_task, args|
-      simulation = (args[:simulation] == 'true') ? true : false
+      simulation = args[:simulation] == 'true'
 
-      puts "SIMULATION MODE!" if simulation
+      puts 'SIMULATION MODE!' if simulation
       trending_maps_lib = CartoDB::TrendingMaps.new
       trending_maps = trending_maps_lib.get_trending_maps
 
@@ -21,19 +21,18 @@ namespace :cartodb do
                                                                                           visualization,
                                                                                           600,
                                                                                           300)
-        unless simulation
-          trending_maps_lib.notify_trending_map(visualization_id, views, preview_image)
+        next if simulation
 
-          user_id = visualization.user.id
-          Carto::Tracking::Events::ScoredTrendingMap.new(user_id,
-                                                         user_id: user_id,
-                                                         visualization_id: visualization.id,
-                                                         mapviews: views).report
-        end
+        trending_maps_lib.notify_trending_map(visualization_id, views, preview_image)
+
+        user_id = visualization.user.id
+        Carto::Tracking::Events::ScoredTrendingMap.new(user_id,
+                                                       user_id: user_id,
+                                                       visualization_id: visualization.id,
+                                                       mapviews: views).report
       end
 
       trending_maps_lib.send_trending_map_report(trending_maps) unless simulation
     end
-
   end
 end

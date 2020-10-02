@@ -1,33 +1,32 @@
 namespace :carto do
   namespace :api_key do
     module ApiKeyRake
+
       def for_each_api_key(query, description)
         all_count = query.count
         current_count = 0
         reflection_seconds = ENV['ENABLE_FF_REFLECTION_SECONDS'] || 10
 
-        puts "############################"
-        puts "#"
+        puts '############################'
+        puts '#'
         puts "# #{description}"
-        puts "#"
+        puts '#'
         puts "# #{all_count} api keys will be processed"
-        puts "#"
+        puts '#'
         puts "# You have #{reflection_seconds} seconds to cancel "
-        puts "# the task before it starts"
-        puts "#"
-        puts "############################"
+        puts '# the task before it starts'
+        puts '#'
+        puts '############################'
 
         sleep reflection_seconds.to_i
 
         query.find_each do |api_key|
-          begin
-            current_count += 1
-            puts "#{current_count} of #{all_count}"
+          current_count += 1
+          puts "#{current_count} of #{all_count}"
 
-            yield api_key
-          rescue StandardError => e
-            puts "ERROR - API Key #{api_key.id}: #{e}"
-          end
+          yield api_key
+        rescue StandardError => e
+          puts "ERROR - API Key #{api_key.id}: #{e}"
         end
       end
 
@@ -53,6 +52,7 @@ namespace :carto do
           end
         end
       end
+
     end
 
     # This should only be used for development, before CartoDB/cartodb/pull/13396 migration
@@ -100,14 +100,15 @@ namespace :carto do
       include ApiKeyRake
       puts "INFO: Creating default API Keys for all users in organization #{args[:org_name]}"
       org = Carto::Organization.find_by_name(args[:org_name])
-      raise "ERROR: Organization not found" unless org
+      raise 'ERROR: Organization not found' unless org
+
       org.users.each { |u| create_api_keys_for_user(u) }
     end
 
     desc 'Creates grants for every API Key'
     task create_api_key_grants: :environment do
       include ApiKeyRake
-      MESSAGE = "Creating permissions for every API Key".freeze
+      MESSAGE = 'Creating permissions for every API Key'.freeze
 
       for_each_api_key(Carto::ApiKey, MESSAGE) do |api_key|
         if api_key.master?

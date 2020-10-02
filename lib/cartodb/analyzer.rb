@@ -18,6 +18,7 @@ require 'json'
 
 require 'json'
 class Analyzer
+
   def initialize(filename)
     @filename = filename
   end
@@ -26,19 +27,21 @@ class Analyzer
     data = []
     File.open(@filename) do |f|
       f.each_line do |line|
-        data << (parsed=JSON.parse(line))
+        data << (parsed = JSON.parse(line))
       end
     end
 
-    data.group_by { |row| row["generation"] }
+    data.group_by { |row| row['generation'] }
         .sort { |a, b| a[0].to_i <=> b[0].to_i }
         .each do |k, v|
           puts "generation #{k} objects #{v.count}"
         end
   end
+
 end
 
 class Analyzer2
+
   def initialize(filename)
     @filename = filename
   end
@@ -51,9 +54,9 @@ class Analyzer2
       data = []
       File.open(@filename) do |f|
         f.each_line do |line|
-          parsed=JSON.parse(line)
+          parsed = JSON.parse(line)
           range = bottom..top
-          data << parsed if range.include?(parsed["generation"].to_i)
+          data << parsed if range.include?(parsed['generation'].to_i)
         end
       end
       data.group_by { |row| "#{row['file']}:#{row['line']}" }
@@ -63,9 +66,11 @@ class Analyzer2
           end
     end
   end
+
 end
 
 class AnalyzerClasses
+
   def initialize(filename)
     load(filename)
   end
@@ -91,6 +96,7 @@ class AnalyzerClasses
       puts "#{v[0]['type']},#{v[0]['class']},#{class_name},#{v.count},#{memsize}"
     end
   end
+
 end
 
 AnalyzerClasses.new(ARGV[0]).analyze

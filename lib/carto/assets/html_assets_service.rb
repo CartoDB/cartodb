@@ -4,9 +4,10 @@ require 'singleton'
 
 module Carto
   class HTMLAssetsService < AssetsService
+
     include Singleton
 
-    EXTENSION = ".html".freeze
+    EXTENSION = '.html'.freeze
     DEFAULT_MAX_SIZE_IN_BYTES = 10 * 1024 * 1024 # 10MB
 
     def upload(visualization, resource)
@@ -52,5 +53,6 @@ module Carto
 
       @max_size_in_bytes = configured || DEFAULT_MAX_SIZE_IN_BYTES
     end
+
   end
 end

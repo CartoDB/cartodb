@@ -133,6 +133,7 @@ module Carto
         def now
           @now ||= Time.now.utc
         end
+
       end
     end
   end

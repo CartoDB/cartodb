@@ -5,7 +5,7 @@ module CartoDB
   class GeocoderCache
 
     DEFAULT_BATCH_SIZE = 5000
-    DEFAULT_MAX_ROWS   = 1000000
+    DEFAULT_MAX_ROWS   = 1_000_000
     HTTP_CONNECT_TIMEOUT = 60
     HTTP_DEFAULT_TIMEOUT = 600
 
@@ -30,13 +30,13 @@ module CartoDB
     end
 
     def run
-      @log.append_and_store "Started searching previous geocoded results in geocoder cache"
+      @log.append_and_store 'Started searching previous geocoded results in geocoder cache'
       get_cache_results
       create_temp_table
       load_results_to_temp_table
       @hits = connection.select.from(temp_table_name).where('longitude is not null and latitude is not null').count.to_i
       copy_results_to_table
-      @log.append_and_store "Finished geocoder cache job"
+      @log.append_and_store 'Finished geocoder cache job'
     rescue StandardError => e
       @log.append_and_store "Error getting results from geocoder cache: #{e.inspect}"
       handle_cache_exception e
@@ -49,28 +49,37 @@ module CartoDB
     end
 
     def get_cache_results
-      begin
-        count = count + 1 rescue 0
+      loop do
+        count = begin
+                  count + 1
+                rescue StandardError
+                  0
+                end
         limit = [@batch_size, @max_rows - (count * @batch_size)].min
-        rows = connection.fetch(%Q{
+        rows = connection.fetch(%{
             SELECT DISTINCT(md5(#{formatter})) AS searchtext
             FROM #{@qualified_table_name}
             WHERE cartodb_georef_status IS NULL
             LIMIT #{limit} OFFSET #{count * @batch_size}
         }).all
         @total_rows += rows.size
-        sql   = "WITH addresses(address) AS (VALUES "
+        sql = 'WITH addresses(address) AS (VALUES '
         sql << rows.map { |r| "('#{r[:searchtext]}')" }.join(',')
         sql << ") SELECT DISTINCT ON(geocode_string) st_x(g.the_geom) longitude, st_y(g.the_geom) latitude,g.geocode_string FROM addresses a INNER JOIN #{sql_api[:table_name]} g ON md5(g.geocode_string)=a.address"
         response = run_query(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
-        File.open(cache_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response == "\n"
-      end while rows.size >= @batch_size && (count * @batch_size) + rows.size < @max_rows
+        File.open(cache_results, 'a') { |f| f.write(response.force_encoding('UTF-8')) } unless response == "\n"
+        break unless rows.size >= @batch_size && (count * @batch_size) + rows.size < @max_rows
+      end
     end
 
     def store
-      begin
-        count = count + 1 rescue 0
-        sql   = %Q{
+      loop do
+        count = begin
+                  count + 1
+                rescue StandardError
+                  0
+                end
+        sql   = %{
            WITH
             -- write the new values
            n(searchtext, the_geom) AS (
@@ -90,7 +99,7 @@ module CartoDB
             SELECT geocode_string FROM upsert
            );
         }
-        rows = connection.fetch(%Q{
+        rows = connection.fetch(%{
           SELECT DISTINCT(quote_nullable(#{formatter})) AS searchtext, the_geom
           FROM #{@qualified_table_name} AS orig
           WHERE orig.cartodb_georef_status IS TRUE AND the_geom IS NOT NULL
@@ -98,7 +107,8 @@ module CartoDB
         }).all
         sql.gsub! '%%VALUES%%', rows.map { |r| "(#{r[:searchtext]}, '#{r[:the_geom]}')" }.join(',')
         run_query(sql) if rows && rows.size > 0
-      end while rows.size >= @batch_size
+        break unless rows.size >= @batch_size
+      end
     rescue StandardError => e
       handle_cache_exception e
     ensure
@@ -106,7 +116,7 @@ module CartoDB
     end
 
     def create_temp_table
-      connection.run(%Q{
+      connection.run(%{
         CREATE TABLE #{temp_table_name} (
           longitude text, latitude text, geocode_string text
         );
@@ -118,7 +128,7 @@ module CartoDB
     end
 
     def copy_results_to_table
-      connection.run(%Q{
+      connection.run(%{
         UPDATE #{@qualified_table_name} AS dest
         SET the_geom = ST_GeomFromText(
               'POINT(' || orig.longitude || ' ' || orig.latitude || ')', 4326
@@ -169,9 +179,10 @@ module CartoDB
     end
 
     def update_log_stats
-      @log.append_and_store "Geocoding cache stats update. "\
+      @log.append_and_store 'Geocoding cache stats update. '\
         "Total rows: #{@total_rows} "\
         "--- Hits: #{@hits} --- Failed: #{@failed_rows}"
     end
+
   end
 end

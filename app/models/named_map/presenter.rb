@@ -2,9 +2,9 @@ module CartoDB
   module NamedMapsWrapper
     class Presenter
 
-      NAMED_MAP_TYPE = 'namedmap'
-      LAYER_TYPES_TO_DECORATE = [ 'torque' ]
-      DEFAULT_TILER_FILTER = 'mapnik'
+      NAMED_MAP_TYPE = 'namedmap'.freeze
+      LAYER_TYPES_TO_DECORATE = ['torque'].freeze
+      DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
       # @throws NamedMapsPresenterError
       def initialize(visualization, layergroup, options, configuration)
@@ -22,12 +22,12 @@ module CartoDB
         return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
 
         {
-          'named_map' =>  {
-            'name' =>         @named_map_name,
-            'layer_index' =>  layer_index,
-            'params' =>       placeholders_data
+          'named_map' => {
+            'name' => @named_map_name,
+            'layer_index' => layer_index,
+            'params' => placeholders_data
           },
-          'query' => nil  #do not expose SQL query on Torque layers with named maps
+          'query' => nil # do not expose SQL query on Torque layers with named maps
         }
       end
 
@@ -40,31 +40,37 @@ module CartoDB
           nil
         else
           api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
-          privacy_type = @visualization.password_protected? ? 'private': api_templates_type
+          privacy_type = @visualization.password_protected? ? 'private' : api_templates_type
           {
-            type:     NAMED_MAP_TYPE,
-            order:    1,
-            options:  {
-              type:             NAMED_MAP_TYPE,
-              user_name:        @options.fetch(:user_name),
+            type: NAMED_MAP_TYPE,
+            order: 1,
+            options: {
+              type: NAMED_MAP_TYPE,
+              user_name: @options.fetch(:user_name),
               maps_api_template: ApplicationHelper.maps_api_template(privacy_type),
               sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
               # tiler_* and sql_api_* are kept for backwards compatibility
-              tiler_protocol:   @visualization.password_protected? ?
-                                  @configuration[:tiler]['private']['protocol'] :
-                                  @configuration[:tiler]['public']['protocol'],
-              tiler_domain:     @visualization.password_protected? ?
-                                  @configuration[:tiler]['private']['domain'] :
-                                  @configuration[:tiler]['public']['domain'],
-              tiler_port:       @visualization.password_protected? ?
-                                  @configuration[:tiler]['private']['port'] :
-                                  @configuration[:tiler]['public']['port'],
-              filter:           @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
-              named_map:        {
-                name:     @named_map_name,
+              tiler_protocol: if @visualization.password_protected?
+                                @configuration[:tiler]['private']['protocol']
+                              else
+                                @configuration[:tiler]['public']['protocol']
+                              end,
+              tiler_domain: if @visualization.password_protected?
+                              @configuration[:tiler]['private']['domain']
+                            else
+                              @configuration[:tiler]['public']['domain']
+                            end,
+              tiler_port: if @visualization.password_protected?
+                            @configuration[:tiler]['private']['port']
+                          else
+                            @configuration[:tiler]['public']['port']
+                          end,
+              filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
+              named_map: {
+                name: @named_map_name,
                 stat_tag: @visualization.id,
-                params:   placeholders_data,
-                layers:   configure_layers_data
+                params: placeholders_data,
+                layers: configure_layers_data
               },
               attribution: @visualization.attributions_from_derived_visualizations.join(', ')
             }
@@ -76,9 +82,9 @@ module CartoDB
 
       def placeholders_data
         data = {}
-        @layergroup_data.each { |layer|
-          data["layer#{layer[:index].to_s}".to_sym] = layer[:visible] ? 1: 0
-        }
+        @layergroup_data.each do |layer|
+          data["layer#{layer[:index]}".to_sym] = layer[:visible] ? 1 : 0
+        end
         data
       end
 
@@ -86,11 +92,11 @@ module CartoDB
       def configure_layers_data
         # Http/base layers don't appear at viz.json
         layers = @visualization.layers(:cartodb)
-        layers_data = Array.new
-        layers.each { |layer|
+        layers_data = []
+        layers.each do |layer|
           layer_vizjson = layer.get_presenter(@options, @configuration).to_vizjson_v2
           layers_data.push(data_for_carto_layer(layer_vizjson))
-        }
+        end
         layers_data
       end
 
@@ -122,6 +128,7 @@ module CartoDB
 
         data
       end
+
     end
   end
 end

@@ -1,8 +1,9 @@
 module Carto
   module FileSystem
     module Sanitize
+
       # Sanitize: NUL, slash, backslash, colon, asterisk, question, quote, less, greater, pipe
-      DISALLOWED_CHARACTERS = /[\x00\/\\:\*\?\"<>\|]/
+      DISALLOWED_CHARACTERS = %r{[\x00/\\:\*\?\"<>\|]}.freeze
 
       def self.sanitize_identifier(identifier, replacement_character: '_')
         if replacement_character =~ DISALLOWED_CHARACTERS
@@ -11,6 +12,7 @@ module Carto
           identifier.gsub(DISALLOWED_CHARACTERS, replacement_character)
         end
       end
+
     end
   end
 end

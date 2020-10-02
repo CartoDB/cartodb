@@ -1,5 +1,7 @@
 module Carto
+
   module DataImportExporterConfiguration
+
     EXPORTED_DATA_IMPORT_ATTRIBUTES = [
       :data_source, :data_type, :table_name, :state, :success, :updated_at, :created_at, :error_code, :queue_id,
       :tables_created_count, :table_names, :append, :migrate_table, :table_copy, :from_query, :id, :service_name,
@@ -9,9 +11,11 @@ module Carto
     ].freeze
 
     MAX_LOG_SIZE = 8192
+
   end
 
   module DataImportImporter
+
     include DataImportExporterConfiguration
 
     private
@@ -39,9 +43,11 @@ module Carto
 
       Carto::Log.new(type: exported_log[:type], entries: exported_log[:entries])
     end
+
   end
 
   module DataImportExporter
+
     include DataImportExporterConfiguration
 
     private
@@ -72,5 +78,7 @@ module Carto
         entries: log.entries && log.entries.length > MAX_LOG_SIZE ? log.entries.slice(-MAX_LOG_SIZE..-1) : log.entries
       }
     end
+
   end
+
 end

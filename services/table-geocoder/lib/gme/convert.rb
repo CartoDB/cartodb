@@ -1,6 +1,5 @@
 module Carto
   module Gme
-
     module Convert
 
       def components
@@ -10,7 +9,7 @@ module Carto
       def bounds
         raise 'not implemented'
       end
-    end
 
+    end
   end
 end

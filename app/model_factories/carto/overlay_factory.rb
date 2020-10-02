@@ -1,5 +1,6 @@
 module Carto
   class OverlayFactory
+
     def self.build_default_overlays(user)
       overlays = [
         build_share_overlay(2),
@@ -16,7 +17,7 @@ module Carto
     def self.build_logo_overlay(order)
       Carto::Overlay.new(
         order: order,
-        type: "logo",
+        type: 'logo',
         template: '',
         options: { display: true, x: 10, y: 40 }
       )
@@ -62,5 +63,6 @@ module Carto
       )
     end
     private_class_method :build_search_overlay
+
   end
 end

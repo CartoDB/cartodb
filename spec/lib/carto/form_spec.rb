@@ -1,145 +1,146 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe Form do
     let(:point_form) do
       {
-        "fill" => {
-          "size" => {
-            "fixed" => 7
+        'fill' => {
+          'size' => {
+            'fixed' => 7
           },
-          "color" => {
-            "fixed" => "#EE4D5A",
-            "opacity" => 0.9
+          'color' => {
+            'fixed' => '#EE4D5A',
+            'opacity' => 0.9
           }
         },
-        "stroke" => {
-          "size" => {
-            "fixed" => 1
+        'stroke' => {
+          'size' => {
+            'fixed' => 1
           },
-          "color" => {
-            "fixed" => "#FFFFFF",
-            "opacity" => 1
+          'color' => {
+            'fixed' => '#FFFFFF',
+            'opacity' => 1
           }
         },
-        "blending" => "none",
-        "aggregation" => {},
-        "labels" => {
-          "enabled" => false,
-          "attribute" => nil,
-          "font" => "DejaVu Sans Book",
-          "fill" => {
-            "size" => {
-              "fixed" => 10
+        'blending' => 'none',
+        'aggregation' => {},
+        'labels' => {
+          'enabled' => false,
+          'attribute' => nil,
+          'font' => 'DejaVu Sans Book',
+          'fill' => {
+            'size' => {
+              'fixed' => 10
             },
-            "color" => {
-              "fixed" => "#FFFFFF",
-              "opacity" => 1
+            'color' => {
+              'fixed' => '#FFFFFF',
+              'opacity' => 1
             }
           },
-          "halo" => {
-            "size" => {
-              "fixed" => 1
+          'halo' => {
+            'size' => {
+              'fixed' => 1
             },
-            "color" => {
-              "fixed" => "#6F808D",
-              "opacity" => 1
+            'color' => {
+              'fixed' => '#6F808D',
+              'opacity' => 1
             }
           },
-          "offset" => -10,
-          "overlap" => true,
-          "placement" => "point"
+          'offset' => -10,
+          'overlap' => true,
+          'placement' => 'point'
         }
       }
     end
 
     let(:polygon_form) do
       {
-        "fill" => {
-          "color" => {
-            "fixed" => "#826DBA",
-            "opacity" => 0.9
+        'fill' => {
+          'color' => {
+            'fixed' => '#826DBA',
+            'opacity' => 0.9
           }
         },
-        "stroke" => {
-          "size" => {
-            "fixed" => 1
+        'stroke' => {
+          'size' => {
+            'fixed' => 1
           },
-          "color" => {
-            "fixed" => "#FFFFFF",
-            "opacity" => 0.5
+          'color' => {
+            'fixed' => '#FFFFFF',
+            'opacity' => 0.5
           }
         },
-        "blending" => "none",
-        "aggregation" => {},
-        "labels" => {
-          "enabled" => false,
-          "attribute" => nil,
-          "font" => "DejaVu Sans Book",
-          "fill" => {
-            "size" => {
-              "fixed" => 10
+        'blending' => 'none',
+        'aggregation' => {},
+        'labels' => {
+          'enabled' => false,
+          'attribute' => nil,
+          'font' => 'DejaVu Sans Book',
+          'fill' => {
+            'size' => {
+              'fixed' => 10
             },
-            "color" => {
-              "fixed" => "#FFFFFF",
-              "opacity" => 1
+            'color' => {
+              'fixed' => '#FFFFFF',
+              'opacity' => 1
             }
           },
-          "halo" => {
-            "size" => {
-              "fixed" => 1
+          'halo' => {
+            'size' => {
+              'fixed' => 1
             },
-            "color" => {
-              "fixed" => "#6F808D",
-              "opacity" => 1
+            'color' => {
+              'fixed' => '#6F808D',
+              'opacity' => 1
             }
           },
-          "offset" => -10,
-          "overlap" => true,
-          "placement" => "point"
+          'offset' => -10,
+          'overlap' => true,
+          'placement' => 'point'
         }
       }
     end
 
     let(:line_form) do
       {
-        "fill" => {},
-        "stroke" => {
-          "size" => {
-            "fixed" => 1.5
+        'fill' => {},
+        'stroke' => {
+          'size' => {
+            'fixed' => 1.5
           },
-          "color" => {
-            "fixed" => "#4CC8A3",
-            "opacity" => 1
+          'color' => {
+            'fixed' => '#4CC8A3',
+            'opacity' => 1
           }
         },
-        "blending" => "none",
-        "aggregation" => {},
-        "labels" => {
-          "enabled" => false,
-          "attribute" => nil,
-          "font" => "DejaVu Sans Book",
-          "fill" => {
-            "size" => {
-              "fixed" => 10
+        'blending' => 'none',
+        'aggregation' => {},
+        'labels' => {
+          'enabled' => false,
+          'attribute' => nil,
+          'font' => 'DejaVu Sans Book',
+          'fill' => {
+            'size' => {
+              'fixed' => 10
             },
-            "color" => {
-              "fixed" => "#FFFFFF",
-              "opacity" => 1
+            'color' => {
+              'fixed' => '#FFFFFF',
+              'opacity' => 1
             }
           },
-          "halo" => {
-            "size" => {
-              "fixed" => 1
+          'halo' => {
+            'size' => {
+              'fixed' => 1
             },
-            "color" => {
-              "fixed" => "#6F808D",
-              "opacity" => 1
+            'color' => {
+              'fixed' => '#6F808D',
+              'opacity' => 1
             }
           },
-          "offset" => -10,
-          "overlap" => true,
-          "placement" => "point"
+          'offset' => -10,
+          'overlap' => true,
+          'placement' => 'point'
         }
       }
     end
@@ -168,4 +169,5 @@ module Carto
       form.to_hash.should eq point_form
     end
   end
+
 end

@@ -30,7 +30,8 @@ describe Carto::Api::AnalysesController do
       user_domain: user.username,
       api_key: user.api_key,
       visualization_id: visualization.id,
-      id: analysis_id)
+      id: analysis_id
+    )
   end
 
   def clean_analysis_definition(analysis_definition)
@@ -105,7 +106,8 @@ describe Carto::Api::AnalysesController do
       analyses_url(
         user_domain: user.username,
         api_key: user.api_key,
-        visualization_id: visualization.id)
+        visualization_id: visualization.id
+      )
     end
 
     it 'creates new analysis' do
@@ -178,13 +180,13 @@ describe Carto::Api::AnalysesController do
       post_json create_analysis_url(@user, @visualization), nil do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), "" do |response|
+      post_json create_analysis_url(@user, @visualization), '' do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), "wadus" do |response|
+      post_json create_analysis_url(@user, @visualization), 'wadus' do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), "wadus: 1" do |response|
+      post_json create_analysis_url(@user, @visualization), 'wadus: 1' do |response|
         response.status.should eq 422
       end
     end
@@ -202,13 +204,13 @@ describe Carto::Api::AnalysesController do
       post_json create_analysis_url(@user, @visualization), analysis_definition: nil do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), analysis_definition: "" do |response|
+      post_json create_analysis_url(@user, @visualization), analysis_definition: '' do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), analysis_definition: "wadus" do |response|
+      post_json create_analysis_url(@user, @visualization), analysis_definition: 'wadus' do |response|
         response.status.should eq 422
       end
-      post_json create_analysis_url(@user, @visualization), analysis_definition: "wadus: 1" do |response|
+      post_json create_analysis_url(@user, @visualization), analysis_definition: 'wadus: 1' do |response|
         response.status.should eq 422
       end
     end
@@ -287,13 +289,13 @@ describe Carto::Api::AnalysesController do
       put_json viz_analysis_url(@user, @visualization, @analysis), nil do |response|
         response.status.should eq 422
       end
-      put_json viz_analysis_url(@user, @visualization, @analysis), "" do |response|
+      put_json viz_analysis_url(@user, @visualization, @analysis), '' do |response|
         response.status.should eq 422
       end
-      put_json viz_analysis_url(@user, @visualization, @analysis), "wadus" do |response|
+      put_json viz_analysis_url(@user, @visualization, @analysis), 'wadus' do |response|
         response.status.should eq 422
       end
-      put_json viz_analysis_url(@user, @visualization, @analysis), "wadus: 1" do |response|
+      put_json viz_analysis_url(@user, @visualization, @analysis), 'wadus: 1' do |response|
         response.status.should eq 422
       end
     end
@@ -311,13 +313,13 @@ describe Carto::Api::AnalysesController do
       put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: nil do |response|
         response.status.should eq 422
       end
-      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: "" do |response|
+      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: '' do |response|
         response.status.should eq 422
       end
-      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: "wadus" do |response|
+      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: 'wadus' do |response|
         response.status.should eq 422
       end
-      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: "wadus: 1" do |response|
+      put_json viz_analysis_url(@user, @visualization, @analysis), analysis_definition: 'wadus: 1' do |response|
         response.status.should eq 422
       end
     end

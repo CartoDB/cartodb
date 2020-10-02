@@ -2,6 +2,7 @@ require 'helpers/unique_names_helper'
 
 module CartoDB
   module Factories
+
     include UniqueNamesHelper
 
     def new_organization(attributes = {})
@@ -11,11 +12,11 @@ module CartoDB
       organization.seats =            attributes[:seats] || 10
       organization.quota_in_bytes =   attributes[:quota_in_bytes] || 100.megabytes
       organization.geocoding_quota =  attributes[:geocoding_quota] || 1000
-      organization.here_isolines_quota =    attributes[:here_isolines_quota] || 1000
+      organization.here_isolines_quota = attributes[:here_isolines_quota] || 1000
       organization.obs_snapshot_quota = attributes[:obs_snapshot_quota] || 1000
       organization.obs_general_quota = attributes[:obs_general_quota] || 1000
-      organization.mapzen_routing_quota =    attributes[:mapzen_routing_quota] || 1000
-      organization.map_view_quota =   attributes[:map_view_quota] || 100000
+      organization.mapzen_routing_quota = attributes[:mapzen_routing_quota] || 1000
+      organization.map_view_quota =   attributes[:map_view_quota] || 100_000
       organization.website =          attributes[:website] || 'carto.com'
       organization.description =      attributes[:description] || 'Lorem ipsum dolor sit amet'
       organization.display_name =     attributes[:display_name] || 'Vizzuality Inc'
@@ -56,9 +57,12 @@ module CartoDB
       organization.reload
       organization
     end
+
   end
 end
 
 class OrganizationFactory
+
   include CartoDB::Factories
+
 end

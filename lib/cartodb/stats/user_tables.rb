@@ -2,29 +2,25 @@ require_relative 'aggregator'
 
 module CartoDB
   module Stats
-
     class UserTables < Aggregator
 
-      PREFIX = 'tables'
+      PREFIX = 'tables'.freeze
 
       def self.instance(config={})
         # INFO: We explicitly not want anything on the prefix other than PREFIX constant
-        super(PREFIX, config, host_info=nil)
+        super(PREFIX, config, host_info = nil)
       end
 
       def update_tables_counter(count)
-      begin
         if count == -1
-          decrement("total")
+          decrement('total')
         else
-          increment("total")
+          increment('total')
         end
       rescue StandardError
       end
-    end
 
-    def update_tables_counter_per_user(count, user)
-      begin
+      def update_tables_counter_per_user(count, user)
         if count == -1
           decrement("users.#{user}")
         else
@@ -32,10 +28,8 @@ module CartoDB
         end
       rescue StandardError
       end
-    end
 
-    def update_tables_counter_per_host(count)
-      begin
+      def update_tables_counter_per_host(count)
         if count == -1
           decrement("hosts.#{Socket.gethostname.gsub('.', '_')}")
         else
@@ -43,10 +37,8 @@ module CartoDB
         end
       rescue StandardError
       end
-    end
 
-    def update_tables_counter_per_plan(count, plan)
-      begin
+      def update_tables_counter_per_plan(count, plan)
         if count == -1
           decrement("plans.#{plan.gsub(/[\[\]]/, '').upcase}")
         else
@@ -54,9 +46,7 @@ module CartoDB
         end
       rescue StandardError
       end
-    end
 
     end
-
   end
 end

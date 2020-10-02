@@ -1,4 +1,5 @@
 module TrackjsHelper
+
   def insert_trackjs(app = 'editor', freq = 1)
     lucky = freq.nil? || freq >= rand
     if Cartodb.get_config(:trackjs, 'customer') && params[:cookies] != '0' && lucky
@@ -11,4 +12,5 @@ module TrackjsHelper
       render(partial: 'shared/trackjs', locals: locals)
     end
   end
+
 end

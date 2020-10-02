@@ -7,4 +7,3 @@ require_relative './importer/loader'
 require_relative './importer/ogr2ogr'
 require_relative './importer/runner'
 require_relative './importer/source_file'
-

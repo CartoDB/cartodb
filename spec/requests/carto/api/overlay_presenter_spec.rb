@@ -8,9 +8,9 @@ describe Carto::Api::OverlayPresenter do
   describe '#to_poro' do
     it 'renders a hash representation of an overlay' do
       overlay = OpenStruct.new(
-        order:    1,
-        type:     'zoom',
-        options:  {}
+        order: 1,
+        type: 'zoom',
+        options: {}
       )
 
       representation = Carto::Api::OverlayPresenter.new(overlay).to_poro
@@ -25,9 +25,9 @@ describe Carto::Api::OverlayPresenter do
 
     it 'renders a hash representation of an overlay for vizjson' do
       overlay = OpenStruct.new(
-        order:    1,
-        type:     'zoom',
-        options:  {}
+        order: 1,
+        type: 'zoom',
+        options: {}
       )
 
       representation = Carto::Api::OverlayPresenter.new(overlay).to_vizjson_poro

@@ -1,4 +1,4 @@
-require "instagram"
+require 'instagram'
 
 module CartoDB
   module Datasources
@@ -6,9 +6,9 @@ module CartoDB
       class InstagramOAuth < BaseOAuth
 
         # Required for all datasources
-        DATASOURCE_NAME = 'instagram'
+        DATASOURCE_NAME = 'instagram'.freeze
 
-        FORMAT_ALL_MEDIA = 'all_media'
+        FORMAT_ALL_MEDIA = 'all_media'.freeze
 
         # Constructor
         # @param config Array
@@ -21,13 +21,15 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super(config, user, %w{ app_key app_secret callback_url }, DATASOURCE_NAME)
+          super(config, user, %w{app_key app_secret callback_url}, DATASOURCE_NAME)
 
           @user         = user
           @app_key      = config.fetch('app_key')
           @app_secret   = config.fetch('app_secret')
 
-          raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.has_feature_flag?('instagram_import')
+          unless @user.has_feature_flag?('instagram_import')
+            raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username)
+          end
 
           service_name = service_name_for_user(DATASOURCE_NAME, @user)
           placeholder = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)
@@ -44,7 +46,7 @@ module CartoDB
         # @param user : ::User
         # @return CartoDB::Datasources::Url::InstagramOAuth
         def self.get_new(config, user)
-          return new(config, user)
+          new(config, user)
         end
 
         # If will provide a url to download the resource, or requires calling get_resource()
@@ -59,27 +61,27 @@ module CartoDB
         def get_auth_url(use_callback_flow=true)
           # TODO: Add CSRF here (http://instagram.com/developer/authentication/)
           Instagram.authorize_url({
-            client_id:      @app_key,
-            response_type:  'code',
-            redirect_uri:   @callback_url
-          })
-        rescue StandardError => ex
-          raise AuthError.new("get_auth_url(#{use_callback_flow}): #{ex.message}", DATASOURCE_NAME)
+                                    client_id: @app_key,
+                                    response_type: 'code',
+                                    redirect_uri: @callback_url
+                                  })
+        rescue StandardError => e
+          raise AuthError.new("get_auth_url(#{use_callback_flow}): #{e.message}", DATASOURCE_NAME)
         end
 
         # Validates the authorization callback
         # @param params : mixed
         def validate_callback(params)
           response = Instagram.get_access_token(params[:code], {
-            client_id:      @app_key,
-            client_secret:  @app_secret,
-            redirect_uri:   @callback_url
-          })
+                                                  client_id: @app_key,
+                                                  client_secret: @app_secret,
+                                                  redirect_uri: @callback_url
+                                                })
           @access_token = response.access_token
           @client = Instagram.client(access_token: @access_token)
           @access_token
-        rescue StandardError => ex
-          raise AuthError.new("validate_callback(#{params.inspect}): #{ex.message}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise AuthError.new("validate_callback(#{params.inspect}): #{e.message}", DATASOURCE_NAME)
         end
 
         # Set the token
@@ -89,8 +91,8 @@ module CartoDB
         def token=(token)
           @access_token = token
           @client = Instagram.client(access_token: @access_token)
-        rescue StandardError => ex
-          handle_error(ex, "token= : #{ex.message}")
+        rescue StandardError => e
+          handle_error(e, "token= : #{e.message}")
         end
 
         # Retrieve set token
@@ -105,15 +107,15 @@ module CartoDB
         # @throws TokenExpiredOrInvalidError
         # @throws AuthError
         # @throws DataDownloadError
-        def get_resources_list(filter=[])
+        def get_resources_list(_filter=[])
           [
             {
-              id:       FORMAT_ALL_MEDIA,
-              title:    'All your photos and videos',
-              url:      'All your photos and videos',
-              service:  DATASOURCE_NAME,
+              id: FORMAT_ALL_MEDIA,
+              title: 'All your photos and videos',
+              url: 'All your photos and videos',
+              service: DATASOURCE_NAME,
               checksum: '',
-              size:     NO_CONTENT_SIZE_PROVIDED
+              size: NO_CONTENT_SIZE_PROVIDED
             }
           ]
         end
@@ -125,7 +127,6 @@ module CartoDB
         # @throws AuthError
         # @throws DataDownloadError
         def get_resource(id)
-
           contents = [
             field_to_csv('thumbnail'),
             field_to_csv('image'),
@@ -144,10 +145,11 @@ module CartoDB
 
           max_id = nil
 
-          begin
+          loop do
             batch_contents, max_id = get_resource_page(id, max_id)
             contents << batch_contents
-          end while !max_id.nil?
+            break if max_id.nil?
+          end
 
           contents
         end
@@ -159,12 +161,12 @@ module CartoDB
         # @throws DataDownloadError
         def get_resource_metadata(id)
           {
-            id:       FORMAT_ALL_MEDIA,
+            id: FORMAT_ALL_MEDIA,
             filename: "#{DATASOURCE_NAME}_#{@client.user.username}.csv",
-            size:     NO_CONTENT_SIZE_PROVIDED
+            size: NO_CONTENT_SIZE_PROVIDED
           }
-        rescue StandardError => ex
-          handle_error(ex, "get_resource_metadata() #{id}: #{ex.message}")
+        rescue StandardError => e
+          handle_error(e, "get_resource_metadata() #{id}: #{e.message}")
         end
 
         # Retrieves current filters
@@ -175,7 +177,7 @@ module CartoDB
 
         # Sets current filters
         # @param filter_data {}
-        def filter=(filter_data=[])
+        def filter=(_filter_data=[])
           nil
         end
 
@@ -193,7 +195,7 @@ module CartoDB
 
         # Stores the data import item instance to use/manipulate it
         # @param value DataImport
-        def data_import_item=(value)
+        def data_import_item=(_value)
           nil
         end
 
@@ -204,10 +206,8 @@ module CartoDB
           # checking if metadata is returned, if so token
           # is valid, if not it is invalid
           response = get_resource_metadata(DATASOURCE_NAME)
-          if response[:id]
-            true
-          end
-        rescue StandardError => ex
+          true if response[:id]
+        rescue StandardError => e
           false
         end
 
@@ -215,15 +215,15 @@ module CartoDB
         def revoke_token
           # TODO: See how to check this
           true
-        rescue StandardError => ex
-          raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
+        rescue StandardError => e
+          raise AuthError.new("revoke_token: #{e.message}", DATASOURCE_NAME)
         end
 
         private
 
         def field_to_csv(field)
-          '"' + field.to_s.gsub('"', '""').gsub("\\n", ' ').gsub("\x0D", ' ').gsub("\x0A", ' ').gsub("\0", '')
-                     .gsub("\\", ' ') + '"'
+          '"' + field.to_s.gsub('"', '""').gsub('\\n', ' ').gsub("\x0D", ' ').gsub("\x0A", ' ').gsub("\0", '')
+                     .gsub('\\', ' ') + '"'
         end
 
         # @param resource_id String
@@ -265,9 +265,9 @@ module CartoDB
             ].join(',') << "\n"
           end
 
-          [ contents, new_max_id ]
-        rescue StandardError => ex
-          handle_error(ex, "get_resource() #{resource_id}: #{ex.message}")
+          [contents, new_max_id]
+        rescue StandardError => e
+          handle_error(e, "get_resource() #{resource_id}: #{e.message}")
         end
 
         # Handles
@@ -276,7 +276,7 @@ module CartoDB
         # @throws TokenExpiredOrInvalidError
         # @throws AuthError
         # @throws mixed
-        def handle_error(original_exception, message)
+        def handle_error(original_exception, _message)
           # TODO: Implement
           raise original_exception
         end

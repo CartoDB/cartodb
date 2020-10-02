@@ -43,6 +43,7 @@ module Carto
     def verify!(code)
       timestamp = verify(code)
       raise Carto::UnauthorizedError.new('The code is not valid') unless timestamp
+
       update!(enabled: true, last_login: timestamp)
     end
 
@@ -87,5 +88,6 @@ module Carto
     def create_shared_secret
       self.shared_secret = ROTP::Base32.random_base32 unless shared_secret.present?
     end
+
   end
 end

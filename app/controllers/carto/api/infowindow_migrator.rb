@@ -1,6 +1,7 @@
 module Carto
   module Api
     module InfowindowMigrator
+
       MUSTACHE_ROOT_PATH = 'lib/assets/javascripts/builder/mustache-templates'.freeze
 
       def migrate_builder_infowindow(templated_element, mustache_dir: 'infowindows')
@@ -30,7 +31,8 @@ module Carto
           templated_element[:template] = get_template(
             new_template_name,
             templated_sym[:template],
-            template_content_path).gsub('#35AAE5', fixed_color)
+            template_content_path
+          ).gsub('#35AAE5', fixed_color)
 
           templated_element[:headerColor] = {
             color: {
@@ -44,7 +46,8 @@ module Carto
           templated_element[:template] = get_template(
             old_template_name,
             templated_sym[:template],
-            "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/#{get_template_name(old_template_name)}.jst.mustache")
+            "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/#{get_template_name(old_template_name)}.jst.mustache"
+          )
         end
 
         templated_element[:template_name] = new_template_name
@@ -72,8 +75,8 @@ module Carto
 
       def parse_old_template_name(old_template_name)
         Pathname.new(old_template_name).basename.to_s
-      rescue StandardError => exception
-        log_error(message: "InfowindowMigrator: Error parsing template", exception: exception, old_template_name: old_template_name)
+      rescue StandardError => e
+        log_error(message: 'InfowindowMigrator: Error parsing template', exception: e, old_template_name: old_template_name)
         old_template_name
       end
 
@@ -89,6 +92,7 @@ module Carto
           fallback_template
         end
       end
+
     end
   end
 end

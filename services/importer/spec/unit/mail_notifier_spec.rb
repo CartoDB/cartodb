@@ -4,7 +4,6 @@ require_relative '../../../../spec/rspec_configuration.rb'
 require          'active_support/core_ext' # Needed for string.blank?
 
 describe CartoDB::Importer2::MailNotifier do
-
   START_TIME = 0
 
   before(:each) do
@@ -21,7 +20,6 @@ describe CartoDB::Importer2::MailNotifier do
   end
 
   describe '#notify_if_needed' do
-
     it 'should send a mail if the import took more than MIN_IMPORT_TIME_TO_NOTIFY' do
       @data_import.stubs(:synchronization_id).once.returns(nil)
       error_text = { title: 'error stubbing' }
@@ -90,5 +88,4 @@ describe CartoDB::Importer2::MailNotifier do
       @mail_notifier.mail_sent?.should == true
     end
   end
-
 end

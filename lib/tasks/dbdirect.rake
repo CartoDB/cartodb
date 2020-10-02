@@ -2,12 +2,11 @@ require_relative '../../lib/carto/dbdirect/metadata_manager'
 
 namespace :carto do
   namespace :dbdirect do
-
     def save_certs(username, name, id, arn, data, output_directory)
       base_filename = "#{username}_#{name}"
       key_filename = File.join(output_directory, "#{base_filename}.key")
       crt_filename = File.join(output_directory, "#{base_filename}.crt")
-      ca_filename = File.join(output_directory, "server_ca.crt")
+      ca_filename = File.join(output_directory, 'server_ca.crt')
       pk8_filename = File.join(output_directory, "#{base_filename}.key.pk8")
       puts "Certificate #{name} generated for #{username}"
       puts "  id: #{id}"
@@ -32,7 +31,7 @@ namespace :carto do
       input == 'y'
     end
 
-    desc "Generate DB direct certificate"
+    desc 'Generate DB direct certificate'
     task :generate_certificate, [:username, :name, :password, :validity] => :environment do |_t, args|
       user = Carto::User.find_by_username(args.username)
       raise "User #{args.username} not found" unless user
@@ -49,7 +48,7 @@ namespace :carto do
       save_certs user.username, cert.name, cert.id, cert.arn, data, '.'
     end
 
-    desc "Show DB direct user certificates"
+    desc 'Show DB direct user certificates'
     task :user_certificates, [:username] => :environment do |_t, args|
       user = Carto::User.find_by_username(args.username)
       raise "User #{args.username} not found" unless user
@@ -62,7 +61,7 @@ namespace :carto do
       end
     end
 
-    desc "Show DB direct organization certificates"
+    desc 'Show DB direct organization certificates'
     task :organization_certificates, [:org] => :environment do |_t, args|
       organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
       raise "Couldn't find organization #{args.org.inspect}" unless organization.present?
@@ -78,7 +77,7 @@ namespace :carto do
       end
     end
 
-    desc "Revoke DB direct certificate"
+    desc 'Revoke DB direct certificate'
     task :revoke_certificate, [:id] => :environment do |_t, args|
       cert = Carto::DbdirectCertificate.find(args.id)
       raise "Certificate #{args.id} not found" unless cert
@@ -88,11 +87,11 @@ namespace :carto do
         puts "  ARN: #{cert.arn}"
         puts "  Expiration was #{cert.expiration}"
         cert.destroy!
-        puts "DESTROYED!!"
+        puts 'DESTROYED!!'
       end
     end
 
-    desc "Show organization ips"
+    desc 'Show organization ips'
     task :get_organization_ips, [:org] => :environment do |_t, args|
       organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
       raise "Couldn't find organization #{args.org.inspect}" unless organization.present?
@@ -107,7 +106,7 @@ namespace :carto do
       end
     end
 
-    desc "Show user ips"
+    desc 'Show user ips'
     task :get_user_ips, [:user_spec] => :environment do |_t, args|
       user = Carto::User.find_by_id(args.user_spec) || Carto::User.find_by_username(args.user_spec)
       raise "Couldn't find user #{args.user_spec.inspect}" unless user.present?
@@ -122,7 +121,7 @@ namespace :carto do
       end
     end
 
-    desc "Save orgnization ips (use ; to separate ips)"
+    desc 'Save orgnization ips (use ; to separate ips)'
     task :set_organization_ips, [:org, :ips] => :environment do |_t, args|
       organization = Carto::Organization.find_by_id(args.org) || Carto::Organization.find_by_name(args.org)
       raise "Couldn't find organization #{args.org.inspect}" unless organization.present?
@@ -142,7 +141,7 @@ namespace :carto do
         if old_ips.present?
           puts "IPs deleted for organization #{org_id}:"
         else
-          puts "No changes"
+          puts 'No changes'
         end
       else
         puts "New IPs for organization #{org_id}:"
@@ -150,10 +149,10 @@ namespace :carto do
       end
     end
 
-    desc "Check database and redis metadata are in sync"
-    task :check_metadata_sync, [] => :environment do |_t, args|
+    desc 'Check database and redis metadata are in sync'
+    task :check_metadata_sync, [] => :environment do |_t, _args|
       config = Cartodb.get_config(:dbdirect, 'metadata_persist') || {}
-      raise "Config entries for dbdirect:metadata_persist are missing" unless config.any?
+      raise 'Config entries for dbdirect:metadata_persist are missing' unless config.any?
 
       metadata_manager = Carto::Dbdirect::MetadataManager.new(config, $users_metadata)
 
@@ -167,7 +166,7 @@ namespace :carto do
           puts "  > Database: #{database_ips.join(', ')}"
           puts "  > Metadata: #{metadata_ips.join(', ')}"
           puts "  > Diff: #{diff.join(', ')}"
-          puts ""
+          puts ''
         end
       end
     end

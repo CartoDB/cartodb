@@ -9,15 +9,16 @@ describe Carto::Superadmin::UserMigrationExportsController do
     {
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(
         credentials['username'],
-        credentials['password']),
-      'HTTP_ACCEPT' => "application/json"
+        credentials['password']
+      ),
+      'HTTP_ACCEPT' => 'application/json'
     }
   end
 
   let(:invalid_headers) do
     {
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials('not', 'trusworthy'),
-      'HTTP_ACCEPT' => "application/json"
+      'HTTP_ACCEPT' => 'application/json'
     }
   end
 

@@ -7,7 +7,6 @@ describe Carto::Api::UserCreationsController do
   include AccountTypesHelper
 
   describe 'show' do
-
     before :all do
       create_account_type_fg('FREE')
       create_account_type_fg('ORGANIZATION USER')
@@ -85,5 +84,4 @@ describe Carto::Api::UserCreationsController do
       end
     end
   end
-
 end

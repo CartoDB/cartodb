@@ -1,13 +1,14 @@
 require 'active_support/time'
 
 module Carto::Billing
+
   def last_billing_cycle
     day = period_end_date.day
     date = day > Date.today.day ? (Date.today - 1.month) : Date.today
     begin
       Date.new(date.year, date.month, day)
     rescue ArgumentError
-      day = day - 1
+      day -= 1
       retry
     end
   end
@@ -18,7 +19,7 @@ module Carto::Billing
     begin
       Date.new(date.year, date.month, day)
     rescue ArgumentError
-      day = day - 1
+      day -= 1
       retry
     end
   end
@@ -54,4 +55,5 @@ module Carto::Billing
   def enterprise?
     Carto::AccountType::ENTERPRISE_PLANS.include?(account_type)
   end
+
 end

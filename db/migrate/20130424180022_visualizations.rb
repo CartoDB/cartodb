@@ -1,14 +1,14 @@
 class VisualizationsFixMigration < Sequel::Migration
+
   def up
-    SequelRails.connection.run(%Q{
+    SequelRails.connection.run(%{
       ALTER TABLE visualizations
-      ALTER COLUMN map_id 
+      ALTER COLUMN map_id
       TYPE integer
       USING map_id::integer
     })
-  end #up
-  
-  def down
-  end #down
-end # VisualizationsFixMigration
+  end # up
 
+  def down; end # down
+
+end # VisualizationsFixMigration

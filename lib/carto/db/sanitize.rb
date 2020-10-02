@@ -1,14 +1,15 @@
 module Carto
   module DB
     module Sanitize
+
       PREFIX_REPLACEMENT = 'table_'.freeze
       SUFFIX_REPLACEMENT = '_t'.freeze
       CHARACTER_REPLACEMENT = '_'.freeze
       # See https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
       MAX_IDENTIFIER_LENGTH = 63
-      DISALLOWED_STARTING_CHARACTERS_REGEX = /^[^a-z]+/
-      DISALLOWED_CHARACTERS_REGEX = /[^a-z|_|0-9]/
-      REPEATED_UNDERSCORES_REGEX = /_{2,}/
+      DISALLOWED_STARTING_CHARACTERS_REGEX = /^[^a-z]+/.freeze
+      DISALLOWED_CHARACTERS_REGEX = /[^a-z|_|0-9]/.freeze
+      REPEATED_UNDERSCORES_REGEX = /_{2,}/.freeze
       # PG12_DEPRECATED raster, raster_overviews and raster_columns not supported in postgis 3+
       SYSTEM_TABLE_NAMES    = %w(spatial_ref_sys geography_columns geometry_columns raster_columns raster_overviews
                                  cdb_tablemetadata geometry raster).freeze
@@ -33,11 +34,10 @@ module Carto
 
       REJECTED_COLUMN_NAMES = (SYSTEM_COLUMN_NAMES + ADDITIONAL_RESERVED_COLUMNS).freeze
 
-      # FIXME we have been reserving these name in columns but I don't know the reason ¯\_(ツ)_/¯
+      # FIXME: we have been reserving these name in columns but I don't know the reason ¯\_(ツ)_/¯
       ADDITIONAL_WORDS      = %w(between new off old format controller action).freeze
 
       RESERVED_COLUMN_NAMES = SYSTEM_COLUMN_NAMES + RESERVED_WORDS + ADDITIONAL_WORDS
-
 
       def self.append_with_truncate_and_sanitize(identifier, suffix)
         suffix_length = suffix.length
@@ -84,6 +84,7 @@ module Carto
 
         sanitized_identifier
       end
+
     end
   end
 end

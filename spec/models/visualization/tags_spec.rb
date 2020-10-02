@@ -31,10 +31,10 @@ describe Visualization::Tags do
       vis_1_tag = 'v1tag'
       vis_2_tag = 'v2tag'
 
-      Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'viz_1', locked:true, \
-                                                         tags: [vis_1_tag])).store
-      Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'viz_2', locked:false, \
-                                                         tags: [vis_2_tag])).store
+      Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'viz_1', locked: true, \
+                                                  tags: [vis_1_tag])).store
+      Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'viz_2', locked: false, \
+                                                  tags: [vis_2_tag])).store
 
       tags = Visualization::Tags.new(@user_mock)
 
@@ -57,10 +57,9 @@ describe Visualization::Tags do
       manoloescobar_tag = 'manoloescobar'
       manolo_escobar_tag = 'Manolo Escobar'
 
-
-      v1 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v1', locked:true, tags: [manolo_tag, manoloescobar_tag, manolo_escobar_tag])).store
-      v2 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v2', locked:false, tags: [manolo_tag])).store
-      v3 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v3', locked:false, tags: [manolo_escobar_tag, manoloescobar_tag])).store
+      v1 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v1', locked: true, tags: [manolo_tag, manoloescobar_tag, manolo_escobar_tag])).store
+      v2 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v2', locked: false, tags: [manolo_tag])).store
+      v3 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v3', locked: false, tags: [manolo_escobar_tag, manoloescobar_tag])).store
 
       vqb1 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_tag.upcase]).build.map(&:id)
 
@@ -85,13 +84,13 @@ describe Visualization::Tags do
   def random_attributes(attributes={})
     random = unique_name('viz')
     {
-      name:         attributes.fetch(:name, random),
-      description:  attributes.fetch(:description, "description #{random}"),
-      privacy:      attributes.fetch(:privacy, 'public'),
-      tags:         attributes.fetch(:tags, ['tag 1']),
-      type:         attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
-      user_id:      attributes.fetch(:user_id, Carto::UUIDHelper.random_uuid),
-      locked:       attributes.fetch(:locked, false)
+      name: attributes.fetch(:name, random),
+      description: attributes.fetch(:description, "description #{random}"),
+      privacy: attributes.fetch(:privacy, 'public'),
+      tags: attributes.fetch(:tags, ['tag 1']),
+      type: attributes.fetch(:type, CartoDB::Visualization::Member::TYPE_CANONICAL),
+      user_id: attributes.fetch(:user_id, Carto::UUIDHelper.random_uuid),
+      locked: attributes.fetch(:locked, false)
     }
   end
 end

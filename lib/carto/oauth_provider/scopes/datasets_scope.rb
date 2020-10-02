@@ -2,6 +2,7 @@ module Carto
   module OauthProvider
     module Scopes
       class DatasetsScope < DefaultScope
+
         READ_PERMISSIONS = ['select'].freeze
         WRITE_PERMISSIONS = ['insert', 'update', 'delete'].freeze
 
@@ -11,8 +12,8 @@ module Carto
         }.freeze
 
         DESCRIPTIONS = {
-          r: "%<table_name>s (read access)",
-          rw: "%<table_name>s (read/write access)"
+          r: '%<table_name>s (read access)',
+          rw: '%<table_name>s (read/write access)'
         }.freeze
 
         attr_reader :table
@@ -32,7 +33,7 @@ module Carto
 
         def description(permission = @permission, table = @table, schema = @schema)
           schema_table = schema.present? && schema != 'public' ? "#{schema}.#{table}" : table
-          DESCRIPTIONS[permission] % { table_name: schema_table }
+          format(DESCRIPTIONS[permission], table_name: schema_table)
         end
 
         def permission
@@ -90,6 +91,7 @@ module Carto
         def self.permission_from_db_to_scope(permission)
           permission = permission.split(',').sort
           return nil if permission.empty? || (permission - (READ_PERMISSIONS + WRITE_PERMISSIONS)).any?
+
           PERMISSIONS.find { |_, values| permission == values.sort }.first
         end
 
@@ -98,6 +100,7 @@ module Carto
           table, schema = Table.table_and_schema(table_and_schema)
           [table, schema, permission]
         end
+
       end
     end
   end

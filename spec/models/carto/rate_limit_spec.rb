@@ -112,7 +112,7 @@ describe Carto::RateLimit do
       @user.rate_limit_id = @rate_limit.id
       @user.save
 
-      $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["0", "1", "2"]
+      $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ['0', '1', '2']
 
       @rate_limit.maps_anonymous.first.max_burst = 1
       @rate_limit.maps_anonymous.first.count_per_period = 2
@@ -121,7 +121,7 @@ describe Carto::RateLimit do
       @rate_limit.save
       @rate_limit.save_to_redis(@user)
 
-      $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["1", "2", "3"]
+      $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ['1', '2', '3']
     end
 
     it 'is persisted correctly to redis' do
@@ -154,33 +154,33 @@ describe Carto::RateLimit do
 
       @rate_limit.save_to_redis(@user)
 
-      $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["0", "1", "2"]
-      $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == ["3", "4", "5"]
-      $limits_metadata.LRANGE("#{map_prefix}static_named", 0, 2).should == ["6", "7", "8"]
-      $limits_metadata.LRANGE("#{map_prefix}dataview", 0, 2).should == ["9", "10", "11"]
-      $limits_metadata.LRANGE("#{map_prefix}dataview_search", 0, 2).should == ["12", "13", "14"]
-      $limits_metadata.LRANGE("#{map_prefix}analysis", 0, 2).should == ["18", "19", "20"]
-      $limits_metadata.LRANGE("#{map_prefix}tile", 0, 5).should == ["1", "2", "17", "30", "32", "34"]
-      $limits_metadata.LRANGE("#{map_prefix}attributes", 0, 2).should == ["21", "22", "23"]
-      $limits_metadata.LRANGE("#{map_prefix}named_list", 0, 2).should == ["24", "25", "26"]
-      $limits_metadata.LRANGE("#{map_prefix}named_create", 0, 2).should == ["27", "28", "29"]
-      $limits_metadata.LRANGE("#{map_prefix}named_get", 0, 2).should == ["30", "31", "32"]
-      $limits_metadata.LRANGE("#{map_prefix}named", 0, 2).should == ["33", "34", "35"]
-      $limits_metadata.LRANGE("#{map_prefix}named_update", 0, 2).should == ["36", "37", "38"]
-      $limits_metadata.LRANGE("#{map_prefix}named_delete", 0, 2).should == ["39", "40", "41"]
-      $limits_metadata.LRANGE("#{map_prefix}named_tiles", 0, 2).should == ["10", "11", "12"]
-      $limits_metadata.LRANGE("#{map_prefix}analysis_catalog", 0, 2).should == ["10", "11", "12"]
-      $limits_metadata.LRANGE("#{sql_prefix}query", 0, 2).should == ["13", "14", "15"]
-      $limits_metadata.LRANGE("#{sql_prefix}query_format", 0, 2).should == ["16", "17", "18"]
-      $limits_metadata.LRANGE("#{sql_prefix}job_create", 0, 2).should == ["19", "110", "111"]
-      $limits_metadata.LRANGE("#{sql_prefix}job_get", 0, 2).should == ["6", "7", "8"]
-      $limits_metadata.LRANGE("#{sql_prefix}job_delete", 0, 2).should == ["0", "1", "2"]
-      $limits_metadata.LRANGE("#{sql_prefix}copy_from", 0, 2).should == ["1", "1", "60"]
-      $limits_metadata.LRANGE("#{sql_prefix}copy_to", 0, 2).should == ["1", "1", "60"]
+      $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ['0', '1', '2']
+      $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == ['3', '4', '5']
+      $limits_metadata.LRANGE("#{map_prefix}static_named", 0, 2).should == ['6', '7', '8']
+      $limits_metadata.LRANGE("#{map_prefix}dataview", 0, 2).should == ['9', '10', '11']
+      $limits_metadata.LRANGE("#{map_prefix}dataview_search", 0, 2).should == ['12', '13', '14']
+      $limits_metadata.LRANGE("#{map_prefix}analysis", 0, 2).should == ['18', '19', '20']
+      $limits_metadata.LRANGE("#{map_prefix}tile", 0, 5).should == ['1', '2', '17', '30', '32', '34']
+      $limits_metadata.LRANGE("#{map_prefix}attributes", 0, 2).should == ['21', '22', '23']
+      $limits_metadata.LRANGE("#{map_prefix}named_list", 0, 2).should == ['24', '25', '26']
+      $limits_metadata.LRANGE("#{map_prefix}named_create", 0, 2).should == ['27', '28', '29']
+      $limits_metadata.LRANGE("#{map_prefix}named_get", 0, 2).should == ['30', '31', '32']
+      $limits_metadata.LRANGE("#{map_prefix}named", 0, 2).should == ['33', '34', '35']
+      $limits_metadata.LRANGE("#{map_prefix}named_update", 0, 2).should == ['36', '37', '38']
+      $limits_metadata.LRANGE("#{map_prefix}named_delete", 0, 2).should == ['39', '40', '41']
+      $limits_metadata.LRANGE("#{map_prefix}named_tiles", 0, 2).should == ['10', '11', '12']
+      $limits_metadata.LRANGE("#{map_prefix}analysis_catalog", 0, 2).should == ['10', '11', '12']
+      $limits_metadata.LRANGE("#{sql_prefix}query", 0, 2).should == ['13', '14', '15']
+      $limits_metadata.LRANGE("#{sql_prefix}query_format", 0, 2).should == ['16', '17', '18']
+      $limits_metadata.LRANGE("#{sql_prefix}job_create", 0, 2).should == ['19', '110', '111']
+      $limits_metadata.LRANGE("#{sql_prefix}job_get", 0, 2).should == ['6', '7', '8']
+      $limits_metadata.LRANGE("#{sql_prefix}job_delete", 0, 2).should == ['0', '1', '2']
+      $limits_metadata.LRANGE("#{sql_prefix}copy_from", 0, 2).should == ['1', '1', '60']
+      $limits_metadata.LRANGE("#{sql_prefix}copy_to", 0, 2).should == ['1', '1', '60']
 
       @rate_limit.maps_static.first.max_burst = 4
       @rate_limit.save_to_redis(@user)
-      $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == ["4", "4", "5"]
+      $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == ['4', '4', '5']
     end
 
     it 'is removed correctly from redis' do
@@ -196,13 +196,13 @@ describe Carto::RateLimit do
 
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
 
-      expect {
+      expect do
         Carto::RateLimit.find(@rate_limit.id)
-      }.to raise_error(ActiveRecord::RecordNotFound)
+      end.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it 'cannot crate a rate_limit with wrong number of rate limits' do
-      expect {
+      expect do
         Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([0, 1]),
                                  maps_static: Carto::RateLimitValues.new([3, 4, 5]),
                                  maps_static_named: Carto::RateLimitValues.new([6, 7, 8]),
@@ -226,9 +226,9 @@ describe Carto::RateLimit do
                                  sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
                                  sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
                                  sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
-      }.to raise_error(/Error: Number of rate limits needs to be multiple of three/)
+      end.to raise_error(/Error: Number of rate limits needs to be multiple of three/)
 
-      expect {
+      expect do
         Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([0, 1, 2]),
                                  maps_static: Carto::RateLimitValues.new([3, 4, 5]),
                                  maps_static_named: Carto::RateLimitValues.new([6, 7, 8]),
@@ -252,11 +252,11 @@ describe Carto::RateLimit do
                                  sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
                                  sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
                                  sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
-      }.to raise_error(/Error: Number of rate limits needs to be multiple of three/)
+      end.to raise_error(/Error: Number of rate limits needs to be multiple of three/)
     end
 
     it 'raises error if endpoint is set to nil or does not exist' do
-      expect {
+      expect do
         @rate_limit2 = Carto::RateLimit.create!(maps_anonymous: nil,
                                                 maps_static_named: Carto::RateLimitValues.new([6, 7, 8]),
                                                 maps_dataview: Carto::RateLimitValues.new([9, 10, 11]),
@@ -279,11 +279,11 @@ describe Carto::RateLimit do
                                                 sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
                                                 sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
                                                 sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
-      }.to raise_error(ActiveRecord::RecordInvalid)
+      end.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'raises error if any endpoint values are empty' do
-      expect {
+      expect do
         @rate_limit2 = Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([]),
                                                 maps_static: Carto::RateLimitValues.new([3, 4, 5]),
                                                 maps_static_named: Carto::RateLimitValues.new([6, 7, 8]),
@@ -307,7 +307,7 @@ describe Carto::RateLimit do
                                                 sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
                                                 sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
                                                 sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
-      }.to raise_error(ActiveRecord::RecordInvalid)
+      end.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'raises error if any endpoint values are empty' do
@@ -334,9 +334,9 @@ describe Carto::RateLimit do
                                                   sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
                                                   sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
                                                   sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
-      expect {
+      expect do
         rate_limit_not_saved.save_to_redis(@user)
-      }.to raise_error(ActiveRecord::RecordInvalid)
+      end.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'compares the same rate limit instance' do

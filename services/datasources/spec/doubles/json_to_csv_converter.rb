@@ -3,10 +3,9 @@ module CartoDB
     module Doubles
       class JSONToCSVConverter
 
-        def initialize(attrs = {})
-        end
+        def initialize(attrs = {}); end
 
-        def process(input_data = [], add_headers = false, additional_fields = {})
+        def process(input_data = [], _add_headers = false, _additional_fields = {})
           input_data.join("\n")
         end
 
@@ -17,6 +16,7 @@ module CartoDB
             additional_fields.join(',')
           end
         end
+
       end
     end
   end

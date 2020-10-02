@@ -111,7 +111,6 @@ describe User do
     end
 
     describe 'organization email whitelisting' do
-
       before(:each) do
         @organization = create_org('testorg', 10.megabytes, 1)
       end
@@ -131,7 +130,7 @@ describe User do
       end
 
       it 'user email is not valid if organization has whitelisted domains and email is not under that domain' do
-        @organization.whitelisted_email_domains = [ 'organization.org' ]
+        @organization.whitelisted_email_domains = ['organization.org']
         user = FactoryGirl.build(:valid_user, organization: @organization)
         user.valid?.should eq false
         user.errors[:email].should_not be_nil
@@ -139,7 +138,7 @@ describe User do
 
       it 'user email is valid if organization has whitelisted domains and email is under that domain' do
         user = FactoryGirl.build(:valid_user, organization: @organization)
-        @organization.whitelisted_email_domains = [ user.email.split('@')[1] ]
+        @organization.whitelisted_email_domains = [user.email.split('@')[1]]
         user.valid?.should eq true
         user.errors[:email].should == []
       end
@@ -231,7 +230,7 @@ describe User do
     it 'should set account_type properly' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
-        u.account_type.should == "ORGANIZATION USER"
+        u.account_type.should == 'ORGANIZATION USER'
       end
       organization.destroy
     end
@@ -286,7 +285,7 @@ describe User do
       organization.destroy
     end
 
-    it "should return proper values for non-persisted settings" do
+    it 'should return proper values for non-persisted settings' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
         u.private_maps_enabled.should be_true
@@ -295,16 +294,14 @@ describe User do
     end
   end
 
-  describe "organization user deletion" do
-
-    it "should transfer tweet imports to owner" do
-
+  describe 'organization user deletion' do
+    it 'should transfer tweet imports to owner' do
       # avoid: Key (account_type)=(ORGANIZATION USER) is not present in table "account_types"
       org = create_organization_with_users
       org.destroy
 
       u1 = create_user(email: 'u1@exampleb.com', username: 'ub1', password: 'admin123')
-      org = create_org('cartodbtestb', 1234567890, 5)
+      org = create_org('cartodbtestb', 1_234_567_890, 5)
 
       u1.organization = org
       u1.save
@@ -351,7 +348,7 @@ describe User do
       u1 = create_user(email: 'u1@example.com', username: 'u1', password: 'admin123')
       u2 = create_user(email: 'u2@example.com', username: 'u2', password: 'admin123')
 
-      org = create_org('cartodb', 1234567890, 5)
+      org = create_org('cartodb', 1_234_567_890, 5)
 
       u1.organization = org
       u1.save
@@ -370,9 +367,9 @@ describe User do
       u2.reload
 
       # Cannot remove as more users depend on the org
-      expect {
+      expect do
         u1.destroy
-      }.to raise_exception CartoDB::BaseCartoDBError
+      end.to raise_exception CartoDB::BaseCartoDBError
 
       org.destroy
     end

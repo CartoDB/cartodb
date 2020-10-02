@@ -9,6 +9,7 @@ module CartoDB
 
     def decorate_user(user)
       return {} if user.nil?
+
       {
         id: user.id,
         name: user.name,

@@ -20,7 +20,7 @@ describe Carto::Api::AssetsController do
 
     let(:params) { { api_key: @user.api_key } }
 
-    it "gets all assets" do
+    it 'gets all assets' do
       get_json(api_v1_users_assets_index_url(user_id: @user), params) do |response|
         response.status.should be_success
         response.body[:assets].size.should == 0

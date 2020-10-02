@@ -5,10 +5,11 @@ require_relative './shp_helper'
 module CartoDB
   module Importer2
     class ShpNormalizer
-      DEFAULT_ENCODING = 'LATIN1'
+
+      DEFAULT_ENCODING = 'LATIN1'.freeze
 
       # INFO: http://www.postgresql.org/docs/9.1/static/multibyte.html
-      SUPPORTED_ENCODINGS = %W{
+      SUPPORTED_ENCODINGS = %w{
         BIG5 WIN950 Windows950
         EUC_CN
         EUC_JP
@@ -50,18 +51,18 @@ module CartoDB
         WIN1256
         WIN1257
         WIN1258 ABC TCVN TCVN5712 VSCII
-      }
+      }.freeze
       SUPPORTED_ENCODINGS_DOWNCASED = SUPPORTED_ENCODINGS.map(&:downcase)
 
       NORMALIZER_RELATIVE_PATH =
-        "../../../../../lib/importer/misc/shp_normalizer.py"
+        '../../../../../lib/importer/misc/shp_normalizer.py'.freeze
 
       def self.supported?(extension)
-        %w{ .shp .tab }.include?(extension)
+        %w{.shp .tab}.include?(extension)
       end
 
       # INFO: importer_config not used but needed for compatibility with other normalizers
-      def initialize(filepath, job, importer_config = nil)
+      def initialize(filepath, job, _importer_config = nil)
         @job      = job
         @filepath = filepath
         @helper = ShpHelper.new(filepath)
@@ -70,6 +71,7 @@ module CartoDB
 
       def encoding
         return 'UTF-8' if ['LATIN1', 'ISO-8859-1'].include?(shape_encoding)
+
         shape_encoding
       end
 
@@ -84,6 +86,7 @@ module CartoDB
         encoding  = DEFAULT_ENCODING if encoding == 'None'
         encoding  = codepage_for(encoding) if windows?(encoding)
         return(tab_encoding || encoding) if @helper.tab?
+
         encoding
       end
 
@@ -99,9 +102,9 @@ module CartoDB
       end
 
       def tab_encoding
-        return 'WIN1251' if File.open(filepath, 'rb') { |file|
+        return 'WIN1251' if File.open(filepath, 'rb') do |file|
           file.read =~ /WindowsCyrillic/
-        }
+        end
       rescue StandardError
         false
       end
@@ -110,14 +113,15 @@ module CartoDB
         stdout, stderr, status  = Open3.capture3(*normalizer_command)
         output                  = stdout.strip.split(/, */, 4)
         self.normalizer_output  = {
-          projection:   output[0],
-          encoding:     output[1],
-          source:       output[2],
-          destination:  output[3]
+          projection: output[0],
+          encoding: output[1],
+          source: output[2],
+          destination: output[3]
         }
 
         raise ShpNormalizationError unless status.to_i == 0
         raise ShpNormalizationError unless !!normalizer_output
+
         self
       end
 
@@ -143,12 +147,14 @@ module CartoDB
       def codepage_for(encoding)
         encoding = encoding.gsub(/windows-|cp/, 'WIN')
         return DEFAULT_ENCODING unless encoding =~ /WIN\d{4}/
+
         encoding
       end
 
       def windows?(encoding)
         !!(encoding =~ /(windows-|cp)\d+/)
       end
+
     end
   end
 end

@@ -2,6 +2,7 @@ require 'spec_helper_min'
 require 'helpers/database_connection_helper'
 
 module Carto
+
   describe OauthAppUser do
     include_context 'organization with users helper'
     include CartoDB::Factories
@@ -32,20 +33,18 @@ module Carto
       end
 
       it 'does not allow duplicates' do
-        begin
-          @app_user1 = OauthAppUser.create!(user: @user, oauth_app: @app)
-          app_user2 = OauthAppUser.new(user: @user, oauth_app: @app)
-          expect(app_user2).to_not(be_valid)
-          expect(app_user2.errors[:user]).to(include("has already been taken"))
-        ensure
-          @app_user1.destroy if @app_user1
-        end
+        @app_user1 = OauthAppUser.create!(user: @user, oauth_app: @app)
+        app_user2 = OauthAppUser.new(user: @user, oauth_app: @app)
+        expect(app_user2).to_not(be_valid)
+        expect(app_user2.errors[:user]).to(include('has already been taken'))
+      ensure
+        @app_user1.destroy if @app_user1
       end
 
       it 'does not accept invalid scopes' do
         app_user = OauthAppUser.new(scopes: ['wadus'])
         expect(app_user).to_not(be_valid)
-        expect(app_user.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
+        expect(app_user.errors[:scopes]).to(include('contains unsupported scopes: wadus'))
       end
 
       it 'validates' do
@@ -70,7 +69,7 @@ module Carto
         it 'does not accept non-organization users' do
           app_user = OauthAppUser.new(user: @user, oauth_app: @app)
           expect(app_user).not_to(be_valid)
-          expect(app_user.errors[:user]).to(include("is not part of an organization"))
+          expect(app_user.errors[:user]).to(include('is not part of an organization'))
         end
 
         it 'does not accept users from unknown organizations' do
@@ -79,7 +78,7 @@ module Carto
 
           app_user = OauthAppUser.new(user: @carto_org_user_1, oauth_app: @app)
           expect(app_user).not_to(be_valid)
-          expect(app_user.errors[:user]).to(include("is part of an organization which is not allowed access to this application"))
+          expect(app_user.errors[:user]).to(include('is part of an organization which is not allowed access to this application'))
         end
 
         it 'accepts users from the authorized organization' do
@@ -91,7 +90,7 @@ module Carto
           OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app)
           app_user = OauthAppUser.new(user: @carto_org_user_2, oauth_app: @app)
           expect(app_user).not_to(be_valid)
-          expect(app_user.errors[:user]).to(include("does not have an available seat to use this application"))
+          expect(app_user.errors[:user]).to(include('does not have an available seat to use this application'))
         end
       end
     end
@@ -288,9 +287,9 @@ module Carto
         access_token_new = refresh_token.exchange!(requested_scopes: scopes_after)[0]
         expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
         with_connection_from_api_key(access_token_new.api_key) do |connection|
-          expect {
+          expect do
             connection.execute("insert into #{@table1.name} (cartodb_id) values (1000)")
-          }.to raise_exception(Sequel::DatabaseError, /permission denied for (relation|table) #{@table1.name}/)
+          end.to raise_exception(Sequel::DatabaseError, /permission denied for (relation|table) #{@table1.name}/)
         end
 
         oau.destroy
@@ -317,14 +316,13 @@ module Carto
           connection.execute("select cartodb_id from #{@table1.name}") do |result|
             result[0]['cartodb_id'].should eq '999'
           end
-          expect {
+          expect do
             connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
-          }.to raise_exception(Sequel::DatabaseError, /permission denied for (relation|table) #{@table1.name}/)
+          end.to raise_exception(Sequel::DatabaseError, /permission denied for (relation|table) #{@table1.name}/)
         end
 
         oau.destroy
       end
-
     end
 
     describe 'schemas scope' do
@@ -364,7 +362,7 @@ module Carto
       end
 
       it 'create table with permissions should work and assign it to the owner_role' do
-        schemas_scope = "schemas:c"
+        schemas_scope = 'schemas:c'
         scopes = ['user:profile', schemas_scope]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
@@ -372,14 +370,14 @@ module Carto
         access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          connection.execute("create table test_table as select 1 as test")
-          connection.execute("select count(1) from test_table") do |result|
+          connection.execute('create table test_table as select 1 as test')
+          connection.execute('select count(1) from test_table') do |result|
             result[0]['count'].should eq '1'
           end
           connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'") do |result|
             result[0]['owner'].should eq oau.ownership_role_name
           end
-          connection.execute("drop table test_table")
+          connection.execute('drop table test_table')
         end
 
         oau.destroy
@@ -393,16 +391,16 @@ module Carto
         access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          expect {
-            connection.execute("create table test_table as select 1 as test")
-          }.to raise_exception(Sequel::DatabaseError, /permission denied for schema public/)
+          expect do
+            connection.execute('create table test_table as select 1 as test')
+          end.to raise_exception(Sequel::DatabaseError, /permission denied for schema public/)
         end
 
         oau.destroy
       end
 
       it 'create table with permission, then refresh token and drop the table with the new db role' do
-        schemas_scope = "schemas:c"
+        schemas_scope = 'schemas:c'
         scopes = ['offline', 'user:profile', schemas_scope]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
@@ -411,8 +409,8 @@ module Carto
         access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          connection.execute("create table test_table as select 1 as test")
-          connection.execute("select count(1) from test_table") do |result|
+          connection.execute('create table test_table as select 1 as test')
+          connection.execute('select count(1) from test_table') do |result|
             result[0]['count'].should eq '1'
           end
           connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'") do |result|
@@ -423,14 +421,14 @@ module Carto
         access_token_new = refresh_token.exchange!(requested_scopes: scopes)[0]
         expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
         with_connection_from_api_key(access_token_new.api_key) do |connection|
-          connection.execute("drop table test_table")
+          connection.execute('drop table test_table')
         end
 
         oau.destroy
       end
 
       it 'create table with permission, then refresh token and remove permission, then try to create another table and get exception' do
-        schemas_scope = "schemas:c"
+        schemas_scope = 'schemas:c'
         scopes = ['offline', 'user:profile', schemas_scope]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
@@ -439,29 +437,29 @@ module Carto
         access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          connection.execute("create table test_table as select 1 as test")
-          connection.execute("select count(1) from test_table") do |result|
+          connection.execute('create table test_table as select 1 as test')
+          connection.execute('select count(1) from test_table') do |result|
             result[0]['count'].should eq '1'
           end
           connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'") do |result|
             result[0]['owner'].should eq oau.ownership_role_name
           end
-          connection.execute("drop table test_table")
+          connection.execute('drop table test_table')
         end
 
         access_token_new = refresh_token.exchange!(requested_scopes: ['offline', 'user:profile'])[0]
         expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
         with_connection_from_api_key(access_token_new.api_key) do |connection|
-          expect {
-            connection.execute("create table test_table_without_permissions as select 1 as test")
-          }.to raise_exception(Sequel::DatabaseError, /permission denied for schema public/)
+          expect do
+            connection.execute('create table test_table_without_permissions as select 1 as test')
+          end.to raise_exception(Sequel::DatabaseError, /permission denied for schema public/)
         end
 
         oau.destroy
       end
 
       it 'master role can drop tables created with access token API key' do
-        schemas_scope = "schemas:c"
+        schemas_scope = 'schemas:c'
         scopes = ['offline', 'user:profile', schemas_scope]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
@@ -470,14 +468,14 @@ module Carto
         access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          connection.execute("create table test_table as select 1 as test")
-          connection.execute("select count(1) from test_table") do |result|
+          connection.execute('create table test_table as select 1 as test')
+          connection.execute('select count(1) from test_table') do |result|
             result[0]['count'].should eq '1'
           end
         end
 
         with_connection_from_api_key(@carto_user.api_keys.master.first) do |connection|
-          connection.execute("drop table test_table")
+          connection.execute('drop table test_table')
           connection.execute("select * from pg_class where relname = 'test_table'") do |result|
             result.count.should eq 0
           end
@@ -509,19 +507,19 @@ module Carto
       end
 
       it 'should fail with non shared dataset' do
-        expect {
+        expect do
           OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@non_shared_dataset_scope])
-        }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+        end.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
 
       it 'should fail with shared and non shared dataset' do
-        expect {
+        expect do
           OauthAppUser.create!(
             user: @carto_org_user_2,
             oauth_app: @app,
             scopes: [@shared_dataset_scope, @non_shared_dataset_scope]
           )
-        }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+        end.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
 
       it 'should revoke permissions removing shared permissions' do
@@ -566,9 +564,9 @@ module Carto
 
         it 'should fail write scope in shared dataset with only read perms' do
           rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
-          expect {
+          expect do
             OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
-          }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+          end.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
         end
       end
 
@@ -597,19 +595,19 @@ module Carto
         end
 
         it 'should fail with non org shared dataset' do
-          expect {
+          expect do
             OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@non_org_shared_dataset_scope])
-          }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+          end.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
         end
 
         it 'should fail with org shared and non org shared dataset' do
-          expect {
+          expect do
             OauthAppUser.create!(
               user: @carto_org_user_2,
               oauth_app: @app,
               scopes: [@org_shared_dataset_scope, @non_org_shared_dataset_scope]
             )
-          }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+          end.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
         end
 
         describe 'read - write permissions' do
@@ -633,9 +631,9 @@ module Carto
 
           it 'should fail write scope in org shared dataset with only read perms' do
             rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
-            expect {
+            expect do
               OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
-            }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+            end.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
           end
         end
       end
@@ -733,6 +731,6 @@ module Carto
         @user.in_database.fetch(find_owner_query).first[:tableowner].should eql @user.database_username
       end
     end
-
   end
+
 end

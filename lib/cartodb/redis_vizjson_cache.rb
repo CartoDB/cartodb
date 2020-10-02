@@ -40,11 +40,12 @@ module CartoDB
 
       def purge_ids(ids)
         return unless ids.count > 0
-        keys = VIZJSON_VERSION_KEY.keys.map { |vizjson_version|
-          Cartodb.config.fetch(:vizjson_cache_domains, [CartoDB.session_domain]).map { |domain|
+
+        keys = VIZJSON_VERSION_KEY.keys.map do |vizjson_version|
+          Cartodb.config.fetch(:vizjson_cache_domains, [CartoDB.session_domain]).map do |domain|
             ids.map { |id| [key(id, false, vizjson_version), key(id, true, vizjson_version, domain)] }.flatten
-          }.flatten
-        }.flatten
+          end.flatten
+        end.flatten
         redis.del keys
       end
 
@@ -56,9 +57,7 @@ module CartoDB
         '3a' => '3a' # VizJSON v3 forcing anonymoys maps (needed for editor, see #7150)
       }.freeze
 
-      def redis
-        @redis
-      end
+      attr_reader :redis
 
     end
   end

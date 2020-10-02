@@ -1,6 +1,5 @@
 namespace :cartodb do
   namespace :services do
-
     # Prefixes corresponding to User columns names/REDIS keys that store providers
     DS_PROVIDED_SERVICES = ['geocoder', 'routing', 'isolines'].freeze
 
@@ -15,19 +14,16 @@ namespace :cartodb do
 
     def assert_valid_arg(args, parameter, accepted_values: nil)
       value = args[parameter]
-      if value.blank?
-        raise "Please specify the #{parameter}"
-      end
+      raise "Please specify the #{parameter}" if value.blank?
+
       case accepted_values
       when Array
-        if !accepted_values.include?(value)
+        unless accepted_values.include?(value)
           values_sentence = accepted_values.to_sentence(last_word_connector: ' or ', two_words_connector: ' or ')
           raise "Unknown #{parameter}: #{value.inspect}. Please use one of #{values_sentence}"
         end
       when Proc, Hash
-        if !accepted_values[value]
-          raise "Invalid #{parameter} value: #{value.inspect}."
-        end
+        raise "Invalid #{parameter} value: #{value.inspect}." unless accepted_values[value]
       end
     end
 
@@ -70,7 +66,6 @@ namespace :cartodb do
 
       puts "Changed the organization service provider for #{service} to #{provider}."
     end
-
 
     # usage example:
     #   bundle exec rake cartodb:services:set_user_quota['username','geocoding',900]
@@ -118,7 +113,7 @@ namespace :cartodb do
     task :set_user_soft_limit, [:username, :service, :soft_limit] => [:environment] do |_task, args|
       username = args[:username]
       service = args[:service]
-      soft_limit = args[:soft_limit] == 'false' ? false : true
+      soft_limit = !(args[:soft_limit] == 'false')
       user = username && ::User.find(username: username)
 
       assert_valid_arg args, :username,   accepted_values: proc { user.present? }

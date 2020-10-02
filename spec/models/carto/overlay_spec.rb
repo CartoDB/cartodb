@@ -1,7 +1,6 @@
 require_relative '../../spec_helper_min'
 
 describe Carto::Overlay do
-
   include Carto::Factories::Visualizations
 
   before(:all) do

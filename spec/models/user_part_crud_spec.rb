@@ -7,7 +7,7 @@ describe User do
 
   describe 'central synchronization' do
     it 'should create remote user in central if needed' do
-      pending "Central API credentials not provided" unless ::User.new.sync_data_with_cartodb_central?
+      pending 'Central API credentials not provided' unless ::User.new.sync_data_with_cartodb_central?
       organization = create_org('testorg', 500.megabytes, 1)
       user = create_user email: 'user1@testorg.com',
                          username: 'user1',
@@ -21,11 +21,11 @@ describe User do
     end
   end
 
-  it "should have many tables" do
+  it 'should have many tables' do
     @user2.tables.should be_empty
-    create_table :user_id => @user2.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC
+    create_table user_id: @user2.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC
     @user2.reload
-    @user2.tables.all.should == [UserTable.first(:user_id => @user2.id)]
+    @user2.tables.all.should == [UserTable.first(user_id: @user2.id)]
   end
 
   describe '#shared_tables' do
@@ -34,7 +34,7 @@ describe User do
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       bypass_named_maps
       # No need to really touch the DB for the permissions
-      Table::any_instance.stubs(:add_read_permission).returns(nil)
+      Table.any_instance.stubs(:add_read_permission).returns(nil)
 
       # We're leaking tables from some tests, make sure there are no tables
       @user.tables.all.each { |t| t.destroy }
@@ -81,15 +81,15 @@ describe User do
       user_tables.count.should eq 3
 
       contains_shared_table = false
-      user_tables.each{ |item|
+      user_tables.each do |item|
         contains_shared_table ||= item.id == table3.id
-      }
+      end
       contains_shared_table.should eq true
 
       contains_shared_table = false
-      user_tables.each{ |item|
+      user_tables.each do |item|
         contains_shared_table ||= item.id == table4.id
-      }
+      end
       contains_shared_table.should eq false
 
       @user.tables.all.each { |t| t.destroy }
@@ -97,11 +97,11 @@ describe User do
     end
   end
 
-  it "should create a client_application for each user" do
+  it 'should create a client_application for each user' do
     @user.client_application.should_not be_nil
   end
 
-  it "should reset its client application" do
+  it 'should reset its client application' do
     old_key = @user.client_application.key
 
     @user.reset_client_application!
@@ -110,11 +110,11 @@ describe User do
     @user.client_application.key.should_not == old_key
   end
 
-  it "should not regenerate the api_key after saving" do
+  it 'should not regenerate the api_key after saving' do
     expect { @user.save }.to_not change { @user.api_key }
   end
 
-  it "should remove its user tables, layers and data imports after deletion" do
+  it 'should remove its user tables, layers and data imports after deletion' do
     doomed_user = create_user(email: 'doomed2@example.com', username: 'doomed2', password: 'doomed123')
     data_import = DataImport.create(user_id: doomed_user.id, data_source: fake_data_path('clubbing.csv')).run_import!
     doomed_user.add_layer Layer.create(kind: 'carto')
@@ -122,13 +122,13 @@ describe User do
     uuid = UserTable.where(id: table_id).first.table_visualization.id
 
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("#{doomed_user.database_name}.*")
-      .at_least(1)
-      .returns(true)
+                    .with("#{doomed_user.database_name}.*")
+                    .at_least(1)
+                    .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with(".*#{uuid}:vizjson")
-      .at_least_once
-      .returns(true)
+                    .with(".*#{uuid}:vizjson")
+                    .at_least_once
+                    .returns(true)
 
     doomed_user.destroy
 
@@ -163,7 +163,7 @@ describe User do
       expect($users_metadata.exists(api_key.send(:redis_key))).to be_false
     end
 
-    describe "on organizations" do
+    describe 'on organizations' do
       include_context 'organization with users helper'
 
       it 'deletes database role' do
@@ -222,19 +222,19 @@ describe User do
 
           user.create_client_application
           user.client_application.access_tokens << Carto::AccessToken.new(
-            token: "access_token",
-            secret: "access_secret",
-            callback_url: "http://callback2",
-            verifier: "v2",
+            token: 'access_token',
+            secret: 'access_secret',
+            callback_url: 'http://callback2',
+            verifier: 'v2',
             scope: nil,
             client_application_id: user.client_application.id
           ).save
 
           user.client_application.oauth_tokens << Carto::OauthToken.create!(
-            token: "oauth_token",
-            secret: "oauth_secret",
-            callback_url: "http//callback.com",
-            verifier: "v1",
+            token: 'oauth_token',
+            secret: 'oauth_secret',
+            callback_url: 'http//callback.com',
+            verifier: 'v1',
             scope: nil,
             client_application_id: user.client_application.id
           )
@@ -357,14 +357,14 @@ describe User do
     end
   end
 
-  describe "#regressions" do
-    it "Tests geocodings and data import FK not breaking user destruction" do
+  describe '#regressions' do
+    it 'Tests geocodings and data import FK not breaking user destruction' do
       user = create_user
       user_id = user.id
 
       data_import_id = '11111111-1111-1111-1111-111111111111'
 
-      SequelRails.connection.run(%Q{
+      SequelRails.connection.run(%{
         INSERT INTO data_imports("data_source","data_type","table_name","state","success","logger","updated_at",
           "created_at","tables_created_count",
           "table_names","append","id","table_id","user_id",
@@ -377,7 +377,7 @@ describe User do
             '[{"type":".csv","size":5015}]','t','f','t','test','0.0.0.0','13204','test','f','{"twitter_credits_limit":0}');
         })
 
-      SequelRails.connection.run(%Q{
+      SequelRails.connection.run(%{
         INSERT INTO geocodings("table_name","processed_rows","created_at","updated_at","formatter","state",
           "id","user_id",
           "cache_hits","kind","geometry_type","processable_rows","real_rows","used_credits",
@@ -389,8 +389,7 @@ describe User do
 
       user.destroy
 
-      ::User.find(id:user_id).should eq nil
-
+      ::User.find(id: user_id).should eq nil
     end
   end
 end

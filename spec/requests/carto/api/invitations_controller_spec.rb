@@ -77,7 +77,7 @@ describe Carto::Api::InvitationsController do
         response.status.should == 400
         response.body[:errors][:users_emails].length.should == 1
 
-        invitation = Carto::Invitation.find_by_welcome_text(welcome_text).should == nil
+        invitation = Carto::Invitation.find_by_welcome_text(welcome_text).should.nil?
       end
     end
   end

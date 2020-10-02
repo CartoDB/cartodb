@@ -4,6 +4,7 @@ require_relative 'spec/support/redis'
 require_relative 'spec/helpers/spec_helper_helpers'
 
 class CustomPlan < Zeus::Rails
+
   include SpecHelperHelpers
 
   def carto_test
@@ -14,7 +15,11 @@ class CustomPlan < Zeus::Rails
     ENV['PARALLEL'] = 'true'
 
     # Clean up at least sometimes
-    drop_leaked_test_user_databases rescue nil
+    begin
+      drop_leaked_test_user_databases
+    rescue StandardError
+      nil
+    end
 
     # Start redis server
     CartoDB::RedisTest.up
@@ -74,6 +79,7 @@ class CustomPlan < Zeus::Rails
     SequelRails.connection.disconnect
     super
   end
+
 end
 
 Zeus.plan = CustomPlan.new

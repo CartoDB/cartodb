@@ -4,9 +4,7 @@ require_relative '../../models/carto/external_source'
 require_relative '../../models/common_data/singleton'
 
 module CartoDB
-
   module Visualization
-
     class CommonDataService
 
       include ::LoggerHelper
@@ -16,7 +14,7 @@ module CartoDB
       end
 
       def self.load_common_data(user, controller)
-        if self.configured?
+        if configured?
           common_data_url = CartoDB::Visualization::CommonDataService.build_url(controller)
           user.load_common_data(common_data_url)
         end
@@ -35,7 +33,7 @@ module CartoDB
         common_data_user = Carto::User.where(username: common_data_username).first
         if !common_data_base_url.nil?
           # We set user_domain to nil to avoid duplication in the url for subdomainfull urls. Ie. user.carto.com/u/cartodb/...
-          common_data_base_url + CartoDB.path(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public', user_domain: nil})
+          common_data_base_url + CartoDB.path(controller, 'api_v1_visualizations_index', { type: 'table', privacy: 'public', user_domain: nil })
         elsif !common_data_user.nil?
           CartoDB.url(controller, 'api_v1_visualizations_index', params: { type: 'table', privacy: 'public' },
                                                                  user: common_data_user)
@@ -53,7 +51,7 @@ module CartoDB
         datasets = begin
                      get_datasets(visualizations_api_url)
                    rescue StandardError => e
-                     log_error(message: "Loading common data failed", exception: e, target_user: user)
+                     log_error(message: 'Loading common data failed', exception: e, target_user: user)
                      nil
                    end
         # As deletion would delete all user syncs, if the endpoint fails or return nothing, just do nothing.
@@ -78,59 +76,57 @@ module CartoDB
                                                           .map { |v| [v.name, v] }.to_h
         ActiveRecord::Base.transaction do
           datasets.each do |dataset|
-            begin
-              visualization = common_data_remotes_by_name.delete(dataset['name'])
-              if visualization
-                visualization.attributes = dataset_visualization_attributes(dataset)
-                if visualization.changed?
-                  visualization.save!
-                  updated += 1
-                else
-                  not_modified += 1
-                end
-              else
-                visualization = Carto::Visualization.new(
-                  dataset_visualization_attributes(dataset).merge(
-                    name: dataset['name'],
-                    user: carto_user,
-                    type: Carto::Visualization::TYPE_REMOTE
-                  )
-                )
+            visualization = common_data_remotes_by_name.delete(dataset['name'])
+            if visualization
+              visualization.attributes = dataset_visualization_attributes(dataset)
+              if visualization.changed?
                 visualization.save!
-                added += 1
-              end
-
-              external_source = Carto::ExternalSource.where(visualization_id: visualization.id).first
-              if external_source
-                if external_source.update_data(
-                  dataset['url'],
-                  dataset['geometry_types'],
-                  dataset['rows'],
-                  dataset['size'],
-                  'common-data'
-                ).changed?
-                  external_source.save!
-                end
+                updated += 1
               else
-                external_source = Carto::ExternalSource.create(
-                  visualization_id: visualization.id,
-                  import_url: dataset['url'],
-                  rows_counted: dataset['rows'],
-                  size: dataset['size'],
-                  geometry_types: dataset['geometry_types'],
-                  username: 'common-data'
-                )
+                not_modified += 1
               end
-            rescue StandardError => e
-              CartoDB.notify_exception(e, {
-                name: dataset.fetch('name', 'ERR: name'),
-                source: dataset.fetch('source', 'ERR: source'),
-                rows: dataset.fetch('rows', 'ERR: rows'),
-                updated_at: dataset.fetch('updated_at', 'ERR: updated_at'),
-                url: dataset.fetch('url', 'ERR: url')
-              })
-              failed += 1
+            else
+              visualization = Carto::Visualization.new(
+                dataset_visualization_attributes(dataset).merge(
+                  name: dataset['name'],
+                  user: carto_user,
+                  type: Carto::Visualization::TYPE_REMOTE
+                )
+              )
+              visualization.save!
+              added += 1
             end
+
+            external_source = Carto::ExternalSource.where(visualization_id: visualization.id).first
+            if external_source
+              if external_source.update_data(
+                dataset['url'],
+                dataset['geometry_types'],
+                dataset['rows'],
+                dataset['size'],
+                'common-data'
+              ).changed?
+                external_source.save!
+              end
+            else
+              external_source = Carto::ExternalSource.create(
+                visualization_id: visualization.id,
+                import_url: dataset['url'],
+                rows_counted: dataset['rows'],
+                size: dataset['size'],
+                geometry_types: dataset['geometry_types'],
+                username: 'common-data'
+              )
+            end
+          rescue StandardError => e
+            CartoDB.notify_exception(e, {
+                                       name: dataset.fetch('name', 'ERR: name'),
+                                       source: dataset.fetch('source', 'ERR: source'),
+                                       rows: dataset.fetch('rows', 'ERR: rows'),
+                                       updated_at: dataset.fetch('updated_at', 'ERR: updated_at'),
+                                       url: dataset.fetch('url', 'ERR: url')
+                                     })
+            failed += 1
           end
         end
 
@@ -138,21 +134,19 @@ module CartoDB
           deleted += 1 if delete_remote_visualization(remote)
         end
 
-        return added, updated, not_modified, deleted, failed
+        [added, updated, not_modified, deleted, failed]
       end
 
       def update_user_date_flag(user)
-        begin
-          user.last_common_data_update_date = Time.now
-          if user.valid?
-            user.save(raise_on_failure: true)
-          elsif user.errors[:quota_in_bytes]
-            # This happens for the organization quota validation in the user model so we bypass this
-            user.save(:validate => false, raise_on_failure: true)
-          end
-        rescue StandardError => e
-          CartoDB.notify_exception(e, {user: user})
+        user.last_common_data_update_date = Time.now
+        if user.valid?
+          user.save(raise_on_failure: true)
+        elsif user.errors[:quota_in_bytes]
+          # This happens for the organization quota validation in the user model so we bypass this
+          user.save(validate: false, raise_on_failure: true)
         end
+      rescue StandardError => e
+        CartoDB.notify_exception(e, { user: user })
       end
 
       def delete_common_data_for_user(user)
@@ -173,24 +167,22 @@ module CartoDB
       end
 
       def delete_remote_visualization(visualization)
-        begin
-          visualization.destroy
-          true
-        rescue StandardError => e
-          match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
-          if match&.positive?
-            # After #13667 this should no longer happen: deleting remote visualizations is propagated, and external
-            # sources, external data imports and syncs are deleted
-            log_error(message: "Couldn't delete, already imported", visualization: { id: visualization.id })
-            false
-          else
-            CartoDB.notify_error(
-              "Couldn't delete remote visualization",
-              visualization: visualization.id,
-              error: e.inspect
-            )
-            raise e
-          end
+        visualization.destroy
+        true
+      rescue StandardError => e
+        match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
+        if match&.positive?
+          # After #13667 this should no longer happen: deleting remote visualizations is propagated, and external
+          # sources, external data imports and syncs are deleted
+          log_error(message: "Couldn't delete, already imported", visualization: { id: visualization.id })
+          false
+        else
+          CartoDB.notify_error(
+            "Couldn't delete remote visualization",
+            visualization: visualization.id,
+            error: e.inspect
+          )
+          raise e
         end
       end
 
@@ -207,7 +199,5 @@ module CartoDB
       end
 
     end
-
   end
-
 end

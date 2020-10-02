@@ -5,7 +5,7 @@ require_relative 'abstract_table_geocoder'
 
 module CartoDB
   module InternalGeocoder
-    class Geocoder  < AbstractTableGeocoder
+    class Geocoder < AbstractTableGeocoder
 
       SQLAPI_CALLS_TIMEOUT = 45
 
@@ -18,8 +18,7 @@ module CartoDB
       def initialize(arguments)
         super(arguments)
         @sql_api              = CartoDB::SQLApi.new(arguments.fetch(:internal)
-                                                             .merge({ timeout: SQLAPI_CALLS_TIMEOUT })
-                                                   )
+                                                             .merge({ timeout: SQLAPI_CALLS_TIMEOUT }))
         @column_name          = arguments[:formatter]
         @countries            = arguments[:countries].to_s
         @country_column       = arguments[:country_column]
@@ -54,13 +53,17 @@ module CartoDB
         raise e
       ensure
         drop_temp_table
-        FileUtils.remove_entry_secure @working_dir if Dir.exists?(@working_dir)
+        FileUtils.remove_entry_secure @working_dir if Dir.exist?(@working_dir)
       end
 
       def download_results
         log.append_and_store 'download_results()'
-        begin
-          count = count + 1 rescue 0
+        loop do
+          count = begin
+                    count + 1
+                  rescue StandardError
+                    0
+                  end
           search_terms = get_search_terms(count)
           unless search_terms.size == 0
             sql = @query_generator.dataservices_query(search_terms)
@@ -69,9 +72,9 @@ module CartoDB
             # log it as such, total_requests and failed_responses
             begin
               response = sql_api.fetch(sql, 'csv').gsub(/\A.*/, '').gsub(/^$\n/, '')
-            rescue CartoDB::SQLApi::SQLApiError => ex
+            rescue CartoDB::SQLApi::SQLApiError => e
               @usage_metrics.incr(:geocoder_internal, :failed_responses, search_terms.length)
-              raise ex
+              raise e
             ensure
               @usage_metrics.incr(:geocoder_internal, :total_requests, search_terms.length)
             end
@@ -80,16 +83,17 @@ module CartoDB
             empty_responses = 0
             success_responses = 0
             CSV.parse(response.chomp) do |row|
-              empty_responses += 1 if row[4] == "false"
-              success_responses += 1 if row[4] == "true"
+              empty_responses += 1 if row[4] == 'false'
+              success_responses += 1 if row[4] == 'true'
             end
             @usage_metrics.incr(:geocoder_internal, :success_responses, success_responses)
             @usage_metrics.incr(:geocoder_internal, :empty_responses, empty_responses)
 
             log.append_and_store "Saving results to #{geocoding_results}"
-            File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response.blank?
+            File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding('UTF-8')) } unless response.blank?
           end
-        end while search_terms.size >= @batch_size
+          break unless search_terms.size >= @batch_size
+        end
         @processed_rows = `wc -l '#{geocoding_results}' 2>&1`.to_i
         geocoding_results
       end # download_results
@@ -101,7 +105,7 @@ module CartoDB
 
       def create_temp_table
         log.append_and_store 'create_temp_table()'
-        connection.run(%Q{
+        connection.run(%{
           CREATE TABLE #{temp_table_name} (
             geocode_string text, country text, region text, the_geom geometry, cartodb_georef_status boolean
           );
@@ -113,6 +117,7 @@ module CartoDB
       end # update_geocoding_status
 
       def process_results; end
+
       def cancel; end
 
       def load_results_to_temp_table
@@ -124,14 +129,14 @@ module CartoDB
         log.append_and_store 'copy_results_to_table()'
         # 'InternalGeocoder::copy_results_to_table'
         CartoDB::Importer2::QueryBatcher.new(
-            connection,
-            nil,
-            create_seq_field = true,
-            batch_size
-          ).execute_update(
-            @query_generator.copy_results_to_table_query,
-            @table_schema, @table_name
-          )
+          connection,
+          nil,
+          create_seq_field = true,
+          batch_size
+        ).execute_update(
+          @query_generator.copy_results_to_table_query,
+          @table_schema, @table_name
+        )
       end
 
       def drop_temp_table
@@ -139,7 +144,7 @@ module CartoDB
       end # drop_temp_table
 
       def temp_table_name
-        @temp_table_name ||= %Q{"#{@table_schema}".internal_geocoding_#{Time.now.to_i}}
+        @temp_table_name ||= %{"#{@table_schema}".internal_geocoding_#{Time.now.to_i}}
       end # temp_table_name
 
       def name
@@ -151,6 +156,7 @@ module CartoDB
         @geocoding_model.state = status
         @geocoding_model.save
       end
+
     end
   end
 end

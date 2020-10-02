@@ -18,10 +18,10 @@ describe Visualization::NameChecker do
     @vis3 = FactoryGirl.build(:derived_visualization, name: 'Visualization 4', user_id: @user2.id).store
 
     @shared_entity = CartoDB::SharedEntity.new(
-      recipient_id:   @user.id,
+      recipient_id: @user.id,
       recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-      entity_id:      @vis3.id,
-      entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      entity_id: @vis3.id,
+      entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
     ).save
   end
 

@@ -2,6 +2,7 @@ require 'carto/dbdirect/certificate_manager'
 
 module Carto
   class DbdirectCertificate < ActiveRecord::Base
+
     belongs_to :user, inverse_of: :dbdirect_certificates, foreign_key: :user_id
     validates_uniqueness_of :name, scope: :user_id
 
@@ -29,7 +30,7 @@ module Carto
         expiration: DateTime.now + validity_days  # TODO: extract from cert.?
       )
 
-      return certificates, new_record
+      [certificates, new_record]
     end
 
     def self.default_validity
@@ -51,6 +52,7 @@ module Carto
     end
 
     class <<self
+
       private
 
       def config
@@ -72,6 +74,8 @@ module Carto
         end.max
         "#{name}_#{max_suffix + 1}"
       end
+
     end
+
   end
 end

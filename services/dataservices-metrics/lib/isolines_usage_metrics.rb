@@ -22,10 +22,10 @@ module CartoDB
     ].freeze
 
     ISOLINES_KEYS = {
-      "heremaps" => :here_isolines,
-      "mapzen" => :mapzen_isolines,
-      "mapbox" => :mapbox_isolines,
-      "tomtom" => :tomtom_isolines
+      'heremaps' => :here_isolines,
+      'mapzen' => :mapzen_isolines,
+      'mapbox' => :mapbox_isolines,
+      'tomtom' => :tomtom_isolines
     }.freeze
 
     def initialize(username, orgname = nil, redis=$geocoder_metrics)
@@ -38,5 +38,6 @@ module CartoDB
       raise ArgumentError.new('Invalid service') unless VALID_SERVICES.include?(service)
       raise ArgumentError.new('Invalid metric') unless VALID_METRICS.include?(metric)
     end
+
   end
 end

@@ -19,19 +19,19 @@ module CartoDB
 
       include ::LoggerHelper
 
-      SCHEMA            = 'cdb_importer'
-      TABLE_PREFIX      = 'importer'
-      NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv]
+      SCHEMA            = 'cdb_importer'.freeze
+      TABLE_PREFIX      = 'importer'.freeze
+      NORMALIZERS       = [FormatLinter, CsvNormalizer, Xls2Csv, Xlsx2Csv, Json2Csv].freeze
 
       # Files matching any of this regexps will be forcibly normalized
       # @see services/datasources/lib/datasources/search/twitter.rb -> table_name
       FORCE_NORMALIZER_REGEX = [
         /^twitter_(.*)\.csv/
-      ]
-      DEFAULT_ENCODING  = 'UTF-8'
+      ].freeze
+      DEFAULT_ENCODING = 'UTF-8'.freeze
 
       def self.supported?(extension)
-        !(%w{ .tif .tiff }.include?(extension))
+        !%w{.tif .tiff}.include?(extension)
       end
 
       def initialize(job, source_file, layer = nil, ogr2ogr = nil, georeferencer = nil)
@@ -71,11 +71,11 @@ module CartoDB
 
           self
         end
-      rescue StandardError => exception
+      rescue StandardError => e
         begin
           job.delete_job_table
         ensure
-          raise exception
+          raise e
         end
       end
 
@@ -83,13 +83,13 @@ module CartoDB
         normalize
         job.log "Detected encoding #{encoding}"
         job.log "Using database connection with #{job.concealed_pg_options}"
-        job.log "Running in append mode"
+        job.log 'Running in append mode'
         run_ogr2ogr
       end
 
       def streamed_run_continue(new_source_file)
         @ogr2ogr.filepath = new_source_file.fullpath
-        run_ogr2ogr(append_mode=true)
+        run_ogr2ogr(append_mode = true)
       end
 
       def streamed_run_finish(post_import_handler_instance=nil)
@@ -112,31 +112,34 @@ module CartoDB
             GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
           rescue StandardError => e
             raise e unless statement_timeout?(e.to_s)
+
             # Ignore timeouts in query batcher
             log_warning(exception: e, message: 'Could not fix geometries during import')
             job.log "Error fixing geometries during import, skipped (#{e.message})"
           end
         end
       rescue StandardError => e
-        raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError]) unless statement_timeout?(e.to_s)
+        unless statement_timeout?(e.to_s)
+          raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError])
+        end
+
         raise StatementTimeoutError.new(e.to_s, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
       end
 
       def normalize
         converted_filepath = normalizers_for(source_file.extension)
-          .inject(source_file.fullpath) { |filepath, normalizer_klass|
+                             .inject(source_file.fullpath) do |filepath, normalizer_klass|
+          @importer_stats.timing(normalizer_klass.to_s.split('::').last) do
+            normalizer = normalizer_klass.new(filepath, job, options[:importer_config])
 
-            @importer_stats.timing(normalizer_klass.to_s.split('::').last) do
-              normalizer = normalizer_klass.new(filepath, job, options[:importer_config])
-
-              FORCE_NORMALIZER_REGEX.each { |regex|
-                normalizer.force_normalize if regex =~ source_file.path
-              }
-
-              normalizer.run
-                        .converted_filepath
+            FORCE_NORMALIZER_REGEX.each do |regex|
+              normalizer.force_normalize if regex =~ source_file.path
             end
-          }
+
+            normalizer.run
+                      .converted_filepath
+          end
+        end
         layer = source_file.layer
         @source_file = SourceFile.new(converted_filepath)
         @source_file.layer = layer
@@ -151,9 +154,7 @@ module CartoDB
 
       def ogr2ogr_options
         ogr_options = { encoding: encoding }
-        unless options[:ogr2ogr_binary].nil?
-          ogr_options.merge!(ogr2ogr_binary: options[:ogr2ogr_binary])
-        end
+        ogr_options.merge!(ogr2ogr_binary: options[:ogr2ogr_binary]) unless options[:ogr2ogr_binary].nil?
         unless options[:ogr2ogr_csv_guessing].nil?
           ogr_options.merge!(ogr2ogr_csv_guessing: options[:ogr2ogr_csv_guessing])
         end
@@ -176,26 +177,29 @@ module CartoDB
       end
 
       def encoding_guess
-        normalizer = [ShpNormalizer, CsvNormalizer].find { |normalizer|
+        normalizer = [ShpNormalizer, CsvNormalizer].find do |normalizer|
           normalizer.supported?(source_file.extension)
-        }
+        end
         return DEFAULT_ENCODING unless normalizer
+
         normalizer.new(source_file.fullpath, job, options[:importer_config]).encoding
       end
 
       def shapefile_without_prj?
-        normalizer = [ShpNormalizer].find { |normalizer|
+        normalizer = [ShpNormalizer].find do |normalizer|
           normalizer.supported?(source_file.extension)
-        }
+        end
         return false unless normalizer
+
         !normalizer.new(source_file.fullpath, job).prj_file_present?
       end
 
       def shape_encoding
-        normalizer = [ShpNormalizer].find { |normalizer|
+        normalizer = [ShpNormalizer].find do |normalizer|
           normalizer.supported?(source_file.extension)
-        }
+        end
         return nil unless normalizer
+
         normalizer.new(source_file.fullpath, job).shape_encoding
       end
 
@@ -208,7 +212,7 @@ module CartoDB
       end
 
       def georeferencer_options
-        options.select { |key, value| [:guessing, :geocoder, :tracker].include? key }
+        options.select { |key, _value| [:guessing, :geocoder, :tracker].include? key }
       end
 
       def post_import_handler
@@ -228,9 +232,9 @@ module CartoDB
       end
 
       def normalizers_for(extension)
-        NORMALIZERS.find_all { |klass|
+        NORMALIZERS.find_all do |klass|
           klass.supported?(extension)
-        }
+        end
       end
 
       def osm?(source_file)
@@ -242,8 +246,7 @@ module CartoDB
         []
       end
 
-      attr_accessor   :source_file, :options
-
+      attr_accessor :source_file, :options
 
       private
 
@@ -265,10 +268,8 @@ module CartoDB
 
         ogr2ogr.run(append_mode)
 
-        #In case there are not an specific error we try to fix it
-        if ogr2ogr.generic_error? && ogr2ogr.exit_code.zero? || ogr2ogr.missing_srs?
-          try_fallback(append_mode)
-        end
+        # In case there are not an specific error we try to fix it
+        try_fallback(append_mode) if ogr2ogr.generic_error? && ogr2ogr.exit_code.zero? || ogr2ogr.missing_srs?
 
         @job.source_file_rows = get_source_file_rows
         @job.imported_rows = get_imported_rows
@@ -292,20 +293,20 @@ module CartoDB
       # Sometimes we could try to recover from a known failure
       def try_fallback(append_mode)
         if ogr2ogr.invalid_dates?
-          job.log "Fallback: Disabling autoguessing because there are wrong dates in the source file"
-          @job.fallback_executed = "date"
+          job.log 'Fallback: Disabling autoguessing because there are wrong dates in the source file'
+          @job.fallback_executed = 'date'
           ogr2ogr.overwrite = true
           ogr2ogr.csv_guessing = false
           ogr2ogr.run(append_mode)
         elsif ogr2ogr.encoding_error?
-          job.log "Fallback: There is an encoding problem, trying with ISO-8859-1"
-          @job.fallback_executed = "encoding"
+          job.log 'Fallback: There is an encoding problem, trying with ISO-8859-1'
+          @job.fallback_executed = 'encoding'
           ogr2ogr.overwrite = true
-          ogr2ogr.encoding = "ISO-8859-1"
+          ogr2ogr.encoding = 'ISO-8859-1'
           ogr2ogr.run(append_mode)
         elsif ogr2ogr.missing_srs?
-          job.log "Fallback: Source dataset has no coordinate system, forcing -s_srs 4326"
-          @job.fallback_executed = "srs 4326"
+          job.log 'Fallback: Source dataset has no coordinate system, forcing -s_srs 4326'
+          @job.fallback_executed = 'srs 4326'
           ogr2ogr.overwrite = true
           ogr2ogr.shape_coordinate_system = '4326'
           ogr2ogr.run(append_mode)
@@ -322,39 +323,27 @@ module CartoDB
           raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
         end
 
-        if (ogr2ogr.encoding_error? and @job.imported_rows == 0)
+        if ogr2ogr.encoding_error? && (@job.imported_rows == 0)
           raise RowsEncodingColumnError.new(ogr2ogr.command_output)
         end
 
-        if ogr2ogr.file_too_big?
-          raise FileTooBigError.new
-        end
+        raise FileTooBigError.new if ogr2ogr.file_too_big?
 
-        if ogr2ogr.unsupported_format?
-          raise UnsupportedFormatError.new
-        end
+        raise UnsupportedFormatError.new if ogr2ogr.unsupported_format?
 
-        if ogr2ogr.kml_style_missing?
-          raise KmlWithoutStyleIdError.new 'StyleID missing in KML file'
-        end
+        raise KmlWithoutStyleIdError.new 'StyleID missing in KML file' if ogr2ogr.kml_style_missing?
 
         # Could be OOM, could be wrong input
-        if ogr2ogr.segfault_error?
-          raise LoadError.new 'Ogr2ogr SEGFAULT ERROR'
-        end
+        raise LoadError.new 'Ogr2ogr SEGFAULT ERROR' if ogr2ogr.segfault_error?
 
-        if ogr2ogr.exit_code == 256 && ogr2ogr.encoding_error?
-          raise EncodingError.new "Ogr2ogr encoding error"
-        end
+        raise EncodingError.new 'Ogr2ogr encoding error' if ogr2ogr.exit_code == 256 && ogr2ogr.encoding_error?
 
-        if ogr2ogr.geometry_validity_error?
-          raise InvalidGeometriesError.new
-        end
+        raise InvalidGeometriesError.new if ogr2ogr.geometry_validity_error?
 
         # Some kind of error in ogr2ogr could lead to a partial import and we don't want it
         if ogr2ogr.generic_error? || ogr2ogr.exit_code != 0
-          job.logger.append "Ogr2ogr FAILED!"
-          job.logger.append "ogr2ogr.exit_code = " + ogr2ogr.exit_code.to_s
+          job.logger.append 'Ogr2ogr FAILED!'
+          job.logger.append 'ogr2ogr.exit_code = ' + ogr2ogr.exit_code.to_s
           job.logger.append "ogr2ogr.command = #{ogr2ogr.command}", false
           job.logger.append "ogr2ogr.command_output = #{ogr2ogr.command_output}", false
           raise LoadError.new 'Ogr2ogr ERROR'
@@ -362,20 +351,16 @@ module CartoDB
       end
 
       def get_imported_rows
-        #Maybe we could use a cheaper solution
-        rows = @job.db.fetch(%Q{SELECT COUNT(1) as num_rows FROM #{SCHEMA}.#{@job.table_name}}).first
-        return rows.nil? ? nil : rows.fetch(:num_rows, nil)
+        # Maybe we could use a cheaper solution
+        rows = @job.db.fetch(%{SELECT COUNT(1) as num_rows FROM #{SCHEMA}.#{@job.table_name}}).first
+        rows.nil? ? nil : rows.fetch(:num_rows, nil)
       rescue StandardError
         # If there is an import error and try to get the imported rows
-        return nil
+        nil
       end
 
       def get_source_file_rows
-        if is_shp?
-          return ShpHelper.new(@source_file.fullpath).total_rows
-        else
-          return nil
-        end
+        ShpHelper.new(@source_file.fullpath).total_rows if is_shp?
       end
 
       def is_shp?
@@ -385,6 +370,7 @@ module CartoDB
       def statement_timeout?(error)
         error =~ /canceling statement due to statement timeout/i
       end
+
     end
   end
 end

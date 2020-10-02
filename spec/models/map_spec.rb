@@ -111,7 +111,7 @@ describe Map do
 
         it 'requires dashboard_menu to be present' do
           old_options = @map.options.dup
-          @map.options = Hash.new
+          @map.options = ({})
 
           @map.valid?.should be_false
           @map.errors[:options].should_not be_empty
@@ -122,7 +122,7 @@ describe Map do
 
         it 'requires layer_selector to be present' do
           old_options = @map.options.dup
-          @map.options = Hash.new
+          @map.options = ({})
 
           @map.valid?.should be_false
           @map.errors[:options].should_not be_empty
@@ -205,11 +205,11 @@ describe Map do
       @table.reload
 
       CartoDB::Visualization::Member.new(
-        privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-        name:     'wadus',
-        type:     CartoDB::Visualization::Member::TYPE_CANONICAL,
-        user_id:  @user.id,
-        map_id:   map.id
+        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        name: 'wadus',
+        type: CartoDB::Visualization::Member::TYPE_CANONICAL,
+        user_id: @user.id,
+        map_id: map.id
       ).store
 
       map2 = Map.create(user_id: @user.id, table_id: @table.id)
@@ -272,74 +272,73 @@ describe Map do
       map.destroy
     end
 
-    it "recalculates bounds" do
-      table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'Madrid Bars', :tags => 'movies, personal'
+    it 'recalculates bounds' do
+      table = Table.new privacy: UserTable::PRIVACY_PRIVATE, name: 'Madrid Bars', tags: 'movies, personal'
       table.user_id = @user.id
-      table.force_schema = "name text, address text, latitude float, longitude float"
+      table.force_schema = 'name text, address text, latitude float, longitude float'
       table.save
-      table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
-      table.insert_row!({:name => "El Estocolmo", :address => "Calle de la Palma 72, Madrid, Spain", :latitude => 40.426949, :longitude => -3.708969})
-      table.insert_row!({:name => "El Rey del Tallarín", :address => "Plaza Conde de Toreno 2, Madrid, Spain", :latitude => 40.424654, :longitude => -3.709570})
-      table.insert_row!({:name => "El Lacón", :address => "Manuel Fernández y González 8, Madrid, Spain", :latitude => 40.415113, :longitude => -3.699871})
-      table.insert_row!({:name => "El Pico", :address => "Calle Divino Pastor 12, Madrid, Spain", :latitude => 40.428198, :longitude => -3.703991})
+      table.insert_row!({ name: 'Hawai', address: 'Calle de Pérez Galdós 9, Madrid, Spain', latitude: 40.423012, longitude: -3.699732 })
+      table.insert_row!({ name: 'El Estocolmo', address: 'Calle de la Palma 72, Madrid, Spain', latitude: 40.426949, longitude: -3.708969 })
+      table.insert_row!({ name: 'El Rey del Tallarín', address: 'Plaza Conde de Toreno 2, Madrid, Spain', latitude: 40.424654, longitude: -3.709570 })
+      table.insert_row!({ name: 'El Lacón', address: 'Manuel Fernández y González 8, Madrid, Spain', latitude: 40.415113, longitude: -3.699871 })
+      table.insert_row!({ name: 'El Pico', address: 'Calle Divino Pastor 12, Madrid, Spain', latitude: 40.428198, longitude: -3.703991 })
       table.reload
-      table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+      table.georeference_from!(latitude_column: :latitude, longitude_column: :longitude)
       table.optimize
 
       table.map.recalculate_bounds!
-      table.map.view_bounds_ne.should == "[40.4283, -3.69968]"
-      table.map.view_bounds_sw.should == "[40.415, -3.70962]"
+      table.map.view_bounds_ne.should == '[40.4283, -3.69968]'
+      table.map.view_bounds_sw.should == '[40.415, -3.70962]'
     end
 
-    it "recenters map using bounds" do
-      table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'bounds tests', :tags => 'testing'
+    it 'recenters map using bounds' do
+      table = Table.new privacy: UserTable::PRIVACY_PRIVATE, name: 'bounds tests', tags: 'testing'
       table.user_id = @user.id
-      table.force_schema = "name text, latitude float, longitude float"
+      table.force_schema = 'name text, latitude float, longitude float'
       table.save
-      table.insert_row!({:name => "A", :latitude => 40.0, :longitude => -20.0})
-      table.insert_row!({:name => "B", :latitude => 80.0, :longitude => 30.0})
+      table.insert_row!({ name: 'A', latitude: 40.0, longitude: -20.0 })
+      table.insert_row!({ name: 'B', latitude: 80.0, longitude: 30.0 })
       table.reload
-      table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
+      table.georeference_from!(latitude_column: :latitude, longitude_column: :longitude)
       table.optimize
       table.map.set_default_boundaries!
 
       # casting to string :_( but currently only used by frontend
-      table.map.center_data.should == [ 60.0.to_s, 5.0.to_s ]
+      table.map.center_data.should == [60.0.to_s, 5.0.to_s]
     end
 
-    it "recalculates zoom using bounds" do
-      table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'zoom recalc test'
+    it 'recalculates zoom using bounds' do
+      table = Table.new privacy: UserTable::PRIVACY_PRIVATE, name: 'zoom recalc test'
       table.user_id = @user.id
-      table.force_schema = "name text, latitude float, longitude float"
+      table.force_schema = 'name text, latitude float, longitude float'
       table.save
 
       # Out of usual bounds by being bigger than "full world bounding box"
       table.map.stubs(:get_map_bounds)
-               .returns({ minx: -379, maxx: 379, miny: -285 , maxy: 285.0511})
+           .returns({ minx: -379, maxx: 379, miny: -285, maxy: 285.0511 })
       table.map.set_default_boundaries!
       table.map.zoom.should == 1
 
       table.map.stubs(:get_map_bounds)
-               .returns({ minx: -179, maxx: 179, miny: -85 , maxy: 85.0511})
+           .returns({ minx: -179, maxx: 179, miny: -85, maxy: 85.0511 })
       table.map.set_default_boundaries!
       table.map.zoom.should == 1
 
       table.map.stubs(:get_map_bounds)
-               .returns({ minx: 1, maxx: 2, miny: 1 , maxy: 2})
+           .returns({ minx: 1, maxx: 2, miny: 1, maxy: 2 })
       table.map.set_default_boundaries!
       table.map.zoom.should == 8
 
       table.map.stubs(:get_map_bounds)
-               .returns({ minx: 0.025, maxx: 0.05, miny: 0.025 , maxy: 0.05})
+           .returns({ minx: 0.025, maxx: 0.05, miny: 0.025, maxy: 0.05 })
       table.map.set_default_boundaries!
       table.map.zoom.should == 14
 
       # Smaller than our max zoom level
       table.map.stubs(:get_map_bounds)
-               .returns({ minx: 0.000001, maxx: 0.000002, miny: 0.000001 , maxy: 0.000002})
+           .returns({ minx: 0.000001, maxx: 0.000002, miny: 0.000001, maxy: 0.000002 })
       table.map.set_default_boundaries!
       table.map.zoom.should == 18
-
     end
   end
 
@@ -414,7 +413,7 @@ describe Map do
 
   describe '#admits?' do
     it 'checks base layer admission rules' do
-      map   = Map.create(user_id: @user.id, table_id: @table.id)
+      map = Map.create(user_id: @user.id, table_id: @table.id)
 
       # First base layer is always allowed
       layer = Layer.new(kind: 'tiled')
@@ -458,7 +457,7 @@ describe Map do
     end
   end
 
-  it "should correcly set vizjson updated_at" do
+  it 'should correcly set vizjson updated_at' do
     map = Map.create(user_id: @user.id, table_id: @table.id)
 
     # When the table data is newer
@@ -501,8 +500,8 @@ describe Map do
       visualization.private?.should be_false
 
       layer = Carto::Layer.create(
-        kind:     'carto',
-        options:  { table_name: @table2.name }
+        kind: 'carto',
+        options: { table_name: @table2.name }
       )
       layer.add_map(visualization.map)
       layer.save
@@ -556,9 +555,9 @@ describe Map do
         @map.layers_dataset.where(layer_id: layer.id).should_not be_empty
 
         become_viewer(@user)
-        expect {
+        expect do
           @map.layers_dataset.where(layer_id: layer.id).destroy
-        }.to raise_error(/Viewer users can't destroy layers/)
+        end.to raise_error(/Viewer users can't destroy layers/)
         @map.reload
         @map.layers_dataset.where(layer_id: layer.id).should_not be_empty
       end

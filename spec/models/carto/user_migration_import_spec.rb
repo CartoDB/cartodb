@@ -4,7 +4,7 @@ describe Carto::UserMigrationImport do
   it '#import throws an exception if import_metadata and dry are passed' do
     import = Carto::UserMigrationImport.create(
       exported_file: 'irrelevant_file',
-      json_file: "irrelevant_json_file",
+      json_file: 'irrelevant_json_file',
       database_host: 'database_host',
       user_id: 'irrelevant_user_id',
       organization_id: 'irrelevant_organization_id',
@@ -19,7 +19,7 @@ describe Carto::UserMigrationImport do
   it 'fails saving a migration with dry and import_metadata' do
     import = Carto::UserMigrationImport.create(
       exported_file: 'irrelevant_file',
-      json_file: "irrelevant_json_file",
+      json_file: 'irrelevant_json_file',
       database_host: 'database_host',
       user_id: 'irrelevant_user_id',
       organization_id: 'irrelevant_organization_id',
@@ -41,7 +41,7 @@ describe Carto::UserMigrationImport do
       @user = Carto::User.find(@user.id)
       @import = Carto::UserMigrationImport.create(
         exported_file: 'irrelevant_file',
-        json_file: "irrelevant_json_file",
+        json_file: 'irrelevant_json_file',
         database_host: 'database_host',
         user_id: @user.id,
         organization_id: @org.id,
@@ -105,7 +105,7 @@ describe Carto::UserMigrationImport do
     def expected_job_arguments
       {
         job_uuid: nil,
-        file: "irrelevant_data_dir/irrelevant_json_file",
+        file: 'irrelevant_data_dir/irrelevant_json_file',
         data: true,
         metadata: false,
         host: :database_host,

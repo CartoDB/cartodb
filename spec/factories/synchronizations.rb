@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :carto_synchronization, class: Carto::Synchronization do
     id { Carto::UUIDHelper.random_uuid }
     name 'histcounties_1979_present'
-    interval 2592000
+    interval 2_592_000
     url 'https://common-data.cartodb.com/api/v2/sql?q=select+*+from+%22histcounties_1979_present%22&format=shp&filename=histcounties_1979_present'
     state 'success'
     type_guessing true

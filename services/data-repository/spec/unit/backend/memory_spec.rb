@@ -31,7 +31,7 @@ describe Repository do
       retrieved_data.keys.wont_include :id
       retrieved_data.keys.must_include 'id'
     end
-  end #store
+  end # store
 
   describe '#fetch' do
     it 'retrieves a data structure from a key' do
@@ -42,7 +42,7 @@ describe Repository do
       retrieved_data = @repository.fetch(key.to_s)
       retrieved_data.fetch('id').must_equal data.fetch(:id)
     end
-  end #fetch
+  end # fetch
 
   describe '#delete' do
     it 'deletes a key' do
@@ -53,9 +53,9 @@ describe Repository do
       @repository.fetch(key.to_s).wont_be_nil
 
       @repository.delete(key)
-      lambda { @repository.fetch(key.to_s) }.must_raise KeyError
+      -> { @repository.fetch(key.to_s) }.must_raise KeyError
     end
-  end #delete
+  end # delete
 
   describe '#keys' do
     it 'returns all stored keys, stringified' do
@@ -65,7 +65,7 @@ describe Repository do
       @repository.store(key, data)
       @repository.keys.must_equal [key.to_s]
     end
-  end #keys
+  end # keys
 
   describe '#exists?' do
     it 'returns if key exists' do
@@ -76,6 +76,5 @@ describe Repository do
       @repository.store(key, data)
       @repository.exists?(key.to_s).must_equal true
     end
-  end #exists?
+  end # exists?
 end # Repository
-

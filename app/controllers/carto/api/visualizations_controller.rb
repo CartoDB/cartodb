@@ -15,6 +15,7 @@ require_dependency 'carto/ghost_tables_manager'
 module Carto
   module Api
     class VisualizationsController < ::Api::ApplicationController
+
       include VisualizationSearcher
       include PagedSearcher
       include Carto::UUIDHelper
@@ -23,7 +24,7 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy, :google_maps_static_image
       ssl_allowed  :vizjson2, :vizjson3, :list_watching, :static_map,
-        :notify_watching, :list_watching, :add_like, :remove_like
+                   :notify_watching, :list_watching, :add_like, :remove_like
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
       skip_before_filter :api_authorization_required, only: [:show, :index, :vizjson2, :vizjson3, :add_like,
@@ -93,22 +94,21 @@ module Carto
 
         visualizations = vqb.with_order(order, order_direction)
                             .build_paged(page, per_page).map do |v|
-          VisualizationPresenter.new(v, current_viewer, self, presenter_options)
-                                .with_presenter_cache(presenter_cache).to_poro \
-            unless params[:subscribed] == 'true' and not v.subscription.present?
+          unless (params[:subscribed] == 'true') && !v.subscription.present?
+            VisualizationPresenter.new(v, current_viewer, self, presenter_options)
+                                  .with_presenter_cache(presenter_cache).to_poro
+          end
         end.compact
 
         total_subscriptions = 0
-        vqb.filtered_query.find_each{|v| total_subscriptions += 1 if v.subscription.present?}
+        vqb.filtered_query.find_each { |v| total_subscriptions += 1 if v.subscription.present?}
 
         response = {
           visualizations: visualizations,
           total_entries: vqb.count,
           total_subscriptions: total_subscriptions
         }
-        if current_user && (params[:load_totals].to_s != 'false')
-          response.merge!(calculate_totals(types))
-        end
+        response.merge!(calculate_totals(types)) if current_user && (params[:load_totals].to_s != 'false')
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
@@ -162,20 +162,17 @@ module Carto
         render_vizjson(generate_vizjson3(@visualization))
       end
 
-
       def static_map
         # Abusing here of .to_i fallback to 0 if not a proper integer
-        map_width = params.fetch('width',nil).to_i
+        map_width = params.fetch('width', nil).to_i
         map_height = params.fetch('height', nil).to_i
 
         # @see https://github.com/CartoDB/Windshaft-cartodb/blob/b59e0a00a04f822154c6d69acccabaf5c2fdf628/docs/Map-API.md#limits
-        if map_width < 2 || map_height < 2 || map_width > 8192 || map_height > 8192
-          return(head 400)
-        end
+        return(head 400) if map_width < 2 || map_height < 2 || map_width > 8192 || map_height > 8192
 
         response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
         response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{@visualization.surrogate_key}"
-        response.headers['Cache-Control']   = "max-age=86400,must-revalidate, public"
+        response.headers['Cache-Control'] = 'max-age=86400,must-revalidate, public'
 
         redirect_to Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, map_width, map_height)
       end
@@ -196,6 +193,7 @@ module Carto
                 user = Carto::User.find(current_user_id)
                 source = Carto::Visualization.where(id: source_id).first
                 return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
+
                 if source.derived?
                   origin = 'copy'
                   duplicate_derived_visualization(source_id, user)
@@ -232,8 +230,9 @@ module Carto
 
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue StandardError => e
-        log_error(message: "Error creating visualization", exception: e)
+        log_error(message: 'Error creating visualization', exception: e)
         raise e if e.is_a?(Carto::UnauthorizedError)
+
         render_jsonp({ errors: vis.try(:errors).try(:full_messages) }, 400)
       end
 
@@ -270,14 +269,12 @@ module Carto
           vis.attributes = valid_attributes
           vis.save!
 
-          if version_needs_migration?(old_version, vis.version)
-            migrate_visualization_to_v3(vis)
-          end
+          migrate_visualization_to_v3(vis) if version_needs_migration?(old_version, vis.version)
         end
 
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue StandardError => e
-        log_error(message: "Error updating visualization", exception: e)
+        log_error(message: 'Error updating visualization', exception: e)
         error_code = vis.errors.include?(:privacy) ? 403 : 400
         render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error updating'] : vis.errors.full_messages },
                      error_code)
@@ -310,9 +307,9 @@ module Carto
         @visualization.destroy
 
         head 204
-      rescue StandardError => exception
-        log_error(message: 'Error deleting visualization', exception: exception)
-        render_jsonp({ errors: [exception.message] }, 400)
+      rescue StandardError => e
+        log_error(message: 'Error deleting visualization', exception: e)
+        render_jsonp({ errors: [e.message] }, 400)
       end
 
       def google_maps_static_image
@@ -351,19 +348,17 @@ module Carto
       def render_vizjson(vizjson)
         set_vizjson_response_headers_for(@visualization)
         render_jsonp(vizjson)
-      rescue StandardError => exception
-        CartoDB.notify_exception(exception)
-        raise exception
+      rescue StandardError => e
+        CartoDB.notify_exception(e)
+        raise e
       end
 
       def load_visualization
         @visualization = load_visualization_from_id_or_name(params[:id])
 
-        if @visualization.nil?
-          raise Carto::LoadError.new('Visualization does not exist', 404)
-        end
+        raise Carto::LoadError.new('Visualization does not exist', 404) if @visualization.nil?
 
-        if !@visualization.is_accessible_with_password?(current_viewer, params[:password])
+        unless @visualization.is_accessible_with_password?(current_viewer, params[:password])
           if @visualization.password_protected?
             raise Carto::ProtectedVisualizationLoadError.new(@visualization)
           else
@@ -409,7 +404,8 @@ module Carto
         if params.fetch('id', nil) =~ /\./
           @id, @schema = params.fetch('id').split('.').reverse
         else
-          @id, @schema = [params.fetch('id', nil), nil]
+          @id = params.fetch('id', nil)
+          @schema = nil
         end
       end
 
@@ -418,7 +414,7 @@ module Carto
         if @visualization.is_publically_accesible?
           response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
           response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_VIZJSON} #{visualization.surrogate_key}"
-          response.headers['Cache-Control']   = 'no-cache,max-age=86400,must-revalidate, public'
+          response.headers['Cache-Control'] = 'no-cache,max-age=86400,must-revalidate, public'
         end
       end
 
@@ -431,7 +427,7 @@ module Carto
 
       def payload
         request.body.rewind
-        ::JSON.parse(request.body.read.to_s || String.new, symbolize_names: true)
+        ::JSON.parse(request.body.read.to_s || '', symbolize_names: true)
       end
 
       def duplicate_derived_visualization(source, user)
@@ -471,13 +467,16 @@ module Carto
 
       def load_common_data
         return true unless current_user.present?
+
         begin
           visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
-          ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
+          if current_user.should_load_common_data?
+            ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url)
+          end
         rescue Exception => e
           # We don't block the load of the dashboard because we aren't able to load common dat
-          CartoDB.notify_exception(e, {user:current_user})
-          return true
+          CartoDB.notify_exception(e, { user: current_user })
+          true
         end
       end
 
@@ -510,6 +509,7 @@ module Carto
       def log_context
         @visualization.present? ? super.merge(visualization: @visualization&.attributes&.slice(:id)) : super
       end
+
     end
   end
 end

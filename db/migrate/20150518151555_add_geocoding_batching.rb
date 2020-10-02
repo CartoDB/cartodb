@@ -11,4 +11,5 @@ class AddBatchedToGeocoding < Sequel::Migration
       drop_column :batched
     end
   end
+
 end

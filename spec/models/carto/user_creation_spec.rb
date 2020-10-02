@@ -2,9 +2,7 @@ require_relative '../../spec_helper'
 require_relative '../../../app/models/carto/user_creation'
 
 describe Carto::UserCreation do
-
   describe 'autologin?' do
-
     it 'is true for autologin_user_creation factory' do
       FactoryGirl.build(:autologin_user_creation).autologin?.should == true
     end
@@ -47,7 +45,6 @@ describe Carto::UserCreation do
       user.dashboard_viewed_at = Time.now
       user_creation.autologin?.should == false
     end
-
   end
 
   describe 'validation token' do
@@ -72,7 +69,7 @@ describe Carto::UserCreation do
       user_creation = Carto::UserCreation.new_user_signup(user_data)
       user_creation.next_creation_step until user_creation.finished?
 
-      saved_user = Carto::User.order("created_at desc").limit(1).first
+      saved_user = Carto::User.order('created_at desc').limit(1).first
       saved_user.enable_account_token.should_not be_nil
     end
 
@@ -86,7 +83,7 @@ describe Carto::UserCreation do
       user_creation = Carto::UserCreation.new_user_signup(user_data)
       user_creation.next_creation_step until user_creation.finished?
 
-      saved_user = Carto::User.order("created_at desc").limit(1).first
+      saved_user = Carto::User.order('created_at desc').limit(1).first
       saved_user.username.should == user_data.username
       saved_user.enable_account_token.should be_nil
     end
@@ -101,7 +98,7 @@ describe Carto::UserCreation do
       user_creation = Carto::UserCreation.new_user_signup(user_data)
       user_creation.next_creation_step until user_creation.finished?
 
-      saved_user = Carto::User.order("created_at desc").limit(1).first
+      saved_user = Carto::User.order('created_at desc').limit(1).first
       saved_user.username.should == user_data.username
       saved_user.enable_account_token.should be_nil
     end
@@ -224,7 +221,7 @@ describe Carto::UserCreation do
       user_creation.next_creation_step until user_creation.finished?
 
       saved_user = Carto::User.where(username: user_data.username).first
-      saved_user.should == nil
+      saved_user.should.nil?
 
       user_creation.reload
       user_creation.state.should == 'failure'
@@ -248,7 +245,7 @@ describe Carto::UserCreation do
       user_creation.next_creation_step until user_creation.finished?
 
       saved_user = Carto::User.where(username: user_data.username).first
-      saved_user.should == nil
+      saved_user.should.nil?
 
       user_creation.reload
       user_creation.state.should == 'failure'
@@ -266,7 +263,7 @@ describe Carto::UserCreation do
       user_creation = Carto::UserCreation.new_user_signup(user)
       user_creation.next_creation_step until user_creation.finished?
 
-      Carto::User.where(username: user.username).first.should == nil
+      Carto::User.where(username: user.username).first.should.nil?
 
       user_creation.reload
       user_creation.state.should == 'failure'
@@ -284,7 +281,7 @@ describe Carto::UserCreation do
       user_creation = Carto::UserCreation.new_user_signup(user)
       user_creation.next_creation_step until user_creation.finished?
 
-      Carto::User.where(username: user.username).first.should == nil
+      Carto::User.where(username: user.username).first.should.nil?
 
       user_creation.reload
       user_creation.state.should == 'failure'
@@ -299,9 +296,9 @@ describe Carto::UserCreation do
 
       user.organization = @organization
 
-      expect {
+      expect do
         user_creation = Carto::UserCreation.new_user_signup(user)
-      }.to raise_error
+      end.to raise_error
     end
 
     def prepare_fake_central_user
@@ -346,7 +343,7 @@ describe Carto::UserCreation do
       user_data.google_sign_in = false
 
       user_creation = Carto::UserCreation.new_user_signup(user_data)
-      user_creation.set_common_data_url("http://www.example.com")
+      user_creation.set_common_data_url('http://www.example.com')
       user_creation.next_creation_step until user_creation.finished?
     end
 
@@ -436,7 +433,7 @@ describe Carto::UserCreation do
     it 'initializes users with http_authentication without organization' do
       created_via = Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION
       user = FactoryGirl.build(:valid_user)
-      user.organization_id.should == nil
+      user.organization_id.should.nil?
       user_creation = Carto::UserCreation.new_user_signup(user, created_via)
       initialized_user = user_creation.send(:initialize_user)
       initialized_user.should_not be_nil
@@ -472,9 +469,9 @@ describe Carto::UserCreation do
       @user_creation.expects(:create_in_central).once
       @user_creation.expects(:load_common_data).once
 
-      creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
-                                                "promoting_user", "creating_user_in_central", "load_common_data",
-                                                "success"]
+      creation_steps(@user_creation).should eq ['enqueuing', 'creating_user', 'validating_user', 'saving_user',
+                                                'promoting_user', 'creating_user_in_central', 'load_common_data',
+                                                'success']
     end
 
     it 'without Central, skips creation in central' do
@@ -482,8 +479,8 @@ describe Carto::UserCreation do
       @user_creation.expects(:create_in_central).never
       @user_creation.expects(:load_common_data).once
 
-      creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
-                                                "promoting_user", "load_common_data", "success"]
+      creation_steps(@user_creation).should eq ['enqueuing', 'creating_user', 'validating_user', 'saving_user',
+                                                'promoting_user', 'load_common_data', 'success']
     end
 
     it 'with Central as a viewer, skips loading common data' do
@@ -493,8 +490,8 @@ describe Carto::UserCreation do
       @user_creation.expects(:create_in_central).once
       @user_creation.expects(:load_common_data).never
 
-      creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
-                                                "promoting_user", "creating_user_in_central", "success"]
+      creation_steps(@user_creation).should eq ['enqueuing', 'creating_user', 'validating_user', 'saving_user',
+                                                'promoting_user', 'creating_user_in_central', 'success']
     end
 
     it 'without Central as a viewer, skips loading common data and creation in central' do
@@ -503,8 +500,8 @@ describe Carto::UserCreation do
       @user_creation.expects(:create_in_central).never
       @user_creation.expects(:load_common_data).never
 
-      creation_steps(@user_creation).should eq ["enqueuing", "creating_user", "validating_user", "saving_user",
-                                                "promoting_user", "success"]
+      creation_steps(@user_creation).should eq ['enqueuing', 'creating_user', 'validating_user', 'saving_user',
+                                                'promoting_user', 'success']
     end
   end
 end

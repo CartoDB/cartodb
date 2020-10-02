@@ -1,5 +1,6 @@
 module Carto
   class VisualizationInvalidationService
+
     def initialize(visualization)
       @visualization = visualization
     end
@@ -22,6 +23,7 @@ module Carto
 
     def update_or_destroy_named_map
       return if @visualization.remote?
+
       named_maps_api = Carto::NamedMaps::Api.new(@visualization.for_presentation)
       if @visualization.destroyed?
         named_maps_api.destroy
@@ -32,6 +34,7 @@ module Carto
 
     def invalidate_affected_visualizations
       return unless @visualization.user_table
+
       # Invalidate the maps where this table is used. This is needed because the attributions of the datasets used
       # in a map is used in the vizjson, and the description is shown in the public pages/embed.
       # There is no need to invalidate the named maps, as nothing from the dataset is included there.
@@ -59,5 +62,6 @@ module Carto
           @visualization.previous_changes.include?(:attributions)
         )
     end
+
   end
 end

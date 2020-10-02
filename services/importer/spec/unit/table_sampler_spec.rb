@@ -4,31 +4,20 @@ require_relative '../../../../spec/rspec_configuration.rb'
 # Open the class for adition of some stuff used only for testing
 class CartoDB::Importer2::TableSampler
 
-  def ids_count= n
-    @ids_count = n
-  end
+  attr_writer :ids_count
 
-  def min_id= n
-    @min_id = n
-  end
+  attr_writer :min_id
 
-  def max_id= n
-    @max_id = n
-  end
+  attr_writer :max_id
 
-  def min_max_ids= h
-    @min_max_ids = h
-  end
-
+  attr_writer :min_max_ids
 
   public :sample_query, :sample_indices, :sample_indices_add_method, :sample_indices_delete_method
   public :min_id, :max_id, :min_max_ids_query, :ids_count
 
 end
 
-
 describe CartoDB::Importer2::TableSampler do
-
   describe '#sample_query' do
     it 'should return the whole dataset if sample_size >= rows' do
       db = nil
@@ -44,7 +33,7 @@ describe CartoDB::Importer2::TableSampler do
       sampler = CartoDB::Importer2::TableSampler.new db, 'table_name', 'ogc_fid', sample_size
       sampler.min_id = 1
       sampler.max_id = 10
-      sampler.sample_query.should match /SELECT \* FROM table_name WHERE ogc_fid IN \([\d,]+\)/
+      sampler.sample_query.should match(/SELECT \* FROM table_name WHERE ogc_fid IN \([\d,]+\)/)
     end
   end
 
@@ -99,7 +88,7 @@ describe CartoDB::Importer2::TableSampler do
       db = nil
       sample_size = :any
       sampler = CartoDB::Importer2::TableSampler.new db, 'table_name', 'ogc_fid', sample_size
-      sampler.min_max_ids_query.should eq "SELECT min(ogc_fid), max(ogc_fid) FROM table_name"
+      sampler.min_max_ids_query.should eq 'SELECT min(ogc_fid), max(ogc_fid) FROM table_name'
     end
   end
 
@@ -108,9 +97,8 @@ describe CartoDB::Importer2::TableSampler do
       db = nil
       sample_size = :any
       sampler = CartoDB::Importer2::TableSampler.new db, 'table_name', 'ogc_fid', sample_size
-      sampler.min_max_ids = {min: nil, max: nil}
+      sampler.min_max_ids = { min: nil, max: nil }
       sampler.ids_count.should eq 0
     end
   end
-
 end

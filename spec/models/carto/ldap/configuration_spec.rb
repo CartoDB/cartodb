@@ -7,17 +7,17 @@ describe Carto::Ldap::Configuration do
   include_context 'organization with users helper'
 
   before(:all) do
-    @domain_bases = [ "dc=cartodb" ]
+    @domain_bases = ['dc=cartodb']
 
     @ldap_admin_username = 'user'
     @ldap_admin_cn = "cn=#{@ldap_admin_username},#{@domain_bases[0]}"
-    @ldap_admin_password =  '666'
+    @ldap_admin_password = '666'
 
     @user_id_field = 'cn'
   end
 
   before(:each) do
-    FakeNetLdap.register_user(:username => @ldap_admin_cn, :password => @ldap_admin_password)
+    FakeNetLdap.register_user(username: @ldap_admin_cn, password: @ldap_admin_password)
   end
 
   after(:each) do
@@ -45,18 +45,18 @@ describe Carto::Ldap::Configuration do
     other_user_password = 'nobodypass'
 
     ldap_configuration = Carto::Ldap::Configuration.create({
-        organization_id: @organization.id,
-        host: "0.0.0.0",
-        port: 389,
-        domain_bases_list: @domain_bases,
-        connection_user: @ldap_admin_cn,
-        connection_password: @ldap_admin_password,
-        email_field: '.',
-        user_object_class: '.',
-        group_object_class: '.',
-        user_id_field: @user_id_field,
-        username_field: @user_id_field
-      })
+                                                             organization_id: @organization.id,
+                                                             host: '0.0.0.0',
+                                                             port: 389,
+                                                             domain_bases_list: @domain_bases,
+                                                             connection_user: @ldap_admin_cn,
+                                                             connection_password: @ldap_admin_password,
+                                                             email_field: '.',
+                                                             user_object_class: '.',
+                                                             group_object_class: '.',
+                                                             user_id_field: @user_id_field,
+                                                             username_field: @user_id_field
+                                                           })
 
     # This uses ldap_admin credentials
     ldap_configuration.test_connection[:success].should eq true
@@ -109,18 +109,18 @@ describe Carto::Ldap::Configuration do
     user_b_password = '789012'
 
     ldap_configuration = Carto::Ldap::Configuration.create({
-        organization_id: @organization.id,
-        host: "0.0.0.0",
-        port: 389,
-        domain_bases_list: @domain_bases,
-        connection_user: @ldap_admin_cn,
-        connection_password: @ldap_admin_password,
-        email_field: '.',
-        user_object_class: 'organizationalRole',
-        group_object_class: '.',
-        user_id_field: @user_id_field,
-        username_field: @user_id_field
-      })
+                                                             organization_id: @organization.id,
+                                                             host: '0.0.0.0',
+                                                             port: 389,
+                                                             domain_bases_list: @domain_bases,
+                                                             connection_user: @ldap_admin_cn,
+                                                             connection_password: @ldap_admin_password,
+                                                             email_field: '.',
+                                                             user_object_class: 'organizationalRole',
+                                                             group_object_class: '.',
+                                                             user_id_field: @user_id_field,
+                                                             username_field: @user_id_field
+                                                           })
 
     register_ldap_user(user_a_cn, user_a_username, user_a_password)
     register_ldap_user(user_b_cn, user_b_username, user_b_password)
@@ -130,14 +130,14 @@ describe Carto::Ldap::Configuration do
       { @user_id_field => [user_b_username] }
     ]
     FakeNetLdap.register_query(Net::LDAP::Filter.eq('objectClass', ldap_configuration.user_object_class),
-      ldap_search_user_entries)
+                               ldap_search_user_entries)
 
     ldap_configuration.users.should_not eq false
     ldap_configuration.users.count.should eq 2
-    search_results = ldap_configuration.users.map { |user_data|
+    search_results = ldap_configuration.users.map do |user_data|
       user_data['cn'].first
-    }
-    search_results.should eq [ user_a_username, user_b_username ]
+    end
+    search_results.should eq [user_a_username, user_b_username]
 
     ldap_configuration.delete
   end
@@ -145,20 +145,20 @@ describe Carto::Ldap::Configuration do
   it "Doens't allows to change user_id_field once set" do
     # Dumb spec, but to make sure if this gets changed we notice
     ldap_configuration = Carto::Ldap::Configuration.create({
-        organization_id: @organization.id,
-        host: "0.0.0.0",
-        port: 389,
-        domain_bases_list: @domain_bases,
-        connection_user: @ldap_admin_cn,
-        connection_password: @ldap_admin_password,
-        email_field: '.',
-        user_object_class: 'organizationalRole',
-        group_object_class: '.',
-        user_id_field: @user_id_field,
-        username_field: @user_id_field
-      })
+                                                             organization_id: @organization.id,
+                                                             host: '0.0.0.0',
+                                                             port: 389,
+                                                             domain_bases_list: @domain_bases,
+                                                             connection_user: @ldap_admin_cn,
+                                                             connection_password: @ldap_admin_password,
+                                                             email_field: '.',
+                                                             user_object_class: 'organizationalRole',
+                                                             group_object_class: '.',
+                                                             user_id_field: @user_id_field,
+                                                             username_field: @user_id_field
+                                                           })
 
-    ldap_configuration.user_id_field = "modified"
+    ldap_configuration.user_id_field = 'modified'
     ldap_configuration.save
     ldap_configuration.reload
     ldap_configuration.user_id_field.should eq @user_id_field
@@ -166,16 +166,15 @@ describe Carto::Ldap::Configuration do
     ldap_configuration.delete
   end
 
-private
+  private
 
-def register_ldap_user(cn, username, password)
-  ldap_entry_data = {
-    dn: cn,
-    @user_id_field => [username]
-  }
-  # Data to return as an LDAP result, that will be loaded into Carto::Ldap::Entry
-  FakeNetLdap.register_user(:username => cn, :password => password)
-  FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', username), [ldap_entry_data])
-end
-
+  def register_ldap_user(cn, username, password)
+    ldap_entry_data = {
+      dn: cn,
+      @user_id_field => [username]
+    }
+    # Data to return as an LDAP result, that will be loaded into Carto::Ldap::Entry
+    FakeNetLdap.register_user(username: cn, password: password)
+    FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', username), [ldap_entry_data])
+  end
 end

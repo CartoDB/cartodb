@@ -4,6 +4,7 @@ require_dependency 'carto/query_rewriter'
 module Carto
   # Export/import is versioned, but importing should generate a model tree that can be persisted by this class
   class VisualizationsExportPersistenceService
+
     include Carto::UUIDHelper
     include Carto::QueryRewriter
 
@@ -66,6 +67,7 @@ module Carto
         unless visualization.save
           error_message = "Errors saving imported visualization: #{visualization.errors.full_messages}"
           raise Carto::UnauthorizedError.new(error_message) if visualization.errors.include?(:privacy)
+
           raise error_message
         end
 
@@ -123,16 +125,15 @@ module Carto
     def ensure_unique_name(user, visualization)
       existing_names = Carto::Visualization.uniq
                                            .where(user_id: user.id)
-                                           .where("name ~ ?", "#{Regexp.escape(visualization.name)}( Import)?( \d*)?$")
+                                           .where('name ~ ?', "#{Regexp.escape(visualization.name)}( Import)?( \d*)?$")
                                            .where(type: visualization.type)
                                            .pluck(:name)
       if existing_names.include?(visualization.name)
         raise 'Cannot rename a dataset during import' if visualization.canonical?
+
         import_name = "#{visualization.name} Import"
         i = 1
-        while existing_names.include?(import_name)
-          import_name = "#{visualization.name} Import #{i += 1}"
-        end
+        import_name = "#{visualization.name} Import #{i += 1}" while existing_names.include?(import_name)
         visualization.name = import_name
       end
     end
@@ -167,5 +168,6 @@ module Carto
         layers.each { |l| visualization.map.layers << l }
       end
     end
+
   end
 end

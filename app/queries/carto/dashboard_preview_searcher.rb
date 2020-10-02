@@ -10,8 +10,8 @@ class Carto::DashboardPreviewSearcher
     @user = user
     @pattern = pattern
     types = DEFAULT_TYPES unless types.present?
-    @visualization_types = types - ["tag"]
-    @include_tags = types.include?("tag")
+    @visualization_types = types - ['tag']
+    @include_tags = types.include?('tag')
     @limit = limit
   end
 

@@ -3,6 +3,7 @@ require_dependency 'carto/authentication_manager'
 require_dependency 'carto/http_header_authentication'
 
 class ApplicationController < ActionController::Base
+
   include UrlHelper
   include Carto::ControllerHelper
   include ::LoggerControllerHelper
@@ -29,7 +30,7 @@ class ApplicationController < ActionController::Base
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
 
-  rescue_from NoHTML5Compliant, :with => :no_html5_compliant
+  rescue_from NoHTML5Compliant, with: :no_html5_compliant
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
   rescue_from Carto::ExpiredSessionError, with: :rescue_from_carto_error
 
@@ -55,16 +56,16 @@ class ApplicationController < ActionController::Base
   # - Else: the first session found at request.session that comes from warden
   def current_viewer
     if @current_viewer.nil?
-      if current_user && env["warden"].authenticated?(current_user.username)
+      if current_user && env['warden'].authenticated?(current_user.username)
         @current_viewer = current_user if Carto::AuthenticationManager.validate_session(warden, request, current_user)
       else
-        authenticated_usernames = request.session.to_hash.select { |k, _|
-          k.start_with?("warden.user") && !k.end_with?(".session")
-        }.values
+        authenticated_usernames = request.session.to_hash.select do |k, _|
+          k.start_with?('warden.user') && !k.end_with?('.session')
+        end.values
         # See if there's a session of the viewed subdomain corresponding user
-        current_user_present = authenticated_usernames.select { |username|
+        current_user_present = authenticated_usernames.select do |username|
           CartoDB.extract_subdomain(request) == username
-        }.first
+        end.first
 
         # If current user session was there, do nothing; else, retrieve first available
         if current_user_present.nil?
@@ -85,10 +86,12 @@ class ApplicationController < ActionController::Base
   protected
 
   Warden::Manager.after_authentication do |user, auth, opts|
-    auth.cookies.permanent[ME_ENDPOINT_COOKIE] = {
-      value: CartoDB.base_url(user.username),
-      domain: Cartodb.config[:session_domain]
-    } if opts[:store]
+    if opts[:store]
+      auth.cookies.permanent[ME_ENDPOINT_COOKIE] = {
+        value: CartoDB.base_url(user.username),
+        domain: Cartodb.config[:session_domain]
+      }
+    end
 
     # Do not even send the Set-Cookie header if the strategy did not store anything in the session
     auth.request.session_options[:skip] = true if opts[:store] == false
@@ -137,23 +140,23 @@ class ApplicationController < ActionController::Base
   def store_request_host
     return unless CartoDB.subdomainless_urls?
 
-    match = /([\w\-\.]+)(:[\d]+)?\/?/.match(request.host.to_s)
-    unless match.nil?
-      CartoDB.request_host = match[1]
-    end
+    match = %r{([\w\-\.]+)(:[\d]+)?/?}.match(request.host.to_s)
+    CartoDB.request_host = match[1] unless match.nil?
   end
 
   def wrap_in_profiler
     if params[:profile_request].present? && current_user.present? && current_user.has_feature_flag?('profiler')
-      CartoDB::Profiler.new().call(request, response) { yield }
+      CartoDB::Profiler.new.call(request, response) { yield }
     else
       yield
     end
   end
 
   def set_asset_debugging
-    CartoDB::Application.config.assets.debug =
-      (Cartodb.config[:debug_assets].nil? ? true : Cartodb.config[:debug_assets]) if Rails.env.development?
+    if Rails.env.development?
+      CartoDB::Application.config.assets.debug =
+        (Cartodb.config[:debug_assets].nil? ? true : Cartodb.config[:debug_assets])
+    end
   end
 
   def cors_preflight_check
@@ -196,7 +199,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_user_state
-    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?("/" + path) }
+    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?('/' + path) }
 
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username
@@ -217,18 +220,18 @@ class ApplicationController < ActionController::Base
   end
 
   def check_maintenance_mode
-    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?("/" + path) }
+    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?('/' + path) }
 
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username
       user = Carto::User.find_by_username(viewed_username)
       if user.try(:maintenance_mode?)
         render_locked_owner
-        return
+        nil
       end
     elsif current_user.maintenance_mode?
       render_maintenance_mode
-      return
+      nil
     end
   end
 
@@ -242,7 +245,7 @@ class ApplicationController < ActionController::Base
   def render_404
     respond_to do |format|
       format.html do
-        render :file => 'public/404.html', :status => 404, :layout => false
+        render file: 'public/404.html', status: 404, layout: false
       end
       format.json do
         head :not_found
@@ -372,27 +375,27 @@ class ApplicationController < ActionController::Base
     return exception if exception.blank? || exception.is_a?(String)
 
     case exception
-      when CartoDB::EmptyFile
-      when CartoDB::InvalidUrl
-      when CartoDB::InvalidFile
-      when CartoDB::TableCopyError
-      when CartoDB::QuotaExceeded
-        exception.detail
-      when Sequel::DatabaseError
-        # TODO: rationalise these error codes
-        if exception.message.include?("transform: couldn't project")
-          Cartodb.error_codes[:geometries_error].merge(:raw_error => exception.message)
-        else
-          Cartodb.error_codes[:unknown_error].merge(:raw_error => exception.message)
-        end
+    when CartoDB::EmptyFile
+    when CartoDB::InvalidUrl
+    when CartoDB::InvalidFile
+    when CartoDB::TableCopyError
+    when CartoDB::QuotaExceeded
+      exception.detail
+    when Sequel::DatabaseError
+      # TODO: rationalise these error codes
+      if exception.message.include?("transform: couldn't project")
+        Cartodb.error_codes[:geometries_error].merge(raw_error: exception.message)
       else
-        Cartodb.error_codes[:unknown_error].merge(:raw_error => exception.message)
+        Cartodb.error_codes[:unknown_error].merge(raw_error: exception.message)
+      end
+    else
+      Cartodb.error_codes[:unknown_error].merge(raw_error: exception.message)
     end.to_json
   end
 
   def no_html5_compliant
     logout
-    render :file => "#{Rails.root}/public/HTML5.html", :status => 500, :layout => false
+    render file: "#{Rails.root}/public/HTML5.html", status: 500, layout: false
   end
 
   # In some cases the flash message is going to be set in the fronted with js after making a request to the API
@@ -407,12 +410,10 @@ class ApplicationController < ActionController::Base
     return true if user_agent.nil?
 
     banned_regex = [
-      /msie [0-9]\./, /safari\/[0-4][0-2][0-2]/, /opera\/[0-8].[0-7]/, /firefox\/[0-2].[0-5]/
+      /msie [0-9]\./, %r{safari/[0-4][0-2][0-2]}, %r{opera/[0-8].[0-7]}, %r{firefox/[0-2].[0-5]}
     ]
 
-    if banned_regex.map { |re| user_agent.match(re) }.compact.first
-      raise NoHTML5Compliant
-    end
+    raise NoHTML5Compliant if banned_regex.map { |re| user_agent.match(re) }.compact.first
   end
 
   def ensure_user_organization_valid
@@ -420,9 +421,7 @@ class ApplicationController < ActionController::Base
 
     org_subdomain = CartoDB.extract_host_subdomain(request)
     unless org_subdomain.nil? || current_user.nil?
-      if current_user.organization.nil? || current_user.organization.name != org_subdomain
-        render_404
-      end
+      render_404 if current_user.organization.nil? || current_user.organization.name != org_subdomain
     end
   end
 
@@ -432,7 +431,7 @@ class ApplicationController < ActionController::Base
 
     rewrite_url = !request.params[:dont_rewrite].present?
     if rewrite_url && !current_user.nil? && !current_user.organization.nil? &&
-        CartoDB.subdomain_from_request(request) == current_user.username
+       CartoDB.subdomain_from_request(request) == current_user.username
       if request.fullpath == '/'
         redirect_to CartoDB.url(self, 'dashboard')
       else
@@ -444,14 +443,14 @@ class ApplicationController < ActionController::Base
   def ensure_account_has_been_activated
     return unless current_user
 
-    if !current_user.enable_account_token.nil?
+    unless current_user.enable_account_token.nil?
       respond_to do |format|
-        format.html {
+        format.html do
           redirect_to CartoDB.url(self, 'account_token_authentication_error')
-        }
-        format.all  {
+        end
+        format.all do
           head :forbidden
-        }
+        end
       end
     end
   end
@@ -466,6 +465,7 @@ class ApplicationController < ActionController::Base
 
   def update_user_last_activity
     return false if current_user.nil?
+
     current_user.set_last_active_time
     current_user.set_last_ip_address request.remote_ip
   end
@@ -479,7 +479,9 @@ class ApplicationController < ActionController::Base
   def ensure_required_request_params(required_params, status = 422)
     params_with_value = request.request_parameters.reject { |_, v| v.empty? }
     missing_params = required_params - params_with_value.keys
-    raise Carto::UnprocesableEntityError.new("Missing parameter: #{missing_params}", status) unless missing_params.empty?
+    unless missing_params.empty?
+      raise Carto::UnprocesableEntityError.new("Missing parameter: #{missing_params}", status)
+    end
   end
 
   def ensure_no_extra_request_params(allowed_params, status = 422)
@@ -507,4 +509,5 @@ class ApplicationController < ActionController::Base
     headers['X-XSS-Protection'] = '1; mode=block'
     headers['X-Content-Type-Options'] = 'nosniff'
   end
+
 end

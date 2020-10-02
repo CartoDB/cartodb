@@ -3,6 +3,7 @@ require_dependency 'carto/oauth_provider/scopes/scopes'
 
 module Carto
   class OauthAuthorizationCode < ActiveRecord::Base
+
     include OauthProvider::Scopes
     # Multiple of 3 for pretty base64
     CODE_RANDOM_BYTES = 12
@@ -25,9 +26,7 @@ module Carto
       ActiveRecord::Base.transaction do
         destroy!
         access_token = oauth_app_user.oauth_access_tokens.create!(scopes: scopes)
-        if scopes.include?(SCOPE_OFFLINE)
-          refresh_token = oauth_app_user.oauth_refresh_tokens.create!(scopes: scopes)
-        end
+        refresh_token = oauth_app_user.oauth_refresh_tokens.create!(scopes: scopes) if scopes.include?(SCOPE_OFFLINE)
         [access_token, refresh_token]
       end
     end
@@ -45,5 +44,6 @@ module Carto
     def expired?
       created_at < Time.now - CODE_EXPIRATION_TIME
     end
+
   end
 end

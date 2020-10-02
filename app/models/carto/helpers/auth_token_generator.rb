@@ -1,5 +1,6 @@
 module Carto
   module AuthTokenGenerator
+
     def get_auth_token
       auth_token || generate_and_save_auth_token
     end
@@ -15,5 +16,6 @@ module Carto
     def generate_auth_token
       SecureRandom.urlsafe_base64(nil, false)
     end
+
   end
 end

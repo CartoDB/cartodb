@@ -3,15 +3,17 @@ require_dependency 'carto/table_utils'
 
 module Carto
   module Api
+
     class LayerPresenter
+
       include InfowindowMigrator
       include Carto::TableUtils
 
-      PUBLIC_VALUES = %W{ options kind infowindow tooltip id order }
+      PUBLIC_VALUES = %w{options kind infowindow tooltip id order}.freeze
 
       # CSS is not stored by default, only when sent by frontend,
       # so this is returned whenever a layer that needs CSS but has none is requestesd
-      EMPTY_CSS = '#dummy{}'
+      EMPTY_CSS = '#dummy{}'.freeze
 
       TORQUE_ATTRS = %w(
         table_name
@@ -27,11 +29,11 @@ module Carto
         tile_style
         named_map
         visible
-      )
+      ).freeze
 
       INFOWINDOW_KEYS = %w(
         fields template_name template alternative_names width maxHeight
-      )
+      ).freeze
 
       # Options:
       # - viewer_user
@@ -51,9 +53,7 @@ module Carto
       def to_poro(migrate_builder_infowindows: false)
         poro = base_poro(@layer)
         if migrate_builder_infowindows
-          if poro['infowindow'].present?
-            poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])
-          end
+          poro['infowindow'] = migrate_builder_infowindow(poro['infowindow']) if poro['infowindow'].present?
           if poro['tooltip'].present?
             poro['tooltip'] = migrate_builder_infowindow(poro['tooltip'], mustache_dir: 'tooltips')
           end
@@ -61,7 +61,7 @@ module Carto
         poro
       end
 
-      def to_json
+      def to_json(*_args)
         public_values(@layer).to_json
       end
 
@@ -79,36 +79,37 @@ module Carto
           as_torque
         else
           {
-            id:         @layer.id,
-            type:       'CartoDB',
+            id: @layer.id,
+            type: 'CartoDB',
             infowindow: infowindow_data_v2,
-            tooltip:    tooltip_data_v2,
-            legend:     @layer.legend,
-            order:      @layer.order,
-            visible:    public_values(@layer).symbolize_keys[:options]['visible'],
-            options:    options_data_v2
+            tooltip: tooltip_data_v2,
+            legend: @layer.legend,
+            order: @layer.order,
+            visible: public_values(@layer).symbolize_keys[:options]['visible'],
+            options: options_data_v2
           }
         end
       end
 
       def to_vizjson_v1
         return base_poro(@layer).symbolize_keys if base?(@layer)
+
         {
-          id:         @layer.id,
-          kind:       'CartoDB',
+          id: @layer.id,
+          kind: 'CartoDB',
           infowindow: infowindow_data_v1,
-          order:      @layer.order,
-          options:    options_data_v1
+          order: @layer.order,
+          options: options_data_v1
         }
       end
 
       private
 
       def viewer_is_owner?
-        return (@owner_user.id == @viewer_user.id) if (@owner_user && @viewer_user)
+        return (@owner_user.id == @viewer_user.id) if @owner_user && @viewer_user
 
         # This can be removed if 'user_name' support is dropped
-        layer_opts = @layer.options.nil? ? Hash.new : @layer.options
+        layer_opts = @layer.options.nil? ? {} : @layer.options
         if @viewer_user && layer_opts['user_name'] && layer_opts['table_name']
           @viewer_user.username == layer_opts['user_name']
         else
@@ -118,7 +119,7 @@ module Carto
 
       # INFO: Assumes table_name needs to always be qualified, don't call if doesn't
       def qualify_table_name
-        layer_opts = @layer.options.nil? ? Hash.new : @layer.options
+        layer_opts = @layer.options.nil? ? {} : @layer.options
 
         # if the table_name already have a schema don't add another one.
         # This case happens when you share a layer already shared with you
@@ -143,17 +144,17 @@ module Carto
       end
 
       def public_values(layer)
-        Hash[ PUBLIC_VALUES.map { |attribute| [attribute, layer.send(attribute)] } ]
+        Hash[PUBLIC_VALUES.map { |attribute| [attribute, layer.send(attribute)] }]
       end
 
       # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
       def decorate_with_data(source_hash, decoration_data)
-        decoration_data.each { |key, value|
+        decoration_data.each do |key, value|
           source_hash[key] = value
-          source_hash.delete_if { |k, v|
+          source_hash.delete_if do |_k, v|
             v.nil?
-          }
-        }
+          end
+        end
         source_hash
       end
 
@@ -180,10 +181,8 @@ module Carto
       end
 
       def layer_options
-        layer_opts = @layer.options.nil? ? Hash.new : @layer.options
-        if layer_opts['table_name'] && !viewer_is_owner?
-          layer_opts['table_name'] = qualify_table_name
-        end
+        layer_opts = @layer.options.nil? ? {} : @layer.options
+        layer_opts['table_name'] = qualify_table_name if layer_opts['table_name'] && !viewer_is_owner?
 
         if @with_style_properties &&
            (layer_opts['style_properties'].nil? || layer_opts['style_properties']['autogenerated'] == true)
@@ -195,7 +194,8 @@ module Carto
 
       def options_data_v1
         return @layer.options if @options[:full]
-        @layer.options.select { |key, value| public_options.include?(key.to_s) }
+
+        @layer.options.select { |key, _value| public_options.include?(key.to_s) }
       end
 
       def options_data_v2
@@ -204,18 +204,16 @@ module Carto
         else
           sql = sql_from(@layer.options)
           data = {
-            sql:                wrap(sql, @layer.options),
-            layer_name:         name_for(@layer),
-            cartocss:           css_from(@layer.options),
-            cartocss_version:   @layer.options.fetch('style_version'),  # Mandatory
-            interactivity:      @layer.options.fetch('interactivity')   # Mandatory
+            sql: wrap(sql, @layer.options),
+            layer_name: name_for(@layer),
+            cartocss: css_from(@layer.options),
+            cartocss_version: @layer.options.fetch('style_version'), # Mandatory
+            interactivity: @layer.options.fetch('interactivity') # Mandatory
           }
           data = decorate_with_data(data, @decoration_data)
 
           if @viewer_user
-            if @layer.options['table_name'] && !viewer_is_owner?
-              data['table_name'] = qualify_table_name
-            end
+            data['table_name'] = qualify_table_name if @layer.options['table_name'] && !viewer_is_owner?
           end
           data
         end
@@ -228,32 +226,61 @@ module Carto
       def as_torque
         api_templates_type = @options.fetch(:https_request, false) ? 'private' : 'public'
         layer_options = decorate_with_data(
-            # Make torque always have a SQL query too (as vizjson v2)
-            @layer.options.merge({ 'query' => wrap(sql_from(@layer.options), @layer.options) }),
-            @decoration_data
-          )
+          # Make torque always have a SQL query too (as vizjson v2)
+          @layer.options.merge({ 'query' => wrap(sql_from(@layer.options), @layer.options) }),
+          @decoration_data
+        )
 
         {
-          id:         @layer.id,
-          type:       'torque',
-          order:      @layer.order,
-          legend:     @layer.legend,
-          options:    {
-            stat_tag:           @options.fetch(:visualization_id),
-            maps_api_template:  ApplicationHelper.maps_api_template(api_templates_type),
-            sql_api_template:   ApplicationHelper.sql_api_template(api_templates_type),
+          id: @layer.id,
+          type: 'torque',
+          order: @layer.order,
+          legend: @layer.legend,
+          options: {
+            stat_tag: @options.fetch(:visualization_id),
+            maps_api_template: ApplicationHelper.maps_api_template(api_templates_type),
+            sql_api_template: ApplicationHelper.sql_api_template(api_templates_type),
             # tiler_* is kept for backwards compatibility
-            tiler_protocol:     (@configuration[:tiler]["public"]["protocol"] rescue nil),
-            tiler_domain:       (@configuration[:tiler]["public"]["domain"] rescue nil),
-            tiler_port:         (@configuration[:tiler]["public"]["port"] rescue nil),
+            tiler_protocol: begin
+                                  @configuration[:tiler]['public']['protocol']
+                            rescue StandardError
+                              nil
+                                end,
+            tiler_domain: begin
+                                  @configuration[:tiler]['public']['domain']
+                          rescue StandardError
+                            nil
+                                end,
+            tiler_port: begin
+                                  @configuration[:tiler]['public']['port']
+                        rescue StandardError
+                          nil
+                                end,
             # sql_api_* is kept for backwards compatibility
-            sql_api_protocol:   (@configuration[:sql_api]["public"]["protocol"] rescue nil),
-            sql_api_domain:     (@configuration[:sql_api]["public"]["domain"] rescue nil),
-            sql_api_endpoint:   (@configuration[:sql_api]["public"]["endpoint"] rescue nil),
-            sql_api_port:       (@configuration[:sql_api]["public"]["port"] rescue nil),
-            layer_name:         name_for(@layer),
+            sql_api_protocol: begin
+                                  @configuration[:sql_api]['public']['protocol']
+                              rescue StandardError
+                                nil
+                                end,
+            sql_api_domain: begin
+                                  @configuration[:sql_api]['public']['domain']
+                            rescue StandardError
+                              nil
+                                end,
+            sql_api_endpoint: begin
+                                  @configuration[:sql_api]['public']['endpoint']
+                              rescue StandardError
+                                nil
+                                end,
+            sql_api_port: begin
+                                  @configuration[:sql_api]['public']['port']
+                          rescue StandardError
+                            nil
+                                end,
+            layer_name: name_for(@layer)
           }.merge(
-            layer_options.select { |k| TORQUE_ATTRS.include? k })
+            layer_options.select { |k| TORQUE_ATTRS.include? k }
+          )
         }
       end
 
@@ -283,23 +310,26 @@ module Carto
         table_name  = layer.options['table_name']
 
         return table_name unless layer_alias && !layer_alias.empty?
+
         layer_alias
       end
 
       def sql_from(options)
         query = options.fetch('query', '')
         return default_query_for(options) if query.nil? || query.empty?
+
         query
       end
 
       def css_from(options)
         style = options.include?('tile_style') ? options['tile_style'] : nil
-        (style.nil? || style.strip.empty?) ? EMPTY_CSS : style
+        style.nil? || style.strip.empty? ? EMPTY_CSS : style
       end
 
       def wrap(query, options)
         wrapper = options.fetch('query_wrapper', nil)
         return query if wrapper.nil? || wrapper.empty?
+
         EJS.evaluate(wrapper, sql: query)
       end
 
@@ -313,18 +343,25 @@ module Carto
 
       def public_options
         return @configuration if @configuration.empty?
+
         @configuration.fetch(:layer_opts).fetch('public_opts')
       end
 
       def whitelisted_infowindow(infowindow)
-        infowindow.nil? ? nil : infowindow.select { |key, value|
-                                                    INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
-                                                  }
+        if infowindow.nil?
+          nil
+        else
+          infowindow.select do |key, _value|
+            INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
+          end
+        end
       end
+
     end
 
     # Used to migrate `wizard_properties` to `style_properties`
     class StylePropertiesGenerator
+
       def initialize(layer)
         @layer = layer
         @wizard_properties = @layer.options['wizard_properties']
@@ -356,17 +393,11 @@ module Carto
 
         merge_into_if_present(options['style_properties']['properties'], 'aggregation', generate_aggregation(wpp))
 
-        if SOURCE_TYPES_WITH_SQL_WRAP.include?(@source_type)
-          options['sql_wrap'] = options['query_wrapper']
-        end
+        options['sql_wrap'] = options['query_wrapper'] if SOURCE_TYPES_WITH_SQL_WRAP.include?(@source_type)
 
-        if @source_type == 'cluster'
-          options['cartocss_custom'] = true
-        end
+        options['cartocss_custom'] = true if @source_type == 'cluster'
 
-        if type == 'animation' && @layer.widgets.where(type: 'time-series').none?
-          create_time_series_widget(wpp)
-        end
+        create_time_series_widget(wpp) if type == 'animation' && @layer.widgets.where(type: 'time-series').none?
       end
 
       private
@@ -405,17 +436,15 @@ module Carto
       end
 
       def apply_default_opacity(hash)
-        if hash['fixed'] && !hash['opacity']
-          hash['opacity'] = 1
-        end
+        hash['opacity'] = 1 if hash['fixed'] && !hash['opacity']
 
         hash
       end
 
       PROPERTIES_DIRECT_MAPPING = {
-        "marker-comp-op" => "blending",
-        "torque-blend-mode" => "blending",
-        "line-comp-op" => "blending"
+        'marker-comp-op' => 'blending',
+        'torque-blend-mode' => 'blending',
+        'line-comp-op' => 'blending'
       }.freeze
 
       BLENDING_ALIAS = {
@@ -431,11 +460,11 @@ module Carto
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
 
-        if spp['blending'].blank?
-          spp['blending'] = 'none'
-        else
-          spp['blending'] = BLENDING_ALIAS.fetch(spp['blending'], spp['blending'])
-        end
+        spp['blending'] = if spp['blending'].blank?
+                            'none'
+                          else
+                            BLENDING_ALIAS.fetch(spp['blending'], spp['blending'])
+                          end
 
         merge_into_if_present(spp, 'stroke', generate_stroke(wpp))
 
@@ -443,9 +472,7 @@ module Carto
 
         merge_into_if_present(spp, 'labels', generate_labels(wpp))
 
-        if ANIMATED_TYPES.include?(type)
-          merge_into_if_present(spp, 'animated', generate_animated(wpp))
-        end
+        merge_into_if_present(spp, 'animated', generate_animated(wpp)) if ANIMATED_TYPES.include?(type)
 
         set_animated_style(spp) if type == 'animation'
 
@@ -505,21 +532,21 @@ module Carto
 
       STROKE_FROM_POINT_MAPPING = {
         'size' => {
-          "marker-line-width" => 'fixed'
+          'marker-line-width' => 'fixed'
         },
         'color' => {
-          "marker-line-color" => 'fixed',
-          "marker-line-opacity" => 'opacity'
+          'marker-line-color' => 'fixed',
+          'marker-line-opacity' => 'opacity'
         }
       }.freeze
 
       STROKE_FROM_NON_POINT_MAPPING = {
         'size' => {
-          "line-width" => 'fixed'
+          'line-width' => 'fixed'
         },
         'color' => {
-          "line-color" => 'fixed',
-          "line-opacity" => 'opacity'
+          'line-color' => 'fixed',
+          'line-opacity' => 'opacity'
         }
       }.freeze
 
@@ -550,9 +577,7 @@ module Carto
         %w(polygon marker).each do |prefix|
           set_if_present(color, 'fixed', wpp["#{prefix}-fill"])
 
-          unless color['opacity']
-            set_if_present(color, 'opacity', wpp["#{prefix}-opacity"])
-          end
+          set_if_present(color, 'opacity', wpp["#{prefix}-opacity"]) unless color['opacity']
 
           apply_default_opacity(color)
         end
@@ -592,17 +617,13 @@ module Carto
 
         radius_min = wpp['radius_min']
         radius_max = wpp['radius_max']
-        if radius_min && radius_max
-          size['range'] = [radius_min, radius_max]
-        end
+        size['range'] = [radius_min, radius_max] if radius_min && radius_max
 
         apply_direct_mapping(size, wpp, SIZE_DIRECT_MAPPING)
         quantification = size['quantification']
         size['quantification'] = QUANTIFICATION_MAPPING.fetch(quantification, quantification) if quantification.present?
 
-        if %w{ bubble category }.include?(@source_type)
-          size['bins'] = 10
-        end
+        size['bins'] = 10 if %w{bubble category}.include?(@source_type)
 
         if COLOR_RANGE_SOURCE_TYPES.include?(@source_type)
           # Commented because it might not be definitive
@@ -639,7 +660,7 @@ module Carto
         DEFAULT_ANIMATED.merge(animated)
       end
 
-      AGGREGATION_SOURCE_TYPES = %w{ density torque_heat }.freeze
+      AGGREGATION_SOURCE_TYPES = %w{density torque_heat}.freeze
 
       def generate_aggregation(wpp)
         return {} unless AGGREGATION_SOURCE_TYPES.include?(@source_type)
@@ -654,10 +675,10 @@ module Carto
                end
 
         {
-          "size" => size,
-          "value" => {
-            "operator" => 'COUNT',
-            "attribute" => ''
+          'size' => size,
+          'value' => {
+            'operator' => 'COUNT',
+            'attribute' => ''
           }
         }
       end
@@ -834,6 +855,8 @@ module Carto
           )
         end
       end
+
     end
+
   end
 end

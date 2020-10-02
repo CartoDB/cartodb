@@ -1,6 +1,7 @@
 module Carto
   module Api
     class MultifactorAuthenticationController < ::Api::ApplicationController
+
       extend  Carto::DefaultRescueFroms
       include OrganizationUsersHelper
 
@@ -45,6 +46,7 @@ module Carto
       def create_service
         @service = Carto::UserMultifactorAuthUpdateService.new(user_id: @user.id)
       end
+
     end
   end
 end

@@ -13,6 +13,7 @@ module CartoGearsApi
           name: organization.name
         )
       end
+
     end
   end
 end

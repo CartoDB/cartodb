@@ -3,26 +3,28 @@ require_relative '../../../../../lib/carto/http/client'
 module CartoDB
   module Datasources
     module Url
+
       # BoxAPI module is a replacement for Boxr, which requires Ruby >= 2.
       # Most of this code has been extracted from Boxr.
       # This should be migrated when we upgrade to Ruby 2.
       module BoxAPI
+
         class ExpiredTokenError < StandardError; end
 
         def self.oauth_url(state, options = {})
-          host = options.fetch(:host, "app.box.com")
-          response_type = options.fetch(:response_type, "code")
+          host = options.fetch(:host, 'app.box.com')
+          response_type = options.fetch(:response_type, 'code')
           scope = options[:scope]
           folder_id = options[:folder_id]
           client_id = options[:client_id]
 
-          template = Addressable::Template.new("https://{host}/api/oauth2/authorize{?query*}")
+          template = Addressable::Template.new('https://{host}/api/oauth2/authorize{?query*}')
 
-          query = { "response_type" => "#{response_type}", "state" => "#{state}", "client_id" => "#{client_id}" }
-          query["scope"] = "#{scope}" unless scope.nil?
-          query["folder_id"] = "#{folder_id}" unless folder_id.nil?
+          query = { 'response_type' => response_type.to_s, 'state' => state.to_s, 'client_id' => client_id.to_s }
+          query['scope'] = scope.to_s unless scope.nil?
+          query['folder_id'] = folder_id.to_s unless folder_id.nil?
 
-          template.expand("host" => "#{host}", "query" => query)
+          template.expand('host' => host.to_s, 'query' => query)
         end
 
         def self.get_tokens(code, options = {})
@@ -33,12 +35,12 @@ module CartoDB
           client_id = options[:client_id]
           client_secret = options[:client_secret]
 
-          uri = "https://api.box.com/oauth2/token"
+          uri = 'https://api.box.com/oauth2/token'
           body = "grant_type=#{grant_type}&client_id=#{client_id}&client_secret=#{client_secret}"
-          body = body + "&code=#{code}" unless code.nil?
-          body = body + "&scope=#{scope}" unless scope.nil?
-          body = body + "&username=#{username}" unless username.nil?
-          body = body + "&assertion=#{assertion}" unless assertion.nil?
+          body += "&code=#{code}" unless code.nil?
+          body += "&scope=#{scope}" unless scope.nil?
+          body += "&username=#{username}" unless username.nil?
+          body += "&assertion=#{assertion}" unless assertion.nil?
 
           auth_post(uri, body)
         end
@@ -47,7 +49,7 @@ module CartoDB
           client_id = options[:client_id]
           client_secret = options[:client_secret]
 
-          uri = "https://api.box.com/oauth2/token"
+          uri = 'https://api.box.com/oauth2/token'
           body = "grant_type=refresh_token&refresh_token=#{refresh_token}&client_id=#{client_id}&client_secret=#{client_secret}"
 
           auth_post(uri, body)
@@ -81,8 +83,7 @@ module CartoDB
         def self.post(uri, options = {})
           http_client = Carto::Http::Client.get('box',
                                                 connecttimeout: 60,
-                                                timeout: 600
-                                               )
+                                                timeout: 600)
           http_client.post(uri.to_s, options)
         end
 
@@ -97,21 +98,23 @@ module CartoDB
           response = http_client.get(uri.to_s, headers: header, followlocation: follow_redirect, params: query)
           response
         end
+
       end
 
       module BoxAPI
         class Client
 
-          API_URI = "https://api.box.com/2.0"
-          SEARCH_URI = "#{API_URI}/search"
-          FILES_URI = "#{API_URI}/files"
+          API_URI = 'https://api.box.com/2.0'.freeze
+          SEARCH_URI = "#{API_URI}/search".freeze
+          FILES_URI = "#{API_URI}/files".freeze
 
           def initialize(access_token, options = {})
             client_id = options[:client_id]
             client_secret = options[:client_secret]
 
             @access_token = access_token
-            raise "Access token cannot be nil" if @access_token.nil?
+            raise 'Access token cannot be nil' if @access_token.nil?
+
             @client_id = client_id
             @client_secret = client_secret
           end
@@ -157,7 +160,7 @@ module CartoDB
             follow_redirect = options.fetch(:follow_redirect, true)
 
             file_id = ensure_id(file)
-            begin
+            loop do
               uri = "#{FILES_URI}/#{file_id}/content"
               query = {}
               query[:version] = version unless version.nil?
@@ -179,7 +182,8 @@ module CartoDB
               elsif response.response_code == 200
                 file = response.response_body
               end
-            end until file
+              break if file
+            end
 
             file
           end
@@ -192,7 +196,7 @@ module CartoDB
                                     :permissions, :tags,
                                     :sha1, :shared_link, :version_number, :comment_count, :lock, :extension,
                                     :is_package,
-                                    :expiring_embed_link, :can_non_owners_invite]
+                                    :expiring_embed_link, :can_non_owners_invite].freeze
           FOLDER_AND_FILE_FIELDS_QUERY = FOLDER_AND_FILE_FIELDS.join(',')
 
           def file_from_id(file_id, fields = [])
@@ -204,15 +208,15 @@ module CartoDB
           end
 
           # Required for all providers
-          DATASOURCE_NAME = 'box'
+          DATASOURCE_NAME = 'box'.freeze
 
           def revoke_tokens(token)
-            uri = "https://api.box.com/oauth2/revoke"
+            uri = 'https://api.box.com/oauth2/revoke'
             body = "client_id=#{@client_id}&client_secret=#{@client_secret}&token=#{token}"
 
-            BoxAPI::auth_post(uri, body, false)
-          rescue StandardError => ex
-            raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
+            BoxAPI.auth_post(uri, body, false)
+          rescue StandardError => e
+            raise AuthError.new("revoke_token: #{e.message}", DATASOURCE_NAME)
           end
 
           private
@@ -231,7 +235,8 @@ module CartoDB
             return item if item.class == String || item.class == Integer || item.nil?
             return item.id if item.respond_to?(:id)
             return item['id'] if item.class == Hash
-            raise "Expecting an id of class String or Integer, or object that responds to :id"
+
+            raise 'Expecting an id of class String or Integer, or object that responds to :id'
           end
 
           def get(uri, options = {})
@@ -246,14 +251,14 @@ module CartoDB
             headers['If-Match'] = if_match unless if_match.nil?
             headers['BoxApi'] = box_api_header unless box_api_header.nil?
 
-            res = BoxAPI::get(uri, query: query, header: headers, follow_redirect: follow_redirect)
+            res = BoxAPI.get(uri, query: query, header: headers, follow_redirect: follow_redirect)
 
             check_response_status(res, success_codes)
 
             if process_response
-              return JSON.parse(res.response_body)
+              JSON.parse(res.response_body)
             else
-              return res.response_body, res
+              [res.response_body, res]
             end
           end
 
@@ -264,7 +269,7 @@ module CartoDB
           end
 
           def standard_headers
-            { "Authorization" => "Bearer #{@access_token}" }
+            { 'Authorization' => "Bearer #{@access_token}" }
           end
 
         end
@@ -273,7 +278,7 @@ module CartoDB
       class Box < BaseOAuth
 
         # Required for all providers
-        DATASOURCE_NAME = 'box'
+        DATASOURCE_NAME = 'box'.freeze
 
         # Constructor (hidden)
         # @param config
@@ -286,7 +291,7 @@ module CartoDB
         # @throws UninitializedError
         # @throws MissingConfigurationError
         def initialize(config, user)
-          super(config, user, %w{ application_name client_id client_secret box_host }, DATASOURCE_NAME)
+          super(config, user, %w{application_name client_id client_secret box_host}, DATASOURCE_NAME)
 
           raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
 
@@ -314,12 +319,12 @@ module CartoDB
         def get_auth_url
           service_name = service_name_for_user(DATASOURCE_NAME, @user)
           state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username).sub('service', service_name)
-          BoxAPI::oauth_url(state,
-                            host: config['box_host'],
-                            response_type: "code",
-                            scope: nil,
-                            folder_id: nil,
-                            client_id: config['client_id']).to_s
+          BoxAPI.oauth_url(state,
+                           host: config['box_host'],
+                           response_type: 'code',
+                           scope: nil,
+                           folder_id: nil,
+                           client_id: config['client_id']).to_s
         end
 
         # Validates authorization code, sets access and refresh tokens for current instance and stores (refresh) token
@@ -335,9 +340,7 @@ module CartoDB
         # Validates the authorization callback
         # @param params : mixed
         def validate_callback(params)
-          if params[:error].present?
-            raise AuthError.new("validate_callback: #{params[:error]}", DATASOURCE_NAME)
-          end
+          raise AuthError.new("validate_callback: #{params[:error]}", DATASOURCE_NAME) if params[:error].present?
 
           if params[:code]
             validate_auth_code(params[:code])
@@ -497,19 +500,19 @@ module CartoDB
         end
 
         def get_tokens(code)
-          BoxAPI::get_tokens(code,
-                             grant_type: "authorization_code",
-                             assertion: nil,
-                             scope: nil,
-                             username: nil,
-                             client_id: config['client_id'],
-                             client_secret: config['client_secret'])
+          BoxAPI.get_tokens(code,
+                            grant_type: 'authorization_code',
+                            assertion: nil,
+                            scope: nil,
+                            username: nil,
+                            client_id: config['client_id'],
+                            client_secret: config['client_secret'])
         end
 
         def get_fresh_tokens(refresh_token)
-          tokens = BoxAPI::refresh_tokens(refresh_token,
-                                          client_id: config['client_id'],
-                                          client_secret: config['client_secret'])
+          tokens = BoxAPI.refresh_tokens(refresh_token,
+                                         client_id: config['client_id'],
+                                         client_secret: config['client_secret'])
           # Box refresh tokens can only be used once
           update_user_oauth(tokens['refresh_token'])
           tokens
@@ -527,10 +530,10 @@ module CartoDB
         # @return { :id, :title, :url, :service, :checksum, :size, :filename, :updated_at }
         def format_item_data(item_data)
           {
-            id:           item_data['id'],
-            title:        item_data['name'],
-            service:      DATASOURCE_NAME,
-            checksum:     checksum_of(item_data.fetch('modified_at')),
+            id: item_data['id'],
+            title: item_data['name'],
+            service: DATASOURCE_NAME,
+            checksum: checksum_of(item_data.fetch('modified_at')),
             filename: item_data['name'],
             size: item_data['size'].to_i,
             updated_at: DateTime.rfc3339(item_data['content_modified_at'])
@@ -538,6 +541,7 @@ module CartoDB
         end
 
       end
+
     end
   end
 end

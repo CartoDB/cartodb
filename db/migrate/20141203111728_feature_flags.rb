@@ -1,5 +1,4 @@
 Sequel.migration do
-
   up do
     create_table :feature_flags do
       Integer     :id,                  primary_key: true
@@ -18,7 +17,7 @@ Sequel.migration do
     end
 
     alter_table(:feature_flags_users) do
-      add_index [:user_id, :feature_flag_id], :unique => true
+      add_index [:user_id, :feature_flag_id], unique: true
     end
   end
 
@@ -26,5 +25,4 @@ Sequel.migration do
     drop_table :feature_flags_users
     drop_table :feature_flags
   end
-
 end

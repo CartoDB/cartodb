@@ -69,7 +69,7 @@ describe Unp do
       unp.run(zipfile)
       Dir.entries(unp.temporary_directory).should include('geopackage.gpkg')
       unp.source_files.length.should eq 2
-      unp.source_files.map(&:layer).should eq ["pts", "lns"]
+      unp.source_files.map(&:layer).should eq ['pts', 'lns']
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
@@ -80,7 +80,7 @@ describe Unp do
       unp.run(zipfile)
       Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
       unp.source_files.length.should eq 2
-      unp.source_files.map(&:layer).should eq ["pts", "lns"]
+      unp.source_files.map(&:layer).should eq ['pts', 'lns']
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
@@ -91,7 +91,7 @@ describe Unp do
       unp.run(zipfile)
       Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
       unp.source_files.length.should eq 2
-      unp.source_files.map(&:layer).should eq ["pts", "lns"]
+      unp.source_files.map(&:layer).should eq ['pts', 'lns']
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
@@ -114,7 +114,7 @@ describe Unp do
     end
 
     it 'populates a single source file for the passed path if not compressed' do
-      unp       = Unp.new
+      unp = Unp.new
 
       unp.source_files.should be_empty
       unp.run(file_factory)
@@ -124,7 +124,7 @@ describe Unp do
 
   describe '#without_unpacking' do
     it 'pushes a source file for the passed file path to the source files' do
-      unp       = Unp.new
+      unp = Unp.new
 
       unp.source_files.should be_empty
       unp.without_unpacking(file_factory)
@@ -138,7 +138,7 @@ describe Unp do
 
   describe '#compressed?' do
     it 'returns true if extension denotes a compressed file' do
-      unp       = Unp.new
+      unp = Unp.new
 
       unp.compressed?('bogus.gz').should eq true
       unp.compressed?('bogus.csv').should eq false
@@ -204,7 +204,7 @@ describe Unp do
   describe '#source_file_for' do
     it 'returns a source_file for the passed path' do
       Unp.new.source_file_for('/var/tmp/foo.txt')
-        .should be_an_instance_of SourceFile
+         .should be_an_instance_of SourceFile
     end
   end
 
@@ -213,7 +213,7 @@ describe Unp do
       unp = Unp.new
 
       command = unp.command_for('bogus')
-      command.any? { |c| c.match /unp/ }.should be_true
+      command.any? { |c| c.match(/unp/) }.should be_true
       command.should include 'bogus'
     end
 
@@ -239,21 +239,21 @@ describe Unp do
 
   describe '#normalize' do
     it 'underscores the file name' do
-      fixture   = "/var/tmp/#{Time.now.to_i} with spaces.txt"
+      fixture = "/var/tmp/#{Time.now.to_i} with spaces.txt"
       File.open(fixture, 'w').close
 
-      new_name  = Unp.new.normalize(fixture)
+      new_name = Unp.new.normalize(fixture)
       new_name.should match(/with_spaces/)
     end
 
     it 'renames the file to the underscored file name' do
-      fixture   = "/var/tmp/#{Time.now.to_i} with spaces.txt"
+      fixture = "/var/tmp/#{Time.now.to_i} with spaces.txt"
       File.open(fixture, 'w').close
 
       unp = Unp.new
       unp.normalize(fixture)
 
-      File.exists?(fixture).should eq false
+      File.exist?(fixture).should eq false
     end
   end
 
@@ -280,20 +280,20 @@ describe Unp do
       unp = Unp.new
       unp.rename(fixture, new_name)
 
-      File.exists?(fixture).should eq false
-      File.exists?(new_name).should eq true
+      File.exist?(fixture).should eq false
+      File.exist?(new_name).should eq true
 
       FileUtils.rm(new_name)
     end
 
     it 'does nothing if destination file name is the same as the original' do
-      fixture   = "/var/tmp/#{Time.now.to_i}.txt"
+      fixture = "/var/tmp/#{Time.now.to_i}.txt"
       File.open(fixture, 'w').close
 
       unp = Unp.new
       unp.rename(fixture, fixture)
 
-      File.exists?(fixture).should eq true
+      File.exist?(fixture).should eq true
     end
   end
 
@@ -337,11 +337,11 @@ describe Unp do
     end
   end
 
-  describe "configuration" do
-    it "Uses a different configuration path if specified" do
-      new_config_path = "/fake/uploads"
+  describe 'configuration' do
+    it 'Uses a different configuration path if specified' do
+      new_config_path = '/fake/uploads'
 
-      Unp.new("unp_temporal_folder" => new_config_path).get_temporal_subfolder_path.should eq new_config_path
+      Unp.new('unp_temporal_folder' => new_config_path).get_temporal_subfolder_path.should eq new_config_path
       Unp.new.get_temporal_subfolder_path.should eq Unp::DEFAULT_IMPORTER_TMP_SUBFOLDER
     end
   end
@@ -349,8 +349,8 @@ describe Unp do
   def file_factory(dir = '/var/tmp/bogus', filename: 'bogus.zip')
     zipfile = "#{dir}/#{filename}"
 
-    FileUtils.rm(zipfile) if File.exists?(zipfile)
-    FileUtils.rm_r(dir)   if File.exists?(dir)
+    FileUtils.rm(zipfile) if File.exist?(zipfile)
+    FileUtils.rm_r(dir)   if File.exist?(dir)
     FileUtils.mkdir_p(dir)
 
     FileUtils.cp(File.join(File.dirname(__FILE__), "../fixtures/#{filename}"), zipfile)

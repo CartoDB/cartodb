@@ -8,27 +8,26 @@ require_relative '../../../../lib/carto/http/client'
 
 module Carto
   module Gme
-
     # The responsibility of this class is to perform requests to gme
     # taking care of sigining requests, usage limits, errors, retries, etc.
     class Client
 
       include ::LoggerHelper
 
-      BASE_URL = 'https://maps.googleapis.com'
+      BASE_URL = 'https://maps.googleapis.com'.freeze
 
       DEFAULT_CONNECT_TIMEOUT = 15
       DEFAULT_READ_TIMEOUT = 30
       DEFAULT_RETRY_TIMEOUT = 60
 
-      OK_STATUS = 'OK'
-      ZERO_RESULTS_STATUS = 'ZERO_RESULTS'
-      OVERQUERY_LIMIT_STATUS = 'OVER_QUERY_LIMIT'
-      REQUEST_DENIED_STATUS = 'REQUEST_DENIED'
-      INVALID_REQUEST_STATUS = 'INVALID_REQUEST'
-      UNKNOWN_ERROR_STATUS = 'UNKNOWN_ERROR'
+      OK_STATUS = 'OK'.freeze
+      ZERO_RESULTS_STATUS = 'ZERO_RESULTS'.freeze
+      OVERQUERY_LIMIT_STATUS = 'OVER_QUERY_LIMIT'.freeze
+      REQUEST_DENIED_STATUS = 'REQUEST_DENIED'.freeze
+      INVALID_REQUEST_STATUS = 'INVALID_REQUEST'.freeze
+      UNKNOWN_ERROR_STATUS = 'UNKNOWN_ERROR'.freeze
 
-      HTTP_CLIENT_TAG = 'gme_client'
+      HTTP_CLIENT_TAG = 'gme_client'.freeze
 
       RETRIABLE_STATUSES = Set.new [500, 503, 504]
 
@@ -46,35 +45,30 @@ module Carto
       def get(endpoint, params, first_request_time=nil, retry_counter=0)
         first_request_time ||= Time.now
         elapsed = Time.now - first_request_time
-        if elapsed > @retry_timeout
-          raise Carto::GeocoderErrors::GmeGeocoderTimeoutError.new('retry timeout expired')
-        end
+        raise Carto::GeocoderErrors::GmeGeocoderTimeoutError.new('retry timeout expired') if elapsed > @retry_timeout
 
         # 0.5 * (1.5 ^ i) is an increased sleep time of 1.5x per iteration,
         # starting at 0.5s when retry_counter=0. The first retry will occur
         # at 1, so subtract that first.
         if retry_counter > 0
-          delay_seconds = 0.1 * 1.5 ** (retry_counter - 1)
+          delay_seconds = 0.1 * 1.5**(retry_counter - 1)
           sleep delay_seconds
         end
 
-        url = generate_auth_url(BASE_URL+endpoint, params)
+        url = generate_auth_url(BASE_URL + endpoint, params)
 
         resp = @http_client.get(url, timeout: @read_timeout, connecttimeout: @connect_timeout)
         raise Timeout.new('http request timed out') if resp.timed_out?
 
-        if RETRIABLE_STATUSES.include?(resp.code)
-          return self.get(endpoint, params, first_request_time, retry_counter+1)
-        end
+        return get(endpoint, params, first_request_time, retry_counter + 1) if RETRIABLE_STATUSES.include?(resp.code)
 
         begin
           get_body(resp)
         rescue OverQueryLimit
           CartoDB.notify_debug('Carto::Gme::Client rescuing from OverQueryLimit exception', params.symbolize_keys)
-          return self.get(endpoint, params, first_request_time, retry_counter+1)
+          get(endpoint, params, first_request_time, retry_counter + 1)
         end
       end
-
 
       private
 
@@ -99,26 +93,20 @@ module Carto
           raise HttpError.new(resp.code)
         end
 
-        body = JSON::parse(resp.body)
+        body = JSON.parse(resp.body)
 
         api_status = body['status']
-        if api_status == 'OK' || api_status == 'ZERO_RESULTS'
-          return body
-        end
+        return body if api_status == 'OK' || api_status == 'ZERO_RESULTS'
 
-        if api_status == 'OVER_QUERY_LIMIT'
-          raise OverQueryLimit.new
-        end
+        raise OverQueryLimit.new if api_status == 'OVER_QUERY_LIMIT'
 
         if body.has_key?('error_message')
           raise ApiError.new(api_status, body['error_message'])
         else
           raise ApiError.new(api_status)
         end
-
       end
 
     end
-
   end
 end

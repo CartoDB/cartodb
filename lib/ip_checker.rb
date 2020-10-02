@@ -2,11 +2,14 @@ require 'ipaddr'
 
 # Utility module to check and validate IPs
 module IpChecker
+
   module_function
 
   # Returns true if a string is a valid IP
   def is_ip?(str)
-    str && (IPAddr.new(str) && true) rescue false
+    str && (IPAddr.new(str) && true)
+  rescue StandardError
+    false
   end
 
   # Validate an IP address or range string.
@@ -25,14 +28,13 @@ module IpChecker
   #   that can vary. This can be convenient two define same-size ranges for both IPv4 and IPv6
   #
   def validate(str,
-    max_host_bits: nil,
-    min_ipv4prefix: nil,
-    min_ipv6prefix: nil,
-    exclude_0: false,
-    exclude_private: false,
-    exclude_local: false,
-    exclude_loopback: false
-  )
+               max_host_bits: nil,
+               min_ipv4prefix: nil,
+               min_ipv6prefix: nil,
+               exclude_0: false,
+               exclude_private: false,
+               exclude_local: false,
+               exclude_loopback: false)
     if max_host_bits.present?
       min_ipv4prefix ||= 32 - max_host_bits
       min_ipv6prefix ||= 128 - max_host_bits
@@ -46,21 +48,14 @@ module IpChecker
     if min_ipv6prefix > 0 && ip.ipv6? && ip.prefix < min_ipv6prefix
       return "prefix is too short (#{ip.prefix}); minimum allowed is #{min_ipv6prefix}"
     end
-    if exclude_0 && ['0.0.0.0', '::'].include?(ip.to_s)
-      return "address #{ip.to_s} is not allowed"
-    end
-    if exclude_private && ip.private?
-      return "private addresses are not allowed"
-    end
-    if exclude_local && ip.link_local?
-      return "link local addresses are not allowed"
-    end
-    if exclude_loopback && ip.loopback?
-      return "loopback addresses are not allowed"
-    end
+    return "address #{ip} is not allowed" if exclude_0 && ['0.0.0.0', '::'].include?(ip.to_s)
+    return 'private addresses are not allowed' if exclude_private && ip.private?
+    return 'link local addresses are not allowed' if exclude_local && ip.link_local?
+    return 'loopback addresses are not allowed' if exclude_loopback && ip.loopback?
+
     nil
-  rescue IPAddr::AddressFamilyError, IPAddr::InvalidAddressError => error
-    error.message
+  rescue IPAddr::AddressFamilyError, IPAddr::InvalidAddressError => e
+    e.message
   end
 
   # Normalized IP ranges, so that IP bits outside the mask range are 0
@@ -71,12 +66,14 @@ module IpChecker
     norm_ip += "/#{ip.prefix}" if ip.prefix < IPAddr.new(norm_ip).prefix
     norm_ip
   end
+
 end
 
 # Backport some IPAddr methods from Ruby 2.5
 
 unless IPAddr.instance_methods.include?(:prefix)
   class IPAddr
+
     def prefix
       case @family
       when Socket::AF_INET
@@ -86,7 +83,7 @@ unless IPAddr.instance_methods.include?(:prefix)
         n = IN6MASK ^ @mask_addr
         i = 128
       else
-        raise IPAddr::AddressFamilyError, "unsupported address family"
+        raise IPAddr::AddressFamilyError, 'unsupported address family'
       end
       while n.positive?
         n >>= 1
@@ -94,11 +91,13 @@ unless IPAddr.instance_methods.include?(:prefix)
       end
       i
     end
+
   end
 end
 
 unless IPAddr.instance_methods.include?(:private?)
   class IPAddr
+
     def private?
       case @family
       when Socket::AF_INET
@@ -108,14 +107,16 @@ unless IPAddr.instance_methods.include?(:private?)
       when Socket::AF_INET6
         @addr & 0xfe00_0000_0000_0000_0000_0000_0000_0000 == 0xfc00_0000_0000_0000_0000_0000_0000_0000
       else
-        raise IPAddr::AddressFamilyError, "unsupported address family"
+        raise IPAddr::AddressFamilyError, 'unsupported address family'
       end
     end
+
   end
 end
 
 unless IPAddr.instance_methods.include?(:link_local?)
   class IPAddr
+
     def link_local?
       case @family
       when Socket::AF_INET
@@ -123,14 +124,16 @@ unless IPAddr.instance_methods.include?(:link_local?)
       when Socket::AF_INET6
         @addr & 0xffc0_0000_0000_0000_0000_0000_0000_0000 == 0xfe80_0000_0000_0000_0000_0000_0000_0000
       else
-        raise IPAddr::AddressFamilyError, "unsupported address family"
+        raise IPAddr::AddressFamilyError, 'unsupported address family'
       end
     end
+
   end
 end
 
 unless IPAddr.instance_methods.include?(:loopback?)
   class IPAddr
+
     def loopback?
       case @family
       when Socket::AF_INET
@@ -138,8 +141,9 @@ unless IPAddr.instance_methods.include?(:loopback?)
       when Socket::AF_INET6
         @addr == 1
       else
-        raise AddressFamilyError, "unsupported address family"
+        raise AddressFamilyError, 'unsupported address family'
       end
     end
+
   end
 end

@@ -1,7 +1,7 @@
 namespace :cartodb do
   namespace :blog do
     desc 'Get last posts'
-    task :get_last_posts => :environment do
+    task get_last_posts: :environment do
       # <div class="block">
       #   <h3>Latest from the blog</h3>
       #   <h4><a href="#">World Database on Protected Areas</a></h4>
@@ -18,21 +18,21 @@ namespace :cartodb do
       #   <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
       # </div>
 
-      feed_url = "https://blog.carto.com/rss"
+      feed_url = 'https://blog.carto.com/rss'
       doc = Nokogiri.parse(open(feed_url))
-      content = ""
+      content = ''
       items = doc.search('item')
       i = 0
       items[0..2].each do |item|
-        text = item.search('description').first.inner_text.strip_tags.gsub(/^(.{150}[^\s]*)(.*)/m) {$2.empty? ? $1 : $1 + "... <a href=\"#{item.search('guid').first.inner_text}\">Read more</a>"}
-        content += <<-HTML
-<div class="block#{i == 2 ? ' last' : ''}">
-  <h3>#{i == 0 ? "Latest from the blog" : ''}</h3>
-  <h4><a href="#{item.search('guid').first.inner_text}" >#{item.search('title').first.inner_text.truncate(60)}</a></h4>
-  <p>#{text}</p>
-</div>
-HTML
-        i+=1
+        text = item.search('description').first.inner_text.strip_tags.gsub(/^(.{150}[^\s]*)(.*)/m) {Regexp.last_match(2).empty? ? Regexp.last_match(1) : Regexp.last_match(1) + "... <a href=\"#{item.search('guid').first.inner_text}\">Read more</a>"}
+        content += <<~HTML
+          <div class="block#{i == 2 ? ' last' : ''}">
+            <h3>#{i == 0 ? 'Latest from the blog' : ''}</h3>
+            <h4><a href="#{item.search('guid').first.inner_text}" >#{item.search('title').first.inner_text.truncate(60)}</a></h4>
+            <p>#{text}</p>
+          </div>
+        HTML
+        i += 1
       end
       fd = File.open(CartoDB::LAST_BLOG_POSTS_FILE_PATH, 'w+')
       fd.write(content)

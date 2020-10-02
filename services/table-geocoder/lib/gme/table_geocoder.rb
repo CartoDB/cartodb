@@ -9,7 +9,7 @@ module Carto
       DEFAULT_MAX_BLOCK_SIZE = 1000
 
       # See https://developers.google.com/maps/documentation/geocoding/#Types
-      ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood']
+      ACCEPTED_ADDRESS_TYPES = ['street_address', 'route', 'intersection', 'neighborhood'].freeze
 
       attr_reader :original_formatter, :processed_rows, :successful_processed_rows, :failed_processed_rows,
                   :empty_processed_rows, :state, :max_block_size
@@ -56,6 +56,7 @@ module Carto
 
       # Empty methods, needed because they're triggered from geocoding.rb
       def remote_id; end
+
       def process_results; end # TODO: can be removed from here and abstract class
 
       def update_geocoding_status
@@ -71,15 +72,16 @@ module Carto
       # Returns a "generator"
       def data_input_blocks
         Enumerator.new do |enum|
-          begin
+          loop do
             data_input = connection.select(:cartodb_id, searchtext_expression)
-              .from(@sequel_qualified_table_name)
-              .where(cartodb_georef_status: nil)
-              .limit(max_block_size)
-              .all
+                                   .from(@sequel_qualified_table_name)
+                                   .where(cartodb_georef_status: nil)
+                                   .limit(max_block_size)
+                                   .all
             enum.yield data_input
             # last iteration when data_input.length < max_block_size, no need for another query
-          end while data_input.length == max_block_size
+            break unless data_input.length == max_block_size
+          end
         end
       end
 
@@ -88,14 +90,14 @@ module Carto
         #   `{street_column_name}[[, additional_free_text][, {province_column_name}][, country_free_text]]`
         # See https://github.com/jeremyevans/sequel/blob/master/doc/security.rdoc
         # See http://sequel.jeremyevans.net/rdoc/classes/Sequel/SQL/Builders.html
-        atoms = original_formatter.split(',').map {|s| s.strip }
-        Sequel.join(atoms.map { |atom|
+        atoms = original_formatter.split(',').map { |s| s.strip }
+        Sequel.join(atoms.map do |atom|
                       if match = /\A{(?<column_name>.*)}\z/.match(atom)
                         Sequel.identifier(match[:column_name])
                       else
                         atom
                       end
-                    }, ',').as(:searchtext)
+                    end, ',').as(:searchtext)
       end
 
       def geocode(data_block)
@@ -103,6 +105,7 @@ module Carto
           response = fetch_from_gme(row[:searchtext])
           # If we get an error we get nil so we pass to the next row
           next if response.nil?
+
           if response['status'] != Client::OK_STATUS
             process_error_or_empty_status(response['status'])
             row.merge!(cartodb_georef_status: false)
@@ -124,10 +127,10 @@ module Carto
         # At this point, data_block is an Array that looks like this:
         #   [{:cartodb_id=>1, :searchtext=>"Some real street name", :lat=>19.29544, :lng=>-99.1472101, :cartodb_georef_status=>true},
         #    {:cartodb_id=>2, :searchtext=>"foo", :cartodb_georef_status=>false}]
-        geocoded = data_block.select {|row| row[:cartodb_georef_status] == true}
+        geocoded = data_block.select { |row| row[:cartodb_georef_status] == true}
         if geocoded.count > 0
-          geocoded_to_sql = geocoded.map {|row| "(#{row[:cartodb_id]}, #{row[:lat]}, #{row[:lng]})"}.join(',')
-          query_geocoded = %Q{
+          geocoded_to_sql = geocoded.map { |row| "(#{row[:cartodb_id]}, #{row[:lat]}, #{row[:lng]})"}.join(',')
+          query_geocoded = %{
             UPDATE #{@qualified_table_name} as target SET
               the_geom = CDB_LatLng(geocoded.lat,geocoded.lng),
               cartodb_georef_status = TRUE
@@ -139,10 +142,10 @@ module Carto
           connection.run(query_geocoded)
         end
 
-        non_geocoded = data_block.select {|row| row[:cartodb_georef_status] == false}
+        non_geocoded = data_block.select { |row| row[:cartodb_georef_status] == false}
         if non_geocoded.count > 0
-          non_geocoded_to_sql = non_geocoded.map {|row| "(#{row[:cartodb_id]})"}.join(',')
-          query_non_geocoded = %Q{
+          non_geocoded_to_sql = non_geocoded.map { |row| "(#{row[:cartodb_id]})"}.join(',')
+          query_non_geocoded = %{
             UPDATE #{@qualified_table_name} as target SET
               cartodb_georef_status = FALSE
             FROM (VALUES
@@ -153,8 +156,6 @@ module Carto
           connection.run(query_non_geocoded)
         end
       end
-
-      private
 
       def init_rows_count
         @processed_rows = 0
@@ -175,13 +176,13 @@ module Carto
 
       def process_error_or_empty_status(status)
         case status
-          when Client::ZERO_RESULTS_STATUS then @empty_processed_rows += 1
-          else @failed_processed_rows += 1
+        when Client::ZERO_RESULTS_STATUS then @empty_processed_rows += 1
+        else @failed_processed_rows += 1
         end
       end
 
       def update_log_stats
-        @log.append_and_store "Geocoding using Google maps, job status update. "\
+        @log.append_and_store 'Geocoding using Google maps, job status update. '\
           "Status: #{@status} --- Processed rows: #{@processed_rows} "\
           "--- Success: #{@successful_processed_rows} --- Empty: #{@empty_processed_rows} "\
           "--- Failed: #{@failed_processed_rows}"
@@ -192,6 +193,7 @@ module Carto
         @geocoding_model.state = status
         @geocoding_model.save
       end
+
     end
   end
 end

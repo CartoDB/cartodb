@@ -9,18 +9,18 @@ include FileServerHelper
 describe Downloader do
   before do
     @file_url =
-      "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/physical/ne_110m_lakes.zip"
+      'http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/physical/ne_110m_lakes.zip'
     @file_filepath = path_to('ne_110m_lakes.zip')
-    @file_url_without_extension = "http://www.example.com/foowithoutextension"
-    @file_filepath_without_extension  = path_to('foowithoutextension')
-    @file_url_with_wrong_extension = "http://www.example.com/csvwithwrongextension.xml"
-    @file_filepath_with_wrong_extension  = path_to('csvwithwrongextension.xml')
+    @file_url_without_extension = 'http://www.example.com/foowithoutextension'
+    @file_filepath_without_extension = path_to('foowithoutextension')
+    @file_url_with_wrong_extension = 'http://www.example.com/csvwithwrongextension.xml'
+    @file_filepath_with_wrong_extension = path_to('csvwithwrongextension.xml')
     @fusion_tables_url =
-      "https://www.google.com/fusiontables/exporttable" +
-      "?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g"
+      'https://www.google.com/fusiontables/exporttable' +
+      '?query=select+*+from+1dimNIKKwROG1yTvJ6JlMm4-B4LxMs2YbncM4p9g'
     @fusion_tables_filepath = path_to('forest_change.csv')
-    @ftp_url        = "ftp://ftp.nlm.nih.gov/nlmdata/sample/INDEX"
-    @ftp_filepath   = path_to('INDEX.txt')
+    @ftp_url = 'ftp://ftp.nlm.nih.gov/nlmdata/sample/INDEX'
+    @ftp_filepath = path_to('INDEX.txt')
   end
 
   before(:all) { @user = FactoryGirl.create(:carto_user) }
@@ -32,7 +32,7 @@ describe Downloader do
 
       downloader = Downloader.new(@user.id, @file_url)
       downloader.run
-      File.exists?(downloader.source_file.fullpath).should eq true
+      File.exist?(downloader.source_file.fullpath).should eq true
     end
 
     it 'extracts the source_file name from the URL' do
@@ -54,7 +54,7 @@ describe Downloader do
     end
 
     it 'extracts the source_file name from the URL for S3 paths without extra parameters' do
-      url = "http://s3.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_lakes.csv"
+      url = 'http://s3.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_lakes.csv'
       stub_download(url: url, filepath: @file_filepath, content_disposition: false)
 
       downloader = Downloader.new(@user.id, url)
@@ -63,7 +63,7 @@ describe Downloader do
     end
 
     it 'extracts the source_file name from the URL for FGDB ZIP files' do
-      url = "http://s3.amazonaws.com/filegeodatabase.gdb.zip"
+      url = 'http://s3.amazonaws.com/filegeodatabase.gdb.zip'
       stub_download(url: url, filepath: @file_filepath, content_disposition: false)
 
       downloader = Downloader.new(@user.id, url)
@@ -80,9 +80,9 @@ describe Downloader do
 
     it 'uses file name for file without extension and with unknown Content-Type header' do
       stub_download(
-          url: @file_url_without_extension,
-          filepath: @file_filepath_without_extension,
-          headers: { 'Content-Type' => 'application/octet-stream' }
+        url: @file_url_without_extension,
+        filepath: @file_filepath_without_extension,
+        headers: { 'Content-Type' => 'application/octet-stream' }
       )
       downloader = Downloader.new(@user.id, @file_url_without_extension)
       downloader.run
@@ -90,12 +90,12 @@ describe Downloader do
     end
 
     it 'uses file name for file with extension and with unknown Content-Type header' do
-      url_csv_with_extension = "http://www.example.com/ngos.csv"
-      csv_filepath_with_extension  = path_to('ngos.csv')
+      url_csv_with_extension = 'http://www.example.com/ngos.csv'
+      csv_filepath_with_extension = path_to('ngos.csv')
       stub_download(
-          url: url_csv_with_extension,
-          filepath: csv_filepath_with_extension,
-          headers: { 'Content-Type' => 'application/octet-stream' }
+        url: url_csv_with_extension,
+        filepath: csv_filepath_with_extension,
+        headers: { 'Content-Type' => 'application/octet-stream' }
       )
       downloader = Downloader.new(@user.id, url_csv_with_extension)
       downloader.run
@@ -111,9 +111,9 @@ describe Downloader do
 
     it 'uses Content-Type header extension for files with different extension' do
       stub_download(
-          url: @file_url_with_wrong_extension,
-          filepath: @file_filepath_with_wrong_extension,
-          headers: { 'Content-Type' => 'text/csv' }
+        url: @file_url_with_wrong_extension,
+        filepath: @file_filepath_with_wrong_extension,
+        headers: { 'Content-Type' => 'text/csv' }
       )
       downloader = Downloader.new(@user.id, @file_url_with_wrong_extension)
       downloader.run
@@ -121,12 +121,12 @@ describe Downloader do
     end
 
     it 'sets the right file extension for file without extension in a multi extension Content-Type' do
-      url_tgz_without_extension = "http://www.example.com/csvwithwrongextension.xml"
-      tgz_filepath_without_extension  = path_to('csvwithwrongextension.xml')
+      url_tgz_without_extension = 'http://www.example.com/csvwithwrongextension.xml'
+      tgz_filepath_without_extension = path_to('csvwithwrongextension.xml')
       stub_download(
-          url: url_tgz_without_extension,
-          filepath: tgz_filepath_without_extension,
-          headers: { 'Content-Type' => 'text/csv' }
+        url: url_tgz_without_extension,
+        filepath: tgz_filepath_without_extension,
+        headers: { 'Content-Type' => 'text/csv' }
       )
       downloader = Downloader.new(@user.id, url_tgz_without_extension)
       downloader.run
@@ -134,12 +134,12 @@ describe Downloader do
     end
 
     it 'uses the right file extension based in a multiple file extension Content-Type scenario' do
-      url_tgz_without_extension = "http://www.example.com/ok_data.csv.gz"
-      tgz_filepath_without_extension  = path_to('ok_data.csv.gz')
+      url_tgz_without_extension = 'http://www.example.com/ok_data.csv.gz'
+      tgz_filepath_without_extension = path_to('ok_data.csv.gz')
       stub_download(
-          url: url_tgz_without_extension,
-          filepath: tgz_filepath_without_extension,
-          headers: { 'Content-Type' => 'application/x-gzip' }
+        url: url_tgz_without_extension,
+        filepath: tgz_filepath_without_extension,
+        headers: { 'Content-Type' => 'application/x-gzip' }
       )
       downloader = Downloader.new(@user.id, url_tgz_without_extension)
       downloader.run
@@ -147,12 +147,12 @@ describe Downloader do
     end
 
     it 'uses the geojson extension if the header is text/plain' do
-      url_geojson = "http://www.example.com/tm_world_borders_simpl_0_8.geojson"
-      filepath_geojson  = path_to('tm_world_borders_simpl_0_8.geojson')
+      url_geojson = 'http://www.example.com/tm_world_borders_simpl_0_8.geojson'
+      filepath_geojson = path_to('tm_world_borders_simpl_0_8.geojson')
       stub_download(
-          url: url_geojson,
-          filepath: filepath_geojson,
-          headers: { 'Content-Type' => 'text/plain' }
+        url: url_geojson,
+        filepath: filepath_geojson,
+        headers: { 'Content-Type' => 'text/plain' }
       )
       downloader = Downloader.new(@user.id, url_geojson)
       downloader.run
@@ -160,12 +160,12 @@ describe Downloader do
     end
 
     it 'uses the kml extension if the header is text/plain' do
-      url_kml = "http://www.example.com/abandoned.kml"
-      filepath_kml  = path_to('abandoned.kml')
+      url_kml = 'http://www.example.com/abandoned.kml'
+      filepath_kml = path_to('abandoned.kml')
       stub_download(
-          url: url_kml,
-          filepath: filepath_kml,
-          headers: { 'Content-Type' => 'text/plain' }
+        url: url_kml,
+        filepath: filepath_kml,
+        headers: { 'Content-Type' => 'text/plain' }
       )
       downloader = Downloader.new(@user.id, url_kml)
       downloader.run
@@ -210,22 +210,22 @@ describe Downloader do
       # INFO: notice this URL is fake
       url_with_percentage = 'https://s3.amazonaws.com/com.cartodb.imports.staging/03b0c2199fc814ceeb75/a_file.zip?AWSAccessKeyId=AKIAIUI5FFFJIRAMEEMA&Expires=1433349484&Signature=t6m%2Bji%2BlKsnrOVqPsptXajPiozw%3D'
       downloader = Downloader.new(@user.id, url_with_percentage)
-      downloader.instance_variable_get("@translated_url").should == url_with_percentage
+      downloader.instance_variable_get('@translated_url').should == url_with_percentage
     end
 
     it 'does not break local filenames with special characters on it' do
       # INFO: notice this URL is fake
       path_with_percentage = '/public/uploads/tést file%.csv'
       downloader = Downloader.new(@user.id, path_with_percentage)
-      downloader.instance_variable_get("@translated_url").should == path_with_percentage
+      downloader.instance_variable_get('@translated_url').should == path_with_percentage
     end
 
     it "doesn't download the file if ETag hasn't changed" do
       etag = 'bogus'
       stub_download(
-        url:      @file_url,
+        url: @file_url,
         filepath: @file_filepath,
-        headers:  { "ETag" => etag }
+        headers: { 'ETag' => etag }
       )
 
       downloader = Downloader.new(@user.id, @file_url, etag: etag)
@@ -235,36 +235,36 @@ describe Downloader do
 
     it "raises if remote URL doesn't respond with a 2XX code" do
       stub_failed_download(
-        url:       @file_url,
+        url: @file_url,
         filepath: @file_filepath,
-        headers:  {}
+        headers: {}
       )
 
       downloader = Downloader.new(@user.id, @file_url)
-      lambda { downloader.run }.should raise_error DownloadError
+      -> { downloader.run }.should raise_error DownloadError
     end
 
-    it "raises if download fails with partial file error" do
+    it 'raises if download fails with partial file error' do
       stub_download(
-        url:      @file_url,
+        url: @file_url,
         filepath: @file_filepath,
-        headers:  {}
+        headers: {}
       )
 
       Typhoeus::Response.any_instance.stubs(:mock).returns(false)
       Typhoeus::Response.any_instance.stubs(:return_code).returns(:partial_file)
 
       downloader = Downloader.new(@user.id, @file_url)
-      lambda { downloader.run }.should raise_error PartialDownloadError
+      -> { downloader.run }.should raise_error PartialDownloadError
     end
 
     describe '#etag' do
-      it "reads etag from download" do
+      it 'reads etag from download' do
         etag = 'whatever'
         stub_download(
-          url:      @file_url,
+          url: @file_url,
           filepath: @file_filepath,
-          headers:  { "ETag" => etag }
+          headers: { 'ETag' => etag }
         )
 
         downloader = Downloader.new(@user.id, @file_url)
@@ -334,26 +334,26 @@ describe Downloader do
       serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
         downloader = Downloader.new(@user.id, url)
         downloader.run
-        downloader.source_file.fullpath.should match /#{@file_url.split('/').last}/
+        downloader.source_file.fullpath.should match(/#{@file_url.split('/').last}/)
       end
     end
   end
 
   describe '#name inference' do
     it 'gets the file name from the Content-Disposition header if present' do
-      headers = { "Content-Disposition" => %{attachment; filename="bar.csv"} }
+      headers = { 'Content-Disposition' => %{attachment; filename="bar.csv"} }
       downloader = Downloader.new(@user.id, @file_url, headers)
       downloader.send(:set_headers, headers)
       downloader.instance_variable_get(:@filename).should eq 'bar.csv'
 
-      headers = { "Content-Disposition" => %{attachment; filename=bar.csv} }
+      headers = { 'Content-Disposition' => %{attachment; filename=bar.csv} }
       downloader = Downloader.new(@user.id, @file_url, headers)
       downloader.send(:set_headers, headers)
       downloader.instance_variable_get(:@filename).should eq 'bar.csv'
 
-      disposition = "attachment; filename=map_gaudi3d.geojson; " +
+      disposition = 'attachment; filename=map_gaudi3d.geojson; ' +
                     'modification-date="Tue, 06 Aug 2013 15:05:35 GMT'
-      headers = { "Content-Disposition" => disposition }
+      headers = { 'Content-Disposition' => disposition }
       downloader = Downloader.new(@user.id, @file_url, headers)
       downloader.send(:set_headers, headers)
       downloader.instance_variable_get(:@filename).should eq 'map_gaudi3d.geojson'
@@ -362,37 +362,37 @@ describe Downloader do
     it 'gets the file name from the URL if no Content-Disposition header' do
       downloader = Downloader.new(@user.id, @file_url)
 
-      downloader.send(:set_headers, Hash.new)
+      downloader.send(:set_headers, {})
       downloader.instance_variable_get(:@filename).should eq 'ne_110m_lakes.zip'
     end
 
     it 'gets the file name from the URL if no Content-Disposition header and custom params schema is used' do
-      hard_url = "https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo"
+      hard_url = 'https://manolo.escobar.es/param&myfilenameparam&zip_file.csv.zip&otherinfo'
 
       downloader = Downloader.new(@user.id, hard_url)
-      downloader.send(:set_headers, Hash.new)
+      downloader.send(:set_headers, {})
       downloader.instance_variable_get(:@filename).should eq 'zip_file.csv.zip'
     end
 
     it 'uses random name in no name can be found in url or http headers' do
-      empty_url = "https://manolo.escobar.es/param&myfilenameparam&nothing&otherinfo"
+      empty_url = 'https://manolo.escobar.es/param&myfilenameparam&nothing&otherinfo'
 
       downloader = Downloader.new(@user.id, empty_url)
-      downloader.send(:set_headers, Hash.new)
+      downloader.send(:set_headers, {})
       downloader.instance_variable_get(:@filename).should_not eq nil
     end
 
     it 'discards url query params' do
       downloader = Downloader.new(@user.id, "#{@file_url}?foo=bar&woo=wee")
-      downloader.send(:set_headers, Hash.new)
+      downloader.send(:set_headers, {})
       downloader.instance_variable_get(:@filename).should eq 'ne_110m_lakes.zip'
     end
 
     it 'matches longer extension available from filename' do
-      hard_url = "https://cartofante.net/my_file.xlsx"
+      hard_url = 'https://cartofante.net/my_file.xlsx'
 
       downloader = Downloader.new(@user.id, hard_url)
-      downloader.send(:set_headers, Hash.new)
+      downloader.send(:set_headers, {})
       downloader.instance_variable_get(:@filename).should eq 'my_file.xlsx'
     end
   end

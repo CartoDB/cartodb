@@ -898,7 +898,7 @@ describe Carto::Api::OrganizationUsersController do
 
       it 'should not delete users from Central that failed to delete in the box' do
         ::User.any_instance.stubs(:delete_in_central).never
-        ::User.any_instance.stubs(:destroy).raises("BOOM")
+        ::User.any_instance.stubs(:destroy).raises('BOOM')
         login(@organization.owner)
 
         delete api_v2_organization_users_delete_url(id_or_name: @organization.name,

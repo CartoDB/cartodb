@@ -2,6 +2,7 @@ require_relative './carto_json_serializer'
 
 module Carto
   class UserNotification < ActiveRecord::Base
+
     belongs_to :user
     serialize :notifications, ::Carto::CartoJsonSymbolizerSerializer
 
@@ -17,5 +18,6 @@ module Carto
         errors.add(:notifications, "Invalid category: #{category}") unless VALID_CATEGORIES.include?(category)
       end
     end
+
   end
 end

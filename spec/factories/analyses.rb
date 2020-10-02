@@ -5,15 +5,17 @@ require 'helpers/unique_names_helper'
 include UniqueNamesHelper
 
 module AnalysisFactoryHelper
+
   def self.source_analysis_for_table(table_name, query)
     query ||= "select * from #{table_name}"
     {
-      id:      unique_string,
-      type:    'source',
-      params:  { query: query },
+      id: unique_string,
+      type: 'source',
+      params: { query: query },
       options: { table_name: table_name }
     }
   end
+
 end
 
 FactoryGirl.define do
@@ -40,7 +42,7 @@ FactoryGirl.define do
     analysis_definition do
       {
         id: unique_string,
-        type: "buffer",
+        type: 'buffer',
         params: {
           source: AnalysisFactoryHelper.source_analysis_for_table(source_table, query)
         }
@@ -59,7 +61,7 @@ FactoryGirl.define do
     analysis_definition do
       {
         id: unique_string,
-        type: "intersection",
+        type: 'intersection',
         params: {
           source: AnalysisFactoryHelper.source_analysis_for_table(source_table, source_query),
           target: AnalysisFactoryHelper.source_analysis_for_table(target_table, target_query)

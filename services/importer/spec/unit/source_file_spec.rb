@@ -17,7 +17,7 @@ describe SourceFile do
       source_file = SourceFile.new("/var/tmp/#{Time.now.to_f}", 'foo')
       source_file.name.should eq 'foo'
     end
-  end #basename
+  end # basename
 
   describe '#extension' do
     it 'returns the extension, if any' do
@@ -33,7 +33,7 @@ describe SourceFile do
       source_file = SourceFile.new("/var/tmp/#{Time.now.to_f}", 'foo')
       source_file.extension.should be_empty
     end
-  end #extension
+  end # extension
 
   describe '#fullpath' do
     it 'returns the full path' do
@@ -50,7 +50,7 @@ describe SourceFile do
       source_file = SourceFile.new("/var/tmp/#{time}", 'foo')
       source_file.fullpath.should eq "/var/tmp/#{time}"
     end
-  end #fullpath
+  end # fullpath
 
   describe '#path' do
     it 'returns the file name with extension' do
@@ -65,9 +65,9 @@ describe SourceFile do
       source_file.path.should eq "#{time}.txt"
 
       source_file = SourceFile.new("/var/tmp/#{time}", 'foo')
-      source_file.path.should eq "#{time}"
+      source_file.path.should eq time.to_s
     end
-  end #path 
+  end # path
 
   describe '#target_schema' do
     it "returns 'cdb_importer'" do
@@ -77,19 +77,19 @@ describe SourceFile do
       source_file = SourceFile.new('/var/tmp/foo')
       source_file.target_schema.should eq 'cdb_importer'
     end
-  end #target_schema
+  end # target_schema
 
   describe '#encoding' do
     it 'returns the encoding if embedded in the filepath' do
-      filepath    = "/var/tmp/foo_encoding_UTF-8_encoding_.csv"
+      filepath    = '/var/tmp/foo_encoding_UTF-8_encoding_.csv'
       source_file = SourceFile.new(filepath)
       source_file.encoding.should eq 'UTF-8'
 
-      filepath    = "/var/tmp/foo_encoding_WIN1252_encoding_.csv"
+      filepath    = '/var/tmp/foo_encoding_WIN1252_encoding_.csv'
       source_file = SourceFile.new(filepath)
       source_file.encoding.should eq 'WIN1252'
 
-      filepath    = "/var/tmp/foo_encoding_LATIN1_encoding_.csv"
+      filepath    = '/var/tmp/foo_encoding_LATIN1_encoding_.csv'
       source_file = SourceFile.new(filepath)
       source_file.encoding.should eq 'LATIN1'
     end
@@ -100,4 +100,3 @@ describe SourceFile do
     end
   end
 end # SourceFile
-

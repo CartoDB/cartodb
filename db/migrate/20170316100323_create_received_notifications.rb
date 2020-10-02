@@ -3,7 +3,7 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     create_table :received_notifications do
       Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :user_id, :users, null: false, type: :uuid, on_delete: :cascade
@@ -17,7 +17,7 @@ migration(
       add_index [:user_id]
     end
   end,
-  Proc.new do
+  proc do
     drop_table :received_notifications
   end
 )

@@ -1,8 +1,8 @@
 Sequel.migration do
   up do
     add_column :organizations, :color, :text
-    
-    SequelRails.connection.run(%Q{
+
+    SequelRails.connection.run(%{
       update organizations set color = '#227dbd' where name = 'team';
     })
   end
@@ -11,4 +11,3 @@ Sequel.migration do
     drop_column :organizations, :color
   end
 end
-

@@ -15,7 +15,7 @@ include CartoDB::Importer2
 describe 'SHP regression tests' do
   include AcceptanceHelpers
   include_context 'cdb_importer schema'
-  include_context "no stats"
+  include_context 'no stats'
 
   before(:all) do
     @user = create_user
@@ -37,9 +37,9 @@ describe 'SHP regression tests' do
                              })
     runner.run
 
-    geometry_type_for(runner, @user).should eq "MULTIPOLYGON"
+    geometry_type_for(runner, @user).should eq 'MULTIPOLYGON'
     job = runner.send(:job)
-    job.db.fetch(%Q{SELECT * FROM #{job.schema}.#{job.table_name}}).count
+    job.db.fetch(%{SELECT * FROM #{job.schema}.#{job.table_name}}).count
   end
 
   it 'imports shp files without .prj' do
@@ -53,9 +53,9 @@ describe 'SHP regression tests' do
                              })
     runner.run
 
-    geometry_type_for(runner, @user).should eq "MULTIPOLYGON"
+    geometry_type_for(runner, @user).should eq 'MULTIPOLYGON'
     job = runner.send(:job)
-    job.db.fetch(%Q{SELECT * FROM #{job.schema}.#{job.table_name}}).count
+    job.db.fetch(%{SELECT * FROM #{job.schema}.#{job.table_name}}).count
   end
 
   it 'generates proper error for invalid geometries' do

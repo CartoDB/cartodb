@@ -12,18 +12,17 @@ module CartoDB
 
       LINE_SIZE_FOR_CLEANING = 5000
       LINES_FOR_DETECTION   = 100       # How many lines to read?
-      SAMPLE_READ_LIMIT     = 500000   # Read big enough sample bytes for the encoding sampling
+      SAMPLE_READ_LIMIT     = 500_000 # Read big enough sample bytes for the encoding sampling
       COMMON_DELIMITERS     = [',', "\t", ' ', ';', '|'].freeze
       DELIMITER_WEIGHTS     = { ',' => 2, "\t" => 2, ' ' => 1, ';' => 2, '|' => 2 }.freeze
-      DEFAULT_DELIMITER     = ','
-      DEFAULT_ENCODING      = 'UTF-8'
-      DEFAULT_QUOTE         = '"'
-      OUTPUT_DELIMITER      = ','       # Normalized CSVs will use this delimiter
+      DEFAULT_DELIMITER     = ','.freeze
+      DEFAULT_ENCODING      = 'UTF-8'.freeze
+      DEFAULT_QUOTE         = '"'.freeze
+      OUTPUT_DELIMITER      = ','.freeze # Normalized CSVs will use this delimiter
       ENCODING_CONFIDENCE   = 28
-      ACCEPTABLE_ENCODINGS  = %w{ ISO-8859-1 ISO-8859-2 UTF-8 }
-      LINE_FEED             = "\x0A"
-      CARRIAGE_RETURN       = "\x0D"
-
+      ACCEPTABLE_ENCODINGS  = %w{ISO-8859-1 ISO-8859-2 UTF-8}.freeze
+      LINE_FEED             = "\x0A".freeze
+      CARRIAGE_RETURN       = "\x0D".freeze
 
       def initialize(filepath, job = nil, importer_config = nil)
         @filepath = filepath
@@ -40,14 +39,14 @@ module CartoDB
 
       # @throws MalformedCSVException
       def run
-        return self unless File.exists?(filepath)
+        return self unless File.exist?(filepath)
 
         detect_delimiter
 
         begin
-          return self unless (needs_normalization? || @force_normalize)
-        rescue CSV::MalformedCSVError => ex
-          raise MalformedCSVException.new(ex.message)
+          return self unless needs_normalization? || @force_normalize
+        rescue CSV::MalformedCSVError => e
+          raise MalformedCSVException.new(e.message)
         end
 
         normalize(temporary_filepath)
@@ -59,20 +58,19 @@ module CartoDB
       end
 
       def detect_delimiter
-
         # Calculate variances of the N first lines for each delimiter, then grab the one that changes less
         @delimiter = DEFAULT_DELIMITER unless first_line
 
         # Flag to skip newlines contained inside string values
         skip_line = false
 
-        lines_for_detection = Array.new
+        lines_for_detection = []
 
-        LINES_FOR_DETECTION.times {
+        LINES_FOR_DETECTION.times do
           line = stream.gets
-          skip_line ^= true if line&.count("\"")&.odd?  # Toggle skip line mode
+          skip_line ^= true if line&.count('"')&.odd? # Toggle skip line mode
           lines_for_detection << remove_quoted_strings(line) unless !line || skip_line
-        }
+        end
 
         stream.rewind
 
@@ -80,27 +78,26 @@ module CartoDB
         if lines_for_detection.size == 1
           lines_for_detection = lines_for_detection.first
           # Did it read as columns instead of rows?
-          if lines_for_detection.class == Array
-            lines_for_detection.first
-          end
+          lines_for_detection.first if lines_for_detection.class == Array
           # Carriage return without newline
           lines_for_detection = lines_for_detection.split(CARRIAGE_RETURN)
         end
 
         occurrences = Hash[
-          COMMON_DELIMITERS.map { |delimiter|
-            [delimiter, lines_for_detection.map { |line|
-              line.count(delimiter) }]
-          }
+          COMMON_DELIMITERS.map do |delimiter|
+            [delimiter, lines_for_detection.map do |line|
+                          line.count(delimiter)
+                        end]
+          end
         ]
 
         stream.rewind
 
-        variances = Hash.new
+        variances = {}
         @delimiter = DEFAULT_DELIMITER
 
         use_variance = true
-        occurrences.each { |key, values|
+        occurrences.each do |key, values|
           if values.length > 1
             variances[key] = sample_variance(values) unless values.first == 0
           elsif values.length == 1
@@ -110,15 +107,15 @@ module CartoDB
           else
             use_variance = false
           end
-        }
+        end
 
         if variances.length > 0
-          if use_variance
-            @delimiter = variances.sort {|a, b| a.last <=> b.last }.first.first
-          else
-            # Use whatever delimiter appears more and hope for the best
-            @delimiter = variances.sort {|a, b| b.last <=> a.last }.first.first
-          end
+          @delimiter = if use_variance
+                         variances.min { |a, b| a.last <=> b.last }.first
+                       else
+                         # Use whatever delimiter appears more and hope for the best
+                         variances.min { |a, b| b.last <=> a.last }.first
+                       end
         end
 
         @delimiter
@@ -129,7 +126,6 @@ module CartoDB
       end
 
       def normalize(temporary_filepath)
-
         temporary_csv = CSV.open(temporary_filepath, 'w', col_sep: OUTPUT_DELIMITER, encoding: 'UTF-8')
 
         CSV.open(filepath, "rb:#{encoding}", col_sep: @delimiter) do |input|
@@ -161,31 +157,31 @@ module CartoDB
 
       def csv_options
         {
-          col_sep:            delimiter,
-          quote_char:         DEFAULT_QUOTE
+          col_sep: delimiter,
+          quote_char: DEFAULT_QUOTE
         }
       end
 
       def needs_normalization?
-        (!ACCEPTABLE_ENCODINGS.include?(encoding))  ||
-        (delimiter != DEFAULT_DELIMITER)            ||
-        single_column?
+        !ACCEPTABLE_ENCODINGS.include?(encoding) ||
+          (delimiter != DEFAULT_DELIMITER) ||
+          single_column?
       end
 
       def single_column?
         columns = ::CSV.parse(first_line, csv_options)
-        raise EmptyFileError.new if !columns.any?
+        raise EmptyFileError.new unless columns.any?
+
         columns.first.length < 2
       end
 
       def multiple_column(row)
         return row if row.length > 1
+
         row << nil
       end
 
-      def delimiter
-        @delimiter
-      end
+      attr_reader :delimiter
 
       def encoding
         return @encoding unless @encoding.nil?
@@ -216,6 +212,7 @@ module CartoDB
 
       def first_line
         return @first_line if @first_line
+
         stream.rewind
         @first_line ||= stream.gets || ''
         stream.rewind
@@ -233,8 +230,8 @@ module CartoDB
         @stream ||= File.open(filepath, 'rb')
       end
 
-      attr_reader   :filepath
-      alias_method  :converted_filepath, :filepath
+      attr_reader :filepath
+      alias converted_filepath filepath
 
       private
 
@@ -249,7 +246,7 @@ module CartoDB
       end
 
       def sum(items_list)
-        items_list.inject(0){|accum, i| accum + i }
+        items_list.inject(0) { |accum, i| accum + i }
       end
 
       def mean(items_list)
@@ -258,7 +255,7 @@ module CartoDB
 
       def sample_variance(items_list)
         m = mean(items_list)
-        sum = items_list.inject(0){|accum, i| accum + (i-m)**2 }
+        sum = items_list.inject(0) { |accum, i| accum + (i - m)**2 }
         sum / (items_list.length - 1).to_f
       end
 

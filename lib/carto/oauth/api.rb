@@ -9,6 +9,7 @@ module Carto
       def self.with_code(config, code)
         token = config.client.exchange_code_for_token(code)
         raise 'Could not initialize Oauth API' unless token
+
         new(config, token)
       end
 
@@ -38,6 +39,7 @@ module Carto
       def log_context
         super.merge(current_user: user)
       end
+
     end
   end
 end

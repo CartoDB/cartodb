@@ -3,11 +3,12 @@ require_relative 'db/sanitize.rb'
 
 module Carto
   class ValidTableNameProposer
+
     include ::LoggerHelper
 
     DEFAULT_SEPARATOR = '_'.freeze
     DEFAULT_TABLE_NAME = 'untitled_table'.freeze
-    MAX_RENAME_RETRIES = 10000
+    MAX_RENAME_RETRIES = 10_000
     NON_COLLISIONABLE_STRING_LENGTH = 61
 
     def propose_valid_table_name(contendent = DEFAULT_TABLE_NAME.dup, taken_names:)
@@ -43,5 +44,6 @@ module Carto
     def name_can_have_typname_collision(name, proposal)
       name == proposal || name[0..NON_COLLISIONABLE_STRING_LENGTH] == proposal[0..NON_COLLISIONABLE_STRING_LENGTH]
     end
+
   end
 end

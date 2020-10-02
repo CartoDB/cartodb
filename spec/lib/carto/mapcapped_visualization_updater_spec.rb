@@ -2,6 +2,7 @@ require 'spec_helper_min'
 require 'carto/mapcapped_visualization_updater'
 
 module Carto
+
   describe MapcappedVisualizationUpdater do
     include Factories::Visualizations
     include MapcappedVisualizationUpdater
@@ -52,4 +53,5 @@ module Carto
       mapcap_visualization.layers.first.tooltip.should be_nil
     end
   end
+
 end

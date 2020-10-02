@@ -3,11 +3,12 @@ require_relative '../visualization/member'
 
 module CartoDB
   class TableRelator
+
     INTERFACE = %w{
       synchronization
       row_count_and_size
       related_templates
-    }
+    }.freeze
 
     def initialize(db, table)
       @db     = db
@@ -20,14 +21,14 @@ module CartoDB
 
     def affected_visualizations
       affected_visualization_records.to_a
-        .uniq { |attributes| attributes.fetch(:id) }
-        .map  { |attributes| Visualization::Member.new(attributes) }
+                                    .uniq { |attributes| attributes.fetch(:id) }
+                                    .map  { |attributes| Visualization::Member.new(attributes) }
     end
 
     def preview_for(visualization)
       data = {
-        id:         visualization.id,
-        name:       visualization.name,
+        id: visualization.id,
+        name: visualization.name,
         updated_at: visualization.updated_at
       }
       if visualization[:permission_id].present? && !visualization.permission.nil?
@@ -47,6 +48,7 @@ module CartoDB
 
     def synchronization
       return nil unless synchronization_record && !synchronization_record.empty?
+
       CartoDB::Synchronization::Member.new(synchronization_record.first)
     end
 
@@ -63,7 +65,7 @@ module CartoDB
     attr_reader :db, :table
 
     def affected_visualization_records
-      db[:visualizations].with_sql(%Q{
+      db[:visualizations].with_sql(%{
         SELECT  *
         FROM    layers_user_tables, layers_maps, visualizations
         WHERE   layers_user_tables.user_table_id = '#{table.id}'
@@ -73,16 +75,16 @@ module CartoDB
     end
 
     def synchronization_record
-      @syncronization_record ||= db[:synchronizations].with_sql(%Q{
+      @syncronization_record ||= db[:synchronizations].with_sql(%{
         SELECT *
         FROM synchronizations
         WHERE synchronizations.user_id = '#{table.user_id}'
         AND synchronizations.name = '#{table.name}'
         LIMIT 1
       }).to_a
-    rescue StandardError => exception
-      puts exception.to_s
-      puts exception.backtrace
+    rescue StandardError => e
+      puts e.to_s
+      puts e.backtrace
       nil
     end
 

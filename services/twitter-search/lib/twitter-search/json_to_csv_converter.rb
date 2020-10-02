@@ -10,7 +10,7 @@ module CartoDB
         :favoritesCount,
         :twitter_lang,
         :retweetCount
-      ]
+      ].freeze
 
       GROUP_FIELDS = [
         :actor,
@@ -18,7 +18,7 @@ module CartoDB
         :geo,
         :twitter_entities, # Save json string,
         :location
-      ]
+      ].freeze
 
       # Same as above but with fields inside a group field
       SUBGROUP_FIELDS_TO_DUMP = {
@@ -30,9 +30,9 @@ module CartoDB
         # if this gets renamed to the_geom, cartodb will import it as a bounding box
         location: [
           :geo
-        ],
+        ]
         # same as location->geo, but as a point, so should have higher priority
-      }
+      }.freeze
 
       # This fields will get dumped as field_subfield. If not present here will be saved as a stringified json
       SUBFIELDS = {
@@ -58,12 +58,12 @@ module CartoDB
           :geo,
           :name
         ]
-      }
+      }.freeze
 
       # Other fields with special behaviour we want to add
       CARTODB_FIELDS = [
         :the_geom
-      ]
+      ].freeze
 
       def generate_headers(additional_fields = {})
         process([], true, additional_fields)
@@ -74,16 +74,16 @@ module CartoDB
         results = []
 
         if add_headers
-          results_row = INDIVIDUAL_FIELDS.map { |field|
+          results_row = INDIVIDUAL_FIELDS.map do |field|
             field_to_csv(field)
-          }
+          end
 
           GROUP_FIELDS.each do |field|
             if SUBFIELDS[field].nil?
               results_row << field_to_csv(field)
             else
               SUBFIELDS[field].each do |subfield|
-                results_row << field_to_csv("#{field.to_s}_#{subfield.to_s}")
+                results_row << field_to_csv("#{field}_#{subfield}")
               end
             end
           end
@@ -110,32 +110,24 @@ module CartoDB
           GROUP_FIELDS.each do |field|
             # Group field has no subfields "defined"? then must be dumped
             if SUBFIELDS[field].nil?
-              if !item[field].nil?
-                results_row << field_to_csv(::JSON.dump(item[field]))
-              else
-                results_row << nil
-              end
+              results_row << (field_to_csv(::JSON.dump(item[field])) unless item[field].nil?)
             else
               # Go inside fields, repeat similar logic
               SUBFIELDS[field].each do |subfield|
-                if !item[field].nil? && !item[field][subfield].nil?
-                  # Subitems will either get written as they are or dumped
-                  if !SUBGROUP_FIELDS_TO_DUMP[field].nil? && SUBGROUP_FIELDS_TO_DUMP[field].include?(subfield)
-                    results_row << field_to_csv(::JSON.dump(item[field][subfield]))
-                  else
-                    results_row << field_to_csv(item[field][subfield])
-                  end
-                else
-                  results_row << nil
-                end
+                results_row << if !item[field].nil? && !item[field][subfield].nil?
+                                 # Subitems will either get written as they are or dumped
+                                 if !SUBGROUP_FIELDS_TO_DUMP[field].nil? && SUBGROUP_FIELDS_TO_DUMP[field].include?(subfield)
+                                   field_to_csv(::JSON.dump(item[field][subfield]))
+                                 else
+                                   field_to_csv(item[field][subfield])
+                                 end
+                               end
               end
             end
           end
 
           CARTODB_FIELDS.each do |field|
-            if field == :the_geom
-              results_row << field_to_csv(calculate_the_geom(item))
-            end
+            results_row << field_to_csv(calculate_the_geom(item)) if field == :the_geom
           end
 
           additional_fields.each do |_key, value|
@@ -150,14 +142,14 @@ module CartoDB
 
       # INFO: This gets called before field-by-field parsing to speed up things
       def clean_string(contents)
-        contents.gsub("\\n", ' ').gsub("\\r", ' ')
+        contents.gsub('\\n', ' ').gsub('\\r', ' ')
       end
 
       private
 
       def field_to_csv(field)
         # RFC4180
-        '"' + field.to_s.gsub('"', '""').gsub("\\", ' ').gsub("\x0D", ' ').gsub("\x0A", ' ').gsub("\0", '') + '"'
+        '"' + field.to_s.gsub('"', '""').gsub('\\', ' ').gsub("\x0D", ' ').gsub("\x0A", ' ').gsub("\0", '') + '"'
       end
 
       def calculate_the_geom(row)
@@ -177,16 +169,16 @@ module CartoDB
 
           row[:gnip][:profileLocations].each do |location|
             # Store first point found (only)
-            if !location[:geo].nil? && !location[:geo].empty? && !location[:geo][:type].nil? &&
-               !location[:geo][:type].empty? && location[:geo][:type] == 'point' && output.nil?
+            next unless !location[:geo].nil? && !location[:geo].empty? && !location[:geo][:type].nil? &&
+                        !location[:geo][:type].empty? && location[:geo][:type] == 'point' && output.nil?
 
-              output = ::JSON.dump(location[:geo])
-            end
+            output = ::JSON.dump(location[:geo])
           end
         end
 
         output
       end
+
     end
   end
 end

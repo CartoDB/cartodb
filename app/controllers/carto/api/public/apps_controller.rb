@@ -2,6 +2,7 @@ require_relative '../visualization_searcher'
 require_relative '../paged_searcher'
 
 class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationController
+
   include Carto::Api::VisualizationSearcher
   include Carto::Api::PagedSearcher
 
@@ -110,7 +111,7 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
   end
 
   def check_master_api_key
-    api_key = Carto::ApiKey.find_by_token(params["api_key"])
+    api_key = Carto::ApiKey.find_by_token(params['api_key'])
     raise Carto::UnauthorizedError unless api_key&.master?
   end
 
@@ -137,7 +138,7 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
         decoded_data = Base64.strict_decode64(params[:data])
         return render_jsonp({ error: 'data parameter must be HTML' }, 400) unless html_param?(decoded_data)
       rescue ArgumentError
-        return render_jsonp({ error: 'data parameter must be encoded in base64' }, 400)
+        render_jsonp({ error: 'data parameter must be encoded in base64' }, 400)
       end
     end
   end
@@ -151,7 +152,7 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
   end
 
   def html_param?(data)
-    # FIXME this is a very naive implementantion. I'm trying to use
+    # FIXME: this is a very naive implementantion. I'm trying to use
     # Nokogiri to validate the HTML but it doesn't works as I want
     # so
     data.match(/\<html.*\>/).present?
@@ -159,8 +160,7 @@ class Carto::Api::Public::AppsController < Carto::Api::Public::ApplicationContro
 
   def get_app
     @app = Carto::Visualization.find(params[:id])
-    if @app.nil?
-      raise Carto::LoadError.new('App doesn\'t exist', 404)
-    end
+    raise Carto::LoadError.new('App doesn\'t exist', 404) if @app.nil?
   end
+
 end

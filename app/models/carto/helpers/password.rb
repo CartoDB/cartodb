@@ -1,4 +1,5 @@
 module Carto::Password
+
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
     validate_password_not_in_use(nil, value, key)
@@ -15,9 +16,7 @@ module Carto::Password
   end
 
   def validate_password_not_in_use(old_password = nil, new_password = nil, key = :new_password)
-    if password_in_use?(old_password, new_password)
-      errors.add(key, 'New password cannot be the same as old password')
-    end
+    errors.add(key, 'New password cannot be the same as old password') if password_in_use?(old_password, new_password)
     errors[key].empty?
   end
 
@@ -86,4 +85,5 @@ module Carto::Password
   def set_last_password_change_date
     self.last_password_change_date = Time.zone.now unless new_record?
   end
+
 end

@@ -3,7 +3,7 @@
 
 module CartoDB
   module MiniSequel
-        
+
     def output_identifier(v)
       v = 'untitled' if v == ''
       v.to_sym
@@ -15,7 +15,7 @@ module CartoDB
       res.nfields.times do |fieldnum|
         cols << [fieldnum, procs[res.ftype(fieldnum)], output_identifier(res.fname(fieldnum))]
       end
-      @columns = cols.map{|c| c.at(2)}
+      @columns = cols.map { |c| c.at(2)}
       cols
     end
 
@@ -24,28 +24,29 @@ module CartoDB
         converted_rec = {}
         cols.each do |fieldnum, type_proc, fieldsym|
           value = res.getvalue(recnum, fieldnum)
-          converted_rec[fieldsym] = (value && type_proc) ? type_proc.call(value) : value
+          converted_rec[fieldsym] = value && type_proc ? type_proc.call(value) : value
         end
         yield converted_rec
       end
     end
-    
+
     def pg_to_hash(res, translation_proc)
       rows = []
-      yield_hash_rows(res,fetch_rows_set_cols(res,translation_proc)) {|row| row.delete("the_geom"); rows << row}
-      rows      
+      yield_hash_rows(res, fetch_rows_set_cols(res, translation_proc)) { |row| row.delete('the_geom'); rows << row}
+      rows
     end
-    
+
     def pg_results? res
       res.result_status == PGresult::PGRES_TUPLES_OK
     end
-    
+
     def pg_modified? res
       res.result_status == PGresult::PGRES_COMMAND_OK
     end
-    
+
     def pg_size res
       res.cmd_tuples
-    end          
+    end
+
   end
 end

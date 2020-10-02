@@ -1,5 +1,6 @@
 module CartoDB
   class ImportDatabaseConnection
+
     def self.connection
       @@connection ||= nil
       if @@connection
@@ -11,14 +12,14 @@ module CartoDB
           @@connection = c
         rescue StandardError
           c = ::Sequel.connect('postgres://postgres:@localhost:5432')
-          c.run <<-SQL
-CREATE DATABASE cartodb_importer_test
-WITH TEMPLATE = template_postgis
-OWNER = postgres
-SQL
+          c.run <<~SQL
+            CREATE DATABASE cartodb_importer_test
+            WITH TEMPLATE = template_postgis
+            OWNER = postgres
+          SQL
           @@connection = ::Sequel.connect('postgres://postgres:@localhost:5432/cartodb_importer_test')
         end
-        return @@connection
+        @@connection
       end
     end
 
@@ -27,11 +28,12 @@ SQL
       @@connection = nil
       begin
         c = ::Sequel.connect('postgres://postgres:@localhost:5432')
-        c.run "DROP DATABASE cartodb_importer_test"
+        c.run 'DROP DATABASE cartodb_importer_test'
       rescue StandardError => e
         raise e
       end
-      return true
+      true
     end
+
   end
 end

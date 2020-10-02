@@ -45,18 +45,18 @@ describe Carto::Visualization do
         if type == CartoDB::Visualization::Member::TYPE_SLIDE
           parent = CartoDB::Visualization::Member.new(
             user_id: @user.id,
-            name:    unique_name('viz'),
-            map_id:  map.id,
-            type:    CartoDB::Visualization::Member::TYPE_DERIVED,
+            name: unique_name('viz'),
+            map_id: map.id,
+            type: CartoDB::Visualization::Member::TYPE_DERIVED,
             privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
           ).store
         end
 
         viz = CartoDB::Visualization::Member.new(
           user_id: @user.id,
-          name:    unique_name('viz'),
-          map_id:  map.id,
-          type:    type,
+          name: unique_name('viz'),
+          map_id: map.id,
+          type: type,
           parent_id: parent.try(:id),
           privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
         )
@@ -71,9 +71,9 @@ describe Carto::Visualization do
       Carto::Visualization::VALID_TYPES.each do |type|
         viz = Carto::Visualization.new(
           user_id: @user.id,
-          name:    unique_name('viz'),
-          map_id:  map.id,
-          type:    type,
+          name: unique_name('viz'),
+          map_id: map.id,
+          type: type,
           privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
         )
 
@@ -86,17 +86,17 @@ describe Carto::Visualization do
 
       viz = CartoDB::Visualization::Member.new(
         user_id: @user.id,
-        name:    unique_name('viz'),
-        map_id:  map.id,
-        type:    'whatever',
+        name: unique_name('viz'),
+        map_id: map.id,
+        type: 'whatever',
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
       )
 
       viz.valid?.should be_false
 
-      expect {
+      expect do
         viz.store
-      }.to raise_error(CartoDB::InvalidMember, /Visualization type is not valid/)
+      end.to raise_error(CartoDB::InvalidMember, /Visualization type is not valid/)
     end
 
     it 'throws error if not valid type using carto model' do
@@ -104,22 +104,21 @@ describe Carto::Visualization do
 
       viz = Carto::Visualization.new(
         user_id: @user.id,
-        name:    unique_name('viz'),
-        map_id:  map.id,
-        type:    'whatever',
+        name: unique_name('viz'),
+        map_id: map.id,
+        type: 'whatever',
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
       )
 
       viz.valid?.should be_false
 
-      expect {
+      expect do
         viz.save!
-      }.to raise_error(ActiveRecord::RecordInvalid, /Type is not included in the list/)
+      end.to raise_error(ActiveRecord::RecordInvalid, /Type is not included in the list/)
     end
   end
 
   describe '#estimated_row_count and #actual_row_count' do
-
     it 'should query Table estimated an actual row count methods' do
       ::Table.any_instance.stubs(:row_count_and_size).returns(row_count: 999)
       ::Table.any_instance.stubs(:actual_row_count).returns(1000)
@@ -128,15 +127,14 @@ describe Carto::Visualization do
       vis.estimated_row_count.should == 999
       vis.actual_row_count.should == 1000
     end
-
   end
 
   describe '#tags=' do
     it 'should not set blank tags' do
       vis = Carto::Visualization.new
-      vis.tags = ["tag1", " ", ""]
+      vis.tags = ['tag1', ' ', '']
 
-      vis.tags.should eq ["tag1"]
+      vis.tags.should eq ['tag1']
     end
   end
 
@@ -154,18 +152,18 @@ describe Carto::Visualization do
 
       parent = CartoDB::Visualization::Member.new(
         user_id: @user.id,
-        name:    unique_name('viz'),
-        map_id:  map.id,
-        type:    CartoDB::Visualization::Member::TYPE_DERIVED,
+        name: unique_name('viz'),
+        map_id: map.id,
+        type: CartoDB::Visualization::Member::TYPE_DERIVED,
         privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
       ).store
 
       child = CartoDB::Visualization::Member.new(
-        user_id:   @user.id,
-        name:      unique_name('viz'),
-        map_id:    ::Map.create(user_id: @user.id).id,
-        type:      Visualization::Member::TYPE_SLIDE,
-        privacy:   CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        user_id: @user.id,
+        name: unique_name('viz'),
+        map_id: ::Map.create(user_id: @user.id).id,
+        type: Visualization::Member::TYPE_SLIDE,
+        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
         parent_id: parent.id
       ).store
 
@@ -173,11 +171,11 @@ describe Carto::Visualization do
       parent.children.count.should == 1
 
       child2 = CartoDB::Visualization::Member.new(
-        user_id:   @user.id,
-        name:      unique_name('viz'),
-        map_id:    ::Map.create(user_id: @user.id).id,
-        type:      Visualization::Member::TYPE_SLIDE,
-        privacy:   CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        user_id: @user.id,
+        name: unique_name('viz'),
+        map_id: ::Map.create(user_id: @user.id).id,
+        type: Visualization::Member::TYPE_SLIDE,
+        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
         parent_id: parent.id
       ).store
       child.set_next_list_item!(child2)
@@ -185,7 +183,6 @@ describe Carto::Visualization do
       parent = Carto::Visualization.where(id: parent.id).first
 
       parent.children.count.should == 2
-
     end
   end
 
@@ -197,9 +194,8 @@ describe Carto::Visualization do
       v.store
       vis = Carto::Visualization.find(v.id)
       vis.license_info.id.should eq :apache
-      vis.license_info.name.should eq "Apache license"
+      vis.license_info.name.should eq 'Apache license'
     end
-
   end
 
   describe '#related_tables_readable_by' do
@@ -386,7 +382,7 @@ describe Carto::Visualization do
       visualization = FactoryGirl.build(:carto_visualization, user: viewer)
       visualization.valid?.should be_false
       visualization.errors[:user].should_not be_empty
-      visualization.errors[:user].first.should eq "cannot be viewer"
+      visualization.errors[:user].first.should eq 'cannot be viewer'
     end
   end
 
@@ -503,13 +499,13 @@ describe Carto::Visualization do
         user_mock.stubs(:id).returns(user_id)
         expect(@visualization.likes.count).to eq(0)
 
-        expect {
+        expect do
           @visualization.add_like_from(user_mock)
-        }.to raise_error Carto::Visualization::UnauthorizedLikeError
+        end.to raise_error Carto::Visualization::UnauthorizedLikeError
       end
 
       it 'raises an error if same user tries to like again the same content' do
-        user_id  = Carto::UUIDHelper.random_uuid
+        user_id = Carto::UUIDHelper.random_uuid
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
 
@@ -518,9 +514,9 @@ describe Carto::Visualization do
         expect(@visualization.likes.count).to eq(1)
         expect(@visualization.liked_by?(@carto_user)).to be_true
 
-        expect {
+        expect do
           @visualization.add_like_from(@carto_user)
-        }.to raise_error Carto::Visualization::AlreadyLikedError
+        end.to raise_error Carto::Visualization::AlreadyLikedError
         expect(@visualization.likes.count).to eq(1)
       end
 
@@ -570,9 +566,9 @@ describe Carto::Visualization do
         @visualization.add_like_from(@carto_user)
         expect(@visualization.likes.count).to eq(1)
 
-        expect {
+        expect do
           @visualization.remove_like_from(user_mock)
-        }.to raise_error Carto::Visualization::UnauthorizedLikeError
+        end.to raise_error Carto::Visualization::UnauthorizedLikeError
         expect(@visualization.likes.count).to eq(1)
       end
 

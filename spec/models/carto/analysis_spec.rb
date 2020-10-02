@@ -4,21 +4,21 @@ require 'support/helpers'
 describe Carto::Analysis do
   let(:definition_with_options) do
     {
-      id: "a1",
-      type: "buffer",
+      id: 'a1',
+      type: 'buffer',
       params: {
         distance: 100
       },
       options: {
-        unit: "m"
+        unit: 'm'
       }
     }
   end
 
   let(:nested_definition_with_options) do
     {
-      id: "a1",
-      type: "buffer",
+      id: 'a1',
+      type: 'buffer',
       params: {
         source: definition_with_options
       }
@@ -27,16 +27,16 @@ describe Carto::Analysis do
 
   let(:point_in_polygon_definition_with_options) do
     {
-      id: "a2",
-      type: "point-in-polygon",
-      options: { primary_source_name: "polygons_source" },
+      id: 'a2',
+      type: 'point-in-polygon',
+      options: { primary_source_name: 'polygons_source' },
       params: {
         polygon_source: definition_with_options,
         points_source: {
-          id: "table",
-          type: "source",
-          params: { query: "SELECT * FROM table" },
-          options: { table_name: "table" }
+          id: 'table',
+          type: 'source',
+          params: { query: 'SELECT * FROM table' },
+          options: { table_name: 'table' }
         }
       }
     }
@@ -46,12 +46,12 @@ describe Carto::Analysis do
     it 'returns nil if analysis definition has no id at the first level' do
       Carto::Analysis.new(analysis_definition: nil).natural_id.should eq nil
       Carto::Analysis.new(analysis_definition: {}).natural_id.should eq nil
-      Carto::Analysis.new(analysis_definition: { "wadus" => 1 }).natural_id.should eq nil
+      Carto::Analysis.new(analysis_definition: { 'wadus' => 1 }).natural_id.should eq nil
       Carto::Analysis.new(analysis_definition: { wadus: 1 }).natural_id.should eq nil
     end
 
     it 'returns id if analysis definition has id at the first level' do
-      Carto::Analysis.new(analysis_definition: { id: "a1" }).natural_id.should eq 'a1'
+      Carto::Analysis.new(analysis_definition: { id: 'a1' }).natural_id.should eq 'a1'
     end
   end
 

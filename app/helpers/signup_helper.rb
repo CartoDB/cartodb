@@ -1,4 +1,5 @@
 module SignupHelper
+
   def duplicated_username_prompt?
     # Ask for a different username for Google or GitHub signups with username errors
     only_username_errors? && (google_sign_in? || github_sign_in?)
@@ -7,6 +8,7 @@ module SignupHelper
   def only_username_errors?
     errors = @user.try(:errors)
     return false unless errors.present?
+
     @user.errors.select { |_, v| v.present? }.keys == [:username]
   end
 
@@ -23,4 +25,5 @@ module SignupHelper
 
     CartoDB.base_url(subdomain) + signup_path if Carto::Organization.where(name: subdomain).any?
   end
+
 end

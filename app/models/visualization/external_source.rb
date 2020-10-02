@@ -3,14 +3,13 @@ require_relative './member'
 
 module CartoDB
   module Visualization
-
     class ExternalSource < Sequel::Model
 
       def validate
         validates_presence :visualization_id
         validates_presence :import_url
         # TODO: retrieve geometry_types
-        #validates_presence :geometry_types
+        # validates_presence :geometry_types
         validates_presence :rows_counted
         validates_presence :size
       end

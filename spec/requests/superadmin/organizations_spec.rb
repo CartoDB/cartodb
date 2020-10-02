@@ -8,31 +8,31 @@ feature "Superadmin's organization API" do
     @org_atts = @organization1.values
   end
 
-  scenario "Http auth is needed" do
-    post_json superadmin_users_path, { :format => "json" } do |response|
+  scenario 'Http auth is needed' do
+    post_json superadmin_users_path, { format: 'json' } do |response|
       response.status.should == 401
     end
   end
 
-  scenario "organization create fail" do
+  scenario 'organization create fail' do
     pending "Exception handling isn' implemented yet"
   end
 
-  scenario "organization create success" do
+  scenario 'organization create success' do
     @org_atts = FactoryGirl.build(:organization).values
     post_json superadmin_organizations_path, { organization: @org_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:name].should == @org_atts[:name]
 
       # Double check that the organization has been created properly
-      organization = Organization.filter(:name => @org_atts[:name]).first
+      organization = Organization.filter(name: @org_atts[:name]).first
       organization.should be_present
       organization.id.should == response.body[:id]
       organization.destroy
     end
   end
 
-  scenario "organization with owner creation success" do
+  scenario 'organization with owner creation success' do
     org_atts = FactoryGirl.build(:organization).values
     user = FactoryGirl.create(:user_with_private_tables)
     org_atts[:owner_id] = user.id
@@ -53,7 +53,7 @@ feature "Superadmin's organization API" do
     end
   end
 
-  scenario "organization with owner creation failure" do
+  scenario 'organization with owner creation failure' do
     org_atts = FactoryGirl.build(:organization).values
     user = FactoryGirl.create(:user_with_private_tables)
     org_atts[:owner_id] = user.id
@@ -70,20 +70,20 @@ feature "Superadmin's organization API" do
     end
   end
 
-  scenario "organization update fail" do
+  scenario 'organization update fail' do
     pending "Exception handling isn' implemented yet"
   end
 
-  scenario "organization update success" do
-    put_json superadmin_organization_path(@organization1), { :organization => { :display_name => "Update Test", :map_view_quota => 800000 } }, superadmin_headers do |response|
+  scenario 'organization update success' do
+    put_json superadmin_organization_path(@organization1), { organization: { display_name: 'Update Test', map_view_quota: 800_000 } }, superadmin_headers do |response|
       response.status.should == 204
     end
     organization = Organization[@organization1.id]
-    organization.display_name.should == "Update Test"
-    organization.map_view_quota.should == 800000
+    organization.display_name.should == 'Update Test'
+    organization.map_view_quota.should == 800_000
   end
 
-  describe "organization delete success" do
+  describe 'organization delete success' do
     include_context 'organization with users helper'
     include TableSharing
 
@@ -102,42 +102,41 @@ feature "Superadmin's organization API" do
     end
   end
 
-  scenario "organization get info success" do
+  scenario 'organization get info success' do
     get_json superadmin_organization_path(@organization1), {}, superadmin_headers do |response|
       response.status.should == 200
       response.body[:id].should == @organization1.id
     end
   end
 
-  describe "GET /superadmin/organization" do
-
-    it "gets all organizations" do
+  describe 'GET /superadmin/organization' do
+    it 'gets all organizations' do
       Organization.where(owner_id: nil).each(&:delete)
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|
         response.status.should == 200
-        response.body.map { |u| u["name"] }.should include(@organization1.name, @organization2.name)
+        response.body.map { |u| u['name'] }.should include(@organization1.name, @organization2.name)
         response.body.length.should >= 2
       end
     end
-    it "gets overquota organizations" do
+    it 'gets overquota organizations' do
       Carto::Organization.stubs(:overquota).returns [@organization1]
       get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
-        response.body[0]["name"].should == @organization1.name
+        response.body[0]['name'].should == @organization1.name
         response.body.length.should == 1
       end
     end
-    it "returns geocoding and mapviews quotas and uses for all organizations" do
+    it 'returns geocoding and mapviews quotas and uses for all organizations' do
       Carto::Organization.stubs(:overquota).returns [@organization1]
       ::User.any_instance.stubs(:get_geocoding_calls).returns(100)
       ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
       get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
-        response.body[0]["name"].should == @organization1.name
-        response.body[0]["geocoding"]['quota'].should == @organization1.geocoding_quota
-        response.body[0]["geocoding"]['monthly_use'].should == @organization1.get_geocoding_calls
-        response.body[0]["api_calls_quota"].should == @organization1.map_view_quota
-        response.body[0]["api_calls"].should == @organization1.get_api_calls
+        response.body[0]['name'].should == @organization1.name
+        response.body[0]['geocoding']['quota'].should == @organization1.geocoding_quota
+        response.body[0]['geocoding']['monthly_use'].should == @organization1.get_geocoding_calls
+        response.body[0]['api_calls_quota'].should == @organization1.map_view_quota
+        response.body[0]['api_calls'].should == @organization1.get_api_calls
         response.body.length.should == 1
       end
     end
@@ -169,9 +168,9 @@ feature "Superadmin's organization API" do
 
       Carto::UserTable.where(id: table.id).first.should_not be_nil
 
-      expect {
+      expect do
         @org_user_1.destroy
-      }.not_to raise_error(CartoDB::BaseCartoDBError, "Cannot delete user, has shared entities")
+      end.not_to raise_error(CartoDB::BaseCartoDBError, 'Cannot delete user, has shared entities')
     end
   end
 
@@ -203,18 +202,18 @@ feature "Superadmin's organization API" do
       acl = JSON.parse(permission.access_control_list)
       acl.count.should == 0
 
-      expect {
+      expect do
         @org_user_1.destroy
-      }.not_to raise_error(CartoDB::BaseCartoDBError, "Cannot delete user, has shared entities")
+      end.not_to raise_error(CartoDB::BaseCartoDBError, 'Cannot delete user, has shared entities')
     end
   end
 
   private
 
-  def superadmin_headers(user = Cartodb.config[:superadmin]["username"], password = Cartodb.config[:superadmin]["password"])
+  def superadmin_headers(user = Cartodb.config[:superadmin]['username'], password = Cartodb.config[:superadmin]['password'])
     {
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(user, password),
-      'HTTP_ACCEPT' => "application/json"
+      'HTTP_ACCEPT' => 'application/json'
     }
   end
 end

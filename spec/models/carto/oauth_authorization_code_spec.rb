@@ -1,6 +1,7 @@
 require 'spec_helper_min'
 
 module Carto
+
   describe OauthAuthorizationCode do
     describe '#validation' do
       before(:all) do
@@ -19,7 +20,7 @@ module Carto
       it 'does not accept invalid scopes' do
         authorization = OauthAuthorizationCode.new(scopes: ['wadus'])
         expect(authorization).to_not(be_valid)
-        expect(authorization.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
+        expect(authorization.errors[:scopes]).to(include('contains unsupported scopes: wadus'))
       end
 
       it 'validates without redirect_uri and autogenerates code' do
@@ -84,4 +85,5 @@ module Carto
       end
     end
   end
+
 end

@@ -1,8 +1,9 @@
 module CartoDB
   module Importer2
     class Result
-      ATTRIBUTES = %w{ name schema extension tables success error_code log_trace support_tables original_name }.freeze
-      attr_reader *ATTRIBUTES.map(&:to_sym)
+
+      ATTRIBUTES = %w{name schema extension tables success error_code log_trace support_tables original_name}.freeze
+      attr_reader(*ATTRIBUTES.map(&:to_sym))
       attr_writer :name
 
       def initialize(attributes)
@@ -10,7 +11,7 @@ module CartoDB
 
         ATTRIBUTES.each do |attribute|
           instance_variable_set :"@#{attribute}",
-            attributes.fetch(attribute.to_sym, nil)
+                                attributes.fetch(attribute.to_sym, nil)
         end
 
         @original_name = name
@@ -21,7 +22,7 @@ module CartoDB
       end
 
       def qualified_table_name
-        %Q("#{schema}"."#{table_name}")
+        %("#{schema}"."#{table_name}")
       end
 
       def table_name

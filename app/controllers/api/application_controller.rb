@@ -1,6 +1,7 @@
 require_relative '../../../lib/cartodb/stats/editor_apis'
 
 class Api::ApplicationController < ApplicationController
+
   protect_from_forgery with: :null_session
 
   # Don't force org urls
@@ -21,9 +22,9 @@ class Api::ApplicationController < ApplicationController
   # dry up the jsonp output
   def render_jsonp(obj, status = 200, options = {})
     if callback_valid?
-      options.reverse_merge! :json => obj, :status => status, :callback => params[:callback]
+      options.reverse_merge! json: obj, status: status, callback: params[:callback]
     else
-      options.reverse_merge! :json => { errors: { callback: "Invalid callback format" } }, :status => 400
+      options.reverse_merge! json: { errors: { callback: 'Invalid callback format' } }, status: 400
     end
     render options
   end
@@ -34,7 +35,7 @@ class Api::ApplicationController < ApplicationController
 
   def valid_password_confirmation
     unless current_user.valid_password_confirmation(params[:password_confirmation])
-      raise Carto::PasswordConfirmationError.new
+      raise Carto::PasswordConfirmationError
     end
   end
 
@@ -42,6 +43,7 @@ class Api::ApplicationController < ApplicationController
 
   def callback_valid?
     # While only checks basic characters, represents most common use of JS function names
-    params[:callback].nil?  || !!(params[:callback] =~ /\A[$a-z_][0-9a-z_$]*\z/i)
+    params[:callback].nil? || !!(params[:callback] =~ /\A[$a-z_][0-9a-z_$]*\z/i)
   end
+
 end

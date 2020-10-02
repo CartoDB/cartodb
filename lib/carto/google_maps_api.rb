@@ -3,10 +3,12 @@ require 'openssl'
 
 module Carto
   class GoogleMapsApi
+
     STATIC_IMAGE_BASE_URL = 'https://maps.googleapis.com/maps/api/staticmap'.freeze
 
     def sign_url(user, url)
       raise 'User does not have Google configured' unless user.google_maps_query_string.present?
+
       if user.google_maps_client_id.present? && user.google_maps_private_key.present?
         # Add client=xxx + signature
         client_id_signed_url(user, url)
@@ -43,6 +45,7 @@ module Carto
 
     def parse_basemap_styles(style_json)
       return '' unless style_json
+
       styles = style_json.map do |style_definition|
         style_parts = []
         style_parts << "feature:#{style_definition[:featureType] || 'all'}"
@@ -58,5 +61,6 @@ module Carto
         styler.map { |k, v| "#{k}:#{v.to_s.gsub('#', '0x')}" }
       end
     end
+
   end
 end

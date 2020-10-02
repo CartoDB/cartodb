@@ -6,6 +6,7 @@ require_relative '../../../table-geocoder/lib/internal-geocoder/latitude_longitu
 module CartoDB
   module Importer2
     class GeometryFixer
+
       DEFAULT_BATCH_SIZE = 1000
       DEFAULT_SCHEMA = 'cdb_importer'.freeze
 
@@ -63,4 +64,3 @@ module CartoDB
     end
   end
 end
-

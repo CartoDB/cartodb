@@ -3,7 +3,7 @@ require 'carto/db/migration_helper'
 include Carto::Db::MigrationHelper
 
 migration(
-  Proc.new do
+  proc do
     create_table :oauth_access_tokens do
       Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :oauth_app_user_id, :oauth_app_users, type: :uuid, null: false, index: true, on_delete: :cascade
@@ -22,7 +22,7 @@ migration(
       DateTime    :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
     end
   end,
-  Proc.new do
+  proc do
     drop_table :oauth_access_tokens
     drop_table :oauth_authorization_codes
   end

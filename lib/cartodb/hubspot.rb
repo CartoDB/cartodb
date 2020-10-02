@@ -2,7 +2,6 @@ require 'rollbar'
 require 'singleton'
 require_relative '../carto/http/client'
 
-
 # Development info: http://developers.hubspot.com/docs/overview
 module CartoDB
   class Hubspot
@@ -46,7 +45,6 @@ module CartoDB
       track_event('geocoding_success', payload)
     end
 
-
     private
 
     def track_event(event_name, metric_payload)
@@ -54,19 +52,19 @@ module CartoDB
 
       event_id = event_ids[event_name]
 
-      #remove the log from the payload
-      payload = metric_payload.select {|k,v| k != :log }
+      # remove the log from the payload
+      payload = metric_payload.select { |k, _v| k != :log }
 
       response = get_events("/v1/event/?_a=#{@token}&_n=#{event_id}&email=#{payload[:email]}")
 
-      unless (!response.nil? && response.code == 200)
+      unless !response.nil? && response.code == 200
         log_error(message: 'Hubspot error tracking event', payload: payload, event: { id: event_id })
       end
 
       self
     end
 
-    def get_events(endpoint, valid_response_codes = [ 200 ])
+    def get_events(endpoint, valid_response_codes = [200])
       send_request(events_url(endpoint), 'GET', nil, valid_response_codes)
     end
 
@@ -74,20 +72,18 @@ module CartoDB
       "#{@events_host}#{endpoint}"
     end
 
-    def send_request(url, method, content = nil, valid_response_codes = [ 200 ])
+    def send_request(url, method, content = nil, valid_response_codes = [200])
       http_client = Carto::Http::Client.get('hubspot')
       response = http_client.request(
-                                       url,
-                                       method: method,
-                                       headers: { "Content-Type" => "application/json" },
-                                       body: content.nil? ? nil : content.to_json,
-                                       ssl_verifypeer: true,
-                                       timeout: 600
-                                       ).run
+        url,
+        method: method,
+        headers: { 'Content-Type' => 'application/json' },
+        body: content.nil? ? nil : content.to_json,
+        ssl_verifypeer: true,
+        timeout: 600
+      ).run
 
-      if !valid_response_codes.include?(response.code)
-        raise "Hubspot error #{response.code}"
-      end
+      raise "Hubspot error #{response.code}" unless valid_response_codes.include?(response.code)
 
       response
     rescue StandardError => e

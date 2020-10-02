@@ -1,5 +1,6 @@
 module CartoDB
   module Factories
+
     def new_client_application(attributes = {})
       attributes = attributes.dup
       attributes[:user] ||= create_user
@@ -10,5 +11,6 @@ module CartoDB
       client_application = new_client_application(attributes)
       client_application.save
     end
+
   end
 end

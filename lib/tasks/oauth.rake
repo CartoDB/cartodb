@@ -8,11 +8,9 @@ namespace :cartodb do
       include ::LoggerHelper
 
       Carto::OauthAccessToken.expired.find_each do |token|
-        begin
-          token.destroy!
-        rescue StandardError => e
-          log_error(message: 'Could not destroy expired access token', exception: e)
-        end
+        token.destroy!
+      rescue StandardError => e
+        log_error(message: 'Could not destroy expired access token', exception: e)
       end
     end
 
@@ -21,11 +19,9 @@ namespace :cartodb do
       include ::LoggerHelper
 
       Carto::OauthAuthorizationCode.expired.find_each do |code|
-        begin
-          code.destroy!
-        rescue StandardError => e
-          log_error(message: 'Could not destroy expired authorization code', exception: e)
-        end
+        code.destroy!
+      rescue StandardError => e
+        log_error(message: 'Could not destroy expired authorization code', exception: e)
       end
     end
 
@@ -34,11 +30,9 @@ namespace :cartodb do
       include ::LoggerHelper
 
       Carto::OauthRefreshToken.expired.find_each do |code|
-        begin
-          code.destroy!
-        rescue StandardError => e
-          log_error(message: 'Could not destroy expired refresh token', exception: e)
-        end
+        code.destroy!
+      rescue StandardError => e
+        log_error(message: 'Could not destroy expired refresh token', exception: e)
       end
     end
 
@@ -56,14 +50,12 @@ namespace :cartodb do
       include ::LoggerHelper
 
       Carto::OauthAppUser.find_each do |oau|
-        begin
-          next if oau.exists_ownership_role?
+        next if oau.exists_ownership_role?
 
-          oau.create_ownership_role
-          oau.grant_ownership_role_privileges
-        rescue StandardError => e
-          log_error(message: 'Could not create ownership role', exception: e)
-        end
+        oau.create_ownership_role
+        oau.grant_ownership_role_privileges
+      rescue StandardError => e
+        log_error(message: 'Could not create ownership role', exception: e)
       end
     end
 
@@ -72,27 +64,25 @@ namespace :cartodb do
       include ::LoggerHelper
 
       Carto::OauthApp.find_each do |app|
-        begin
-          app_properties = {
-            user_id: app.user_id,
+        app_properties = {
+          user_id: app.user_id,
+          app_id: app.id,
+          app_name: app.name,
+          timestamp: app.created_at
+        }
+        Carto::Tracking::Events::CreatedOauthApp.new(app.user_id, app_properties).report
+
+        app.oauth_app_users.find_each do |app_user|
+          app_user_properties = {
+            user_id: app_user.user_id,
             app_id: app.id,
             app_name: app.name,
-            timestamp: app.created_at
+            timestamp: app_user.created_at
           }
-          Carto::Tracking::Events::CreatedOauthApp.new(app.user_id, app_properties).report
-
-          app.oauth_app_users.find_each do |app_user|
-            app_user_properties = {
-              user_id: app_user.user_id,
-              app_id: app.id,
-              app_name: app.name,
-              timestamp: app_user.created_at
-            }
-            Carto::Tracking::Events::CreatedOauthAppUser.new(app_user.user_id, app_user_properties).report
-          end
-        rescue StandardError => e
-          log_error(message: 'Could not track event', exception: e)
+          Carto::Tracking::Events::CreatedOauthAppUser.new(app_user.user_id, app_user_properties).report
         end
+      rescue StandardError => e
+        log_error(message: 'Could not track event', exception: e)
       end
     end
   end

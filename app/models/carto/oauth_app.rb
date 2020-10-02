@@ -2,6 +2,7 @@ require_dependency 'carto/helpers/url_validator'
 
 module Carto
   class OauthApp < ActiveRecord::Base
+
     # Multiple of 3 for pretty base64
     CLIENT_ID_RANDOM_BYTES = 9
     CLIENT_SECRET_RANDOM_BYTES = 18
@@ -32,7 +33,7 @@ module Carto
     after_destroy :send_app_removal_notification, unless: :avoid_send_notification
 
     ALLOWED_SYNC_ATTRIBUTES = %i[id name client_id client_secret redirect_uris
-      icon_url restricted description website_url].freeze
+                                 icon_url restricted description website_url].freeze
 
     attr_accessor :avoid_sync_central, :avoid_send_notification
 
@@ -55,6 +56,7 @@ module Carto
 
     def send_app_removal_notification
       return if @user_ids.empty?
+
       notification = Carto::Notification.create!(body: notification_body, icon: Notification::ICON_ALERT)
       ::Resque.enqueue(::Resque::UserJobs::Notifications::Send, @user_ids, notification.id)
     rescue StandardError => e
@@ -81,11 +83,11 @@ module Carto
 
     def validate_uri(redirect_uri)
       uri = URI.parse(redirect_uri)
-      errors.add(:redirect_uris, "must be absolute") unless uri.absolute?
-      errors.add(:redirect_uris, "must be https") unless uri.scheme == 'https'
-      errors.add(:redirect_uris, "must not contain a fragment") unless uri.fragment.nil?
+      errors.add(:redirect_uris, 'must be absolute') unless uri.absolute?
+      errors.add(:redirect_uris, 'must be https') unless uri.scheme == 'https'
+      errors.add(:redirect_uris, 'must not contain a fragment') unless uri.fragment.nil?
     rescue URI::InvalidURIError
-      errors.add(:redirect_uris, "must be valid")
+      errors.add(:redirect_uris, 'must be valid')
     end
 
     def create_central
@@ -115,5 +117,6 @@ module Carto
     def sync_attributes(attrs = attributes)
       attrs.symbolize_keys.slice(*ALLOWED_SYNC_ATTRIBUTES)
     end
+
   end
 end

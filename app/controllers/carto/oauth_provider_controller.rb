@@ -7,6 +7,7 @@ require_dependency 'carto/helpers/frame_options_helper'
 
 module Carto
   class OauthProviderController < ApplicationController
+
     include Carto::FrameOptionsHelper
 
     GRANT_STRATEGIES = {
@@ -190,7 +191,9 @@ module Carto
     end
 
     def reject_client_secret
-      raise OauthProvider::Errors::InvalidRequest.new("The client_secret param must not be sent in the authorize request") if params[:client_secret].present?
+      if params[:client_secret].present?
+        raise OauthProvider::Errors::InvalidRequest.new('The client_secret param must not be sent in the authorize request')
+      end
     end
 
     def validate_oauth_app_user(oauth_app_user)
@@ -226,5 +229,6 @@ module Carto
       }
       Carto::Tracking::Events::CreatedOauthAppUser.new(current_viewer.id, properties).report
     end
+
   end
 end

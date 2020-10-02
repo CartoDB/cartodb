@@ -3,6 +3,7 @@ require_dependency 'carto/oauth_provider/errors'
 
 module Carto
   class OauthAppUser < ActiveRecord::Base
+
     include OauthProvider::Scopes
 
     belongs_to :user, inverse_of: :oauth_app_users
@@ -185,6 +186,7 @@ module Carto
 
     def enable_schema_triggers
       return if user.organization_user? && oauth_users_in_organization > 1
+
       user.db_service.create_oauth_reassign_ownership_event_trigger
     rescue StandardError => e
       log_error(message: 'Error enabling schema trigger', exception: e, current_user: user)
@@ -192,6 +194,7 @@ module Carto
 
     def disable_schema_triggers
       return if user.organization_user? && oauth_users_in_organization >= 1
+
       user.db_service.drop_oauth_reassign_ownership_event_trigger
     rescue StandardError => e
       log_error(message: 'Error disabling schema trigger', exception: e, current_user: user)
@@ -229,6 +232,7 @@ module Carto
     rescue ActiveRecord::StatementInvalid => e
       log_error(message: error_title, exception: e)
       return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped
+
       raise OauthProvider::Errors::ServerError.new("#{error_title}: #{e.message}")
     end
 
@@ -241,5 +245,6 @@ module Carto
 
       Carto::OauthAppUser.joins(:user).where('organization_id = ?', user.organization_id).count
     end
+
   end
 end

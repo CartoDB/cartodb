@@ -7,38 +7,33 @@ class Api::Json::UploadsController < Api::ApplicationController
 
   def create
     @stats_aggregator.timing('uploads.create') do
+      temp_file = filename = filedata = nil
 
-      begin
-        temp_file = filename = filedata = nil
-
-        case
-        when params[:filename].present? && request.body.present?
-          filename = params[:filename]
-          filedata = request.body.read.force_encoding('utf-8')
-        when params[:file].present?
-          filename = params[:file].original_filename
-          filedata = params[:file].read.force_encoding('utf-8')
-        end
-
-        random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id.to_s}").first(20)
-
-        file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:importer, 'uploads_path'))
-        file_upload_helper.get_uploads_path
-
-        @stats_aggregator.timing('save') do
-          FileUtils.mkdir_p(file_upload_helper.get_uploads_path.join(random_token))
-          file = File.new(file_upload_helper.get_uploads_path.join(random_token).join(File.basename(filename)), 'w')
-          file.write filedata
-          file.close
-        end
-
-        render :json => {:file_uri => file.path[/(\/uploads\/.*)/, 1], :success => true}
-      rescue StandardError => e
-        logger.error e
-        logger.error e.backtrace
-        head(400)
+      if params[:filename].present? && request.body.present?
+        filename = params[:filename]
+        filedata = request.body.read.force_encoding('utf-8')
+      elsif params[:file].present?
+        filename = params[:file].original_filename
+        filedata = params[:file].read.force_encoding('utf-8')
       end
 
+      random_token = Digest::SHA2.hexdigest("#{Time.now.utc}--#{filename.object_id}").first(20)
+
+      file_upload_helper = CartoDB::FileUpload.new(Cartodb.get_config(:importer, 'uploads_path'))
+      file_upload_helper.get_uploads_path
+
+      @stats_aggregator.timing('save') do
+        FileUtils.mkdir_p(file_upload_helper.get_uploads_path.join(random_token))
+        file = File.new(file_upload_helper.get_uploads_path.join(random_token).join(File.basename(filename)), 'w')
+        file.write filedata
+        file.close
+      end
+
+      render json: { file_uri: file.path[%r{(/uploads/.*)}, 1], success: true }
+    rescue StandardError => e
+      logger.error e
+      logger.error e.backtrace
+      head(400)
     end
   end
 

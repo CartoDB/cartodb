@@ -6,6 +6,7 @@ module CartoGearsApi
     # - carto_gears_api/dashboard
     # - carto_gears_api/profile
     module GearControllerHelper
+
       include SafeJsObject
       include CartoDB::ConfigUtils
       include TrackjsHelper
@@ -20,6 +21,7 @@ module CartoGearsApi
       def logged_user
         @logged_user ||= CartoGearsApi::Users::UsersService.new.logged_user(request)
       end
+
     end
   end
 end

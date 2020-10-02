@@ -67,11 +67,13 @@ describe Visualization::NameGenerator do
 
   def positive_checker
     checker = Object.new
-    def checker.available?(*args); true; end
+    def checker.available?(*_args)
+      true
+    end
     checker
   end
 
-  def negative_checker(existing = [ 'visualization 1', 'Untitled visualization', 'Untitled visualization 0', 'Untitled visualization 1'])
+  def negative_checker(existing = ['visualization 1', 'Untitled visualization', 'Untitled visualization 0', 'Untitled visualization 1'])
     checker = OpenStruct.new
     checker.existing = existing
     def checker.available?(candidate)
@@ -80,4 +82,3 @@ describe Visualization::NameGenerator do
     checker
   end
 end
-

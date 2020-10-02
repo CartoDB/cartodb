@@ -1,7 +1,9 @@
 module Carto
   module VisualizationMigrator
+
     def migrate_visualization_to_v3(vis)
       raise "#{vis.id} is not v3" unless vis.version == 3
+
       # Non-private visualizations need to have a Mapcap to be "published" in the Builder (available at the embed)
 
       layer_selector_migration(vis)
@@ -17,9 +19,7 @@ module Carto
     private
 
     def mapcap_creation(vis)
-      if !vis.is_privacy_private? && !vis.mapcapped?
-        Carto::Mapcap.create!(visualization_id: vis.id)
-      end
+      Carto::Mapcap.create!(visualization_id: vis.id) if !vis.is_privacy_private? && !vis.mapcapped?
     end
 
     def layer_selector_migration(vis)
@@ -46,5 +46,6 @@ module Carto
       vis.add_source_analyses
       vis.reload
     end
+
   end
 end

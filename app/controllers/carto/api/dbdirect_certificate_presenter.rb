@@ -3,6 +3,7 @@ require 'json'
 module Carto
   module Api
     class DbdirectCertificatePresenter
+
       def initialize(dbdirect_certificate)
         @dbdirect_certificate = dbdirect_certificate
       end
@@ -16,6 +17,7 @@ module Carto
           expiration: @dbdirect_certificate.expiration.to_datetime.rfc3339
         }
       end
+
     end
   end
 end

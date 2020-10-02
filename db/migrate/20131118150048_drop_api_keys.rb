@@ -2,7 +2,7 @@ Sequel.migration do
   up do
     drop_table :api_keys
   end
-  
+
   down do
     create_table :api_keys do
       primary_key :id

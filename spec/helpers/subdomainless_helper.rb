@@ -7,5 +7,5 @@ end
 def stub_subdomainless
   CartoDB.stubs(:session_domain).returns('localhost.lan')
   CartoDB.stubs(:subdomainless_urls?).returns(true)
-  host! "localhost.lan"
+  host! 'localhost.lan'
 end

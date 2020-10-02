@@ -1,6 +1,5 @@
-Sequel.migration do 
+Sequel.migration do
   up do
-
     create_table :automatic_geocodings do
       primary_key :id
       Integer     :table_id
@@ -11,7 +10,6 @@ Sequel.migration do
       Integer     :interval
       Integer     :retried_times
     end
-
   end
 
   down do

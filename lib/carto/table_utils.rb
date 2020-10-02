@@ -1,5 +1,6 @@
 module Carto
   module TableUtils
+
     # Returns a (double) quoted table name if needed (if it contains a dash, for example).
     # Coupled to lib/assets/javascripts/builder/helpers/utils.js#safeTableNameQuoting
     def safe_table_name_quoting(table_name)
@@ -20,8 +21,8 @@ module Carto
 
     private
 
-    ALREADY_QUOTED = /\A".*"\Z/
-    VALID_IDENTIFIER = /^[a-zA-Z_][a-zA-Z0-9_$]*$/
+    ALREADY_QUOTED = /\A".*"\Z/.freeze
+    VALID_IDENTIFIER = /^[a-zA-Z_][a-zA-Z0-9_$]*$/.freeze
 
     def dashes_quoting(name)
       name && !name.match(ALREADY_QUOTED) && !name.match(VALID_IDENTIFIER) ? "\"#{name}\"" : name
@@ -30,5 +31,6 @@ module Carto
     def can_be_quoted?(name)
       name && !name.include?('.')
     end
+
   end
 end

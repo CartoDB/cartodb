@@ -6,6 +6,7 @@ module Carto
   module Oauth
     module Google
       class Api < Carto::Oauth::Api
+
         include Carto::EmailCleaner
 
         USERINFO_ENDPOINT = 'https://openidconnect.googleapis.com/v1/userinfo'.freeze
@@ -74,6 +75,7 @@ module Carto
           ).run
 
           raise 'Invalid response code' unless response.code == 200
+
           JSON.parse(response.body)
         rescue StandardError => e
           trace_info = {
@@ -81,15 +83,16 @@ module Carto
           }
           if response
             trace_info.merge!(response: {
-              code: response.code,
-              headers: response.headers,
-              body: response.body,
-              status: response.return_code
-            })
+                                code: response.code,
+                                headers: response.headers,
+                                body: response.body,
+                                status: response.return_code
+                              })
           end
           log_error(trace_info)
           nil
         end
+
       end
     end
   end

@@ -1,11 +1,12 @@
 class HomeController < ApplicationController
+
   layout 'frontend'
 
   STATUS = Hash.new('warning')
   STATUS[true] = 'ok'
   STATUS[false] = 'error'
 
-  OS_VERSION = "Description:\tUbuntu 18.04"
+  OS_VERSION = "Description:\tUbuntu 18.04".freeze
   PG_VERSION = 'PostgreSQL 12'.freeze
   POSTGIS_VERSION = '3.0'.freeze
   CDB_VALID_VERSION = '0.36.0'.freeze
@@ -30,11 +31,12 @@ class HomeController < ApplicationController
   skip_before_filter :ensure_org_url_if_org_user
 
   def app_status
-    return head(503) if Cartodb.config[:disable_file] && File.exists?(File.expand_path(Cartodb.config[:disable_file]))
+    return head(503) if Cartodb.config[:disable_file] && File.exist?(File.expand_path(Cartodb.config[:disable_file]))
+
     db_ok    = check_db
     redis_ok = check_redis
     api_ok   = true
-    head (db_ok && redis_ok && api_ok) ? 200 : 500
+    headdb_ok && redis_ok && api_ok ? 200 : 500
   rescue StandardError => e
     log_info(message: 'status method failed', exception: e)
     head 500
@@ -54,15 +56,17 @@ class HomeController < ApplicationController
       diagnosis_output('Database connection') { db_diagnosis },
       diagnosis_output('Redis') { redis_diagnosis },
       diagnosis_output('Redis connection') { redis_connection_diagnosis },
-      diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) {
-        windshaft_diagnosis(WINDSHAFT_VALID_VERSION, WINDSHAFT_LATEST_VERSION) },
-      diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) {
-        sql_api_diagnosis(SQL_API_VALID_VERSION, SQL_API_LATEST_VERSION) },
+      diagnosis_output('Windshaft', RUN_WINDSHAFT_INSTRUCTIONS) do
+        windshaft_diagnosis(WINDSHAFT_VALID_VERSION, WINDSHAFT_LATEST_VERSION)
+      end,
+      diagnosis_output('SQL API', RUN_SQL_API_INSTRUCTIONS) do
+        sql_api_diagnosis(SQL_API_VALID_VERSION, SQL_API_LATEST_VERSION)
+      end,
       diagnosis_output('Resque') { resque_diagnosis(RUN_RESQUE_INSTRUCTIONS) },
       diagnosis_output('GEOS') do
         single_line_command_version_diagnosis('geos-config --version', minor_version: GEOS_VERSION)
       end,
-      diagnosis_output('GDAL') { single_line_command_version_diagnosis('gdal-config --version', GDAL_VERSION) },
+      diagnosis_output('GDAL') { single_line_command_version_diagnosis('gdal-config --version', GDAL_VERSION) }
     ]
   end
 
@@ -86,10 +90,10 @@ class HomeController < ApplicationController
   end
 
   def pg_diagnosis
-    version_diagnosis(PG_VERSION) {
+    version_diagnosis(PG_VERSION) do
       version = SequelRails.connection.fetch('select version()').first.values[0]
       [version, [version]]
-    }
+    end
   end
 
   def db_diagnosis
@@ -97,10 +101,10 @@ class HomeController < ApplicationController
   end
 
   def redis_diagnosis
-    version_diagnosis(REDIS_VERSION) {
+    version_diagnosis(REDIS_VERSION) do
       version = $tables_metadata.info['redis_version']
       [version, [version]]
-    }
+    end
   end
 
   def redis_connection_diagnosis
@@ -110,7 +114,7 @@ class HomeController < ApplicationController
   def windshaft_diagnosis(supported_version, latest_version)
     config = Cartodb.config[:tiler]
     url_config_key = 'internal'
-    endpoint_prefix = ""
+    endpoint_prefix = ''
     version_key = 'windshaft_cartodb'
 
     api_service_diagnosis(config, url_config_key, supported_version, latest_version, endpoint_prefix, version_key)
@@ -119,7 +123,7 @@ class HomeController < ApplicationController
   def sql_api_diagnosis(supported_version, latest_version)
     config = Cartodb.config[:sql_api]
     url_config_key = 'private'
-    endpoint_prefix = "api/v1/"
+    endpoint_prefix = 'api/v1/'
     version_key = 'cartodb_sql_api'
 
     api_service_diagnosis(config, url_config_key, supported_version, latest_version, endpoint_prefix, version_key)
@@ -143,7 +147,7 @@ class HomeController < ApplicationController
         health['instructions'] = "Enable health checking at config/environments/#{environment}.js"
       end
       health_ok = health['ok'] == true
-      messages.concat(health.reject { |k, v| k == 'result' }
+      messages.concat(health.reject { |k, _v| k == 'result' }
                             .to_a
                             .map { |s, v| "<span class='lib'>Health #{s}</strong>: <span class='version'>#{v}</span>" })
     end
@@ -155,7 +159,7 @@ class HomeController < ApplicationController
   # nil: supported
   # false: not supported
   def valid?(supported_version, latest_version, version)
-    if (version =~ /\A#{latest_version}/ ? true : nil)
+    if version =~ /\A#{latest_version}/ ? true : nil
       true
     else
       version =~ /\A#{supported_version}/ ? nil : false
@@ -163,18 +167,23 @@ class HomeController < ApplicationController
   end
 
   def resque_diagnosis(help)
-    Open3.popen3('ps xah | grep "[s]cript/resque"') do |stdin, stdout, stderr, process|
+    Open3.popen3('ps xah | grep "[s]cript/resque"') do |_stdin, stdout, _stderr, _process|
       output = stdout.read
-      status = output != nil && output != ''
+      status = !output.nil? && output != ''
       messages = output.split("\n")
-      [STATUS[status], messages.append(status ? ("Running pids: #{running_import_ids}") : help)]
+      [STATUS[status], messages.append(status ? "Running pids: #{running_import_ids}" : help)]
     end
   end
 
   def running_import_ids
     Resque::Worker.all.map do |worker|
       next unless worker.job['queue'] == 'imports'
-      worker.job['payload']['args'].first['job_id'] rescue nil
+
+      begin
+        worker.job['payload']['args'].first['job_id']
+      rescue StandardError
+        nil
+      end
     end.compact
   end
 
@@ -183,7 +192,7 @@ class HomeController < ApplicationController
   end
 
   def check_redis
-    $tables_metadata.dbsize != nil
+    !$tables_metadata.dbsize.nil?
   end
 
   def http_client
@@ -191,13 +200,13 @@ class HomeController < ApplicationController
   end
 
   def diagnosis_output(title, help = nil)
-    [title, safe_diagnosis(help) { yield } ].flatten(1)
+    [title, safe_diagnosis(help) { yield }].flatten(1)
   end
 
   def safe_diagnosis(help = nil)
     yield
   rescue StandardError => e
-    [ STATUS[false], [ help, e.to_s ].compact ]
+    [STATUS[false], [help, e.to_s].compact]
   end
 
   def extension_diagnosis(extension, supported_version, latest_version = nil)
@@ -243,9 +252,7 @@ class HomeController < ApplicationController
     version_diagnosis(supported_version, latest_version, minor_version: minor_version) do
       stdin, stdout, stderr, process = Open3.popen3(command)
       output = stdout.read.split("\n")
-      if latest_version.nil?
-        [output[line_index], output]
-      end
+      [output[line_index], output] if latest_version.nil?
     end
   end
 

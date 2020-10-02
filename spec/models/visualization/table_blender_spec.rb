@@ -3,7 +3,7 @@ require_relative '../../../app/models/visualization/table_blender'
 
 include CartoDB::Visualization
 
-# TODO this file cannot be executed in isolation
+# TODO: this file cannot be executed in isolation
 describe TableBlender do
   let(:user) do
     FactoryGirl.create(:valid_user, private_tables_enabled: true, viewer: true)
@@ -24,9 +24,9 @@ describe TableBlender do
 
     it 'raises an error for viewer users' do
       tables = [fake_public_table, fake_private_table]
-      expect {
+      expect do
         TableBlender.new(user, tables).blend
-      }.to raise_error(/Viewer users can't blend tables/)
+      end.to raise_error(/Viewer users can't blend tables/)
       user.destroy
     end
 
@@ -87,7 +87,7 @@ describe TableBlender do
     end
   end
 
-  # TODO test too coupled with implementation outside blender
+  # TODO: test too coupled with implementation outside blender
   # refactor once Privacy is extracted
   describe '#blended_privacy' do
     it 'returns private if any of all tables is private' do

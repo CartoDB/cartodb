@@ -11,7 +11,6 @@ module CartoDB
 end
 
 describe 'CartoDB' do
-
   describe '#ip?' do
     it 'detects ips' do
       CartoDB.ip?(nil).should == false

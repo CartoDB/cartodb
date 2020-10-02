@@ -1,6 +1,7 @@
 require_relative '../../../spec_helper'
 
 module CartoDB
+
   def self.clear_internal_cache
     remove_class_variable(:@@request_host) if defined?(@@request_host)
     remove_class_variable(:@@hostname) if defined?(@@hostname)
@@ -12,10 +13,10 @@ module CartoDB
     remove_class_variable(:@@account_host) if defined?(@@account_host)
     remove_class_variable(:@@account_path) if defined?(@@account_path)
   end
+
 end
 
 describe Carto::Api::OembedController do
-
   after(:each) do
     CartoDB.clear_internal_cache
   end
@@ -25,7 +26,7 @@ describe Carto::Api::OembedController do
       domain = '.test.local'
       @username = 'testuser'
       @orgname = 'testorg'
-      @uuid = "00000000-0000-0000-0000-000000000000"
+      @uuid = '00000000-0000-0000-0000-000000000000'
       @callback = 'callback'
       @uri = "/user/#{@username}/api/v1/oembed?url=http://#{@orgname}#{domain}/u/#{@username}/#{@uuid}"
     end
@@ -55,7 +56,6 @@ describe Carto::Api::OembedController do
     end
   end
   describe '#private_url_methods_tests' do
-
     it 'Tests from_domainless_url()' do
       controller = Carto::Api::OembedController.new
 
@@ -68,7 +68,7 @@ describe Carto::Api::OembedController do
       CartoDB.expects(:get_subdomainless_urls).at_least(0).returns(false)
 
       # test.local/u/testuser
-      url_fragments = [ '', '', domain, '', '', "/u/#{username}" ]
+      url_fragments = ['', '', domain, '', '', "/u/#{username}"]
       expected_results = {
         username: username,
         organization_name: nil,
@@ -77,7 +77,7 @@ describe Carto::Api::OembedController do
       controller.send(:from_domainless_url, url_fragments, protocol).should eq expected_results
 
       # test.local/u/testuser/something
-      url_fragments = [ '', '', domain, '', '', "/u/#{username}/something" ]
+      url_fragments = ['', '', domain, '', '', "/u/#{username}/something"]
       expected_results = {
         username: username,
         organization_name: nil,
@@ -85,17 +85,16 @@ describe Carto::Api::OembedController do
       }
       controller.send(:from_domainless_url, url_fragments, protocol).should eq expected_results
 
-      url_fragments = [ '', '', domain, '', '', "/something" ]
-      expect {
+      url_fragments = ['', '', domain, '', '', '/something']
+      expect do
         controller.send(:from_domainless_url, url_fragments, protocol)
-      }.to raise_error Carto::Api::UrlFRagmentsError, "URL needs username specified in the Path"
+      end.to raise_error Carto::Api::UrlFRagmentsError, 'URL needs username specified in the Path'
 
-      url_fragments = [ '', '', domain, '', '', "/u/" ]
-      expect {
+      url_fragments = ['', '', domain, '', '', '/u/']
+      expect do
         controller.send(:from_domainless_url, url_fragments, protocol)
-      }.to raise_error Carto::Api::UrlFRagmentsError, "Username not found at url"
+      end.to raise_error Carto::Api::UrlFRagmentsError, 'Username not found at url'
     end
-
 
     it 'Tests from_url()' do
       controller = Carto::Api::OembedController.new
@@ -112,13 +111,13 @@ describe Carto::Api::OembedController do
       CartoDB.expects(:get_session_domain).returns(domain)
 
       # .test.local
-      url_fragments = [ '', '', "#{domain}", '', '', '' ]
-      expect {
+      url_fragments = ['', '', domain.to_s, '', '', '']
+      expect do
         controller.send(:from_url, url_fragments, protocol, domain)
-      }.to raise_error Carto::Api::UrlFRagmentsError, "Subdomain not found at url"
+      end.to raise_error Carto::Api::UrlFRagmentsError, 'Subdomain not found at url'
 
       # testuser.test.local
-      url_fragments = [ '', '', "#{username}#{domain}", '', '', '/vis' ]
+      url_fragments = ['', '', "#{username}#{domain}", '', '', '/vis']
       expected_results = {
         username: username,
         organization_name: nil,
@@ -127,7 +126,7 @@ describe Carto::Api::OembedController do
       controller.send(:from_url, url_fragments, protocol, domain).should eq expected_results
 
       # testorg.test.local/u/testuser/vis
-      url_fragments = [ '', '', "#{orgname}#{domain}", '', '', "/u/#{username}/vis" ]
+      url_fragments = ['', '', "#{orgname}#{domain}", '', '', "/u/#{username}/vis"]
       expected_results = {
         username: username,
         organization_name: orgname,
@@ -135,10 +134,10 @@ describe Carto::Api::OembedController do
       }
       controller.send(:from_url, url_fragments, protocol, domain).should eq expected_results
 
-      url_fragments = [ '', '', "#{orgname}#{domain}", '', '', "/u//vis" ]
-      expect {
+      url_fragments = ['', '', "#{orgname}#{domain}", '', '', '/u//vis']
+      expect do
         controller.send(:from_url, url_fragments, protocol, domain)
-      }.to raise_error   Carto::Api::UrlFRagmentsError, "Username not found at url"
+      end.to raise_error Carto::Api::UrlFRagmentsError, 'Username not found at url'
     end
 
     it 'Tests url_fields_from_fragments()' do
@@ -155,15 +154,15 @@ describe Carto::Api::OembedController do
       expected_results = {
         username: username,
         organization_name: nil,
-        user_profile_url: "#{CartoDB.base_url(username)}",
+        user_profile_url: CartoDB.base_url(username).to_s,
         protocol: protocol
       }
 
-      controller.send(:url_fields_from_fragments, "#{CartoDB.base_url(username)}", force_https)
-        .should eq expected_results
+      controller.send(:url_fields_from_fragments, CartoDB.base_url(username).to_s, force_https)
+                .should eq expected_results
 
       controller.send(:url_fields_from_fragments, "#{CartoDB.base_url(username)}/something", force_https)
-        .should eq expected_results
+                .should eq expected_results
 
       CartoDB.clear_internal_cache
       domain = 'carto.com'
@@ -178,7 +177,7 @@ describe Carto::Api::OembedController do
         protocol: protocol
       }
       controller.send(:url_fields_from_fragments, "http://#{domain}/u/#{username}", force_https)
-      .should eq expected_results
+                .should eq expected_results
 
       expected_results = {
         username: username,
@@ -187,11 +186,11 @@ describe Carto::Api::OembedController do
         protocol: protocol
       }
       controller.send(:url_fields_from_fragments, "http://#{domain}/u/#{username}/something", force_https)
-      .should eq expected_results
+                .should eq expected_results
 
-      expect {
+      expect do
         controller.send(:url_fields_from_fragments, "http://#{domain}", force_https)
-      }.to raise_error Carto::Api::UrlFRagmentsError, "URL needs username specified in the Path"
+      end.to raise_error Carto::Api::UrlFRagmentsError, 'URL needs username specified in the Path'
 
       expected_results = {
         username: username,
@@ -200,7 +199,7 @@ describe Carto::Api::OembedController do
         protocol: protocol
       }
       controller.send(:url_fields_from_fragments, "http://#{username}#{domain}/vis", force_https)
-        .should eq expected_results
+                .should eq expected_results
 
       expected_results = {
         username: username,
@@ -209,14 +208,11 @@ describe Carto::Api::OembedController do
         protocol: protocol
       }
       controller.send(:url_fields_from_fragments, "http://#{orgname}#{domain}/u/#{username}/vis", force_https)
-        .should eq expected_results
+                .should eq expected_results
 
-      expect {
+      expect do
         controller.send(:url_fields_from_fragments, "http://#{orgname}#{domain}/u//vis", force_https)
-      }.to raise_error Carto::Api::UrlFRagmentsError, "Username not found at url"
-
+      end.to raise_error Carto::Api::UrlFRagmentsError, 'Username not found at url'
     end
-
   end
-
 end

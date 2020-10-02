@@ -1,8 +1,8 @@
 require_dependency 'carto/uuidhelper'
 
 module Carto
-
   class DataImportsService
+
     include Carto::UUIDHelper
 
     def initialize(users_metadata = $users_metadata, tables_metadata = $tables_metadata)
@@ -15,7 +15,7 @@ module Carto
 
       running_ids = running_import_ids
 
-      imports.map { |import|
+      imports.map do |import|
         if import.created_at < Time.now - 60.minutes && !running_ids.include?(import.id)
           # INFO: failure is handled with old model
           ::DataImport[import.id].handle_failure(CartoDB::Importer2::StuckImportJobError.new)
@@ -23,11 +23,11 @@ module Carto
         else
           import
         end
-      }.compact
+      end.compact
     end
 
     def process_by_id(id)
-      return nil if !uuid?(id)
+      return nil unless uuid?(id)
 
       import = Carto::DataImport.where(id: id).first
 
@@ -54,9 +54,7 @@ module Carto
         valid = false
       end
 
-      unless valid
-        delete_oauth(user, oauth)
-      end
+      delete_oauth(user, oauth) unless valid
 
       valid
     rescue StandardError => e
@@ -66,6 +64,7 @@ module Carto
     def get_service_files(user, service, filter)
       oauth = user.oauth_for_service(service)
       raise CartoDB::Datasources::AuthError.new("No oauth set for service #{service}") if oauth.nil?
+
       datasource = oauth.get_service_datasource
       datasource.get_resources_list(filter)
     rescue StandardError => e
@@ -87,10 +86,10 @@ module Carto
       begin
         auth_token = datasource.validate_auth_code(code)
         user.add_oauth(service, auth_token)
-        return true
+        true
       rescue CartoDB::Datasources::AuthError => e
         CartoDB.notify_exception(e, { message: "Error while validating code #{code}, it won't be stored", user: user, service: service })
-        return false
+        false
       end
     rescue StandardError => e
       delete_oauth_if_expired_and_raise(user, e, oauth)
@@ -99,12 +98,13 @@ module Carto
     def validate_callback(user, service, params)
       oauth = user.oauth_for_service(service)
       raise CartoDB::Datasources::AuthError.new("OAuth already set for service #{service}") if oauth
+
       datasource = get_datasource(user, service)
 
       token = datasource.validate_callback(params)
 
       # TODO: workaround for https://github.com/CartoDB/cartodb/issues/4003
-      #user.add_oauth(service, datasource.validate_callback(params))
+      # user.add_oauth(service, datasource.validate_callback(params))
       CartoDB::OAuths.new(::User.where(id: user.id).first).add(service, token)
     rescue StandardError => e
       delete_oauth_if_expired_and_raise(user, e, oauth)
@@ -114,10 +114,11 @@ module Carto
 
     def get_datasource(user, service)
       datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, user, {
-        redis_storage: @tables_metadata,
-        http_timeout: ::DataImport.http_timeout_for(user)
-      })
+                                                                             redis_storage: @tables_metadata,
+                                                                             http_timeout: ::DataImport.http_timeout_for(user)
+                                                                           })
       raise CartoDB::Datasources::AuthError.new("Couldn't fetch datasource for service #{service}") if datasource.nil?
+
       datasource
     end
 
@@ -130,9 +131,7 @@ module Carto
 
     def delete_oauth_if_expired_and_raise(user, e, oauth = nil)
       CartoDB.notify_exception(e, { message: 'Error while processing datasource', user: user, oauth: oauth })
-      if e.kind_of?(CartoDB::Datasources::TokenExpiredOrInvalidError) && oauth
-        delete_oauth(user, oauth)
-      end
+      delete_oauth(user, oauth) if e.is_a?(CartoDB::Datasources::TokenExpiredOrInvalidError) && oauth
 
       raise e
     end
@@ -140,14 +139,17 @@ module Carto
     def stuck?(import)
       # TODO: this kind of method is in the service because it requires communication with external systems (resque). Anyway, should some logic (state check, for example) be inside the model?
       ![Carto::DataImport::STATE_ENQUEUED, Carto::DataImport::STATE_PENDING, Carto::DataImport::STATE_COMPLETE, Carto::DataImport::STATE_FAILURE].include?(import.state) &&
-      import.created_at < 5.minutes.ago &&
-      !running_import_ids.include?(import.id)
+        import.created_at < 5.minutes.ago &&
+        !running_import_ids.include?(import.id)
     end
 
     def running_import_ids
-      Resque::Worker.all.map { |worker| worker.job["payload"]["args"].first["job_id"] rescue nil }.compact
+      Resque::Worker.all.map do |worker|
+        worker.job['payload']['args'].first['job_id']
+      rescue StandardError
+        nil
+      end .compact
     end
 
   end
-
 end

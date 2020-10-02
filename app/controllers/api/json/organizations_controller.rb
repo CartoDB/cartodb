@@ -1,4 +1,5 @@
 class Api::Json::OrganizationsController < Api::ApplicationController
+
   include CartoDB
 
   ssl_required :show, :users

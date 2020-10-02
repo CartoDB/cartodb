@@ -3,6 +3,7 @@ require_relative '../../../app/controllers/carto/controller_helper'
 
 module Carto
   class DataLibraryService
+
     # - source_api_key is used to retrieve metadata from the dataset
     # - granted_api_key is stored as the one to use for the importing
     def load_dataset!(carto_api_client,
@@ -53,13 +54,13 @@ module Carto
       database_grants.each do |database_grant|
         tables = database_grant[:tables]
         tables.each do |table|
-          if table[:permissions].include?('select')
-            load_dataset!(carto_api_client,
-                          source_dataset: table[:name],
-                          source_username: source_username, source_api_key: source_api_key,
-                          target_username: target_username, granted_api_key: granted_api_key,
-                          format: format)
-          end
+          next unless table[:permissions].include?('select')
+
+          load_dataset!(carto_api_client,
+                        source_dataset: table[:name],
+                        source_username: source_username, source_api_key: source_api_key,
+                        target_username: target_username, granted_api_key: granted_api_key,
+                        format: format)
         end
       end
     end
@@ -69,5 +70,6 @@ module Carto
     def display_name(remote_visualization)
       remote_visualization[:display_name].presence || remote_visualization[:name]
     end
+
   end
 end

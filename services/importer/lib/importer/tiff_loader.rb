@@ -3,6 +3,7 @@ require_relative './raster2pgsql'
 module CartoDB
   module Importer2
     class TiffLoader
+
       def self.supported?(extension)
         extension =~ /tif/
       end
@@ -24,30 +25,29 @@ module CartoDB
         job.log "raster2pgsql exit code: #{raster2pgsql.exit_code}"
 
         if raster2pgsql.exit_code != 0
-          if raster2pgsql.command_output =~ /no space left on device/i
-            raise FileTooBigError.new(job.logger)
-          end
+          raise FileTooBigError.new(job.logger) if raster2pgsql.command_output =~ /no space left on device/i
+
           raise LoadError.new(job.logger)
         end
 
-        job.db.run(%Q{
+        job.db.run(%{
           ALTER TABLE #{job.qualified_table_name}
           RENAME COLUMN rid TO cartodb_id
         })
 
         self
-      rescue StandardError => exception
+      rescue StandardError => e
         begin
           clean_temporary_tables
         ensure
-          raise exception
+          raise e
         end
       end
 
       def clean_temporary_tables
-        additional_support_tables.each { |table_name|
+        additional_support_tables.each do |table_name|
           job.delete_temp_table(table_name)
-        }
+        end
         job.delete_job_table
       end
 
@@ -64,12 +64,13 @@ module CartoDB
         [job.table_name]
       end
 
-      attr_accessor   :options
+      attr_accessor :options
 
       private
 
       attr_writer     :raster2pgsql
       attr_accessor   :job, :source_file
+
     end
   end
 end

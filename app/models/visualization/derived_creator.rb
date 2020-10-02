@@ -1,7 +1,8 @@
 module CartoDB
   module Visualization
     class DerivedCreator
-      DEFAULT_MAP_NAME = 'Untitled Map'
+
+      DEFAULT_MAP_NAME = 'Untitled Map'.freeze
 
       def initialize(user, tables = [])
         @rejected_layers = []
@@ -27,9 +28,7 @@ module CartoDB
           privacy: blender.blended_privacy,
           user_id: user.id
         )
-        unless user.private_maps_enabled
-          vis.privacy = Carto::Visualization::PRIVACY_PUBLIC
-        end
+        vis.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
 
         vis.save!
         CartoDB::Visualization::Overlays.new(vis).create_default_overlays
@@ -49,6 +48,7 @@ module CartoDB
       end
 
       attr_reader :user, :tables, :rejected_layers
+
     end
   end
 end

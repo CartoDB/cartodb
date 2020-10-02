@@ -4,6 +4,7 @@ module Carto
   module Oauth
     module Github
       class Config < Carto::Oauth::Config
+
         def self.config
           Cartodb.get_config(:oauth, 'github') || {}
         end
@@ -27,6 +28,7 @@ module Carto
         def auth_enabled?(organization)
           organization.auth_github_enabled
         end
+
       end
     end
   end

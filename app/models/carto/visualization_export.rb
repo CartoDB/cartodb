@@ -8,6 +8,7 @@ require_dependency 'carto/visualization_exporter'
 
 module Carto
   class VisualizationExport < ::ActiveRecord::Base
+
     include VisualizationExporter
     include Carto::VisualizationsExportService2Validator
 
@@ -75,7 +76,7 @@ module Carto
       logger.append_exception('Exporting', exception: e)
       log_error(
         exception: e,
-        message: "Visualization export error",
+        message: 'Visualization export error',
         current_user: user,
         visualization: visualization.attributes.slice(:id),
         visualization_export: attributes.slice(:id)
@@ -92,7 +93,7 @@ module Carto
     end
 
     def default_file_upload_helper
-      CartoDB::FileUpload.new(Cartodb.get_config(:exporter, "uploads_path"))
+      CartoDB::FileUpload.new(Cartodb.get_config(:exporter, 'uploads_path'))
     end
 
     def visualization_exportable_by_user?
@@ -101,6 +102,7 @@ module Carto
 
     def user_tables_ids_valid?
       return unless user_tables_ids.present?
+
       related_tables_ids = visualization.related_tables_readable_by(user).map(&:id)
       not_valid = user_tables_ids.split(',').select { |user_table_id| !related_tables_ids.include?(user_table_id) }
       not_valid.each do |user_table_id|
@@ -111,5 +113,6 @@ module Carto
     def valid_visualization_type?
       errors.add(:visualization, 'Only derived visualizations can be exported') unless visualization.derived?
     end
+
   end
 end

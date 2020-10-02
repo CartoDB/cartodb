@@ -25,6 +25,5 @@ describe Backend::Detector do
       detector = Backend::Detector.new(Redis.new)
       detector.detect.must_be_instance_of Backend::Redis
     end
-  end #detect
+  end # detect
 end # Backend::Detector
-

@@ -2,14 +2,6 @@
 
 AllCops:
   TargetRubyVersion: 2.5
-  Include:
-  - "**/*.gemspec"
-  - "**/*.podspec"
-  - "**/*.rake"
-  - "**/Gemfile"
-  - "**/Rakefile"
-  - "**/Capfile"
-  - "**/Guardfile"
   Exclude:
   - "vendor/**/*"
   - "db/schema.rb"

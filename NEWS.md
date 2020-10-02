@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
 
 4.42.0 (2020-09-28)
 -------------------
@@ -16,6 +16,7 @@ Development
 ### Features
 * New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
 * New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
+* Import API documentation for Snowflake & Redshift connectors ([#15858](https://github.com/CartoDB/cartodb/pull/15858))
 * Release Data Observatory subscriptions [#15834](https://github.com/CartoDB/cartodb/pull/15834)
 * Allow to cancel premium DO requests [#15864](https://github.com/CartoDB/cartodb/pull/15864)
 
@@ -54,12 +55,14 @@ Development
 * Update DO subscriptions email [#15851](https://github.com/CartoDB/cartodb/pull/15851)
 * Remove beta descriptor from Direct SQL Connection text [#15854](https://github.com/CartoDB/cartodb/pull/15854)
 * Added a script to generate a graph of Sequel models associations [#15865](https://github.com/CartoDB/cartodb/pull/15865)
+* Upgrade ruby-prof gem to 1.4.1 [#15867](https://github.com/CartoDB/cartodb/pull/15867)
 * Migrate `::FeatureFlagsUser` to `ActiveRecord` [#15841](https://github.com/CartoDB/cartodb/pull/15841)
 * Migrate `::SearchTweet` to ActiveRecord [#15859](https://github.com/CartoDB/cartodb/pull/15859)
 * Make import/export of user metadata resilient to missing feature flag [#15872](https://github.com/CartoDB/cartodb/pull/15872)
 * Fix Organization.overquota exception logging [#15873](https://github.com/CartoDB/cartodb/pull/15873)
 * Revamp Rubocop config
 * Fix visualization backup when permission is missing [#15874](https://github.com/CartoDB/cartodb/pull/15874)
+* Show outdated subscriptions. Optimize requests [#15879](https://github.com/CartoDB/cartodb/pull/15879)
 * Include `::Carto::ActiveRecordCompatibility` in all `Sequel` models [#15879](https://github.com/CartoDB/cartodb/pull/15879)
 
 4.41.1 (2020-09-03)

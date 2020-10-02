@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
 
 4.42.0 (2020-09-28)
 -------------------

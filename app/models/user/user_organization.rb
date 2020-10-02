@@ -65,16 +65,12 @@ module CartoDB
     end
 
     def self.user_belongs_to_organization?(name)
-      if CartoDB::UserOrganization.user?(name)
-        begin
-          organization_id = ::User.select(:organization_id).where(:username => name).first[:organization_id]
-          return Organization.select(:name).where(:id => organization_id).first[:name]
-        rescue StandardError
-          return nil
-        end
-      else
-        return nil
-      end
+      return nil unless CartoDB::UserOrganization.user?(name)
+
+      organization_id = Carto::User.find_by(username: name)&.organization_id
+      Carto::Organization.find_by(id: organization_id)&.name
+    rescue StandardError
+      nil
     end
 
   end

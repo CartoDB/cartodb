@@ -14,10 +14,16 @@ Rollbar.configure do |config|
   info_errors = ['error creating usertable']
   config.exception_level_filters.merge!(
     'ActionController::RoutingError' => 'ignore',
-    'Sequel::DatabaseConnectionError' => 'warning',
-    'ActiveRecord::RecordInvalid' => lambda do
-      |error| info_errors.any? { |message| error.to_s.downcase.include?(message) } ? 'info' : 'error'
-    end
+    'ActionController::UnknownFormat' => 'ignore',
+    'ActiveRecord::RecordInvalid' => lambda do |error|
+      info_errors.any? { |message| error.to_s.downcase.include?(message) } ? 'info' : 'error'
+    end,
+    'CartoDB::Datasources::DataDownloadTimeoutError' => 'ignore',
+    'CartoDB::InvalidGeomType' => 'ignore',
+    'Net::OpenTimeout' => 'ignore',
+    'PG::QueryCanceled' => 'ignore',
+    'PG::UndefinedTable' => 'ignore',
+    'Sequel::DatabaseConnectionError' => 'ignore'
   )
 end
 

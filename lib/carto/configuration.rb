@@ -1,11 +1,17 @@
 module Carto
   module Configuration
     def db_config
-      @@db_config ||= YAML.load(File.read(db_config_file)).freeze
+      @@db_config ||= begin
+        template = ERB.new File.new(db_config_file).read
+        YAML.load(template.result(binding)).freeze
+      end
     end
 
     def app_config
-      @@app_config ||= YAML.load_file(app_config_file).freeze
+      @@app_config ||= begin
+        template = ERB.new File.new(app_config_file).read
+        YAML.load(template.result(binding)).freeze
+      end
     end
 
     def frontend_version
@@ -107,11 +113,7 @@ module Carto
     end
 
     def db_config_file
-      if ENV['RAILS_DATABASE_FILE']
-        File.join(config_files_root, 'config/' + ENV['RAILS_DATABASE_FILE'])
-      else
-        File.join(config_files_root, 'config/database.yml')
-      end
+      "#{config_files_root}/config/#{ENV['RAILS_DATABASE_FILE'] || 'database.yml'}"
     end
 
     def app_config_file

@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+* Load config files as ERB templates to allow reading ENV values ([15881](https://github.com/CartoDB/cartodb/pull/15881))
 
 ### Bug fixes / enhancements
 - Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)

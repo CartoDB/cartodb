@@ -27,7 +27,7 @@ module Carto
         table = params[:table] || full_visualization_table(carto_user, canonical_map)
         table_visualization = table.visualization || create_table_visualization(carto_user, table)
         visualization_attributes = { user: carto_user, map: map }
-        visualization_attributes.merge(params[:visualization_attributes]) if params[:visualization_attributes]
+        visualization_attributes.merge!(params[:visualization_attributes]) if params[:visualization_attributes]
         visualization = create(:carto_visualization, visualization_attributes)
 
         build_data_layer(visualization, table) unless params[:data_layer]

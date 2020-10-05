@@ -5,10 +5,6 @@ module Carto
       @user = user
     end
 
-    def is_permitted(table, access)
-      table.permission.permitted?(@user, access)
-    end
-
     def add_read_permission(table)
       table.add_read_permission(@user)
     end

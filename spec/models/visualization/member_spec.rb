@@ -10,7 +10,6 @@ require_dependency 'cartodb/redis_vizjson_cache'
 include CartoDB
 
 describe Visualization::Member do
-
   include Carto::Factories::Visualizations
   let(:user) { create(:carto_user) }
 

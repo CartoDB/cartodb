@@ -9,9 +9,5 @@ module Carto
       table.add_organization_read_write_permission
     end
 
-    def is_permitted(table, access)
-      table.permission.permission_for_org == access
-    end
-
   end
 end

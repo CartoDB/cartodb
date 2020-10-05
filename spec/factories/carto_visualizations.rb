@@ -7,8 +7,11 @@ module Carto
 
       def full_visualization_table(carto_user, map)
         carto_user = Carto::User.find(carto_user.id) unless carto_user.is_a? Carto::User
-        map_id = map.nil? ? nil : map.id
-        Carto::UserTable.find(create_table(name: unique_name('fvt_table'), user_id: carto_user.id, map_id: map_id).id)
+        Carto::UserTable.find(create_table(
+          name: unique_name('fvt_table'),
+          user_id: carto_user.id,
+          map_id: map&.id
+        ).id)
       end
 
       def create_full_builder_vis(carto_user, visualization_attributes: {})
@@ -17,41 +20,36 @@ module Carto
 
       # "Full visualization": with map, table... Including actual user table.
       # Table is bound to visualization, and to data_layer if it's not passed.
-      def create_full_visualization(
-        carto_user,
-        canonical_map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
-        map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
-        table: full_visualization_table(carto_user, canonical_map),
-        data_layer: nil,
-        visualization_attributes: {}
-      )
-
-        carto_user = Carto::User.find(carto_user.id) unless carto_user.is_a? Carto::User
-
+      def create_full_visualization(carto_user, params = {})
+        carto_user = carto_user.carto_user
+        canonical_map = params[:canonical_map] || create(:carto_map_with_layers, user_id: carto_user.id)
+        map = params[:map] || create(:carto_map_with_layers, user_id: carto_user.id)
+        table = params[:table] || full_visualization_table(carto_user, canonical_map)
         table_visualization = table.visualization || create_table_visualization(carto_user, table)
-        visualization = FactoryGirl.create(:carto_visualization, { user: carto_user, map: map }
-                                   .merge(visualization_attributes))
+        visualization_attributes = { user: carto_user, map: map }
+        visualization_attributes.merge(params[:visualization_attributes]) if params[:visualization_attributes]
+        visualization = create(:carto_visualization, visualization_attributes)
 
-        unless data_layer.present?
-          data_layer = visualization.map.data_layers.first
-          data_layer.options[:table_name] = table.name
-          data_layer.options[:query] = "select * from #{table.name}"
-          data_layer.options[:sql_wrap] = "select * from (<%= sql %>) __wrap"
-          data_layer.save
-        end
+        build_data_layer(visualization, table) unless params[:data_layer]
 
         visualization.update_column(:active_layer_id, visualization.layers.first.id)
 
-        FactoryGirl.create(:carto_zoom_overlay, visualization: visualization)
-        FactoryGirl.create(:carto_search_overlay, visualization: visualization)
+        create(:carto_zoom_overlay, visualization: visualization)
+        create(:carto_search_overlay, visualization: visualization)
 
         # Need to mock the nonexistant table because factories use Carto::* models
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_name_to).returns(true)
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_privacy_to).returns(true)
 
-        visualization.reload
+        [map, table, table_visualization, visualization.reload]
+      end
 
-        return map, table, table_visualization, visualization
+      def build_data_layer(visualization, table)
+        data_layer = visualization.map.data_layers.first
+        data_layer.options[:table_name] = table.name
+        data_layer.options[:query] = "select * from #{table.name}"
+        data_layer.options[:sql_wrap] = 'select * from (<%= sql %>) __wrap'
+        data_layer.save
       end
 
       def create_table_visualization(carto_user, table)

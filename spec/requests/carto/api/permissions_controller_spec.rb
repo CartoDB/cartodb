@@ -44,31 +44,29 @@ describe Carto::Api::PermissionsController do
     it 'modifies an existing permission' do
       entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
 
-      acl_initial = [ ]
+      acl_initial = []
       client_acl_modified = [
         {
           type: Carto::Permission::TYPE_USER,
-          entity: {
-            id:   @user2.id,
-          },
+          entity: { id: @user2.id },
           access: Carto::Permission::ACCESS_READONLY
         }
       ]
       client_acl_modified_expected = [
-          {
-              type: Carto::Permission::TYPE_USER,
-              entity: {
-                  id:         @user2.id,
-                  username:   @user2.username,
-                  avatar_url: @user2.avatar_url,
-                  viewer:     false,
-                  base_url:   @user2.public_url,
-                  groups:     []
-              },
-              access: Carto::Permission::ACCESS_READONLY
-          }
+        {
+          type: Carto::Permission::TYPE_USER,
+          entity: {
+            id: @user2.id,
+            username: @user2.username,
+            avatar_url: @user2.avatar_url,
+            viewer: false,
+            base_url: @user2.public_url,
+            groups: []
+          },
+          access: Carto::Permission::ACCESS_READONLY
+        }
       ]
-      client_acl_final = [ ]
+      client_acl_final = []
 
       permission = @visualization.permission
       permission.owner_id.should eq @user.id
@@ -162,14 +160,11 @@ describe 'group permission support' do
       }
     ]
     client_acl_modified_expected = [
-        {
-            type: Carto::Permission::TYPE_GROUP,
-            entity: {
-                id:         @group.id,
-                name:       @group.name
-            },
-            access: Carto::Permission::ACCESS_READONLY
-        }
+      {
+        type: Carto::Permission::TYPE_GROUP,
+        entity: { id: @group.id, name: @group.name },
+        access: Carto::Permission::ACCESS_READONLY
+      }
     ]
 
     permission = visualization.permission

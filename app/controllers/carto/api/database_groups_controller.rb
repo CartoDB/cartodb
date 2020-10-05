@@ -158,13 +158,14 @@ module Carto
         @usernames = @username.present? ? [ @username ] : params[:users]
         @table_name = params[:table_name]
         case params['access']
-            when nil
-            when 'r'
-              @access = Carto::Permission::ACCESS_READONLY
-            when 'w'
-              @access = Carto::Permission::ACCESS_READWRITE
-            else raise "Unknown access #{params['access']}"
-            end
+        when 'r'
+          @access = Carto::Permission::ACCESS_READONLY
+        when 'w'
+          @access = Carto::Permission::ACCESS_READWRITE
+        when nil
+          nil
+        else raise "Unknown access #{params['access']}"
+        end
       end
 
       def get_group_from_loaded_parameters

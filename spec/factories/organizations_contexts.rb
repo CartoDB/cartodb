@@ -1,13 +1,14 @@
 require_relative '../support/factories/users'
 require 'helpers/unique_names_helper'
 
-include UniqueNamesHelper
-
 class TestUserFactory
+
   include CartoDB::Factories
+
 end
 
 module TableSharing
+
   def share_table_with_user(table, user, access: Carto::Permission::ACCESS_READONLY)
     vis = CartoDB::Visualization::Member.new(id: table.table_visualization.id).fetch
     per = vis.permission
@@ -23,11 +24,14 @@ module TableSharing
     per.save
     per.reload
   end
+
 end
 
 shared_context 'organization with users helper' do
   include CacheHelper
   include CartoDB::Factories
+  include UniqueNamesHelper
+
   include_context 'database configuration'
 
   before(:each) do
@@ -85,17 +89,23 @@ shared_context 'organization with users helper' do
 
   def share_table(table, owner, user)
     bypass_named_maps
-    headers = {'CONTENT_TYPE'  => 'application/json'}
+    headers = { 'CONTENT_TYPE' => 'application/json' }
     perm_id = table.table_visualization.permission.id
 
-    put api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id),
-        { acl: [{
-                 type: Carto::Permission::TYPE_USER,
-                 entity: {
-                   id:   user.id,
-                 },
-                 access: Carto::Permission::ACCESS_READONLY
-               }]}.to_json, headers
+    request_payload = {
+      acl: [
+        {
+          type: Carto::Permission::TYPE_USER,
+          entity: { id: user.id },
+          access: Carto::Permission::ACCESS_READONLY
+        }
+      ]
+    }.to_json
+    put(
+      api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id),
+      request_payload,
+      headers
+    )
     response.status.should == 200
   end
 

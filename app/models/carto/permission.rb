@@ -28,24 +28,36 @@ class Carto::Permission < ActiveRecord::Base
     temp_old_acl = {}
     # Convert the old and new acls to a better format for searching
     old_acl.each do |i|
-      if !temp_old_acl.has_key?(i[:type])
-        temp_old_acl[i[:type]] = {}
-      end
+      temp_old_acl[i[:type]] = {} unless temp_old_acl.key?(i[:type])
       temp_old_acl[i[:type]][i[:id]] = i
     end
     temp_new_acl = {}
     new_acl.each do |i|
-      if !temp_new_acl.has_key?(i[:type])
-        temp_new_acl[i[:type]] = {}
-      end
+      temp_new_acl[i[:type]] = {} unless temp_new_acl.key?(i[:type])
       temp_new_acl[i[:type]][i[:id]] = i
     end
 
-    # Iterate through the new acl and compare elements with the old one
-    permissions_change = {}
+    changed_permissions = build_changed_permissions(temp_new_acl, temp_old_acl)
+
+    # Iterate through the old acl. All the permissions in this structure are
+    # supposed so be revokes
+    temp_old_acl.each do |pt, pv|
+      changed_permissions[pt] = {} if changed_permissions[pt].nil?
+
+      pv.each do |oi, _iacl|
+        changed_permissions[pt][oi] = [{ 'action' => 'revoke', 'type' => temp_old_acl[pt][oi][:access] }]
+      end
+    end
+
+    changed_permissions
+  end
+
+  def self.build_changed_permissions(temp_new_acl, temp_old_acl)
+    changed_permissions = {}
+
     temp_new_acl.each do |pt, pv|
-      permissions_change[pt] = {}
-      pv.each do |oi, iacl|
+      changed_permissions[pt] = {}
+      pv.each do |oi, _iacl|
         # See if a specific permission exists in the old acl
         # If the new acl is greater than the old we suppose that write
         # permissions were granted. Otherwise they were revoked
@@ -55,30 +67,19 @@ class Carto::Permission < ActiveRecord::Base
         if !temp_old_acl[pt].nil? && !temp_old_acl[pt][oi].nil?
           case temp_new_acl[pt][oi][:access] <=> temp_old_acl[pt][oi][:access]
           when 1
-            permissions_change[pt][oi] = [{'action' => 'grant', 'type' => 'w'}]
+            changed_permissions[pt][oi] = [{ 'action' => 'grant', 'type' => 'w' }]
           when -1
-            permissions_change[pt][oi] = [{'action' => 'revoke', 'type' => 'w'}]
+            changed_permissions[pt][oi] = [{ 'action' => 'revoke', 'type' => 'w' }]
           end
           temp_old_acl[pt].delete(oi)
         else
-          permissions_change[pt][oi] = [{'action' => 'grant', 'type' => temp_new_acl[pt][oi][:access]}]
+          changed_permissions[pt][oi] = [{ 'action' => 'grant', 'type' => temp_new_acl[pt][oi][:access] }]
         end
         temp_new_acl[pt].delete(oi)
       end
     end
 
-    # Iterate through the old acl. All the permissions in this structure are
-    # supposed so be revokes
-    temp_old_acl.each do |pt, pv|
-      if permissions_change[pt].nil?
-        permissions_change[pt] = {}
-      end
-      pv.each do |oi, iacl|
-        permissions_change[pt][oi] = [{'action' => 'revoke', 'type' => temp_old_acl[pt][oi][:access]}]
-      end
-    end
-
-    return permissions_change
+    changed_permissions
   end
 
   def acl
@@ -147,26 +148,20 @@ class Carto::Permission < ActiveRecord::Base
   # @throws Carto::Permission::Error
   def acl=(value)
     incoming_acl = value.nil? ? DEFAULT_ACL_VALUE : value
-    raise Carto::Permission::Error.new('ACL is not an array') unless incoming_acl.is_a? Array
+    raise Carto::Permission::Error, 'ACL is not an array' unless incoming_acl.is_a? Array
+
     incoming_acl.map do |item|
       unless item.is_a?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
-        raise Carto::Permission::Error.new('Wrong ACL entry format')
+        raise Carto::Permission::Error, 'Wrong ACL entry format'
       end
     end
 
     acl_items = incoming_acl.map do |item|
-      {
-        type:   item[:type],
-        id:     item[:entity][:id],
-        access: item[:access]
-      }
+      { type: item[:type], id: item[:entity][:id], access: item[:access] }
     end
 
     cleaned_acl = acl_items.select { |i| i[:id] } # Cleaning, see #5668
-
-    if @old_acl.nil?
-      @old_acl = acl
-    end
+    @old_acl ||= acl
 
     self.access_control_list = ::JSON.dump(cleaned_acl)
   end
@@ -302,11 +297,9 @@ class Carto::Permission < ActiveRecord::Base
 
   def permission_for_org
     permission = nil
-    acl.map { |entry|
-      if entry[:type] == TYPE_ORGANIZATION
-          permission = entry[:access]
-      end
-    }
+    acl.map do |entry|
+      permission = entry[:access] if entry[:type] == TYPE_ORGANIZATION
+    end
     ACCESS_NONE if permission.nil?
   end
 
@@ -568,13 +561,13 @@ class Carto::Permission < ActiveRecord::Base
       # assert database permissions for non canonical tables are assigned
       # its canonical vis
       if not entity.table
-        raise Carto::Permission::Error.new('Trying to change permissions to a table without ownership')
+        raise Carto::Permission::Error, 'Trying to change permissions to a table without ownership'
       end
       table = entity.table
 
       # check ownership
       if not owner_id == entity.permission.owner_id
-        raise Carto::Permission::Error.new('Trying to change permissions to a table without ownership')
+        raise Carto::Permission::Error, 'Trying to change permissions to a table without ownership'
       end
       # give permission
       if access == ACCESS_READONLY
@@ -583,7 +576,7 @@ class Carto::Permission < ActiveRecord::Base
         permission_strategy.add_read_write_permission(table)
       end
     else
-      raise Carto::Permission::Error.new('Unsupported entity type trying to grant permission')
+      raise Carto::Permission::Error, 'Unsupported entity type trying to grant permission'
     end
   end
 

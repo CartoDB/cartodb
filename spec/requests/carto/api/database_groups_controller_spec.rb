@@ -102,14 +102,11 @@ describe Carto::Api::DatabaseGroupsController do
       permission.should_not be_nil
 
       expected_acl = [
-          {
-              type: Carto::Permission::TYPE_GROUP,
-              entity: {
-                  id:         group.id,
-                  name:       group.name
-              },
-              access: Carto::Permission::ACCESS_READONLY
-          }
+        {
+          type: Carto::Permission::TYPE_GROUP,
+          entity: { id: group.id, name: group.name },
+          access: Carto::Permission::ACCESS_READONLY
+        }
       ]
       permission.to_poro[:acl].should == expected_acl
 
@@ -181,17 +178,23 @@ describe Carto::Api::DatabaseGroupsController do
     it '#update_permission granting read on a table to organization, group and user do not duplicate count' do
       bypass_named_maps
       @table_user_2 = create_table_with_options(@org_user_2)
-      put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: @table_user_2['table_visualization'][:permission][:id]),
-          { acl: [ {
-              type: Carto::Permission::TYPE_USER,
-              entity: { id:   @org_user_1.id },
-              access: Carto::Permission::ACCESS_READONLY
-            }, {
-              type: Carto::Permission::TYPE_ORGANIZATION,
-              entity: { id:   @organization.id },
-              access: Carto::Permission::ACCESS_READONLY
-            } ]
-          }.to_json, http_json_headers
+      request_payload = {
+        acl: [
+          {
+            type: Carto::Permission::TYPE_USER,
+            entity: { id: @org_user_1.id },
+            access: Carto::Permission::ACCESS_READONLY
+          },
+          {
+            type: Carto::Permission::TYPE_ORGANIZATION,
+            entity: { id: @organization.id },
+            access: Carto::Permission::ACCESS_READONLY
+          }
+        ]
+      }.to_json
+      permission_id = @table_user_2['table_visualization'][:permission][:id]
+      request_url_params = { user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: permission_id }
+      put api_v1_permissions_update_url(request_url_params), request_payload, http_json_headers
       response.status.should == 200
 
       group = Carto::Group.where(organization_id: @carto_organization.id).first

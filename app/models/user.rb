@@ -38,7 +38,6 @@ class User < Sequel::Model
 
   self.strict_param_setting = false
 
-  one_to_one  :client_application
   one_to_many :synchronization_oauths
   one_to_many :maps
   one_to_many :assets
@@ -62,7 +61,7 @@ class User < Sequel::Model
   many_through_many :groups, [[:users_groups, :user_id, :group_id]]
 
   # Sequel setup & plugins
-  plugin :association_dependencies, :client_application => :destroy, :synchronization_oauths => :destroy
+  plugin :association_dependencies, :synchronization_oauths => :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -437,7 +436,7 @@ class User < Sequel::Model
 
       assign_search_tweets_to_organization_owner
 
-      ClientApplication.where(user_id: id).each(&:destroy)
+      Carto::ClientApplication.where(user_id: id).each(&:destroy)
     rescue StandardError => exception
       error_happened = true
       log_error(message: 'Error destroying user', current_user: self, exception: exception)
@@ -997,13 +996,6 @@ class User < Sequel::Model
     $users_metadata.HMGET(key, 'last_ip_address').first
   end
 
-  def reset_client_application!
-    if client_application
-      client_application.destroy
-    end
-    ClientApplication.create(:user_id => self.id)
-  end
-
   def self.find_with_custom_fields(user_id)
     ::User.filter(:id => user_id).select(:id,:email,:username,:crypted_password,:database_name,:admin).first
   end
@@ -1236,8 +1228,8 @@ class User < Sequel::Model
     end
   end
 
-  def create_client_application
-    ClientApplication.create(:user_id => self.id)
+  def client_application
+    Carto::ClientApplication.find_by(user_id: id)
   end
 
   ## User's databases setup methods
@@ -1245,7 +1237,7 @@ class User < Sequel::Model
     return if disabled?
     db_service.set_database_name
 
-    create_client_application
+    create_client_application!
     if self.has_organization_enabled?
       db_service.new_organization_user_main_db_setup
     else

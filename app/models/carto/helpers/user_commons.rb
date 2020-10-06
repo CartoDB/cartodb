@@ -381,4 +381,12 @@ module Carto::UserCommons
       end
     end
   end
+
+  def create_client_application!
+    if client_application
+      client_application.destroy
+    end
+    Carto::ClientApplication.create(:user_id => id)
+    reload
+  end
 end

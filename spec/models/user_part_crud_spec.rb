@@ -104,7 +104,7 @@ describe User do
   it "should reset its client application" do
     old_key = @user.client_application.key
 
-    @user.reset_client_application!
+    @user.create_client_application!
     @user.reload
 
     @user.client_application.key.should_not == old_key
@@ -220,15 +220,15 @@ describe User do
         it 'deletes client_application and friends' do
           user = create_user(email: 'clientapp@example.com', username: 'clientapp', password: @user_password)
 
-          user.create_client_application
-          user.client_application.access_tokens << Carto::AccessToken.new(
+          user.create_client_application!
+          user.client_application.access_tokens << Carto::AccessToken.create(
             token: "access_token",
             secret: "access_secret",
             callback_url: "http://callback2",
             verifier: "v2",
             scope: nil,
             client_application_id: user.client_application.id
-          ).save
+          )
 
           user.client_application.oauth_tokens << Carto::OauthToken.create!(
             token: "oauth_token",
@@ -241,15 +241,17 @@ describe User do
 
           base_key = "rails:oauth_access_tokens:#{user.client_application.access_tokens.first.token}"
 
-          client_application = ClientApplication.where(user_id: user.id).first
-          expect(ClientApplication.where(user_id: user.id).count).to eq 2
-          expect(client_application.tokens).to_not be_empty
-          expect(client_application.tokens.length).to eq 2
+          client_application = Carto::ClientApplication.find_by(user_id: user.id)
+
+          expect(Carto::ClientApplication.where(user_id: user.id).count).to eq 1
+          tokens = Carto::OauthToken.where(client_application_id: client_application.id)
+          expect(tokens).to_not be_empty
+          expect(tokens.length).to eq 2
           $api_credentials.keys.should include(base_key)
 
           user.destroy
 
-          expect(ClientApplication.where(user_id: user.id).first).to be_nil
+          expect(Carto::ClientApplication.find_by(user_id: user.id)).to be_nil
           expect(Carto::AccessToken.where(user_id: user.id).first).to be_nil
           expect(Carto::OauthToken.where(user_id: user.id).first).to be_nil
           $api_credentials.keys.should_not include(base_key)

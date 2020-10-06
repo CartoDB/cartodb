@@ -72,21 +72,21 @@ describe Carto::UserMetadataExportService do
     @user.reload
 
     # Client Application tokens
-    sequel_user.client_application.access_tokens << Carto::AccessToken.new(
-      token: "access_token",
-      secret: "access_secret",
-      callback_url: "http://callback2",
-      verifier: "v2",
-      scope: nil,
-      client_application_id: sequel_user.client_application.id
-    ).save
-    sequel_user.client_application.oauth_tokens << Carto::OauthToken.create!(
+    @user.client_application.access_tokens << Carto::AccessToken.create!(
+        token: "access_token",
+        secret: "access_secret",
+        callback_url: "http://callback2",
+        verifier: "v2",
+        scope: nil,
+        client_application_id: @user.client_application.id
+    )
+    @user.client_application.oauth_tokens << Carto::OauthToken.create!(
       token: "oauth_token",
       secret: "oauth_secret",
       callback_url: "http//callback.com",
       verifier: "v1",
       scope: nil,
-      client_application_id: sequel_user.client_application.id
+      client_application_id: @user.client_application.id
     )
 
     Carto::UserMultifactorAuth.create!(user_id: @user.id, type: 'totp', last_login: Time.zone.now)
@@ -172,7 +172,7 @@ describe Carto::UserMetadataExportService do
           st.destroy
         end
       end
-      ClientApplication.where(user_id: @user.id).each(&:destroy)
+      Carto::ClientApplication.where(user_id: @user.id).each(&:destroy)
 
       @user.oauth_app_users.each do |oau|
         unless oau.oauth_access_tokens.blank?
@@ -198,7 +198,7 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'imports latest' do
-      user = test_import_user_from_export(full_export)
+      test_import_user_from_export(full_export)
     end
 
     it 'imports 1.0.16 (without email_verification)' do
@@ -274,7 +274,7 @@ describe Carto::UserMetadataExportService do
     it 'imports 1.0.5 (without client_application)' do
       user = test_import_user_from_export(full_export_one_zero_five)
 
-      expect(user.client_applications).to be_empty
+      expect(user.client_application).to be_nil
     end
 
     it 'imports 1.0.4 (without synchornization oauths nor connector configurations)' do

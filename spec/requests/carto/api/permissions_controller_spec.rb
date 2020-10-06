@@ -42,33 +42,31 @@ describe Carto::Api::PermissionsController do
   describe 'PUT /api/v1/perm' do
 
     it 'modifies an existing permission' do
-      entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+      entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
 
-      acl_initial = [ ]
+      acl_initial = []
       client_acl_modified = [
         {
-          type: Permission::TYPE_USER,
-          entity: {
-            id:   @user2.id,
-          },
-          access: Permission::ACCESS_READONLY
+          type: Carto::Permission::TYPE_USER,
+          entity: { id: @user2.id },
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
       client_acl_modified_expected = [
-          {
-              type: Permission::TYPE_USER,
-              entity: {
-                  id:         @user2.id,
-                  username:   @user2.username,
-                  avatar_url: @user2.avatar_url,
-                  viewer:     false,
-                  base_url:   @user2.public_url,
-                  groups:     []
-              },
-              access: Permission::ACCESS_READONLY
-          }
+        {
+          type: Carto::Permission::TYPE_USER,
+          entity: {
+            id: @user2.id,
+            username: @user2.username,
+            avatar_url: @user2.avatar_url,
+            viewer: false,
+            base_url: @user2.public_url,
+            groups: []
+          },
+          access: Carto::Permission::ACCESS_READONLY
+        }
       ]
-      client_acl_final = [ ]
+      client_acl_final = []
 
       permission = @visualization.permission
       permission.owner_id.should eq @user.id
@@ -110,11 +108,10 @@ describe Carto::Api::PermissionsController do
 
   describe 'PUT/DELETE /api/v1/perm' do
     it "makes sure we don't expose unwanted call types" do
-      permission = CartoDB::Permission.new(
-          owner_id: @user.id,
-          owner_username: @user.username
+      permission = Carto::Permission.create(
+        owner_id: @user.id,
+        owner_username: @user.username
       )
-      permission.save
 
       expect {
         post "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", nil, @headers
@@ -150,27 +147,24 @@ describe 'group permission support' do
     visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@org_user_1.id))
     entity_id = visualization.id
 
-    entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+    entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
 
     acl_initial = [ ]
     client_acl_modified = [
       {
-        type: Permission::TYPE_GROUP,
+        type: Carto::Permission::TYPE_GROUP,
         entity: {
           id:   @group.id,
         },
-        access: Permission::ACCESS_READONLY
+        access: Carto::Permission::ACCESS_READONLY
       }
     ]
     client_acl_modified_expected = [
-        {
-            type: Permission::TYPE_GROUP,
-            entity: {
-                id:         @group.id,
-                name:       @group.name
-            },
-            access: Permission::ACCESS_READONLY
-        }
+      {
+        type: Carto::Permission::TYPE_GROUP,
+        entity: { id: @group.id, name: @group.name },
+        access: Carto::Permission::ACCESS_READONLY
+      }
     ]
 
     permission = visualization.permission
@@ -207,17 +201,17 @@ describe 'group permission support' do
 
     client_acl = [
       {
-        type: Permission::TYPE_GROUP,
+        type: Carto::Permission::TYPE_GROUP,
         entity: {
           id:   @group.id,
         },
-        access: Permission::ACCESS_READONLY
+        access: Carto::Permission::ACCESS_READONLY
       }, {
-        type: Permission::TYPE_GROUP,
+        type: Carto::Permission::TYPE_GROUP,
         entity: {
           id:   @group_2.id,
         },
-        access: Permission::ACCESS_READONLY
+        access: Carto::Permission::ACCESS_READONLY
       }
     ]
     put_json(api_v1_permissions_update_url(user_domain: @org_user_1.username, id: permission.id, api_key: @org_user_1.api_key), { acl: client_acl }, @headers) do |response|

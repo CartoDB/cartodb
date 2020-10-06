@@ -17,6 +17,7 @@ describe Visualization::Collection do
   end
 
   before(:each) do
+    Carto::Visualization.destroy_all
     bypass_named_maps
     delete_user_data @user_1
     delete_user_data @user_2

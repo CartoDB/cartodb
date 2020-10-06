@@ -85,7 +85,7 @@ describe Carto::Api::Public::DatasetsController do
       end
 
       it 'includes shared datasets read only' do
-        share_table_with_user(@shared_table, @org_user_2, access: CartoDB::Permission::ACCESS_READONLY)
+        share_table_with_user(@shared_table, @org_user_2, access: Carto::Permission::ACCESS_READONLY)
 
         get_json api_v4_datasets_url(@params) do |response|
           expect(response.status).to eq(200)
@@ -100,7 +100,7 @@ describe Carto::Api::Public::DatasetsController do
       end
 
       it 'includes shared datasets read and write' do
-        share_table_with_user(@shared_table, @org_user_2, access: CartoDB::Permission::ACCESS_READWRITE)
+        share_table_with_user(@shared_table, @org_user_2, access: Carto::Permission::ACCESS_READWRITE)
 
         get_json api_v4_datasets_url(@params) do |response|
           expect(response.status).to eq(200)

@@ -43,7 +43,7 @@ Metrics/AbcSize:
   Description: >-
                  A calculated magnitude based on number of assignments,
                  branches, and conditions.
-  Max: 30
+  Max: 35
 
 Metrics/BlockLength:
   Description: Avoid long blocks with many lines.
@@ -75,6 +75,14 @@ Metrics/PerceivedComplexity:
                   A complexity metric geared towards measuring complexity for a
                   human reader.
   Max: 15
+
+####################
+#  Naming
+####################
+
+Naming/VariableNumber:
+  Description: Use the configured style when numbering variables.
+  Enabled: false
 
 ####################
 #  Style

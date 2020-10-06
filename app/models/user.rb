@@ -406,10 +406,7 @@ class User < Sequel::Model
       ActiveRecord::Base.transaction do
         delete_external_data_imports
         delete_external_sources
-        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each do |v|
-          v.user.viewer = false
-          v.destroy!
-        end
+        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.map(&:destroy_without_checking_permissions!)
         oauth_app_user = Carto::OauthAppUser.where(user_id: id).first
         oauth_app_user.oauth_access_tokens.each(&:destroy) if oauth_app_user
         Carto::ApiKey.where(user_id: id).each(&:destroy)
@@ -1428,11 +1425,11 @@ class User < Sequel::Model
   def revoke_rw_permission_on_shared_entities
     rw_permissions = visualizations_shared_with_this_user
                      .map(&:permission)
-                     .select { |p| p.permission_for_user(self) == CartoDB::Permission::ACCESS_READWRITE }
+                     .select { |p| p.permission_for_user(self) == Carto::Permission::ACCESS_READWRITE }
 
     rw_permissions.each do |p|
       p.remove_user_permission(self)
-      p.set_user_permission(self, CartoDB::Permission::ACCESS_READONLY)
+      p.set_user_permission(self, Carto::Permission::ACCESS_READONLY)
     end
     rw_permissions.map(&:save)
   end

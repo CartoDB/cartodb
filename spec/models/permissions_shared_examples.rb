@@ -1,3 +1,5 @@
+require_dependency 'permission/presenter'
+
 shared_examples_for 'permission models' do
   include Carto::Factories::Visualizations
 
@@ -27,7 +29,7 @@ shared_examples_for 'permission models' do
     it 'tests basic creation' do
       visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user.id))
       entity_id = visualization.id
-      entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+      entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
 
       permission = permission_from_visualization_id(entity_id)
       permission.id.should_not eq nil
@@ -39,13 +41,13 @@ shared_examples_for 'permission models' do
 
       acl_with_data = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user.id,
             username: @user.username,
             avatar_url: @user.avatar_url
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
 
@@ -88,19 +90,19 @@ shared_examples_for 'permission models' do
       # invalid ACL formats
       expect {
         permission2.acl = 'not an array!'
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       expect {
         permission2.acl = [
           'aaa'
         ]
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       expect {
         permission2.acl = [
           {}
         ]
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       expect {
         permission2.acl = [
@@ -109,16 +111,16 @@ shared_examples_for 'permission models' do
             wadus: 'aaa'
           }
         ]
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       permission2.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user2.id,
             username: @user2.username
           },
-          access: Permission::ACCESS_READONLY,
+          access: Carto::Permission::ACCESS_READONLY,
           # Extra undesired field
           wadus: 'aaa'
         }
@@ -128,7 +130,7 @@ shared_examples_for 'permission models' do
       expect {
         permission2.acl = [
           {
-            type: Permission::TYPE_USER,
+            type: Carto::Permission::TYPE_USER,
             entity: {
               id: @user2.id,
               username: @user2.username
@@ -136,7 +138,7 @@ shared_examples_for 'permission models' do
             access: '123'
           }
         ]
-      }.to raise_exception CartoDB::PermissionError
+      }.to raise_exception Carto::Permission::Error
 
       visualization.destroy
       visualization2.destroy
@@ -152,29 +154,29 @@ shared_examples_for 'permission models' do
       permission = permission_from_visualization_id(entity_id)
       acl_with_data = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user.id,
             username: @user.username,
             avatar_url: @user.avatar_url
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         },
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: user_to_be_deleted.id,
             username: user_to_be_deleted.username,
             avatar_url: user_to_be_deleted.avatar_url
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         }
       ]
       permission.acl = acl_with_data
       permission.save
       # here there's a possible race condition, when updating permissions
       user_to_be_deleted.delete
-      acl_from_db = PermissionPresenter.new(permission).to_poro[:acl]
+      acl_from_db = CartoDB::PermissionPresenter.new(permission).to_poro[:acl]
       filtered_acl = acl_from_db.map do |entry|
         {
           type: entry[:type],
@@ -192,12 +194,12 @@ shared_examples_for 'permission models' do
       permission = permission_from_visualization_id(visualization.id)
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @viewer_user.id,
             username: @viewer_user.username
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         }
       ]
 
@@ -216,19 +218,19 @@ shared_examples_for 'permission models' do
       permission = permission_from_visualization_id(table_visualization.id)
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @viewer_user.id,
             username: @viewer_user.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
 
       permission.save
       permission.reload
 
-      permission.permission_for_user(@viewer_user).should eq Permission::ACCESS_READONLY
+      permission.permission_for_user(@viewer_user).should eq Carto::Permission::ACCESS_READONLY
 
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
@@ -241,19 +243,19 @@ shared_examples_for 'permission models' do
       permission = permission_from_visualization_id(table_visualization.id)
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: changing_user.id,
             username: changing_user.username
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         }
       ]
       Table.any_instance.expects(:add_read_write_permission).once.returns(true)
       permission.save
       permission.reload
 
-      permission.permission_for_user(changing_user).should eq CartoDB::Permission::ACCESS_READWRITE
+      permission.permission_for_user(changing_user).should eq Carto::Permission::ACCESS_READWRITE
 
       changing_user.viewer = true
       Table.any_instance.expects(:remove_access).once.returns(true)
@@ -262,7 +264,7 @@ shared_examples_for 'permission models' do
       changing_user.reload
 
       permission.reload
-      permission.permission_for_user(changing_user).should eq CartoDB::Permission::ACCESS_READONLY
+      permission.permission_for_user(changing_user).should eq Carto::Permission::ACCESS_READONLY
 
       destroy_full_visualization(map, table, table_visualization, visualization)
 
@@ -273,7 +275,7 @@ shared_examples_for 'permission models' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user)
 
       entity_id = visualization.id
-      entity_type = Permission::ENTITY_TYPE_VISUALIZATION
+      entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
 
       organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
       group = FactoryGirl.create(:random_group, organization: organization)
@@ -281,12 +283,12 @@ shared_examples_for 'permission models' do
       acl_initial = []
       acl_with_data = [
         {
-          type: Permission::TYPE_GROUP,
+          type: Carto::Permission::TYPE_GROUP,
           entity: {
             id: group.id,
             username: 'a_group'
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
       acl_with_data_expected = [
@@ -323,12 +325,12 @@ shared_examples_for 'permission models' do
       permission = permission_from_visualization_id(table_visualization.id)
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user2.id,
             username: @user2.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
 
@@ -342,9 +344,9 @@ shared_examples_for 'permission models' do
       permission.is_owner?(@user2).should eq false
       permission.is_owner?(@user3).should eq false
 
-      permission.permission_for_user(@user).should eq Permission::ACCESS_READWRITE
-      permission.permission_for_user(@user2).should eq Permission::ACCESS_READONLY
-      permission.permission_for_user(@user3).should eq Permission::ACCESS_NONE
+      permission.permission_for_user(@user).should eq Carto::Permission::ACCESS_READWRITE
+      permission.permission_for_user(@user2).should eq Carto::Permission::ACCESS_READONLY
+      permission.permission_for_user(@user3).should eq Carto::Permission::ACCESS_NONE
 
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
@@ -354,32 +356,32 @@ shared_examples_for 'permission models' do
       permission = permission_from_visualization_id(table_visualization.id)
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user2.id,
             username: @user2.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         },
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user3.id,
             username: @user3.username
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         }
       ]
       permission.save
 
-      permission.permitted?(@user2, Permission::ACCESS_READONLY).should eq true
-      permission.permitted?(@user2, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(@user2, Carto::Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(@user2, Carto::Permission::ACCESS_READWRITE).should eq false
 
-      permission.permitted?(@user3, Permission::ACCESS_READONLY).should eq true
-      permission.permitted?(@user3, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(@user3, Carto::Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(@user3, Carto::Permission::ACCESS_READWRITE).should eq true
 
-      permission.permitted?(@user4, Permission::ACCESS_READONLY).should eq false
-      permission.permitted?(@user4, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(@user4, Carto::Permission::ACCESS_READONLY).should eq false
+      permission.permitted?(@user4, Carto::Permission::ACCESS_READWRITE).should eq false
 
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
@@ -392,64 +394,64 @@ shared_examples_for 'permission models' do
       permission = permission_from_visualization_id(table_visualization.id)
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: org_user.id,
             username: org_user.username
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         },
         {
-          type: Permission::TYPE_ORGANIZATION,
+          type: Carto::Permission::TYPE_ORGANIZATION,
           entity: {
             id: organization.id,
             username: organization.name
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
       permission.save
-      permission.permitted?(org_user, Permission::ACCESS_READONLY).should eq true
-      permission.permitted?(org_user, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(org_user, Carto::Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(org_user, Carto::Permission::ACCESS_READWRITE).should eq true
 
       # Organization has more permissions than user. Should get inherited (RW prevails)
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: org_user.id,
             username: org_user.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         },
         {
-          type: Permission::TYPE_ORGANIZATION,
+          type: Carto::Permission::TYPE_ORGANIZATION,
           entity: {
             id: organization.id,
             username: organization.name
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         }
       ]
       permission.save
-      permission.permitted?(org_user, Permission::ACCESS_READONLY).should eq true
-      permission.permitted?(org_user, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(org_user, Carto::Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(org_user, Carto::Permission::ACCESS_READWRITE).should eq true
 
       # Organization permission only
       permission.acl = [
         {
-          type: Permission::TYPE_ORGANIZATION,
+          type: Carto::Permission::TYPE_ORGANIZATION,
           entity: {
             id: organization.id,
             username: organization.name
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         }
       ]
       permission.save
 
-      permission.permitted?(org_user, Permission::ACCESS_READONLY).should eq true
-      permission.permitted?(org_user, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(org_user, Carto::Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(org_user, Carto::Permission::ACCESS_READWRITE).should eq true
 
       destroy_full_visualization(map, table, table_visualization, visualization)
       organization.destroy_cascade
@@ -488,12 +490,12 @@ shared_examples_for 'permission models' do
       # Leave only user 1
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user.id,
             username: @user.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
       # shared entry of user 2 should dissapear
@@ -507,12 +509,12 @@ shared_examples_for 'permission models' do
       # Leave only user 2 now
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user2.id,
             username: @user2.username
           },
-          access: Permission::ACCESS_READWRITE
+          access: Carto::Permission::ACCESS_READWRITE
         }
       ]
       permission.save
@@ -525,12 +527,12 @@ shared_examples_for 'permission models' do
       # Now just change permission, user2 should still be there
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user2.id,
             username: @user2.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
       permission.save
@@ -543,12 +545,12 @@ shared_examples_for 'permission models' do
       # Now set a permission forbidding a user, so should dissapear too
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user2.id,
             username: @user2.username
           },
-          access: Permission::ACCESS_NONE
+          access: Carto::Permission::ACCESS_NONE
         }
       ]
       permission.save
@@ -569,12 +571,12 @@ shared_examples_for 'permission models' do
 
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user.id,
             username: @user.username
           },
-          access: Permission::ACCESS_NONE
+          access: Carto::Permission::ACCESS_NONE
         }
       ]
       # Twice: once at model `update_changes` and one on permission destroy (at cleanup)
@@ -665,12 +667,12 @@ shared_examples_for 'permission models' do
 
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user2.id,
             username: @user2.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
       acl1 = permission.acl
@@ -681,34 +683,34 @@ shared_examples_for 'permission models' do
 
       permission.acl = [
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user2.id,
             username: @user2.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         },
         {
-          type: Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user3.id,
             username: @user3.username
           },
-          access: Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
       acl2 = permission.acl
 
-      CartoDB::Permission.expects(:compare_new_acl).with(acl1, acl2).once
+      Carto::Permission.expects(:compare_new_acl).with(acl1, acl2).once
       permission.save
 
-      CartoDB::Permission.expects(:compare_new_acl).with(acl2, []).once
+      Carto::Permission.expects(:compare_new_acl).with(acl2, []).once
       # Hack to workaround FK while keeping the destroy test
       fake_permission = FactoryGirl.create(:carto_permission, owner_id: @user.id)
       visualization.update_column(:permission_id, fake_permission.id)
       permission.destroy
 
-      CartoDB::Permission.expects(:compare_new_acl).with([], []).at_least_once
+      Carto::Permission.expects(:compare_new_acl).with([], []).at_least_once
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
@@ -729,7 +731,7 @@ shared_examples_for 'permission models' do
         }
       }
 
-      CartoDB::Permission.compare_new_acl(acl1, acl2).should == expected_diff
+      Carto::Permission.compare_new_acl(acl1, acl2).should == expected_diff
     end
   end
 
@@ -738,26 +740,26 @@ shared_examples_for 'permission models' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user)
       permission = permission_from_visualization_id(table_visualization.id)
 
-      permission.set_user_permission(@user2, Permission::ACCESS_READONLY)
+      permission.set_user_permission(@user2, Carto::Permission::ACCESS_READONLY)
       permission.save
       visualization = visualization_from_id(table_visualization.id)
-      visualization.has_permission?(@user2, Permission::ACCESS_READONLY).should be_true
-      visualization.has_permission?(@user2, Permission::ACCESS_READWRITE).should be_false
+      visualization.has_permission?(@user2, Carto::Permission::ACCESS_READONLY).should be_true
+      visualization.has_permission?(@user2, Carto::Permission::ACCESS_READWRITE).should be_false
 
       # Permission is reassigned because current design doesn't works well with several changes in a row.
       permission = permission_from_visualization_id(table_visualization.id)
       permission.remove_user_permission(@user2)
       permission.save
       visualization = visualization_from_id(table_visualization.id)
-      visualization.has_permission?(@user2, Permission::ACCESS_READONLY).should be_false
-      visualization.has_permission?(@user2, Permission::ACCESS_READWRITE).should be_false
+      visualization.has_permission?(@user2, Carto::Permission::ACCESS_READONLY).should be_false
+      visualization.has_permission?(@user2, Carto::Permission::ACCESS_READWRITE).should be_false
 
       permission = permission_from_visualization_id(table_visualization.id)
-      permission.set_user_permission(@user2, Permission::ACCESS_READWRITE)
+      permission.set_user_permission(@user2, Carto::Permission::ACCESS_READWRITE)
       permission.save
       visualization = visualization_from_id(table_visualization.id)
-      visualization.has_permission?(@user2, Permission::ACCESS_READONLY).should be_true
-      visualization.has_permission?(@user2, Permission::ACCESS_READWRITE).should be_true
+      visualization.has_permission?(@user2, Carto::Permission::ACCESS_READONLY).should be_true
+      visualization.has_permission?(@user2, Carto::Permission::ACCESS_READWRITE).should be_true
 
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
@@ -782,9 +784,9 @@ shared_examples_for 'permission models' do
         permission = table.permission
         permission.acl = [
           {
-            type: Permission::TYPE_USER,
+            type: Carto::Permission::TYPE_USER,
             entity: { id: @carto_org_user_2.id },
-            access: Permission::ACCESS_READONLY
+            access: Carto::Permission::ACCESS_READONLY
           }
         ]
         permission.save
@@ -807,9 +809,9 @@ shared_examples_for 'permission models' do
         permission = table.permission
         permission.acl = [
           {
-            type: Permission::TYPE_GROUP,
+            type: Carto::Permission::TYPE_GROUP,
             entity: { id: @group.id },
-            access: Permission::ACCESS_READONLY
+            access: Carto::Permission::ACCESS_READONLY
           }
         ]
         permission.save

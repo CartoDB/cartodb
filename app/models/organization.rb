@@ -1,6 +1,5 @@
 require_relative '../controllers/carto/api/group_presenter'
 require_relative '../helpers/data_services_metrics_helper'
-require_relative './permission'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/organization_commons'
 

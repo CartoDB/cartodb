@@ -71,7 +71,7 @@ describe UserTable do
       @user.save
       @user_table.reload
 
-      expect { @user_table.destroy }.to raise_error(CartoDB::InvalidMember, /Viewer users can't destroy tables/)
+      expect { @user_table.destroy }.to raise_error(RuntimeError, /Viewer users can't destroy tables/)
 
       @user.viewer = false
       @user.save

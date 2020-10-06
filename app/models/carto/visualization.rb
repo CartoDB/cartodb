@@ -66,34 +66,25 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :user, -> { select(Carto::User::DEFAULT_SELECT) }, inverse_of: :visualizations
   belongs_to :full_user, -> { readonly(true) }, class_name: Carto::User, inverse_of: :visualizations,
                                                 primary_key: :id, foreign_key: :user_id
-
   belongs_to :permission, inverse_of: :visualization, dependent: :destroy
+  belongs_to :active_layer, class_name: Carto::Layer
+  belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
+
+  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy, inverse_of: :visualization
+  has_one :asset, class_name: Carto::Asset, inverse_of: :visualization, dependent: :destroy
+  has_one :synchronization, class_name: Carto::Synchronization, dependent: :destroy
+  has_one :state, class_name: Carto::State, autosave: true
 
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization, dependent: :destroy
-
-  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy, inverse_of: :visualization
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
-
   has_many :overlays, -> { order(:order) }, dependent: :destroy, inverse_of: :visualization
-
-  belongs_to :active_layer, class_name: Carto::Layer
-
-  belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
-
-  has_one :asset, class_name: Carto::Asset, inverse_of: :visualization, dependent: :destroy
-
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
-
-  has_one :synchronization, class_name: Carto::Synchronization, dependent: :destroy
   has_many :external_sources, class_name: Carto::ExternalSource
-
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, -> { order('created_at DESC') }, class_name: Carto::Mapcap, dependent: :destroy
-
-  has_one :state, class_name: Carto::State, autosave: true
-
   has_many :snapshots, class_name: Carto::Snapshot, dependent: :destroy
+  has_many :backups, class_name: Carto::VisualizationBackup
 
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }
@@ -110,10 +101,26 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
+  before_destroy :before_destroy_hooks
   before_destroy :backup_visualization
+  before_destroy :check_destroy_permissions!
   after_commit :perform_invalidations
 
   attr_accessor :register_table_only
+
+  # NASTY HACK: previously, the user was updated to viewer: false for the destroy hooks to pass. As the Sequel
+  # migration advanced, that wasn't possible anymore since the ::User changes were not visible from the ActiveRecord
+  # transaction.
+  def destroy_without_checking_permissions!
+    Carto::Visualization.skip_callback(:destroy, :before, :check_destroy_permissions!)
+    Carto::Overlay.skip_callback(:destroy, :before, :validate_user_not_viewer)
+    Carto::UserTable.skip_callback(:destroy, :before, :ensure_not_viewer)
+    destroy!
+  ensure
+    Carto::Visualization.set_callback(:destroy, :before, :check_destroy_permissions!)
+    Carto::Overlay.set_callback(:destroy, :before, :validate_user_not_viewer)
+    Carto::UserTable.set_callback(:destroy, :before, :ensure_not_viewer)
+  end
 
   def set_register_table_only
     self.register_table_only = false
@@ -830,6 +837,36 @@ class Carto::Visualization < ActiveRecord::Base
 
   def invalidation_service
     @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
+  end
+
+  def check_destroy_permissions!
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user&.reload&.viewer
+  end
+
+  def prev_list_item
+    Carto::Visualization.find_by(id: prev_id)
+  end
+
+  def next_list_item
+    Carto::Visualization.find_by(id: next_id)
+  end
+
+  def unlink_self_from_list!
+    ActiveRecord::Base.transaction do
+      prev_list_item&.update!(next_id: next_id)
+      next_list_item&.update!(prev_id: prev_id)
+
+      unless destroyed?
+        self.prev_id = nil
+        self.next_id = nil
+      end
+    end
+  end
+
+  def before_destroy_hooks
+    unlink_self_from_list!
+    children.each(&:destroy)
+    Carto::NamedMaps::Api.new(self).destroy
   end
 
   class Watcher

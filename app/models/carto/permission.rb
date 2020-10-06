@@ -81,6 +81,7 @@ class Carto::Permission < ActiveRecord::Base
 
     changed_permissions
   end
+  private_class_method :build_changed_permissions
 
   def acl
     JSON.parse(access_control_list, symbolize_names: true)

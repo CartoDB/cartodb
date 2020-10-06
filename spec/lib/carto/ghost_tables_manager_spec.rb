@@ -3,8 +3,10 @@ require_relative '../../../lib/carto/ghost_tables_manager'
 require 'helpers/database_connection_helper'
 
 module Carto
+
   describe GhostTablesManager do
     include DatabaseConnectionHelper
+    include Carto::Factories::Visualizations
 
     let(:sequel_user) { create(:valid_user) }
     let!(:user) { Carto::User.find(sequel_user.id) }
@@ -431,14 +433,19 @@ module Carto
     end
 
     it 'should backup visualizations before dropping a table' do
-      user_table = create(:carto_user_table, :full, user: user)
+      _, _, table_visualization, map_visualization = create_full_visualization(user)
 
       expect(Carto::VisualizationBackup.count).to eq(0)
 
-      run_in_user_database("ALTER TABLE #{user_table.name} DROP COLUMN cartodb_id")
+      run_in_user_database("ALTER TABLE #{table_visualization.user_table.name} DROP COLUMN cartodb_id")
       ghost_tables_manager.link_ghost_tables_synchronously
 
-      expect(Carto::VisualizationBackup.count).to eq(1)
+      expect(table_visualization.backups.first[:export][:visualization][:user_table]).to be_present
+      expect(table_visualization.backups.first[:export][:visualization][:type]).to eq('table')
+
+      expect(map_visualization.backups.first[:export][:visualization][:user_table]).to be_nil
+      expect(map_visualization.backups.first[:export][:visualization][:type]).to eq('derived')
     end
   end
+
 end

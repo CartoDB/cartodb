@@ -7,13 +7,14 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   layout 'application'
 
   def show
-    respond_with(@organization.data(:extended => true))
+    respond_with(::OrganizationPresenter.new(@organization, extended: true).data)
   end
 
   def index
-    @organizations = (params[:overquota].present? ? Organization.overquota(0.20) : Organization.all)
+    organizations = params[:overquota].present? ? Carto::Organization.overquota(0.20) : Carto::Organization.all
+    organizations_data = organizations.map { |organization| ::OrganizationPresenter.new(organization) }.map(&:data)
 
-    respond_with(:superadmin, @organizations.map(&:data))
+    respond_with(:superadmin, organizations_data)
   end
 
   def create

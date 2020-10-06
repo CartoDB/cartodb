@@ -63,11 +63,6 @@ class UserTable < Sequel::Model
     PRIVACY_LINK => 'link'
   }
 
-  # For compatibility with AR model
-  def new_record?
-    new?
-  end
-
   # Associations
   many_to_one  :map
   many_to_many :layers, join_table: :layers_user_tables,
@@ -205,26 +200,8 @@ class UserTable < Sequel::Model
     service.after_save
   end
 
-  def before_destroy
-    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy tables") if user && user.viewer
-
-    @table_visualization = table_visualization
-    @fully_dependent_visualizations_cache = fully_dependent_visualizations.to_a
-    @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
-
-    super
-  end
-
-  def after_destroy
-    @table_visualization.delete_from_table if @table_visualization
-    @fully_dependent_visualizations_cache.each(&:delete)
-    @partially_dependent_visualizations_cache.each do |visualization|
-      visualization.unlink_from(self)
-    end
-    synchronization.delete if synchronization
-
-    service.after_destroy
-    super
+  def destroy
+    Carto::UserTable.find_by(id: id)&.destroy
   end
 
   def before_update

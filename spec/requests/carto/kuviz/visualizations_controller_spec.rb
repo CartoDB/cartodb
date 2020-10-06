@@ -51,9 +51,9 @@ describe Carto::Kuviz::VisualizationsController do
         user2 = FactoryGirl.create(:carto_user)
         @kuviz.permission.acl = [
           {
-            type: Permission::TYPE_USER,
+            type: Carto::Permission::TYPE_USER,
             entity: { id: user2.id, username: user2.username },
-            access: Permission::ACCESS_READONLY
+            access: Carto::Permission::ACCESS_READONLY
           }
         ]
         @kuviz.permission.save

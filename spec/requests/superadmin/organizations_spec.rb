@@ -120,7 +120,7 @@ feature "Superadmin's organization API" do
       end
     end
     it "gets overquota organizations" do
-      Organization.stubs(:overquota).returns [@organization1]
+      Carto::Organization.stubs(:overquota).returns [@organization1]
       get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["name"].should == @organization1.name
@@ -128,7 +128,7 @@ feature "Superadmin's organization API" do
       end
     end
     it "returns geocoding and mapviews quotas and uses for all organizations" do
-      Organization.stubs(:overquota).returns [@organization1]
+      Carto::Organization.stubs(:overquota).returns [@organization1]
       ::User.any_instance.stubs(:get_geocoding_calls).returns(100)
       ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
       get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|

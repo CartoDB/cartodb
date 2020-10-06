@@ -5,7 +5,6 @@ require 'cartodb-common'
 require_relative '../markdown_render'
 require_relative './presenter'
 require_relative './name_checker'
-require_relative '../permission'
 require_relative './relator'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
@@ -45,8 +44,8 @@ module CartoDB
       PRIVACY_VALUES = [PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED].freeze
       TEMPLATE_NAME_PREFIX = 'tpl_'.freeze
 
-      PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
-      PERMISSION_READWRITE = CartoDB::Permission::ACCESS_READWRITE
+      PERMISSION_READONLY = Carto::Permission::ACCESS_READONLY
+      PERMISSION_READWRITE = Carto::Permission::ACCESS_READWRITE
 
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'.freeze
 
@@ -224,48 +223,11 @@ module CartoDB
       end
 
       def delete_from_table
-        delete(true)
+        delete
       end
 
-      def delete(from_table_deletion = false)
-        raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user.viewer
-
-        repository.transaction do
-          unlink_self_from_list!
-
-          support_tables.delete_all
-
-          overlays.map(&:destroy)
-          safe_sequel_delete do
-            # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
-            related_map = map
-            related_map.being_destroyed_by_vis_id = id
-            related_map.destroy
-          end if map
-          safe_sequel_delete { table.destroy } if type == TYPE_CANONICAL && table && !from_table_deletion
-          safe_sequel_delete do
-            children.map do |child|
-              # Refetch each item before removal so Relator reloads prev/next cursors
-              child.fetch.delete
-            end
-          end
-
-          # Avoid invalidating if the visualization has already been destroyed
-          # This happens deleting a canonical visualization, which triggers a table deletion,
-          # which triggers a second deletion of the same visualization
-          carto_vis = carto_visualization
-          if carto_vis
-            Carto::NamedMaps::Api.new(carto_vis).destroy
-            invalidate_cache
-          end
-
-          safe_sequel_delete { permission.destroy_shared_entities } if permission
-          safe_sequel_delete { repository.delete(id) }
-          safe_sequel_delete { permission.destroy } if permission
-          attributes.keys.each { |key| send("#{key}=", nil) }
-        end
-
-        self
+      def delete
+        Carto::Visualization.find_by(id: id)&.destroy
       end
 
       # A visualization is linked to a table when it uses that table in a layergroup (but is not the canonical table)
@@ -551,23 +513,6 @@ module CartoDB
         fetch
       end
 
-      def unlink_self_from_list!
-        repository.transaction do
-          unless self.prev_id.nil?
-            prev_item = prev_list_item
-            prev_item.next_id = self.next_id
-            prev_item.store
-          end
-          unless self.next_id.nil?
-            next_item = next_list_item
-            next_item.prev_id = self.prev_id
-            next_item.store
-          end
-          self.prev_id = nil
-          self.next_id = nil
-        end
-      end
-
       def liked_by?(user)
         !likes.select { |like| like.actor == user.id }.first.nil?
       end
@@ -716,10 +661,8 @@ module CartoDB
 
         # Ensure a permission is set before saving the visualization
         if permission.nil?
-          perm = CartoDB::Permission.new
-          perm.owner = user
-          perm.save
-          @permission_id = perm.id
+          permission = Carto::Permission.create(owner: user)
+          @permission_id = permission.id
         end
         repository.store(id, attributes.to_hash)
 

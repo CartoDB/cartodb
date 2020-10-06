@@ -580,9 +580,9 @@ module Carto
           perm = @org_shared_table.table_visualization.permission
           perm.acl = [
             {
-              type: Permission::TYPE_ORGANIZATION,
+              type: Carto::Permission::TYPE_ORGANIZATION,
               entity: { id: @carto_organization.id },
-              access: Permission::ACCESS_READWRITE
+              access: Carto::Permission::ACCESS_READWRITE
             }
           ]
           perm.save!
@@ -619,9 +619,9 @@ module Carto
             perm = @only_read_table.table_visualization.permission
             perm.acl = [
               {
-                type: Permission::TYPE_ORGANIZATION,
+                type: Carto::Permission::TYPE_ORGANIZATION,
                 entity: { id: @carto_organization.id },
-                access: Permission::ACCESS_READONLY
+                access: Carto::Permission::ACCESS_READONLY
               }
             ]
             perm.save!

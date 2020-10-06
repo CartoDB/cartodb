@@ -49,7 +49,7 @@ namespace :cartodb do
     task :unshare_all_entities, [:user] => :environment do |t, args|
       # First unshare everything owned by the user itself
       user = ::User.find(username: args[:user])
-      CartoDB::Permission.where(owner_id: user.id).each do |permission|
+      Carto::Permission.find_each(owner_id: user.id) do |permission|
         unless permission.acl.empty?
           puts "Deleting permission: #{permission.acl}"
           permission.acl = []
@@ -59,8 +59,7 @@ namespace :cartodb do
 
       # Then, remove permissions of everything they have access to
       CartoDB::SharedEntity.where(recipient_id: user.id).each do |shared_entity|
-        permissions = CartoDB::Permission.where(entity_id: shared_entity.entity_id)
-        permissions.each do |permission|
+        Carto::Permission.find_each(entity_id: shared_entity.entity_id) do |permission|
           acl = permission.acl
           puts "Dropping permission from: #{permission.acl}"
           acl.reject!{|acl_entry| acl_entry[:type] == 'user' && acl_entry[:id] == user.id}

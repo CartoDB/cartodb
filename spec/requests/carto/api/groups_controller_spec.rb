@@ -163,7 +163,8 @@ describe Carto::Api::GroupsController do
         it 'can fetch number of shared tables, maps and users when a table is shared' do
           bypass_named_maps
           table_user_2 = create_table_with_options(@org_user_2)
-          permission = CartoDB::Permission[Carto::Visualization.find(table_user_2['table_visualization'][:id]).permission.id]
+          visualization = Carto::Visualization.find(table_user_2['table_visualization'][:id])
+          permission = Carto::Permission.find(visualization.permission.id)
           permission.set_group_permission(@group_1, Carto::Permission::ACCESS_READONLY)
           permission.save
 

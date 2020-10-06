@@ -134,7 +134,7 @@ module CartoDB
       end
 
       def permission
-        @permission ||= CartoDB::Permission.where(id: @permission_id).first unless @permission_id.nil?
+        @permission ||= Carto::Permission.find(@permission_id) if @permission_id
       end
 
       def likes

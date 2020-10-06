@@ -5,7 +5,7 @@ module Carto::OrganizationCommons
 
     def initialize(organization)
       @organization = organization
-      super "Organization #{organization.name} has no owner"
+      super "Organization has no owner"
     end
   end
 end
@@ -34,4 +34,9 @@ module Carto::OrganizationSoftLimits
   def soft_mapzen_routing_limit?
     owner.try(:soft_mapzen_routing_limit)
   end
+
+  def db_size_in_bytes
+    users.map(&:db_size_in_bytes).sum
+  end
+
 end

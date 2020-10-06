@@ -14,7 +14,7 @@ class Carto::User < ActiveRecord::Base
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
   include Carto::UserCommons
-  include Concerns::CartodbCentralSynchronizable
+  include CartodbCentralSynchronizable
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \

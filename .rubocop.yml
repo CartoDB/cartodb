@@ -1,21 +1,7 @@
+# Extends defaults from: https://github.com/rubocop-hq/rubocop/blob/master/config/default.yml
+
 AllCops:
-  TargetRubyVersion: 2.4
-  Include:
-  - "**/*.gemspec"
-  - "**/*.podspec"
-  - "**/*.jbuilder"
-  - "**/*.rake"
-  - "**/*.opal"
-  - "**/Gemfile"
-  - "**/Rakefile"
-  - "**/Capfile"
-  - "**/Guardfile"
-  - "**/Podfile"
-  - "**/Thorfile"
-  - "**/Vagrantfile"
-  - "**/Berksfile"
-  - "**/Cheffile"
-  - "**/Vagabondfile"
+  TargetRubyVersion: 2.5
   Exclude:
   - "vendor/**/*"
   - "db/schema.rb"
@@ -31,611 +17,103 @@ AllCops:
   - "script"
   - "tmp"
   - "vendor"
-  DisplayCopNames: false
-  StyleGuideCopsOnly: false
-
-#
-# Layout config
-#
-
-
-Layout/AccessModifierIndentation:
-  Enabled: true
-  EnforcedStyle: indent
-
-Layout/HashAlignment:
-  Enabled: true
-  EnforcedHashRocketStyle: key
-  EnforcedColonStyle: key
-  EnforcedLastArgumentHashStyle: always_inspect
-
-Layout/ParameterAlignment:
-  Enabled: true
-  EnforcedStyle: with_first_parameter
-
-Layout/CaseIndentation:
-  Enabled: true
-  EnforcedStyle: case
-  IndentOneStep: false
-
-Layout/EmptyLineBetweenDefs:
-  Enabled: true
-  AllowAdjacentOneLineDefs: false
-
-Layout/EmptyLinesAroundModuleBody:
-  Enabled: true
-  EnforcedStyle: no_empty_lines
-
-Layout/ExtraSpacing:
-  Enabled: true
-
-Layout/FirstArgumentIndentation:
-  Enabled: true
-  EnforcedStyle: special_for_inner_method_call_in_parentheses
-
-Layout/IndentationWidth:
-  Enabled: true
-  Width: 2
-
-Layout/FirstHashElementIndentation:
-  Description: Checks the indentation of the first key in a hash literal.
-  Enabled: true
-  EnforcedStyle: special_inside_parentheses
-  SupportedStyles:
-  - special_inside_parentheses
-  - consistent
-
-Layout/MultilineOperationIndentation:
-  Enabled: true
-  EnforcedStyle: aligned
-
-Layout/SpaceAroundBlockParameters:
-  Enabled: true
-  EnforcedStyleInsidePipes: no_space
-
-Layout/SpaceAroundEqualsInParameterDefault:
-  Enabled: true
-  EnforcedStyle: space
-
-Layout/SpaceBeforeBlockBraces:
-  Enabled: true
-  EnforcedStyle: space
-
-Layout/SpaceInsideBlockBraces:
-  Enabled: true
-  EnforcedStyle: space
-  EnforcedStyleForEmptyBraces: no_space
-  SpaceBeforeBlockParameters: true
-
-Layout/SpaceInsideHashLiteralBraces:
-  Enabled: true
-  EnforcedStyle: space
-  EnforcedStyleForEmptyBraces: no_space
-
-Layout/TrailingEmptyLines:
-  Enabled: true
-  EnforcedStyle: final_newline
-
-Layout/ArrayAlignment:
-  Enabled: true
-
-Layout/BlockEndNewline:
-  Enabled: true
-
-Layout/CommentIndentation:
-  Enabled: true
-
-Layout/ElseAlignment:
-  Enabled: true
-
-Layout/EmptyLines:
-  Enabled: true
-
-Layout/EmptyLinesAroundAccessModifier:
-  Enabled: true
-
-Layout/EmptyLinesAroundMethodBody:
-  Enabled: true
-
-Layout/EndOfLine:
-  Enabled: true
-
-Layout/IndentationConsistency:
-  Enabled: true
-
-Layout/FirstArrayElementIndentation:
-  Enabled: true
-
-Layout/LeadingCommentSpace:
-  Enabled: true
-
-Layout/MultilineBlockLayout:
-  Enabled: true
-
-Layout/SpaceBeforeFirstArg:
-  Enabled: true
-
-Layout/SpaceAfterColon:
-  Enabled: true
-
-Layout/SpaceAfterComma:
-  Enabled: true
-
-Layout/SpaceAroundKeyword:
-  Enabled: true
-
-Layout/SpaceAfterMethodName:
-  Enabled: true
-
-Layout/SpaceAfterNot:
-  Enabled: true
-
-Layout/SpaceAfterSemicolon:
-  Enabled: true
-
-Layout/SpaceBeforeComma:
-  Enabled: true
-
-Layout/SpaceBeforeComment:
-  Enabled: true
-
-Layout/SpaceBeforeSemicolon:
-  Enabled: true
-
-Layout/SpaceAroundOperators:
-  Enabled: true
-
-Layout/SpaceInsideParens:
-  Enabled: true
-
-Layout/SpaceInsideRangeLiteral:
-  Enabled: true
-
-Layout/IndentationStyle:
-  Enabled: true
-
-Layout/TrailingWhitespace:
-  Enabled: true
-
-
-
-#
-# Style config
-#
-
-Style/AndOr:
-  Enabled: true
-  EnforcedStyle: always
-
-Style/BarePercentLiterals:
-  Enabled: true
-  EnforcedStyle: bare_percent
-
-Style/ClassCheck:
-  Enabled: true
-  EnforcedStyle: is_a?
-
-Style/CollectionMethods:
-  Enabled: true
-  PreferredMethods:
-    collect: map
-    collect!: map!
-    inject: reduce
-    detect: find
-    find_all: select
-
-Style/For:
-  Enabled: true
-  EnforcedStyle: each
-
-Style/HashSyntax:
-  Enabled: true
-  EnforcedStyle: ruby19
-
-Style/NonNilCheck:
-  Enabled: true
-  IncludeSemanticChanges: false
-
-Style/MethodDefParentheses:
-  Enabled: true
-  EnforcedStyle: require_parentheses
-
-Naming/MethodName:
-  Enabled: true
-  EnforcedStyle: snake_case
-
-Style/ParenthesesAroundCondition:
-  Enabled: true
-  AllowSafeAssignment: true
-
-Style/PercentQLiterals:
-  Enabled: true
-  EnforcedStyle: lower_case_q
-
-Naming/PredicateName:
-  Enabled: true
-
-Style/RedundantReturn:
-  Enabled: true
-  AllowMultipleReturnValues: false
-
-Style/Semicolon:
-  Enabled: true
-  AllowAsExpressionSeparator: false
-
-Style/StringLiteralsInInterpolation:
-  Enabled: true
-  EnforcedStyle: single_quotes
-
-Style/SymbolProc:
-  Enabled: true
-  IgnoredMethods:
-  - respond_to
-
-Style/TrailingCommaInArguments:
-  Enabled: true
-  EnforcedStyleForMultiline: no_comma
-
-Style/TrailingCommaInArrayLiteral:
-  Enabled: true
-  EnforcedStyleForMultiline: no_comma
-
-Style/TrailingCommaInHashLiteral:
-  Enabled: true
-  EnforcedStyleForMultiline: no_comma
-
-Naming/VariableName:
-  Enabled: true
-  EnforcedStyle: snake_case
-
-Style/BeginBlock:
-  Enabled: true
-
-Style/BlockComments:
-  Enabled: true
-
-Style/BlockDelimiters:
-  Enabled: true
-  EnforcedStyle: braces_for_chaining
-
-Naming/ClassAndModuleCamelCase:
-  Enabled: true
-
-Style/ClassMethods:
-  Enabled: true
-
-Naming/ConstantName:
-  Enabled: true
-
-Style/DefWithParentheses:
-  Enabled: true
-
-Style/EmptyElse:
-  Enabled: true
-
-Style/EndBlock:
-  Enabled: true
-
-Style/InfiniteLoop:
-  Enabled: true
-
-Style/MethodCallWithoutArgsParentheses:
-  Enabled: true
-
-Style/MultilineBlockChain:
-  Enabled: true
-
-Style/MultilineIfThen:
-  Enabled: true
-
-Style/MultilineTernaryOperator:
-  Enabled: true
-
-Style/NestedTernaryOperator:
-  Enabled: true
-
-Style/RedundantBegin:
-  Enabled: true
-
-Style/RedundantException:
-  Enabled: true
-
-Style/RedundantSelf:
-  Enabled: true
-
-Style/RescueModifier:
-  Enabled: true
-
-Style/StructInheritance:
-  Enabled: true
-
-Style/UnlessElse:
-  Enabled: true
-
-Style/RedundantCapitalW:
-  Enabled: true
-
-Style/RedundantPercentQ:
-  Enabled: true
-
-Style/WhileUntilDo:
-  Enabled: true
-
-Style/HashEachMethods:
-  Enabled: true
-
-Style/HashTransformKeys:
-  Enabled: true
-
-Style/HashTransformValues:
-  Enabled: true
-
-
-#
-# Metrics cops
-#
-
-Metrics/AbcSize:
-  Enabled: true
-  Max: 35
+  NewCops: disable
+
+####################
+#  Layout
+####################
 
 Layout/LineLength:
-  Enabled: true
+  Description: Checks that line length does not exceed the configured limit.
   Max: 120
-  AllowURI: true
-  URISchemes:
-  - http
-  - https
+
+Layout/EmptyLinesAroundClassBody:
+  Description: Keeps track of empty lines around class bodies.
+  EnforcedStyle: empty_lines_except_namespace
+
+Layout/EmptyLinesAroundModuleBody:
+  Description: Keeps track of empty lines around module bodies.
+  EnforcedStyle: empty_lines_except_namespace
+
+####################
+#  Metrics
+####################
+
+Metrics/AbcSize:
+  Description: >-
+                 A calculated magnitude based on number of assignments,
+                 branches, and conditions.
+  Max: 35
 
 Metrics/BlockLength:
-  Enabled: true
+  Description: Avoid long blocks with many lines.
+  Max: 50
   Exclude:
-    - spec/**/*
+    - '**/*.gemspec'
+    - spec/**/*_spec.rb
 
-
-#
-# Lint cops
-#
-
-Layout/EndAlignment:
-  Enabled: true
-  EnforcedStyleAlignWith: keyword
-
-Layout/DefEndAlignment:
-  Enabled: true
-  EnforcedStyleAlignWith: start_of_line
-
-Lint/RescueException:
-  Enabled: true
-
-Lint/ShadowingOuterLocalVariable:
-  Enabled: true
-
-Lint/RedundantStringCoercion:
-  Enabled: true
-
-Lint/UnusedBlockArgument:
-  Enabled: true
-
-Lint/UnusedMethodArgument:
-  Enabled: true
-
-Lint/UnreachableCode:
-  Enabled: true
-
-Lint/UselessAccessModifier:
-  Enabled: true
-
-Lint/UselessAssignment:
-  Enabled: true
-
-Lint/UselessComparison:
-  Enabled: true
-
-Lint/UselessElseWithoutRescue:
-  Enabled: true
-
-Lint/UselessSetterCall:
-  Enabled: true
-
-Layout/BlockAlignment:
-  Enabled: true
-
-Lint/Debugger:
-  Enabled: true
-
-Lint/DuplicateMethods:
-  Enabled: true
-
-Lint/EmptyEnsure:
-  Enabled: true
-
-Lint/EmptyInterpolation:
-  Enabled: true
-
-Lint/EnsureReturn:
-  Enabled: true
-
-Lint/RaiseException:
-  Enabled: true
-
-Lint/StructNewOverride:
-  Enabled: true
-
-
-#
-# Security cops
-#
-
-Security/Eval:
-  Description: The use of eval represents a serious security risk.
-  Enabled: true
-
-
-
-#
-# Disabled cops
-#
-
-Layout/DotPosition:
-  Enabled: false
-Layout/EmptyLinesAroundBlockBody:
-  Enabled: false
-Layout/EmptyLinesAroundClassBody:
-  Enabled: false
-Style/ClassAndModuleChildren:
-  Enabled: false
-Style/CommentAnnotation:
-  Enabled: false
-Style/Encoding:
-  Enabled: false
-Naming/FileName:
-  Enabled: false
-Style/FormatString:
-  Enabled: false
-Style/GlobalVars:
-  Enabled: false
-Style/GuardClause:
-  Enabled: false
-Style/IfUnlessModifier:
-  Enabled: false
-Style/LambdaCall:
-  Enabled: false
-Style/Next:
-  Enabled: false
-Style/NumericLiterals:
-  Enabled: false
-Style/PercentLiteralDelimiters:
-  Enabled: false
-Style/RaiseArgs:
-  Enabled: false
-Style/RegexpLiteral:
-  Enabled: false
-Style/SignalException:
-  Enabled: false
-Style/SingleLineBlockParams:
-  Enabled: false
-Style/SingleLineMethods:
-  Enabled: false
-Style/StringLiterals:
-  Enabled: false
-Style/TrivialAccessors:
-  Enabled: false
-Style/WhileUntilModifier:
-  Enabled: false
-Style/WordArray:
-  Enabled: false
-Style/InlineComment:
-  Enabled: false
-Style/MethodCalledOnDoEndBlock:
-  Enabled: false
-Style/SymbolArray:
-  Enabled: false
-Naming/AccessorMethodName:
-  Enabled: false
-Style/Alias:
-  Enabled: false
-Style/ArrayJoin:
-  Enabled: false
-Style/AsciiComments:
-  Enabled: false
-Naming/AsciiIdentifiers:
-  Enabled: false
-Style/Attr:
-  Enabled: false
-Style/CaseEquality:
-  Enabled: false
-Style/CharacterLiteral:
-  Enabled: false
-Style/ClassVars:
-  Enabled: false
-Style/ColonMethodCall:
-  Enabled: false
-Style/PreferredHashMethods:
-  Enabled: false
-Style/Documentation:
-  Enabled: false
-Style/DoubleNegation:
-  Enabled: false
-Style/EachWithObject:
-  Enabled: false
-Style/EmptyLiteral:
-  Enabled: false
-Style/EvenOdd:
-  Enabled: false
-Lint/FlipFlop:
-  Enabled: false
-Style/IfWithSemicolon:
-  Enabled: false
-Style/Lambda:
-  Enabled: false
-Style/LineEndConcatenation:
-  Enabled: false
-Style/ModuleFunction:
-  Enabled: false
-Style/NegatedIf:
-  Enabled: false
-Style/NegatedWhile:
-  Enabled: false
-Style/NilComparison:
-  Enabled: false
-Style/Not:
-  Enabled: false
-Style/OneLineConditional:
-  Enabled: false
-Naming/BinaryOperatorParameterName:
-  Enabled: false
-Style/PerlBackrefs:
-  Enabled: false
-Style/Proc:
-  Enabled: false
-Style/SelfAssignment:
-  Enabled: false
-Style/SpecialGlobalVars:
-  Enabled: false
-Style/VariableInterpolation:
-  Enabled: false
-Style/WhenThen:
-  Enabled: false
-Style/FrozenStringLiteralComment:
-  Enabled: false
-Metrics/BlockNesting:
-  Enabled: false
 Metrics/ClassLength:
-  Enabled: false
+  Description: Avoid classes longer than 400 lines of code.
+  Max: 400
+
 Metrics/CyclomaticComplexity:
-  Enabled: false
+  Description: >-
+                  A complexity metric that is strongly correlated to the number
+                  of test cases needed to validate a method.
+  Max: 15
+
 Metrics/MethodLength:
-  Enabled: false
+  Description: Avoid methods longer than 100 lines of code.
+  Max: 100
+
 Metrics/ModuleLength:
-  Enabled: false
-Metrics/ParameterLists:
-  Enabled: false
+  Description: Avoid modules longer than 400 lines of code.
+  Max: 400
+
 Metrics/PerceivedComplexity:
+  Description: >-
+                  A complexity metric geared towards measuring complexity for a
+                  human reader.
+  Max: 15
+
+####################
+#  Naming
+####################
+
+Naming/VariableNumber:
+  Description: Use the configured style when numbering variables.
   Enabled: false
-Lint/AssignmentInCondition:
+
+####################
+#  Style
+####################
+
+Style/PercentLiteralDelimiters:
+  Description: Use `%`-literal delimiters consistently.
   Enabled: false
-Lint/AmbiguousOperator:
+
+Style/StringLiterals:
+  Description: Checks if uses of quotes match the configured preference.
+  EnforcedStyle: single_quotes
+
+Style/Documentation:
+  Description: Document classes and non-namespace modules.
   Enabled: false
-Lint/AmbiguousRegexpLiteral:
+
+Style/DoubleNegation:
+  Description: Checks for uses of double negation (!!).
   Enabled: false
-Layout/ConditionPosition:
+
+Style/FrozenStringLiteralComment:
+  Description: >-
+                  Add the frozen_string_literal comment to the top of files
+                  to help transition to frozen string literals by default.
   Enabled: false
-Lint/DeprecatedClassMethods:
+
+Style/SymbolArray:
+  Description: Use %i or %I for arrays of symbols.
   Enabled: false
-Lint/ElseLayout:
-  Enabled: false
-Lint/SuppressedException:
-  Enabled: false
-Lint/LiteralInInterpolation:
-  Enabled: false
-Lint/Loop:
-  Enabled: false
-Lint/ParenthesesAsGroupedExpression:
-  Enabled: false
-Lint/RequireParentheses:
-  Enabled: false
-Lint/UnderscorePrefixedVariableName:
-  Enabled: false
-Lint/Void:
+
+Style/WordArray:
+  Description: Use %w or %W for arrays of words.
   Enabled: false

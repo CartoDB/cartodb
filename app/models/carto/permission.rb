@@ -2,6 +2,9 @@ require 'active_record'
 require_dependency 'cartodb/errors'
 
 class Carto::Permission < ActiveRecord::Base
+
+  class Error < StandardError; end
+
   DEFAULT_ACL_VALUE = [].freeze
 
   ACCESS_READONLY   = 'r'.freeze
@@ -20,6 +23,65 @@ class Carto::Permission < ActiveRecord::Base
 
   after_update :update_changes
   after_destroy :update_changes_deletion
+
+  def self.compare_new_acl(old_acl, new_acl)
+    temp_old_acl = {}
+    # Convert the old and new acls to a better format for searching
+    old_acl.each do |i|
+      temp_old_acl[i[:type]] = {} unless temp_old_acl.key?(i[:type])
+      temp_old_acl[i[:type]][i[:id]] = i
+    end
+    temp_new_acl = {}
+    new_acl.each do |i|
+      temp_new_acl[i[:type]] = {} unless temp_new_acl.key?(i[:type])
+      temp_new_acl[i[:type]][i[:id]] = i
+    end
+
+    changed_permissions = build_changed_permissions(temp_new_acl, temp_old_acl)
+
+    # Iterate through the old acl. All the permissions in this structure are
+    # supposed so be revokes
+    temp_old_acl.each do |pt, pv|
+      changed_permissions[pt] = {} if changed_permissions[pt].nil?
+
+      pv.each do |oi, _iacl|
+        changed_permissions[pt][oi] = [{ 'action' => 'revoke', 'type' => temp_old_acl[pt][oi][:access] }]
+      end
+    end
+
+    changed_permissions
+  end
+
+  def self.build_changed_permissions(temp_new_acl, temp_old_acl)
+    changed_permissions = {}
+
+    temp_new_acl.each do |pt, pv|
+      changed_permissions[pt] = {}
+      pv.each do |oi, _iacl|
+        # See if a specific permission exists in the old acl
+        # If the new acl is greater than the old we suppose that write
+        # permissions were granted. Otherwise they were revoked
+        # If the permissions doesn't exist in the old acl it has been granted
+        # After the comparisson both old and new acl are removed from the
+        # temporal structure
+        if !temp_old_acl[pt].nil? && !temp_old_acl[pt][oi].nil?
+          case temp_new_acl[pt][oi][:access] <=> temp_old_acl[pt][oi][:access]
+          when 1
+            changed_permissions[pt][oi] = [{ 'action' => 'grant', 'type' => 'w' }]
+          when -1
+            changed_permissions[pt][oi] = [{ 'action' => 'revoke', 'type' => 'w' }]
+          end
+          temp_old_acl[pt].delete(oi)
+        else
+          changed_permissions[pt][oi] = [{ 'action' => 'grant', 'type' => temp_new_acl[pt][oi][:access] }]
+        end
+        temp_new_acl[pt].delete(oi)
+      end
+    end
+
+    changed_permissions
+  end
+  private_class_method :build_changed_permissions
 
   def acl
     JSON.parse(access_control_list, symbolize_names: true)
@@ -59,7 +121,7 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def entity_id
-    visualization.try(:id)
+    visualization&.id
   end
 
   def is_owner?(subject)
@@ -84,29 +146,23 @@ class Carto::Permission < ActiveRecord::Base
   # access is from ACCESS_xxxxx constants
   #
   # @param value Array
-  # @throws CartoDB::PermissionError
+  # @throws Carto::Permission::Error
   def acl=(value)
     incoming_acl = value.nil? ? DEFAULT_ACL_VALUE : value
-    raise CartoDB::PermissionError.new('ACL is not an array') unless incoming_acl.is_a? Array
+    raise Carto::Permission::Error, 'ACL is not an array' unless incoming_acl.is_a? Array
+
     incoming_acl.map do |item|
       unless item.is_a?(Hash) && acl_has_required_fields?(item) && acl_has_valid_access?(item)
-        raise CartoDB::PermissionError.new('Wrong ACL entry format')
+        raise Carto::Permission::Error, 'Wrong ACL entry format'
       end
     end
 
     acl_items = incoming_acl.map do |item|
-      {
-        type:   item[:type],
-        id:     item[:entity][:id],
-        access: item[:access]
-      }
+      { type: item[:type], id: item[:entity][:id], access: item[:access] }
     end
 
     cleaned_acl = acl_items.select { |i| i[:id] } # Cleaning, see #5668
-
-    if @old_acl.nil?
-      @old_acl = acl
-    end
+    @old_acl ||= acl
 
     self.access_control_list = ::JSON.dump(cleaned_acl)
   end
@@ -240,6 +296,41 @@ class Carto::Permission < ActiveRecord::Base
     end
   end
 
+  def permission_for_org
+    permission = nil
+    acl.map do |entry|
+      permission = entry[:access] if entry[:type] == TYPE_ORGANIZATION
+    end
+    ACCESS_NONE if permission.nil?
+  end
+
+  def to_poro
+    CartoDB::PermissionPresenter.new(self).to_poro
+  end
+
+  def set_subject_permission(subject_id, access, type)
+    new_acl = inputable_acl
+
+    new_acl << {
+      type: type,
+      entity: {
+        id: subject_id,
+        avatar_url: '',
+        username: '',
+        name: ''
+      },
+      access: access
+    }
+
+    self.acl = new_acl
+  end
+
+  def clear
+    self.acl = []
+    revoke_previous_permissions(entity)
+    save
+  end
+
   private
 
   def real_entity_type
@@ -255,7 +346,7 @@ class Carto::Permission < ActiveRecord::Base
 
   def users_with_permissions(access)
     user_ids = relevant_user_acl_entries(acl).select { |e| access == e[:access] }.map { |e| e[:id] }
-    user_ids.empty? ? [] : Carto::User.where(id: user_ids).all
+    Carto::User.where(id: user_ids)
   end
 
   ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
@@ -315,7 +406,7 @@ class Carto::Permission < ActiveRecord::Base
 
   def update_changes
     if !@old_acl.nil?
-      notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, acl))
+      notify_permissions_change(Carto::Permission.compare_new_acl(@old_acl, acl))
       Carto::DbPermissionService.shared_entities_revokes(@old_acl, acl, entity.table) if entity.table?
     end
     update_shared_entities
@@ -328,7 +419,7 @@ class Carto::Permission < ActiveRecord::Base
     # considered revokes
     # We need to pass the current acl as old_acl and the new_acl as something
     # empty to recreate a revoke by deletion
-    notify_permissions_change(CartoDB::Permission.compare_new_acl(acl, []))
+    notify_permissions_change(Carto::Permission.compare_new_acl(acl, []))
   end
 
   def update_shared_entities
@@ -386,7 +477,7 @@ class Carto::Permission < ActiveRecord::Base
   end
 
   def destroy_shared_entities
-    Carto::SharedEntity.where(entity_id: entity.id).each(&:destroy)
+    Carto::SharedEntity.where(entity_id: entity.id).destroy_all
   end
 
   def revoke_previous_permissions(entity)
@@ -413,7 +504,7 @@ class Carto::Permission < ActiveRecord::Base
         check_related_visualizations(entity.table)
       end
     else
-      raise CartoDB::PermissionError.new("Unsupported entity type trying to grant permission: #{entity.class.name}")
+      raise Carto::Permission::Error.new("Unsupported entity type trying to grant permission: #{entity.class.name}")
     end
   end
 
@@ -460,10 +551,10 @@ class Carto::Permission < ActiveRecord::Base
 
   def grant_db_permission(entity, access, shared_entity)
     if shared_entity.recipient_type == Carto::SharedEntity::RECIPIENT_TYPE_ORGANIZATION
-      permission_strategy = CartoDB::OrganizationPermission.new
+      permission_strategy = Carto::OrganizationPermission.new
     else
       u = Carto::User.find(shared_entity[:recipient_id])
-      permission_strategy = CartoDB::UserPermission.new(u)
+      permission_strategy = Carto::UserPermission.new(u)
     end
 
     case entity.class.name
@@ -471,13 +562,13 @@ class Carto::Permission < ActiveRecord::Base
       # assert database permissions for non canonical tables are assigned
       # its canonical vis
       if not entity.table
-        raise CartoDB::PermissionError.new('Trying to change permissions to a table without ownership')
+        raise Carto::Permission::Error, 'Trying to change permissions to a table without ownership'
       end
       table = entity.table
 
       # check ownership
       if not owner_id == entity.permission.owner_id
-        raise CartoDB::PermissionError.new('Trying to change permissions to a table without ownership')
+        raise Carto::Permission::Error, 'Trying to change permissions to a table without ownership'
       end
       # give permission
       if access == ACCESS_READONLY
@@ -486,25 +577,8 @@ class Carto::Permission < ActiveRecord::Base
         permission_strategy.add_read_write_permission(table)
       end
     else
-      raise CartoDB::PermissionError.new('Unsupported entity type trying to grant permission')
+      raise Carto::Permission::Error, 'Unsupported entity type trying to grant permission'
     end
-  end
-
-  def set_subject_permission(subject_id, access, type)
-    new_acl = inputable_acl
-
-    new_acl << {
-      type: type,
-      entity: {
-        id: subject_id,
-        avatar_url: '',
-        username: '',
-        name: ''
-      },
-      access: access
-    }
-
-    self.acl = new_acl
   end
 
   def granted_access_for_user(user)

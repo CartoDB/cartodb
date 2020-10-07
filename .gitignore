@@ -88,3 +88,4 @@ database.yml
 build_resources/
 .dockerignore
 fake.log*
+cartodb-on-gcp-core-team-*.json

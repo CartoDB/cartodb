@@ -14,7 +14,10 @@ namespace :poc do
 
       # We just assume the message is of type
       # 'user updated in central'
-      received_message.reject! unless received_message.data == 'user updated in central'
+      unless received_message.data == 'user updated in central'
+        received_message.reject!
+        next
+      end
 
       attributes = received_message.attributes
       user_id = attributes.delete("remote_user_id")

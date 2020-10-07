@@ -104,7 +104,7 @@ describe User do
   it "should reset its client application" do
     old_key = @user.client_application.key
 
-    @user.create_client_application!
+    @user.reset_client_application!
     @user.reload
 
     @user.client_application.key.should_not == old_key
@@ -220,7 +220,7 @@ describe User do
         it 'deletes client_application and friends' do
           user = create_user(email: 'clientapp@example.com', username: 'clientapp', password: @user_password)
 
-          user.create_client_application!
+          user.new_client_application
           user.client_application.access_tokens << Carto::AccessToken.create(
             token: "access_token",
             secret: "access_secret",
@@ -243,7 +243,7 @@ describe User do
 
           client_application = Carto::ClientApplication.find_by(user_id: user.id)
 
-          expect(Carto::ClientApplication.where(user_id: user.id).count).to eq 1
+          expect(Carto::ClientApplication.where(user_id: user.id).count).to eq 2
           tokens = Carto::OauthToken.where(client_application_id: client_application.id)
           expect(tokens).to_not be_empty
           expect(tokens.length).to eq 2

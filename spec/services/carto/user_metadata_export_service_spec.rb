@@ -73,18 +73,18 @@ describe Carto::UserMetadataExportService do
 
     # Client Application tokens
     @user.client_application.access_tokens << Carto::AccessToken.create!(
-        token: "access_token",
-        secret: "access_secret",
-        callback_url: "http://callback2",
-        verifier: "v2",
-        scope: nil,
-        client_application_id: @user.client_application.id
+      token: 'access_token',
+      secret: 'access_secret',
+      callback_url: 'http://callback2',
+      verifier: 'v2',
+      scope: nil,
+      client_application_id: @user.client_application.id
     )
     @user.client_application.oauth_tokens << Carto::OauthToken.create!(
-      token: "oauth_token",
-      secret: "oauth_secret",
-      callback_url: "http//callback.com",
-      verifier: "v1",
+      token: 'oauth_token',
+      secret: 'oauth_secret',
+      callback_url: 'http//callback.com',
+      verifier: 'v1',
       scope: nil,
       client_application_id: @user.client_application.id
     )

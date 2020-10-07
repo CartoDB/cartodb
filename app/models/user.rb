@@ -61,7 +61,7 @@ class User < Sequel::Model
   many_through_many :groups, [[:users_groups, :user_id, :group_id]]
 
   # Sequel setup & plugins
-  plugin :association_dependencies, :synchronization_oauths => :destroy
+  plugin :association_dependencies, synchronization_oauths: :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty
@@ -1237,7 +1237,7 @@ class User < Sequel::Model
     return if disabled?
     db_service.set_database_name
 
-    create_client_application!
+    new_client_application
     if self.has_organization_enabled?
       db_service.new_organization_user_main_db_setup
     else

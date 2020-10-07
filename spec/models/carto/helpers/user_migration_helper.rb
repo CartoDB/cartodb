@@ -180,7 +180,8 @@ module UserMigrationHelper
   end
 
   def destroy_user
-    @carto_user.client_application.destroy
+    @carto_user.client_application&.destroy
     @user.destroy
   end
+
 end

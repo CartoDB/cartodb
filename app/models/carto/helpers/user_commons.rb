@@ -382,11 +382,13 @@ module Carto::UserCommons
     end
   end
 
-  def create_client_application!
-    if client_application
-      client_application.destroy
-    end
-    Carto::ClientApplication.create(:user_id => id)
-    reload
+  def new_client_application
+    Carto::ClientApplication.create(user_id: id)
   end
+
+  def reset_client_application!
+    client_application&.destroy
+    Carto::ClientApplication.create(user_id: id)
+  end
+
 end

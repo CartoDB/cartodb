@@ -60,7 +60,9 @@ feature "Sessions" do
     end
 
     scenario "Get the session information via OAuth" do
-      client_application = create_client_application(user: @user.carto_user, url: CartoDB.hostname, callback_url: CartoDB.hostname)
+      client_application = create_client_application(
+        user: @user.carto_user, url: CartoDB.hostname, callback_url: CartoDB.hostname
+      )
       oauth_consumer = OAuth::Consumer.new(client_application.key, client_application.secret, {
         :site => client_application.url,
         :scheme => :query_string,
@@ -321,7 +323,7 @@ feature "Sessions" do
       end
 
       it 'does not allow google login to organization users if they have ldap configuration' do
-        visit org_login_url(@carto_org_user_1.organization)
+        visit org_login_url(@org_user_1.organization)
         page.should_not have_css('#google_signup_access_token')
         page.should_not have_css('#google_login_button_iframe')
       end

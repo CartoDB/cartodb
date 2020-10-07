@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+* Fix column sanitization for connector syncs ([15885](https://github.com/CartoDB/cartodb/pull/15885))
 * Load config files as ERB templates to allow reading ENV values ([15881](https://github.com/CartoDB/cartodb/pull/15881))
 
 ### Bug fixes / enhancements

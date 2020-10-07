@@ -10,7 +10,7 @@ Development
 
 ### Bug fixes / enhancements
 * Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
-* Migrate `ClientApplication` model to `ActiveRecord`
+* Migrate `ClientApplication` model to `ActiveRecord` [#15886](https://github.com/CartoDB/cartodb/pull/15886)
 
 4.42.0 (2020-09-28)
 -------------------

@@ -239,11 +239,11 @@ module Carto
         callback_url: client_app_hash[:callback_url],
         oauth_tokens: client_app_hash[:oauth_tokens].map { |t| build_oauth_token_fom_hash(t) },
         access_tokens: client_app_hash[:access_tokens].map { |t| build_oauth_token_fom_hash(t) },
-        user_id: client_app_hash[:user_id],
-        key: client_app_hash[:key],
-        secret: client_app_hash[:secret]
+        user_id: client_app_hash[:user_id]
       )
       # Overwrite fields that were created with ORM lifecycle callbacks
+      client_application.key = client_app_hash[:key]
+      client_application.secret = client_app_hash[:secret]
       client_application.created_at = client_app_hash[:created_at]
       client_application.updated_at = client_app_hash[:updated_at]
       client_application

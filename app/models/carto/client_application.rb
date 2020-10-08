@@ -41,8 +41,8 @@ module Carto
     private
 
     def initialize_entity
-      self.key = OAuth::Helper.generate_key(40)[0, 40] unless key.present?
-      self.secret = OAuth::Helper.generate_key(40)[0, 40] unless secret.present?
+      self.key = OAuth::Helper.generate_key(40)[0, 40]
+      self.secret = OAuth::Helper.generate_key(40)[0, 40]
     end
 
   end

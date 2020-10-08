@@ -554,6 +554,41 @@ describe Carto::Api::LayersController do
       @user.destroy
     end
 
+    it 'does backups OK' do
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @user.id)
+
+      post(
+        api_v1_visualizations_create_url(api_key: @api_key),
+        { name: 'Viz 1', tables: [table.name] }.to_json,
+        @headers
+      )
+
+      post(
+        api_v1_visualizations_create_url(api_key: @api_key),
+        { name: 'Viz 2', tables: [table.name] }.to_json,
+        @headers
+      )
+
+      table_visualization = Carto::Visualization.where(type: 'table').first
+
+      Rails.logger.expects(:error).never
+
+      # FUNCIONA: table_visualization.layers.map(&:visualization)
+      # PETA: table_visualization.table.layers.map(&:visualization)
+      table_visualization.table.layers.map(&:visualization)
+      #reloaded_table_visualization = Carto::Visualization.find(table_visualization.id)
+      # la reloaded no tiene el atributo @table seteado
+      #debugger
+      #table_visualization.instance_variable_set(:@association_cache, {})
+      table_visualization.destroy!
+
+      # delete(
+      #   api_v1_visualizations_destroy_url(id: table_visualization.id, api_key: @api_key),
+      #   { id: table_visualization.id }.to_json,
+      #   @headers
+      # )
+    end
+
     it 'attribution changes in a visualization propagate to associated layers' do
       table_1_attribution = 'attribution 1'
       table_2_attribution = 'attribution 2'

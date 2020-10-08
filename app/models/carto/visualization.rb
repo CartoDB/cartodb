@@ -108,6 +108,14 @@ class Carto::Visualization < ActiveRecord::Base
 
   attr_accessor :register_table_only
 
+  # There's a weird bug in the Carto::Visualization <-> ::Table relationships that makes the visualization retain
+  # some association_cache info about maps. This makes the visualization backup fail afterwards.
+  # Force a reload so the cache is discarded.
+  def destroy
+    reload
+    super
+  end
+
   # NASTY HACK: previously, the user was updated to viewer: false for the destroy hooks to pass. As the Sequel
   # migration advanced, that wasn't possible anymore since the ::User changes were not visible from the ActiveRecord
   # transaction.

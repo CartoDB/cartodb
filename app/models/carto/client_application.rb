@@ -1,14 +1,7 @@
 require 'active_record'
 require 'oauth'
 require_dependency 'cartodb_config_utils'
-
-class DomainPatcherRequestProxy < OAuth::RequestProxy::RackRequest
-
-  def uri
-    super.sub('carto.com', 'cartodb.com')
-  end
-
-end
+require_dependency 'carto/domain_patcher_request_proxy'
 
 module Carto
   class ClientApplication < ActiveRecord::Base
@@ -37,7 +30,7 @@ module Carto
       value = OAuth::Signature.build(request, options, &block).verify
       if !value && !cartodb_com_hosted?
         # Validation failed, try to see if it has been signed for cartodb.com
-        cartodb_request = DomainPatcherRequestProxy.new(request, options)
+        cartodb_request = Carto::DomainPatcherRequestProxy.new(request, options)
         value = OAuth::Signature.build(cartodb_request, options, &block).verify
       end
       value
@@ -48,8 +41,8 @@ module Carto
     private
 
     def initialize_entity
-      self.key = OAuth::Helper.generate_key(40)[0, 40]
-      self.secret = OAuth::Helper.generate_key(40)[0, 40]
+      self.key = OAuth::Helper.generate_key(40)[0, 40] unless key.present?
+      self.secret = OAuth::Helper.generate_key(40)[0, 40] unless secret.present?
     end
 
   end

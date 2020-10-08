@@ -172,7 +172,6 @@ describe Carto::UserMetadataExportService do
           st.destroy
         end
       end
-      Carto::ClientApplication.where(user_id: @user.id).each(&:destroy)
 
       @user.oauth_app_users.each do |oau|
         unless oau.oauth_access_tokens.blank?

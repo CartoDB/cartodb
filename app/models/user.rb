@@ -436,7 +436,7 @@ class User < Sequel::Model
 
       assign_search_tweets_to_organization_owner
 
-      Carto::ClientApplication.where(user_id: id).each(&:destroy)
+      Carto::ClientApplication.where(user_id: id).destroy_all
     rescue StandardError => exception
       error_happened = true
       log_error(message: 'Error destroying user', current_user: self, exception: exception)

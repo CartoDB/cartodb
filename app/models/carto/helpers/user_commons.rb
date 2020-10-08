@@ -383,12 +383,12 @@ module Carto::UserCommons
   end
 
   def new_client_application
-    Carto::ClientApplication.create(user_id: id)
+    Carto::ClientApplication.create!(user_id: id)
   end
 
   def reset_client_application!
     client_application&.destroy
-    Carto::ClientApplication.create(user_id: id)
+    Carto::ClientApplication.create!(user_id: id)
   end
 
 end

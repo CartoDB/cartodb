@@ -7,7 +7,7 @@ class BasePresenter
   end
 
   def self.delegated_methods
-    object_klass.columns.map(&:name).map(&:to_sym) + object_klass.instance_methods
+    object_klass.columns.map(&:name).map(&:to_sym) + (object_klass.instance_methods - Object.methods)
   end
 
   def initialize(object, params = {})

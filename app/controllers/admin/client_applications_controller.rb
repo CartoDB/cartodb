@@ -55,6 +55,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
   def regenerate_oauth
     @client_application = current_user.client_application
     return if request.get?
+
     current_user.reset_client_application!
 
     redirect_to CartoDB.url(self, 'oauth_credentials', params: { type: 'oauth' }, user: current_user),

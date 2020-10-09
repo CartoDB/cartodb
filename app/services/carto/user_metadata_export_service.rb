@@ -87,15 +87,22 @@ module Carto
     end
 
     def save_imported_user(user)
+      # Keep client_application imported timestamps
+      if user.client_application
+        import_app_updated_at = user.client_application.updated_at
+        import_app_created_at = user.client_application.created_at
+      end
+
       user.save!
       ::User[user.id].after_save
 
-      client_application = user.client_applications.first
-      if client_application
-        client_application.access_tokens.each do |t|
-          t.update!(type: 'AccessToken')
-        end
+      return unless user.client_application
+
+      user.client_application.access_tokens.each do |t|
+        t.update!(type: 'AccessToken')
       end
+
+      user.client_application.update_columns(created_at: import_app_created_at, updated_at: import_app_updated_at)
     end
 
     def save_imported_search_tweet(search_tweet, user)
@@ -146,7 +153,7 @@ module Carto
 
       user.connector_configurations = build_connector_configurations_from_hash(exported_user[:connector_configurations])
 
-      user.client_applications = build_client_applications_from_hash(exported_user[:client_application])
+      user.client_application = build_client_application_from_hash(exported_user[:client_application])
 
       user.oauth_app_users = build_oauth_app_users_from_hash(exported_user[:oauth_app_users])
 
@@ -222,23 +229,24 @@ module Carto
       )
     end
 
-    def build_client_applications_from_hash(client_app_hash)
-      return [] unless client_app_hash
+    def build_client_application_from_hash(client_app_hash)
+      return unless client_app_hash
 
-      client_application = Carto::ClientApplication.new(
+      client_application = Carto::ClientApplication.create(
         name: client_app_hash[:name],
         url: client_app_hash[:url],
         support_url: client_app_hash[:support_url],
         callback_url: client_app_hash[:callback_url],
-        key: client_app_hash[:key],
-        secret: client_app_hash[:secret],
-        created_at: client_app_hash[:created_at],
-        updated_at: client_app_hash[:updated_at],
         oauth_tokens: client_app_hash[:oauth_tokens].map { |t| build_oauth_token_fom_hash(t) },
-        access_tokens: client_app_hash[:access_tokens].map { |t| build_oauth_token_fom_hash(t) }
+        access_tokens: client_app_hash[:access_tokens].map { |t| build_oauth_token_fom_hash(t) },
+        user_id: client_app_hash[:user_id]
       )
-
-      [client_application]
+      # Overwrite fields that were created with ORM lifecycle callbacks
+      client_application.key = client_app_hash[:key]
+      client_application.secret = client_app_hash[:secret]
+      client_application.created_at = client_app_hash[:created_at]
+      client_application.updated_at = client_app_hash[:updated_at]
+      client_application
     end
 
     def build_oauth_app_users_from_hash(oauth_app_users)
@@ -371,7 +379,8 @@ module Carto
         created_at: app.created_at,
         updated_at: app.updated_at,
         oauth_tokens: app.oauth_tokens.reject { |t| a_t_tokens.include?(t.token) }.map { |ot| export_oauth_token(ot) },
-        access_tokens: app.access_tokens.map { |ot| export_oauth_token(ot) }
+        access_tokens: app.access_tokens.map { |ot| export_oauth_token(ot) },
+        user_id: app.user_id
       }
     end
 

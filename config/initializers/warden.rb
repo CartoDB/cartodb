@@ -181,8 +181,8 @@ Warden::Strategies.add(:api_authentication) do
     # WARNING: The following code is a modified copy of the oauth10_token method from
     # oauth-plugin-0.4.0.pre4/lib/oauth/controllers/application_controller_methods.rb
     # It also checks token class like does the oauth10_access_token method of that same file
-    if ClientApplication.verify_request(request) do |request_proxy|
-          @oauth_token = ClientApplication.find_token(request_proxy.token)
+    if Carto::ClientApplication.verify_request(request) do |request_proxy|
+          @oauth_token = Carto::ClientApplication.find_token(request_proxy.token)
           if @oauth_token.respond_to?(:provided_oauth_verifier=)
             @oauth_token.provided_oauth_verifier=request_proxy.oauth_verifier
           end

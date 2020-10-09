@@ -7,7 +7,7 @@ module UserMigrationHelper
       { name: 'user-mover', description: 'insanity' }
     ]
 
-  agg_ds_config = 
+  agg_ds_config =
     {
       aggregation_tables: {
         'host' => 'localhost',
@@ -62,7 +62,7 @@ module UserMigrationHelper
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-      @carto_user.client_applications.each(&:destroy)
+      @carto_user.client_application.destroy
       @table1.table_visualization.layers.each(&:destroy)
       @table1.destroy
       expect { @table1.records }.to raise_error
@@ -180,7 +180,8 @@ module UserMigrationHelper
   end
 
   def destroy_user
-    @carto_user.client_applications.each(&:destroy)
+    @carto_user.client_application&.destroy
     @user.destroy
   end
+
 end

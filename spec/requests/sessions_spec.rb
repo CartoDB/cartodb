@@ -60,10 +60,9 @@ feature "Sessions" do
     end
 
     scenario "Get the session information via OAuth" do
-      # TODO: migrate this factory to AR (only used here)
-      sequel_client_application = create_client_application(user: @user, url: CartoDB.hostname, callback_url: CartoDB.hostname)
-      client_application = Carto::ClientApplication.find(sequel_client_application.id)
-
+      client_application = create_client_application(
+        user: @user.carto_user, url: CartoDB.hostname, callback_url: CartoDB.hostname
+      )
       oauth_consumer = OAuth::Consumer.new(client_application.key, client_application.secret, {
         :site => client_application.url,
         :scheme => :query_string,

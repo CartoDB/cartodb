@@ -404,7 +404,7 @@ describe 'UserMigration' do
       $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
       $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
 
-      @carto_user.client_applications.each(&:destroy)
+      @carto_user.client_application.destroy
       @master_api_key.destroy
       @table.destroy
       @map.destroy
@@ -471,7 +471,7 @@ describe 'UserMigration' do
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-      @carto_user.client_applications.each(&:destroy)
+      @carto_user.client_application.destroy
       @master_api_key.destroy
       @table.destroy
       @map.destroy
@@ -552,7 +552,7 @@ describe 'UserMigration' do
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-      @carto_user.client_applications.each(&:destroy)
+      @carto_user.client_application.destroy
       @master_api_key.destroy
       @table.destroy
       @map.destroy

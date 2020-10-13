@@ -9,4 +9,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.CARTOFANTE_PAT }}
+          repository: CartoDB/cartodb-private
           event-type: my-event

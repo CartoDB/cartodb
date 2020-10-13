@@ -51,7 +51,6 @@ module Carto
         before_action :load_remote_table, only: [:update_remote_table, :unregister_remote_table, :show_remote_table]
         before_action :check_remote_table, only: [:unregister_remote_table, :show_remote_table]
         before_action :ensure_required_remote_table_attributes, only: [:register_remote_table, :update_remote_table]
-        before_action :ensure_readonly_mode, only: [:register_federated_server, :update_federated_server]
 
         setup_default_rescues
         rescue_from Sequel::DatabaseError, with: :rescue_from_service_error
@@ -216,10 +215,6 @@ module Carto
             ensure_required_request_params(REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES)
             ensure_no_extra_request_params(ALLOWED_PUT_REMOTE_TABLE_ATTRIBUTES, 422)
           end
-        end
-
-        def ensure_readonly_mode
-            raise Carto::UnprocesableEntityError.new("Invalid access mode: '#{params[:mode]}'. Only 'read-only' accepted") unless ("read-only".casecmp params[:mode]) == 0
         end
 
         def check_permissions

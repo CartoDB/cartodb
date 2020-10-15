@@ -76,9 +76,6 @@
       <NotAvailable
         v-else
         :title="'Sample is not available'"
-        :description="
-          'This data sample can’t be shown because the real dataset only contains a few rows.'
-        "
         :contactUrl="getFormURL()"
         :mode="'contact'"
       ></NotAvailable>

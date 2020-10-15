@@ -1,6 +1,6 @@
 <template>
   <Page class="page--data">
-    <SecondaryNavigation v-if="showDataCatalog">
+    <SecondaryNavigation>
       <div class="tabs">
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
           <span>{{ $t('DataPage.tabs.datasets') }}</span>
@@ -18,11 +18,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import { isAllowed } from 'new-dashboard/core/configuration/filters';
-import * as accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'DataPage',
@@ -31,14 +29,8 @@ export default {
     SecondaryNavigation
   },
   computed: {
-    ...mapState({
-      planAccountType: state => state.user.account_type
-    }),
     isDatasetPage () {
       return isAllowed(this.$route.params.filter);
-    },
-    showDataCatalog () {
-      return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
     },
     isDOEnabled () {
       return this.$store.state.user.do_enabled;

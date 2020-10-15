@@ -30,6 +30,7 @@ require_dependency 'carto/valid_table_name_proposer'
 require_dependency 'carto/configuration'
 require_dependency 'carto/db/user_schema'
 require_dependency 'carto/uuidhelper'
+require_dependency 'carto/helpers/data_import_commons'
 
 include CartoDB::Datasources
 
@@ -37,6 +38,7 @@ class DataImport < Sequel::Model
   include Carto::DataImportConstants
   include Carto::Configuration
   include Carto::UUIDHelper
+  include Carto::DataImportCommons
 
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
   DIRECT_STATEMENT_TIMEOUT = 1.hour * 1000
@@ -183,18 +185,6 @@ class DataImport < Sequel::Model
     handle_failure(exception)
     raise exception
     self
-  end
-
-  # Notice that this returns the entire error hash, not just the text
-  # It seems that it's only used for the rollbar reporting
-  def get_error_text
-    if self.error_code == CartoDB::NO_ERROR_CODE
-      CartoDB::NO_ERROR_CODE
-    elsif self.error_code.blank? || self.error_code == 99999
-      connector_error_message || CartoDB::IMPORTER_ERROR_CODES[9999]
-    else
-      CartoDB::IMPORTER_ERROR_CODES[self.error_code]
-    end
   end
 
   def get_error_source
@@ -346,13 +336,6 @@ class DataImport < Sequel::Model
   end
 
   private
-
-  CONNECTOR_ERROR_PATTERN = /Connector Error [^\s]+: ERROR:\s+(.+?)^\d\d\d\d-\d\d-\d\d/mi.freeze
-
-  def connector_error_message
-    match = CONNECTOR_ERROR_PATTERN.match(log&.entries)
-    match && match[1]
-  end
 
   def get_provider_name_from_id(service_item_id)
     begin

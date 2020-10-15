@@ -23,7 +23,7 @@ module Carto::DataImportCommons
       {
         title: 'Connector Error',
         what_about: match[1],
-        source: ERROR_SOURCE_CARTODB # FIXME, should it typically be ERROR_SOURCE_USER ?
+        source: CartoDB::ERROR_SOURCE_CARTODB # FIXME, should it typically be ERROR_SOURCE_USER ?
       }
     end
   end

@@ -347,14 +347,11 @@ class DataImport < Sequel::Model
 
   private
 
-  CONNECTOR_ERROR_PATTERN = /Connector Error [^\s]+: ERROR:\s+(.+)/.freeze
+  CONNECTOR_ERROR_PATTERN = /Connector Error [^\s]+: ERROR:\s+(.+?)^\d\d\d\d-\d\d-\d\d/mi.freeze
 
   def connector_error_message
-    error_lines = log&.entries.to_s.split("\n").grep(CONNECTOR_ERROR_PATTERN)
-    if error_lines.present?
-      match = CONNECTOR_ERROR_PATTERN.match(error_lines.first)
-      match[1]
-    end
+    match = CONNECTOR_ERROR_PATTERN.match(log&.entries)
+    match && match[1]
   end
 
   def get_provider_name_from_id(service_item_id)

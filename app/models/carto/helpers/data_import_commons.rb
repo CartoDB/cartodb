@@ -2,7 +2,6 @@ require_dependency 'cartodb/errors'
 require_dependency 'cartodb/import_error_codes'
 
 module Carto
-
   module DataImportCommons
 
     # Notice that this returns the entire error hash, not just the text
@@ -23,6 +22,7 @@ module Carto
     def connector_error_message
       match = CONNECTOR_ERROR_PATTERN.match(log&.entries)
       return unless match.present?
+
       {
         title: 'Connector Error',
         what_about: match[1],
@@ -31,5 +31,4 @@ module Carto
     end
 
   end
-
 end

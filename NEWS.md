@@ -9,6 +9,7 @@ Development
 * Load config files as ERB templates to allow reading ENV values ([15881](https://github.com/CartoDB/cartodb/pull/15881))
 
 ### Bug fixes / enhancements
+* Improve import error messages [#15893](https://github.com/CartoDB/cartodb/pull/15893)
 * Identify multi-line GeoJSON columns correctly on imports [#15891](https://github.com/CartoDB/cartodb/pull/15891)
 * Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
 * Migrate `ClientApplication` model to `ActiveRecord` [#15886](https://github.com/CartoDB/cartodb/pull/15886)

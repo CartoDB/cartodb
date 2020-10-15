@@ -190,8 +190,10 @@ class DataImport < Sequel::Model
   def get_error_text
     if self.error_code == CartoDB::NO_ERROR_CODE
       CartoDB::NO_ERROR_CODE
+    elsif self.error_code.blank? || self.error_code == 99999
+      connector_error_message || CartoDB::IMPORTER_ERROR_CODES[9999]
     else
-      self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
+      CartoDB::IMPORTER_ERROR_CODES[self.error_code]
     end
   end
 
@@ -344,6 +346,16 @@ class DataImport < Sequel::Model
   end
 
   private
+
+  CONNECTOR_ERROR_PATTERN = /Connector Error [^\s]+: ERROR:\s+(.+)/.freeze
+
+  def connector_error_message
+    error_lines = log&.entries.to_s.split("\n").grep(CONNECTOR_ERROR_PATTERN)
+    if error_lines.present?
+      match = CONNECTOR_ERROR_PATTERN.match(error_lines.first)
+      match[1]
+    end
+  end
 
   def get_provider_name_from_id(service_item_id)
     begin

@@ -2,7 +2,6 @@ require_dependency 'cartodb/errors'
 require_dependency 'cartodb/import_error_codes'
 
 module Carto::DataImportCommons
-
   # Notice that this returns the entire error hash, not just the text
   def get_error_text
     if self.error_code == CartoDB::NO_ERROR_CODE
@@ -20,7 +19,12 @@ module Carto::DataImportCommons
 
   def connector_error_message
     match = CONNECTOR_ERROR_PATTERN.match(log&.entries)
-    match && match[1]
+    if match.present?
+      {
+        title: 'Connector Error',
+        what_about: match[1],
+        source: ERROR_SOURCE_CARTODB # FIXME, should it typically be ERROR_SOURCE_USER ?
+      }
+    end
   end
-
 end

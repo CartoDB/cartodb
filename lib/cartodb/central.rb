@@ -1,12 +1,8 @@
 require_relative '../carto/http/client'
+require 'carto/tracking/services/message_broker'
 
 module Cartodb
   class Central
-
-    def self.sync_data_with_cartodb_central?
-      Cartodb.get_config(:cartodb_central_api, 'username').present? &&
-        Cartodb.get_config(:cartodb_central_api, 'password').present?
-    end
 
     def initialize
       config_host = Cartodb.get_config(:cartodb_central_api, 'host')
@@ -17,10 +13,16 @@ module Cartodb
         username: Cartodb.get_config(:cartodb_central_api, 'username'),
         password: Cartodb.get_config(:cartodb_central_api, 'password')
       }
+
+      @message_broker = Carto::Tracking::Services::PubSub::MessageBroker.instance
     end
 
     def host
       @host
+    end
+
+    def self.sync_data_with_cartodb_central?
+      true # TODO how to initialize pubsub service?
     end
 
     def google_signup_url
@@ -86,12 +88,23 @@ module Cartodb
     end
 
     def update_user(username, user_attributes)
-      body = {user: user_attributes}
-      send_request("api/users/#{username}", body, :put, [204])
+      event = { username: username }.merge(user_attributes)
+      event_attrs = {
+        entity: 'USER',
+        operation: 'UPDATE',
+        type: 'REQUEST'
+      }
+      @message_broker.send_event(:cartodb_to_central, event, event_attrs)
     end
 
     def delete_user(username)
-      send_request("api/users/#{username}", nil, :delete, [204, 404])
+      event = { username: username }
+      event_attrs = {
+        entity: 'USER',
+        operation: 'DELETE',
+        type: 'REQUEST'
+      }
+      @message_broker.send_event(:cartodb_to_central, event, event_attrs)
     end
 
     def check_do_enabled(username)

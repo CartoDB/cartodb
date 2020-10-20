@@ -13,6 +13,7 @@ Development
 * Relax rubocop checks to use ruby2.4+
 * Improve import error messages [#15893](https://github.com/CartoDB/cartodb/pull/15893)
 * Identify multi-line GeoJSON columns correctly on imports [#15891](https://github.com/CartoDB/cartodb/pull/15891)
+* Some experimental code using a message broker
 * Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
 * Migrate `ClientApplication` model to `ActiveRecord` [#15886](https://github.com/CartoDB/cartodb/pull/15886)
 * Avoid delegating special methods in presenters [#15889](https://github.com/CartoDB/cartodb/pull/15889)

@@ -9,7 +9,7 @@ module Carto
       if error_code == CartoDB::NO_ERROR_CODE
         CartoDB::NO_ERROR_CODE
       elsif error_code.blank? || error_code == 99999
-        connector_error_message || CartoDB::IMPORTER_ERROR_CODES[9999]
+        connector_error_message || CartoDB::IMPORTER_ERROR_CODES[99999]
       else
         CartoDB::IMPORTER_ERROR_CODES[error_code]
       end

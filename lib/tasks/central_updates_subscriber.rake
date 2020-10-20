@@ -1,42 +1,42 @@
-require 'google/cloud/pubsub'
-
 namespace :poc do
-  desc 'Consume messages from pubsub topic "cloud_pull_update"'
-  task :cloud_pull_update, [] => [:environment] do |task, args|
-    project_id = 'cartodb-on-gcp-core-team'
-    subscription_name = 'cloud_pull_update'
+  desc 'Consume messages from subscription "cloud_pull_update"'
+  task :cloud_pull_update => [:environment] do |_task, _args|
+    message_broker = Carto::Common::MessageBroker.instance
+    subscription = message_broker.get_subscription(:cloud_pull_update)
 
-    pubsub = Google::Cloud::Pubsub.new(project: project_id)
-
-    subscription = pubsub.subscription(subscription_name)
     subscriber = subscription.listen do |received_message|
       puts "Received message: #{received_message.data}"
 
-      # We just assume the message is of type
-      # 'user updated in central'
-      unless received_message.data == 'user updated in central'
+      case received_message.data
+      when 'user updated in central'
+        puts "Received message 'user updated in central'"
+        attributes = received_message.attributes
+        user_id = attributes.delete("remote_user_id")
+        if !user_id.nil? && attributes.any?
+          user = Carto::User.find(user_id)
+          user.update(attributes)
+          user.save!
+          received_message.acknowledge!
+          puts "User #{user.username} updated"
+        end
+      else
         received_message.reject!
         next
       end
 
-      attributes = received_message.attributes
-      user_id = attributes.delete("remote_user_id")
-      if !user_id.nil? && attributes.any?
-        user = Carto::User.find(user_id)
-        user.update(attributes)
-        user.save!
-      end
-
-      received_message.acknowledge!
     rescue => ex
       puts ex
       received_message.reject!
     end
 
+    at_exit do
+      puts "Stopping subscribber..."
+      subscriber.stop!
+      puts "done"
+    end
+
     subscriber.start
-    # Let the main thread sleep for 60 seconds so the thread for listening
-    # messages does not quit
-    sleep 60
-    subscriber.stop.wait!
+    puts 'Consuming messages from subscription "cloud_pull_update"'
+    sleep
   end
 end

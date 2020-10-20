@@ -4,12 +4,14 @@ require_dependency 'cartodb/import_error_codes'
 module Carto
   module DataImportCommons
 
+    GENERIC_ERROR_CODE = 99999
+
     # Notice that this returns the entire error hash, not just the text
     def get_error_text
       if error_code == CartoDB::NO_ERROR_CODE
         CartoDB::NO_ERROR_CODE
-      elsif error_code.blank? || error_code == 99999
-        connector_error_message || CartoDB::IMPORTER_ERROR_CODES[99999]
+      elsif error_code.blank? || error_code == GENERIC_ERROR_CODE
+        connector_error_message || CartoDB::IMPORTER_ERROR_CODES[GENERIC_ERROR_CODE]
       else
         CartoDB::IMPORTER_ERROR_CODES[error_code]
       end

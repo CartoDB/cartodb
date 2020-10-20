@@ -5,28 +5,30 @@ namespace :poc do
     subscription = message_broker.get_subscription(:cloud_pull_update)
 
     subscriber = subscription.listen do |received_message|
-      puts "Received message: #{received_message.data}"
+      begin
+        puts "Received message: #{received_message.data}"
 
-      case received_message.data
-      when 'user updated in central'
-        puts "Received message 'user updated in central'"
-        attributes = received_message.attributes
-        user_id = attributes.delete("remote_user_id")
-        if !user_id.nil? && attributes.any?
-          user = Carto::User.find(user_id)
-          user.update(attributes)
-          user.save!
-          received_message.acknowledge!
-          puts "User #{user.username} updated"
+        case received_message.data.to_sym
+        when :update_user
+          puts 'Processing :update_user'
+          attributes = received_message.attributes
+          user_id = attributes.delete("remote_user_id")
+          if !user_id.nil? && attributes.any?
+            user = Carto::User.find(user_id)
+            user.update(attributes)
+            user.save!
+            received_message.acknowledge!
+            puts "User #{user.username} updated"
+          end
+        else
+          received_message.reject!
+          next
         end
-      else
-        received_message.reject!
-        next
-      end
 
-    rescue => ex
-      puts ex
-      received_message.reject!
+      rescue => ex
+        puts ex
+        received_message.reject!
+      end
     end
 
     at_exit do

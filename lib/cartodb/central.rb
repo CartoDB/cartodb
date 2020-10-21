@@ -1,5 +1,4 @@
 require_relative '../carto/http/client'
-require 'carto/tracking/services/message_broker'
 
 module Cartodb
   class Central
@@ -13,8 +12,6 @@ module Cartodb
         username: Cartodb.get_config(:cartodb_central_api, 'username'),
         password: Cartodb.get_config(:cartodb_central_api, 'password')
       }
-
-      @message_broker = Carto::Tracking::Services::PubSub::MessageBroker.instance
     end
 
     def host
@@ -78,12 +75,8 @@ module Cartodb
         current_username: current_username,
         organization_name: organization_name
       }.merge(user_attributes)
-      event_attrs = {
-        entity: 'ORGANIZATION_USER',
-        operation: 'CREATE',
-        type: 'REQUEST'
-      }
-      @message_broker.send_event(:cartodb_to_central, event, event_attrs)
+      topic = Carto::Common::MessageBroker.instance.get_topic(:poc_central_cartodb_sync)
+      topic.publish(:create_org_user, event)
     end
 
     def update_organization_user(organization_name, username, user_attributes)
@@ -97,22 +90,14 @@ module Cartodb
 
     def update_user(username, user_attributes)
       event = { username: username }.merge(user_attributes)
-      event_attrs = {
-        entity: 'USER',
-        operation: 'UPDATE',
-        type: 'REQUEST'
-      }
-      @message_broker.send_event(:cartodb_to_central, event, event_attrs)
+      topic = Carto::Common::MessageBroker.instance.get_topic(:poc_central_cartodb_sync)
+      topic.publish(:update_user, event)
     end
 
     def delete_user(username)
       event = { username: username }
-      event_attrs = {
-        entity: 'USER',
-        operation: 'DELETE',
-        type: 'REQUEST'
-      }
-      @message_broker.send_event(:cartodb_to_central, event, event_attrs)
+      topic = Carto::Common::MessageBroker.instance.get_topic(:poc_central_cartodb_sync)
+      topic.publish(:delete_user, event)
     end
 
     def check_do_enabled(username)

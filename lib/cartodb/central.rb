@@ -73,9 +73,17 @@ module Cartodb
       send_request("api/organizations/#{ organization_name }/users/#{ username }", nil, :get, [200])
     end
 
-    def create_organization_user(organization_name, user_attributes)
-      body = {user: user_attributes}
-      send_request("api/organizations/#{ organization_name }/users", body, :post, [201])
+    def create_organization_user(organization_name, user_attributes, current_username)
+      event = {
+        current_username: current_username,
+        organization_name: organization_name
+      }.merge(user_attributes)
+      event_attrs = {
+        entity: 'ORGANIZATION_USER',
+        operation: 'CREATE',
+        type: 'REQUEST'
+      }
+      @message_broker.send_event(:cartodb_to_central, event, event_attrs)
     end
 
     def update_organization_user(organization_name, username, user_attributes)

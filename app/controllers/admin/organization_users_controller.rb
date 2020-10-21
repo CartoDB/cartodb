@@ -85,7 +85,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.save(raise_on_failure: true)
-    @user.create_in_central
+    @user.create_in_central(current_user.username)
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
     ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user

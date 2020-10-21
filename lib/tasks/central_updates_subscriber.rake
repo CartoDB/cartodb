@@ -16,10 +16,10 @@ namespace :poc do
       begin
         puts "Received message: #{received_message.data}"
 
-        case received_message.data.to_sym
+        case received_message.attributes['event'].to_sym
         when :update_user
           puts 'Processing :update_user'
-          attributes = received_message.attributes
+          attributes = JSON.parse(received_message.data)
           user_id = attributes.delete("remote_user_id")
           if !user_id.nil? && attributes.any?
             user = Carto::User.find(user_id)
@@ -32,7 +32,8 @@ namespace :poc do
           # NOTE copied from the superadmin users_controller.rb
           puts 'Processing :create_user'
           user = ::User.new
-          user_param = received_message.attributes
+          user_param = JSON.parse(received_message.data).with_indifferent_access
+          user.id = user_param[:id]
           user.set_fields_from_central(user_param, :create)
           user.enabled = true
 

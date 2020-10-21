@@ -1,26 +1,34 @@
 require_relative '../../spec_helper_min'
 
 describe Carto::UserDBService do
-  include_context 'organization with users helper'
-
-  before(:all) do
-    @user = Carto::User.find(FactoryGirl.create(:valid_user).id)
-  end
-
-  after(:all) do
-    @user.destroy
-  end
+  let(:user) { create(:carto_user) }
+  let(:db_service) { Carto::UserDBService.new(user) }
 
   describe '#public_user_roles' do
-    it 'should return public user for non-org users' do
-      expect(Carto::UserDBService.new(@user).public_user_roles).to eq [CartoDB::PUBLIC_DB_USER]
+    subject { db_service.public_user_roles }
+
+    context 'for non-organization users' do
+      it 'should return public user for non-org users' do
+        expect(subject).to eq [CartoDB::PUBLIC_DB_USER]
+      end
     end
 
-    it 'should return public user and org public user for org users' do
-      expect(Carto::UserDBService.new(@carto_org_user_1).public_user_roles).to eq [
-        CartoDB::PUBLIC_DB_USER,
-        "cartodb_publicuser_#{@carto_org_user_1.id}"
-      ]
+    context 'for organization users' do
+      let(:organization) { create(:organization_with_users) }
+      let(:user) { organization.users.first.carto_user }
+
+      it 'should return public user and org public user for org users' do
+        expect(subject).to eq [CartoDB::PUBLIC_DB_USER, "cartodb_publicuser_#{user.id}"]
+      end
+    end
+  end
+
+  describe '#pg_server_version' do
+    subject { db_service.pg_server_version }
+
+    it 'returns the PostgreSQL server version number' do
+      # Support all versions of CI. Don't stub as that would make the spec useless.
+      expect([110_005, 120_001, 120_002]).to include(subject)
     end
   end
 end

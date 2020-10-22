@@ -4,7 +4,6 @@ require_relative '../../services/table-geocoder/lib/exceptions'
 require_relative '../../services/table-geocoder/lib/mail_geocoder'
 require_relative '../../services/geocoder/lib/geocoder_config'
 require_relative '../../lib/cartodb/metrics'
-require_relative 'log'
 require_relative '../../lib/cartodb/stats/geocoding'
 
 require_dependency 'carto/configuration'
@@ -321,16 +320,13 @@ class Geocoding < Sequel::Model
   end
 
   def instantiate_log
-    if self.log_id
-      @log = CartoDB::Log.where(id: log_id).first
+    if log_id
+      @log = Carto::Log.find(log_id)
     else
-      @log = CartoDB::Log.new({
-          type: CartoDB::Log::TYPE_GEOCODING,
-          user_id: user.id
-        })
+      @log = Carto::Log.new_geocoding(user.id)
       @log.store
       self.log_id = @log.id
-      self.save
+      save
     end
     @log
   end

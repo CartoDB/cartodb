@@ -45,7 +45,6 @@ module CartoDB
       def run(tracker = nil)
         @tracker = tracker
         @job.log "ConnectorRunner #{@json_params.except('connection').to_json}"
-        # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
         updated = false
         if !should_import?(@connector.table_name)
@@ -140,7 +139,7 @@ module CartoDB
       end
 
       def new_logger
-        CartoDB::Log.new(type: CartoDB::Log::TYPE_DATA_IMPORT)
+        Carto::Log.new_data_import
       end
 
       def new_job(log, pg_options)

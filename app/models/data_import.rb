@@ -2,7 +2,6 @@ require 'sequel'
 require 'fileutils'
 require_relative './user'
 require_relative './table'
-require_relative './log'
 require_relative './visualization/member'
 require_relative './table_registrar'
 require_relative './quota_checker'
@@ -385,14 +384,11 @@ class DataImport < Sequel::Model
   def instantiate_log
     uuid = logger
 
-    if uuid?(uuid)
-      self.log = CartoDB::Log.where(id: uuid.to_s).first
-    else
-      self.log = CartoDB::Log.new(
-        type:     CartoDB::Log::TYPE_DATA_IMPORT,
-        user_id:  user_id
-      )
-    end
+    self.log = if uuid?(uuid)
+                 Carto::Log.find(uuid.to_s)
+               else
+                 Carto::Log.new_data_import(user_id)
+               end
   end
 
   def uploaded_file
@@ -833,7 +829,7 @@ class DataImport < Sequel::Model
 
   def update_synchronization(importer)
     if synchronization_id
-      log.type = CartoDB::Log::TYPE_SYNCHRONIZATION
+      log.type = Carto::Log::TYPE_SYNCHRONIZATION
       log.store
       log.append("synchronization_id: #{synchronization_id}")
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch

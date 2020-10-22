@@ -20,12 +20,12 @@ module CartodbCentralSynchronizable
     errors.empty?
   end
 
-  def create_in_central(current_username = nil)
+  def create_in_central
     return true unless sync_data_with_cartodb_central?
 
     if user?
       if organization.present?
-        cartodb_central_client.create_organization_user(organization.name, allowed_attributes_to_central(:create), current_username)
+        cartodb_central_client.create_organization_user(organization.name, allowed_attributes_to_central(:create))
       else
         CartoDB.notify_debug('User creations at box without organization are not notified to Central', user: self)
       end

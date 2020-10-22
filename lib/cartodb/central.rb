@@ -70,9 +70,8 @@ module Cartodb
       send_request("api/organizations/#{ organization_name }/users/#{ username }", nil, :get, [200])
     end
 
-    def create_organization_user(organization_name, user_attributes, current_username)
+    def create_organization_user(organization_name, user_attributes)
       event = {
-        current_username: current_username,
         organization_name: organization_name
       }.merge(user_attributes)
       topic = Carto::Common::MessageBroker.instance.get_topic(:poc_central_cartodb_sync)
@@ -95,7 +94,8 @@ module Cartodb
     end
 
     def delete_user(username)
-      event = { username: username }
+      remote_data = Carto::User.where(username: username).first
+      event = { username: username, remote_data: remote_data }
       topic = Carto::Common::MessageBroker.instance.get_topic(:poc_central_cartodb_sync)
       topic.publish(:delete_user, event)
     end

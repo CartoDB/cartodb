@@ -28,7 +28,9 @@ describe Carto::UserDBService do
 
     it 'returns the PostgreSQL server version number' do
       # Support all versions of CI. Don't stub as that would make the spec useless.
-      expect([110_005, 120_001, 120_002]).to include(subject)
+      # rubocop:disable Style/NumericLiterals
+      expect([11_00_05, 12_00_01, 12_00_02]).to include(subject)
+      # rubocop:enable Style/NumericLiterals
     end
   end
 end

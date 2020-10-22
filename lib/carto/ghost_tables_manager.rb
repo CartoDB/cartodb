@@ -215,7 +215,9 @@ module Carto
     # CTEs were materialized by default until PG11, but PG12 changed it.
     # https://www.depesz.com/2019/02/19/waiting-for-postgresql-12-allow-user-control-of-cte-materialization-and-change-the-default-behavior/
     def force_cte_materialization_keyword
-      'MATERIALIZED' if carto_user.db_service.pg_server_version > 120_000
+      # rubocop:disable Style/NumericLiterals
+      'MATERIALIZED' if carto_user.db_service.pg_server_version > 12_00_00
+      # rubocop:enable Style/NumericLiterals
     end
   end
 

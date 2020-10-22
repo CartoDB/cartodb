@@ -3,11 +3,6 @@ require_relative '../carto/http/client'
 module Cartodb
   class Central
 
-    def self.sync_data_with_cartodb_central?
-      Cartodb.get_config(:cartodb_central_api, 'username').present? &&
-        Cartodb.get_config(:cartodb_central_api, 'password').present?
-    end
-
     def initialize
       config_host = Cartodb.get_config(:cartodb_central_api, 'host')
       config_port = Cartodb.get_config(:cartodb_central_api, 'port')
@@ -21,6 +16,10 @@ module Cartodb
 
     def host
       @host
+    end
+
+    def self.sync_data_with_cartodb_central?
+      true # TODO how to initialize pubsub service?
     end
 
     def google_signup_url
@@ -72,8 +71,11 @@ module Cartodb
     end
 
     def create_organization_user(organization_name, user_attributes)
-      body = {user: user_attributes}
-      send_request("api/organizations/#{ organization_name }/users", body, :post, [201])
+      payload = {
+        organization_name: organization_name
+      }.merge(user_attributes)
+      topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
+      topic.publish(:create_org_user, payload)
     end
 
     def update_organization_user(organization_name, username, user_attributes)
@@ -86,12 +88,16 @@ module Cartodb
     end
 
     def update_user(username, user_attributes)
-      body = {user: user_attributes}
-      send_request("api/users/#{username}", body, :put, [204])
+      payload = { username: username }.merge(user_attributes)
+      topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
+      topic.publish(:update_user, payload)
     end
 
     def delete_user(username)
-      send_request("api/users/#{username}", nil, :delete, [204, 404])
+      remote_data = Carto::User.where(username: username).first
+      payload = { username: username, remote_data: remote_data }
+      topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
+      topic.publish(:delete_user, payload)
     end
 
     def check_do_enabled(username)

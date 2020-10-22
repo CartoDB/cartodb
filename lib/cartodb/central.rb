@@ -71,11 +71,11 @@ module Cartodb
     end
 
     def create_organization_user(organization_name, user_attributes)
-      event = {
+      payload = {
         organization_name: organization_name
       }.merge(user_attributes)
       topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
-      topic.publish(:create_org_user, event)
+      topic.publish(:create_org_user, payload)
     end
 
     def update_organization_user(organization_name, username, user_attributes)
@@ -88,16 +88,16 @@ module Cartodb
     end
 
     def update_user(username, user_attributes)
-      event = { username: username }.merge(user_attributes)
+      payload = { username: username }.merge(user_attributes)
       topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
-      topic.publish(:update_user, event)
+      topic.publish(:update_user, payload)
     end
 
     def delete_user(username)
       remote_data = Carto::User.where(username: username).first
-      event = { username: username, remote_data: remote_data }
+      payload = { username: username, remote_data: remote_data }
       topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
-      topic.publish(:delete_user, event)
+      topic.publish(:delete_user, payload)
     end
 
     def check_do_enabled(username)

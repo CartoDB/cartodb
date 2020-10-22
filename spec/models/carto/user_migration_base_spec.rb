@@ -367,7 +367,9 @@ describe 'UserMigration' do
       export = create(:user_migration_export, user_id: carto_user.id, export_metadata: true)
       export.run_export
 
-      export.log.collect_entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
+      export.log.collect_entries.should_not include(
+        "Cannot export if tables aren't in sync with db. Please run ghost tables."
+      )
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
       export.destroy
 

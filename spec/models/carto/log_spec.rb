@@ -18,8 +18,8 @@ describe Carto::Log do
       log = Carto::Log.find(log_id)
       log.id.should eq log_id
       log.type.should eq type
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::END_OF_LOG_MARK
     end
   end
@@ -50,27 +50,27 @@ describe Carto::Log do
       log.append(text3, false, timestamp)
       log.append(text4, false, timestamp)
 
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text4]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text4) +
                          Carto::Log::END_OF_LOG_MARK
 
       log.append(text5, false, timestamp)
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text4]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text5]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text4) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text5) +
                          Carto::Log::END_OF_LOG_MARK
 
       log.append(text6, false, timestamp)
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text5]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text6]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text5) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text6) +
                          Carto::Log::END_OF_LOG_MARK
     end
 
@@ -99,16 +99,16 @@ describe Carto::Log do
       log = Carto::Log.find(log.id)
 
       # collect doesn't beautifies
-      log.send(:collect_entries).should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text4])
+      log.send(:collect_entries).should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text4)
 
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text4]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text4) +
                          Carto::Log::END_OF_LOG_MARK
 
       # More tests
@@ -119,38 +119,38 @@ describe Carto::Log do
       log.store
       log = Carto::Log.find(log.id)
 
-      log.send(:collect_entries).should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text3])
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.send(:collect_entries).should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text3)
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
                          Carto::Log::END_OF_LOG_MARK
 
       # Check that new entries are added correctly
       log.append(text4, false, timestamp)
-      log.send(:collect_entries).should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text4])
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.send(:collect_entries).should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text4)
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text4]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text4) +
                          Carto::Log::END_OF_LOG_MARK
       log.append(text5, false, timestamp)
       log.append(text6, false, timestamp)
-      log.send(:collect_entries).should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text5]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text6])
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.send(:collect_entries).should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text5) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text6)
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text5]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text6]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text5) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text6) +
                          Carto::Log::END_OF_LOG_MARK
 
       log = Carto::Log.new_data_import
@@ -158,9 +158,9 @@ describe Carto::Log do
       log.store
       log = Carto::Log.find(log.id)
 
-      log.send(:collect_entries).should eq(Carto::Log::ENTRY_FORMAT % [timestamp, text1])
+      log.send(:collect_entries).should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1)
 
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
                          Carto::Log::END_OF_LOG_MARK
 
       # This test checks that old logs with more lines than accepted get truncated correctly
@@ -177,41 +177,41 @@ describe Carto::Log do
 
       log = Carto::Log.find(log.id)
 
-      log.send(:collect_entries).should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text4])
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.send(:collect_entries).should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text4)
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text4]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text4) +
                          Carto::Log::END_OF_LOG_MARK
 
       # Nothing should change with this
       log.send(:fix_entries_encoding)
-      log.send(:collect_entries).should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text4])
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.send(:collect_entries).should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text4)
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text3]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text4]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text3) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text4) +
                          Carto::Log::END_OF_LOG_MARK
       # Check that new entries are added correctly
       log.append(text5, false, timestamp)
       log.append(text6, false, timestamp)
-      log.send(:collect_entries).should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text5]) +
-                                           (Carto::Log::ENTRY_FORMAT % [timestamp, text6])
-      log.to_s.should eq (Carto::Log::ENTRY_FORMAT % [timestamp, text1]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text2]) +
+      log.send(:collect_entries).should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text5) +
+                                           format(Carto::Log::ENTRY_FORMAT, timestamp, text6)
+      log.to_s.should eq format(Carto::Log::ENTRY_FORMAT, timestamp, text1) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text2) +
                          Carto::Log::HALF_OF_LOG_MARK +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text5]) +
-                         (Carto::Log::ENTRY_FORMAT % [timestamp, text6]) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text5) +
+                         format(Carto::Log::ENTRY_FORMAT, timestamp, text6) +
                          Carto::Log::END_OF_LOG_MARK
     end
 

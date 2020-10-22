@@ -204,7 +204,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def log_transition(prefix)
-    self.log.append("#{prefix}: State: #{self.state}")
+    log.append("#{prefix}: State: #{self.state}")
   end
 
   def initialize_user

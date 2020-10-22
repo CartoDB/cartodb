@@ -54,7 +54,6 @@ module Carto
 
     def self.new_visualization_export
       Carto::Log.new(
-        entries: '',
         type: TYPE_VISUALIZATION_EXPORT
       )
     end
@@ -68,21 +67,18 @@ module Carto
 
     def self.new_user_migration_export
       Carto::Log.new(
-        entries: '',
         type: TYPE_USER_MIGRATION_EXPORT
       )
     end
 
     def self.new_user_migration_import
       Carto::Log.new(
-        entries: '',
         type: TYPE_USER_MIGRATION_IMPORT
       )
     end
 
     def self.new_data_import(user_id = nil)
       Carto::Log.new(
-        entries: '',
         type: TYPE_DATA_IMPORT,
         user_id: user_id
       )
@@ -90,7 +86,6 @@ module Carto
 
     def self.new_synchronization(user_id = nil)
       Carto::Log.new(
-        entries: '',
         type: TYPE_SYNCHRONIZATION,
         user_id: user_id
       )
@@ -98,7 +93,6 @@ module Carto
 
     def self.new_geocoding(user_id = nil)
       Carto::Log.new(
-        entries: '',
         type: TYPE_GEOCODING,
         user_id: user_id
       )
@@ -112,7 +106,6 @@ module Carto
       @dirty = true
       content.slice!(MAX_ENTRY_LENGTH..-1) if truncate
       add_to_entries(format(ENTRY_FORMAT, timestamp, content))
-      store
     end
 
     def append_and_store(content, truncate = true, timestamp = Time.now.utc)
@@ -220,7 +213,7 @@ module Carto
     end
 
     def exception_to_string(error)
-      error.inspect + "\n" + error.backtrace.join("\n") + "\n"
+      "#{error.inspect}\n#{error.backtrace.join("\n")}\n"
     end
 
     def half_max_size

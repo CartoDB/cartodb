@@ -64,7 +64,7 @@ module CartoDB
       def path_for(layer_name)
         File.join(
           temporary_directory,
-          Unp.new.underscore(sanitized(layer_name)) + '.kml'
+          "#{Unp.new.underscore(sanitized(layer_name))}.kml"
         )
       end
 

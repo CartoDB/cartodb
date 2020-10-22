@@ -11,6 +11,7 @@ namespace :poc do
   task :cloud_pull_update => [:environment] do |_task, _args|
     message_broker = Carto::Common::MessageBroker.instance
     subscription = message_broker.get_subscription(:cloud_pull_update)
+    notifications_topic = message_broker.get_topic(:cartodb_central_notifications)
 
     subscriber = subscription.listen do |received_message|
       begin
@@ -43,7 +44,6 @@ namespace :poc do
           puts 'Processing :create_user'
           user = ::User.new
           user_param = JSON.parse(received_message.data).with_indifferent_access
-          user.id = user_param[:id]
           user.set_fields_from_central(user_param, :create)
           user.enabled = true
 
@@ -58,6 +58,11 @@ namespace :poc do
               CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_SUPERADMIN, user
             )
           )
+          notifications_topic.publish(:user_created, {
+                                        username: user.username,
+                                        id: user.id
+                                      })
+          puts 'Done with :create_user'
           received_message.acknowledge!
         else
           received_message.reject!

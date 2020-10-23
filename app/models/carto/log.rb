@@ -1,6 +1,8 @@
 module Carto
   class Log < ActiveRecord::Base
 
+    include ::LoggerHelper
+
     has_one :data_import, class_name: Carto::DataImport, foreign_key: :logger
 
     after_initialize :after_initialize_callback
@@ -131,27 +133,18 @@ module Carto
         @dirty = false
       end
     rescue StandardError => e
-      CartoDB.notify_error(
-        'Error appending log, likely an encoding issue',
-        { error_info: "id: #{id}. #{inspect} --------- #{e.backtrace.join}" }
-      )
+      log_error(message: 'Error appending log, likely an encoding issue', exception: e, log_id: id)
       begin
         fix_entries_encoding
         save
       rescue StandardError => e
-        CartoDB.notify_exception(
-          e,
-          { message: 'Error saving fallback log info.', error_info: "id: #{id}" }
-        )
+        log_error(message: 'Error saving fallback log info.', exception: e, log_id: id)
         begin
           self.entries = "Previous log entries stripped because of an error, check Rollbar. Id: #{id}\n" +
                          END_OF_LOG_MARK
           save
         rescue StandardError => e
-          CartoDB.notify_exception(
-            e,
-            { message: 'Error saving stripped fallback log info.', error_info: "id: #{id}" }
-          )
+          log_error(message: 'Error saving stripped fallback log info.', exception: e, log_id: id)
         end
       end
     end
@@ -162,7 +155,7 @@ module Carto
 
       list = @fixed_entries_half
       circular_half = ordered_circular_entries_half
-      list += [HALF_OF_LOG_MARK] unless circular_half.empty?
+      list += [HALF_OF_LOG_MARK] if circular_half.any?
       (list + circular_half + [END_OF_LOG_MARK]).join('')
     end
 
@@ -185,7 +178,7 @@ module Carto
       existing_entries = source.nil? ? [] : source.split(ENTRY_POSTFIX.to_s)
 
       # If rehydrated data, assume nothing changed yet
-      @dirty = false unless existing_entries.empty?
+      @dirty = false if existing_entries.any?
 
       @fixed_entries_half = existing_entries.slice!(0, half_max_size)
                                             .map { |entry| format(ENTRY_REHYDRATED_FORMAT, entry) }

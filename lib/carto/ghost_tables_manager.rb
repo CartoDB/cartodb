@@ -12,6 +12,7 @@ module Carto
     MAX_USERTABLES_FOR_SYNC_CHECK = 128
 
     def initialize(user_id)
+      log_info(message: 'Initialized', context: 'GhostTablesManager', step: '1')
       @user_id = user_id
     end
 
@@ -20,22 +21,36 @@ module Carto
     end
 
     def link_ghost_tables
+      log_info(message: 'Start method', context: 'GhostTablesManager#link_ghost_tables', step: '2')
       user_tables = fetch_user_tables
       if (user_tables.length > MAX_USERTABLES_FOR_SYNC_CHECK)
         # When the user has a big amount of tables, we don't even attempt to check if we
         # need to run ghost tables, and instead we request an async link.
         # We do this because doing comparisons with the arrays scales pretty badly
+        log_info(message: 'Will run link_ghost_tables_asynchronously', context: 'GhostTablesManager#link_ghost_tables', step: '3')
         link_ghost_tables_asynchronously
       else
         regenerated_tables, renamed_tables, new_tables, dropped_tables = fetch_altered_tables
+        log_info(
+          message: 'fetch_altered_tables',
+          context: 'GhostTablesManager#link_ghost_tables',
+          step: '3',
+          regenerated_tables: regenerated_tables.map(&:name),
+          renamed_tables: renamed_tables.map(&:name),
+          new_tables: new_tables.map(&:name),
+          dropped_tables: dropped_tables.map(&:name)
+        )
         return if user_tables_synced_with_db?(regenerated_tables, renamed_tables, new_tables, dropped_tables)
 
         if should_run_synchronously?(regenerated_tables, renamed_tables, new_tables, dropped_tables)
+          log_info(message: 'Will run link_ghost_tables_synchronously', context: 'GhostTablesManager#link_ghost_tables', step: '4')
           link_ghost_tables_synchronously
         else
+          log_info(message: 'Will run link_ghost_tables_asynchronously', context: 'GhostTablesManager#link_ghost_tables', step: '4')
           link_ghost_tables_asynchronously
         end
       end
+      log_info(message: 'End method', context: 'GhostTablesManager#link_ghost_tables', step: '5')
     end
 
     def link_ghost_tables_synchronously
@@ -91,7 +106,13 @@ module Carto
       got_locked = get_bolt.run_locked(fail_function: lambda { link_ghost_tables_asynchronously }) { sync }
     end
 
+    def map_tables(tables)
+      tables.map { |t| { id: t.id, name: t.name } }
+    end
+
     def fetch_altered_tables
+      log_info(message: 'Start method', context: 'GhostTablesManager#fetch_altered_tables')
+
       cartodbfied_tables = fetch_cartodbfied_tables.sort_by(&:id)
       user_tables = fetch_user_tables.sort_by(&:id)
 
@@ -100,6 +121,13 @@ module Carto
       new_cartodbfied_ids = []
       missing_user_tables_ids = []
       renamed_tables = []
+
+      log_info(
+        message: 'Step 1',
+        context: 'GhostTablesManager#fetch_altered_tables',
+        cartodbfied_tables: map_tables(cartodbfied_tables),
+        user_tables: map_tables(user_tables)
+      )
 
       # Find which ids are new, which existed but have changed names, and which one have dissapeared
       while (cartodb_table_it < cartodbfied_tables.size && user_tables_it < user_tables.size)
@@ -120,8 +148,24 @@ module Carto
         end
       end
 
+      log_info(
+        message: 'Step 2',
+        context: 'GhostTablesManager#fetch_altered_tables',
+        new_cartodbfied_ids: new_cartodbfied_ids,
+        renamed_tables: map_tables(renamed_tables),
+        missing_user_tables_ids: map_tables(missing_user_tables_ids),
+        user_tables: Carto::UserTable.where(user_id: @user_id).map { |ut| { id: ut.id, name: ut.name, table_id: ut.table_id } }
+      )
+
       new_cartodbfied_ids += cartodbfied_tables[cartodb_table_it, cartodbfied_tables.size - cartodb_table_it] if cartodb_table_it < cartodbfied_tables.size
       missing_user_tables_ids += user_tables[user_tables_it, user_tables.size - user_tables_it] if user_tables_it < user_tables.size
+
+      log_info(
+        message: 'Step 3',
+        context: 'GhostTablesManager#fetch_altered_tables',
+        new_cartodbfied_ids: new_cartodbfied_ids,
+        missing_user_tables_ids: map_tables(missing_user_tables_ids)
+      )
 
       # Out of the extracted ids we need to know which one are truly new tables, which ones are
       # regenerated tables (the underlying ids have changed, but the name remains) and which ones
@@ -129,16 +173,50 @@ module Carto
       regenerated_tables = new_cartodbfied_ids.select do |cartodbfied_table|
             missing_user_tables_ids.any?{|t| t.name == cartodbfied_table.name}
         end
+
+      log_info(
+        message: 'Step 4',
+        context: 'GhostTablesManager#fetch_altered_tables',
+        regenerated_tables: map_tables(regenerated_tables)
+      )
+
       new_tables = new_cartodbfied_ids - regenerated_tables
+
+      log_info(
+        message: 'Step 4',
+        context: 'GhostTablesManager#fetch_altered_tables',
+        new_tables: map_tables(new_tables)
+      )
+
       dropped_tables = missing_user_tables_ids.reject do |dropped_table|
             regenerated_tables.any?{|t| t.name == dropped_table.name}
         end
+
+      log_info(
+        message: 'Step 5',
+        context: 'GhostTablesManager#fetch_altered_tables',
+        dropped_tables: map_tables(dropped_tables)
+      )
+
+      log_info(message: 'End method', context: 'GhostTablesManager#fetch_altered_tables')
 
       return regenerated_tables, renamed_tables, new_tables, dropped_tables
     end
 
     def sync
+      log_info(message: 'Start method', context: 'GhostTablesManager#link_ghost_tables', step: '2')
+
       regenerated_tables, renamed_tables, new_tables, dropped_tables = fetch_altered_tables
+
+      log_info(
+        message: 'fetch_altered_tables',
+        context: 'GhostTablesManager#sync',
+        step: '3',
+        regenerated_tables: map_tables(regenerated_tables),
+        renamed_tables: map_tables(renamed_tables),
+        new_tables: map_tables(new_tables),
+        dropped_tables: map_tables(dropped_tables)
+      )
 
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
       regenerated_tables.each(&:regenerate_user_table)

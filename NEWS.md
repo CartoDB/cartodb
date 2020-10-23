@@ -14,6 +14,7 @@ Development
 * Migrate `ClientApplication` model to `ActiveRecord` [#15886](https://github.com/CartoDB/cartodb/pull/15886)
 * Avoid delegating special methods in presenters [#15889](https://github.com/CartoDB/cartodb/pull/15889)
 * Fix Dashboard/Data navigation for free users. Update Data preview texts [#15892](https://github.com/CartoDB/cartodb/pull/15892)
+* Force CTE materialization in Ghost Tables query to improve performance [#15895](https://github.com/CartoDB/cartodb/pull/15895)
 * Fix KML importing error when the layers have slashes in their names [#15897](https://github.com/CartoDB/cartodb/pull/15897)
 
 4.42.0 (2020-09-28)

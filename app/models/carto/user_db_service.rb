@@ -71,9 +71,7 @@ module Carto
         GROUP BY schema, t;
       }
 
-      @user.in_database(as: :superuser) do |database|
-        database.execute(query)
-      end
+      execute_as_superuser(query)
     end
 
     def all_tables_granted_hashed(role = nil)
@@ -136,9 +134,7 @@ module Carto
             granted_permissions is not null and granted_permissions <> '';
       }
 
-      @user.in_database(as: :superuser) do |database|
-        database.execute(query)
-      end
+      execute_as_superuser(query)
     end
 
     def all_schemas_granted_hashed(role = nil)
@@ -155,7 +151,7 @@ module Carto
         WHERE  rolname = '#{rolname}'
       }
 
-      result = @user.in_database(as: :superuser).execute(query)
+      result = execute_as_superuser(query)
       result.count > 0
     end
 
@@ -165,11 +161,22 @@ module Carto
     end
 
     def create_oauth_reassign_ownership_event_trigger
-      @user.in_database(as: :superuser).execute('SELECT CDB_EnableOAuthReassignTablesTrigger()')
+      execute_as_superuser('SELECT CDB_EnableOAuthReassignTablesTrigger()')
     end
 
     def drop_oauth_reassign_ownership_event_trigger
-      @user.in_database(as: :superuser).execute('SELECT CDB_DisableOAuthReassignTablesTrigger()')
+      execute_as_superuser('SELECT CDB_DisableOAuthReassignTablesTrigger()')
+    end
+
+    def pg_server_version
+      execute_as_superuser("select current_setting('server_version_num') as version")
+        .first.with_indifferent_access[:version].to_i
+    end
+
+    private
+
+    def execute_as_superuser(query)
+      @user.in_database(as: :superuser).execute(query)
     end
   end
 end

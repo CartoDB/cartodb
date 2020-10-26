@@ -93,10 +93,10 @@ describe(Carto::Common::Logger, type: :request) do
     expect(output).to match(/"request_id":"1234".*"filter":":builder_users_only\".*"event_message":"Filter chain halted \(rendered or redirected\)"/)
   end
 
-  it 'logs when an emails was sent' do
-    output = LogDeviceMock.capture_output { user.carto_user.send_password_reset! }
+  # it 'logs when an emails was sent' do
+  #   output = LogDeviceMock.capture_output { user.carto_user.send_password_reset! }
 
-    expect(output).to match(/"event_message":"Mail processed"/)
-    expect(output).to match(/"event_message":"Mail sent"/)
-  end
+  #   expect(output).to match(/"event_message":"Mail processed"/)
+  #   expect(output).to match(/"event_message":"Mail sent"/)
+  # end
 end

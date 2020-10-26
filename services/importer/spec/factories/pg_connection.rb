@@ -60,7 +60,7 @@ module CartoDB
           else
             yml_config = "#{File.dirname(__FILE__)}/../../../../config/database.yml"
           end
-          yml_config = YAML.load_file(yml_config)['test'].each_with_object({}){ |(k,v), h|
+          yml_config = YAML.load(ERB.new(File.read(yml_config)).result)['test'].each_with_object({}){ |(k,v), h|
             h[k.to_sym] = v
           }
           yml_config[:user] = yml_config.delete :username

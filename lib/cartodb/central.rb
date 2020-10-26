@@ -88,7 +88,12 @@ module Cartodb
     end
 
     def delete_organization_user(organization_name, username)
-      send_request("api/organizations/#{organization_name}/users/#{username}", nil, :delete, [204, 404])
+      payload = {
+        organization_name: organization_name,
+        username: username
+      }.merge(user_attributes)
+      topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
+      topic.publish(:delete_org_user, payload)
     end
 
     def update_user(username, user_attributes)

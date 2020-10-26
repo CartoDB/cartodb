@@ -7,10 +7,10 @@ module RateLimitsHelper
 end
 
 namespace :poc do
-  desc 'Consume messages from subscription "cloud_pull_update"'
-  task :cloud_pull_update => [:environment] do |_task, _args|
+  desc 'Consume messages from subscription "central_cartodb_commands"'
+  task :central_cartodb_commands => [:environment] do |_task, _args|
     message_broker = Carto::Common::MessageBroker.instance
-    subscription = message_broker.get_subscription(:cloud_pull_update)
+    subscription = message_broker.get_subscription(:central_cartodb_commands)
     notifications_topic = message_broker.get_topic(:cartodb_central_notifications)
 
     subscriber = subscription.listen do |received_message|
@@ -82,7 +82,7 @@ namespace :poc do
     end
 
     subscriber.start
-    puts 'Consuming messages from subscription "cloud_pull_update"'
+    puts 'Consuming messages from subscription "central_cartodb_commands"'
     sleep
   end
 end

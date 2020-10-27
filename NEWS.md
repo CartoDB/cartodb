@@ -17,7 +17,7 @@ Development
 * Force CTE materialization in Ghost Tables query to improve performance [#15895](https://github.com/CartoDB/cartodb/pull/15895)
 * Adapt default Rails mail logs to JSON format [#15894](https://github.com/CartoDB/cartodb/pull/15894)
 * Fix export of Google Sheet files larger than 10MB [#15903](https://github.com/CartoDB/cartodb/pull/15903)
-* Adding `builder_url` to `api/v4/me` endpoint
+* Adding `builder_url` to `api/v4/me` endpoint [#15904](https://github.com/CartoDB/cartodb/pull/15904)
 
 4.42.0 (2020-09-28)
 -------------------

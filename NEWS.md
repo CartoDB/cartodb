@@ -15,6 +15,8 @@ Development
 * Avoid delegating special methods in presenters [#15889](https://github.com/CartoDB/cartodb/pull/15889)
 * Fix Dashboard/Data navigation for free users. Update Data preview texts [#15892](https://github.com/CartoDB/cartodb/pull/15892)
 * Force CTE materialization in Ghost Tables query to improve performance [#15895](https://github.com/CartoDB/cartodb/pull/15895)
+* Adapt default Rails mail logs to JSON format [#15894](https://github.com/CartoDB/cartodb/pull/15894)
+* Fix export of Google Sheet files larger than 10MB [#15903](https://github.com/CartoDB/cartodb/pull/15903)
 * Fix KML importing error when the layers have slashes in their names [#15897](https://github.com/CartoDB/cartodb/pull/15897)
 
 4.42.0 (2020-09-28)

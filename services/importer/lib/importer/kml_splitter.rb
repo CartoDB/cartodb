@@ -64,7 +64,7 @@ module CartoDB
       def path_for(layer_name)
         File.join(
           temporary_directory,
-          "#{Unp.new.underscore(sanitized(layer_name))}.kml"
+          "#{Unp.new.underscore(Carto::FileSystem::Sanitize.sanitize_identifier(layer_name))}.kml"
         )
       end
 
@@ -74,14 +74,6 @@ module CartoDB
 
       attr_reader :temporary_directory
       attr_writer :source_file
-
-      # NOTE: Based on ActiveStorage::Filename `sanitized` method
-      #       https://apidock.com/rails/v5.2.3/ActiveStorage/Filename/sanitized
-      def sanitized(layer_name)
-        layer_name.encode(Encoding::UTF_8, invalid: :replace, undef: :replace, replace: 'ï¿½')
-                  .strip
-                  .tr("\u{202E}%$|:;/\t\r\n\\", '-')
-      end
 
     end
   end

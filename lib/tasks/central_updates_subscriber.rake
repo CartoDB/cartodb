@@ -64,14 +64,31 @@ namespace :poc do
                                       })
           puts 'Done with :create_user'
           received_message.acknowledge!
+        when :delete_user
+          begin
+            user_param = JSON.parse(received_message.data).with_indifferent_access
+            user = ::User.where(id: user_param[:id]).first
+            user.set_force_destroy if user_param[:force] == 'true'
+            user.destroy
+            notifications_topic.publish(:user_deleted, {
+                                          username: user.username
+                                        })
+          rescue CartoDB::SharedEntitiesError => e
+            notifications_topic.publish(:user_could_not_be_deleted, {
+                                          username: user.username,
+                                          reason: 'user has shared entities'
+                                        })
+          end
+          received_message.acknowledge!
         else
-          received_message.reject!
+          puts "Message not recognized: #{received_message.attributes['event'].to_sym}"
+          received_message.ack!
           next
         end
 
       rescue => ex
         puts ex
-        received_message.reject!
+        received_message.ack!
       end
     end
 

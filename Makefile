@@ -94,7 +94,7 @@ WORKING_SPECS_1 = \
 	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
 	spec/services/carto/visualization_backup_service_spec.rb \
-	spec/requests/carto_logger_spec.rb \
+	spec/lib/carto/common/logger_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_2 = \

@@ -91,7 +91,7 @@ module Cartodb
       payload = {
         organization_name: organization_name,
         username: username
-      }.merge(user_attributes)
+      }
       topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
       topic.publish(:delete_org_user, payload)
     end

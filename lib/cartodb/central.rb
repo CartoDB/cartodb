@@ -153,7 +153,9 @@ module Cartodb
     end
 
     def delete_organization(organization_name)
-      send_request("api/organizations/#{organization_name}", nil, :delete, [204, 404])
+      payload = { organization_name: organization_name }
+      topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
+      topic.publish(:delete_organization, payload)
     end
 
     ############################################################################

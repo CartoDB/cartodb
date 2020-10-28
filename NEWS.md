@@ -18,6 +18,7 @@ Development
 * Adapt default Rails mail logs to JSON format [#15894](https://github.com/CartoDB/cartodb/pull/15894)
 * Fix export of Google Sheet files larger than 10MB [#15903](https://github.com/CartoDB/cartodb/pull/15903)
 * Adding `builder_url` to `api/v4/me` endpoint [#15904](https://github.com/CartoDB/cartodb/pull/15904)
+* Create OAuth scope for reading/writing all datasets [#15884](https://github.com/CartoDB/cartodb/pull/15884)
 
 4.42.0 (2020-09-28)
 -------------------

@@ -44,11 +44,19 @@ module Carto
       SUPPORTED_SCOPES = (SCOPES.map(&:name) - [SCOPE_DEFAULT]).freeze
 
       def self.invalid_scopes(scopes)
-        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes) - SchemasScope.valid_scopes(scopes)
+        scopes -
+          SUPPORTED_SCOPES -
+          DatasetsScope.valid_scopes(scopes) -
+          SchemasScope.valid_scopes(scopes) -
+          AllDatasetsScope.valid_scopes(scopes)
       end
 
       def self.invalid_scopes_and_tables(scopes, user)
-        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes_with_table(scopes, user) - SchemasScope.valid_scopes_with_schema(scopes, user)
+        scopes -
+          SUPPORTED_SCOPES -
+          DatasetsScope.valid_scopes_with_table(scopes, user) -
+          SchemasScope.valid_scopes_with_schema(scopes, user) -
+          AllDatasetsScope.valid_scopes(scopes)
       end
 
       def self.build(scope)
@@ -56,6 +64,8 @@ module Carto
         if !result
           if DatasetsScope.is_a?(scope)
             result = DatasetsScope.new(scope)
+          elsif AllDatasetsScope.is_a?(scope)
+            result = AllDatasetsScope.new(scope)
           elsif SchemasScope.is_a?(scope)
             result = SchemasScope.new(scope)
           end

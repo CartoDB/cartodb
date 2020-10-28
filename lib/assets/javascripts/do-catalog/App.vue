@@ -10,7 +10,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .do-catalog {
   font-family: 'Montserrat', 'Open Sans', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -19,5 +19,9 @@ export default {
 
 * {
   box-sizing: border-box;
+}
+
+body {
+  margin: 0;
 }
 </style>

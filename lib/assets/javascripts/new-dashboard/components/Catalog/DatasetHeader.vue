@@ -2,7 +2,7 @@
   <header
     class="grid u-flex__justify--center u-mb--36 u-mb--20--tablet u-mt--36"
   >
-    <div class="grid-cell grid-cell--col9 grid-cell--col8--tablet tilte-container">
+    <div class="grid-cell grid-cell--col9 grid-cell--col8--tablet tilte-container" :class="{ publicWebsite }">
       <nav class="breadcrumbs">
         <p class="text is-caption is-txtMainTextColor" v-if="!isGeography">
           <span class="title is-txtMainTextColor">{{
@@ -22,10 +22,13 @@
       </h1>
     </div>
 
-    <div class="u-ml--auto grid-cell grid-cell--col3 grid-cell--col4--tablet buttons-actions">
+    <div class="u-ml--auto grid-cell grid-cell--col3 grid-cell--col4--tablet buttons-actions" :class="{ publicWebsite }">
       <div class="u-flex u-flex__justify--end">
         <Button
           v-if="getSubscriptionStatus === 'interested' && !interesedInSubscription"
+          :color="publicWebsite ? 'green' : ''"
+          :big="publicWebsite"
+          :arrow="publicWebsite"
           @click.native="interesed"
         >
           I’m interested
@@ -79,7 +82,7 @@
         v-else-if="!subscriptionInfo && !isEnterprise"
         class="text is-small is-txtMainTextColor u-mt--16 right-align"
       >
-        Only available for <a href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
+        Only available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
       </p>
     </div>
 
@@ -103,6 +106,9 @@ import { formURL } from 'new-dashboard/utils/catalog/form-url';
 
 export default {
   name: 'DatasetHeader',
+  props: {
+    publicWebsite: Boolean
+  },
   data () {
     return {
       modalOpen: false,
@@ -226,12 +232,17 @@ a.disabled {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 68px;
+    height: 120px;
+    flex-direction: column;
   }
 }
 
 .is-sectiontitle {
   font-size: 24px;
   line-height: 36px;
+}
+
+.publicWebsite {
+  background-color: $color-primary;
 }
 </style>

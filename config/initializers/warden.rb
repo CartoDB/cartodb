@@ -14,6 +14,9 @@ end
 # - Include this module
 # - Override the methods as needed
 module CartoStrategy
+
+  include ::LoggerHelper
+
   def affected_by_password_expiration?
     true
   end
@@ -45,7 +48,7 @@ module CartoStrategy
     begin
       user.update_in_central
     rescue StandardError => e
-      CartoDB::Logger.warning(message: "Error updating lastlogin_date in central", exception: e)
+      log_warning(message: "Error updating lastlogin_date in central", exception: e)
     end
   end
 end
@@ -178,8 +181,8 @@ Warden::Strategies.add(:api_authentication) do
     # WARNING: The following code is a modified copy of the oauth10_token method from
     # oauth-plugin-0.4.0.pre4/lib/oauth/controllers/application_controller_methods.rb
     # It also checks token class like does the oauth10_access_token method of that same file
-    if ClientApplication.verify_request(request) do |request_proxy|
-          @oauth_token = ClientApplication.find_token(request_proxy.token)
+    if Carto::ClientApplication.verify_request(request) do |request_proxy|
+          @oauth_token = Carto::ClientApplication.find_token(request_proxy.token)
           if @oauth_token.respond_to?(:provided_oauth_verifier=)
             @oauth_token.provided_oauth_verifier=request_proxy.oauth_verifier
           end
@@ -187,7 +190,7 @@ Warden::Strategies.add(:api_authentication) do
           [(@oauth_token.nil? ? nil : @oauth_token.secret), (@oauth_token.nil? || @oauth_token.client_application.nil? ? nil : @oauth_token.client_application.secret)]
         end
 
-      if @oauth_token && @oauth_token.is_a?(::AccessToken)
+      if @oauth_token && @oauth_token.is_a?(Carto::AccessToken)
         user = ::User.find_with_custom_fields(@oauth_token.user_id)
         if user.enable_account_token.nil?
           success!(user) and return
@@ -218,7 +221,7 @@ Warden::Strategies.add(:http_header_authentication) do
     trigger_login_event(user)
 
     success!(user)
-  rescue => e
+  rescue StandardError => e
     CartoDB.report_exception(e, "Authenticating with http_header_authentication", user: user)
     return fail!
   end
@@ -227,6 +230,7 @@ end
 Warden::Strategies.add(:saml) do
   include CartoStrategy
   include Carto::EmailCleaner
+  include ::LoggerHelper
 
   def affected_by_password_expiration?
     false
@@ -267,8 +271,8 @@ Warden::Strategies.add(:saml) do
             organization_id: organization.id,
             saml_email: email)
     end
-  rescue => e
-    CartoDB::Logger.error(message: "Authenticating with SAML", exception: e)
+  rescue StandardError => e
+    log_error(message: "Authenticating with SAML", exception: e)
     return fail!
   end
 end
@@ -351,7 +355,7 @@ module Carto::Api::AuthApiAuthentication
 
     return fail! unless api_key.exists?
     success!(user)
-  rescue
+  rescue StandardError
     fail!
   end
 

@@ -266,7 +266,7 @@ describe Column do
     end
 
     table_name
-  rescue
+  rescue StandardError
     db.run(%Q{DROP TABLE "cdb_importer"."#{table_name}"})
     table_name
   end #create_table
@@ -494,4 +494,3 @@ describe Column do
   end # .get_valid_column_name
 
 end # Column
-

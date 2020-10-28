@@ -5,7 +5,7 @@ Sequel.migration do
       alter_table :organizations do
         add_column :admin_email, :text
       end
-    rescue
+    rescue StandardError
       # Weird scenario that column already exists. probably due to a file timestamp change
     end
 

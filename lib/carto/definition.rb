@@ -3,6 +3,7 @@ require 'singleton'
 module Carto
   class Definition
     include Singleton
+    include ::LoggerHelper
 
     def initialize
       @definitions = {}
@@ -16,7 +17,7 @@ module Carto
       @definitions[file_path] = JSON.parse(definition_file).with_indifferent_access
     rescue Errno::ENOENT
       message = 'Carto::Definition: Couldn\'t read from file'
-      CartoDB::Logger.error(message: message, file_path: file_path)
+      log_error(message: message, file_path: file_path)
 
       raise message
     end

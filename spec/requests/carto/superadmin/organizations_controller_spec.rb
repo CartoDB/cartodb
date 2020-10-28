@@ -234,21 +234,21 @@ describe Carto::Superadmin::OrganizationsController do
     end
 
     it 'returns Twitter imports' do
-      st1 = SearchTweet.create(
+      st1 = Carto::SearchTweet.create(
         user_id: @org_user_owner.id,
         table_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         service_item_id: '555',
         retrieved_items: 42,
-        state: ::SearchTweet::STATE_COMPLETE
+        state: Carto::SearchTweet::STATE_COMPLETE
       )
-      st2 = SearchTweet.create(
+      st2 = Carto::SearchTweet.create(
         user_id: @org_user_1.id,
         table_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         service_item_id: '555',
         retrieved_items: 628,
-        state: ::SearchTweet::STATE_COMPLETE
+        state: Carto::SearchTweet::STATE_COMPLETE
       )
       get_json(usage_superadmin_organization_url(@organization.id), { from: Date.today - 5 }, superadmin_headers) do |response|
         tweets = response.body[:twitter_imports][:retrieved_items]

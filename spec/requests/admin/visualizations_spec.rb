@@ -587,7 +587,7 @@ describe Admin::VisualizationsController do
       end
 
       perm = vis.permission
-      perm.set_user_permission(user_b, CartoDB::Permission::ACCESS_READONLY)
+      perm.set_user_permission(user_b, Carto::Permission::ACCESS_READONLY)
       perm.save
 
       get CartoDB.url(@mock_context, 'public_table', params: { id: vis.name }, user: user_a)

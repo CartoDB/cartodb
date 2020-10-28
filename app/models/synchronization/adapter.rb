@@ -3,6 +3,9 @@ require 'carto/importer/table_setup'
 module CartoDB
   module Synchronization
     class Adapter
+
+      include ::LoggerHelper
+
       STATEMENT_TIMEOUT = (1.hour * 1000).freeze
       DESTINATION_SCHEMA = 'public'.freeze
       THE_GEOM = 'the_geom'.freeze
@@ -51,7 +54,7 @@ module CartoDB
           end
         end
         self
-      rescue => exception
+      rescue StandardError => exception
         @failed = true
         puts '=================='
         puts exception.to_s
@@ -120,18 +123,14 @@ module CartoDB
         # TODO not sure whether these two are needed
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
-      rescue => exception
+      rescue StandardError => exception
         @error_code = OVERWRITE_ERROR
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
 
         # Gets all attributes in the result except for 'log_trace', as it is too long for Rollbar
         result_hash = CartoDB::Importer2::Result::ATTRIBUTES.map { |m| [m, result.send(m)] if m != 'log_trace' }
                                                             .compact.to_h
-        CartoDB::Logger.error(message: 'Error in sync overwrite',
-                              exception: exception,
-                              user: user,
-                              table: table_name,
-                              result: result_hash)
+        log_error(message: 'Error in sync overwrite', exception: exception, result: result_hash)
         drop(result.table_name) if exists?(result.table_name)
         raise exception
       end
@@ -151,18 +150,14 @@ module CartoDB
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
         @table_setup.run_index_statements(index_statements, @database)
-      rescue => exception
+      rescue StandardError => exception
         @error_code = OVERWRITE_ERROR
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
 
         # Gets all attributes in the result except for 'log_trace', as it is too long for Rollbar
         result_hash = CartoDB::Importer2::Result::ATTRIBUTES.map { |m| [m, result.send(m)] if m != 'log_trace' }
                                                             .compact.to_h
-        CartoDB::Logger.error(message: 'Error in sync overwrite',
-                              exception: exception,
-                              user: user,
-                              table: table_name,
-                              result: result_hash)
+        log_error(message: 'Error in sync overwrite', exception: exception, result: result_hash)
         drop(result.table_name) if exists?(result.table_name)
         raise exception
       end
@@ -180,11 +175,8 @@ module CartoDB
         # set_the_geom_column! should just edit the metadata with the specified type
         table.send :set_the_geom_column!, geo_type
         table.save
-      rescue => exception
-        CartoDB::Logger.error(message: 'Error in setup cartodbfy',
-                              exception: exception,
-                              user: user,
-                              table: table_name)
+      rescue StandardError
+        log_error(message: 'Error in setup cartodbfy', exception: exception)
       ensure
         @table_setup.fix_oid(table_name)
       end
@@ -241,10 +233,7 @@ module CartoDB
         # if the geometry is MULTIPOINT we convert it to POINT
         if type == 'multipoint'
           user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
-            user_database.run("SELECT public.AddGeometryColumn('#{schema_name}', '#{table_name}','the_geom_simple',4326, 'GEOMETRY', 2);")
-            user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_GeometryN(the_geom,1);})
-            user_database.run("SELECT DropGeometryColumn('#{schema_name}', '#{table_name}','the_geom');")
-            user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
+            user_database.run("UPDATE #{qualified_table_name} SET the_geom = ST_GeometryN(the_geom,1);")
           end
           type = 'point'
         end
@@ -252,10 +241,7 @@ module CartoDB
         # if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING or MULTIPOLYGON
         if %w(linestring polygon).include?(type)
           user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
-            user_database.run("SELECT public.AddGeometryColumn('#{schema_name}', '#{table_name}','the_geom_simple',4326, 'GEOMETRY', 2);")
-            user_database.run(%Q{UPDATE #{qualified_table_name} SET the_geom_simple = ST_Multi(the_geom);})
-            user_database.run("SELECT DropGeometryColumn('#{schema_name}', '#{table_name}','the_geom');")
-            user_database.run(%Q{ALTER TABLE #{qualified_table_name} RENAME COLUMN the_geom_simple TO the_geom;})
+            user_database.run("UPDATE #{qualified_table_name} SET the_geom = ST_Multi(the_geom);")
 
             type = user_database[%Q{
               SELECT GeometryType(#{THE_GEOM})
@@ -282,8 +268,7 @@ module CartoDB
           # but is kept because there may be existing syncs for which this double sanitization
           # (version 1 sanitization which wasn't idemponent) had the effect of altering some
           # satinizated names (e.g. __1 -> _1).
-          table = ::Table.new(name: @table_name, user_id: @user.id)
-          # we could as well: table = Carto::UserTable.find(@user.tables.where(name: @table_name).first.id).service
+          table = Carto::UserTable.find(@user.tables.where(name: @table_name).first.id).service
           table.sanitize_columns(table_name: table_name, database_schema: schema_name, connection: user_database)
 
           # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
@@ -324,7 +309,7 @@ module CartoDB
             begin
               already_had_cartodb_id = false
               user_database.run(%Q{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
-            rescue
+            rescue StandardError
               already_had_cartodb_id = true
             end
             unless already_had_cartodb_id
@@ -415,17 +400,16 @@ module CartoDB
 
       def column_names(user, table_name)
         user.in_database.schema(table_name, schema: user.database_schema).map { |row| row[0] }
-      rescue => e
-        CartoDB::Logger.error(
-          message: 'Error in column_names from sync adapter',
-          exception: e,
-          user: user,
-          table: table_name
-        )
+      rescue StandardError => e
+        log_error(message: 'Error in column_names from sync adapter', exception: e)
         []
       end
 
       attr_reader :table_name, :runner, :database, :user
+
+      def log_context
+        super.merge(table: { name: table_name }, current_user: user)
+      end
     end
   end
 end

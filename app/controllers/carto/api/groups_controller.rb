@@ -44,15 +44,14 @@ module Carto
       end
 
       def create
-        group = @organization.create_group(params['display_name'])
-        render_jsonp(Carto::Api::GroupPresenter.full(group).to_poro, 200)
+        @group = @organization.create_group(params['display_name'])
+        render_jsonp(Carto::Api::GroupPresenter.full(@group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
-        CartoDB::Logger.debug(message: 'Group already exists', exception: e, params: params)
         render json: { errors: ["A group with that name already exists"] }, status: 409
       rescue ActiveRecord::StatementInvalid => e
-        handle_statement_invalid_error(e, group)
-      rescue => e
-        CartoDB::Logger.error(exception: e, params: params, group: group || 'no group', organization: @organization)
+        handle_statement_invalid_error(e, @group)
+      rescue StandardError => e
+        log_error(exception: e)
         render json: { errors: [e.message] }, status: 500
       end
 
@@ -60,12 +59,11 @@ module Carto
         @group.rename_group_with_extension(params['display_name'])
         render_jsonp(Carto::Api::GroupPresenter.full(@group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
-        CartoDB::Logger.debug(message: 'Group display name already exists', params: params)
         render json: { errors: ["A group with that name already exists"] }, status: 409
       rescue ActiveRecord::StatementInvalid => e
         handle_statement_invalid_error(e, @group)
-      rescue => e
-        CartoDB::Logger.error(exception: e, params: params, group: @group)
+      rescue StandardError => e
+        log_error(exception: e)
         render json: { errors: [e.message] }, status: 500
       end
 
@@ -74,8 +72,8 @@ module Carto
         render json: {}, status: 204
       rescue ActiveRecord::StatementInvalid => e
         handle_statement_invalid_error(e, @group)
-      rescue => e
-        CartoDB::Logger.error(exception: e, params: params, group: @group)
+      rescue StandardError => e
+        log_error(exception: e)
         render json: { errors: [e.message] }, status: 500
       end
 
@@ -84,8 +82,8 @@ module Carto
         render json: {}, status: 200
       rescue ActiveRecord::StatementInvalid => e
         handle_statement_invalid_error(e, @group)
-      rescue => e
-        CartoDB::Logger.error(exception: e, user: @user, params: params, group: @group)
+      rescue StandardError => e
+        log_error(exception: e)
         render json: { errors: [e.message] }, status: 500
       end
 
@@ -94,8 +92,8 @@ module Carto
         render json: {}, status: 200
       rescue ActiveRecord::StatementInvalid => e
         handle_statement_invalid_error(e, @group)
-      rescue => e
-        CartoDB::Logger.error(exception: e, user: @user, params: params, group: @group)
+      rescue StandardError => e
+        log_error(exception: e)
         render json: { errors: [e.message] }, status: 500
       end
 
@@ -164,7 +162,7 @@ module Carto
         if e.message =~ err_regexp
           render json: { errors: [err_regexp.match(e.message)[1]] }, status: 422
         else
-          CartoDB::Logger.error(exception: e, params: params, group: group || 'no group', organization: @organization)
+          log_error(exception: e)
           render json: { errors: [e.message] }, status: 500
         end
       end
@@ -173,6 +171,10 @@ module Carto
         log_rescue_from(__method__, error)
 
         render_jsonp({ message: "Error modifying groups", errors: [error.message] }, 403)
+      end
+
+      def log_context
+        super.merge(params: params, group: @group, organization: @organization)
       end
     end
   end

@@ -1,13 +1,12 @@
 module Carto
   class FeatureFlag < ActiveRecord::Base
 
-    validates :name, presence: true
-
     has_many :feature_flags_user, dependent: :destroy
+    has_many :users, through: :feature_flags_user
 
-    def self.find_by_user(user)
-      FeatureFlag.where(restricted: false) + user.feature_flags.select(&:restricted)
-    end
+    scope :restricted, -> { where(restricted: true) }
+    scope :not_restricted, -> { where(restricted: false) }
 
+    validates :name, presence: true
   end
 end

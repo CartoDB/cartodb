@@ -12,7 +12,7 @@ module CartoDB
     class Column
       DEFAULT_SRID    = 4326
       WKB_RE          = /^\d{2}/
-      GEOJSON_RE      = /{.*(type|coordinates).*(type|coordinates).*}/
+      GEOJSON_RE      = /{.*(type|coordinates).*(type|coordinates).*}/m
       WKT_RE          = /POINT|LINESTRING|POLYGON/
       KML_MULTI_RE    = /<Line|<Polygon/
       KML_POINT_RE    = /<Point>/
@@ -71,7 +71,7 @@ module CartoDB
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                  UPDATE #{qualified_table_name}
-                                 SET #{column_name} = ST_GeomFromText(#{column_name}, #{DEFAULT_SRID})
+                                 SET "#{column_name}" = ST_GeomFromText("#{column_name}", #{DEFAULT_SRID})
                                  })
         end
         self
@@ -81,8 +81,8 @@ module CartoDB
         # 1) cast to proper null the geom column
         db.run(%Q{
           UPDATE #{qualified_table_name}
-          SET #{column_name} = NULL
-          WHERE #{column_name} = ''
+          SET "#{column_name}" = NULL
+          WHERE "#{column_name}" = ''
         })
 
         # 2) Normal geojson behavior
@@ -91,7 +91,7 @@ module CartoDB
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                  UPDATE #{qualified_table_name}
-                                 SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+                                 SET "#{column_name}" = public.ST_SetSRID(public.ST_GeomFromGeoJSON("#{column_name}"), #{DEFAULT_SRID})
                                  })
         end
 
@@ -104,7 +104,7 @@ module CartoDB
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                  UPDATE #{qualified_table_name}
-                                 SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromGeoJSON(#{column_name}), #{DEFAULT_SRID})
+                                 SET "#{column_name}" = public.ST_SetSRID(public.ST_GeomFromGeoJSON("#{column_name}"), #{DEFAULT_SRID})
                                  })
         end
 
@@ -117,7 +117,7 @@ module CartoDB
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                  UPDATE #{qualified_table_name}
-                                 SET #{column_name} = public.ST_SetSRID(public.ST_GeomFromKML(#{column_name}),#{DEFAULT_SRID})
+                                 SET "#{column_name}" = public.ST_SetSRID(public.ST_GeomFromKML("#{column_name}"),#{DEFAULT_SRID})
                                  })
         end
       end
@@ -128,7 +128,7 @@ module CartoDB
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                  UPDATE #{qualified_table_name}
-                                 SET #{column_name} = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML(#{column_name})),#{DEFAULT_SRID})
+                                 SET "#{column_name}" = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML("#{column_name}")),#{DEFAULT_SRID})
                                  })
         end
       end
@@ -140,7 +140,7 @@ module CartoDB
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                  UPDATE #{qualified_table_name}
-                                 SET #{column_name} = public.ST_Force2D(#{column_name})
+                                 SET "#{column_name}" = public.ST_Force2D("#{column_name}")
                                  })
         end
 
@@ -172,9 +172,9 @@ module CartoDB
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                     ALTER TABLE #{qualified_table_name}
-                                    ALTER #{column_name}
+                                    ALTER "#{column_name}"
                                     TYPE #{type}
-                                    USING #{column_name}::#{type}
+                                    USING "#{column_name}"::#{type}
                                   })
         end
         self
@@ -191,9 +191,9 @@ module CartoDB
 
       def records_with_data
         @records_with_data ||= db[%Q{
-          SELECT #{column_name} FROM "#{schema}"."#{table_name}"
-          WHERE #{column_name} IS NOT NULL
-          AND #{column_name}::text != ''
+          SELECT "#{column_name}" FROM "#{schema}"."#{table_name}"
+          WHERE "#{column_name}" IS NOT NULL
+          AND "#{column_name}"::text != ''
           LIMIT 1
         }]
       end
@@ -212,10 +212,10 @@ module CartoDB
 
       def geometry_type
         sample = db[%Q{
-          SELECT public.GeometryType(ST_Force2D(#{column_name}::geometry))
+          SELECT public.GeometryType(ST_Force2D("#{column_name}"::geometry))
           AS type
           FROM #{schema}.#{table_name}
-          WHERE #{column_name} IS NOT NULL
+          WHERE "#{column_name}" IS NOT NULL
           LIMIT 1
         }].first
         sample && sample.fetch(:type)
@@ -224,7 +224,7 @@ module CartoDB
       def drop
         db.run(%Q{
           ALTER TABLE #{qualified_table_name}
-          DROP COLUMN IF EXISTS #{column_name}
+          DROP COLUMN IF EXISTS "#{column_name}"
         })
       end
 
@@ -245,8 +245,8 @@ module CartoDB
           @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
             user_direct_conn.run(%Q{
                    UPDATE #{qualified_table_name}
-                   SET #{column_name}=NULL
-                   WHERE #{column_name}=''
+                   SET "#{column_name}"=NULL
+                   WHERE "#{column_name}"=''
                  })
           end
         else

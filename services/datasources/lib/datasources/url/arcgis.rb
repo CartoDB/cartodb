@@ -288,7 +288,7 @@ module CartoDB
               supported_formats:          supported_formats,
               advanced_queries_supported: data.fetch(:supportsAdvancedQueries, false)
             }
-          rescue => exception
+          rescue StandardError => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{exception.backtrace}")
           end
 
@@ -351,7 +351,7 @@ module CartoDB
 
           begin
             data = ::JSON.parse(response.body).fetch('layers')
-          rescue => exception
+          rescue StandardError => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
 
@@ -368,7 +368,7 @@ module CartoDB
                 title: item.fetch('name')
               }
             }
-          rescue => exception
+          rescue StandardError => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
         end
@@ -387,7 +387,7 @@ module CartoDB
 
           begin
             data = ::JSON.parse(response.body).fetch('objectIds').sort
-          rescue => exception
+          rescue StandardError => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
 
@@ -473,7 +473,7 @@ module CartoDB
             retrieved_fields = body.fetch('fields')
             geometry_type = body.fetch('geometryType')
             spatial_reference = body.fetch('spatialReference')
-          rescue => exception
+          rescue StandardError => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{prepared_url} #{exception.backtrace}")
           end
           raise ResponseError.new("'fields' empty or invalid #{prepared_url}") \

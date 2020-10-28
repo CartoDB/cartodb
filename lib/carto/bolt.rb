@@ -1,11 +1,13 @@
 module Carto
   class Bolt
-    DEFAULT_REDIS_OBJECT = $users_metadata
+
+    include ::LoggerHelper
+
     DEFAULT_TTL_MS = 10000
     DEFAULT_RETRY_ATTEMPTS = 1
     DEFAULT_RETRY_TIMEOUT = 10000 # in_ms
 
-    def initialize(bolt_key, redis_object: DEFAULT_REDIS_OBJECT, ttl_ms: DEFAULT_TTL_MS)
+    def initialize(bolt_key, redis_object: $users_metadata, ttl_ms: DEFAULT_TTL_MS)
       @bolt_key = add_namespace_to_key(bolt_key)
       @redis_object = redis_object
       @ttl_ms = ttl_ms
@@ -55,7 +57,7 @@ module Carto
         end
         sleep((timeout / 1000.0).second)
       end
-      CartoDB::Logger.warning(message: "Couldn't acquire bolt after #{attempts} attempts with #{timeout} timeout")
+      log_warning(message: "Couldn't acquire bolt", attempts: attempts, timeout: timeout)
       false
     end
 

@@ -43,56 +43,7 @@ class DataImport < Sequel::Model
 
   attr_accessor   :log, :results
 
-  one_to_many :external_data_imports
   many_to_one :user
-
-  # @see store_results() method also when adding new fields
-  PUBLIC_ATTRIBUTES = [
-    'id',
-    'user_id',
-    'table_id',
-    'data_type',
-    'table_name',
-    'state',
-    'error_code',
-    'queue_id',
-    'get_error_text',
-    'get_error_source',
-    'tables_created_count',
-    'synchronization_id',
-    'service_name',
-    'service_item_id',
-    'type_guessing',
-    'quoted_fields_guessing',
-    'content_guessing',
-    'server',
-    'host',
-    'upload_host',
-    'resque_ppid',
-    'create_visualization',
-    'visualization_id',
-    # String field containing a json, format:
-    # {
-    #   twitter_credits: Integer
-    # }
-    # No automatic conversion coded
-    'user_defined_limits',
-    'original_url',
-    'privacy',
-    'http_response_code',
-    'rejected_layers',
-    'runner_warnings'
-  ]
-
-  # This attributes will get removed from public_values upon calling api_call_public_values
-  NON_API_VISIBLE_ATTRIBUTES = [
-    'service_item_id',
-    'service_name',
-    'server',
-    'host',
-    'upload_host',
-    'resque_ppid',
-  ]
 
   # Not all constants are used, but so that we keep track of available states
   STATE_ENQUEUED  = 'enqueued'  # Default state for imports whose files are not yet at "import source"
@@ -167,20 +118,6 @@ class DataImport < Sequel::Model
     @@dataimport_logger ||= CartoDB.unformatted_logger(log_file_path("imports.log"))
   end
 
-  # Meant to be used when calling from API endpoints (hides some fields not needed at editor scope)
-  def api_public_values
-    public_values.reject { |key|
-      DataImport::NON_API_VISIBLE_ATTRIBUTES.include?(key)
-    }
-  end
-
-  def public_values
-    values = Hash[PUBLIC_ATTRIBUTES.map{ |attribute| [attribute, send(attribute)] }]
-    values.merge!('queue_id' => id)
-    values.merge!(success: success) if (state == STATE_COMPLETE || state == STATE_FAILURE || state == STATE_STUCK)
-    values
-  end
-
   def run_import!
     self.resque_ppid = Process.ppid
     self.server = Socket.gethostname
@@ -192,7 +129,7 @@ class DataImport < Sequel::Model
       success = false
       begin
         current_user.oauths.remove(ex.service_name)
-      rescue => ex2
+      rescue StandardError => ex2
         log.append("Exception removing OAuth: #{ex2.message}")
         log.append(ex2.backtrace)
       end
@@ -238,7 +175,7 @@ class DataImport < Sequel::Model
     error = CartoDB::Importer2::MapQuotaExceededError.new
     handle_failure(error)
     raise error
-  rescue => exception
+  rescue StandardError => exception
     log.append("Exception: #{exception.to_s}")
     log.append(exception.backtrace, false)
     stacktrace = exception.to_s + exception.backtrace.join
@@ -274,6 +211,7 @@ class DataImport < Sequel::Model
     raise CartoDB::QuotaExceeded, 'More tables required'
   end
 
+  # TODO: move to new model
   def mark_as_failed_if_stuck!
     return false unless stuck?
 
@@ -304,7 +242,7 @@ class DataImport < Sequel::Model
         end
       rescue Addressable::URI::InvalidURIError
         # this should only happen in testing, but just in case capture and log
-        CartoDB::Logger.warning(message: 'InvalidURIError when processing data_source', data_source: data_source)
+        log_warning(message: 'InvalidURIError when processing data_source', data_source: data_source)
       end
     end
 
@@ -339,9 +277,8 @@ class DataImport < Sequel::Model
                                                                              }
                                                                          })
                                                                     .decrement!
-    rescue => exception
-      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
-                           "#{exception.message} #{exception.backtrace.inspect}")
+    rescue StandardError => exception
+      log_info('Error decreasing concurrent import limit', exception: exception)
     end
     notify(results, id)
 
@@ -365,38 +302,16 @@ class DataImport < Sequel::Model
                                                                            }
                                                                          })
       .decrement!
-    rescue => exception
-      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
-                           "#{exception.message} #{exception.backtrace.inspect}")
+    rescue StandardError => exception
+      log_info('Error decreasing concurrent import limit', exception: exception)
     end
     notify(results)
     self
-  rescue => exception
+  rescue StandardError => exception
     log.append("Exception: #{exception.to_s}")
     log.append(exception.backtrace, false)
     log.store
     self
-  end
-
-  def table
-    # We can assume the owner is always who imports the data
-    # so no need to change to a Visualization::Collection based load
-    # TODO better to use an association for this
-    ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
-  end
-
-  def tables
-    table_names_array.map do |table_name|
-      UserTable.where(name: table_name, user_id: user_id).first.service
-    end
-  end
-
-  def table_names_array
-    table_names.present? ? table_names.split(' ') : []
-  end
-
-  def is_raster?
-    ::JSON.parse(self.stats).select{ |item| item['type'] == '.tif' }.length > 0
   end
 
   # Calculates the maximum timeout in seconds for a given user, to be used when performing HTTP requests
@@ -429,6 +344,15 @@ class DataImport < Sequel::Model
   end
 
   private
+
+  def get_provider_name_from_id(service_item_id)
+    begin
+      connector_params = JSON.parse(service_item_id)
+      return connector_params['provider']
+    rescue StandardError
+      return nil
+    end
+  end
 
   def dispatch
     self.state = STATE_UPLOADING
@@ -723,7 +647,7 @@ class DataImport < Sequel::Model
         error_code: ex.error_code,
         log_info: CartoDB::IMPORTER_ERROR_CODES[ex.error_code]
       }
-    rescue => ex
+    rescue StandardError => ex
       had_errors = true
       manual_fields = {
         error_code: 99999,
@@ -758,7 +682,8 @@ class DataImport < Sequel::Model
   # * importer: the new importer (nil if download errors detected)
   # * connector: the connector that the importer uses
   def new_importer_with_connector
-    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user)
+    provider_name = get_provider_name_from_id(service_item_id)
+    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user, provider_name)
 
     database_options = pg_options
 
@@ -853,7 +778,7 @@ class DataImport < Sequel::Model
 
     store_results(importer, runner, datasource_provider, manual_fields)
     importer.nil? ? false : importer.success?
-  rescue => e
+  rescue StandardError => e
     # Note: If this exception is not treated, results will not be defined
     # and the import will finish with a null error_code
     if manual_fields
@@ -1127,7 +1052,7 @@ class DataImport < Sequel::Model
                                           user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
                                        })
       datasource.token = oauth.token unless oauth.nil?
-    rescue => ex
+    rescue StandardError => ex
       log.append("Exception: #{ex.message}")
       log.append(ex.backtrace, false)
       CartoDB.report_exception(ex, 'Import error: ', error_info: ex.message + ex.backtrace.join)
@@ -1202,9 +1127,8 @@ class DataImport < Sequel::Model
                                                     origin: origin)).report
       end
     end
-  rescue => exception
-    CartoDB::Logger.warning(message: 'Carto::Tracking: Couldn\'t report event',
-                            exception: exception)
+  rescue StandardError => e
+    log_warning(message: "Carto::Tracking: Couldn't report event", exception: e)
   end
 
   def sync?

@@ -41,9 +41,6 @@ module Carto
 
     belongs_to :data_import
 
-    has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding,
-                                    foreign_key: :table_id, dependent: :destroy
-
     # Disabled to avoid conflicting with the `tags` field. This relation is updated by ::Table.manage_tags.
     # TODO: We can remove both the `user_tables.tags` field and the `tags` table in favour of the canonical viz tags.
     # has_many :tags, foreign_key: :table_id
@@ -70,6 +67,7 @@ module Carto
     # TODO: This can be simplified after deleting the old UserTable model
     before_destroy :ensure_not_viewer
     before_destroy :cache_dependent_visualizations, unless: :destroyed?
+    before_destroy :backup_visualizations, unless: :destroyed?
     after_destroy :destroy_dependent_visualizations
     after_destroy :service_after_destroy
 
@@ -245,10 +243,6 @@ module Carto
       privacy == PRIVACY_LINK ? 'PUBLIC' : privacy_text
     end
 
-    def automatic_geocoding
-      automatic_geocodings.first
-    end
-
     def is_owner?(user)
       return false unless user
       user_id == user.id
@@ -297,17 +291,25 @@ module Carto
       @partially_dependent_visualizations_cache = partially_dependent_visualizations
     end
 
+    def backup_visualizations
+      affected_visualizations.each(&:backup_visualization)
+    end
+
     def destroy_dependent_visualizations
+      # Replace these backups per the ones done at Carto::UserTable#backup_visualizations level.
+      # The first ones run when the user table has already been deleted, resulting in an incomplete backup.
+      Carto::Visualization.skip_callback(:destroy, :before, :backup_visualization)
       table_visualization.try(:delete_from_table)
       @fully_dependent_visualizations_cache.each(&:destroy)
       @partially_dependent_visualizations_cache.each do |visualization|
         visualization.unlink_from(self)
       end
+    ensure
+      Carto::Visualization.set_callback(:destroy, :before, :backup_visualization)
     end
 
     def ensure_not_viewer
-      # Loading ::User is a workaround for User deletion: viewer attribute change is not visible at AR transaction
-      raise "Viewer users can't destroy tables" if user && user.viewer && ::User[user_id].viewer
+      raise "Viewer users can't destroy tables" if user&.carto_user&.reload&.viewer
     end
 
     def service_before_create

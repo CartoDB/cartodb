@@ -80,6 +80,7 @@ WORKING_SPECS_1 = \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/helpers/logger_helper_spec.rb \
+	spec/helpers/user_commons_spec.rb \
 	spec/models/carto/data_import_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/models/carto/visualization/watcher_spec.rb \
@@ -93,7 +94,7 @@ WORKING_SPECS_1 = \
 	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
 	spec/services/carto/visualization_backup_service_spec.rb \
-	spec/requests/carto_logger_spec.rb \
+	spec/lib/carto/common/logger_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_2 = \
@@ -189,7 +190,6 @@ WORKING_SPECS_5 = \
 	spec/models/organization_spec.rb \
 	spec/models/user_organization_spec.rb \
 	spec/models/synchronization/synchronization_oauth_spec.rb \
-	spec/models/permission_spec.rb \
 	spec/models/carto/permission_spec.rb \
 	spec/lib/carto/ghost_tables_manager_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
@@ -258,6 +258,8 @@ WORKING_SPECS_9 = \
 	services/geocoder/spec/hires_geocoder_factory_spec.rb \
 	services/table-geocoder/spec/geocoder_cache_spec.rb \
 	services/user-mover/spec/user_mover_spec.rb \
+	spec/presenters/base_presenter_spec.rb \
+	spec/presenters/organization_presenter_spec.rb \
 	$(NULL)
 
 # Tests using spec_helper_min instead of spec_helper
@@ -398,28 +400,28 @@ endif
 	# TODO skip this if db already exists ?
 	# Clean DB connections before drop test DB
 	psql -U postgres -c "select pg_terminate_backend(pid) from pg_stat_activity where datname='carto_db_test'"
-	MOCHA_OPTIONS=skip_integration RAILS_ENV=test bundle exec rake cartodb:test:prepare --trace
+	MOCHA_OPTIONS=skip_integration RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rake cartodb:test:prepare --trace
 
 # TODO: Ongoing removal of groups, that's the reason of holes in numbering
 check-1:
-	CHECK_SPEC=1 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_1)
+	CHECK_SPEC=1 RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_1)
 check-2:
-	CHECK_SPEC=2 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_2)
+	CHECK_SPEC=2 RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_2)
 check-4:
-	CHECK_SPEC=4 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_4)
+	CHECK_SPEC=4 RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_4)
 check-5:
-	CHECK_SPEC=5 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_5)
+	CHECK_SPEC=5 RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_5)
 check-7:
-	CHECK_SPEC=7 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_7)
+	CHECK_SPEC=7 RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_7)
 check-9:
-	CHECK_SPEC=9 RAILS_ENV=test bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_9)
+	CHECK_SPEC=9 RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rspec --require ./spec/rspec_configuration.rb $(WORKING_SPECS_9)
 check-spec-helper-min:
-	CHECK_SPEC=50 RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
+	CHECK_SPEC=50 RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
 check-carto-db-class:
-	CHECK_SPEC=51 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
+	CHECK_SPEC=51 RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rspec $(WORKING_SPECS_carto_db_class)
 
 check-gear/%: %
-	cd $< && bundle install && RAILS_ENV=test bundle exec rspec
+	cd $< && bundle install && RAILS_ENV=test COVERBAND_DISABLE_AUTO_START=true bundle exec rspec
 
 check-gears: $(addprefix check-gear/, $(wildcard gears/*))
 

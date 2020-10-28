@@ -86,12 +86,17 @@ shared_examples_for 'vizjson generator' do
       last_response.status.should == 200
 
       # Share vis with user_2 in readonly (vis can never be shared in readwrite)
-      put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_vis_1_perm_id),
-          { acl: [{
-                   type: CartoDB::Permission::TYPE_USER,
-                   entity: { id:   user_2.id },
-                   access: CartoDB::Permission::ACCESS_READONLY
-                  }] }.to_json, http_json_headers
+      request_payload = {
+        acl: [
+          {
+            type: Carto::Permission::TYPE_USER,
+            entity: { id: user_2.id },
+            access: Carto::Permission::ACCESS_READONLY
+          }
+        ]
+      }.to_json
+      request_url_params = { user_domain: user_1.username, api_key: user_1.api_key, id: u1_vis_1_perm_id }
+      put api_v1_permissions_update_url(request_url_params), request_payload, http_json_headers
       last_response.status.should == 200
 
       # privacy private checks

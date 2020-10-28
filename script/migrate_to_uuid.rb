@@ -14,14 +14,14 @@ def execution_summary()
   ###
   #
   # You are running the action '#{ACTION}' which performs the next actions:
-  # 
+  #
   #   #{@actions[ACTION]}
   #
   # It's highly recommended to have a database backup of the PostgreSQL databases, mainly the metadata one and Redis.
   #
   #
   # Params used within the execution of the script
-  # 
+  #
   # DB Connection
   # -------------
   # Database host: #{DBHOST}
@@ -106,13 +106,9 @@ end
 @logs = Hash.new
 
 tables = {
-           :assets => { 
+           :assets => {
              :related => [],
              :singular => 'asset'
-           },
-           :automatic_geocodings => { 
-             :related => ['geocodings'],
-             :singular => 'automatic_geocoding'
            },
            :client_applications => {
              :related => ['oauth_tokens'],
@@ -164,7 +160,7 @@ tables = {
              :singular => 'tag'
            },
            :user_tables => {
-             :related => ['data_imports', 'layers_user_tables', 'tags', 'automatic_geocodings', 'geocodings'],
+             :related => ['data_imports', 'layers_user_tables', 'tags', 'geocodings'],
              :singular => 'table',
              :relation_for => {'layers_user_tables' => 'user_table'}
            },
@@ -188,7 +184,7 @@ redis_keys = {
               },
               :table => {
                 :template => "rails:USERDB:*",
-                :var_position => 1, 
+                :var_position => 1,
                 :separator => ':',
                 :db => 0,
                 :type => 'hash',
@@ -220,7 +216,7 @@ def redis_replace_from_template(template, id, username)
   elsif template.include?('USERID')
     id
   else
-    '' 
+    ''
   end
 end
 
@@ -233,7 +229,7 @@ def redis_template_user_gsub(template, id, username)
   elsif template.include?('USERNAME')
     template.gsub('USERNAME', replacement)
   else
-    '' 
+    ''
   end
 end
 
@@ -302,13 +298,13 @@ def database_name_prefix
   "cartodb_#{ENVIRONMENT}_user_"
 end #database_prefix
 
-def alter_schema(tables) 
+def alter_schema(tables)
   tables.each do |tname, tinfo|
     # Create main uuid column in every table
     puts "Creating uuid column in #{tname}"
     begin
       @conn.exec("ALTER TABLE #{tname} ADD uuid uuid UNIQUE NOT NULL DEFAULT uuid_generate_v4()")
-    rescue => e
+    rescue StandardError => e
       log('C', "Creating uuid column in #{tname}", e.error.strip)
     end
     tinfo[:related].each do |rtable|
@@ -316,7 +312,7 @@ def alter_schema(tables)
       puts "Creating #{relation_column_name_for(tables, tname, rtable)}_uuid column in related table #{rtable}"
       begin
         @conn.exec("ALTER TABLE #{rtable} ADD #{relation_column_name_for(tables, tname, rtable)}_uuid uuid")
-      rescue => e
+      rescue StandardError => e
         log('C', "Creating #{relation_column_name_for(tables, tname, rtable)}_uuid column in related table #{rtable}", e.error.strip)
       end
     end
@@ -330,7 +326,7 @@ def rollback_schema(tables)
       puts "Dropping #{relation_column_name_for(tables, tname, rtable)}_uuid column in related table #{rtable}"
       begin
         @conn.exec("ALTER TABLE #{rtable} DROP IF EXISTS #{relation_column_name_for(tables, tname, rtable)}_uuid")
-      rescue => e
+      rescue StandardError => e
         log('C', "Dropping #{relation_column_name_for(tables, tname, rtable)}_uuid column in related table #{rtable}", e.error.strip)
       end
     end
@@ -338,7 +334,7 @@ def rollback_schema(tables)
     puts "Dropping uuid column in #{tname}"
     begin
       @conn.exec("ALTER TABLE #{tname} DROP IF EXISTS uuid")
-    rescue => e
+    rescue StandardError => e
       log('C', "Dropping uuid column in #{tname}", e.error.strip)
     end
   end
@@ -352,7 +348,7 @@ def migrate_meta(tables)
           puts "Setting #{relation_column_name_for(tables, tname, rtable)}_uuid in #{rtable}"
           begin
             @conn.exec("UPDATE #{rtable} SET #{relation_column_name_for(tables, tname, rtable)}_uuid='#{row['uuid']}' WHERE #{relation_column_name_for(tables, tname, rtable)}_id='#{row['id']}'")
-          rescue => e
+          rescue StandardError => e
             log('C', "Setting #{relation_column_name_for(tables, tname, rtable)}_uuid in #{rtable}", e.error.strip)
           end
         end
@@ -372,13 +368,13 @@ def migrate_data(redis_keys)
         sconn.exec("ALTER ROLE \"#{database_username(row['id'])}\" RENAME TO \"#{database_username(row['uuid'])}\"")
         @conn.exec("UPDATE users SET database_name='#{user_database(row['uuid'])}' WHERE id=#{row['id']} AND uuid='#{row['uuid']}'")
         @conn.exec("UPDATE user_tables SET database_name='#{user_database(row['uuid'])}' WHERE user_id='#{row['id']}' AND user_uuid='#{row['uuid']}'")
-      rescue => e
+      rescue StandardError => e
         log('C', "Renaming pg user and db for id #{row['id']}", e.error.strip)
       end
       puts "Copying redis keys with uuid for id #{row['id']}"
       #begin
         copy_redis_keys(redis_keys, row['id'], row['uuid'], row['username'])
-      #rescue => e
+      #rescue StandardError => e
       #  log('C', "Copying redis keys with uuid for id #{row['id']}", e.error.strip)
       #end
     end
@@ -388,28 +384,28 @@ def migrate_data(redis_keys)
       puts "Chaing user_id for oauth token '#{row['token']}'"
       begin
         alter_redis_hash("rails:oauth_access_tokens:#{row['token']}", 'user_id', row['user_id'], {'db' => 3})
-      rescue => e
+      rescue StandardError => e
         log('C', "Changing user id to uuid in oauth token #{row['token']}", e.error.strip)
       end
     end
   end
 end
 
-def clean_db(tables) 
+def clean_db(tables)
   tables.each do |tname, tinfo|
     tinfo[:related].each do |rtable|
       # Drop old id relation column in every table
       puts "Dropping #{relation_column_name_for(tables, tname, rtable)}_id from #{rtable}"
       begin
         @conn.exec("ALTER TABLE #{rtable} DROP IF EXISTS #{relation_column_name_for(tables, tname, rtable)}_id")
-      rescue => e
+      rescue StandardError => e
         log('C', "Dropping #{relation_column_name_for(tables, tname, rtable)}_id from #{rtable}", e.error.strip)
       end
       # Rename new uuid relation column to id
       puts "Renaming #{relation_column_name_for(tables, tname, rtable)}_uuid to #{relation_column_name_for(tables, tname, rtable)}_id in #{rtable}"
       begin
         @conn.exec("ALTER TABLE #{rtable} RENAME #{relation_column_name_for(tables, tname, rtable)}_uuid TO #{relation_column_name_for(tables, tname, rtable)}_id")
-      rescue => e
+      rescue StandardError => e
         log('C', "Renaming #{relation_column_name_for(tables, tname, rtable)}_uuid to #{relation_column_name_for(tables, tname, rtable)}_id in #{rtable}", e.error.strip)
       end
     end
@@ -417,21 +413,21 @@ def clean_db(tables)
     puts "Dropping old id from #{tname}"
     begin
       @conn.exec("ALTER TABLE #{tname} DROP IF EXISTS id")
-    rescue => e
+    rescue StandardError => e
       log('C', "Dropping old id from #{rtable}", e.error.strip)
     end
     # Rename new uuid relation column to id
     puts "Renaming uuid to id in #{tname}"
     begin
       @conn.exec("ALTER TABLE #{tname} RENAME uuid TO id")
-    rescue => e
+    rescue StandardError => e
       log('C', "Renaming uuid to id in #{tname}", e.error.strip)
     end
     # Set new id as primary key
     puts "Setting new id as primary key on #{tname}"
     begin
       @conn.exec("ALTER TABLE #{tname} ADD PRIMARY KEY (id)")
-    rescue => e
+    rescue StandardError => e
       log('C', "Setting new id as primary key on #{tname}", e.error.strip)
     end
   end

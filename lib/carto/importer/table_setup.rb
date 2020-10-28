@@ -1,6 +1,9 @@
 module Carto
   module Importer
     class TableSetup
+
+      include ::LoggerHelper
+
       STATEMENT_TIMEOUT = 1.hour * 1000
 
       def initialize(user:, overviews_creator:, log:, statement_timeout: STATEMENT_TIMEOUT)
@@ -49,12 +52,8 @@ module Carto
         statements.each do |statement|
           begin
             database.run(statement)
-          rescue => exception
-            if exception.message !~ /relation .* already exists/
-              CartoDB::Logger.error(exception: exception,
-                                    message: 'Error copying indexes',
-                                    statement: statement)
-            end
+          rescue StandardError => e
+            log_error(exception: e)
           end
         end
       end
@@ -70,12 +69,9 @@ module Carto
         end
 
         update_table_pg_stats(qualified_table_name)
-      rescue => exception
-        CartoDB::Logger.error(message: 'Error in sync cartodbfy',
-                              exception: exception,
-                              user: @user,
-                              table: table_name)
-        raise exception
+      rescue StandardError => e
+        log_error(message: 'Error in sync cartodbfy', exception: e, table: { name: table_name })
+        raise e
       end
 
       def copy_privileges(origin_schema, origin_table_name, destination_schema, destination_table_name)
@@ -90,32 +86,26 @@ module Carto
           WHERE relname='#{destination_table_name}'
           and relnamespace = (select oid from pg_namespace where nspname = '#{destination_schema}')
         ))
-      rescue => exception
-        CartoDB::Logger.error(exception: exception,
-                              message: 'Error copying privileges',
-                              origin_schema: origin_schema,
-                              origin_table_name: origin_table_name,
-                              destination_schema: destination_schema,
-                              destination_table_name: destination_table_name)
+      rescue StandardError => e
+        log_error(
+          message: 'Error copying privileges', exception: e,
+          origin_schema: origin_schema, origin_table_name: origin_table_name,
+          destination_schema: destination_schema, destination_table_name: destination_table_name
+        )
       end
 
       def recreate_overviews(table_name)
         dataset = @overviews_creator.dataset(table_name)
         dataset.update_overviews!
-      rescue => exception
+      rescue StandardError => e
         # In case of overview creation failure we'll just omit the
         # overviews creation and continue with the process.
         # Since the actual creation is handled by a single SQL
         # function, and thus executed in a transaction, we shouldn't
         # need any clean up here. (Either all overviews were created
         # or nothing changed)
-        @log.append("Overviews recreation failed: #{exception.message}")
-        CartoDB::Logger.error(
-          message:    "Overviews recreation failed:  #{exception}",
-          exception:  exception,
-          user:       @user,
-          table_name: table_name
-        )
+        @log.append("Overviews recreation failed: #{e.message}")
+        log_error(message: 'Error creating overviews', exception: e, table_name: table_name)
       end
 
       def fix_oid(table_name)
@@ -135,6 +125,12 @@ module Carto
 
       def update_cdb_tablemetadata(name)
         @user.tables.where(name: name).first.update_cdb_tablemetadata
+      end
+
+      private
+
+      def log_context
+        super.merge(current_user: @user)
       end
     end
   end

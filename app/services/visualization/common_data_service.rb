@@ -9,6 +9,8 @@ module CartoDB
 
     class CommonDataService
 
+      include ::LoggerHelper
+
       def initialize(datasets = nil)
         @datasets = datasets
       end
@@ -51,7 +53,7 @@ module CartoDB
         datasets = begin
                      get_datasets(visualizations_api_url)
                    rescue StandardError => e
-                     CartoDB::Logger.error(message: "Loading common data failed", exception: e, user: user)
+                     log_error(message: "Loading common data failed", exception: e, target_user: user)
                      nil
                    end
         # As deletion would delete all user syncs, if the endpoint fails or return nothing, just do nothing.
@@ -119,7 +121,7 @@ module CartoDB
                   username: 'common-data'
                 )
               end
-            rescue => e
+            rescue StandardError => e
               CartoDB.notify_exception(e, {
                 name: dataset.fetch('name', 'ERR: name'),
                 source: dataset.fetch('source', 'ERR: source'),
@@ -148,7 +150,7 @@ module CartoDB
             # This happens for the organization quota validation in the user model so we bypass this
             user.save(:validate => false, raise_on_failure: true)
           end
-        rescue => e
+        rescue StandardError => e
           CartoDB.notify_exception(e, {user: user})
         end
       end
@@ -174,12 +176,12 @@ module CartoDB
         begin
           visualization.destroy
           true
-        rescue => e
+        rescue StandardError => e
           match = e.message =~ /violates foreign key constraint "external_data_imports_external_source_id_fkey"/
-          if match.present? && match >= 0
+          if match&.positive?
             # After #13667 this should no longer happen: deleting remote visualizations is propagated, and external
             # sources, external data imports and syncs are deleted
-            CartoDB::Logger.error(message: "Couldn't delete, already imported", visualization_id: visualization.id)
+            log_error(message: "Couldn't delete, already imported", visualization: { id: visualization.id })
             false
           else
             CartoDB.notify_error(

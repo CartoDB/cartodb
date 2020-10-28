@@ -3,6 +3,8 @@ require_relative 'db/sanitize.rb'
 
 module Carto
   class ValidTableNameProposer
+    include ::LoggerHelper
+
     DEFAULT_SEPARATOR = '_'.freeze
     DEFAULT_TABLE_NAME = 'untitled_table'.freeze
     MAX_RENAME_RETRIES = 10000
@@ -33,7 +35,7 @@ module Carto
         proposal = Carto::DB::Sanitize.append_with_truncate_and_sanitize(prefix, "#{separator}#{appendix}")
       end
 
-      CartoDB::Logger.error(message: 'Physical tables: Out of rename retries', table_name: prefix)
+      log_error(message: 'Physical tables: Out of rename retries', table: { name: prefix })
 
       raise "Out of retries (#{MAX_RENAME_RETRIES}) renaming #{proposal}"
     end

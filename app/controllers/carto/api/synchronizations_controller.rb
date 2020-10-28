@@ -8,7 +8,7 @@ module Carto
 
       def show
         render_jsonp(@synchronization)
-      rescue => exception
+      rescue StandardError => exception
         CartoDB.notify_exception(exception)
         head(404)
       end
@@ -21,14 +21,14 @@ module Carto
           total_entries: synchronizations.count
         }
         render_jsonp(response)
-      rescue => exception
+      rescue StandardError => exception
         CartoDB.notify_exception(exception)
         head(404)
       end
 
       def syncing?
         render_jsonp( { state: @synchronization.state } )
-      rescue => exception
+      rescue StandardError => exception
         CartoDB.notify_exception(exception)
         head(404)
       end
@@ -44,5 +44,3 @@ module Carto
     end
   end
 end
-
-

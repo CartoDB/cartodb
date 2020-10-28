@@ -141,9 +141,6 @@ export default {
       }
     }
   },
-  mounted () {
-    this.initializeDataset();
-  },
   watch: {
     isSubscriptionSyncing: {
       immediate: true,
@@ -152,7 +149,7 @@ export default {
         if (this.isSubscriptionSyncing) {
           this.id_interval = setInterval(() => {
             this.$store.dispatch('catalog/fetchSubscriptionsList');
-          }, 5000);
+          }, 1000);
         }
       }
     },

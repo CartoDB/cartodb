@@ -106,7 +106,7 @@ module CartoDB
           begin
             resource_data = @datasource.get_resource(@item_metadata[:id])
             @http_response_code = @datasource.get_http_response_code if @datasource.providers_download_url?
-          rescue => exception
+          rescue StandardError => exception
             if exception.message =~ /quota/i
               user_id = @options[:user_id]
               report_over_quota(user_id) if user_id
@@ -153,4 +153,3 @@ module CartoDB
     end
   end
 end
-

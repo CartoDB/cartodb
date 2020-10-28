@@ -106,7 +106,6 @@ module CartoDB
     def initialize(message)
       @db_message = message.split("\n")[0]
       @syntax_message = message.split("\n")[1..-1].join("\n")
-      CartoDB::StdoutLogger.info 'InvalidType', message
     end
   end
 
@@ -121,7 +120,6 @@ module CartoDB
     attr_accessor :error_message
     def initialize(message)
       @error_message = message
-      CartoDB::StdoutLogger.info 'EmptyAttributes', message
     end
   end
 
@@ -129,7 +127,6 @@ module CartoDB
     attr_accessor :error_message
     def initialize(message)
       @error_message = message
-      CartoDB::StdoutLogger.info 'InvalidAttributes', message
     end
   end
 
@@ -144,7 +141,7 @@ module CartoDB
       @response_code = response.code
       @errors = JSON.parse(response.body)['errors']
       @errors = [@errors] unless @errors.is_a?(Array)
-    rescue
+    rescue StandardError
       @errors = ['Couldn\'t parse response errors.']
     end
 

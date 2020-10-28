@@ -14,6 +14,7 @@ class Carto::User < ActiveRecord::Base
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
   include Carto::UserCommons
+  include CartodbCentralSynchronizable
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
@@ -38,20 +39,20 @@ class Carto::User < ActiveRecord::Base
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
   has_one :static_notifications, class_name: Carto::UserNotification, inverse_of: :user
 
-  has_many :feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user
-  has_many :feature_flags, through: :feature_flags_user
+  has_many :self_feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user, class_name: Carto::FeatureFlagsUser
+  has_many :self_feature_flags, through: :self_feature_flags_user, source: :feature_flag
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
   has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
-  has_many :search_tweets, inverse_of: :user
+  has_many :search_tweets, class_name: Carto::SearchTweet, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
   has_many :tags, inverse_of: :user
   has_many :permissions, inverse_of: :owner, foreign_key: :owner_id
   has_many :connector_configurations, inverse_of: :user, dependent: :destroy
 
-  has_many :client_applications, class_name: Carto::ClientApplication
-  has_many :oauth_tokens, class_name: Carto::OauthToken
+  has_one :client_application, class_name: Carto::ClientApplication, dependent: :destroy
+  has_many :tokens, class_name: Carto::OauthToken, dependent: :destroy
 
   has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
   has_many :groups, through: :users_group
@@ -83,6 +84,7 @@ class Carto::User < ActiveRecord::Base
   alias_method :assets_dataset, :assets
   alias_method :data_imports_dataset, :data_imports
   alias_method :geocodings_dataset, :geocodings
+  def carto_user; self end
 
   before_create :set_database_host
   before_create :generate_api_key
@@ -98,23 +100,6 @@ class Carto::User < ActiveRecord::Base
     static_notifications_without_creation || build_static_notifications(user: self, notifications: {})
   end
   alias_method_chain :static_notifications, :creation
-
-  def password=(value)
-    return if !value.nil? && password_validator.validate(value, value, self).any?
-
-    @password = value
-    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
-                                                                     secret: Cartodb.config[:password_secret])
-  end
-
-  def password_confirmation=(password_confirmation)
-    # TODO: Implement
-  end
-
-  def invalidate_all_sessions!
-    user = ::User.where(id: self.id).first
-    user&.invalidate_all_sessions!
-  end
 
   def default_avatar
     "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
@@ -136,17 +121,6 @@ class Carto::User < ActiveRecord::Base
 
   def default_table_privacy
     private_tables_enabled ? Carto::UserTable::PRIVACY_PRIVATE : Carto::UserTable::PRIVACY_PUBLIC
-  end
-
-  def feature_flags_list
-    ffs = feature_flags_user + (organization&.inheritable_feature_flags || [])
-    @feature_flag_names = (ffs
-                                 .map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false)
-                                                                                 .map(&:name)).uniq.sort
-  end
-
-  def has_feature_flag?(feature_flag_name)
-    feature_flags_list.present? && feature_flags_list.include?(feature_flag_name)
   end
 
   def twitter_datasource_enabled
@@ -307,24 +281,12 @@ class Carto::User < ActiveRecord::Base
 
   def dbdirect_effective_ips=(ips)
     ips ||= []
-    bearer = dbdirect_bearer
-    if bearer.dbdirect_ip
-      bearer.dbdirect_ip.update!(ips: ips)
-    else
-      bearer.create_dbdirect_ip!(ips: ips)
-    end
+    reload
+    dbdirect_ip ? dbdirect_ip.update!(ips: ips) : create_dbdirect_ip!(ips: ips)
   end
 
   def dbdirect_effective_ip
-    dbdirect_bearer.dbdirect_ip
-  end
-
-  def dbdirect_bearer
-    if organization.present? && organization.owner != self
-      organization.owner.reload
-    else
-      reload
-    end
+    reload.dbdirect_ip
   end
 
   private

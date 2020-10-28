@@ -2,6 +2,8 @@ require_relative '../../spec_helper'
 require_relative '../user_shared_examples'
 
 describe Carto::User do
+  let(:user) { create(:carto_user) }
+
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
       get_user_by_id(user_id).twitter_imports_count
@@ -12,11 +14,11 @@ describe Carto::User do
     end
 
     def create_user
-      FactoryGirl.create(:carto_user)
+      create(:carto_user)
     end
 
     def build_user
-      FactoryGirl.build(:carto_user)
+      build(:carto_user)
     end
   end
 

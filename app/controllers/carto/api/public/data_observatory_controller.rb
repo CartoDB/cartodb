@@ -20,10 +20,10 @@ module Carto
 
         before_action :load_user
         before_action :load_filters, only: [:subscriptions]
-        before_action :load_id, only: [:subscription_info, :subscribe, :unsubscribe]
-        before_action :load_type, only: [:subscription_info, :subscribe]
+        before_action :load_id, only: [:subscription, :subscription_info, :subscribe, :unsubscribe]
+        before_action :load_type, only: [:subscription, :subscription_info, :subscribe]
         before_action :check_api_key_permissions
-        before_action :check_do_enabled, only: [:subscription_info, :subscriptions]
+        before_action :check_do_enabled, only: [:subscription, :subscription_info, :subscriptions]
 
         setup_default_rescues
         rescue_from Carto::SubscriptionNotFoundError, with: :rescue_from_subscription_not_found
@@ -37,7 +37,7 @@ module Carto
         VALID_TYPES = %w(dataset geography).freeze
         VALID_STATUSES = %w(active requested).freeze
         DATASET_REGEX = /[\w\-]+\.[\w\-]+\.[\w\-]+/.freeze
-        VALID_ORDER_PARAMS = %i(id table dataset project type).freeze
+        VALID_ORDER_PARAMS = %i(created_at id table dataset project type).freeze
         METADATA_FIELDS = %i(id estimated_delivery_days subscription_list_price tos tos_link licenses licenses_link
                              rights type).freeze
         TABLES_BY_TYPE = { 'dataset' => 'datasets', 'geography' => 'geographies' }.freeze
@@ -57,16 +57,13 @@ module Carto
           render(json: { subscriptions: response })
         end
 
+        def subscription
+          bq_subscription = Carto::DoLicensingService.new(@user.username).subscription(@id)
+          render(json: bq_subscription)
+        end
+
         def subscription_info
           response = present_metadata(subscription_metadata)
-
-          subscriptions = Carto::DoLicensingService.new(@user.username).subscriptions
-          sub = subscriptions.find { |s| s[:id] = @id }
-
-          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
-          sync_data = doss.sync(@id)
-
-          response = response.merge(sub).merge(sync_data)
 
           render(json: response)
         end
@@ -96,7 +93,7 @@ module Carto
         end
 
         def regular_license(metadata)
-          DataObservatoryMailer.user_request(@user, metadata[:id], metadata[:name]).deliver_now
+          DataObservatoryMailer.user_request(@user, metadata[:name], metadata[:provider_name]).deliver_now
           DataObservatoryMailer.carto_request(@user, metadata[:id], metadata[:estimated_delivery_days]).deliver_now
           licensing_service = Carto::DoLicensingService.new(@user.username)
           licensing_service.subscribe(license_info(metadata, 'requested'))
@@ -153,19 +150,26 @@ module Carto
 
         def load_filters
           _, _, @order, @direction = page_per_page_order_params(
-            VALID_ORDER_PARAMS, default_order: 'id', default_order_direction: 'asc'
+            VALID_ORDER_PARAMS, default_order: 'created_at', default_order_direction: 'asc'
           )
           @status = VALID_STATUSES.include?(params[:status]) ? params[:status] : nil
-          load_type(required: false)  
+          load_type(required: false)
         end
 
         def load_id
-          @id = params[:id]
+          @id = params[:id] || params[:subscription_id]
           raise ParamInvalidError.new(:id) unless @id =~ DATASET_REGEX
         end
 
         def load_type(required: true)
           @type = params[:type]
+          id = params[:id] || params[:subscription_id]
+          if @type.nil? && !(id.nil?) then
+            # If we don't have the type, we can figure it out from the id:
+            doss = Carto::DoSyncServiceFactory.get_for_user(@user)
+            parsed_entity_id = doss.parsed_entity_id(id)
+            @type = parsed_entity_id[:type]
+          end
           return if @type.nil? && !required
 
           raise ParamInvalidError.new(:type, VALID_TYPES.join(', ')) unless VALID_TYPES.include?(@type)
@@ -177,7 +181,7 @@ module Carto
         end
 
         def check_do_enabled
-          Cartodb::Central.new.check_do_enabled(@user.username)
+          @user.do_enabled?
         end
 
         def rescue_from_central_error(exception)
@@ -190,12 +194,8 @@ module Carto
           if @type.present?
             subscriptions = subscriptions.select { |subscription| subscription[:type] == @type }
           end
-          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
-          enriched_subscriptions = subscriptions.map do |subscription|
-            sync_data = doss.sync(subscription[:id])
-            subscription.merge(sync_data)
-          end
-          ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }
+
+          ordered_subscriptions = subscriptions.sort_by { |subscription| subscription[@order] || subscription['id'] }
           @direction == :asc ? ordered_subscriptions : ordered_subscriptions.reverse
         end
 
@@ -213,7 +213,10 @@ module Carto
         def subscription_metadata
           connection = Carto::Db::Connection.do_metadata_connection()
 
-          query = "SELECT *, '#{@type}' as type FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
+          query = "SELECT t.*, p.name as provider_name, '#{@type}' as type
+            FROM #{TABLES_BY_TYPE[@type]} t
+              INNER JOIN providers p ON t.provider_id = p.id
+            WHERE t.id = '#{@id}'"
           result = connection.execute(query).first
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 
@@ -230,13 +233,18 @@ module Carto
         end
 
         def license_info(metadata, status)
-          {
+          doss = Carto::DoSyncServiceFactory.get_for_user(@user)
+          entity_info = doss.parsed_entity_id(metadata[:id])
+          # 'requested' datasets may no exists yet in 'bq', but let's assume it will...
+          available_in = (metadata[:available_in].nil? && status == 'requested')? ['bq'] : metadata[:available_in]
+          entity_info.merge({
             dataset_id: metadata[:id],
-            available_in: metadata[:available_in],
+            available_in: available_in,
             price: metadata[:subscription_list_price],
-            expires_at: Time.now.round + 1.year,
+            created_at: entity_info[:created_at] || Time.now.round,
+            expires_at: entity_info[:expires_at] || Time.now.round + 1.year,
             status: status
-          }
+          })
         end
       end
     end

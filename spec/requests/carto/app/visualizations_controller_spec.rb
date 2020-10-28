@@ -51,9 +51,9 @@ describe Carto::App::VisualizationsController do
         user2 = FactoryGirl.create(:carto_user)
         @app.permission.acl = [
           {
-            type: Permission::TYPE_USER,
+            type: Carto::Permission::TYPE_USER,
             entity: { id: user2.id, username: user2.username },
-            access: Permission::ACCESS_READONLY
+            access: Carto::Permission::ACCESS_READONLY
           }
         ]
         @app.permission.save

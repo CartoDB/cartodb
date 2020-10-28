@@ -54,8 +54,6 @@ describe Synchronization::Member do
 
     describe "synchronization" do
       it 'creates overviews' do
-        CartoDB::Logger.stubs(:error).never
-
         url = 'https://wadus.com/cities-box.csv'
         path = "#{Rails.root}/spec/support/data/cities-box.csv"
         stub_download(url: url, filepath: path, content_disposition: false)
@@ -77,7 +75,7 @@ describe Synchronization::Member do
             privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
           ).run_import!
         end
-        table_name = UserTable[id: data_import.table.id].name
+        table_name = UserTable[id: data_import.table_id].name
         has_overviews?(@user1, table_name).should eq false
 
         # Now synchronize with overviews needed
@@ -88,8 +86,6 @@ describe Synchronization::Member do
       end
 
       it 'deletes overviews' do
-        CartoDB::Logger.stubs(:error).never
-
         url = 'https://wadus.com/cities-box.csv'
         path = "#{Rails.root}/spec/support/data/cities-box.csv"
         stub_download(url: url, filepath: path, content_disposition: false)
@@ -111,7 +107,7 @@ describe Synchronization::Member do
             privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
           ).run_import!
         end
-        table_name = UserTable[id: data_import.table.id].name
+        table_name = UserTable[id: data_import.table_id].name
         member.name = table_name
         has_overviews?(@user1, table_name).should eq true
 
@@ -123,8 +119,6 @@ describe Synchronization::Member do
       end
 
       it 'updates overviews' do
-        CartoDB::Logger.stubs(:error).never
-
         url = 'https://wadus.com/cities-box.csv'
         path = "#{Rails.root}/spec/support/data/cities-box.csv"
         stub_download(url: url, filepath: path, content_disposition: false)
@@ -146,7 +140,7 @@ describe Synchronization::Member do
             privacy:     ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['public']
           ).run_import!
         end
-        table_name = UserTable[id: data_import.table.id].name
+        table_name = UserTable[id: data_import.table_id].name
         has_overviews?(@user1, table_name).should eq true
 
         # Now synchronize with overviews needed

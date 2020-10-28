@@ -10,6 +10,7 @@ require_dependency 'carto/helpers/password_rate_limit'
 require_dependency 'carto/helpers/urls'
 require_dependency 'carto/helpers/varnish_cache_handler'
 require_dependency 'carto/gcloud_user_settings'
+require_dependency 'carto/helpers/sessions_invalidations'
 
 module Carto::UserCommons
   include Carto::BatchQueriesStatementTimeout
@@ -23,6 +24,7 @@ module Carto::UserCommons
   include Carto::PasswordRateLimit
   include Carto::Urls
   include Carto::VarnishCacheHandler
+  include Carto::SessionsInvalidations
 
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
@@ -85,21 +87,6 @@ module Carto::UserCommons
   # @return CartoDB::OAuths
   def oauths
     @oauths ||= CartoDB::OAuths.new(self)
-  end
-
-  def remaining_days_deletion
-    return nil unless state == STATE_LOCKED
-
-    begin
-      deletion_date = Cartodb::Central.new.get_user(username).fetch('scheduled_deletion_date', nil)
-      return nil unless deletion_date
-
-      (deletion_date.to_date - Date.today).to_i
-    rescue StandardError => e
-      message = 'Something went wrong calculating the number of remaining days for account deletion'
-      CartoDB::Logger.warning(exception: e, message: message)
-      return nil
-    end
   end
 
   def unverified?
@@ -265,6 +252,7 @@ module Carto::UserCommons
     viewer ? 'viewer' : 'builder'
   end
 
+  # TODO: replace .to_hash with .to_h, and monkeypatch Sequel model to respond to :attributes
   def logging_attrs
     if self.respond_to?(:attributes)
       # AR
@@ -288,7 +276,7 @@ module Carto::UserCommons
       license_srv.add_to_redis(attributes[:do_dataset])
     else
       message = 'Error updating a DO subscription: unknown action'
-      CartoDB::Logger.error(message: message)
+      log_error(message: message)
       raise message
     end
   end
@@ -311,4 +299,96 @@ module Carto::UserCommons
   def do_enabled?
     gcloud_settings[:service_account].present?
   end
+
+  def has_access_to_coverband?
+    return true unless Rails.env.production?
+
+    organization&.name == 'team'
+  end
+
+  def feature_flags
+    feature_flags_ids = self_feature_flags.pluck(:id) + Carto::FeatureFlag.not_restricted.pluck(:id)
+    feature_flags_ids += organization.inheritable_feature_flags.pluck(:id) if organization
+
+    Carto::FeatureFlag.where(id: feature_flags_ids)
+  end
+
+  def feature_flags_names
+    feature_flags.pluck(:name)
+  end
+
+  def has_feature_flag?(feature_flag_name)
+    feature_flags.exists?(name: feature_flag_name)
+  end
+
+  def activate_feature_flag!(feature_flag)
+    return if Carto::FeatureFlagsUser.exists?(feature_flag: feature_flag, user_id: id)
+
+    Carto::FeatureFlagsUser.create!(feature_flag: feature_flag, user_id: id)
+  end
+
+  def update_feature_flags(feature_flag_ids = nil)
+    return unless feature_flag_ids
+
+    self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all
+
+    new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)
+    new_feature_flags_ids.each do |feature_flag_id|
+      self_feature_flags_user.find_or_create_by(feature_flag_id: feature_flag_id)
+    end
+  end
+
+  def remaining_twitter_quota
+    if active_record_organization.present?
+      remaining = active_record_organization.remaining_twitter_quota
+    else
+      remaining = twitter_datasource_quota - get_twitter_imports_count
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def effective_twitter_total_quota
+    active_record_organization.present? ? active_record_organization.twitter_datasource_quota : twitter_datasource_quota
+  end
+
+  def effective_twitter_block_price
+    active_record_organization.present? ? active_record_organization.twitter_datasource_block_price : twitter_datasource_block_price
+  end
+
+  def effective_twitter_datasource_block_size
+    active_record_organization.present? ? active_record_organization.twitter_datasource_block_size : twitter_datasource_block_size
+  end
+
+  def effective_get_twitter_imports_count
+    active_record_organization.present? ? active_record_organization.get_twitter_imports_count : get_twitter_imports_count
+  end
+
+  # Should return the number of tweets imported by this user for the specified period of time, as an integer
+  def get_twitter_imports_count(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+
+    Carto::SearchTweet.twitter_imports_count(search_tweets, date_from, date_to)
+  end
+  alias get_twitter_datasource_calls get_twitter_imports_count
+
+  def active_record_organization
+    if organization.present?
+      if organization.kind_of?(ActiveRecord::Base)
+        organization
+      else
+        Carto::Organization.find(organization.id)
+      end
+    end
+  end
+
+  def new_client_application
+    Carto::ClientApplication.create!(user_id: id)
+  end
+
+  def reset_client_application!
+    client_application&.destroy
+    Carto::ClientApplication.create!(user_id: id)
+  end
+
 end

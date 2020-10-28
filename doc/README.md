@@ -5,6 +5,7 @@ Yes, there's a lot of docs missing, we appreciate [contributions](../CONTRIBUTIN
 - [API](api.md)
 - [redis](redis.md)
 - [Frontend](frontend/README.md)
+- [Logging](logging.md)
 
 #### Developer Center
 

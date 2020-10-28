@@ -24,6 +24,8 @@ module CartoDB
     end
 
     class Member
+
+      include ::LoggerHelper
       include Carto::Configuration
       include Virtus.model
 
@@ -207,11 +209,11 @@ module CartoDB
 
         notify
 
-      rescue => exception
+      rescue StandardError => exception
         if exception.is_a? CartoDB::Datasources::NotFoundDownloadError
-          CartoDB::Logger.debug(exception: exception, sync_id: id)
+          log_warning(exception: exception, synchronization_member: { id: id })
         else
-          CartoDB::Logger.error(exception: exception, sync_id: id)
+          log_error(exception: exception, synchronization_member: { id: id })
         end
         log.append_and_store exception.message, truncate = false
         log.append exception.backtrace.join("\n"), truncate = false
@@ -236,7 +238,7 @@ module CartoDB
         if exception.is_a?(TokenExpiredOrInvalidError)
           begin
             user.oauths.remove(exception.service_name)
-          rescue => ex
+          rescue StandardError => ex
             log.append "Exception removing OAuth: #{ex.message}"
             log.append ex.backtrace
           end
@@ -292,7 +294,8 @@ module CartoDB
         # last-modified time of the external data at the last synchronization) through the
         # downloader provided to the runner.
         # For connectors we need to pass it directly to the connector runner.
-        CartoDB::Importer2::ConnectorRunner.check_availability!(user)
+        provider_name = get_provider_name_from_id(service_item_id)
+        CartoDB::Importer2::ConnectorRunner.check_availability!(user, provider_name)
         CartoDB::Importer2::ConnectorRunner.new(
           service_item_id,
           user: user,
@@ -392,11 +395,11 @@ module CartoDB
         self.retried_times  = 0
         self.run_at         = Time.now + interval
         self.modified_at    = importer.last_modified
-        geocode_table
-      rescue => exception
-        CartoDB::Logger.error(exception: exception,
-                                message: 'Error updating state for sync table',
-                                sync_id: self.id)
+      rescue StandardError => exception
+        log_error(
+          exception: exception, message: 'Error updating state for sync table',
+          synchronization_member: { id: id }
+        )
         self
       end
 
@@ -438,7 +441,7 @@ module CartoDB
         end
 
         track_failure
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e,
           {
             error_code: error_code,
@@ -464,15 +467,6 @@ module CartoDB
 
         Carto::Tracking::Events::FailedSync.new(self.user_id, properties).report
       end
-
-      # Tries to run automatic geocoding if present
-      def geocode_table
-        return unless table && table.automatic_geocoding
-        log.append 'Running automatic geocoding...'
-        table.automatic_geocoding.run
-      rescue => e
-        log.append "Error while running automatic geocoding: #{e.message}"
-      end # geocode_table
 
       def to_hash
         attributes.merge({from_external_source: from_external_source?}).to_hash
@@ -572,7 +566,7 @@ module CartoDB
             oauth = user.oauths.select(datasource_name)
             datasource.token = oauth.token unless oauth.nil?
           end
-        rescue => ex
+        rescue StandardError => ex
           log.append "Exception: #{ex.message}"
           log.append ex.backtrace
           datasource = nil
@@ -581,12 +575,23 @@ module CartoDB
       end
 
       def from_external_source?
-        ::ExternalDataImport.where(synchronization_id: self.id).first != nil
+        Carto::ExternalDataImport.where(synchronization_id: self.id).first != nil
       end
 
       attr_reader :repository
 
       attr_accessor :log_trace, :service_name, :service_item_id
+
+      private
+
+      def get_provider_name_from_id(service_item_id)
+        begin
+          connector_params = JSON.parse(service_item_id)
+          return connector_params['provider']
+        rescue StandardError
+          return nil
+        end
+      end
 
     end
   end

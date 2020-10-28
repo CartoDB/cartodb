@@ -5,6 +5,8 @@ require_relative '../../lib/carto_api/json_client'
 
 class CommonData
 
+  include ::LoggerHelper
+
   def initialize(visualizations_api_url)
     @datasets = nil
     @http_client = Carto::Http::Client.get('common_data', log_requests: true)
@@ -27,16 +29,16 @@ class CommonData
             @datasets = get_datasets(response.response_body)
             redis_cache.set(is_https_request, response.headers, response.response_body)
           else
-            CartoDB::Logger.warning(message: "Error retrieving common data datasets", response: response.to_s)
+            log_warning(message: "Error retrieving common data datasets", error_detail: response.inspect)
           end
         rescue StandardError => e
-          CartoDB::Logger.error(exception: e)
+          log_error(exception: e)
         end
       else
         @datasets = get_datasets(cached_data[:body])
       end
 
-      CartoDB::Logger.error(message: 'common-data empty', url: @visualizations_api_url) if @datasets.empty?
+      log_error(message: 'common-data empty', url: @visualizations_api_url) if @datasets.empty?
     end
 
     @datasets
@@ -52,7 +54,7 @@ class CommonData
     begin
       rows = JSON.parse(json).fetch('visualizations', [])
     rescue StandardError => e
-      CartoDB::Logger.error(exception: e)
+      log_error(exception: e)
       rows = []
     end
 

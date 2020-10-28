@@ -25,16 +25,16 @@
     <div class="u-ml--auto grid-cell grid-cell--col3 grid-cell--col4--tablet buttons-actions" :class="{ publicWebsite }">
       <div class="u-flex u-flex__justify--end">
         <Button
-          v-if="getSubscriptionStatus === 'interested' && !interesedInSubscription"
+          v-if="getSubscriptionStatus === 'interested' && !interestedInSubscription"
           :color="publicWebsite ? 'green' : ''"
           :big="publicWebsite"
           :arrow="publicWebsite"
-          @click.native="interesed"
+          @click.native="interested"
         >
           I’m interested
         </Button>
         <SubscriptionRequestSuccess
-          v-else-if="getSubscriptionStatus === 'interested' && interesedInSubscription"
+          v-else-if="getSubscriptionStatus === 'interested' && interestedInSubscription"
         ></SubscriptionRequestSuccess>
         <Button
           v-else-if="getSubscriptionStatus === 'free_subscription'"
@@ -60,17 +60,24 @@
             :title="subscriptionInfo.sync_status === 'syncing' ? 'Can not remove a subscription while connecting' : ''"
             @click="subscriptionInfo.sync_status !== 'syncing' && showModal('unsubscribe')"
             :class="{ 'disabled': subscriptionInfo.sync_status === 'syncing' }"
-            class="text is-small is-txtSoftGrey u-mt--8 underline"
-            >Unsubscribe
+            class="text is-small is-txtSoftGrey u-mt--8 underline">
+            Unsubscribe
           </a>
         </div>
-        <Button
+        <div
           v-else-if="getSubscriptionStatus === 'requested'"
-          class="is-outline extra-border navy-blue noCursor"
+          class="u-flex u-flex__direction--column u-flex__align--center"
         >
-          Requested
-          <img class="u-ml--12" src="../../assets/icons/catalog/check.svg" alt="check" />
-        </Button>
+          <Button class="is-outline extra-border navy-blue noCursor">
+            Requested
+            <img class="u-ml--12" src="../../assets/icons/catalog/check.svg" alt="check" />
+          </Button>
+          <a
+            @click="showModal('cancelRequest')"
+            class="text is-small is-txtSoftGrey u-mt--8 underline">
+            Cancel request
+          </a>
+        </div>
       </div>
       <p
         v-if="subscriptionInfo && subscriptionInfo.status !== 'active'"
@@ -158,7 +165,7 @@ export default {
       }
       return null;
     },
-    interesedInSubscription () {
+    interestedInSubscription () {
       return this.interestedSubscriptions.indexOf(this.dataset.id) >= 0;
     },
     isEnterprise () {
@@ -172,11 +179,18 @@ export default {
     getFormURL () {
       return formURL(this.dataset);
     },
-    interesed () {
+    async interested () {
       if (this.isPublicWebsite) {
         window.location.replace(this.getFormURL());
       } else {
-        this.$store.dispatch('catalog/requestDataset', { user: this.$store.state.user, dataset: this.dataset });
+        if (
+          await this.$store.dispatch('catalog/requestDataset', {
+            user: this.$store.state.user,
+            dataset: this.dataset
+          })
+        ) {
+          this.$store.commit('catalog/addInterestedSubscriptions', this.dataset.id);
+        }
       }
     },
     showModal (mode) {

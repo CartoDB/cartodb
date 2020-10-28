@@ -16,6 +16,8 @@ module CartoDB
       #    This obviously will work for a single user.
       class Dropbox < BaseOAuth
 
+        include ::LoggerHelper
+
         # Required for all datasources
         DATASOURCE_NAME = 'dropbox'
 
@@ -71,7 +73,7 @@ module CartoDB
         # @throws AuthError
         def get_auth_url
           authenticator.authorize_url redirect_uri: @callback_url, state: state
-        rescue => ex
+        rescue StandardError => ex
           raise AuthError.new("get_auth_url(#{use_callback_flow}): #{ex.message}", DATASOURCE_NAME)
         end
 
@@ -84,7 +86,7 @@ module CartoDB
 
           @client = DropboxApi::Client.new(@access_token)
           @access_token
-        rescue => ex
+        rescue StandardError => ex
           raise AuthError.new("validate_callback(#{params.inspect}): #{ex.message}", DATASOURCE_NAME)
         end
 
@@ -95,7 +97,7 @@ module CartoDB
         def token=(token)
           @access_token = token
           @client = DropboxApi::Client.new(@access_token)
-        rescue => ex
+        rescue StandardError => ex
           handle_error(ex, "token= : #{ex.message}")
         end
 
@@ -127,7 +129,7 @@ module CartoDB
             end
           end
           all_results
-        rescue => ex
+        rescue StandardError => ex
           handle_error(ex, "get_resources_list(): #{ex.message}")
         end
 
@@ -143,7 +145,7 @@ module CartoDB
             file_contents << chunk
           end
           file_contents
-        rescue => ex
+        rescue StandardError => ex
           handle_error(ex, "get_resource() #{id}: #{ex.message}")
         end
 
@@ -159,7 +161,7 @@ module CartoDB
           item_data = format_item_data(response)
 
           item_data.to_hash
-        rescue => ex
+        rescue StandardError => ex
           handle_error(ex, "get_resource_metadata() #{id}: #{ex.message}")
         end
 
@@ -207,8 +209,7 @@ module CartoDB
           # Any call would do, we just want to see if communicates or refuses the token
           @client.get_current_account
           true
-        rescue DropboxApi::Errors::HttpError => ex
-          CartoDB::Logger.debug(message: 'Invalid Dropbox token', exception: ex, user: @user)
+        rescue DropboxApi::Errors::HttpError
           false
         end
 
@@ -217,9 +218,9 @@ module CartoDB
           @client.revoke
           true
         rescue DropboxApi::Errors::HttpError => ex
-          CartoDB::Logger.debug(message: 'Error revoking Dropbox token', exception: ex, user: @user)
+          log_info(message: 'Error revoking Dropbox token: already invalid', exception: ex, current_user: @user)
           true
-        rescue => ex
+        rescue StandardError => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
         end
 

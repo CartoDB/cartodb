@@ -1,96 +1,110 @@
 <template>
   <li class="list-item">
-    <div class="category title is-small grid grid--space">
-      <div>
-        <span class="country">{{ dataset.country_name }}</span>
-        <span>·</span
-        >{{ dataset.is_geography ? 'Geography' : dataset.category_name }}
+    <div class="main-item">
+      <div class="category title is-small grid grid--space">
+        <div>
+          <span class="country">{{ dataset.country_name }}</span>
+          <span>·</span
+          >{{ dataset.category_name ? dataset.category_name : 'Geography' }}
+        </div>
+        <div>
+          {{ dataset.provider_name }}
+        </div>
       </div>
-      <div>
-        {{ dataset.provider_name }}
+      <div class="info u-mr--72">
+        <h3 class="title is-body u-mb--8">
+          <router-link
+            :to="{
+              name: 'catalog-dataset-summary',
+              params: {
+                datasetId: dataset.slug,
+                type: dataset.is_geography ? 'geography' : 'dataset'
+              }
+            }"
+            >{{ dataset.name }}</router-link
+          >
+        </h3>
+        <p class="description text">{{ dataset.description }}</p>
       </div>
-    </div>
-    <div class="info u-mr--72">
-      <h3 class="title is-body u-mb--8">
-        <router-link
-          :to="{
-            name: 'catalog-dataset-summary',
-            params: {
-              datasetId: dataset.slug,
-              type: dataset.is_geography ? 'geography' : 'dataset'
-            }
-          }"
-          >{{ dataset.name }}</router-link
+      <div
+        class="extra text is-small grid u-mt--16"
+        v-if="!dataset.is_geography"
+      >
+        <div
+          class="grid-cell--col7 grid grid--align-end grid--no-wrap"
         >
-      </h3>
-      <p class="description text">{{ dataset.description }}</p>
-    </div>
-    <div
-      class="extra text is-small grid u-mt--16"
-      v-if="!dataset.is_geography"
-    >
-      <div
-        class="grid-cell--col7 grid grid--align-end grid--no-wrap"
-      >
-        <div class="license">
-          <p>License</p> {{ dataset.license_name }}
+          <div class="license">
+            <p>License</p> {{ dataset.license_name }}
+          </div>
+          <div class="geography" :title="dataset.placetype_name">
+            <p>Placetype</p> {{ dataset.placetype_name }}
+          </div>
         </div>
-        <div class="geography" :title="dataset.placetype_name">
-          <p>Placetype</p> {{ dataset.placetype_name }}
-        </div>
-      </div>
-      <div
-        class="grid-cell--col5 grid grid--align-end grid--space grid--no-wrap"
-      >
-        <div class="aggregation">
-          <p>Temporal aggr.</p> {{ temporalAggregation }}
-        </div>
-        <div class="provider">
-          <img
-            :src="providerLogo"
-            :alt="dataset.provider_name"
-            :title="dataset.provider_name"
-          />
+        <div
+          class="grid-cell--col5 grid grid--align-end grid--space grid--no-wrap"
+        >
+          <div class="aggregation">
+            <p>Temporal aggr.</p> {{ temporalAggregation }}
+          </div>
+          <div class="provider">
+            <img
+              :src="providerLogo"
+              :alt="dataset.provider_name"
+              :title="dataset.provider_name"
+            />
+          </div>
         </div>
       </div>
-    </div>
-    <div class="extra text is-small grid u-mt--16" v-else>
-      <div
-        class="grid-cell--col7 grid grid--align-end grid--no-wrap"
-      >
-        <div class="license">
-          <p>License</p> {{ dataset.license_name }}
+      <div class="extra text is-small grid u-mt--16" v-else>
+        <div
+          class="grid-cell--col7 grid grid--align-end grid--no-wrap"
+        >
+          <div class="license">
+            <p>License</p> {{ dataset.license_name }}
+          </div>
+          <div class="geography" :title="dataset.placetype_name">
+            <p>Placetype</p> {{ dataset.placetype_name }}
+          </div>
         </div>
-        <div class="geography" :title="dataset.placetype_name">
-          <p>Placetype</p> {{ dataset.placetype_name }}
-        </div>
-      </div>
-      <div
-        class="grid-cell--col5 grid grid--align-end grid--space grid--no-wrap"
-      >
-        <div class="aggregation">
-          <p>Geometry type</p> {{ geometryType }}
-        </div>
-        <div class="provider">
-          <img
-            :src="providerLogo"
-            :alt="dataset.provider_name"
-            :title="dataset.provider_name"
-          />
+        <div
+          class="grid-cell--col5 grid grid--align-end grid--space grid--no-wrap"
+        >
+          <div class="aggregation">
+            <p>Geometry type</p> {{ geometryType }}
+          </div>
+          <div class="provider">
+            <img
+              :src="providerLogo"
+              :alt="dataset.provider_name"
+              :title="dataset.provider_name"
+            />
+          </div>
         </div>
       </div>
     </div>
+    <DatasetListItemExtra v-if="extra" :dataset="dataset"></DatasetListItemExtra>
   </li>
 </template>
 
 <script>
 import { temporalAggregationName } from 'new-dashboard/utils/catalog/temporal-agregation-name';
 import { geometryTypeName } from 'new-dashboard/utils/catalog/geometry-type-name';
+import DatasetListItemExtra from 'new-dashboard/components/Subscriptions/DatasetListItemExtra';
 
 export default {
   name: 'DatasetListItem',
   props: {
-    dataset: Object
+    dataset: {
+      type: Object,
+      required: true
+    },
+    extra: {
+      type: Boolean,
+      required: false
+    }
+  },
+  components: {
+    DatasetListItemExtra
   },
   computed: {
     temporalAggregation () {
@@ -110,12 +124,19 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .list-item {
-  padding: 24px;
+  display: flex;
+  width: 100%;
+  padding: 12px;
   border-bottom: 1px solid $neutral--300;
   color: $navy-blue;
 
   &:hover {
     background-color: $blue--100;
+  }
+
+  .main-item {
+    width: 100%;
+    padding: 12px;
   }
 
   .category {
@@ -143,6 +164,7 @@ export default {
   }
 
   .description {
+    height: 60px;
     font-size: 14px;
     line-height: 20px;
     display: -webkit-box;

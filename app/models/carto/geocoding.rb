@@ -20,7 +20,6 @@ module Carto
     end
 
     belongs_to :user
-    belongs_to :automatic_geocoding
 
     def public_values
       Hash[PUBLIC_ATTRIBUTES.map{ |k| [k, (self.send(k) rescue self[k].to_s)] }]

@@ -46,11 +46,7 @@ module Carto
                                        .order(updated_at: :desc)
                                        .offset(MAX_TOKENS_PER_OAUTH_APP_USER - 1)
 
-      unless oldest_tokens.count.zero?
-        CartoDB::Logger.debug(message: "Removing #{oldest_tokens.count} refresh tokens",
-                              oauth_app_user: oauth_app_user)
-        oldest_tokens.find_each(&:destroy!)
-      end
+      oldest_tokens.find_each(&:destroy!) unless oldest_tokens.count.zero?
     end
 
     def expired?

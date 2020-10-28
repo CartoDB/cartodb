@@ -62,10 +62,10 @@ module CartoDB
 
         # Calculate variances of the N first lines for each delimiter, then grab the one that changes less
         @delimiter = DEFAULT_DELIMITER unless first_line
-        
+
         # Flag to skip newlines contained inside string values
         skip_line = false
-        
+
         lines_for_detection = Array.new
 
         LINES_FOR_DETECTION.times {
@@ -210,7 +210,7 @@ module CartoDB
         end
 
         @encoding
-      rescue
+      rescue StandardError
         DEFAULT_ENCODING
       end
 

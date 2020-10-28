@@ -3,7 +3,6 @@ require 'json'
 require_relative '../util/csv_file_dumper'
 
 require_relative '../../../../twitter-search/twitter-search'
-require_relative '../../../../../lib/cartodb/logger'
 require_relative '../base_file_stream'
 
 module CartoDB
@@ -13,6 +12,8 @@ module CartoDB
       # NOTE: 'redis_storage' is only sent in normal imports, not at OAuth or Synchronizations,
       # as this datasource is not intended to be used in such.
       class Twitter < BaseFileStream
+
+        include ::LoggerHelper
 
         # Required for all datasources
         DATASOURCE_NAME = 'twitter_search'
@@ -287,7 +288,7 @@ module CartoDB
         # Signature must be like: .report_message('Import error', 'error', error_info: stacktrace)
         def report_error(message, additional_data)
           log("Error: #{message} Additional Info: #{additional_data}")
-          CartoDB::Logger.error(message: message, error_info: additional_data)
+          log_error(message: message, error_detail: additional_data)
         end
 
         # @param api_config Hash
@@ -578,13 +579,13 @@ module CartoDB
         end
 
         # Call this inside specs to override returned class
-        # @param override_class SearchTweet|nil (optional)
-        # @return SearchTweet
+        # @param override_class Carto::SearchTweet|nil (optional)
+        # @return Carto::SearchTweet
         def audit_entry(override_class = nil)
           if @audit_entry.nil?
             if override_class.nil?
-              require_relative '../../../../../app/models/search_tweet'
-              @audit_entry = ::SearchTweet.new
+              require_relative '../../../../../app/models/carto/search_tweet'
+              @audit_entry = Carto::SearchTweet.new
             else
               @audit_entry = override_class.new
             end

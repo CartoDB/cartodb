@@ -53,6 +53,8 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 .copy-container {
+  height: 32px;
+
   button {
     position: relative;
   }
@@ -60,11 +62,10 @@ export default {
     white-space: nowrap;
   }
   input[type="text"] {
-    flex: 0 0 166px;
     border: solid 1px $neutral--400;
     border-radius: 4px;
     padding: 0 12px;
-    height: 32px;
+    height: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -73,9 +74,8 @@ export default {
     outline: none;
   }
   button {
-    flex: 0 0 32px;
     width: 32px;
-    height: 32px;
+    height: 100%;
     background-color: $neutral--100;
     border: solid 1px $neutral--400;
     border-radius: 4px;

@@ -49,7 +49,7 @@ module CartoDB
         load_results_to_temp_table
         copy_results_to_table
         change_status('completed')
-      rescue => e
+      rescue StandardError => e
         change_status('failed')
         raise e
       ensure

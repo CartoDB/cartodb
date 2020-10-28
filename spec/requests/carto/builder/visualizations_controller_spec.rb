@@ -20,20 +20,19 @@ describe Carto::Builder::VisualizationsController do
 
     it 'denies iframe for users without the allow_private_viz_iframe feature flag' do
       get builder_visualization_url(id: @visualization.id)
-      
+
       response.status.should == 200
       response.headers['X-Frame-Options'].should == 'DENY'
     end
 
     it 'allows iframe for users without the allow_private_viz_iframe feature flag' do
       ff = FactoryGirl.create(:feature_flag, name: 'allow_private_viz_iframe')
-      fuu = FactoryGirl.create(:feature_flags_user, feature_flag_id: ff.id, user_id: @user1.id)
-      
+      @user1.activate_feature_flag!(ff)
+
       get builder_visualization_url(id: @visualization.id)
-      
+
       response.status.should == 200
       response.headers['X-Frame-Options'].should be_nil
-      fuu.destroy
     end
 
     it 'redirects to embed for non-editor users requests' do

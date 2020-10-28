@@ -13,11 +13,11 @@ module Carto
           if response
             response['student']
           else
-            Logger.error(message: 'Error checking GitHub student', access_token: access_token)
+            log_error(message: 'Error checking GitHub student', access_token: access_token)
             false
           end
         rescue StandardError => e
-          Logger.error(message: 'Error checking GitHub student', exception: e, access_token: access_token)
+          log_error(message: 'Error checking GitHub student', exception: e, access_token: access_token)
         end
 
         def user_params
@@ -73,8 +73,7 @@ module Carto
         def user_data
           @user_data ||= authenticated_request('GET', 'https://api.github.com/user')
         rescue StandardError => e
-          Logger.error(message: 'Error obtaining GitHub user data',
-                      exception: e, access_token: access_token)
+          log_error(message: 'Error obtaining GitHub user data', exception: e, access_token: access_token)
           nil
         end
 
@@ -85,7 +84,7 @@ module Carto
         def get_emails
           authenticated_request('GET', 'https://api.github.com/user/emails').select { |email| email['verified'] }
         rescue StandardError => e
-          CartodbCentral::Logger.error(message: 'Error obtaining GitHub user emails', exception: e, access_token: access_token)
+          log_error(message: 'Error obtaining GitHub user emails', exception: e, access_token: access_token)
           nil
         end
 
@@ -107,15 +106,17 @@ module Carto
         rescue StandardError => e
           trace_info = {
             message: 'Error in request to GitHub', exception: e,
-            method: method, url: url, body: body, headers: headers
+            request: { method: method, url: url, body: body, headers: headers }
           }
           if response
-            trace_info.merge!(
-              response_code: response.code, response_headers: response.headers,
-              response_body: response.body, return_code: response.return_code
-            )
+            trace_info.merge!(response: {
+              code: response.code,
+              headers: response.headers,
+              body: response.body,
+              status: response.return_code
+            })
           end
-          Logger.error(trace_info)
+          log_error(trace_info)
           nil
         end
       end

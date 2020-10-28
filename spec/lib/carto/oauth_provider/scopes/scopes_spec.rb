@@ -257,9 +257,9 @@ describe Carto::OauthProvider::Scopes do
           perm = @org_shared_table.table_visualization.permission
           perm.acl = [
             {
-              type: Permission::TYPE_ORGANIZATION,
+              type: Carto::Permission::TYPE_ORGANIZATION,
               entity: { id: @carto_organization.id },
-              access: Permission::ACCESS_READONLY
+              access: Carto::Permission::ACCESS_READONLY
             }
           ]
           perm.save!

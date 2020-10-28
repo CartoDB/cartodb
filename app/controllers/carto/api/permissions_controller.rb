@@ -13,8 +13,8 @@ class Carto::Api::PermissionsController < ::Api::ApplicationController
       acl = params[:acl]
       acl ||= []
       permission.acl = acl.map(&:deep_symbolize_keys)
-    rescue CartoDB::PermissionError => e
-      CartoDB::Logger.error(exception: e)
+    rescue Carto::Permission::Error => e
+      log_error(exception: e)
       return head(400)
     end
 

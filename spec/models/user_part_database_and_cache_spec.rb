@@ -95,7 +95,7 @@ describe User do
     begin
       connection.test_connection
       true.should_not be_true
-    rescue
+    rescue StandardError
       true.should be_true
     ensure
       connection.disconnect
@@ -119,7 +119,7 @@ describe User do
     begin
       connection.test_connection
       true.should_not be_true
-    rescue
+    rescue StandardError
       true.should be_true
     ensure
       connection.disconnect

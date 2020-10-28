@@ -34,8 +34,8 @@ class Admin::OrganizationsController < Admin::AdminController
       @organization.destroy_cascade(delete_in_central: true)
       redirect_to logout_url
     end
-  rescue => e
-    CartoDB::Logger.error(message: "Error deleting organization", exception: e, organization: @organization)
+  rescue StandardError => e
+    log_error(message: 'Error deleting organization', exception: e, organization: @organization)
     flash.now[:error] = "Error deleting organization: #{e.message}"
     render 'show', status: 500
   end
@@ -138,7 +138,7 @@ class Admin::OrganizationsController < Admin::AdminController
   rescue Carto::PasswordConfirmationError => e
     flash.now[:error] = e.message
     render action: 'settings', status: e.status
-  rescue => e
+  rescue StandardError => e
     CartoDB.notify_exception(e, { organization: @organization.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API keys. Please, try again and contact us if the problem persists"
     render action: 'settings'

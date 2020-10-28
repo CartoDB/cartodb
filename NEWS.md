@@ -5,13 +5,92 @@ Development
 - None yet
 
 ### Features
-- None yet
+* Fix column sanitization for connector syncs ([15885](https://github.com/CartoDB/cartodb/pull/15885))
+* Load config files as ERB templates to allow reading ENV values ([15881](https://github.com/CartoDB/cartodb/pull/15881))
 
 ### Bug fixes / enhancements
-- Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
-- The `X-Request-ID` HTTP header is now propagated from incoming requests to outbound requests for better traceability [#15778](https://github.com/CartoDB/cartodb/pull/15778)
-- Fix Catalog "I'm interested" button ([#15785](https://github.com/CartoDB/cartodb/pull/15785))
-- Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
+* Identify multi-line GeoJSON columns correctly on imports [#15891](https://github.com/CartoDB/cartodb/pull/15891)
+* Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
+* Migrate `ClientApplication` model to `ActiveRecord` [#15886](https://github.com/CartoDB/cartodb/pull/15886)
+* Avoid delegating special methods in presenters [#15889](https://github.com/CartoDB/cartodb/pull/15889)
+* Fix Dashboard/Data navigation for free users. Update Data preview texts [#15892](https://github.com/CartoDB/cartodb/pull/15892)
+* Force CTE materialization in Ghost Tables query to improve performance [#15895](https://github.com/CartoDB/cartodb/pull/15895)
+* Adapt default Rails mail logs to JSON format [#15894](https://github.com/CartoDB/cartodb/pull/15894)
+* Fix export of Google Sheet files larger than 10MB [#15903](https://github.com/CartoDB/cartodb/pull/15903)
+* Adding `builder_url` to `api/v4/me` endpoint [#15904](https://github.com/CartoDB/cartodb/pull/15904)
+
+4.42.0 (2020-09-28)
+-------------------
+
+### Features
+* New management capabilities for API Keys of other users ([#15819](https://github.com/CartoDB/cartodb/pull/15819))
+* New Snowflake, Redshift connectors UI [#15814](https://github.com/CartoDB/cartodb/pull/15814)
+* Import API documentation for Snowflake & Redshift connectors ([#15858](https://github.com/CartoDB/cartodb/pull/15858))
+* Release Data Observatory subscriptions [#15834](https://github.com/CartoDB/cartodb/pull/15834)
+* Allow to cancel premium DO requests [#15864](https://github.com/CartoDB/cartodb/pull/15864)
+
+### Bug fixes / enhancements
+* WMTS compatibility: Replace OGC parameters from cartodb-wmsproxy ([15866](https://github.com/CartoDB/cartodb/pull/15866))
+* WMTS compatibility: Replace OGC parameters ([15849](https://github.com/CartoDB/cartodb/pull/15849))
+* Fix inconsistent handling of SRID in syncs and imports ([15821](https://github.com/CartoDB/cartodb/pull/15821))
+* Fix orm-check workflow when the diff has binary files
+* Return expired subscriptions with status 'expired' ([93673](https://app.clubhouse.io/cartoteam/story/93673/return-expired-subscriptions))
+* Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
+* Fix logs for named maps ([15826](https://github.com/CartoDB/cartodb/pull/15826))
+* Remove automatic geocodings models and table ([#15817](https://github.com/CartoDB/cartodb/pull/15817))
+* Fix column quoting for geometrification ([#15815](https://github.com/CartoDB/cartodb/pull/15815))
+* Removing unused class ([#15816](https://github.com/CartoDB/cartodb/pull/15816))
+* Added check to avoid modifications of Sequel model files ([#15800](https://github.com/CartoDB/cartodb/pull/15800))
+* Refactor: Use Carto::User model as a CartodbCentralSynchronizable [#15807](https://github.com/CartoDB/cartodb/pull/15807)
+* Bump cartodb-common to 0.3.4 [#15808](https://github.com/CartoDB/cartodb/pull/15808)
+* Fixes missing includes of LoggerHelper [#15812](https://github.com/CartoDB/cartodb/pull/15812)
+* Adds logging docs [#15813](https://github.com/CartoDB/cartodb/pull/15813)
+* Add wildcard IP for Direct SQL connection [#15818](https://github.com/CartoDB/cartodb/pull/15818)
+* Remove usage of `::User` Sequel model from the `ApplicationController` [#15804](https://github.com/CartoDB/cartodb/pull/15804)
+* Bump version of cartodb-common module to v0.3.6 [#15820](https://github.com/CartoDB/cartodb/pull/15820)
+* Setup Coverband dead code detector [#15811](https://github.com/CartoDB/cartodb/pull/15811)
+* Include LoggerHelper as class methods in models [#15824](https://github.com/CartoDB/cartodb/pull/15824)
+* Refactor of `Admin::VisualizationsController` code [#15830](https://github.com/CartoDB/cartodb/pull/15830)
+* Fix Coverband - Resque integration [#15827](https://github.com/CartoDB/cartodb/pull/15827)
+* Delete unused DataImport methods [#15833](https://github.com/CartoDB/cartodb/pull/15833)
+* Fix missing LoggerHelper in CartoDB::LayerModule::Presenter [#15829](https://github.com/CartoDB/cartodb/pull/15829)
+* Migrated and removed old `::ExternalDataImport` sequel model [#15844](https://github.com/CartoDB/cartodb/pull/15844)
+* Fix map backups when deleting tables via Ghost Tables [#15832](https://github.com/CartoDB/cartodb/pull/15832)
+* Add DO subscriptions improvements [#15847](https://github.com/CartoDB/cartodb/pull/15847)
+* Migrate ::OauthToken from Sequel to ActiveRecord [#15840](https://github.com/CartoDB/cartodb/pull/15840)
+* Fix passing `::User` instead of `::Carto::User` [#15848](https://github.com/CartoDB/cartodb/pull/15848)
+* Fix DO subscriptions [#15855](https://github.com/CartoDB/cartodb/pull/15855)
+* Make the logger honor the environment variable `RAILS_LOG_BASE_PATH` again
+* Update DO subscriptions email [#15851](https://github.com/CartoDB/cartodb/pull/15851)
+* Remove beta descriptor from Direct SQL Connection text [#15854](https://github.com/CartoDB/cartodb/pull/15854)
+* Added a script to generate a graph of Sequel models associations [#15865](https://github.com/CartoDB/cartodb/pull/15865)
+* Upgrade ruby-prof gem to 1.4.1 [#15867](https://github.com/CartoDB/cartodb/pull/15867)
+* Migrate `::FeatureFlagsUser` to `ActiveRecord` [#15841](https://github.com/CartoDB/cartodb/pull/15841)
+* Migrate `::SearchTweet` to ActiveRecord [#15859](https://github.com/CartoDB/cartodb/pull/15859)
+* Make import/export of user metadata resilient to missing feature flag [#15872](https://github.com/CartoDB/cartodb/pull/15872)
+* Fix Organization.overquota exception logging [#15873](https://github.com/CartoDB/cartodb/pull/15873)
+* Revamp Rubocop config
+* Fix visualization backup when permission is missing [#15874](https://github.com/CartoDB/cartodb/pull/15874)
+* Show outdated subscriptions. Optimize requests [#15879](https://github.com/CartoDB/cartodb/pull/15879)
+* Include `::Carto::ActiveRecordCompatibility` in all `Sequel` models [#15879](https://github.com/CartoDB/cartodb/pull/15879)
+* Migrate `Permission` model to `ActiveRecord` [#15878](https://github.com/CartoDB/cartodb/pull/15878)
+
+4.41.1 (2020-09-03)
+-------------------
+
+### Bug fixes / enhancements
+* Now every user manages its own dbdirect IPs, regardless of being a organization user [#15805](https://github.com/CartoDB/cartodb/pull/15805)
+* Add a script to measure Sequel model LOC [#15803](https://github.com/CartoDB/cartodb/pull/15803)
+
+4.41.0 (2020-09-01)
+-------------------
+
+### Bug fixes / enhancements
+
+* The `X-Request-ID` HTTP header is now propagated from incoming requests to outbound requests for better traceability [#15778](https://github.com/CartoDB/cartodb/pull/15778)
+* Fix Catalog "I'm interested" button ([#15785](https://github.com/CartoDB/cartodb/pull/15785))
+* Bumps cartodb-common to v0.3.3 to fix error traces ([#15787](https://github.com/CartoDB/cartodb/pull/15787))
+* Pg-proxy compatibility: Store the IP firewall information in Redis ([#15791](https://github.com/CartoDB/cartodb/pull/15791))
 
 4.40.0 (2020-07-31)
 -------------------
@@ -28,6 +107,7 @@ Development
 * Modify .gitignore
 * Install Carto::Common::Logger with JSON support ([#15762](https://github.com/CartoDB/cartodb/pull/15762))
 * Return all shared datasets ([#15767](https://github.com/CartoDB/cartodb/pull/15767))
+* Migrate traces to new Carto::Common::Logger ([#15776](https://github.com/CartoDB/cartodb/pull/15776))
 
 4.39.0 (2020-07-20)
 -------------------

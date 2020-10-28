@@ -236,7 +236,7 @@ module Carto
           },
           notification: @user.notification,
           avatar_url: @user.avatar,
-          feature_flags: @user.feature_flags_list,
+          feature_flags: @user.feature_flags_names,
           base_url: @user.public_url,
           needs_password_confirmation: @user.needs_password_confirmation?,
           description: @user.description,

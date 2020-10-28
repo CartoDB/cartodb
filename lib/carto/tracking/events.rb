@@ -18,6 +18,8 @@ module Carto
   module Tracking
     module Events
       class Event
+        include ::LoggerHelper
+
         def initialize(reporter_id, properties)
           properties.merge!({event_version: event_version})
 
@@ -58,11 +60,12 @@ module Carto
 
         def report
           report!
-        rescue => exception
-          CartoDB::Logger.error(message: 'Carto::Tracking: Couldn\'t report event',
-                                exception: exception,
-                                name: name,
-                                properties: @format.to_hash)
+        rescue StandardError => e
+          log_error(
+            message: 'Carto::Tracking: Error reporting event',
+            exception: e,
+            event: @format.to_hash.merge(name: name)
+          )
         end
 
         def report!
@@ -281,7 +284,7 @@ module Carto
 
       class CreatedDataset < DatasetEvent
         include Carto::Tracking::Services::Hubspot
-        
+
         required_properties :origin
         optional_properties :connection
 
@@ -509,7 +512,7 @@ module Carto
           data
         end
       end
-      
+
     end
   end
 end

@@ -7,6 +7,7 @@ describe(Carto::Common::Logger, type: :request) do
   include_context 'users helper'
 
   class LogDeviceMock < Logger::LogDevice
+
     attr_accessor :written_text
 
     def write(text)
@@ -17,12 +18,13 @@ describe(Carto::Common::Logger, type: :request) do
 
     def self.capture_output
       original_log_device = Rails.logger.instance_variable_get(:@logdev)
-      mock_log_device = self.new('fake.log')
+      mock_log_device = new('fake.log')
       Rails.logger.instance_variable_set(:@logdev, mock_log_device)
       yield
       Rails.logger.instance_variable_set(:@logdev, original_log_device)
       mock_log_device.written_text
     end
+
   end
 
   let!(:user) do
@@ -45,10 +47,18 @@ describe(Carto::Common::Logger, type: :request) do
 
   it 'obfuscates sensitive parameters' do
     output = LogDeviceMock.capture_output do
-      get(root_path, password: 'password', nested: { token: 'token', auth_stuff: 'auth_stuff' })
+      get(
+        root_path,
+        password: 'password',
+        nested: { token: 'token', auth_stuff: 'auth_stuff' },
+        nested_array: %w[auth sensible_stuff]
+      )
     end
 
-    expect(output).to match(/"password":"********".*"token":"*****".*"auth_stuff":"**********"/)
+    expect(output).to match(/password=(\*{8})/)
+    expect(output).to match(/nested\[token\]=(\*{5})/)
+    expect(output).to match(/nested\[auth_stuff\]=(\*{10})/)
+    expect(output).to match(/nested_array=(\*{4})(.*)(\*{14})/)
   end
 
   it 'logs request processing' do
@@ -83,4 +93,10 @@ describe(Carto::Common::Logger, type: :request) do
     expect(output).to match(/"request_id":"1234".*"filter":":builder_users_only\".*"event_message":"Filter chain halted \(rendered or redirected\)"/)
   end
 
+  it 'logs when an emails was sent' do
+    output = LogDeviceMock.capture_output { user.carto_user.send_password_reset! }
+
+    expect(output).to match(/"event_message":"Mail processed"/)
+    expect(output).to match(/"event_message":"Mail sent"/)
+  end
 end

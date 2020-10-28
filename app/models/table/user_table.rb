@@ -34,7 +34,6 @@ class UserTable < Sequel::Model
     user_id
     user_id=
     updated_at
-    automatic_geocoding
     private?
     public?
     public_with_link_only?
@@ -63,11 +62,6 @@ class UserTable < Sequel::Model
     PRIVACY_PUBLIC => 'public',
     PRIVACY_LINK => 'link'
   }
-
-  # For compatibility with AR model
-  def new_record?
-    new?
-  end
 
   # Associations
   many_to_one  :map
@@ -206,28 +200,8 @@ class UserTable < Sequel::Model
     service.after_save
   end
 
-  def before_destroy
-    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy tables") if user && user.viewer
-
-    @table_visualization = table_visualization
-    @fully_dependent_visualizations_cache = fully_dependent_visualizations.to_a
-    @partially_dependent_visualizations_cache = partially_dependent_visualizations.to_a
-
-    automatic_geocoding&.destroy
-
-    super
-  end
-
-  def after_destroy
-    @table_visualization.delete_from_table if @table_visualization
-    @fully_dependent_visualizations_cache.each(&:delete)
-    @partially_dependent_visualizations_cache.each do |visualization|
-      visualization.unlink_from(self)
-    end
-    synchronization.delete if synchronization
-
-    service.after_destroy
-    super
+  def destroy
+    Carto::UserTable.find_by(id: id)&.destroy
   end
 
   def before_update
@@ -302,7 +276,11 @@ class UserTable < Sequel::Model
   end
 
   def external_source_visualization
-    data_import.try(:external_data_imports).try(:first).try(:external_source).try(:visualization)
+    if data_import_id
+      Carto::ExternalDataImports.where(data_import_id: data_import_id)&.first&.external_source&.visualization
+    else
+      nil
+    end
   end
 
   def table_visualization
@@ -335,10 +313,6 @@ class UserTable < Sequel::Model
   def is_owner?(user)
     return false unless user
     user_id == user.id
-  end
-
-  def automatic_geocoding
-    Carto::AutomaticGeocoding.find_by_table_id(id)
   end
 
   private

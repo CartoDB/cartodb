@@ -245,7 +245,7 @@ describe 'UserMigration' do
       puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
-      carto_user.client_applications.each(&:destroy)
+      carto_user.client_application.destroy
       user.destroy
 
       import = Carto::UserMigrationImport.create(

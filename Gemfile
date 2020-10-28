@@ -28,7 +28,7 @@ gem 'nokogiri',                '~> 1.10'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk-acmpca',          '~> 1'
 gem 'aws-sdk-s3',              '~> 1'
-gem 'ruby-prof',               '0.15.1'
+gem 'ruby-prof',               '1.4.1'
 gem 'request_store',           '1.1.0'
 
 # It's used in the dataimport and arcgis.
@@ -53,7 +53,7 @@ group :assets do
   gem "compass",               "1.0.3"
 end
 
-# Importer & sync tables
+gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.3.7'
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '1.3.1'
@@ -63,27 +63,16 @@ gem 'google-api-client',       '0.34.1'
 gem 'dropbox_api',             '0.1.17'
 gem 'gibbon',                  '1.1.4'
 gem 'instagram-continued-continued'
-
-# GCloud
 gem 'google-cloud-pubsub', '1.2.0'
-
-# Service components (/services)
 gem 'virtus',                   '1.0.5'
-gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.3.3'
 gem 'email_address',            '~> 0.1.11'
-
-# Markdown
 gem 'redcarpet', '3.3.3'
-
-# TODO Production gems, put them in :production group
 gem 'rollbar',               '~>2.11.1'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
-
 gem 'net-telnet'
-
 gem 'rubyzip',               '>= 2.0.0'
-
+gem 'coverband'
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
 
@@ -126,15 +115,16 @@ group :test, :development do
 end
 
 group :development, :test do
-  gem 'rspec-rails',           '2.12.0'
-  gem 'rb-readline'
   gem 'byebug'
-  gem 'pry-byebug',            '3.9.0'
+  gem 'pry-byebug', '3.9.0'
   gem 'rack'
+  gem 'rb-readline'
+  gem 'rspec-rails', '2.12.0'
+  gem 'rubocop', '~> 0.92'
+  gem 'rubocop-rails'
+  gem 'rubocop-rspec'
+  gem 'thin', require: false
   gem 'zeus'
-
-  # Server
-  gem 'thin',                           require: false
 end
 
 # segment metrics

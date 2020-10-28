@@ -1,27 +1,15 @@
 require_relative '../controllers/carto/api/group_presenter'
-require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'
-require_relative './permission'
 require_dependency 'carto/helpers/auth_token_generator'
-require_dependency 'common/organization_common'
+require_dependency 'carto/helpers/organization_commons'
 
 class Organization < Sequel::Model
 
-  class OrganizationWithoutOwner < StandardError
-    attr_reader :organization
-
-    def initialize(organization)
-      @organization = organization
-      super "Organization #{organization.name} has no owner"
-    end
-  end
-
-  include CartoDB::OrganizationDecorator
-  include Concerns::CartodbCentralSynchronizable
+  include CartodbCentralSynchronizable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
-  include SequelFormCompatibility
   include Carto::OrganizationSoftLimits
+  include Carto::OrganizationCommons
 
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false
@@ -58,6 +46,12 @@ class Organization < Sequel::Model
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
   DEFAULT_MAPZEN_ROUTING_QUOTA = nil
+
+  delegate :get_api_calls, to: :carto_organization
+
+  def carto_organization
+    @carto_organization ||= Carto::Organization.find(id)
+  end
 
   def default_password_expiration_in_d
     Cartodb.get_config(:passwords, 'expiration_in_d')
@@ -193,43 +187,6 @@ class Organization < Sequel::Model
     users.select { |u| owner && u.id != owner.id }
   end
 
-  ##
-  # SLOW! Checks redis data (geocoding and isolines) for every user in every organization
-  # delta: get organizations who are also this percentage below their limit.
-  #        example: 0.20 will get all organizations at 80% of their map view limit
-  #
-  def self.overquota(delta = 0)
-    Organization.all.select do |o|
-      begin
-        limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
-        over_geocodings = o.get_geocoding_calls > limit
-        limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
-        over_here_isolines = o.get_here_isolines_calls > limit
-        limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
-        over_obs_snapshot = o.get_obs_snapshot_calls > limit
-        limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
-        over_obs_general = o.get_obs_general_calls > limit
-        limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
-        over_twitter_imports = o.get_twitter_imports_count > limit
-        limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
-        over_mapzen_routing = o.get_mapzen_routing_calls > limit
-        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
-      rescue OrganizationWithoutOwner => error
-        # Avoid aborting because of inconistent organizations; just omit them
-        CartoDB::Logger.error(
-          message: 'Skipping organization without owner in overquota report',
-          organization: name,
-          exception: error
-        )
-        false
-      end
-    end
-  end
-
-  def get_api_calls(options = {})
-    users.map{ |u| u.get_api_calls(options).sum }.sum
-  end
-
   def get_geocoding_calls(options = {})
     require_organization_owner_presence!
     date_from, date_to = quota_dates(options)
@@ -252,9 +209,7 @@ class Organization < Sequel::Model
   end
 
   def get_twitter_imports_count(options = {})
-    date_from, date_to = quota_dates(options)
-
-    SearchTweet.get_twitter_imports_count(users_dataset.join(:search_tweets, :user_id => :id), date_from, date_to)
+    Carto::Organization.find(self.id).get_twitter_imports_count(options)
   end
 
   def get_mapzen_routing_calls(options = {})
@@ -282,18 +237,9 @@ class Organization < Sequel::Model
     (remaining > 0 ? remaining : 0)
   end
 
-  def remaining_twitter_quota
-    remaining = twitter_datasource_quota - get_twitter_imports_count
-    (remaining > 0 ? remaining : 0)
-  end
-
   def remaining_mapzen_routing_quota
     remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls
     (remaining > 0 ? remaining : 0)
-  end
-
-  def db_size_in_bytes
-    users.map(&:db_size_in_bytes).sum.to_i
   end
 
   def assigned_quota
@@ -460,7 +406,7 @@ class Organization < Sequel::Model
 
   def require_organization_owner_presence!
     if owner.nil?
-      raise Organization::OrganizationWithoutOwner.new(self)
+      raise Carto::Organization::OrganizationWithoutOwner.new(self)
     end
   end
 
@@ -485,7 +431,7 @@ class Organization < Sequel::Model
   end
 
   def inheritable_feature_flags
-    inherit_owner_ffs ? owner.feature_flags_user : []
+    inherit_owner_ffs ? owner.self_feature_flags : Carto::FeatureFlag.none
   end
 
   private

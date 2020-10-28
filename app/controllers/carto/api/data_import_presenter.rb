@@ -132,7 +132,7 @@ module Carto
           display_name = url.nil? ? @data_import.id : extract_filename(url)
           display_name || @data_import.id
         end
-      rescue => e
+      rescue StandardError => e
         @data_import.id
       end
 
@@ -142,7 +142,7 @@ module Carto
 
       def extract_twitter_display_name(data_import)
         "Tweets about '#{JSON.parse(data_import.service_item_id)['categories'].map { |c| c['terms'] }.join(', ')}'"
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_debug('Error extracting Twitter import display name', { data_import_id: data_import.id, service_item_id: data_import.service_item_id, data_source: data_import.data_source })
         "Twitter search #{data_import.id}"
       end

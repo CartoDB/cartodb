@@ -60,7 +60,7 @@ module CartoDB
           georeference
           @warnings.merge! warnings if warnings.present?
         end
-      rescue => error
+      rescue StandardError => error
         @job.log "ConnectorRunner Error #{error}"
         @results.push result_for(@job.schema, table_name, error)
       else
@@ -73,7 +73,7 @@ module CartoDB
 
       def georeference
         @georeferencer.run
-      rescue => error
+      rescue StandardError => error
         @job.log "ConnectorRunner Error while georeference #{error}"
       end
 
@@ -91,8 +91,8 @@ module CartoDB
       end
 
       # General availability of connectors for a user
-      def self.check_availability!(user)
-        Carto::Connector.check_availability! user
+      def self.check_availability!(user, provider_name=nil)
+        Carto::Connector.check_availability!(user, provider_name)
       end
 
       def etag

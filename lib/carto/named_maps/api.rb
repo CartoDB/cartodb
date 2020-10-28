@@ -5,12 +5,18 @@ require_dependency 'carto/named_maps/template'
 module Carto
   module NamedMaps
     class Api
+
+      include ::LoggerHelper
+
       HTTP_CONNECT_TIMEOUT_SECONDS = 45
       HTTP_REQUEST_TIMEOUT_SECONDS = 60
       RETRY_TIME_SECONDS = 2
       MAX_RETRY_ATTEMPTS = 3
 
+      attr_accessor :user, :visualization
+
       def initialize(visualization)
+        @visualization = visualization
         @user = visualization.user
         @named_map_template = Carto::NamedMaps::Template.new(visualization)
       end
@@ -107,15 +113,15 @@ module Carto
       end
 
       def url(template_name: '')
-        username = @user.username
+        username = user.username
         user_url = CartoDB.subdomainless_urls? ? "/user/#{username}" : ''
 
-        "#{protocol}://#{host(username)}:#{port}#{user_url}/api/v1/map/named/#{template_name}?api_key=#{@user.api_key}"
+        "#{protocol}://#{host(username)}:#{port}#{user_url}/api/v1/map/named/#{template_name}?api_key=#{user.api_key}"
       end
 
       def request_params
         {
-          headers: headers(@user.username),
+          headers: headers(user.username),
           ssl_verifypeer: ssl_verifypeer,
           ssl_verifyhost: ssl_verifyhost,
           followlocation: true,
@@ -168,14 +174,24 @@ module Carto
       end
 
       def log_response(response, action)
-        CartoDB::Logger.error(
-          message: 'Named Maps Api',
+        log_error(
+          message: 'Error in named maps API',
+          current_user: user,
+          visualization_id: visualization.id,
           action: action,
-          user: @user,
-          response_code: response.code,
-          url: response.request.url,
-          body: response.body
+          request_url: response.request.url,
+          status: response.code,
+          response_body: response.body
         )
+      rescue Encoding::UndefinedConversionError => e
+        # Hotfix for preventing https://rollbar.com/carto/CartoDB/items/41457 until we find the root cause
+        # https://cartoteam.slack.com/archives/CEQLWTW9Z/p1599134417001900
+        # https://app.clubhouse.io/cartoteam/story/101908/fix-encoding-error-while-logging-request
+        Rollbar.error(e)
+      end
+
+      def log_context
+        super.merge(request_id: Carto::CurrentRequest.request_id, component: 'cartodb.named-maps-client')
       end
     end
   end

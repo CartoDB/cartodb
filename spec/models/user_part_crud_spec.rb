@@ -21,28 +21,6 @@ describe User do
     end
   end
 
-  it 'should store feature flags' do
-    ff = FactoryGirl.create(:feature_flag, id: 10001, name: 'ff10001')
-
-    user = create_user email: 'ff@example.com', username: 'ff-user-01', password: '000ff-user-01'
-    user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
-    user.save
-    user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
-    user.destroy
-  end
-
-  it 'should delete feature flags assignations to a deleted user' do
-    ff = FactoryGirl.create(:feature_flag, id: 10002, name: 'ff10002')
-
-    user = create_user email: 'ff2@example.com', username: 'ff2-user-01', password: '000ff2-user-01'
-    user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
-    user.save
-    user_id = user.id
-    user.destroy
-    SequelRails.connection["select count(*) from feature_flags_users where user_id = '#{user_id}'"].first[:count].should eq 0
-    SequelRails.connection["select count(*) from feature_flags where id = '#{ff.id}'"].first[:count].should eq 1
-  end
-
   it "should have many tables" do
     @user2.tables.should be_empty
     create_table :user_id => @user2.id, :name => 'My first table', :privacy => UserTable::PRIVACY_PUBLIC
@@ -88,12 +66,12 @@ describe User do
       permission = user2_vis.permission
       permission.acl = [
         {
-          type: CartoDB::Permission::TYPE_USER,
+          type: Carto::Permission::TYPE_USER,
           entity: {
             id: @user.id,
             username: @user.username
           },
-          access: CartoDB::Permission::ACCESS_READONLY
+          access: Carto::Permission::ACCESS_READONLY
         }
       ]
       permission.save
@@ -242,38 +220,40 @@ describe User do
         it 'deletes client_application and friends' do
           user = create_user(email: 'clientapp@example.com', username: 'clientapp', password: @user_password)
 
-          user.create_client_application
-          user.client_application.access_tokens << ::AccessToken.new(
+          user.new_client_application
+          user.client_application.access_tokens << Carto::AccessToken.create(
             token: "access_token",
             secret: "access_secret",
             callback_url: "http://callback2",
             verifier: "v2",
             scope: nil,
             client_application_id: user.client_application.id
-          ).save
+          )
 
-          user.client_application.oauth_tokens << ::OauthToken.new(
+          user.client_application.oauth_tokens << Carto::OauthToken.create!(
             token: "oauth_token",
             secret: "oauth_secret",
             callback_url: "http//callback.com",
             verifier: "v1",
             scope: nil,
             client_application_id: user.client_application.id
-          ).save
+          )
 
           base_key = "rails:oauth_access_tokens:#{user.client_application.access_tokens.first.token}"
 
-          client_application = ClientApplication.where(user_id: user.id).first
-          expect(ClientApplication.where(user_id: user.id).count).to eq 2
-          expect(client_application.tokens).to_not be_empty
-          expect(client_application.tokens.length).to eq 2
+          client_application = Carto::ClientApplication.find_by(user_id: user.id)
+
+          expect(Carto::ClientApplication.where(user_id: user.id).count).to eq 2
+          tokens = Carto::OauthToken.where(client_application_id: client_application.id)
+          expect(tokens).to_not be_empty
+          expect(tokens.length).to eq 2
           $api_credentials.keys.should include(base_key)
 
           user.destroy
 
-          expect(ClientApplication.where(user_id: user.id).first).to be_nil
-          expect(AccessToken.where(user_id: user.id).first).to be_nil
-          expect(OauthToken.where(user_id: user.id).first).to be_nil
+          expect(Carto::ClientApplication.find_by(user_id: user.id)).to be_nil
+          expect(Carto::AccessToken.where(user_id: user.id).first).to be_nil
+          expect(Carto::OauthToken.where(user_id: user.id).first).to be_nil
           $api_credentials.keys.should_not include(base_key)
         end
 

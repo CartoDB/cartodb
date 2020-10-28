@@ -45,7 +45,7 @@ module CartoDB
         table = ::Table.get_by_id(id_or_name, user)
         return false unless table && table.table_visualization
         [table.table_visualization, table]
-      rescue
+      rescue StandardError
         false
       end
 
@@ -78,4 +78,3 @@ module CartoDB
     end
   end
 end
-

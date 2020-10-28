@@ -72,11 +72,8 @@ module Carto
 
       def parse_old_template_name(old_template_name)
         Pathname.new(old_template_name).basename.to_s
-      rescue => exception
-        CartoDB::Logger.error(message: "#{self.class}: Error parsing template",
-                              exception: exception,
-                              parsing: old_template_name)
-
+      rescue StandardError => exception
+        log_error(message: "InfowindowMigrator: Error parsing template", exception: exception, old_template_name: old_template_name)
         old_template_name
       end
 

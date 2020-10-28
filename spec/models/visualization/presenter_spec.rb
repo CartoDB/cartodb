@@ -121,7 +121,7 @@ describe Visualization::Member do
     it 'tests .children and its sorting' do
       Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
-      ::Permission.any_instance.stubs(:owner).returns(@user_mock)
+      Carto::Permission.any_instance.stubs(:owner).returns(@user_mock)
 
       parent = Visualization::Member.new(random_attributes_for_vis_member({
                                                                             name:'PARENT',

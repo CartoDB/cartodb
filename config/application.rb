@@ -6,6 +6,9 @@ require "active_record/railtie"
 require_relative '../lib/carto/configuration'
 require_relative '../lib/carto/carto_gears_support'
 
+# Forcefully require Coverband config because otherwise it raises an error in the rails console
+require './config/coverband'
+
 if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)
 end
@@ -221,7 +224,7 @@ module CartoDB
 
     ## Logging
     config.log_level = :info
-    config.logger = Carto::Common::Logger.new("log/#{Rails.env}.log")
+    config.logger = Carto::Common::Logger.new(Carto::Conf.new.log_file_path("#{Rails.env}.log"))
   end
 end
 
@@ -231,7 +234,6 @@ require 'cartodb/controller_flows/public/content'
 require 'cartodb/controller_flows/public/datasets'
 require 'cartodb/controller_flows/public/maps'
 require 'cartodb/errors'
-require 'cartodb/logger'
 require 'cartodb/connection_pool'
 require 'cartodb/pagination'
 require 'cartodb/mini_sequel'

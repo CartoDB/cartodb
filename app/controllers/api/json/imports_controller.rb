@@ -78,7 +78,10 @@ class Api::Json::ImportsController < Api::ApplicationController
 
         if external_source.present?
           @stats_aggregator.timing('external-data-import.save') do
-            ExternalDataImport.new(data_import.id, external_source.id).save
+            Carto::ExternalDataImport.new(
+              data_import_id: data_import.id,
+              external_source_id: external_source.id
+            ).save
           end
         end
 
@@ -90,9 +93,9 @@ class Api::Json::ImportsController < Api::ApplicationController
         render_jsonp({
                        errors: { imports: "We're sorry but you're already using your allowed #{rl_value} import slots" }
                      }, 429)
-      rescue => ex
+      rescue StandardError => ex
         decrement_concurrent_imports_rate_limit
-        CartoDB::StdoutLogger.info('Error: create', "#{ex.message} #{ex.backtrace.inspect}")
+        log_info(message: 'Error: create', exception: ex)
         render_jsonp({ errors: { imports: ex.message } }, 400)
       end
 
@@ -125,8 +128,8 @@ class Api::Json::ImportsController < Api::ApplicationController
         end
 
         render_jsonp({ success: true })
-      rescue => ex
-        CartoDB::StdoutLogger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")
+      rescue StandardError => ex
+        log_info(message: 'Error: invalidate_service_token', exception: ex)
         render_jsonp({ errors: { imports: ex.message } }, 400)
       end
 
@@ -172,7 +175,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   def decorate_twitter_import_data!(data, data_import)
     return if data_import.service_name != CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME
 
-    audit_entry = ::SearchTweet.where(data_import_id: data_import.id).first
+    audit_entry = Carto::SearchTweet.find_by(data_import_id: data_import.id)
     data[:tweets_georeferenced] = audit_entry.retrieved_items
     data[:tweets_cost] = audit_entry.price
     data[:tweets_overquota] = audit_entry.user.remaining_twitter_quota == 0
@@ -208,9 +211,8 @@ class Api::Json::ImportsController < Api::ApplicationController
       # It's ok to decrease always as if over limit, will get just at limit and next try again go overlimit
       concurrent_import_limit.decrement!
       concurrent_import_limit.peek  # return limit value
-    rescue => sub_exception
-      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
-                           "#{sub_exception.message} #{sub_exception.backtrace.inspect}")
+    rescue StandardError => e
+      log_info(message: 'Error decreasing concurrent import limit', exception: e)
       nil
     end
   end

@@ -18,10 +18,10 @@ class Api::Json::AssetsController < Api::ApplicationController
 
         render_jsonp(Carto::Api::AssetPresenter.new(@asset).to_hash)
       rescue Sequel::ValidationFailed => e
-        CartoDB::Logger.warning(exception: e, message: 'Validation error creating asset')
+        log_warning(exception: e, message: 'Validation error creating asset')
         render json: { error: @asset.errors.full_messages }, status: 400
-      rescue => e
-        CartoDB::Logger.error(exception: e, message: 'Error creating asset')
+      rescue StandardError => e
+        log_error(exception: e, message: 'Error creating asset')
         render json: { error: [e.message] }, status: 400
       end
     end
@@ -32,8 +32,8 @@ class Api::Json::AssetsController < Api::ApplicationController
       begin
         Asset[params[:id]].destroy
         head :ok
-      rescue => e
-        CartoDB::Logger.error(exception: e, message: 'Error destroying asset')
+      rescue StandardError => e
+        log_error(exception: e, message: 'Error destroying asset')
         render json: { error: [e.message] }, status: 400
       end
     end

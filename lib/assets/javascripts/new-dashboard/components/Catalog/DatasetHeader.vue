@@ -25,13 +25,20 @@
     <div class="u-ml--auto grid-cell grid-cell--col3 grid-cell--col4--tablet buttons-actions" :class="{ publicWebsite }">
       <div class="u-flex u-flex__justify--end">
         <Button
-          v-if="getSubscriptionStatus === 'interested' && !interestedInSubscription"
+          v-if="hasSample && getSubscriptionStatus === 'interested' && !interestedInSubscription"
           :color="publicWebsite ? 'green' : ''"
           :big="publicWebsite"
-          :arrow="publicWebsite"
+          url="https://carto.com/signup"
+        >
+          Sign up to access sample
+        </Button>
+        <Button
+          v-else-if="getSubscriptionStatus === 'interested' && !interestedInSubscription"
+          :color="publicWebsite ? 'green' : ''"
+          :big="publicWebsite"
           @click.native="interested"
         >
-          I’m interested
+          I'm interested
         </Button>
         <SubscriptionRequestSuccess
           v-else-if="getSubscriptionStatus === 'interested' && interestedInSubscription"
@@ -84,6 +91,12 @@
         class="text is-small is-txtMainTextColor u-mt--16 right-align"
       >
         Any questions? <a href="https://carto.com/request-live-demo/" target="_blank">Contact</a>
+      </p>
+      <p
+        v-else-if="hasSample && !subscriptionInfo && !isEnterprise"
+        class="text is-small is-txtMainTextColor u-mt--16 right-align"
+      >
+        Full dataset available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
       </p>
       <p
         v-else-if="!subscriptionInfo && !isEnterprise"
@@ -173,6 +186,9 @@ export default {
     },
     isDOEnabled () {
       return this.$store.state.user && this.$store.state.user.do_enabled;
+    },
+    hasSample () {
+      return this.dataset.available_in && this.dataset.available_in.indexOf('bq-sample') >= 0;
     }
   },
   methods: {

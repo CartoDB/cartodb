@@ -229,7 +229,7 @@
     "build": "NODE_ENV=production webpack --progress --config webpack/v4/webpack.prod.config.js",
     "build:dev": "NODE_ENV=development webpack --progress --config webpack/v4/webpack.dev.config.js",
     "build:static": "NODE_ENV=production webpack --progress --config w ebpack/static-pages/webpack.prod.config.js",
-    "build:do-catalog": "vue-cli-service build --target lib --name do-catalog --formats umd-min --dest public/assets/1.0.0-assets.190-do-subscriptions-0/javascripts/ --no-clean --inline-vue lib/assets/javascripts/do-catalog/main.js",
+    "build:do-catalog": "NODE_ENV=production vue-cli-service build --target lib --name do-catalog --formats umd-min --no-clean --inline-vue lib/assets/javascripts/do-catalog/main.js",
     "carto-node": "NODE_ENV=production webpack --progress --config webpack/carto-node/webpack.config.js",
     "dev": "NODE_ENV=development webpack --progress --watch --config webpack/v4/webpack.dev.config.js",
     "dev:editor": "grunt editor",

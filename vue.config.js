@@ -1,6 +1,8 @@
 const path = require('path');
+const { version } = require('./package.json');
 
 module.exports = {
+  outputDir: path.resolve(__dirname, `public/assets/${version}/javascripts`),
   configureWebpack: {
     resolve: {
       alias: {

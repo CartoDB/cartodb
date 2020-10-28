@@ -147,8 +147,9 @@ module Cartodb
     end
 
     def update_organization(organization_name, organization_attributes)
-      body = {organization: organization_attributes}
-      send_request("api/organizations/#{ organization_name }", body, :put, [204])
+      payload = { organization: organization_name }.merge(organization_attributes)
+      topic = Carto::Common::MessageBroker.instance.get_topic(:poc_cartodb_central_sync)
+      topic.publish(:update_organization, payload)
     end
 
     def delete_organization(organization_name)

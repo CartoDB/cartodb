@@ -623,7 +623,7 @@ CartoDB::Application.routes.draw do
         post 'subscriptions/:subscription_id/sync' => 'data_observatory#create_sync', as: :api_v4_do_subscription_create_sync, constraints: { subscription_id: /[\w\.\-]+/ }
         delete 'subscriptions/:subscription_id/sync' => 'data_observatory#destroy_sync', as: :api_v4_do_subscription_destroy_sync, constraints: { subscription_id: /[\w\.\-]+/ }
 
-        post 'subscriptions/:datasetïd/sample' => 'data_observatory#create_sync', as: :api_v4_do_subscription_create_sample, constraints: { datasetïd: /[\w\.\-]+/ }
+        post 'subscriptions/:datasetïd/sample' => 'data_observatory#create_sample', as: :api_v4_do_subscription_create_sample, constraints: { datasetïd: /[\w\.\-]+/ }
       end
 
       # Federated Tables

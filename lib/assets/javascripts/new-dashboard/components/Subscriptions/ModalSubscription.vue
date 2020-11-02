@@ -15,7 +15,7 @@
             :src="require('new-dashboard/assets/icons/catalog/modal/' + getHeaderIcon)"
             alt="Request data"
           />
-          <h2 class="title is-sectiontitle is-txtNavyBlue u-mt--24">
+          <h2 class="title is-title-small is-txtNavyBlue u-mt--24">
             {{ getTitle }}
           </h2>
           <p class="text is-caption is-txtNavyBlue u-mt--12">
@@ -26,8 +26,13 @@
           <DatasetListItem
             :key="dataset.slug"
             :dataset="dataset"
+            :minimal="true"
           ></DatasetListItem>
         </ul>
+
+        <p class="text is-caption-xsmall u-mt--16" v-if="currentMode == 'sample' || currentMode == 'connectingSample'">
+          {{ getDescription }}
+        </p>
 
         <div
           class="license u-mt--24"
@@ -120,8 +125,8 @@
             :isOutline="true"
             :color="(currentMode === 'unsubscribe' || currentMode === 'cancelRequest') ? 'navy-blue' : ''"
             class="noBorder"
-            >{{ getCloseText }}</Button
-          >
+            >{{ getCloseText }}
+          </Button>
           <Button
             v-if="currentMode === 'subscribe'"
             @click.native="subscribe()"
@@ -172,6 +177,18 @@
             Confirm cancellation
           </Button>
 
+          <Button
+            v-if="currentMode === 'sample'"
+            @click.native="connectSample()"
+            class="u-ml--16"
+            :class="{ 'require-licence': !licenseAccepted, 'is-loading': loading }"
+          >
+          <span class="loading u-flex u-flex__align-center u-mr--12">
+            <img svg-inline src="../../assets/icons/catalog/loading_white.svg" class="loading__svg"/>
+          </span>
+            Connect sample
+          </Button>
+
           <router-link
             v-else-if="currentMode === 'subscribed' || currentMode === 'requested'"
             :to="{ name: 'subscriptions' }">
@@ -182,6 +199,19 @@
               >
                 <img class="u-mr--12" src="../../assets/icons/catalog/check_white.svg" alt="check" />
                 Check your subscriptions
+              </Button>
+          </router-link>
+
+          <router-link
+            v-else-if="currentMode === 'connectingSample'"
+            :to="{ name: 'datasets' }" replace>
+              <Button
+                @click.native="closeModal()"
+                class="u-ml--16"
+                :color="'green'"
+              >
+                <img class="u-mr--12" src="../../assets/icons/catalog/check_white.svg" alt="check" />
+                Go to Your Datasets
               </Button>
           </router-link>
 
@@ -219,7 +249,7 @@ export default {
       type: String,
       required: false,
       validator: value => {
-        return ['subscribe', 'unsubscribe', 'request', 'cancelRequest'].indexOf(value) !== -1;
+        return ['subscribe', 'unsubscribe', 'request', 'cancelRequest', 'sample'].indexOf(value) !== -1;
       }
     }
   },
@@ -242,14 +272,18 @@ export default {
         return 'subsc-unsubsc-icon.svg';
       } else if (this.currentMode === 'request') {
         return 'data-request.svg';
+      } else if (this.currentMode === 'sample') {
+        return 'subsc-add-icon.svg';
       } else if (this.currentMode === 'subscribed') {
         return 'subsc-subscribed-icon.svg';
       } else if (this.currentMode === 'requested') {
         return 'subsc-requested-icon.svg';
       } else if (this.currentMode === 'cancelRequest') {
         return 'subsc-unsubsc-icon.svg';
+      } else if (this.currentMode === 'connectingSample') {
+        // TODO: subsc-loading-icon.svg
+        return 'subsc-add-icon.svg';
       }
-      return null;
     },
     getTitle () {
       if (this.currentMode === 'subscribe') {
@@ -258,14 +292,17 @@ export default {
         return 'Confirm your unsubscription';
       } else if (this.currentMode === 'request') {
         return 'Confirm your request';
+      } else if (this.currentMode === 'sample') {
+        return 'Connect your sample';
       } else if (this.currentMode === 'subscribed') {
         return 'Subscription confirmed';
       } else if (this.currentMode === 'requested') {
         return 'Subscription request confirmed';
       } else if (this.currentMode === 'cancelRequest') {
         return 'Confirm cancellation of subscription request';
+      } else if (this.currentMode === 'connectingSample') {
+        return 'Your sample is almost ready';
       }
-      return '';
     },
     getSubTitle () {
       if (this.currentMode === 'subscribe') {
@@ -274,14 +311,24 @@ export default {
         return 'You are going to unsubscribe to the following dataset:';
       } else if (this.currentMode === 'request') {
         return 'You are going to request a subscription to the following dataset:';
+      } else if (this.currentMode === 'sample') {
+        return 'You are going to access the following sample dataset:';
       } else if (this.currentMode === 'subscribed') {
         return 'Your subscription has been activated successfully.';
       } else if (this.currentMode === 'requested') {
         return 'We have received your subscription request and we will contact you really soon about the following dataset:';
       } else if (this.currentMode === 'cancelRequest') {
         return 'You are going to cancel the request to start the subscription process for the following dataset:';
+      } else if (this.currentMode === 'connectingSample') {
+        return 'Your sample is being processed and will be available from Your Datasets shortly.';
       }
-      return '';
+    },
+    getDescription () {
+      if (this.currentMode === 'sample') {
+        return 'The sample data is for trial evaluation purposes only and may differ slightly from final product data.';
+      } else if (this.currentMode === 'connectingSample') {
+        return 'The sample data is for trial evaluation purposes only and may differ slightly from final product data.';
+      }
     },
     getCloseText () {
       if (
@@ -302,6 +349,7 @@ export default {
   },
   methods: {
     closeModal () {
+      this.licenseStatus = false;
       this.$emit('closeModal');
     },
     async subscribe () {
@@ -372,6 +420,10 @@ export default {
         this.closeModal();
       }
       this.loading = false;
+    },
+    async connectSample () {
+      // TODO
+      this.currentMode = 'connectingSample';
     }
   },
   watch: {
@@ -422,9 +474,20 @@ export default {
   }
 }
 
+.is-title-small {
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 32px;
+}
+
 .is-caption-small {
   font-size: 14px;
   line-height: 1.43;
+}
+
+.is-caption-xsmall {
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .license {

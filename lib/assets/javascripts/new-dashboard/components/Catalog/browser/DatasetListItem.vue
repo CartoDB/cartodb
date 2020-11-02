@@ -1,14 +1,21 @@
 <template>
   <li class="list-item">
     <div class="main-item">
-      <div class="category title is-small grid grid--space">
+      <div class="category title is-small grid grid--space u-flex__align--center">
         <div>
           <span class="country">{{ dataset.country_name }}</span>
           <span>·</span
           >{{ dataset.category_name ? dataset.category_name : 'Geography' }}
         </div>
-        <div>
+        <div class="u-flex u-flex__align--center">
           {{ dataset.provider_name }}
+          <div class="provider" v-if="minimal">
+            <img
+              :src="providerLogo"
+              :alt="dataset.provider_name"
+              :title="dataset.provider_name"
+            />
+          </div>
         </div>
       </div>
       <div class="info u-mr--72">
@@ -24,11 +31,11 @@
             >{{ dataset.name }}</router-link
           >
         </h3>
-        <p class="description text">{{ dataset.description }}</p>
+        <p v-if="!minimal" class="description text">{{ dataset.description }}</p>
       </div>
       <div
         class="extra text is-small grid u-mt--16"
-        v-if="!dataset.is_geography"
+        v-if="!dataset.is_geography && !minimal"
       >
         <div
           class="grid-cell--col7 grid grid--align-end grid--no-wrap"
@@ -55,7 +62,7 @@
           </div>
         </div>
       </div>
-      <div class="extra text is-small grid u-mt--16" v-else>
+      <div class="extra text is-small grid u-mt--16" v-else-if="!minimal">
         <div
           class="grid-cell--col7 grid grid--align-end grid--no-wrap"
         >
@@ -101,6 +108,9 @@ export default {
     extra: {
       type: Boolean,
       required: false
+    },
+    minimal: {
+      type: Boolean
     }
   },
   components: {
@@ -198,17 +208,17 @@ export default {
     .grid--reverse {
       flex-direction: row-reverse;
     }
+  }
 
-    .provider {
-      flex: 0 0 auto;
-      display: block;
-      width: 36px;
-      height: 36px;
-      margin-left: 8px;
+  .provider {
+    flex: 0 0 auto;
+    display: block;
+    width: 36px;
+    height: 36px;
+    margin-left: 8px;
 
-      img {
-        max-width: 100%;
-      }
+    img {
+      max-width: 100%;
     }
   }
 

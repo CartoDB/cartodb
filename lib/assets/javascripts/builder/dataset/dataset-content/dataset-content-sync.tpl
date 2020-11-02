@@ -18,13 +18,13 @@
     <%- _t('dataset.sync.error-code', { errorCode: errorCode }) %>: <%- errorMessage %>.
   <% } %>
 
-  <% if (!fromExternalSource) { %>
+  <% if (!fromExternalSource && !isSubscription) { %>
     <% if (state !== "syncing") { %>
       <button class="<% if (canSyncNow) { %>u-actionTextColor js-syncNow<% } else { %>is-disabled js-syncNowDisabled<% } %>"><%- _t('dataset.sync.sync-now') %></button>.
     <% } %>
   <% } %>
 
-  <% if (state !== "syncing") { %>
+  <% if (state !== "syncing" && !isSubscription) { %>
     <button class="js-options u-actionTextColor"><%- _t('dataset.sync.view-options') %></button>.
   <% } %>
 </p>

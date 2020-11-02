@@ -1,6 +1,5 @@
 <template>
   <a :href="vizUrl"
-     target="_blank"
      class="card map-card"
      :class="{
        'card--selected': isSelected,

@@ -1,6 +1,5 @@
 <template>
   <a :href="vizUrl"
-     target="_blank"
      class="dataset-row"
      :class="{
        'dataset-row--selected': isSelected,

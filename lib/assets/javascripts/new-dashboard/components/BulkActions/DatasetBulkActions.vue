@@ -48,12 +48,13 @@ export default {
           {
             name: this.$t('BulkActions.datasets.changePrivacy'),
             event: 'changePrivacy',
-            shouldBeHidden: this.isAnyShared || this.isAnyLocked
+            shouldBeHidden: this.isSubscription || this.isAnyShared || this.isAnyLocked
           },
           {
             name: this.$t('BulkActions.datasets.duplicate'),
             event: 'duplicateDataset',
-            shouldBeDisabled: this.isOutOfDatasetsQuota
+            shouldBeDisabled: this.isOutOfDatasetsQuota,
+            shouldBeHidden: this.isSubscription
           },
           {
             name: this.$t('BulkActions.datasets.lock'),
@@ -127,7 +128,7 @@ export default {
     isSubscription () {
       return this.selectedDatasets.some(dataset => {
         const subscription = dataset.subscription;
-        return subscription && subscription.id !== undefined || false;
+        return subscription && subscription.entityId !== undefined || false;
       });
     }
   },

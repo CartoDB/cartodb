@@ -16,7 +16,7 @@
         <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
       </div>
 
-      <TypeBadge v-if="isBuilderMap || isKuviz || isKeplergl || isSubscription" class="card-badge" :visualizationType="badgeVisualizationType" :isKuviz="isKuviz" :inCondensedCard="false" />
+      <TypeBadge v-if="isBuilderMap || isKuviz || isKeplergl || isSample || isSubscription" class="card-badge" :visualizationType="badgeVisualizationType" :isKuviz="isKuviz" :inCondensedCard="false" />
       <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
     </div>
 
@@ -153,7 +153,9 @@ export default {
       }, {});
     },
     badgeVisualizationType () {
-      if (this.isSubscription) {
+      if (this.isSample) {
+        return 'sample';
+      } else if (this.isSubscription) {
         return 'subscription';
       }
       return this.$props.visualization.type;

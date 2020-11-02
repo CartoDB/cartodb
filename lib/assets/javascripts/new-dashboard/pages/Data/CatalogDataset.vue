@@ -25,7 +25,7 @@
             </svg>
           </span>
           <span class="text is-txtSoftGrey is-caption u-mt--12">
-            Loading {{ type }} details…
+            Loading {{ entityType }} details...
           </span>
         </div>
       </div>
@@ -104,8 +104,8 @@ export default {
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset,
-      type () {
-        return this.$route.params.type;
+      entityType () {
+        return this.$route.params.entityType;
       }
     }),
     subscription () {
@@ -114,7 +114,7 @@ export default {
       );
     },
     isGeography () {
-      return this.$route.params.type === 'geography';
+      return this.$route.params.entityType === 'geography';
     },
     isSubscriptionSyncing () {
       return this.subscription && this.subscription.sync_status === 'syncing';
@@ -122,19 +122,19 @@ export default {
   },
   methods: {
     initializeDataset () {
-      if (!this.dataset || this.dataset.slug !== this.$route.params.datasetId) {
+      if (!this.dataset || this.dataset.slug !== this.$route.params.entityId) {
         this.loading = true;
         Promise.all([
           this.$store.dispatch('catalog/fetchSubscriptionsList'),
           this.$store.dispatch('catalog/fetchDataset', {
-            id: this.$route.params.datasetId,
-            type: this.$route.params.type
+            id: this.$route.params.entityId,
+            type: this.$route.params.entityType
           })
         ]).then(() => {
           this.loading = false;
-          if (this.$route.params.datasetId !== this.dataset.slug) {
+          if (this.$route.params.entityId !== this.dataset.slug) {
             this.$router.replace({
-              params: { datasetId: this.dataset.slug }
+              params: { entityId: this.dataset.slug }
             });
           }
         });
@@ -153,7 +153,7 @@ export default {
         }
       }
     },
-    type: {
+    entityType: {
       immediate: true,
       handler () {
         this.initializeDataset();
@@ -161,7 +161,7 @@ export default {
     }
   },
   destroyed () {
-    if (this.dataset.slug !== this.$route.params.datasetId) {
+    if (this.dataset.slug !== this.$route.params.entityId) {
       this.$store.commit('catalog/resetDataset');
     }
     clearInterval(this.id_interval);

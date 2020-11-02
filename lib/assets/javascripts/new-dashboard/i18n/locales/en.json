@@ -17,6 +17,7 @@
       "derived": "BUILDER",
       "kuviz": "CARTOFRAMES",
       "keplergl": "KEPLER.GL",
+      "sample": "SAMPLE",
       "subscription": "SUBSCRIPTION"
     }
   },
@@ -36,6 +37,8 @@
     "changePrivacy": "Change privacy",
     "share": "Share with colleagues",
     "duplicate": "Duplicate",
+    "viewSubscription": "View subscription",
+    "subscribeToEntity": "Subscribe to dataset",
     "lock": "Lock",
     "unlock": "Unlock",
     "delete": "Delete",

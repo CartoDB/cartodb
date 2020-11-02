@@ -24,8 +24,8 @@
             :to="{
               name: 'catalog-dataset-summary',
               params: {
-                datasetId: dataset.slug,
-                type: dataset.is_geography ? 'geography' : 'dataset'
+                entityId: dataset.slug,
+                entityType: dataset.is_geography ? 'geography' : 'dataset'
               }
             }"
             >{{ dataset.name }}</router-link

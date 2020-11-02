@@ -30,9 +30,9 @@
   <div>
     <div class="DatasetsList-itemMeta">
 
-      <% if (subscriptionTag) { %>
-        <span class="CDB-Tag is-subscription CDB-Text is-semibold CDB-Size-small u-upperCase">
-          <%- subscriptionTag %>
+      <% if (entityTag) { %>
+        <span class="CDB-Tag CDB-Text is-semibold CDB-Size-small u-upperCase">
+          <%- entityTag %>
         </span>
       <% } %>
       <span class="CDB-Tag is-<%- privacy %> CDB-Text is-semibold CDB-Size-small u-upperCase">

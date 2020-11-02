@@ -83,8 +83,8 @@
               :to="{
                 name: 'catalog-dataset-summary',
                 params: {
-                  datasetId: (dataset.geography_slug || dataset.geography_id),
-                  type: 'geography'
+                  entityId: (dataset.geography_slug || dataset.geography_id),
+                  entityType: 'geography'
                 }
               }"
             >
@@ -133,7 +133,7 @@ export default {
       return updateFrequencyName(this.dataset.update_frequency);
     },
     isGeography () {
-      return this.$route.params.type === 'geography';
+      return this.$route.params.entityType === 'geography';
     },
     geometryType () {
       return geometryTypeName(this.dataset.geom_type);
@@ -142,8 +142,8 @@ export default {
   methods: {
     fetchKeyVariables () {
       this.$store.dispatch('catalog/fetchKeyVariables', {
-        id: this.$route.params.datasetId,
-        type: this.$route.params.type
+        id: this.$route.params.entityId,
+        type: this.$route.params.entityType
       });
     }
   },

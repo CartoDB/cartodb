@@ -51,21 +51,34 @@ export default {
           },
           {
             name: this.$t('QuickActions.manageTags'),
-            event: 'manageTags'
+            event: 'manageTags',
+            shouldBeHidden: this.isSubscription
           },
           {
             name: this.$t('QuickActions.changePrivacy'),
-            event: 'changePrivacy'
+            event: 'changePrivacy',
+            shouldBeHidden: this.isSubscription
           },
           {
             name: this.$t('QuickActions.share'),
             event: 'shareVisualization',
-            shouldBeHidden: !this.isUserInsideOrganization
+            shouldBeHidden: this.isSubscription || !this.isUserInsideOrganization
           },
           {
             name: this.$t('QuickActions.duplicate'),
             event: 'duplicateDataset',
-            shouldBeDisabled: this.isOutOfDatasetsQuota
+            shouldBeDisabled: this.isOutOfDatasetsQuota,
+            shouldBeHidden: this.isSubscription
+          },
+          {
+            name: this.$t('QuickActions.viewSubscription'),
+            event: 'goToEntity',
+            shouldBeHidden: !this.isSubscription && (!this.isSample || !this.entitySubscribed)
+          },
+          {
+            name: this.$t('QuickActions.subscribeToEntity'),
+            event: 'goToEntity',
+            shouldBeHidden: !this.isSample || this.entitySubscribed
           },
           {
             name: this.$t('QuickActions.lock'),
@@ -114,9 +127,17 @@ export default {
       const userOrganization = this.$store.state.user.organization;
       return userOrganization && userOrganization.id;
     },
+    isSample () {
+      const sample = this.dataset.sample;
+      return sample && sample.entityId !== undefined || false;
+    },
+    entitySubscribed () {
+      const sample = this.dataset.sample;
+      return sample && sample.entitySubscribed || false;
+    },
     isSubscription () {
       const subscription = this.dataset.subscription;
-      return subscription && subscription.id !== undefined || false;
+      return subscription && subscription.entityId !== undefined || false;
     }
   },
   methods: {
@@ -187,6 +208,13 @@ export default {
         create_vis: false
       });
       this.closeDropdown();
+    },
+    goToEntity () {
+      const entity = this.dataset.sample || this.dataset.subscription;
+      this.$router.push({
+        name: 'catalog-dataset-summary',
+        params: { entityId: entity.entityId, entityType: entity.entityType }
+      });
     },
     unlockDataset () {
       DialogActions.changeLockState.apply(this, [this.dataset, 'datasets', this.getActionHandlers()]);

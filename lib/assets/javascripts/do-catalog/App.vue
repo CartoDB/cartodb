@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'do-catalog'
+  name: 'App'
 };
 </script>
 

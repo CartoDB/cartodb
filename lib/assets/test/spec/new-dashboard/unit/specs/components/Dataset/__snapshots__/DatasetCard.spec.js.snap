@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DatasetCard.vue Methods should hide the dropdown 1`] = `
-<a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="viz-column--main-info">
     <div class="cell cell--start cell--first">
       <div class="row-dataType">
@@ -45,7 +45,7 @@ exports[`DatasetCard.vue Methods should hide the dropdown 1`] = `
 `;
 
 exports[`DatasetCard.vue Methods should show copy name dropdown 1`] = `
-<a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="viz-column--main-info">
     <div class="cell cell--start cell--first">
       <div class="row-dataType">
@@ -89,7 +89,7 @@ exports[`DatasetCard.vue Methods should show copy name dropdown 1`] = `
 `;
 
 exports[`DatasetCard.vue should add class selected to the card when the property isSelected is true 1`] = `
-<a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--selected dataset-row--can-hover">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--selected dataset-row--can-hover">
   <div class="viz-column--main-info">
     <div class="cell cell--start cell--first">
       <div class="row-dataType">
@@ -133,7 +133,7 @@ exports[`DatasetCard.vue should add class selected to the card when the property
 `;
 
 exports[`DatasetCard.vue should add the name of the owner if the dataset is shared 1`] = `
-<a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="viz-column--main-info">
     <div class="cell cell--start cell--first">
       <div class="row-dataType">
@@ -150,6 +150,7 @@ exports[`DatasetCard.vue should add the name of the owner if the dataset is shar
         </div> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
       </div>
       <div class="row-metadataContainer">
+        <!---->
         <!---->
         <!---->
         <div class="row-metadata"><img svg-inline="" src="../../assets/icons/common/user.svg" class="icon-metadata"> <span class="text is-small is-txtSoftGrey">cdb</span></div>
@@ -182,7 +183,7 @@ exports[`DatasetCard.vue should add the name of the owner if the dataset is shar
 `;
 
 exports[`DatasetCard.vue should render correct contents 1`] = `
-<a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="viz-column--main-info">
     <div class="cell cell--start cell--first">
       <div class="row-dataType">
@@ -226,7 +227,7 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
 `;
 
 exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
-<a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="viz-column--main-info">
     <div class="cell cell--start cell--first">
       <div class="row-dataType">
@@ -273,7 +274,7 @@ exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
 `;
 
 exports[`DatasetCard.vue should render multiple tags 1`] = `
-<a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="viz-column--main-info">
     <div class="cell cell--start cell--first">
       <div class="row-dataType">
@@ -290,6 +291,7 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
         </div> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
       </div>
       <div class="row-metadataContainer">
+        <!---->
         <!---->
         <div class="row-metadata"><img src="../../assets/icons/common/tag.svg" width="14" height="14" class="icon-metadata">
           <!---->
@@ -325,7 +327,7 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
 `;
 
 exports[`DatasetCard.vue should render shared brief with all organisation members 1`] = `
-<a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="viz-column--main-info">
     <div class="cell cell--start cell--first">
       <div class="row-dataType">
@@ -342,6 +344,7 @@ exports[`DatasetCard.vue should render shared brief with all organisation member
         </div> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
       </div>
       <div class="row-metadataContainer">
+        <!---->
         <!---->
         <!---->
         <!---->
@@ -374,7 +377,7 @@ exports[`DatasetCard.vue should render shared brief with all organisation member
 `;
 
 exports[`DatasetCard.vue should render tags 1`] = `
-<a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="viz-column--main-info">
     <div class="cell cell--start cell--first">
       <div class="row-dataType">
@@ -391,6 +394,7 @@ exports[`DatasetCard.vue should render tags 1`] = `
         </div> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
       </div>
       <div class="row-metadataContainer">
+        <!---->
         <!---->
         <div class="row-metadata"><img src="../../assets/icons/common/tag.svg" width="14" height="14" class="icon-metadata">
           <ul class="tag-list">

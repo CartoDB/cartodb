@@ -31,6 +31,8 @@ exports[`DatasetQuickAction.vue should render open dropdown with all actions for
         <!----> <a href="#" class="action__text text is-caption is-txtPrimary">QuickActions.share</a></li>
       <li class="action__item">
         <!----> <a href="#" class="action__text text is-caption is-txtPrimary">QuickActions.duplicate</a></li>
+      <!---->
+      <!---->
       <li class="action__item">
         <!----> <a href="#" class="action__text text is-caption is-txtPrimary">QuickActions.lock</a></li>
       <li class="action__item">

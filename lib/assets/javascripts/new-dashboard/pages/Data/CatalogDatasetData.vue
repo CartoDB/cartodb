@@ -178,9 +178,6 @@ export default {
       variables: state => state.catalog.variables,
       isFetching: state => state.catalog.isFetching
     }),
-    isPublicWebsite () {
-      return !(this.$store.state.user && this.$store.state.user.id);
-    },
     tableKey () {
       if (this.dataset && this.dataset.summary_json) {
         if (this.dataset.summary_json.ordered_glimpses) {

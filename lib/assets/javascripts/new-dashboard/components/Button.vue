@@ -8,7 +8,8 @@
         'extra-border': extraBorder,
         'is-narrow': narrow,
         'is-big': big,
-        'has-arrow': arrow
+        'has-arrow': arrow,
+        'disabled': disabled
       },
       color
     ]"
@@ -31,7 +32,8 @@ export default {
     narrow: Boolean,
     blank: Boolean,
     big: Boolean,
-    arrow: Boolean
+    arrow: Boolean,
+    disabled: Boolean
   }
 };
 </script>
@@ -102,6 +104,11 @@ export default {
     content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCAyMCAxMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZD0iTS0yLTdoMjR2MjRILTJ6Ii8+CiAgICA8cGF0aCBmaWxsPSIjRkZGIiBkPSJNMTQuNzA3LjI5M2wtMS40MTQgMS40MTRMMTUuNTg2IDRIMHYyaDE1LjU4NmwtMi4yOTMgMi4yOTMgMS40MTQgMS40MTRMMTkuNDE0IDV6Ii8+CiAgPC9nPgo8L3N2Zz4=);
     margin-left: 12px;
   }
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 .reverse-colors {
@@ -109,7 +116,7 @@ export default {
   color: $button__bg-color;
 
   &:hover {
-    background-color: darken($button__color, 2);
+    background-color: $button__color;
   }
 }
 

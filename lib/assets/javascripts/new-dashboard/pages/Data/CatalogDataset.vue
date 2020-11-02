@@ -48,7 +48,7 @@
               :slug="dataset.slug"
               class="u-mt--12"
             ></DatasetActionsBar>
-            <DatasetHeader :publicWebsite="true"></DatasetHeader>
+            <DatasetHeader :publicWebsite="publicWebsite"></DatasetHeader>
           </div>
         </transition>
       </div>

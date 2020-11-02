@@ -24,16 +24,16 @@
 
     <div class="u-ml--auto grid-cell grid-cell--col3 grid-cell--col4--tablet buttons-actions" :class="{ publicWebsite }">
       <div class="u-flex u-flex__justify--end">
-        <Button
+        <!-- <Button
           v-if="hasSample && getSubscriptionStatus === 'interested' && !interestedInSubscription"
           :color="publicWebsite ? 'green' : ''"
           :big="publicWebsite"
           url="https://carto.com/signup"
         >
           Sign up to access sample
-        </Button>
+        </Button> -->
         <Button
-          v-else-if="getSubscriptionStatus === 'interested' && !interestedInSubscription"
+          v-if="getSubscriptionStatus === 'interested' && !interestedInSubscription"
           :color="publicWebsite ? 'green' : ''"
           :big="publicWebsite"
           @click.native="interested"
@@ -92,12 +92,12 @@
       >
         Any questions? <a href="https://carto.com/request-live-demo/" target="_blank">Contact</a>
       </p>
-      <p
+      <!-- <p
         v-else-if="hasSample && !subscriptionInfo && !isEnterprise"
         class="text is-small is-txtMainTextColor u-mt--16 right-align"
       >
         Full dataset available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
-      </p>
+      </p> -->
       <p
         v-else-if="!subscriptionInfo && !isEnterprise"
         class="text is-small is-txtMainTextColor u-mt--16 right-align"

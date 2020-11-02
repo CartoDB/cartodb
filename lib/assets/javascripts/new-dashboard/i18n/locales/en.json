@@ -17,7 +17,7 @@
       "derived": "BUILDER",
       "kuviz": "CARTOFRAMES",
       "keplergl": "KEPLER.GL",
-      "data-observatory": "DATA OBSERVATORY"
+      "subscription": "SUBSCRIPTION"
     }
   },
   "MapListHeader": {

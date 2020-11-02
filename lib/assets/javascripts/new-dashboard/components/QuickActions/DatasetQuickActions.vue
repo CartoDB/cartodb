@@ -47,7 +47,7 @@ export default {
           {
             name: this.$t('QuickActions.editInfo'),
             event: 'editInfo',
-            shouldBeHidden: this.isDOSubscription
+            shouldBeHidden: this.isSubscription
           },
           {
             name: this.$t('QuickActions.manageTags'),
@@ -70,12 +70,12 @@ export default {
           {
             name: this.$t('QuickActions.lock'),
             event: 'lockDataset',
-            shouldBeHidden: this.isDOSubscription
+            shouldBeHidden: this.isSubscription
           },
           {
             name: this.$t('QuickActions.delete'),
             event: 'deleteDataset',
-            shouldBeHidden: this.isDOSubscription,
+            shouldBeHidden: this.isSubscription,
             isDestructive: true
           }
         ],
@@ -114,9 +114,9 @@ export default {
       const userOrganization = this.$store.state.user.organization;
       return userOrganization && userOrganization.id;
     },
-    isDOSubscription () {
+    isSubscription () {
       const subscription = this.dataset.subscription;
-      return subscription && subscription.provider === 'do-v2';
+      return subscription && subscription.id !== undefined || false;
     }
   },
   methods: {

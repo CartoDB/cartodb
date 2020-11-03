@@ -82,6 +82,20 @@ describe 'KML regression tests' do
     geometry_type_for(runner, @user).should be
   end
 
+  it 'imports multi-layer KMLs with slashes in the names' do
+    filepath    = path_to('multiple_layer_with_slashes_in_names.kml')
+    downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
+    runner      = CartoDB::Importer2::Runner.new(
+      pg: @user.db_service.db_configuration_for,
+      downloader: downloader,
+      log: CartoDB::Importer2::Doubles::Log.new(@user),
+      user: @user
+    )
+    runner.run
+
+    geometry_type_for(runner, @user).should be
+  end
+
   it 'raises if KML just contains a link to the actual KML url' do
     filepath    = path_to('abandoned.kml')
     downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)

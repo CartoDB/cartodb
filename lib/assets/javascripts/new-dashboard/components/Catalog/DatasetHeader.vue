@@ -274,5 +274,8 @@ a.disabled {
 
 .publicWebsite {
   background-color: $color-primary;
+  h1, p, a, span {
+    color: white;
+  }
 }
 </style>

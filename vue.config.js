@@ -3,6 +3,7 @@ const { version } = require('./package.json');
 
 module.exports = {
   runtimeCompiler: true,
+  publicPath: '/spatial-data-catalog/browser/',
   outputDir: path.resolve(__dirname, `public/assets/${version}/javascripts`),
   configureWebpack: {
     resolve: {
@@ -26,14 +27,16 @@ module.exports = {
     }
   },
   chainWebpack: config => {
-    config.module.rule('images').use('url-loader')
-      .loader('file-loader')
-      .tap(options => Object.assign(options, {
-        name: '../images/do-catalog/[name].[hash:8].[ext]'
-      }));
-    config.module.rule('svg').use('file-loader')
-      .tap(options => Object.assign(options, {
-        name: '../images/do-catalog/[name].[hash:8].[ext]'
-      }));
+    if (process.env.NODE_ENV === 'poduction') {
+      config.module.rule('images').use('url-loader')
+        .loader('file-loader')
+        .tap(options => Object.assign(options, {
+          name: '../images/do-catalog/[name].[hash:8].[ext]'
+        }));
+      config.module.rule('svg').use('file-loader')
+        .tap(options => Object.assign(options, {
+          name: '../images/do-catalog/[name].[hash:8].[ext]'
+        }));
+    }
   }
 };

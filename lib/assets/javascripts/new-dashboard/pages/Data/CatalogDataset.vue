@@ -169,7 +169,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import 'new-dashboard/styles/variables';
 
 .catalogDetail {
@@ -251,19 +251,12 @@ input::-ms-clear {
   padding: 0;
   border-bottom: none !important;
 
-  .secondaryNavigation {
-    top: 0;
-    padding: 0;
-    border: none;
-    background-color: $color-primary;
-  }
-
   .website-header {
     padding-bottom: 24px;
     margin-bottom: 24px;
     background-color: $color-primary;
 
-    h1, p, a, span {
+    a {
       color: white;
     }
   }

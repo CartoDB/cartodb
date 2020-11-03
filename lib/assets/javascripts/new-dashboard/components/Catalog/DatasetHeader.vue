@@ -2,7 +2,7 @@
   <header
     class="grid u-flex__justify--center u-mb--36 u-mb--20--tablet u-mt--36"
   >
-    <div class="grid-cell grid-cell--col9 grid-cell--col8--tablet tilte-container">
+    <div class="grid-cell grid-cell--col9 grid-cell--col8--tablet tilte-container" :class="{ publicWebsite }">
       <nav class="breadcrumbs">
         <p class="text is-caption is-txtMainTextColor" v-if="!isGeography">
           <span class="title is-txtMainTextColor">{{
@@ -22,13 +22,23 @@
       </h1>
     </div>
 
-    <div class="u-ml--auto grid-cell grid-cell--col3 grid-cell--col4--tablet buttons-actions">
+    <div class="u-ml--auto grid-cell grid-cell--col3 grid-cell--col4--tablet buttons-actions" :class="{ publicWebsite }">
       <div class="u-flex u-flex__justify--end">
+        <!-- <Button
+          v-if="hasSample && getSubscriptionStatus === 'interested' && !interestedInSubscription"
+          :color="publicWebsite ? 'green' : ''"
+          :big="publicWebsite"
+          url="https://carto.com/signup"
+        >
+          Sign up to access sample
+        </Button> -->
         <Button
           v-if="getSubscriptionStatus === 'interested' && !interestedInSubscription"
+          :color="publicWebsite ? 'green' : ''"
+          :big="publicWebsite"
           @click.native="interested"
         >
-          I’m interested
+          I'm interested
         </Button>
         <SubscriptionRequestSuccess
           v-else-if="getSubscriptionStatus === 'interested' && interestedInSubscription"
@@ -82,11 +92,17 @@
       >
         Any questions? <a href="https://carto.com/request-live-demo/" target="_blank">Contact</a>
       </p>
+      <!-- <p
+        v-else-if="hasSample && !subscriptionInfo && !isEnterprise"
+        class="text is-small is-txtMainTextColor u-mt--16 right-align"
+      >
+        Full dataset available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
+      </p> -->
       <p
         v-else-if="!subscriptionInfo && !isEnterprise"
         class="text is-small is-txtMainTextColor u-mt--16 right-align"
       >
-        Only available for <a href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
+        Only available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
       </p>
     </div>
 
@@ -110,6 +126,9 @@ import { formURL } from 'new-dashboard/utils/catalog/form-url';
 
 export default {
   name: 'DatasetHeader',
+  props: {
+    publicWebsite: Boolean
+  },
   data () {
     return {
       modalOpen: false,
@@ -163,10 +182,13 @@ export default {
       return this.interestedSubscriptions.indexOf(this.dataset.id) >= 0;
     },
     isEnterprise () {
-      return this.$store.state.user.is_enterprise;
+      return this.$store.state.user && this.$store.state.user.is_enterprise;
     },
     isDOEnabled () {
-      return this.$store.state.user.do_enabled;
+      return this.$store.state.user && this.$store.state.user.do_enabled;
+    },
+    hasSample () {
+      return this.dataset.available_in && this.dataset.available_in.indexOf('bq-sample') >= 0;
     }
   },
   methods: {
@@ -240,12 +262,20 @@ a.disabled {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 68px;
+    height: 120px;
+    flex-direction: column;
   }
 }
 
 .is-sectiontitle {
   font-size: 24px;
   line-height: 36px;
+}
+
+.publicWebsite {
+  background-color: $color-primary;
+  h1, p, a, span {
+    color: white;
+  }
 }
 </style>

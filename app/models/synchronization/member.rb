@@ -4,7 +4,6 @@ require_relative '../../../services/importer/lib/importer'
 require_relative '../visualization/collection'
 require_relative '../../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../../services/datasources/lib/datasources'
-require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
 require_relative '../../../services/importer/lib/importer/overviews'
@@ -169,12 +168,12 @@ module CartoDB
         # First import is a "normal import" so still has no id, then run gets called and will get log first time
         # but we need this to fix old logs
         if log.nil?
-          @log = CartoDB::Log.new(type: CartoDB::Log::TYPE_SYNCHRONIZATION, user_id: user.id)
+          @log = Carto::Log.new_synchronization(user.id)
           @log.store
           self.log_id = @log.id
           store
         else
-          @log.type = CartoDB::Log::TYPE_SYNCHRONIZATION
+          @log.type = Carto::Log::TYPE_SYNCHRONIZATION
           @log.clear
           @log.store
         end
@@ -554,7 +553,7 @@ module CartoDB
 
         log_attributes.merge(user_id: user.id) if user
 
-        @log = CartoDB::Log.where(log_attributes).first
+        @log = Carto::Log.find_by(log_attributes)
       end
 
       def get_datasource(datasource_name)

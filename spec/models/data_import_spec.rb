@@ -603,12 +603,12 @@ describe DataImport do
   end
 
   describe 'log' do
-    it 'is initialized to a CartoDB::Log instance' do
+    it 'is initialized to a Carto::Log instance' do
       data_import = DataImport.create(
         user_id: @user.id,
         data_source: "http://mydatasource.cartodb.wadus.com/foo.csv"
       )
-      data_import.log.should be_instance_of CartoDB::Log
+      data_import.log.should be_instance_of Carto::Log
     end
 
     it 'allows messages to be appended' do

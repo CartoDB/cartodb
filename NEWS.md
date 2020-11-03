@@ -10,6 +10,7 @@ Development
 * Add public website DO catalog integration ([#15908](https://github.com/CartoDB/cartodb/pull/15908), [#15911](https://github.com/CartoDB/cartodb/pull/15911))
 
 ### Bug fixes / enhancements
+* Improve import error messages [#15893](https://github.com/CartoDB/cartodb/pull/15893)
 * Identify multi-line GeoJSON columns correctly on imports [#15891](https://github.com/CartoDB/cartodb/pull/15891)
 * Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
 * Migrate `ClientApplication` model to `ActiveRecord` [#15886](https://github.com/CartoDB/cartodb/pull/15886)
@@ -20,6 +21,8 @@ Development
 * Fix export of Google Sheet files larger than 10MB [#15903](https://github.com/CartoDB/cartodb/pull/15903)
 * Adding `builder_url` to `api/v4/me` endpoint [#15904](https://github.com/CartoDB/cartodb/pull/15904)
 * Fix local tests run by parsing database config with ERB [#15901](https://github.com/CartoDB/cartodb/pull/15901)
+* Migrate `Log` model to `ActiveRecord` [#15896](https://github.com/CartoDB/cartodb/pull/15896)
+* Fix KML importing error when the layers have slashes in their names [#15897](https://github.com/CartoDB/cartodb/pull/15897)
 
 4.42.0 (2020-09-28)
 -------------------

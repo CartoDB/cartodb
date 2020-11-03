@@ -27,7 +27,7 @@ module.exports = {
     }
   },
   chainWebpack: config => {
-    if (process.env.NODE_ENV === 'poduction') {
+    if (process.env.NODE_ENV === 'production') {
       config.module.rule('images').use('url-loader')
         .loader('file-loader')
         .tap(options => Object.assign(options, {

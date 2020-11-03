@@ -1,0 +1,39 @@
+/* Theme */
+$color-primary: #2E51E8;
+$color-primary--soft: #F2F6F9;
+$color-primary--dark: #3D33CC;
+
+@import '../new-dashboard/styles/variables';
+
+// base
+@import '../new-dashboard/styles/base/reset';
+@import '../new-dashboard/styles/base/typography';
+
+// layout
+@import '../new-dashboard/styles/layout/cells';
+@import '../new-dashboard/styles/layout/grid';
+@import '../new-dashboard/styles/layout/page';
+@import '../new-dashboard/styles/layout/section';
+
+// components
+@import '../new-dashboard/styles/components/buttons';
+@import '../new-dashboard/styles/components/checkbox';
+@import '../new-dashboard/styles/components/code';
+@import '../new-dashboard/styles/components/welcome';
+@import '../new-dashboard/styles/components/scrollbar';
+
+// pages
+@import '../new-dashboard/styles/pages/solutionsIcons';
+@import '../new-dashboard/styles/pages/visualizations';
+
+// helpers
+@import '../new-dashboard/styles/helpers/colors';
+@import '../new-dashboard/styles/helpers/flexbox';
+@import '../new-dashboard/styles/helpers/spacing';
+@import '../new-dashboard/styles/helpers/utilities';
+
+//hangar
+@import '../new-dashboard/styles/hangar/main';
+
+//vendors
+@import '../new-dashboard/styles/vendors/perfect-scrollbar';

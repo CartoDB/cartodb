@@ -19,7 +19,8 @@ module Carto
               sql: sql_api_url(@user.username),
               maps: maps_api_url(@user.username),
               import: base_rails_url,
-              auth: base_rails_url
+              auth: base_rails_url,
+              builder: base_rails_url
             }
           }
         end

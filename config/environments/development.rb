@@ -23,7 +23,7 @@ CartoDB::Application.configure do
   # If you have no front-end server that supports something like X-Sendfile,
   # just comment this out and Rails will serve the files
 
-  config.logger = Carto::Common::Logger.new(STDOUT)
+  config.logger = Carto::Common::Logger.new($stdout)
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store

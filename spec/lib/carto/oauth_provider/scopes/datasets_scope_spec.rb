@@ -83,7 +83,6 @@ describe Carto::OauthProvider::Scopes::DatasetsScope do
       ]
     end
 
-
     before(:all) do
       @user = mock
       @user.stubs(:database_schema).returns('wadus')

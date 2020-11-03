@@ -103,7 +103,7 @@ module Carto
 
         response = {
           visualizations: visualizations,
-          total_entries: vqb.count,
+          total_entries: params[:subscribed] == 'true' ? total_subscriptions : vqb.count,
           total_subscriptions: total_subscriptions
         }
         if current_user && (params[:load_totals].to_s != 'false')

@@ -29,6 +29,7 @@ require_dependency 'carto/valid_table_name_proposer'
 require_dependency 'carto/configuration'
 require_dependency 'carto/db/user_schema'
 require_dependency 'carto/uuidhelper'
+require_dependency 'carto/helpers/data_import_commons'
 
 include CartoDB::Datasources
 
@@ -36,6 +37,7 @@ class DataImport < Sequel::Model
   include Carto::DataImportConstants
   include Carto::Configuration
   include Carto::UUIDHelper
+  include Carto::DataImportCommons
 
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
   DIRECT_STATEMENT_TIMEOUT = 1.hour * 1000
@@ -182,16 +184,6 @@ class DataImport < Sequel::Model
     handle_failure(exception)
     raise exception
     self
-  end
-
-  # Notice that this returns the entire error hash, not just the text
-  # It seems that it's only used for the rollbar reporting
-  def get_error_text
-    if self.error_code == CartoDB::NO_ERROR_CODE
-      CartoDB::NO_ERROR_CODE
-    else
-      self.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[self.error_code]
-    end
   end
 
   def get_error_source

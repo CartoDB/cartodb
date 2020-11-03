@@ -64,7 +64,6 @@
                   class="checkbox-decorationMedia"
                 >
                   <path
-                    data-v-d1b5b660=""
                     d="M1.65 3.803l2.84 3.169L10.38.717"
                     fill="none"
                     class="checkbox-check"

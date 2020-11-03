@@ -20,6 +20,7 @@ Development
 * Fix export of Google Sheet files larger than 10MB [#15903](https://github.com/CartoDB/cartodb/pull/15903)
 * Adding `builder_url` to `api/v4/me` endpoint [#15904](https://github.com/CartoDB/cartodb/pull/15904)
 * Fix local tests run by parsing database config with ERB [#15901](https://github.com/CartoDB/cartodb/pull/15901)
+* Migrate `Log` model to `ActiveRecord` [#15896](https://github.com/CartoDB/cartodb/pull/15896)
 
 4.42.0 (2020-09-28)
 -------------------

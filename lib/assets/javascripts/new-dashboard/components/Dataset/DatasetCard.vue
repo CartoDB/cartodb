@@ -209,11 +209,11 @@ export default {
     },
     isSample () {
       const sample = this.$props.dataset.sample;
-      return sample && sample.entityId !== undefined || false;
+      return sample && !!sample.entityId || false;
     },
     isSubscription () {
       const subscription = this.$props.dataset.subscription;
-      return subscription && subscription.entityId !== undefined || false;
+      return subscription && !!subscription.entityId || false;
     }
   },
   methods: {

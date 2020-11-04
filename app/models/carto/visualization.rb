@@ -673,7 +673,7 @@ class Carto::Visualization < ActiveRecord::Base
       {
         entityId: s['id'],
         entityType: s['type']
-      } if s
+      } if s && s['id'] && s['type']
     end
   end
 

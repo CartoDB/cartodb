@@ -128,7 +128,7 @@ export default {
     isSubscription () {
       return this.selectedDatasets.some(dataset => {
         const subscription = dataset.subscription;
-        return subscription && subscription.entityId !== undefined || false;
+        return subscription && !!subscription.entityId || false;
       });
     }
   },

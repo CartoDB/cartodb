@@ -129,7 +129,7 @@ export default {
     },
     isSample () {
       const sample = this.dataset.sample;
-      return sample && sample.entityId !== undefined || false;
+      return sample && !!sample.entityId || false;
     },
     entitySubscribed () {
       const sample = this.dataset.sample;
@@ -137,7 +137,7 @@ export default {
     },
     isSubscription () {
       const subscription = this.dataset.subscription;
-      return subscription && subscription.entityId !== undefined || false;
+      return subscription && !!subscription.entityId || false;
     }
   },
   methods: {

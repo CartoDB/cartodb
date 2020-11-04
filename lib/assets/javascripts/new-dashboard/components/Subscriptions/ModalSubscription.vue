@@ -36,12 +36,11 @@
 
         <div
           class="license u-mt--24"
-          v-if="currentMode !== 'unsubscribe' && dataset.licenses && dataset.licenses !== ''"
+          v-if="currentMode !== 'unsubscribe'"
         >
-
           <p class="text is-small is-txtBaseGrey license-description">
-            {{dataset.licenses}}
-            <a v-if="dataset.licenses_link" class="text is-small" :href="dataset.licenses_link" target="_blank">More info.</a>
+            <span v-html="getLicense"></span>
+            <a v-if="dataset.licenses_link" class="text is-small" :href="dataset.licenses_link" target="_blank">Continue reading.</a>
           </p>
 
           <p v-if="currentMode === 'subscribed' || currentMode === 'requested'"
@@ -333,18 +332,26 @@ export default {
     getCloseText () {
       if (
         this.currentMode === 'subscribed' ||
-        this.currentMode === 'requested'
+        this.currentMode === 'requested' ||
+        this.currentMode === 'connectingSample'
       ) {
         return 'Close';
       }
       return 'Cancel';
     },
+    getLicense () {
+      let license = '';
+      if (this.currentMode === 'sample') {
+        license += 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vitae massa vitae diam blandit accumsan et nec libero. Nunc at mi venenatis, luctus nisi a, lobortis enim. Proin dapibus sem lectus. Phasellus ut blandit dui. Cras aliquam urna metus, et sollicitudin arcu tincidunt ut. Sed semper ut nulla ut convallis. Integer ullamcorper quam vel erat vestibulum dignissim. Donec varius, urna eu rutrum facilisis, diam lacus suscipit ligula, ac tincidunt justo enim eu nisl.';
+        license += '</br>';
+      }
+      if (this.dataset && this.dataset.licenses) {
+        license += `${this.dataset.licenses} `;
+      }
+      return license;
+    },
     licenseAccepted () {
-      return (
-        !this.dataset.licenses ||
-        this.dataset.licenses === '' ||
-        this.licenseStatus
-      );
+      return !this.getLicense || this.licenseStatus;
     }
   },
   methods: {

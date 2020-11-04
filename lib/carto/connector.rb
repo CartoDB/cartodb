@@ -77,6 +77,7 @@ module Carto
     # and specific provider availability if provider_name is not nil
     def self.check_availability!(user, provider_name=nil)
       return false if user.nil?
+      return true if provider_name == 'do-v2-sample'
       return user.do_enabled? if provider_name == 'do-v2'
       # check general availability
       unless user.has_feature_flag?('carto-connectors')

@@ -192,7 +192,7 @@ class User < Sequel::Model
         errors.add(:quota_in_bytes, "not enough disk quota")
       end
 
-      organization.validate_seats_for_signup(self, errors)
+      organization.validate_seats(self, errors)
     end
 
     errors.add(:viewer, "cannot be enabled for organization admin") if organization_admin? && viewer

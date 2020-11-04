@@ -12,7 +12,7 @@ FactoryGirl.define do
     ran_at Time.now
 
     after(:build) do |sync|
-      sync.log = FactoryGirl.build(:carto_log, type: 'sync')
+      sync.log = FactoryGirl.build(:log, type: 'sync')
     end
 
     trait :enqueued do

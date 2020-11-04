@@ -90,6 +90,16 @@ Naming/VariableNumber:
   Enabled: false
 
 ####################
+#  RSpec
+####################
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 30
+
+####################
 #  Style
 ####################
 

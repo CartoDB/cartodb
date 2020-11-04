@@ -57,9 +57,9 @@ module Carto
     ## ./ AR compatibility
 
     def self.find_by_database_name(database_name)
-      Carto::Organization.
-        joins('INNER JOIN users ON organizations.owner_id = users.id').
-        where('users.database_name = ?', database_name).first
+      Carto::Organization
+        .joins('INNER JOIN users ON organizations.owner_id = users.id')
+        .where('users.database_name = ?', database_name).first
     end
 
     def default_password_expiration_in_d
@@ -99,21 +99,21 @@ module Carto
       owner_id == user.id
     end
 
-    def tags(type, exclude_shared=true)
+    def tags(type, exclude_shared = true)
       users.map { |u| u.tags(exclude_shared, type) }.flatten
     end
 
     def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at', version = nil)
       CartoDB::Visualization::Collection.new.fetch(
-          user_id:  self.users.map(&:id),
-          type:     type,
-          privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-          page:     page_num,
-          per_page: items_per_page,
-          tags:     tags,
-          order:    order,
-          o:        { updated_at: :desc },
-          version:  version
+        user_id: users.pluck(:id),
+        type: type,
+        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
+        page: page_num,
+        per_page: items_per_page,
+        tags: tags,
+        order: order,
+        o: { updated_at: :desc },
+        version: version
       )
     end
 
@@ -177,12 +177,6 @@ module Carto
       owner ? owner.max_layers : ::User::DEFAULT_MAX_LAYERS
     end
 
-    def require_organization_owner_presence!
-      if owner.nil?
-        raise Carto::Organization::OrganizationWithoutOwner.new(self)
-      end
-    end
-
     def auth_saml_enabled?
       auth_saml_configuration.present?
     end
@@ -207,20 +201,16 @@ module Carto
       inherit_owner_ffs ? owner.self_feature_flags : Carto::FeatureFlag.none
     end
 
-    def dbdirect_effective_ips
-      owner.dbdirect_effective_ips
-    end
+    delegate :dbdirect_effective_ips, to: :owner
 
-    def dbdirect_effective_ips=(ips)
-      owner.dbdirect_effective_ips = ips
-    end
+    delegate :dbdirect_effective_ips=, to: :owner
 
     def get_api_calls(options = {})
       users.map { |u| u.get_api_calls(options).sum }.sum
     end
 
     def require_organization_owner_presence!
-      raise Carto::Organization::OrganizationWithoutOwner.new(self) unless owner
+      raise Carto::Organization::OrganizationWithoutOwner, self unless owner
     end
 
     # INFO: replacement for destroy because destroying owner triggers

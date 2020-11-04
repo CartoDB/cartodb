@@ -17,30 +17,28 @@ module Carto
       #
       def overquota(delta = 0)
         Carto::Organization.find_each.select do |o|
-          begin
-            limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
-            over_geocodings = o.get_geocoding_calls > limit
-            limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
-            over_here_isolines = o.get_here_isolines_calls > limit
-            limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
-            over_obs_snapshot = o.get_obs_snapshot_calls > limit
-            limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
-            over_obs_general = o.get_obs_general_calls > limit
-            limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
-            over_twitter_imports = o.twitter_imports_count > limit
-            limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
-            over_mapzen_routing = o.get_mapzen_routing_calls > limit
+          limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
+          over_geocodings = o.get_geocoding_calls > limit
+          limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
+          over_here_isolines = o.get_here_isolines_calls > limit
+          limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
+          over_obs_snapshot = o.get_obs_snapshot_calls > limit
+          limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
+          over_obs_general = o.get_obs_general_calls > limit
+          limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
+          over_twitter_imports = o.twitter_imports_count > limit
+          limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
+          over_mapzen_routing = o.get_mapzen_routing_calls > limit
 
-            (over_geocodings ||
-             over_twitter_imports ||
-             over_here_isolines ||
-             over_obs_snapshot ||
-             over_obs_general ||
-             over_mapzen_routing)
-          rescue Carto::Organization::OrganizationWithoutOwner => e
-            log_warning(message: 'Skipping inconsistent organization', organization: o, exception: e)
-            false
-          end
+          (over_geocodings ||
+           over_twitter_imports ||
+           over_here_isolines ||
+           over_obs_snapshot ||
+           over_obs_general ||
+           over_mapzen_routing)
+        rescue Carto::Organization::OrganizationWithoutOwner => e
+          log_warning(message: 'Skipping inconsistent organization', organization: o, exception: e)
+          false
         end
       end
     end

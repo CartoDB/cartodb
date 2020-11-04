@@ -173,7 +173,10 @@ module Carto
       end
 
       def get_group(database_name, name)
-        Carto::Group.where(organization_id: Carto::Organization.find_by_database_name(database_name).id, name: name).first
+        # rubocop:disable Rails/DynamicFindBy
+        organization = Carto::Organization.find_by_database_name(database_name)
+        # rubocop:enable Rails/DynamicFindBy
+        Carto::Group.where(organization_id: organization.id, name: name).first
       end
 
       def load_mandatory_group

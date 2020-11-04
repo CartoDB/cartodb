@@ -129,6 +129,7 @@ module Carto
         poro[:related_tables] = related_tables if related
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features
+        poro[:sample] = @visualization.sample if @visualization.sample
 
         poro
       end

@@ -49,7 +49,6 @@ class User < Sequel::Model
   }
 
   plugin :many_through_many
-  many_through_many :groups, [[:users_groups, :user_id, :group_id]]
 
   # Sequel setup & plugins
   plugin :association_dependencies, synchronization_oauths: :destroy
@@ -111,6 +110,8 @@ class User < Sequel::Model
   def self_feature_flags
     Carto::FeatureFlag.where(id: self_feature_flags_user.pluck(:feature_flag_id))
   end
+
+  delegate :groups, to: :carto_user
   ## ./AR compatibility until User is migrated
 
   def db_service

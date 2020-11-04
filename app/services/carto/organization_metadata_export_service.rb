@@ -81,7 +81,7 @@ module Carto
     end
 
     def build_group_from_hash(exported_group)
-      g = Group.new_instance_without_validation(
+      g = Carto::Group.new_instance_without_validation(
         name: exported_group[:name],
         display_name: exported_group[:display_name],
         database_role: exported_group[:database_role],

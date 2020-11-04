@@ -32,7 +32,7 @@ module Carto
       before_filter :load_table, :only => [:update_permission, :destroy_permission]
 
       def create
-        group = Group.new_instance(@database_name, @name, @database_role)
+        group = Carto::Group.new_instance(@database_name, @name, @database_role)
         if group.save
           render json: group.to_json
         else
@@ -173,7 +173,7 @@ module Carto
       end
 
       def get_group(database_name, name)
-        Group.where(organization_id: Carto::Organization.find_by_database_name(database_name).id, name: name).first
+        Carto::Group.where(organization_id: Carto::Organization.find_by_database_name(database_name).id, name: name).first
       end
 
       def load_mandatory_group

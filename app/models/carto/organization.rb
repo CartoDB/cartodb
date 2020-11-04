@@ -7,22 +7,17 @@ require_dependency 'carto/helpers/organization_commons'
 module Carto
   class Organization < ActiveRecord::Base
 
-    DEFAULT_GEOCODING_QUOTA = 0
-    DEFAULT_HERE_ISOLINES_QUOTA = 0
-    DEFAULT_OBS_SNAPSHOT_QUOTA = 0
-    DEFAULT_OBS_GENERAL_QUOTA = 0
-    DEFAULT_MAPZEN_ROUTING_QUOTA = nil
-
     include CartodbCentralSynchronizable
     include DataServicesMetricsHelper
+    include Carto::OrganizationQuotas
     include AuthTokenGenerator
     include OrganizationSoftLimits
     include Carto::OrganizationCommons
 
-    belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization
+    belongs_to :owner, class_name: 'Carto::User', inverse_of: :owned_organization
     has_many :users, -> { order(:username) }, inverse_of: :organization
     has_many :groups, -> { order(:display_name) }, inverse_of: :organization
-    has_many :assets, class_name: Carto::Asset, dependent: :destroy, inverse_of: :organization
+    has_many :assets, class_name: 'Carto::Asset', dependent: :destroy, inverse_of: :organization
     has_many :notifications, -> { order('created_at DESC') }, dependent: :destroy
     has_many :connector_configurations, inverse_of: :organization, dependent: :destroy
     has_many :oauth_app_organizations, inverse_of: :oauth_app, dependent: :destroy
@@ -67,34 +62,6 @@ module Carto
         where('users.database_name = ?', database_name).first
     end
 
-    ##
-    # SLOW! Checks redis data (geocoding and isolines) for every user in every organization
-    # delta: get organizations who are also this percentage below their limit.
-    #        example: 0.20 will get all organizations at 80% of their map view limit
-    #
-    def self.overquota(delta = 0)
-      Carto::Organization.find_each.select do |o|
-        begin
-          limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
-          over_geocodings = o.get_geocoding_calls > limit
-          limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
-          over_here_isolines = o.get_here_isolines_calls > limit
-          limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
-          over_obs_snapshot = o.get_obs_snapshot_calls > limit
-          limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
-          over_obs_general = o.get_obs_general_calls > limit
-          limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
-          over_twitter_imports = o.twitter_imports_count > limit
-          limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
-          over_mapzen_routing = o.get_mapzen_routing_calls > limit
-          over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
-        rescue Carto::Organization::OrganizationWithoutOwner => error
-          log_warning(message: 'Skipping inconsistent organization', organization: o, exception: error)
-          false
-        end
-      end
-    end
-
     def default_password_expiration_in_d
       Cartodb.get_config(:passwords, 'expiration_in_d')
     end
@@ -111,55 +78,13 @@ module Carto
       builder_users.count { |u| !excluded_users.map(&:id).include?(u.id) }
     end
 
-    def valid_disk_quota?(quota = default_quota_in_bytes)
-      unassigned_quota >= quota
-    end
-
     # Make code more uniform with user.database_schema
     def database_schema
       name
     end
 
-    ####
-
-    def quota_dates(options)
-      date_to = (options[:to] ? options[:to].to_date : Date.today)
-      date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-      return date_from, date_to
-    end
-
     def last_billing_cycle
       owner ? owner.last_billing_cycle : Date.today
-    end
-
-    def get_geocoding_calls(options = {})
-      require_organization_owner_presence!
-      date_from, date_to = quota_dates(options)
-      get_organization_geocoding_data(self, date_from, date_to)
-    end
-
-    def get_here_isolines_calls(options = {})
-      require_organization_owner_presence!
-      date_from, date_to = quota_dates(options)
-      get_organization_here_isolines_data(self, date_from, date_to)
-    end
-
-    def get_mapzen_routing_calls(options = {})
-      require_organization_owner_presence!
-      date_from, date_to = quota_dates(options)
-      get_organization_mapzen_routing_data(self, date_from, date_to)
-    end
-
-    def get_obs_snapshot_calls(options = {})
-      require_organization_owner_presence!
-      date_from, date_to = quota_dates(options)
-      get_organization_obs_snapshot_data(self, date_from, date_to)
-    end
-
-    def get_obs_general_calls(options = {})
-      require_organization_owner_presence!
-      date_from, date_to = quota_dates(options)
-      get_organization_obs_general_data(self, date_from, date_to)
     end
 
     def twitter_imports_count(options = {})
@@ -172,77 +97,6 @@ module Carto
 
     def owner?(user)
       owner_id == user.id
-    end
-
-    def remaining_geocoding_quota(options = {})
-      remaining = geocoding_quota.to_i - get_geocoding_calls(options)
-      (remaining > 0 ? remaining : 0)
-    end
-
-    def remaining_here_isolines_quota(options = {})
-      remaining = here_isolines_quota.to_i - get_here_isolines_calls(options)
-      (remaining > 0 ? remaining : 0)
-    end
-
-    def remaining_mapzen_routing_quota(options = {})
-      remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls(options)
-      (remaining > 0 ? remaining : 0)
-    end
-
-    def remaining_obs_snapshot_quota(options = {})
-      remaining = obs_snapshot_quota.to_i - get_obs_snapshot_calls(options)
-      (remaining > 0 ? remaining : 0)
-    end
-
-    def remaining_obs_general_quota(options = {})
-      remaining = obs_general_quota.to_i - get_obs_general_calls(options)
-      (remaining > 0 ? remaining : 0)
-    end
-
-    def to_poro
-      {
-        created_at:       created_at,
-        description:      description,
-        discus_shortname: discus_shortname,
-        display_name:     display_name,
-        id:               id,
-        name:             name,
-        owner: {
-          id:         owner ? owner.id : nil,
-          username:   owner ? owner.username : nil,
-          avatar_url: owner ? owner.avatar_url : nil,
-          email:      owner ? owner.email : nil,
-          groups:     owner && owner.groups ? owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
-        },
-        admins:                    users.select(&:org_admin).map { |u| { id: u.id } },
-        quota_in_bytes:            quota_in_bytes,
-        unassigned_quota:          unassigned_quota,
-        geocoding_quota:           geocoding_quota,
-        map_view_quota:            map_view_quota,
-        twitter_datasource_quota:  twitter_datasource_quota,
-        map_view_block_price:      map_view_block_price,
-        geocoding_block_price:     geocoding_block_price,
-        here_isolines_quota:       here_isolines_quota,
-        here_isolines_block_price: here_isolines_block_price,
-        obs_snapshot_quota:        obs_snapshot_quota,
-        obs_snapshot_block_price:  obs_snapshot_block_price,
-        obs_general_quota:         obs_general_quota,
-        obs_general_block_price:   obs_general_block_price,
-        geocoder_provider:         geocoder_provider,
-        isolines_provider:         isolines_provider,
-        routing_provider:          routing_provider,
-        mapzen_routing_quota:       mapzen_routing_quota,
-        mapzen_routing_block_price: mapzen_routing_block_price,
-        seats:                     seats,
-        twitter_username:          twitter_username,
-        location:                  twitter_username,
-        updated_at:                updated_at,
-        website:                   website,
-        admin_email:               admin_email,
-        avatar_url:                avatar_url,
-        user_count:                users.count,
-        password_expiration_in_d:  password_expiration_in_d
-      }
     end
 
     def tags(type, exclude_shared=true)
@@ -288,7 +142,7 @@ module Carto
     end
 
     def notify_if_seat_limit_reached
-      ::Resque.enqueue(::Resque::OrganizationJobs::Mail::SeatLimitReached, id) if seat_limit_reached?
+      ::Resque.enqueue(::Resque::OrganizationJobs::Mail::SeatLimitReached, id) if will_reach_seat_limit?
     end
 
     def database_name
@@ -321,14 +175,6 @@ module Carto
 
     def max_layers
       owner ? owner.max_layers : ::User::DEFAULT_MAX_LAYERS
-    end
-
-    def assigned_quota
-      users.sum(:quota_in_bytes).to_i
-    end
-
-    def unassigned_quota
-      quota_in_bytes - assigned_quota
     end
 
     def require_organization_owner_presence!
@@ -369,50 +215,12 @@ module Carto
       owner.dbdirect_effective_ips = ips
     end
 
-    def remaining_twitter_quota
-      remaining = twitter_datasource_quota - twitter_imports_count
-      (remaining > 0 ? remaining : 0)
-    end
-
     def get_api_calls(options = {})
       users.map { |u| u.get_api_calls(options).sum }.sum
     end
 
     def require_organization_owner_presence!
       raise Carto::Organization::OrganizationWithoutOwner.new(self) unless owner
-    end
-
-    ## TODO: make private once model is fully migrated
-
-    def destroy_non_owner_users
-      non_owner_users.each do |user|
-        user.ensure_nonviewer
-        user.shared_entities.map(&:entity).uniq.each(&:delete)
-        user.sequel_user.destroy_cascade
-      end
-    end
-
-    def destroy_assets
-      assets.map { |asset| Carto::Asset.find(asset.id) }.map(&:destroy).all?
-    end
-
-    # Returns true if disk quota won't allow new signups with existing defaults
-    def disk_quota_limit_reached?
-      unassigned_quota < default_quota_in_bytes
-    end
-
-    # Returns true if seat limit will be reached with new user
-    def seat_limit_reached?
-      (remaining_seats - 1) < 1
-    end
-
-    def public_vis_count_by_type(type)
-      CartoDB::Visualization::Collection.new.fetch(
-        user_id: users.map(&:id),
-        type: type,
-        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC,
-        per_page: CartoDB::Visualization::Collection::ALL_RECORDS
-      ).count
     end
 
     # INFO: replacement for destroy because destroying owner triggers
@@ -448,6 +256,22 @@ module Carto
 
     private
 
+    def destroy_non_owner_users
+      non_owner_users.each do |user|
+        user.ensure_nonviewer
+        user.shared_entities.map(&:entity).uniq.each(&:delete)
+        user.sequel_user.destroy_cascade
+      end
+    end
+
+    def destroy_assets
+      assets.map { |asset| Carto::Asset.find(asset.id) }.map(&:destroy).all?
+    end
+
+    def will_reach_seat_limit?
+      remaining_seats <= 1
+    end
+
     def authentication_methods_available
       if whitelisted_email_domains.present? && !auth_enabled?
         errors.add(:whitelisted_email_domains, 'enable at least one auth. system or clear whitelisted email domains')
@@ -473,25 +297,6 @@ module Carto
 
     def ensure_auth_saml_configuration
       self.auth_saml_configuration ||= {}
-    end
-
-    def set_default_quotas
-      self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
-      self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
-      self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
-      self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
-      self.mapzen_routing_quota ||= DEFAULT_MAPZEN_ROUTING_QUOTA
-    end
-
-    # TODO: These variables are not read explicitly. Can they be removed?
-    def register_modified_quotas
-      @geocoding_quota_modified = geocoding_quota_changed?
-      @here_isolines_quota_modified = here_isolines_quota_changed?
-      @obs_snapshot_quota_modified = obs_snapshot_quota_changed?
-      @obs_general_quota_modified = obs_general_quota_changed?
-      @mapzen_routing_quota_modified = mapzen_routing_quota_changed?
-
-      raise errors.join('; ') unless valid?
     end
 
   end

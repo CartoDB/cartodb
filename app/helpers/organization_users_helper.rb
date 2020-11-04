@@ -6,7 +6,7 @@ module OrganizationUsersHelper
   def load_organization
     id_or_name = params[:id_or_name]
 
-    @organization = ::Organization.where(uuid?(id_or_name) ? { id: id_or_name } : { name: id_or_name }).first
+    @organization = Carto::Organization.find_by(uuid?(id_or_name) ? { id: id_or_name } : { name: id_or_name })
 
     unless @organization
       render_jsonp({}, 401) # Not giving clues to guessers via 404
@@ -29,7 +29,7 @@ module OrganizationUsersHelper
   end
 
   def load_user
-    @user = ::User.where(username: params[:u_username], organization: @organization).first
+    @user = @organization.users.find_by(username: params[:u_username])&.sequel_user
 
     if @user.nil?
       render_jsonp("No user with username '#{params[:u_username]}' in '#{@organization.name}'", 404)

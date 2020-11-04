@@ -146,7 +146,8 @@ describe Carto::Template do
   end
 
   it 'tests you cannot see tables outside the organization' do
-    org2 = test_organization.save
+    org2 = test_organization
+    org2.save
     org2_user_owner = create_test_user(unique_name('user'))
     user_org = CartoDB::UserOrganization.new(org2.id, org2_user_owner.id)
     user_org.promote_user_to_admin

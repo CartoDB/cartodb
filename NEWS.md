@@ -24,6 +24,7 @@ Development
 * Migrate `Log` model to `ActiveRecord` [#15896](https://github.com/CartoDB/cartodb/pull/15896)
 * Fix KML importing error when the layers have slashes in their names [#15897](https://github.com/CartoDB/cartodb/pull/15897)
 * Create OAuth scope for reading/writing all datasets [#15884](https://github.com/CartoDB/cartodb/pull/15884)
+* Migrate `Organization` model to `ActiveRecord` [#15884](https://github.com/CartoDB/cartodb/pull/15884)
 
 4.42.0 (2020-09-28)
 -------------------

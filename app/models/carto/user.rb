@@ -86,6 +86,10 @@ class Carto::User < ActiveRecord::Base
   alias_method :geocodings_dataset, :geocodings
   def carto_user; self end
 
+  def sequel_user
+    persisted? ? ::User[id] : ::User.new(attributes)
+  end
+
   before_create :set_database_host
   before_create :generate_api_key
   before_create :generate_session_salt

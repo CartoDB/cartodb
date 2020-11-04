@@ -32,7 +32,7 @@ module Carto
 
     # Constructor for groups already existing in the database
     def self.new_instance(database_name, name, database_role, display_name = name)
-      organization = Organization.find_by_database_name(database_name)
+      organization = Carto::Organization.find_by_database_name(database_name)
 
       raise "Organization not found for database #{database_name}" unless organization
 

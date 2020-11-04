@@ -1,5 +1,10 @@
 # Extends defaults from: https://github.com/rubocop-hq/rubocop/blob/master/config/default.yml
 
+require:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 2.5
   Exclude:
@@ -108,6 +113,9 @@ Style/FrozenStringLiteralComment:
   Description: >-
                   Add the frozen_string_literal comment to the top of files
                   to help transition to frozen string literals by default.
+  Enabled: false
+
+Style/GuardClause:
   Enabled: false
 
 Style/SymbolArray:

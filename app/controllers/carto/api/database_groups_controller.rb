@@ -173,7 +173,7 @@ module Carto
       end
 
       def get_group(database_name, name)
-        Group.where(organization_id: Organization.find_by_database_name(database_name).id, name: name).first
+        Group.where(organization_id: Carto::Organization.find_by_database_name(database_name).id, name: name).first
       end
 
       def load_mandatory_group

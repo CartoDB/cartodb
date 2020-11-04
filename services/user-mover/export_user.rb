@@ -232,7 +232,7 @@ module CartoDB
       def dump_org_metadata
         data = dump_related_data(Carto::Organization, @org_id)
         data[Carto::Organization] = [@org_metadata]
-        data.select! { |key, _value| [::Carto::Organization, ::Carto::Group].include?(key) }
+        data.select! { |key, _value| [Carto::Organization, ::Carto::Group].include?(key) }
         dump_sql_data(data, "org_#{@org_id}")
       end
 

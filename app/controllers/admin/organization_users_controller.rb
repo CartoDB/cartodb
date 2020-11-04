@@ -12,7 +12,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   before_filter :get_config
   before_filter :login_required, :check_permissions, :load_organization
-  before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
+  before_filter :load_user, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
 
   layout 'application'
@@ -203,7 +203,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def destroy
     valid_password_confirmation
-    raise "Can't delete user. Has shared entities" if @user.has_shared_entities?
+    raise "Can't delete user. Has shared entities" if @user.shared_entities?
 
     @user.destroy
     @user.delete_in_central
@@ -289,8 +289,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     raise RecordNotFound unless current_user.organization_admin?
   end
 
-  def get_user
-    @user = @organization.users_dataset.where(username: params[:id]).first
+  def load_user
+    @user = @organization.users.find_by(username: params[:id])&.sequel_user
     raise RecordNotFound unless @user
   end
 

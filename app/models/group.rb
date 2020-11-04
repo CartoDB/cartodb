@@ -2,7 +2,10 @@ require_dependency 'carto/helpers/auth_token_generator'
 
 class Group < Sequel::Model
 
-  many_to_one :organization
-
   include Carto::AuthTokenGenerator
+
+  def organization
+    Carto::Organization.find_by(id: organization_id) if organization_id
+  end
+
 end

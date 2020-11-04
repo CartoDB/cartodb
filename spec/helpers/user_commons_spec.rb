@@ -6,8 +6,8 @@ describe Carto::UserCommons do
   let(:sequel_user) { ::User[original_user.id] }
   let(:user) { ::Carto::User.find(original_user.id) }
 
-  let(:organization_owner) { create(:user) }
-  let(:organization) { Carto::Organization.find(create(:organization, owner: organization_owner).id) }
+  let(:organization_owner) { create(:user).carto_user }
+  let(:organization) { create(:organization, owner: organization_owner) }
 
   describe '#has_access_to_coverband?' do
     let(:team_organization) { organization.update!(name: 'team'); organization }
@@ -23,6 +23,7 @@ describe Carto::UserCommons do
 
       context 'when belongs to team' do
         before { user.update!(organization: team_organization) }
+        after { team_organization.destroy! }
 
         it { should be_true }
 

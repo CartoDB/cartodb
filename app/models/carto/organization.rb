@@ -244,14 +244,6 @@ module Carto
       errors.add(:quota_in_bytes, 'not enough disk quota')
     end
 
-    def validate_seats
-      errors.add(:seats, 'cannot be less than the number of builders') if seats && remaining_seats.negative?
-
-      return unless viewer_seats && remaining_viewer_seats.negative?
-
-      errors.add(:viewer_seats, 'cannot be less than the number of viewers')
-    end
-
     private
 
     def destroy_non_owner_users
@@ -278,6 +270,14 @@ module Carto
 
     def organization_name_collision
       errors.add(:name, 'cannot exist as user') if Carto::User.exists?(username: name)
+    end
+
+    def validate_seats
+      errors.add(:seats, 'cannot be less than the number of builders') if seats && remaining_seats.negative?
+
+      return unless viewer_seats && remaining_viewer_seats.negative?
+
+      errors.add(:viewer_seats, 'cannot be less than the number of viewers')
     end
 
     def validate_password_expiration_in_d

@@ -7,6 +7,16 @@ GIT
       oauth (>= 0.4.4)
 
 GIT
+  remote: https://github.com/cartodb/cartodb-common.git
+  revision: ddb45e67585022e8ecf54928401911d251378a7c
+  tag: v0.4.1
+  specs:
+    cartodb-common (0.4.1)
+      activesupport
+      argon2 (~> 2)
+      google-cloud-pubsub (~> 1.2.0)
+
+GIT
   remote: https://github.com/kuldeepaggarwal/fake_net_ldap.git
   revision: d99f2fcf13b9737a150f869fe9b9fbc0d788aa3f
   branch: fix-responder
@@ -519,12 +529,12 @@ DEPENDENCIES
   activerecord-postgresql-adapter
   addressable (~> 2.5)
   analytics-ruby (~> 2.0.0)
-  argon2 (~> 2.0)
   avro (~> 1.10.0)
   aws-sdk-acmpca (~> 1)
   aws-sdk-s3 (~> 1)
   byebug
   capybara (= 2.18.0)
+  cartodb-common!
   charlock_holmes (= 0.7.6)
   ci_reporter (= 1.8.4)
   compass (= 1.0.3)

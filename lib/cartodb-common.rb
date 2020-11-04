@@ -1,1 +1,0 @@
-../vendor/cartodb-common/lib/cartodb-common.rb

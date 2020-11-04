@@ -7,6 +7,3 @@
 [submodule "lib/sql"]
 	path = lib/sql
 	url = git://github.com/CartoDB/cartodb-postgresql.git
-[submodule "vendor/cartodb-common"]
-	path = vendor/cartodb-common
-	url = https://github.com/CartoDB/cartodb-common.git

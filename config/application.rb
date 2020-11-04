@@ -5,7 +5,6 @@ require "action_mailer/railtie"
 require "active_record/railtie"
 require_relative '../lib/carto/configuration'
 require_relative '../lib/carto/carto_gears_support'
-require_relative '../lib/carto/common/logger'
 
 # Forcefully require Coverband config because otherwise it raises an error in the rails console
 require './config/coverband'

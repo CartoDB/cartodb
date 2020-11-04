@@ -120,7 +120,7 @@ group :development, :test do
   gem 'rack'
   gem 'rb-readline'
   gem 'rspec-rails', '2.12.0'
-  gem 'rubocop', '>= 0.92', require: false
+  gem 'rubocop', '~> 0.93', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false

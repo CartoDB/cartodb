@@ -131,7 +131,7 @@ module Carto
           entityId: 'mc_geographic__4a11e98c',
           entityType: 'dataset',
           entitySubscribed: false
-        }
+        } if @visualization.name == 'my_sample'
         poro[:related_tables] = related_tables if related
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features

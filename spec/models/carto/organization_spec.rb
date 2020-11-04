@@ -51,148 +51,89 @@ describe Carto::Organization do
     end
   end
 
-  describe '.overquota' do
-    let!(:organization) { create(:carto_organization) }
-    let(:overquota_organization) { create(:carto_organization) }
-    let(:user) { create(:carto_user) }
+  describe '#overquota?' do
+    subject { organization.overquota?(delta) }
+
+    let(:organization) { create(:organization_with_users) }
+    let(:delta) { 0 }
+    let(:api_calls) { 0 }
+    let(:geocoding_calls) { 0 }
+    let(:obs_snapshot_calls) { 0 }
+    let(:here_isolines_calls) { 0 }
+    let(:obs_general_calls) { 0 }
+    let(:mapzen_routing_calls) { 0 }
 
     before do
-      overquota_organization.update!(owner: user)
-      user.update!(organization: overquota_organization)
+      organization.stubs(:get_api_calls).returns(api_calls)
+      organization.stubs(:map_view_quota).returns(100)
+      organization.stubs(:get_geocoding_calls).returns(geocoding_calls)
+      organization.stubs(:geocoding_quota).returns(100)
+      organization.stubs(:get_obs_snapshot_calls).returns(obs_snapshot_calls)
+      organization.stubs(:obs_snapshot_quota).returns(100)
+      organization.stubs(:obs_general_quota).returns(100)
+      organization.stubs(:get_obs_general_calls).returns(obs_general_calls)
+      organization.stubs(:mapzen_routing_quota).returns(100)
+      organization.stubs(:get_mapzen_routing_calls).returns(mapzen_routing_calls)
+      organization.stubs(:here_isolines_quota).returns(100)
+      organization.stubs(:get_here_isolines_calls).returns(here_isolines_calls)
     end
 
-    it 'should return organizations over their geocoding quota' do
-      described_class.any_instance.stubs(:get_api_calls).returns(0)
-      described_class.any_instance.stubs(:map_view_quota).returns(10)
-      described_class.any_instance.stubs(:get_geocoding_calls).returns 30
-      described_class.any_instance.stubs(:geocoding_quota).returns 10
+    context 'when over geocoding quota' do
+      let(:geocoding_calls) { 101 }
 
-      expect(described_class.overquota).not_to include(organization)
-      expect(described_class.overquota).to include(overquota_organization)
+      it { should be_true }
     end
 
-    it 'should return organizations over their here isolines quota' do
-      described_class.any_instance.stubs(:get_api_calls).returns(0)
-      described_class.any_instance.stubs(:map_view_quota).returns(10)
-      described_class.any_instance.stubs(:get_geocoding_calls).returns 0
-      described_class.any_instance.stubs(:geocoding_quota).returns 10
-      described_class.any_instance.stubs(:get_here_isolines_calls).returns 30
-      described_class.any_instance.stubs(:here_isolines_quota).returns 10
+    context 'when over here isolines quota' do
+      let(:here_isolines_calls) { 101 }
 
-      expect(described_class.overquota).not_to include(organization)
-      expect(described_class.overquota).to include(overquota_organization)
+      it { should be_true }
     end
 
-    it 'should return organizations over their data observatory snapshot quota' do
-      described_class.any_instance.stubs(:get_api_calls).returns(0)
-      described_class.any_instance.stubs(:map_view_quota).returns(10)
-      described_class.any_instance.stubs(:get_geocoding_calls).returns 0
-      described_class.any_instance.stubs(:geocoding_quota).returns 10
-      described_class.any_instance.stubs(:get_obs_snapshot_calls).returns 30
-      described_class.any_instance.stubs(:obs_snapshot_quota).returns 10
+    context 'when over data observatory snapshot quota' do
+      let(:obs_snapshot_calls) { 101 }
 
-      expect(described_class.overquota).not_to include(organization)
-      expect(described_class.overquota).to include(overquota_organization)
+      it { should be_true }
     end
 
-    it 'should return organizations over their data observatory general quota' do
-      described_class.any_instance.stubs(:get_api_calls).returns(0)
-      described_class.any_instance.stubs(:map_view_quota).returns(10)
-      described_class.any_instance.stubs(:get_geocoding_calls).returns 0
-      described_class.any_instance.stubs(:geocoding_quota).returns 10
-      described_class.any_instance.stubs(:get_obs_snapshot_calls).returns 0
-      described_class.any_instance.stubs(:obs_snapshot_quota).returns 10
-      described_class.any_instance.stubs(:get_obs_general_calls).returns 30
-      described_class.any_instance.stubs(:obs_general_quota).returns 10
+    context 'when over their data observatory general quota' do
+      let(:obs_general_calls) { 101 }
 
-      expect(described_class.overquota).not_to include(organization)
-      expect(described_class.overquota).to include(overquota_organization)
+      it { should be_true }
     end
 
-    it 'should return organizations near their geocoding quota' do
-      described_class.any_instance.stubs(:get_api_calls).returns(0)
-      described_class.any_instance.stubs(:map_view_quota).returns(120)
-      described_class.any_instance.stubs(:get_geocoding_calls).returns(81)
-      described_class.any_instance.stubs(:geocoding_quota).returns(100)
+    context 'when over their mapzen routing quota' do
+      let(:mapzen_routing_calls) { 101 }
 
-      expect(described_class.overquota).to be_empty
-      expect(described_class.overquota(0.20)).not_to include(organization)
-      expect(described_class.overquota(0.20)).to include(overquota_organization)
-      expect(described_class.overquota(0.10)).to be_empty
+      it { should be_true }
     end
 
-    it 'should return organizations near their here isolines quota' do
-      described_class.any_instance.stubs(:get_api_calls).returns(0)
-      described_class.any_instance.stubs(:map_view_quota).returns(120)
-      described_class.any_instance.stubs(:get_geocoding_calls).returns(0)
-      described_class.any_instance.stubs(:geocoding_quota).returns(100)
-      described_class.any_instance.stubs(:get_here_isolines_calls).returns(81)
-      described_class.any_instance.stubs(:here_isolines_quota).returns(100)
-      described_class.any_instance.stubs(:get_obs_snapshot_calls).returns(0)
-      described_class.any_instance.stubs(:obs_snapshot_quota).returns(100)
-      described_class.any_instance.stubs(:get_obs_general_calls).returns(0)
-      described_class.any_instance.stubs(:obs_general_quota).returns(100)
-      described_class.any_instance.stubs(:get_mapzen_routing_calls).returns(81)
-      described_class.any_instance.stubs(:mapzen_routing_quota).returns(100)
+    context 'when searching for organizations near quota' do
+      let(:delta) { 0.20 }
 
-      expect(described_class.overquota).to be_empty
-      expect(described_class.overquota(0.20)).not_to include(organization)
-      expect(described_class.overquota(0.20)).to include(overquota_organization)
-      expect(described_class.overquota(0.10)).to be_empty
-    end
+      context 'with geocoding quota near limit' do
+        let(:geocoding_calls) { 81 }
 
-    it 'should return organizations near their data observatory snapshot quota' do
-      described_class.any_instance.stubs(:get_api_calls).returns(0)
-      described_class.any_instance.stubs(:map_view_quota).returns(120)
-      described_class.any_instance.stubs(:get_geocoding_calls).returns(0)
-      described_class.any_instance.stubs(:geocoding_quota).returns(100)
-      described_class.any_instance.stubs(:get_here_isolines_calls).returns(0)
-      described_class.any_instance.stubs(:here_isolines_quota).returns(100)
-      described_class.any_instance.stubs(:get_obs_general_calls).returns(0)
-      described_class.any_instance.stubs(:obs_general_quota).returns(100)
-      described_class.any_instance.stubs(:get_obs_snapshot_calls).returns(81)
-      described_class.any_instance.stubs(:obs_snapshot_quota).returns(100)
-      described_class.any_instance.stubs(:get_mapzen_routing_calls).returns(0)
-      described_class.any_instance.stubs(:mapzen_routing_quota).returns(100)
+        it { should be_true }
+      end
 
-      expect(described_class.overquota).to be_empty
-      expect(described_class.overquota(0.20)).not_to include(organization)
-      expect(described_class.overquota(0.20)).to include(overquota_organization)
-      expect(described_class.overquota(0.10)).to be_empty
-    end
+      context 'with here isolines quota quota near limit' do
+        let(:here_isolines_calls) { 81 }
 
-    it 'should return organizations near their data observatory general quota' do
-      described_class.any_instance.stubs(:get_api_calls).returns(0)
-      described_class.any_instance.stubs(:map_view_quota).returns(120)
-      described_class.any_instance.stubs(:get_geocoding_calls).returns(0)
-      described_class.any_instance.stubs(:geocoding_quota).returns(100)
-      described_class.any_instance.stubs(:get_here_isolines_calls).returns(0)
-      described_class.any_instance.stubs(:here_isolines_quota).returns(100)
-      described_class.any_instance.stubs(:get_obs_snapshot_calls).returns(0)
-      described_class.any_instance.stubs(:obs_snapshot_quota).returns(100)
-      described_class.any_instance.stubs(:get_obs_general_calls).returns(81)
-      described_class.any_instance.stubs(:obs_general_quota).returns(100)
-      described_class.any_instance.stubs(:get_mapzen_routing_calls).returns(0)
-      described_class.any_instance.stubs(:mapzen_routing_quota).returns(100)
+        it { should be_true }
+      end
 
-      expect(described_class.overquota).to be_empty
-      expect(described_class.overquota(0.20)).not_to include(organization)
-      expect(described_class.overquota(0.20)).to include(overquota_organization)
-      expect(described_class.overquota(0.10)).to be_empty
-    end
+      context 'with data observatory snapshot quota quota near limit' do
+        let(:obs_snapshot_calls) { 81 }
 
-    it 'should return organizations over their mapzen routing quota' do
-      described_class.any_instance.stubs(:get_api_calls).returns(0)
-      described_class.any_instance.stubs(:map_view_quota).returns(10)
-      described_class.any_instance.stubs(:get_geocoding_calls).returns 0
-      described_class.any_instance.stubs(:geocoding_quota).returns 10
-      described_class.any_instance.stubs(:get_here_isolines_calls).returns(0)
-      described_class.any_instance.stubs(:here_isolines_quota).returns(100)
-      described_class.any_instance.stubs(:get_mapzen_routing_calls).returns 30
-      described_class.any_instance.stubs(:mapzen_routing_quota).returns 10
+        it { should be_true }
+      end
 
-      expect(described_class.overquota(0.20)).not_to include(organization)
-      expect(described_class.overquota(0.20)).to include(overquota_organization)
+      context 'with data observatory general quota quota near limit' do
+        let(:obs_general_calls) { 81 }
+
+        it { should be_true }
+      end
     end
   end
 end

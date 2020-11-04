@@ -99,6 +99,16 @@ RSpec/AnyInstance:
 RSpec/ExampleLength:
   Max: 30
 
+# Incompatible until RSpec 3
+RSpec/ImplicitExpect:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 15
+
+RSpec/NestedGroups:
+  Max: 5
+
 ####################
 #  Style
 ####################

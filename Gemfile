@@ -53,7 +53,7 @@ group :assets do
   gem "compass",               "1.0.3"
 end
 
-gem 'argon2',                   '~> 2.0' # needed by cartodb-common Argon2EncryptionStrategy
+gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.4.1'
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '1.3.1'

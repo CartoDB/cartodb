@@ -129,7 +129,7 @@ module Carto
         end
 
         def create_sample
-           Carto::DoSamplecServiceFactory.get_for_user(@user).import_sample!(params[:datasetïd])
+           Carto::DoSampleServiceFactory.get_for_user(@user).import_sample!(params[:datasetïd])
           head :no_content
         end
 

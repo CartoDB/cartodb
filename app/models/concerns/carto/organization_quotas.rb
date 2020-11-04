@@ -16,31 +16,20 @@ module Carto
       #        example: 0.20 will get all organizations at 80% of their map view limit
       #
       def overquota(delta = 0)
-        Carto::Organization.find_each.select do |o|
-          limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
-          over_geocodings = o.get_geocoding_calls > limit
-          limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
-          over_here_isolines = o.get_here_isolines_calls > limit
-          limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
-          over_obs_snapshot = o.get_obs_snapshot_calls > limit
-          limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
-          over_obs_general = o.get_obs_general_calls > limit
-          limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
-          over_twitter_imports = o.twitter_imports_count > limit
-          limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
-          over_mapzen_routing = o.get_mapzen_routing_calls > limit
-
-          (over_geocodings ||
-           over_twitter_imports ||
-           over_here_isolines ||
-           over_obs_snapshot ||
-           over_obs_general ||
-           over_mapzen_routing)
-        rescue Carto::Organization::OrganizationWithoutOwner => e
-          log_warning(message: 'Skipping inconsistent organization', organization: o, exception: e)
-          false
-        end
+        Carto::Organization.find_each.select { |organization| organization.overquota?(delta) }
       end
+    end
+
+    def overquota?(delta)
+      over_geocoding_quota?(delta) ||
+        over_here_isolines_quota?(delta) ||
+        over_obs_snapshot_quota?(delta) ||
+        over_obs_general_quota?(delta) ||
+        over_twitter_datasource_quota?(delta) ||
+        over_mapzen_routing_quota?(delta)
+    rescue Carto::Organization::OrganizationWithoutOwner => e
+      log_warning(message: 'Skipping inconsistent organization', organization: self, exception: e)
+      false
     end
 
     def valid_disk_quota?(quota = default_quota_in_bytes)
@@ -145,6 +134,36 @@ module Carto
 
     def disk_quota_limit_reached?
       unassigned_quota < default_quota_in_bytes
+    end
+
+    def over_geocoding_quota?(delta)
+      limit = geocoding_quota.to_i - (geocoding_quota.to_i * delta)
+      get_geocoding_calls > limit
+    end
+
+    def over_here_isolines_quota?(delta)
+      limit = here_isolines_quota.to_i - (here_isolines_quota.to_i * delta)
+      get_here_isolines_calls > limit
+    end
+
+    def over_obs_snapshot_quota?(delta)
+      limit = obs_snapshot_quota.to_i - (obs_snapshot_quota.to_i * delta)
+      get_obs_snapshot_calls > limit
+    end
+
+    def over_obs_general_quota?(delta)
+      limit = obs_general_quota.to_i - (obs_general_quota.to_i * delta)
+      get_obs_general_calls > limit
+    end
+
+    def over_twitter_datasource_quota?(delta)
+      limit = twitter_datasource_quota.to_i - (twitter_datasource_quota.to_i * delta)
+      twitter_imports_count > limit
+    end
+
+    def over_mapzen_routing_quota?(delta)
+      limit = mapzen_routing_quota.to_i - (mapzen_routing_quota.to_i * delta)
+      get_mapzen_routing_calls > limit
     end
 
   end

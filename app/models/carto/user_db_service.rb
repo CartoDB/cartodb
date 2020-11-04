@@ -144,6 +144,46 @@ module Carto
       results.map { |row| [row['object_name'], row['granted_permissions'].split(',')] }.to_h
     end
 
+    # Returns all tables the user has access to, including shared ones and excluding internal tables.
+    # The result has this format:
+    # [<OpenStruct table_schema='public', name='table_name', mode='rw'>]
+    def tables_granted(params = {})
+      table = table_grants
+      table.project('*')
+      table.order("#{params[:order]} #{params[:direction]}") if params[:order]
+      table.take(params[:limit]) if params[:limit]
+      table.skip(params[:offset]) if params[:offset]
+
+      @user.in_database.execute(table.to_sql).map { |t| OpenStruct.new(t) }
+    end
+
+    def tables_granted_count
+      @user.in_database
+           .execute(table_grants.project('COUNT(*)').to_sql)
+           .first['count'].to_i
+    end
+
+    def table_grants
+      table = Arel::Table.new('information_schema.role_table_grants')
+      query_sql = table.project(Arel.sql(%{
+        table_schema,
+        table_name AS name,
+        STRING_AGG(
+          CASE privilege_type
+          WHEN 'SELECT' THEN 'r'
+          ELSE 'w'
+          END,
+          '' ORDER BY privilege_type
+        ) AS mode
+      })).where(Arel.sql(%{
+        grantee IN ('#{all_user_roles.join("','")}') AND
+        table_schema NOT IN ('cartodb', 'aggregation') AND
+        grantor != 'postgres' AND
+        privilege_type IN ('SELECT', 'UPDATE')
+      })).group(Arel.sql('table_schema, table_name')).to_sql
+      Arel::SelectManager.new(Arel::Table.engine, Arel.sql("(#{query_sql}) AS q"))
+    end
+
     def exists_role?(rolname)
       query = %{
         SELECT 1

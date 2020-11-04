@@ -21,9 +21,11 @@ module Carto
         VALID_ORDER_PARAMS = %i(name).freeze
 
         def index
-          tables = @user.in_database[select_tables_query].all
+          db_service = @user.carto_user.db_service
+
+          tables = db_service.tables_granted(@query_params)
           result = enrich_tables(tables)
-          total = @user.in_database[count_tables_query].first[:count]
+          total = db_service.tables_granted_count
 
           render_paged(result, total)
         end
@@ -39,6 +41,7 @@ module Carto
             VALID_ORDER_PARAMS, default_order: 'name', default_order_direction: 'asc'
           )
           @offset = (@page - 1) * @per_page
+          @query_params = { order: @order, direction: @direction, limit: @per_page, offset: @offset }
         end
 
         def check_permissions
@@ -47,12 +50,12 @@ module Carto
         end
 
         def enrich_tables(tables)
-          table_names = tables.map { |table| table[:name] }
+          table_names = tables.map(&:name)
           visualizations = table_visualizations(table_names)
           tables.map do |table|
-            viz = visualizations.find { |visualization| visualization[:name] == table[:name] }
+            viz = visualizations.find { |visualization| visualization[:name] == table.name }
             extra_fields = viz || default_extra_fields
-            table.merge(extra_fields)
+            table.to_h.merge(extra_fields)
           end
         end
 
@@ -80,36 +83,6 @@ module Carto
               shared: !visualization.is_owner?(@user)
             }
           end
-        end
-
-        def select_tables_query
-          %{
-            SELECT * FROM (#{query}) AS q
-            ORDER BY #{@order} #{@direction}
-            LIMIT #{@per_page}
-            OFFSET #{@offset}
-          }.squish
-        end
-
-        def count_tables_query
-          %{
-            SELECT COUNT(*) FROM (#{query}) AS q
-          }.squish
-        end
-
-        def query
-          roles_in = @user.db_service.all_user_roles.join("','")
-          %{
-            SELECT table_schema, table_name as name,
-              string_agg(CASE privilege_type WHEN 'SELECT' THEN 'r' ELSE 'w' END,
-                        '' order by privilege_type) as mode
-            FROM information_schema.role_table_grants
-            WHERE grantee IN ('#{roles_in}')
-              AND table_schema not in ('cartodb', 'aggregation')
-              AND grantor!='postgres'
-              AND privilege_type in ('SELECT', 'UPDATE')
-            GROUP BY table_schema,  table_name
-          }.squish
         end
 
         def render_paged(result, total)

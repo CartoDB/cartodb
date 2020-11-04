@@ -35,7 +35,7 @@ module CartoDB
       # {
       #   :pg Hash { ... }
       #   :downloader CartoDB::Importer2::DatasourceDownloader|CartoDB::Importer2::Downloader
-      #   :log CartoDB::Log|nil
+      #   :log Carto::Log|nil
       #   :job CartoDB::Importer2::Job|nil
       #   :user ::User|nil
       #   :unpacker Unp|nil
@@ -80,7 +80,7 @@ module CartoDB
       end
 
       def new_logger
-        CartoDB::Log.new(type: CartoDB::Log::TYPE_DATA_IMPORT)
+        Carto::Log.new_data_import
       end
 
       def include_additional_errors_mapping(additional_errors)

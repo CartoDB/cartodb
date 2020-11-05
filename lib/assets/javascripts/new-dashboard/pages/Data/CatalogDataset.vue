@@ -25,7 +25,7 @@
             </svg>
           </span>
           <span class="text is-txtSoftGrey is-caption u-mt--12">
-            Loading {{ entityType }} details...
+            Loading {{ entity_type }} details...
           </span>
         </div>
       </div>
@@ -106,8 +106,8 @@ export default {
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset,
-      entityType () {
-        return this.$route.params.entityType;
+      entity_type () {
+        return this.$route.params.entity_type;
       }
     }),
     subscription () {
@@ -116,7 +116,7 @@ export default {
       );
     },
     isGeography () {
-      return this.$route.params.entityType === 'geography';
+      return this.$route.params.entity_type === 'geography';
     },
     isSubscriptionSyncing () {
       return this.subscription && this.subscription.sync_status === 'syncing';
@@ -124,19 +124,19 @@ export default {
   },
   methods: {
     initializeDataset () {
-      if (!this.dataset || this.dataset.slug !== this.$route.params.entityId) {
+      if (!this.dataset || this.dataset.slug !== this.$route.params.entity_id) {
         this.loading = true;
         Promise.all([
           this.$store.dispatch('catalog/fetchSubscriptionsList'),
           this.$store.dispatch('catalog/fetchDataset', {
-            id: this.$route.params.entityId,
-            type: this.$route.params.entityType
+            id: this.$route.params.entity_id,
+            type: this.$route.params.entity_type
           })
         ]).then(() => {
           this.loading = false;
-          if (this.$route.params.entityId !== this.dataset.slug) {
+          if (this.$route.params.entity_id !== this.dataset.slug) {
             this.$router.replace({
-              params: { entityId: this.dataset.slug }
+              params: { entity_id: this.dataset.slug }
             });
           }
         });
@@ -155,7 +155,7 @@ export default {
         }
       }
     },
-    entityType: {
+    entity_type: {
       immediate: true,
       handler () {
         this.initializeDataset();
@@ -163,7 +163,7 @@ export default {
     }
   },
   destroyed () {
-    if (this.dataset.slug !== this.$route.params.entityId) {
+    if (this.dataset.slug !== this.$route.params.entity_id) {
       this.$store.commit('catalog/resetDataset');
     }
     clearInterval(this.id_interval);

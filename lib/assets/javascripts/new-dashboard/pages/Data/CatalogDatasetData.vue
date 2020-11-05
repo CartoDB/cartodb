@@ -211,14 +211,14 @@ export default {
       return this.variables ? this.variables.length : this.columns.length;
     },
     isGeography () {
-      return this.$route.params.entityType === 'geography';
+      return this.$route.params.entity_type === 'geography';
     }
   },
   methods: {
     fetchVariables () {
       this.$store.dispatch('catalog/fetchVariables', {
-        id: this.$route.params.entityId,
-        type: this.$route.params.entityType
+        id: this.$route.params.entity_id,
+        type: this.$route.params.entity_type
       });
     },
     findVariableInfo (variableName) {

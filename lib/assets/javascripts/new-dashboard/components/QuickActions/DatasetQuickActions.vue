@@ -73,7 +73,7 @@ export default {
           {
             name: this.$t('QuickActions.viewSubscription'),
             event: 'goToEntity',
-            shouldBeHidden: !this.isSubscription && (!this.isSample || !this.entitySubscribed)
+            shouldBeHidden: !this.isSubscription && (!this.isSample || !this.entity_subscribed)
           },
           {
             name: this.$t('QuickActions.subscribeToEntity'),
@@ -129,15 +129,15 @@ export default {
     },
     isSample () {
       const sample = this.dataset.sample;
-      return sample && !!sample.entityId || false;
+      return sample && !!sample.entity_id || false;
     },
     entitySubscribed () {
       const sample = this.dataset.sample;
-      return sample && sample.entitySubscribed || false;
+      return sample && sample.entity_subscribed || false;
     },
     isSubscription () {
       const subscription = this.dataset.subscription;
-      return subscription && !!subscription.entityId || false;
+      return subscription && !!subscription.entity_id || false;
     }
   },
   methods: {
@@ -213,7 +213,7 @@ export default {
       const entity = this.dataset.sample || this.dataset.subscription;
       this.$router.push({
         name: 'catalog-dataset-summary',
-        params: { entityId: entity.entityId, entityType: entity.entityType }
+        params: { entity_id: entity.entity_id, entity_type: entity.entity_type }
       });
     },
     unlockDataset () {

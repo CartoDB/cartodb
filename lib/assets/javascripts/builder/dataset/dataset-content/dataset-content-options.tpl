@@ -1,9 +1,9 @@
 <div class="u-flex u-alignCenter">
   <div class="js-sync"></div>
   <div>
-    <% if (entityTag && entityType && entityId) { %>
+    <% if (entityTag && entity_type && entity_id) { %>
       <span class="Tag Tag--Entity u-ml--12 u-mr--8"><%- entityTag %></span>
-      <a class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase" href="<%- baseUrl %>/dashboard/datasets/spatial-data-catalog/<%- entityType %>/<%- entityId %>"><%- entityLabel %></a>
+      <a class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase" href="<%- baseUrl %>/dashboard/datasets/spatial-data-catalog/<%- entity_type %>/<%- entity_id %>"><%- entityLabel %></a>
     <% } %>
   </div>
 </div>

@@ -128,13 +128,13 @@ export default {
     isSample () {
       return this.selectedDatasets.some(dataset => {
         const sample = dataset.sample;
-        return sample && !!sample.entityId || false;
+        return sample && !!sample.entity_id || false;
       });
     },
     isSubscription () {
       return this.selectedDatasets.some(dataset => {
         const subscription = dataset.subscription;
-        return subscription && !!subscription.entityId || false;
+        return subscription && !!subscription.entity_id || false;
       });
     }
   },

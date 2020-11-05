@@ -201,7 +201,7 @@ export default {
       return this.interestedSubscriptions.indexOf(this.dataset.id) >= 0;
     },
     isGeography () {
-      return this.$route.params.entityType === 'geography';
+      return this.$route.params.entity_type === 'geography';
     },
     isSubscribed () {
       const possibleLicenceStates = ['requested', 'active', 'expired'];

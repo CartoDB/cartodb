@@ -266,22 +266,21 @@ export default {
     }),
     getHeaderIcon () {
       if (this.currentMode === 'subscribe') {
-        return 'subsc-add-icon.svg';
+        return 'data-add.svg';
       } else if (this.currentMode === 'unsubscribe') {
-        return 'subsc-unsubsc-icon.svg';
+        return 'data-drop.svg';
       } else if (this.currentMode === 'request') {
         return 'data-request.svg';
       } else if (this.currentMode === 'sample') {
-        return 'subsc-add-icon.svg';
+        return 'data-add.svg';
       } else if (this.currentMode === 'subscribed') {
-        return 'subsc-subscribed-icon.svg';
+        return 'data-check.svg';
       } else if (this.currentMode === 'requested') {
-        return 'subsc-requested-icon.svg';
+        return 'data-requested.svg';
       } else if (this.currentMode === 'cancelRequest') {
-        return 'subsc-unsubsc-icon.svg';
+        return 'data-drop.svg';
       } else if (this.currentMode === 'connectingSample') {
-        // TODO: subsc-loading-icon.svg
-        return 'subsc-add-icon.svg';
+        return 'data-loading.svg';
       }
     },
     getTitle () {

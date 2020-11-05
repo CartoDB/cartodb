@@ -48,7 +48,7 @@ export default {
           {
             name: this.$t('BulkActions.datasets.changePrivacy'),
             event: 'changePrivacy',
-            shouldBeHidden: this.isSubscription || this.isAnyShared || this.isAnyLocked
+            shouldBeHidden: this.isSubscription || this.isSample || this.isAnyShared || this.isAnyLocked
           },
           {
             name: this.$t('BulkActions.datasets.duplicate'),
@@ -60,20 +60,20 @@ export default {
             name: this.$t('BulkActions.datasets.lock'),
             event: 'lockDataset',
             shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
-            shouldBeHidden: this.isSubscription || this.isAnyLocked
+            shouldBeHidden: this.isSubscription || this.isSample || this.isAnyLocked
           },
           {
             name: this.$t('BulkActions.datasets.unlock'),
             event: 'unlockDataset',
             shouldBeDisabled: this.isAnyShared && this.areAllLocked,
-            shouldBeHidden: this.isSubscription || !this.areAllLocked
+            shouldBeHidden: this.isSubscription || this.isSample || !this.areAllLocked
           },
           {
             name: this.$t('BulkActions.datasets.delete'),
             event: 'deleteDataset',
             isDestructive: true,
             shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
-            shouldBeHidden: this.isSubscription || this.isAnyLocked
+            shouldBeHidden: this.isSubscription || this.isSample || this.isAnyLocked
           }
         ],
         multiple: [
@@ -95,20 +95,20 @@ export default {
             name: this.$t('BulkActions.datasets.lock'),
             event: 'lockDatasets',
             shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
-            shouldBeHidden: this.isSubscription || this.isAnyLocked
+            shouldBeHidden: this.isSubscription || this.isSample || this.isAnyLocked
           },
           {
             name: this.$t('BulkActions.datasets.unlock'),
             event: 'unlockDatasets',
             shouldBeDisabled: this.isAnyShared && this.areAllLocked,
-            shouldBeHidden: this.isSubscription || !this.areAllLocked
+            shouldBeHidden: this.isSubscription || this.isSample || !this.areAllLocked
           },
           {
             name: this.$t('BulkActions.datasets.delete'),
             event: 'deleteDatasets',
             isDestructive: true,
             shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
-            shouldBeHidden: this.isSubscription || this.isAnyLocked
+            shouldBeHidden: this.isSubscription || this.isSample || this.isAnyLocked
           }
         ]
       };
@@ -124,6 +124,12 @@ export default {
     },
     areAllLocked () {
       return this.selectedDatasets.every(dataset => dataset.locked);
+    },
+    isSample () {
+      return this.selectedDatasets.some(dataset => {
+        const sample = dataset.sample;
+        return sample && !!sample.entityId || false;
+      });
     },
     isSubscription () {
       return this.selectedDatasets.some(dataset => {

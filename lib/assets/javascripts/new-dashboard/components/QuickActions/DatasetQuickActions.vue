@@ -47,22 +47,22 @@ export default {
           {
             name: this.$t('QuickActions.editInfo'),
             event: 'editInfo',
-            shouldBeHidden: this.isSubscription
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.manageTags'),
             event: 'manageTags',
-            shouldBeHidden: this.isSubscription
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.changePrivacy'),
             event: 'changePrivacy',
-            shouldBeHidden: this.isSubscription
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.share'),
             event: 'shareVisualization',
-            shouldBeHidden: this.isSubscription || !this.isUserInsideOrganization
+            shouldBeHidden: this.isSubscription || this.isSample || !this.isUserInsideOrganization
           },
           {
             name: this.$t('QuickActions.duplicate'),
@@ -83,12 +83,12 @@ export default {
           {
             name: this.$t('QuickActions.lock'),
             event: 'lockDataset',
-            shouldBeHidden: this.isSubscription
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.delete'),
             event: 'deleteDataset',
-            shouldBeHidden: this.isSubscription,
+            shouldBeHidden: this.isSubscription || this.isSample,
             isDestructive: true
           }
         ],

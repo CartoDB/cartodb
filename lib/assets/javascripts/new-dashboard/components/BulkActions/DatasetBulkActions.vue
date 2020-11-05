@@ -73,7 +73,7 @@ export default {
             event: 'deleteDataset',
             isDestructive: true,
             shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
-            shouldBeHidden: this.isSubscription || this.isSample || this.isAnyLocked
+            shouldBeHidden: this.isSubscription || this.isAnyLocked
           }
         ],
         multiple: [
@@ -108,7 +108,7 @@ export default {
             event: 'deleteDatasets',
             isDestructive: true,
             shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
-            shouldBeHidden: this.isSubscription || this.isSample || this.isAnyLocked
+            shouldBeHidden: this.isSubscription || this.isAnyLocked
           }
         ]
       };

@@ -73,7 +73,7 @@ export default {
           {
             name: this.$t('QuickActions.viewSubscription'),
             event: 'goToEntity',
-            shouldBeHidden: !this.isSubscription && (!this.isSample || !this.entity_subscribed)
+            shouldBeHidden: !this.isSubscription && (!this.isSample || !this.entitySubscribed)
           },
           {
             name: this.$t('QuickActions.subscribeToEntity'),
@@ -88,7 +88,7 @@ export default {
           {
             name: this.$t('QuickActions.delete'),
             event: 'deleteDataset',
-            shouldBeHidden: this.isSubscription || this.isSample,
+            shouldBeHidden: this.isSubscription,
             isDestructive: true
           }
         ],

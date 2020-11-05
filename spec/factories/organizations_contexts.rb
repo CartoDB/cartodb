@@ -124,13 +124,12 @@ shared_context 'organization with users helper' do
   end
 
   def share_visualization(visualization, user, access = Carto::Permission::ACCESS_READONLY)
-    shared_entity = CartoDB::SharedEntity.new(
+    shared_entity = Carto::SharedEntity.create(
       recipient_id: user.id,
-      recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+      recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
       entity_id: visualization.id,
-      entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
     )
-    shared_entity.save
 
     owner = visualization.user
     perm_id = visualization.permission.id

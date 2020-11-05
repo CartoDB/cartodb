@@ -216,15 +216,13 @@ describe Carto::TagQueryBuilder do
         shared_visualization = table.table_visualization
         shared_visualization.tags = ["shared-tag"]
         shared_visualization.save
-        shared_entity = CartoDB::SharedEntity.new(
-          recipient_id:   @user1.id,
-          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-          entity_id:      shared_visualization.id,
-          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        Carto::SharedEntity.create(
+          recipient_id: @user1.id,
+          recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id: shared_visualization.id,
+          entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
         )
-        shared_entity.save
-
-        FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["owned-tag"])
+        create(:derived_visualization, user_id: @user1.id, tags: ["owned-tag"])
       end
 
       it "does not include shared visualizations when using with_owned_by_user_id" do

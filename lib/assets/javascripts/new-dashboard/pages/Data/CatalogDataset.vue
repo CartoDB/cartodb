@@ -35,8 +35,8 @@
       <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
         <transition name="fade">
           <div>
-            <div class="catalogDetail__back">
-              <router-link v-if="publicWebsite"
+            <div v-if="publicWebsite" class="catalogDetail__back">
+              <router-link
                 class="title is-small back-link"
                 :class="{ 'disabled': loading }"
                 :to="{ name: 'spatial-data-catalog' }"

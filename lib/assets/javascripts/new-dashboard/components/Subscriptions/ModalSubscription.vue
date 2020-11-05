@@ -430,15 +430,18 @@ export default {
       this.loading = false;
     },
     async connectSample () {
+      this.error = false;
       this.loading = true;
-      // TODO: perform sync sample
       if (
         await this.$store.dispatch('catalog/requestDataset', {
           user: this.$store.state.user,
           dataset: this.dataset
-        })
+        }) &&
+        await this.$store.dispatch('catalog/connectSubscriptionSample', this.dataset.id)
       ) {
         this.currentMode = 'connectingSample';
+      } else {
+        this.error = true;
       }
       this.loading = false;
     }

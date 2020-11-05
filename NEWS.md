@@ -11,6 +11,7 @@ Development
 
 ### Bug fixes / enhancements
 * Relax rubocop checks to use ruby2.4+
+* Fixed an error handling issue during synchronizations
 * Improve import error messages [#15893](https://github.com/CartoDB/cartodb/pull/15893)
 * Identify multi-line GeoJSON columns correctly on imports [#15891](https://github.com/CartoDB/cartodb/pull/15891)
 * Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)

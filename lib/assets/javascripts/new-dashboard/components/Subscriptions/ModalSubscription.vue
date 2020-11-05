@@ -429,8 +429,17 @@ export default {
       this.loading = false;
     },
     async connectSample () {
-      // TODO
-      this.currentMode = 'connectingSample';
+      this.loading = true;
+      // TODO: perform sync sample
+      if (
+        await this.$store.dispatch('catalog/requestDataset', {
+          user: this.$store.state.user,
+          dataset: this.dataset
+        })
+      ) {
+        this.currentMode = 'connectingSample';
+      }
+      this.loading = false;
     }
   },
   watch: {

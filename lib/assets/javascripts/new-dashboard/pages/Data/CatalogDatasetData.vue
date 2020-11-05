@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isFetching" class="grid grid-cell u-flex__justify--center">
+  <div v-if="!isFetching" class="grid grid-cell u-flex__justify--center u-mb--32">
     <div class="grid-cell grid-cell--col12 u-mt--28">
       <div class="u-flex u-flex__justify--between title-container">
         <h2 class="title is-caption is-txtMainTextColor">

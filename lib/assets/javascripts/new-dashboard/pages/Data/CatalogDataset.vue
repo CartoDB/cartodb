@@ -35,13 +35,15 @@
       <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
         <transition name="fade">
           <div>
-            <a v-if="publicWebsite"
-              class="catalogDetail__back title is-small"
-              :class="{ 'disabled': loading }"
-              href="javascript:history.back()"
-            >
-              <span class="back-link">{{ $t('Catalog.back') }}</span>
-            </a>
+            <div class="catalogDetail__back">
+              <router-link v-if="publicWebsite"
+                class="title is-small back-link"
+                :class="{ 'disabled': loading }"
+                :to="{ name: 'spatial-data-catalog' }"
+              >
+                {{ $t('Catalog.name') }}
+              </router-link>
+            </div>
             <DatasetActionsBar
               v-if="subscription"
               :subscription="subscription"

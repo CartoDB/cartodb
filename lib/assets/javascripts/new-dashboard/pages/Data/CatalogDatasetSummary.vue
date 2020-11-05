@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cell u-flex__justify--center wrap-reverse--tablet">
+  <div class="grid grid-cell u-flex__justify--center u-mb--16 wrap-reverse--tablet">
     <div class="grid-cell grid-cell--col9 grid-cell--col12--tablet main-column">
       <p
         class="text is-caption is-txtMainTextColor u-mt--32 u-mt--12--tablet"

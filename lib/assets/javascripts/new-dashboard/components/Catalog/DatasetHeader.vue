@@ -201,7 +201,7 @@ export default {
       return this.interestedSubscriptions.indexOf(this.dataset.id) >= 0;
     },
     isGeography () {
-      return this.$route.params.type === 'geography';
+      return this.$route.params.entityType === 'geography';
     },
     isSubscribed () {
       const possibleLicenceStates = ['requested', 'active', 'expired'];
@@ -221,7 +221,7 @@ export default {
   methods: {
     async interested () {
       if (this.publicWebsite) {
-        window.location.replace(formURL(this.dataset));
+        window.open(formURL(this.dataset), '_blank');
       } else {
         if (
           await this.$store.dispatch('catalog/requestDataset', {

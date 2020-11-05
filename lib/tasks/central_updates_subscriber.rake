@@ -1,13 +1,3 @@
-module RateLimitsHelper
-
-  def self.create_rate_limits(rate_limit_attributes)
-    rate_limit = Carto::RateLimit.from_api_attributes(rate_limit_attributes)
-    rate_limit.save!
-    rate_limit
-  end
-
-end
-
 class CentralUserCommands
 
   include ::LoggerHelper
@@ -48,7 +38,7 @@ class CentralUserCommands
     user.enabled = true
 
     if user_param[:rate_limit].present?
-      user.rate_limit_id = RateLimitsHelper.create_rate_limits(user_param[:rate_limit]).id
+      user.rate_limit_id = Carto::RateLimitsHelper.create_rate_limits(user_param[:rate_limit]).id
     end
     if user.save
       user.reload

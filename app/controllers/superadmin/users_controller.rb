@@ -50,7 +50,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.set_fields_from_central(user_param, :create)
     @user.enabled = true
 
-    @user.rate_limit_id = create_rate_limits(user_param[:rate_limit]).id if user_param[:rate_limit].present?
+    if user_param[:rate_limit].present?
+      @user.rate_limit_id = Carto::RateLimitsHelper.create_rate_limits(user_param[:rate_limit]).id
+    end
     if @user.save
       @user.reload
       CartoDB::Visualization::CommonDataService.load_common_data(@user, self) if @user.should_load_common_data?
@@ -215,12 +217,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def get_carto_user
     @user = Carto::User.where(id: params[:id]).first
     render json: { error: 'User not found' }, status: 404 unless @user
-  end
-
-  def create_rate_limits(rate_limit_attributes)
-    rate_limit = Carto::RateLimit.from_api_attributes(rate_limit_attributes)
-    rate_limit.save!
-    rate_limit
   end
 
 end # Superadmin::UsersController

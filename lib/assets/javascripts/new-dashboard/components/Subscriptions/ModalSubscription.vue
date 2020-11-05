@@ -36,7 +36,7 @@
 
         <div
           class="license u-mt--24"
-          v-if="currentMode !== 'unsubscribe'"
+          v-if="currentMode !== 'unsubscribe' && getLicense"
         >
           <p class="text is-small is-txtBaseGrey license-description">
             <span v-html="getLicense"></span>

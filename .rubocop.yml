@@ -1,7 +1,7 @@
 # Extends defaults from: https://github.com/rubocop-hq/rubocop/blob/master/config/default.yml
 
 AllCops:
-  TargetRubyVersion: 2.5
+  TargetRubyVersion: 2.4
   Exclude:
   - "vendor/**/*"
   - "db/schema.rb"

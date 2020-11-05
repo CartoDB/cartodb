@@ -219,7 +219,8 @@ module Carto
     end
 
     def set_defaults
-      self.log = Carto::Log.create(type: 'user_migration_import') unless log
+      self.log = Carto::Log.new_user_migration_import unless log
+      log.save
       self.state = STATE_PENDING unless state
       save
     end

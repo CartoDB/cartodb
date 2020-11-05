@@ -175,8 +175,8 @@ module CartoDB
         # set_the_geom_column! should just edit the metadata with the specified type
         table.send :set_the_geom_column!, geo_type
         table.save
-      rescue StandardError
-        log_error(message: 'Error in setup cartodbfy', exception: exception)
+      rescue StandardError => e
+        log_error(message: 'Error in setup cartodbfy', exception: e)
       ensure
         @table_setup.fix_oid(table_name)
       end

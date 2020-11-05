@@ -1,6 +1,6 @@
 <template>
-  <Page class="page--data">
-    <SecondaryNavigation>
+  <Page class="page--data" :class="{ 'website-page': publicWebsite }">
+    <SecondaryNavigation v-if="!publicWebsite">
       <a
         class="catalogDetail__back title is-small"
         :class="{ 'disabled': loading }"
@@ -11,9 +11,9 @@
       </a>
     </SecondaryNavigation>
 
-    <section class="catalogDetail container grid">
+    <section v-if="loading" class="catalogDetail container grid">
       <div class="grid-cell grid-cell--col12">
-        <div v-if="loading" class="u-flex u-flex__align--center u-flex__direction--column u-mt--120">
+        <div class="u-flex u-flex__align--center u-flex__direction--column u-mt--120">
           <span class="loading u-mr--12">
             <svg viewBox="0 0 38 38">
               <g transform="translate(1 1)" fill="none" fill-rule="evenodd">
@@ -28,15 +28,36 @@
             Loading {{ type }} details…
           </span>
         </div>
+      </div>
+    </section>
+
+    <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center website-header': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
         <transition name="fade">
-          <div v-if="!loading">
+          <div>
+            <a v-if="publicWebsite"
+              class="catalogDetail__back title is-small"
+              :class="{ 'disabled': loading }"
+              href="javascript:history.back()"
+            >
+              <span class="back-link">{{ $t('Catalog.back') }}</span>
+            </a>
             <DatasetActionsBar
               v-if="subscription"
               :subscription="subscription"
               :slug="dataset.slug"
               class="u-mt--12"
             ></DatasetActionsBar>
-            <DatasetHeader></DatasetHeader>
+            <DatasetHeader :publicWebsite="publicWebsite"></DatasetHeader>
+          </div>
+        </transition>
+      </div>
+    </section>
+
+    <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
+        <transition name="fade">
+          <div >
             <div class="grid grid-cell u-flex__justify--center">
               <NavigationTabs class="grid-cell--col12">
                 <router-link :to="{ name: 'catalog-dataset-summary' }" replace>Summary</router-link>
@@ -63,6 +84,9 @@ import GoUpButton from 'new-dashboard/components/Catalog/GoUpButton';
 
 export default {
   name: 'CatalogDataset',
+  props: {
+    publicWebsite: Boolean
+  },
   components: {
     Page,
     SecondaryNavigation,
@@ -155,6 +179,12 @@ export default {
     align-items: center;
     padding: 24px 0;
 
+    a.disabled {
+      cursor: default;
+      pointer-events: none;
+      text-decoration: none;
+    }
+
     &--icon {
       width: 7px;
       height: 12px;
@@ -207,12 +237,6 @@ export default {
   bottom: 64px;
 }
 
-a.disabled {
-  cursor: default;
-  pointer-events: none;
-  text-decoration: none;
-}
-
 input::-ms-clear {
   display: none;
 }
@@ -221,5 +245,25 @@ input::-ms-clear {
 }
 .fade-enter {
   opacity: 0;
+}
+
+.website-page {
+  padding: 0;
+  border-bottom: none !important;
+
+  .website-header {
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    background-color: $color-primary;
+
+    a {
+      color: white;
+    }
+  }
+}
+
+.back-link:before {
+  content: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMjItN0gtMnYyNGgyNHoiLz48cGF0aCBkPSJNNS4yOTMuMjkzbDEuNDE0IDEuNDE0TDQuNDE0IDRIMjB2Mkg0LjQxNGwyLjI5MyAyLjI5My0xLjQxNCAxLjQxNEwuNTg2IDV6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==);
+  margin-right: 12px;
 }
 </style>

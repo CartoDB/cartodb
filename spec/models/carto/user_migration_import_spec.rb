@@ -13,7 +13,7 @@ describe Carto::UserMigrationImport do
     )
     import.run_import.should eq false
     import.state.should eq 'failure'
-    import.log.entries.should match(/Dry dry cannot be true while import_metadata is true/)
+    import.log.collect_entries.should match(/Dry dry cannot be true while import_metadata is true/)
   end
 
   it 'fails saving a migration with dry and import_metadata' do

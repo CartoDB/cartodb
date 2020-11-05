@@ -342,7 +342,7 @@ export default {
     getLicense () {
       let license = '';
       if (this.currentMode === 'sample') {
-        license += 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vitae massa vitae diam blandit accumsan et nec libero. Nunc at mi venenatis, luctus nisi a, lobortis enim. Proin dapibus sem lectus. Phasellus ut blandit dui. Cras aliquam urna metus, et sollicitudin arcu tincidunt ut. Sed semper ut nulla ut convallis. Integer ullamcorper quam vel erat vestibulum dignissim. Donec varius, urna eu rutrum facilisis, diam lacus suscipit ligula, ac tincidunt justo enim eu nisl.';
+        license += 'This sample is for evaluation purposes only and may be used internally only for non-commercial purposes. This sample is subject to limited, non-exclusive, non-transferable, non-sublicensable and revocable rights and license to use. Any rights not expressly granted are withheld.';
         license += '</br>';
       }
       if (this.dataset && this.dataset.licenses) {

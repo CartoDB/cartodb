@@ -159,9 +159,7 @@ module Carto
         if provider_information[:parameters]["connection"].present?
           parameters[:connection] = {}
           provider_information[:parameters]["connection"].each do |key, _value|
-            if request_params[key.to_sym].present?
-              parameters[:connection][key.to_sym] = request_params[key.to_sym]
-            end
+            parameters[:connection][key.to_sym] = request_params[key.to_sym] if request_params[key.to_sym].present?
           end
         end
         parameters
@@ -176,9 +174,7 @@ module Carto
         parameters[:provider] = provider_id
         provider_information = Carto::Connector.information(provider_id)
         provider_information[:parameters].each do |key, _value|
-          if request_params[key.to_sym].present?
-            parameters[key.to_sym] = request_params[key.to_sym]
-          end
+          parameters[key.to_sym] = request_params[key.to_sym] if request_params[key.to_sym].present?
         end
         parameters
       end

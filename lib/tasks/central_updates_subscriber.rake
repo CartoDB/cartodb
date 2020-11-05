@@ -10,6 +10,8 @@ end
 
 class CentralUserCommands
 
+  include ::LoggerHelper
+
   attr_reader :notifications_topic
 
   def initialize(notifications_topic)
@@ -17,7 +19,7 @@ class CentralUserCommands
   end
 
   def update_user(user_param)
-    puts 'Processing :update_user'
+    log_debug(message: 'Processing :update_user')
     user_id = user_param.delete('remote_user_id')
 
     return unless user_id.present? && user_param.any?
@@ -35,12 +37,12 @@ class CentralUserCommands
     user.update_do_subscription(user_param[:do_subscription])
     user.save
 
-    puts "User #{user.username} updated"
+    log_info(message: 'User updated', current_user: user)
   end
 
   def create_user(user_param)
     # NOTE copied from the superadmin users_controller.rb
-    puts 'Processing :create_user'
+    log_debug(message: 'Processing :create_user')
     user = ::User.new
     user.set_fields_from_central(user_param, :create)
     user.enabled = true
@@ -64,21 +66,31 @@ class CentralUserCommands
                                   username: user.username,
                                   id: user.id
                                 })
-    puts 'Done with :create_user'
+    log_info(message: 'User created', current_user: user)
   end
 
   def delete_user(user_param)
+    log_debug(message: 'Processing :delete_user')
     user = ::User.where(id: user_param[:id]).first
     user.set_force_destroy if user_param[:force] == 'true'
     user.destroy
     notifications_topic.publish(:user_deleted, {
                                   username: user.username
                                 })
+    log_info(message: 'User deleted', current_user: user.username)
   rescue CartoDB::SharedEntitiesError
     notifications_topic.publish(:user_could_not_be_deleted, {
                                   username: user.username,
                                   reason: 'user has shared entities'
                                 })
+    log_info(message: 'User could not be deleted because it has shared entities',
+             current_user: user.username)
+  end
+
+  private
+
+  def log_context
+    super.merge(class_name: self.class.name)
   end
 
 end
@@ -86,6 +98,8 @@ end
 namespace :poc do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task central_cartodb_commands: [:environment] do |_task, _args|
+    include ::LoggerHelper
+
     message_broker = Carto::Common::MessageBroker.instance
     subscription = message_broker.get_subscription(:central_cartodb_commands)
     notifications_topic = message_broker.get_topic(:cartodb_central_notifications)
@@ -101,13 +115,13 @@ namespace :poc do
                                    &central_user_commands.method(:delete_user))
 
     at_exit do
-      puts 'Stopping subscribber...'
+      log_debug(message: 'Stopping subscriber...')
       subscription.stop!
-      puts 'done'
+      log_debug(message: 'Done')
     end
 
     subscription.start
-    puts 'Consuming messages from subscription "central_cartodb_commands"'
+    log_debug(message: 'Consuming messages from subscription')
     sleep
   end
 end

@@ -127,7 +127,7 @@
           v-else-if="(getActionStatus === 'sign_up' || getActionStatus === 'access_sample') && !isEnterprise && !isDOEnabled"
           class="text is-small is-txtMainTextColor"
         >
-          Full dataset available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
+          Full dataset only available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
         </p>
         <p
           v-else-if="getActionStatus === 'interest' && !isEnterprise && !isDOEnabled"

@@ -43,7 +43,7 @@
             <a v-if="dataset.licenses_link" class="text is-small" :href="dataset.licenses_link" target="_blank">Continue reading.</a>
           </p>
 
-          <p v-if="currentMode === 'subscribed' || currentMode === 'requested'"
+          <p v-if="currentMode === 'subscribed' || currentMode === 'requested' || currentMode === 'connectingSample'"
             class="text u-mt--16 is-caption-small is-txtNavyBlue u-flex"
           >
             <img class="u-mr--12" src="../../assets/icons/catalog/check.svg" alt="check" />
@@ -340,9 +340,11 @@ export default {
     },
     getLicense () {
       let license = '';
-      if (this.currentMode === 'sample') {
+      if (this.currentMode === 'sample' || this.currentMode === 'connectingSample') {
         license += 'This sample is for evaluation purposes only and may be used internally only for non-commercial purposes. This sample is subject to limited, non-exclusive, non-transferable, non-sublicensable and revocable rights and license to use. Any rights not expressly granted are withheld.';
-        license += '</br>';
+        if (this.dataset && this.dataset.licenses) {
+          license += '</br></br>';
+        }
       }
       if (this.dataset && this.dataset.licenses) {
         license += `${this.dataset.licenses} `;
@@ -516,8 +518,9 @@ export default {
 }
 
 .license-description {
-  max-height: 88px;
-  overflow-y: scroll;
+  max-height: 80px;
+  overflow-y: auto;
+  padding-right: 8px;
 }
 
 .loading {

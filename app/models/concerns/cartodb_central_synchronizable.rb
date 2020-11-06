@@ -175,7 +175,13 @@ module CartodbCentralSynchronizable
     return self unless params.present? && action.present?
 
     changed_attributes = params.slice(*allowed_attributes_from_central(action))
-    set(changed_attributes)
+
+    if self.class.ancestors.include?(Sequel::Model)
+      set(changed_attributes)
+    else
+      changed_attributes.each { |attr, value| write_attribute(attr, value) }
+    end
+
     self.password = self.password_confirmation = params[:password] if user? && params.key?(:password)
 
     self

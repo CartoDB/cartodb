@@ -1,6 +1,10 @@
 require 'spec_helper'
+require './spec/support/factories/organizations'
 
 describe Carto::UserCommons do
+  include Carto::Factories::Visualizations
+  include TableSharing
+
   # This is a trick to always have the reloaded record
   let(:original_user) { create(:user) }
   let(:sequel_user) { ::User[original_user.id] }
@@ -159,6 +163,22 @@ describe Carto::UserCommons do
 
         expect(user.reload.feature_flags).not_to be_empty
       end
+    end
+  end
+
+  describe '#shared_entities' do
+    subject(:shared_entities) { org_admin.shared_entities }
+
+    let(:organization) { OrganizationFactory.new.create_organization_with_users }
+    let(:org_admin) { organization.owner }
+    let(:organization_user) { organization.users.where.not(id: org_admin.id).first }
+    let(:table) { create_full_visualization(org_admin)[1] }
+
+    before { share_table_with_user(table, organization_user) }
+
+    it 'returns the corresponding shared entities' do
+      expect(shared_entities.count).to eq(1)
+      expect(shared_entities.first.visualization).to eq(table.visualization)
     end
   end
 end

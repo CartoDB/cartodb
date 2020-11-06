@@ -208,7 +208,7 @@ module Carto::UserCommons
   end
 
   def shared_entities
-    CartoDB::SharedEntity.join(:visualizations, id: :entity_id).where(user_id: id)
+    Carto::SharedEntity.joins(:visualization).where('visualizations.user_id = ?', id)
   end
 
   def has_shared_entities?

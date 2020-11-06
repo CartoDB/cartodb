@@ -18,9 +18,7 @@
           <h2 class="title is-title-small is-txtNavyBlue u-mt--24">
             {{ getTitle }}
           </h2>
-          <p class="text is-caption is-txtNavyBlue u-mt--12">
-            {{ getSubTitle }}
-          </p>
+          <p class="text is-caption is-txtNavyBlue u-mt--12" v-html="getSubTitle"></p>
         </div>
         <ul>
           <DatasetListItem
@@ -47,7 +45,7 @@
             class="text u-mt--16 is-caption-small is-txtNavyBlue u-flex"
           >
             <img class="u-mr--12" src="../../assets/icons/catalog/check.svg" alt="check" />
-            I accepted the License
+            {{ getAcceptedLicense }}
           </p>
 
           <label v-else class="text u-flex u-flex__align--center u-mt--16">
@@ -75,7 +73,7 @@
                 </svg>
               </span>
             </span>
-            <span class="is-txtNavyBlue is-caption-small"> I accept the License </span>
+            <span class="is-txtNavyBlue is-caption-small">{{ getAcceptLicense }}</span>
           </label>
         </div>
 
@@ -203,7 +201,7 @@
 
           <router-link
             v-else-if="currentMode === 'connectingSample'"
-            :to="{ name: 'datasets' }" replace>
+            :to="{ name: 'datasets' }">
               <Button
                 @click.native="closeModal()"
                 class="u-ml--16"
@@ -318,7 +316,7 @@ export default {
       } else if (this.currentMode === 'cancelRequest') {
         return 'You are going to cancel the request to start the subscription process for the following dataset:';
       } else if (this.currentMode === 'connectingSample') {
-        return 'Your sample is being processed and will be available from Your Datasets shortly.';
+        return 'Your sample is being processed and will be available from <a href="/dashboard/datasets/">Your Datasets</a> shortly.';
       }
     },
     getDescription () {
@@ -326,6 +324,20 @@ export default {
         return 'The sample data is for trial evaluation purposes only and may differ slightly from final product data.';
       } else if (this.currentMode === 'connectingSample') {
         return 'The sample data is for trial evaluation purposes only and may differ slightly from final product data.';
+      }
+    },
+    getAcceptLicense () {
+      if (this.currentMode === 'sample') {
+        return 'I accept the Terms of Use';
+      } else {
+        return 'I accept the License';
+      }
+    },
+    getAcceptedLicense () {
+      if (this.currentMode === 'connectingSample') {
+        return 'I accepted the Terms of Use';
+      } else {
+        return 'I accepted the License';
       }
     },
     getCloseText () {
@@ -341,13 +353,10 @@ export default {
     getLicense () {
       let license = '';
       if (this.currentMode === 'sample' || this.currentMode === 'connectingSample') {
-        license += 'This sample is for evaluation purposes only and may be used internally only for non-commercial purposes. This sample is subject to limited, non-exclusive, non-transferable, non-sublicensable and revocable rights and license to use. Any rights not expressly granted are withheld.';
-        if (this.dataset && this.dataset.licenses) {
-          license += '</br></br>';
-        }
+        license = 'This sample is for evaluation purposes only and may be used internally only for non-commercial purposes. This sample is subject to limited, non-exclusive, non-transferable, non-sublicensable and revocable rights and license to use. Any rights not expressly granted are withheld.';
       }
       if (this.dataset && this.dataset.licenses) {
-        license += `${this.dataset.licenses} `;
+        license = `${this.dataset.licenses} `;
       }
       return license;
     },

@@ -31,16 +31,18 @@
           :big="publicWebsite"
           :blank="true"
           url="https://carto.com/signup"
+          class="underline-animation"
         >
-          Sign up to access sample
+          <span>Sign up to access sample</span>
         </Button>
         <Button
           v-else-if="getActionStatus === 'interest' && !alreadyInterested"
+          :class="{ 'underline-animation': publicWebsite }"
           :color="publicWebsite ? 'green' : ''"
           :big="publicWebsite"
           @click.native="interested"
         >
-          I'm interested
+          <span>I'm interested</span>
         </Button>
         <SubscriptionRequestSuccess
           v-if="getActionStatus === 'interest' && alreadyInterested"
@@ -296,6 +298,28 @@ a.disabled {
   background-color: $color-primary;
   h1, p, a, span {
     color: white;
+  }
+}
+
+.underline-animation {
+  & > span {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    &:before {
+      content: '';
+      position: absolute;
+      transition: transform .3s ease;
+      left: -1px;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      transform: translateX(-100%);
+    }
+  }
+  &:hover > span:before {
+    transform: none;
   }
 }
 </style>

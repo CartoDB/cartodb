@@ -288,7 +288,7 @@ shared_examples_for 'Layer model' do
     it 'saves styles for layers with source_id' do
       @layer.options['source'] = 'a0'
       @layer.save
-      lns = LayerNodeStyle.where(layer_id: @layer.id).first
+      lns = Carto::LayerNodeStyle.find_by(layer_id: @layer.id)
       lns.should be
       lns.tooltip.should eq @layer.tooltip || {}
       lns.infowindow.should eq @layer.infowindow || {}
@@ -300,14 +300,14 @@ shared_examples_for 'Layer model' do
     it 'does not save styles for layers with source_id' do
       @layer.options['source'] = nil
       @layer.save
-      LayerNodeStyle.where(layer_id: @layer.id).count.should eq 0
+      Carto::LayerNodeStyle.where(layer_id: @layer.id).count.should eq 0
     end
 
     it 'saves styles for torque layers' do
       @layer.kind = 'torque'
       @layer.options['source'] = 'a0'
       @layer.save
-      lns = LayerNodeStyle.where(layer_id: @layer.id).first
+      lns = Carto::LayerNodeStyle.find_by(layer_id: @layer.id)
       lns.should be
       lns.tooltip.should eq @layer.tooltip || {}
       lns.infowindow.should eq @layer.infowindow || {}

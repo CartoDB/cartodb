@@ -134,10 +134,12 @@ export default {
           })
         ]).then(() => {
           this.loading = false;
-          if (this.$route.params.entity_id !== this.dataset.slug) {
-            this.$router.replace({
-              params: { entity_id: this.dataset.slug }
-            });
+          if (this.dataset.slug) {
+            if (this.$route.params.entity_id !== this.dataset.slug) {
+              this.$router.replace({ params: { entity_id: this.dataset.slug } });
+            }
+          } else {
+            this.$router.replace({ name: 'spatial-data-catalog' });
           }
         });
       }

@@ -5,6 +5,15 @@ Development
 - None yet
 
 ### Features
+- None yet
+
+### Bug fixes / enhancements
+- None yet
+
+4.43.0 (2020-11-06)
+-------------------
+
+### Features
 * Fix dryrun connector end-point for org users ([#15918](https://github.com/CartoDB/cartodb/pull/15918))
 * Fix column sanitization for connector syncs ([#15885](https://github.com/CartoDB/cartodb/pull/15885))
 * Load config files as ERB templates to allow reading ENV values ([#15881](https://github.com/CartoDB/cartodb/pull/15881))

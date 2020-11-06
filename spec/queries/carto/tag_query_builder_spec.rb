@@ -222,7 +222,7 @@ describe Carto::TagQueryBuilder do
           entity_id: shared_visualization.id,
           entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
         )
-        create(:derived_visualization, user_id: @user1.id, tags: ["owned-tag"])
+        create(:derived_visualization, user_id: @user1.id, tags: ['owned-tag'])
       end
 
       it "does not include shared visualizations when using with_owned_by_user_id" do

@@ -35,6 +35,6 @@ module Carto
     def supported_type
       errors.add(:entity_type, 'unsupported type') unless entity_type == ENTITY_TYPE_VISUALIZATION
     end
-  end
 
+  end
 end

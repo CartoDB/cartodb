@@ -274,46 +274,40 @@ shared_examples_for 'Layer model' do
   end
 
   describe '#LayerNodeStyle cache' do
-    before(:each) do
-      @map = create_map(user_id: @user.id, table_id: @table.id)
-      @layer = layer_class.create(kind: 'carto')
-      add_layer_to_entity(@map, @layer)
-    end
+    let(:map) { create_map(user_id: @user.id, table_id: @table.id) }
+    let(:layer) { layer_class.create(kind: 'carto') }
 
-    after(:each) do
-      @layer.destroy
-      @map.destroy
-    end
+    before { add_layer_to_entity(map, layer) }
 
     it 'saves styles for layers with source_id' do
-      @layer.options['source'] = 'a0'
-      @layer.save
-      lns = Carto::LayerNodeStyle.find_by(layer_id: @layer.id)
+      layer.options['source'] = 'a0'
+      layer.save
+      lns = Carto::LayerNodeStyle.find_by(layer_id: layer.id)
       lns.should be
-      lns.tooltip.should eq @layer.tooltip || {}
-      lns.infowindow.should eq @layer.infowindow || {}
-      lns.options['tile_style'].should eq @layer.options['tile_style']
-      lns.options['sql_wrap'].should eq @layer.options['sql_wrap']
-      lns.options['style_properties'].should eq @layer.options['style_properties']
+      lns.tooltip.should eq layer.tooltip || {}
+      lns.infowindow.should eq layer.infowindow || {}
+      lns.options['tile_style'].should eq layer.options['tile_style']
+      lns.options['sql_wrap'].should eq layer.options['sql_wrap']
+      lns.options['style_properties'].should eq layer.options['style_properties']
     end
 
     it 'does not save styles for layers with source_id' do
-      @layer.options['source'] = nil
-      @layer.save
-      Carto::LayerNodeStyle.where(layer_id: @layer.id).count.should eq 0
+      layer.options['source'] = nil
+      layer.save
+      Carto::LayerNodeStyle.where(layer_id: layer.id).count.should eq 0
     end
 
     it 'saves styles for torque layers' do
-      @layer.kind = 'torque'
-      @layer.options['source'] = 'a0'
-      @layer.save
-      lns = Carto::LayerNodeStyle.find_by(layer_id: @layer.id)
+      layer.kind = 'torque'
+      layer.options['source'] = 'a0'
+      layer.save
+      lns = Carto::LayerNodeStyle.find_by(layer_id: layer.id)
       lns.should be
-      lns.tooltip.should eq @layer.tooltip || {}
-      lns.infowindow.should eq @layer.infowindow || {}
-      lns.options['tile_style'].should eq @layer.options['tile_style']
-      lns.options['sql_wrap'].should eq @layer.options['sql_wrap']
-      lns.options['style_properties'].should eq @layer.options['style_properties']
+      lns.tooltip.should eq layer.tooltip || {}
+      lns.infowindow.should eq layer.infowindow || {}
+      lns.options['tile_style'].should eq layer.options['tile_style']
+      lns.options['sql_wrap'].should eq layer.options['sql_wrap']
+      lns.options['style_properties'].should eq layer.options['style_properties']
     end
   end
 end

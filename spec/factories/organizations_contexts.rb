@@ -124,7 +124,7 @@ shared_context 'organization with users helper' do
   end
 
   def share_visualization(visualization, user, access = Carto::Permission::ACCESS_READONLY)
-    shared_entity = Carto::SharedEntity.create(
+    Carto::SharedEntity.create(
       recipient_id: user.id,
       recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
       entity_id: visualization.id,

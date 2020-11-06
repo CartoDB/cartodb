@@ -20,4 +20,12 @@ module ActiveRecordCompatibility
     self.class.model_name
   end
 
+  def set(new_attributes)
+    if self.class.ancestors.include?(ActiveRecord::Base)
+      new_attributes.each { |attr, value| self[attr] = value }
+    else
+      super
+    end
+  end
+
 end

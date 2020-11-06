@@ -1785,7 +1785,8 @@
             "label": "Sync my data",
             "error": "There was an error setting the interval",
             "confirm": "Save",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "last-updated": "Last updated: %{ranAt}"
         },
         "unlock": {
             "cancel": "back to dashboard",

@@ -211,7 +211,7 @@ module Carto::UserCommons
     CartoDB::SharedEntity.join(:visualizations, id: :entity_id).where(user_id: id)
   end
 
-  def shared_entities?
+  def has_shared_entities?
     shared_entities.first.present?
   end
 

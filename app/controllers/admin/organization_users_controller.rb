@@ -203,7 +203,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def destroy
     valid_password_confirmation
-    raise "Can't delete user. Has shared entities" if @user.shared_entities?
+    raise "Can't delete user. Has shared entities" if @user.has_shared_entities?
 
     @user.destroy
     @user.delete_in_central

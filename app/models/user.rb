@@ -393,7 +393,7 @@ class User < Sequel::Model
         end
       end
 
-      if !@force_destroy && shared_entities?
+      if !@force_destroy && has_shared_entities?
         raise CartoDB::SharedEntitiesError.new('Cannot delete user, has shared entities')
       end
 

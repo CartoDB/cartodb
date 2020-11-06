@@ -85,6 +85,11 @@ Metrics/PerceivedComplexity:
 #  Naming
 ####################
 
+Naming/PredicateName:
+  ForbiddenPrefixes:
+    - is_
+    - have_
+
 Naming/VariableNumber:
   Description: Use the configured style when numbering variables.
   Enabled: false

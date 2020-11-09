@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-* Fix column sanitization for connector syncs ([#15885](https://github.com/CartoDB/cartodb/pull/15885))
+* Fix BigQuery connector not importing 0-bytes-processed datasets ([#15916]https://github.com/CartoDB/cartodb/pull/15916)
 * Load config files as ERB templates to allow reading ENV values ([#15881](https://github.com/CartoDB/cartodb/pull/15881))
 * Add public website DO catalog integration ([#15908](https://github.com/CartoDB/cartodb/pull/15908), [#15911](https://github.com/CartoDB/cartodb/pull/15911), [#15912](https://github.com/CartoDB/cartodb/pull/15912))
 

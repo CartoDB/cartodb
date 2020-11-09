@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+* Fix BigQuery connector not importing 0-bytes-processed datasets ([#15916]https://github.com/CartoDB/cartodb/pull/15916)
 
 4.43.0 (2020-11-06)
 -------------------

@@ -8,7 +8,7 @@
     </div>
 
     <div class="grid u-flex__justify--center">
-      <div class="grid-cell--col6">
+      <div class="modal-col grid-cell--col6">
         <div class="u-align--center">
           <img
             v-if="getHeaderIcon"
@@ -25,6 +25,7 @@
             :key="dataset.slug"
             :dataset="dataset"
             :minimal="true"
+            :warning="getWarning"
           ></DatasetListItem>
         </ul>
 
@@ -326,6 +327,14 @@ export default {
         return 'The sample data is for trial evaluation purposes only and may differ slightly from final product data.';
       }
     },
+    getWarning () {
+      if (this.currentMode === 'sample' || this.currentMode === 'connectingSample') {
+        if (this.dataset.sample_info && this.dataset.sample_info.default_source) {
+          const source = `&nbsp;<span class="is-semibold is-italic">${this.dataset.sample_info.default_source}</span>`;
+          return `(*) Sample not available: this sample is for${source}`;
+        }
+      }
+    },
     getAcceptLicense () {
       if (this.currentMode === 'sample') {
         return 'I accept the Terms of Use';
@@ -478,6 +487,10 @@ export default {
   height: 100vh;
   background-color: rgba($white, 0.96);
   overflow-y: auto;
+}
+
+.modal-col {
+  max-width: 800px;
 }
 
 .close-modal {

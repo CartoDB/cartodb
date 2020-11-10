@@ -88,6 +88,7 @@
           </div>
         </div>
       </div>
+      <span v-else-if="warning" class="warning" v-html="warning"></span>
     </div>
     <DatasetListItemExtra v-if="extra" :dataset="dataset"></DatasetListItemExtra>
   </li>
@@ -110,7 +111,12 @@ export default {
       required: false
     },
     minimal: {
-      type: Boolean
+      type: Boolean,
+      required: false
+    },
+    warning: {
+      type: String,
+      required: false
     }
   },
   components: {
@@ -228,6 +234,20 @@ export default {
     .info.u-mr--72 {
       margin-right: 0;
     }
+  }
+}
+
+.warning {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 12px;
+  line-height: 16px;
+  margin-top: 20px;
+
+  &:after {
+    content: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/1.0.0-assets.206/images/interface-alert-triangle.svg);
+    margin-left: 12px;
   }
 }
 </style>

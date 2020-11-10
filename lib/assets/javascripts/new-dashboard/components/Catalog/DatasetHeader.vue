@@ -217,7 +217,7 @@ export default {
       return this.$store.state.user && this.$store.state.user.is_enterprise;
     },
     hasSample () {
-      return this.dataset.available_in && this.dataset.available_in.indexOf('bq-sample') >= 0;
+      return this.dataset.sample_info && !!this.dataset.sample_info.id;
     }
   },
   methods: {

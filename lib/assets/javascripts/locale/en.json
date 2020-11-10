@@ -1786,7 +1786,7 @@
             "error": "There was an error setting the interval",
             "confirm": "Save",
             "cancel": "Cancel",
-            "last-updated": "Last updated: %{ranAt}"
+            "last-updated": "Last updated: %{modifiedAt}"
         },
         "unlock": {
             "cancel": "back to dashboard",

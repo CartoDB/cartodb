@@ -2,8 +2,8 @@
 
   <% if (isSubscription) { %>
 
-    <% if (state === "success") { %>
-      <%- _t('dataset.sync.last-updated', { ranAt: ranAt }) %>.
+    <% if (state === "success" && modifiedAt) { %>
+      <%- _t('dataset.sync.last-updated', { modifiedAt: modifiedAt }) %>.
     <% } %>
 
   <% } else { %>

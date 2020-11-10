@@ -126,17 +126,6 @@ module Carto
         }
 
         poro[:subscription] = @visualization.subscription if @visualization.subscription
-        # TODO: remove mocks
-        poro[:sample] = {
-          entity_id: 'mc_geographic__4a11e98c',
-          entity_type: 'dataset',
-          entity_subscribed: false
-        } if @visualization.name == 'my_sample'
-        poro[:sample] = {
-          entity_id: 'mc_geographic__4a11e98c',
-          entity_type: 'dataset',
-          entity_subscribed: true
-        } if @visualization.name == 'my_sample_2'
         poro[:related_tables] = related_tables if related
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features

@@ -23,6 +23,10 @@ module Carto
       super.reject { |c| c.name == "id" }
     end
 
+    def entity
+      @entity ||= CartoDB::Visualization::Member.new(id: entity_id).fetch
+    end
+
     private
 
     def supported_type

@@ -51,7 +51,8 @@ export default {
           },
           {
             name: this.$t('QuickActions.manageTags'),
-            event: 'manageTags'
+            event: 'manageTags',
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.changePrivacy'),

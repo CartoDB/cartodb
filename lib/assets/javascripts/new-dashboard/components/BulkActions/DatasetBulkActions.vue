@@ -54,7 +54,7 @@ export default {
             name: this.$t('BulkActions.datasets.duplicate'),
             event: 'duplicateDataset',
             shouldBeDisabled: this.isOutOfDatasetsQuota,
-            shouldBeHidden: this.isSubscription
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('BulkActions.datasets.lock'),

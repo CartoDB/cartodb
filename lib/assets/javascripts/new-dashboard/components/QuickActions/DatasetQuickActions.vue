@@ -67,7 +67,7 @@ export default {
             name: this.$t('QuickActions.duplicate'),
             event: 'duplicateDataset',
             shouldBeDisabled: this.isOutOfDatasetsQuota,
-            shouldBeHidden: this.isSubscription
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.viewSubscription'),

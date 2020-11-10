@@ -26,10 +26,6 @@ module Carto
       @entity ||= CartoDB::Visualization::Member.new(id: entity_id).fetch
     end
 
-    def entity
-      @entity ||= CartoDB::Visualization::Member.new(id: entity_id).fetch
-    end
-
     private
 
     def supported_type

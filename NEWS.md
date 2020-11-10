@@ -5,12 +5,23 @@ Development
 - None yet
 
 ### Features
+- None yet
+
+### Bug fixes / enhancements
+* Fix BigQuery connector not importing 0-bytes-processed datasets ([#15916]https://github.com/CartoDB/cartodb/pull/15916)
+
+4.43.0 (2020-11-06)
+-------------------
+
+### Features
+* Fix dryrun connector end-point for org users ([#15918](https://github.com/CartoDB/cartodb/pull/15918))
 * Fix column sanitization for connector syncs ([#15885](https://github.com/CartoDB/cartodb/pull/15885))
 * Load config files as ERB templates to allow reading ENV values ([#15881](https://github.com/CartoDB/cartodb/pull/15881))
 * Add public website DO catalog integration ([#15908](https://github.com/CartoDB/cartodb/pull/15908), [#15911](https://github.com/CartoDB/cartodb/pull/15911), [#15912](https://github.com/CartoDB/cartodb/pull/15912))
 
 ### Bug fixes / enhancements
 * Relax rubocop checks to use ruby2.4+
+* Fixed an error handling issue during synchronizations
 * Improve import error messages [#15893](https://github.com/CartoDB/cartodb/pull/15893)
 * Identify multi-line GeoJSON columns correctly on imports [#15891](https://github.com/CartoDB/cartodb/pull/15891)
 * Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)

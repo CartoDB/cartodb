@@ -5,16 +5,22 @@ class Api::Json::OrganizationsController < Api::ApplicationController
 
   # Fetch info from the current user orgranization
   def show
-    render json: {}.to_json if current_user.organization.nil?
+    data = current_user.organization ? organization_presenter.to_poro : {}
 
-    render json: current_user.organization.to_poro
+    render json: data
   end
 
   # Return user list of current user organization
   def users
-    render json: {}.to_json if current_user.organization.nil?
+    data = current_user.organization ? organization_presenter.to_poro[:users] : {}
 
-    render json: current_user.organization.to_poro[:users]
+    render json: data
+  end
+
+  private
+
+  def organization_presenter
+    ::OrganizationPresenter.new(current_user.organization)
   end
 
 end

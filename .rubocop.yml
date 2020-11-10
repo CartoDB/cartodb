@@ -1,5 +1,10 @@
 # Extends defaults from: https://github.com/rubocop-hq/rubocop/blob/master/config/default.yml
 
+require:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 2.4
   Exclude:
@@ -80,9 +85,34 @@ Metrics/PerceivedComplexity:
 #  Naming
 ####################
 
+Naming/PredicateName:
+  ForbiddenPrefixes:
+    - is_
+    - have_
+
 Naming/VariableNumber:
   Description: Use the configured style when numbering variables.
   Enabled: false
+
+####################
+#  RSpec
+####################
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 30
+
+# Incompatible until RSpec 3
+RSpec/ImplicitExpect:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 15
+
+RSpec/NestedGroups:
+  Max: 5
 
 ####################
 #  Style
@@ -108,6 +138,9 @@ Style/FrozenStringLiteralComment:
   Description: >-
                   Add the frozen_string_literal comment to the top of files
                   to help transition to frozen string literals by default.
+  Enabled: false
+
+Style/GuardClause:
   Enabled: false
 
 Style/SymbolArray:

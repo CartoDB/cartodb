@@ -663,7 +663,7 @@ describe Carto::Api::LayersController do
         private_tables_enabled: false
       )
 
-      organization = Organization.new
+      organization = Carto::Organization.new
       organization.name = unique_name('org')
       organization.quota_in_bytes = 1234567890
       organization.seats = 5

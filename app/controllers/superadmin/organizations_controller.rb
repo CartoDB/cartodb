@@ -18,14 +18,14 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   end
 
   def create
-    @organization = Organization.new
+    @organization = Carto::Organization.new
     @organization.set_fields_from_central(params[:organization], :create)
     if @organization.save && params[:organization][:owner_id].present? && @organization.owner.nil?
       # TODO: move this into a callback or a model method
       uo = CartoDB::UserOrganization.new(@organization.id, params[:organization][:owner_id])
       uo.promote_user_to_admin
     end
-    respond_with(:superadmin, @organization)
+    respond_with(:superadmin, @organization, location: -> { superadmin_organization_path(@organization) })
   rescue StandardError => e
     begin
       @organization.delete if @organization && @organization.id
@@ -54,8 +54,8 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   private
 
   def get_organization
-    @organization = Organization[params[:id]]
+    @organization = Carto::Organization.find_by(id: params[:id])
     render json: { error: 'Organization not found' }, status: 404 unless @organization
-  end # get_organization
+  end
 
 end

@@ -228,10 +228,10 @@ describe Geocoding do
     it 'returns the remaining quota for the organization if the user has hard limit and belongs to an org' do
       organization = create_organization_with_users(geocoding_quota: 150)
       organization.owner.geocoder_provider = 'heremaps'
-      organization.owner.save.reload
+      organization.owner.save
       org_user = organization.users.last
       org_user.stubs('soft_geocoding_limit?').returns(false)
-      org_geocoding = FactoryGirl.build(:geocoding, user: org_user)
+      org_geocoding = build(:geocoding, user: org_user.sequel_user)
       organization.geocoding_quota.should eq 150
       org_geocoding.max_geocodable_rows.should eq 150
       org_user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(org_user.username, organization.name)

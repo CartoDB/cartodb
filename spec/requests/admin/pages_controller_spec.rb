@@ -3,93 +3,77 @@ require_relative '../../../app/controllers/admin/pages_controller'
 require_relative '../../factories/organizations_contexts'
 require_relative '../../factories/carto_visualizations'
 
-def app
-  CartoDB::Application.new
-end #app
-
 describe Admin::PagesController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
   JSON_HEADER = {'CONTENT_TYPE' => 'application/json'}
 
-  before(:all) do
-
-    @non_org_user_name = 'development'
-
-    @org_name = 'foobar'
-    @org_user_name = 'foo'
-
-    @other_org_user_name = 'other'
-
-    @belongs_to_org = true
-    @user_org = true
-  end
+  let(:non_org_user_name) { 'development' }
+  let(:org_user_name) { 'foo' }
+  let(:other_org_user_name) { 'other' }
+  let(:belongs_to_org) { true }
+  let(:user_org) { true }
+  let(:organization) { create_organization_with_users(password_expiration_in_d: nil) }
 
   describe '#index' do
-    before(:each) do
-      host! "#{@org_name}.localhost.lan"
-    end
+    before { host!("#{organization.name}.localhost.lan") }
+    after { Carto::User.delete_all }
 
     it 'returns 404 if user does not belongs to host organization' do
-      user = prepare_user(@non_org_user_name)
+      prepare_user(non_org_user_name)
 
-      get "/u/#{@non_org_user_name}", {}, JSON_HEADER
+      get "/u/#{non_org_user_name}", {}, JSON_HEADER
 
       last_response.status.should == 404
-
-      user.delete
     end
 
     it 'returns 200 if it is an org user and belongs to host organization' do
-      user = prepare_user(@org_user_name, @user_org, @belongs_to_org)
+      prepare_user(org_user_name, user_org, belongs_to_org)
 
-      get "/u/#{@org_user_name}", {}, JSON_HEADER
+      get "/u/#{org_user_name}", {}, JSON_HEADER
 
       last_response.status.should == 200
-
-      user.delete
     end
 
     it 'redirects_to dashboard if organization user is logged in' do
-      user = prepare_user(@org_user_name, @user_org, @belongs_to_org)
+      user = prepare_user(org_user_name, user_org, belongs_to_org)
 
       login_as(user, scope: user.username)
 
-      get "/u/#{@org_user_name}", {}, JSON_HEADER
+      get "/u/#{org_user_name}", {}, JSON_HEADER
 
-      last_response.status.should == 302
-
-      follow_redirect!
-
-      uri = URI.parse(last_request.url)
-      uri.host.should == "#{@org_name}.localhost.lan"
-      uri.path.should == "/u/#{@org_user_name}/dashboard"
-
-      user.delete
+      expect(last_response.status).to eq(302)
+      expect(last_response.location).to match(%r{
+        http://#{organization.name}.localhost.lan.*/u/#{org_user_name}/dashboard
+      }x)
     end
 
     it 'redirects if it is an org user but gets called without organization' do
-      user = prepare_user(@org_user_name, @user_org, @belongs_to_org)
+      prepare_user(org_user_name, user_org, belongs_to_org)
 
-      host! "#{@org_user_name}.localhost.lan"
-      get "", {}, JSON_HEADER
+      host! "#{org_user_name}.localhost.lan"
+      get '', {}, JSON_HEADER
 
-      last_response.status.should == 302
+      expect(last_response.status).to eq(302)
+      expect(last_response.location).to match(%r{http://#{org_user_name}.*/me})
+
       follow_redirect!
-      last_response.status.should == 200
 
-      user.delete
+      expect(last_response.status).to eq(302)
+      expect(last_response.location).to match(%r{http://#{organization.name}.*/u/#{org_user_name}/me})
+
+      follow_redirect!
+
+      expect(last_response.status).to eq(200)
     end
 
     it 'returns 404 if it is an org user but does NOT belong to host organization' do
-      user = prepare_user(@other_org_user_name, @user_org, !@belongs_to_org)
+      prepare_user(other_org_user_name, user_org, !belongs_to_org)
 
-      get "/u/#{@other_org_user_name}", {}, JSON_HEADER
+      get "/u/#{other_org_user_name}", {}, JSON_HEADER
 
       last_response.status.should == 404
-
-      user.delete
     end
 
     it 'returns 404 if user does NOT exist' do
@@ -112,12 +96,10 @@ describe Admin::PagesController do
       uri = URI.parse(last_request.url)
       uri.host.should == 'anyuser.localhost.lan'
       uri.path.should == '/me'
-
-      [anyuser, anyviewer].each(&:delete)
     end
 
     it 'redirects to user feed if not logged in' do
-      user = prepare_user('anyuser')
+      prepare_user('anyuser')
       host! 'anyuser.localhost.lan'
 
       get '', {}, JSON_HEADER
@@ -128,13 +110,11 @@ describe Admin::PagesController do
       uri.path.should == '/me'
       follow_redirect!
       last_response.status.should == 200
-
-      user.delete
     end
 
     it 'redirects to local login page if no user is specified and Central is not enabled' do
       Cartodb.with_config(cartodb_central_api: {}) do
-        user = prepare_user('anyuser')
+        prepare_user('anyuser')
         host! 'localhost.lan'
         CartoDB.stubs(:session_domain).returns('localhost.lan')
         CartoDB.stubs(:subdomainless_urls?).returns(true)
@@ -147,8 +127,6 @@ describe Admin::PagesController do
         uri.path.should == '/login'
         follow_redirect!
         last_response.status.should == 200
-
-        user.delete
       end
     end
 
@@ -163,7 +141,7 @@ describe Admin::PagesController do
           'password' => 'test'
         }
       ) do
-        user = prepare_user('anyuser')
+        prepare_user('anyuser')
         host! 'localhost.lan'
         CartoDB.stubs(:session_domain).returns('localhost.lan')
         CartoDB.stubs(:subdomainless_urls?).returns(true)
@@ -182,8 +160,6 @@ describe Admin::PagesController do
         uri.port.should == central_port
         uri.path.should == '/login'
         follow_redirect!
-
-        user.delete
       end
     end
 
@@ -200,8 +176,6 @@ describe Admin::PagesController do
       uri = URI.parse(last_response.location)
       uri.host.should == 'localhost.lan'
       uri.path.should == '/user/anyuser/dashboard'
-
-      anyuser.delete
     end
 
     it 'extracts username from redirection for dashboard with subdomainless' do
@@ -227,8 +201,6 @@ describe Admin::PagesController do
       User.any_instance.stubs(:db_size_in_bytes).returns(0)
       get location
       last_response.status.should == 200
-
-      anyuser.delete
     end
 
     it 'redirects to login without login' do
@@ -337,28 +309,16 @@ describe Admin::PagesController do
     anyuser
   end
 
-  def prepare_user(user_name, org_user=false, belongs_to_org=false)
-    user = create_user(
-      username: user_name,
-      email:    "#{user_name}@example.com",
-      password: 'longer_than_MIN_PASSWORD_LENGTH',
-      fake_user: true,
-      quota_in_bytes: 10000000
-    )
+  def prepare_user(username, organization_user = false, belongs_to_organization = false)
+    user = if organization_user && belongs_to_organization
+             organization.users.where.not(id: organization.owner.id).first
+           elsif organization_user
+             create_organization_with_users.owner
+           else
+             create(:valid_user).carto_user
+           end
 
-    user.stubs(:username => user_name, :organization_user? => org_user)
-
-    if org_user
-      org = mock
-      org.stubs(name: @org_name)
-      org.stubs(password_expiration_in_d: nil)
-      user.stubs(organization: org)
-      Organization.stubs(:where).with(name: @org_name).returns([org])
-      Organization.stubs(:where).with(name: @org_user_name).returns([org])
-      ::User.any_instance.stubs(:belongs_to_organization?).with(org).returns(belongs_to_org)
-    end
-
+    user.update!(username: username, quota_in_bytes: 10_000_000)
     user
   end
-
 end

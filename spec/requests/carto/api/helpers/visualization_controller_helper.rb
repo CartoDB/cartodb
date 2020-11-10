@@ -109,12 +109,12 @@ module VisualizationControllerHelper
   end
 
   def test_organization
-    organization = Organization.new
-    organization.name = unique_name('org')
-    organization.quota_in_bytes = 1234567890
-    organization.seats = 5
-    organization.builder_enabled = false
-    organization
+    Carto::Organization.new(
+      name: unique_name('org'),
+      quota_in_bytes: 1_234_567_890,
+      seats: 5,
+      builder_enabled: false
+    )
   end
 
   def create_geometry_table(user, the_geom)

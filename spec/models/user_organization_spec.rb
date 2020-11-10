@@ -10,7 +10,7 @@ describe UserOrganization do
     before(:each) do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
-      @organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      @organization = Carto::Organization.create(quota_in_bytes: 1_234_567_890, name: 'wadus', seats: 5)
 
       @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
     end
@@ -191,7 +191,7 @@ describe UserOrganization do
   it 'can assign an owner user having non-cartodbfied tables' do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
-    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'non-cartodbfied-org', seats: 5).save
+    @organization = Carto::Organization.create(quota_in_bytes: 1_234_567_890, name: 'non-cartodbfied-org', seats: 5)
     @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
     @owner.in_database.run('create table no_cartodbfied_table (test integer)')
 
@@ -214,7 +214,7 @@ describe UserOrganization do
     Carto::UserTable.stubs(:find_by_user_id_and_name).raises(StandardError.new("Simulation of table movement failure"))
     CartoDB::UserModule::DBService.any_instance.stubs(:move_schema_content_by_renaming).raises(StandardError.new("Simulation of table movement failure"))
 
-    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail', seats: 5).save
+    @organization = Carto::Organization.create(quota_in_bytes: 1_234_567_890, name: 'org-that-will-fail', seats: 5)
     @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
     @owner.in_database.run('create table no_cartodbfied_table (test integer)')
 
@@ -239,7 +239,7 @@ describe UserOrganization do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
 
-    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail-2', seats: 5).save
+    @organization = Carto::Organization.create(quota_in_bytes: 1_234_567_890, name: 'org-that-will-fail-2', seats: 5)
     @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
     @owner.in_database.run('create table no_cartodbfied_table (test integer)')
 
@@ -269,7 +269,12 @@ describe UserOrganization do
     ::User.any_instance.stubs(:update_in_central).returns(true)
 
     @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
-    @organization = Organization.new(quota_in_bytes: 1234567890, name: 'org-that-will-fail-3', seats: 5, owner_id: @owner.id).save
+    @organization = Carto::Organization.create(
+      quota_in_bytes: 1_234_567_890,
+      name: 'org-that-will-fail-3',
+      seats: 5,
+      owner_id: @owner.id
+    )
 
     @owner.in_database.run('create table no_cartodbfied_table (test integer)')
 

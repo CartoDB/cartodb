@@ -12,7 +12,7 @@ module Resque
         @queue = :users
 
         def self.perform(organization_id)
-          OrganizationMailer.quota_limit_reached(Organization.where(id: organization_id).first).deliver_now
+          OrganizationMailer.quota_limit_reached(Carto::Organization.find(organization_id)).deliver_now
         end
       end
 
@@ -36,7 +36,7 @@ module Resque
         @queue = :users
 
         def self.perform(organization_id)
-          OrganizationMailer.seat_limit_reached(Organization.where(id: organization_id).first).deliver_now
+          OrganizationMailer.seat_limit_reached(Carto::Organization.find(organization_id)).deliver_now
         end
       end
     end

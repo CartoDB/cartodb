@@ -49,7 +49,7 @@ shared_examples_for "user models" do
 
       twitter_search_conf['standard'] = custom_wadus
       @organization.twitter_datasource_enabled = false
-      @organization.save.reload
+      @organization.save!
       @org_user_1.twitter_datasource_enabled = true
       @org_user_1.save.reload
       twitter_search_conf['customized_user_list'] = []
@@ -59,7 +59,7 @@ shared_examples_for "user models" do
       twitter_search_conf['standard'] = {}
 
       @organization.twitter_datasource_enabled = false
-      @organization.save.reload
+      @organization.save!
       @org_user_1.twitter_datasource_enabled = false
       @org_user_1.save.reload
       twitter_search_conf['customized_user_list'] = []
@@ -68,7 +68,7 @@ shared_examples_for "user models" do
       get_user_by_id(@org_user_1.id).twitter_datasource_enabled.should == false
 
       @organization.twitter_datasource_enabled = true
-      @organization.save.reload
+      @organization.save!
       @org_user_1.twitter_datasource_enabled = false
       @org_user_1.save.reload
       twitter_search_conf['customized_user_list'] = []
@@ -77,7 +77,7 @@ shared_examples_for "user models" do
       get_user_by_id(@org_user_1.id).twitter_datasource_enabled.should == true
 
       @organization.twitter_datasource_enabled = false
-      @organization.save.reload
+      @organization.save!
       @org_user_1.twitter_datasource_enabled = true
       @org_user_1.save.reload
       twitter_search_conf['customized_user_list'] = [@org_user_1.username]
@@ -104,9 +104,9 @@ shared_examples_for "user models" do
 
     it 'takes into account geocodings performed by the org users #4033' do
       @organization.geocoding_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.geocoder_provider = 'heremaps'
-      @organization.owner.save.reload
+      @organization.owner.save!
 
       org_user_1_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(
         @org_user_1.username,
@@ -139,10 +139,10 @@ shared_examples_for "user models" do
       @user1.period_end_date = (Date.current + 1) << 1
       @user1.save.reload
       @organization.geocoding_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.period_end_date = (Date.current + 1) << 1
       @organization.owner.geocoder_provider = 'heremaps'
-      @organization.owner.save.reload
+      @organization.owner.save!
     end
 
     it 'calculates the used geocoder quota in the current billing cycle' do
@@ -225,10 +225,10 @@ shared_examples_for "user models" do
       @user1.isolines_provider = 'heremaps'
       @user1.save.reload
       @organization.here_isolines_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.period_end_date = (Date.current + 1) << 1
       @organization.owner.isolines_provider = 'heremaps'
-      @organization.owner.save.reload
+      @organization.owner.save!
     end
 
     it 'calculates the remaining quota for a non-org user correctly' do
@@ -267,10 +267,10 @@ shared_examples_for "user models" do
       @user1.isolines_provider = 'heremaps'
       @user1.save.reload
       @organization.here_isolines_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.period_end_date = (Date.current + 1) << 1
       @organization.owner.isolines_provider = 'heremaps'
-      @organization.owner.save.reload
+      @organization.owner.save!
     end
 
     it 'calculates the used here isolines quota in the current billing cycle' do
@@ -318,9 +318,9 @@ shared_examples_for "user models" do
       @user1.period_end_date = (Date.current + 1) << 1
       @user1.save.reload
       @organization.obs_snapshot_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.period_end_date = (Date.current + 1) << 1
-      @organization.owner.save.reload
+      @organization.owner.save!
     end
 
     it 'calculates the remaining quota for a non-org user correctly' do
@@ -358,9 +358,9 @@ shared_examples_for "user models" do
       @user1.period_end_date = (Date.current + 1) << 1
       @user1.save.reload
       @organization.obs_general_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.period_end_date = (Date.current + 1) << 1
-      @organization.owner.save.reload
+      @organization.owner.save!
     end
 
     it 'calculates the remaining quota for a non-org user correctly' do
@@ -398,9 +398,9 @@ shared_examples_for "user models" do
       @user1.period_end_date = (Date.current + 1) << 1
       @user1.save.reload
       @organization.obs_snapshot_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.period_end_date = (Date.current + 1) << 1
-      @organization.owner.save.reload
+      @organization.owner.save!
     end
 
     it 'calculates the used data observatory snapshot quota in the current billing cycle' do
@@ -448,9 +448,9 @@ shared_examples_for "user models" do
       @user1.period_end_date = (Date.current + 1) << 1
       @user1.save.reload
       @organization.obs_general_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.period_end_date = (Date.current + 1) << 1
-      @organization.owner.save.reload
+      @organization.owner.save!
     end
 
     it 'calculates the used data observatory general quota in the current billing cycle' do
@@ -500,10 +500,10 @@ shared_examples_for "user models" do
       @user1.save.reload
       @organization.routing_provider = 'mapbox'
       @organization.mapzen_routing_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.period_end_date = (Date.current + 1) << 1
       @organization.owner.routing_provider = 'mapbox'
-      @organization.owner.save.reload
+      @organization.owner.save!
     end
 
     it 'calculates the remaining quota for a non-org user correctly' do
@@ -547,10 +547,10 @@ shared_examples_for "user models" do
       @user1.save.reload
       @organization.routing_provider = 'mapbox'
       @organization.mapzen_routing_quota = 500
-      @organization.save.reload
+      @organization.save!
       @organization.owner.period_end_date = (Date.current + 1) << 1
       @organization.owner.routing_provider = 'mapbox'
-      @organization.owner.save.reload
+      @organization.owner.save!
     end
 
     it 'calculates the used mapzen routing quota in the current billing cycle' do

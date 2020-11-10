@@ -5,6 +5,17 @@ Development
 - None yet
 
 ### Features
+- None yet
+
+### Bug fixes / enhancements
+* Fix BigQuery connector not importing 0-bytes-processed datasets [#15916](https://github.com/CartoDB/cartodb/pull/15916)
+* Error importing geopackage files with multiple layers [#15907](https://github.com/CartoDB/cartodb/pull/15907)
+
+4.43.0 (2020-11-06)
+-------------------
+
+### Features
+* Fix dryrun connector end-point for org users ([#15918](https://github.com/CartoDB/cartodb/pull/15918))
 * Fix column sanitization for connector syncs ([#15885](https://github.com/CartoDB/cartodb/pull/15885))
 * Load config files as ERB templates to allow reading ENV values ([#15881](https://github.com/CartoDB/cartodb/pull/15881))
 * Add public website DO catalog integration ([#15908](https://github.com/CartoDB/cartodb/pull/15908), [#15911](https://github.com/CartoDB/cartodb/pull/15911), [#15912](https://github.com/CartoDB/cartodb/pull/15912))
@@ -26,7 +37,7 @@ Development
 * Migrate `Log` model to `ActiveRecord` [#15896](https://github.com/CartoDB/cartodb/pull/15896)
 * Fix KML importing error when the layers have slashes in their names [#15897](https://github.com/CartoDB/cartodb/pull/15897)
 * Create OAuth scope for reading/writing all datasets [#15884](https://github.com/CartoDB/cartodb/pull/15884)
-* Error importing geopackage files with multiple layers [#15907](https://github.com/CartoDB/cartodb/pull/15907)
+* Migrate `Organization` model to `ActiveRecord` [#15884](https://github.com/CartoDB/cartodb/pull/15884)
 
 4.42.0 (2020-09-28)
 -------------------

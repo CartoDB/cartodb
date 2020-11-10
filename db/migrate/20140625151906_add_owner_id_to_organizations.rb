@@ -1,7 +1,7 @@
 Sequel.migration do
   up do
     add_column :organizations, :owner_id, :uuid
-    Organization.send(:get_db_schema, true)
+    # Organization.send(:get_db_schema, true)
     ::User.filter(:organization_owner => true).all.each do |user|
       org = user.organization
       if org
@@ -15,13 +15,13 @@ Sequel.migration do
   down do
     add_column :users, :organization_owner, :boolean
     ::User.send(:get_db_schema, true)
-    Organization.all.each do |org|
-      user = User[org.owner_id]
-      if user
-        user.set(organization_owner: true)
-        user.save(:organization_owner)
-      end
-    end
+    # Organization.all.each do |org|
+    #   user = User[org.owner_id]
+    #   if user
+    #     user.set(organization_owner: true)
+    #     user.save(:organization_owner)
+    #   end
+    # end
     drop_column :organizations, :owner_id
   end
 end

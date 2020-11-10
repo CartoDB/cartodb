@@ -197,8 +197,10 @@ describe 'UserMigration' do
         import.run_import
 
         import.state.should eq 'complete'
-        Organization[@organization.id].users.first.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'st_text'").should eq 0
+        organization_user = @organization.users.first
+        deprecated_acls_count = organization_user.in_database.execute("SELECT COUNT(*) FROM pg_proc WHERE proname = 'st_text'")
 
+        expect(deprecated_acls_count.first['count'].to_i).to be_zero
       end
     end
   end

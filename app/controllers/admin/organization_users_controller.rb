@@ -10,10 +10,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
   # Data of single users
   ssl_required  :profile, :account, :oauth, :api_key, :regenerate_api_key
 
-  before_filter :get_config
-  before_filter :login_required, :check_permissions, :load_organization
-  before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
-  before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
+  before_action :get_config
+  before_action :login_required, :check_permissions, :load_organization
+  before_action :load_user, only: [:edit, :update, :destroy, :regenerate_api_key]
+  before_action :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
 
   layout 'application'
 
@@ -289,8 +289,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     raise RecordNotFound unless current_user.organization_admin?
   end
 
-  def get_user
-    @user = @organization.users_dataset.where(username: params[:id]).first
+  def load_user
+    @user = @organization.users.find_by(username: params[:id])&.sequel_user
     raise RecordNotFound unless @user
   end
 

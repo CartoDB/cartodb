@@ -13,7 +13,7 @@ describe Carto::OauthProvider::Scopes::AllDatasetsScope do
   let(:scope_string) { r_scope_string }
   let(:scope) { described_class.new(scope_string) }
   let(:user) { create(:valid_user).carto_user }
-  let!(:organization) { OrganizationFactory.new.create_organization_with_users.carto_organization }
+  let!(:organization) { OrganizationFactory.new.create_organization_with_users }
   let!(:org_admin) { organization.owner }
   let(:organization_user) { organization.users.where.not(id: org_admin.id).first }
   let(:tables_grants) { grants.find { |grant| grant[:type] == 'database' }[:tables] }

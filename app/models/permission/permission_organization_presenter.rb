@@ -2,7 +2,7 @@ module CartoDB
   class PermissionOrganizationPresenter
 
     def decorate(org_id)
-      org = Organization.where(id: org_id).first
+      org = Carto::Organization.find_by(id: org_id)
       return {} if org.nil?
       {
           id:         org.id,
@@ -13,4 +13,3 @@ module CartoDB
 
   end
 end
-

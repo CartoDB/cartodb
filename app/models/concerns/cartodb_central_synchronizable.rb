@@ -5,7 +5,7 @@ module CartodbCentralSynchronizable
   end
 
   def organization?
-    is_a?(::Organization) || is_a?(Carto::Organization)
+    is_a?(Carto::Organization)
   end
 
   # Can't be added to the model because if user creation begins at Central we can't know if user is the same or existing
@@ -174,7 +174,14 @@ module CartodbCentralSynchronizable
   def set_fields_from_central(params, action)
     return self unless params.present? && action.present?
 
-    set(params.slice(*allowed_attributes_from_central(action)))
+    changed_attributes = params.slice(*allowed_attributes_from_central(action))
+
+    if self.class.ancestors.include?(Sequel::Model)
+      set(changed_attributes)
+    else
+      changed_attributes.each { |attr, value| write_attribute(attr, value) }
+    end
+
     self.password = self.password_confirmation = params[:password] if user? && params.key?(:password)
 
     self

@@ -172,7 +172,7 @@ module CartoDB
       end
 
       if organization.present?
-        data[:organization] = organization.to_poro
+        data[:organization] = ::OrganizationPresenter.new(organization).to_poro
         data[:organization][:available_quota_for_user] = organization.unassigned_quota + quota_in_bytes
       end
 

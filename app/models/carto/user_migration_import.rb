@@ -128,22 +128,20 @@ module Carto
 
     def reconfigure_dataservices
       if org_import?
-        ::Organization[organization.id].owner.db_service.install_and_configure_geocoder_api_extension
+        organization.owner&.carto_user&.db_service&.install_and_configure_geocoder_api_extension
       else
         ::User[user.id].db_service.install_and_configure_geocoder_api_extension
       end
     end
 
     def reconfigure_aggregation_tables
-      u = org_import? ? ::Organization[organization.id].owner : ::User[user.id]
-      begin
-        u.db_service.connect_to_aggregation_tables
-      rescue StandardError => e
-        log_error(
-          message: 'Error refreshing aggregation tables', exception: e,
-          current_user: u, organization: u.organization, user_migration_import: self.attributes.slice(:id)
-        )
-      end
+      u = org_import? ? Carto::Organization.find(organization.id).owner : ::User[user.id]
+      u.sequel_user.db_service.connect_to_aggregation_tables
+    rescue StandardError => e
+      log_error(
+        message: 'Error refreshing aggregation tables', exception: e,
+        current_user: u, organization: u.organization, user_migration_import: self.attributes.slice(:id)
+      )
     end
 
     def import_visualizations(imported, package, service)

@@ -5,8 +5,7 @@ describe Carto::RedisExportService do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    sequel_organization = FactoryGirl.create(:organization)
-    @organization = Carto::Organization.find(sequel_organization.id)
+    @organization = create(:organization)
     @user = FactoryGirl.create(:carto_user)
   end
 

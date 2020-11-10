@@ -53,6 +53,13 @@ export default {
       selectedDatasets: []
     };
   },
+  beforeRouteEnter (to, from, next) {
+    next();
+    // Test reload to show sample progress
+    if (['catalog-dataset-summary', 'catalog-dataset-data'].indexOf(from.name) > -1) {
+      location.reload(true);
+    }
+  },
   beforeMount () {
     if (this.$store.getters['user/isViewer']) {
       // Redirect to shared datasets page if user is viewer

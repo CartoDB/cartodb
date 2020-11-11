@@ -19,9 +19,10 @@ module Carto
 
     private
     CONNECTOR_ERROR_PATTERN = /Connector(?:Runner)? Error(?:[^\s]+: ERROR:)?\s+(.+?)^\d\d\d\d-\d\d-\d\d/mi.freeze
+    GENERAL_ERROR_PATTERN = /Exception:\s+(.+?)^\d\d\d\d-\d\d-\d\d/mi.freeze
 
     def connector_error_message
-      match = CONNECTOR_ERROR_PATTERN.match(log&.entries)
+      match = CONNECTOR_ERROR_PATTERN.match(log&.entries) || GENERAL_ERROR_PATTERN.match(log&.entries)
       return unless match.present?
 
       {

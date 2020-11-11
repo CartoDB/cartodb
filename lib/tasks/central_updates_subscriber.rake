@@ -4,7 +4,8 @@ namespace :poc do
     include ::LoggerHelper
 
     message_broker = Carto::Common::MessageBroker.instance
-    subscription = message_broker.get_subscription(:central_cartodb_commands)
+    subscription_name = Carto::Common::MessageBroker::Config.instance.central_commands_subscription
+    subscription = message_broker.get_subscription(subscription_name)
     notifications_topic = message_broker.get_topic(:cartodb_central_notifications)
     central_user_commands = Carto::Subscribers::CentralUserCommands.new(notifications_topic)
 

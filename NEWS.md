@@ -8,7 +8,8 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-* Fix BigQuery connector not importing 0-bytes-processed datasets ([#15916]https://github.com/CartoDB/cartodb/pull/15916)
+* Fix BigQuery connector not importing 0-bytes-processed datasets [#15916](https://github.com/CartoDB/cartodb/pull/15916)
+* Error importing geopackage files with multiple layers [#15907](https://github.com/CartoDB/cartodb/pull/15907)
 
 4.43.0 (2020-11-06)
 -------------------
@@ -37,6 +38,7 @@ Development
 * Fix KML importing error when the layers have slashes in their names [#15897](https://github.com/CartoDB/cartodb/pull/15897)
 * Create OAuth scope for reading/writing all datasets [#15884](https://github.com/CartoDB/cartodb/pull/15884)
 * Migrate `Organization` model to `ActiveRecord` [#15884](https://github.com/CartoDB/cartodb/pull/15884)
+* Fix bug reassigning geocodings [#15924](https://github.com/CartoDB/cartodb/pull/15924)
 
 4.42.0 (2020-09-28)
 -------------------

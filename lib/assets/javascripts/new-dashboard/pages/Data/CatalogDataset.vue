@@ -1,14 +1,14 @@
 <template>
   <Page class="page--data" :class="{ 'website-page': publicWebsite }">
     <SecondaryNavigation v-if="!publicWebsite">
-      <a
-        class="catalogDetail__back title is-small"
+      <router-link
+        class="catalogDetail__catalog title is-small"
         :class="{ 'disabled': loading }"
-        href="javascript:history.back()"
+        :to="{ name: 'spatial-data-catalog' }"
       >
-        <img class="catalogDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
-        <span>{{ $t('Catalog.back') }}</span>
-      </a>
+        <img class="catalogDetail__catalog--icon" svg-inline src="../../assets/icons/common/back.svg"/>
+        <span>{{ $t('Catalog.name') }}</span>
+      </router-link>
     </SecondaryNavigation>
 
     <section v-if="loading" class="catalogDetail container grid">
@@ -35,7 +35,7 @@
       <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
         <transition name="fade">
           <div>
-            <div v-if="publicWebsite" class="catalogDetail__back">
+            <div v-if="publicWebsite" class="catalogDetail__catalog">
               <router-link
                 class="title is-small back-link"
                 :class="{ 'disabled': loading }"
@@ -178,7 +178,7 @@ export default {
 
 .catalogDetail {
 
-  &__back {
+  &__catalog {
     display: flex;
     align-items: center;
     padding: 24px 0;

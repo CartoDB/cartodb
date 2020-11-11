@@ -730,8 +730,7 @@
     "datasetSize": "Dataset size"
   },
   "Catalog": {
-    "name": "Spatial Data Catalog",
-    "back": "Back"
+    "name": "Spatial Data Catalog"
   },
   "Dialogs": {
     "ShareViaURL": {

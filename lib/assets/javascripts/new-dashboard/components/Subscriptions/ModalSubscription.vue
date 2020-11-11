@@ -317,7 +317,7 @@ export default {
       } else if (this.currentMode === 'cancelRequest') {
         return 'You are going to cancel the request to start the subscription process for the following dataset:';
       } else if (this.currentMode === 'connectingSample') {
-        return 'Your sample is being processed and will be available from <a href="./../../">Your Datasets</a> shortly.';
+        return 'Your sample is being processed and will be available from <a href="./../../../">Your Datasets</a> shortly.';
       }
     },
     getDescription () {

@@ -42,7 +42,7 @@ module CartoDB
 
       def connector
         @connector ||= Carto::Connector.new(
-          @parameters: @params, user: @user, logger: @log, previous_last_modified: @previous_last_modified
+          parameters: @params, user: @user, logger: @log, previous_last_modified: @previous_last_modified
         ).tap { |connector| connector.check_availability! }
       end
 

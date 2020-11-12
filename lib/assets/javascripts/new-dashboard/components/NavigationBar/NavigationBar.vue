@@ -53,7 +53,7 @@
           :messageHasHTML="true"
           @click.native="markPopupAsRead('dataObservatory.popupWasShown')"/>
 
-        <NotificationPopup
+        <!-- <NotificationPopup
           v-if="!popupWasShown('popups.directDBConnection') && hasDBFFActive"
           class="notification-popup"
           title="New Connection Feature"
@@ -66,7 +66,7 @@
           title="New database connectors"
           :message="`You can now import data from Snowflake and Amazon Redshift.<br>Please request access to the beta.<br><a href='${this.$router.resolve({name: 'datasets'}).href}'>Connect a new dataset!</a>`"
           :messageHasHTML="true"
-          @click.native="markPopupAsRead('popups.snowflakeRedshiftConnectors')"/>
+          @click.native="markPopupAsRead('popups.snowflakeRedshiftConnectors')"/> -->
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/close.svg" />
@@ -76,7 +76,6 @@
 </template>
 
 <script>
-import isAfter from 'date-fns/is_after';
 import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
 import NotificationPopup from '../Popups/NotificationPopup';

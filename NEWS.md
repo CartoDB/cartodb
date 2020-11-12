@@ -70,6 +70,7 @@ sudo make install
 * Fix bug reassigning geocodings [#15924](https://github.com/CartoDB/cartodb/pull/15924)
 * Migrate `SharedEntity`, `LayerNodeStyle` and `ExternalSource` to `ActiveRecord` [#15920](https://github.com/CartoDB/cartodb/pull/15920)
 * Fix broken Sequel <> ActiveRecord association [#15928](https://github.com/CartoDB/cartodb/pull/15928)
+* Speedup query to do ApiKey grants [#15927](https://github.com/CartoDB/cartodb/pull/15927)
 
 4.42.0 (2020-09-28)
 -------------------

@@ -26,12 +26,10 @@ describe CartoDB::Importer2::Overviews do
   include FeatureFlagHelper
 
   def overview_tables(user, table)
-    overviews = user.in_database do |db|
-      db.fetch %{
-        SELECT * FROM CDB_Overviews('#{table}'::regclass)
-      }
-    end
-    overviews.map(:overview_table)
+    user.carto_user
+        .in_database
+        .execute("SELECT * FROM CDB_Overviews('#{table}'::regclass)")
+        .map { |o| o['overview_table'] }
   end
 
   def has_overviews?(user, table)

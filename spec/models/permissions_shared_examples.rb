@@ -472,20 +472,20 @@ shared_examples_for 'permission models' do
       entity_id = @table_visualization.id
       permission = permission_from_visualization_id(entity_id)
       # Create old entries
-      CartoDB::SharedEntity.new(
-        recipient_id:   @user.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      entity_id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-      ).save
-      CartoDB::SharedEntity.new(
-        recipient_id:   @user2.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      entity_id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-      ).save
+      Carto::SharedEntity.create(
+        recipient_id: @user.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id: entity_id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
+      Carto::SharedEntity.create(
+        recipient_id: @user2.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id: entity_id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
 
-      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 2
+      Carto::SharedEntity.where(entity_id: entity_id).count.should eq 2
 
       # Leave only user 1
       permission.acl = [
@@ -501,8 +501,8 @@ shared_examples_for 'permission models' do
       # shared entry of user 2 should dissapear
       permission.save
 
-      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 1
-      shared_entity = CartoDB::SharedEntity.where(entity_id: entity_id).first
+      Carto::SharedEntity.where(entity_id: entity_id).count.should eq 1
+      shared_entity = Carto::SharedEntity.find_by(entity_id: entity_id)
       shared_entity.recipient_id.should eq @user.id
       shared_entity.entity_id.should eq entity_id
 
@@ -519,8 +519,8 @@ shared_examples_for 'permission models' do
       ]
       permission.save
 
-      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 1
-      shared_entity = CartoDB::SharedEntity.where(entity_id: entity_id).first
+      Carto::SharedEntity.where(entity_id: entity_id).count.should eq 1
+      shared_entity = Carto::SharedEntity.find_by(entity_id: entity_id)
       shared_entity.recipient_id.should eq @user2.id
       shared_entity.entity_id.should eq entity_id
 
@@ -537,8 +537,8 @@ shared_examples_for 'permission models' do
       ]
       permission.save
 
-      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 1
-      shared_entity = CartoDB::SharedEntity.where(entity_id: entity_id).first
+      Carto::SharedEntity.where(entity_id: entity_id).count.should eq 1
+      shared_entity = Carto::SharedEntity.find_by(entity_id: entity_id)
       shared_entity.recipient_id.should eq @user2.id
       shared_entity.entity_id.should eq entity_id
 
@@ -555,19 +555,19 @@ shared_examples_for 'permission models' do
       ]
       permission.save
 
-      CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 0
+      Carto::SharedEntity.where(entity_id: entity_id).count.should eq 0
     end
 
     it 'triggers table metadata update (to purgue caches, for example) if a permission is removed' do
       entity_id = @table_visualization.id
       permission = permission_from_visualization_id(entity_id)
 
-      CartoDB::SharedEntity.new(
-        recipient_id:   @user.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      entity_id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-      ).save
+      Carto::SharedEntity.create(
+        recipient_id: @user.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id: entity_id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      )
 
       permission.acl = [
         {

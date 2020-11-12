@@ -10,7 +10,6 @@ require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
 require_relative './data_import'
-require_relative './visualization/external_source'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
@@ -43,22 +42,12 @@ class User < Sequel::Model
   one_to_many :assets
   one_to_many :data_imports
   one_to_many :geocodings, order: Sequel.desc(:created_at)
-  many_to_one :organization
 
   many_to_many :layers, class: ::Layer, :order => :order, :after_add => proc { |user, layer|
     layer.set_default_order(user)
   }
 
-  def self_feature_flags_user
-    Carto::FeatureFlagsUser.where(user_id: id)
-  end
-
-  def self_feature_flags
-    Carto::FeatureFlag.where(id: self_feature_flags_user.pluck(:feature_flag_id))
-  end
-
   plugin :many_through_many
-  many_through_many :groups, [[:users_groups, :user_id, :group_id]]
 
   # Sequel setup & plugins
   plugin :association_dependencies, synchronization_oauths: :destroy
@@ -96,6 +85,34 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  ## AR compatibility until User is migrated
+  def organization
+    Carto::Organization.find_by(id: organization_id) if organization_id
+  end
+
+  def organization=(organization)
+    self.organization_id = organization&.id
+  end
+
+  def carto_user
+    persisted? ? Carto::User.find_by(id: id) : Carto::User.new(attributes)
+  end
+
+  def sequel_user
+    self
+  end
+
+  def self_feature_flags_user
+    Carto::FeatureFlagsUser.where(user_id: id)
+  end
+
+  def self_feature_flags
+    Carto::FeatureFlag.where(id: self_feature_flags_user.pluck(:feature_flag_id))
+  end
+
+  delegate :groups, to: :carto_user
+  ## ./AR compatibility until User is migrated
+
   def db_service
     @db_service ||= CartoDB::UserModule::DBService.new(self)
   end
@@ -125,7 +142,7 @@ class User < Sequel::Model
     validates_format /\A[a-z0-9]{1}/, :username, message: "must start with alphanumeric chars"
     validates_format /[a-z0-9]{1}\z/, :username, message: "must end with alphanumeric chars"
     validates_max_length 63, :username
-    errors.add(:name, 'is taken') if name_exists_in_organizations?
+    errors.add(:name, 'is taken') if Carto::Organization.exists?(name: username)
   end
 
   def validate_email
@@ -174,7 +191,7 @@ class User < Sequel::Model
         errors.add(:quota_in_bytes, "not enough disk quota")
       end
 
-      organization.validate_seats(self, errors)
+      organization.validate_seats_for_signup(self, errors)
     end
 
     errors.add(:viewer, "cannot be enabled for organization admin") if organization_admin? && viewer
@@ -351,24 +368,6 @@ class User < Sequel::Model
     Carto::UserMultifactorAuth.where(user_id: id)
   end
 
-  def shared_entities
-    CartoDB::SharedEntity.join(:visualizations, id: :entity_id).where(user_id: id)
-  end
-
-  def has_shared_entities?
-    # Right now, cannot delete users with entities shared with other users or the org.
-    shared_entities.first.present?
-  end
-
-  def ensure_nonviewer
-    # A viewer can't destroy data, this allows the cleanup. Down to dataset level
-    # to skip model hooks.
-    if viewer
-      this.update(viewer: false)
-      self.viewer = false
-    end
-  end
-
   def set_force_destroy
     @force_destroy = true
   end
@@ -490,7 +489,7 @@ class User < Sequel::Model
 
   def after_destroy
     unless @org_id_for_org_wipe.nil?
-      organization = Organization.where(id: @org_id_for_org_wipe).first
+      organization = Carto::Organization.find_by(id: @org_id_for_org_wipe)
       organization.destroy
     end
 
@@ -837,10 +836,6 @@ class User < Sequel::Model
 
   def rate_limit
     Carto::RateLimit.find(rate_limit_id) if rate_limit_id
-  end
-
-  def carto_account_type
-    Carto::AccountType.find(account_type)
   end
 
   # Returns an array representing the last 30 days, populated with api_calls
@@ -1284,16 +1279,6 @@ class User < Sequel::Model
     to.invite_token = make_token
   end
 
-  def regenerate_api_key(new_api_key = make_token)
-    invalidate_varnish_cache
-    update api_key: new_api_key
-  end
-
-  def regenerate_all_api_keys
-    regenerate_api_key
-    api_keys.regular.each(&:regenerate_token!)
-  end
-
   # This is set temporary on user creation with invitation,
   # or retrieved from database afterwards
   def invitation_token
@@ -1321,10 +1306,6 @@ class User < Sequel::Model
     destroy
   end
 
-  def carto_user
-    @carto_user ||= Carto::User.find(id)
-  end
-
   def create_api_keys
     carto_user.api_keys.create_master_key! unless carto_user.api_keys.master.exists?
     carto_user.api_keys.create_default_public_key! unless carto_user.api_keys.default_public.exists?
@@ -1346,7 +1327,7 @@ class User < Sequel::Model
   end
 
   def destroy_shared_with
-    CartoDB::SharedEntity.where(recipient_id: id).each do |se|
+    Carto::SharedEntity.where(recipient_id: id).find_each do |se|
       viz = Carto::Visualization.find(se.entity_id)
       permission = viz.permission
       permission.remove_user_permission(self)
@@ -1385,19 +1366,19 @@ class User < Sequel::Model
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_geocodings_to_organization_owner
-    return if organization.nil? || organization.owner.nil? || organization_owner?
-    geocodings_dataset.all.each do |g|
-      g.user = organization.owner
-      g.data_import_id = nil
-      g.save(raise_on_failure: true)
+    return if organization&.owner.blank? || organization_owner?
+
+    Carto::Geocoding.where(user_id: id).find_each do |geocoding|
+      geocoding.update!(user_id: organization.owner.id, data_import_id: nil)
     end
   rescue StandardError => e
-    log_error(exception: e, message: 'Error assigning geocodings to org owner', target_user: self)
+    log_error(
+      message: 'Error assigning geocodings to org owner',
+      exception: e,
+      target_user: self,
+      organization: organization
+    )
     geocodings.each(&:destroy)
-  end
-
-  def name_exists_in_organizations?
-    !Organization.where(name: self.username).first.nil?
   end
 
   def set_viewer_quotas

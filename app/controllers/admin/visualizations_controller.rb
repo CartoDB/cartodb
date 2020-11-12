@@ -499,7 +499,7 @@ class Admin::VisualizationsController < Admin::AdminController
     org_name = CartoDB.subdomain_from_request(request)
     if CartoDB.extract_subdomain(request) != org_name
       # Might be an org url, try getting the org
-      organization = Organization.where(name: org_name).first
+      organization = Carto::Organization.find_by(name: org_name)
       unless organization.nil?
         authenticated_users = request.session.to_hash.select { |k, _v|
           k.start_with?("warden.user") && !k.end_with?(".session")

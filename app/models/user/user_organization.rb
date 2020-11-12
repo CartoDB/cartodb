@@ -7,7 +7,7 @@ module CartoDB
       if !@owner.organization_id.nil? && @owner.organization_id != org_id
         raise "The user already has a organization and it's not #{org_id}"
       end
-      @organization = Organization.where(:id => org_id).first
+      @organization = Carto::Organization.find_by(id: org_id)
       raise "The user needs a organization" if @organization.nil?
       if !@organization.owner_id.nil? && @organization.owner_id != owner_id
         raise "The organization already has a owner and it's not #{owner_id}"
@@ -26,7 +26,6 @@ module CartoDB
       @organization.owner_id = @owner.id
       @organization.admin_email = @owner.email
       @organization.save
-      @owner.organization = @organization
 
       # WIP: CartoDB/cartodb-management#4467
       # Added after commenting it in setup_organization_user_schema to avoid configure_database to reset permissions
@@ -51,7 +50,7 @@ module CartoDB
     end
 
     def self.from_org_id(organization_id)
-      organization = Organization.where(:id => organization_id).first
+      organization = Carto::Organization.find_by(id: organization_id)
       raise "Organization with id #{org_id} does not exist" if organization.nil?
       return CartoDB::UserOrganization.new(organization.id, organization.owner_id)
     end
@@ -61,7 +60,7 @@ module CartoDB
     end
 
     def self.organization?(name)
-      return Organization.where(:username => name).count > 0 ? true : false
+      Carto::Organization.where(username: name).count.positive?
     end
 
     def self.user_belongs_to_organization?(name)

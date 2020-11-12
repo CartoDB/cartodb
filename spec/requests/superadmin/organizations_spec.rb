@@ -19,13 +19,13 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization create success" do
-    @org_atts = FactoryGirl.build(:organization).values
+    @org_atts = build(:organization).attributes
     post_json superadmin_organizations_path, { organization: @org_atts }, superadmin_headers do |response|
-      response.status.should == 201
-      response.body[:name].should == @org_atts[:name]
+      expect(response.status).to eq(201)
+      expect(response.body[:name]).to eq(@org_atts['name'])
 
       # Double check that the organization has been created properly
-      organization = Organization.filter(:name => @org_atts[:name]).first
+      organization = Carto::Organization.find_by(name: @org_atts['name'])
       organization.should be_present
       organization.id.should == response.body[:id]
       organization.destroy
@@ -38,11 +38,11 @@ feature "Superadmin's organization API" do
     org_atts[:owner_id] = user.id
 
     post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
-      response.status.should == 201
-      response.body[:name].should == org_atts[:name]
+      expect(response.status).to eq(201)
+      expect(response.body[:name]).to eq(org_atts['name'])
 
       # Double check that the organization has been created properly
-      organization = Organization.filter(name: org_atts[:name]).first
+      organization = Carto::Organization.find_by(name: org_atts['name'])
       organization.should be_present
       organization.id.should == response.body[:id]
 
@@ -64,7 +64,7 @@ feature "Superadmin's organization API" do
     post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
       response.status.should == 500
 
-      Organization.filter(name: org_atts[:name]).first.should be_nil
+      Carto::Organization.find_by(name: org_atts[:name]).should be_nil
       user.reload
       user.organization_id.should be_nil
     end
@@ -78,7 +78,7 @@ feature "Superadmin's organization API" do
     put_json superadmin_organization_path(@organization1), { :organization => { :display_name => "Update Test", :map_view_quota => 800000 } }, superadmin_headers do |response|
       response.status.should == 204
     end
-    organization = Organization[@organization1.id]
+    organization = Carto::Organization.find(@organization1.id)
     organization.display_name.should == "Update Test"
     organization.map_view_quota.should == 800000
   end
@@ -98,7 +98,7 @@ feature "Superadmin's organization API" do
       delete_json superadmin_organization_path(@organization), {}, superadmin_headers do |response|
         response.status.should eq 204
       end
-      Organization[@organization.id].should be_nil
+      Carto::Organization.find_by(id: @organization.id).should be_nil
     end
   end
 
@@ -112,7 +112,7 @@ feature "Superadmin's organization API" do
   describe "GET /superadmin/organization" do
 
     it "gets all organizations" do
-      Organization.where(owner_id: nil).each(&:delete)
+      Carto::Organization.where(owner_id: nil).destroy_all
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|
         response.status.should == 200
         response.body.map { |u| u["name"] }.should include(@organization1.name, @organization2.name)

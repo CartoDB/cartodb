@@ -254,7 +254,8 @@ describe Admin::VisualizationsController do
     end
 
     it 'returns public map for org users' do
-      org = OrganizationFactory.new.new_organization.save
+      org = OrganizationFactory.new.new_organization
+      org.save
 
       user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
@@ -268,7 +269,8 @@ describe Admin::VisualizationsController do
     end
 
     it 'go to password protected page if the organization viz is password protected' do
-      org = OrganizationFactory.new.new_organization.save
+      org = OrganizationFactory.new.new_organization
+      org.save
 
       user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
@@ -546,7 +548,7 @@ describe Admin::VisualizationsController do
 
       # --------TEST ITSELF-----------
 
-      org = Organization.new
+      org = Carto::Organization.new
       org.name = 'vis-spec-org-2'
       org.quota_in_bytes = 1024 ** 3
       org.seats = 10
@@ -654,7 +656,7 @@ describe Admin::VisualizationsController do
 
       # --------TEST ITSELF-----------
 
-      org = Organization.new
+      org = Carto::Organization.new
       org.name = 'vis-spec-org'
       org.quota_in_bytes = 1024**3
       org.seats = 10

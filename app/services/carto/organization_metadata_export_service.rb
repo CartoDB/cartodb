@@ -50,13 +50,8 @@ module Carto
 
     private
 
-    def save_imported_organization(organization)
-      organization.save!
-      ::Organization[organization.id].after_save
-    end
-
     def build_organization_from_hash(exported_organization)
-      organization = Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES - [:id]))
+      organization = Carto::Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES - [:id]))
       organization.assets = exported_organization[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
       organization.groups = exported_organization[:groups].map { |group| build_group_from_hash(group.symbolize_keys) }
       organization.notifications = exported_organization[:notifications].map do |notification|
@@ -86,7 +81,7 @@ module Carto
     end
 
     def build_group_from_hash(exported_group)
-      g = Group.new_instance_without_validation(
+      g = Carto::Group.new_instance_without_validation(
         name: exported_group[:name],
         display_name: exported_group[:display_name],
         database_role: exported_group[:database_role],
@@ -237,7 +232,7 @@ module Carto
     def import_from_directory(meta_path)
       # Import organization
       organization = load_organization_from_directory(meta_path)
-      raise OrganizationAlreadyExists.new if ::Carto::Organization.exists?(id: organization.id)
+      raise OrganizationAlreadyExists.new if Carto::Organization.exists?(id: organization.id)
 
       organization_redis_file = redis_filename(meta_path)
       Carto::RedisExportService.new.restore_redis_from_json_export(File.read(organization_redis_file))
@@ -250,7 +245,7 @@ module Carto
       oauth_app_organizations = organization.oauth_app_organizations.map(&:clone)
       organization.oauth_app_organizations.clear
 
-      save_imported_organization(organization)
+      organization.save!
 
       user_list = get_user_list(meta_path)
 

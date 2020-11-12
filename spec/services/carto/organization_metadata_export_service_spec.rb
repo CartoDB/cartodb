@@ -1,54 +1,41 @@
 require 'spec_helper_min'
 require 'factories/carto_visualizations'
+require './spec/support/factories/organizations'
 
 describe Carto::OrganizationMetadataExportService do
   include NamedMapsHelper
   include Carto::Factories::Visualizations
   include TableSharing
+  include CartoDB::Factories
 
-  before(:all) do
-    @connector_provider = FactoryGirl.create(:connector_provider)
-    user = FactoryGirl.create(:carto_user)
-    @oauth_app = FactoryGirl.create(:oauth_app, user: user)
+  let!(:organization) { create_organization_with_users }
+  let(:owner) { organization.owner }
+  let(:non_owner) { organization.users.reject(&:organization_owner?).first }
+  let!(:asset) { create(:organization_asset, organization: organization) }
+  let!(:group) do
+    group = create(:carto_group, organization: organization)
+    group.add_user(non_owner.username)
+    group
   end
-
-  after(:all) do
-    @connector_provider.destroy
+  let!(:notification) do
+    notification = create(:notification, organization: organization)
+    notification.received_notifications.find_by_user_id(owner.id).update_attribute(:read_at, DateTime.now)
+    notification
   end
-
-  def create_organization_with_dependencies
-    @sequel_organization = FactoryGirl.create(:organization_with_users, password_expiration_in_d: 365)
-    @organization = Carto::Organization.find(@sequel_organization.id)
-    @owner = @organization.owner
-    @non_owner = @organization.users.reject(&:organization_owner?).first
-
-    @map, @table, @table_visualization, @visualization = create_full_visualization(@non_owner)
-    share_visualization_with_user(@table_visualization, @owner)
-
-    @asset = FactoryGirl.create(:organization_asset, organization: @organization)
-
-    @group = FactoryGirl.create(:carto_group, organization: @organization)
-    @group.add_user(@non_owner.username)
-
-    notification = FactoryGirl.create(:notification, organization: @organization)
-    notification.received_notifications.find_by_user_id(@owner.id).update_attribute(:read_at, DateTime.now)
-
-    CartoDB::GeocoderUsageMetrics.new(@owner.username, @organization.name).incr(:geocoder_here, :success_responses)
-
-    FactoryGirl.create(:connector_configuration, connector_provider: @connector_provider, organization: @organization)
-
-    @organization.reload
-  end
+  let(:table_visualization) { create_full_visualization(non_owner)[2] }
+  let!(:connector_provider) { create(:connector_provider) }
+  let(:user) { create(:carto_user) }
+  let!(:oauth_app) { create(:oauth_app, user: user) }
 
   def destroy_organization
     clean_redis
-    @organization.groups.each(&:destroy)
-    @organization.groups.clear
-    Organization[@organization.id].destroy_cascade
+    organization.groups.each(&:destroy)
+    organization.groups.clear
+    organization.reload.destroy_cascade
   end
 
   def clean_redis
-    gum = CartoDB::GeocoderUsageMetrics.new(@owner.username, @organization.name)
+    gum = CartoDB::GeocoderUsageMetrics.new(owner.username, organization.name)
     $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
     $users_metadata.DEL(gum.send(:org_key_prefix, :geocoder_here, :success_responses, DateTime.now))
   end
@@ -56,32 +43,30 @@ describe Carto::OrganizationMetadataExportService do
   let(:service) { Carto::OrganizationMetadataExportService.new }
 
   describe '#organization export' do
-    before(:all) do
-      create_organization_with_dependencies
-    end
-
-    after(:all) do
-      destroy_organization
+    before do
+      share_visualization_with_user(table_visualization, owner)
+      CartoDB::GeocoderUsageMetrics.new(owner.username, organization.name).incr(:geocoder_here, :success_responses)
+      create(:connector_configuration, connector_provider: connector_provider, organization: organization)
     end
 
     it 'exports' do
-      export = service.export_organization_json_hash(@organization)
+      export = service.export_organization_json_hash(organization)
 
-      expect_export_matches_organization(export[:organization], @organization)
+      expect_export_matches_organization(export[:organization], organization)
     end
 
     it 'includes all user model attributes' do
-      export = service.export_organization_json_hash(@organization)
+      export = service.export_organization_json_hash(organization)
 
-      expect(export[:organization].keys).to include(*@organization.attributes.symbolize_keys.keys)
+      expect(export[:organization].keys).to include(*organization.attributes.symbolize_keys.keys)
     end
 
     it 'exports notifications and received notifications' do
-      export = service.export_organization_json_hash(@organization)
+      export = service.export_organization_json_hash(organization)
 
       exported_notifications = export[:organization][:notifications]
       exported_notifications.length.should eq 1
-      exported_notifications.first[:received_by].length.should eq @organization.users.length
+      exported_notifications.first[:received_by].length.should eq organization.users.length
     end
   end
 
@@ -117,44 +102,49 @@ describe Carto::OrganizationMetadataExportService do
   describe '#full export + import (organization, users and visualizations)' do
     it 'export + import organization, users and visualizations' do
       Dir.mktmpdir do |path|
-        create_organization_with_dependencies
-        service.export_to_directory(@organization, path)
-        source_organization = @organization.attributes
-        source_users = @organization.users.map(&:attributes)
-        source_groups = @organization.groups.map(&:attributes)
-        source_group_users = @group.users.map(&:id)
-        source_assets = @organization.assets.map(&:attributes)
+        share_visualization_with_user(table_visualization, owner)
+        CartoDB::GeocoderUsageMetrics.new(owner.username, organization.name).incr(:geocoder_here, :success_responses)
+        create(:connector_configuration, connector_provider: connector_provider, organization: organization)
+
+        organization.reload
+        service.export_to_directory(organization, path)
+        source_organization = organization.attributes
+        source_users = organization.users.order(username: :asc).map(&:attributes)
+        source_groups = organization.groups.map(&:attributes)
+        source_group_users = group.users.map(&:id)
+        source_assets = organization.assets.map(&:attributes)
         expect(source_assets).not_to be_empty
-        source_notifications = @organization.notifications.map(&:attributes)
-        source_received_notifications = @organization.notifications.map { |n|
+        source_notifications = organization.notifications.map(&:attributes)
+        source_received_notifications = organization.notifications.map { |n|
           [n.id, n.received_notifications.map(&:attributes)]
         }.to_h
 
         # Destroy, keeping the database
         clean_redis
         Table.any_instance.stubs(:remove_table_from_user_database)
-        @organization.notifications.each(&:destroy)
-        @organization.assets.each { |a| a.update_attribute(:storage_info, nil) } # Avoids remote deletion attempt
-        @organization.assets.each(&:delete)
-        @organization.assets.clear
-        @organization.users.flat_map(&:visualizations).each(&:destroy)
-        @organization.users.each do |u|
+        organization.notifications.each(&:destroy)
+        organization.assets.each { |a| a.update_attribute(:storage_info, nil) } # Avoids remote deletion attempt
+        organization.assets.each(&:delete)
+        organization.assets.clear
+        organization.users.flat_map(&:visualizations).each(&:destroy)
+        organization.users.each do |u|
           sequel_user = ::User[u.id]
           sequel_user.client_application.access_tokens.each(&:destroy)
           sequel_user.client_application.destroy
           u.destroy
         end
-        @organization.groups.each(&:destroy)
-        @organization.groups.clear
-        @organization.destroy
+        organization.groups.each(&:destroy)
+        organization.groups.clear
+        organization.destroy
 
         imported_organization = service.import_from_directory(path)
         service.import_metadata_from_directory(imported_organization, path)
+        imported_organization.reload
 
         compare_excluding_dates(imported_organization.attributes, source_organization)
 
         expect(imported_organization.users.count).to eq source_users.count
-        imported_organization.users.zip(source_users).each do |u1, u2|
+        imported_organization.users.order(username: :asc).zip(source_users).each do |u1, u2|
           compare_excluding_dates(u1.attributes, u2)
         end
 
@@ -413,12 +403,12 @@ describe Carto::OrganizationMetadataExportService do
             updated_at: DateTime.now,
             enabled: true,
             max_rows: 100000,
-            provider_name: @connector_provider.name
+            provider_name: connector_provider.name
           }
         ],
         oauth_app_organizations: [
           {
-            oauth_app_id: @oauth_app.id,
+            oauth_app_id: oauth_app.id,
             seats: 5,
             created_at: "2018-11-16T14:31:46+00:00",
             updated_at: "2018-11-17T16:41:56+00:00"

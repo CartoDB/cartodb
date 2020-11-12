@@ -250,7 +250,8 @@ class Layer < Sequel::Model
   end
 
   def current_layer_node_style
-    return nil unless source_id
-    LayerNodeStyle.find(layer_id: id, source_id: source_id) || LayerNodeStyle.new(layer: self, source_id: source_id)
+    return unless source_id
+
+    Carto::LayerNodeStyle.find_or_initialize_by(layer_id: id, source_id: source_id)
   end
 end

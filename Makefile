@@ -229,7 +229,6 @@ WORKING_SPECS_9 = \
 	spec/models/asset_spec.rb \
 	spec/models/access_token_spec.rb \
 	spec/requests/carto/api/permissions_controller_spec.rb \
-	spec/models/shared_entity_spec.rb \
 	spec/models/carto/shared_entity_spec.rb \
 	spec/requests/signup_controller_spec.rb \
 	spec/requests/account_tokens_controller_spec.rb \

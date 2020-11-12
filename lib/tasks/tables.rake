@@ -58,7 +58,7 @@ namespace :cartodb do
       end
 
       # Then, remove permissions of everything they have access to
-      CartoDB::SharedEntity.where(recipient_id: user.id).each do |shared_entity|
+      Carto::SharedEntity.where(recipient_id: user.id).find_each do |shared_entity|
         Carto::Permission.find_each(entity_id: shared_entity.entity_id) do |permission|
           acl = permission.acl
           puts "Dropping permission from: #{permission.acl}"

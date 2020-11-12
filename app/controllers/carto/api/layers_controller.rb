@@ -263,11 +263,8 @@ module Carto
         if from_letter != to_letter
           # Dragging middle node: rename the moved node
           node_id_to_fix = to_source.gsub(to_letter, from_letter)
-          style_node = ::LayerNodeStyle.where(layer_id: from_layer.id, source_id: node_id_to_fix).first
-          if style_node
-            style_node.source_id = to_source
-            style_node.save
-          end
+          Carto::LayerNodeStyle.find_by(layer_id: from_layer.id, source_id: node_id_to_fix)
+                               &.update(source_id: to_source)
         else
           # Dragging head node: remove unneeded old styles in the old layer
           from_layer.reload

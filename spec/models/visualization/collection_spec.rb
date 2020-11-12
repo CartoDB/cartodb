@@ -74,14 +74,12 @@ describe Visualization::Collection do
       vis2 = Visualization::Member.new(random_attributes_for_vis_member(name: vis_2_name, user_id: @user_2.id)).store
       vis3 = Visualization::Member.new(random_attributes_for_vis_member(name: vis_3_name, user_id: @user_2.id)).store
 
-      shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user_1.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      vis2.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      Carto::SharedEntity.create(
+        recipient_id: @user_1.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id: vis2.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
-      shared_entity.save
-      shared_entity.reload
 
       collection = Visualization::Collection.new
       collection.stubs(:user_shared_vis).with(@user_1.id).returns([vis2.id])
@@ -154,20 +152,18 @@ describe Visualization::Collection do
                                                                  user_id: @user_1.id,
                                                                  locked:  false)).store
 
-      shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user_1.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      vis2.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      Carto::SharedEntity.create(
+        recipient_id: @user_1.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id: vis2.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
-      shared_entity.save
-      shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user_1.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      vis3.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      Carto::SharedEntity.create(
+        recipient_id: @user_1.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id: vis3.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
-      shared_entity.save
 
       collection = Visualization::Collection.new
       collection.stubs(:user_shared_vis).with(@user_1.id).returns([vis2.id, vis3.id])
@@ -348,14 +344,12 @@ describe Visualization::Collection do
       vis_user2 = Visualization::Member.new(random_attributes(name: vis_3_name, user_id: @user_2.id)).store
       vis2_user2 = Visualization::Member.new(random_attributes(name: vis_4_name, user_id: @user_2.id)).store
 
-      shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user_1.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      vis_user2.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      Carto::SharedEntity.create(
+        recipient_id: @user_1.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id: vis_user2.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
-      shared_entity.save
-      shared_entity.reload
 
       collection = Visualization::Collection.new
       collection.stubs(:user_shared_vis).with(@user_1.id).returns([vis_user2.id])

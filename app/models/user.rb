@@ -10,7 +10,6 @@ require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
 require_relative './data_import'
-require_relative './visualization/external_source'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
@@ -1328,7 +1327,7 @@ class User < Sequel::Model
   end
 
   def destroy_shared_with
-    CartoDB::SharedEntity.where(recipient_id: id).each do |se|
+    Carto::SharedEntity.where(recipient_id: id).find_each do |se|
       viz = Carto::Visualization.find(se.entity_id)
       permission = viz.permission
       permission.remove_user_permission(self)

@@ -40,6 +40,7 @@ Development
 * Migrate `Organization` model to `ActiveRecord` [#15884](https://github.com/CartoDB/cartodb/pull/15884)
 * Fix bug reassigning geocodings [#15924](https://github.com/CartoDB/cartodb/pull/15924)
 * Migrate `SharedEntity`, `LayerNodeStyle` and `ExternalSource` to `ActiveRecord` [#15920](https://github.com/CartoDB/cartodb/pull/15920)
+* Fix broken Sequel <> ActiveRecord association [#15928](https://github.com/CartoDB/cartodb/pull/15928)
 
 4.42.0 (2020-09-28)
 -------------------

@@ -1,6 +1,5 @@
 require 'rollbar'
 require_relative '../../models/carto/visualization'
-require_relative '../../models/carto/external_source'
 require_relative '../../models/common_data/singleton'
 
 module CartoDB
@@ -100,7 +99,7 @@ module CartoDB
                 added += 1
               end
 
-              external_source = Carto::ExternalSource.where(visualization_id: visualization.id).first
+              external_source = Carto::ExternalSource.find_by(visualization_id: visualization.id)
               if external_source
                 if external_source.update_data(
                   dataset['url'],
@@ -112,7 +111,7 @@ module CartoDB
                   external_source.save!
                 end
               else
-                external_source = Carto::ExternalSource.create(
+                Carto::ExternalSource.create(
                   visualization_id: visualization.id,
                   import_url: dataset['url'],
                   rows_counted: dataset['rows'],

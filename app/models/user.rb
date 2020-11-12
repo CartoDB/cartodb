@@ -10,7 +10,6 @@ require_relative './user/user_organization'
 require_relative './synchronization/collection.rb'
 require_relative '../services/visualization/common_data_service'
 require_relative './data_import'
-require_relative './visualization/external_source'
 require_relative '../../lib/cartodb/stats/api_calls'
 require_relative '../../lib/carto/http/client'
 require_dependency 'cartodb_config_utils'
@@ -1328,7 +1327,7 @@ class User < Sequel::Model
   end
 
   def destroy_shared_with
-    CartoDB::SharedEntity.where(recipient_id: id).each do |se|
+    Carto::SharedEntity.where(recipient_id: id).find_each do |se|
       viz = Carto::Visualization.find(se.entity_id)
       permission = viz.permission
       permission.remove_user_permission(self)
@@ -1367,14 +1366,18 @@ class User < Sequel::Model
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_geocodings_to_organization_owner
-    return if organization.nil? || organization.owner.nil? || organization_owner?
-    geocodings_dataset.all.each do |g|
-      g.user = organization.owner
-      g.data_import_id = nil
-      g.save(raise_on_failure: true)
+    return if organization&.owner.blank? || organization_owner?
+
+    Carto::Geocoding.where(user_id: id).find_each do |geocoding|
+      geocoding.update!(user_id: organization.owner.id, data_import_id: nil)
     end
   rescue StandardError => e
-    log_error(exception: e, message: 'Error assigning geocodings to org owner', target_user: self)
+    log_error(
+      message: 'Error assigning geocodings to org owner',
+      exception: e,
+      target_user: self,
+      organization: organization
+    )
     geocodings.each(&:destroy)
   end
 

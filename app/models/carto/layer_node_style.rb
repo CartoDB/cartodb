@@ -2,6 +2,7 @@ require_dependency 'carto/carto_json_serializer'
 
 module Carto
   class LayerNodeStyle < ActiveRecord::Base
+
     belongs_to :layer
 
     serialize :options, CartoJsonSymbolizerSerializer
@@ -19,5 +20,6 @@ module Carto
       self.tooltip = layer.tooltip || {}
       self.options = layer.options.symbolize_keys.slice(*OPTIONS_TO_COPY)
     end
+
   end
 end

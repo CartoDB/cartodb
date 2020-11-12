@@ -1,5 +1,4 @@
 require_relative './member'
-require_relative './external_source'
 
 module CartoDB
   module Visualization
@@ -129,7 +128,7 @@ module CartoDB
       def external_source_data_for(visualization)
         return {} unless visualization.type == Member::TYPE_REMOTE
 
-        external_source = Carto::ExternalSource.where(visualization_id: visualization.id).first
+        external_source = Carto::ExternalSource.find_by(visualization_id: visualization.id)
         return {} unless external_source.present?
 
         {

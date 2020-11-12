@@ -528,13 +528,12 @@ describe Carto::Visualization do
         visualization = FactoryGirl.build(:carto_visualization,
                                           user: @carto_org_user_1,
                                           privacy: Carto::Visualization::PRIVACY_LINK.upcase)
-        shared_entity = CartoDB::SharedEntity.new(
+        Carto::SharedEntity.create(
           recipient_id: @carto_org_user_2.id,
-          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+          recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
           entity_id: visualization.id,
-          entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+          entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
         )
-        shared_entity.save
         visualization.permission.acl = [
           {
             type: Carto::Permission::TYPE_USER,
@@ -580,13 +579,12 @@ describe Carto::Visualization do
         visualization = FactoryGirl.build(:carto_visualization,
                                           user: @carto_org_user_1,
                                           privacy: Carto::Visualization::PRIVACY_LINK.upcase)
-        shared_entity = CartoDB::SharedEntity.new(
+        Carto::SharedEntity.create(
           recipient_id: @carto_org_user_2.id,
-          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+          recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
           entity_id: visualization.id,
-          entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+          entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
         )
-        shared_entity.save
         visualization.permission.acl = [
           {
             type: Carto::Permission::TYPE_USER,

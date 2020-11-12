@@ -225,7 +225,6 @@ spec/requests/carto/api/data_import_presenter_spec.rb
 spec/queries/carto/visualization_query_searcher_spec.rb
 spec/models/synchronization/synchronization_oauth_spec.rb
 spec/models/synchronization/collection_spec.rb
-spec/models/shared_entity_spec.rb
 spec/models/platform-limits/user_concurrent_syncs_amount_spec.rb
 spec/models/platform-limits/user_concurrent_imports_amount_spec.rb
 spec/models/carto/user_service_spec.rb

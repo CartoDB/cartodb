@@ -153,7 +153,7 @@ module Carto
 
     def destroy_shared_with
       if transaction_include_any_action?([:destroy])
-        Carto::SharedEntity.where(recipient_id: id).each do |se|
+        Carto::SharedEntity.where(recipient_id: id).find_each do |se|
           viz = Carto::Visualization.find(se.entity_id)
           permission = viz.permission
           permission.remove_group_permission(self)

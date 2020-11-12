@@ -1,7 +1,6 @@
 require 'set'
 require_relative './member'
 require_relative './overlays'
-require_relative '../shared_entity'
 require_relative '../../../services/data-repository/structures/collection'
 
 module CartoDB
@@ -180,19 +179,18 @@ module CartoDB
 
       def user_shared_entities_count(type = nil)
         type ||= @type
-        user_shared_count = CartoDB::SharedEntity.select(:entity_id)
-        .where(recipient_id: @user_id,
-               entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
-               recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER)
-        if type.nil?
-          user_shared_count = user_shared_count.join(:visualizations,
-                                                     visualizations__id: :entity_id)
-        else
-          user_shared_count = user_shared_count.join(:visualizations,
-                                                     visualizations__id: :entity_id,
-                                                     type: type)
-        end
-        user_shared_count.count
+        entities = Carto::SharedEntity.select(:entity_id)
+                                      .where(
+                                        recipient_id: @user_id,
+                                        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION,
+                                        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER
+                                      )
+        entities = if type.nil?
+                     entities.joins(:visualization, visualizations__id: :entity_id)
+                   else
+                     entities.joins(:visualization, visualizations__id: :entity_id, type: type)
+                   end
+        entities.count
       end
 
       def organization_shared_entities_count(type)
@@ -201,19 +199,18 @@ module CartoDB
         if user.nil? || user.organization.nil?
           0
         else
-          org_shared_count = CartoDB::SharedEntity.select(:entity_id)
-          .where(:recipient_id => user.organization_id,
-                 :entity_type => CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION,
-                 :recipient_type => CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION)
-          if type.nil?
-            org_shared_count = org_shared_count.join(:visualizations,
-                                                     visualizations__id: :entity_id)
-          else
-            org_shared_count = org_shared_count.join(:visualizations,
-                                                     visualizations__id: :entity_id,
-                                                     type: type)
-          end
-          org_shared_count.count
+          entities = Carto::SharedEntity.select(:entity_id)
+                                        .where(
+                                          recipient_id: user.organization_id,
+                                          entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION,
+                                          recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_ORGANIZATION
+                                        )
+          entities = if type.nil?
+                       entities.join(:visualizations, visualizations__id: :entity_id)
+                     else
+                       entities.join(:visualizations, visualizations__id: :entity_id, type: type)
+                     end
+          entities.count
         end
       end
 
@@ -465,13 +462,10 @@ module CartoDB
           end
         }
 
-        CartoDB::SharedEntity.where(
-            recipient_id: recipient_ids,
-            entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-        ).all
-        .map { |entity|
-          entity.entity_id
-        }
+        Carto::SharedEntity.where(
+          recipient_id: recipient_ids,
+          entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        ).pluck(:entity_id)
       end
 
       def user_liked_vis(user_id)

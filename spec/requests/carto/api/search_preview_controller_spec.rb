@@ -20,13 +20,12 @@ describe Carto::Api::TagsController do
       shared_visualization = table.table_visualization
       shared_visualization.tags = ["shared-tag"]
       shared_visualization.save
-      shared_entity = CartoDB::SharedEntity.new(
+      Carto::SharedEntity.create(
         recipient_id: @user1.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
         entity_id: shared_visualization.id,
-        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
-      shared_entity.save
 
       @base_url = "#{@user1.username}.localhost.lan"
       host! @base_url

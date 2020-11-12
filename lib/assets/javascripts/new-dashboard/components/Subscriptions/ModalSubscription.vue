@@ -200,18 +200,16 @@
               </Button>
           </router-link>
 
-          <router-link
-            v-else-if="currentMode === 'connectingSample'"
-            :to="{ name: 'datasets' }">
-              <Button
-                @click.native="closeModal()"
-                class="u-ml--16"
-                :color="'green'"
-              >
-                <img class="u-mr--12" src="../../assets/icons/catalog/check_white.svg" alt="check" />
-                Go to Your Datasets
-              </Button>
-          </router-link>
+          <a v-else-if="currentMode === 'connectingSample'" href="./../../../">
+            <Button
+              @click.native="closeModal()"
+              class="u-ml--16"
+              :color="'green'"
+            >
+              <img class="u-mr--12" src="../../assets/icons/catalog/check_white.svg" alt="check" />
+              Go to Your Datasets
+            </Button>
+          </a>
 
         </div>
         <div class="grid u-flex__justify--center u-mt--24">

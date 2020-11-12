@@ -79,7 +79,8 @@
         "link": "Your Link-shared Datasets",
         "password": "Your Password-protected Datasets",
         "private": "Your Private Datasets",
-        "subscribed": "Your Subscribed Datasets"
+        "subscribed": "Your Subscribed Datasets",
+        "sample": "Your Sample Datasets"
       },
       "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}' class='is-bold'>Upgrade now</a> to get more datasets."
     },
@@ -175,7 +176,8 @@
       "passwordPrivacy": "Password",
       "builderType": "Builder",
       "kuvizType": "CARTOframes",
-      "subscribed": "Subscriptions ({count})"
+      "subscribed": "Subscriptions ({count})",
+      "sample": "Samples ({count})"
     }
   },
   "DatasetCard": {

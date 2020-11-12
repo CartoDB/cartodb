@@ -26,7 +26,8 @@ export default {
       default () {
         return {
           total_shared: 0,
-          total_subscriptions: 0
+          total_subscriptions: 0,
+          total_samples: 0
         };
       }
     }

@@ -8,13 +8,13 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: bdc21db9672228714143a979ebd2e7a2afce1476
-  tag: v0.4.2
+  revision: 8c391c621cbccf8dffff96349801c4d770472d6a
+  tag: v0.4.4
   specs:
-    cartodb-common (0.4.2)
-      activesupport
+    cartodb-common (0.4.4)
+      activesupport (>= 4, < 6)
       argon2 (~> 2)
-      google-cloud-pubsub (~> 1.2.0)
+      google-cloud-pubsub (~> 1.2)
 
 GIT
   remote: https://github.com/kuldeepaggarwal/fake_net_ldap.git

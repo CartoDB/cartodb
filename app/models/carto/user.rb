@@ -293,6 +293,16 @@ class Carto::User < ActiveRecord::Base
     reload.dbdirect_ip
   end
 
+  def subscriptions_public_size_in_bytes
+    # TODO
+    200000
+  end
+
+  def subscriptions_premium_size_in_bytes
+    # TODO
+    500000
+  end
+
   private
 
   def set_database_host

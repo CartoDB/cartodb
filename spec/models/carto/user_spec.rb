@@ -102,7 +102,7 @@ describe Carto::User do
     end
   end
 
-  describe "#is_email_notification_enabled" do
+  describe '#is_email_notification_enabled' do
     before(:all) do
       @carto_user = FactoryGirl.create(:carto_user)
     end

@@ -38,7 +38,7 @@ class Carto::User < ActiveRecord::Base
   belongs_to :rate_limit
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
   has_one :static_notifications, class_name: Carto::UserNotification, inverse_of: :user
-  has_many :email_notifications, class_name: Carto::UserEmailNotification, inverse_of: :user, dependent: :destroy
+  has_many :email_notifications, class_name: 'Carto::UserEmailNotification', inverse_of: :user, dependent: :destroy
 
   has_many :self_feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user, class_name: Carto::FeatureFlagsUser
   has_many :self_feature_flags, through: :self_feature_flags_user, source: :feature_flag

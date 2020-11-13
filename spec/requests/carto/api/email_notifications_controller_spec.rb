@@ -44,7 +44,8 @@ describe Carto::Api::EmailNotificationsController do
     end
 
     it 'successfully updates notifications' do
-      put_json(api_v3_email_notifications_update_url(auth_params), { notifications: { do_subscriptions: false } }) do |response|
+      params = { notifications: { do_subscriptions: false } }
+      put_json(api_v3_email_notifications_update_url(auth_params), params) do |response|
         response.status.should eq 204
       end
     end

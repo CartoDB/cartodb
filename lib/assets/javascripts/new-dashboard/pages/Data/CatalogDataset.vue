@@ -62,6 +62,7 @@
               <NavigationTabs class="grid-cell--col12">
                 <router-link :to="{ name: 'catalog-dataset-summary' }" replace>Summary</router-link>
                 <router-link :to="{ name: 'catalog-dataset-data' }" replace>Data</router-link>
+                <router-link :to="{ name: 'catalog-dataset-map' }" replace>Map</router-link>
               </NavigationTabs>
             </div>
             <router-view></router-view>

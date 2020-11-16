@@ -328,8 +328,9 @@ export default {
     getWarning () {
       if (this.currentMode === 'sample' || this.currentMode === 'connectingSample') {
         if (this.dataset.sample_info && this.dataset.sample_info.default_source) {
-          const source = `&nbsp;<span class="is-semibold is-italic">${this.dataset.sample_info.default_source}</span>`;
-          return `(*) Sample not available: this sample is for${source}`;
+          const source = this.dataset.sample_info.default_source;
+          const htmlSource = `&nbsp;<span class="is-semibold is-italic" title="${source}">${source}</span>`;
+          return `(*) Sample not available: this sample is for${htmlSource}`;
         }
       }
     },

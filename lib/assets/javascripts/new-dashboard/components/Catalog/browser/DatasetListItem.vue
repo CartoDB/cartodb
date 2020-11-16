@@ -88,7 +88,9 @@
           </div>
         </div>
       </div>
-      <span v-else-if="warning" class="warning" v-html="warning"></span>
+      <div v-else-if="warning" class="warning">
+        <span v-html="warning"></span>
+      </div>
     </div>
     <DatasetListItemExtra v-if="extra" :dataset="dataset"></DatasetListItemExtra>
   </li>
@@ -244,6 +246,12 @@ export default {
   font-size: 12px;
   line-height: 16px;
   margin-top: 20px;
+
+  span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 
   &:after {
     content: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/1.0.0-assets.206/images/interface-alert-triangle.svg);

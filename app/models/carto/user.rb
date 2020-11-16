@@ -294,13 +294,21 @@ class Carto::User < ActiveRecord::Base
   end
 
   def subscriptions_public_size_in_bytes
-    # TODO
-    200000
+    subs_synced = subscriptions.select {|d| d['sync_status'] == 'synced' && !d['sync_table'].empty?}
+    subs_public = subs_synced.select {|d| d['dataset_id'].split('.')[0] == Carto::DoLicensingService::CARTO_DO_PUBLIC_PROJECT}
+    total = subs_public.map {|d| d['estimated_size']}.reduce(0) {|a, b| a + b}
+    total || 0
   end
 
   def subscriptions_premium_size_in_bytes
-    # TODO
-    500000
+    subs_synced = subscriptions.select {|d| d['sync_status'] == 'synced' && !d['sync_table'].empty?}
+    subs_premium = subs_synced.select {|d| d['dataset_id'].split('.')[0] == Carto::DoLicensingService::CARTO_DO_PROJECT}
+    total = subs_premium.map {|d| d['estimated_size']}.reduce(0) {|a, b| a + b}
+    total || 0
+  end
+
+  def subscriptions
+    Carto::DoLicensingService.new(username).subscriptions || []
   end
 
   private

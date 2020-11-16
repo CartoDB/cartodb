@@ -298,7 +298,7 @@ class Carto::User < ActiveRecord::Base
     subs_public = subs_synced.select do |d|
       d['dataset_id'].split('.')[0] == Carto::DoLicensingService::CARTO_DO_PUBLIC_PROJECT
     end
-    total = subs_public.map { |d| d['estimated_size']}.reduce(0) {|a, b| a + b }
+    total = subs_public.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
     total || 0
   end
 

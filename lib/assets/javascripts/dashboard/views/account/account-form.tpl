@@ -139,12 +139,12 @@
       <div class="FormAccount-rowData">
         <div class="Toggler">
           <input name="<%='notifications[' + notificationKey + ']'%>" type="hidden" value="0">
-          <input class="js-toggle-notification" id="<%=notificationKey%>" name="<%='notifications[' + notificationKey + ']'%>" type="checkbox" value="1" <% if (notifications[notificationKey]) { %>checked="checked"<% } %>>
+          <input class="js-toggle-notification <%='js-toggle-notification-' + notificationKey%>" id="<%=notificationKey%>" name="<%='notifications[' + notificationKey + ']'%>" type="checkbox" value="1" <% if (notifications[notificationKey]) { %>checked="checked"<% } %>>
           <label for="<%=notificationKey%>"></label>
         </div>
       
         <div class="FormAccount-rowInfo u-lSpace--xl">
-          <p class="CDB-Text CDB-Size-medium js-mfa-label">
+          <p class="CDB-Text CDB-Size-medium <%='js-notification-label-' + notificationKey%>">
             <%= notifications[notificationKey] ? _t('account.views.form.email_section.notifications.enabled') : _t('account.views.form.email_section.notifications.disabled') %>
           </p>
         </div>
@@ -152,8 +152,7 @@
     </div>
     <% }); %>
 
-  </div>
- 
+  </div> 
 
   <!-- External datasources -->
   <% if (services.length > 0) { %>

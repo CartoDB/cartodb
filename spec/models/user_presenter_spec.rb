@@ -186,7 +186,6 @@ describe Carto::Api::UserPresenter do
     new_data[:db_size_in_megabytes].should == old_data[:db_size_in_megabytes]
     new_data[:remaining_table_quota].should == old_data[:remaining_table_quota]
     new_data[:remaining_byte_quota].should == old_data[:remaining_byte_quota]
-    new_data[:storage].should == old_data[:storage]
     new_data[:api_calls].should == old_data[:api_calls]
     new_data[:api_calls_quota].should == old_data[:api_calls_quota]
     new_data[:api_calls_block_price].should == old_data[:api_calls_block_price]

@@ -39,7 +39,7 @@
         >
           <p class="text is-small is-txtBaseGrey license-description">
             <span v-html="getLicense"></span>
-            <a v-if="dataset.licenses_link" class="text is-small" :href="dataset.licenses_link" target="_blank">Continue reading.</a>
+            <a v-if="getLicenseLink" class="text is-small" :href="getLicenseLink" target="_blank">Continue reading</a>
           </p>
 
           <p v-if="currentMode === 'subscribed' || currentMode === 'requested' || currentMode === 'connectingSample'"
@@ -361,11 +361,19 @@ export default {
       let license = '';
       if (this.currentMode === 'sample' || this.currentMode === 'connectingSample') {
         license = 'This sample is for evaluation purposes only and may be used internally only for non-commercial purposes. This sample is subject to limited, non-exclusive, non-transferable, non-sublicensable and revocable rights and license to use. Any rights not expressly granted are withheld.';
-      }
-      if (this.dataset && this.dataset.licenses) {
+      } else if (this.dataset && this.dataset.licenses) {
         license = `${this.dataset.licenses} `;
       }
       return license;
+    },
+    getLicenseLink () {
+      let licenseLink = '';
+      if (this.currentMode !== 'sample' && this.currentMode !== 'connectingSample') {
+        if (this.dataset && this.dataset.licenses_link) {
+          licenseLink = this.dataset.licenses_link;
+        }
+      }
+      return licenseLink;
     },
     licenseAccepted () {
       return !this.getLicense || this.licenseStatus;

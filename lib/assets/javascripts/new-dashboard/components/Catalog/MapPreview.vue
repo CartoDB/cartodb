@@ -1,9 +1,11 @@
 <template>
-  <div class="viewer-container">
-    <h1>{{ name }}</h1>
-    <div class="map-container">
-      <div id="map"></div>
-      <canvas id="deck-canvas"></canvas>
+  <div class="map-preview">
+    <div id="map"></div>
+    <canvas id="deck-canvas"></canvas>
+    <div class="overlay">
+      <router-link :to="{ name: 'catalog-dataset-map' }" replace>
+        Explore
+      </router-link>
     </div>
   </div>
 </template>
@@ -15,7 +17,7 @@ import { Deck } from '@deck.gl/core';
 import { CartoBQTilerLayer, setDefaultCredentials, BASEMAP } from '@deck.gl/carto';
 
 export default {
-  name: 'CatalogDatasetMap',
+  name: 'PreviewMap',
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset
@@ -39,7 +41,7 @@ export default {
     const INITIAL_VIEW_STATE = {
       latitude: 40.750736,
       longitude: -73.973674,
-      zoom: 11 + 1
+      zoom: 11 + 1.5
     };
 
     const map = new mapboxgl.Map({
@@ -47,22 +49,13 @@ export default {
       style: BASEMAP.POSITRON,
       interactive: false,
       center: [INITIAL_VIEW_STATE.longitude, INITIAL_VIEW_STATE.latitude],
-      zoom: INITIAL_VIEW_STATE.zoom
+      zoom: INITIAL_VIEW_STATE.zoom,
+      attributionControl: false
     });
 
     const deck = new Deck({
       canvas: 'deck-canvas',
       initialViewState: INITIAL_VIEW_STATE,
-      controller: true,
-      onViewStateChange: ({ viewState }) => {
-        // Synchronize Deck.gl view with Mapbox
-        map.jumpTo({
-          center: [viewState.longitude, viewState.latitude],
-          zoom: viewState.zoom,
-          bearing: viewState.bearing,
-          pitch: viewState.pitch
-        });
-      },
       layers: [
         new CartoBQTilerLayer({
           data: this.tilesetSampleId(this.dataset.id),
@@ -96,29 +89,33 @@ export default {
 <style lang="scss" scoped>
 @import 'new-dashboard/styles/variables';
 
-.viewer-container {
-  margin: 12px auto;
-  padding: 16px;
-  border-radius: 4px;
-  background: $color-primary--soft;
+.map-preview {
+  position: relative;
+  height: 200px;
+  width: 100%;
+  margin: 12px 0;
 
-  h1 {
-    font-size: 14px;
-    font-weight: 600;
-    padding-bottom: 16px;
-    color: $text__color;
+  & > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 
-  .map-container {
-    position: relative;
-    height: 460px;
+  .overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    & > * {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+    a {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 20px;
+      padding: 10px 16px;
+      border-radius: 4px;
+      color: white;
+      background:rgba(52,68,76, 0.6);
     }
   }
 }

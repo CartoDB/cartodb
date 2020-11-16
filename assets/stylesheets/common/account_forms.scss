@@ -215,6 +215,12 @@ $sLabel-width: 140px;
   align-items: flex-start;
 }
 
+.FormAccount-rowData--listItemWithAction {
+  justify-content: space-between;
+  background: $cStructure-grayBkg;
+  padding: 8px 14px;
+}
+
 .FormAccount-planTag {
   padding: 5px 10px;
   border-radius: 4px;

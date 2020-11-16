@@ -1,4 +1,6 @@
 <form accept-charset="UTF-8">
+
+  <!-- Username -->
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.username') %></label>
@@ -12,6 +14,7 @@
     </div>
   </div>
 
+  <!-- Change password -->
   <% if (!hidePasswordFields) { %>
     <div class="VerticalAligned--FormRow">
       <div class="FormAccount-row">
@@ -41,6 +44,7 @@
 
   <%= accountFormExtension %>
 
+  <!-- Multifactor authentication -->
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
@@ -59,7 +63,7 @@
         </p>
       </div>
     </div>
-    <div class="FormAccount-rowData u-tspace-xs">
+    <div class="FormAccount-rowData u-tspace-xs u-vspace-s">
       <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('account.views.form.mfa_description') %></p>
     </div>
   </div>
@@ -111,6 +115,46 @@
     <% } %>
   <% } %>
 
+  <!-- Email settings -->
+  <div class="FormAccount-title">
+    <p class="FormAccount-titleText"><%= _t('account.views.form.email_section.title') %></p>
+  </div>
+
+  <span class="FormAccount-separator"></span>
+
+  <div class="FormAccount-row FormAccount-row--smallMarginBottom">
+    <p class="CDB-Text CDB-Size-medium"><%= _t('account.views.form.email_section.description') %></p>
+  </div>
+
+  <!-- One row per notification (eg: do_subscriptions) -->
+  <div class="FormAccount-row">
+    
+    <div class="FormAccount-rowData FormAccount-rowData--listItemWithAction u-tspace-xs">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
+        <!-- extract to a 'description' property -->
+        <%= _t('account.views.form.email_section.notifications.do_subscriptions') %>
+      </label>
+      
+      <div class="FormAccount-rowData">
+        <div class="Toggler">
+          <input name="user[mfa]" type="hidden" value="0">
+          <input class="js-toggle-mfa" id="mfa" name="user[mfa]" type="checkbox" value="1" <% if (mfaEnabled) { %>checked="checked"<% } %>>
+          <label for="mfa"></label>
+        </div>
+      
+        <div class="FormAccount-rowInfo u-lSpace--xl">
+          <p class="CDB-Text CDB-Size-medium js-mfa-label">
+            <%= mfaEnabled ? _t('account.views.form.email_section.notifications.enabled') : _t('account.views.form.email_section.notifications.disabled') %>
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- External datasources -->
   <% if (services.length > 0) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.connect_external_datasources') %></p>
@@ -121,6 +165,7 @@
     <div class="js-datasourcesContent"></div>
   <% } %>
 
+  <!-- Delete account -->
   <div class="FormAccount-footer <% if (cantBeDeletedReason) { %>FormAccount-footer--noMarginBottom<% } %>">
     <% if (cantBeDeletedReason) { %>
       <p class="FormAccount-footerText">

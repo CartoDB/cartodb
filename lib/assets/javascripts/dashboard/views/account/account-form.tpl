@@ -125,34 +125,35 @@
   <div class="FormAccount-row FormAccount-row--smallMarginBottom">
     <p class="CDB-Text CDB-Size-medium"><%= _t('account.views.form.email_section.description') %></p>
   </div>
-
-  <!-- One row per notification (eg: do_subscriptions) -->
+  
   <div class="FormAccount-row">
-    
-    <div class="FormAccount-rowData FormAccount-rowData--listItemWithAction u-tspace-xs">
+
+    <!-- One row per notification (eg: do_subscriptions) -->
+    <% Object.keys(notifications).forEach(function (notificationKey) { %>
+    <div class="FormAccount-rowData FormAccount-rowData--listItemWithAction">
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
         <!-- extract to a 'description' property -->
-        <%= _t('account.views.form.email_section.notifications.do_subscriptions') %>
+        <%= _t('account.views.form.email_section.notifications.' + notificationKey) %>
       </label>
       
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <input name="user[mfa]" type="hidden" value="0">
-          <input class="js-toggle-mfa" id="mfa" name="user[mfa]" type="checkbox" value="1" <% if (mfaEnabled) { %>checked="checked"<% } %>>
-          <label for="mfa"></label>
+          <input name="<%='notifications[' + notificationKey + ']'%>" type="hidden" value="0">
+          <input class="js-toggle-notification" id="<%=notificationKey%>" name="<%='notifications[' + notificationKey + ']'%>" type="checkbox" value="1" <% if (notifications[notificationKey]) { %>checked="checked"<% } %>>
+          <label for="<%=notificationKey%>"></label>
         </div>
       
         <div class="FormAccount-rowInfo u-lSpace--xl">
           <p class="CDB-Text CDB-Size-medium js-mfa-label">
-            <%= mfaEnabled ? _t('account.views.form.email_section.notifications.enabled') : _t('account.views.form.email_section.notifications.disabled') %>
+            <%= notifications[notificationKey] ? _t('account.views.form.email_section.notifications.enabled') : _t('account.views.form.email_section.notifications.disabled') %>
           </p>
         </div>
-
       </div>
     </div>
+    <% }); %>
 
   </div>
-
+ 
 
   <!-- External datasources -->
   <% if (services.length > 0) { %>

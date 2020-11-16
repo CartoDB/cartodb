@@ -68,9 +68,20 @@ export default {
           data: this.tilesetSampleId(this.dataset.id),
           getFillColor: [130, 109, 186],
           getLineColor: [0, 0, 0, 100],
-          lineWidthMinPixels: 0.5
+          lineWidthMinPixels: 0.5,
+          pickable: true
         })
-      ]
+      ],
+      getTooltip: ({ object }) => {
+        if (!object) return false;
+        let html = '';
+        for (let p in object.properties) {
+          if (p === 'total_pop') {
+            html += `${p}: ${object.properties[p]}<br/>`;
+          }
+        }
+        return { html };
+      }
     });
   },
   methods: {

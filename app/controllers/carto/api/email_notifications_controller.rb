@@ -1,5 +1,3 @@
-require_dependency 'carto/uuidhelper'
-
 module Carto
   module Api
     class EmailNotificationsController < ::Api::ApplicationController
@@ -8,7 +6,6 @@ module Carto
       before_action :load_notifications, only: [:show, :update]
 
       rescue_from StandardError, with: :rescue_from_standard_error
-      rescue_from Carto::LoadError, with: :rescue_from_carto_error
 
       def show
         render_jsonp({ notifications: decorate_notifications }, 200)

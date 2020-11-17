@@ -91,7 +91,7 @@ export default {
 
 .map-preview {
   position: relative;
-  height: 200px;
+  height: 180px;
   width: 100%;
   margin: 12px 0;
 
@@ -111,11 +111,11 @@ export default {
     a {
       font-size: 12px;
       font-weight: 600;
-      line-height: 20px;
+      line-height: 16px;
       padding: 10px 16px;
       border-radius: 4px;
       color: white;
-      background:rgba(52,68,76, 0.6);
+      background:rgba(46, 60, 67, 0.8);
     }
   }
 }

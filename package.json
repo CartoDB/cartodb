@@ -23,7 +23,7 @@
     "@carto/toolkit-core": "0.0.1-rc.18",
     "@carto/toolkit-custom-storage": "0.0.1-rc.18",
     "@carto/zera": "1.0.7",
-    "@deck.gl/carto": "^8.3.7",
+    "@deck.gl/carto": "8.4.0-alpha.2",
     "@deck.gl/core": "^8.3.7",
     "@deck.gl/geo-layers": "^8.3.7",
     "@deck.gl/layers": "^8.3.7",

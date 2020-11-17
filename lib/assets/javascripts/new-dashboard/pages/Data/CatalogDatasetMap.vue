@@ -1,9 +1,23 @@
 <template>
-  <div class="viewer-container">
-    <h1>{{ name }}</h1>
-    <div class="map-container">
-      <div id="map"></div>
-      <canvas id="deck-canvas"></canvas>
+  <div>
+    <div class="viewer-container">
+      <div class="header-container">
+        <h1 class="title is-caption is-txtMainTextColor">{{ title }}</h1>
+        <img src="../../assets/icons/catalog/button-question.svg" alt="question" @click="infoVisible = !infoVisible">
+      </div>
+      <div class="map-container">
+        <div id="map"></div>
+        <canvas id="deck-canvas"></canvas>
+        <div class="map-info" v-show="infoVisible">
+          <p class="is-small">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius tortor nibh, sit amet tempor nibh finibus et. Aenean eu enim justo.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-container" v-if="defaultSource">
+      <span class="is-small">
+        (*) Sample not available: this preview is for&nbsp;
+        <i class="is-semibold is-italic">{{ defaultSource }}</i>
+      </span>
     </div>
   </div>
 </template>
@@ -16,12 +30,20 @@ import { CartoBQTilerLayer, setDefaultCredentials, BASEMAP } from '@deck.gl/cart
 
 export default {
   name: 'CatalogDatasetMap',
+  data () {
+    return {
+      infoVisible: false
+    };
+  },
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset
     }),
-    name () {
+    title () {
       return this.dataset.name;
+    },
+    defaultSource () {
+      return this.dataset.sample_info && this.dataset.sample_info.default_source || 'Test';
     }
   },
   created () {
@@ -47,7 +69,8 @@ export default {
       style: BASEMAP.POSITRON,
       interactive: false,
       center: [INITIAL_VIEW_STATE.longitude, INITIAL_VIEW_STATE.latitude],
-      zoom: INITIAL_VIEW_STATE.zoom
+      zoom: INITIAL_VIEW_STATE.zoom,
+      attributionControl: false
     });
 
     const deck = new Deck({
@@ -108,21 +131,26 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .viewer-container {
-  margin: 12px auto;
-  padding: 16px;
+  margin: 12px;
+  padding: 12px;
   border-radius: 4px;
   background: $color-primary--soft;
 
-  h1 {
-    font-size: 14px;
-    font-weight: 600;
-    padding-bottom: 16px;
-    color: $text__color;
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+
+    img {
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+    }
   }
 
   .map-container {
     position: relative;
-    height: 460px;
+    height: 500px;
+    margin-top: 6px;
 
     & > * {
       position: absolute;
@@ -130,6 +158,38 @@ export default {
       left: 0;
       width: 100%;
       height: 100%;
+    }
+
+    .map-info {
+      left: auto;
+      right: 0;
+      width: 240px;
+      height: auto;
+      padding: 20px;
+      border-radius: 4px;
+      background-color: white;
+      box-shadow: 0 2px 8px 0 rgba(44, 44, 44, 0.16);
+
+      p {
+        color: $neutral--700;
+      }
+    }
+  }
+}
+
+.footer-container {
+  display: flex;
+  justify-content: flex-end;
+  margin: 24px 12px;
+
+  span {
+    display: flex;
+    align-items: center;
+    white-space: pre-wrap;
+
+    &:after {
+      content: url('../../assets/icons/catalog/interface-alert-triangle.svg');
+      margin-left: 12px;
     }
   }
 }

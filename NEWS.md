@@ -11,7 +11,7 @@ Development
 * Fix BigQuery connector not importing 0-bytes-processed datasets [#15916](https://github.com/CartoDB/cartodb/pull/15916)
 * Error importing geopackage files with multiple layers [#15907](https://github.com/CartoDB/cartodb/pull/15907)
 * Add DO notification in dashboard [#15929](https://github.com/CartoDB/cartodb/pull/15929)
-* Data loss on table rename due to GhostTablesManager
+* Data loss on table rename due to GhostTablesManager [#15935](https://github.com/CartoDB/cartodb/pull/15935)
 
 4.43.0 (2020-11-06)
 -------------------

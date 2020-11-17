@@ -1,14 +1,6 @@
 module Carto
   module Subscribers
-    class CentralUserCommands
-
-      include ::LoggerHelper
-
-      attr_reader :notifications_topic
-
-      def initialize(notifications_topic)
-        @notifications_topic = notifications_topic
-      end
+    class CentralUserCommands < ::Carto::Subscribers::Base
 
       def update_user(user_param)
         log_debug(message: 'Processing :update_user')
@@ -77,12 +69,6 @@ module Carto
                                     })
         log_info(message: 'User could not be deleted because it has shared entities',
                  current_user: user.username)
-      end
-
-      private
-
-      def log_context
-        super.merge(class_name: self.class.name)
       end
 
     end

@@ -201,7 +201,12 @@ class UserTable < Sequel::Model
   end
 
   def destroy
-    Carto::UserTable.find_by(id: id)&.destroy
+    carto_user_table = Carto::UserTable.find_by(id: id)
+
+    return if carto_user_table.nil?
+
+    carto_user_table.set_service(service)
+    carto_user_table.destroy
   end
 
   def before_update

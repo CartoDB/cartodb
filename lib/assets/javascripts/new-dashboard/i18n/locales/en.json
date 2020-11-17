@@ -382,6 +382,10 @@
     "title": "Let us know what you think.",
     "message": "Missing something? Should we be doing something differently?"
   },
+  "DataObservatoryMessage": {
+    "title": "What’s new in Data Observatory?",
+    "message": "Check out our new public & premium datasets in the Data Observatory: Census data from the UK and Canada, Dstillery's Behavioural Audiences and more.</br><a href='{path}'>Visit our Spatial Data Catalog</a>"
+  },
   "SharedBrief": {
     "sharedWith": "Shared with",
     "org": "all your organization",

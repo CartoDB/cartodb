@@ -3,7 +3,7 @@ module Carto
     class EmailNotificationsController < ::Api::ApplicationController
 
       ssl_required :update
-      before_action :load_notifications, only: [:show, :update]
+      before_action :load_notifications
 
       rescue_from StandardError, with: :rescue_from_standard_error
 

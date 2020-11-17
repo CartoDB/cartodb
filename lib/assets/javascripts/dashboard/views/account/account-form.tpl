@@ -123,7 +123,7 @@
 
     <span class="FormAccount-separator"></span>
 
-    <div class="FormAccount-row FormAccount-row--smallMarginBottom">
+    <div class="FormAccount-row FormAccount-row--mediumMarginBottom">
       <p class="CDB-Text CDB-Size-medium"><%= _t('account.views.form.email_section.description') %></p>
     </div>
     

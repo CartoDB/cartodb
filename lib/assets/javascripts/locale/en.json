@@ -92,8 +92,7 @@
                     "notifications": {
                         "enabled": "On",
                         "disabled": "Off",
-                        "do_subscriptions":"Emails from Data Observatory",
-                        "fake_subscriptions":"Emails from Data Observatory (II)"
+                        "do_subscriptions":"Emails from Data Observatory"
                     }
                 }
             }

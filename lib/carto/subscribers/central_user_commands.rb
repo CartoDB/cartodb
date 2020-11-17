@@ -3,7 +3,7 @@ require './lib/carto/user_updater'
 
 module Carto
   module Subscribers
-    class CentralUserCommands
+    class CentralUserCommands < ::Carto::Subscribers::Base
 
       attr_reader :notifications_topic,
                   :logger

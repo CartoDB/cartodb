@@ -116,43 +116,43 @@
   <% } %>
 
   <!-- Email settings -->
-  <div class="FormAccount-title">
-    <p class="FormAccount-titleText"><%= _t('account.views.form.email_section.title') %></p>
-  </div>
+  <% if (Object.keys(notifications).length > 0) { %>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText"><%= _t('account.views.form.email_section.title') %></p>
+    </div>
 
-  <span class="FormAccount-separator"></span>
+    <span class="FormAccount-separator"></span>
 
-  <div class="FormAccount-row FormAccount-row--smallMarginBottom">
-    <p class="CDB-Text CDB-Size-medium"><%= _t('account.views.form.email_section.description') %></p>
-  </div>
-  
-  <div class="FormAccount-row">
-
-    <!-- One row per notification (eg: do_subscriptions) -->
-    <% Object.keys(notifications).forEach(function (notificationKey) { %>
-    <div class="FormAccount-rowData FormAccount-rowData--listItemWithAction">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
-        <!-- extract to a 'description' property -->
-        <%= _t('account.views.form.email_section.notifications.' + notificationKey) %>
-      </label>
-      
-      <div class="FormAccount-rowData">
-        <div class="Toggler">
-          <input name="<%='notifications[' + notificationKey + ']'%>" type="hidden" value="0">
-          <input class="js-toggle-notification <%='js-toggle-notification-' + notificationKey%>" id="<%=notificationKey%>" name="<%='notifications[' + notificationKey + ']'%>" type="checkbox" value="1" <% if (notifications[notificationKey]) { %>checked="checked"<% } %>>
-          <label for="<%=notificationKey%>"></label>
-        </div>
-      
-        <div class="FormAccount-rowInfo u-lSpace--xl">
-          <p class="CDB-Text CDB-Size-medium <%='js-notification-label-' + notificationKey%>">
-            <%= notifications[notificationKey] ? _t('account.views.form.email_section.notifications.enabled') : _t('account.views.form.email_section.notifications.disabled') %>
-          </p>
+    <div class="FormAccount-row FormAccount-row--smallMarginBottom">
+      <p class="CDB-Text CDB-Size-medium"><%= _t('account.views.form.email_section.description') %></p>
+    </div>
+    
+    <div class="FormAccount-row">
+      <!-- One row per notification (eg: do_subscriptions) -->
+      <% Object.keys(notifications).forEach(function (notificationKey) { %>
+      <div class="FormAccount-rowData FormAccount-rowData--listItemWithAction">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
+          <!-- extract to a 'description' property -->
+          <%= _t('account.views.form.email_section.notifications.' + notificationKey) %>
+        </label>
+        
+        <div class="FormAccount-rowData">
+          <div class="Toggler">
+            <input name="<%='notifications[' + notificationKey + ']'%>" type="hidden" value="0">
+            <input class="js-toggle-notification <%='js-toggle-notification-' + notificationKey%>" id="<%=notificationKey%>" name="<%='notifications[' + notificationKey + ']'%>" type="checkbox" value="1" <% if (notifications[notificationKey]) { %>checked="checked"<% } %>>
+            <label for="<%=notificationKey%>"></label>
+          </div>
+        
+          <div class="FormAccount-rowInfo u-lSpace--xl">
+            <p class="CDB-Text CDB-Size-medium <%='js-notification-label-' + notificationKey%>">
+              <%= notifications[notificationKey] ? _t('account.views.form.email_section.notifications.enabled') : _t('account.views.form.email_section.notifications.disabled') %>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-    <% }); %>
-
-  </div> 
+      <% }); %>
+    </div> 
+  <% } %>
 
   <!-- External datasources -->
   <% if (services.length > 0) { %>

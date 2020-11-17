@@ -9,7 +9,7 @@
         <div id="map"></div>
         <canvas id="deck-canvas"></canvas>
         <div class="map-info" v-show="infoVisible">
-          <p class="is-small">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius tortor nibh, sit amet tempor nibh finibus et. Aenean eu enim justo.</p>
+          <p class="is-small">{{ description }}</p>
         </div>
         <div class="recenter" @click="recenter">
           <img src="../../assets/icons/catalog/recenter.svg" alt="recenter">
@@ -39,6 +39,7 @@ export default {
   data () {
     return {
       map: null,
+      variable: null,
       infoVisible: false,
       initialViewState: {
         latitude: 0,
@@ -51,10 +52,14 @@ export default {
   },
   computed: {
     ...mapState({
-      dataset: state => state.catalog.dataset
+      dataset: state => state.catalog.dataset,
+      keyVariables: state => state.catalog.keyVariables
     }),
     title () {
       return this.dataset.name;
+    },
+    description () {
+      return this.variable && this.variable.description;
     },
     defaultSource () {
       return this.dataset.sample_info && this.dataset.sample_info.default_source || 'Test';
@@ -64,8 +69,6 @@ export default {
     this.importMapboxStyles();
   },
   mounted () {
-    // Testing ID: acs_sociodemogr_b758e778
-
     this.map = new mapboxgl.Map({
       container: 'map',
       style: BASEMAP.POSITRON,
@@ -93,9 +96,12 @@ export default {
           getFillColor: [130, 109, 186],
           getLineColor: [0, 0, 0, 100],
           lineWidthMinPixels: 0.5,
+          getLineWidth: 4,
+          getRadius: 16,
           pickable: true,
           onDataLoad: (tileJSON) => {
-            const { center } = tileJSON;
+            console.log('TILEJSON', tileJSON);
+            const { center, tilestats } = tileJSON;
             this.initialViewState = {
               zoom: parseFloat(center[2]) - 1,
               latitude: parseFloat(center[1]),
@@ -104,18 +110,29 @@ export default {
               pitch: 0
             };
             this.recenter();
+            this.variable = tilestats.layers[0].attributes[1];
+            this.fetchVariable();
           }
         })
       ],
       getTooltip: ({ object }) => {
         if (!object) return false;
-        let html = '';
-        for (let p in object.properties) {
-          if (p === 'total_pop') {
-            html += `${p}: ${object.properties[p]}<br/>`;
-          }
+        const title = this.variable.name || this.variable.attribute;
+        const value = object.properties[this.variable.attribute];
+        if (value === undefined) return false;
+        const html = `
+          <p style="margin: 0 0 0 4px; color: #6f777c;">${title}</p>
+          <p style="margin: 4px 0 0 4px;"><b>${value}</b></p>
+        `;
+        const style = {
+          'padding': '8px 12px',
+          'border-radius': '2px',
+          'font-size': '12px',
+          'color': '#162945',
+          'background-color': 'white',
+          'border': 'solid 1px #e6e8eb'
         }
-        return { html };
+        return { html, style };
       }
     });
   },
@@ -150,6 +167,20 @@ export default {
       this.initialViewState.zoom -= 0.000001;
       deck.setProps({ initialViewState: { ...this.initialViewState } });
       this.syncMapboxViewState(this.initialViewState);
+    },
+    async fetchVariable () {
+      await this.$store.dispatch('catalog/fetchKeyVariables', {
+        id: this.$route.params.datasetId,
+        type: this.$route.params.type
+      });
+      const keyVariable = this.keyVariables.find((v) => {
+        return v.id.split('.').slice(-1)[0] === this.variable.attribute;
+      });
+      this.variable = {
+        ...this.variable,
+        ...keyVariable
+      };
+      console.log('VARIABLE', { ...this.variable });
     }
   }
 };
@@ -177,7 +208,7 @@ export default {
 
   .map-container {
     position: relative;
-    height: 500px;
+    height: 600px;
     margin-top: 6px;
 
     & > * {

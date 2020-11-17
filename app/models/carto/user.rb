@@ -294,21 +294,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def subscriptions_public_size_in_bytes
-    subs_synced = subscriptions.select { |d| d['sync_status'] == 'synced' && !d['sync_table'].empty? }
-    subs_public = subs_synced.select do |d|
-      d['dataset_id'].split('.')[0] == Carto::DoLicensingService::CARTO_DO_PUBLIC_PROJECT
-    end
-    total = subs_public.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
-    total || 0
+    subscriptions_size_in_bytes(Carto::DoLicensingService::CARTO_DO_PUBLIC_PROJECT)
   end
 
   def subscriptions_premium_size_in_bytes
-    subs_synced = subscriptions.select { |d| d['sync_status'] == 'synced' && !d['sync_table'].empty? }
-    subs_premium = subs_synced.select do |d|
-      d['dataset_id'].split('.')[0] == Carto::DoLicensingService::CARTO_DO_PROJECT
-    end
-    total = subs_premium.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
-    total || 0
+    subscriptions_size_in_bytes(Carto::DoLicensingService::CARTO_DO_PROJECT)
   end
 
   def subscriptions
@@ -316,6 +306,14 @@ class Carto::User < ActiveRecord::Base
   end
 
   private
+
+  def subscriptions_size_in_bytes(project)
+    # Note we cannot filter by `project` subscription attribute, we must use the dataset ID.
+    subs_synced = subscriptions.select { |d| d['sync_status'] == 'synced' && !d['sync_table'].empty? }
+    subs_filtered = subs_synced.select { |d| d['dataset_id'].split('.')[0] == project }
+    total = subs_filtered.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
+    total || 0
+  end
 
   def set_database_host
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']

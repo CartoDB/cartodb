@@ -35,6 +35,10 @@ namespace :message_broker do
         notifications_topic: notifications_topic,
         logger: logger
       )
+      central_organization_commands = Carto::Subscribers::CentralOrganizationCommands.new(
+        notifications_topic: notifications_topic,
+        logger: logger
+      )
 
       subscription.register_callback(:update_user,
                                      &central_user_commands.method(:update_user))
@@ -44,6 +48,15 @@ namespace :message_broker do
 
       subscription.register_callback(:delete_user,
                                      &central_user_commands.method(:delete_user))
+
+      subscription.register_callback(:update_organization,
+                                     &central_organization_commands.method(:update_organization))
+
+      subscription.register_callback(:create_organization,
+                                     &central_organization_commands.method(:create_organization))
+
+      subscription.register_callback(:delete_organization,
+                                     &central_organization_commands.method(:delete_organization))
 
       at_exit do
         logger.info(message: 'Stopping subscriber...')

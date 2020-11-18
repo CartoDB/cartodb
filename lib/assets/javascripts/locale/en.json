@@ -1715,8 +1715,9 @@
             "add-column": "Add column",
             "export": "Export"
         },
-        "subscriptions": {
-            "view-subscription": "View subscription"
+        "actions": {
+            "view-subscription": "View subscription",
+            "subscribe-to-entity": "Subscribe to dataset"
         },
         "preview-map": {
             "preview": "preview",
@@ -1784,7 +1785,8 @@
             "label": "Sync my data",
             "error": "There was an error setting the interval",
             "confirm": "Save",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "last-updated": "Last updated: %{modifiedAt}"
         },
         "unlock": {
             "cancel": "back to dashboard",

@@ -159,8 +159,8 @@ export default {
     },
     async fetchVariable () {
       await this.$store.dispatch('catalog/fetchKeyVariables', {
-        id: this.$route.params.datasetId,
-        type: this.$route.params.type
+        id: this.$route.params.entity_id,
+        type: this.$route.params.entity_type
       });
       const keyVariable = this.keyVariables.find((v) => {
         return v.id.split('.').slice(-1)[0] === this.variable.attribute;

@@ -1,6 +1,5 @@
 <template>
   <a :href="vizUrl"
-     target="_blank"
      class="card map-card"
      :class="{
        'card--selected': isSelected,
@@ -16,7 +15,7 @@
         <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
       </div>
 
-      <TypeBadge v-if="isBuilderMap || isKuviz || isKeplergl || isDataObservatory" class="card-badge" :visualizationType="badgeVisualizationType" :isKuviz="isKuviz" :inCondensedCard="false" />
+      <TypeBadge v-if="isBuilderMap || isKuviz || isKeplergl || isSample || isSubscription" class="card-badge" :visualizationType="badgeVisualizationType" :isKuviz="isKuviz" :inCondensedCard="false" />
       <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
     </div>
 
@@ -153,8 +152,10 @@ export default {
       }, {});
     },
     badgeVisualizationType () {
-      if (this.isDataObservatory) {
-        return 'data-observatory';
+      if (this.isSample) {
+        return 'sample';
+      } else if (this.isSubscription) {
+        return 'subscription';
       }
       return this.$props.visualization.type;
     }

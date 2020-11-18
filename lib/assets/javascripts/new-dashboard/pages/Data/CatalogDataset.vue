@@ -1,14 +1,14 @@
 <template>
   <Page class="page--data" :class="{ 'website-page': publicWebsite }">
     <SecondaryNavigation v-if="!publicWebsite">
-      <a
-        class="catalogDetail__back title is-small"
+      <router-link
+        class="catalogDetail__catalog title is-small"
         :class="{ 'disabled': loading }"
-        href="javascript:history.back()"
+        :to="{ name: 'spatial-data-catalog' }"
       >
-        <img class="catalogDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
-        <span>{{ $t('Catalog.back') }}</span>
-      </a>
+        <img class="catalogDetail__catalog--icon" svg-inline src="../../assets/icons/common/back.svg"/>
+        <span>{{ $t('Catalog.name') }}</span>
+      </router-link>
     </SecondaryNavigation>
 
     <section v-if="loading" class="catalogDetail container grid">
@@ -25,7 +25,7 @@
             </svg>
           </span>
           <span class="text is-txtSoftGrey is-caption u-mt--12">
-            Loading {{ type }} details…
+            Loading {{ entity_type }} details...
           </span>
         </div>
       </div>
@@ -35,13 +35,15 @@
       <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
         <transition name="fade">
           <div>
-            <a v-if="publicWebsite"
-              class="catalogDetail__back title is-small"
-              :class="{ 'disabled': loading }"
-              href="javascript:history.back()"
-            >
-              <span class="back-link">{{ $t('Catalog.back') }}</span>
-            </a>
+            <div v-if="publicWebsite" class="catalogDetail__catalog">
+              <router-link
+                class="title is-small back-link"
+                :class="{ 'disabled': loading }"
+                :to="{ name: 'spatial-data-catalog' }"
+              >
+                {{ $t('Catalog.name') }}
+              </router-link>
+            </div>
             <DatasetActionsBar
               v-if="subscription"
               :subscription="subscription"
@@ -105,8 +107,8 @@ export default {
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset,
-      type () {
-        return this.$route.params.type;
+      entity_type () {
+        return this.$route.params.entity_type;
       }
     }),
     subscription () {
@@ -115,7 +117,7 @@ export default {
       );
     },
     isGeography () {
-      return this.$route.params.type === 'geography';
+      return this.$route.params.entity_type === 'geography';
     },
     isSubscriptionSyncing () {
       return this.subscription && this.subscription.sync_status === 'syncing';
@@ -123,20 +125,22 @@ export default {
   },
   methods: {
     initializeDataset () {
-      if (!this.dataset || this.dataset.slug !== this.$route.params.datasetId) {
+      if (!this.dataset || this.dataset.slug !== this.$route.params.entity_id) {
         this.loading = true;
         Promise.all([
           this.$store.dispatch('catalog/fetchSubscriptionsList'),
           this.$store.dispatch('catalog/fetchDataset', {
-            id: this.$route.params.datasetId,
-            type: this.$route.params.type
+            id: this.$route.params.entity_id,
+            type: this.$route.params.entity_type
           })
         ]).then(() => {
           this.loading = false;
-          if (this.$route.params.datasetId !== this.dataset.slug) {
-            this.$router.replace({
-              params: { datasetId: this.dataset.slug }
-            });
+          if (this.dataset.slug) {
+            if (this.$route.params.entity_id !== this.dataset.slug) {
+              this.$router.replace({ params: { entity_id: this.dataset.slug } });
+            }
+          } else {
+            this.$router.replace({ name: 'spatial-data-catalog' });
           }
         });
       }
@@ -154,7 +158,7 @@ export default {
         }
       }
     },
-    type: {
+    entity_type: {
       immediate: true,
       handler () {
         this.initializeDataset();
@@ -162,7 +166,7 @@ export default {
     }
   },
   destroyed () {
-    if (this.dataset.slug !== this.$route.params.datasetId) {
+    if (this.dataset.slug !== this.$route.params.entity_id) {
       this.$store.commit('catalog/resetDataset');
     }
     clearInterval(this.id_interval);
@@ -175,7 +179,7 @@ export default {
 
 .catalogDetail {
 
-  &__back {
+  &__catalog {
     display: flex;
     align-items: center;
     padding: 24px 0;

@@ -317,6 +317,20 @@ describe Carto::Api::Public::DataObservatoryController do
     end
   end
 
+  describe 'create_sample' do
+    before(:each) do
+      @doss = mock
+      Carto::DoSampleServiceFactory.stubs(:get_for_user).returns(@doss)
+      @doss.stubs(:import_sample!).returns(nil)
+    end
+
+    it 'returns 200 if the dataset_id is valid' do
+      @url_helper = 'api_v4_do_subscription_create_sample_url'
+      post_json endpoint_url(api_key: @master, dataset_id: 'carto.zzz.table1'), @headers do |response|
+        expect(response.status).to eq(200)2
+      end
+    end
+  end
   describe 'subscription' do
     before(:all) do
       @url_helper = 'api_v4_do_subscription_show_url'

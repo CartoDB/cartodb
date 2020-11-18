@@ -107,8 +107,11 @@ export default {
       getTooltip: ({ object }) => {
         if (!object) return false;
         const title = this.variable.name || this.variable.attribute;
-        const value = object.properties[this.variable.attribute];
+        let value = object.properties[this.variable.attribute];
         if (value === undefined) return false;
+        if (typeof value === 'number') {
+          value = this.formatNumber(value);
+        }
         const html = `
           <p style="margin: 0 0 0 4px; color: #6f777c;">${title}</p>
           <p style="margin: 4px 0 0 4px;"><b>${value}</b></p>
@@ -170,6 +173,15 @@ export default {
         ...keyVariable
       };
       console.log('VARIABLE', { ...this.variable });
+    },
+    formatNumber (value) {
+      if (!Number.isInteger(value)) {
+        return value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 3
+        });
+      }
+      return value.toLocaleString();
     }
   }
 };

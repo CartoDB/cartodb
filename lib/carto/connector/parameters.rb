@@ -22,6 +22,7 @@ module Carto
         @optional_parameters = normalized_array(optional || [])
         # TODO: validate definition (no dups...)
         @accepted_parameters = @required_parameters + @optional_parameters
+        manage_connection
       end
 
       def [](name)

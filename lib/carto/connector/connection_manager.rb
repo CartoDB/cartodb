@@ -1,4 +1,4 @@
-class Carto
+module Carto
   class ConnectionManager
     DB_PASSWORD_PLACEHOLDER = '********'.freeze
     DB_TOKEN_PLACEHOLDER = '********'.freeze
@@ -8,35 +8,37 @@ class Carto
     end
 
     def list_connectors(connections: false, type: nil)
-      type ||= Array(type)
+      types = Array(type)
 
       oauth_connectors = db_connectors = []
 
-      if type.include?(Carto::Connector::TYPE_OAUTH_SERVICE)
+      if type.nil? || types.include?(Carto::Connection::TYPE_OAUTH_SERVICE)
         oauth_connectors += ConnectionManager.valid_oauth_services.map { |service|
           # TODO: check enabled for @user
           is_enabled = true
           # TODO: use presenter
           connector = {
-            types: [Carto::Connector::TYPE_OAUTH_SERVICE],
+            types: [Carto::Connection::TYPE_OAUTH_SERVICE],
             connector: service,
             enabled: is_enabled,
             available: !@user.connections.exists?(connector: service)
           }
           connector[:connections] = list_connections(connector: service) if connections
+          connector
         }
       end
 
-      if type.include?(Carto::Connector::TYPE_DB_CONNECTOR)
+      if type.nil? || types.include?(Carto::Connection::TYPE_DB_CONNECTOR)
         db_connectors += ConnectionManager.valid_db_connectors.map { |provider|
           is_enabled = Carto::Connector.provider_available?(provider, @user)
           connector = {
-            types: [Carto::Connector::TYPE_DB_CONNECTOR],
+            types: [Carto::Connection::TYPE_DB_CONNECTOR],
             connector: provider,
             enabled: is_enabled,
             available: is_enabled
           }
           connector[:connections] = list_connections(connector: service) if connections
+          connector
         }
       end
 
@@ -70,12 +72,12 @@ class Carto
           type: connection.type,
         }
         case type
-        when Carto::Connector::TYPE_DB_CONNECTOR
+        when Carto::Connection::TYPE_DB_CONNECTOR
           presented_connection[:parameters] = connection.parameters
           if presented_connection[:parameters].keys.include?('password')
             presented_connection[:parameters]['password'] = DB_PASSWORD_PLACEHOLDER
           end
-        when Carto::Connector::TYPE_OAUTH_SERVICE
+        when Carto::Connection::TYPE_OAUTH_SERVICE
           presented_connection[:token] = OAUTH_TOKEN_PLACEHOLDER
         end
         # TODO: compute in_use
@@ -84,7 +86,7 @@ class Carto
 
     def find_db_connection(provider, parameters)
       @user.db_connections.find { |connection|
-        connection.type == Carto::Connector::TYPE_DB_CONNECTOR &&
+        connection.type == Carto::Connection::TYPE_DB_CONNECTOR &&
         connection.connector == provider &&
          parameters == connection.parameters
       }
@@ -140,9 +142,9 @@ class Carto
     def connection_ready?(id)
       connection = fetch_connection!(id)
       case connection.type
-      when Carto::Connector::TYPE_DB_CONNECTOR
+      when Carto::Connection::TYPE_DB_CONNECTOR
         true
-      when Carto::Connector::TYPE_OAUTH_SERVICE
+      when Carto::Connection::TYPE_OAUTH_SERVICE
         oauth_connection_valid?(connection.connector)
       end
     end
@@ -163,20 +165,23 @@ class Carto
     private
 
     def self.valid_oauth_services
-      CartoDb::Datasources::DatasourcesFactory.get_all_oauth_datasources.select { |service|
-        # FIXME: this includes twitter, maybe just do:
-        # Cartodb.config[:oauth][service].present?
-        begin
-          config, _ = CartoDb::Datasources::DatasourcesFactory.get_config(service)
-          config.present?
-        rescue MissingConfigurationError
-          false
-        end
+      CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources.select { |service|
+        # FIXME: this includes twitter...
+        # begin
+        #   config, _ = CartoDB::Datasources::DatasourcesFactory.get_config(service)
+        #   config.present?
+        # rescue MissingConfigurationError
+        #   false
+        # end
+        Cartodb.config[:oauth][service].present?
       }
     end
 
     def self.valid_db_connectors
-      Carto::Connector.provider_ids
+      # Carto::Connector.provider_ids # ["odbc", "postgres", "mysql", "sqlserver", "hive", "bigquery", "do-v2", "do-v2-sample", "snowflake", "redshift"]
+      # Carto::ConnectorProvider.all.map(&:name) # ["postgres", "odbc", "mysql", "sqlserver", "hive", "bigquery", "do-v2", "snowflake", "redshift"]
+      # Carto::Connector.providers.keys # ["postgres", "mysql", "sqlserver", "hive", "bigquery", "snowflake", "redshift"]
+      Carto::Connector.providers.keys
     end
 
     def generate_unique_db_connection_name(provider)

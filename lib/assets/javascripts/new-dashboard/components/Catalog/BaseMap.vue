@@ -42,7 +42,7 @@ export default {
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset,
-      keyVariables: state => state.catalog.keyVariables
+      variables: state => state.catalog.variables
     }),
     title () {
       return this.dataset.name;
@@ -99,8 +99,7 @@ export default {
               pitch: 0
             };
             this.recenterMap();
-            this.variable = tilestats.layers[0].attributes[1];
-            this.fetchVariable();
+            this.setVariable(tilestats.layers[0].attributes[1]);
           }
         })
       ],
@@ -160,17 +159,13 @@ export default {
       deck.setProps({ initialViewState: { ...this.initialViewState } });
       this.syncMapboxViewState(this.initialViewState);
     },
-    async fetchVariable () {
-      await this.$store.dispatch('catalog/fetchKeyVariables', {
-        id: this.$route.params.entity_id,
-        type: this.$route.params.entity_type
-      });
-      const keyVariable = this.keyVariables.find((v) => {
-        return v.id.split('.').slice(-1)[0] === this.variable.attribute;
+    setVariable (variable) {
+      const variableExtra = this.variables.find((v) => {
+        return v.id.split('.').slice(-1)[0] === variable.attribute;
       });
       this.variable = {
-        ...this.variable,
-        ...keyVariable
+        ...variable,
+        ...variableExtra
       };
       console.log('VARIABLE', { ...this.variable });
     },

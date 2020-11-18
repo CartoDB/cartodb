@@ -139,6 +139,10 @@ export default {
             if (this.$route.params.entity_id !== this.dataset.slug) {
               this.$router.replace({ params: { entity_id: this.dataset.slug } });
             }
+            this.$store.dispatch('catalog/fetchVariables', {
+              id: this.dataset.slug,
+              type: this.$route.params.entity_type
+            });
           } else {
             this.$router.replace({ name: 'spatial-data-catalog' });
           }

@@ -1,6 +1,7 @@
 require_relative 'connector/errors'
 require_relative 'connector/providers'
 require_relative 'connector/parameters'
+require_dependency 'carto/connector/connection_manager'
 
 module Carto
   # This class provides remote database connection services
@@ -166,6 +167,7 @@ module Carto
     # If a `user:` argument is provided, the  `enabled` key will indicate if the provider is
     # enabled for the user; otherwise it indicates if it is enabled by default.
     #
+    # TODO: add filter for UI-available connectors (i.e. exclude do-sync, do-sample...)
     def self.providers(user: nil, all: false)
       providers_info = {}
       provider_ids.each do |id|
@@ -219,7 +221,7 @@ module Carto
       if connection_id.present?
         connection = Carto::ConnectionManager.new(@user).fetch_connection!(connection_id)
         if provider.present?
-          raise "Invalid connection" if provider != connection.connector)
+          raise "Invalid connection" if provider != connection.connector
         else
           @params.merge! provider: connector.connector
         end

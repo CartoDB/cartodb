@@ -22,6 +22,8 @@ module Carto
 
     # TODO: serialize parameters as JSON
 
+    validates :name, uniqueness: { scope: :user_id }
+
     def get_service_datasource
       raise "Invalid connection type (#{type}) to get service datasource" unless type == TYPE_OAUTH_SERVICE
 

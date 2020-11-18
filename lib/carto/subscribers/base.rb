@@ -16,12 +16,12 @@ module Carto
         super.merge(subscriber_class: self.class.name)
       end
 
-      def log_command_start(method_name, overrides = {})
-        log_info({ message: 'Processing command', command_name: method_name }.merge(overrides))
+      def log_command_start(method_name, params = {})
+        log_info(params.merge(message: 'Processing command', command_name: method_name))
       end
 
-      def log_command_end(method_name, overrides = {})
-        log_info({ message: 'Completed command', command_name: method_name }.merge(overrides))
+      def log_command_end(method_name, params = {})
+        log_info(params.merge(message: 'Completed command', command_name: method_name))
       end
 
     end

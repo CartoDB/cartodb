@@ -61,7 +61,7 @@ namespace :message_broker do
       at_exit do
         logger.info(message: 'Stopping subscriber...')
         subscription.stop!
-        logger.info(message: 'Done')
+        logger.info(message: 'Subscriber stopped')
       end
 
       subscription.start

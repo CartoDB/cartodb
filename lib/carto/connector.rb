@@ -10,6 +10,7 @@ module Carto
 
     def initialize(parameters:, user:, **args)
       @params = Parameters.new(parameters)
+      set_connection_from_connection_id!
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
@@ -77,6 +78,7 @@ module Carto
     # and specific provider availability if provider_name is not nil
     def self.check_availability!(user, provider_name=nil)
       return false if user.nil?
+      return true if provider_name == 'do-v2-sample'
       return user.do_enabled? if provider_name == 'do-v2'
       # check general availability
       unless user.has_feature_flag?('carto-connectors')
@@ -209,6 +211,21 @@ module Carto
 
     def log(message, truncate = true)
       @provider.log message, truncate
+    end
+
+    def set_connection_from_connection_id!
+      connection_id = @params[:connection_id]
+      provider = @params[:provider]
+      if connection_id.present?
+        connection = Carto::ConnectionManager.new(@user).fetch_connection!(connection_id)
+        if provider.present?
+          raise "Invalid connection" if provider != connection.connector)
+        else
+          @params.merge! provider: connector.connector
+        end
+        @params.merge! connection: connection
+        @params.delete :connection_id
+      end
     end
   end
 end

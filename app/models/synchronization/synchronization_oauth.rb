@@ -1,5 +1,8 @@
 require_relative '../../../services/datasources/lib/datasources'
 
+# TODO: this will be replaced by Carto::Connection; when migration is complete and working
+# this class should be removed
+
 # @see DB table 'synchronization_oauths'
 class SynchronizationOauth < Sequel::Model
 

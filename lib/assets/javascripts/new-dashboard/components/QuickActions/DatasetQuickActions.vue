@@ -47,35 +47,48 @@ export default {
           {
             name: this.$t('QuickActions.editInfo'),
             event: 'editInfo',
-            shouldBeHidden: this.isDOSubscription
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.manageTags'),
-            event: 'manageTags'
+            event: 'manageTags',
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.changePrivacy'),
-            event: 'changePrivacy'
+            event: 'changePrivacy',
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.share'),
             event: 'shareVisualization',
-            shouldBeHidden: !this.isUserInsideOrganization
+            shouldBeHidden: this.isSubscription || this.isSample || !this.isUserInsideOrganization
           },
           {
             name: this.$t('QuickActions.duplicate'),
             event: 'duplicateDataset',
-            shouldBeDisabled: this.isOutOfDatasetsQuota
+            shouldBeDisabled: this.isOutOfDatasetsQuota,
+            shouldBeHidden: this.isSubscription || this.isSample
+          },
+          {
+            name: this.$t('QuickActions.viewSubscription'),
+            event: 'goToEntity',
+            shouldBeHidden: !this.isSubscription && (!this.isSample || !this.entitySubscribed)
+          },
+          {
+            name: this.$t('QuickActions.subscribeToEntity'),
+            event: 'goToEntity',
+            shouldBeHidden: !this.isSample || this.entitySubscribed
           },
           {
             name: this.$t('QuickActions.lock'),
             event: 'lockDataset',
-            shouldBeHidden: this.isDOSubscription
+            shouldBeHidden: this.isSubscription || this.isSample
           },
           {
             name: this.$t('QuickActions.delete'),
             event: 'deleteDataset',
-            shouldBeHidden: this.isDOSubscription,
+            shouldBeHidden: this.isSubscription,
             isDestructive: true
           }
         ],
@@ -114,9 +127,17 @@ export default {
       const userOrganization = this.$store.state.user.organization;
       return userOrganization && userOrganization.id;
     },
-    isDOSubscription () {
+    isSample () {
+      const sample = this.dataset.sample;
+      return sample && !!sample.entity_id || false;
+    },
+    entitySubscribed () {
+      const sample = this.dataset.sample;
+      return sample && sample.entity_subscribed || false;
+    },
+    isSubscription () {
       const subscription = this.dataset.subscription;
-      return subscription && subscription.provider === 'do-v2';
+      return subscription && !!subscription.entity_id || false;
     }
   },
   methods: {
@@ -187,6 +208,13 @@ export default {
         create_vis: false
       });
       this.closeDropdown();
+    },
+    goToEntity () {
+      const entity = this.dataset.sample || this.dataset.subscription;
+      this.$router.push({
+        name: 'catalog-dataset-summary',
+        params: { entity_id: entity.entity_id, entity_type: entity.entity_type }
+      });
     },
     unlockDataset () {
       DialogActions.changeLockState.apply(this, [this.dataset, 'datasets', this.getActionHandlers()]);

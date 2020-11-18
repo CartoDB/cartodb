@@ -28,7 +28,6 @@
     "children": [],
     "synchronization": null,
     "subscription": {
-      "provider": "do-v2",
       "type": "dataset",
       "id": "1234567890"
     },

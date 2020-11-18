@@ -3,7 +3,7 @@ require 'cartodb-common'
 require 'securerandom'
 require_relative 'user_service'
 require_relative 'user_db_service'
-require_relative 'synchronization_oauth'
+require_relative 'connection'
 require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/user_commons'
@@ -45,7 +45,10 @@ class Carto::User < ActiveRecord::Base
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
-  has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
+  has_many :connections, class_name: Carto::Connection, inverse_of: :user, dependent: :destroy
+  scope :oauth_connections, -> { where(type: Carto::Connection::TYPE_OAUTH_SERVICE) }
+  scope :db_connections, -> { where(type: Carto::Connection::TYPE_DB_CONNECTOR) }
+
   has_many :search_tweets, class_name: Carto::SearchTweet, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
   has_many :tags, inverse_of: :user
@@ -199,26 +202,19 @@ class Carto::User < ActiveRecord::Base
   end
 
   def oauth_for_service(service)
-    synchronization_oauths.where(service: service).first
+    oauth_connections.where(service: service).first
   end
 
-  # INFO: don't use, use CartoDB::OAuths#add instead
   def add_oauth(service, token)
-    # INFO: this should be the right way, but there's a problem with pgbouncer:
-    # ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist
-    # synchronization_oauths.create(
-    #    service:  service,
-    #    token:    token
-    # )
-    # INFO: even this fails eventually, th the same error. See https://github.com/CartoDB/cartodb/issues/4003
-    synchronization_oauth = Carto::SynchronizationOauth.new(
+    connection = Carto::Connection.new(
       user_id: id,
+      type: Carto::Connection::TYPE_OAUTH_SERVICE,
       service: service,
       token: token
     )
-    synchronization_oauth.save
-    synchronization_oauths.append(synchronization_oauth)
-    synchronization_oauth
+    connection.save
+    connections.append(connection)
+    connection
   end
 
   def get_geocoding_calls(options = {})

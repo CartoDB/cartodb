@@ -30,13 +30,13 @@ namespace :poc do
                                    &central_organization_commands.method(:delete_organization))
 
     at_exit do
-      log_debug(message: 'Stopping subscriber...')
-      subscription.stop!
-      log_debug(message: 'Done')
+      log_info(message: 'Stopping subscriber...')
+      subscription&.stop!
+      log_info(message: 'Subscriber stopped')
     end
 
     subscription.start
-    log_debug(message: 'Consuming messages from subscription')
+    log_info(message: 'Consuming messages from subscription')
     sleep
   end
 end

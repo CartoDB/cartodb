@@ -6,9 +6,6 @@ describe Carto::Api::EmailNotificationsController do
 
   before(:all) do
     @carto_user = FactoryGirl.create(:carto_user)
-    @carto_user.email_notifications = {
-      do_subscriptions: true
-    }
   end
 
   let(:auth_params) do
@@ -16,10 +13,20 @@ describe Carto::Api::EmailNotificationsController do
   end
 
   describe '#show' do
-    it 'list the current notifications' do
+    it 'always list available notifications with default value if missing in database' do
       get_json(api_v3_email_notifications_show_url(auth_params)) do |response|
         response.status.should eq 200
         response.body.should eq({ notifications: { do_subscriptions: true } })
+      end
+    end
+
+    it 'list the current notifications' do
+      @carto_user.email_notifications = {
+          do_subscriptions: false
+      }
+      get_json(api_v3_email_notifications_show_url(auth_params)) do |response|
+        response.status.should eq 200
+        response.body.should eq({ notifications: { do_subscriptions: false } })
       end
     end
 

@@ -22,7 +22,7 @@ describe Carto::Api::EmailNotificationsController do
 
     it 'list the current notifications' do
       @carto_user.email_notifications = {
-          do_subscriptions: false
+        do_subscriptions: false
       }
       get_json(api_v3_email_notifications_show_url(auth_params)) do |response|
         response.status.should eq 200

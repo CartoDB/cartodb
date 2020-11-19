@@ -82,6 +82,13 @@ describe Carto::ApiKey do
     }
   end
 
+  def data_observatory_datasets_grant(datasets = ['carto-do.here.pointsofinterest_pointsofinterest_usa_latlon_v1_quarterly_v1'])
+    {
+      type: 'data-observatory',
+      datasets: datasets
+    }
+  end
+
   def user_grant(data = ['profile'])
     {
       type: 'user',
@@ -809,6 +816,30 @@ describe Carto::ApiKey do
         expect {
           @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
         }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    describe 'data observatory datasets api key' do
+      before :each do
+        @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
+        Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
+      end
+
+      after :each do
+        Carto::ApiKey.any_instance.unstub(:db_role)
+      end
+
+      it 'grants with data observatory datasets' do
+        grants = [apis_grant(['maps']), data_observatory_datasets_grant]
+        expected = ['carto-do.here.pointsofinterest_pointsofinterest_usa_latlon_v1_quarterly_v1']
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'data-observatory', grants: grants)
+
+        api_key.should be
+        api_key.data_observatory_datasets.should eq expected
+        data_observatory_datasets = $users_metadata.hget(api_key.send(:redis_key), :data_observatory_datasets)
+        expect(JSON.parse(data_observatory_datasets, symbolize_names: true)).to eql(expected)
+
+        api_key.destroy
       end
     end
 

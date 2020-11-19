@@ -10,7 +10,7 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
 
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
 
-    max_one_sections = ['database', 'dataservices', 'user']
+    max_one_sections = ['database', 'dataservices', 'user', 'data-observatory']
     max_one_sections.each do |section|
       if value.count { |v| v[:type] == section } > 1
         record.errors[attribute] << "only one #{section} section is allowed"
@@ -255,6 +255,10 @@ module Carto
       @user_data ||= process_user_data_grants
     end
 
+    def data_observatory_datasets
+      @data_observatory_datasets ||= process_data_observatory_datasets
+    end
+
     def regenerate_token!
       if master?
         # Send all master key updates through the user model, avoid circular updates
@@ -288,6 +292,10 @@ module Carto
 
     def data_services?
       data_services.present?
+    end
+
+    def data_observatory_datasets?
+      data_observatory_datasets.present?
     end
 
     def valid_name_for_type
@@ -455,6 +463,13 @@ module Carto
       dataset_metadata_grants.try(:[], :table_metadata)
     end
 
+    def process_data_observatory_datasets
+      data_observatory_grants = grants.find { |v| v[:type] == 'data-observatory' }
+      return nil unless data_observatory_grants.present?
+
+      data_observatory_grants[:datasets]
+    end
+
     def check_permissions
       # Only checks if no previous errors in JSON definition
       check_table_permissions
@@ -613,6 +628,7 @@ module Carto
     def redis_hash_as_array
       hash = ['user', user.username, 'type', type, 'database_role', db_role, 'database_password', db_password]
       granted_apis.each { |api| hash += ["grants_#{api}", true] }
+      hash += ["data_observatory_datasets", data_observatory_datasets]
       hash
     end
 

@@ -157,7 +157,7 @@ export default {
             console.log('TILEJSON', tileJSON);
             const { center, tilestats } = tileJSON;
             this.initialViewState = {
-              zoom: parseFloat(center[2]) - 1,
+              zoom: parseFloat(center[2]),
               latitude: parseFloat(center[1]),
               longitude: parseFloat(center[0]),
               bearing: 0,

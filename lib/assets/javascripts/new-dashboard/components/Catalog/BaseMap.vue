@@ -2,7 +2,7 @@
   <div class="base-map">
     <div id="map"></div>
     <canvas id="deck-canvas"></canvas>
-    <div v-show="showInfo" class="map-info">
+    <div v-show="showInfo && description" class="map-info">
       <p class="is-small">{{ description }}</p>
     </div>
     <div v-if="recenter" class="recenter" @click="recenterMap">
@@ -18,7 +18,16 @@ import mapboxgl from 'mapbox-gl';
 import { Deck } from '@deck.gl/core';
 import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
 
+import colorBinsStyle from './map-styles/color-bins-style';
+import colorCategoriesStyle from './map-styles/color-categories-style';
+
 let deck;
+let propId;
+let colorStyle;
+let getFillColor;
+let getLineColor;
+let pointRadiusMinPixels;
+let lineWidthMinPixels;
 
 export default {
   name: 'BaseMap',
@@ -30,6 +39,7 @@ export default {
     return {
       map: null,
       variable: null,
+      geomType: null,
       initialViewState: {
         latitude: 0,
         longitude: 0,
@@ -49,9 +59,6 @@ export default {
     },
     description () {
       return this.variable && this.variable.description;
-    },
-    defaultSource () {
-      return this.dataset.sample_info && this.dataset.sample_info.default_source || 'Test';
     }
   },
   created () {
@@ -74,38 +81,9 @@ export default {
         this.syncMapboxViewState(viewState);
       },
       controller: true,
-      layers: [
-        new CartoBQTilerLayer({
-          data: this.tilesetSampleId(this.dataset.id),
-          credentials: {
-            username: 'public',
-            apiKey: 'default_public',
-            mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
-          },
-          getFillColor: [130, 109, 186],
-          getLineColor: [0, 0, 0, 100],
-          lineWidthMinPixels: 0.5,
-          getLineWidth: 4,
-          getRadius: 16,
-          pickable: true,
-          onDataLoad: (tileJSON) => {
-            console.log('TILEJSON', tileJSON);
-            const { center, tilestats } = tileJSON;
-            this.initialViewState = {
-              zoom: parseFloat(center[2]) - 1,
-              latitude: parseFloat(center[1]),
-              longitude: parseFloat(center[0]),
-              bearing: 0,
-              pitch: 0
-            };
-            this.recenterMap();
-            this.setVariable(tilestats.layers[0].attributes[1]);
-          }
-        })
-      ],
       getTooltip: ({ object }) => {
-        if (!object) return false;
-        const title = this.variable.name || this.variable.attribute;
+        if (!object || !this.variable) return false;
+        const title = this.variable.attribute;
         let value = object.properties[this.variable.attribute];
         if (value === undefined) return false;
         if (typeof value === 'number') {
@@ -126,6 +104,8 @@ export default {
         return { html, style };
       }
     });
+
+    this.renderLayer();
   },
   methods: {
     importMapboxStyles () {
@@ -159,7 +139,47 @@ export default {
       deck.setProps({ initialViewState: { ...this.initialViewState } });
       this.syncMapboxViewState(this.initialViewState);
     },
-    setVariable (variable) {
+    renderLayer () {
+      const layers = [
+        new CartoBQTilerLayer({
+          data: this.tilesetSampleId(this.dataset.id),
+          credentials: {
+            username: 'public',
+            apiKey: 'default_public',
+            mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
+          },
+          getFillColor,
+          getLineColor,
+          pointRadiusMinPixels,
+          lineWidthMinPixels,
+          pickable: true,
+          onDataLoad: (tileJSON) => {
+            console.log('TILEJSON', tileJSON);
+            const { center, tilestats } = tileJSON;
+            this.initialViewState = {
+              zoom: parseFloat(center[2]) - 1,
+              latitude: parseFloat(center[1]),
+              longitude: parseFloat(center[0]),
+              bearing: 0,
+              pitch: 0
+            };
+            this.recenterMap();
+            this.setGeomType(tilestats);
+            this.setVariable(tilestats);
+            this.resetColorStyle();
+            this.generateColorStyle();
+            this.renderLayer();
+          }
+        })
+      ];
+      deck.setProps({ layers });
+    },
+    setGeomType (tilestats) {
+      this.geomType = tilestats.layers[0].geometry;
+    },
+    setVariable (tilestats) {
+      const variable = tilestats.layers[0].attributes[1];
+      if (!this.variables || !variable) return;
       const variableExtra = this.variables.find((v) => {
         return v.id.split('.').slice(-1)[0] === variable.attribute;
       });
@@ -177,6 +197,91 @@ export default {
         });
       }
       return value.toLocaleString();
+    },
+    generateColorStyle () {
+      const g = this.geomType;
+      const v = this.variable && this.variable.type;
+      const stats = this.variable;
+
+      propId = this.variable && this.variable.attribute;
+
+      if (g === 'Polygon' && v === null) {
+        getFillColor = [130, 109, 186];
+        getLineColor = [0, 0, 0, 100];
+        lineWidthMinPixels = 0.5;
+      }
+      if (g === 'Polygon' && v === 'Number') {
+        colorStyle = colorBinsStyle({
+          breaks: { stats, method: 'quantiles', bins: 5 },
+          colors: 'OrYel'
+        });
+        getFillColor = (d) => colorStyle(d.properties[propId]);
+        getLineColor = [0, 0, 0, 100];
+        lineWidthMinPixels = 0.5;
+      }
+      if (g === 'Polygon' && v === 'String') {
+        colorStyle = colorCategoriesStyle({
+          categories: { stats, top: 10 },
+          colors: 'Bold'
+        });
+        getFillColor = (d) => colorStyle(d.properties[propId]);
+        getLineColor = [0, 0, 0, 100];
+        lineWidthMinPixels = 0.5;
+      }
+      if (g === 'LineString' && v === null) {
+        getLineColor = [76, 200, 163];
+        lineWidthMinPixels = 2;
+      }
+      if (g === 'LineString' && v === 'Number') {
+        colorStyle = colorBinsStyle({
+          breaks: { stats, method: 'quantiles', bins: 5 },
+          colors: 'SunsetDark'
+        });
+        getLineColor = (d) => colorStyle(d.properties[propId]);
+        lineWidthMinPixels = 2;
+      }
+      if (g === 'LineString' && v === 'String') {
+        colorStyle = colorCategoriesStyle({
+          categories: { stats, top: 10 },
+          colors: 'Bold'
+        });
+        getLineColor = (d) => colorStyle(d.properties[propId]);
+        lineWidthMinPixels = 2;
+      }
+      if (g === 'Point' && v === null) {
+        getFillColor = [238, 77, 90];
+        getLineColor = [0, 0, 0, 100];
+        pointRadiusMinPixels = 3;
+        lineWidthMinPixels = 0.5;
+      }
+      if (g === 'Point' && v === 'Number') {
+        colorStyle = colorBinsStyle({
+          breaks: { stats, method: 'quantiles', bins: 5 },
+          colors: 'SunsetDark'
+        });
+        getFillColor = (d) => colorStyle(d.properties[propId]);
+        getLineColor = [0, 0, 0, 100];
+        pointRadiusMinPixels = 3;
+        lineWidthMinPixels = 0.5;
+      }
+      if (g === 'Point' && v === 'String') {
+        colorStyle = colorCategoriesStyle({
+          categories: { stats, top: 10 },
+          colors: 'Safe'
+        });
+        getFillColor = (d) => colorStyle(d.properties[propId]);
+        getLineColor = [0, 0, 0, 100];
+        pointRadiusMinPixels = 3;
+        lineWidthMinPixels = 0.5;
+      }
+    },
+    resetColorStyle () {
+      propId = undefined;
+      colorStyle = undefined;
+      getFillColor = undefined;
+      getLineColor = undefined;
+      pointRadiusMinPixels = undefined;
+      lineWidthMinPixels = undefined;
     }
   }
 };

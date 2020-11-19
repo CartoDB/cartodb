@@ -38,7 +38,7 @@ export default {
       return this.dataset.name;
     },
     defaultSource () {
-      return this.dataset.sample_info && this.dataset.sample_info.default_source || 'Test';
+      return this.dataset.sample_info && this.dataset.sample_info.default_source;
     }
   },
   methods: {
@@ -50,7 +50,7 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .catalog-dataset-map {
-  margin: 12px;
+  margin: 12px 12px 24px;
   padding: 12px;
   border-radius: 4px;
   background: $color-primary--soft;
@@ -74,7 +74,7 @@ export default {
 .footer {
   display: flex;
   justify-content: flex-end;
-  margin: 24px 12px;
+  margin: 0 12px 24px 12px;
 
   span {
     display: flex;

@@ -2,6 +2,7 @@
   <div class="base-map">
     <div id="map"></div>
     <canvas id="deck-canvas"></canvas>
+    <div class="cover" v-if="!showMap"></div>
     <div v-show="showInfo && description" class="map-info">
       <p class="is-small">{{ description }}</p>
     </div>
@@ -38,15 +39,10 @@ export default {
   data () {
     return {
       map: null,
+      showMap: false,
       variable: null,
       geomType: null,
-      initialViewState: {
-        latitude: 0,
-        longitude: 0,
-        zoom: 0,
-        bearing: 0,
-        pitch: 0
-      }
+      initialViewState: null
     };
   },
   computed: {
@@ -69,14 +65,11 @@ export default {
       container: 'map',
       style: BASEMAP.POSITRON,
       interactive: false,
-      attributionControl: false,
-      center: [this.initialViewState.longitude, this.initialViewState.latitude],
-      zoom: this.initialViewState.zoom
+      attributionControl: false
     });
 
     deck = new Deck({
       canvas: 'deck-canvas',
-      initialViewState: this.initialViewState,
       onViewStateChange: ({ viewState }) => {
         this.syncMapboxViewState(viewState);
       },
@@ -169,6 +162,7 @@ export default {
             this.resetColorStyle();
             this.generateColorStyle();
             this.renderLayer();
+            this.showMap = true;
           }
         })
       ];
@@ -300,6 +294,10 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
+  }
+
+  .cover {
+    background: $color-primary--soft;
   }
 
   .map-info {

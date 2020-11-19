@@ -68,6 +68,7 @@
     </div>
   </div>
 
+  <!-- Account type -->
   <% if (isCartoDBHosted) { %>
     <% if ((isOrgAdmin || isOrgOwner) && licenseExpiration) { %>
       <div class="FormAccount-title">

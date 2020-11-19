@@ -519,7 +519,16 @@ module CartoDB
       # Org users share the same db, so must only delete the schema unless he's the owner
       def drop_organization_user(org_id, is_owner: false, force_destroy: false)
         raise CartoDB::BaseCartoDBError.new('Tried to delete an organization user without org id') if org_id.nil?
-        Thread.new do
+
+        #debugger
+
+        #@user.in_database(as: :superuser) { |db| db.run('select 1') }
+
+        #debugger
+
+        #Thread.new do
+          #@user.in_database(as: :superuser) { |db| db.run('select 1') }
+
           @user.in_database(as: :superuser) do |database|
             if is_owner
               schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', @user.database_schema] +
@@ -557,7 +566,7 @@ module CartoDB
             conn.run("DROP DATABASE \"#{@user.database_name}\"")
           end
           drop_user(conn)
-        end.join
+        #end.join
 
         monitor_user_notification
       end
@@ -941,6 +950,7 @@ module CartoDB
       end
 
       def drop_users_privileges_in_schema(schema, accounts, conn: nil)
+        # esto peta?
         user_database = conn || @user.in_database(as: :superuser, statement_timeout: 600000)
         return unless schema_exists?(schema, user_database)
 

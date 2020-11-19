@@ -371,8 +371,9 @@ class User < Sequel::Model
   def set_force_destroy
     @force_destroy = true
   end
-
+  # se destruye el owner, peta el before_destroy
   def before_destroy(skip_table_drop: false)
+    log_info(message: 'Calling User#before_destroy')
     ensure_nonviewer
 
     @org_id_for_org_wipe = nil
@@ -401,14 +402,14 @@ class User < Sequel::Model
 
     begin
       # Remove user data imports, maps, layers and assets
-      ActiveRecord::Base.transaction do
+      # ActiveRecord::Base.transaction do
         delete_external_data_imports
         delete_external_sources
         Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.map(&:destroy_without_checking_permissions!)
         oauth_app_user = Carto::OauthAppUser.where(user_id: id).first
         oauth_app_user.oauth_access_tokens.each(&:destroy) if oauth_app_user
         Carto::ApiKey.where(user_id: id).each(&:destroy)
-      end
+      # end
 
       # This shouldn't be needed, because previous step deletes canonical visualizations.
       # Kept in order to support old data.
@@ -443,6 +444,7 @@ class User < Sequel::Model
 
     # Invalidate user cache
     invalidate_varnish_cache
+    log_info(message: 'User#before_destroy -> Trying to drop DB')
 
     drop_database(has_organization) unless skip_table_drop || error_happened
 
@@ -466,11 +468,11 @@ class User < Sequel::Model
       raise CartoDB::BaseCartoDBError.new(
         'The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
     else
-      Thread.new {
+      #Thread.new {
         conn = in_database(as: :cluster_admin)
         db_service.drop_database_and_user(conn)
         db_service.drop_user(conn)
-      }.join
+      #}.join
       db_service.monitor_user_notification
     end
   end

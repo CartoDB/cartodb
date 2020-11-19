@@ -216,6 +216,7 @@ module Carto
     # INFO: replacement for destroy because destroying owner triggers
     # organization destroy
     def destroy_cascade(delete_in_central: false)
+      log_info(message: 'Running Organization#destroy_cascade')
       # This remains commented because we consider that enabling this for users at SaaS is unnecessary and risky.
       # Nevertheless, code remains, _just in case_. More info at https://github.com/CartoDB/cartodb/issues/12049
       # Central branch: 1764-Allow_updating_inactive_users
@@ -225,7 +226,12 @@ module Carto
 
       groups.each(&:destroy_group_with_extension)
       destroy_non_owner_users
-      owner ? owner.sequel_user.destroy_cascade : destroy
+      if owner
+        log_info(message: 'Organization#destroy_cascade -> Will call destroy_cascade on owner')
+        owner.sequel_user.destroy_cascade
+      else
+        destroy
+      end
     end
 
     def validate_seats_for_signup(user, errors)

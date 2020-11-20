@@ -164,6 +164,7 @@ module Carto
             # DB storage used by premium subscriptions:
             subscriptions_premium_size_in_bytes: @user.subscriptions_premium_size_in_bytes
           },
+          map_views: @user.map_views_count,
           unverified: @user.unverified?,
           api_calls: calls,
           api_calls_quota: @user.organization_user? ? @user.organization.map_view_quota : @user.map_view_quota,

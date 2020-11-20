@@ -316,6 +316,10 @@ class Carto::User < ActiveRecord::Base
     email_notification.enabled
   end
 
+  def map_views_count
+    123 # Mocked value by now.
+  end
+
   def subscriptions_public_size_in_bytes
     subscriptions_size_in_bytes(Carto::DoLicensingService::CARTO_DO_PUBLIC_PROJECT)
   end

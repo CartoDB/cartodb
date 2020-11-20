@@ -3,6 +3,14 @@
     <div id="map"></div>
     <canvas id="deck-canvas"></canvas>
     <div v-if="legend" class="legend">
+      <ColorBinsLegend
+        v-if="variableMax"
+        :title="variableName"
+        :min="variableMin"
+        :max="variableMax"
+        :avg="variableAvg"
+        :bins="variableBins"
+      />
       <ColorCategoriesLegend
         v-if="variableCategories"
         :title="variableName"
@@ -29,6 +37,7 @@ import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
 import colorBinsStyle from './map-styles/colorBinsStyle';
 import colorCategoriesStyle from './map-styles/colorCategoriesStyle';
 
+import ColorBinsLegend from './legends/ColorBinsLegend';
 import ColorCategoriesLegend from './legends/ColorCategoriesLegend';
 
 let deck;
@@ -47,6 +56,7 @@ export default {
     showInfo: Boolean
   },
   components: {
+    ColorBinsLegend,
     ColorCategoriesLegend
   },
   data () {
@@ -72,14 +82,26 @@ export default {
     variableDescription () {
       return this.variable && this.variable.description;
     },
+    variableMin () {
+      return this.formatNumber(this.variable && this.variable.min);
+    },
+    variableMax () {
+      return this.formatNumber(this.variable && this.variable.max);
+    },
+    variableAvg () {
+      return this.formatNumber(this.variable && this.variable.avg);
+    },
+    variableBins () {
+      if (this.variable && this.variable.quantiles && colorStyle) {
+        const bins = this.variable.quantiles[2]['5'].map(q => ({
+          color: `rgb(${colorStyle(q)})`
+        }));
+        return bins;
+      }
+    },
     variableCategories () {
-      if (this.variable && this.variable.categories) {
-        const top = 10;
-        const colorStyle = colorCategoriesStyle({
-          categories: { stats: this.variable, top },
-          colors: 'Bold'
-        });
-        const categories = this.variable.categories.slice(0, top).map(c => ({
+      if (this.variable && this.variable.categories && colorStyle) {
+        const categories = this.variable.categories.slice(0, 10).map(c => ({
           color: `rgb(${colorStyle(c.category)})`,
           name: c.category
         }));
@@ -218,13 +240,15 @@ export default {
       console.log('VARIABLE', { ...this.variable });
     },
     formatNumber (value) {
-      if (!Number.isInteger(value)) {
-        return value.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 3
-        });
+      if (value !== undefined && value !== null) {
+        if (!Number.isInteger(value)) {
+          return value.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 3
+          });
+        }
+        return value.toLocaleString();
       }
-      return value.toLocaleString();
     },
     generateColorStyle () {
       const g = this.geomType;

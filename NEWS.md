@@ -6,6 +6,7 @@ Development
 
 ### Features
 * Email notifications toggle API endpoint [#15930](https://github.com/CartoDB/cartodb/pull/15930)
+* Allow to create regular apikeys for data observatory datasets [#15940](https://github.com/CartoDB/cartodb/pull/15940)
 
 ### Bug fixes / enhancements
 * Fix BigQuery connector not importing 0-bytes-processed datasets [#15916](https://github.com/CartoDB/cartodb/pull/15916)

@@ -1,3 +1,5 @@
+# rubocop:disable InstanceVariable, DepartmentName
+
 require 'spec_helper_min'
 require 'support/helpers'
 require 'factories/carto_visualizations'
@@ -223,6 +225,37 @@ describe Carto::Api::ApiKeysController do
           api_key_response[:token].should_not be_empty
           api_key_response[:databaseConfig].should_not be
 
+          Carto::ApiKey.where(name: api_key_response[:name]).each(&:destroy)
+        end
+      end
+
+      it 'creates a new API key with data observatory datasets' do
+        grants = [
+          {
+            type: 'apis',
+            apis: ['maps']
+          },
+          {
+            type: 'data-observatory',
+            datasets: [
+              'carto-do.here.pointsofinterest_pointsofinterest_usa_latlon_v1_quarterly_v1'
+            ]
+          }
+        ]
+        name = 'foo'
+        payload = { name: name, grants: grants }
+        auth_user(@carto_user)
+        post_json api_keys_url, auth_params.merge(payload), auth_headers do |response|
+          response.status.should eq 201
+          api_key_response = response.body
+          api_key_response[:id].should_not be
+          api_key_response[:name].should eq name
+          api_key_response[:user][:username].should eq @carto_user.username
+          api_key_response[:type].should eq 'regular'
+          api_key_response[:token].should_not be_empty
+          expected_datasets_granted = ['carto-do.here.pointsofinterest_pointsofinterest_usa_latlon_v1_quarterly_v1']
+          request_datasets_granted = grants.find { |grant| grant[:type] == 'data-observatory' }[:datasets]
+          expect(request_datasets_granted).to eql(expected_datasets_granted)
           Carto::ApiKey.where(name: api_key_response[:name]).each(&:destroy)
         end
       end
@@ -1844,3 +1877,5 @@ describe Carto::Api::ApiKeysController do
     end
   end
 end
+
+# rubocop:enable InstanceVariable, DepartmentName

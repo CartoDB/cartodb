@@ -2,7 +2,7 @@
   <div class="base-map">
     <div id="map"></div>
     <canvas id="deck-canvas"></canvas>
-    <div v-if="legend" class="legend">
+    <div v-if="legend && !isGeography" class="legend">
       <ColorBinsLegend
         v-if="variableMax"
         :title="variableName"
@@ -75,6 +75,9 @@ export default {
     }),
     title () {
       return this.dataset.name;
+    },
+    isGeography () {
+      return this.$route.params.entity_type === 'geography';
     },
     variableName () {
       return this.variable && this.variable.attribute;
@@ -257,8 +260,8 @@ export default {
 
       propId = this.variable && this.variable.attribute;
 
-      if (g === 'Polygon' && v === null) {
-        getFillColor = [130, 109, 186];
+      if (g === 'Polygon' && v === null || this.isGeography) {
+        getFillColor = [234, 200, 100, 168];
         getLineColor = [0, 0, 0, 100];
         lineWidthMinPixels = 0.5;
       }
@@ -280,8 +283,8 @@ export default {
         getLineColor = [0, 0, 0, 100];
         lineWidthMinPixels = 0.5;
       }
-      if (g === 'LineString' && v === null) {
-        getLineColor = [76, 200, 163];
+      if (g === 'LineString' && v === null || this.isGeography) {
+        getLineColor = [234, 200, 100, 168];
         lineWidthMinPixels = 2;
       }
       if (g === 'LineString' && v === 'Number') {
@@ -300,8 +303,8 @@ export default {
         getLineColor = (d) => colorStyle(d.properties[propId]);
         lineWidthMinPixels = 2;
       }
-      if (g === 'Point' && v === null) {
-        getFillColor = [238, 77, 90];
+      if (g === 'Point' && v === null || this.isGeography) {
+        getFillColor = [234, 200, 100, 168];
         getLineColor = [0, 0, 0, 100];
         pointRadiusMinPixels = 4;
         lineWidthMinPixels = 0.1;

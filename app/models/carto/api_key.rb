@@ -465,7 +465,7 @@ module Carto
 
     def process_data_observatory_datasets
       data_observatory_grants = grants.find { |v| v[:type] == 'data-observatory' }
-      return nil unless data_observatory_grants.present?
+      return nil if data_observatory_grants.blank?
 
       data_observatory_grants[:datasets]
     end
@@ -628,7 +628,7 @@ module Carto
     def redis_hash_as_array
       hash = ['user', user.username, 'type', type, 'database_role', db_role, 'database_password', db_password]
       granted_apis.each { |api| hash += ["grants_#{api}", true] }
-      hash += ["data_observatory_datasets", data_observatory_datasets]
+      hash += ['data_observatory_datasets', data_observatory_datasets]
       hash
     end
 

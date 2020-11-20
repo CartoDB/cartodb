@@ -5,7 +5,7 @@
         <h1 class="title is-caption is-txtMainTextColor">{{ title }}</h1>
         <img src="../../assets/icons/catalog/button-question.svg" alt="question" @click="infoVisible = !infoVisible">
       </div>
-      <BaseMap class="base-map" :showInfo="infoVisible" :legend="true" :recenter="true" />
+      <CatalogMap class="base-map" :showInfo="infoVisible" :legend="true" :recenter="true" />
     </div>
     <div class="footer" v-if="defaultSource">
       <span class="is-small">
@@ -18,12 +18,12 @@
 
 <script>
 import { mapState } from 'vuex';
-import BaseMap from 'new-dashboard/components/Catalog/BaseMap';
+import CatalogMap from 'new-dashboard/components/Catalog/CatalogMap';
 
 export default {
   name: 'CatalogDatasetMap',
   components: {
-    BaseMap
+    CatalogMap
   },
   data () {
     return {

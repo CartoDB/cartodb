@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cell u-flex__justify--center u-mb--16 wrap-reverse--tablet">
     <div class="grid-cell grid-cell--col9 grid-cell--col12--tablet main-column">
-      <MapPreview />
+      <CatalogMapPreview />
       <p
         class="text is-caption is-txtMainTextColor u-mt--32 u-mt--12--tablet"
         v-html="dataset.description || 'No description available.'"
@@ -104,12 +104,12 @@ import { temporalAggregationName } from 'new-dashboard/utils/catalog/temporal-ag
 import { geometryTypeName } from 'new-dashboard/utils/catalog/geometry-type-name';
 import { updateFrequencyName } from 'new-dashboard/utils/catalog/update-frequency-name';
 import { sendCustomDimensions } from 'new-dashboard/utils/catalog/custom-dimensions-ga';
-import MapPreview from 'new-dashboard/components/Catalog/MapPreview';
+import CatalogMapPreview from 'new-dashboard/components/Catalog/CatalogMapPreview';
 
 export default {
   name: 'CatalogDatasetSummary',
   components: {
-    MapPreview
+    CatalogMapPreview
   },
   watch: {
     dataset: {

@@ -40,7 +40,7 @@ let pointRadiusMinPixels;
 let lineWidthMinPixels;
 
 export default {
-  name: 'BaseMap',
+  name: 'CatalogMap',
   props: {
     legend: Boolean,
     recenter: Boolean,

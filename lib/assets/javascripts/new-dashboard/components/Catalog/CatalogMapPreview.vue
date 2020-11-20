@@ -1,6 +1,6 @@
 <template>
   <div class="map-preview">
-    <BaseMap />
+    <CatalogMap />
     <div class="overlay">
       <router-link :to="{ name: 'catalog-dataset-map' }" replace>
         Explore
@@ -10,12 +10,12 @@
 </template>
 
 <script>
-import BaseMap from 'new-dashboard/components/Catalog/BaseMap';
+import CatalogMap from 'new-dashboard/components/Catalog/CatalogMap';
 
 export default {
-  name: 'PreviewMap',
+  name: 'CatalogMapPreview',
   components: {
-    BaseMap
+    CatalogMap
   }
 };
 </script>

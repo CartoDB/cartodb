@@ -1,3 +1,5 @@
+# rubocop:disable InstanceVariable, GlobalVars, DepartmentName
+
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/database_connection_helper'
@@ -834,11 +836,11 @@ describe Carto::ApiKey do
       it 'grants with data observatory datasets' do
         grants = [apis_grant(['maps']), data_observatory_datasets_grant]
         expected = ['carto-do.here.pointsofinterest_pointsofinterest_usa_latlon_v1_quarterly_v1']
-        api_key = @carto_user1.api_keys.create_regular_key!(name: 'data-observatory', grants: grants) # rubocop:disable InstanceVariable, DepartmentName
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'data-observatory', grants: grants)
 
         api_key.should be
         api_key.data_observatory_datasets.should eq expected
-        data_observatory_datasets = $users_metadata.hget(api_key.send(:redis_key), :data_observatory_datasets) # rubocop:disable GlobalVars, DepartmentName
+        data_observatory_datasets = $users_metadata.hget(api_key.send(:redis_key), :data_observatory_datasets)
         expect(JSON.parse(data_observatory_datasets, symbolize_names: true)).to eql(expected)
 
         api_key.destroy
@@ -1113,3 +1115,5 @@ describe Carto::ApiKey do
     connection.execute("drop table \"#{schema}\".#{table_name}") if drop
   end
 end
+
+# rubocop:enable InstanceVariable, GlobalVars, DepartmentName

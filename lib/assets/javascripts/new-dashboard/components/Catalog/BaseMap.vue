@@ -2,14 +2,21 @@
   <div class="base-map">
     <div id="map"></div>
     <canvas id="deck-canvas"></canvas>
-    <div class="cover" v-if="!showMap"></div>
-    <div v-show="showInfo && description" class="map-info">
-      <p class="is-small">{{ description }}</p>
+    <div v-if="legend" class="legend">
+      <ColorCategoriesLegend
+        v-if="variableCategories"
+        :title="variableName"
+        :categories="variableCategories"
+      />
+    </div>
+    <div v-show="showInfo && variableDescription" class="map-info">
+      <p class="is-small">{{ variableDescription }}</p>
     </div>
     <div v-if="recenter" class="recenter" @click="recenterMap">
       <img src="../../assets/icons/catalog/recenter.svg" alt="recenter">
       <p class="is-small is-semibold">Recenter</p>
     </div>
+    <div class="cover" v-if="!showMap"></div>
   </div>
 </template>
 
@@ -19,8 +26,10 @@ import mapboxgl from 'mapbox-gl';
 import { Deck } from '@deck.gl/core';
 import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
 
-import colorBinsStyle from './map-styles/color-bins-style';
-import colorCategoriesStyle from './map-styles/color-categories-style';
+import colorBinsStyle from './map-styles/colorBinsStyle';
+import colorCategoriesStyle from './map-styles/colorCategoriesStyle';
+
+import ColorCategoriesLegend from './legends/ColorCategoriesLegend';
 
 let deck;
 let propId;
@@ -33,8 +42,12 @@ let lineWidthMinPixels;
 export default {
   name: 'BaseMap',
   props: {
+    legend: Boolean,
     recenter: Boolean,
     showInfo: Boolean
+  },
+  components: {
+    ColorCategoriesLegend
   },
   data () {
     return {
@@ -53,8 +66,29 @@ export default {
     title () {
       return this.dataset.name;
     },
-    description () {
+    variableName () {
+      return this.variable && this.variable.attribute;
+    },
+    variableDescription () {
       return this.variable && this.variable.description;
+    },
+    variableCategories () {
+      if (this.variable && this.variable.categories) {
+        const top = 10;
+        const colorStyle = colorCategoriesStyle({
+          categories: { stats: this.variable, top },
+          colors: 'Bold'
+        });
+        const categories = this.variable.categories.slice(0, top).map(c => ({
+          color: `rgb(${colorStyle(c.category)})`,
+          name: c.category
+        }));
+        categories.push({
+          name: 'Others',
+          color: 'rgb(119, 119, 119)'
+        });
+        return categories;
+      }
     }
   },
   created () {
@@ -245,8 +279,8 @@ export default {
       if (g === 'Point' && v === null) {
         getFillColor = [238, 77, 90];
         getLineColor = [0, 0, 0, 100];
-        pointRadiusMinPixels = 3;
-        lineWidthMinPixels = 0.5;
+        pointRadiusMinPixels = 4;
+        lineWidthMinPixels = 0.1;
       }
       if (g === 'Point' && v === 'Number') {
         colorStyle = colorBinsStyle({
@@ -255,18 +289,18 @@ export default {
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [0, 0, 0, 100];
-        pointRadiusMinPixels = 3;
-        lineWidthMinPixels = 0.5;
+        pointRadiusMinPixels = 4;
+        lineWidthMinPixels = 0.1;
       }
       if (g === 'Point' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
-          colors: 'Safe'
+          colors: 'Bold'
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [0, 0, 0, 100];
-        pointRadiusMinPixels = 3;
-        lineWidthMinPixels = 0.5;
+        pointRadiusMinPixels = 4;
+        lineWidthMinPixels = 0.1;
       }
     },
     resetColorStyle () {
@@ -298,6 +332,17 @@ export default {
 
   .cover {
     background: $color-primary--soft;
+  }
+
+  .legend {
+    width: 240px;
+    height: auto;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 4px;
+    color: $neutral--700;
+    background-color: white;
+    box-shadow: 0 2px 8px 0 rgba(44, 44, 44, 0.16);
   }
 
   .map-info {

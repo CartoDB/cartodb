@@ -22,6 +22,7 @@
       @applyOrder="applyOrder"
       @selectionChange="updateSelected" />
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+    <router-view></router-view>
   </section>
 </template>
 

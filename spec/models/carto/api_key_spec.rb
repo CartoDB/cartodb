@@ -1,4 +1,4 @@
-# rubocop:disable InstanceVariable, GlobalVars, DepartmentName
+# rubocop:disable RSpec/InstanceVariable, Style/GlobalVars
 
 require 'spec_helper_min'
 require 'support/helpers'
@@ -829,21 +829,15 @@ describe Carto::ApiKey do
         described_class.any_instance.stubs(:db_role).returns(db_role)
       end
 
-      after do
-        described_class.any_instance.unstub(:db_role)
-      end
-
       it 'grants with data observatory datasets' do
         grants = [apis_grant(['maps']), data_observatory_datasets_grant]
         expected = ['carto-do.here.pointsofinterest_pointsofinterest_usa_latlon_v1_quarterly_v1']
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'data-observatory', grants: grants)
 
-        api_key.should be
-        api_key.data_observatory_datasets.should eq expected
+        expect(api_key).not_to be(nil)
+        expect(api_key.data_observatory_datasets).to eq(expected)
         data_observatory_datasets = $users_metadata.hget(api_key.send(:redis_key), :data_observatory_datasets)
         expect(JSON.parse(data_observatory_datasets, symbolize_names: true)).to eql(expected)
-
-        api_key.destroy
       end
     end
 
@@ -1116,4 +1110,4 @@ describe Carto::ApiKey do
   end
 end
 
-# rubocop:enable InstanceVariable, GlobalVars, DepartmentName
+# rubocop:enable RSpec/InstanceVariable, Style/GlobalVars

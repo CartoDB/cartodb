@@ -465,7 +465,7 @@ module Carto
 
     def process_data_observatory_datasets
       data_observatory_grants = grants.find { |v| v[:type] == 'data-observatory' }
-      return nil if data_observatory_grants.blank?
+      return if data_observatory_grants.blank?
 
       data_observatory_grants[:datasets]
     end

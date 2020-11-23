@@ -66,7 +66,11 @@ steps:
   args: ['bash', '-c', 'rm -rf .git && cp ci-tools/repos/cartodb/* . && cp config/app_config.yml.sample config/app_config.yml && cp config/database.yml.sample config/database.yml && cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json && cp script/ci/* .']
 
 - name: 'docker/compose:1.22.0'
-  args: ['-f', 'docker-compose-pg12.yml', 'up', '--build', '-d']
+  args: ['-f', 'docker-compose-pg12.yml', 'pull']
+  timeout: 120s
+
+- name: 'docker/compose:1.22.0'
+  args: ['-f', 'docker-compose-pg12.yml', 'up', '-d']
   timeout: 900s
 
 - name: gcr.io/cloud-builders/docker

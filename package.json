@@ -38,7 +38,7 @@
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.34.0",
     "carto": "cartodb/carto#master",
-    "cartocolor": "^4.0.2",
+    "cartocolor": "4.0.0",
     "cartodb-pecan": "0.2.x",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",

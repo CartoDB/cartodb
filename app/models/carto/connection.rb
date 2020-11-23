@@ -49,5 +49,10 @@ module Carto
       connector
     end
 
+    # TODO: before_save:
+    #   self.name ||= connector
+    #   self.parameters = { refresh_token: token } if type == TYPE_OAUTH_SERVICE && parameters.blank?
+    # this could be used as a convention for db-connectors with OAuth
+
   end
 end

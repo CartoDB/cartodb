@@ -109,34 +109,36 @@ module Carto
       DataImportsService.new.get_service_auth_url(@user, service)
     end
 
-    def create_oauth_connection(service:) # returns auth_url, doesn't actually create connection
+    # create Oauth connection logic
+    #    connection = nil
+    #    loop do
+    #      # First check if valid connection already exists
+    #      connection = connection_manager.fetch_valid_oauth_connection(service)
+    #      break if connection
+    #      # Give user opportunity to cancel, since next step will remove any existing connection
+    #      break if user_cancels_connection()
+    #      # let the user authorize our app; existing connection will be dismissed
+    #      open_authorization_window(connection_manager.create_oauth_connection_get_url(service))
+    #    end
+    def fetch_valid_oauth_connection(service) # check for valid oauth_connection
       existing_connection = find_oauth_connection(service)
-      return existing_connection if existing_connection.present?
-
-      name = service
-
-      # alt 1:
-      {
-        auth_url: oauth_connection_url(service)
-      }
-
-      # alt 2:
-      connection = @user.connections.create(name: name, connection: service, token: nil)
-      {
-        id: connection.id,
-        auth_url: oauth_connection_url(service)
-      }
+      return existing_connection if oauth_connection_valid?(existing_connection)
     end
 
-    def oauth_connection_completed?(service)
-      connection = find_oauth_connection(service)
-      connection.present? && connection.token.present?
+    def create_oauth_connection_get_url(service:) # get_url_to_create_oauth_connection
+      existing_connection = find_oauth_connection(service)
+      existing_connection.destroy if existing_connection.present?
+      oauth_connection_url(service)
     end
 
-    def oauth_connection_valid?(service)
-      # return false unless oauth_connection_completed?(service)
+    # def oauth_connection_completed?(service)
+    #   connection = find_oauth_connection(service)
+    #   connection.present? && connection.token.present?
+    # end
 
-      @user.oauths.select(service)&.get_service_datasource&.token_valid?
+    def oauth_connection_valid?(connection)
+      # conection.token.present? && @user.oauths.select(connection.service)&.get_service_datasource&.token_valid?
+      conection.get_service_datasource&.token_valid?
     end
 
     def connection_ready?(id)
@@ -178,9 +180,6 @@ module Carto
     end
 
     def self.valid_db_connectors
-      # Carto::Connector.provider_ids # ["odbc", "postgres", "mysql", "sqlserver", "hive", "bigquery", "do-v2", "do-v2-sample", "snowflake", "redshift"]
-      # Carto::ConnectorProvider.all.map(&:name) # ["postgres", "odbc", "mysql", "sqlserver", "hive", "bigquery", "do-v2", "snowflake", "redshift"]
-      # Carto::Connector.providers.keys # ["postgres", "mysql", "sqlserver", "hive", "bigquery", "snowflake", "redshift"]
       Carto::Connector.providers.keys
     end
 

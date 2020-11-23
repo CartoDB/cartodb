@@ -138,8 +138,7 @@ module CartoDB
       def overwrite_replace(schema, table_name, result)
         return false unless runner.remote_data_updated?
 
-        @table_setup.copy_privileges(schema, table_name, schema, result.table_name)
-        index_statements = @table_setup.generate_index_statements(schema, table_name)
+        table_statements = @table_setup.generate_table_statements(schema, table_name)
 
         temporary_name = temporary_name_for(result.table_name)
         database.transaction do
@@ -149,7 +148,7 @@ module CartoDB
         end
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
-        @table_setup.run_index_statements(index_statements, @database)
+        @table_setup.run_index_statements(table_statements, @database)
       rescue StandardError => exception
         @error_code = OVERWRITE_ERROR
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"

@@ -12,7 +12,7 @@ sudo make install
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Improve the syncronization functions by using `CDB_GetTableQueries`.
 
 4.44.0 (2020-11-20)
 -------------------

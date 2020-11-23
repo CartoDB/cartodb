@@ -316,7 +316,7 @@ module CartoDB
       end
 
       def overwrite_register(result, name)
-        index_statements = @table_setup.generate_index_statements(@destination_schema, name)
+        table_statements = @table_setup.generate_table_statements(@destination_schema, name)
 
         database.transaction do
           log("Replacing #{name} with #{result.table_name}")
@@ -332,7 +332,7 @@ module CartoDB
 
         @table_setup.cartodbfy(name)
         @table_setup.fix_oid(name)
-        @table_setup.run_index_statements(index_statements, @database)
+        @table_setup.run_table_statements(table_statements, @database)
         @table_setup.recreate_overviews(name)
         @table_setup.update_cdb_tablemetadata(name)
         restore_permissions_for(name)

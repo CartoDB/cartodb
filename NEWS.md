@@ -5,7 +5,17 @@ Development
 - None yet
 
 ### Features
+- None yet
+
+### Bug fixes / enhancements
+- None yet
+
+4.44.0 (2020-11-20)
+-------------------
+
+### Features
 * Email notifications toggle API endpoint [#15930](https://github.com/CartoDB/cartodb/pull/15930)
+* New Email settings section in Account page to manage notifications [#15933](https://github.com/CartoDB/cartodb/pull/15933)
 
 ### Bug fixes / enhancements
 * Fix BigQuery connector not importing 0-bytes-processed datasets [#15916](https://github.com/CartoDB/cartodb/pull/15916)

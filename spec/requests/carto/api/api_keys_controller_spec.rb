@@ -1,4 +1,4 @@
-# rubocop:disable InstanceVariable, DepartmentName
+# rubocop:disable RSpec/InstanceVariable
 
 require 'spec_helper_min'
 require 'support/helpers'
@@ -1877,4 +1877,4 @@ describe Carto::Api::ApiKeysController do
   end
 end
 
-# rubocop:enable InstanceVariable, DepartmentName
+# rubocop:enable RSpec/InstanceVariable

@@ -57,7 +57,7 @@ steps:
 
 # Checkout ci-tools
 - name: 'gcr.io/cloud-builders/git'
-  args: ['clone', '-b', 'master', 'git@github.com:CartoDB/ci-tools.git']
+  args: ['clone', '-b', 'albertoh-testing-new-images', 'git@github.com:CartoDB/ci-tools.git']
   volumes:
   - name: 'ssh'
     path: /root/.ssh

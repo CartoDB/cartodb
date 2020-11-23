@@ -1,4 +1,6 @@
 <form accept-charset="UTF-8">
+
+  <!-- Username -->
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.username') %></label>
@@ -12,6 +14,7 @@
     </div>
   </div>
 
+  <!-- Change password -->
   <% if (!hidePasswordFields) { %>
     <div class="VerticalAligned--FormRow">
       <div class="FormAccount-row">
@@ -41,6 +44,7 @@
 
   <%= accountFormExtension %>
 
+  <!-- Multifactor authentication -->
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
@@ -59,11 +63,12 @@
         </p>
       </div>
     </div>
-    <div class="FormAccount-rowData u-tspace-xs">
+    <div class="FormAccount-rowData u-tspace-xs u-vspace-s">
       <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('account.views.form.mfa_description') %></p>
     </div>
   </div>
 
+  <!-- Account type -->
   <% if (isCartoDBHosted) { %>
     <% if ((isOrgAdmin || isOrgOwner) && licenseExpiration) { %>
       <div class="FormAccount-title">
@@ -111,6 +116,46 @@
     <% } %>
   <% } %>
 
+  <!-- Email settings -->
+  <% if (Object.keys(notifications).length > 0) { %>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText"><%= _t('account.views.form.email_section.title') %></p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row FormAccount-row--mediumMarginBottom">
+      <p class="CDB-Text CDB-Size-medium"><%= _t('account.views.form.email_section.description') %></p>
+    </div>
+    
+    <div class="FormAccount-row">
+      <!-- One row per notification (eg: do_subscriptions) -->
+      <% Object.keys(notifications).forEach(function (notificationKey) { %>
+      <div class="FormAccount-rowData FormAccount-rowData--listItemWithAction">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
+          <!-- extract to a 'description' property -->
+          <%= _t('account.views.form.email_section.notifications.' + notificationKey) %>
+        </label>
+        
+        <div class="FormAccount-rowData">
+          <div class="Toggler">
+            <input name="<%='notifications[' + notificationKey + ']'%>" type="hidden" value="0">
+            <input class="js-toggle-notification <%='js-toggle-notification-' + notificationKey%>" id="<%=notificationKey%>" name="<%='notifications[' + notificationKey + ']'%>" type="checkbox" value="1" <% if (notifications[notificationKey]) { %>checked="checked"<% } %>>
+            <label for="<%=notificationKey%>"></label>
+          </div>
+        
+          <div class="FormAccount-rowInfo u-lSpace--xl">
+            <p class="CDB-Text CDB-Size-medium <%='js-notification-label-' + notificationKey%>">
+              <%= notifications[notificationKey] ? _t('account.views.form.email_section.notifications.enabled') : _t('account.views.form.email_section.notifications.disabled') %>
+            </p>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div> 
+  <% } %>
+
+  <!-- External datasources -->
   <% if (services.length > 0) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.connect_external_datasources') %></p>
@@ -121,6 +166,7 @@
     <div class="js-datasourcesContent"></div>
   <% } %>
 
+  <!-- Delete account -->
   <div class="FormAccount-footer <% if (cantBeDeletedReason) { %>FormAccount-footer--noMarginBottom<% } %>">
     <% if (cantBeDeletedReason) { %>
       <p class="FormAccount-footerText">

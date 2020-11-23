@@ -79,6 +79,10 @@ $sLabel-width: 140px;
   margin-bottom: 16px;
 }
 
+.FormAccount-row--mediumMarginBottom {
+  margin-bottom: 24px;
+}
+
 .FormAccount-row--wideMarginBottom {
   margin-bottom: 100px;
 }
@@ -213,6 +217,12 @@ $sLabel-width: 140px;
 .FormAccount-rowData.in-block {
   flex-direction: column;
   align-items: flex-start;
+}
+
+.FormAccount-rowData--listItemWithAction {
+  justify-content: space-between;
+  background: $cStructure-grayBkg;
+  padding: 11px 11px 10px 12px;
 }
 
 .FormAccount-planTag {

@@ -166,7 +166,6 @@ module Carto
     # If a `user:` argument is provided, the  `enabled` key will indicate if the provider is
     # enabled for the user; otherwise it indicates if it is enabled by default.
     #
-    # TODO: add filter for UI-available connectors (i.e. exclude do-sync, do-sample...)
     def self.providers(user: nil, all: false)
       providers_info = {}
       provider_ids.each do |id|
@@ -224,7 +223,9 @@ module Carto
         else
           @params.merge! provider: connector.connector
         end
-        @params.merge! connection: connection
+        @params.merge! connection: connection.parameters
+        # TODO: new convention for hybrid connectors (db-connectors using OAuth and connection parameters)
+        # @params.merge! connection: { refresh_token: token } if connection.parameters.blank? && token.present?
         @params.delete :connection_id
       end
     end

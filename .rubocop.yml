@@ -162,3 +162,10 @@ Style/WordArray:
 Rails/CreateTableWithTimestamps:
   Description: Create new tables with created_at and updated_at timestamps
   Enabled: false
+
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - production
+    - staging
+    - test

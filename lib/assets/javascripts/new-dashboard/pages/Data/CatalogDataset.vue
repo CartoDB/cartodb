@@ -64,6 +64,7 @@
               <NavigationTabs class="grid-cell--col12">
                 <router-link :to="{ name: 'catalog-dataset-summary' }" replace>Summary</router-link>
                 <router-link :to="{ name: 'catalog-dataset-data' }" replace>Data</router-link>
+                <router-link :to="{ name: 'catalog-dataset-map' }" replace>Map</router-link>
               </NavigationTabs>
             </div>
             <router-view></router-view>
@@ -129,6 +130,10 @@ export default {
         Promise.all([
           this.$store.dispatch('catalog/fetchSubscriptionsList'),
           this.$store.dispatch('catalog/fetchDataset', {
+            id: this.$route.params.entity_id,
+            type: this.$route.params.entity_type
+          }),
+          this.$store.dispatch('catalog/fetchVariables', {
             id: this.$route.params.entity_id,
             type: this.$route.params.entity_type
           })

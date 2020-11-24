@@ -15,24 +15,21 @@ module Carto
 
       # Store all properties from the table to re-create them after "syncing" the table by reimporting and swapping it
       def generate_table_statements(origin_schema, origin_table_name)
-
         @user.in_database(as: :superuser)[%(
-            SELECT unnest(q) as queries
-            FROM cartodb.CDB_GetTableQueries(
+            SELECT cartodb.CDB_GetTableQueries(
                             concat(quote_ident('#{origin_schema}'), '.', quote_ident('#{origin_table_name}'))::regclass::oid,
-                            ignore_cartodbfication := true) q
-          )].map { |record| record.fetch(:queries) }
+                            ignore_cartodbfication := true)
+          )]
       end
 
       def run_table_statements(statements, database)
-        # Note: This should be using CDB_RegenerateTable and pass the array from CDB_GetTableQueries
-        statements.each do |statement|
-          begin
-            database.run(statement)
+        begin
+          database.run([%(
+            SELECT cartodb.CDB_ApplyQueriesSafe(#{statements})
+                      )])
           rescue StandardError => e
             log_error(exception: e)
           end
-        end
       end
 
       def cartodbfy(table_name)

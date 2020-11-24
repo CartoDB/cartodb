@@ -23,27 +23,8 @@ module Carto
       end
 
       def create_user(user_param)
-        # NOTE copied from the superadmin users_controller.rb
         log_debug(message: 'Processing :create_user')
-        user = ::User.new
-        user.set_fields_from_central(user_param, :create)
-        user.enabled = true
-
-        if user_param[:rate_limit].present?
-          user.rate_limit_id = Carto::RateLimitsHelper.create_rate_limits(user_param[:rate_limit]).id
-        end
-        if user.save
-          user.reload
-          if user.should_load_common_data?
-            CartoDB::Visualization::CommonDataService.load_common_data(user, Superadmin::UsersController)
-          end
-          user.update_feature_flags(user_param[:feature_flags])
-        end
-        CartoGearsApi::Events::EventManager.instance.notify(
-          CartoGearsApi::Events::UserCreationEvent.new(
-            CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_SUPERADMIN, user
-          )
-        )
+        user = Carto::UserCreator.create(user_param)
         notifications_topic.publish(:user_created, {
                                       username: user.username,
                                       id: user.id

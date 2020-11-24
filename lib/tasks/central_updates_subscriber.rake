@@ -1,6 +1,6 @@
-namespace :poc do
+namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
-  task central_cartodb_commands: [:environment] do |_task, _args|
+  task cartodb_subscribers: [:environment] do |_task, _args|
     include ::LoggerHelper
 
     message_broker = Carto::Common::MessageBroker.instance

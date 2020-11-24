@@ -209,7 +209,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/:id'              => 'visualizations#index', as: :your_connections_edit
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/delete/:id'       => 'visualizations#index', as: :your_connections_delete
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/new'                          => 'visualizations#index', as: :datasets_new
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/new-dataset'                          => 'visualizations#index', as: :datasets_new
 
     # Tables search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q'                    => 'visualizations#index', as: :tables_search

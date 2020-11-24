@@ -93,6 +93,7 @@
     "tabs": {
       "datasets": "Your Datasets",
       "subscriptions": "Your Subscriptions",
+      "connections": "Your Connections",
       "catalog": "Spatial Data Catalog"
     }
   },

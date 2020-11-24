@@ -146,6 +146,7 @@ module CartoDB
           max_layers: max_layers
         },
         notification: notification,
+        email_notifications: decorate_email_notifications,
         avatar_url: avatar,
         feature_flags: feature_flags_names,
         base_url: public_url,
@@ -189,5 +190,16 @@ module CartoDB
         data
       end
     end
+
+    def decorate_email_notifications
+      payload = {}
+      Carto::UserEmailNotification::VALID_NOTIFICATIONS.map { |n| payload[n] = true }
+
+      carto_user.email_notifications.each do |notification|
+        payload[notification.notification] = notification.enabled
+      end
+      payload
+    end
+
   end
 end

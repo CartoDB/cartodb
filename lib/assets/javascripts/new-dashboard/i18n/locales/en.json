@@ -340,6 +340,11 @@
       "total": "Total",
       "perMonth": "per month"
     },
+    "memory": "Memory",
+    "yourPlan": "Your plan",
+    "addOns": "Add-ons",
+    "mapLoads": "Map loads",
+    "quota": "Quota",
     "account": "Your Account",
     "dataServices": "Data Services",
     "storage": "Storage",

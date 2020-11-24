@@ -25,6 +25,7 @@ module Carto
       end
 
       def run_table_statements(statements, database)
+        # Note: This should be using CDB_RegenerateTable and pass the array from CDB_GetTableQueries
         statements.each do |statement|
           begin
             database.run(statement)

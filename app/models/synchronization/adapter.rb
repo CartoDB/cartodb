@@ -148,7 +148,7 @@ module CartoDB
         end
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
-        @table_setup.run_index_statements(table_statements, @database)
+        @table_setup.run_table_statements(table_statements, @database)
       rescue StandardError => exception
         @error_code = OVERWRITE_ERROR
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"

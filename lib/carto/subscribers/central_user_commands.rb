@@ -1,3 +1,6 @@
+require './lib/carto/user_creator'
+require './lib/carto/user_updater'
+
 module Carto
   module Subscribers
     class CentralUserCommands

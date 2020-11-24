@@ -2,6 +2,8 @@ require_relative '../../../lib/carto/http/client'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/overquota_users_service'
 require_dependency 'carto/api/paged_searcher'
+require './lib/carto/user_creator'
+require './lib/carto/user_updater'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper

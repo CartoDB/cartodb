@@ -24,7 +24,7 @@ module Carto
 
       def create_user(user_param)
         log_debug(message: 'Processing :create_user')
-        user = Carto::UserCreator.create(user_param)
+        user = Carto::UserCreator.new.create(user_param)
         notifications_topic.publish(:user_created, {
                                       username: user.username,
                                       id: user.id

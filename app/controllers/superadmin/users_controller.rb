@@ -45,7 +45,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def create
     user_param = params[:user]
-    @user = Carto::UserCreator.create(user_param)
+    @user = Carto::UserCreator.new.create(user_param)
     respond_with(:superadmin, @user)
   end
 

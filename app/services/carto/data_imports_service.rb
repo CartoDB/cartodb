@@ -30,6 +30,7 @@ module Carto
       return nil if !uuid?(id)
 
       import = Carto::DataImport.where(id: id).first
+      return import if import.blank?
 
       if stuck?(import)
         # INFO: failure because of stuck is handled with old model

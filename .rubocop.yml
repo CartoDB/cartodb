@@ -153,3 +153,19 @@ Style/SymbolArray:
 Style/WordArray:
   Description: Use %w or %W for arrays of words.
   Enabled: false
+
+
+####################
+#  Rails
+####################
+
+Rails/CreateTableWithTimestamps:
+  Description: Create new tables with created_at and updated_at timestamps
+  Enabled: false
+
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - production
+    - staging
+    - test

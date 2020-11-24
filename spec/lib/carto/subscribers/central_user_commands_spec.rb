@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Carto::Subscribers::CentralUserCommands do
   let(:notifications_topic) { mock }
-  let(:central_user_commands) { Carto::Subscribers::CentralUserCommands.new(notifications_topic) }
+  let(:central_user_commands) { described_class.new(notifications_topic) }
 
   describe '#update_user' do
     let(:original_user) { create(:user) }

@@ -1,7 +1,7 @@
 module Carto
   class UserCreator
 
-    # NOTE copied from the superadmin users_controller.rb
+    # NOTE: copied from the superadmin users_controller.rb
     def create(params)
       user = ::User.new
 

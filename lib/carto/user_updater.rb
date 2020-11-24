@@ -1,5 +1,6 @@
 module Carto
   class UserUpdater
+
     def initialize(user)
       # TODO: this needs to be a ::User for this to work. We need to
       # progress in the synchronizable concern, in particular the
@@ -17,5 +18,6 @@ module Carto
       @user.update_do_subscription(user_param[:do_subscription])
       @user.save
     end
+
   end
 end

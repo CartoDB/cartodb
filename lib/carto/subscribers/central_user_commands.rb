@@ -16,18 +16,8 @@ module Carto
 
         return unless user_id.present? && user_param.any?
 
-        # TODO: need to progress in the synchronizable concern
-        # in particular, set_fields_from_central at least
         user = ::User.where(id: user_id).first
-
-        # Copied from Superadmin::UsersController#update
-        user.set_fields_from_central(user_param, :update)
-        user.update_feature_flags(user_param[:feature_flags])
-        user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
-        user.update_rate_limits(user_param[:rate_limit])
-        user.update_gcloud_settings(user_param[:gcloud_settings])
-        user.update_do_subscription(user_param[:do_subscription])
-        user.save
+        Carto::UserUpdater.new(user).update(user_param)
 
         log_info(message: 'User updated', current_user: user)
       end

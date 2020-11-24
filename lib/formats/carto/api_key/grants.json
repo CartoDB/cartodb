@@ -13,7 +13,8 @@
           "apis",
           "database",
           "dataservices",
-          "user"
+          "user",
+          "data-observatory"
         ]
       },
       "apis": {
@@ -115,6 +116,12 @@
       },
       "table_metadata": {
         "type": "array"
+      },
+      "datasets": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
       }
     }
   }

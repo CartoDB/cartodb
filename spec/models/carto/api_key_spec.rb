@@ -1,3 +1,5 @@
+# rubocop:disable RSpec/InstanceVariable, Style/GlobalVars
+
 require 'spec_helper_min'
 require 'support/helpers'
 require 'helpers/database_connection_helper'
@@ -79,6 +81,15 @@ describe Carto::ApiKey do
     {
       type: 'dataservices',
       services: services
+    }
+  end
+
+  def data_observatory_datasets_grant(
+    datasets = ['carto-do.here.pointsofinterest_pointsofinterest_usa_latlon_v1_quarterly_v1']
+  )
+    {
+      type: 'data-observatory',
+      datasets: datasets
     }
   end
 
@@ -812,6 +823,24 @@ describe Carto::ApiKey do
       end
     end
 
+    describe 'data observatory datasets api key' do
+      before do
+        db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
+        described_class.any_instance.stubs(:db_role).returns(db_role)
+      end
+
+      it 'grants with data observatory datasets' do
+        grants = [apis_grant(['maps']), data_observatory_datasets_grant]
+        expected = ['carto-do.here.pointsofinterest_pointsofinterest_usa_latlon_v1_quarterly_v1']
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'data-observatory', grants: grants)
+
+        expect(api_key).not_to be(nil)
+        expect(api_key.data_observatory_datasets).to eq(expected)
+        data_observatory_datasets = $users_metadata.hget(api_key.send(:redis_key), :data_observatory_datasets)
+        expect(JSON.parse(data_observatory_datasets, symbolize_names: true)).to eql(expected)
+      end
+    end
+
     describe 'filter by type' do
       it 'filters just master' do
         api_keys = @carto_user1.api_keys.by_type([Carto::ApiKey::TYPE_MASTER])
@@ -1080,3 +1109,5 @@ describe Carto::ApiKey do
     connection.execute("drop table \"#{schema}\".#{table_name}") if drop
   end
 end
+
+# rubocop:enable RSpec/InstanceVariable, Style/GlobalVars

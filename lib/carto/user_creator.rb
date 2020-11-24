@@ -13,7 +13,7 @@ module Carto
       end
       if user.save
         user.reload
-        CartoDB::Visualization::CommonDataService.load_common_data(user, self) if user.should_load_common_data?
+        CartoDB::Visualization::CommonDataService.load_common_data(user, Superadmin::UsersController) if user.should_load_common_data?
         user.update_feature_flags(params[:feature_flags])
       end
       CartoGearsApi::Events::EventManager.instance.notify(

@@ -191,15 +191,5 @@ module CartoDB
       end
     end
 
-    def decorate_email_notifications
-      payload = {}
-      Carto::UserEmailNotification::VALID_NOTIFICATIONS.map { |n| payload[n] = true }
-
-      carto_user.email_notifications.each do |notification|
-        payload[notification.notification] = notification.enabled
-      end
-      payload
-    end
-
   end
 end

@@ -48,20 +48,6 @@ module Carto
         raise e
       end
 
-      def recreate_overviews(table_name)
-        dataset = @overviews_creator.dataset(table_name)
-        dataset.update_overviews!
-      rescue StandardError => e
-        # In case of overview creation failure we'll just omit the
-        # overviews creation and continue with the process.
-        # Since the actual creation is handled by a single SQL
-        # function, and thus executed in a transaction, we shouldn't
-        # need any clean up here. (Either all overviews were created
-        # or nothing changed)
-        @log.append("Overviews recreation failed: #{e.message}")
-        log_error(message: 'Error creating overviews', exception: e, table_name: table_name)
-      end
-
       def fix_oid(table_name)
         user_table = Carto::UserTable.find(@user.tables.where(name: table_name).first.id)
 

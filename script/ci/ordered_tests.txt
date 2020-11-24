@@ -42,7 +42,6 @@ spec/models/permission_spec.rb
 spec/models/carto/permission_spec.rb
 spec/lib/carto/oauth_provider/scopes/scopes_spec.rb
 spec/models/user_part_plans_and_services_spec.rb
-spec/connectors/importer_overviews_spec.rb
 spec/requests/carto/oauth_provider_controller_spec.rb
 spec/requests/sessions_spec.rb
 spec/models/user_organization_spec.rb

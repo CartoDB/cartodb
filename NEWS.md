@@ -6,6 +6,7 @@ Development
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
+* As part of the release of `0.37.0`, the creation of overviews is removed and will no longer work.
 ```
 
 ### Features

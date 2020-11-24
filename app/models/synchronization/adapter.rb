@@ -50,7 +50,6 @@ module CartoDB
             @table_setup.cartodbfy(result.table_name)
             overwrite(user.database_schema, table_name, result, geo_type)
             setup_table(table_name, geo_type)
-            @table_setup.recreate_overviews(table_name)
           end
         end
         self

@@ -16,20 +16,25 @@ module Carto
       # Store all properties from the table to re-create them after "syncing" the table by reimporting and swapping it
       def generate_table_statements(origin_schema, origin_table_name)
         @user.in_database(as: :superuser)[%(
-            SELECT cartodb.CDB_GetTableQueries(
+            SELECT quote_literal(q) as q FROM unnest(cartodb.CDB_GetTableQueries(
                             concat(quote_ident('#{origin_schema}'), '.', quote_ident('#{origin_table_name}'))::regclass::oid,
-                            ignore_cartodbfication := true)
-          )]
+                            ignore_cartodbfication := true)) as q
+          )].map { |record| record.fetch(:q) }
       end
 
       def run_table_statements(statements, database)
-        begin
-          database.run([%(
-            SELECT cartodb.CDB_ApplyQueriesSafe(#{statements})
-                      )])
+        # This should be passing the array from CDB_GetTableQueries as is, but I couldn't find a way
+        # to do it with sequel, so I'm calling CDB_ApplyQueriesSafe multiple times with arrays of length 1
+        # after saving the original array to a ruby array and the strings with quote_literal
+        # Gotta love ORMs
+        statements.each do |statement|
+          begin
+            arr_statement = %(SELECT cartodb.CDB_ApplyQueriesSafe(ARRAY[#{statement}]))
+            database.run(arr_statement)
           rescue StandardError => e
             log_error(exception: e)
           end
+        end
       end
 
       def cartodbfy(table_name)

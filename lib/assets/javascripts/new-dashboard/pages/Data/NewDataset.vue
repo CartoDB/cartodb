@@ -1,30 +1,23 @@
 <template>
-  <Dialog @close="close">
-    <DialogHeader
-      :title="$t('DataPage.addDataset')"
-      :image="require('../../assets/icons/catalog/modal/subsc-add-icon.svg')"
-    ></DialogHeader>
-    <div class="Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder Dialog-body--no-spacing"></div>
+  <Dialog
+    :headerTitle="$t('DataPage.addDataset')"
+    :headerImage="require('../../assets/icons/catalog/modal/subsc-add-icon.svg')"
+  >
+    Add new dataset page
   </Dialog>
 </template>
 
 <script>
 
-import Dialog from 'new-dashboard/components/Backbone/Dialog.vue';
-import DialogHeader from 'new-dashboard/components/Dialogs/DialogHeader.vue';
+import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 
 export default {
   name: 'NewDataset',
   components: {
-    Dialog,
-    DialogHeader
+    Dialog
   },
   computed: {},
-  methods: {
-    close () {
-      this.$router.push({name: 'datasets'});
-    }
-  }
+  methods: {}
 };
 </script>
 

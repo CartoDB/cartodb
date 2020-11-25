@@ -1,10 +1,10 @@
 <template>
-  <Dialog>
+  <Dialog @close="close">
     <DialogHeader
       :title="'Add new dataset'"
       :image="require('../../assets/icons/catalog/modal/subsc-add-icon.svg')"
     ></DialogHeader>
-    <div class="js-content-container Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder"></div>
+    <div class="Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder Dialog-body--no-spacing"></div>
   </Dialog>
 </template>
 
@@ -20,7 +20,11 @@ export default {
     DialogHeader
   },
   computed: {},
-  methods: {}
+  methods: {
+    close () {
+      this.$router.push({name: 'datasets'});
+    }
+  }
 };
 </script>
 

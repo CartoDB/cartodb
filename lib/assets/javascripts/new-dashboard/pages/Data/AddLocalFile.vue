@@ -14,7 +14,7 @@ import Dialog from 'new-dashboard/components/Backbone/Dialog.vue';
 import DialogHeader from 'new-dashboard/components/Dialogs/DialogHeader.vue';
 
 export default {
-  name: 'NewDataset',
+  name: 'AddLocalFile',
   components: {
     Dialog,
     DialogHeader

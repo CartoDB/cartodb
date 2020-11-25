@@ -122,6 +122,11 @@ body.is-inDialog {
   overflow: auto;
 }
 
+.Dialog-body.Dialog-body--create.Dialog-body--no-spacing {
+  margin: 0;
+  padding: 0;
+}
+
 .Dialog-body.Dialog-body--share {
   display: flex;
   flex-direction: column;

@@ -13,7 +13,7 @@ module Carto
       oauth_connectors = db_connectors = []
 
       if type.nil? || types.include?(Carto::Connection::TYPE_OAUTH_SERVICE)
-        oauth_connectors += ConnectionManager.valid_oauth_services.map { |service|
+        oauth_connectors = Carto::ConnectionManager.valid_oauth_services.map { |service|
           # TODO: check enabled for @user
           is_enabled = true
           # TODO: use presenter
@@ -29,7 +29,7 @@ module Carto
       end
 
       if type.nil? || types.include?(Carto::Connection::TYPE_DB_CONNECTOR)
-        db_connectors += ConnectionManager.valid_db_connectors.map { |provider|
+        db_connectors = Carto::ConnectionManager.valid_db_connectors.map { |provider|
           is_enabled = Carto::Connector.provider_available?(provider, @user)
           connector = {
             types: [Carto::Connection::TYPE_DB_CONNECTOR],
@@ -37,7 +37,7 @@ module Carto
             enabled: is_enabled,
             available: is_enabled
           }
-          connector[:connections] = list_connections(connector: service) if connections
+          connector[:connections] = list_connections(connector: provider) if connections
           connector
         }
       end
@@ -47,7 +47,7 @@ module Carto
         db_connector = db_connectors.find { |c| c[:connector] == oauth_connector[:connector] }
         if db_connector.present?
           db_connectors.delete db_connector
-          oauth_connector[:types] += db_connectors[:types]
+          oauth_connector[:types] += db_connector[:types]
           # assume enabled is same for both
           oauth_connector[:available] &&= db_connector[:available]
           if connections
@@ -61,8 +61,8 @@ module Carto
 
     def list_connections(type: nil, connector: nil)
       connections = @user.connections
-      connections = connections.where(type: type) if type.present
-      connections = connections.where(connector: connector) if connector.present
+      connections = connections.where(type: type) if type.present?
+      connections = connections.where(connector: connector) if connector.present?
       connections.map { |connection|
         # TODO: use presenter
         presented_connection = {
@@ -101,7 +101,7 @@ module Carto
       return existing_connection if existing_connection.present?
 
       name ||= generate_unique_db_connection_name(provider) # FIXME: is it a good idea? note that the create may still fail if another connection is concurrently created
-      @user.connections.create(name: name, connection: provider, parameters: parameters)
+      @user.connections.create(name: name, connector: provider, parameters: parameters)
     end
 
 

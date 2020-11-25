@@ -20,7 +20,8 @@ module Carto
     # (note that only token used in the latter case; no parameters as the billing project has been removed from the connection)
     belongs_to :user, class_name: 'Carto::User', inverse_of: :connections
 
-    # TODO: serialize parameters as JSON
+    scope :oauth_connections, -> { where(type: TYPE_OAUTH_SERVICE) }
+    scope :db_connections, -> { where(type: TYPE_DB_CONNECTOR) }
 
     validates :name, uniqueness: { scope: :user_id }
 
@@ -34,25 +35,46 @@ module Carto
       datasource
     end
 
-    def connector
-      service || provider
-    end
-
-    # TODO: replace service, provider by single field connector
-    # then:
     def service
-      raise "..." unless type == TYPE_OAUTH_SERVICE
+      raise "service not available for connection of type #{type}" unless type == TYPE_OAUTH_SERVICE
       connector
     end
+
     def provider
-      raise "..." unless type == TYPE_DB_CONNECTOR
+      raise "provider not available for connection of type #{type}"  unless type == TYPE_DB_CONNECTOR
       connector
     end
 
-    # TODO: before_save:
-    #   self.name ||= connector
-    #   self.parameters = { refresh_token: token } if type == TYPE_OAUTH_SERVICE && parameters.blank?
-    # this could be used as a convention for db-connectors with OAuth
+    before_validation :set_type
+    before_validation :set_name
+    # before_validation :set_parameters
 
+    private
+
+    def set_type
+      return if type.present?
+
+      if token.present?
+        self.type = TYPE_OAUTH_SERVICE
+      else
+        self.type = TYPE_DB_CONNECTOR
+      end
+    end
+
+    def set_name
+      return if name.present?
+
+      if type == TYPE_OAUTH_SERVICE
+        self.name = connector
+      end
+    end
+
+    def set_parameters
+      return if parameters.present?
+
+      if type == TYPE_OAUTH_SERVICE
+        self.parameters = { refresh_token: token }
+      end
+    end
   end
 end

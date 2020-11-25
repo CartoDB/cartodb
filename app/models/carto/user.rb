@@ -46,8 +46,14 @@ class Carto::User < ActiveRecord::Base
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
   has_many :connections, class_name: Carto::Connection, inverse_of: :user, dependent: :destroy
-  scope :oauth_connections, -> { where(type: Carto::Connection::TYPE_OAUTH_SERVICE) }
-  scope :db_connections, -> { where(type: Carto::Connection::TYPE_DB_CONNECTOR) }
+
+  def oauth_connections
+    connections.oauth_connections
+  end
+
+  def db_connections
+    connections.db_connections
+  end
 
   has_many :search_tweets, class_name: Carto::SearchTweet, inverse_of: :user
   has_many :synchronizations, inverse_of: :user

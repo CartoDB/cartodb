@@ -83,6 +83,8 @@
     "createDataset": "New Dataset",
     "addDataset": "Add new dataset",
     "addLocalFile": "Add local file",
+    "formats": "Formats",
+    "learnmore": "Learn more",
     "zeroCase": {
       "title": "Upload your first dataset",
       "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",

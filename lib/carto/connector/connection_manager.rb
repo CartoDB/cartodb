@@ -81,6 +81,7 @@ module Carto
           presented_connection[:token] = OAUTH_TOKEN_PLACEHOLDER
         end
         # TODO: compute in_use
+        presented_connection
       }
     end
 

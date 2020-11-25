@@ -3,11 +3,13 @@
     <StackedQuotaWidget
       :name="$t(`QuotaSection.yourPlan`)"
       :usedQuota="usedStorage"
-      :availableQuota="getAmountInUnit(quotaInBytes)"
-      :unit="getUnit(quotaInBytes)"
+      :availableQuota="getAmountInUnit(availableQuota)"
+      :unit="getUnit(availableQuota)"
       :formatToLocale="false"
+      helpText="TODO"
       :helpLink="storageHelpLink"/>
     <StackedQuotaWidget
+      v-if="subscriptionsPremiumSizeInBytes"
       :name="$t(`QuotaSection.addOns`)"
       :usedQuota="usedPremiumDataSubscriptions"
       :unit="getUnit(subscriptionsPremiumSizeInBytes)"
@@ -42,20 +44,25 @@ export default {
     ...mapState({
       quotaInBytes: state => state.user.storage.quota_in_bytes,
       dbSizeInBytes: state => state.user.storage.db_size_in_bytes,
-      subscriptionsPublicSizeInBytes: state => state.user.storage.subscriptions_public_size_in_bytes || 51200000,
-      subscriptionsPremiumSizeInBytes: state => state.user.storage.subscriptions_premium_size_in_bytes || 40e9
+      subscriptionsPublicSizeInBytes: state => state.user.storage.subscriptions_public_size_in_bytes,
+      subscriptionsPremiumSizeInBytes: state => state.user.storage.subscriptions_premium_size_in_bytes
     }),
+    availableQuota () {
+      return this.quotaInBytes - this.subscriptionsPremiumSizeInBytes;
+    },
+    datasetsSize () {
+      return this.dbSizeInBytes - this.subscriptionsPremiumSizeInBytes - this.subscriptionsPublicSizeInBytes;
+    },
     usedStorage () {
       return [{
         color: DATASETS_COLOR,
         label: 'Datasets',
-        value: getAmountInUnit(35600000, this.storageExponent)
-        // value: getAmountInUnit(this.dbSizeInBytes, this.storageExponent)
-      }, {
+        value: getAmountInUnit(this.datasetsSize, this.storageExponent)
+      }, ...(this.subscriptionsPublicSizeInBytes ? [{
         color: DATA_SUBSCRIPTIONS_COLOR,
         label: 'Public data subscriptions',
         value: getAmountInUnit(this.subscriptionsPublicSizeInBytes, this.storageExponent)
-      }];
+      }] : [])];
     },
     usedPremiumDataSubscriptions () {
       return [

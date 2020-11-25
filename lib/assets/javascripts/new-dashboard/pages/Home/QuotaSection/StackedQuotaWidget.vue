@@ -10,19 +10,21 @@
             <div class="text is-small" v-html="$t('QuotaSection.upgrade', { path: upgradeUrl })"></div>
           </NotificationBadge>
           <div v-else class="progressbar">
-            <template v-if="Array.isArray(usedQuota)">
-              <div v-for="section in usedQuota"
-                :key="section.label"
-                :class="`progressbar ${qualitative ? `progressbar--${getStatusBar}` : 'progressbar--filled'}`"
-                :style="{backgroundColor: section.color, width: `${getUsedPercent(section.value)}%`}">
-              </div>
-            </template>
-            <template v-else>
-              <div
-                :class="`progressbar ${qualitative ? `progressbar--${getStatusBar}` : 'progressbar--filled'}`"
-                :style="{width: `${getUsedPercent(usedQuota)}%`}">
-              </div>
-            </template>
+            <Tooltip :text="tooltipText" position="bottom-right" hide-delay="0s" show-delay="1s">
+              <template v-if="Array.isArray(usedQuota)">
+                <div v-for="section in usedQuota"
+                  :key="section.label"
+                  :class="`progressbar ${qualitative ? `progressbar--${getStatusBar}` : 'progressbar--filled'}`"
+                  :style="{backgroundColor: section.color, width: `${getUsedPercent(section.value)}%`}">
+                </div>
+              </template>
+              <template v-else>
+                <div
+                  :class="`progressbar ${qualitative ? `progressbar--${getStatusBar}` : 'progressbar--filled'}`"
+                  :style="{width: `${getUsedPercent(usedQuota)}%`}">
+                </div>
+              </template>
+            </Tooltip>
           </div>
         </div>
       </div>
@@ -47,7 +49,9 @@
           </span>
         </div>
         <div class="quota-help cell--small">
-          <a :href="helpLink" v-if="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
+          <Tooltip :text="helpText" position="bottom-left" hide-delay="0s" show-delay="1s">
+            <a :href="helpLink" v-if="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
+          </Tooltip>
         </div>
       </div>
     </div>
@@ -64,6 +68,7 @@
 
 <script>
 import NotificationBadge from 'new-dashboard/components/NotificationBadge';
+import Tooltip from 'new-dashboard/components/Tooltip/Tooltip';
 import { mapState } from 'vuex';
 
 export default {
@@ -78,6 +83,7 @@ export default {
       type: Boolean,
       default: true
     },
+    helpText: String,
     helpLink: String,
     isDisabled: {
       type: Boolean,
@@ -93,7 +99,8 @@ export default {
     }
   },
   components: {
-    NotificationBadge
+    NotificationBadge,
+    Tooltip
   },
   data: function () {
     return {
@@ -104,6 +111,13 @@ export default {
     ...mapState({
       upgradeUrl: state => state.config.upgrade_url
     }),
+    tooltipText () {
+      let tooltip = Array.isArray(this.usedQuota) ? `${this.usedQuota.map(l => {
+        return `${l.label} ${this.getNumberInLocaleFormat(this.roundOneDecimal(l.value))} ${this.unit}`;
+      }).join('<br>')}` : null;
+
+      return tooltip;
+    },
     totalUsedQuota () {
       return !Array.isArray(this.usedQuota) ? this.usedQuota : this.usedQuota.reduce((acum, current) => {
         return acum + current.value;
@@ -237,7 +251,7 @@ export default {
 .quota-help {
   display: flex;
   justify-content: flex-end;
-  padding-right: 16px;
+  padding-right: 24px;
   cursor: pointer;
 }
 
@@ -286,6 +300,10 @@ export default {
   height: 8px;
   border-radius: 4px;
   background-color: $progressbar__bg-color;
+
+  .tooltip-container {
+    width: 100%;
+  }
 
   &:not(:last-child) {
     border-radius: 4px 0 0 4px;

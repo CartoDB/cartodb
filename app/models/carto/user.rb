@@ -317,7 +317,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def map_views_count
-    123 # Mocked value by now.
+    123 # TODO. Mocked value by now.
   end
 
   def subscriptions_public_size_in_bytes
@@ -336,9 +336,11 @@ class Carto::User < ActiveRecord::Base
 
   def subscriptions_size_in_bytes(project)
     # Note we cannot filter by `project` subscription attribute, we must use the dataset ID.
-    subs_synced = subscriptions.select { |d| d['sync_status'] == 'synced' && !d['sync_table'].empty? }
-    subs_filtered = subs_synced.select { |d| d['dataset_id'].split('.')[0] == project }
-    total = subs_filtered.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
+    subs_filtered = subscriptions.select { |d| d['dataset_id'].split('.')[0] == project }
+    subs_synced = subs_filtered.select do |d|
+      d['sync_status'] == 'synced' && !d['sync_table'].empty? && Carto::UserTable.exists?(d['sync_table_id'])
+    end
+    total = subs_synced.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
     total || 0
   end
 

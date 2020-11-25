@@ -63,6 +63,12 @@
           {{item.label}}
       </div>
     </div>
+    <div class="quota-warning" v-if="showWarning">
+      <p class="is-small is-bold">
+        <img src="../../../assets/icons/apps/warning.svg" />
+        {{$t('QuotaSection.quotaExceeded')}}
+      </p>
+    </div>
   </div>
 </template>
 
@@ -111,6 +117,9 @@ export default {
     ...mapState({
       upgradeUrl: state => state.config.upgrade_url
     }),
+    showWarning () {
+      return this.remainingQuota <= 0;
+    },
     tooltipText () {
       let tooltip = Array.isArray(this.usedQuota) ? `${this.usedQuota.map(l => {
         return `${l.label} ${this.getNumberInLocaleFormat(this.roundOneDecimal(l.value))} ${this.unit}`;
@@ -127,8 +136,7 @@ export default {
       return this.availableQuota;
     },
     remainingQuota () {
-      const remainingQuota = this.totalQuota - this.totalUsedQuota;
-      return Math.max(0, remainingQuota);
+      return this.totalQuota - this.totalUsedQuota;
     },
     getStatusBar () {
       const usedPercent = this.getUsedPercent(this.totalUsedQuota);
@@ -175,7 +183,26 @@ export default {
   min-height: 80px;
 
   &:not(:last-of-type) {
-    border-bottom: 1px solid $softblue;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .quota-warning {
+    display: flex;
+    padding-top: 20px;
+    margin-left: 36px;
+
+    p {
+      display: flex;
+      align-items: center;
+      border-radius: 18px;
+      padding: 8px 16px 8px 10px;
+      background-color: $warning__bg-color-light;
+
+      img {
+        margin-right: 8px;
+      }
+    }
+
   }
 
   .quota-legend {

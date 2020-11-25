@@ -355,6 +355,7 @@
     "geocoding": "Geocoding",
     "isolines": "Isolines",
     "routing": "Routing",
+    "quotaExceeded": "You have exceeded your monthly map loads quota",
     "credits": "Your credits are reset on the {day} of each month.",
     "upgrade": "Not included in your current plan. <a class='is-bold' href='{path}'>Upgrade now</a>"
   },

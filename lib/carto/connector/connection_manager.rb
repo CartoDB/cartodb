@@ -101,7 +101,7 @@ module Carto
       return existing_connection if existing_connection.present?
 
       name ||= generate_unique_db_connection_name(provider) # FIXME: is it a good idea? note that the create may still fail if another connection is concurrently created
-      @user.connections.create(name: name, connector: provider, parameters: parameters)
+      @user.connections.create!(name: name, connector: provider, parameters: parameters)
     end
 
 

@@ -1,7 +1,7 @@
 <template>
   <div class="Dialog is-white">
     <button class="CDB-Shape Dialog-closeBtn" @click="close">
-      <div class="CDB-Shape-close is-blue is-huge"></div>
+      <img src="../../assets/icons/common/close.svg">
     </button>
     <div class="Dialog-contentWrapper Dialog-contentWrapper--withHeaderWrapper">
       <div class="Dialog-header CreateDialog-header with-separator">
@@ -11,7 +11,17 @@
       <div class="Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder Dialog-body--no-spacing">
         <div class="container grid">
           <div class="grid-cell grid-cell--col12">
-            <slot />
+            <div v-if="showSubHeader" class="u-flex u-flex__justify--between u-flex__align--center u-mt--10 sub-header">
+              <button v-if="backText" class="is-small is-semibold is-txtPrimary u-flex u-flex__align--center">
+                <img class="u-mr--8" src="../../assets/icons/common/icon-prev-blue.svg">
+                {{backText}}
+                </button>
+                 <slot name="sub-header"></slot>
+              <div></div>
+            </div>
+            <div class="u-mt--32">
+              <slot />
+            </div>
           </div>
         </div>
       </div>
@@ -25,7 +35,19 @@ export default {
   components: {},
   props: {
     headerTitle: String,
-    headerImage: String
+    headerImage: String,
+    showSubHeader: {
+      default: true
+    },
+    backText: {
+      default: 'Connect'
+    }
+  },
+  beforeMount () {
+    document.body.classList.add('u-overflow-hidden');
+  },
+  beforeDestroy () {
+    document.body.classList.remove('u-overflow-hidden');
   },
   computed: {},
   methods: {
@@ -42,5 +64,9 @@ export default {
   width: 100%;
   min-height: 0 !important;
   padding: 32px 0;
+}
+.sub-header {
+  height: 44px;
+  border-bottom: 1px solid #dddddd;
 }
 </style>

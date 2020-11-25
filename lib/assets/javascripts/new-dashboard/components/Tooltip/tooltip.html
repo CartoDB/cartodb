@@ -1,0 +1,14 @@
+<!-- Tooltip template file -->
+<div class="tooltip-container">
+  <slot name="tooltip">
+    <TooltipComponent v-if="visible"
+      :bbox="bbox"
+      :margin="margin"
+      :text="text"
+      :position="position"
+      :multiline="multiline">
+    </TooltipComponent>
+  </slot>
+
+  <slot></slot>
+</div>

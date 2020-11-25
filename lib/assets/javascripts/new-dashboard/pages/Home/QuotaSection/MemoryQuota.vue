@@ -6,6 +6,7 @@
       :availableQuota="getAmountInUnit(availableQuota)"
       :unit="getUnit(availableQuota)"
       :formatToLocale="false"
+      helpText="TODO"
       :helpLink="storageHelpLink"/>
     <StackedQuotaWidget
       v-if="subscriptionsPremiumSizeInBytes"

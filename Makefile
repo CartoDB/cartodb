@@ -184,7 +184,6 @@ WORKING_SPECS_5 = \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
 	services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \
 	spec/models/synchronization/member_spec.rb \
-	spec/models/synchronization/member_overviews_spec.rb \
 	spec/models/synchronization/collection_spec.rb \
 	spec/models/organization_spec.rb \
 	spec/models/user_organization_spec.rb \

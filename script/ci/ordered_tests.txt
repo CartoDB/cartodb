@@ -112,7 +112,6 @@ spec/requests/carto/api/maps_controller_spec.rb
 spec/requests/carto/api/layer_presenter_spec.rb
 spec/requests/carto/api/layer_presenter_spec.rb
 spec/requests/api/visualizations_spec.rb
-spec/models/synchronization/member_overviews_spec.rb
 spec/models/layer_spec.rb
 services/importer/spec/unit/downloader_spec.rb
 spec/requests/carto/api/organization_assets_controller_spec.rb

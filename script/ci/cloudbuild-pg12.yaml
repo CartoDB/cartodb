@@ -69,8 +69,9 @@ steps:
   args: ['-f', 'docker-compose-pg12.yml', 'up', '-d']
   timeout: 900s
 
-- name: 'docker/compose:1.22.0'
-  args: ['-f', 'docker-compose-pg12.yml', 'exec', '-T', '-e', 'SLACK_TOKEN=$_SLACK_TOKEN', '-e', 'BUILD_ID=$BUILD_ID', '-e', 'BRANCH_NAME=$BRANCH_NAME', 'builder', 'bash', '-c', "trap '/cartodb/script/ci/send_slack_notification.sh' ERR && /cartodb/runParallelTests.sh 24" ]
+- name: gcr.io/cloud-builders/docker
+  args: ['exec', '-e', 'SLACK_TOKEN=$_SLACK_TOKEN', '-e', 'BUILD_ID=$BUILD_ID', '-e', 'BRANCH_NAME=$BRANCH_NAME', '-i', 'builder_1', 'bash', '-c',
+         "trap '/cartodb/script/ci/send_slack_notification.sh' ERR && /cartodb/runParallelTests.sh 24" ]
   timeout: 2700s
 
 options:

@@ -17,7 +17,8 @@ module Carto
       def generate_table_statements(origin_schema, origin_table_name)
         @user.in_database(as: :superuser)[%(
             SELECT quote_literal(q) as q FROM unnest(cartodb.CDB_GetTableQueries(
-                            concat(quote_ident('#{origin_schema}'), '.', quote_ident('#{origin_table_name}'))::regclass::oid,
+                            concat(quote_ident('#{origin_schema}'), '.',
+                                   quote_ident('#{origin_table_name}'))::regclass::oid,
                             ignore_cartodbfication := true)) as q
           )].map { |record| record.fetch(:q) }
       end

@@ -50,7 +50,8 @@ module CartoDB
       end
 
       def create_overviews!(table_name)
-        log_info(message: "create_overviews! called: Doing nothing", target_user: @user, table: { name: table_name })
+        log_info(message: "create_overviews! called: Doing nothing",
+                 target_user: @user, table: { name: table_name })
       end
 
       def delete_overviews!(table_name)

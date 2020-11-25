@@ -1,30 +1,29 @@
 <template>
-  <Dialog @close="close">
-    <DialogHeader
-      :title="$t('DataPage.addDataset')"
-      :image="require('../../assets/icons/catalog/modal/subsc-add-icon.svg')"
-    ></DialogHeader>
-    <div class="Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder Dialog-body--no-spacing"></div>
+  <Dialog
+    :headerTitle="$t('DataPage.addDataset')"
+    :headerImage="require('../../assets/icons/catalog/modal/subsc-add-icon.svg')"
+  >
+  <template slot="sub-header">
+    <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
+      <img class="u-mr--8" src="../../assets/icons/datasets/local-file.svg">
+      {{ $t('DataPage.addLocalFile') }}
+    </h3>
+  </template>
+    Add local file page
   </Dialog>
 </template>
 
 <script>
 
-import Dialog from 'new-dashboard/components/Backbone/Dialog.vue';
-import DialogHeader from 'new-dashboard/components/Dialogs/DialogHeader.vue';
+import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 
 export default {
   name: 'AddLocalFile',
   components: {
-    Dialog,
-    DialogHeader
+    Dialog
   },
   computed: {},
-  methods: {
-    close () {
-      this.$router.push({name: 'datasets'});
-    }
-  }
+  methods: {}
 };
 </script>
 

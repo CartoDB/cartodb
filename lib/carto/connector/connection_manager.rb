@@ -61,7 +61,7 @@ module Carto
 
     def list_connections(type: nil, connector: nil)
       connections = @user.connections
-      connections = connections.where(type: type) if type.present?
+      connections = connections.where(connection_type: type) if type.present?
       connections = connections.where(connector: connector) if connector.present?
       connections.map { |connection|
         # TODO: use presenter
@@ -69,7 +69,7 @@ module Carto
           id: connection.id,
           name: connection.name,
           connector: connection.connector,
-          type: connection.type,
+          type: connection.connection_type,
         }
         case type
         when Carto::Connection::TYPE_DB_CONNECTOR
@@ -86,14 +86,13 @@ module Carto
 
     def find_db_connection(provider, parameters)
       @user.db_connections.find { |connection|
-        connection.type == Carto::Connection::TYPE_DB_CONNECTOR &&
         connection.connector == provider &&
          parameters == connection.parameters
       }
     end
 
     def find_oauth_connection(service)
-      @user.connections.where(connector: service).first
+      @user.oauth_connections.where(connector: service).first
     end
 
     def create_db_connection(name: nil, provider:, parameters:)
@@ -143,7 +142,7 @@ module Carto
 
     def connection_ready?(id)
       connection = fetch_connection!(id)
-      case connection.type
+      case connection.connection_type
       when Carto::Connection::TYPE_DB_CONNECTOR
         true
       when Carto::Connection::TYPE_OAUTH_SERVICE

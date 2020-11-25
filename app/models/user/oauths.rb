@@ -26,7 +26,8 @@ module CartoDB
     end
 
     def remove(service)
-      oauth = Carto::Conection.where(type: Connection::TYPE_OAUTH_SERVICE, service: service, user_id: @owner.id).first
+      # oauth = Carto::Conection.where(connection_type: Connection::TYPE_OAUTH_SERVICE, service: service, user_id: @owner.id).first
+      oauth = @owner.oauth_for_service(service)
       oauth.delete unless oauth.nil?
       @owner.reload
       self

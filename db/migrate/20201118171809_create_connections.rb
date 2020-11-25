@@ -7,7 +7,7 @@ migration(
     create_table :connections do
       Uuid :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :user_id, :users, type: :uuid, null: false, on_delete: :cascade
-      String :type, null: false
+      String :connection_type, null: false
       String :connector, null: false
       String :name, null: false
       String :parameters, null: true, type: 'json'

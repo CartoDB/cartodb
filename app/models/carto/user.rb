@@ -214,7 +214,7 @@ class Carto::User < ActiveRecord::Base
   def add_oauth(service, token)
     connection = Carto::Connection.new(
       user_id: id,
-      type: Carto::Connection::TYPE_OAUTH_SERVICE,
+      connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
       service: service,
       token: token
     )

@@ -101,4 +101,95 @@ describe Carto::User do
       @user.password_reset_sent_at.to_s.should eql now.to_s
     end
   end
+
+  describe '#is_email_notification_enabled' do
+    before(:all) do
+      @carto_user = FactoryGirl.create(:carto_user)
+    end
+
+    it 'returns the notification flag if it exists' do
+      notification_type = Carto::UserEmailNotification::NOTIFICATION_DO_SUBSCRIPTIONS
+      email_notification = Carto::UserEmailNotification.create(
+        user_id: @carto_user.id,
+        notification: notification_type,
+        enabled: false
+      )
+
+      expect(@carto_user.email_notification_enabled?(notification_type)).to be_false
+      email_notification.destroy
+    end
+
+    it 'returns true as default if notification is missing' do
+      expect(@carto_user.email_notification_enabled?('missing')).to be_true
+    end
+
+    it 'cascade delete notifications if the user is destroyed' do
+      notification_type = Carto::UserEmailNotification::NOTIFICATION_DO_SUBSCRIPTIONS
+      email_notification = Carto::UserEmailNotification.create(
+        user_id: @carto_user.id,
+        notification: notification_type,
+        enabled: true
+      )
+
+      @carto_user.destroy
+      expect do
+        Carto::UserEmailNotification.find(email_notification.id)
+      end.to raise_error ActiveRecord::RecordNotFound
+    end
+
+    it 'does not create object if an invalid type is provided' do
+      email_notification = Carto::UserEmailNotification.new(
+        user_id: @carto_user.id,
+        notification: 'invalid_type',
+        enabled: true
+      )
+      expect(email_notification.valid?).to be_false
+    end
+  end
+
+  describe '#email_notification=' do
+    before(:all) do
+      @carto_user = FactoryGirl.create(:carto_user)
+    end
+
+    it 'creates a fresh set of notifications' do
+      Carto::UserEmailNotification.any_instance.stubs(:valid_notification).returns(true)
+      @carto_user.email_notifications = {
+        notif_a: true,
+        notif_b: false
+      }
+
+      expect(@carto_user.email_notifications.length).to eq 2
+      expect(@carto_user.email_notification_enabled?('notif_a')).to be_true
+      expect(@carto_user.email_notification_enabled?('notif_b')).to be_false
+    end
+
+    it 'updates notifications if they already exist' do
+      Carto::UserEmailNotification.any_instance.stubs(:valid_notification).returns(true)
+      Carto::UserEmailNotification.create(
+        user_id: @carto_user.id,
+        notification: 'existing_notification',
+        enabled: true
+      )
+
+      @carto_user.email_notifications = {
+        notif_a: true,
+        notif_b: false,
+        existing_notification: false
+      }
+
+      expect(@carto_user.email_notifications.length).to eq 3
+      expect(@carto_user.email_notification_enabled?('notif_a')).to be_true
+      expect(@carto_user.email_notification_enabled?('notif_b')).to be_false
+      expect(@carto_user.email_notification_enabled?('existing_notification')).to be_false
+    end
+
+    it 'raises an error if an invalid notification is set' do
+      expect do
+        @carto_user.email_notifications = {
+          notif_a: true
+        }
+      end.to raise_error StandardError
+    end
+  end
 end

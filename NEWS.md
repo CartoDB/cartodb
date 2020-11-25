@@ -8,10 +8,22 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+* Load GoogleMaps library for a map if the owner's query string is available [#15948](https://github.com/CartoDB/cartodb/pull/15948)
+* 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
+
+4.44.0 (2020-11-20)
+-------------------
+
+### Features
+* Email notifications toggle API endpoint [#15930](https://github.com/CartoDB/cartodb/pull/15930)
+* New Email settings section in Account page to manage notifications [#15933](https://github.com/CartoDB/cartodb/pull/15933)
+* Allow to create regular apikeys for data observatory datasets [#15940](https://github.com/CartoDB/cartodb/pull/15940)
+
+### Bug fixes / enhancements
 * Fix BigQuery connector not importing 0-bytes-processed datasets [#15916](https://github.com/CartoDB/cartodb/pull/15916)
 * Error importing geopackage files with multiple layers [#15907](https://github.com/CartoDB/cartodb/pull/15907)
 * Add DO notification in dashboard [#15929](https://github.com/CartoDB/cartodb/pull/15929)
-* 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
+* Data loss on table rename due to GhostTablesManager [#15935](https://github.com/CartoDB/cartodb/pull/15935)
 
 4.43.0 (2020-11-06)
 -------------------

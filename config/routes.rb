@@ -689,6 +689,9 @@ CartoDB::Application.routes.draw do
 
       put 'notifications/:category', to: 'static_notifications#update', as: :api_v3_static_notifications_update
 
+      get 'email_notifications', to: 'email_notifications#show', as: :api_v3_email_notifications_show
+      put 'email_notifications', to: 'email_notifications#update', as: :api_v3_email_notifications_update
+
       resources :organizations, only: [] do
         resources :notifications, only: [:create, :destroy],
                                   controller: :organization_notifications,

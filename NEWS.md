@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix cleanup after import failing due to overquota ([#15802](https://github.com/CartoDB/cartodb/pull/15802))
 
 4.44.0 (2020-11-20)
 -------------------

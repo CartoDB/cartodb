@@ -58,7 +58,7 @@ module CartoDB
         if quota_checker.will_be_over_table_quota?(results.length)
           log('Results would set overquota')
           @aborted = true
-          results.each { |result| drop(result.table_name) }
+          results.each { |result| drop("#{ORIGIN_SCHEMA}.#{result.table_name}") }
         else
           check_map_quotas(runner.visualizations)
           check_dataset_quotas(runner.visualizations)

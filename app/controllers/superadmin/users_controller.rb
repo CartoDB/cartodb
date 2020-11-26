@@ -2,6 +2,8 @@ require_relative '../../../lib/carto/http/client'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/overquota_users_service'
 require_dependency 'carto/api/paged_searcher'
+require './lib/carto/user_creator'
+require './lib/carto/user_updater'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
   include Carto::UUIDHelper
@@ -44,35 +46,14 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def create
-    @user = ::User.new
-
     user_param = params[:user]
-    @user.set_fields_from_central(user_param, :create)
-    @user.enabled = true
-
-    @user.rate_limit_id = create_rate_limits(user_param[:rate_limit]).id if user_param[:rate_limit].present?
-    if @user.save
-      @user.reload
-      CartoDB::Visualization::CommonDataService.load_common_data(@user, self) if @user.should_load_common_data?
-      @user.update_feature_flags(user_param[:feature_flags])
-    end
-    CartoGearsApi::Events::EventManager.instance.notify(
-      CartoGearsApi::Events::UserCreationEvent.new(
-        CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_SUPERADMIN, @user
-      )
-    )
+    @user = Carto::UserCreator.new.create(user_param)
     respond_with(:superadmin, @user)
   end
 
   def update
     user_param = params[:user]
-    @user.set_fields_from_central(user_param, :update)
-    @user.update_feature_flags(user_param[:feature_flags])
-    @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
-    @user.update_rate_limits(user_param[:rate_limit])
-    @user.update_gcloud_settings(user_param[:gcloud_settings])
-    @user.update_do_subscription(user_param[:do_subscription])
-    @user.save
+    Carto::UserUpdater.new(@user).update(user_param)
     respond_with(:superadmin, @user)
   end
 
@@ -215,12 +196,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   def get_carto_user
     @user = Carto::User.where(id: params[:id]).first
     render json: { error: 'User not found' }, status: 404 unless @user
-  end
-
-  def create_rate_limits(rate_limit_attributes)
-    rate_limit = Carto::RateLimit.from_api_attributes(rate_limit_attributes)
-    rate_limit.save!
-    rate_limit
   end
 
 end # Superadmin::UsersController

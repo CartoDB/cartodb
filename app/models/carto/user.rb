@@ -318,7 +318,33 @@ class Carto::User < ActiveRecord::Base
     email_notification.enabled
   end
 
+  def map_views_count
+    123 # TODO. Mocked value by now.
+  end
+
+  def subscriptions_public_size_in_bytes
+    subscriptions_size_in_bytes(Carto::DoLicensingService::CARTO_DO_PUBLIC_PROJECT)
+  end
+
+  def subscriptions_premium_size_in_bytes
+    subscriptions_size_in_bytes(Carto::DoLicensingService::CARTO_DO_PROJECT)
+  end
+
+  def subscriptions
+    Carto::DoLicensingService.new(username).subscriptions || []
+  end
+
   private
+
+  def subscriptions_size_in_bytes(project)
+    # Note we cannot filter by `project` subscription attribute, we must use the dataset ID.
+    subs_filtered = subscriptions.select { |d| d['dataset_id'].split('.')[0] == project }
+    subs_synced = subs_filtered.select do |d|
+      d['sync_status'] == 'synced' && !d['sync_table'].empty? && Carto::UserTable.exists?(d['sync_table_id'])
+    end
+    total = subs_synced.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
+    total || 0
+  end
 
   def set_database_host
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']

@@ -121,6 +121,10 @@ module Carto
     #      # let the user authorize our app; existing connection will be dismissed
     #      open_authorization_window(connection_manager.create_oauth_connection_get_url(service))
     #    end
+    #    if connection
+    #      # connection of dual type (bigquery) we must additionally require parameters from the user and assign them:
+    #      connection = assign_db_parameters(service, parameters)
+    #    end
     def fetch_valid_oauth_connection(service) # check for valid oauth_connection
       existing_connection = find_oauth_connection(service)
       return existing_connection if oauth_connection_valid?(existing_connection)
@@ -130,6 +134,17 @@ module Carto
       existing_connection = find_oauth_connection(service)
       existing_connection.destroy if existing_connection.present?
       oauth_connection_url(service)
+    end
+
+    # for dual connection only (BigQuery): after fetching a valid oauth connection,
+    # parameters should be assigned, which will trigger the final validation
+    # this may not be needed: API could perform a regular update
+    def assign_db_parameters(service:, parameters:)
+      connection = find_oauth_connection(service)
+      raise "Connection not found for service #{service}" unless connection.present?
+
+      connection.update! parameters: parameters
+      connection
     end
 
     # def oauth_connection_completed?(service)

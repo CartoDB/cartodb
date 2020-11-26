@@ -82,26 +82,37 @@ module Carto
 
     def validate_parameters
       case connection_type
-      when TYPE_DB_CONNECTOR
-        connector_parameters = {
-          provider: connector,
-          connection: parameters
-        }
-        begin
-          connector = Carto::Connector.new(parameters: connector_parameters, user: user, logger: nil)
-          connector.check_connection
-        rescue Carto::Connector::InvalidParametersError => error
-          if error.to_s =~ /Invalid provider/im
-            errors.add :connector, error.to_s
-          else
-            errors.add :parameters, error.to_s
-          end
-        rescue CartoDB::Datasources::AuthError, CartoDB::Datasources::TokenExpiredOrInvalidError => error
-          errors.add :token, error.to_s
-        rescue StandardError => error
-          errors.add :base, error.to_s
+      when TYPE_OAUTH_SERVICE
+        if !get_service_datasource&.token_valid? # !Carto::ConnectionManager.new(user).oauth_connection_valid?(self)
+          errors.add :token, "Invalid OAuth"
+        elsif parameters.present?
+          # OAuth connections that also admit db-connector parameters (BigQuery)
+          # can be saved incomplete without the parameters; once the parameters are assigned,
+          # the db connection is validates
+          validate_db_connection
         end
+      when TYPE_DB_CONNECTOR
+        validate_db_connection
       end
+    end
+
+    def validate_db_connection
+      connector_parameters = {
+        provider: connector,
+        connection: parameters
+      }
+      connector = Carto::Connector.new(parameters: connector_parameters, user: user, logger: nil)
+      connector.check_connection
+    rescue Carto::Connector::InvalidParametersError => error
+      if error.to_s =~ /Invalid provider/im
+        errors.add :connector, error.to_s
+      else
+        errors.add :parameters, error.to_s
+      end
+    rescue CartoDB::Datasources::AuthError, CartoDB::Datasources::TokenExpiredOrInvalidError => error
+      errors.add :token, error.to_s
+    rescue StandardError => error
+      errors.add :base, error.to_s
     end
   end
 end

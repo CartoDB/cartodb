@@ -208,14 +208,14 @@ class Carto::User < ActiveRecord::Base
   end
 
   def oauth_for_service(service)
-    oauth_connections.where(service: service).first
+    oauth_connections.where(connector: service, connector_type: Carto::Connection::TYPE_OAUTH_SERVICE).first
   end
 
   def add_oauth(service, token)
     connection = Carto::Connection.new(
       user_id: id,
       connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
-      service: service,
+      connector: service,
       token: token
     )
     connection.save

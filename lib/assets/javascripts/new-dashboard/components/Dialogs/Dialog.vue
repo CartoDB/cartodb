@@ -32,6 +32,7 @@
 
 export default {
   name: 'Dialog',
+  inject: ['backboneViews'],
   components: {},
   props: {
     headerTitle: String,
@@ -45,9 +46,11 @@ export default {
   },
   beforeMount () {
     document.body.classList.add('u-overflow-hidden');
+    this.backboneViews.mamufasImportView.mamufasView.disable();
   },
   beforeDestroy () {
     document.body.classList.remove('u-overflow-hidden');
+    this.backboneViews.mamufasImportView.mamufasView.enable();
   },
   computed: {},
   methods: {

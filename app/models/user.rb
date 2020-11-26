@@ -919,62 +919,6 @@ class User < Sequel::Model
     (remaining > 0 ? remaining : 0)
   end
 
-  # Get the api calls from ES and sum them to the stored ones in redis
-  # Returns the final sum of them
-  def get_api_calls_from_es
-    require 'date'
-    yesterday = Date.today - 1
-    from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
-    to_date = DateTime.now.strftime("%Q")
-    request_body = Cartodb.config[:api_requests_es_service]['body'].dup
-    request_url = Cartodb.config[:api_requests_es_service]['url'].dup
-    request_body.gsub!("$CDB_SUBDOMAIN$", self.username)
-    request_body.gsub!("\"$FROM$\"", from_date)
-    request_body.gsub!("\"$TO$\"", to_date)
-    request = http_client.request(
-      request_url,
-      method: :post,
-      headers: { "Content-Type" => "application/json" },
-      body: request_body
-    )
-    response = request.run
-    if response.code != 200
-      raise(response.body)
-    end
-    values = {}
-    JSON.parse(response.body)["aggregations"]["0"]["buckets"].each {|i| values[i['key']] = i['doc_count']}
-    return values
-  end
-
-  # Get the final api calls from ES and write them to redis
-  def set_api_calls_from_es(options = {})
-    if options[:force_update]
-      es_api_calls = get_api_calls_from_es
-      es_api_calls.each do |d,v|
-        $users_metadata.ZADD "user:#{self.username}:mapviews_es:global", v, DateTime.strptime(d.to_s, "%Q").strftime("%Y%m%d")
-      end
-    end
-  end
-
-  ## Legacy stats fetching
-  ## This is DEPRECATED
-  def get_old_api_calls
-    JSON.parse($users_metadata.HMGET(key, 'api_calls').first) rescue {}
-  end
-
-  def set_old_api_calls(options = {})
-    # Ensure we update only once every 3 hours
-    if options[:force_update] || get_old_api_calls["updated_at"].to_i < 3.hours.ago.to_i
-      api_calls = JSON.parse(
-        open("#{Cartodb.config[:api_requests_service_url]}?username=#{self.username}").read
-      ) rescue {}
-
-      # Manually set updated_at
-      api_calls["updated_at"] = Time.now.to_i
-      $users_metadata.HMSET key, 'api_calls', api_calls.to_json
-    end
-  end
-
   def set_last_active_time
     $users_metadata.HMSET key, 'last_active_time', Time.now
   end

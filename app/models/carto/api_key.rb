@@ -332,9 +332,9 @@ module Carto
       queries
     end
 
-    def set_enabled_for_engine
+    def set_enabled_for_engine(new_user_attributes)
       # We enable/disable API keys for engine usage by adding/removing them from Redis
-      valid_user? ? add_to_redis : remove_from_redis
+      valid_user?(new_user_attributes) ? add_to_redis : remove_from_redis
     end
 
     def save_cdb_conf_info
@@ -655,9 +655,21 @@ module Carto
       errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
     end
 
-    def valid_user?
+    def valid_user?(new_user_attributes = {})
+      engine_enabled = if new_user_attributes.present?(:engine_enabled)
+                         new_user_attributes[:engine_enabled]
+                       else
+                         user.engine_enabled?
+                       end
+
+      locked = if new_user_attributes.present?(:state)
+                 new_user_attributes[:state] == Carto::UserCommons.STATE_LOCKED
+               else
+                 user.locked?
+               end
+
       # This is not avalidation per-se, since we don't want to remove api keys when a user is disabled
-      !(user.locked? || regular? && !user.engine_enabled?)
+      !(locked || regular? && engine_enabled)
     end
   end
 end

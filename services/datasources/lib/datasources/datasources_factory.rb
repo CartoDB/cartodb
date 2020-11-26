@@ -28,6 +28,7 @@ module CartoDB
         # @return mixed
         # @throws MissingConfigurationError
         def self.get_datasource(datasource_name, user, additional_config = {})
+          # FIXME: does this work with Carto::User user? if not convert it to ::User
           if additional_config[:http_timeout].nil?
             additional_config[:http_timeout] = DEFAULT_HTTP_REQUEST_TIMEOUT
           end

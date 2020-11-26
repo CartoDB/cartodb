@@ -351,7 +351,7 @@ class User < Sequel::Model
     sync_master_key if changes.include?(:api_key)
     sync_default_public_key if changes.include?(:database_schema)
     $users_metadata.HSET(key, 'map_key', make_token) if locked?
-    db.after_commit { sync_enabled_api_keys(changes) } if changes.include?(:engine_enabled) || changes.include?(:state)
+    db.after_commit { sync_enabled_api_keys } if changes.include?(:engine_enabled) || changes.include?(:state)
 
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
@@ -1449,7 +1449,14 @@ class User < Sequel::Model
     default_key.update_attributes(db_role: database_public_username)
   end
 
-  def sync_enabled_api_keys(new_user_attributes)
-    api_keys.each { |api_key| api_key.set_enabled_for_engine(new_user_attributes) }
+  def sync_enabled_api_keys
+    if previous_changes.present?
+      new_attributes = {
+        state: previous_changes[:state],
+        engine_enabled: previous_changes[:engine_enabled]
+      }
+    end
+
+    api_keys.each { |api_key| api_key.set_enabled_for_engine(new_attributes) }
   end
 end

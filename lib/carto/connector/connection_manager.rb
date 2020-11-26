@@ -63,27 +63,33 @@ module Carto
       connections = @user.connections
       connections = connections.where(connection_type: type) if type.present?
       connections = connections.where(connector: connector) if connector.present?
-      connections.map { |connection|
-        # TODO: use presenter
-        presented_connection = {
-          id: connection.id,
-          name: connection.name,
-          connector: connection.connector,
-          type: connection.connection_type,
-        }
-        case type
-        when Carto::Connection::TYPE_DB_CONNECTOR
-          presented_connection[:parameters] = connection.parameters
-          if presented_connection[:parameters].keys.include?('password')
-            presented_connection[:parameters]['password'] = DB_PASSWORD_PLACEHOLDER
-          end
-        when Carto::Connection::TYPE_OAUTH_SERVICE
-          presented_connection[:token] = OAUTH_TOKEN_PLACEHOLDER
-        end
-        # TODO: compute in_use
-        presented_connection
-      }
+      connections.map { |connection| present_connection(connection) }
     end
+
+    def show_connection(id)
+      present_connection @user.connections.find(id)
+    end
+
+    def present_connection(connection)
+      presented_connection = {
+        id: connection.id,
+        name: connection.name,
+        connector: connection.connector,
+        type: connection.connection_type,
+      }
+      case connection.connection_type
+      when Carto::Connection::TYPE_DB_CONNECTOR
+        presented_connection[:parameters] = connection.parameters
+        if presented_connection[:parameters].keys.include?('password')
+          presented_connection[:parameters]['password'] = DB_PASSWORD_PLACEHOLDER
+        end
+      when Carto::Connection::TYPE_OAUTH_SERVICE
+        presented_connection[:token] = OAUTH_TOKEN_PLACEHOLDER
+        # presented_connection[:parameters] = connection.parameters if connection.parameters.present?
+      end
+      # TODO: compute in_use
+      presented_connection
+  end
 
     def find_db_connection(provider, parameters)
       @user.db_connections.find { |connection|

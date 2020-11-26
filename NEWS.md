@@ -25,6 +25,7 @@ Development
 * Data loss on table rename due to GhostTablesManager [#15935](https://github.com/CartoDB/cartodb/pull/15935)
 * Add DO datasets sync size in /me endpoint [#15932](https://github.com/CartoDB/cartodb/pull/15932)
 * Load GoogleMaps library for a map if the owner's query string is available [#15948](https://github.com/CartoDB/cartodb/pull/15948)
+* Log subscribers to STDOUT and fix JSON format [#15957](https://github.com/CartoDB/cartodb/pull/15957)
 
 4.43.0 (2020-11-06)
 -------------------

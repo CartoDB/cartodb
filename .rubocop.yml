@@ -108,7 +108,7 @@ RSpec/ExampleLength:
 RSpec/ImplicitExpect:
   Enabled: false
 
-RSpec::MessageSpies:
+RSpec/MessageSpies:
   Enabled: false
 
 RSpec/MultipleExpectations:

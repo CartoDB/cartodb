@@ -609,6 +609,12 @@ CartoDB::Application.routes.draw do
 
       get 'datasets', to: 'datasets#index', as: :api_v4_datasets
 
+      ## Connections
+      get 'connections' => 'connections#index', as: :api_v4_connections_list
+      post 'connections'  => 'connections#create', as: :api_v4_connections_create
+      get 'connections/:id' => 'connections#show', as: :api_v4_connections_show
+      get 'connectors' => 'connections#list_connectors', as: :api_v4_connections_list_connectors
+
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token
         get 'subscriptions' => 'data_observatory#subscriptions', as: :api_v4_do_subscriptions_show

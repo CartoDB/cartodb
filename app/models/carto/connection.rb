@@ -29,7 +29,7 @@ module Carto
     def get_service_datasource
       raise "Invalid connection type (#{connection_type}) to get service datasource" unless connection_type == TYPE_OAUTH_SERVICE
 
-      datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(service, user, {
+      datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(connector, user, {
         http_timeout: ::DataImport.http_timeout_for(user)
       })
       datasource.token = token unless datasource.nil?

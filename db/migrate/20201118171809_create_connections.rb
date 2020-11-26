@@ -6,7 +6,7 @@ migration(
   proc do
     create_table :connections do
       Uuid :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
-      foreign_key :user_id, :users, type: :uuid, null: false, on_delete: :cascade
+      foreign_key :user_id, :users, type: :uuid, null: false, index: true, on_delete: :cascade
       String :connection_type, null: false
       String :connector, null: false
       String :name, null: false
@@ -14,7 +14,6 @@ migration(
       String :token, null: true
       DateTime :created_at, null: false
       DateTime :updated_at, null: false
-      index [:user_id], unique: true
     end
   end,
   proc do

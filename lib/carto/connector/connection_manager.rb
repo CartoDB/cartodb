@@ -102,14 +102,9 @@ module Carto
       @user.oauth_connections.where(connector: service).first
     end
 
-    def create_db_connection(name: nil, provider:, parameters:)
-      existing_connection = find_db_connection(provider, parameters)
-      return existing_connection if existing_connection.present?
-
-      name ||= generate_unique_db_connection_name(provider) # FIXME: is it a good idea? note that the create may still fail if another connection is concurrently created
+    def create_db_connection(name:, provider:, parameters:)
       @user.connections.create!(name: name, connector: provider, parameters: parameters)
     end
-
 
     def oauth_connection_url(service) # returns auth_url, doesn't actually create connection
       DataImportsService.new.get_service_auth_url(@user, service)
@@ -188,10 +183,5 @@ module Carto
     def self.valid_db_connectors
       Carto::Connector.providers.keys
     end
-
-    def generate_unique_db_connection_name(provider)
-      # ...
-    end
-
   end
 end

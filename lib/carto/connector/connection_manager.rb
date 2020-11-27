@@ -169,7 +169,7 @@ module Carto
 
     def delete_connection(id)
       connection = fetch_connection(id)
-      connection.destroy
+      connection.destroy!
       @user.reload
     end
 

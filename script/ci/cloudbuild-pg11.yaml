@@ -65,7 +65,7 @@ steps:
     path: /root/.ssh
 
 - name: ubuntu
-  args: ['bash', '-c', 'rm -rf .git && cp ci-tools/repos/cartodb/* . && cp config/app_config.yml.sample.py2 config/app_config.yml && cp config/database.yml.sample config/database.yml && cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json && cp script/ci/* .']
+  args: ['bash', '-c', 'cp ci-tools/repos/cartodb/* . && cp config/app_config.yml.sample.py2 config/app_config.yml && cp config/database.yml.sample config/database.yml && cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json && cp script/ci/* .']
 
 - name: 'docker/compose:1.22.0'
   args: ['-f', 'docker-compose-pg11.yml', 'up', '--build', '-d']

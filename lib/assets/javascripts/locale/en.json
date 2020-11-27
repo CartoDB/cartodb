@@ -85,6 +85,15 @@
                 "email_google": "Your account is linked to your Google account.",
                 "errors": {
                     "change_email": "You can change the email if you set a password."
+                },
+                "email_section": {
+                    "title": "Email settings",
+                    "description": "Choose what type of emails you'd like to receive.",
+                    "notifications": {
+                        "enabled": "On",
+                        "disabled": "Off",
+                        "do_subscriptions":"Emails from Data Observatory"
+                    }
                 }
             }
         }

@@ -50,6 +50,13 @@ module Carto
           }
         end
 
+        if @api_key.data_observatory_datasets?
+          grants << {
+            type: 'data-observatory',
+            datasets: @api_key.data_observatory_datasets
+          }
+        end
+
         grants
       end
 

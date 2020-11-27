@@ -27,6 +27,8 @@ module Carto
 
       def decorate_notifications
         payload = {}
+        Carto::UserEmailNotification::VALID_NOTIFICATIONS.map { |n| payload[n] = true }
+
         @notifications.each do |notification|
           payload[notification.notification] = notification.enabled
         end

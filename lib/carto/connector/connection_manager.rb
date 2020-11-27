@@ -103,11 +103,8 @@ module Carto
     end
 
     def create_db_connection(name:, provider:, parameters:)
+      check_db_provider!(provider)
       @user.connections.create!(name: name, connector: provider, parameters: parameters)
-    end
-
-    def oauth_connection_url(service) # returns auth_url, doesn't actually create connection
-      DataImportsService.new.get_service_auth_url(@user, service)
     end
 
     # create Oauth connection logic
@@ -131,6 +128,7 @@ module Carto
     end
 
     def create_oauth_connection_get_url(service:) # get_url_to_create_oauth_connection
+      check_oauth_service!(service)
       existing_connection = find_oauth_connection(service)
       existing_connection.destroy if existing_connection.present?
       oauth_connection_url(service)
@@ -184,6 +182,10 @@ module Carto
 
     private
 
+    def oauth_connection_url(service) # returns auth_url, doesn't actually create connection
+      DataImportsService.new.get_service_auth_url(@user, service)
+    end
+
     def self.valid_oauth_services
       CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources.select { |service|
         # FIXME: this includes twitter...
@@ -199,6 +201,16 @@ module Carto
 
     def self.valid_db_connectors
       Carto::Connector.providers.keys
+    end
+
+    def check_oauth_service!(service)
+      # TODO: check also that is enabled for @user
+      raise "Invalid OAuth service #{service}" unless service.in?(Carto::ConnectionManager.valid_oauth_services)
+    end
+
+    def check_db_provider!(provider)
+      # TODO: check also that is enabled for @user
+      raise "Invalid DB provider #{provider}" unless service.in?(Carto::ConnectionManager.valid_db_connectors)
     end
   end
 end

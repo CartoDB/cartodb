@@ -615,6 +615,7 @@ CartoDB::Application.routes.draw do
       get 'connections/:id' => 'connections#show', as: :api_v4_connections_show
       get 'connectors' => 'connections#list_connectors', as: :api_v4_connections_list_connectors
       delete 'connections/:id' => 'connections#destroy', as: :api_v4_connections_destroy
+      get 'connections/check_oauth/:service' => 'connections#check_oauth', as: :api_v4_connectors_check_oauth
 
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token

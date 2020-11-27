@@ -13,6 +13,7 @@ sudo make install
 - None yet
 
 ### Bug fixes / enhancements
+- Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
 - Improve the syncronization functions by using `CDB_GetTableQueries`.
 
 4.44.0 (2020-11-20)

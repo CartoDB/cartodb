@@ -19,6 +19,15 @@
       </div>
       <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert">{{fileValidation.msg}}</p>
     </div>
+    <template slot="footer">
+      <GuessPrivacyFooter
+        :guess="uploadObject.content_guessing && uploadObject.type_guessing"
+        :privacy="uploadObject.privacy"
+        :disabled="!fileValidation.valid"
+        @guessChanged="changeGuess"
+        @privacyChanged="changePrivacy"
+      ></GuessPrivacyFooter>
+    </template>
   </Dialog>
 </template>
 
@@ -27,21 +36,24 @@
 import Dropzone from 'dropzone';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';
+import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 require('dragster');
 
 export default {
   name: 'AddLocalFile',
   mixins: [uploadData],
   components: {
-    Dialog
+    Dialog,
+    GuessPrivacyFooter
   },
   data () {
     return {
       dragged: false,
       fileValidation: {
-        valid: true,
+        valid: false,
         msg: ''
-      }
+      },
+      uploadObject: this.getUploadObject()
     };
   },
   mounted () {
@@ -80,6 +92,13 @@ export default {
       if (files && files.length > 0) {
         this.fileValidation = this.validateFile(files, this.remainingByteQuota);
       }
+    },
+    changeGuess (value) {
+      this.uploadObject.content_guessing = value;
+      this.uploadObject.type_guessing = value;
+    },
+    changePrivacy (value) {
+      this.uploadObject.privacy = value;
     }
   },
   beforeDestroy () {

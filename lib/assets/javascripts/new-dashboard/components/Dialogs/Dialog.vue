@@ -10,8 +10,8 @@
       </div>
       <div class="Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder Dialog-body--no-spacing">
         <div class="container grid">
-          <div class="grid-cell grid-cell--col12">
-            <div v-if="showSubHeader" class="u-flex u-flex__justify--between u-flex__align--center u-mt--10 sub-header">
+          <div class="grid-cell grid-cell--col12 u-flex u-flex__direction--column">
+            <div v-if="showSubHeader" class="u-flex u-flex__justify--between u-flex__align--center u-pt--10 sub-header">
               <button v-if="backText" class="is-small is-semibold is-txtPrimary u-flex u-flex__align--center">
                 <img class="u-mr--8" src="../../assets/icons/common/icon-prev-blue.svg">
                 {{backText}}
@@ -21,6 +21,9 @@
             </div>
             <div class="u-mt--32">
               <slot />
+            </div>
+            <div class="footer">
+              <slot name="footer"></slot>
             </div>
           </div>
         </div>
@@ -68,8 +71,24 @@ export default {
   min-height: 0 !important;
   padding: 32px 0;
 }
+.Dialog-body {
+  flex: 1 1 0%;
+}
+.container {
+  height: 100%;
+}
+.sub-header, .footer {
+  position: sticky;
+  background-color: $neutral--100;
+}
 .sub-header {
-  height: 44px;
+  top: 0px;
+  height: 54px;
   border-bottom: 1px solid #dddddd;
+}
+.footer {
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: 1px;
 }
 </style>

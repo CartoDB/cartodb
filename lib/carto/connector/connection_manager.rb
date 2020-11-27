@@ -5,6 +5,7 @@ module Carto
 
     def initialize(user)
       @user = user
+      @user = Carto::User.find(@user.id) unless @user.kind_of?(Carto::User)
     end
 
     def list_connectors(connections: false, type: nil)
@@ -210,7 +211,7 @@ module Carto
 
     def check_db_provider!(provider)
       # TODO: check also that is enabled for @user
-      raise "Invalid DB provider #{provider}" unless service.in?(Carto::ConnectionManager.valid_db_connectors)
+      raise "Invalid DB provider #{provider}" unless provider.in?(Carto::ConnectionManager.valid_db_connectors)
     end
   end
 end

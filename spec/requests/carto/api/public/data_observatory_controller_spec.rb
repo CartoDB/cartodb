@@ -327,7 +327,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'returns 200 if the dataset_id is valid' do
       @url_helper = 'api_v4_do_subscription_create_sample_url'
       post_json endpoint_url(api_key: @master, dataset_id: 'carto.zzz.table1'), @headers do |response|
-        expect(response.status).to eq(200)2
+        expect(response.status).to eq(204)
       end
     end
   end

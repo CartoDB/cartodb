@@ -17,7 +17,7 @@
   </script>
 
   <% content_for(:js) do %>
-    <% if @visualization.map.provider == 'googlemaps' %>
+    <% if @visualization.user.google_maps_query_string.present? %>
       <%= insert_google_maps(@visualization.user.google_maps_query_string) %>
     <% end %>
     <%= editor_javascript_include_tag 'cdb.js','models.js', 'templates.js', 'templates_mustache.js', 'table.js', 'editor.js' %>

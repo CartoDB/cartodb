@@ -3,6 +3,8 @@ module Carto
 
     AVAILABLE_STORAGES = %w(bq bigtable carto).freeze
     PRESELECTED_STORAGE = 'bq'.freeze
+    CARTO_DO_PROJECT = 'carto-do'.freeze
+    CARTO_DO_PUBLIC_PROJECT = 'carto-do-public-data'.freeze
 
     def initialize(username)
       @user = Carto::User.find_by(username: username)

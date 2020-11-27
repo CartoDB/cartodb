@@ -152,12 +152,16 @@ export default {
       }, {});
     },
     badgeVisualizationType () {
-      if (this.isSample) {
-        return 'sample';
-      } else if (this.isSubscription) {
-        return 'subscription';
+      const visualizationType = this.$props.visualization.type;
+
+      if (visualizationType === 'table') {
+        if (this.isSample) {
+          return 'sample';
+        } else if (this.isSubscription) {
+          return 'subscription';
+        }
       }
-      return this.$props.visualization.type;
+      return visualizationType;
     }
   },
   methods: {

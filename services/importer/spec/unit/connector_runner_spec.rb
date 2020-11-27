@@ -208,7 +208,7 @@ describe CartoDB::Importer2::ConnectorRunner do
 
   describe 'with invalid provider' do
 
-    it "Fails at creation" do
+    it "Fails when accessing the connector" do
       with_feature_flag @user, 'carto-connectors', true do
         parameters = {
           provider: 'invalid_provider',
@@ -222,7 +222,8 @@ describe CartoDB::Importer2::ConnectorRunner do
           user: @user
         }
         expect {
-          CartoDB::Importer2::ConnectorRunner.new(parameters.to_json, options)
+          runner = CartoDB::Importer2::ConnectorRunner.new(parameters.to_json, options)
+          runner.connector
         }.to raise_error(Carto::Connector::InvalidParametersError)
       end
     end

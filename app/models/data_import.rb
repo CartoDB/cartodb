@@ -827,16 +827,17 @@ class DataImport < Sequel::Model
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
       synchronization.name    = self.table_name
       synchronization.log_id  = log.id
-
+      
       if importer.success?
         imported_table = ::Table.get_by_table_id(self.table_id)
         if !imported_table.nil? && imported_table.table_visualization
           synchronization.visualization_id = imported_table.table_visualization.id
         end
-
+        
         synchronization.state = 'success'
         synchronization.error_code = nil
         synchronization.error_message = nil
+        synchronization.modified_at = importer.last_modified
       else
         synchronization.state = 'failure'
         synchronization.error_code = error_code.blank? ? 9999 : error_code

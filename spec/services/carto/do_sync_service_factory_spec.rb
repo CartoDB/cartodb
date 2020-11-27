@@ -71,7 +71,7 @@ describe Carto::DoSyncServiceFactory do
       state: 'complete',
       synchronization_id: @synced_sync.id,
       service_name: 'connector',
-      service_item_id: %[{"provider":"do-v2","subscription_id":"#{@subscribed_synced_dataset_id}"}]
+      service_item_id: %[{"subscription_id":"#{@subscribed_synced_dataset_id}"}]
     )
     @synced_table = FactoryGirl.create(
       :user_table,
@@ -94,7 +94,7 @@ describe Carto::DoSyncServiceFactory do
       state: 'importing',
       synchronization_id: @syncing_sync.id,
       service_name: 'connector',
-      service_item_id: %[{"provider":"do-v2","subscription_id":"#{@subscribed_syncing_dataset_id}"}]
+      service_item_id: %[{"subscription_id":"#{@subscribed_syncing_dataset_id}"}]
     )
     @syncing_table = FactoryGirl.create(
       :user_table,
@@ -118,7 +118,7 @@ describe Carto::DoSyncServiceFactory do
       error_code: @import_error_code,
       synchronization_id: @error_sync.id,
       service_name: 'connector',
-      service_item_id: %[{"provider":"do-v2","subscription_id":"#{@subscribed_sync_error_dataset_id}"}]
+      service_item_id: %[{"subscription_id":"#{@subscribed_sync_error_dataset_id}"}]
     )
   end
 
@@ -483,7 +483,6 @@ describe Carto::DoSyncServiceFactory do
       sync_info['estimated_size'].should be_between 500, 1000
       sync_info['estimated_row_count'].should eq 100
       expected_subscription_info = {
-        provider: 'do-v2',
         id: @subscribed_synced_dataset_id,
         type: 'dataset'
       }
@@ -514,7 +513,6 @@ describe Carto::DoSyncServiceFactory do
       # Note that we don't embrace here the DataImport anomaly of not nullifying the synchronization foreign key
       sync_info['synchronization_id'].should be_nil
       expected_subscription_info = {
-        provider: 'do-v2',
         id: @subscribed_synced_dataset_id,
         type: 'dataset'
       }
@@ -563,7 +561,6 @@ describe Carto::DoSyncServiceFactory do
   describe '#subscription_from_sync_table' do
     it 'returns the subscription id given a sync table' do
       expected_subscription_info = {
-        provider: 'do-v2',
         id: @subscribed_synced_dataset_id,
         type: 'dataset'
       }

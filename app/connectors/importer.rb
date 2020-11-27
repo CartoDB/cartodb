@@ -321,6 +321,10 @@ module CartoDB
         restore_permissions_for(name)
       end
 
+      def last_modified
+        runner.last_modified
+      end
+
       private
 
       def new_register(name, result)

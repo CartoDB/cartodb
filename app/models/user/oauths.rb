@@ -7,7 +7,8 @@ module CartoDB
     # Class constructor
     # @param owner_user ::User
     def initialize(owner_user)
-      @owner = Carto::User.find(owner_user.id)
+      @oner = owner_user
+      @owner = Carto::User.find(@owner.id) unless @owner.kind_of?(Carto::User)
     end #initialize
 
     def all

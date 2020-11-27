@@ -5,6 +5,7 @@ module Carto
 
     def initialize(user)
       @user = user
+      @user = Carto::User.find(@user.id) unless @user.kind_of?(Carto::User)
     end
 
     def list_connectors(connections: false, type: nil)
@@ -103,11 +104,8 @@ module Carto
     end
 
     def create_db_connection(name:, provider:, parameters:)
+      check_db_provider!(provider)
       @user.connections.create!(name: name, connector: provider, parameters: parameters)
-    end
-
-    def oauth_connection_url(service) # returns auth_url, doesn't actually create connection
-      DataImportsService.new.get_service_auth_url(@user, service)
     end
 
     # create Oauth connection logic
@@ -121,15 +119,31 @@ module Carto
     #      # let the user authorize our app; existing connection will be dismissed
     #      open_authorization_window(connection_manager.create_oauth_connection_get_url(service))
     #    end
+    #    if connection
+    #      # connection of dual type (bigquery) we must additionally require parameters from the user and assign them:
+    #      connection = assign_db_parameters(service, parameters)
+    #    end
     def fetch_valid_oauth_connection(service) # check for valid oauth_connection
       existing_connection = find_oauth_connection(service)
       return existing_connection if oauth_connection_valid?(existing_connection)
     end
 
     def create_oauth_connection_get_url(service:) # get_url_to_create_oauth_connection
+      check_oauth_service!(service)
       existing_connection = find_oauth_connection(service)
       existing_connection.destroy if existing_connection.present?
       oauth_connection_url(service)
+    end
+
+    # for dual connection only (BigQuery): after fetching a valid oauth connection,
+    # parameters should be assigned, which will trigger the final validation
+    # this may not be needed: API could perform a regular update
+    def assign_db_parameters(service:, parameters:)
+      connection = find_oauth_connection(service)
+      raise "Connection not found for service #{service}" unless connection.present?
+
+      connection.update! parameters: parameters
+      connection
     end
 
     # def oauth_connection_completed?(service)
@@ -143,7 +157,7 @@ module Carto
     end
 
     def connection_ready?(id)
-      connection = fetch_connection!(id)
+      connection = fetch_connection(id)
       case connection.connection_type
       when Carto::Connection::TYPE_DB_CONNECTOR
         true
@@ -153,19 +167,25 @@ module Carto
     end
 
     def delete_connection(id)
-      connection = fetch_connection!(id)
-      connection.destroy
+      connection = fetch_connection(id)
+      connection.destroy!
       @user.reload
     end
 
-    def fetch_connection!(id)
-      connection = @user.connections.where(id: id).first
-      # TODO: use specific exception class
-      raise "Connection #{id} not found" unless connection.present?
-      connection
+    def fetch_connection(id)
+      @user.connections.find(id)
+    end
+
+    def update_db_connection(id:, parameters:)
+      connection = fetch_connection(id)
+      connection.update! parameters: parameters
     end
 
     private
+
+    def oauth_connection_url(service) # returns auth_url, doesn't actually create connection
+      DataImportsService.new.get_service_auth_url(@user, service)
+    end
 
     def self.valid_oauth_services
       CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources.select { |service|
@@ -182,6 +202,16 @@ module Carto
 
     def self.valid_db_connectors
       Carto::Connector.providers.keys
+    end
+
+    def check_oauth_service!(service)
+      # TODO: check also that is enabled for @user
+      raise "Invalid OAuth service #{service}" unless service.in?(Carto::ConnectionManager.valid_oauth_services)
+    end
+
+    def check_db_provider!(provider)
+      # TODO: check also that is enabled for @user
+      raise "Invalid DB provider #{provider}" unless provider.in?(Carto::ConnectionManager.valid_db_connectors)
     end
   end
 end

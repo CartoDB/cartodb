@@ -24,12 +24,39 @@ module Carto
         end
 
         def create
-          connection = @connection_manager.create_db_connection(
-            name: params[:name],
-            provider: params[:connector],
-            parameters: params[:parameters]
-          )
-          render_jsonp({ id: connection.id }, 201)
+          if params[:name].present? || params[:parameters].present?
+            connection = @connection_manager.create_db_connection(
+              name: params[:name],
+              provider: params[:connector],
+              parameters: params[:parameters]
+            )
+            render_jsonp({ id: connection.id }, 201)
+          else
+            # initiate creation of OAuth connection
+            render_jsonp({ auth_url: @connection_manager.create_oauth_connection_get_url(service: params[:connector]) })
+          end
+        end
+
+        def destroy
+          connection = @connection_manager.fetch_connection(params[:id])
+          connection.destroy!
+          head :ok
+        end
+
+        def update
+          @connection_manager.update_db_connection(id: params[:id], parameters: params[:parameters])
+          head :ok
+        end
+
+        def check_oauth
+          service = params[:service]
+          connection = @connection_manager.find_oauth_connection(service)
+          # shouldn't it return a presented connection? and raise an exception if not found?
+          if connection
+            render_jsonp(@connection_manager.present_connection(connection), 200)
+          else
+            render_jsonp({ errors: "OAuth connection for #{service} not found" }, 404)
+          end
         end
 
         private

@@ -158,7 +158,7 @@ module Carto
     end
 
     def connection_ready?(id)
-      connection = fetch_connection!(id)
+      connection = fetch_connection(id)
       case connection.connection_type
       when Carto::Connection::TYPE_DB_CONNECTOR
         true
@@ -168,12 +168,12 @@ module Carto
     end
 
     def delete_connection(id)
-      connection = fetch_connection!(id)
+      connection = fetch_connection(id)
       connection.destroy
       @user.reload
     end
 
-    def fetch_connection!(id)
+    def fetch_connection(id)
       connection = @user.connections.where(id: id).first
       # TODO: use specific exception class
       raise "Connection #{id} not found" unless connection.present?

@@ -217,7 +217,7 @@ module Carto
       connection_id = @params[:connection_id]
       provider = @params[:provider]
       if connection_id.present?
-        connection = Carto::ConnectionManager.new(@user).fetch_connection!(connection_id)
+        connection = Carto::ConnectionManager.new(@user).fetch_connection(connection_id)
         if provider.present?
           raise "Invalid connection" if provider != connection.connector
         else

@@ -177,6 +177,11 @@ module Carto
       @user.connections.find(id)
     end
 
+    def update_db_connection(id:, parameters:)
+      connection = fetch_connection(id)
+      connection.update! parameters: parameters
+    end
+
     private
 
     def self.valid_oauth_services

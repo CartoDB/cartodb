@@ -33,8 +33,13 @@ module Carto
         end
 
         def destroy
-          connection = Carto::Connection.find(params[:id])
+          connection = @connection_manager.fetch_connection(params[:id])
           connection.destroy!
+          head :ok
+        end
+
+        def update
+          @connection_manager.update_db_connection(id: params[:id], parameters: params[:parameters])
           head :ok
         end
 

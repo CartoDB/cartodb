@@ -64,7 +64,6 @@ module CartoDB
           check_dataset_quotas(runner.visualizations)
           log('Proceeding to register')
           register_results(results)
-          results.select(&:success?).each { |result| create_overviews(result) }
           create_visualization if data_import.create_visualization
         end
         self
@@ -147,21 +146,6 @@ module CartoDB
         else
           raise exception
         end
-      end
-
-      def create_overviews(result)
-        dataset = @overviews_creator.dataset(result.name)
-        dataset.create_overviews!
-      rescue StandardError => exception
-        # In case of overview creation failure we'll just omit the
-        # overviews creation and continue with the process.
-        # Since the actual creation is handled by a single SQL
-        # function, and thus executed in a transaction, we shouldn't
-        # need any clean up here. (Either all overviews were created
-        # or nothing changed)
-        log("Overviews creation failed: #{exception.message}")
-        user = Carto::User.find(data_import.user_id)
-        log_error(message: 'Error creating overview', exception: exception, current_user: user, table_name: result.name)
       end
 
       def create_visualization
@@ -316,7 +300,7 @@ module CartoDB
       end
 
       def overwrite_register(result, name)
-        index_statements = @table_setup.generate_index_statements(@destination_schema, name)
+        table_statements = @table_setup.generate_table_statements(@destination_schema, name)
 
         database.transaction do
           log("Replacing #{name} with #{result.table_name}")
@@ -332,8 +316,7 @@ module CartoDB
 
         @table_setup.cartodbfy(name)
         @table_setup.fix_oid(name)
-        @table_setup.run_index_statements(index_statements, @database)
-        @table_setup.recreate_overviews(name)
+        @table_setup.run_table_statements(table_statements, @database)
         @table_setup.update_cdb_tablemetadata(name)
         restore_permissions_for(name)
       end

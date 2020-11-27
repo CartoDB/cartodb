@@ -174,10 +174,7 @@ module Carto
     end
 
     def fetch_connection(id)
-      connection = @user.connections.where(id: id).first
-      # TODO: use specific exception class
-      raise "Connection #{id} not found" unless connection.present?
-      connection
+      @user.connections.find(id)
     end
 
     private

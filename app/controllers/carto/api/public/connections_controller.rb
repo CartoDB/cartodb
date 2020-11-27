@@ -32,6 +32,12 @@ module Carto
           render_jsonp({ id: connection.id }, 201)
         end
 
+        def destroy
+          connection = Carto::Connection.find(params[:id])
+          connection.destroy!
+          head :ok
+        end
+
         # # TODO: three endpoints for OAuth connection creation
 
         # # 1. used both for checking if a connection already exists (then, for dual, presence of parameters should be checked to see if the connection is really complete or requires parameters assignment)

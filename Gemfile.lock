@@ -302,8 +302,6 @@ GEM
       cliver (~> 0.3.1)
       websocket-driver (>= 0.2.0)
     power_assert (1.2.0)
-    protected_attributes (1.1.4)
-      activemodel (>= 4.0.1, < 5.0)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -567,7 +565,6 @@ DEPENDENCIES
   oauth-plugin!
   pg (= 0.20.0)
   poltergeist (= 1.18.1)
-  protected_attributes
   pry-byebug (= 3.9.0)
   rack
   rack-test (= 0.6.3)

@@ -12,7 +12,6 @@ gem 'sequel_pg',               '~> 1.12.0', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
 
-gem 'protected_attributes'
 gem 'responders', '~> 2.0'
 
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework

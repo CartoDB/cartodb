@@ -16,8 +16,6 @@ module Carto
     validates :recipient_id, uniqueness: { scope: :entity_id, message: 'is already taken' }
     validate :supported_type
 
-    attr_accessible :entity_id, :recipient_id, :entity_type, :recipient_type
-
     def self.columns
       super.reject { |c| c.name == 'id' }
     end

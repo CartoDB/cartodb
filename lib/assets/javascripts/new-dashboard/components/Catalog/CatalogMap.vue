@@ -97,7 +97,7 @@ export default {
     variableBins () {
       if (this.variable && this.variable.quantiles && colorStyle) {
         const breaks = [this.variable.min, ...this.variable.quantiles[2]['5']];
-        const bins = breaks.map(q => ({
+        const bins = [...new Set(breaks)].map(q => ({
           color: `rgb(${colorStyle(q)})`
         }));
         return bins;
@@ -363,7 +363,8 @@ export default {
   }
 
   .legend {
-    width: 240px;
+    min-width: 240px;
+    width: auto;
     height: auto;
     margin: 20px;
     padding: 20px;

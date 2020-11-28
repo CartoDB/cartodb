@@ -96,7 +96,8 @@ export default {
     },
     variableBins () {
       if (this.variable && this.variable.quantiles && colorStyle) {
-        const bins = this.variable.quantiles[2]['5'].map(q => ({
+        const breaks = [this.variable.min, ...this.variable.quantiles[2]['5']];
+        const bins = breaks.map(q => ({
           color: `rgb(${colorStyle(q)})`
         }));
         return bins;
@@ -114,6 +115,14 @@ export default {
         });
         return categories;
       }
+    },
+    tilesetSampleId () {
+      const TILESET_SAMPLE_PROJECT_MAP = {
+        'do-sample-prod': 'do-tileset-sample-stag',
+        'do-public-sample': 'do-public-tileset-sample-stag'
+      };
+      const [project, dataset, table] = this.dataset.sample_info.id.split('.');
+      return [TILESET_SAMPLE_PROJECT_MAP[project], dataset, table].join('.');
     }
   },
   created () {
@@ -167,14 +176,6 @@ export default {
       style.href = 'https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css';
       document.head.appendChild(style);
     },
-    tilesetSampleId (id) {
-      const TILESET_SAMPLE_PROJECT_MAP = {
-        'carto-do': 'do-tileset-sample-stag',
-        'carto-do-public-data': 'do-public-tileset-sample-stag'
-      };
-      const [project, dataset, table] = id.split('.');
-      return [TILESET_SAMPLE_PROJECT_MAP[project], dataset, table].join('.');
-    },
     syncMapboxViewState (viewState) {
       this.map.jumpTo({
         center: [viewState.longitude, viewState.latitude],
@@ -194,7 +195,7 @@ export default {
     renderLayer () {
       const layers = [
         new CartoBQTilerLayer({
-          data: this.tilesetSampleId(this.dataset.id),
+          data: this.tilesetSampleId,
           credentials: {
             username: 'public',
             apiKey: 'default_public',

@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cell u-flex__justify--center u-mb--16 wrap-reverse--tablet">
     <div class="grid-cell grid-cell--col9 grid-cell--col12--tablet main-column">
-      <CatalogMapPreview />
+      <CatalogMapPreview v-if="hasSample" />
       <p
         class="text is-caption is-txtMainTextColor u-mt--32 u-mt--12--tablet"
         v-html="dataset.description || 'No description available.'"
@@ -142,6 +142,9 @@ export default {
     },
     geometryType () {
       return geometryTypeName(this.dataset.geom_type);
+    },
+    hasSample () {
+      return this.dataset.sample_info && !!this.dataset.sample_info.id;
     }
   },
   methods: {

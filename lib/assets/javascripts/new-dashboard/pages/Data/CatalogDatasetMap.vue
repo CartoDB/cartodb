@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="hasSample">
     <div class="catalog-dataset-map">
       <div class="header">
         <h1 class="title is-caption is-txtMainTextColor">{{ title }}</h1>
@@ -30,6 +30,11 @@ export default {
       infoVisible: false
     };
   },
+  created () {
+    if (!this.hasSample) {
+      this.$router.replace({ name: 'catalog-dataset-summary' });
+    }
+  },
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset
@@ -39,6 +44,9 @@ export default {
     },
     defaultSource () {
       return this.dataset.sample_info && this.dataset.sample_info.default_source;
+    },
+    hasSample () {
+      return this.dataset.sample_info && !!this.dataset.sample_info.id;
     }
   },
   methods: {

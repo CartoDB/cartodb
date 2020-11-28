@@ -64,7 +64,7 @@
               <NavigationTabs class="grid-cell--col12">
                 <router-link :to="{ name: 'catalog-dataset-summary' }" replace>Summary</router-link>
                 <router-link :to="{ name: 'catalog-dataset-data' }" replace>Data</router-link>
-                <router-link :to="{ name: 'catalog-dataset-map' }" replace>Map</router-link>
+                <router-link :to="{ name: 'catalog-dataset-map' }" replace v-if="hasSample">Map</router-link>
               </NavigationTabs>
             </div>
             <router-view></router-view>
@@ -121,6 +121,9 @@ export default {
     },
     isSubscriptionSyncing () {
       return this.subscription && this.subscription.sync_status === 'syncing';
+    },
+    hasSample () {
+      return this.dataset.sample_info && !!this.dataset.sample_info.id;
     }
   },
   methods: {

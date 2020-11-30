@@ -1,3 +1,5 @@
+require './lib/carto/subscribers/central_user_commands'
+
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task cartodb_subscribers: [:environment] do |_task, _args|

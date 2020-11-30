@@ -17,7 +17,8 @@
       "derived": "BUILDER",
       "kuviz": "CARTOFRAMES",
       "keplergl": "KEPLER.GL",
-      "data-observatory": "DATA OBSERVATORY"
+      "sample": "SAMPLE",
+      "subscription": "SUBSCRIPTION"
     }
   },
   "MapListHeader": {
@@ -36,6 +37,8 @@
     "changePrivacy": "Change privacy",
     "share": "Share with colleagues",
     "duplicate": "Duplicate",
+    "viewSubscription": "View subscription",
+    "subscribeToEntity": "Subscribe to dataset",
     "lock": "Lock",
     "unlock": "Unlock",
     "delete": "Delete",
@@ -76,7 +79,8 @@
         "link": "Your Link-shared Datasets",
         "password": "Your Password-protected Datasets",
         "private": "Your Private Datasets",
-        "subscribed": "Your Subscribed Datasets"
+        "subscribed": "Your Subscribed Datasets",
+        "sample": "Your Sample Datasets"
       },
       "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}' class='is-bold'>Upgrade now</a> to get more datasets."
     },
@@ -172,7 +176,8 @@
       "passwordPrivacy": "Password",
       "builderType": "Builder",
       "kuvizType": "CARTOframes",
-      "subscribed": "Subscriptions ({count})"
+      "subscribed": "Subscriptions ({count})",
+      "sample": "Samples ({count})"
     }
   },
   "DatasetCard": {
@@ -731,7 +736,7 @@
     "datasetSize": "Dataset size"
   },
   "Catalog": {
-    "back": "Back"
+    "name": "Spatial Data Catalog"
   },
   "Dialogs": {
     "ShareViaURL": {

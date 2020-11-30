@@ -1,9 +1,9 @@
 <div class="u-flex u-alignCenter">
   <div class="js-sync"></div>
-  <div class="subscription">
-    <% if (subscriptionTag && subscriptionType) { %>
-      <span class="Tag Tag--Subscription u-ml--12 u-mr--8"><%- subscriptionTag %></span>
-      <a class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase" href="<%- baseUrl %>/dashboard/datasets/spatial-data-catalog/<%- subscriptionType %>/<%- subscriptionId %>"><%- _t('dataset.subscriptions.view-subscription') %></a>
+  <div>
+    <% if (entityTag && entity_type && entity_id) { %>
+      <span class="Tag Tag--Entity u-ml--12 u-mr--8"><%- entityTag %></span>
+      <a class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase" href="<%- baseUrl %>/dashboard/datasets/spatial-data-catalog/<%- entity_type %>/<%- entity_id %>"><%- entityLabel %></a>
     <% } %>
   </div>
 </div>

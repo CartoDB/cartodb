@@ -2,13 +2,19 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+* This release upgrades the CartoDB PostgreSQL extension to `0.37.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+* As part of the release of `0.37.0`, the creation of overviews is removed and will no longer work.
+```
 
 ### Features
-- None yet
+- Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 
 ### Bug fixes / enhancements
-- None yet
+- Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
+- Improve the syncronization functions by using `CDB_GetTableQueries`.
 
 4.44.0 (2020-11-20)
 -------------------

@@ -108,6 +108,9 @@ RSpec/ExampleLength:
 RSpec/ImplicitExpect:
   Enabled: false
 
+RSpec/MessageSpies:
+  Enabled: false
+
 RSpec/MultipleExpectations:
   Max: 10
 
@@ -116,6 +119,9 @@ RSpec/MultipleMemoizedHelpers:
 
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/StubbedMock:
+  Enabled: false
 
 ####################
 #  Style

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isFetching" class="grid grid-cell u-flex__justify--center">
+  <div v-if="!isFetching" class="grid grid-cell u-flex__justify--center u-mb--32">
     <div class="grid-cell grid-cell--col12 u-mt--28">
       <div class="u-flex u-flex__justify--between title-container">
         <h2 class="title is-caption is-txtMainTextColor">
@@ -178,9 +178,6 @@ export default {
       variables: state => state.catalog.variables,
       isFetching: state => state.catalog.isFetching
     }),
-    isPublicWebsite () {
-      return !(this.$store.state.user && this.$store.state.user.id);
-    },
     tableKey () {
       if (this.dataset && this.dataset.summary_json) {
         if (this.dataset.summary_json.ordered_glimpses) {
@@ -214,14 +211,14 @@ export default {
       return this.variables ? this.variables.length : this.columns.length;
     },
     isGeography () {
-      return this.$route.params.type === 'geography';
+      return this.$route.params.entity_type === 'geography';
     }
   },
   methods: {
     fetchVariables () {
       this.$store.dispatch('catalog/fetchVariables', {
-        id: this.$route.params.datasetId,
-        type: this.$route.params.type
+        id: this.$route.params.entity_id,
+        type: this.$route.params.entity_type
       });
     },
     findVariableInfo (variableName) {

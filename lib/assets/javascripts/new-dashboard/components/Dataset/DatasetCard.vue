@@ -1,6 +1,5 @@
 <template>
   <a :href="vizUrl"
-     target="_blank"
      class="dataset-row"
      :class="{
        'dataset-row--selected': isSelected,
@@ -35,8 +34,9 @@
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </div>
-        <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues || isDataObservatory">
-          <span class="tag-squared title is-xsmall letter-spacing" v-if="isDataObservatory">Data Observatory</span>
+        <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues || isSample || isSubscription">
+          <span class="tag-squared title is-xsmall letter-spacing" v-if="isSample">SAMPLE</span>
+          <span class="tag-squared title is-xsmall letter-spacing" v-if="isSubscription">SUBSCRIPTION</span>
           <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img class="icon-metadata" src="../../assets/icons/common/tag.svg" width="14" height="14">
             <ul v-if="tagsChars <= maxTagChars" class="tag-list">
@@ -207,9 +207,13 @@ export default {
     isSharedWithColleagues () {
       return this.$props.dataset.permission.acl.length > 0;
     },
-    isDataObservatory () {
+    isSample () {
+      const sample = this.$props.dataset.sample;
+      return sample && !!sample.entity_id || false;
+    },
+    isSubscription () {
       const subscription = this.$props.dataset.subscription;
-      return subscription && subscription.provider === 'do-v2';
+      return subscription && !!subscription.entity_id || false;
     }
   },
   methods: {

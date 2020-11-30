@@ -1,6 +1,7 @@
 require_relative 'connector/errors'
 require_relative 'connector/providers'
 require_relative 'connector/parameters'
+require_dependency 'carto/connector/connection_manager'
 
 module Carto
   # This class provides remote database connection services
@@ -10,12 +11,11 @@ module Carto
 
     def initialize(parameters:, user:, **args)
       @params = Parameters.new(parameters)
+      @user = user
+      set_connection_from_connection_id!
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
-
-      @user = user
-
       raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
       @provider = Connector.provider_class(@provider_name).try :new, parameters: @params, user: @user, **args
       raise InvalidParametersError.new(message: "Invalid provider", provider: @provider_name) if @provider.blank?
@@ -209,6 +209,23 @@ module Carto
 
     def log(message, truncate = true)
       @provider.log message, truncate
+    end
+
+    def set_connection_from_connection_id!
+      connection_id = @params[:connection_id]
+      provider = @params[:provider]
+      if connection_id.present?
+        connection = Carto::ConnectionManager.new(@user).fetch_connection(connection_id)
+        if provider.present?
+          raise "Invalid connection" if provider != connection.connector
+        else
+          @params.merge! provider: connection.connector
+        end
+        @params.merge! connection: connection.parameters
+        # TODO: new convention for hybrid connectors (db-connectors using OAuth and connection parameters)
+        # @params.merge! connection: { refresh_token: token } if connection.parameters.blank? && token.present?
+        @params.delete :connection_id
+      end
     end
   end
 end

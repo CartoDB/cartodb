@@ -10,9 +10,6 @@ module Carto
     end
 
     def create_overviews(table_name, tolerance_px)
-      @database.run %{
-        SELECT cartodb.CDB_CreateOverviewsWithToleranceInPixels('#{table_name}'::REGCLASS, '#{tolerance_px}'::float8);
-      }
     end
 
     def rename_overviews(table_name, new_table_name)

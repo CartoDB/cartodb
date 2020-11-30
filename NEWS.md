@@ -2,13 +2,19 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+* This release upgrades the CartoDB PostgreSQL extension to `0.37.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+* As part of the release of `0.37.0`, the creation of overviews is removed and will no longer work.
+```
 
 ### Features
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
+- Improve the syncronization functions by using `CDB_GetTableQueries`.
 
 4.44.0 (2020-11-20)
 -------------------
@@ -23,6 +29,8 @@ Development
 * Error importing geopackage files with multiple layers [#15907](https://github.com/CartoDB/cartodb/pull/15907)
 * Add DO notification in dashboard [#15929](https://github.com/CartoDB/cartodb/pull/15929)
 * Data loss on table rename due to GhostTablesManager [#15935](https://github.com/CartoDB/cartodb/pull/15935)
+* Add DO datasets sync size in /me endpoint [#15932](https://github.com/CartoDB/cartodb/pull/15932)
+* Load GoogleMaps library for a map if the owner's query string is available [#15948](https://github.com/CartoDB/cartodb/pull/15948)
 
 4.43.0 (2020-11-06)
 -------------------
@@ -38,6 +46,7 @@ Development
 * Fixed an error handling issue during synchronizations
 * Improve import error messages [#15893](https://github.com/CartoDB/cartodb/pull/15893)
 * Identify multi-line GeoJSON columns correctly on imports [#15891](https://github.com/CartoDB/cartodb/pull/15891)
+* Some experimental code using a message broker
 * Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
 * Migrate `ClientApplication` model to `ActiveRecord` [#15886](https://github.com/CartoDB/cartodb/pull/15886)
 * Avoid delegating special methods in presenters [#15889](https://github.com/CartoDB/cartodb/pull/15889)

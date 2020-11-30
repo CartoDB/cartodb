@@ -167,7 +167,7 @@ module Carto
 
       def datasource_vizjson(options, forced_privacy_version)
         ds = {
-          user_name: @visualization.user.username,
+          user_name: @visualization.user&.username,
           maps_api_template: ApplicationHelper.maps_api_template(api_templates_type(options)),
           stat_tag: @visualization.id
         }

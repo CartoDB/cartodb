@@ -127,7 +127,7 @@ module Carto
           raise ee
         end
         retry unless attempts > 1
-        CartoDB.notify_exception(e, user: @user)
+        log_warning(error: e, current_user: @user)
         # INFO: we need to return something to avoid 'disabled' return value
         nil
       end

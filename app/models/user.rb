@@ -620,15 +620,14 @@ class User < Sequel::Model
   end
 
   def get_connection(options = {}, configuration)
-  connection = $pool.fetch(configuration) do
+    $pool.fetch(configuration) do
       db = get_database(options, configuration)
       db.extension(:connection_validator)
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)
       db
     end
-  rescue StandardError => exception
-    CartoDB::report_exception(exception, "Cannot connect to user database",
-                              user: self, database: configuration['database'])
+  rescue StandardError => e
+    log_warning("Can't connect to user database", error: e, current_user: self)
     raise exception
   end
 

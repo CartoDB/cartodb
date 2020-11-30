@@ -174,7 +174,7 @@ module Carto
       end
 
       def log_response(response, action)
-        log_error(
+        log_warning(
           message: 'Error in named maps API',
           current_user: user,
           visualization_id: visualization.id,

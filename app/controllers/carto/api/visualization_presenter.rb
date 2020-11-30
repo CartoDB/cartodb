@@ -125,6 +125,7 @@ module Carto
           children: []
         }
 
+        poro[:sample] = @visualization.sample if @visualization.sample
         poro[:subscription] = @visualization.subscription if @visualization.subscription
         poro[:related_tables] = related_tables if related
         poro[:synchronization] = synchronization if show_synchronization

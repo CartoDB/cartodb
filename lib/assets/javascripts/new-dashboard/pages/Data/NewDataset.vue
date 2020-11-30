@@ -1,7 +1,7 @@
 <template>
   <Dialog
     :headerTitle="$t('DataPage.addDataset')"
-    :headerImage="require('../../assets/icons/catalog/modal/subsc-add-icon.svg')"
+    :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
     :showSubHeader="false"
   >
     Add new dataset page

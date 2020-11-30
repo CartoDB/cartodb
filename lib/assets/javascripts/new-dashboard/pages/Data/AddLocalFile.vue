@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <Dialog ref="dialog"
     :headerTitle="$t('DataPage.addDataset')"
     :headerImage="require('../../assets/icons/catalog/modal/subsc-add-icon.svg')"
   >
@@ -9,31 +9,150 @@
       {{ $t('DataPage.addLocalFile') }}
     </h3>
   </template>
-    <div class="u-flex u-flex__direction--column u-flex__align--center">
+  <template #default>
+    <div v-show="!isFileSelected" class="u-flex u-flex__direction--column u-flex__align--center">
       <span class="is-small">{{ $t('DataPage.formats') }}: CSV, GeoJSON, GPKG, SHP, KML, OSM, CARTO, GPX, FGDB <a target="_blank" href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">{{ $t('DataPage.learnmore') }}</a></span>
-      <div class="drag-zone u-mt--32 u-flex u-flex__direction--column u-flex__align--center u-flex__justify--center">
+      <div ref="dragZone" :class="{dragged: dragged}" class="drag-zone u-mt--32 u-flex u-flex__direction--column u-flex__align--center u-flex__justify--center">
         <img src="../../assets/icons/datasets/move-up.svg">
         <h4 class="is-small is-semibold u-mt--16" style="text-align: center;">Drag and drop your file<br>or</h4>
         <button @click="selectFile()" class="button is-primary u-mt--16">Browse</button>
-        <input ref="file" type="file">
+        <input @change="fileSelected" ref="file" type="file">
       </div>
+      <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert">{{fileValidation.msg}}</p>
     </div>
+    <div v-show="isFileSelected" class="u-flex u-flex__align--center u-flex__justify--between u-pl--24 u-pr--24 file">
+      <div class="is-txtMainTextColor u-flex u-flex__direction--column">
+        <span class="is-caption">{{uploadObject.value.name}}</span>
+        <span class="is-small" style="margin-top:2px;">{{humanFileSize(uploadObject.value.size)}}</span>
+      </div>
+      <button @click="clearFile();">
+        <img src="../../assets/icons/common/delete.svg">
+      </button>
+    </div>
+  </template>
+    <template slot="footer">
+      <GuessPrivacyFooter
+        :guess="uploadObject.content_guessing && uploadObject.type_guessing"
+        :privacy="uploadObject.privacy"
+        :disabled="!fileValidation.valid"
+        @guessChanged="changeGuess"
+        @privacyChanged="changePrivacy"
+        @connect="connectDataset"
+      ></GuessPrivacyFooter>
+    </template>
   </Dialog>
 </template>
 
 <script>
 
+import Dropzone from 'dropzone';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
+import uploadData from '../../mixins/connector/uploadData';
+import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
+import * as Formatter from 'new-dashboard/utils/formatter';
+require('dragster');
 
 export default {
   name: 'AddLocalFile',
+  inject: ['backboneViews'],
+  mixins: [uploadData],
   components: {
-    Dialog
+    Dialog,
+    GuessPrivacyFooter
   },
-  computed: {},
+  data () {
+    return {
+      dragged: false,
+      fileValidation: {
+        valid: false,
+        msg: ''
+      },
+      uploadObject: this.getUploadObject()
+    };
+  },
+  mounted () {
+    this.clearFile();
+    this.dragster = new Dragster(this.$refs.dragZone); // eslint-disable-line
+    this.$refs.dragZone.addEventListener('dragster:enter', this.dragsterEnter);
+    this.$refs.dragZone.addEventListener('dragster:leave', this.dragsterLeave);
+    this.dropzone = new Dropzone(this.$refs.dragZone, {
+      url: ':)',
+      autoProcessQueue: false,
+      previewsContainer: false
+    });
+    this.dropzone.on('drop', e => {
+      this.dragster.dragleave(event);
+      this.dropzone.removeFile(event);
+      this.setFile(event.dataTransfer.files);
+    });
+  },
+  computed: {
+    remainingByteQuota () {
+      return this.$store.state.user && this.$store.state.user.remaining_byte_quota;
+    },
+    isFileSelected () {
+      return this.fileValidation.valid && this.uploadObject && this.uploadObject.value && this.uploadObject.value !== '' && this.uploadObject.type === 'file';
+    }
+  },
   methods: {
+    dragsterEnter () {
+      this.dragged = true;
+    },
+    dragsterLeave () {
+      this.dragged = false;
+    },
     selectFile () {
       this.$refs.file.click();
+    },
+    fileSelected (event) {
+      this.setFile(event.target.files);
+      event.target.value = '';
+    },
+    setFile (files) {
+      this.clearFile();
+      if (files && files.length > 0) {
+        this.fileValidation = this.validateFile(files, this.remainingByteQuota);
+        if (this.fileValidation.valid) {
+          this.uploadObject.type = 'file';
+          this.uploadObject.value = files[0];
+        }
+      }
+    },
+    changeGuess (value) {
+      this.uploadObject.content_guessing = value;
+      this.uploadObject.type_guessing = value;
+    },
+    changePrivacy (value) {
+      this.uploadObject.privacy = value;
+    },
+    clearFile () {
+      this.uploadObject.type = '';
+      this.uploadObject.value = '';
+      this.fileValidation = {
+        valid: false,
+        msg: ''
+      };
+    },
+    humanFileSize (size) {
+      return Formatter.humanFileSize(size);
+    },
+    connectDataset () {
+      if (this.isFileSelected) {
+        const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
+        backgroundPollingView._addDataset({...this.uploadObject});
+        this.$refs.dialog.closePoup();
+      }
+    }
+  },
+  beforeDestroy () {
+    if (this.dragster) {
+      this.dragster.removeListeners();
+      this.dragster.reset();
+    }
+    this.$refs.dragZone.removeEventListener('dragster:enter', this.dragsterEnter);
+    this.$refs.dragZone.removeEventListener('dragster:leave', this.dragsterLeave);
+    if (this.dropzone) {
+      this.dropzone.destroy();
     }
   }
 };
@@ -47,8 +166,26 @@ export default {
   border-radius: 4px;
   border: dashed 2px #dddddd;
   background-color: $white;
+  transition: border-color 0.25s linear;
+  >* {
+    transition: opacity 0.25s linear;
+  }
+  &.dragged {
+    border-color: $blue--500;
+    >* {
+      opacity: 0.5;
+    }
+  }
 }
 input[type=file] {
   display: none;
+}
+.file {
+  background-color: $white;
+  height: 74px;
+  max-width: 460px;
+  border-radius: 4px;
+  border: 1px solid $blue--500;
+  margin: 0 auto;
 }
 </style>

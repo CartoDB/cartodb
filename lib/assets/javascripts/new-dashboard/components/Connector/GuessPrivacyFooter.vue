@@ -30,9 +30,9 @@
       <button type="button" class="PrivacyToggler u-mr--24" :class="{'PrivacyToggler--PRIVATE ': isPrivate, 'PrivacyToggler--PUBLIC ': !isPrivate}" @click="isPrivate = !isPrivate">
         <i class="CDB-IconFont" :class="{'CDB-IconFont-lock ': isPrivate, 'CDB-IconFont-unlock ': !isPrivate}"></i>
       </button>
-      <button class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled ': disabled}">
+      <button class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled ': disabled}" @click="connect">
         <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
-          Connect dataset
+          {{ $t('DataPage.connectDataset') }}
         </span>
       </button>
     </div>
@@ -65,7 +65,11 @@ export default {
       set (value) { this.$emit('privacyChanged', value ? 'PRIVATE' : 'PUBLIC'); }
     }
   },
-  methods: {}
+  methods: {
+    connect () {
+      this.$emit('connect');
+    }
+  }
 };
 </script>
 

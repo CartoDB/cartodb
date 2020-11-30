@@ -1,6 +1,6 @@
 <template>
   <div class="Dialog is-white">
-    <button class="CDB-Shape Dialog-closeBtn" @click="close">
+    <button @click="closePoup" class="CDB-Shape Dialog-closeBtn">
       <img src="../../assets/icons/common/close.svg">
     </button>
     <div class="Dialog-contentWrapper Dialog-contentWrapper--withHeaderWrapper">
@@ -57,8 +57,11 @@ export default {
   },
   computed: {},
   methods: {
-    close () {
-      this.$emit('close');
+    closePoup () {
+      const route = this.$route.matched.slice(-2).shift();
+      if (route && route.parent) {
+        this.$router.push(route.parent.path);
+      }
     }
   }
 };

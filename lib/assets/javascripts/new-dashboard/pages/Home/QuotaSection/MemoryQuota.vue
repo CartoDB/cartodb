@@ -35,7 +35,6 @@ export default {
   },
   data () {
     return {
-      usedApiKeys: 0
     };
   },
   computed: {

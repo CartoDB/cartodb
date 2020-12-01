@@ -13,7 +13,6 @@
 import { mapState } from 'vuex';
 import QuotaContainer from './QuotaContainer';
 import StackedQuotaWidget from './StackedQuotaWidget';
-import { apiKeysTypes } from 'new-dashboard/core/constants/api-keys';
 
 export default {
   name: 'MapLoadsQuota',
@@ -21,12 +20,8 @@ export default {
     StackedQuotaWidget,
     QuotaContainer
   },
-  beforeMount () {
-    this.getApiKeysTotal();
-  },
   data () {
     return {
-      usedApiKeys: 0
     };
   },
   computed: {
@@ -39,34 +34,6 @@ export default {
     }
   },
   methods: {
-    getExpBaseTwo (sizeInBytes) {
-      if (sizeInBytes === 0) {
-        return 0;
-      }
-
-      let exponent = 0;
-      if (Math.log2) {
-        exponent = Math.log2(sizeInBytes);
-      } else {
-        exponent = Math.log(sizeInBytes) * Math.LOG2E;
-      }
-
-      return Math.round(exponent / 10) * 10;
-    },
-    getAmountInUnit (number, exponent) {
-      return number / Math.pow(2, exponent);
-    },
-    getApiKeysTotal () {
-      this.$store.state.client.getApiKeys(apiKeysTypes.REGULAR,
-
-        (err, _, data) => {
-          if (err) {
-            return;
-          }
-          this.usedApiKeys = data.count;
-        }
-      );
-    }
   }
 };
 </script>

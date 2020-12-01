@@ -83,7 +83,7 @@ export default {
     name: String,
     availableQuota: Number,
     unit: String,
-    usedQuota: Array | Number,
+    usedQuota: [Array, Number],
     billingPeriod: String,
     formatToLocale: {
       type: Boolean,

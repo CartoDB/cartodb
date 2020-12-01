@@ -18,12 +18,10 @@ module LoggerHelper
 
   def log_error(params = {})
     rails_log(:error, params)
-    send_exception_to_rollbar(params)
   end
 
   def log_fatal(params = {})
     rails_log(:fatal, params)
-    send_exception_to_rollbar(params)
   end
 
   private
@@ -32,30 +30,19 @@ module LoggerHelper
     parsed_params = {}.with_indifferent_access
 
     params.each do |key, value|
-      if value.is_a?(Exception)
-        parsed_params[:exception] = { class: value.class.name, message: value.message, backtrace_hint: value.backtrace&.take(5) }
-        parsed_params[:message] = value.message if params[:message].blank?
-      elsif value.is_a?(::User) || value.is_a?(::Carto::User)
-        parsed_params[key] = value.username
-      elsif value.is_a?(Carto::Organization)
-        parsed_params[key] = value.name
-      else
-        parsed_params[key] = value
-      end
+      parsed_params[key] = case value
+                           when ::User
+                             value.username
+                           when ::Carto::User
+                             value.username
+                           when ::Carto::Organization
+                             value.name
+                           else
+                             value
+                           end
     end
 
     Rails.logger.send(level, log_context.merge(parsed_params))
-  end
-
-  def send_exception_to_rollbar(params)
-    exception = params[:exception]
-    message = params[:message]
-
-    if message && exception && exception.is_a?(Exception)
-      Rollbar.error(exception, message)
-    else
-      Rollbar.error(exception || message)
-    end
   end
 
   # Can be overriden in more specific contexts to add additional information.

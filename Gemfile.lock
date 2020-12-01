@@ -378,8 +378,7 @@ GEM
     retriable (3.1.2)
     rexml (3.2.4)
     rly (0.2.3)
-    rollbar (2.11.5)
-      multi_json
+    rollbar (3.1.1)
     roo (1.13.2)
       nokogiri
       rubyzip
@@ -584,7 +583,7 @@ DEPENDENCIES
   responders (~> 2.0)
   resque (= 1.25.2)
   resque-metrics (= 0.1.1)
-  rollbar (~> 2.11.1)
+  rollbar
   roo (= 1.13.2)
   rotp (~> 3.3, >= 3.3.1)
   rqrcode (~> 0.10.1)

@@ -15,6 +15,8 @@ sudo make install
 ### Bug fixes / enhancements
 - Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
 - Improve the syncronization functions by using `CDB_GetTableQueries`.
+- Bump cartodb-common to v0.4.8
+- Don't send ActionController::RoutingError to Rollbar [#15968](https://github.com/CartoDB/cartodb/pull/15968)
 
 4.44.0 (2020-11-20)
 -------------------

@@ -77,6 +77,11 @@ import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import Tooltip from 'new-dashboard/components/Tooltip/Tooltip';
 import { mapState } from 'vuex';
 
+const THRESHOLDS = {
+  WARNING: 60,
+  PROBLEM: 90
+};
+
 export default {
   name: 'StackedQuotaCard',
   props: {
@@ -121,8 +126,8 @@ export default {
       return this.remainingQuota <= 0;
     },
     tooltipText () {
-      let tooltip = Array.isArray(this.usedQuota) ? `${this.usedQuota.map(l => {
-        return `${l.label} ${this.getNumberInLocaleFormat(this.roundOneDecimal(l.value))} ${this.unit}`;
+      let tooltip = Array.isArray(this.usedQuota) ? `${this.usedQuota.map(quotaEntry => {
+        return `${quotaEntry.label} ${this.getNumberInLocaleFormat(this.roundOneDecimal(quotaEntry.value))} ${this.unit}`;
       }).join('<br>')}` : null;
 
       return tooltip;
@@ -140,9 +145,9 @@ export default {
     },
     getStatusBar () {
       const usedPercent = this.getUsedPercent(this.totalUsedQuota);
-      if (usedPercent > 90) {
+      if (usedPercent > THRESHOLDS.PROBLEM) {
         return 'problem';
-      } else if (usedPercent > 60) {
+      } else if (usedPercent > THRESHOLDS.WARNING) {
         return 'warning';
       } else {
         return 'good';

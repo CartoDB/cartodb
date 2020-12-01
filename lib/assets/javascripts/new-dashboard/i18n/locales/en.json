@@ -91,6 +91,11 @@
     "learnmore": "Learn more",
     "guessing-desc": "Let CARTO automatically guess data types and content on import.",
     "connectDataset": "Connect dataset",
+    "startAddingConnections": "Start adding your connections",
+    "connectDescription": "Connect CARTO to your existing stack so you can do more with your data.",
+    "newConnection": "New Connection",
+    "addConnection": "Add new connection",
+    "deleteConnection": "Delete your connection",
     "zeroCase": {
       "title": "Upload your first dataset",
       "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",

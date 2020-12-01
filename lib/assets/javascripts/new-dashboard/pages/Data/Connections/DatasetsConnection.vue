@@ -1,14 +1,24 @@
 <template>
-  <div>
-    Datasets Connection
-  </div>
+  <Dialog ref="dialog"
+    :headerTitle="$t('DataPage.addDataset')"
+    :headerImage="require('../../../assets/icons/datasets/subsc-add-icon.svg')"
+    :showSubHeader="true"
+  >
+    <template #default>
+      Datasets Connection
+    </template>
+  </Dialog>
 </template>
 
 <script>
 
+import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
+
 export default {
   name: 'DatasetsConnection',
-  components: {},
+  components: {
+    Dialog
+  },
   computed: {},
   methods: {}
 };

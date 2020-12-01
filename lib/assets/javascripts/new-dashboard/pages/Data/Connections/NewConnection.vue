@@ -1,14 +1,24 @@
 <template>
-  <div>
-    New Connection
-  </div>
+  <Dialog ref="dialog"
+    :headerTitle="$t('DataPage.addConnection')"
+    :headerImage="require('../../../assets/icons/datasets/add-connection.svg')"
+    :showSubHeader="false"
+  >
+    <template #default>
+      New connection page
+    </template>
+  </Dialog>
 </template>
 
 <script>
 
+import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
+
 export default {
   name: 'NewConnection',
-  components: {},
+  components: {
+    Dialog
+  },
   computed: {},
   methods: {}
 };

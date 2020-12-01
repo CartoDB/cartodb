@@ -58,9 +58,11 @@ export default {
   computed: {},
   methods: {
     closePoup () {
-      const route = this.$route.matched.slice(-2).shift();
+      const mathed = this.$route.matched;
+      const route = mathed[mathed.length - 1];
+      // const route = this.$route.matched.slice(-2).shift();
       if (route && route.parent) {
-        this.$router.push(route.parent.path);
+        this.$router.push({name: route.parent.name});
       }
     }
   }

@@ -247,6 +247,7 @@ module Carto
             max_layers: @user.max_layers
           },
           notification: @user.notification,
+          email_notifications: @user.decorate_email_notifications,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flags_names,
           base_url: @user.public_url,

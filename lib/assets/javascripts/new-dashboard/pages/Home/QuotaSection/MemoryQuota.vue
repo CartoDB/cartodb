@@ -20,7 +20,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import QuotaWidget from './QuotaWidget';
 import QuotaContainer from './QuotaContainer';
 import StackedQuotaWidget from './StackedQuotaWidget';
 import { getAmountInUnit, getUnit, getExpBaseTwo } from 'new-dashboard/utils/storage-utils';
@@ -32,7 +31,6 @@ export default {
   name: 'MemoryQuota',
   components: {
     StackedQuotaWidget,
-    QuotaWidget,
     QuotaContainer
   },
   data () {

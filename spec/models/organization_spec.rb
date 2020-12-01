@@ -429,13 +429,13 @@ describe Carto::Organization do
     end
   end
 
-  describe '#get_api_calls and #get_geocodings' do
+  describe '#map_views_count' do
     let(:organization) { create_organization_with_users }
 
-    before { Carto::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a }
+    before { Carto::User.any_instance.stubs(:map_views_count).returns (0..30).to_a }
 
-    it 'should return the sum of the api_calls for all organization users' do
-      expect(organization.get_api_calls).to eq((0..30).to_a.sum * organization.users.size)
+    it 'should return the sum of the map views for all organization users' do
+      expect(organization.map_views_count).to eq((0..30).to_a.sum * organization.users.size)
     end
   end
 

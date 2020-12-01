@@ -25,7 +25,7 @@ class UserMetadataExportFactory
         account_type: "FREE",
         private_tables_enabled: false,
         period_end_date: nil,
-        map_view_quota: 10000,
+        map_views_quota: 10000,
         max_layers: 8,
         database_timeout: 300000,
         user_timeout: 300000,

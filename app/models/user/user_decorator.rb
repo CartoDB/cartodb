@@ -3,9 +3,6 @@ module CartoDB
     include AccountTypeHelper
 
     def activity(options = {})
-      calls = options.fetch(:show_api_calls, true) ? get_api_calls(from: last_billing_cycle, to: Date.today) : []
-      map_views = calls.reduce(0, :+)
-
       {
         id: id,
         email: email,
@@ -17,7 +14,7 @@ module CartoDB
           password_privacy_visualization_count,
         private_map_count: private_privacy_visualization_count,
         map_count: all_visualization_count,
-        map_views: map_views,
+        map_views: user.map_views_count,
         geocoding_credits_count: organization_user? ? organization.get_geocoding_calls : get_geocoding_calls,
         routing_credits_count: organization_user? ? organization.get_mapzen_routing_calls : get_mapzen_routing_calls,
         isolines_credits_count: organization_user? ? organization.get_here_isolines_calls : get_here_isolines_calls,
@@ -27,12 +24,8 @@ module CartoDB
     end
 
     # Options:
-    # - show_api_calls: load api calls. Default: true.
     # - extended: load real_table_count and last_active_time. Default: false.
     def data(options = {})
-      calls = options.fetch(:show_api_calls, true) ? get_api_calls(from: last_billing_cycle, to: Date.today) : []
-      calls.fill(0, calls.size..29)
-
       db_size_in_bytes = self.db_size_in_bytes
 
       data = {
@@ -72,9 +65,6 @@ module CartoDB
         remaining_table_quota: remaining_table_quota,
         remaining_byte_quota: remaining_quota(db_size_in_bytes).to_f,
         unverified: unverified?,
-        api_calls: calls,
-        api_calls_quota: organization_user? ? organization.map_view_quota : map_view_quota,
-        api_calls_block_price: organization_user? ? organization.map_view_block_price : map_view_block_price,
         geocoding: {
           quota:       organization_user? ? organization.geocoding_quota : geocoding_quota,
           block_price: organization_user? ? organization.geocoding_block_price : geocoding_block_price,

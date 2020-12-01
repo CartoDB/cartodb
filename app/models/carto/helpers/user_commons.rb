@@ -27,7 +27,7 @@ module Carto::UserCommons
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
   LOGGING_ATTRIBUTES = %i[username admin enabled map_enabled quota_in_bytes
-                          table_quota account_type private_tables_enabled period_end_date map_view_quota
+                          table_quota account_type private_tables_enabled period_end_date map_views_quota
                           max_layers database_timeout user_timeout upgraded_at map_view_block_price
                           geocoding_quota dashboard_viewed_at sync_tables_enabled database_host
                           geocoding_block_price notification organization_id created_at updated_atid

@@ -75,12 +75,12 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization update success" do
-    put_json superadmin_organization_path(@organization1), { :organization => { :display_name => "Update Test", :map_view_quota => 800000 } }, superadmin_headers do |response|
+    put_json superadmin_organization_path(@organization1), { :organization => { :display_name => "Update Test", :map_views_quota => 800000 } }, superadmin_headers do |response|
       response.status.should == 204
     end
     organization = Carto::Organization.find(@organization1.id)
     organization.display_name.should == "Update Test"
-    organization.map_view_quota.should == 800000
+    organization.map_views_quota.should == 800000
   end
 
   describe "organization delete success" do
@@ -130,14 +130,14 @@ feature "Superadmin's organization API" do
     it "returns geocoding and mapviews quotas and uses for all organizations" do
       Carto::Organization.stubs(:overquota).returns [@organization1]
       ::User.any_instance.stubs(:get_geocoding_calls).returns(100)
-      ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
+      ::User.any_instance.stubs(:map_views_count).returns (0..30).to_a
       get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["name"].should == @organization1.name
         response.body[0]["geocoding"]['quota'].should == @organization1.geocoding_quota
         response.body[0]["geocoding"]['monthly_use'].should == @organization1.get_geocoding_calls
-        response.body[0]["api_calls_quota"].should == @organization1.map_view_quota
-        response.body[0]["api_calls"].should == @organization1.get_api_calls
+        response.body[0]["map_views_quota"].should == @organization1.map_views_quota
+        response.body[0]["map_views"].should == @organization1.map_views_count
         response.body.length.should == 1
       end
     end

@@ -117,8 +117,8 @@ exports[`StackedQuotaWidget.vue should render multiple bars 1`] = `
       <div class="quota-cell cell--large">
         <div class="progressbar">
           <tooltip-stub text="undefined 224 undefined<br>undefined 100 undefined" position="bottom-right" hide-delay="0s" show-delay="1s">
-            <div class="progressbar progressbar--good" style="width: 22.400000000000002%;"></div>
-            <div class="progressbar progressbar--good" style="width: 10%;"></div>
+            <div class="progressbar progressbar--filled" style="width: 22.400000000000002%;"></div>
+            <div class="progressbar progressbar--filled" style="width: 10%;"></div>
           </tooltip-stub>
         </div>
       </div>
@@ -194,9 +194,8 @@ exports[`StackedQuotaWidget.vue should render unlimited bar if unlimited is true
       </div>
       <div class="quota-cell cell--large">
         <div class="progressbar">
-          <tooltip-stub text="undefined 224 undefined<br>undefined 100 undefined" position="bottom-right" hide-delay="0s" show-delay="1s">
-            <div class="progressbar progressbar--filled" style="width: 22.400000000000002%;"></div>
-            <div class="progressbar progressbar--filled" style="width: 10%;"></div>
+          <tooltip-stub position="bottom-right" hide-delay="0s" show-delay="1s">
+            <div class="progressbar progressbar--filled"></div>
           </tooltip-stub>
         </div>
       </div>
@@ -209,21 +208,14 @@ exports[`StackedQuotaWidget.vue should render unlimited bar if unlimited is true
         <!---->
       </div>
       <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
-          324 
+          400 
         </span></div>
       <div class="quota-help cell--small">
         <tooltip-stub position="bottom-left" hide-delay="0s" show-delay="1s"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></tooltip-stub>
       </div>
     </div>
   </div>
-  <div class="quota-legend">
-    <div class="legend-item text is-small is-semibold"><span class="legend-icon"></span>
-
-    </div>
-    <div class="legend-item text is-small is-semibold"><span class="legend-icon"></span>
-
-    </div>
-  </div>
+  <!---->
   <!---->
 </div>
 `;

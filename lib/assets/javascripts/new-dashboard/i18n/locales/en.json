@@ -96,6 +96,9 @@
     "newConnection": "New Connection",
     "addConnection": "Add new connection",
     "deleteConnection": "Delete your connection",
+    "connectWith": "Connect with",
+    "gettingConnected": "Getting connected",
+    "connectInfo": "To ensure CARTO has access to your PostgreSQL database, please make sure your firewall is configured to allow the connections from these IP addresses:",
     "zeroCase": {
       "title": "Upload your first dataset",
       "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",

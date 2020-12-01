@@ -1,14 +1,18 @@
 <template>
   <div>
-    List of connectors
+    <Connector></Connector>
   </div>
 </template>
 
 <script>
 
+import Connector from 'new-dashboard/components/Connector/Connector';
+
 export default {
   name: 'ConnectorList',
-  components: {},
+  components: {
+    Connector
+  },
   computed: {},
   methods: {}
 };

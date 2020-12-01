@@ -1,10 +1,28 @@
 /**
  *  Tooltip.vue
 **/
-/* template import */
-<template src="./tooltip.html"></template>
-/* style import */
-<style scoped lang="scss" src="./tooltip.scss"></style>
+<template>
+  <div class="tooltip-container">
+    <slot name="tooltip">
+      <TooltipComponent v-if="visible"
+        :bbox="bbox"
+        :margin="margin"
+        :text="text"
+        :position="position"
+        :multiline="multiline">
+      </TooltipComponent>
+    </slot>
+
+    <slot></slot>
+  </div>
+</template>
+
+<style scoped lang="scss">
+  .tooltip-container {
+    display: inline-flex;
+  }
+</style>
+
 <script>
 import TooltipComponent from './tooltip-component/TooltipComponent';
 

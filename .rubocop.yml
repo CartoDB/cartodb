@@ -123,6 +123,9 @@ RSpec/NestedGroups:
 RSpec/StubbedMock:
   Enabled: false
 
+RSpec/SubjectStub:
+  Enabled: false
+
 ####################
 #  Style
 ####################

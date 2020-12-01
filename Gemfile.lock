@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 608c1f1ced5e8b56f0dda2b315d0f10ff69d778d
-  tag: v0.4.6
+  revision: 9b6eed36b18132693f360dc7f88a2f41371f7e13
+  tag: v0.4.7
   specs:
-    cartodb-common (0.4.5)
+    cartodb-common (0.4.7)
       argon2 (~> 2)
       google-cloud-pubsub (~> 1.2)
       rails (>= 4, < 6)

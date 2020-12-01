@@ -25,9 +25,8 @@
     "db_size_in_megabytes": 59.45,
     "remaining_table_quota": null,
     "remaining_byte_quota": 1011404800.0,
-    "api_calls": [15.0, 26.0],
-    "api_calls_quota": 10000,
-    "api_calls_block_price": null,
+    "map_views": 1000,
+    "map_views_quota": 10000,
     "geocoding": {
       "quota": 0,
       "block_price": null,

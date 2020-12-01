@@ -81,7 +81,7 @@ feature "Superadmin's users API" do
   scenario "user create default account settings" do
     @user_atts[:private_tables_enabled] = false
     @user_atts[:sync_tables_enabled] = false
-    @user_atts[:map_view_quota] = 80
+    @user_atts[:map_views_quota] = 80
     t = Time.now
     @user_atts[:upgraded_at] = t
 
@@ -97,7 +97,7 @@ feature "Superadmin's users API" do
       response.body[:account_type].should == 'FREE'
       response.body[:private_tables_enabled].should == false
       response.body[:sync_tables_enabled].should == false
-      response.body[:map_view_quota].should == 80
+      response.body[:map_views_quota].should == 80
 
       # Double check that the user has been created properly
       user = ::User.filter(email: @user_atts[:email]).first
@@ -302,13 +302,13 @@ feature "Superadmin's users API" do
   scenario "user update success" do
     user = create_user
     put_json superadmin_user_path(user),
-             { user: { email: "newmail@test.com", map_view_quota: 80 } },
+             { user: { email: "newmail@test.com", map_views_quota: 80 } },
              superadmin_headers do |response|
       response.status.should == 204
     end
     user = ::User[user.id]
     user.email.should == "newmail@test.com"
-    user.map_view_quota.should == 80
+    user.map_views_quota.should == 80
 
     user.destroy
   end

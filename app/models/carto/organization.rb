@@ -205,8 +205,8 @@ module Carto
 
     delegate :dbdirect_effective_ips=, to: :owner
 
-    def get_api_calls(options = {})
-      users.map { |u| u.get_api_calls(options).sum }.sum
+    def get_map_views_count()
+      users.map { |u| u.map_views_count().sum }.sum
     end
 
     def require_organization_owner_presence!

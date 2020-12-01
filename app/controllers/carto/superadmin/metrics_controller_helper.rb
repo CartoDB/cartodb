@@ -9,8 +9,7 @@ module Carto::Superadmin
       CartoDB::IsolinesUsageMetrics,
       CartoDB::ObservatoryGeneralUsageMetrics,
       CartoDB::ObservatorySnapshotUsageMetrics,
-      CartoDB::RoutingUsageMetrics,
-      Carto::Metrics::MapviewsUsageMetrics
+      CartoDB::RoutingUsageMetrics
     ].freeze
 
     USAGE_METRICS_RETRIEVERS = (

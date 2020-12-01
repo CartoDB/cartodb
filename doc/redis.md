@@ -43,7 +43,7 @@ The values of the hash are:
 `users_metadata` Holds records of the username/subdomain to id and name of database so that we can easily go from their subdomain to their user database. The following keys are used:
 
 ```
-rails:users:<username/subdomain> 
+rails:users:<username/subdomain>
 ```
 
 The values of the hash are:
@@ -54,6 +54,5 @@ The values of the hash are:
   - `mapviews`: hash with this values:
     - `global`: sorted set of map views, the key for this sorted set is `%Y%m%d`
     - `stat_tag:<visualization_id>`: sorted set of map views for a given visualization
-  - `api_calls`: array of aggregated map views for the last 30 days
   - `last_active_time`: last time the user loaded their dashboard
 

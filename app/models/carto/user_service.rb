@@ -93,12 +93,6 @@ module Carto
       Carto::SearchTweet.twitter_imports_count(@user.search_tweets, date_from, date_to)
     end
 
-    # Returns an array representing the last 30 days, populated with api_calls
-    # from three different sources
-    def get_api_calls(options = {})
-      return CartoDB::Stats::APICalls.new.get_api_calls_without_dates(@user.username, {old_api_calls: false})
-    end
-
     # This method is innaccurate and understates point based tables (the /2 is to account for the_geom_webmercator)
     # TODO: Without a full table scan, ignoring the_geom_webmercator, we cannot accuratly asses table size
     # Needs to go on a background job.

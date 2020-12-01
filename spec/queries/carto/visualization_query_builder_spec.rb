@@ -235,23 +235,6 @@ describe Carto::VisualizationQueryBuilder do
               .offset(1).limit(2).all.map(&:id)
     ids.should == [ table3.table_visualization.id, table2.table_visualization.id ]
 
-    # Mapviews
-
-    # visualization.mapviews -> visualization.stats -> CartoDB::Visualization::Stats ->
-    #   CartoDB::Stats::APICalls.get_api_calls_with_dates
-    CartoDB::Stats::APICalls.any_instance.stubs(:get_api_calls_with_dates)
-                            .with(@user1.username, {stat_tag: table1.table_visualization.id})
-                            .returns({ "2015-04-15" => 1, "2015-04-14" => 0 })
-    CartoDB::Stats::APICalls.any_instance.stubs(:get_api_calls_with_dates)
-                            .with(@user1.username, {stat_tag: table2.table_visualization.id})
-                            .returns({ "2015-04-15" => 333, "2015-04-14" => 666 })
-    CartoDB::Stats::APICalls.any_instance.stubs(:get_api_calls_with_dates)
-                            .with(@user1.username, {stat_tag: table3.table_visualization.id})
-                            .returns({ "2015-04-15" => 12, "2015-04-14" => 20 })
-
-    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('mapviews', :desc).build.all.map(&:id)
-    ids.should == [table2.table_visualization.id, table3.table_visualization.id, table1.table_visualization.id]
-
     # Size
 
     mocked_vis1 = Carto::Visualization.where(id: table1.table_visualization.id).first

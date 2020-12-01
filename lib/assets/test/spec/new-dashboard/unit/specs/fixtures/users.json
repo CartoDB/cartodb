@@ -94,8 +94,7 @@
     "db_size_in_megabytes":6.78,
     "remaining_table_quota":null,
     "remaining_byte_quota":1066631168,
-    "api_calls_quota":10000,
-    "api_calls_block_price":null,
+    "map_views":10000,
     "next_billing_period": "2019-01-11",
     "geocoding":{
       "quota":1200,

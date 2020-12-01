@@ -61,13 +61,11 @@ WORKING_SPECS_1 = \
 	spec/models/data_import_spec.rb \
 	spec/models/geocoding_spec.rb \
 	spec/models/common_data_spec.rb \
-	spec/lib/api_calls_spec.rb \
 	spec/lib/errors_spec.rb \
 	spec/lib/url_signer_spec.rb \
 	spec/lib/string_spec.rb \
 	spec/lib/image_metadata_spec.rb \
 	spec/lib/central_spec.rb \
-	spec/lib/trending_maps_spec.rb \
 	spec/lib/user_account_creator_spec.rb \
 	spec/lib/carto/filename_generator_spec.rb \
 	spec/lib/carto/http_header_authentication_spec.rb \

@@ -6,7 +6,7 @@
   >
   <template slot="sub-header">
     <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
-      <img class="u-mr--8" src="../../assets/icons/datasets/local-file.svg">
+      <img class="u-mr--8 file-icon" :src="fileIcon" @error="setAltImage">
       {{ $t('DataPage.addLocalFile') }}
     </h3>
   </template>
@@ -46,6 +46,7 @@
 
 <script>
 
+import exportedScssVars from 'new-dashboard/styles/variables.scss';
 import Dropzone from 'dropzone';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';
@@ -68,6 +69,7 @@ export default {
         valid: false,
         msg: ''
       },
+      extension: this.$route.params.extension,
       uploadObject: this.getUploadObject()
     };
   },
@@ -88,6 +90,9 @@ export default {
     });
   },
   computed: {
+    fileIcon () {
+      return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/file-${this.extension}.svg`;
+    },
     remainingByteQuota () {
       return this.$store.state.user && this.$store.state.user.remaining_byte_quota;
     },
@@ -96,6 +101,9 @@ export default {
     }
   },
   methods: {
+    setAltImage (event) {
+      event.target.src = require('../../assets/icons/datasets/local-file.svg');
+    },
     dragsterEnter () {
       this.dragged = true;
     },
@@ -161,6 +169,10 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+.file-icon {
+  height: 20px;
+}
+
 .drag-zone {
   width: 460px;
   height: 204px;

@@ -92,7 +92,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def settings_update
     valid_password_confirmation
-    attributes = params[:organization]
+    attributes = params[:carto_organization]
 
     if attributes.include?(:avatar_url) && valid_avatar_file?(attributes[:avatar_url])
       @organization.avatar_url = attributes[:avatar_url]
@@ -152,7 +152,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def auth_update
     valid_password_confirmation
-    attributes = params[:organization]
+    attributes = params[:carto_organization]
     @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
     @organization.auth_username_password_enabled = attributes[:auth_username_password_enabled]
     @organization.auth_google_enabled = attributes[:auth_google_enabled]

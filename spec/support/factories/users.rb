@@ -61,7 +61,7 @@ module CartoDB
       user.regular_api_key_quota = attributes[:regular_api_key_quota] if attributes[:regular_api_key_quota]
       user.quota_in_bytes        = attributes[:quota_in_bytes]  if attributes[:quota_in_bytes]
       user.account_type          = attributes[:account_type]    if attributes[:account_type]
-      user.map_views_quota = attributes[:map_views_quota]  if attributes.key?(:map_views_quota)
+      user.map_views_quota = attributes[:map_views_quota] if attributes.key?(:map_views_quota)
       user.map_view_block_price  = attributes[:map_view_block_price]  if attributes.has_key?(:map_view_block_price)
       user.period_end_date       = attributes[:period_end_date] if attributes.has_key?(:period_end_date)
       user.user_timeout          = attributes[:user_timeout] || 300000

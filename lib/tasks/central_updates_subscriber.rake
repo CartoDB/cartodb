@@ -4,7 +4,7 @@ namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task cartodb_subscribers: [:environment] do |_task, _args|
     pid_file = ENV['PIDFILE'] || Rails.root.join('tmp/pids/cartodb_subscribers.pid')
-    raise 'pid file exists!' if File.exist?(pid_file)
+    raise "PID file exists: #{pid_file}" if File.exist?(pid_file)
 
     File.open(pid_file, 'w') { |f| f.puts Process.pid }
     begin

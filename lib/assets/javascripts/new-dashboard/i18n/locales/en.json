@@ -91,6 +91,7 @@
     "learnmore": "Learn more",
     "guessing-desc": "Let CARTO automatically guess data types and content on import.",
     "connectDataset": "Connect dataset",
+    "connect": "Connect",
     "startAddingConnections": "Start adding your connections",
     "connectDescription": "Connect CARTO to your existing stack so you can do more with your data.",
     "newConnection": "New Connection",
@@ -113,6 +114,25 @@
       "subscriptions": "Your Subscriptions",
       "connections": "Your Connections",
       "catalog": "Spatial Data Catalog"
+    },
+    "imports": {
+      "database": {
+        "title": "Your %{brand} credentials",
+        "label-server": "Server",
+        "placeholder-server": "Paste your %{brand} Server URL",
+        "label-port": "Port",
+        "placeholder-port": "Type your port",
+        "label-database": "Database",
+        "placeholder-database": "Type your database name",
+        "label-username": "Username",
+        "placeholder-username": "Type your username",
+        "label-password": "Password",
+        "placeholder-password": "Type your password",
+        "label-cluster": "Cluster",
+        "placeholder-cluster": "Type your cluster name",
+        "label-warehouse": "Warehouse",
+        "placeholder-warehouse": "Type your warehouse name"
+      }
     }
   },
   "MapsPage": {

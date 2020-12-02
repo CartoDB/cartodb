@@ -31,7 +31,7 @@ module Carto
           @logger.debug("Updated user #{user_id} -> map_views = #{map_views} (#{date})")
         end
       end
-    end
 
+    end
   end
 end

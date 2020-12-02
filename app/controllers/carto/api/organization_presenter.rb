@@ -39,7 +39,7 @@ module Carto
           mapzen_routing_block_price: @organization.mapzen_routing_block_price,
           geocoder_provider:          @organization.geocoder_provider,
           isolines_provider:          @organization.isolines_provider,
-          routing_provider:           @organization.routing_provider,
+          routing_provider: @organization.routing_provider,
           map_views_quota:            @organization.map_views_quota,
           twitter_datasource_quota:   @organization.twitter_datasource_quota,
           map_view_block_price:       @organization.map_view_block_price,

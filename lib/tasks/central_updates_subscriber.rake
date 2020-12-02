@@ -3,7 +3,7 @@ require './lib/carto/subscribers/central_user_commands'
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task cartodb_subscribers: [:environment] do |_task, _args|
-    pid_file = ENV['PIDFILE'] || 'tmp/pids/cartodb_subscribers.pid'
+    pid_file = ENV['PIDFILE'] || "#{Rails.root}/tmp/pids/cartodb_subscribers.pid"
     raise 'pid file exists!' if File.exist?(pid_file)
 
     File.open(pid_file, 'w') { |f| f.puts Process.pid }

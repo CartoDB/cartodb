@@ -340,7 +340,8 @@ class Carto::User < ActiveRecord::Base
     subs_synced = subs_filtered.select do |d|
       d['sync_status'] == 'synced' && !d['sync_table'].empty? && Carto::UserTable.exists?(d['sync_table_id'])
     end
-    total = subs_synced.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
+    synced_tables = subs_synced.map { |d| Carto::UserTable.find_by(id: d['sync_table_id']) }
+    total = synced_tables.map { |d| d.table_size }.reduce(0) { |a, b| a + b }
     total || 0
   end
 

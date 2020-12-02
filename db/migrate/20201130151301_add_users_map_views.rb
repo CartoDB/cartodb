@@ -1,6 +1,8 @@
 require 'carto/db/migration_helper'
 
+# rubocop:disable Style/MixinUsage
 include Carto::Db::MigrationHelper
+# rubocop:enable Style/MixinUsage
 
 migration(
   proc do

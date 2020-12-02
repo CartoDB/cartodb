@@ -1,3 +1,5 @@
+# rubocop:disable RSpec/InstanceVariable
+
 require_relative '../../acceptance_helper'
 
 feature "Superadmin's organization API" do
@@ -75,8 +77,14 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization update success" do
-    put_json superadmin_organization_path(@organization1), { :organization => { :display_name => "Update Test", :map_views_quota => 800000 } }, superadmin_headers do |response|
-      response.status.should == 204
+    put_json superadmin_organization_path(@organization1), {
+        organization: {
+          display_name: 'Update Test',
+          map_views_quota: 800000
+        }
+      },
+      superadmin_headers do |response|
+        response.status.should == 204
     end
     organization = Carto::Organization.find(@organization1.id)
     organization.display_name.should == "Update Test"
@@ -218,3 +226,4 @@ feature "Superadmin's organization API" do
     }
   end
 end
+# rubocop:enable RSpec/InstanceVariable

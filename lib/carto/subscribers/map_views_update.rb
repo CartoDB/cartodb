@@ -21,8 +21,9 @@ module Carto
           user_id = user_data[:user_id]
           map_views = user_data[:map_views]
 
-          user = Carto::User.find_by_id(user_id)
+          user = Carto::User.find_by(id: user_id)
           next if user.nil?
+
           user_map_views = Carto::UserMapViews.find_or_initialize_by(
             user: user, metric_date: date
           )
@@ -31,5 +32,6 @@ module Carto
         end
       end
     end
+
   end
 end

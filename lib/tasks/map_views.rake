@@ -1,4 +1,3 @@
-
 # TODO
 namespace :message_broker do
   desc 'Consume messages from "TODO" topic with map_views agreggated by users'

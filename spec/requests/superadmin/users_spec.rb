@@ -312,7 +312,9 @@ feature "Superadmin's users API" do
     end
     user = ::User[user.id]
     user.email.should == "newmail@test.com"
+    # rubocop:disable Lint/Void
     user.map_views_quota.should == 80
+    # rubocop:enable Lint/Void
 
     user.destroy
   end

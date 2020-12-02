@@ -215,6 +215,7 @@ describe Carto::Api::UserPresenter do
 
     if org_user
       new_data[:organization].keys.sort.should == old_data[:organization].keys.sort
+      # rubocop:disable Lint/Void
 
       # This is an implicit test of OrganizationPresenter...
       # INFO: we have a weird error sometimes running builds that fails comparing dates despite having equal value...
@@ -257,6 +258,7 @@ describe Carto::Api::UserPresenter do
       new_data[:geocoder_provider].should == old_data[:geocoder_provider]
       new_data[:isolines_provider].should == old_data[:isolines_provider]
       new_data[:routing_provider].should == old_data[:routing_provider]
+      # rubocop:enable Lint/Void
     end
 
     if mobile_sdk_enabled

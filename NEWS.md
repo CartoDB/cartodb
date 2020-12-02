@@ -17,6 +17,7 @@ sudo make install
 - Improve the syncronization functions by using `CDB_GetTableQueries`.
 - Bump cartodb-common to v0.4.8
 - Don't send ActionController::RoutingError to Rollbar [#15968](https://github.com/CartoDB/cartodb/pull/15968)
+- Wrong param name in organization forms [#15975](https://github.com/CartoDB/cartodb/pull/15975)
 
 4.44.0 (2020-11-20)
 -------------------

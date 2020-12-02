@@ -183,3 +183,7 @@ $z-index__stack-context--third: 0;
 /* === DEPRECATED === */
 $primary-color: $color-primary;
 $softblue: $color-primary--soft;
+
+:export {
+  assetsDir: $assetsDir;
+}

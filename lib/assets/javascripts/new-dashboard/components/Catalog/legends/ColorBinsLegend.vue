@@ -32,6 +32,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'new-dashboard/styles/variables';
+
 .color-bins-legend {
   color: $neutral--700;
 

@@ -5,7 +5,7 @@
     :showSubHeader="false"
   >
     <template #default>
-      New connection page
+      <ConnectorsList></ConnectorsList>
     </template>
   </Dialog>
 </template>
@@ -13,11 +13,13 @@
 <script>
 
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
+import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 
 export default {
   name: 'NewConnection',
   components: {
-    Dialog
+    Dialog,
+    ConnectorsList
   },
   computed: {},
   methods: {}

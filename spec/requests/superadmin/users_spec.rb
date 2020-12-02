@@ -99,7 +99,9 @@ feature "Superadmin's users API" do
       response.body[:account_type].should == 'FREE'
       response.body[:private_tables_enabled].should == false
       response.body[:sync_tables_enabled].should == false
+      # rubocop:disable Lint/Void
       response.body[:map_views_quota].should == 80
+      # rubocop:enable Lint/Void
 
       # Double check that the user has been created properly
       user = ::User.filter(email: @user_atts[:email]).first

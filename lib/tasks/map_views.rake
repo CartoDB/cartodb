@@ -2,8 +2,8 @@
 namespace :message_broker do
   desc 'Consume messages from "TODO" topic with map_views agreggated by users'
   task map_views_subscriber: [:environment] do |_task, _args|
-    include ::LoggerHelper
-    logger = ::Logger.new($stdout)
+    # include ::LoggerHelper
+    # logger = ::Logger.new($stdout)
 
     # message_broker = Carto::Common::MessageBroker.instance
     # subscription_name = 'testing-subscription' # TODO

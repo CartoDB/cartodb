@@ -1,3 +1,5 @@
+# rubocop:disable RSpec/InstanceVariable
+
 # coding: utf-8
 require 'ostruct'
 require_relative '../../acceptance_helper'
@@ -853,3 +855,4 @@ feature "Superadmin's users API" do
     end
   end
 end
+# rubocop:enable RSpec/InstanceVariable

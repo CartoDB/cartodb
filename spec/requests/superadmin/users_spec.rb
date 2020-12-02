@@ -304,7 +304,7 @@ feature "Superadmin's users API" do
   scenario "user update success" do
     user = create_user
     put_json superadmin_user_path(user),
-             { user: { email: "newmail@test.com", map_views_quota: 80 } },
+             { user: { email: 'newmail@test.com', map_views_quota: 80 } },
              superadmin_headers do |response|
       response.status.should == 204
     end

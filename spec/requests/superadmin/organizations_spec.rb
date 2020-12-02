@@ -78,15 +78,15 @@ feature "Superadmin's organization API" do
 
   scenario "organization update success" do
     put_json superadmin_organization_path(@organization1),
-      {
-        organization: {
-          display_name: 'Update Test',
-          map_views_quota: 800_000
-        }
-      },
-      superadmin_headers do |response|
-        response.status.should == 204
-      end
+             {
+               organization: {
+                 display_name: 'Update Test',
+                 map_views_quota: 800_000
+               }
+             },
+             superadmin_headers do |response|
+               response.status.should == 204
+             end
     organization = Carto::Organization.find(@organization1.id)
     organization.display_name.should == "Update Test"
     organization.map_views_quota.should == 800_000

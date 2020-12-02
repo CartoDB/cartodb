@@ -137,6 +137,7 @@ feature "Superadmin's organization API" do
       end
     end
     # rubocop:disable Lint/Void
+
     it "returns geocoding and mapviews quotas and uses for all organizations" do
       Carto::Organization.stubs(:overquota).returns [@organization1]
       ::User.any_instance.stubs(:get_geocoding_calls).returns(100)

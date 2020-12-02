@@ -33,9 +33,12 @@
         </template>
 
         <template slot="actionButton" v-if="showCreateButton">
-          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">
-            {{ $t(`DataPage.createDataset`) }}
+          <CreateButton class="u-mr--8" visualizationType="dataset" :disabled="!canCreateDatasets">
+            {{ $t(`DataPage.createDataset`) }}_old
           </CreateButton>
+          <router-link :to="{ name: 'new-dataset' }">
+            <button class="button is-primary">{{ $t(`DataPage.createDataset`) }}</button>
+          </router-link>
         </template>
 
         <template v-if="shouldShowLimitsWarning" slot="warning">

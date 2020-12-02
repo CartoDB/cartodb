@@ -2,12 +2,14 @@
   <div>
     <ConnectorSection :label="$t('DataPage.databases')" :connectors="databases"></ConnectorSection>
     <ConnectorSection :label="$t('DataPage.cloudFiles')" :connectors="cloudFiles"></ConnectorSection>
+    {{dataBaseConnectors}}
   </div>
 </template>
 
 <script>
 
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
+import { IMPORT_OPTIONS } from 'builder/components/modals/add-layer/content/imports/import-options';
 
 const CLOUD_FILES = [{
   id: 'gdrive',
@@ -58,7 +60,11 @@ export default {
       cloudFiles: CLOUD_FILES
     };
   },
-  computed: {},
+  computed: {
+    dataBaseConnectors () {
+      return Object.keys(IMPORT_OPTIONS).filter(opt => IMPORT_OPTIONS[opt].type === 'database');
+    }
+  },
   methods: {}
 };
 </script>

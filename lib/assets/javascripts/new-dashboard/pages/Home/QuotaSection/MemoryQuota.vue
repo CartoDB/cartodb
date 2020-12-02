@@ -48,7 +48,7 @@ export default {
       return this.quotaInBytes - this.subscriptionsPremiumSizeInBytes;
     },
     datasetsSize () {
-      return this.dbSizeInBytes - this.subscriptionsPremiumSizeInBytes - this.subscriptionsPublicSizeInBytes;
+      return Math.max(0, this.dbSizeInBytes - this.subscriptionsPremiumSizeInBytes - this.subscriptionsPublicSizeInBytes);
     },
     usedStorage () {
       return [{

@@ -3,6 +3,10 @@ require './lib/carto/subscribers/central_user_commands'
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task cartodb_subscribers: [:environment] do |_task, _args|
+    pid_file = ENV['PIDFILE'] || 'cartodb_subscribers.pid'
+    raise 'pid file exists!' if File.exist?(pid_file)
+
+    File.open(pid_file, 'w') { |f| f.puts Process.pid }
     begin
       logger = Carto::Common::Logger.new
 
@@ -33,6 +37,8 @@ namespace :message_broker do
     rescue StandardError => e
       logger.error(exception: e)
       exit(1)
+    ensure
+      File.delete(pid_file)
     end
   end
 end

@@ -434,7 +434,7 @@ describe Carto::Organization do
 
     before { Carto::User.any_instance.stubs(:map_views_count).returns (0..30).to_a }
 
-    it 'should return the sum of the map views for all organization users' do
+    it 'must return the sum of the map views for all organization users' do
       expect(organization.map_views_count).to eq((0..30).to_a.sum * organization.users.size)
     end
   end

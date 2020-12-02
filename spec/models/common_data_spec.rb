@@ -29,17 +29,10 @@ describe CommonData do
 
   it 'should return empty datasets and notify error for invalid json' do
     stub_api_response(200, INVALID_JSON_RESPONSE)
-    JSON::ParserError.any_instance.stubs(:backtrace).returns(%w(line_1 line_2))
 
     Rails.logger.expects(:error).with(
-      'exception' => {
-        'class' => 'JSON::ParserError',
-        'message' => '784: unexpected token at \'{\'',
-        'backtrace_hint' => ['line_1', 'line_2']
-      },
-      'message' => '784: unexpected token at \'{\''
+      has_entries('exception' => is_a(JSON::ParserError))
     )
-
     Rails.logger.expects(:error).with('message' => 'common-data empty', 'url' => common_data_url)
 
     expect(@common_data.datasets).to be_empty

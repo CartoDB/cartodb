@@ -2,7 +2,7 @@
   <header
     class="grid u-flex__justify--center u-mb--36 u-mb--20--tablet u-mt--36"
   >
-    <div class="grid-cell grid-cell--col9 grid-cell--col8--tablet tilte-container" :class="{ publicWebsite }">
+    <div class="grid-cell grid-cell--col8 grid-cell--col8--tablet tilte-container" :class="{ publicWebsite }">
       <nav class="breadcrumbs">
         <p class="text is-caption is-txtMainTextColor" v-if="!isGeography">
           <span class="title is-txtMainTextColor">{{
@@ -22,41 +22,72 @@
       </h1>
     </div>
 
-    <div class="u-ml--auto grid-cell grid-cell--col3 grid-cell--col4--tablet buttons-actions" :class="{ publicWebsite }">
+    <div class="u-ml--auto grid-cell grid-cell--col4 grid-cell--col4--tablet buttons-actions" :class="{ publicWebsite }">
+      <!-- Primary CTA -->
       <div class="u-flex u-flex__justify--end">
-        <!-- <Button
-          v-if="hasSample && getSubscriptionStatus === 'interested' && !interestedInSubscription"
+        <Button
+          v-if="getActionStatus === 'sign_up'"
           :color="publicWebsite ? 'green' : ''"
           :big="publicWebsite"
+          :blank="true"
           url="https://carto.com/signup"
+          class="underline-animation"
         >
-          Sign up to access sample
-        </Button> -->
+          <span>Sign up to access sample</span>
+        </Button>
         <Button
-          v-if="getSubscriptionStatus === 'interested' && !interestedInSubscription"
+          v-else-if="getActionStatus === 'interest' && !alreadyInterested"
+          :class="{ 'underline-animation': publicWebsite }"
           :color="publicWebsite ? 'green' : ''"
           :big="publicWebsite"
           @click.native="interested"
         >
-          I'm interested
+          <span>I'm interested</span>
         </Button>
         <SubscriptionRequestSuccess
-          v-else-if="getSubscriptionStatus === 'interested' && interestedInSubscription"
+          v-if="getActionStatus === 'interest' && alreadyInterested"
         ></SubscriptionRequestSuccess>
         <Button
-          v-else-if="getSubscriptionStatus === 'free_subscription'"
-          @click.native="showModal('subscribe')"
+          v-else-if="getActionStatus === 'access_sample'"
+          @click.native="showModal('sample')"
         >
-          Subscribe for free
-        </Button>
-        <Button
-          v-else-if="getSubscriptionStatus === 'request_subscription'"
-          @click.native="showModal('request')"
-        >
-          Request subscription
+          Access free sample
         </Button>
         <div
-          v-else-if="getSubscriptionStatus === 'active'"
+          v-else-if="getActionStatus === 'public_subscription' || getActionStatus === 'premium_subscription'"
+          class="u-flex u-flex__direction--column u-flex__align--center"
+        >
+          <Button
+            v-if="getActionStatus === 'public_subscription'"
+            @click.native="showModal('subscribe')"
+          >
+            Subscribe for free
+          </Button>
+          <Button
+            v-else-if="getActionStatus === 'premium_subscription'"
+            @click.native="showModal('request')"
+          >
+            Request subscription
+          </Button>
+          <Button
+            v-if="hasSample"
+            class="u-mt--12"
+            :reverseColors="true"
+            @click.native="showModal('sample')"
+          >
+            Access free sample
+          </Button>
+          <Button
+            v-else
+            class="u-mt--12"
+            :reverseColors="true"
+            :disabled="true"
+          >
+            No sample available
+          </Button>
+        </div>
+        <div
+          v-else-if="getActionStatus === 'active'"
           class="u-flex u-flex__direction--column u-flex__align--center"
         >
           <Button class="is-outline extra-border navy-blue noCursor">
@@ -72,7 +103,7 @@
           </a>
         </div>
         <div
-          v-else-if="getSubscriptionStatus === 'requested'"
+          v-else-if="getActionStatus === 'requested'"
           class="u-flex u-flex__direction--column u-flex__align--center"
         >
           <Button class="is-outline extra-border navy-blue noCursor">
@@ -86,24 +117,27 @@
           </a>
         </div>
       </div>
-      <p
-        v-if="subscriptionInfo && subscriptionInfo.status !== 'active'"
-        class="text is-small is-txtMainTextColor u-mt--16 right-align"
-      >
-        Any questions? <a href="https://carto.com/request-live-demo/" target="_blank">Contact</a>
-      </p>
-      <!-- <p
-        v-else-if="hasSample && !subscriptionInfo && !isEnterprise"
-        class="text is-small is-txtMainTextColor u-mt--16 right-align"
-      >
-        Full dataset available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
-      </p> -->
-      <p
-        v-else-if="!subscriptionInfo && !isEnterprise"
-        class="text is-small is-txtMainTextColor u-mt--16 right-align"
-      >
-        Only available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
-      </p>
+      <!-- Secondary CTA -->
+      <div class="u-flex u-flex__justify--end u-mt--16">
+        <p
+          v-if="subscriptionInfo && subscriptionInfo.status !== 'active'"
+          class="text is-small is-txtMainTextColor"
+        >
+          Any questions? <a href="https://carto.com/request-live-demo/" target="_blank">Contact</a>
+        </p>
+        <p
+          v-else-if="(getActionStatus === 'sign_up' || getActionStatus === 'access_sample') && !isEnterprise && !isDOEnabled"
+          class="text is-small is-txtMainTextColor"
+        >
+          Full dataset only available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
+        </p>
+        <p
+          v-else-if="getActionStatus === 'interest' && !isEnterprise && !isDOEnabled"
+          class="text is-small is-txtMainTextColor"
+        >
+          Only available for <a class="underline" href="https://carto.com/pricing/" target="_blank">Enterprise plans</a>
+        </p>
+      </div>
     </div>
 
     <ModalSubscription
@@ -150,54 +184,46 @@ export default {
         this.dataset.id
       );
     },
-    isPublicWebsite () {
-      return !(this.$store.state.user && this.$store.state.user.id);
-    },
-    isGeography () {
-      return this.$route.params.type === 'geography';
-    },
-    getSubscriptionStatus () {
-      const possibleLicenceStates = ['requested', 'active', 'expired'];
-      if (
-        !this.isPublicWebsite &&
-        this.subscriptionInfo &&
-        this.subscriptionInfo.status &&
-        possibleLicenceStates.indexOf(this.subscriptionInfo.status) >= 0
-      ) {
+    getActionStatus () {
+      if (this.publicWebsite) {
+        return this.hasSample ? 'sign_up' : 'interest';
+      }
+      if (this.isSubscribed) {
         return this.subscriptionInfo.status;
       }
-      if (this.isPublicWebsite || !this.isDOEnabled) {
-        return 'interested';
-      } else if (
-        this.isDOEnabled &&
-        this.dataset.is_public_data !== undefined
-      ) {
-        return this.dataset.is_public_data
-          ? 'free_subscription'
-          : 'request_subscription';
+      if (this.isDOEnabled && this.dataset.is_public_data !== undefined) {
+        return this.dataset.is_public_data ? 'public_subscription' : 'premium_subscription';
       }
-      return null;
+      if (this.hasSample) {
+        return 'access_sample';
+      }
+      return 'interest';
     },
-    interestedInSubscription () {
+    alreadyInterested () {
       return this.interestedSubscriptions.indexOf(this.dataset.id) >= 0;
     },
-    isEnterprise () {
-      return this.$store.state.user && this.$store.state.user.is_enterprise;
+    isGeography () {
+      return this.$route.params.entity_type === 'geography';
+    },
+    isSubscribed () {
+      const possibleLicenceStates = ['requested', 'active', 'expired'];
+      return this.subscriptionInfo && this.subscriptionInfo.status &&
+             possibleLicenceStates.indexOf(this.subscriptionInfo.status) >= 0;
     },
     isDOEnabled () {
       return this.$store.state.user && this.$store.state.user.do_enabled;
     },
+    isEnterprise () {
+      return this.$store.state.user && this.$store.state.user.is_enterprise;
+    },
     hasSample () {
-      return this.dataset.available_in && this.dataset.available_in.indexOf('bq-sample') >= 0;
+      return this.dataset.sample_info && !!this.dataset.sample_info.id;
     }
   },
   methods: {
-    getFormURL () {
-      return formURL(this.dataset);
-    },
     async interested () {
-      if (this.isPublicWebsite) {
-        window.location.replace(this.getFormURL());
+      if (this.publicWebsite) {
+        window.open(formURL(this.dataset), '_blank');
       } else {
         if (
           await this.$store.dispatch('catalog/requestDataset', {
@@ -228,10 +254,6 @@ export default {
 
 <style lang="scss" scoped>
 @import 'new-dashboard/styles/variables';
-.right-align {
-  text-align: right;
-}
-
 .u-ml--auto {
   margin-left: auto;
 }
@@ -276,6 +298,28 @@ a.disabled {
   background-color: $color-primary;
   h1, p, a, span {
     color: white;
+  }
+}
+
+.underline-animation {
+  & > span {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    &:before {
+      content: '';
+      position: absolute;
+      transition: transform .3s ease;
+      left: -1px;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      transform: translateX(-100%);
+    }
+  }
+  &:hover > span:before {
+    transform: none;
   }
 }
 </style>

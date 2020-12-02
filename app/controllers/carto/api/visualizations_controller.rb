@@ -94,16 +94,24 @@ module Carto
                             .build_paged(page, per_page).map do |v|
           VisualizationPresenter.new(v, current_viewer, self, presenter_options)
                                 .with_presenter_cache(presenter_cache).to_poro \
-            unless params[:subscribed] == 'true' and not v.subscription.present?
+            unless (params[:subscribed] == 'true' and not v.subscription.present?) or (params[:sample] == 'true' and not v.sample.present?)
         end.compact
 
         total_subscriptions = 0
         vqb.filtered_query.find_each{|v| total_subscriptions += 1 if v.subscription.present?}
 
+        total_samples = 0
+        vqb.filtered_query.find_each{|v| total_samples += 1 if v.sample.present?}
+
+        total_entries = vqb.count
+        total_entries = total_subscriptions if params[:subscribed] == 'true'
+        total_entries = total_samples if params[:sample] == 'true'
+
         response = {
           visualizations: visualizations,
-          total_entries: vqb.count,
-          total_subscriptions: total_subscriptions
+          total_entries: total_entries,
+          total_subscriptions: total_subscriptions,
+          total_samples: total_samples
         }
         if current_user && (params[:load_totals].to_s != 'false')
           response.merge!(calculate_totals(types))

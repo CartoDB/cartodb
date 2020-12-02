@@ -2,13 +2,21 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+* This release upgrades the CartoDB PostgreSQL extension to `0.37.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+* As part of the release of `0.37.0`, the creation of overviews is removed and will no longer work.
+```
 
 ### Features
-- None yet
+- Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 
 ### Bug fixes / enhancements
-- None yet
+- Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
+- Improve the syncronization functions by using `CDB_GetTableQueries`.
+- Bump cartodb-common to v0.4.8
+- Don't send ActionController::RoutingError to Rollbar [#15968](https://github.com/CartoDB/cartodb/pull/15968)
 
 4.44.0 (2020-11-20)
 -------------------
@@ -17,6 +25,7 @@ Development
 * Email notifications toggle API endpoint [#15930](https://github.com/CartoDB/cartodb/pull/15930)
 * New Email settings section in Account page to manage notifications [#15933](https://github.com/CartoDB/cartodb/pull/15933)
 * Allow to create regular apikeys for data observatory datasets [#15940](https://github.com/CartoDB/cartodb/pull/15940)
+* Add email_notifications to user decorator [#15949](https://github.com/CartoDB/cartodb/pull/15949)
 
 ### Bug fixes / enhancements
 * Fix BigQuery connector not importing 0-bytes-processed datasets [#15916](https://github.com/CartoDB/cartodb/pull/15916)
@@ -25,6 +34,7 @@ Development
 * Data loss on table rename due to GhostTablesManager [#15935](https://github.com/CartoDB/cartodb/pull/15935)
 * Add DO datasets sync size in /me endpoint [#15932](https://github.com/CartoDB/cartodb/pull/15932)
 * Load GoogleMaps library for a map if the owner's query string is available [#15948](https://github.com/CartoDB/cartodb/pull/15948)
+* Log subscribers to STDOUT and fix JSON format [#15957](https://github.com/CartoDB/cartodb/pull/15957)
 
 4.43.0 (2020-11-06)
 -------------------

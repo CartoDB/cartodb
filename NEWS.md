@@ -17,6 +17,7 @@ sudo make install
 - Improve the syncronization functions by using `CDB_GetTableQueries`.
 - Bump cartodb-common to v0.4.8
 - Don't send ActionController::RoutingError to Rollbar [#15968](https://github.com/CartoDB/cartodb/pull/15968)
+- Generate a .pid file to control and manage the subscriber rake process [#15970](https://github.com/CartoDB/cartodb/pull/15970)
 
 4.44.0 (2020-11-20)
 -------------------

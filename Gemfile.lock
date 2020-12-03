@@ -8,13 +8,14 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: aebf468b520da4065ddb2ec6f9ddfdd0fc320de6
-  tag: v0.4.5
+  revision: c49a25b587e55867a31d53a2cca1851821f7debd
+  tag: v0.4.8
   specs:
-    cartodb-common (0.4.5)
-      activesupport (>= 4, < 6)
+    cartodb-common (0.4.7)
       argon2 (~> 2)
       google-cloud-pubsub (~> 1.2)
+      rails (>= 4, < 6)
+      rollbar
 
 GIT
   remote: https://github.com/kuldeepaggarwal/fake_net_ldap.git
@@ -377,8 +378,7 @@ GEM
     retriable (3.1.2)
     rexml (3.2.4)
     rly (0.2.3)
-    rollbar (2.11.5)
-      multi_json
+    rollbar (3.1.1)
     roo (1.13.2)
       nokogiri
       rubyzip
@@ -462,7 +462,7 @@ GEM
     sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
-    sprockets-rails (3.2.1)
+    sprockets-rails (3.2.2)
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
@@ -488,7 +488,7 @@ GEM
     trollop (2.9.10)
     typhoeus (1.3.1)
       ethon (>= 0.9.0)
-    tzinfo (1.2.7)
+    tzinfo (1.2.8)
       thread_safe (~> 0.1)
     uber (0.1.0)
     unf (0.1.4)
@@ -583,7 +583,7 @@ DEPENDENCIES
   responders (~> 2.0)
   resque (= 1.25.2)
   resque-metrics (= 0.1.1)
-  rollbar (~> 2.11.1)
+  rollbar
   roo (= 1.13.2)
   rotp (~> 3.3, >= 3.3.1)
   rqrcode (~> 0.10.1)

@@ -3,20 +3,35 @@
     <ConnectorSection @connectorSelected="connectorSelected" :label="$t('DataPage.databases')" :connectors="dataBaseConnectors"></ConnectorSection>
     <ConnectorSection @connectorSelected="connectorSelected" :label="$t('DataPage.cloudFiles')" :connectors="cloudConnectors"></ConnectorSection>
     <template v-if="!requestedConnectorLoading">
-      <div class="u-flex u-mt--48 u-pt--32 u-pb--32 u-pr--48 u-pl--48 request-connector">
-        <div class="u-flex__grow--1 message">
-          <div class="is-small is-semibold">{{ $t('DataPage.requestConnector') }}</div>
-          <div class="text is-small is-txtMidGrey u-mt--4">{{ $t('DataPage.requestConnectorSubtitle') }}</div>
+      <template v-if="!requestdConnectorSuccess">
+        <div class="u-flex u-mt--48 u-pt--32 u-pb--32 u-pr--48 u-pl--48 request-connector">
+          <div class="u-flex__grow--1 message">
+            <div class="is-small is-semibold">{{ $t('DataPage.requestConnector') }}</div>
+            <div class="text is-small is-txtMidGrey u-mt--4">{{ $t('DataPage.requestConnectorSubtitle') }}</div>
+          </div>
+          <div class="u-flex__grow--1 u-flex u-flex__justify--end form">
+            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper">
+              <input type="text" v-model="requestedConnector" class="Form-input Form-inputInline Form-input--longer CDB-Text CDB-Size-medium" value="" :placeholder="$t('DataPage.requestConnectorPlaceholder')" />
+              <button type="submit" class="Form-inputSubmitInline is-small is-txtPrimary is-semibold" @click="requestConnector" :disabled="!requestedConnector">
+                <span>{{ $t('DataPage.requestConnectorSubmit') }}</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="u-flex__grow--1 u-flex u-flex__justify--end form">
-          <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper">
-            <input type="text" v-model="requestedConnector" class="Form-input Form-inputInline Form-input--longer CDB-Text CDB-Size-medium" value="" :placeholder="$t('DataPage.requestConnectorPlaceholder')" />
-            <button type="submit" class="Form-inputSubmitInline is-small is-txtPrimary is-semibold" @click="requestConnector" :disabled="!requestedConnector">
-              <span>{{ $t('DataPage.requestConnectorSubmit') }}</span>
+      </template>
+      <template v-else>
+        <div class="u-flex u-mt--48 u-pt--32 u-pb--32 u-pr--48 u-pl--48 request-connector">
+          <div class="u-flex__grow--1 message">
+            <div class="is-small is-semibold">{{ $t('DataPage.requestConnectorSuccess') }}</div>
+            <div class="text is-small is-txtMidGrey u-mt--4">{{ $t('DataPage.requestConnectorSuccessSubtitle',  {connector: requestedConnector}) }}</div>
+          </div>
+          <div class="u-flex__grow--1 u-flex u-flex__justify--end form">
+            <button type="button" class="button" @click="acceptSuccessRequest">
+              <span>{{ $t('DataPage.requestConnectorSuccessButton') }}</span>
             </button>
           </div>
         </div>
-      </div>
+      </template>
     </template>
     <template v-else>
       <div class="u-flex u-flex__direction--column u-flex__align--center u-flex__justify--center u-mt--48 u-pt--16 u-pb--24 u-pr--48 u-pl--48 request-connector">
@@ -40,7 +55,8 @@ export default {
   data: () => {
     return {
       requestedConnector: '',
-      requestedConnectorLoading: false
+      requestedConnectorLoading: false,
+      requestdConnectorSuccess: false
     };
   },
   computed: {
@@ -61,6 +77,10 @@ export default {
         connector: this.requestedConnector
       });
       this.requestedConnectorLoading = false;
+      this.requestdConnectorSuccess = true;
+    },
+    acceptSuccessRequest () {
+      this.requestdConnectorSuccess = false;
       this.requestedConnector = '';
     },
     connectorsByType (type) {

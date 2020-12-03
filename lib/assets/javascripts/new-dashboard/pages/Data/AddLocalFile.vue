@@ -27,7 +27,7 @@
           <div class="u-flex u-flex__align--center u-mt--32">
             <label class="text is-small u-mr--16">{{ $t('DataPage.url') }}</label>
             <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--longer">
-              <input type="text" v-model="urlToUpload" class="Form-input Form-inputInline u-flex__grow--1" value="" placeholder="https://carto.com/data-library" />
+              <input type="text" v-model="urlToUpload" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="" placeholder="https://carto.com/data-library" />
               <button type="submit" class="Form-inputSubmitInline button" @click="uploadUrl">
                 <span>Submit</span>
               </button>
@@ -209,6 +209,7 @@ export default {
   .button {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    padding: 0 16px;
     margin-top: -1px;
     margin-right: -1px;
     height: calc(100% + 2px);

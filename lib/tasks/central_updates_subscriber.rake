@@ -8,13 +8,17 @@ namespace :message_broker do
 
     File.open(pid_file, 'w') { |f| f.puts Process.pid }
     begin
-      logger = Carto::Common::Logger.new
+      $stdout.sync = true
+      logger = Carto::Common::Logger.new($stdout)
 
       message_broker = Carto::Common::MessageBroker.new(logger: logger)
       subscription_name = Carto::Common::MessageBroker::Config.instance.central_commands_subscription
       subscription = message_broker.get_subscription(subscription_name)
       notifications_topic = message_broker.get_topic(:cartodb_central)
-      central_user_commands = Carto::Subscribers::CentralUserCommands.new(notifications_topic)
+      central_user_commands = Carto::Subscribers::CentralUserCommands.new(
+        notifications_topic: notifications_topic,
+        logger: logger
+      )
 
       subscription.register_callback(:update_user,
                                      &central_user_commands.method(:update_user))

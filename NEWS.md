@@ -13,6 +13,7 @@ sudo make install
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 
 ### Bug fixes / enhancements
+- Replace DO metadata SQL with API request [#15983](https://github.com/CartoDB/cartodb/pull/15983)
 - Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
 - Improve the syncronization functions by using `CDB_GetTableQueries`.
 - Bump cartodb-common to v0.4.8

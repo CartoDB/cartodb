@@ -1,6 +1,6 @@
 require './lib/carto/subscribers/central_user_commands'
 
-def wait_for_db_creation
+def wait_for_db_creation(logger)
   retries = 0
   max_retries = 25
 
@@ -11,7 +11,7 @@ def wait_for_db_creation
 
     retries += 1
     database_name = Rails.configuration.database_configuration[Rails.env]['database']
-    puts "Database '#{database_name}' doesn't exist. Sleeping 5 seconds before retry #{retries}/#{max_retries}"
+    logger.info("Database '#{database_name}' doesn't exist. Sleeping 5 seconds before retry #{retries}/#{max_retries}")
     sleep(5)
     retry
   end
@@ -20,14 +20,14 @@ end
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task cartodb_subscribers: [:environment] do |_task, _args|
-    wait_for_db_creation if Rails.env.development? || Rails.env.test?
-
     pid_file = ENV['PIDFILE'] || Rails.root.join('tmp/pids/cartodb_subscribers.pid')
     raise "PID file exists: #{pid_file}" if File.exist?(pid_file)
 
     File.open(pid_file, 'w') { |f| f.puts Process.pid }
     begin
       logger = Carto::Common::Logger.new
+
+      wait_for_db_creation(logger) if Rails.env.development? || Rails.env.test?
 
       message_broker = Carto::Common::MessageBroker.new(logger: logger)
       subscription_name = Carto::Common::MessageBroker::Config.instance.central_commands_subscription

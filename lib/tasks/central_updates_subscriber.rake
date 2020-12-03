@@ -1,8 +1,26 @@
 require './lib/carto/subscribers/central_user_commands'
 
+def wait_for_db_creation
+  retries = 0
+
+  begin
+    ActiveRecord::Base.connection
+  rescue ActiveRecord::NoDatabaseError => e
+    raise e if retries >= 10
+
+    retries += 1
+    database_name = Rails.configuration.database_configuration[Rails.env]['database']
+    puts "Database '#{database_name}' doesn't exist. Sleeping 5 seconds before retry ##{retries}"
+    sleep(5)
+    retry
+  end
+end
+
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task cartodb_subscribers: [:environment] do |_task, _args|
+    wait_for_db_creation if Rails.env.development? || Rails.env.test?
+
     pid_file = ENV['PIDFILE'] || Rails.root.join('tmp/pids/cartodb_subscribers.pid')
     raise "PID file exists: #{pid_file}" if File.exist?(pid_file)
 

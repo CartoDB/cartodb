@@ -66,7 +66,7 @@ export default {
       if (this.code) {
         this.codemirror.setValue(this.code);
       }
-      this.codemirror.on("change", this.onInputChange);
+      this.codemirror.on('change', this.onInputChange);
     },
     destroy () {
       const codemirrorElement = this.codemirror.doc.cm.getWrapperElement();

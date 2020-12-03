@@ -26,9 +26,9 @@
         <div v-show="extension === 'url'">
           <div class="u-flex u-flex__align--center u-mt--32">
             <label class="text is-small u-mr--16">{{ $t('DataPage.url') }}</label>
-            <div class="Form-rowData Form-rowData--noMargin Form-rowData--longer">
-              <input type="text" v-model="urlToUpload" class="Form-input u-flex__grow--1 js-textInput CDB-Text CDB-Size-medium" value="" placeholder="https://carto.com/data-library" />
-              <button type="submit" class="CDB-Button CDB-Button--primary CDB-Size-medium" @click="uploadUrl">
+            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--longer">
+              <input type="text" v-model="urlToUpload" class="Form-input Form-inputInline u-flex__grow--1" value="" placeholder="https://carto.com/data-library" />
+              <button type="submit" class="Form-inputSubmitInline button" @click="uploadUrl">
                 <span>Submit</span>
               </button>
             </div>
@@ -204,20 +204,14 @@ export default {
 .Form-rowData {
   .Form-input {
     height: 36px;
-    max-width: calc(100% - 78px + 1px);
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
   }
 
-  .CDB-Button {
-    position: absolute;
-    top: 2px;
-    bottom: 2px;
-    right: 0;
-    z-index: 9;
+  .button {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    width: 78px;
+    margin-top: -1px;
+    margin-right: -1px;
+    height: calc(100% + 2px);
   }
 }
 

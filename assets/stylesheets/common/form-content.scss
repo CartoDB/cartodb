@@ -196,7 +196,7 @@ $sLabel-width: 140px;
   }
 
   .Form-inputInline {
-    padding: 0 12px;
+    padding-left: 12px;
     border: none;
     background-color: transparent;
     height: 100%;
@@ -206,7 +206,7 @@ $sLabel-width: 140px;
   .Form-inputSubmitInline {
     display: flex;
     height: 100%;
-    padding: 0 12px 0 0;
+    padding: 0 12px;
     flex-grow: 0;
     justify-content: center;
     align-items: center;

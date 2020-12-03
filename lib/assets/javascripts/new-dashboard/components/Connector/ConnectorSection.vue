@@ -3,7 +3,13 @@
     <span class="is-small">{{ label }}</span>
     <div class="connectors-list u-flex u-flex__direction--row u-flex__align--center" :class="{ carrousel }">
       <Connector v-for="connector in connectors"
-        :key="connector.id" :id="connector.id" :label="connector.label"></Connector>
+        :key="connector.id"
+        :id="connector.id"
+        :label="connector.label"
+        :beta="connector.beta"
+        :disabled="connector.disabled"
+        @connectorSelected="connectorSelected"
+        ></Connector>
     </div>
     <div class="carrousel-controls" v-if="carrousel">
       <span class="prev"></span>
@@ -41,7 +47,11 @@ export default {
     };
   },
   computed: {},
-  methods: {}
+  methods: {
+    connectorSelected (id) {
+      this.$emit('connectorSelected', id);
+    }
+  }
 };
 </script>
 

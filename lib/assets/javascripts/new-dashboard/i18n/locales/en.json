@@ -102,6 +102,8 @@
     "connectInfo": "To ensure CARTO has access to your PostgreSQL database, please make sure your firewall is configured to allow the connections from these IP addresses:",
     "fromYourConnections": "From your existing connections",
     "fromNewConnections": "From a new connection/file",
+    "connectionsSuccessfull": "Successfully connected!",
+    "addYourData":"Add your data",
     "zeroCase": {
       "title": "Upload your first dataset",
       "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
@@ -118,6 +120,7 @@
       "catalog": "Spatial Data Catalog"
     },
     "imports": {
+      "connections": "Your Connections",
       "database": {
         "title": "Your %{brand} credentials",
         "label-server": "Server",
@@ -133,7 +136,8 @@
         "label-cluster": "Cluster",
         "placeholder-cluster": "Type your cluster name",
         "label-warehouse": "Warehouse",
-        "placeholder-warehouse": "Type your warehouse name"
+        "placeholder-warehouse": "Type your warehouse name",
+        "successTitle": "Your %{brand} connection is ready"
       }
     },
     "localFiles": "Local files",

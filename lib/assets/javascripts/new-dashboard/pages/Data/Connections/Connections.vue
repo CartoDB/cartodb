@@ -15,7 +15,7 @@
         <div class="emptyState u-pl--64 u-mb--60">
           <h3 class="is-body is-semibold u-mt--64">{{$t('DataPage.startAddingConnections')}}</h3>
           <p class="u-mt--16 is-caption">{{$t('DataPage.connectDescription')}}</p>   
-          <router-link :to="{ name: 'connections-new-connection' }">
+          <router-link :to="{ name: 'new-connection' }">
             <button class="button is-primary u-mt--48" style="margin-bottom: 56px;"> {{$t('DataPage.newConnection')}} </button>
           </router-link>
           <img class="logo" width="314" src="../../../assets/images/connectors/connectors.png">

@@ -1,5 +1,5 @@
 <template>
-  <div class="connector u-flex u-flex__direction--column u-flex__justify--center u-flex__align--center" :class="{disabled, beta}">
+  <div @click="connectorSelected" class="connector u-flex u-flex__direction--column u-flex__justify--center u-flex__align--center" :class="{disabled, beta}">
     <div class="beta-label is-small" v-if="beta">Beta</div>
     <div class="ImportButton">
       <i :class="'is-' + id"></i>
@@ -32,7 +32,11 @@ export default {
     };
   },
   computed: {},
-  methods: {}
+  methods: {
+    connectorSelected () {
+      this.$emit('connectorSelected', this.id);
+    }
+  }
 };
 </script>
 

@@ -5,7 +5,7 @@
     :showSubHeader="false"
   >
     <template #default>
-      <ConnectorsList></ConnectorsList>
+      <ConnectorsList @connectorSelected="connectorSelected"></ConnectorsList>
     </template>
   </Dialog>
 </template>
@@ -22,7 +22,11 @@ export default {
     ConnectorsList
   },
   computed: {},
-  methods: {}
+  methods: {
+    connectorSelected (id) {
+      this.$router.push({name: 'new-connection-connector', params: { connector: id }});
+    }
+  }
 };
 </script>
 

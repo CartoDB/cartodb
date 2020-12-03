@@ -328,20 +328,28 @@ class Carto::User < ActiveRecord::Base
     subscriptions_size_in_bytes(Carto::DoLicensingService::CARTO_DO_PROJECT)
   end
 
+  def subscriptions_premium_estimated_size_in_bytes
+    subscriptions_size_in_bytes(Carto::DoLicensingService::CARTO_DO_PROJECT, estimated: true)
+  end
+
   def subscriptions
     Carto::DoLicensingService.new(username).subscriptions || []
   end
 
   private
 
-  def subscriptions_size_in_bytes(project)
+  def subscriptions_size_in_bytes(project, estimated: false)
     # Note we cannot filter by `project` subscription attribute, we must use the dataset ID.
     subs_filtered = subscriptions.select { |d| d['dataset_id'].split('.')[0] == project }
     subs_synced = subs_filtered.select do |d|
       d['sync_status'] == 'synced' && !d['sync_table'].empty? && Carto::UserTable.exists?(d['sync_table_id'])
     end
-    synced_tables = subs_synced.map { |d| Carto::UserTable.find_by(id: d['sync_table_id']) }
-    total = synced_tables.map { |d| d.table_size }.reduce(0) { |a, b| a + b }
+    if estimated == true
+      total = subs_synced.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
+    else
+      synced_tables = subs_synced.map { |d| Carto::UserTable.find_by(id: d['sync_table_id']) }
+      total = synced_tables.map(&:table_size).reduce(0) { |a, b| a + b }
+    end
     total || 0
   end
 

@@ -4,10 +4,10 @@
       <h4 class="is-small is-semibold">{{$t('DataPage.imports.database.title', { brand: connector.title })}}</h4>
       <div v-for="p in connector.options.params" :key="p.key" class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
         <label class="is-small u-mr--16">{{p.key}}</label>
-        <input :type="p.type" :placeholder="$t('DataPage.imports.database.placeholder-' + p.key, { brand: p.title })">
+        <input v-model="conexionModel[p.key]" :type="p.type" :placeholder="$t('DataPage.imports.database.placeholder-' + p.key, { brand: p.title })">
       </div>
       <div class="u-flex u-flex__justify--end u-mt--32">
-        <button class="CDB-Button CDB-Button--primary CDB-Button--big is-disabled">
+        <button @click="connect" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': !conexionModelIsValid}">
         <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
           {{ $t('DataPage.connect') }}
         </span>
@@ -39,8 +39,26 @@ export default {
       required: true
     }
   },
-  computed: {},
-  methods: {}
+  data () {
+    return {
+      conexionModel: this.connector.options.params.reduce((accum, current) => {
+        accum[current.key] = '';
+        return accum;
+      }, {})
+    };
+  },
+  computed: {
+    conexionModelIsValid () {
+      return this.connector.options.params.reduce((accum, current) => {
+        return accum && (current.optional || !!this.conexionModel[current.key]);
+      }, true);
+    }
+  },
+  methods: {
+    connect () {
+      this.$emit('connectClicked', {...this.conexionModel});
+    }
+  }
 };
 </script>
 

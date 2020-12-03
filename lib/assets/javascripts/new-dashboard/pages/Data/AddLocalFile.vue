@@ -2,6 +2,7 @@
   <Dialog ref="dialog"
     :headerTitle="$t('DataPage.addDataset')"
     :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
+    :backRoute="{name: 'new-dataset'}"
   >
   <template slot="sub-header">
     <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">

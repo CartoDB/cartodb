@@ -82,8 +82,9 @@ export default {
     connectorSelected (id) {
       if (id === 'url') {
         this.navigateToFile(id);
-        return;
+        return true;
       }
+      this.$router.push({name: 'new-dataset-new-connection-connector', params: { connector: id }});
     },
     navigateToFile (id) {
       this.$router.push({name: 'add-local-file', params: { extension: id }});

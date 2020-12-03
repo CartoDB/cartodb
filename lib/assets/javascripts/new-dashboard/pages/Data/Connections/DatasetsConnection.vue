@@ -3,6 +3,7 @@
     :headerTitle="$t('DataPage.addDataset')"
     :headerImage="require('../../../assets/icons/datasets/subsc-add-icon.svg')"
     :showSubHeader="true"
+    :backRoute="{name: backNamedRoute}"
   >
     <template #default>
       Datasets Connection
@@ -18,6 +19,11 @@ export default {
   name: 'DatasetsConnection',
   components: {
     Dialog
+  },
+  props: {
+    backNamedRoute: {
+      default: ''
+    }
   },
   computed: {},
   methods: {}

@@ -43,7 +43,7 @@
 <script>
 
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
-import CodeBlock from 'new-dashboard/components/code/CodeBlock.vue'
+import CodeBlock from 'new-dashboard/components/code/CodeBlock.vue';
 import FormInput from 'new-dashboard/components/forms/FormInput';
 import Button from 'new-dashboard/components/Button';
 
@@ -59,8 +59,8 @@ export default {
     return {
       query: '',
       datasetName: ''
-    }
-  }, 
+    };
+  },
   computed: {},
   methods: {}
 };

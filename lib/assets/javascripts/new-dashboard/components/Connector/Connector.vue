@@ -67,6 +67,7 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 1;
     padding: 0 5px 4px 5px;
     background-color: #f0f0f0;
     border: 1px solid #dddddd;

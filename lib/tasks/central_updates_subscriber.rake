@@ -2,15 +2,16 @@ require './lib/carto/subscribers/central_user_commands'
 
 def wait_for_db_creation
   retries = 0
+  max_retries = 25
 
   begin
     ActiveRecord::Base.connection
   rescue ActiveRecord::NoDatabaseError => e
-    raise e if retries >= 10
+    raise e if retries >= max_retries
 
     retries += 1
     database_name = Rails.configuration.database_configuration[Rails.env]['database']
-    puts "Database '#{database_name}' doesn't exist. Sleeping 5 seconds before retry ##{retries}"
+    puts "Database '#{database_name}' doesn't exist. Sleeping 5 seconds before retry #{retries}/#{max_retries}"
     sleep(5)
     retry
   end

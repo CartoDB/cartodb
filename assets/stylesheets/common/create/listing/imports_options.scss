@@ -342,6 +342,8 @@ $import-button-width: 174px;
 @include importIcon(twitter);
 @include importIcon(dataobservatory);
 @include importIcon(snowflake);
+@include importIcon(redshift);
+@include importIcon('file-url');
 @include importIcon('file-carto');
 @include importIcon('file-csv');
 @include importIcon('file-excel');

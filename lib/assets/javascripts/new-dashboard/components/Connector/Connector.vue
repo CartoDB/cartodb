@@ -51,6 +51,7 @@ export default {
   background-color: $white;
   border: 1px solid $neutral--300;
   position: relative;
+  transition: ease 300ms box-shadow;
   cursor: pointer;
 
   &.disabled {

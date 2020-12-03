@@ -70,7 +70,7 @@ class Carto::User < ActiveRecord::Base
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
   has_many :granted_oauth_apps, through: :oauth_app_users, class_name: Carto::OauthApp, source: 'oauth_app'
 
-  has_many :user_map_views, -> { current_month }, class_name: 'Carto::UserMapViews', inverse_of: :user
+  has_many :user_map_views, class_name: 'Carto::UserMapViews', inverse_of: :user
 
   delegate [
     :database_username, :database_password, :in_database,
@@ -320,7 +320,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def map_views_count
-    user_map_views.reduce(0) { |sum, item| sum + item.map_views }
+    user_map_views.last_billing_cycle(last_billing_cycle).reduce(0) { |sum, item| sum + item.map_views }
   end
 
   def subscriptions_public_size_in_bytes

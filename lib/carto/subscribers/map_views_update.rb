@@ -7,12 +7,8 @@ module Carto
 
       include ::LoggerHelper
 
-      def initialize(logger: nil)
-        @logger = logger || ::Logger.new($stdout)
-      end
-
       def update_map_views(map_views_data)
-        @logger.info('Processing :update_map_views')
+        log_info(message: 'Processing :update_map_views')
 
         date = map_views_data[:date]
         users_data = map_views_data[:data]
@@ -28,7 +24,7 @@ module Carto
             user: user, metric_date: date
           )
           user_map_views.update!(map_views: map_views)
-          @logger.debug("Updated user #{user_id} -> map_views = #{map_views} (#{date})")
+          log_debug(message: 'Updated user map_views', user_id: user_id, map_views: map_views, date: date)
         end
       end
 

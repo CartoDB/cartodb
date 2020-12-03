@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-* This release upgrades the CartoDB PostgreSQL extension to `0.37.0`. Run the following to have it available:
+* This release upgrades the CartoDB PostgreSQL extension to `0.37.1`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -17,6 +17,8 @@ sudo make install
 - Improve the syncronization functions by using `CDB_GetTableQueries`.
 - Bump cartodb-common to v0.4.8
 - Don't send ActionController::RoutingError to Rollbar [#15968](https://github.com/CartoDB/cartodb/pull/15968)
+- Generate a .pid file to control and manage the subscriber rake process [#15970](https://github.com/CartoDB/cartodb/pull/15970)
+- Fix buffering of log traces in subscriber [#15980](https://github.com/CartoDB/cartodb/pull/15980)
 - Wrong param name in organization forms [#15975](https://github.com/CartoDB/cartodb/pull/15975)
 
 4.44.0 (2020-11-20)

@@ -128,6 +128,14 @@
       "connections": "Your Connections",
       "catalog": "Spatial Data Catalog"
     },
+    "addConnector": {
+      "importFrom": "Import your data from a %{datasource}",
+      "query": "SQL Query",
+      "destinationDataset": "CARTO Dataset",
+      "sqlNote": "If your query contains geographic data in EPSG:4326 format, name that column with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
+      "destinationDatasetNote": "Name of the new Dataset that will be created in your CARTO Dashboard with the imported data.",
+      "runQuery": "Run SQL Query"
+    },
     "imports": {
       "connections": "Your Connections",
       "database": {

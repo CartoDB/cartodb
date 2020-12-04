@@ -81,6 +81,7 @@ export default {
 
 .query-container {
   flex-grow: 1;
+  min-width: 0;
 
   .codeblock-container {
     height: 120px;

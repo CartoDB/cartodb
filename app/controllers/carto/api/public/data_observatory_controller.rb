@@ -250,7 +250,7 @@ module Carto
         def request_subscription_metadata(dataset_id, type)
           do_meta_config = Cartodb.config[:do_metadata_api]
 
-          base_url = "#{do_meta_config['scheme']}://#{do_meta_config['host']}"
+          base_url = "#{do_meta_config['scheme']}://#{do_meta_config['host']}:#{do_meta_config['port']}"
           src_endpoint = TABLES_BY_TYPE[type]
 
           url = "#{base_url}/api/v4/data/observatory/metadata/#{src_endpoint}/#{dataset_id}"

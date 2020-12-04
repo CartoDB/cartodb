@@ -42,10 +42,11 @@ export default {
       quotaInBytes: state => state.user.storage.quota_in_bytes,
       dbSizeInBytes: state => state.user.storage.db_size_in_bytes,
       subscriptionsPublicSizeInBytes: state => state.user.storage.subscriptions_public_size_in_bytes,
+      subscriptionsPremiumEstimatedSizeInBytes: state => state.user.storage.subscriptions_premium_estimated_size_in_bytes,
       subscriptionsPremiumSizeInBytes: state => state.user.storage.subscriptions_premium_size_in_bytes
     }),
     availableQuota () {
-      return this.quotaInBytes - this.subscriptionsPremiumSizeInBytes;
+      return this.quotaInBytes - this.subscriptionsPremiumEstimatedSizeInBytes;
     },
     datasetsSize () {
       return Math.max(0, this.dbSizeInBytes - this.subscriptionsPremiumSizeInBytes - this.subscriptionsPublicSizeInBytes);

@@ -32,6 +32,7 @@
   "QuickActions": {
     "title": "Quick actions",
     "editInfo": "Edit name & description",
+    "editConnection": "Edit connection",
     "manageTags": "Manage tags",
     "createMap": "Create map",
     "changePrivacy": "Change privacy",
@@ -105,6 +106,8 @@
     "newConnection": "New Connection",
     "addConnection": "Add new connection",
     "deleteConnection": "Delete your connection",
+    "connectionThroughtOauth": "Connection through oAuth",
+    "connectionParameters": "Parameters",
     "connectWith": "Connect with",
     "gettingConnected": "Getting connected",
     "connectInfo": "To ensure CARTO has access to your PostgreSQL database, please make sure your firewall is configured to allow the connections from these IP addresses:",

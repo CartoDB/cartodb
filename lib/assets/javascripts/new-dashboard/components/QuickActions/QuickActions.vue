@@ -1,5 +1,5 @@
 <template>
-  <div class="quick-actions" v-click-outside="closeDropdown">
+  <div class="quick-actions" :class="{'is-open': isOpen }" v-click-outside="closeDropdown">
     <a href="javascript:void(0)" class="quick-actions-select" @click="toggleDropdown" :class="{'is-active': isOpen }">
       <img svg-inline src="new-dashboard/assets/icons/common/options.svg">
     </a>
@@ -70,6 +70,10 @@ export default {
   border: 1px solid transparent;
   border-radius: 2px;
   background: $white;
+
+  > svg {
+    outline: none;
+  }
 
   &.is-active {
     background-color: $primary-color;

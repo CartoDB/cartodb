@@ -15,8 +15,7 @@
               <div class="codeblock-container">
                 <CodeBlock language="text/x-plsql"
                   :readOnly="false"
-                  placeholder="SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom 
-FROM mytable"
+                  placeholder="SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable"
                   v-model="query"/>
               </div>
               <p class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNote')}}</p>

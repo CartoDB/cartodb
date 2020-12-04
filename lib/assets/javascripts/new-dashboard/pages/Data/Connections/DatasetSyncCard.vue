@@ -37,13 +37,12 @@
 
 <script>
 
-
 export default {
   name: 'DatasetSyncCard',
   data () {
     return {
       selectedInput: this.syncFrequency
-    }
+    };
   },
   model: {
     prop: 'selectedInput',
@@ -52,7 +51,6 @@ export default {
   props: {
     name: String,
     size: String,
-    syncFrequency: String,
     isActive: Boolean,
     fileType: String,
     syncFrequency: {

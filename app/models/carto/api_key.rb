@@ -660,7 +660,7 @@ module Carto
       user.state = new_user_attributes[:state] if new_user_attributes[:state].present?
 
       # This is not avalidation per-se, since we don't want to remove api keys when a user is disabled
-      !(user.locked? || regular? && user.engine_enabled?)
+      !(user.locked? || regular? && !user.engine_enabled?)
     end
   end
 end

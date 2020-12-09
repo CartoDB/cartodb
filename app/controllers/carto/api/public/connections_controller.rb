@@ -7,9 +7,12 @@ module Carto
         before_action :load_user
         before_action :load_manager
 
+        setup_default_rescues
         # TODO: rescuers from ConnectionManager exceptions to be defined, e.g.
         # rescue_from Carto::ConnectionNotFoundError, with: :rescue_from_connection_not_found
         rescue_from ActiveRecord::RecordInvalid, with: :rescue_from_connection_not_found
+
+        respond_to :json
 
         def index
           render_jsonp(@connection_manager.list_connections, 200)

@@ -7,7 +7,7 @@
   >
     <template #default>
       <div class="u-flex u-flex__justify--center">
-        <div class="forms-container">
+        <div v-if="!queryIsValid" class="forms-container">
           <h3 class="title is-small">{{$t('DataPage.addConnector.importFrom', { datasource: "Snowflake instance" })}}</h3>
           <div class="u-flex u-mt--24">
             <p class="text is-small u-mt--12 label-text">{{$t('DataPage.addConnector.query')}}</p>
@@ -33,15 +33,23 @@ FROM mytable"
             </div>
           </div>
           <div class="u-flex u-flex__justify--end u-mt--24">
-            <Button
-              color="is-primary"
-              class="underline-animation"
-              :disabled="!(query && datasetName)">
-              <span>{{$t('DataPage.addConnector.runQuery')}}</span>
-            </Button>
+            <button @click="validateQuery" class="button is-primary" :disabled="!(query && datasetName)"> {{$t('DataPage.addConnector.runQuery')}} </button>
           </div>
         </div>
+        <div v-else-if="queryIsValid" class="dataset-sync-card-container">
+          <DatasetSyncCard
+            :name="query"
+            syncFrequency="never"
+            fileType="SQL"
+            isActive>
+          </DatasetSyncCard>
+        </div>
       </div>
+    </template>
+    <template v-if="queryIsValid" slot="footer">
+      <GuessPrivacyFooter
+        :disabled="false"
+      ></GuessPrivacyFooter>
     </template>
   </Dialog>
 </template>
@@ -52,6 +60,8 @@ import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import CodeBlock from 'new-dashboard/components/code/CodeBlock.vue';
 import FormInput from 'new-dashboard/components/forms/FormInput';
 import Button from 'new-dashboard/components/Button';
+import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
+import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 
 export default {
   name: 'DatasetsConnection',
@@ -59,12 +69,15 @@ export default {
     Button,
     CodeBlock,
     Dialog,
-    FormInput
+    FormInput,
+    DatasetSyncCard,
+    GuessPrivacyFooter
   },
   data () {
     return {
       query: '',
-      datasetName: ''
+      datasetName: '',
+      queryIsValid: false
     };
   },
   props: {
@@ -73,7 +86,11 @@ export default {
     }
   },
   computed: {},
-  methods: {}
+  methods: {
+    validateQuery () {
+      this.queryIsValid = true;
+    }
+  }
 };
 </script>
 
@@ -87,6 +104,7 @@ export default {
 
 .query-container {
   flex-grow: 1;
+  min-width: 0;
 
   .codeblock-container {
     height: 120px;
@@ -110,5 +128,9 @@ export default {
 
 .dataset-container {
   flex-grow: 1;
+}
+
+.dataset-sync-card-container {
+  max-width: 780px;
 }
 </style>

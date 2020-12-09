@@ -136,6 +136,16 @@
       "destinationDatasetNote": "Name of the new Dataset that will be created in your CARTO Dashboard with the imported data.",
       "runQuery": "Run SQL Query"
     },
+    "datasetCard": {
+      "syncFrequency": {
+        "title": "Sync my data",
+        "never": "Never",
+        "hourly": "Every hour",
+        "daily": "Every day",
+        "weekly": "Every week",
+        "monthly": "Every month"
+      }
+    },
     "imports": {
       "connections": "Your Connections",
       "database": {

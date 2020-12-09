@@ -12,25 +12,32 @@
         </SectionTitle>
       </div>
       <div class="u-width--100 u-mt-50 grid-cell">
-        <div class="emptyState u-pl--64 u-mb--60" v-if="!connections || !connections.length">
-          <h3 class="is-body is-semibold u-mt--64">{{$t('DataPage.startAddingConnections')}}</h3>
-          <p class="u-mt--16 is-caption">{{$t('DataPage.connectDescription')}}</p>
-          <router-link :to="{ name: 'new-connection' }">
-            <button class="button is-primary u-mt--48" style="margin-bottom: 56px;"> {{$t('DataPage.newConnection')}} </button>
-          </router-link>
-          <img class="logo" width="314" src="../../../assets/images/connectors/connectors.png">
-        </div>
-        <div class="connections-container grid" v-else>
-          <div v-for="connection in connections" :key="connection.raw.id" class="connector-wrapper grid-cell grid-cell--col4">
-            <ConnectorLarge
-              :type="connection.raw.connector"
-              :label="connection.default.title"
-              :beta="connection.default.options.beta"
-              :connectionName="connection.raw.name"
-              :connectionParams="connection.raw.parameters"
-              :connectionType="connection.default.type"/>
+        <template v-if="!loading">
+          <div class="emptyState u-pl--64 u-mb--60" v-if="!connections.length">
+            <h3 class="is-body is-semibold u-mt--64">{{$t('DataPage.startAddingConnections')}}</h3>
+            <p class="u-mt--16 is-caption">{{$t('DataPage.connectDescription')}}</p>
+            <router-link :to="{ name: 'new-connection' }">
+              <button class="button is-primary u-mt--48" style="margin-bottom: 56px;"> {{$t('DataPage.newConnection')}} </button>
+            </router-link>
+            <img class="logo" width="314" src="../../../assets/images/connectors/connectors.png">
           </div>
-        </div>
+          <div class="connections-container grid" v-else>
+            <div v-for="connection in connections" :key="connection.raw.id" class="connector-wrapper grid-cell grid-cell--col4">
+              <ConnectorLarge
+                :type="connection.raw.connector"
+                :label="connection.default.title"
+                :beta="connection.default.options.beta"
+                :connectionName="connection.raw.name"
+                :connectionParams="connection.raw.parameters"
+                :connectionType="connection.default.type"/>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div>
+            <LoadingState primary/>
+          </div>
+        </template>
       </div>
     </div>
     <router-view></router-view>
@@ -40,33 +47,43 @@
 <script>
 
 import SectionTitle from 'new-dashboard/components/SectionTitle';
+import LoadingState from 'new-dashboard/components/States/LoadingState';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import ConnectorLarge from 'new-dashboard/components/Connector/ConnectorLarge';
 import { IMPORT_OPTIONS } from 'builder/components/modals/add-layer/content/imports/import-options';
+import { mapState } from 'vuex';
 
 export default {
   name: 'YourConnections',
   components: {
+    LoadingState,
     SectionTitle,
     VisualizationsTitle,
     ConnectorLarge
   },
   data: () => {
     return {
-      rawConnections: [
-        {id: '36103518-12a5-4983-9b1f-c7abb5887a90', name: 'A_very_very_very_long_connection_name', connector: 'mysql', type: 'db-connector', parameters: {server: 'x'}},
-        {id: '36103518-12a5-4983-9b1f-c7abb5887a99', name: 'othercon2', connector: 'bigquery', type: 'db-connector', parameters: {server: 'x'}},
-        {id: '36103518-12a5-4983-9b1f-c7abb5887a98', name: 'othercon3', connector: 'gdrive', type: 'db-connector', parameters: {server: 'x'}},
-        {id: '36103518-12a5-4983-9b1f-c7abb5887a97', name: 'othercon4', connector: 'postgresql', type: 'db-connector', parameters: {server: 'x'}}
-      ]
+      // rawConnections: [
+      //   {id: '36103518-12a5-4983-9b1f-c7abb5887a90', name: 'A_very_very_very_long_connection_name', connector: 'mysql', type: 'db-connector', parameters: {server: 'x'}},
+      //   {id: '36103518-12a5-4983-9b1f-c7abb5887a99', name: 'othercon2', connector: 'bigquery', type: 'db-connector', parameters: {server: 'x'}},
+      //   {id: '36103518-12a5-4983-9b1f-c7abb5887a98', name: 'othercon3', connector: 'gdrive', type: 'db-connector', parameters: {server: 'x'}},
+      //   {id: '36103518-12a5-4983-9b1f-c7abb5887a97', name: 'othercon4', connector: 'postgresql', type: 'db-connector', parameters: {server: 'x'}}
+      // ]
     };
   },
   computed: {
+    ...mapState({
+      loading: state => state.connectors.loadingConnections,
+      rawConnections: state => state.connectors.connections
+    }),
     connections () {
-      return this.rawConnections.map(raw => {
+      return this.rawConnections ? this.rawConnections.map(raw => {
         return {raw, default: Object.values(IMPORT_OPTIONS).find(({ name }) => raw.connector === name)};
-      });
+      }) : [];
     }
+  },
+  mounted: function () {
+    this.$store.dispatch('connectors/fetchConnectionsList');
   },
   methods: {}
 };

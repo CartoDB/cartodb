@@ -144,6 +144,8 @@
       "database": {
         "title": "Your %{brand} credentials",
         "label-server": "Server",
+        "placeholder-name": "Type a name for your connection",
+        "label-name": "Name",
         "placeholder-server": "Paste your %{brand} Server URL",
         "label-port": "Port",
         "placeholder-port": "Type your port",
@@ -759,6 +761,14 @@
       "clientSecretDesc": "OAuth apps can use OAuth credentials to identify users. Learn more about identifying users by reading our <a href='https://carto.com/developers/fundamentals/oauth-apps/#oauth-flow' target='_blank'>integration developer documentation.</a>",
       "appInformationTitle": "App Information",
       "deleteAppButton": "Delete my app"
+    }
+  },
+  "ConnectorsPage": {
+    "removeModal": {
+      "title": "You are about to delete your PostgreSQL connection",
+      "subtitle": "If you have synchronized datasets, you will no longer be able to update them",
+      "cancelButton": "Cancel",
+      "removeButton": "Ok, remove"
     }
   },
   "ConnectedAppsPage": {

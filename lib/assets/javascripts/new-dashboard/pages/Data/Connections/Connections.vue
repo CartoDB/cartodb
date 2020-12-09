@@ -9,6 +9,11 @@
           <template slot="title">
             <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.connections')"/>
           </template>
+          <template slot="actionButton">
+            <router-link :to="{ name: 'new-connection' }">
+              <button class="button is-primary">{{ $t(`DataPage.newConnection`) }}</button>
+            </router-link>
+          </template>
         </SectionTitle>
       </div>
       <div class="u-width--100 u-mt-50 grid-cell">
@@ -24,7 +29,8 @@
           <div class="connections-container grid" v-else>
             <div v-for="connection in connections" :key="connection.raw.id" class="connector-wrapper grid-cell grid-cell--col4">
               <ConnectorLarge
-                :type="connection.raw.connector"
+                :id="connection.raw.id"
+                :type="connection.default.name"
                 :label="connection.default.title"
                 :beta="connection.default.options.beta"
                 :connectionName="connection.raw.name"
@@ -61,16 +67,6 @@ export default {
     VisualizationsTitle,
     ConnectorLarge
   },
-  data: () => {
-    return {
-      // rawConnections: [
-      //   {id: '36103518-12a5-4983-9b1f-c7abb5887a90', name: 'A_very_very_very_long_connection_name', connector: 'mysql', type: 'db-connector', parameters: {server: 'x'}},
-      //   {id: '36103518-12a5-4983-9b1f-c7abb5887a99', name: 'othercon2', connector: 'bigquery', type: 'db-connector', parameters: {server: 'x'}},
-      //   {id: '36103518-12a5-4983-9b1f-c7abb5887a98', name: 'othercon3', connector: 'gdrive', type: 'db-connector', parameters: {server: 'x'}},
-      //   {id: '36103518-12a5-4983-9b1f-c7abb5887a97', name: 'othercon4', connector: 'postgresql', type: 'db-connector', parameters: {server: 'x'}}
-      // ]
-    };
-  },
   computed: {
     ...mapState({
       loading: state => state.connectors.loadingConnections,
@@ -78,7 +74,7 @@ export default {
     }),
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {
-        return {raw, default: Object.values(IMPORT_OPTIONS).find(({ name }) => raw.connector === name)};
+        return {raw, default: Object.values(IMPORT_OPTIONS).find(({ name, options }) => raw.connector === name || raw.connector === (options && options.service))};
       }) : [];
     }
   },

@@ -5,7 +5,22 @@
     :showSubHeader="false"
   >
     <template #default>
-      Delete connection page
+      <div class="u-flex u-flex__direction--column u-flex__align--center u-mt--32">
+        <div class="is-subtitle is-semibold">
+          {{ $t('ConnectorsPage.removeModal.title') }}
+        </div>
+        <div class="is-caption u-mt--16">
+          {{ $t('ConnectorsPage.removeModal.subtitle') }}
+        </div>
+        <div class="u-flex u-flex__justify--center u-mt--48">
+          <button @click="cancel" class="button button--ghost u-mr--20">
+              {{ $t('ConnectorsPage.removeModal.cancelButton') }}
+          </button>
+          <button @click="confirmDelete" class="button button--alert">
+              {{ $t('ConnectorsPage.removeModal.removeButton') }}
+          </button>
+        </div>
+      </div>
     </template>
   </Dialog>
 </template>
@@ -20,7 +35,15 @@ export default {
     Dialog
   },
   computed: {},
-  methods: {}
+  methods: {
+    cancel () {
+      this.$refs.dialog.closePoup();
+    },
+    confirmDelete () {
+      this.$store.dispatch('connectors/deleteConnection', this.$route.params.id);
+      this.$refs.dialog.closePoup();
+    }
+  }
 };
 </script>
 

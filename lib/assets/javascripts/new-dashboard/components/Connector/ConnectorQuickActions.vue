@@ -61,8 +61,8 @@ export default {
       this.closeDropdown();
     },
     deleteConnection () {
-      // DialogActions.deleteVisualization.apply(this, [this.connection, 'datasets', this.getActionHandlers()]);
       this.closeDropdown();
+      this.$router.push({name: 'delete-connection', params: {id: this.connection}});
     }
   }
 };

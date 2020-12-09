@@ -1,13 +1,19 @@
 <template>
   <div class="connector-section">
-    <span class="is-small">{{ label }}</span>
+    <span class="is-small is-txtMidGrey">{{ label }}</span>
     <div class="connectors-list u-flex u-flex__direction--row u-flex__align--center" :class="{ carrousel }">
       <Connector v-for="connector in connectors"
-        :key="connector.id" :id="connector.id" :label="connector.label"></Connector>
+        :key="connector.id"
+        :id="connector.id"
+        :label="connector.label"
+        :beta="connector.beta"
+        :disabled="connector.disabled"
+        @connectorSelected="connectorSelected"
+        ></Connector>
     </div>
     <div class="carrousel-controls" v-if="carrousel">
-      <span class="prev"></span>
-      <span class="next"></span>
+      <span class="u-flex u-flex__align--center u-flex__justify--center prev"></span>
+      <span class="u-flex u-flex__align--center u-flex__justify--center next"></span>
     </div>
   </div>
 </template>
@@ -41,7 +47,11 @@ export default {
     };
   },
   computed: {},
-  methods: {}
+  methods: {
+    connectorSelected (id) {
+      this.$emit('connectorSelected', id);
+    }
+  }
 };
 </script>
 
@@ -78,7 +88,6 @@ $controlSize: 36px;
     top: 16px;
 
     .prev, .next {
-      display: block;
       position: absolute;
       height: $controlSize;
       width: $controlSize;
@@ -88,12 +97,27 @@ $controlSize: 36px;
       background-color: $white;
       border: 1px solid $neutral--300;
       border-radius: 50%;
+
+      &:before{
+        content: '';
+        display: block;
+        height: 14px;
+        width: 14px;
+        background-image: url("../../assets/icons/catalog/arrow-navy.svg");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 14px;
+        opacity: .2;
+      }
     }
+
     .prev {
       left: #{$controlSize / -2};
+      transform: rotate(90deg);
     }
     .next {
       right: #{$controlSize / -2};
+      transform: rotate(-90deg);
     }
   }
 }

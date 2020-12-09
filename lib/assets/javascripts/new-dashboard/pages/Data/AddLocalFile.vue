@@ -2,28 +2,48 @@
   <Dialog ref="dialog"
     :headerTitle="$t('DataPage.addDataset')"
     :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
+    :backRoute="{name: 'new-dataset'}"
   >
   <template slot="sub-header">
     <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
-      <img class="u-mr--8" src="../../assets/icons/datasets/local-file.svg">
+      <img class="u-mr--8 file-icon" :src="fileIcon" @error="setAltImage">
       {{ $t('DataPage.addLocalFile') }}
     </h3>
   </template>
   <template #default>
-    <div v-show="!isFileSelected" class="u-flex u-flex__direction--column u-flex__align--center">
-      <span class="is-small">{{ $t('DataPage.formats') }}: CSV, GeoJSON, GPKG, SHP, KML, OSM, CARTO, GPX, FGDB <a target="_blank" href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">{{ $t('DataPage.learnmore') }}</a></span>
-      <div ref="dragZone" :class="{dragged: dragged}" class="drag-zone u-mt--32 u-flex u-flex__direction--column u-flex__align--center u-flex__justify--center">
-        <img src="../../assets/icons/datasets/move-up.svg">
-        <h4 class="is-small is-semibold u-mt--16" style="text-align: center;">Drag and drop your file<br>or</h4>
-        <button @click="selectFile()" class="button is-primary u-mt--16">Browse</button>
-        <input @change="fileSelected" ref="file" type="file">
+    <div v-show="!isFileSelected">
+      <div class="u-flex u-flex__direction--column u-flex__align--center">
+        <span class="is-small">{{ $t('DataPage.formats') }}: CSV, GeoJSON, GPKG, SHP, KML, OSM, CARTO, GPX, FGDB <a target="_blank" href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">{{ $t('DataPage.learnmore') }}</a></span>
+        <div v-show="extension !== 'url'">
+          <div ref="dragZone" :class="{dragged: dragged}" class="drag-zone u-mt--32 u-flex u-flex__direction--column u-flex__align--center u-flex__justify--center">
+            <img src="../../assets/icons/datasets/move-up.svg">
+            <h4 class="is-small is-semibold u-mt--16" style="text-align: center;">Drag and drop your file<br>or</h4>
+            <button @click="selectFile()" class="button is-primary u-mt--16">Browse</button>
+            <input @change="fileSelected" ref="file" type="file">
+          </div>
+          <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert">{{fileValidation.msg}}</p>
+        </div>
+        <div v-show="extension === 'url'">
+          <div class="u-flex u-flex__align--center u-mt--32">
+            <label class="text is-small u-mr--16">{{ $t('DataPage.url') }}</label>
+            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--longer">
+              <input type="text" v-model="urlToUpload" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="" placeholder="https://carto.com/data-library" />
+              <button type="submit" class="Form-inputSubmitInline button" @click="uploadUrl">
+                <span>Submit</span>
+              </button>
+            </div>
+          </div>
+          <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert url-error">{{fileValidation.msg}}</p>
+        </div>
       </div>
-      <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert">{{fileValidation.msg}}</p>
     </div>
     <div v-show="isFileSelected" class="u-flex u-flex__align--center u-flex__justify--between u-pl--24 u-pr--24 file">
-      <div class="is-txtMainTextColor u-flex u-flex__direction--column">
-        <span class="is-caption">{{uploadObject.value.name}}</span>
-        <span class="is-small" style="margin-top:2px;">{{humanFileSize(uploadObject.value.size)}}</span>
+      <div class="is-txtMainTextColor u-flex u-flex__direction--column file-main">
+        <template v-if="uploadObject.type === 'file'">
+          <span class="is-caption">{{uploadObject.value.name}}</span>
+          <span class="is-small" style="margin-top:2px;">{{humanFileSize(uploadObject.value.size)}}</span>
+        </template>
+        <span v-if="uploadObject.type === 'url'" class="is-caption url-text">{{uploadObject.value}}</span>
       </div>
       <button @click="clearFile();">
         <img src="../../assets/icons/common/delete.svg">
@@ -45,6 +65,7 @@
 
 <script>
 
+import exportedScssVars from 'new-dashboard/styles/variables.scss';
 import Dropzone from 'dropzone';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';
@@ -63,10 +84,12 @@ export default {
   data () {
     return {
       dragged: false,
+      urlToUpload: '',
       fileValidation: {
         valid: false,
         msg: ''
       },
+      extension: this.$route.params.extension,
       uploadObject: this.getUploadObject()
     };
   },
@@ -87,14 +110,20 @@ export default {
     });
   },
   computed: {
+    fileIcon () {
+      return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/file-${this.extension}.svg`;
+    },
     remainingByteQuota () {
       return this.$store.state.user && this.$store.state.user.remaining_byte_quota;
     },
     isFileSelected () {
-      return this.fileValidation.valid && this.uploadObject && this.uploadObject.value && this.uploadObject.value !== '' && this.uploadObject.type === 'file';
+      return this.fileValidation.valid && this.uploadObject && !!this.uploadObject.value && !!this.uploadObject.type;
     }
   },
   methods: {
+    setAltImage (event) {
+      event.target.src = require('../../assets/icons/datasets/local-file.svg');
+    },
     dragsterEnter () {
       this.dragged = true;
     },
@@ -136,6 +165,14 @@ export default {
     humanFileSize (size) {
       return Formatter.humanFileSize(size);
     },
+    uploadUrl () {
+      this.fileValidation = this.validateUrl(this.urlToUpload);
+
+      if (this.fileValidation.valid) {
+        this.uploadObject.type = 'url';
+        this.uploadObject.value = this.urlToUpload;
+      }
+    },
     connectDataset () {
       if (this.isFileSelected) {
         const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
@@ -160,6 +197,25 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+.file-icon {
+  height: 20px;
+}
+
+.Form-rowData {
+  .Form-input {
+    height: 36px;
+  }
+
+  .button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    padding: 0 16px;
+    margin-top: -1px;
+    margin-right: -1px;
+    height: calc(100% + 2px);
+  }
+}
+
 .drag-zone {
   width: 460px;
   height: 204px;
@@ -187,5 +243,19 @@ input[type=file] {
   border-radius: 4px;
   border: 1px solid $blue--500;
   margin: 0 auto;
+}
+
+.file-main {
+  max-width: calc(100% - 24px);
+
+  .url-text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.url-error {
+  text-align: center;
 }
 </style>

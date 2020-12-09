@@ -7,8 +7,8 @@
     <template #default>
       <h3 class="is-caption is-semibold u-mt--32">{{ $t('DataPage.fromYourConnections') }}</h3>
       <h3 class="is-caption is-semibold u-mt--36">{{ $t('DataPage.fromNewConnections') }}</h3>
-      <ConnectorSection class="u-mt--16" :label="$t('DataPage.localFiles')" :connectors="localFiles" carrousel></ConnectorSection>
-      <ConnectorsList></ConnectorsList>
+      <ConnectorSection @connectorSelected="fileSelected" class="u-mt--16" :label="$t('DataPage.localFiles')" :connectors="localFiles" carrousel></ConnectorSection>
+      <ConnectorsList @connectorSelected="connectorSelected"></ConnectorsList>
     </template>
   </Dialog>
 </template>
@@ -75,7 +75,21 @@ export default {
       localFiles: LOCAL_FILES
     };
   },
-  methods: {}
+  methods: {
+    fileSelected (id) {
+      this.navigateToFile(id);
+    },
+    connectorSelected (id) {
+      if (id === 'url') {
+        this.navigateToFile(id);
+        return true;
+      }
+      this.$router.push({name: 'new-dataset-new-connection-connector', params: { connector: id }});
+    },
+    navigateToFile (id) {
+      this.$router.push({name: 'add-local-file', params: { extension: id }});
+    }
+  }
 };
 </script>
 

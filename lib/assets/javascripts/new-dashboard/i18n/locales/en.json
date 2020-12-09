@@ -84,6 +84,14 @@
       },
       "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}' class='is-bold'>Upgrade now</a> to get more datasets."
     },
+    "requestConnector": "Request connector",
+    "requestConnectorSubtitle": "If you can’t find your connector in this list you can request it.",
+    "requestConnectorPlaceholder": "Type your connector",
+    "requestConnectorSubmit": "Request connector",
+    "requestConnectorLoading": "Sending request",
+    "requestConnectorSuccess": "Succesfully requested!",
+    "requestConnectorSuccessSubtitle": "We have received your request, and we will notify you if {connector} is available eventually.",
+    "requestConnectorSuccessButton": "Got it",
     "createDataset": "New Dataset",
     "addDataset": "Add new dataset",
     "addLocalFile": "Add local file",
@@ -102,6 +110,9 @@
     "connectInfo": "To ensure CARTO has access to your PostgreSQL database, please make sure your firewall is configured to allow the connections from these IP addresses:",
     "fromYourConnections": "From your existing connections",
     "fromNewConnections": "From a new connection/file",
+    "connectionsSuccessfull": "Successfully connected!",
+    "addYourData":"Add your data",
+    "url": "Enter a URL",
     "zeroCase": {
       "title": "Upload your first dataset",
       "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
@@ -136,6 +147,7 @@
       }
     },
     "imports": {
+      "connections": "Your Connections",
       "database": {
         "title": "Your %{brand} credentials",
         "label-server": "Server",
@@ -151,7 +163,8 @@
         "label-cluster": "Cluster",
         "placeholder-cluster": "Type your cluster name",
         "label-warehouse": "Warehouse",
-        "placeholder-warehouse": "Type your warehouse name"
+        "placeholder-warehouse": "Type your warehouse name",
+        "successTitle": "Your %{brand} connection is ready"
       }
     },
     "localFiles": "Local files",

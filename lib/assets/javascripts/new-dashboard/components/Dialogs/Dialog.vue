@@ -12,7 +12,7 @@
         <div class="container grid">
           <div class="grid-cell grid-cell--col12 u-flex u-flex__direction--column">
             <div v-if="showSubHeader" class="u-flex u-flex__justify--between u-flex__align--center u-pt--10 sub-header">
-              <button v-if="backText" class="is-small is-semibold is-txtPrimary u-flex u-flex__align--center">
+              <button @click="goBack" v-if="backText" class="is-small is-semibold is-txtPrimary u-flex u-flex__align--center">
                 <img class="u-mr--8" src="../../assets/icons/common/icon-prev-blue.svg">
                 {{backText}}
                 </button>
@@ -45,9 +45,12 @@ export default {
     },
     backText: {
       default: 'Connect'
+    },
+    backRoute: {
+      default: null
     }
   },
-  beforeMount () {
+  mounted () {
     document.body.classList.add('u-overflow-hidden');
     this.backboneViews.mamufasImportView.mamufasView.disable();
   },
@@ -60,9 +63,13 @@ export default {
     closePoup () {
       const mathed = this.$route.matched;
       const route = mathed[mathed.length - 1];
-      // const route = this.$route.matched.slice(-2).shift();
       if (route && route.parent) {
         this.$router.push({name: route.parent.name});
+      }
+    },
+    goBack () {
+      if (this.backRoute) {
+        this.$router.push(this.backRoute);
       }
     }
   }

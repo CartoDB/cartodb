@@ -3,6 +3,7 @@
     :headerTitle="$t('DataPage.addDataset')"
     :headerImage="require('../../../assets/icons/datasets/subsc-add-icon.svg')"
     :showSubHeader="true"
+    :backRoute="{name: backNamedRoute}"
   >
     <template #default>
       <div class="u-flex u-flex__justify--center">
@@ -65,6 +66,11 @@ export default {
       query: '',
       datasetName: ''
     };
+  },
+  props: {
+    backNamedRoute: {
+      default: ''
+    }
   },
   computed: {},
   methods: {}

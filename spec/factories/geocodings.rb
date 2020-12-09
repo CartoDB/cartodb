@@ -10,4 +10,10 @@ FactoryGirl.define do
       kind 'high-resolution'
     end
   end
+
+  factory :carto_geocoding, class: 'Carto::Geocoding' do
+    kind { 'namedplace' }
+    formatter { 'foo' }
+    used_credits { 1 }
+  end
 end

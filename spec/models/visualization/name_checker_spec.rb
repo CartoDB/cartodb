@@ -17,12 +17,12 @@ describe Visualization::NameChecker do
     @vis2 = FactoryGirl.build(:derived_visualization, name: 'Visualization 2', user_id: @user.id).store
     @vis3 = FactoryGirl.build(:derived_visualization, name: 'Visualization 4', user_id: @user2.id).store
 
-    @shared_entity = CartoDB::SharedEntity.new(
-      recipient_id:   @user.id,
-      recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-      entity_id:      @vis3.id,
-      entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-    ).save
+    @shared_entity = Carto::SharedEntity.create(
+      recipient_id: @user.id,
+      recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+      entity_id: @vis3.id,
+      entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+    )
   end
 
   after :all do

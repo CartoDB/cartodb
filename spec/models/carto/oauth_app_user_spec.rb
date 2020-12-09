@@ -75,7 +75,7 @@ module Carto
 
         it 'does not accept users from unknown organizations' do
           @app.oauth_app_organizations.each(&:destroy!)
-          @app.oauth_app_organizations.create!(organization: @carto_organization_2, seats: 1)
+          @app.oauth_app_organizations.create!(organization: @organization_2, seats: 1)
 
           app_user = OauthAppUser.new(user: @carto_org_user_1, oauth_app: @app)
           expect(app_user).not_to(be_valid)

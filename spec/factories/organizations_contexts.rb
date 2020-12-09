@@ -39,16 +39,16 @@ shared_context 'organization with users helper' do
   end
 
   def test_organization
-    organization = Organization.new
-    organization.name = unique_name('org')
-    organization.quota_in_bytes = 1234567890
-    organization.seats = 15
-    organization.viewer_seats = 15
-    organization.builder_enabled = false
-    organization.geocoder_provider = 'heremaps'
-    organization.isolines_provider = 'heremaps'
-    organization.routing_provider = 'heremaps'
-    organization
+    Carto::Organization.create!(
+      name: unique_name('org'),
+      quota_in_bytes: 1_234_567_890,
+      seats: 15,
+      viewer_seats: 15,
+      builder_enabled: false,
+      geocoder_provider: 'heremaps',
+      isolines_provider: 'heremaps',
+      routing_provider: 'heremaps'
+    )
   end
 
   before(:all) do
@@ -65,11 +65,10 @@ shared_context 'organization with users helper' do
 
     @organization.reload
 
-    @carto_organization = Carto::Organization.find(@organization.id)
-    @carto_organization_2 = Carto::Organization.find(@organization_2.id)
-    @carto_org_user_owner = Carto::User.find(@org_user_owner.id)
-    @carto_org_user_1 = Carto::User.find(@org_user_1.id)
-    @carto_org_user_2 = Carto::User.find(@org_user_2.id)
+    @carto_organization = @organization
+    @carto_org_user_owner = @org_user_owner.carto_user
+    @carto_org_user_1 = @org_user_1.carto_user
+    @carto_org_user_2 = @org_user_2.carto_user
   end
 
   before(:each) do
@@ -125,13 +124,12 @@ shared_context 'organization with users helper' do
   end
 
   def share_visualization(visualization, user, access = Carto::Permission::ACCESS_READONLY)
-    shared_entity = CartoDB::SharedEntity.new(
+    Carto::SharedEntity.create(
       recipient_id: user.id,
-      recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+      recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
       entity_id: visualization.id,
-      entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
     )
-    shared_entity.save
 
     owner = visualization.user
     perm_id = visualization.permission.id

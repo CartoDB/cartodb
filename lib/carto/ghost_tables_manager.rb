@@ -11,8 +11,11 @@ module Carto
     MAX_TABLES_FOR_SYNC_RUN = 8
     MAX_USERTABLES_FOR_SYNC_CHECK = 128
 
+    attr_reader :carto_user
+
     def initialize(user_id)
       @user_id = user_id
+      @carto_user = Carto::User.find_by(id: user_id)
     end
 
     def user
@@ -172,7 +175,7 @@ module Carto
                 AND c.relkind = 'r'
                 AND n.nspname = '#{user.database_schema}'
         ),
-        tables_with_columns AS
+        tables_with_columns AS #{force_cte_materialization_keyword}
         (
             SELECT attrelid FROM
             (
@@ -206,6 +209,15 @@ module Carto
       user.in_database(as: :superuser)[sql].all.map do |record|
         Carto::TableFacade.new(record[:reloid], record[:table_name], @user_id)
       end
+    end
+
+    # Forces CTE query to be executed inline to improve performance.
+    # CTEs were materialized by default until PG11, but PG12 changed it.
+    # https://www.depesz.com/2019/02/19/waiting-for-postgresql-12-allow-user-control-of-cte-materialization-and-change-the-default-behavior/
+    def force_cte_materialization_keyword
+      # rubocop:disable Style/NumericLiterals
+      'MATERIALIZED' if carto_user.db_service.pg_server_version > 12_00_00
+      # rubocop:enable Style/NumericLiterals
     end
   end
 

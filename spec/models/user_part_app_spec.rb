@@ -387,4 +387,28 @@ describe User do
       end
     end
   end
+
+  describe '#assign_geocodings_to_organization_owner' do
+    let(:organization) { create_organization_with_users }
+    let(:organization_owner) { organization.owner }
+    let(:user) { organization.users.where.not(id: organization_owner.id).first }
+
+    before { create(:carto_geocoding, user: user) }
+
+    it 'assigns geocodings to organization owner' do
+      expect(organization_owner.geocodings.count).to eq(0)
+
+      user.sequel_user.send(:assign_geocodings_to_organization_owner)
+
+      expect(organization_owner.geocodings.count).to eq(1)
+    end
+
+    context 'when user does not belong to organization' do
+      let(:user) { create(:valid_user).carto_user }
+
+      it 'does nothing' do
+        user.sequel_user.send(:assign_geocodings_to_organization_owner)
+      end
+    end
+  end
 end

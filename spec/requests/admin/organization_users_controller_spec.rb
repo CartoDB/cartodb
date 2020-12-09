@@ -23,7 +23,7 @@ describe Admin::OrganizationUsersController do
   end
 
   describe 'security' do
-    before(:all) do
+    before do
       @org_user_2.org_admin = true
       @org_user_2.save
 
@@ -88,10 +88,6 @@ describe Admin::OrganizationUsersController do
     end
 
     describe '#create' do
-      after(:each) do
-        Carto::User.find_by_username(user_params[:username]).try(:destroy)
-      end
-
       it 'fails if password is the username' do
         login_as(@owner, scope: @owner.username)
 
@@ -115,16 +111,19 @@ describe Admin::OrganizationUsersController do
       end
 
       it 'fails if password is not strong' do
-        @owner.organization.stubs(:strong_passwords_enabled).returns(true)
+        @owner.organization.update!(strong_passwords_enabled: true)
         login_as(@owner, scope: @owner.username)
 
-        post create_organization_user_url(user_domain: @owner.username),
-             user: user_params.merge(password: 'galinaa', password_confirmation: 'galinaa'),
-             password_confirmation: @owner.password
+        post(
+          create_organization_user_url(user_domain: @owner.username),
+          user: user_params.merge(password: 'galinaa', password_confirmation: 'galinaa'),
+          password_confirmation: @owner.password
+        )
 
         last_response.status.should == 200
         last_response.body.should include 'must be at least 8 characters long'
-        @owner.organization.unstub(:strong_passwords_enabled)
+
+        @owner.organization.update!(strong_passwords_enabled: false)
       end
 
       it 'returns 404 for non admin users' do
@@ -297,7 +296,7 @@ describe Admin::OrganizationUsersController do
       end
 
       it 'fails if password is not strong' do
-        Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+        Carto::Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
         login_as(@owner, scope: @owner.username)
 
         put update_organization_user_url(user_domain: @owner.username, id: @admin.username),
@@ -306,7 +305,7 @@ describe Admin::OrganizationUsersController do
 
         last_response.status.should == 422
         last_response.body.should include 'must be at least 8 characters long'
-        Organization.any_instance.unstub(:strong_passwords_enabled)
+        Carto::Organization.any_instance.unstub(:strong_passwords_enabled)
       end
     end
 
@@ -370,7 +369,7 @@ describe Admin::OrganizationUsersController do
     describe '#new' do
       it 'quota defaults to organization default' do
         expected_quota = 123456789
-        Organization.any_instance.stubs(:default_quota_in_bytes).returns(expected_quota)
+        Carto::Organization.any_instance.stubs(:default_quota_in_bytes).returns(expected_quota)
 
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
@@ -380,7 +379,7 @@ describe Admin::OrganizationUsersController do
 
       it 'quota defaults to remaining quota if the assigned default goes overquota' do
         expected_quota = @organization.unassigned_quota
-        Organization.any_instance.stubs(:default_quota_in_bytes).returns(123456789012345)
+        Carto::Organization.any_instance.stubs(:default_quota_in_bytes).returns(123_456_789_012_345)
 
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200

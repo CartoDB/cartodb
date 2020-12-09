@@ -1,6 +1,5 @@
 require_relative '../../../helpers/file_upload'
 require_relative '../../../../services/datasources/lib/datasources'
-require_relative '../../../models/visualization/external_source'
 require_relative '../../../../services/platform-limits/platform_limits'
 require_relative '../../../../services/importer/lib/importer/exceptions'
 require_dependency 'carto/uuidhelper'
@@ -192,7 +191,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   end
 
   def external_source(remote_visualization_id)
-    external_source = Carto::ExternalSource.where(visualization_id: remote_visualization_id).first
+    external_source = Carto::ExternalSource.find_by(visualization_id: remote_visualization_id)
     unless remote_visualization_id.present? && external_source.importable_by?(current_user)
       raise CartoDB::Datasources::AuthError.new('Illegal external load')
     end

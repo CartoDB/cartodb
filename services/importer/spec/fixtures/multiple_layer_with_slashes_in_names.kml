@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+  <Document>
+    <name>This is a layer with slashes - 01/01/2020 - 01/02/2020</name>
+    <LookAt id="density.png">
+      <longitude>-67.5</longitude>
+      <latitude>16.5</latitude>
+      <altitude>0.00</altitude>
+      <range>1475440</range>
+      <tilt>0.0</tilt>
+      <heading>0.0</heading>
+    </LookAt>
+    <description>Description.</description>
+    <GroundOverlay>
+      <name>density.png</name>
+      <Icon>
+        <href>https://fake-url/density.png</href>
+      </Icon>
+      <LatLonBox id="density.png">
+        <north>23.0</north>
+        <south>10.0</south>
+        <east>-60.0</east>
+        <west>-75.0</west>
+        <rotation>0.00</rotation>
+      </LatLonBox>
+    </GroundOverlay>
+    <Document>
+      <name>This is another layer with a date with slashes - 01/01/2000</name>
+      <description>Description.</description>
+      <Style id="vector">
+        <LineStyle>
+          <color>ffffffff</color>
+          <width>2.00</width>
+        </LineStyle>
+      </Style>
+      <Placemark id="p0">
+        <name>10.0284N, 61.92W</name>
+        <description>
+          Speed: 24.5317 cm/s
+          <br />
+          N/S (positive N, negative S):
+          <br />
+          6.3219 cm/s
+          <br />
+          E/W (positive E, negative W):
+          <br />
+          -23.7031 cm/s
+        </description>
+        <visibility>1</visibility>
+        <styleUrl>#vector</styleUrl>
+        <LineString id="pl1_1">
+          <extrude>0</extrude>
+          <altitudeMode>relativeToGround</altitudeMode>
+          <tessellate>1</tessellate>
+          <coordinates>-61.92004,10.0284,2
+        -62.15707083,10.091618765,2
+        -62.1183664167298,10.0645842375291,2
+        -62.15707083,10.091618765,2
+        -62.1100440699981,10.0957878327488,2</coordinates>
+        </LineString>
+      </Placemark>
+    </Document>
+  </Document>
+</kml>

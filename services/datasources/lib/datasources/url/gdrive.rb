@@ -193,22 +193,25 @@ module CartoDB
               raise DataDownloadError.new(error_msg, DATASOURCE_NAME)
             end
             if file.export_links.present?
-              @drive.export_file(file.id, 'text/csv', download_dest: StringIO.new) do |content, export_err|
+              @drive.http(:get, file.export_links['text/csv'], download_dest: StringIO.new) do |content, export_err|
                 raise export_err if export_err
-                return content
+
+                # NOTE: Reinitializing StringIO due to 'content' is not readable
+                return StringIO.new(content.string)
               end
             else
               @drive.get_file(file.id, download_dest: StringIO.new) do |content, download_err|
                 raise download_err if download_err
+
                 return content
               end
             end
           end
-        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => ex
-          raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
+        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => e
+          raise TokenExpiredOrInvalidError.new("Invalid token: #{e.message}", DATASOURCE_NAME)
         rescue Google::Apis::BatchError, Google::Apis::TransmissionError, Google::Apis::ClientError, \
-               Google::Apis::ServerError => ex
-          raise DataDownloadError.new("downloading file #{id}: #{ex.message}", DATASOURCE_NAME)
+               Google::Apis::ServerError => e
+          raise DataDownloadError.new("downloading file #{id}: #{e.message}", DATASOURCE_NAME)
         end
 
         # @param id string

@@ -1,8 +1,10 @@
 require 'active_record'
+require_dependency 'carto/helpers/data_import_commons'
 
 module Carto
   class DataImport < ActiveRecord::Base
     include Carto::DataImportConstants
+    include Carto::DataImportCommons
 
     # INFO: hack to workaround `ActiveRecord::DangerousAttributeError: logger is defined by ActiveRecord`
     class << self

@@ -44,7 +44,7 @@ module Carto
       private
 
       def load_organization
-        @organization = Organization.find(params[:organization_id])
+        @organization = Carto::Organization.find(params[:organization_id])
       rescue ActiveRecord::RecordNotFound
         raise LoadError.new('Organization not found')
       end

@@ -117,7 +117,7 @@ describe Carto::Api::UserPresenter do
         account_type: 'ENTERPRISE LUMP-SUM'
       })
 
-    organization = ::Organization.new(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5).save
+    organization = Carto::Organization.create(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5)
     user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
     user_org.promote_user_to_admin
     organization.reload
@@ -288,12 +288,7 @@ describe Carto::Api::UserPresenter do
   end
 
   def create_org(org_name, org_quota, org_seats)
-    organization = Organization.new
-    organization.name = org_name
-    organization.quota_in_bytes = org_quota
-    organization.seats = org_seats
-    organization.save!
-    organization
+    Carto::Organization.create!(name: org_name, quota_in_bytes: org_quota, seats: org_seats)
   end
 
 end

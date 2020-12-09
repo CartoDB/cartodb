@@ -16,8 +16,7 @@
     transform-origin: 50% 50%;
     stroke-width: 2;
     stroke-dasharray: 48;
-    stroke-dashoffset: 48;
-    stroke: $checkbox-stroke__color;
+    stroke: $checkbox__border-color;
   }
 
   .checkbox-decorationMedia {
@@ -44,11 +43,10 @@
     cursor: pointer;
 
     &::before {
-      content: ' ';
+      content: '';
       position: absolute;
       width: 100%;
       height: 100%;
-      background-image: url('../assets/icons/common/check-hover.svg');
       background-repeat: no-repeat;
       background-position: center;
     }
@@ -72,28 +70,40 @@
         border: 1px solid $checkbox__border-color--hover;
 
         &::before {
-          content: "";
+          content: '';
           display: block;
           position: absolute;
           top: calc(50% - 12px);
           left: calc(50% - 12px);
           width: 24px;
           height: 24px;
-          animation: radioIn 300ms;
           border-radius: 3px;
           opacity: 1;
-          animation-fill-mode: forwards;
           background: $checkbox__bg-color--selected;
         }
 
         .checkbox-check {
-          animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 300ms forwards;
+          stroke-dashoffset: 0;
+          stroke: $checkbox-stroke__color;
         }
       }
     }
 
     &:focus {
       outline: none;
+      &.is-selected,
+      &:checked {
+        + .checkbox-decoration {
+          &::before {
+            animation: radioIn 300ms;
+            animation-fill-mode: forwards;
+          }
+          .checkbox-check {
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 300ms forwards;
+          }
+        }
+      }
     }
   }
 }

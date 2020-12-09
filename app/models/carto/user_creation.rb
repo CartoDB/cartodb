@@ -204,7 +204,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def log_transition(prefix)
-    self.log.append("#{prefix}: State: #{self.state}")
+    log.append("#{prefix}: State: #{state}")
   end
 
   def initialize_user
@@ -219,10 +219,10 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.enable_account_token = Carto::Common::EncryptionService.make_token if requires_validation_email?
 
     unless organization_id.nil? || @promote_to_organization_owner
-      organization = ::Organization.where(id: organization_id).first
+      organization = Carto::Organization.find_by(id: organization_id)
       raise "Trying to copy organization settings from one without owner" if organization.owner.nil?
       @cartodb_user.organization = organization
-      @cartodb_user.organization.owner.copy_account_features(@cartodb_user)
+      @cartodb_user.organization.owner.sequel_user.copy_account_features(@cartodb_user)
     end
 
     @cartodb_user.quota_in_bytes = quota_in_bytes unless quota_in_bytes.nil?
@@ -276,7 +276,7 @@ class Carto::UserCreation < ActiveRecord::Base
   def promote_user
     return unless @promote_to_organization_owner
 
-    organization = ::Organization.where(id: self.organization_id).first
+    organization = Carto::Organization.find_by(id: organization_id)
     raise "Trying to set organization owner when there's already one" unless organization.owner.nil?
 
     user_organization = CartoDB::UserOrganization.new(organization_id, @cartodb_user.id)
@@ -311,7 +311,7 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def handle_failure(e, mark_as_failure)
-    CartoDB.notify_exception(e, { user_creation: self, mark_as_failure: mark_as_failure })
+    log_error(exception: e, user_creation_id: id, mark_as_failure: mark_as_failure)
     self.log.append("Error on state #{self.state}, mark_as_failure: #{mark_as_failure}. Error: #{e.message}")
     self.log.append(e.backtrace.join("\n"))
 

@@ -1,6 +1,5 @@
 require_relative '../spec_helper'
 require_relative '../../app/models/visualization/collection'
-require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
 require_relative '../factories/visualization_creation_helpers'
 require 'helpers/account_types_helper'
@@ -13,7 +12,7 @@ include CartoDB, StorageHelper, UniqueNamesHelper
 describe 'refactored behaviour' do
   it_behaves_like 'organization models' do
     before(:each) do
-      @the_organization = ::Organization.where(id: @organization.id).first
+      @the_organization = Carto::Organization.find(@organization.id)
     end
 
     def get_twitter_imports_count_by_organization_id(organization_id)
@@ -32,7 +31,7 @@ describe 'refactored behaviour' do
   end
 end
 
-describe Organization do
+describe Carto::Organization do
 
   before(:all) do
     @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -65,7 +64,7 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
+      organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: 'wadus', seats: 5)
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -81,13 +80,13 @@ describe Organization do
       organization.users.count.should eq 2
 
       organization.destroy_cascade
-      Organization.where(id: organization.id).first.should be nil
+      Carto::Organization.find_by(id: organization.id).should be nil
       ::User.where(id: user.id).first.should be nil
       ::User.where(id: owner.id).first.should be nil
     end
 
     it 'Destroys viewer users with shared visualizations' do
-      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 3, viewer_seats: 2).save
+      organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: 'wadus', seats: 3, viewer_seats: 2)
 
       owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -105,9 +104,9 @@ describe Organization do
       user2.viewer = true
       user2.save
 
-      organization.destroy_cascade
+      organization.reload.destroy_cascade
 
-      Organization.where(id: organization.id).first.should be nil
+      Carto::Organization.find_by(id: organization.id).should be nil
       ::User.where(id: user1.id).first.should be nil
       ::User.where(id: user2.id).first.should be nil
       ::User.where(id: owner.id).first.should be nil
@@ -116,7 +115,7 @@ describe Organization do
     end
 
     it 'destroys users with unregistered tables' do
-      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
+      organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: 'wadus', seats: 5)
 
       owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -135,16 +134,18 @@ describe Organization do
 
       organization.destroy_cascade
 
-      Organization.where(id: organization.id).first.should be nil
+      Carto::Organization.find_by(id: organization.id).should be nil
       ::User.where(id: user.id).first.should be nil
       ::User.where(id: owner.id).first.should be nil
     end
 
     it 'destroys its groups through the extension' do
+      organization = create(:organization_with_users)
+      create(:carto_group, organization: Carto::Organization.find(organization.id))
+
       Carto::Group.any_instance.expects(:destroy_group_with_extension).once
 
-      FactoryGirl.create(:carto_group, organization: Carto::Organization.find(@organization.id))
-      @organization.destroy
+      organization.destroy
     end
 
     it 'destroys assets' do
@@ -165,16 +166,10 @@ describe Organization do
 
       username = @user.username
 
-      organization = Organization.new
+      organization = Carto::Organization.create(name: org_name, quota_in_bytes: org_quota, seats: org_seats)
+      expect(organization).to be_valid
 
-      organization.name = org_name
-      organization.quota_in_bytes = org_quota
-      organization.seats = org_seats
-      organization.save
-      organization.valid?.should eq true
-      organization.errors.should eq Hash.new
-
-      @user.organization = organization
+      @user.organization_id = organization.id
       @user.save
 
       user = ::User.where(username: username).first
@@ -188,7 +183,7 @@ describe Organization do
       user.organization.quota_in_bytes.should eq org_quota
       user.organization.seats.should eq org_seats
 
-      @user.organization = nil
+      @user.organization_id = nil
       @user.save
       organization.destroy
     end
@@ -199,7 +194,7 @@ describe Organization do
       seats = 1
       viewer_seats = 1
 
-      organization = Organization.new(name: name, quota_in_bytes: quota, seats: seats, viewer_seats: viewer_seats).save
+      organization = Carto::Organization.create(name: name, quota_in_bytes: quota, seats: seats, viewer_seats: viewer_seats)
 
       user = create_validated_user
       CartoDB::UserOrganization.new(organization.id, user.id).promote_user_to_admin
@@ -208,7 +203,7 @@ describe Organization do
 
       organization.remaining_seats.should eq 0
       organization.remaining_viewer_seats.should eq 1
-      organization.users.should include(user)
+      organization.users.should include(user.carto_user)
 
       viewer = create_validated_user(organization: organization, viewer: true)
 
@@ -218,26 +213,20 @@ describe Organization do
 
       organization.remaining_seats.should eq 0
       organization.remaining_viewer_seats.should eq 0
-      organization.users.should include(viewer)
+      organization.users.should include(viewer.carto_user)
 
       builder = create_validated_user(organization: organization, viewer: false)
       organization.reload
 
       organization.remaining_seats.should eq 0
       organization.remaining_viewer_seats.should eq 0
-      organization.users.should_not include(builder)
+      organization.users.should_not include(builder.carto_user)
 
       viewer2 = create_validated_user(organization: organization, viewer: true)
-      organization.reload
 
-      organization.remaining_seats.should eq 0
-      organization.remaining_viewer_seats.should eq 0
-      organization.users.should_not include(viewer2)
-
-      organization.seats = 0
-      organization.viewer_seats = 0
-      organization.valid?.should be_false
-      organization.errors.should include :seats, :viewer_seats
+      expect(viewer2).not_to be_valid
+      expect(viewer2.errors[:organization]).to include('not enough viewer seats')
+      expect(organization.reload.users).not_to include(viewer2.carto_user)
 
       organization.destroy_cascade
     end
@@ -264,7 +253,7 @@ describe Organization do
 
     it 'Tests setting a user as the organization owner' do
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
+      organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5)
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -296,7 +285,7 @@ describe Organization do
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
+      organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5)
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -350,16 +339,14 @@ describe Organization do
 
       owner.destroy
 
-      expect {
-        organization.reload
-      }.to raise_error Sequel::Error
+      expect { organization.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
     it 'Tests removing a normal member with analysis tables' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
+      organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5)
       owner = create_test_user('orgowner')
       user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
       user_org.promote_user_to_admin
@@ -418,7 +405,7 @@ describe Organization do
     it 'Tests uniqueness of name' do
       org_name = unique_name('org')
 
-      organization = Organization.new
+      organization = Carto::Organization.new
       organization.name = org_name
       organization.quota_in_bytes = 123
       organization.seats = 1
@@ -431,7 +418,7 @@ describe Organization do
       organization.name = org_name
       organization.save
 
-      organization2 = Organization.new
+      organization2 = Carto::Organization.new
       # Repeated name
       organization2.name = org_name
       organization2.quota_in_bytes = 123
@@ -453,61 +440,33 @@ describe Organization do
   end
 
   it 'should validate password_expiration_in_d' do
-    organization = FactoryGirl.create(:organization)
-    organization.valid?.should be_true
-    organization.password_expiration_in_d.should_not be
+    organization = create(:organization)
+    expect(organization).to be_valid
+    expect(organization.password_expiration_in_d).not_to be_present
 
     # minimum 1 day
-    organization = FactoryGirl.create(:organization, password_expiration_in_d: 1)
+    organization = create(:organization, password_expiration_in_d: 1)
     organization.valid?.should be_true
-    organization.password_expiration_in_d.should eq 1
+    organization.password_expiration_in_d.should eq(1)
 
-    expect {
-      organization = FactoryGirl.create(:organization, password_expiration_in_d: 0)
-    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+    organization = create(:organization, password_expiration_in_d: 0)
+    expect(organization).not_to be_valid
+    expect(organization.errors.keys).to include(:password_expiration_in_d)
 
     # maximum 1 year
-    organization = FactoryGirl.create(:organization, password_expiration_in_d: 365)
-    organization.valid?.should be_true
-    organization.password_expiration_in_d.should eq 365
+    organization = create(:organization, password_expiration_in_d: 365)
+    expect(organization).to be_valid
 
-    expect {
-      organization = FactoryGirl.create(:organization, password_expiration_in_d: 366)
-    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+    organization = create(:organization, password_expiration_in_d: 366)
+    expect(organization).not_to be_valid
+    expect(organization.errors.keys).to include(:password_expiration_in_d)
 
     # nil or blank means unlimited
-    organization = FactoryGirl.create(:organization, password_expiration_in_d: nil)
-    organization.valid?.should be_true
-    organization.password_expiration_in_d.should_not be
+    organization = create(:organization, password_expiration_in_d: nil)
+    expect(organization).to be_valid
 
-    organization = FactoryGirl.create(:organization, password_expiration_in_d: '')
-    organization.valid?.should be_true
-    organization.password_expiration_in_d.should_not be
-
-    # defaults to global config if no value
-    organization = FactoryGirl.build(:organization, password_expiration_in_d: 1)
-    organization.valid?.should be_true
-    organization.save
-
-    organization = Carto::Organization.find(organization.id)
-    organization.valid?.should be_true
-    organization.password_expiration_in_d.should eq 1
-
-    organization.password_expiration_in_d = nil
-    organization.valid?.should be_true
-    organization.save
-    organization = Carto::Organization.find(organization.id)
-    organization.password_expiration_in_d.should_not be
-
-    # override default config if a value is set
-    organization = FactoryGirl.create(:organization, password_expiration_in_d: 10)
-    organization.valid?.should be_true
-    organization.password_expiration_in_d.should eq 10
-
-    # keep values configured
-    organization = Carto::Organization.find(organization.id)
-    organization.valid?.should be_true
-    organization.password_expiration_in_d.should eq 10
+    organization = create(:organization, password_expiration_in_d: '')
+    expect(organization).to be_valid
   end
 
   it 'should handle redis keys properly' do

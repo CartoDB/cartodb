@@ -60,9 +60,7 @@ module CartoDB
           else
             yml_config = "#{File.dirname(__FILE__)}/../../../../config/database.yml"
           end
-          yml_config = YAML.load_file(yml_config)['test'].each_with_object({}){ |(k,v), h|
-            h[k.to_sym] = v
-          }
+          yml_config = YAML.safe_load(ERB.new(File.read(yml_config)).result)['test'].transform_keys(&:to_sym)
           yml_config[:user] = yml_config.delete :username
           yml_config[:adapter].sub!('postgresql', 'postgres')
           yml_config

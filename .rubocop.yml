@@ -1,7 +1,12 @@
 # Extends defaults from: https://github.com/rubocop-hq/rubocop/blob/master/config/default.yml
 
+require:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+
 AllCops:
-  TargetRubyVersion: 2.5
+  TargetRubyVersion: 2.4
   Exclude:
   - "vendor/**/*"
   - "db/schema.rb"
@@ -80,8 +85,45 @@ Metrics/PerceivedComplexity:
 #  Naming
 ####################
 
+Naming/PredicateName:
+  ForbiddenPrefixes:
+    - is_
+    - have_
+
 Naming/VariableNumber:
   Description: Use the configured style when numbering variables.
+  Enabled: false
+
+####################
+#  RSpec
+####################
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 50
+
+# Incompatible until RSpec 3
+RSpec/ImplicitExpect:
+  Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 10
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 15
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/StubbedMock:
+  Enabled: false
+
+RSpec/SubjectStub:
   Enabled: false
 
 ####################
@@ -110,6 +152,9 @@ Style/FrozenStringLiteralComment:
                   to help transition to frozen string literals by default.
   Enabled: false
 
+Style/GuardClause:
+  Enabled: false
+
 Style/SymbolArray:
   Description: Use %i or %I for arrays of symbols.
   Enabled: false
@@ -117,3 +162,19 @@ Style/SymbolArray:
 Style/WordArray:
   Description: Use %w or %W for arrays of words.
   Enabled: false
+
+
+####################
+#  Rails
+####################
+
+Rails/CreateTableWithTimestamps:
+  Description: Create new tables with created_at and updated_at timestamps
+  Enabled: false
+
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - production
+    - staging
+    - test

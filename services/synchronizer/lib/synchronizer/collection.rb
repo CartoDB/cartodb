@@ -1,6 +1,5 @@
 require 'yaml'
 require 'resque'
-require_relative '../../../../app/models/log'
 require_relative '../../../../app/models/synchronization/member'
 require_relative '../../../../lib/resque/synchronization_jobs'
 require_relative '../../../../services/platform-limits/platform_limits'

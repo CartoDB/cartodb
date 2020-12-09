@@ -367,8 +367,11 @@ module Carto
     end
 
     def current_layer_node_style
-      return nil unless source_id
-      layer_node_styles.where(source_id: source_id).first || LayerNodeStyle.new(layer: self, source_id: source_id)
+      return unless source_id
+
+      layer_node_styles.find_by(source_id: source_id) ||
+        Carto::LayerNodeStyle.new(layer: self, source_id: source_id)
     end
+
   end
 end

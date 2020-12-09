@@ -53,7 +53,7 @@ export default {
     },
     description: {
       type: String,
-      required: true
+      required: false
     },
     contactUrl: {
       type: String,

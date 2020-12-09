@@ -41,9 +41,9 @@ $purple--500: #3D33CC;
 $navy-blue: #162945;
 
 /* Theme */
-$color-primary--soft: $blue--100;
-$color-primary: $blue--500;
-$color-primary--dark: $blue--700;
+$color-primary--soft: $blue--100 !default;
+$color-primary: $blue--500 !default;
+$color-primary--dark: $blue--700 !default;
 
 $color-premium: $yellow--700;
 

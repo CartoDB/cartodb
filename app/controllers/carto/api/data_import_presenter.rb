@@ -117,11 +117,7 @@ module Carto
       end
 
       def get_error_text
-        if @data_import.error_code.nil?
-          nil
-        else
-          @data_import.error_code.blank? ? CartoDB::IMPORTER_ERROR_CODES[99999] : CartoDB::IMPORTER_ERROR_CODES[@data_import.error_code]
-        end
+        @data_import.get_error_text
       end
 
       def display_name

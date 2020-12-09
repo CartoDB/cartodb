@@ -369,7 +369,7 @@ class Admin::PagesController < Admin::AdminController
     @email              = optional.fetch(:email, nil)
     @available_for_hire = optional.fetch(:available_for_hire, false)
     @user               = optional.fetch(:user, nil)
-    @is_org             = model.is_a? Organization
+    @is_org             = model.is_a? Carto::Organization
     @tables_num = (@is_org ? org_datasets_public_builder(model) : user_datasets_public_builder(model)).count
     @maps_count = (@is_org ? org_maps_public_builder(model) : user_maps_public_builder(model)).count
 
@@ -422,7 +422,7 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def get_organization_if_exists(name)
-    Organization.where(name: name).first
+    Carto::Organization.where(name: name).first
   end
 
   def current_page

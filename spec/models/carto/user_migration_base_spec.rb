@@ -60,7 +60,7 @@ describe 'UserMigration' do
       export = create(:user_migration_export, user_id: carto_user.id, export_data: false)
       export.run_export
 
-      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      export.log.collect_entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
       remove_user(carto_user)
@@ -77,7 +77,7 @@ describe 'UserMigration' do
 
       import.run_import
 
-      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+      import.log.collect_entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
       expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
 
       carto_user = Carto::User.find(user_attributes['id'])
@@ -128,7 +128,7 @@ describe 'UserMigration' do
       export = create(:user_migration_export, user_id: carto_user.id, export_data: false)
       export.run_export
 
-      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      export.log.collect_entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
       remove_user(carto_user)
@@ -162,7 +162,7 @@ describe 'UserMigration' do
         export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
         export.run_export
 
-        puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+        export.log.collect_entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
         expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
         database_host = @carto_organization.owner.database_host
@@ -182,7 +182,7 @@ describe 'UserMigration' do
 
         import.run_import
 
-        puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+        import.log.collect_entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
         expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
 
         @carto_organization.users.each do |u|
@@ -195,7 +195,7 @@ describe 'UserMigration' do
         export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
         export.run_export
 
-        puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+        export.log.collect_entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
         expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
         database_host = @carto_organization.owner.database_host
@@ -242,7 +242,7 @@ describe 'UserMigration' do
       export = create(:user_migration_export, user_id: carto_user.id, export_metadata: true)
       export.run_export
 
-      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      export.log.collect_entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
       carto_user.client_application.destroy
@@ -260,7 +260,7 @@ describe 'UserMigration' do
       import.stubs(:assert_user_does_not_exist)
       import.run_import
 
-      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+      import.log.collect_entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
       expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
 
       carto_user = Carto::User.find(user_attributes['id'])
@@ -291,7 +291,7 @@ describe 'UserMigration' do
       export = create(:user_migration_export, user_id: carto_user.id, export_metadata: true)
       export.run_export
 
-      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      export.log.collect_entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
 
       user.destroy_cascade
@@ -308,7 +308,7 @@ describe 'UserMigration' do
       import.stubs(:assert_user_does_not_exist)
       import.run_import
 
-      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+      import.log.collect_entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
       expect(export.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
       imported_user = Carto::User.find(user_attributes['id'])
       imported_user.visualizations.count.should eq 3
@@ -341,7 +341,7 @@ describe 'UserMigration' do
       import.run_import
 
       expect(import.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
-      expect(import.log.entries).to include('DB already exists at DB host')
+      expect(import.log.collect_entries).to include('DB already exists at DB host')
 
       # DB exists, otherwise this would fail
       user.in_database.run("select 1;")
@@ -367,7 +367,9 @@ describe 'UserMigration' do
       export = create(:user_migration_export, user_id: carto_user.id, export_metadata: true)
       export.run_export
 
-      export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
+      export.log.collect_entries.should_not include(
+        "Cannot export if tables aren't in sync with db. Please run ghost tables."
+      )
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
       export.destroy
 
@@ -425,7 +427,7 @@ describe 'UserMigration' do
 
       it "fails" do
         expect(export.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
-        expect(export.log.entries).to include("Can't migrate custom plpython2 functions")
+        expect(export.log.collect_entries).to include("Can't migrate custom plpython2 functions")
 
         teardown_mock_plpython_function(user)
       end
@@ -437,7 +439,7 @@ describe 'UserMigration' do
 
       it "fails" do
         expect(export.state).to eq(Carto::UserMigrationImport::STATE_FAILURE)
-        expect(export.log.entries).to include("Can't migrate custom plpython2 functions")
+        expect(export.log.collect_entries).to include("Can't migrate custom plpython2 functions")
 
         teardown_mock_plpython_function(user)
       end

@@ -38,6 +38,7 @@ class Carto::User < ActiveRecord::Base
   belongs_to :rate_limit
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
   has_one :static_notifications, class_name: Carto::UserNotification, inverse_of: :user
+  has_many :email_notifications, class_name: 'Carto::UserEmailNotification', inverse_of: :user, dependent: :destroy
 
   has_many :self_feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user, class_name: Carto::FeatureFlagsUser
   has_many :self_feature_flags, through: :self_feature_flags_user, source: :feature_flag
@@ -85,6 +86,10 @@ class Carto::User < ActiveRecord::Base
   alias_method :data_imports_dataset, :data_imports
   alias_method :geocodings_dataset, :geocodings
   def carto_user; self end
+
+  def sequel_user
+    persisted? ? ::User[id] : ::User.new(attributes)
+  end
 
   before_create :set_database_host
   before_create :generate_api_key
@@ -289,7 +294,55 @@ class Carto::User < ActiveRecord::Base
     reload.dbdirect_ip
   end
 
+  # @param [Hash] notifications_hash A notification list with this format: {"notif_a" => true, "notif_b" => false}
+  def email_notifications=(notifications_hash)
+    notifications_hash.each do |key, value|
+      Carto::UserEmailNotification
+        .find_or_initialize_by(user_id: id, notification: key)
+        .update!(enabled: value)
+    end
+    reload
+  rescue StandardError => e
+    log_warning(message: 'Tried to create an invalid notification', exception: e, current_user: self)
+    raise e
+  end
+
+  def email_notification_enabled?(notification)
+    # By default, the email notifications are enabled if the row is missing.
+    email_notification = email_notifications.find { |n| n.notification == notification }
+
+    return true if email_notification.nil?
+
+    email_notification.enabled
+  end
+
+  def map_views_count
+    123 # TODO. Mocked value by now.
+  end
+
+  def subscriptions_public_size_in_bytes
+    subscriptions_size_in_bytes(Carto::DoLicensingService::CARTO_DO_PUBLIC_PROJECT)
+  end
+
+  def subscriptions_premium_size_in_bytes
+    subscriptions_size_in_bytes(Carto::DoLicensingService::CARTO_DO_PROJECT)
+  end
+
+  def subscriptions
+    Carto::DoLicensingService.new(username).subscriptions || []
+  end
+
   private
+
+  def subscriptions_size_in_bytes(project)
+    # Note we cannot filter by `project` subscription attribute, we must use the dataset ID.
+    subs_filtered = subscriptions.select { |d| d['dataset_id'].split('.')[0] == project }
+    subs_synced = subs_filtered.select do |d|
+      d['sync_status'] == 'synced' && !d['sync_table'].empty? && Carto::UserTable.exists?(d['sync_table_id'])
+    end
+    total = subs_synced.map { |d| d['estimated_size'] }.reduce(0) { |a, b| a + b }
+    total || 0
+  end
 
   def set_database_host
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']

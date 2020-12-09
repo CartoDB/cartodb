@@ -6,7 +6,10 @@
         'is-outline': isOutline,
         'reverse-colors': reverseColors,
         'extra-border': extraBorder,
-        'is-narrow': narrow
+        'is-narrow': narrow,
+        'is-big': big,
+        'has-arrow': arrow,
+        'disabled': disabled
       },
       color
     ]"
@@ -27,7 +30,10 @@ export default {
     extraBorder: Boolean,
     color: String,
     narrow: Boolean,
-    blank: Boolean
+    blank: Boolean,
+    big: Boolean,
+    arrow: Boolean,
+    disabled: Boolean
   }
 };
 </script>
@@ -51,16 +57,57 @@ export default {
     background-color: $button__bg-color--hover;
   }
 
+  &.red {
+    background-color: $red--600 !important;
+  }
+
+  &.green {
+    background-color: $green--400 !important;
+  }
+
+  &.is-outline {
+    border: 1px solid $button-outline__border-color;
+    background: transparent;
+    color: $button-outline__color;
+
+    &:hover,
+    &:focus {
+      background-color: rgba($black, 0.02);
+    }
+
+    &.navy-blue {
+      border-color: $navy-blue;
+      background-color: transparent;
+      color: $navy-blue;
+    }
+
+    &.noBorder {
+      border: none;
+    }
+  }
+
+  &.extra-border {
+    border-width: 2px;
+  }
+
   &.is-narrow {
     padding: 6px 16px;
   }
 
-  &.red {
-    background-color: $red--600;
+  &.is-big {
+    border-radius: 8px;
+    padding: 16px 24px;
+    font: 600 14px/20px $title__font-family;
   }
 
-  &.green {
-    background-color: $green--400;
+  &.has-arrow:after {
+    content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCAyMCAxMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZD0iTS0yLTdoMjR2MjRILTJ6Ii8+CiAgICA8cGF0aCBmaWxsPSIjRkZGIiBkPSJNMTQuNzA3LjI5M2wtMS40MTQgMS40MTRMMTUuNTg2IDRIMHYyaDE1LjU4NmwtMi4yOTMgMi4yOTMgMS40MTQgMS40MTRMMTkuNDE0IDV6Ii8+CiAgPC9nPgo8L3N2Zz4=);
+    margin-left: 12px;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
   }
 }
 
@@ -69,33 +116,7 @@ export default {
   color: $button__bg-color;
 
   &:hover {
-    background-color: darken($button__color, 2);
-  }
-}
-
-.is-outline {
-  border: 1px solid $button-outline__border-color;
-  padding: 9px 16px;
-  background: transparent;
-  color: $button-outline__color;
-
-  &.extra-border {
-    border-width: 2px;
-  }
-
-  &:hover,
-  &:focus {
-    background-color: rgba($black, 0.02);
-  }
-
-  &.navy-blue {
-    border-color: $navy-blue;
-    background-color: transparent;
-    color: $navy-blue;
-  }
-
-  &.noBorder {
-    border: none;
+    background-color: $button__color;
   }
 }
 

@@ -10,7 +10,6 @@ module CartoDB
       def initialize(attributes={})
         @id         = attributes.fetch(:id, Carto::UUIDHelper.random_uuid)
         @logger     = attributes.fetch(:logger, nil)
-        # Avoid calling new_logger (and thus, requiring CartoDB::Log) if param comes
         @logger     = new_logger if @logger.nil?
         @pg_options = attributes.fetch(:pg_options, {})
         @schema     = attributes.fetch(:schema, DEFAULT_IMPORT_SCHEMA)
@@ -28,7 +27,7 @@ module CartoDB
       end
 
       def new_logger
-        CartoDB::Log.new(type: CartoDB::Log::TYPE_DATA_IMPORT)
+        Carto::Log.new_data_import
       end
 
       def log(message, truncate = true)

@@ -197,8 +197,10 @@ describe 'UserMigration' do
         import.run_import
 
         import.state.should eq 'complete'
-        Organization[@organization.id].users.first.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'st_text'").should eq 0
+        organization_user = @organization.users.first
+        deprecated_acls_count = organization_user.in_database.execute("SELECT COUNT(*) FROM pg_proc WHERE proname = 'st_text'")
 
+        expect(deprecated_acls_count.first['count'].to_i).to be_zero
       end
     end
   end
@@ -313,7 +315,9 @@ describe 'UserMigration' do
 
       export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: true)
       export.run_export
-      export.log.entries.should_not include("Cannot export if tables aren't synched with db. Please run ghost tables.")
+      export.log.collect_entries.should_not include(
+        "Cannot export if tables aren't synched with db. Please run ghost tables."
+      )
       expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
       export.destroy
     end

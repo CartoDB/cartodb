@@ -6,6 +6,7 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class GpkgSplitter
+
       MAX_LAYERS = 50
       ITEM_COUNT_REGEX = 'Feature Count:\s'.freeze
       OGRINFO_BINARY = 'ogrinfo'.freeze
@@ -28,6 +29,7 @@ module CartoDB
       def run
         n_layers = layers_in(source_file).length
         return self if n_layers <= 1
+
         if n_layers > MAX_LAYERS
           raise CartoDB::Importer2::TooManyLayersError.new(
             "File has too many layers (#{n_layers}). Maximum number of layers: #{MAX_LAYERS}"
@@ -39,6 +41,7 @@ module CartoDB
 
       def source_files
         return [source_file] unless multiple_layers?(source_file)
+
         @source_files
       end
 
@@ -70,16 +73,16 @@ module CartoDB
         stdout, stderr, status = Open3.capture3(OGRINFO_BINARY, source_file.fullpath)
         gpkg_layers = stdout.split("\n")
                             .select { |line| line =~ /^\d+/ }
-                            .map { |line| line.gsub(/^\d+: /, "") }
-                            .map { |line| line.gsub(/ \([\w ]+\)$/, "") }
+                            .map { |line| line.gsub(/^\d+: | \(.+\)$/, '') }
 
         gpkg_layers.each do |layer|
-          stdout, stderr, status = Open3.capture3(OGRINFO_BINARY, '-so', source_file.fullpath, layer)
+          stdout, stderr, status =
+            Open3.capture3(OGRINFO_BINARY, '-so', source_file.fullpath, layer)
           number_rows = stdout.split("\n")
                               .select { |line| line =~ /^#{ITEM_COUNT_REGEX}/ }
                               .map { |line| line.gsub(/#{ITEM_COUNT_REGEX}/, '') }.first
           number_rows = number_or_nil(number_rows)
-          layers << layer if !number_rows.nil? && number_rows > 0
+          layers << layer if !number_rows.nil? && number_rows.positive?
         end
         layers
       end
@@ -98,6 +101,7 @@ module CartoDB
 
       attr_reader :temporary_directory
       attr_writer :source_file
+
     end
   end
 end

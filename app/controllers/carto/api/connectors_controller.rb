@@ -159,9 +159,7 @@ module Carto
         if provider_information[:parameters]["connection"].present?
           parameters[:connection] = {}
           provider_information[:parameters]["connection"].each do |key, _value|
-            if request_params[key.to_sym].present?
-              parameters[:connection][key.to_sym] = request_params[key.to_sym]
-            end
+            parameters[:connection][key.to_sym] = request_params[key.to_sym] if request_params[key.to_sym].present?
           end
         end
         parameters
@@ -174,7 +172,11 @@ module Carto
           raise Carto::Connector::InvalidParametersError.new(message: "Provider doesn't match")
         end
         parameters[:provider] = provider_id
-        parameters.merge! request_params.except(:provider_id, :format, :controller, :action)
+        provider_information = Carto::Connector.information(provider_id)
+        provider_information[:parameters].each do |key, _value|
+          parameters[key.to_sym] = request_params[key.to_sym] if request_params[key.to_sym].present?
+        end
+        parameters
       end
 
       def check_availability

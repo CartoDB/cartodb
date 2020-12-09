@@ -94,7 +94,7 @@ describe 'Carto::OverquotaUsersService' do
 
   it "should not return organization users" do
     ::User.any_instance.stubs(:organization_id).returns("organization-id")
-    ::User.any_instance.stubs(:organization).returns(Organization.new)
+    ::User.any_instance.stubs(:organization).returns(Carto::Organization.new)
     overquota.should be_empty
   end
 end

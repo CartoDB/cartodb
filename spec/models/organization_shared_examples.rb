@@ -63,28 +63,37 @@ shared_examples_for "organization models" do
 
   end
 
-  describe "#signup_page_enabled" do
+  describe '#signup_page_enabled' do
     it 'is true if domain whitelist is not empty' do
       organization = get_organization
-      organization.auth_username_password_enabled = true
-      organization.whitelisted_email_domains = ['carto.com']
-      organization.signup_page_enabled.should == true
+      organization.update!(
+        auth_username_password_enabled: true,
+        whitelisted_email_domains: ['carto.com']
+      )
+
+      expect(organization.reload.signup_page_enabled).to be_true
     end
 
     it 'is false if domain whitelist is empty' do
       organization = get_organization
-      organization.auth_username_password_enabled = true
-      organization.whitelisted_email_domains = []
-      organization.signup_page_enabled.should == false
+      organization.update!(
+        auth_username_password_enabled: true,
+        whitelisted_email_domains: []
+      )
+
+      expect(organization.reload.signup_page_enabled).to be_false
     end
 
     it 'is false if no authentication is enabled' do
       organization = get_organization
-      organization.auth_username_password_enabled = false
-      organization.auth_google_enabled = false
-      organization.auth_github_enabled = false
-      organization.whitelisted_email_domains = ['carto.com']
-      organization.signup_page_enabled.should be_false
+      organization.update_columns(
+        auth_username_password_enabled: false,
+        auth_google_enabled: false,
+        auth_github_enabled: false,
+        whitelisted_email_domains: ['carto.com']
+      )
+
+      expect(organization.reload.signup_page_enabled).to be_false
     end
   end
 

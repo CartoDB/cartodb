@@ -94,7 +94,7 @@ WORKING_SPECS_1 = \
 	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
 	spec/services/carto/visualization_backup_service_spec.rb \
-	spec/requests/carto_logger_spec.rb \
+	spec/lib/carto/common/logger_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_2 = \
@@ -165,7 +165,6 @@ WORKING_SPECS_4 = \
 	spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \
 	spec/connectors/importer_spec.rb \
-	spec/connectors/importer_overviews_spec.rb \
 	spec/requests/carto/api/connectors_controller_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
 	$(NULL)
@@ -185,7 +184,6 @@ WORKING_SPECS_5 = \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
 	services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \
 	spec/models/synchronization/member_spec.rb \
-	spec/models/synchronization/member_overviews_spec.rb \
 	spec/models/synchronization/collection_spec.rb \
 	spec/models/organization_spec.rb \
 	spec/models/user_organization_spec.rb \
@@ -198,6 +196,7 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/db/user_schema_spec.rb \
 	spec/lib/carto/db/sql_interface_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
+	spec/lib/carto/subscribers/central_user_commands_spec.rb \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why
@@ -229,7 +228,6 @@ WORKING_SPECS_9 = \
 	spec/models/asset_spec.rb \
 	spec/models/access_token_spec.rb \
 	spec/requests/carto/api/permissions_controller_spec.rb \
-	spec/models/shared_entity_spec.rb \
 	spec/models/carto/shared_entity_spec.rb \
 	spec/requests/signup_controller_spec.rb \
 	spec/requests/account_tokens_controller_spec.rb \
@@ -329,7 +327,12 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
 	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
+	spec/lib/carto/oauth_provider/scopes/all_datasets_scope_spec.rb \
+	spec/lib/carto/oauth_provider/scopes/apis_scope_spec.rb \
+	spec/lib/carto/oauth_provider/scopes/dataservices_scope_spec.rb \
+	spec/lib/carto/oauth_provider/scopes/datasets_scope_spec.rb \
 	spec/lib/carto/oauth_provider/scopes/scopes_spec.rb \
+	spec/lib/carto/oauth_provider/scopes/user_scope_spec.rb \
 	spec/models/carto/legend_spec.rb \
 	spec/requests/carto/api/legends_controller_spec.rb \
 	spec/lib/carto/legend_definition_validator_spec.rb \

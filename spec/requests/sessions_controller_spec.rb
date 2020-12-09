@@ -23,7 +23,7 @@ describe SessionsController do
 
     create_admin_user(admin_user_username, admin_user_email, admin_user_password)
     @admin_user.save.reload
-    ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+    Carto::Organization.any_instance.stubs(:owner).returns(@admin_user)
 
     # INFO: Again, hack to act as if user had organization
     ::User.stubs(:where).with(username: admin_user_username,
@@ -109,7 +109,7 @@ describe SessionsController do
       @admin_user.save.reload
 
       # INFO: Hack to avoid having to destroy and recreate later the organization
-      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+      Carto::Organization.any_instance.stubs(:owner).returns(@admin_user)
 
       normal_user_username = "ldap-user"
       normal_user_password = "foobar"
@@ -173,7 +173,7 @@ describe SessionsController do
         organization: nil
       )
       @admin_user.save.reload
-      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+      Carto::Organization.any_instance.stubs(:owner).returns(@admin_user)
 
       # INFO: Again, hack to act as if user had organization
       ::User.stubs(:where).with(username: admin_user_username,
@@ -217,7 +217,7 @@ describe SessionsController do
 
     before(:all) do
       bypass_named_maps
-      @organization = ::Organization.new
+      @organization = Carto::Organization.new
       @organization.seats = 5
       @organization.quota_in_bytes = 100.megabytes
       @organization.name = "ldap-org"
@@ -469,7 +469,7 @@ describe SessionsController do
         organization: nil
       )
       admin_user.save.reload
-      @organization.owner = admin_user
+      @organization.owner_id = admin_user.id
       @organization.save
 
       admin_user

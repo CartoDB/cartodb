@@ -71,9 +71,7 @@ module Carto
         GROUP BY schema, t;
       }
 
-      @user.in_database(as: :superuser) do |database|
-        database.execute(query)
-      end
+      execute_as_superuser(query)
     end
 
     def all_tables_granted_hashed(role = nil)
@@ -136,9 +134,7 @@ module Carto
             granted_permissions is not null and granted_permissions <> '';
       }
 
-      @user.in_database(as: :superuser) do |database|
-        database.execute(query)
-      end
+      execute_as_superuser(query)
     end
 
     def all_schemas_granted_hashed(role = nil)
@@ -148,6 +144,46 @@ module Carto
       results.map { |row| [row['object_name'], row['granted_permissions'].split(',')] }.to_h
     end
 
+    # Returns all tables the user has access to, including shared ones and excluding internal tables.
+    # The result has this format:
+    # [<OpenStruct table_schema='public', name='table_name', mode='rw'>]
+    def tables_granted(params = {})
+      table = table_grants
+      table.project('*')
+      table.order("#{params[:order]} #{params[:direction]}") if params[:order]
+      table.take(params[:limit]) if params[:limit]
+      table.skip(params[:offset]) if params[:offset]
+
+      @user.in_database.execute(table.to_sql).map { |t| OpenStruct.new(t) }
+    end
+
+    def tables_granted_count
+      @user.in_database
+           .execute(table_grants.project('COUNT(*)').to_sql)
+           .first['count'].to_i
+    end
+
+    def table_grants
+      table = Arel::Table.new('information_schema.role_table_grants')
+      query_sql = table.project(Arel.sql(%{
+        table_schema,
+        table_name AS name,
+        STRING_AGG(
+          CASE privilege_type
+          WHEN 'SELECT' THEN 'r'
+          ELSE 'w'
+          END,
+          '' ORDER BY privilege_type
+        ) AS mode
+      })).where(Arel.sql(%{
+        grantee IN ('#{all_user_roles.join("','")}') AND
+        table_schema NOT IN ('cartodb', 'aggregation') AND
+        grantor != 'postgres' AND
+        privilege_type IN ('SELECT', 'UPDATE')
+      })).group(Arel.sql('table_schema, table_name')).to_sql
+      Arel::SelectManager.new(Arel::Table.engine, Arel.sql("(#{query_sql}) AS q"))
+    end
+
     def exists_role?(rolname)
       query = %{
         SELECT 1
@@ -155,7 +191,7 @@ module Carto
         WHERE  rolname = '#{rolname}'
       }
 
-      result = @user.in_database(as: :superuser).execute(query)
+      result = execute_as_superuser(query)
       result.count > 0
     end
 
@@ -165,11 +201,54 @@ module Carto
     end
 
     def create_oauth_reassign_ownership_event_trigger
-      @user.in_database(as: :superuser).execute('SELECT CDB_EnableOAuthReassignTablesTrigger()')
+      execute_as_superuser('SELECT CDB_EnableOAuthReassignTablesTrigger()')
     end
 
     def drop_oauth_reassign_ownership_event_trigger
-      @user.in_database(as: :superuser).execute('SELECT CDB_DisableOAuthReassignTablesTrigger()')
+      execute_as_superuser('SELECT CDB_DisableOAuthReassignTablesTrigger()')
+    end
+
+    def pg_server_version
+      execute_as_superuser("select current_setting('server_version_num') as version")
+        .first.with_indifferent_access[:version].to_i
+    end
+
+    def sequences_for_tables(tables)
+      return [] unless tables.any?
+
+      tables_conditions = tables.map do |table|
+        "                                                               \
+        (                                                               \
+          QUOTE_IDENT(#{superuser_connection.quote(table[:schema])}) || \
+          '.' ||                                                        \
+          QUOTE_IDENT(#{superuser_connection.quote(table[:table_name])})\
+        )::regclass                                                     \
+        "
+      end.join(',')
+
+      execute_as_superuser(%{
+        SELECT
+          n.nspname, quote_ident(c.relname) as relname
+        FROM
+          pg_depend d
+          JOIN pg_class c ON d.objid = c.oid
+          JOIN pg_namespace n ON c.relnamespace = n.oid
+        WHERE
+          d.refobjsubid > 0 AND
+          d.classid = 'pg_class'::regclass AND
+          c.relkind = 'S'::"char" AND
+          d.refobjid IN (#{tables_conditions})
+      }).map { |r| "\"#{r['nspname']}\".#{r['relname']}" }
+    end
+
+    private
+
+    def superuser_connection
+      @user.in_database(as: :superuser)
+    end
+
+    def execute_as_superuser(query)
+      superuser_connection.execute(query)
     end
   end
 end

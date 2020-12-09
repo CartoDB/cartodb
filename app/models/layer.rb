@@ -35,7 +35,6 @@ class Layer < Sequel::Model
     self.update(:order => order) if self.order.blank?
   end
 
-  one_to_many  :layer_node_styles
   many_to_many :maps,  after_add: proc { |layer, parent| layer.after_added_to_map(parent) }
   many_to_many :users, after_add: proc { |layer, parent| layer.set_default_order(parent) }
   many_to_many :user_tables,
@@ -44,6 +43,10 @@ class Layer < Sequel::Model
                 reciprocal: :layers, class: ::UserTable
 
   plugin  :association_dependencies, :maps => :nullify, :users => :nullify, :user_tables => :nullify
+
+  def layer_node_styles
+    Carto::LayerNodeStyle.where(layer_id: id)
+  end
 
   def public_values
     Hash[ PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
@@ -250,7 +253,8 @@ class Layer < Sequel::Model
   end
 
   def current_layer_node_style
-    return nil unless source_id
-    LayerNodeStyle.find(layer_id: id, source_id: source_id) || LayerNodeStyle.new(layer: self, source_id: source_id)
+    return unless source_id
+
+    Carto::LayerNodeStyle.find_or_initialize_by(layer_id: id, source_id: source_id)
   end
 end

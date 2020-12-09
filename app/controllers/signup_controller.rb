@@ -165,7 +165,7 @@ class SignupController < ApplicationController
     end
 
     if subdomain && subdomain != CartoDB.session_domain
-      @organization = ::Organization.where(name: subdomain).first
+      @organization = Carto::Organization.where(name: subdomain).first
     end
   end
 

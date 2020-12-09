@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cell u-flex__justify--center wrap-reverse--tablet">
+  <div class="grid grid-cell u-flex__justify--center u-mb--16 wrap-reverse--tablet">
     <div class="grid-cell grid-cell--col9 grid-cell--col12--tablet main-column">
       <p
         class="text is-caption is-txtMainTextColor u-mt--32 u-mt--12--tablet"
@@ -83,8 +83,8 @@
               :to="{
                 name: 'catalog-dataset-summary',
                 params: {
-                  datasetId: (dataset.geography_slug || dataset.geography_id),
-                  type: 'geography'
+                  entity_id: (dataset.geography_slug || dataset.geography_id),
+                  entity_type: 'geography'
                 }
               }"
             >
@@ -133,7 +133,7 @@ export default {
       return updateFrequencyName(this.dataset.update_frequency);
     },
     isGeography () {
-      return this.$route.params.type === 'geography';
+      return this.$route.params.entity_type === 'geography';
     },
     geometryType () {
       return geometryTypeName(this.dataset.geom_type);
@@ -142,8 +142,8 @@ export default {
   methods: {
     fetchKeyVariables () {
       this.$store.dispatch('catalog/fetchKeyVariables', {
-        id: this.$route.params.datasetId,
-        type: this.$route.params.type
+        id: this.$route.params.entity_id,
+        type: this.$route.params.entity_type
       });
     }
   },

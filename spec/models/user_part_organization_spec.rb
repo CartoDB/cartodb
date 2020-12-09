@@ -39,13 +39,10 @@ describe User do
 
     it "should not be valid if their organization doesn't have enough disk space" do
       organization = create_org('testorg', 10.megabytes, 1)
-      organization.stubs(:assigned_quota).returns(10.megabytes)
-      user = ::User.new
-      user.organization = organization
-      user.quota_in_bytes = 1.megabyte
-      user.valid?.should be_false
-      user.errors.keys.should include(:quota_in_bytes)
-      organization.destroy
+      user = build(:valid_user, quota_in_bytes: 100.megabytes, organization_id: organization.id)
+
+      expect(user).not_to be_valid
+      expect(user.errors.keys).to include(:quota_in_bytes)
     end
 
     it 'should be valid if their organization has enough disk space' do
@@ -75,9 +72,11 @@ describe User do
       end
 
       it 'cannot be owner and viewer at the same time' do
-        @organization.owner.viewer = true
-        @organization.owner.should_not be_valid
-        @organization.owner.errors.keys.should include(:viewer)
+        owner = @organization.owner.sequel_user
+
+        owner.viewer = true
+        expect(owner).not_to be_valid
+        expect(owner.errors.keys).to include(:viewer)
       end
 
       it 'cannot be admin and viewer at the same time' do
@@ -111,120 +110,89 @@ describe User do
     end
 
     describe 'organization email whitelisting' do
-
-      before(:each) do
-        @organization = create_org('testorg', 10.megabytes, 1)
-      end
-
-      after(:each) do
-        @organization.destroy
-      end
+      let(:organization) { create_org('testorg', 10.megabytes, 1) }
 
       it 'valid_user is valid' do
-        user = FactoryGirl.build(:valid_user)
-        user.valid?.should == true
+        user = build(:valid_user)
+
+        expect(user).to be_valid
       end
 
       it 'user email is valid if organization has not whitelisted domains' do
-        user = FactoryGirl.build(:valid_user, organization: @organization)
-        user.valid?.should == true
+        user = build(:valid_user, organization: organization)
+
+        expect(user).to be_valid
       end
 
       it 'user email is not valid if organization has whitelisted domains and email is not under that domain' do
-        @organization.whitelisted_email_domains = [ 'organization.org' ]
-        user = FactoryGirl.build(:valid_user, organization: @organization)
-        user.valid?.should eq false
-        user.errors[:email].should_not be_nil
+        organization.update!(whitelisted_email_domains: ['organization.org'])
+        user = build(:valid_user, organization: organization).sequel_user
+
+        expect(user).not_to be_valid
+        expect(user.errors[:email]).to be_present
       end
 
       it 'user email is valid if organization has whitelisted domains and email is under that domain' do
-        user = FactoryGirl.build(:valid_user, organization: @organization)
-        @organization.whitelisted_email_domains = [ user.email.split('@')[1] ]
-        user.valid?.should eq true
-        user.errors[:email].should == []
+        user = build(:valid_user, organization: organization)
+        organization.whitelisted_email_domains = [user.email.split('@')[1]]
+
+        expect(user).to be_valid
+        expect(user.errors[:email]).to be_empty
       end
     end
 
     describe 'when updating user quota' do
+      let(:organization) { create_organization_with_users(quota_in_bytes: 70.megabytes) }
+      let(:user) { organization.owner.sequel_user }
+
       it 'should be valid if their organization has enough disk space' do
-        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
-        organization.assigned_quota.should == 70.megabytes
-        user = organization.owner
         user.quota_in_bytes = 1.megabyte
-        user.valid?
-        user.errors.keys.should_not include(:quota_in_bytes)
-        organization.destroy
+
+        expect(user).to be_valid
       end
       it "should not be valid if their organization doesn't have enough disk space" do
-        organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
-        organization.assigned_quota.should == 70.megabytes
-        user = organization.owner
         user.quota_in_bytes = 71.megabytes
-        user.valid?.should be_false
-        user.errors.keys.should include(:quota_in_bytes)
-        organization.destroy
+
+        expect(user).not_to be_valid
+        expect(user.errors.keys).to include(:quota_in_bytes)
       end
     end
 
     describe 'when updating viewer state' do
-      before(:all) do
-        @organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
-      end
+      let(:organization) { create_organization_with_users(quota_in_bytes: 70.megabytes) }
+      let(:user) { organization.users.find { |u| !u.organization_owner? } }
+      let(:sequel_user) { user.sequel_user }
 
-      after(:all) do
-        @organization.destroy
-      end
-
-      before(:each) do
-        @organization.viewer_seats = 10
-        @organization.seats = 10
-        @organization.save
-      end
+      before { organization.update!(viewer_seats: 10, seats: 10) }
 
       it 'should not allow changing to viewer without seats' do
-        @organization.viewer_seats = 0
-        @organization.save
+        organization.update!(viewer_seats: 0)
+        sequel_user.viewer = true
 
-        user = @organization.users.find { |u| !u.organization_owner? }
-        user.reload
-        user.viewer = true
-        expect(user).not_to be_valid
-        expect(user.errors.keys).to include(:organization)
+        expect(sequel_user).not_to be_valid
+        expect(sequel_user.errors.keys).to include(:organization)
       end
 
       it 'should allow changing to viewer with enough seats' do
-        user = @organization.users.find { |u| !u.organization_owner? }
-        user.reload
-        user.viewer = true
-        expect(user).to be_valid
-        expect(user.errors.keys).not_to include(:organization)
+        sequel_user.viewer = true
+
+        expect(sequel_user).to be_valid
       end
 
       it 'should not allow changing to builder without seats' do
-        user = @organization.users.find { |u| !u.organization_owner? }
-        user.reload
-        user.viewer = true
-        user.save
+        user.update!(viewer: true)
+        organization.update!(seats: 1)
+        sequel_user.viewer = false
 
-        @organization.seats = 1
-        @organization.save
-
-        user.reload
-        user.viewer = false
-        expect(user).not_to be_valid
-        expect(user.errors.keys).to include(:organization)
+        expect(sequel_user).not_to be_valid
+        expect(sequel_user.errors.keys).to include(:organization)
       end
 
       it 'should allow changing to builder with seats' do
-        user = @organization.users.find { |u| !u.organization_owner? }
-        user.reload
-        user.viewer = true
-        user.save
+        user.update!(viewer: true)
+        sequel_user.viewer = false
 
-        user.reload
-        user.viewer = false
-        expect(user).to be_valid
-        expect(user.errors.keys).not_to include(:organization)
+        expect(sequel_user).to be_valid
       end
     end
 

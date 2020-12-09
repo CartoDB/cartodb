@@ -46,8 +46,10 @@ This is a list of available tasks to run:
 | `npm run dev`                  | Runs webpack for Builder and Dashboard
 | `npm run dev:static`           | Runs webpack for static pages
 | `npm run dev:editor`           | Runs Editor for development
+| `npm run dev:do-catalog`       | Runs Data Observatory catalog for development
 | `npm run build`                | Create production builds for Builder and Dashboard
 | `npm run build:static`         | Create production builds for static pages
+| `npm run build:do-catalog`     | Create production builds for Data Observatory catalog
 | `npm run carto-node`           | Create production builds for `carto-node`
 | `npm run test`                 | Run all test suites
 | `npm run test:builder`         | Run and watches builder test suites

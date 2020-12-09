@@ -15,7 +15,7 @@ module CartoDB
           viewed_user = ::User.where(username: username).first
 
           if viewed_user.nil?
-            org = Organization.where(name: username).first
+            org = Carto::Organization.find_by(name: username)
             unless org.nil?
               return @renderer.organization_content(org)
             end

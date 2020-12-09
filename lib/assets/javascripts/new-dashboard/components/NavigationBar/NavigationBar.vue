@@ -43,22 +43,30 @@
           class="notification-popup"
           :title="$t('FeedbackMessage.title')"
           :message="$t('FeedbackMessage.message')"
-          @click.native.stop.prevent="onFeedbackClicked"/>
+          @click.native.stop.prevent="toggleDropdown"/>
 
         <NotificationPopup
-          v-if="!popupWasShown('popups.directDBConnection') && !twoWeeksSinceRelease && hasDBFFActive"
+          v-if="!popupWasShown('dataObservatory.popupWasShown') && hasDOEnabled"
+          class="notification-popup"
+          :title="$t('DataObservatoryMessage.title')"
+          :message="$t('DataObservatoryMessage.message', { path: this.$router.resolve({ name: 'spatial-data-catalog' }).href })"
+          :messageHasHTML="true"
+          @click.native="markPopupAsRead('dataObservatory.popupWasShown')"/>
+
+        <!-- <NotificationPopup
+          v-if="!popupWasShown('popups.directDBConnection') && hasDBFFActive"
           class="notification-popup"
           title="New Connection Feature"
           :message="`Bring your CARTO data to the tools you already use. You can now connect to your CARTO account from other GIS or BI tools and database clients. <a href='${this.$router.resolve({name: 'connections'}).href}'>Discover it!</a>`"
           :messageHasHTML="true"/>
 
         <NotificationPopup
-          v-if="!popupWasShown('popups.snowflakeRedshiftConnectors') && !twoWeeksSinceRelease && hasCCFFActive"
+          v-if="!popupWasShown('popups.snowflakeRedshiftConnectors') && hasCCFFActive"
           class="notification-popup"
           title="New database connectors"
           :message="`You can now import data from Snowflake and Amazon Redshift.<br>Please request access to the beta.<br><a href='${this.$router.resolve({name: 'datasets'}).href}'>Connect a new dataset!</a>`"
           :messageHasHTML="true"
-          @click.native="markPopupAsRead('popups.snowflakeRedshiftConnectors')"/>
+          @click.native="markPopupAsRead('popups.snowflakeRedshiftConnectors')"/> -->
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/close.svg" />
@@ -68,12 +76,11 @@
 </template>
 
 <script>
-import isAfter from 'date-fns/is_after';
 import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
 import NotificationPopup from '../Popups/NotificationPopup';
 import storageAvailable from 'new-dashboard/utils/is-storage-available';
-import { hasFeatureEnabled } from 'new-dashboard/core/models/user';
+import { hasFeatureEnabled, hasDOEnabled } from 'new-dashboard/core/models/user';
 
 export default {
   name: 'NavigationBar',
@@ -114,6 +121,9 @@ export default {
     hasCCFFActive () {
       return hasFeatureEnabled(this.$props.user, 'carto-connectors');
     },
+    hasDOEnabled () {
+      return hasDOEnabled(this.$props.user);
+    },
     isDashboardBundle () {
       return this.$props.bundleType === 'dashboard';
     },
@@ -122,10 +132,6 @@ export default {
         !this.isFirstTimeInDashboard &&
         !this.hasDropdownOpenedForFirstTime &&
         !this.popupWasShown;
-    },
-    twoWeeksSinceRelease () {
-      // 2020/09/22 + 2w = 2020/10/06
-      return isAfter(new Date(), new Date(2020, 9, 6));
     }
   },
   methods: {
@@ -141,9 +147,6 @@ export default {
     },
     isHomePage () {
       return (this.$route || {}).name === 'home';
-    },
-    onFeedbackClicked () {
-      this.toggleDropdown();
     },
     popupWasShown (type) {
       if (!storageAvailable('localStorage')) {

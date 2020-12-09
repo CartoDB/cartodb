@@ -1,3 +1,5 @@
+require './app/helpers/logger_helper'
+
 module Carto
   class SamlService
 

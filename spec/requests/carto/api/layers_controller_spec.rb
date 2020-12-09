@@ -251,7 +251,7 @@ describe Carto::Api::LayersController do
         @original_layer.layer_node_styles.each(&:destroy)
 
         ['a2', 'a1', 'a0'].each do |node_id|
-          LayerNodeStyle.create(
+          Carto::LayerNodeStyle.create(
             layer_id: @original_layer.id,
             source_id: node_id,
             options: { original_id: node_id },
@@ -663,7 +663,7 @@ describe Carto::Api::LayersController do
         private_tables_enabled: false
       )
 
-      organization = Organization.new
+      organization = Carto::Organization.new
       organization.name = unique_name('org')
       organization.quota_in_bytes = 1234567890
       organization.seats = 5

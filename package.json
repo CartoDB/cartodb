@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.199",
+  "version": "1.0.0-assets.210",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -84,6 +84,7 @@
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
     "@vue/babel-plugin-transform-vue-jsx": "^1.1.2",
+    "@vue/cli-service": "^4.5.8",
     "@vue/test-utils": "^1.0.0-beta.25",
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
@@ -225,14 +226,16 @@
     "update-internal-deps": "rm -rf node_modules && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
-    "build": "NODE_ENV=production webpack --progress --config webpack/v4/webpack.prod.config.js",
+    "build": "NODE_ENV=production webpack --progress --config webpack/v4/webpack.prod.config.js && npm run build:do-catalog",
     "build:dev": "NODE_ENV=development webpack --progress --config webpack/v4/webpack.dev.config.js",
     "build:static": "NODE_ENV=production webpack --progress --config webpack/static-pages/webpack.prod.config.js",
+    "build:do-catalog": "NODE_ENV=production vue-cli-service build --target lib --name do-catalog --formats umd-min --no-clean --inline-vue lib/assets/javascripts/do-catalog/main.js",
     "carto-node": "NODE_ENV=production webpack --progress --config webpack/carto-node/webpack.config.js",
     "dev": "NODE_ENV=development webpack --progress --watch --config webpack/v4/webpack.dev.config.js",
     "dev:editor": "grunt editor",
     "dev:editor:cdb": "grunt editor-cdb",
     "dev:static": "webpack --progress --watch --config webpack/static-pages/webpack.dev.config.js",
+    "dev:do-catalog": "NODE_ENV=development vue-cli-service serve --watch lib/assets/javascripts/do-catalog/main.js",
     "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json"
   }
 }

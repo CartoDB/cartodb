@@ -12,6 +12,8 @@ Rollbar.configure do |config|
   # Valid levels: 'critical', 'error', 'warning', 'info', 'debug', 'ignore'
   # 'ignore' will cause the exception to not be reported at all.
   info_errors = ['error creating usertable']
+
+  # TODO: This approach is currently not working (I suspect the usage of rescue_from StandardError)
   config.exception_level_filters.merge!(
     'ActionController::RoutingError' => 'ignore',
     'Sequel::DatabaseConnectionError' => 'warning',
@@ -19,6 +21,11 @@ Rollbar.configure do |config|
       |error| info_errors.any? { |message| error.to_s.downcase.include?(message) } ? 'info' : 'error'
     end
   )
+
+  config.before_process << proc do |options|
+    raise Rollbar::Ignore if options.is_a?(Hash) &&
+                             options[:message]&.include?('ActionController::RoutingError')
+  end
 end
 
 # TODO: remove this wrapper for legacy logger

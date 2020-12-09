@@ -2,16 +2,75 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+* This release upgrades the CartoDB PostgreSQL extension to `0.37.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+* As part of the release of `0.37.0`, the creation of overviews is removed and will no longer work.
+```
 
 ### Features
-* Fix column sanitization for connector syncs ([15885](https://github.com/CartoDB/cartodb/pull/15885))
-* Load config files as ERB templates to allow reading ENV values ([15881](https://github.com/CartoDB/cartodb/pull/15881))
+- Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 
 ### Bug fixes / enhancements
+- Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
+- Improve the syncronization functions by using `CDB_GetTableQueries`.
+- Bump cartodb-common to v0.4.8
+- Don't send ActionController::RoutingError to Rollbar [#15968](https://github.com/CartoDB/cartodb/pull/15968)
+- Generate a .pid file to control and manage the subscriber rake process [#15970](https://github.com/CartoDB/cartodb/pull/15970)
+- Fix buffering of log traces in subscriber [#15980](https://github.com/CartoDB/cartodb/pull/15980)
+- Wrong param name in organization forms [#15975](https://github.com/CartoDB/cartodb/pull/15975)
+
+4.44.0 (2020-11-20)
+-------------------
+
+### Features
+* Email notifications toggle API endpoint [#15930](https://github.com/CartoDB/cartodb/pull/15930)
+* New Email settings section in Account page to manage notifications [#15933](https://github.com/CartoDB/cartodb/pull/15933)
+* Allow to create regular apikeys for data observatory datasets [#15940](https://github.com/CartoDB/cartodb/pull/15940)
+* Add email_notifications to user decorator [#15949](https://github.com/CartoDB/cartodb/pull/15949)
+
+### Bug fixes / enhancements
+* Fix BigQuery connector not importing 0-bytes-processed datasets [#15916](https://github.com/CartoDB/cartodb/pull/15916)
+* Error importing geopackage files with multiple layers [#15907](https://github.com/CartoDB/cartodb/pull/15907)
+* Add DO notification in dashboard [#15929](https://github.com/CartoDB/cartodb/pull/15929)
+* Data loss on table rename due to GhostTablesManager [#15935](https://github.com/CartoDB/cartodb/pull/15935)
+* Add DO datasets sync size in /me endpoint [#15932](https://github.com/CartoDB/cartodb/pull/15932)
+* Load GoogleMaps library for a map if the owner's query string is available [#15948](https://github.com/CartoDB/cartodb/pull/15948)
+* Log subscribers to STDOUT and fix JSON format [#15957](https://github.com/CartoDB/cartodb/pull/15957)
+
+4.43.0 (2020-11-06)
+-------------------
+
+### Features
+* Fix dryrun connector end-point for org users ([#15918](https://github.com/CartoDB/cartodb/pull/15918))
+* Fix column sanitization for connector syncs ([#15885](https://github.com/CartoDB/cartodb/pull/15885))
+* Load config files as ERB templates to allow reading ENV values ([#15881](https://github.com/CartoDB/cartodb/pull/15881))
+* Add public website DO catalog integration ([#15908](https://github.com/CartoDB/cartodb/pull/15908), [#15911](https://github.com/CartoDB/cartodb/pull/15911), [#15912](https://github.com/CartoDB/cartodb/pull/15912))
+
+### Bug fixes / enhancements
+* Relax rubocop checks to use ruby2.4+
+* Fixed an error handling issue during synchronizations
+* Improve import error messages [#15893](https://github.com/CartoDB/cartodb/pull/15893)
+* Identify multi-line GeoJSON columns correctly on imports [#15891](https://github.com/CartoDB/cartodb/pull/15891)
+* Some experimental code using a message broker
 * Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
 * Migrate `ClientApplication` model to `ActiveRecord` [#15886](https://github.com/CartoDB/cartodb/pull/15886)
 * Avoid delegating special methods in presenters [#15889](https://github.com/CartoDB/cartodb/pull/15889)
+* Fix Dashboard/Data navigation for free users. Update Data preview texts [#15892](https://github.com/CartoDB/cartodb/pull/15892)
+* Force CTE materialization in Ghost Tables query to improve performance [#15895](https://github.com/CartoDB/cartodb/pull/15895)
+* Adapt default Rails mail logs to JSON format [#15894](https://github.com/CartoDB/cartodb/pull/15894)
+* Fix export of Google Sheet files larger than 10MB [#15903](https://github.com/CartoDB/cartodb/pull/15903)
+* Adding `builder_url` to `api/v4/me` endpoint [#15904](https://github.com/CartoDB/cartodb/pull/15904)
+* Fix local tests run by parsing database config with ERB [#15901](https://github.com/CartoDB/cartodb/pull/15901)
+* Migrate `Log` model to `ActiveRecord` [#15896](https://github.com/CartoDB/cartodb/pull/15896)
+* Fix KML importing error when the layers have slashes in their names [#15897](https://github.com/CartoDB/cartodb/pull/15897)
+* Create OAuth scope for reading/writing all datasets [#15884](https://github.com/CartoDB/cartodb/pull/15884)
+* Migrate `Organization` model to `ActiveRecord` [#15884](https://github.com/CartoDB/cartodb/pull/15884)
+* Fix bug reassigning geocodings [#15924](https://github.com/CartoDB/cartodb/pull/15924)
+* Migrate `SharedEntity`, `LayerNodeStyle` and `ExternalSource` to `ActiveRecord` [#15920](https://github.com/CartoDB/cartodb/pull/15920)
+* Fix broken Sequel <> ActiveRecord association [#15928](https://github.com/CartoDB/cartodb/pull/15928)
+* Speedup query to do ApiKey grants [#15927](https://github.com/CartoDB/cartodb/pull/15927)
 
 4.42.0 (2020-09-28)
 -------------------

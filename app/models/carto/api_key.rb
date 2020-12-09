@@ -10,7 +10,7 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
 
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
 
-    max_one_sections = ['database', 'dataservices', 'user']
+    max_one_sections = ['database', 'dataservices', 'user', 'data-observatory']
     max_one_sections.each do |section|
       if value.count { |v| v[:type] == section } > 1
         record.errors[attribute] << "only one #{section} section is allowed"
@@ -172,8 +172,10 @@ module Carto
           FROM \"#{db_role}\"
         }
         db_run(query)
-        sequences_for_table(s, t).each do |seq|
-          db_run("REVOKE ALL ON SEQUENCE #{seq} FROM \"#{db_role}\"")
+
+        tables = [{ schema: s, table_name: t }]
+        user.db_service.sequences_for_tables(tables).each do |sequence|
+          db_run("REVOKE ALL ON SEQUENCE #{sequence} FROM \"#{db_role}\"")
         end
       end
     end
@@ -255,6 +257,10 @@ module Carto
       @user_data ||= process_user_data_grants
     end
 
+    def data_observatory_datasets
+      @data_observatory_datasets ||= process_data_observatory_datasets
+    end
+
     def regenerate_token!
       if master?
         # Send all master key updates through the user model, avoid circular updates
@@ -288,6 +294,10 @@ module Carto
 
     def data_services?
       data_services.present?
+    end
+
+    def data_observatory_datasets?
+      data_observatory_datasets.present?
     end
 
     def valid_name_for_type
@@ -363,13 +373,17 @@ module Carto
     end
 
     def setup_table_permissions
+      tables = []
+
       setup_permissions(table_permissions) do |tp|
         Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
           db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
-          sequences_for_table(schema, table_name).each do |seq|
-            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
-          end
+          tables << { schema: schema, table_name: table_name }
         end
+      end
+
+      user.db_service.sequences_for_tables(tables).each do |sequence|
+        db_run("GRANT USAGE, SELECT ON SEQUENCE #{sequence} TO \"#{db_role}\"")
       end
 
       schemas_from_granted_tables.each { |s| grant_usage_privileges_for_schema(s) }
@@ -453,6 +467,13 @@ module Carto
     def process_dataset_metadata_permissions
       dataset_metadata_grants = grants.find { |v| v[:type] == 'database' }
       dataset_metadata_grants.try(:[], :table_metadata)
+    end
+
+    def process_data_observatory_datasets
+      data_observatory_grants = grants.find { |v| v[:type] == 'data-observatory' }
+      return if data_observatory_grants.blank?
+
+      data_observatory_grants[:datasets]
     end
 
     def check_permissions
@@ -570,26 +591,6 @@ module Carto
       redis_client.del(key)
     end
 
-    def sequences_for_table(schema, table)
-      db_run(%{
-        SELECT
-          n.nspname, c.relname
-        FROM
-          pg_depend d
-          JOIN pg_class c ON d.objid = c.oid
-          JOIN pg_namespace n ON c.relnamespace = n.oid
-        WHERE
-          d.refobjsubid > 0 AND
-          d.classid = 'pg_class'::regclass AND
-          c.relkind = 'S'::"char" AND
-          d.refobjid = (
-            QUOTE_IDENT(#{db_connection.quote(schema)}) ||
-            '.' ||
-            QUOTE_IDENT(#{db_connection.quote(table)})
-          )::regclass;
-      }).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
-    end
-
     def db_run(query, connection = db_connection)
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
@@ -613,6 +614,7 @@ module Carto
     def redis_hash_as_array
       hash = ['user', user.username, 'type', type, 'database_role', db_role, 'database_password', db_password]
       granted_apis.each { |api| hash += ["grants_#{api}", true] }
+      hash += ['data_observatory_datasets', data_observatory_datasets]
       hash
     end
 

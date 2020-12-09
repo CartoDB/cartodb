@@ -52,9 +52,8 @@
               :checked="currentFilter.find(f => f.id === option.id)"
               @change="filterChanged($event, option)"
             />
-            <span data-v-d1b5b660="" class="checkbox-decoration">
+            <span class="checkbox-decoration">
               <svg
-                data-v-d1b5b660=""
                 viewBox="0 0 12 12"
                 svg-inline=""
                 role="presentation"
@@ -63,7 +62,6 @@
                 class="checkbox-decorationMedia"
               >
                 <path
-                  data-v-d1b5b660=""
                   d="M1.65 3.803l2.84 3.169L10.38.717"
                   fill="none"
                   class="checkbox-check"

@@ -74,7 +74,7 @@ module Carto
 
     def signup(api)
       org_name = @organization_name
-      @organization = ::Organization.where(name: org_name).first if org_name.present?
+      @organization = Carto::Organization.find_by(name: org_name) if org_name.present?
       unless @organization.present? && signup_page_enabled?(api)
         return redirect_to CartoDB.url(self, 'login')
       end

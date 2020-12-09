@@ -1,9 +1,9 @@
 <template>
-  <div v-if="!isFetching" class="grid grid-cell u-flex__justify--center">
+  <div v-if="!isFetching" class="grid grid-cell u-flex__justify--center u-mb--32">
     <div class="grid-cell grid-cell--col12 u-mt--28">
       <div class="u-flex u-flex__justify--between title-container">
         <h2 class="title is-caption is-txtMainTextColor">
-          Data sample
+          Data preview
           <transition name="fade">
             <a
               v-if="variables && variables.length > 0"
@@ -15,7 +15,7 @@
         </h2>
         <div class="is-small text txtMainTextColor">
           <span class="source u-flex u-flex__align--center" style="white-space:pre-wrap;" v-if="source"
-            >(*) Sample not available: this preview is for&nbsp;
+            >(*) Data preview not available: this one is for&nbsp;
             <i class="is-semibold is-italic">{{ source }}</i></span
           >
           <span class="grey" v-else-if="numberRows > 0"
@@ -54,14 +54,14 @@
             </tr>
             <tr v-for="n in numberRows" :key="n">
               <td class="is-semibold">{{ n - 1 }}</td>
-              <td v-for="sample of tableSample" :key="sample.column_name">
-                <template v-if="sample.column_name !== 'geom'">
+              <td v-for="preview of tablePreview" :key="preview.column_name">
+                <template v-if="preview.column_name !== 'geom'">
                   <span
                     v-if="
-                      sample.values[n - 1] !== null &&
-                        sample.values[n - 1] !== undefined
+                      preview.values[n - 1] !== null &&
+                        preview.values[n - 1] !== undefined
                     "
-                    >{{ sample.values[n - 1] }}</span
+                    >{{ preview.values[n - 1] }}</span
                   >
                   <span v-else class="is-txtLightGrey is-italic">null</span>
                 </template>
@@ -75,10 +75,7 @@
       </div>
       <NotAvailable
         v-else
-        :title="'Sample is not available'"
-        :description="
-          'This data sample can’t be shown because the real dataset only contains a few rows.'
-        "
+        :title="'Data preview is not available'"
         :contactUrl="getFormURL()"
         :mode="'contact'"
       ></NotAvailable>
@@ -181,9 +178,6 @@ export default {
       variables: state => state.catalog.variables,
       isFetching: state => state.catalog.isFetching
     }),
-    isPublicWebsite () {
-      return !(this.$store.state.user && this.$store.state.user.id);
-    },
     tableKey () {
       if (this.dataset && this.dataset.summary_json) {
         if (this.dataset.summary_json.ordered_glimpses) {
@@ -200,7 +194,7 @@ export default {
       }
       return null;
     },
-    tableSample () {
+    tablePreview () {
       if (this.tableKey && this.dataset.summary_json) {
         const geom_column = { column_name: 'geom', values: Array(10) };
         return [...this.dataset.summary_json[this.tableKey].tail, geom_column];
@@ -208,24 +202,23 @@ export default {
       return [];
     },
     columns () {
-      return this.tableSample ? this.tableSample.map(t => t.column_name) : [];
+      return this.tablePreview ? this.tablePreview.map(t => t.column_name) : [];
     },
     numberRows () {
-      // return this.columns.length ? this.tableSample[this.columns[0]].length : 0;
-      return this.tableSample && this.tableSample.length > 0 ? this.tableSample[0].values.length : 0;
+      return this.tablePreview && this.tablePreview.length > 0 ? this.tablePreview[0].values.length : 0;
     },
     numberColumns () {
       return this.variables ? this.variables.length : this.columns.length;
     },
     isGeography () {
-      return this.$route.params.type === 'geography';
+      return this.$route.params.entity_type === 'geography';
     }
   },
   methods: {
     fetchVariables () {
       this.$store.dispatch('catalog/fetchVariables', {
-        id: this.$route.params.datasetId,
-        type: this.$route.params.type
+        id: this.$route.params.entity_id,
+        type: this.$route.params.entity_type
       });
     },
     findVariableInfo (variableName) {

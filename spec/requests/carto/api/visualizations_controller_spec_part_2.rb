@@ -74,7 +74,8 @@ describe Carto::Api::VisualizationsController do
         private_tables_enabled: false
       )
 
-      organization = test_organization.save
+      organization = test_organization
+      organization.save
 
       user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
       user_org.promote_user_to_admin
@@ -541,7 +542,8 @@ describe Carto::Api::VisualizationsController do
       it 'tests organization users authenticated and unauthenticated calls' do
         bypass_named_maps
 
-        organization = test_organization.save
+        organization = test_organization
+        organization.save
 
         user_2 = create_user(
           username: unique_name('user'),
@@ -1255,13 +1257,14 @@ describe Carto::Api::VisualizationsController do
         @user_1_1 = create_test_user
         @user_1_2 = create_test_user
 
-        organization = test_organization.save
+        organization = test_organization
+        organization.save
 
         user_org = CartoDB::UserOrganization.new(organization.id, @user_1_1.id)
         user_org.promote_user_to_admin
         @user_1_1.reload
 
-        @user_1_2.organization_id = organization.id
+        @user_1_2.organization = organization
         @user_1_2.save.reload
       end
 

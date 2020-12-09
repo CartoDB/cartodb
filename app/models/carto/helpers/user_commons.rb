@@ -8,7 +8,6 @@ require_dependency 'carto/helpers/oauth_services'
 require_dependency 'carto/helpers/password'
 require_dependency 'carto/helpers/password_rate_limit'
 require_dependency 'carto/helpers/urls'
-require_dependency 'carto/helpers/varnish_cache_handler'
 require_dependency 'carto/gcloud_user_settings'
 require_dependency 'carto/helpers/sessions_invalidations'
 
@@ -23,7 +22,6 @@ module Carto::UserCommons
   include Carto::Password
   include Carto::PasswordRateLimit
   include Carto::Urls
-  include Carto::VarnishCacheHandler
   include Carto::SessionsInvalidations
 
   STATE_ACTIVE = 'active'.freeze
@@ -196,6 +194,25 @@ module Carto::UserCommons
 
   def viewer?
     viewer
+  end
+
+  # A viewer can't destroy data, this allows the cleanup. Down to dataset level
+  # to skip model hooks.
+  def ensure_nonviewer
+    if is_a?(Carto::User)
+      update!(viewer: false)
+    elsif viewer
+      this.update(viewer: false)
+      self.viewer = false
+    end
+  end
+
+  def shared_entities
+    Carto::SharedEntity.joins(:visualization).where('visualizations.user_id = ?', id)
+  end
+
+  def has_shared_entities?
+    shared_entities.first.present?
   end
 
   def builder_enabled?
@@ -391,4 +408,32 @@ module Carto::UserCommons
     Carto::ClientApplication.create!(user_id: id)
   end
 
+  def carto_account_type
+    Carto::AccountType.find(account_type)
+  end
+
+  def regenerate_api_key(new_api_key = make_token)
+    invalidate_varnish_cache
+    update api_key: new_api_key
+  end
+
+  def regenerate_all_api_keys
+    regenerate_api_key
+    api_keys.regular.each(&:regenerate_token!)
+  end
+
+  def invalidate_varnish_cache(options = {})
+    options[:regex] ||= '.*'
+    CartoDB::Varnish.new.purge("#{database_name}#{options[:regex]}")
+  end
+
+  def decorate_email_notifications
+    payload = {}
+    Carto::UserEmailNotification::VALID_NOTIFICATIONS.map { |n| payload[n] = true }
+
+    carto_user.email_notifications.each do |notification|
+      payload[notification.notification] = notification.enabled
+    end
+    payload
+  end
 end

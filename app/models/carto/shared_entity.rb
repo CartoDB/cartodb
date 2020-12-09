@@ -1,10 +1,9 @@
 require 'active_record'
-require_relative '../shared_entity'
 
 module Carto
   class SharedEntity < ActiveRecord::Base
-    ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
 
+    ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
     RECIPIENT_TYPE_USER         = 'user'.freeze
     RECIPIENT_TYPE_ORGANIZATION = 'org'.freeze
     RECIPIENT_TYPE_GROUP        = 'group'.freeze
@@ -20,13 +19,18 @@ module Carto
     attr_accessible :entity_id, :recipient_id, :entity_type, :recipient_type
 
     def self.columns
-      super.reject { |c| c.name == "id" }
+      super.reject { |c| c.name == 'id' }
+    end
+
+    def entity
+      @entity ||= CartoDB::Visualization::Member.new(id: entity_id).fetch
     end
 
     private
 
     def supported_type
-      errors.add(:entity_type, 'unsupported type') unless self.entity_type == ENTITY_TYPE_VISUALIZATION
+      errors.add(:entity_type, 'unsupported type') unless entity_type == ENTITY_TYPE_VISUALIZATION
     end
+
   end
 end

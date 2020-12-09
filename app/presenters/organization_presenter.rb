@@ -13,33 +13,64 @@ class OrganizationPresenter < BasePresenter
     params[:extended] ? extended_representation : default_representation
   end
 
+  def to_poro
+    {
+      owner: owner_attributes.merge(email: owner&.email),
+      admins: users.select(&:org_admin).map { |u| { id: u.id } },
+      quota_in_bytes: quota_in_bytes,
+      unassigned_quota: unassigned_quota,
+      geocoding_quota: geocoding_quota,
+      map_view_quota: map_view_quota,
+      twitter_datasource_quota: twitter_datasource_quota,
+      map_view_block_price: map_view_block_price,
+      geocoding_block_price: geocoding_block_price,
+      here_isolines_quota: here_isolines_quota,
+      here_isolines_block_price: here_isolines_block_price,
+      obs_snapshot_quota: obs_snapshot_quota,
+      obs_snapshot_block_price: obs_snapshot_block_price,
+      obs_general_quota: obs_general_quota,
+      obs_general_block_price: obs_general_block_price,
+      mapzen_routing_quota: mapzen_routing_quota,
+      mapzen_routing_block_price: mapzen_routing_block_price,
+      admin_email: admin_email,
+      user_count: users.count
+    }.merge(common_attributes)
+  end
+
   private
 
-  def default_representation
+  def common_attributes
     {
+      id: id,
+      name: name,
       created_at: created_at,
+      updated_at: updated_at,
       description: description,
       discus_shortname: discus_shortname,
       display_name: display_name,
-      id: id,
-      name: name,
-      owner: {
-        id: owner ? owner.id : nil,
-        username: owner ? owner.username : nil,
-        avatar_url: owner ? owner.avatar : nil,
-        groups: owner_groups
-      },
       geocoder_provider: geocoder_provider,
       isolines_provider: isolines_provider,
       routing_provider: routing_provider,
-      seats: seats,
-      twitter_username: twitter_username,
-      location: location,
-      updated_at: updated_at,
+      location: twitter_username,
       website: website,
+      twitter_username: twitter_username,
+      seats: seats,
       avatar_url: avatar_url,
       password_expiration_in_d: password_expiration_in_d
-    }.merge(quotas_information)
+    }
+  end
+
+  def owner_attributes
+    {
+      id: owner&.id,
+      username: owner&.username,
+      avatar_url: owner&.avatar,
+      groups: owner_groups
+    }
+  end
+
+  def default_representation
+    { owner: owner_attributes }.merge(quotas_information).merge(common_attributes)
   end
 
   def extended_representation

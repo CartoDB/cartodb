@@ -32,7 +32,9 @@ module Carto
 
     # Constructor for groups already existing in the database
     def self.new_instance(database_name, name, database_role, display_name = name)
-      organization = Organization.find_by_database_name(database_name)
+      # rubocop:disable Rails/DynamicFindBy
+      organization = Carto::Organization.find_by_database_name(database_name)
+      # rubocop:enable Rails/DynamicFindBy
 
       raise "Organization not found for database #{database_name}" unless organization
 
@@ -151,7 +153,7 @@ module Carto
 
     def destroy_shared_with
       if transaction_include_any_action?([:destroy])
-        Carto::SharedEntity.where(recipient_id: id).each do |se|
+        Carto::SharedEntity.where(recipient_id: id).find_each do |se|
           viz = Carto::Visualization.find(se.entity_id)
           permission = viz.permission
           permission.remove_group_permission(self)

@@ -42,7 +42,6 @@ spec/models/permission_spec.rb
 spec/models/carto/permission_spec.rb
 spec/lib/carto/oauth_provider/scopes/scopes_spec.rb
 spec/models/user_part_plans_and_services_spec.rb
-spec/connectors/importer_overviews_spec.rb
 spec/requests/carto/oauth_provider_controller_spec.rb
 spec/requests/sessions_spec.rb
 spec/models/user_organization_spec.rb
@@ -113,7 +112,6 @@ spec/requests/carto/api/maps_controller_spec.rb
 spec/requests/carto/api/layer_presenter_spec.rb
 spec/requests/carto/api/layer_presenter_spec.rb
 spec/requests/api/visualizations_spec.rb
-spec/models/synchronization/member_overviews_spec.rb
 spec/models/layer_spec.rb
 services/importer/spec/unit/downloader_spec.rb
 spec/requests/carto/api/organization_assets_controller_spec.rb
@@ -225,7 +223,6 @@ spec/requests/carto/api/data_import_presenter_spec.rb
 spec/queries/carto/visualization_query_searcher_spec.rb
 spec/models/synchronization/synchronization_oauth_spec.rb
 spec/models/synchronization/collection_spec.rb
-spec/models/shared_entity_spec.rb
 spec/models/platform-limits/user_concurrent_syncs_amount_spec.rb
 spec/models/platform-limits/user_concurrent_imports_amount_spec.rb
 spec/models/carto/user_service_spec.rb

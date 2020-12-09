@@ -20,7 +20,7 @@ describe SignupController do
       @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
       CartoDB.stubs(:subdomainless_urls?).returns(true)
       CartoDB.stubs(:session_domain).returns('localhost.lan')
-      Organization.stubs(:where).returns([@fake_organization])
+      Carto::Organization.stubs(:where).returns([@fake_organization])
       host! "localhost.lan"
       get signup_subdomainless_url(user_domain: 'organization')
       response.status.should == 200
@@ -30,7 +30,7 @@ describe SignupController do
       @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
       CartoDB.stubs(:subdomainless_urls?).returns(true)
       CartoDB.stubs(:session_domain).returns('localhost.lan')
-      Organization.stubs(:where).returns([@fake_organization])
+      Carto::Organization.stubs(:where).returns([@fake_organization])
       host! "localhost.lan"
       get signup_url
       response.status.should == 404
@@ -45,14 +45,14 @@ describe SignupController do
 
     it 'returns 200 for organizations with signup_page_enabled' do
       @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
-      Organization.stubs(:where).returns([@fake_organization])
+      Carto::Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
     end
 
     it 'returns 404 for organizations without signup_page_enabled' do
       @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: [])
-      Organization.stubs(:where).returns([@fake_organization])
+      Carto::Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 404
     end
@@ -63,7 +63,7 @@ describe SignupController do
                                               auth_google_enabled: false,
                                               auth_github_enabled: false)
       @fake_organization.stubs(:auth_username_password_enabled).returns(false)
-      Organization.stubs(:where).returns([@fake_organization])
+      Carto::Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 404
     end
@@ -72,15 +72,15 @@ describe SignupController do
       @fake_organization = FactoryGirl.create(:organization_with_users, whitelisted_email_domains: [])
       owner = Carto::User.find(@fake_organization.owner.id)
       invitation = Carto::Invitation.create_new(owner, ['wadus@wad.us'], 'Welcome!', false)
-      Organization.stubs(:where).returns([@fake_organization])
+      Carto::Organization.stubs(:where).returns([@fake_organization])
       get signup_url(invitation_token: invitation.token('wadus@wad.us'), email: 'wadus@wad.us')
       response.status.should == 200
     end
 
     it 'returns user error with admin mail if organization has not enough seats' do
-      fake_owner = FactoryGirl.build(:valid_user)
-      @fake_organization = FactoryGirl.create(:organization_whitelist_carto, seats: 0, owner: fake_owner)
-      Organization.stubs(:where).returns([@fake_organization])
+      fake_owner = build(:valid_user).carto_user
+      @fake_organization = create(:organization_whitelist_carto, seats: 0, owner: fake_owner)
+      Carto::Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
       response.body.should include("organization not enough seats")
@@ -159,7 +159,7 @@ describe SignupController do
     end
 
     before(:each) do
-      @organization.whitelisted_email_domains = ['carto.com']      
+      @organization.whitelisted_email_domains = ['carto.com']
       @organization.auth_username_password_enabled = true
       @organization.auth_google_enabled = true
       @organization.strong_passwords_enabled = true

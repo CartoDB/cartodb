@@ -193,7 +193,7 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     it 'returns 410 if password is not strong' do
-      Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+      Carto::Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
       login(@organization.owner)
 
       username = 'manolo'
@@ -202,7 +202,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should eq 410
       last_response.body.include?('must be at least 8 characters long').should be true
-      Organization.any_instance.unstub(:strong_passwords_enabled)
+      Carto::Organization.any_instance.unstub(:strong_passwords_enabled)
     end
 
     it 'correctly creates a user' do
@@ -523,7 +523,7 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     it 'fails to update password if strongs passwords enabled' do
-      Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+      Carto::Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
       login(@organization.owner)
 
       user_to_update = @organization.non_owner_users[0]
@@ -534,7 +534,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should == 410
       last_response.body.should include 'password must be at least 8 characters long'
-      Organization.any_instance.unstub(:strong_passwords_enabled)
+      Carto::Organization.any_instance.unstub(:strong_passwords_enabled)
     end
 
     it 'should update email' do

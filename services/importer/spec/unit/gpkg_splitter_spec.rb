@@ -17,17 +17,16 @@ describe CartoDB::Importer2::GpkgSplitter do
       source_file = CartoDB::Importer2::SourceFile.new(@multiple_layer_filepath)
       splitter    = CartoDB::Importer2::GpkgSplitter.new(source_file, @temporary_directory, @ogr2ogr_config)
       splitter.run
-      splitter.source_files.length.should eq 2
+      splitter.source_files.length.should eq 3
     end
-
   end
 
   describe '#layers_in' do
     it 'returns all layers name in the file' do
       source_file = CartoDB::Importer2::SourceFile.new(@multiple_layer_filepath)
       splitter    = CartoDB::Importer2::GpkgSplitter.new(source_file, @temporary_directory, @ogr2ogr_config)
-      splitter.layers_in(source_file).length.should eq 2
-      splitter.layers_in(source_file).should eq ["pts", "lns"]
+      splitter.layers_in(source_file).length.should eq 3
+      splitter.layers_in(source_file).should eq %w(census2016_spca_tas_ste_short lines points)
     end
   end
 

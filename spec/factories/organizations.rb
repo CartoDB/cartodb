@@ -4,40 +4,37 @@ require 'helpers/unique_names_helper'
 include UniqueNamesHelper
 
 FactoryGirl.define do
-
-  factory :organization do
-    to_create(&:save)
-
+  factory :organization, class: 'Carto::Organization' do
     name { unique_name('organization') }
-    seats 10
-    quota_in_bytes 100.megabytes
-    geocoding_quota 1000
-    here_isolines_quota 1000
-    obs_snapshot_quota 1000
-    obs_general_quota 1000
-    map_view_quota 100000
-    website 'carto.com'
-    description 'Lorem ipsum dolor sit amet'
-    display_name 'Vizzuality Inc'
-    discus_shortname 'cartodb'
-    twitter_username 'cartodb'
-    location 'Madrid'
-    builder_enabled false # Most tests still assume editor
-    geocoder_provider 'heremaps'
-    isolines_provider 'heremaps'
-    routing_provider 'heremaps'
+    seats { 10 }
+    quota_in_bytes { 100.megabytes }
+    geocoding_quota { 1000 }
+    here_isolines_quota { 1000 }
+    obs_snapshot_quota { 1000 }
+    obs_general_quota { 1000 }
+    map_view_quota { 100_000 }
+    website { 'carto.com' }
+    description { 'Lorem ipsum dolor sit amet' }
+    display_name { 'Vizzuality Inc' }
+    discus_shortname { 'cartodb' }
+    twitter_username { 'cartodb' }
+    location { 'Madrid' }
+    builder_enabled { false } # Most tests still assume editor
+    geocoder_provider { 'heremaps' }
+    isolines_provider { 'heremaps' }
+    routing_provider { 'heremaps' }
 
-    factory :organization_whitelist_carto do
-      whitelisted_email_domains ['carto.com']
-      auth_username_password_enabled true
+    factory :organization_whitelist_carto, class: 'Carto::Organization' do
+      whitelisted_email_domains { ['carto.com'] }
+      auth_username_password_enabled { true }
     end
 
-    factory :organization_google_whitelist_empty do
-      whitelisted_email_domains []
-      auth_google_enabled true
+    factory :organization_google_whitelist_empty, class: 'Carto::Organization' do
+      whitelisted_email_domains { [] }
+      auth_google_enabled { true }
     end
 
-    factory :organization_with_users do
+    factory :organization_with_users, class: 'Carto::Organization' do
       after(:create) do |org|
         create_account_type_fg('ORGANIZATION USER')
         owner = FactoryGirl.create(:user)
@@ -52,7 +49,7 @@ FactoryGirl.define do
       end
 
       trait :mfa_enabled do
-        auth_username_password_enabled true
+        auth_username_password_enabled { true }
 
         after :create do |org|
           Carto::Organization.find(org.id).users.each do |user|
@@ -63,7 +60,7 @@ FactoryGirl.define do
       end
     end
 
-    factory :saml_organization do
+    factory :saml_organization, class: 'Carto::Organization' do
       auth_saml_configuration do
         {
           issuer: 'localhost.lan',
@@ -77,24 +74,22 @@ FactoryGirl.define do
       end
     end
 
-    factory :carto_organization, class: Carto::Organization do
-      to_create(&:save!)
-
+    factory :carto_organization, class: 'Carto::Organization' do
       name { unique_name('organization') }
-      seats 10
-      quota_in_bytes 100.megabytes
-      geocoding_quota 1000
-      here_isolines_quota 1000
-      obs_snapshot_quota 1000
-      obs_general_quota 1000
-      map_view_quota 100000
-      website 'carto.com'
-      description 'Lorem ipsum dolor sit amet'
-      display_name 'Vizzuality Inc'
-      discus_shortname 'cartodb'
-      twitter_username 'cartodb'
-      location 'Madrid'
-      builder_enabled false # Most tests still assume editor
+      seats { 10 }
+      quota_in_bytes { 100.megabytes }
+      geocoding_quota { 1000 }
+      here_isolines_quota { 1000 }
+      obs_snapshot_quota { 1000 }
+      obs_general_quota { 1000 }
+      map_view_quota { 100_000 }
+      website { 'carto.com' }
+      description { 'Lorem ipsum dolor sit amet' }
+      display_name { 'Vizzuality Inc' }
+      discus_shortname { 'cartodb' }
+      twitter_username { 'cartodb' }
+      location { 'Madrid' }
+      builder_enabled { false } # Most tests still assume editor
     end
   end
 end

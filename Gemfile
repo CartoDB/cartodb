@@ -53,6 +53,7 @@ group :assets do
   gem "compass",               "1.0.3"
 end
 
+gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.4.8'
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '1.3.1'
@@ -64,10 +65,9 @@ gem 'gibbon',                  '1.1.4'
 gem 'instagram-continued-continued'
 gem 'google-cloud-pubsub', '1.2.0'
 gem 'virtus',                   '1.0.5'
-gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.3.6'
 gem 'email_address',            '~> 0.1.11'
 gem 'redcarpet', '3.3.3'
-gem 'rollbar',               '~>2.11.1'
+gem 'rollbar'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 gem 'net-telnet'
@@ -120,9 +120,10 @@ group :development, :test do
   gem 'rack'
   gem 'rb-readline'
   gem 'rspec-rails', '2.12.0'
-  gem 'rubocop', '~> 0.92'
-  gem 'rubocop-rails'
-  gem 'rubocop-rspec'
+  gem 'rubocop', '~> 0.93', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
   gem 'thin', require: false
   gem 'zeus'
 end

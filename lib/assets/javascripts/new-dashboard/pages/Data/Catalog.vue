@@ -1,6 +1,9 @@
 <template>
-  <section class="catalog-section">
-    <div class="container grid">
+  <section class="catalog-section" :class="{ 'dashboard-page': !publicWebsite }">
+    <div v-if="publicWebsite" class="website-header">
+      <h1 class="grid-cell--col10">{{ $t('DataPage.tabs.catalog') }}</h1>
+    </div>
+    <div v-else class="container grid">
       <div class="full-width">
         <SectionTitle class="grid-cell">
           <template slot="icon">
@@ -12,8 +15,8 @@
         </SectionTitle>
       </div>
     </div>
-    <div class="container grid">
-      <div class="grid-cell grid-cell--col12">
+    <div :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
         <div class="grid u-flex__justify--center">
           <div
             class="u-pr--10 grid-cell--col4 grid-cell--col12--tablet dynamic-filtering"
@@ -100,6 +103,9 @@ import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 
 export default {
   name: 'CatalogPage',
+  props: {
+    publicWebsite: Boolean
+  },
   mixins: [icon_by_environment],
   components: {
     SectionTitle,
@@ -186,9 +192,6 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .catalog-section {
-  min-height: 640px;
-  margin-top: 64px;
-
   &__filter {
     justify-content: space-between;
     height: 168px;
@@ -196,6 +199,26 @@ export default {
     &--dropdown {
       position: relative;
     }
+  }
+}
+
+.dashboard-page {
+  min-height: 640px;
+  margin-top: 64px;
+}
+
+.website-header {
+  display: flex;
+  justify-content: center;
+  background-color: $color-primary;
+  margin-bottom: 32px;
+
+  h1 {
+    color: white;
+    font-size: 36px;
+    font-weight: 600;
+    line-height: 44px;
+    padding: 60px 0px 60px 12px;
   }
 }
 

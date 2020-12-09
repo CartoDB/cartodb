@@ -80,7 +80,7 @@ module CartoDB
       user.mapzen_routing_quota   = attributes[:mapzen_routing_quota] || 1000
       user.mapzen_routing_block_price = attributes[:mapzen_routing_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
-      user.organization          = attributes[:organization] || nil
+      user.organization_id          = attributes[:organization]&.id || nil
       user.viewer                = attributes[:viewer] || false
       user.builder_enabled       = attributes[:builder_enabled] # nil by default, for old tests
       if attributes[:organization_id]

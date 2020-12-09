@@ -15,7 +15,7 @@ jobs:
         shell: bash
         run: |
           # This script will exit if any of these files is found in the head branch.
-          ORM_FILES=$(git grep -l 'class.*Sequel::Model' -- app/models)
+          ORM_FILES=$(git grep -l 'class.*< Sequel::Model\|class DBService' -- app/models)
 
           MODIFIED_FILES=()
           while IFS='$\n' read -r c; do

@@ -230,7 +230,7 @@ class SessionsController < ApplicationController
   end
 
   def create_user(username, organization_id, email, created_via, &config_account_creator_block)
-    @organization = ::Organization.where(id: organization_id).first
+    @organization = Carto::Organization.find(organization_id)
 
     account_creator = CartoDB::UserAccountCreator.new(created_via)
 
@@ -379,7 +379,7 @@ class SessionsController < ApplicationController
       @organization = current_viewer.organization
     else
       subdomain = CartoDB.extract_subdomain(request)
-      @organization = Carto::Organization.where(name: subdomain).first if subdomain
+      @organization = Carto::Organization.find_by(name: subdomain) if subdomain
     end
   end
 

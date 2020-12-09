@@ -108,6 +108,7 @@ module UserMigrationHelper
   end
 
   def drop_user_database(user)
+    user = user.sequel_user
     conn = user.in_database(as: :cluster_admin)
     user.db_service.drop_database_and_user(conn)
     user.db_service.drop_user(conn)

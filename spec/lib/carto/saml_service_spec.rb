@@ -2,17 +2,9 @@ require 'carto/saml_service'
 require 'spec_helper_min'
 
 describe Carto::SamlService do
-  let(:service) do
-    Carto::SamlService.new(@organization)
-  end
-
-  before(:each) do
-    @organization = FactoryGirl.create(:saml_organization)
-  end
-
-  after(:each) do
-    @organization.delete
-  end
+  let!(:organization) { create(:saml_organization) }
+  let(:service) { Carto::SamlService.new(organization) }
+  let(:saml_config) { organization.auth_saml_configuration }
 
   describe 'configuration support' do
     it 'is disabled if there is no configuration or it is empty' do
@@ -28,21 +20,18 @@ describe Carto::SamlService do
     end
 
     it 'email_attribute doesnt return the default value if its defined' do
-      saml_config = @organization.auth_saml_configuration
-      saml_config['email_attribute'] = 'defined_username'
+      saml_config[:email_attribute] = 'defined_username'
       service.send(:email_attribute).should eq 'defined_username'
-      saml_config['email_attribute'] = nil
+      saml_config[:email_attribute] = nil
       service.send(:email_attribute).should eq 'name_id'
     end
   end
 
   describe 'Integration logic' do
-    # This stubs the SAML external integration
     let(:response_mock) { mock }
     let(:saml_response_param_mock) { mock }
-    let(:saml_config) { @organization.auth_saml_configuration }
 
-    before(:each) do
+    before do
       Cartodb.stubs(:config).returns(saml_authentication: saml_config)
       service.stubs(:get_saml_response).returns(response_mock)
       service.stubs(:debug_response)
@@ -63,19 +52,13 @@ describe Carto::SamlService do
       end
 
       it 'returns the user with matching email' do
-        user = create_test_saml_user
+        ::User.any_instance.stubs(:after_create).returns(true)
+        user = create(:carto_user)
         response_mock.stubs(:is_valid?).returns(true)
-        response_mock.stubs(:attributes).returns(saml_config['email_attribute'] => user.email)
+        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => user.email)
 
         service.get_user_email(saml_response_param_mock).should eq user.email
-
-        user.delete
       end
-    end
-
-    def create_test_saml_user
-      ::User.any_instance.stubs(:after_create).returns(true)
-      FactoryGirl.create(:carto_user)
     end
   end
 end

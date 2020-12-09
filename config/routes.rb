@@ -622,6 +622,8 @@ CartoDB::Application.routes.draw do
         get 'subscriptions/:subscription_id/sync' => 'data_observatory#sync_info', as: :api_v4_do_subscription_sync_info, constraints: { subscription_id: /[\w\.\-]+/ }
         post 'subscriptions/:subscription_id/sync' => 'data_observatory#create_sync', as: :api_v4_do_subscription_create_sync, constraints: { subscription_id: /[\w\.\-]+/ }
         delete 'subscriptions/:subscription_id/sync' => 'data_observatory#destroy_sync', as: :api_v4_do_subscription_destroy_sync, constraints: { subscription_id: /[\w\.\-]+/ }
+
+        post 'subscriptions/:dataset_id/sample' => 'data_observatory#create_sample', as: :api_v4_do_subscription_create_sample, constraints: { dataset_id: /[\w\.\-]+/ }
       end
 
       # Federated Tables
@@ -688,6 +690,9 @@ CartoDB::Application.routes.draw do
       end
 
       put 'notifications/:category', to: 'static_notifications#update', as: :api_v3_static_notifications_update
+
+      get 'email_notifications', to: 'email_notifications#show', as: :api_v3_email_notifications_show
+      put 'email_notifications', to: 'email_notifications#update', as: :api_v3_email_notifications_update
 
       resources :organizations, only: [] do
         resources :notifications, only: [:create, :destroy],

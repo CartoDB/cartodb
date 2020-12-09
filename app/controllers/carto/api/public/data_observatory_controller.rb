@@ -93,7 +93,6 @@ module Carto
         end
 
         def regular_license(metadata)
-          DataObservatoryMailer.user_request(@user, metadata[:name], metadata[:provider_name]).deliver_now
           DataObservatoryMailer.carto_request(@user, metadata[:id], metadata[:estimated_delivery_days]).deliver_now
           licensing_service = Carto::DoLicensingService.new(@user.username)
           licensing_service.subscribe(license_info(metadata, 'requested'))
@@ -125,6 +124,11 @@ module Carto
         def destroy_sync
           check_subscription!
           Carto::DoSyncServiceFactory.get_for_user(@user).remove_sync!(params[:subscription_id])
+          head :no_content
+        end
+
+        def create_sample
+           Carto::DoSampleServiceFactory.get_for_user(@user).import_sample!(params[:dataset_id])
           head :no_content
         end
 

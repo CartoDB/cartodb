@@ -60,7 +60,8 @@ shared_examples_for 'vizjson generator' do
         private_tables_enabled: true
       )
 
-      organization = test_organization.save
+      organization = test_organization
+      organization.save
 
       user_org = CartoDB::UserOrganization.new(organization.id, user_1.id)
       user_org.promote_user_to_admin

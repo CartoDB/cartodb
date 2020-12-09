@@ -5,7 +5,7 @@ module CartoDB
     include UniqueNamesHelper
 
     def new_organization(attributes = {})
-      organization = Organization.new
+      organization = Carto::Organization.new
 
       organization.name =             attributes[:name] || unique_name('organization')
       organization.seats =            attributes[:seats] || 10

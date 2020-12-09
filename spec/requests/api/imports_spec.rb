@@ -167,7 +167,7 @@ describe "Imports API" do
     last_import.tables_created_count.should be_nil
     last_import.state.should be == 'failure'
     last_import.error_code.should be == 8002
-    last_import.log.entries.should include('Results would set overquota')
+    last_import.log.collect_entries.should include('Results would set overquota')
     @user.reload.tables.count.should == 0
   end
 

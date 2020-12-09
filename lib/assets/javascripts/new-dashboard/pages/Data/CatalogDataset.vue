@@ -1,19 +1,19 @@
 <template>
-  <Page class="page--data">
-    <SecondaryNavigation>
-      <a
-        class="catalogDetail__back title is-small"
+  <Page class="page--data" :class="{ 'website-page': publicWebsite }">
+    <SecondaryNavigation v-if="!publicWebsite">
+      <router-link
+        class="catalogDetail__catalog title is-small"
         :class="{ 'disabled': loading }"
-        href="javascript:history.back()"
+        :to="{ name: 'spatial-data-catalog' }"
       >
-        <img class="catalogDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
-        <span>{{ $t('Catalog.back') }}</span>
-      </a>
+        <img class="catalogDetail__catalog--icon" svg-inline src="../../assets/icons/common/back.svg"/>
+        <span>{{ $t('Catalog.name') }}</span>
+      </router-link>
     </SecondaryNavigation>
 
-    <section class="catalogDetail container grid">
+    <section v-if="loading" class="catalogDetail container grid">
       <div class="grid-cell grid-cell--col12">
-        <div v-if="loading" class="u-flex u-flex__align--center u-flex__direction--column u-mt--120">
+        <div class="u-flex u-flex__align--center u-flex__direction--column u-mt--120">
           <span class="loading u-mr--12">
             <svg viewBox="0 0 38 38">
               <g transform="translate(1 1)" fill="none" fill-rule="evenodd">
@@ -25,18 +25,41 @@
             </svg>
           </span>
           <span class="text is-txtSoftGrey is-caption u-mt--12">
-            Loading {{ type }} details…
+            Loading {{ entity_type }} details...
           </span>
         </div>
+      </div>
+    </section>
+
+    <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center website-header': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
         <transition name="fade">
-          <div v-if="!loading">
+          <div>
+            <div v-if="publicWebsite" class="catalogDetail__catalog">
+              <router-link
+                class="title is-small back-link"
+                :class="{ 'disabled': loading }"
+                :to="{ name: 'spatial-data-catalog' }"
+              >
+                {{ $t('Catalog.name') }}
+              </router-link>
+            </div>
             <DatasetActionsBar
               v-if="subscription"
               :subscription="subscription"
               :slug="dataset.slug"
               class="u-mt--12"
             ></DatasetActionsBar>
-            <DatasetHeader></DatasetHeader>
+            <DatasetHeader :publicWebsite="publicWebsite"></DatasetHeader>
+          </div>
+        </transition>
+      </div>
+    </section>
+
+    <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
+        <transition name="fade">
+          <div >
             <div class="grid grid-cell u-flex__justify--center">
               <NavigationTabs class="grid-cell--col12">
                 <router-link :to="{ name: 'catalog-dataset-summary' }" replace>Summary</router-link>
@@ -63,6 +86,9 @@ import GoUpButton from 'new-dashboard/components/Catalog/GoUpButton';
 
 export default {
   name: 'CatalogDataset',
+  props: {
+    publicWebsite: Boolean
+  },
   components: {
     Page,
     SecondaryNavigation,
@@ -80,8 +106,8 @@ export default {
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset,
-      type () {
-        return this.$route.params.type;
+      entity_type () {
+        return this.$route.params.entity_type;
       }
     }),
     subscription () {
@@ -90,7 +116,7 @@ export default {
       );
     },
     isGeography () {
-      return this.$route.params.type === 'geography';
+      return this.$route.params.entity_type === 'geography';
     },
     isSubscriptionSyncing () {
       return this.subscription && this.subscription.sync_status === 'syncing';
@@ -98,20 +124,22 @@ export default {
   },
   methods: {
     initializeDataset () {
-      if (!this.dataset || this.dataset.slug !== this.$route.params.datasetId) {
+      if (!this.dataset || this.dataset.slug !== this.$route.params.entity_id) {
         this.loading = true;
         Promise.all([
           this.$store.dispatch('catalog/fetchSubscriptionsList'),
           this.$store.dispatch('catalog/fetchDataset', {
-            id: this.$route.params.datasetId,
-            type: this.$route.params.type
+            id: this.$route.params.entity_id,
+            type: this.$route.params.entity_type
           })
         ]).then(() => {
           this.loading = false;
-          if (this.$route.params.datasetId !== this.dataset.slug) {
-            this.$router.replace({
-              params: { datasetId: this.dataset.slug }
-            });
+          if (this.dataset.slug) {
+            if (this.$route.params.entity_id !== this.dataset.slug) {
+              this.$router.replace({ params: { entity_id: this.dataset.slug } });
+            }
+          } else {
+            this.$router.replace({ name: 'spatial-data-catalog' });
           }
         });
       }
@@ -129,7 +157,7 @@ export default {
         }
       }
     },
-    type: {
+    entity_type: {
       immediate: true,
       handler () {
         this.initializeDataset();
@@ -137,7 +165,7 @@ export default {
     }
   },
   destroyed () {
-    if (this.dataset.slug !== this.$route.params.datasetId) {
+    if (this.dataset.slug !== this.$route.params.entity_id) {
       this.$store.commit('catalog/resetDataset');
     }
     clearInterval(this.id_interval);
@@ -150,10 +178,16 @@ export default {
 
 .catalogDetail {
 
-  &__back {
+  &__catalog {
     display: flex;
     align-items: center;
     padding: 24px 0;
+
+    a.disabled {
+      cursor: default;
+      pointer-events: none;
+      text-decoration: none;
+    }
 
     &--icon {
       width: 7px;
@@ -207,12 +241,6 @@ export default {
   bottom: 64px;
 }
 
-a.disabled {
-  cursor: default;
-  pointer-events: none;
-  text-decoration: none;
-}
-
 input::-ms-clear {
   display: none;
 }
@@ -221,5 +249,25 @@ input::-ms-clear {
 }
 .fade-enter {
   opacity: 0;
+}
+
+.website-page {
+  padding: 0;
+  border-bottom: none !important;
+
+  .website-header {
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    background-color: $color-primary;
+
+    a {
+      color: white;
+    }
+  }
+}
+
+.back-link:before {
+  content: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMjItN0gtMnYyNGgyNHoiLz48cGF0aCBkPSJNNS4yOTMuMjkzbDEuNDE0IDEuNDE0TDQuNDE0IDRIMjB2Mkg0LjQxNGwyLjI5MyAyLjI5My0xLjQxNCAxLjQxNEwuNTg2IDV6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==);
+  margin-right: 12px;
 }
 </style>

@@ -126,13 +126,12 @@ describe Carto::VisualizationQueryBuilder do
   it 'searches for shared visualizations' do
     table = create_random_table(@user1)
     shared_visualization = table.table_visualization
-    shared_entity = CartoDB::SharedEntity.new(
-      recipient_id:   @user2.id,
-      recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-      entity_id:      shared_visualization.id,
-      entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+    Carto::SharedEntity.create(
+      recipient_id: @user2.id,
+      recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+      entity_id: shared_visualization.id,
+      entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
     )
-    shared_entity.save
     vq = @vqb.with_shared_with_user_id(@user2.id)
     vq.build.all.map(&:id).should include(shared_visualization.id)
   end
@@ -142,13 +141,12 @@ describe Carto::VisualizationQueryBuilder do
     it 'lists all visualizations shared with the org' do
       table = create_random_table(@org_user_1)
       shared_visualization = table.table_visualization
-      org_shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @organization.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      Carto::SharedEntity.create(
+        recipient_id: @organization.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
+        entity_id: shared_visualization.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
-      org_shared_entity.save
 
       vqb = Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@org_user_2.id).build
       expect(vqb.count).to eq 1
@@ -161,13 +159,12 @@ describe Carto::VisualizationQueryBuilder do
 
       table = create_random_table(@org_user_1)
       shared_visualization = table.table_visualization
-      org_shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @group.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      org_shared_entity = Carto::SharedEntity.create(
+        recipient_id: @group.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_GROUP,
+        entity_id: shared_visualization.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
-      org_shared_entity.save
 
       vqb = Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@org_user_2.id).build
       expect(vqb.count).to eq 1
@@ -183,21 +180,19 @@ describe Carto::VisualizationQueryBuilder do
       # interprets the result, it gives less results than expected.
       table = create_random_table(@org_user_1)
       shared_visualization = table.table_visualization
-      user_shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @org_user_2.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      Carto::SharedEntity.create(
+        recipient_id: @org_user_2.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id: shared_visualization.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
-      user_shared_entity.save
 
-      org_shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @organization.id,
-        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      Carto::SharedEntity.create(
+        recipient_id: @organization.id,
+        recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
+        entity_id: shared_visualization.id,
+        entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
-      org_shared_entity.save
 
       vqb = Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@org_user_2.id).build
       expect(vqb.count).to eq 1

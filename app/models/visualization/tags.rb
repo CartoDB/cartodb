@@ -1,5 +1,4 @@
 require_relative './member'
-require_relative '../shared_entity'
 
 module CartoDB
   module Visualization
@@ -98,12 +97,10 @@ module CartoDB
 
         only_shared = only_shared?(params)
 
-        ids = CartoDB::SharedEntity.where({
+        ids = Carto::SharedEntity.where(
           recipient_id: @user.id,
-          entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-        }).all.map { |entity|
-          entity.entity_id
-        }
+          entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        ).pluck(:entity_id)
         return '' if ids.nil? || ids.empty?
 
         if only_shared

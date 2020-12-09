@@ -1,10 +1,13 @@
 require_relative '../spec_helper'
 require 'helpers/rate_limits_helper'
 require 'helpers/user_part_helper'
+require './spec/support/factories/organizations'
 
 describe User do
   include UserPartHelper
   include RateLimitsHelper
+  include CartoDB::Factories
+
   include_context 'user spec configuration'
 
   it "should correctly identify last billing cycle" do
@@ -54,47 +57,18 @@ describe User do
   end
 
   describe '#rate limits' do
-    before :all do
-      @account_type = create_account_type_fg('FREE')
-      @account_type_pro = create_account_type_fg('PRO')
-      @account_type_org = create_account_type_fg('ORGANIZATION USER')
-      @rate_limits_custom = FactoryGirl.create(:rate_limits_custom)
-      @rate_limits = FactoryGirl.create(:rate_limits)
-      @rate_limits_pro = FactoryGirl.create(:rate_limits_pro)
-      @user_rt = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
-      @organization = FactoryGirl.create(:organization)
+    let!(:rate_limits_custom) { create(:rate_limits_custom) }
+    let!(:rate_limits_pro) { create(:rate_limits_pro) }
+    let!(:organization) { create_organization_with_users }
+    let!(:rate_limits) { create(:rate_limits) }
+    let!(:owner) { organization.owner }
+    let(:organization_user) { organization.users.where.not(id: owner.id).first }
+    let!(:user_rt) { create(:valid_user, rate_limit_id: rate_limits.id) }
 
-      owner = FactoryGirl.create(:user, account_type: 'PRO')
-      uo = CartoDB::UserOrganization.new(@organization.id, owner.id)
-      uo.promote_user_to_admin
-      @organization.reload
-      @user_org = FactoryGirl.build(:user, account_type: 'FREE')
-      @user_org.organization = @organization
-      @user_org.enabled = true
-      @user_org.save
-
-      @map_prefix = "limits:rate:store:#{@user_rt.username}:maps:"
-      @sql_prefix = "limits:rate:store:#{@user_rt.username}:sql:"
-    end
-
-    after :all do
-      @user_rt.destroy unless @user_rt.nil?
-      @user_no_ff.destroy unless @user_no_ff.nil?
-      @organization.destroy unless @organization.nil?
-      @account_type.destroy unless @account_type.nil?
-      @account_type_pro.destroy unless @account_type_pro.nil?
-      @account_type_org.destroy unless @account_type_org.nil?
-      @account_type.rate_limit.destroy unless @account_type.nil?
-      @account_type_pro.rate_limit.destroy unless @account_type_pro.nil?
-      @account_type_org.rate_limit.destroy unless @account_type_org.nil?
-      @rate_limits.destroy unless @rate_limits.nil?
-      @rate_limits_custom.destroy unless @rate_limits_custom.nil?
-      @rate_limits_custom2.destroy unless @rate_limits_custom2.nil?
-      @rate_limits_pro.destroy unless @rate_limits_pro.nil?
-    end
+    before { ['FREE', 'ORGANIZATION USER'].each { |account_type| create_account_type_fg(account_type) } }
 
     it 'does create rate limits' do
-      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
+      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits.id)
       map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
       sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
@@ -102,24 +76,24 @@ describe User do
     end
 
     it 'creates rate limits from user account type' do
-      expect_rate_limits_saved_to_redis(@user_rt.username)
+      expect_rate_limits_saved_to_redis(user_rt.username)
     end
 
     it 'updates rate limits from user custom rate_limit' do
-      expect_rate_limits_saved_to_redis(@user_rt.username)
+      expect_rate_limits_saved_to_redis(user_rt.username)
 
-      @user_rt.rate_limit_id = @rate_limits_custom.id
-      @user_rt.save
+      user_rt.rate_limit_id = rate_limits_custom.id
+      user_rt.save
 
-      expect_rate_limits_custom_saved_to_redis(@user_rt.username)
+      expect_rate_limits_custom_saved_to_redis(user_rt.username)
     end
 
     it 'creates rate limits for a org user' do
-      expect_rate_limits_pro_saved_to_redis(@user_org.username)
+      expect_rate_limits_saved_to_redis(organization_user.username)
     end
 
     it 'destroy rate limits' do
-      user2 = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_pro.id)
+      user2 = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits_pro.id)
 
       expect_rate_limits_pro_saved_to_redis(user2.username)
 
@@ -134,11 +108,11 @@ describe User do
 
     it 'updates rate limits when user has no rate limits' do
       user = FactoryGirl.create(:valid_user)
-      user.update_rate_limits(@rate_limits.api_attributes)
+      user.update_rate_limits(rate_limits.api_attributes)
 
       user.reload
       user.rate_limit.should_not be_nil
-      user.rate_limit.api_attributes.should eq @rate_limits.api_attributes
+      user.rate_limit.api_attributes.should eq rate_limits.api_attributes
 
       user.destroy
     end
@@ -154,21 +128,21 @@ describe User do
     end
 
     it 'updates rate limits when user has rate limits' do
-      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
-      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
-      user.update_rate_limits(@rate_limits.api_attributes)
+      rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
+      user = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits_custom2.id)
+      user.update_rate_limits(rate_limits.api_attributes)
       user.reload
       user.rate_limit.should_not be_nil
-      user.rate_limit_id.should eq @rate_limits_custom2.id
-      user.rate_limit.api_attributes.should eq @rate_limits.api_attributes
-      @rate_limits.api_attributes.should eq @rate_limits_custom2.reload.api_attributes
+      user.rate_limit_id.should eq rate_limits_custom2.id
+      user.rate_limit.api_attributes.should eq rate_limits.api_attributes
+      rate_limits.api_attributes.should eq rate_limits_custom2.reload.api_attributes
 
       user.destroy
     end
 
     it 'set rate limits to nil when user has rate limits' do
-      @rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
-      user = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits_custom2.id)
+      rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
+      user = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits_custom2.id)
 
       user.update_rate_limits(nil)
 
@@ -176,7 +150,7 @@ describe User do
       user.rate_limit.should be_nil
 
       expect {
-        Carto::RateLimit.find(@rate_limits_custom2.id)
+        Carto::RateLimit.find(rate_limits_custom2.id)
       }.to raise_error(ActiveRecord::RecordNotFound)
 
       # limits reverted to the ones from the account type

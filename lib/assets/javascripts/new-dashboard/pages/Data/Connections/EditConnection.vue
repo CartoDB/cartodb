@@ -78,7 +78,7 @@ export default {
       this.connectionsSuccessfull = true;
     },
     navigateNext () {
-      const routeNamePrefix = this.$route.name.replace('new-connection-connector', '');
+      const routeNamePrefix = this.$route.name.replace('connector-selected', '');
       this.$router.push({name: `${routeNamePrefix}connection-dataset`, params: {id: 1}});
     }
   }

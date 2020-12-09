@@ -84,10 +84,11 @@ export default {
         this.navigateToFile(id);
         return true;
       }
-      this.$router.push({name: 'new-dataset-new-connection-connector', params: { connector: id }});
+      this.$router.push({name: `${this.$route.name}-connector-selected`, params: { connector: id }});
     },
     navigateToFile (id) {
-      this.$router.push({name: 'add-local-file', params: { extension: id }});
+      const routeNamePrefix = this.$route.name.replace('new-dataset', '');
+      this.$router.push({name: `${routeNamePrefix}add-local-file`, params: { extension: id }});
     }
   }
 };

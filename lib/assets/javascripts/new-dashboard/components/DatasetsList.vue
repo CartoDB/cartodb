@@ -36,9 +36,7 @@
           <CreateButton class="u-mr--8" visualizationType="dataset" :disabled="!canCreateDatasets">
             {{ $t(`DataPage.createDataset`) }}_old
           </CreateButton>
-          <router-link :to="{ name: 'new-dataset' }">
-            <button class="button is-primary">{{ $t(`DataPage.createDataset`) }}</button>
-          </router-link>
+          <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.createDataset`) }}</button>
         </template>
 
         <template v-if="shouldShowLimitsWarning" slot="warning">
@@ -275,6 +273,9 @@ export default {
     },
     onContentChanged (type) {
       this.$emit('contentChanged', type);
+    },
+    createDataset () {
+      this.$emit('newDatesetClicked');
     }
   },
   watch: {

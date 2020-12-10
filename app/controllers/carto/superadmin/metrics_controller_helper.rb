@@ -1,3 +1,4 @@
+require_dependency 'carto/metrics/mapviews_usage_metrics'
 require_dependency 'carto/metrics/usage_metrics_retriever'
 require_dependency 'carto/metrics/twitter_imports_retriever'
 
@@ -8,7 +9,8 @@ module Carto::Superadmin
       CartoDB::IsolinesUsageMetrics,
       CartoDB::ObservatoryGeneralUsageMetrics,
       CartoDB::ObservatorySnapshotUsageMetrics,
-      CartoDB::RoutingUsageMetrics
+      CartoDB::RoutingUsageMetrics,
+      Carto::Metrics::MapviewsUsageMetrics
     ].freeze
 
     USAGE_METRICS_RETRIEVERS = (

@@ -256,6 +256,7 @@ spec/lib/image_metadata_spec.rb
 spec/lib/carto/saml_service_spec.rb
 spec/lib/carto/forms_definition_spec.rb
 spec/lib/carto/file_system/sanitize_spec.rb
+spec/lib/api_calls_spec.rb
 services/table-geocoder/spec/lib/abstract_table_geocoder_spec.rb
 services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb
 services/table-geocoder/spec/internal-geocoder/input_type_resolver_spec.rb

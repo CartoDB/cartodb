@@ -7,7 +7,7 @@
     <template #default>
       <div class="u-flex u-flex__direction--column u-flex__align--center u-mt--32">
         <div class="is-subtitle is-semibold">
-          {{ $t('ConnectorsPage.removeModal.title') }}
+          {{ $t('ConnectorsPage.removeModal.title', { connector }) }}
         </div>
         <div class="is-caption u-mt--16">
           {{ $t('ConnectorsPage.removeModal.subtitle') }}
@@ -28,13 +28,31 @@
 <script>
 
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
+import { IMPORT_OPTIONS } from 'builder/components/modals/add-layer/content/imports/import-options';
+import { mapState } from 'vuex';
 
 export default {
   name: 'DeleteConnection',
   components: {
     Dialog
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      rawConnections: state => state.connectors.connections
+    }),
+    connection () {
+      return this.rawConnections && this.rawConnections.find(conn => conn.id === this.$route.params.id);
+    },
+    connector () {
+      let connectorTitle = '';
+      if (this.connection) {
+        const _connector = Object.values(IMPORT_OPTIONS)
+          .find(({name, options}) => this.connection.connector === name || this.connection.connector === (options && options.service));
+        connectorTitle = _connector ? _connector.title : '';
+      }
+      return connectorTitle;
+    }
+  },
   methods: {
     cancel () {
       this.$refs.dialog.closePoup();

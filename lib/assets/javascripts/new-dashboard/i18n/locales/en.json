@@ -765,7 +765,7 @@
   },
   "ConnectorsPage": {
     "removeModal": {
-      "title": "You are about to delete your PostgreSQL connection",
+      "title": "You are about to delete your {connector} connection",
       "subtitle": "If you have synchronized datasets, you will no longer be able to update them",
       "cancelButton": "Cancel",
       "removeButton": "Ok, remove"

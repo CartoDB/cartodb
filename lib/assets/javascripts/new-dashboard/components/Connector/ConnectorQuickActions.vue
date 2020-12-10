@@ -2,9 +2,7 @@
   <QuickActions
     :actions="actions"
     v-on="getEventListeners()"
-    ref="quickActions"
-    @open="openQuickactions"
-    @close="closeQuickactions" />
+    ref="quickActions" />
 </template>
 
 <script>
@@ -12,7 +10,6 @@ import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 
 export default {
   name: 'ConnectorQuickActions',
-  inject: ['backboneViews'],
   components: {
     QuickActions
   },
@@ -47,18 +44,12 @@ export default {
         }, {}
       );
     },
-    openQuickactions () {
-      this.$emit('open');
-    },
-    closeQuickactions () {
-      this.$emit('close');
-    },
     closeDropdown () {
       this.$refs.quickActions.closeDropdown();
     },
     editConnection () {
-      // DialogActions.editDatasetMetadata.apply(this, [this.connection, this.getActionHandlers()]);
       this.closeDropdown();
+      // DialogActions.editDatasetMetadata.apply(this, [this.connection, this.getActionHandlers()]);
     },
     deleteConnection () {
       this.closeDropdown();

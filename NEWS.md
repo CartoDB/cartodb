@@ -20,6 +20,7 @@ sudo make install
 - Don't send ActionController::RoutingError to Rollbar [#15968](https://github.com/CartoDB/cartodb/pull/15968)
 - Generate a .pid file to control and manage the subscriber rake process [#15970](https://github.com/CartoDB/cartodb/pull/15970)
 - Fix buffering of log traces in subscriber [#15980](https://github.com/CartoDB/cartodb/pull/15980)
+- Wrong param name in organization forms [#15975](https://github.com/CartoDB/cartodb/pull/15975)
 
 4.44.0 (2020-11-20)
 -------------------
@@ -70,6 +71,7 @@ sudo make install
 * Fix bug reassigning geocodings [#15924](https://github.com/CartoDB/cartodb/pull/15924)
 * Migrate `SharedEntity`, `LayerNodeStyle` and `ExternalSource` to `ActiveRecord` [#15920](https://github.com/CartoDB/cartodb/pull/15920)
 * Fix broken Sequel <> ActiveRecord association [#15928](https://github.com/CartoDB/cartodb/pull/15928)
+* Speedup query to do ApiKey grants [#15927](https://github.com/CartoDB/cartodb/pull/15927)
 
 4.42.0 (2020-09-28)
 -------------------

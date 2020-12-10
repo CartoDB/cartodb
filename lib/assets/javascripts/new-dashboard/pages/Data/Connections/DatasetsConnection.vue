@@ -58,14 +58,12 @@
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import CodeBlock from 'new-dashboard/components/code/CodeBlock.vue';
 import FormInput from 'new-dashboard/components/forms/FormInput';
-import Button from 'new-dashboard/components/Button';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 
 export default {
   name: 'DatasetsConnection',
   components: {
-    Button,
     CodeBlock,
     Dialog,
     FormInput,

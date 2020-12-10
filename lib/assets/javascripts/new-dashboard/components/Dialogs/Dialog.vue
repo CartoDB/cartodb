@@ -64,7 +64,7 @@ export default {
       const mathed = this.$route.matched;
       const route = mathed[mathed.length - 1];
       if (route && route.parent) {
-        this.$router.push({name: route.parent.name});
+        this.$router.push({ name: route.parent.name });
       }
     },
     goBack () {

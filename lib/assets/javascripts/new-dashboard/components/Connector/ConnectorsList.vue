@@ -65,7 +65,7 @@ export default {
     },
     cloudConnectors () {
       const connectors = this.connectorsByType('cloud');
-      connectors.push({id: 'url', label: 'URL'});
+      connectors.push({ id: 'url', label: 'URL' });
       return connectors;
     }
   },

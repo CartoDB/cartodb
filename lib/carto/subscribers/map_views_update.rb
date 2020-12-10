@@ -1,4 +1,3 @@
-
 module Carto
   module Subscribers
     class MapViewsUpdate

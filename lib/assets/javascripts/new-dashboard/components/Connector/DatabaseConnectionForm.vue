@@ -100,14 +100,17 @@ export default {
     }
   },
   watch: {
-    connection () {
-      if (this.editing) {
-        this.connectionModel = {
-          id: this.connection.id,
-          name: this.connection.name,
-          connector: this.connection.connector,
-          ...this.connection.parameters
-        };
+    connection: {
+      immediate: true,
+      handler () {
+        if (this.editing && this.connection) {
+          this.connectionModel = {
+            id: this.connection.id,
+            name: this.connection.name,
+            connector: this.connection.connector,
+            ...this.connection.parameters
+          };
+        }
       }
     }
   }

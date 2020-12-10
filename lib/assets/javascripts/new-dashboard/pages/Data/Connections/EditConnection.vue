@@ -1,7 +1,7 @@
 <template>
   <Dialog ref="dialog"
     :headerTitle="$t('DataPage.addConnection')"
-    :headerImage=" connectionsSuccessfull ? require('../../../assets/icons/datasets/conected.svg') : require('../../../assets/icons/datasets/add-connection.svg')"
+    :headerImage=" connectionsSuccessfullId ? require('../../../assets/icons/datasets/conected.svg') : require('../../../assets/icons/datasets/add-connection.svg')"
     :backRoute="{name: backNamedRoute}"
   >
     <template slot="sub-header">
@@ -12,15 +12,15 @@
     </template>
     <template #default>
 
-      <template v-if="!connectionsSuccessfull">
+      <template v-if="!connectionsSuccessfullId">
       <DatabaseConnectionForm
           v-if="type === 'database'"
           :connector="importOption"
-          @connectClicked="connectDatabase"
+          @connectClicked="databaseConnected"
         ></DatabaseConnectionForm>
       </template>
 
-      <div v-else-if="connectionsSuccessfull" class="connections-successfull u-flex u-flex__direction--column u-flex__align--center">
+      <div v-else-if="connectionsSuccessfullId" class="connections-successfull u-flex u-flex__direction--column u-flex__align--center">
         <h3 class="is-semibold u-mt--16">{{ $t('DataPage.connectionsSuccessfull') }}</h3>
         <h4 class="is-caption u-mt--16 is-regular">{{$t('DataPage.imports.database.successTitle', { brand: title })}}</h4>
         <div class="u-mt--48 u-flex u-flex__align--center">
@@ -55,7 +55,7 @@ export default {
   },
   data () {
     return {
-      connectionsSuccessfull: false
+      connectionsSuccessfullId: null
     };
   },
   computed: {
@@ -74,12 +74,12 @@ export default {
     }
   },
   methods: {
-    connectDatabase (params) {
-      this.connectionsSuccessfull = true;
+    databaseConnected (id) {
+      this.connectionsSuccessfullId = id;
     },
     navigateNext () {
       const routeNamePrefix = this.$route.name.replace('connector-selected', '');
-      this.$router.push({name: `${routeNamePrefix}connection-dataset`, params: {id: 1}});
+      this.$router.push({name: `${routeNamePrefix}connection-dataset`, params: {id: this.connectionsSuccessfullId}});
     }
   }
 };

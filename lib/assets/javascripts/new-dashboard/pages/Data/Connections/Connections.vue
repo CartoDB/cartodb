@@ -35,7 +35,8 @@
                 :beta="connection.default.options.beta"
                 :connectionName="connection.raw.name"
                 :connectionParams="connection.raw.parameters"
-                :connectionType="connection.default.type"/>
+                :connectionType="connection.default.type"
+                @click.native="navigateToCreateDateset(connection)"/>
             </div>
           </div>
         </template>
@@ -52,7 +53,7 @@ import SectionTitle from 'new-dashboard/components/SectionTitle';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import Connection from 'new-dashboard/components/Connector/Connection';
-import { IMPORT_OPTIONS } from 'builder/components/modals/add-layer/content/imports/import-options';
+import { getImportOption } from 'new-dashboard/utils/connector/import-option';
 import { mapState } from 'vuex';
 
 export default {
@@ -70,14 +71,18 @@ export default {
     }),
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {
-        return {raw, default: Object.values(IMPORT_OPTIONS).find(({ name, options }) => raw.connector === name || raw.connector === (options && options.service))};
+        return { raw, default: getImportOption(raw.connector) };
       }) : [];
     }
   },
   mounted: function () {
     this.$store.dispatch('connectors/fetchConnectionsList');
   },
-  methods: {}
+  methods: {
+    navigateToCreateDateset (connection) {
+      this.$router.push({ name: 'new-connection-connection-dataset', params: { id: connection.raw.id } });
+    }
+  }
 };
 </script>
 

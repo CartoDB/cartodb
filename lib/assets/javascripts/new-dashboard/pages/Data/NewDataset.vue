@@ -111,13 +111,13 @@ export default {
         this.navigateToFile(id);
         return true;
       }
-      this.$router.push({name: `${this.$route.name}-connector-selected`, params: { connector: id }});
+      this.$router.push({ name: `${this.$route.name}-connector-selected`, params: { connector: id } });
     },
     navigateToFile (id) {
-      this.$router.push({name: `${this.getRouteNamePrefix}add-local-file`, params: { extension: id }});
+      this.$router.push({ name: `${this.getRouteNamePrefix}add-local-file`, params: { extension: id } });
     },
     conenectionSelected (id) {
-      this.$router.push({name: `${this.getRouteNamePrefix}new-dataset-connection-dataset`, params: { id: id }});
+      this.$router.push({ name: `${this.getRouteNamePrefix}new-dataset-connection-dataset`, params: { id: id } });
     }
   }
 };

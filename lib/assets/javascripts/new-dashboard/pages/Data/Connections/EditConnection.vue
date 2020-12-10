@@ -93,7 +93,7 @@ export default {
       this.connectionsSuccessfullId = id;
     },
     navigateNext () {
-      const routeNamePrefix = this.$route.name.replace('connector-selected', '');
+      const routeNamePrefix = !this.editing ? this.$route.name.replace('connector-selected', '') : 'new-connection-';
       this.$router.push({ name: `${routeNamePrefix}connection-dataset`, params: { id: this.connectionsSuccessfullId } });
     }
   }

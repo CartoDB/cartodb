@@ -1,7 +1,7 @@
 <template>
   <div class="connector">
     <div class="beta-label text is-small" v-if="beta">Beta</div>
-    <div class="quickactions">
+    <div class="quickactions" @click="stopPropagation">
       <ConnectorQuickActions :connection="id"/>
     </div>
     <div class="ConnectorInfo u-flex u-flex__direction--column u-flex__align--center u-flex__align--center u-pt--20 u-pb--16">
@@ -74,6 +74,9 @@ export default {
   methods: {
     connectorSelected () {
       this.$emit('connectorSelected', this.id);
+    },
+    stopPropagation (e) {
+      e.stopPropagation();
     }
   }
 };

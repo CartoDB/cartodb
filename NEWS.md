@@ -18,6 +18,7 @@ sudo make install
 - Bump cartodb-common to v0.4.8
 - Don't send ActionController::RoutingError to Rollbar [#15968](https://github.com/CartoDB/cartodb/pull/15968)
 - Generate a .pid file to control and manage the subscriber rake process [#15970](https://github.com/CartoDB/cartodb/pull/15970)
+- Make subscriber wait for DB creation in development [#15982](https://github.com/CartoDB/cartodb/pull/15982)
 
 4.44.0 (2020-11-20)
 -------------------

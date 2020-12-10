@@ -2,13 +2,15 @@
   <div class="connector-section">
     <span class="is-small is-txtMidGrey">{{ label }}</span>
     <div class="connectors-list u-flex u-flex__direction--row u-flex__align--center" :class="{ carrousel }">
-      <Connector v-for="connector in connectors"
-        :key="connector.id"
+      <Connector v-for="(connector, index) in connectors"
+        :key="`${connector.id}-${index}`"
         :id="connector.id"
+        :conenection_id="connector.conenection_id"
         :label="connector.label"
         :beta="connector.beta"
         :disabled="connector.disabled"
         @connectorSelected="connectorSelected"
+        @conenectionSelected="conenectionSelected"
         ></Connector>
     </div>
     <div class="carrousel-controls" v-if="carrousel">
@@ -50,6 +52,9 @@ export default {
   methods: {
     connectorSelected (id) {
       this.$emit('connectorSelected', id);
+    },
+    conenectionSelected (id) {
+      this.$emit('conenectionSelected', id);
     }
   }
 };

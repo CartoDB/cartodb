@@ -1,5 +1,5 @@
 <template>
-  <div @click="connectorSelected" class="connector u-flex u-flex__direction--column u-flex__justify--center u-flex__align--center" :class="{disabled, beta}">
+  <div @click="connectorSelected" class="connector u-flex u-flex__direction--column u-flex__justify--center u-flex__align--center" :class="{disabled, beta, conenection: conenection_id}">
     <div class="beta-label is-small" v-if="beta">Beta</div>
     <div class="ImportButton">
       <i :class="'is-' + id"></i>
@@ -16,6 +16,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    conenection_id: {
+      default: null
     },
     label: {
       type: String
@@ -34,7 +37,11 @@ export default {
   computed: {},
   methods: {
     connectorSelected () {
-      this.$emit('connectorSelected', this.id);
+      if (this.conenection_id) {
+        this.$emit('conenectionSelected', this.conenection_id);
+      } else {
+        this.$emit('connectorSelected', this.id);
+      }
     }
   }
 };
@@ -57,6 +64,10 @@ export default {
   &.disabled {
     pointer-events: none;
     opacity: .4;
+  }
+
+  &.conenection {
+    border-color: $green--400;
   }
 
   &:hover {

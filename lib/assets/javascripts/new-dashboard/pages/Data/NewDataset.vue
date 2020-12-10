@@ -5,10 +5,16 @@
     :showSubHeader="false"
   >
     <template #default>
-      <h3 class="is-caption is-semibold u-mt--32">{{ $t('DataPage.fromYourConnections') }}</h3>
-      <h3 class="is-caption is-semibold u-mt--36">{{ $t('DataPage.fromNewConnections') }}</h3>
-      <ConnectorSection @connectorSelected="fileSelected" class="u-mt--16" :label="$t('DataPage.localFiles')" :connectors="localFiles" carrousel></ConnectorSection>
-      <ConnectorsList @connectorSelected="connectorSelected"></ConnectorsList>
+      <template v-if="!loading">
+        <template v-if="connections.length > 0">
+          <h3 class="is-caption is-semibold">{{ $t('DataPage.fromYourConnections') }}</h3>
+          <ConnectorSection class="u-mt--24" :connectors="connections" @conenectionSelected="conenectionSelected"></ConnectorSection>
+          <h3 class="is-caption is-semibold u-mt--36 u-mb--16">{{ $t('DataPage.fromNewConnections') }}</h3>
+        </template>
+        <ConnectorSection @connectorSelected="fileSelected" :label="$t('DataPage.localFiles')" :connectors="localFiles" carrousel></ConnectorSection>
+        <ConnectorsList @connectorSelected="connectorSelected"></ConnectorsList>
+      </template>
+      <LoadingState v-else primary/>
     </template>
   </Dialog>
 </template>
@@ -18,6 +24,9 @@
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
+import LoadingState from 'new-dashboard/components/States/LoadingState';
+import { getImportOption } from 'new-dashboard/utils/connector/import-option';
+import { mapState } from 'vuex';
 
 const LOCAL_FILES = [
   {
@@ -67,13 +76,31 @@ export default {
   components: {
     Dialog,
     ConnectorSection,
-    ConnectorsList
+    ConnectorsList,
+    LoadingState
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      loading: state => state.connectors.loadingConnections,
+      rawConnections: state => state.connectors.connections
+    }),
+    connections () {
+      return this.rawConnections ? this.rawConnections.map(raw => {
+        const option = getImportOption(raw.connector);
+        return { id: option.name, conenection_id: raw.id, label: option.title, beta: option.options && option.options.beta };
+      }) : [];
+    },
+    getRouteNamePrefix () {
+      return this.$route.name.replace('new-dataset', '');
+    }
+  },
   data: () => {
     return {
       localFiles: LOCAL_FILES
     };
+  },
+  mounted: function () {
+    this.$store.dispatch('connectors/fetchConnectionsList');
   },
   methods: {
     fileSelected (id) {
@@ -87,8 +114,10 @@ export default {
       this.$router.push({name: `${this.$route.name}-connector-selected`, params: { connector: id }});
     },
     navigateToFile (id) {
-      const routeNamePrefix = this.$route.name.replace('new-dataset', '');
-      this.$router.push({name: `${routeNamePrefix}add-local-file`, params: { extension: id }});
+      this.$router.push({name: `${this.getRouteNamePrefix}add-local-file`, params: { extension: id }});
+    },
+    conenectionSelected (id) {
+      this.$router.push({name: `${this.getRouteNamePrefix}new-dataset-connection-dataset`, params: { id: id }});
     }
   }
 };

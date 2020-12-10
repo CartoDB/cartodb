@@ -48,7 +48,7 @@ export default {
   name: 'DatabaseConnectionForm',
   components: {},
   props: {
-    editing: false,
+    editing: Boolean,
     connection: null,
     connector: {
       required: true
@@ -61,7 +61,7 @@ export default {
       connectionModel: this.connector.options.params.reduce((accum, current) => {
         accum[current.key] = '';
         return accum;
-      }, {name: '', connector: this.connector.options.service})
+      }, { name: '', connector: this.connector.options.service })
     };
   },
   computed: {
@@ -81,7 +81,7 @@ export default {
         this.submited = true;
         let id;
         if (this.editing) {
-          const params = {...this.connectionModel};
+          const params = { ...this.connectionModel };
           if (this.originalPassword === this.connectionModel.password) {
             delete params.password;
           }

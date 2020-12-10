@@ -72,7 +72,7 @@ export default {
     importOption () {
       let connector = this.editing ? 'postgres' : this.$route.params.connector;
       const option = Object.values(IMPORT_OPTIONS)
-        .find(({name, options}) => connector === name || connector === (options && options.service));
+        .find(({ name, options }) => connector === name || connector === (options && options.service));
       return option;
     },
     connection () {
@@ -94,7 +94,7 @@ export default {
     },
     navigateNext () {
       const routeNamePrefix = this.$route.name.replace('connector-selected', '');
-      this.$router.push({name: `${routeNamePrefix}connection-dataset`, params: {id: this.connectionsSuccessfullId}});
+      this.$router.push({ name: `${routeNamePrefix}connection-dataset`, params: { id: this.connectionsSuccessfullId } });
     }
   }
 };

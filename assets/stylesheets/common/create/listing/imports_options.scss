@@ -318,7 +318,7 @@ $import-button-width: 174px;
 }
 
 @mixin importIcon($name) {
-  .ImportButton .is-#{$name} {
+  .ImportButton .is-#{$name}, .ConnectorInfo .is-#{$name}{
     display: block;
     width: 65px;
     height: 30px;

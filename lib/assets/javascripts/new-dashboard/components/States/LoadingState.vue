@@ -1,7 +1,9 @@
 <template>
   <div class="loading-state">
     <div class="loading-state-icon">
-      <img svg-inline src="../../assets/icons/common/loading.svg" class="loading-state__svg"/>
+      <img svg-inline src="../../assets/icons/common/loading.svg"
+        :class="{'loading-state__svg': true, primary}"
+        :style="{height: size, width: size}"/>
     </div>
 
     <h6 class="loading-state-text text is-caption is-txtSoftGrey">{{text}}</h6>
@@ -12,7 +14,12 @@
 export default {
   name: 'LoadingState',
   props: {
-    text: String
+    text: String,
+    size: {
+      type: String,
+      default: '48px'
+    },
+    primary: Boolean
   }
 };
 </script>
@@ -29,8 +36,20 @@ export default {
 }
 
 .loading-state__svg {
-  width: 48px;
-  height: 48px;
+  outline: none;
+
+  &.primary {
+    path {
+      stroke: $blue--400;
+      stroke-width: 2;
+    }
+
+    circle {
+      stroke: $neutral--300;
+      stroke-opacity: 1;
+      stroke-width: 2;
+    }
+  }
 }
 
 .loading-state-text {

@@ -169,7 +169,8 @@
         "placeholder-cluster": "Type your cluster name",
         "label-warehouse": "Warehouse",
         "placeholder-warehouse": "Type your warehouse name",
-        "successTitle": "Your %{brand} connection is ready"
+        "successTitle": "Your %{brand} connection is ready",
+        "connection-error": "The connection could not be established. Please, check the entered parameters."
       }
     },
     "localFiles": "Local files",

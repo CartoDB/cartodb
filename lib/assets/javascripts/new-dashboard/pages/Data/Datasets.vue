@@ -20,7 +20,8 @@
       :maxVisibleDatasets="maxVisibleDatasets"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
-      @selectionChange="updateSelected" />
+      @selectionChange="updateSelected"
+      @newDatesetClicked="openCreateDatasetPopup"/>
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     <router-view></router-view>
   </section>
@@ -133,6 +134,9 @@ export default {
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
       const notificationHeight = this.isNotificationVisible ? 60 : 0;
       return headerBoundingClientRect.top - notificationHeight;
+    },
+    openCreateDatasetPopup () {
+      this.$router.push({ name: 'datasets-new-dataset' });
     }
   },
   watch: {

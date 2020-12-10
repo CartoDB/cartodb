@@ -6,7 +6,9 @@
       :maxVisibleDatasets="maxVisibleDatasets"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
-      @contentChanged="onContentChanged"/>
+      @contentChanged="onContentChanged"
+      @newDatesetClicked="onNewDatesetClicked"
+      />
 
     <router-link :to="{ name: 'datasets' }" class="title is-small viewall-link" v-if="showViewAllLink">
       {{ datasetsLinkText }}
@@ -54,6 +56,9 @@ export default {
     },
     onContentChanged (type) {
       this.$emit('contentChanged', type);
+    },
+    onNewDatesetClicked () {
+      this.$emit('newDatesetClicked');
     }
   }
 };

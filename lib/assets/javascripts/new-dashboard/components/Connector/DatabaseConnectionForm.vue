@@ -7,7 +7,10 @@
         <input v-model="connectionModel.name" type="text" :placeholder="$t('DataPage.imports.database.placeholder-name')">
       </div>
       <div v-for="p in connector.options.params" :key="p.key" class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
-        <label class="is-small u-mr--16">{{p.key}}</label>
+        <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
+          <label class="is-small">{{p.key}}</label>
+          <span v-if="p.optional" class="is-small is-txtMidGrey">(optional)</span>
+        </div>
         <input v-model="connectionModel[p.key]" :type="p.type" :placeholder="$t('DataPage.imports.database.placeholder-' + p.key, { brand: p.title })">
       </div>
       <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--16" v-if="error">
@@ -68,12 +71,12 @@ export default {
       try {
         this.error = '';
         this.submited = true;
-        await this.$store.dispatch('connectors/createNewConnection', this.connectionModel);
+        const id = await this.$store.dispatch('connectors/createNewConnection', this.connectionModel);
         this.submited = false;
-        this.$emit('connectClicked', {...this.connectionModel});
+        this.$emit('connectClicked', id);
       } catch (error) {
         this.submited = false;
-        this.error = error.message;
+        this.error = this.$t('DataPage.imports.database.connection-error');
       }
     }
   }

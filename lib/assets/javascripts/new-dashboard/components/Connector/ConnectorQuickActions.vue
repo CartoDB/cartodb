@@ -49,7 +49,7 @@ export default {
     },
     editConnection () {
       this.closeDropdown();
-      // DialogActions.editDatasetMetadata.apply(this, [this.connection, this.getActionHandlers()]);
+      this.$router.push({name: 'edit-connection', params: {id: this.connection}});
     },
     deleteConnection () {
       this.closeDropdown();

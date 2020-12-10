@@ -1,11 +1,14 @@
 <template>
   <Dialog ref="dialog"
-    :headerTitle="$t('DataPage.addConnection')"
-    :headerImage=" connectionsSuccessfullId ? require('../../../assets/icons/datasets/conected.svg') : require('../../../assets/icons/datasets/add-connection.svg')"
+    :headerTitle="editing ? $t('ConnectorsPage.editConnection', {connector: title}) : $t('ConnectorsPage.addConnection')"
+    :headerImage="connectionsSuccessfullId ?
+      require('../../../assets/icons/datasets/conected.svg') :
+      (editing ? require('../../../assets/icons/datasets/edit-connection.svg') : require('../../../assets/icons/datasets/add-connection.svg'))"
+    :showSubHeader="!editing"
     :backRoute="{name: backNamedRoute}"
   >
     <template slot="sub-header">
-      <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
+      <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center" v-if="!editing">
         <img height="21" class="u-mr--8" :src="logo">
         {{ $t('DataPage.connectWith') }} {{title}}
       </h3>
@@ -13,9 +16,11 @@
     <template #default>
 
       <template v-if="!connectionsSuccessfullId">
-      <DatabaseConnectionForm
+        <DatabaseConnectionForm
           v-if="type === 'database'"
           :connector="importOption"
+          :connection="connection"
+          :editing="editing"
           @connectClicked="databaseConnected"
         ></DatabaseConnectionForm>
       </template>
@@ -41,6 +46,7 @@ import exportedScssVars from 'new-dashboard/styles/variables.scss';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import DatabaseConnectionForm from 'new-dashboard/components/Connector/DatabaseConnectionForm';
 import { IMPORT_OPTIONS } from 'builder/components/modals/add-layer/content/imports/import-options';
+import { mapState } from 'vuex';
 
 export default {
   name: 'EditConnection',
@@ -55,13 +61,22 @@ export default {
   },
   data () {
     return {
-      connectionsSuccessfullId: null
+      editing: this.$route.name === 'edit-connection',
+      connectionsSuccessfullId: false
     };
   },
   computed: {
+    ...mapState({
+      rawConnections: state => state.connectors.connections
+    }),
     importOption () {
-      const option = Object.keys(IMPORT_OPTIONS).find(opt => IMPORT_OPTIONS[opt].name === this.$route.params.connector);
-      return option && IMPORT_OPTIONS[option];
+      let connector = this.editing ? 'postgres' : this.$route.params.connector;
+      const option = Object.values(IMPORT_OPTIONS)
+        .find(({name, options}) => connector === name || connector === (options && options.service));
+      return option;
+    },
+    connection () {
+      return this.rawConnections && this.editing ? this.rawConnections.find(conn => conn.id === this.$route.params.id) : null;
     },
     logo () {
       return this.importOption && `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/${this.importOption.name}.svg`;

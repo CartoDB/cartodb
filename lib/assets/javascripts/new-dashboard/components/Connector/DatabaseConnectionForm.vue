@@ -1,10 +1,13 @@
 <template>
   <div class="u-flex u-flex__justify--center">
     <div>
+      <div class="alert u-pl--36 u-pt--8 u-pb--8 u-pr--8 u-mb--24" v-if="editing">
+        <span class="is-small" v-html="$t('ConnectorsPage.editConnectionDisclaimer')"></span>
+      </div>
       <h4 class="is-small is-semibold">{{$t('DataPage.imports.database.title', { brand: connector.title })}}</h4>
       <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
         <label class="is-small u-mr--16">{{$t('DataPage.imports.database.label-name')}}</label>
-        <input v-model="connectionModel.name" type="text" :placeholder="$t('DataPage.imports.database.placeholder-name')">
+        <input v-model="connectionModel.name" type="text" :placeholder="$t('DataPage.imports.database.placeholder-name')" :disabled="editing">
       </div>
       <div v-for="p in connector.options.params" :key="p.key" class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
         <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
@@ -18,8 +21,8 @@
       </div>
       <div class="u-flex u-flex__justify--end u-mt--32">
         <button @click="connect" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': (!connectionModelIsValid || submited)}">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
-            {{ $t('DataPage.connect') }}
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium">
+            {{ editing ? $t('ConnectorsPage.editConnectionButton') : $t('DataPage.connect') }}
           </span>
         </button>
       </div>
@@ -45,6 +48,8 @@ export default {
   name: 'DatabaseConnectionForm',
   components: {},
   props: {
+    editing: false,
+    connection: null,
     connector: {
       required: true
     }
@@ -64,6 +69,9 @@ export default {
       return this.connector.options.params.reduce((accum, current) => {
         return accum && (current.optional || !!this.connectionModel[current.key]);
       }, true);
+    },
+    originalPassword () {
+      return this.connection && this.connection.parameters.password;
     }
   },
   methods: {
@@ -71,12 +79,35 @@ export default {
       try {
         this.error = '';
         this.submited = true;
-        const id = await this.$store.dispatch('connectors/createNewConnection', this.connectionModel);
+        let id;
+        if (this.editing) {
+          const params = {...this.connectionModel};
+          if (this.originalPassword === this.connectionModel.password) {
+            delete params.password;
+          }
+
+          id = await this.$store.dispatch('connectors/editExistingConnection', params);
+        } else {
+          id = await this.$store.dispatch('connectors/createNewConnection', this.connectionModel);
+        }
+
         this.submited = false;
         this.$emit('connectClicked', id);
       } catch (error) {
         this.submited = false;
         this.error = this.$t('DataPage.imports.database.connection-error');
+      }
+    }
+  },
+  watch: {
+    connection () {
+      if (this.editing) {
+        this.connectionModel = {
+          id: this.connection.id,
+          name: this.connection.name,
+          connector: this.connection.connector,
+          ...this.connection.parameters
+        };
       }
     }
   }
@@ -85,6 +116,26 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+.alert {
+  position: relative;
+  background-color: $yellow--050;
+  max-width: 460px;
+  border-radius: 22px;
+
+  &:before {
+    content: '';
+    position: absolute;
+    display: block;
+    top: 6px;
+    left: 10px;
+    height: 20px;
+    width: 20px;
+    background-image: url('../../assets/icons/common/alert.svg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+  }
+}
 .info {
   flex: 0 0 160px;
 }

@@ -71,7 +71,7 @@ export default {
     }),
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {
-        return {raw, default: getImportOption(raw.connector)};
+        return { raw, default: getImportOption(raw.connector) };
       }) : [];
     }
   },
@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     navigateToCreateDateset (connection) {
-      this.$router.push({name: 'new-connection-connection-dataset', params: {id: connection.raw.id}});
+      this.$router.push({ name: 'new-connection-connection-dataset', params: { id: connection.raw.id } });
     }
   }
 };

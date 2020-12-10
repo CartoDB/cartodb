@@ -1,7 +1,7 @@
 <template>
   <section class="welcome-section">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
-    <WelcomeCompact v-else :name="name" :userType="userType">
+    <WelcomeCompact v-else :name="name" :userType="userType" @newDatesetClicked="onNewDatesetClicked">
       <template>
         <a v-if="showUpgrade" :href="accountUpgradeURL" class="button is-primary">
           {{ $t('HomePage.WelcomeSection.upgradeNow') }}
@@ -118,6 +118,9 @@ export default {
       const endDate = moment(finishDate);
       const now = moment();
       return Math.ceil(endDate.diff(now, 'days', true));
+    },
+    onNewDatesetClicked () {
+      this.$emit('newDatesetClicked');
     }
   }
 };

@@ -214,6 +214,12 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_new_dataset
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/add-local-file/:extension'               => 'visualizations#index', as: :datasets_local_new
 
+    # Datasets from home for new dashboard
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-dataset'             => 'visualizations#index', as: :datasets_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-connection/:connector'   => 'visualizations#index', as: :your_connections_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/add-local-file/:extension'   => 'visualizations#index', as: :datasets_local_new_from_home
+
     # Tables search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q'                    => 'visualizations#index', as: :tables_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q/:page'              => 'visualizations#index', as: :tables_search_page

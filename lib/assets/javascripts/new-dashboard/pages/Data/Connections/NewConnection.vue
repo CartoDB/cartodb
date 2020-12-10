@@ -24,7 +24,7 @@ export default {
   computed: {},
   methods: {
     connectorSelected (id) {
-      this.$router.push({name: 'new-connection-connector', params: { connector: id }});
+      this.$router.push({name: 'new-connection-connector-selected', params: { connector: id }});
     }
   }
 };

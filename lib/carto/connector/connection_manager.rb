@@ -178,7 +178,7 @@ module Carto
 
     def update_db_connection(id:, parameters:)
       connection = fetch_connection(id)
-      connection.update! parameters: parameters
+      connection.update! parameters: connection.parameters.merge(parameters)
     end
 
     private

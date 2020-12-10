@@ -28,7 +28,7 @@
           </div>
           <div class="connections-container grid" v-else>
             <div v-for="connection in connections" :key="connection.raw.id" class="connector-wrapper grid-cell grid-cell--col4">
-              <ConnectorLarge
+              <Connection
                 :id="connection.raw.id"
                 :type="connection.default.name"
                 :label="connection.default.title"
@@ -39,11 +39,7 @@
             </div>
           </div>
         </template>
-        <template v-else>
-          <div>
-            <LoadingState primary/>
-          </div>
-        </template>
+        <LoadingState v-else primary/>
       </div>
     </div>
     <router-view></router-view>
@@ -55,7 +51,7 @@
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
-import ConnectorLarge from 'new-dashboard/components/Connector/ConnectorLarge';
+import Connection from 'new-dashboard/components/Connector/Connection';
 import { IMPORT_OPTIONS } from 'builder/components/modals/add-layer/content/imports/import-options';
 import { mapState } from 'vuex';
 
@@ -65,7 +61,7 @@ export default {
     LoadingState,
     SectionTitle,
     VisualizationsTitle,
-    ConnectorLarge
+    Connection
   },
   computed: {
     ...mapState({

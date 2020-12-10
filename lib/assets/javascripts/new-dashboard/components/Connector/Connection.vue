@@ -32,7 +32,7 @@ import ConnectorQuickActions from './ConnectorQuickActions';
 const DATABASE = 'database';
 
 export default {
-  name: 'ConnectorLarge',
+  name: 'Connection',
   components: {
     ConnectorQuickActions
   },

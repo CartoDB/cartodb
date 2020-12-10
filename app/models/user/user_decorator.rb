@@ -3,6 +3,8 @@ module CartoDB
     include AccountTypeHelper
 
     def activity(options = {})
+      user = Carto::User.find_by(username: username)
+
       {
         id: id,
         email: email,

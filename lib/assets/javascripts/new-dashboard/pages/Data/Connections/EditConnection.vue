@@ -20,7 +20,6 @@
           v-if="type === 'database'"
           :connector="importOption"
           :connection="connection"
-          :editing="editing"
           @connectClicked="databaseConnected"
         ></DatabaseConnectionForm>
       </template>
@@ -44,8 +43,8 @@
 
 import exportedScssVars from 'new-dashboard/styles/variables.scss';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
+import { getImportOption } from 'new-dashboard/utils/connector/import-option';
 import DatabaseConnectionForm from 'new-dashboard/components/Connector/DatabaseConnectionForm';
-import { IMPORT_OPTIONS } from 'builder/components/modals/add-layer/content/imports/import-options';
 import { mapState } from 'vuex';
 
 export default {
@@ -61,8 +60,7 @@ export default {
   },
   data () {
     return {
-      editing: this.$route.name === 'edit-connection',
-      connectionsSuccessfullId: false
+      connectionsSuccessfullId: null
     };
   },
   computed: {
@@ -70,10 +68,12 @@ export default {
       rawConnections: state => state.connectors.connections
     }),
     importOption () {
-      let connector = this.editing ? 'postgres' : this.$route.params.connector;
-      const option = Object.values(IMPORT_OPTIONS)
-        .find(({ name, options }) => connector === name || connector === (options && options.service));
+      let connector = this.editing ? (this.connection ? this.connection.connector : null) : this.$route.params.connector;
+      const option = getImportOption(connector);
       return option;
+    },
+    editing () {
+      return this.$route.name === 'edit-connection';
     },
     connection () {
       return this.rawConnections && this.editing ? this.rawConnections.find(conn => conn.id === this.$route.params.id) : null;

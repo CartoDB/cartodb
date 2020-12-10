@@ -48,7 +48,6 @@ export default {
   name: 'DatabaseConnectionForm',
   components: {},
   props: {
-    editing: Boolean,
     connection: null,
     connector: {
       required: true
@@ -65,6 +64,9 @@ export default {
     };
   },
   computed: {
+    editing () {
+      return !!this.connection;
+    },
     connectionModelIsValid () {
       return this.connector.options.params.reduce((accum, current) => {
         return accum && (current.optional || !!this.connectionModel[current.key]);

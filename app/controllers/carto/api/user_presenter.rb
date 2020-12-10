@@ -149,11 +149,23 @@ module Carto
           success_import_count: success_import_count,
           import_count: import_count,
           last_visualization_created_at: last_visualization_created_at,
-          quota_in_bytes: @user.quota_in_bytes,
-          db_size_in_bytes: db_size_in_bytes,
+          quota_in_bytes: @user.quota_in_bytes, # TODO: To be deprecated in favor of memory -> quota_in_bytes
+          db_size_in_bytes: db_size_in_bytes, # TODO: To be deprecated in favor of memory -> db_size_in_bytes
           db_size_in_megabytes: db_size_in_bytes.present? ? (db_size_in_bytes / (1024.0 * 1024.0)).round(2) : nil,
           remaining_table_quota: @user.remaining_table_quota,
           remaining_byte_quota: @user.remaining_quota(db_size_in_bytes).to_f,
+          storage: {
+            # Total quota, including premium subscriptions addons:
+            quota_in_bytes: @user.quota_in_bytes,
+            # Total DB storage used, including premium and public synchronized datasets:
+            db_size_in_bytes: db_size_in_bytes,
+            # DB storage used by public subscriptions:
+            subscriptions_public_size_in_bytes: @user.subscriptions_public_size_in_bytes,
+            # DB storage used by premium subscriptions:
+            subscriptions_premium_size_in_bytes: @user.subscriptions_premium_size_in_bytes
+          },
+          map_views: @user.map_views_count,
+          map_views_quota: @user.organization_user? ? @user.organization.map_view_quota : @user.map_view_quota,
           unverified: @user.unverified?,
           api_calls: calls,
           api_calls_quota: @user.organization_user? ? @user.organization.map_view_quota : @user.map_view_quota,
@@ -235,6 +247,7 @@ module Carto
             max_layers: @user.max_layers
           },
           notification: @user.notification,
+          email_notifications: @user.decorate_email_notifications,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flags_names,
           base_url: @user.public_url,

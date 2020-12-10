@@ -1,10 +1,13 @@
 require 'spec_helper'
 require './app/helpers/logger_helper'
 
+class MockObject
+
+  include LoggerHelper
+
+end
+
 describe LoggerHelper do
-
-  class MockObject; include LoggerHelper end
-
   before { User.any_instance.stubs(:update_in_central).returns(true) }
 
   let(:mock_object) { MockObject.new }
@@ -23,24 +26,6 @@ describe LoggerHelper do
       Rails.logger.expects(:warn).with('message' => 'Message')
 
       mock_object.log_warning(message: 'Message')
-    end
-
-    it 'reports plain error message to Rollbar' do
-      Rollbar.expects(:error).with('Custom error message')
-
-      mock_object.log_error(message: 'Custom error message')
-    end
-
-    it 'reports exceptions to Rollbar' do
-      Rollbar.expects(:error).with(exception)
-
-      mock_object.log_error(exception: exception)
-    end
-
-    it 'reports exceptions with custom message to Rollbar' do
-      Rollbar.expects(:error).with(exception, 'Message')
-
-      mock_object.log_error(message: 'Message', exception: exception)
     end
   end
 
@@ -79,15 +64,5 @@ describe LoggerHelper do
 
       mock_object.log_info(message: 'Message', organization: carto_organization)
     end
-
-    it 'serializes Exception objects' do
-      Rails.logger.expects(:error).with(
-        'message' => 'Message',
-        'exception' => { 'class' => 'StandardError', 'message' => 'Exception message', 'backtrace_hint' => nil }
-      )
-
-      mock_object.log_error(message: 'Message', exception: exception)
-    end
   end
-
 end

@@ -2,14 +2,26 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+* This release upgrades the CartoDB PostgreSQL extension to `0.37.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+* As part of the release of `0.37.0`, the creation of overviews is removed and will no longer work.
+```
 
 ### Features
-- None yet
+- Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 
 ### Bug fixes / enhancements
-* Load GoogleMaps library for a map if the owner's query string is available [#15948](https://github.com/CartoDB/cartodb/pull/15948)
-* 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
+- Load GoogleMaps library for a map if the owner's query string is available [#15948](https://github.com/CartoDB/cartodb/pull/15948)
+- Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
+- Improve the syncronization functions by using `CDB_GetTableQueries`.
+- Bump cartodb-common to v0.4.8
+- Don't send ActionController::RoutingError to Rollbar [#15968](https://github.com/CartoDB/cartodb/pull/15968)
+- Generate a .pid file to control and manage the subscriber rake process [#15970](https://github.com/CartoDB/cartodb/pull/15970)
+- Fix buffering of log traces in subscriber [#15980](https://github.com/CartoDB/cartodb/pull/15980)
+- Wrong param name in organization forms [#15975](https://github.com/CartoDB/cartodb/pull/15975)
+- 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
 
 4.44.0 (2020-11-20)
 -------------------
@@ -18,12 +30,15 @@ Development
 * Email notifications toggle API endpoint [#15930](https://github.com/CartoDB/cartodb/pull/15930)
 * New Email settings section in Account page to manage notifications [#15933](https://github.com/CartoDB/cartodb/pull/15933)
 * Allow to create regular apikeys for data observatory datasets [#15940](https://github.com/CartoDB/cartodb/pull/15940)
+* Add email_notifications to user decorator [#15949](https://github.com/CartoDB/cartodb/pull/15949)
 
 ### Bug fixes / enhancements
 * Fix BigQuery connector not importing 0-bytes-processed datasets [#15916](https://github.com/CartoDB/cartodb/pull/15916)
 * Error importing geopackage files with multiple layers [#15907](https://github.com/CartoDB/cartodb/pull/15907)
 * Add DO notification in dashboard [#15929](https://github.com/CartoDB/cartodb/pull/15929)
 * Data loss on table rename due to GhostTablesManager [#15935](https://github.com/CartoDB/cartodb/pull/15935)
+* Add DO datasets sync size in /me endpoint [#15932](https://github.com/CartoDB/cartodb/pull/15932)
+* Log subscribers to STDOUT and fix JSON format [#15957](https://github.com/CartoDB/cartodb/pull/15957)
 
 4.43.0 (2020-11-06)
 -------------------
@@ -39,6 +54,7 @@ Development
 * Fixed an error handling issue during synchronizations
 * Improve import error messages [#15893](https://github.com/CartoDB/cartodb/pull/15893)
 * Identify multi-line GeoJSON columns correctly on imports [#15891](https://github.com/CartoDB/cartodb/pull/15891)
+* Some experimental code using a message broker
 * Add DO geography key variables [#15882](https://github.com/CartoDB/cartodb/pull/15882)
 * Migrate `ClientApplication` model to `ActiveRecord` [#15886](https://github.com/CartoDB/cartodb/pull/15886)
 * Avoid delegating special methods in presenters [#15889](https://github.com/CartoDB/cartodb/pull/15889)
@@ -55,6 +71,7 @@ Development
 * Fix bug reassigning geocodings [#15924](https://github.com/CartoDB/cartodb/pull/15924)
 * Migrate `SharedEntity`, `LayerNodeStyle` and `ExternalSource` to `ActiveRecord` [#15920](https://github.com/CartoDB/cartodb/pull/15920)
 * Fix broken Sequel <> ActiveRecord association [#15928](https://github.com/CartoDB/cartodb/pull/15928)
+* Speedup query to do ApiKey grants [#15927](https://github.com/CartoDB/cartodb/pull/15927)
 
 4.42.0 (2020-09-28)
 -------------------

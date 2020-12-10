@@ -317,6 +317,20 @@ describe Carto::Api::Public::DataObservatoryController do
     end
   end
 
+  describe 'create_sample' do
+    before(:each) do
+      @doss = mock
+      Carto::DoSampleServiceFactory.stubs(:get_for_user).returns(@doss)
+      @doss.stubs(:import_sample!).returns(nil)
+    end
+
+    it 'returns 200 if the dataset_id is valid' do
+      @url_helper = 'api_v4_do_subscription_create_sample_url'
+      post_json endpoint_url(api_key: @master, dataset_id: 'carto.zzz.table1'), @headers do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+  end
   describe 'subscription' do
     before(:all) do
       @url_helper = 'api_v4_do_subscription_show_url'
@@ -654,8 +668,16 @@ describe Carto::Api::Public::DataObservatoryController do
       dataset_id = 'carto.abc.geography1'
       dataset_name = 'CARTO geography 1'
       provider_name = 'CARTO'
-      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_name, provider_name).once.returns(mailer_mock)
-      DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 3.0).once.returns(mailer_mock)
+      DataObservatoryMailer.expects(:user_request).with(
+        @carto_user1,
+        dataset_name,
+        provider_name
+      ).never
+      DataObservatoryMailer.expects(:carto_request).with(
+        @carto_user1,
+        dataset_id,
+        3.0
+      ).once.returns(mailer_mock)
 
       expected_params = {
         dataset_id: 'carto.abc.geography1',
@@ -738,8 +760,16 @@ describe Carto::Api::Public::DataObservatoryController do
         dataset_id = 'carto.abc.deliver_1day'
         dataset_name = 'CARTO dataset 1'
         provider_name = 'CARTO'
-        DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_name, provider_name).once.returns(mailer_mock)
-        DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 1.0).once.returns(mailer_mock)
+        DataObservatoryMailer.expects(:user_request).with(
+          @carto_user1,
+          dataset_name,
+          provider_name
+        ).never
+        DataObservatoryMailer.expects(:carto_request).with(
+          @carto_user1,
+          dataset_id,
+          1.0
+        ).once.returns(mailer_mock)
 
         expected_params = {
           dataset_id: dataset_id,

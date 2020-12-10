@@ -1,6 +1,6 @@
 <template>
   <Page class="page--welcome">
-    <Welcome />
+    <Welcome @newDatesetClicked="onNewDatesetClicked"/>
     <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
     <DatasetsSection v-if="isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" />

@@ -8,6 +8,7 @@ module Carto
   class Organization < ActiveRecord::Base
 
     # PUM
+    # PAM
 
   end
 end

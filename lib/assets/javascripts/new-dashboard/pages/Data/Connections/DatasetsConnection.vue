@@ -50,7 +50,12 @@
     </template>
     <template v-if="queryIsValid" slot="footer">
       <GuessPrivacyFooter
+        :guess="uploadObject.content_guessing && uploadObject.type_guessing"
+        :privacy="uploadObject.privacy"
         :disabled="false"
+        @guessChanged="changeGuess"
+        @privacyChanged="changePrivacy"
+        @connect="connectDataset"
       ></GuessPrivacyFooter>
     </template>
   </Dialog>
@@ -58,16 +63,19 @@
 
 <script>
 
+import { mapState } from 'vuex';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import CodeBlock from 'new-dashboard/components/code/CodeBlock.vue';
 import FormInput from 'new-dashboard/components/forms/FormInput';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
-import { mapState } from 'vuex';
+import uploadData from '../../../mixins/connector/uploadData';
 
 export default {
   name: 'DatasetsConnection',
+  inject: ['backboneViews'],
+  mixins: [uploadData],
   components: {
     CodeBlock,
     Dialog,
@@ -81,7 +89,8 @@ export default {
       datasetName: '',
       error: '',
       sending: false,
-      queryIsValid: false
+      queryIsValid: false,
+      uploadObject: this.getUploadObject()
     };
   },
   props: {
@@ -115,7 +124,22 @@ export default {
         this.error = true;
       } finally {
         this.sending = false;
+        this.queryIsValid = true;
       }
+    },
+    changeGuess (value) {
+      this.uploadObject.content_guessing = value;
+      this.uploadObject.type_guessing = value;
+    },
+    changePrivacy (value) {
+      this.uploadObject.privacy = value;
+    },
+    connectDataset () {
+      // if (this.isFileSelected) {
+      //   const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
+      //   backgroundPollingView._addDataset({...this.uploadObject});
+      //   this.$refs.dialog.closePoup();
+      // }
     }
   }
 };

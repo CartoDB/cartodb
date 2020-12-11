@@ -764,6 +764,7 @@ CartoDB::Application.routes.draw do
 
     scope 'v1/' do
       resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
+      match '*path', via: [:OPTIONS], to: 'application#options'
 
       # Organization assets
       scope '/organization/:organization_id', constraints: { id: UUID_REGEXP } do

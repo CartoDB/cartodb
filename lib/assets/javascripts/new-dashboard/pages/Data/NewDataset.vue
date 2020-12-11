@@ -30,44 +30,44 @@ import { mapState } from 'vuex';
 
 const LOCAL_FILES = [
   {
-    id: 'file-carto',
-    label: 'CARTO'
-  },
-  {
     id: 'file-csv',
     label: 'CSV'
-  },
-  {
-    id: 'file-excel',
-    label: 'Excel'
   },
   {
     id: 'file-geojson',
     label: 'GeoJSON'
   },
   {
-    id: 'file-gpkg',
-    label: 'GeoPackage'
+    id: 'file-shapefile',
+    label: 'Shapefile'
   },
   {
-    id: 'file-gpx',
-    label: 'GPX'
+    id: 'file-gpkg',
+    label: 'GeoPackage'
   },
   {
     id: 'file-kml',
     label: 'KML'
   },
   {
-    id: 'file-ods',
-    label: 'ODS'
+    id: 'file-excel',
+    label: 'Excel'
+  },
+  {
+    id: 'file-carto',
+    label: 'CARTO'
   },
   {
     id: 'file-osm',
     label: 'OSM'
   },
   {
-    id: 'file-shapefile',
-    label: 'Shapefile'
+    id: 'file-gpx',
+    label: 'GPX'
+  },
+  {
+    id: 'file-ods',
+    label: 'ODS'
   }
 ];
 
@@ -87,7 +87,7 @@ export default {
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {
         const option = getImportOption(raw.connector);
-        return { id: option.name, conenection_id: raw.id, label: option.title, beta: option.options && option.options.beta };
+        return { id: option.name, conenection_id: raw.id, label: raw.name, beta: option.options && option.options.beta };
       }) : [];
     },
     getRouteNamePrefix () {

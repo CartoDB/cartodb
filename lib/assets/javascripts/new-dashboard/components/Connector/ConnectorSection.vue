@@ -74,6 +74,11 @@ $controlSize: 36px;
     &.carrousel {
       flex-wrap: nowrap;
       overflow-x: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
 
     .connector {

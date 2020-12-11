@@ -45,8 +45,8 @@ let propId;
 let colorStyle;
 let getFillColor;
 let getLineColor;
-let pointRadiusMinPixels;
-let lineWidthMinPixels;
+let getLineWidth;
+let getRadius;
 
 export default {
   name: 'CatalogMap',
@@ -111,7 +111,7 @@ export default {
         }));
         categories.push({
           name: 'Others',
-          color: 'rgb(119, 119, 119)'
+          color: 'rgb(165, 170, 153)'
         });
         return categories;
       }
@@ -203,8 +203,10 @@ export default {
           },
           getFillColor,
           getLineColor,
-          pointRadiusMinPixels,
-          lineWidthMinPixels,
+          getLineWidth,
+          getRadius,
+          lineWidthUnits: 'pixels',
+          pointRadiusUnits: 'pixels',
           pickable: true,
           onDataLoad: (tileJSON) => {
             console.log('TILEJSON', tileJSON);
@@ -237,6 +239,10 @@ export default {
       const variableExtra = this.variables.find((v) => {
         return v.id.split('.').slice(-1)[0] === variable.attribute;
       });
+      if (variable.quantiles && variable.quantiles.length === undefined) {
+        // Compatibility change: convert JSON into array
+        variable.quantiles = Object.keys(variable.quantiles).map(k => ({ [k]: variable.quantiles[k] }));
+      }
       this.variable = {
         ...variable,
         ...variableExtra
@@ -263,8 +269,8 @@ export default {
 
       if (g === 'Polygon' && v === null || this.isGeography) {
         getFillColor = [234, 200, 100, 168];
-        getLineColor = [0, 0, 0, 100];
-        lineWidthMinPixels = 0.5;
+        getLineColor = [44, 44, 44, 60];
+        getLineWidth = 1;
       }
       if (g === 'Polygon' && v === 'Number') {
         colorStyle = colorBinsStyle({
@@ -272,8 +278,8 @@ export default {
           colors: 'OrYel'
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [0, 0, 0, 100];
-        lineWidthMinPixels = 0.5;
+        getLineColor = [44, 44, 44, 60];
+        getLineWidth = 1;
       }
       if (g === 'Polygon' && v === 'String') {
         colorStyle = colorCategoriesStyle({
@@ -281,12 +287,12 @@ export default {
           colors: 'Bold'
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [0, 0, 0, 100];
-        lineWidthMinPixels = 0.5;
+        getLineColor = [44, 44, 44, 60];
+        getLineWidth = 1;
       }
       if (g === 'LineString' && v === null || this.isGeography) {
         getLineColor = [234, 200, 100, 168];
-        lineWidthMinPixels = 2;
+        getLineWidth = 2;
       }
       if (g === 'LineString' && v === 'Number') {
         colorStyle = colorBinsStyle({
@@ -294,7 +300,7 @@ export default {
           colors: 'SunsetDark'
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
-        lineWidthMinPixels = 2;
+        getLineWidth = 2;
       }
       if (g === 'LineString' && v === 'String') {
         colorStyle = colorCategoriesStyle({
@@ -302,13 +308,13 @@ export default {
           colors: 'Bold'
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
-        lineWidthMinPixels = 2;
+        getLineWidth = 2;
       }
       if (g === 'Point' && v === null || this.isGeography) {
         getFillColor = [234, 200, 100, 168];
-        getLineColor = [0, 0, 0, 100];
-        pointRadiusMinPixels = 4;
-        lineWidthMinPixels = 0.1;
+        getLineColor = [44, 44, 44, 60];
+        getLineWidth = 1;
+        getRadius = 4;
       }
       if (g === 'Point' && v === 'Number') {
         colorStyle = colorBinsStyle({
@@ -316,9 +322,9 @@ export default {
           colors: 'SunsetDark'
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [0, 0, 0, 100];
-        pointRadiusMinPixels = 4;
-        lineWidthMinPixels = 0.1;
+        getLineColor = [44, 44, 44, 60];
+        getLineWidth = 1;
+        getRadius = 4;
       }
       if (g === 'Point' && v === 'String') {
         colorStyle = colorCategoriesStyle({
@@ -326,9 +332,9 @@ export default {
           colors: 'Bold'
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [0, 0, 0, 100];
-        pointRadiusMinPixels = 4;
-        lineWidthMinPixels = 0.1;
+        getLineColor = [44, 44, 44, 60];
+        getLineWidth = 1;
+        getRadius = 4;
       }
     },
     resetColorStyle () {
@@ -336,8 +342,8 @@ export default {
       colorStyle = undefined;
       getFillColor = undefined;
       getLineColor = undefined;
-      pointRadiusMinPixels = undefined;
-      lineWidthMinPixels = undefined;
+      getLineWidth = undefined;
+      getRadius = undefined;
     }
   }
 };

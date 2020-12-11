@@ -1,0 +1,297 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StackedQuotaWidget.vue should render a disabled  widget with warning 1`] = `
+<div class="quota-widget-wrapper" quotatype="credits">
+  <div class="quota-widget is-disabled">
+    <div class="quota-main">
+      <div class="quota-cell cell--title">
+        <h4 class="text is-caption is-semibold is-txtGrey">Another test</h4>
+      </div>
+      <div class="quota-cell cell--large">
+        <notificationbadge-stub type="info" showicon="true" hasmargin="true">
+          <div class="text is-small">QuotaSection.upgrade</div>
+        </notificationbadge-stub>
+      </div>
+    </div>
+    <div class="quota-data">
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          0 
+        </span></div>
+      <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">
+          0 
+        </span></div>
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          0 
+        </span></div>
+      <div class="quota-help cell--small">
+        <tooltip-stub position="bottom-left" hide-delay="0s" show-delay="1s"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></tooltip-stub>
+      </div>
+    </div>
+  </div>
+  <!---->
+  <div class="quota-warning">
+    <p class="is-small is-bold"><img src="../../../assets/icons/apps/warning.svg">
+      QuotaSection.quotaExceeded
+    </p>
+  </div>
+</div>
+`;
+
+exports[`StackedQuotaWidget.vue should render correct contents 1`] = `
+<div class="quota-widget-wrapper" quotatype="quota">
+  <div class="quota-widget">
+    <div class="quota-main">
+      <div class="quota-cell cell--title">
+        <h4 class="text is-caption is-semibold is-txtGrey">Widget test</h4>
+      </div>
+      <div class="quota-cell cell--large">
+        <div class="progressbar">
+          <tooltip-stub position="bottom-right" hide-delay="0s" show-delay="1s">
+            <div class="progressbar progressbar--filled" style="width: 3.2414910858995136%;"></div>
+          </tooltip-stub>
+        </div>
+      </div>
+    </div>
+    <div class="quota-data">
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          1,194 GB
+        </span></div>
+      <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">
+          40 GB
+        </span></div>
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          1,234 GB
+        </span></div>
+      <div class="quota-help cell--small">
+        <tooltip-stub position="bottom-left" hide-delay="0s" show-delay="1s"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></tooltip-stub>
+      </div>
+    </div>
+  </div>
+  <!---->
+  <!---->
+</div>
+`;
+
+exports[`StackedQuotaWidget.vue should render correctly compact widget 1`] = `
+<div class="quota-widget-wrapper" quotatype="credits" mode="compact">
+  <div class="quota-widget">
+    <div class="quota-main">
+      <div class="quota-cell cell--title">
+        <h4 class="text is-caption is-semibold is-txtGrey">Another test</h4>
+      </div>
+      <div class="quota-cell cell--large">
+        <div class="progressbar">
+          <tooltip-stub position="bottom-right" hide-delay="0s" show-delay="1s">
+            <div class="progressbar progressbar--filled" style="width: 0.9724473257698543%;"></div>
+          </tooltip-stub>
+        </div>
+      </div>
+    </div>
+    <div class="quota-data">
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          1,222 
+        </span></div>
+      <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">
+          12 
+        </span></div>
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          1,234 
+        </span></div>
+      <div class="quota-help cell--small">
+        <tooltip-stub position="bottom-left" hide-delay="0s" show-delay="1s"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></tooltip-stub>
+      </div>
+    </div>
+  </div>
+  <!---->
+  <!---->
+</div>
+`;
+
+exports[`StackedQuotaWidget.vue should render multiple bars 1`] = `
+<div class="quota-widget-wrapper" quotatype="test">
+  <div class="quota-widget">
+    <div class="quota-main">
+      <div class="quota-cell cell--title">
+        <h4 class="text is-caption is-semibold is-txtGrey">My test</h4>
+      </div>
+      <div class="quota-cell cell--large">
+        <div class="progressbar">
+          <tooltip-stub text="undefined 224 undefined<br>undefined 100 undefined" position="bottom-right" hide-delay="0s" show-delay="1s">
+            <div class="progressbar progressbar--filled" style="width: 22.400000000000002%;"></div>
+            <div class="progressbar progressbar--filled" style="width: 10%;"></div>
+          </tooltip-stub>
+        </div>
+      </div>
+    </div>
+    <div class="quota-data">
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          676 
+        </span></div>
+      <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">
+          324 
+        </span></div>
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          1,000 
+        </span></div>
+      <div class="quota-help cell--small">
+        <tooltip-stub position="bottom-left" hide-delay="0s" show-delay="1s"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></tooltip-stub>
+      </div>
+    </div>
+  </div>
+  <div class="quota-legend">
+    <div class="legend-item text is-small is-semibold"><span class="legend-icon"></span>
+
+    </div>
+    <div class="legend-item text is-small is-semibold"><span class="legend-icon"></span>
+
+    </div>
+  </div>
+  <!---->
+</div>
+`;
+
+exports[`StackedQuotaWidget.vue should render problem bar if used ammount is over 90% 1`] = `
+<div class="quota-widget-wrapper" quotatype="test">
+  <div class="quota-widget">
+    <div class="quota-main">
+      <div class="quota-cell cell--title">
+        <h4 class="text is-caption is-semibold is-txtGrey">My test</h4>
+      </div>
+      <div class="quota-cell cell--large">
+        <div class="progressbar">
+          <tooltip-stub position="bottom-right" hide-delay="0s" show-delay="1s">
+            <div class="progressbar progressbar--problem" style="width: 93.2%;"></div>
+          </tooltip-stub>
+        </div>
+      </div>
+    </div>
+    <div class="quota-data">
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          68 
+        </span></div>
+      <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">
+          932 
+        </span></div>
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          1,000 
+        </span></div>
+      <div class="quota-help cell--small">
+        <tooltip-stub position="bottom-left" hide-delay="0s" show-delay="1s"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></tooltip-stub>
+      </div>
+    </div>
+  </div>
+  <!---->
+  <!---->
+</div>
+`;
+
+exports[`StackedQuotaWidget.vue should render unlimited bar if unlimited is true 1`] = `
+<div class="quota-widget-wrapper" quotatype="test">
+  <div class="quota-widget">
+    <div class="quota-main">
+      <div class="quota-cell cell--title">
+        <h4 class="text is-caption is-semibold is-txtGrey">My test</h4>
+      </div>
+      <div class="quota-cell cell--large">
+        <div class="progressbar">
+          <tooltip-stub position="bottom-right" hide-delay="0s" show-delay="1s">
+            <div class="progressbar progressbar--filled"></div>
+          </tooltip-stub>
+        </div>
+      </div>
+    </div>
+    <div class="quota-data">
+      <div class="quota-cell cell--medium">
+        <!---->
+      </div>
+      <div class="quota-cell cell--medium cell--mobile">
+        <!---->
+      </div>
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          400 
+        </span></div>
+      <div class="quota-help cell--small">
+        <tooltip-stub position="bottom-left" hide-delay="0s" show-delay="1s"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></tooltip-stub>
+      </div>
+    </div>
+  </div>
+  <!---->
+  <!---->
+</div>
+`;
+
+exports[`StackedQuotaWidget.vue should render warning bar if used ammount is over 60% and under 90% 1`] = `
+<div class="quota-widget-wrapper" quotatype="test">
+  <div class="quota-widget">
+    <div class="quota-main">
+      <div class="quota-cell cell--title">
+        <h4 class="text is-caption is-semibold is-txtGrey">My test</h4>
+      </div>
+      <div class="quota-cell cell--large">
+        <div class="progressbar">
+          <tooltip-stub position="bottom-right" hide-delay="0s" show-delay="1s">
+            <div class="progressbar progressbar--warning" style="width: 61%;"></div>
+          </tooltip-stub>
+        </div>
+      </div>
+    </div>
+    <div class="quota-data">
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          390 
+        </span></div>
+      <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">
+          610 
+        </span></div>
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          1,000 
+        </span></div>
+      <div class="quota-help cell--small">
+        <tooltip-stub position="bottom-left" hide-delay="0s" show-delay="1s"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></tooltip-stub>
+      </div>
+    </div>
+  </div>
+  <!---->
+  <!---->
+</div>
+`;
+
+exports[`StackedQuotaWidget.vue should render warning if the storage remaining quota is negative 1`] = `
+<div class="quota-widget-wrapper" quotatype="quota">
+  <div class="quota-widget">
+    <div class="quota-main">
+      <div class="quota-cell cell--title">
+        <h4 class="text is-caption is-semibold is-txtGrey">Another test</h4>
+      </div>
+      <div class="quota-cell cell--large">
+        <div class="progressbar">
+          <tooltip-stub position="bottom-right" hide-delay="0s" show-delay="1s">
+            <div class="progressbar progressbar--filled" style="width: 110.5203125%;"></div>
+          </tooltip-stub>
+        </div>
+      </div>
+    </div>
+    <div class="quota-data">
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          -27,578,368 MB
+        </span></div>
+      <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">
+          289,722,368 MB
+        </span></div>
+      <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+          262,144,000 MB
+        </span></div>
+      <div class="quota-help cell--small">
+        <tooltip-stub position="bottom-left" hide-delay="0s" show-delay="1s">
+          <!---->
+        </tooltip-stub>
+      </div>
+    </div>
+  </div>
+  <!---->
+  <div class="quota-warning">
+    <p class="is-small is-bold"><img src="../../../assets/icons/apps/warning.svg">
+      QuotaSection.quotaExceeded
+    </p>
+  </div>
+</div>
+`;

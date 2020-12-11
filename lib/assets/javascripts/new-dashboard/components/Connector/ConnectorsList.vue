@@ -65,7 +65,7 @@ export default {
     },
     cloudConnectors () {
       const connectors = this.connectorsByType('cloud');
-      connectors.push({id: 'url', label: 'URL'});
+      connectors.push({ id: 'url', label: 'URL' });
       return connectors;
     }
   },
@@ -128,6 +128,7 @@ export default {
   .request-connector {
     border: 1px solid $neutral--300;
     border-radius: 4px;
+    margin-bottom: 24px;
 
     .Form-inputWrapper {
       width: 318px;

@@ -4,7 +4,7 @@
     <div class="ImportButton">
       <i :class="'is-' + id"></i>
     </div>
-    <span class="is-small is-semibold">{{ label }}</span>
+    <span class="is-small is-semibold title">{{ label }}</span>
   </div>
 </template>
 
@@ -85,6 +85,14 @@ export default {
     border-left: 0;
     border-top: 0;
     border-bottom-right-radius: 4px;
+  }
+
+  .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    padding: 0 12px;
   }
 }
 

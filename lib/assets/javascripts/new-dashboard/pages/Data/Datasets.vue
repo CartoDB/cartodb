@@ -70,7 +70,12 @@ export default {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
   beforeRouteUpdate (to, from, next) {
-    checkFilters('datasets', 'datasets', to, from, next);
+    const matched = to.matched[to.matched.length - 1];
+    // Prevent checkFilters when you open Dialog to add a new dataset
+    if (!matched.parent || !matched.parent.name) {
+      checkFilters('datasets', 'datasets', to, from, next);
+    }
+    next();
   },
   computed: {
     ...mapState({

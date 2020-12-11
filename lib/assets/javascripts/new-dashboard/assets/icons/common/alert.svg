@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>interface-alert-diamond</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01-Home-limit" transform="translate(-297.000000, -1421.000000)">
+            <g id="Group-8" transform="translate(0.000000, 628.000000)">
+                <g id="Group-16" transform="translate(250.000000, 132.858796)">
+                    <g id="Group-2-Copy-2" transform="translate(0.000000, 545.000000)">
+                        <g id="Quotas" transform="translate(1.000000, 32.981481)">
+                            <g id="Bar-/-Green" transform="translate(36.000000, 36.978588)">
+                                <g id="interface-alert-diamond" transform="translate(0.000000, 39.181134)">
+                                    <g transform="translate(10.000000, 6.000000)">
+                                        <polygon id="Frame_-_24px" points="0 0 20 0 20 20 0 20"></polygon>
+                                        <g id="Line_Icons" transform="translate(1.666667, 1.666667)" fill="#2A2727" fill-rule="nonzero">
+                                            <path fill="#feb100" d="M8.33333333,16.6666697 C8.11228288,16.666895 7.90025442,16.5790247 7.74416667,16.4225 L0.244166667,8.9225 C0.0877363679,8.76633547 -0.000167634836,8.55437134 -0.000167634836,8.33333333 C-0.000167634836,8.11229533 0.0877363679,7.9003312 0.244166667,7.74416667 L7.74416667,0.244166667 C7.9003312,0.0877363679 8.11229533,-0.000167634836 8.33333333,-0.000167634836 C8.55437134,-0.000167634836 8.76633547,0.0877363679 8.9225,0.244166667 L16.4225,7.74416667 C16.5789303,7.9003312 16.6668343,8.11229533 16.6668343,8.33333333 C16.6668343,8.55437134 16.5789303,8.76633547 16.4225,8.9225 L8.9225,16.4225 C8.76662243,16.5793384 8.55445715,16.6672654 8.33333333,16.6666697 Z M2.01166667,8.33333333 L8.33333333,14.655 L14.655,8.33333333 L8.33333333,2.0125 L2.01166667,8.33333333 Z" id="Shape"></path>
+                                            <polygon fill="#feb100" id="Path" points="7.5 5 9.16666667 5 9.16666667 10 7.5 10"></polygon>
+                                            <circle fill="#feb100" id="Oval" cx="8.33333333" cy="11.6666667" r="1.04166667"></circle>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

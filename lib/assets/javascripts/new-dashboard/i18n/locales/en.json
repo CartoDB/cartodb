@@ -775,6 +775,10 @@
     }
   },
   "ConnectorsPage": {
+    "addConnection": "Add new connection",
+    "editConnection": "Edit your {connector} connection",
+    "editConnectionDisclaimer": "<span class='is-semibold'>Some datasets are using this connection to synchronize.</span> If you modify these parameters, you'll need to ensure you still have access to them.",
+    "editConnectionButton": "Save & Connect",
     "removeModal": {
       "title": "You are about to delete your {connector} connection",
       "subtitle": "If you have synchronized datasets, you will no longer be able to update them",

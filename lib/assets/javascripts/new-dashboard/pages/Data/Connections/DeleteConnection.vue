@@ -47,7 +47,7 @@ export default {
       let connectorTitle = '';
       if (this.connection) {
         const _connector = Object.values(IMPORT_OPTIONS)
-          .find(({name, options}) => this.connection.connector === name || this.connection.connector === (options && options.service));
+          .find(({ name, options }) => this.connection.connector === name || this.connection.connector === (options && options.service));
         connectorTitle = _connector ? _connector.title : '';
       }
       return connectorTitle;

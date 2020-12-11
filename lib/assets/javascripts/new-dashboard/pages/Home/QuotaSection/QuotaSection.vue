@@ -36,7 +36,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { hasFeatureEnabled } from 'new-dashboard/core/models/user';
+// import { hasFeatureEnabled } from 'new-dashboard/core/models/user';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import MemoryQuota from './MemoryQuota';
 import MapLoadsQuota from './MapLoadsQuota';
@@ -54,7 +54,7 @@ export default {
   computed: {
     ...mapState({
       billingPeriod: state => state.user.next_billing_period,
-      hideMapLoadsMetrics: state => hasFeatureEnabled(state.user, 'map_loads_metric_disabled')
+      hideMapLoadsMetrics: state => true // hasFeatureEnabled(state.user, 'map_loads_metric_disabled')
     }),
     billingDay () {
       return format(new Date(this.billingPeriod), 'Do');

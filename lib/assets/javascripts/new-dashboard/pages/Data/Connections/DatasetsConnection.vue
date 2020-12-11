@@ -12,11 +12,14 @@
           <div class="u-flex u-mt--24">
             <p class="text is-small u-mt--12 label-text">{{$t('DataPage.addConnector.query')}}</p>
             <div class="query-container u-ml--16">
-              <div class="codeblock-container">
+              <div class="codeblock-container" :class="{ 'with-errors': error}">
                 <CodeBlock language="text/x-plsql"
                   :readOnly="false"
-                  placeholder="SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable"
+                  :placeholder="connector.options.placeholder_query"
                   v-model="query"/>
+              </div>
+              <div class="text is-small is-txtAlert error u-pt--10 u-pr--12 u-pl--12 u-pb--8" v-if="error">
+                {{ $t('ConnectorsPage.queryError') }}
               </div>
               <p class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNote')}}</p>
             </div>
@@ -32,7 +35,7 @@
             </div>
           </div>
           <div class="u-flex u-flex__justify--end u-mt--24">
-            <button @click="validateQuery" class="button is-primary" :disabled="!(query && datasetName)"> {{$t('DataPage.addConnector.runQuery')}} </button>
+            <button @click="validateQuery" class="button is-primary" :disabled="!(query && datasetName) || sending"> {{$t('DataPage.addConnector.runQuery')}} </button>
           </div>
         </div>
         <div v-else-if="queryIsValid" class="dataset-sync-card-container">
@@ -60,6 +63,8 @@ import CodeBlock from 'new-dashboard/components/code/CodeBlock.vue';
 import FormInput from 'new-dashboard/components/forms/FormInput';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
+import { getImportOption } from 'new-dashboard/utils/connector/import-option';
+import { mapState } from 'vuex';
 
 export default {
   name: 'DatasetsConnection',
@@ -74,6 +79,8 @@ export default {
     return {
       query: '',
       datasetName: '',
+      error: '',
+      sending: false,
       queryIsValid: false
     };
   },
@@ -82,10 +89,33 @@ export default {
       default: ''
     }
   },
-  computed: {},
+  mounted () {
+    this.$store.dispatch('connectors/fetchConnectionsList');
+  },
+  computed: {
+    ...mapState({
+      loading: state => state.connectors.loadingConnections,
+      rawConnections: state => state.connectors.connections
+    }),
+    connection () {
+      return this.rawConnections && this.rawConnections.find(conn => conn.id === this.$route.params.id);
+    },
+    connector () {
+      return this.connection ? getImportOption(this.connection.connector) : null;
+    }
+  },
   methods: {
-    validateQuery () {
-      this.queryIsValid = true;
+    async validateQuery () {
+      this.sending = true;
+      this.error = '';
+
+      try {
+        await this.$store.dispatch('connectors/connectionDryrun', { ...this.connection, sql_query: this.query, import_as: this.datasetName });
+      } catch (error) {
+        this.error = true;
+      } finally {
+        this.sending = false;
+      }
     }
   }
 };
@@ -103,10 +133,21 @@ export default {
   flex-grow: 1;
   min-width: 0;
 
+  .error {
+    border: 1px solid $red--400;
+    background-color: transparentize($red--400, 0.92);
+    border-top: 0;
+    border-radius: 0 0 4px 4px;
+  }
+
   .codeblock-container {
     height: 120px;
     overflow: hidden;
     border-radius: 4px;
+
+    &.with-errors {
+      border-radius: 4px 4px 0 0;
+    }
 
     /deep/ .CodeMirror {
       max-width: 100%;

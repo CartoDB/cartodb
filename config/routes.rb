@@ -763,8 +763,8 @@ CartoDB::Application.routes.draw do
     end
 
     scope 'v1/' do
-      resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
       match '*path', via: [:OPTIONS], to: 'application#options'
+      resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
 
       # Organization assets
       scope '/organization/:organization_id', constraints: { id: UUID_REGEXP } do
@@ -776,6 +776,7 @@ CartoDB::Application.routes.draw do
 
       # EUMAPI
       scope 'organization/:id_or_name/' do
+        match '*path', via: [:OPTIONS], to: 'application#options'
         post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
         get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show
         delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v1_organization_users_delete

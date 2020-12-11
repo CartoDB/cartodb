@@ -119,7 +119,7 @@ group :development, :test do
   gem 'pry-byebug', '3.9.0'
   gem 'rack'
   gem 'rb-readline'
-  gem 'rspec-rails', '2.12.0'
+  gem 'rspec-rails', '2.14.1'
   gem 'rubocop', '~> 0.93', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false

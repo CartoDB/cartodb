@@ -48,6 +48,20 @@ let getLineColor;
 let getLineWidth;
 let getRadius;
 
+const CATEGORY_IDS = {
+   DEMOGRAPHICS: 'demographics',
+   ENVIRONMENTAL: 'environmental',
+   DERIVED: 'derived',
+   POIS: 'points_of_interest',
+   GEOGRAPHY: 'geography',
+   HOUSING: 'housing',
+   HUMAN_MOBILITY: 'human_mobility',
+   ROAD_TRAFFIC: 'road_traffic',
+   FINANCIAL: 'financial',
+   COVID19: 'covid19',
+   BEHAVIORAL: 'behavioral'
+} 
+
 export default {
   name: 'CatalogMap',
   props: {
@@ -76,6 +90,10 @@ export default {
     title () {
       return this.dataset.name;
     },
+    categoryId () {
+      console.log('CATEGORY ID:', this.dataset.category_id)
+      return this.dataset.category_id;
+    },
     isGeography () {
       return this.$route.params.entity_type === 'geography';
     },
@@ -93,6 +111,41 @@ export default {
     },
     variableAvg () {
       return this.formatNumber(this.variable && this.variable.avg);
+    },
+    categoryIdColor () {
+      let cartoColor;
+      switch (this.categoryId) {
+        case CATEGORY_IDS.DEMOGRAPHICS: 
+          cartoColor = 'SunsetDark'
+        break;
+        case CATEGORY_IDS.ENVIRONMENTAL:
+          cartoColor = 'BluGrn'
+          break;
+        case CATEGORY_IDS.DERIVED:
+          cartoColor = 'Teal'
+          break;
+        case CATEGORY_IDS.HOUSING:
+          cartoColor = 'Magenta'
+          break;
+        case CATEGORY_IDS.HUMAN_MOBILITY:
+          cartoColor = 'BurgYl'
+          break;
+        case CATEGORY_IDS.ROAD_TRAFFIC:
+          cartoColor = 'Sunset'
+          break;
+        case CATEGORY_IDS.FINANCIAL: 
+          cartoColor = 'PurpOr'
+          break; 
+        case CATEGORY_IDS.COVID19:
+          cartoColor = 'Peach'
+          break;
+        case CATEGORY_IDS.BEHAVIORAL:
+          cartoColor = 'TealGrn'
+          break;
+        default:
+          cartoColor = 'OrYel'
+      } 
+      return cartoColor;
     },
     variableBins () {
       if (this.variable && this.variable.quantiles && colorStyle) {
@@ -275,8 +328,9 @@ export default {
       if (g === 'Polygon' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
-          colors: 'OrYel'
+          colors: this.categoryIdColor
         });
+        console.log('CARTOCOLOR:', this.categoryIdColor);
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [44, 44, 44, 60];
         getLineWidth = 1;
@@ -284,7 +338,7 @@ export default {
       if (g === 'Polygon' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
-          colors: 'Bold'
+          colors: 'Prism'
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [44, 44, 44, 60];
@@ -297,7 +351,7 @@ export default {
       if (g === 'LineString' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
-          colors: 'SunsetDark'
+          colors: this.categoryIdColor
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
         getLineWidth = 2;
@@ -305,7 +359,7 @@ export default {
       if (g === 'LineString' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
-          colors: 'Bold'
+          colors: 'Prism'
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
         getLineWidth = 2;
@@ -319,10 +373,10 @@ export default {
       if (g === 'Point' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
-          colors: 'SunsetDark'
+          colors: this.categoryIdColor
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [44, 44, 44, 60];
+        getLineColor = [100, 100, 100, 255];
         getLineWidth = 1;
         getRadius = 4;
       }
@@ -332,7 +386,7 @@ export default {
           colors: 'Bold'
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [44, 44, 44, 60];
+        getLineColor = [100, 100, 100, 255];
         getLineWidth = 1;
         getRadius = 4;
       }

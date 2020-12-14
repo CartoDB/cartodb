@@ -25,8 +25,8 @@ describe Carto::Http::Client do
         method: :post,
         body: "this is a request body",
         params: { field1: "a field" },
-        headers: { Accept: "text/html", 
-                  "User-Agent" => Carto::Http::Request::DEFAULT_USER_AGENT 
+        headers: { Accept: "text/html",
+                  "User-Agent" => Carto::Http::Request::DEFAULT_USER_AGENT
                 }
       }
       Typhoeus::Request.expects(:new).once.with(expected_url, expected_options)
@@ -57,11 +57,11 @@ describe Carto::Http::Client do
 
   describe '#set_x_request_id!' do
     after(:each) do
-      Carto::CurrentRequest.request_id = nil
+      Carto::Common::CurrentRequest.request_id = nil
     end
 
     it 'adds the X-Request-ID header from the CurrentRequest when present' do
-      Carto::CurrentRequest.request_id = 'expected_request_id'
+      Carto::Common::CurrentRequest.request_id = 'expected_request_id'
       expected_response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
       Typhoeus.stub('www.example.com') do |request|
         request.options[:headers]['X-Request-ID'].should eq 'expected_request_id'
@@ -136,4 +136,3 @@ describe Carto::Http::Client do
   end
 
 end
-

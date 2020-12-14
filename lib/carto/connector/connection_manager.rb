@@ -176,9 +176,12 @@ module Carto
       @user.connections.find(id)
     end
 
-    def update_db_connection(id:, parameters:)
+    def update_db_connection(id:, parameters: nil, name: nil)
       connection = fetch_connection(id)
-      connection.update! parameters: connection.parameters.merge(parameters)
+      new_attributes = {}
+      new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
+      new_attributes[:name] = name if name.present?
+      connection.update!(new_attributes) if new_attributes.present?
     end
 
     private

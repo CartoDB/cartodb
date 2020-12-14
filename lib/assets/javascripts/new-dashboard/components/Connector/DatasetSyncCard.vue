@@ -12,23 +12,23 @@
     <div class="sync-options u-flex text is-small">
       <p class="">{{$t('DataPage.datasetCard.syncFrequency.title')}}</p>
       <div class="sync-option">
-        <input type="radio" id="never" name="syncFrequency" value="never" v-model="selectedInput">
+        <input type="radio" id="never" name="syncFrequency" :value="syncValues.never" v-model="selectedInput">
         <label for="never">{{$t('DataPage.datasetCard.syncFrequency.never')}}</label>
       </div>
       <div class="sync-option">
-        <input type="radio" id="hour" name="syncFrequency" value="hour" v-model="selectedInput">
+        <input type="radio" id="hour" name="syncFrequency" :value="syncValues.hour" v-model="selectedInput">
         <label for="hour">{{$t('DataPage.datasetCard.syncFrequency.hourly')}}</label>
       </div>
       <div class="sync-option">
-        <input type="radio" id="day" name="syncFrequency" value="day" v-model="selectedInput">
+        <input type="radio" id="day" name="syncFrequency" :value="syncValues.day" v-model="selectedInput">
         <label for="day">{{$t('DataPage.datasetCard.syncFrequency.daily')}}</label>
       </div>
       <div class="sync-option">
-        <input type="radio" id="week" name="syncFrequency" value="week" v-model="selectedInput">
+        <input type="radio" id="week" name="syncFrequency" :value="syncValues.week" v-model="selectedInput">
         <label for="week">{{$t('DataPage.datasetCard.syncFrequency.weekly')}}</label>
       </div>
       <div class="sync-option">
-        <input type="radio" id="month" name="syncFrequency" value="month" v-model="selectedInput">
+        <input type="radio" id="month" name="syncFrequency" :value="syncValues.month" v-model="selectedInput">
         <label for="month">{{$t('DataPage.datasetCard.syncFrequency.monthly')}}</label>
       </div>
     </div>
@@ -37,11 +37,20 @@
 
 <script>
 
+const SYNC_VALUES = {
+  never: 0,
+  hour: 3600,
+  day: 86400,
+  week: 604800,
+  month: 2592000
+};
+
 export default {
   name: 'DatasetSyncCard',
   data () {
     return {
-      selectedInput: this.syncFrequency
+      selectedInput: this.syncFrequency,
+      syncValues: SYNC_VALUES
     };
   },
   model: {
@@ -54,8 +63,8 @@ export default {
     isActive: Boolean,
     fileType: String,
     syncFrequency: {
-      type: String,
-      default: 'never'
+      type: Number,
+      default: SYNC_VALUES.never
     }
   },
   watch: {

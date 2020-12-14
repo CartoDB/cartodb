@@ -76,7 +76,8 @@ export default {
 };
 
 const defaultOptions = {
-  addModeClass: true
+  addModeClass: true,
+  lineWrapping: true
 };
 
 </script>

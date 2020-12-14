@@ -4,7 +4,7 @@
       <div class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
       <div class="welcome-compact__actions">
         <OnboardingButton :isFirstTimeViewingDashboard="false"></OnboardingButton>
-        <CreateButton class="button--ghost" visualizationType="map" :disabled="!canCreateMaps">{{ $t(`HomePage.WelcomeSection.actions.createMap`) }}</CreateButton>
+        <button @click="onNewMapClicked" class="button is-primary button--ghost" :disabled="!canCreateMaps">{{ $t(`HomePage.WelcomeSection.actions.createMap`) }}</button>
         <button @click="onNewDatesetClicked" class="button is-primary button--ghost" :disabled="!canCreateDatasets">{{ $t(`HomePage.WelcomeSection.actions.createDataset`) }}</button>
       </div>
 
@@ -42,6 +42,9 @@ export default {
   methods: {
     onNewDatesetClicked () {
       this.$emit('newDatesetClicked');
+    },
+    onNewMapClicked () {
+      this.$emit('newMapClicked');
     }
   }
 };

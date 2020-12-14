@@ -6,16 +6,16 @@
     :backRoute="{name: backNamedRoute}"
   >
     <template #default>
-      <div class="u-flex u-flex__justify--center">
+      <div  v-if="connector" class="u-flex u-flex__justify--center">
         <div v-if="!queryIsValid" class="forms-container">
-          <h3 class="title is-small">{{$t('DataPage.addConnector.importFrom', { datasource: "Snowflake instance" })}}</h3>
+          <h3 class="title is-small">{{$t('DataPage.addConnector.importFrom', { datasource: connector.title })}}</h3>
           <div class="u-flex u-mt--24">
             <p class="text is-small u-mt--12 label-text">{{$t('DataPage.addConnector.query')}}</p>
             <div class="query-container u-ml--16">
               <div class="codeblock-container" :class="{ 'with-errors': error}">
                 <CodeBlock language="text/x-plsql"
                   :readOnly="false"
-                  :placeholder="connector.options.placeholder_query"
+                  :placeholder="placeholderQuery"
                   v-model="query"/>
               </div>
               <div class="text is-small is-txtAlert error u-pt--10 u-pr--12 u-pl--12 u-pb--8" v-if="error">
@@ -64,14 +64,13 @@
 
 <script>
 
-import { mapState } from 'vuex';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import CodeBlock from 'new-dashboard/components/code/CodeBlock.vue';
 import FormInput from 'new-dashboard/components/forms/FormInput';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
-import uploadData from '../../../mixins/connector/uploadData';
+import uploadData from 'new-dashboard/mixins/connector/uploadData';
 
 export default {
   name: 'DatasetsConnection',
@@ -105,12 +104,11 @@ export default {
     this.connection = await this.$store.dispatch('connectors/fetchConnectionById', connId);
   },
   computed: {
-    ...mapState({
-      loading: state => state.connectors.loadingConnections,
-      rawConnections: state => state.connectors.connections
-    }),
     connector () {
       return this.connection ? getImportOption(this.connection.connector) : null;
+    },
+    placeholderQuery () {
+      return this.connector && this.connector.options.placeholder_query;
     }
   },
   methods: {
@@ -120,11 +118,11 @@ export default {
 
       try {
         await this.$store.dispatch('connectors/connectionDryrun', { ...this.connection, sql_query: this.query, import_as: this.datasetName });
+        this.queryIsValid = true;
       } catch (error) {
         this.error = true;
       } finally {
         this.sending = false;
-        this.queryIsValid = true;
       }
     },
     changeSyncInterval (value) {
@@ -144,7 +142,7 @@ export default {
         sql_query: this.query,
         import_as: this.datasetName
       };
-      
+
       const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
       backgroundPollingView._addDataset({ ...this.uploadObject, value: this.query });
       this.$refs.dialog.closePoup();

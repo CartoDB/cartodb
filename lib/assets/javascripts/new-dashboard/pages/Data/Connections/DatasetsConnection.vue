@@ -41,6 +41,7 @@
         <div v-else-if="queryIsValid" class="dataset-sync-card-container">
           <DatasetSyncCard
             :name="query"
+            @inputChange="changeSyncInterval"
             syncFrequency="never"
             fileType="SQL"
             isActive>
@@ -126,6 +127,9 @@ export default {
         this.queryIsValid = true;
       }
     },
+    changeSyncInterval (value) {
+      this.uploadObject.interval = value;
+    },
     changeGuess (value) {
       this.uploadObject.content_guessing = value;
       this.uploadObject.type_guessing = value;
@@ -135,12 +139,15 @@ export default {
     },
     connectDataset () {
       this.uploadObject.type = 'service';
-      this.uploadObject.connector = {"connection_id":"...", "sql_query":"select *,2 from users;","import_as":"users2"}
-      // if (this.isFileSelected) {
+      this.uploadObject.connector = {
+        connection_id: this.connection.id,
+        sql_query: this.query,
+        import_as: this.datasetName
+      };
+      
       const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
       backgroundPollingView._addDataset({ ...this.uploadObject, value: this.query });
       this.$refs.dialog.closePoup();
-      // }
     }
   }
 };

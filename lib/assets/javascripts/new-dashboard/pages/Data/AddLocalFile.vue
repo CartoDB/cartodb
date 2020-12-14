@@ -65,7 +65,7 @@
 
 <script>
 
-import exportedScssVars from 'new-dashboard/styles/variables.scss';
+import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import Dropzone from 'dropzone';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';

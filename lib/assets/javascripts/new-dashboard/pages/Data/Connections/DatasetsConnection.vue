@@ -56,7 +56,7 @@
 <script>
 
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
-import CodeBlock from 'new-dashboard/components/code/CodeBlock.vue';
+import CodeBlock from 'new-dashboard/components/Code/CodeBlock.vue';
 import FormInput from 'new-dashboard/components/forms/FormInput';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';

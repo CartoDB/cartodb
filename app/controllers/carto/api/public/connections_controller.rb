@@ -47,7 +47,7 @@ module Carto
         end
 
         def update
-          @connection_manager.update_db_connection(id: params[:id], parameters: params[:parameters])
+          @connection_manager.update_db_connection(id: params[:id], parameters: params[:parameters], name: params[:name])
           head :ok
         end
 

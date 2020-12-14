@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    :headerTitle="$t('DataPage.addDataset')"
+    :headerTitle="getHeaderTitleFromMode"
     :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
     :showSubHeader="false"
   >
@@ -26,6 +26,7 @@ import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
+import uploadData from 'new-dashboard/mixins/connector/uploadData';
 import { mapState } from 'vuex';
 
 const LOCAL_FILES = [
@@ -73,11 +74,15 @@ const LOCAL_FILES = [
 
 export default {
   name: 'NewDataset',
+  mixins: [uploadData],
   components: {
     Dialog,
     ConnectorSection,
     ConnectorsList,
     LoadingState
+  },
+  props: {
+    mode: String
   },
   computed: {
     ...mapState({

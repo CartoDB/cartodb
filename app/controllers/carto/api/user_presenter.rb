@@ -162,7 +162,9 @@ module Carto
             # DB storage used by public subscriptions:
             subscriptions_public_size_in_bytes: @user.subscriptions_public_size_in_bytes,
             # DB storage used by premium subscriptions:
-            subscriptions_premium_size_in_bytes: @user.subscriptions_premium_size_in_bytes
+            subscriptions_premium_size_in_bytes: @user.subscriptions_premium_size_in_bytes,
+            # Estimated premium datasets size:
+            subscriptions_premium_estimated_size_in_bytes: @user.subscriptions_premium_estimated_size_in_bytes
           },
           map_views: @user.map_views_count,
           map_views_quota: @user.organization_user? ? @user.organization.map_view_quota : @user.map_view_quota,

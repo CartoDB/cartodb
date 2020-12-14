@@ -22,7 +22,7 @@ sudo make install
 - Wrong param name in organization forms [#15975](https://github.com/CartoDB/cartodb/pull/15975)
 - Adding API Keys to Redis when user is unlocked [#15959](https://github.com/CartoDB/cartodb/pull/15959)
 - Make subscriber wait for DB creation in development [#15982](https://github.com/CartoDB/cartodb/pull/15982)
-- Public profile can be disabled [#15982](https://github.com/CartoDB/cartodb/pull/15995)
+- Public profile can be disabled via Feature Flag [#15982](https://github.com/CartoDB/cartodb/pull/15995)
 
 4.44.0 (2020-11-20)
 -------------------

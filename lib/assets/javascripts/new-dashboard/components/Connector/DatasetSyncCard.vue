@@ -63,7 +63,7 @@ export default {
     isActive: Boolean,
     fileType: String,
     syncFrequency: {
-      type: String,
+      type: Number,
       default: SYNC_VALUES.never
     }
   },

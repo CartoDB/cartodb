@@ -121,7 +121,6 @@ export default {
       } catch (error) {
         this.error = true;
       } finally {
-        this.queryIsValid = true;
         this.sending = false;
       }
     },

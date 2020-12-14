@@ -8,12 +8,12 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: c49a25b587e55867a31d53a2cca1851821f7debd
-  tag: v0.4.8
+  revision: 0fe56adb6ffb5c2dadbded59713878395e768118
+  tag: v0.4.9
   specs:
-    cartodb-common (0.4.7)
+    cartodb-common (0.4.9)
       argon2 (~> 2)
-      google-cloud-pubsub (~> 1.2)
+      google-cloud-pubsub (~> 1.10)
       rails (>= 4, < 6)
       rollbar
 
@@ -205,7 +205,7 @@ GEM
     google-cloud-env (1.3.0)
       faraday (~> 0.11)
     google-cloud-errors (1.0.1)
-    google-cloud-pubsub (1.2.0)
+    google-cloud-pubsub (1.10.0)
       concurrent-ruby (~> 1.1)
       google-cloud-core (~> 1.2)
       google-gax (~> 1.8)
@@ -552,7 +552,7 @@ DEPENDENCIES
   gibbon (= 1.1.4)
   google-api-client (= 0.34.1)
   google-cloud-bigquery-storage-v1 (~> 0.2.3)
-  google-cloud-pubsub (= 1.2.0)
+  google-cloud-pubsub (~> 1.10)
   hiredis (~> 0.6.1)
   instagram-continued-continued
   json-schema (= 2.1.9)

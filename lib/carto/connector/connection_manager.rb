@@ -1,7 +1,7 @@
 module Carto
   class ConnectionManager
     DB_PASSWORD_PLACEHOLDER = '********'.freeze
-    DB_TOKEN_PLACEHOLDER = '********'.freeze
+    OAUTH_TOKEN_PLACEHOLDER = '********'.freeze
 
     def initialize(user)
       @user = user

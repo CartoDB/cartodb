@@ -7,7 +7,7 @@
       <h4 class="is-small is-semibold">{{$t('DataPage.imports.database.title', { brand: connector.title })}}</h4>
       <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
         <label class="is-small u-mr--16">{{$t('DataPage.imports.database.label-name')}}</label>
-        <input v-model="connectionModel.name" type="text" :placeholder="$t('DataPage.imports.database.placeholder-name')" :disabled="editing">
+        <input v-model="connectionModel.name" type="text" :placeholder="$t('DataPage.imports.database.placeholder-name')">
       </div>
       <div v-for="p in connector.options.params" :key="p.key" class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
         <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">

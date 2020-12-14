@@ -114,7 +114,7 @@ export default {
       return this.$route.name.replace('add-local-file', '');
     },
     fileIcon () {
-      return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/file-${this.extension}.svg`;
+      return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/${this.extension}.svg`;
     },
     remainingByteQuota () {
       return this.$store.state.user && this.$store.state.user.remaining_byte_quota;

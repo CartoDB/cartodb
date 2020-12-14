@@ -88,6 +88,7 @@ export default {
       query: '',
       datasetName: '',
       error: '',
+      connection: null,
       sending: false,
       queryIsValid: false,
       uploadObject: this.getUploadObject()
@@ -98,17 +99,15 @@ export default {
       default: ''
     }
   },
-  mounted () {
-    this.$store.dispatch('connectors/fetchConnectionsList');
+  async mounted () {
+    const connId = this.$route.params.id;
+    this.connection = await this.$store.dispatch('connectors/fetchConnectionById', connId);
   },
   computed: {
     ...mapState({
       loading: state => state.connectors.loadingConnections,
       rawConnections: state => state.connectors.connections
     }),
-    connection () {
-      return this.rawConnections && this.rawConnections.find(conn => conn.id === this.$route.params.id);
-    },
     connector () {
       return this.connection ? getImportOption(this.connection.connector) : null;
     }
@@ -135,10 +134,12 @@ export default {
       this.uploadObject.privacy = value;
     },
     connectDataset () {
+      this.uploadObject.type = 'service';
+      this.uploadObject.connector = {"connection_id":"...", "sql_query":"select *,2 from users;","import_as":"users2"}
       // if (this.isFileSelected) {
-      //   const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
-      //   backgroundPollingView._addDataset({...this.uploadObject});
-      //   this.$refs.dialog.closePoup();
+      const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
+      backgroundPollingView._addDataset({ ...this.uploadObject, value: this.query });
+      this.$refs.dialog.closePoup();
       // }
     }
   }

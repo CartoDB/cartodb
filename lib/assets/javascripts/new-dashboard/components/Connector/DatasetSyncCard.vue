@@ -64,7 +64,7 @@ export default {
     fileType: String,
     syncFrequency: {
       type: String,
-      default: 'never'
+      default: SYNC_VALUES.never
     }
   },
   watch: {

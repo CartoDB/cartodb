@@ -42,7 +42,6 @@
           <DatasetSyncCard
             :name="query"
             @inputChange="changeSyncInterval"
-            syncFrequency="never"
             fileType="SQL"
             isActive>
           </DatasetSyncCard>
@@ -122,6 +121,7 @@ export default {
       } catch (error) {
         this.error = true;
       } finally {
+        this.queryIsValid = true;
         this.sending = false;
       }
     },

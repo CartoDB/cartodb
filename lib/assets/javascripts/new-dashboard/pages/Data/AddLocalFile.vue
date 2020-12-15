@@ -1,6 +1,6 @@
 <template>
   <Dialog ref="dialog"
-    :headerTitle="$t('DataPage.addDataset')"
+    :headerTitle="getHeaderTitleFromMode"
     :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
     :backRoute="{name: `${getRouteNamePrefix}new-dataset`}"
   >
@@ -80,6 +80,9 @@ export default {
   components: {
     Dialog,
     GuessPrivacyFooter
+  },
+  props: {
+    mode: String
   },
   data () {
     return {

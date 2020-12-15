@@ -1,6 +1,6 @@
 <template>
   <Dialog ref="dialog"
-    :headerTitle="$t('DataPage.addDataset')"
+    :headerTitle="getHeaderTitleFromMode"
     :headerImage="require('../../../assets/icons/datasets/subsc-add-icon.svg')"
     :showSubHeader="true"
     :backRoute="{name: backNamedRoute}"
@@ -96,7 +96,8 @@ export default {
   props: {
     backNamedRoute: {
       default: ''
-    }
+    },
+    mode: String
   },
   async mounted () {
     const connId = this.$route.params.id;

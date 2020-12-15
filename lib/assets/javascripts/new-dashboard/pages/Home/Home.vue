@@ -87,10 +87,10 @@ export default {
       this.$store.dispatch('datasets/fetch');
     },
     onNewDatesetClicked () {
-      this.$router.push({name: 'home-dataset-new-dataset'});
+      this.$router.push({ name: 'home-dataset-new-dataset' });
     },
     onNewMapClicked () {
-      this.$router.push({name: 'home-maps-new-dataset'});
+      this.$router.push({ name: 'home-maps-new-dataset' });
     }
   }
 };

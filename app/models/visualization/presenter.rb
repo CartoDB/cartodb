@@ -1,4 +1,5 @@
 require_relative './member'
+require_relative '../permission/presenter'
 
 module CartoDB
   module Visualization

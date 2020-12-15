@@ -347,7 +347,9 @@ module Carto::UserCommons
   def update_feature_flags(feature_flag_ids = nil)
     return unless feature_flag_ids
 
-    self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all
+    self_feature_flags_user.where.not(
+      feature_flag_id: feature_flag_ids.select {|e| e != ""}
+    ).destroy_all
 
     new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)
     new_feature_flags_ids.each do |feature_flag_id|

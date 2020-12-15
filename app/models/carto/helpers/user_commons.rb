@@ -348,7 +348,7 @@ module Carto::UserCommons
     return unless feature_flag_ids
 
     self_feature_flags_user.where.not(
-      feature_flag_id: feature_flag_ids.select {|e| e != ""}
+      feature_flag_id: feature_flag_ids.reject { |e| e == '' }
     ).destroy_all
 
     new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)

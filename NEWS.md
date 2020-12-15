@@ -25,6 +25,7 @@ sudo make install
 - Adding API Keys to Redis when user is unlocked [#15959](https://github.com/CartoDB/cartodb/pull/15959)
 - Bump version of cartodb-common to v0.4.9 and pubsub to 1.10 [#16007](https://github.com/CartoDB/cartodb/pull/16007)
 - Make subscriber wait for DB creation in development [#15982](https://github.com/CartoDB/cartodb/pull/15982)
+- Fix an issue with autoloading of a model class [#16011](https://github.com/CartoDB/cartodb/pull/16011)
 
 4.44.0 (2020-11-20)
 -------------------

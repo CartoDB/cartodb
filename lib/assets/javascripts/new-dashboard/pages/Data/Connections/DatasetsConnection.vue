@@ -5,54 +5,76 @@
     :showSubHeader="true"
     :backRoute="{name: backNamedRoute}"
   >
+    <template slot="sub-header">
+      <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
+        <img height="21" class="u-mr--8" :src="logo">
+        {{ $t('DataPage.connectWith') }} {{title}}
+      </h3>
+    </template>
     <template #default>
       <div  v-if="connector" class="u-flex u-flex__justify--center">
-        <div v-if="!queryIsValid" class="forms-container">
-          <h3 class="title is-small">{{$t('DataPage.addConnector.importFrom', { datasource: connector.title })}}</h3>
-          <div class="u-flex u-mt--24">
-            <p class="text is-small u-mt--12 label-text">{{$t('DataPage.addConnector.query')}}</p>
-            <div class="query-container u-ml--16">
-              <div class="codeblock-container" :class="{ 'with-errors': error}">
-                <CodeBlock language="text/x-plsql"
-                  :readOnly="false"
-                  :placeholder="placeholderQuery"
-                  v-model="query"/>
+        <template v-if="isDatabase">
+          <div v-if="!queryIsValid" class="forms-container">
+            <h3 class="title is-small">{{$t('DataPage.addConnector.importFrom', { datasource: connector.title })}}</h3>
+            <div class="u-flex u-mt--24">
+              <p class="text is-small u-mt--12 label-text">{{$t('DataPage.addConnector.query')}}</p>
+              <div class="query-container u-ml--16">
+                <div class="codeblock-container" :class="{ 'with-errors': error}">
+                  <CodeBlock language="text/x-plsql"
+                    :readOnly="false"
+                    :placeholder="placeholderQuery"
+                    v-model="query"/>
+                </div>
+                <div class="text is-small is-txtAlert error u-pt--10 u-pr--12 u-pl--12 u-pb--8" v-if="error">
+                  {{ $t('ConnectorsPage.queryError') }}
+                </div>
+                <p class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNote')}}</p>
               </div>
-              <div class="text is-small is-txtAlert error u-pt--10 u-pr--12 u-pl--12 u-pb--8" v-if="error">
-                {{ $t('ConnectorsPage.queryError') }}
+            </div>
+            <div class="u-flex u-mt--20">
+              <p class="text is-small u-mt--24 label-text">{{$t('DataPage.addConnector.destinationDataset')}}</p>
+              <div class="dataset-container u-ml--16">
+                <FormInput
+                  :optional="true"
+                  placeholder=""
+                  v-model="datasetName"/>
+                <p class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.destinationDatasetNote')}}</p>
               </div>
-              <p class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNote')}}</p>
+            </div>
+            <div class="u-flex u-flex__justify--end u-mt--24">
+              <button @click="validateQuery" class="button is-primary" :disabled="!(query && datasetName) || sending"> {{$t('DataPage.addConnector.runQuery')}} </button>
             </div>
           </div>
-          <div class="u-flex u-mt--20">
-            <p class="text is-small u-mt--24 label-text">{{$t('DataPage.addConnector.destinationDataset')}}</p>
-            <div class="dataset-container u-ml--16">
-              <FormInput
-                :optional="true"
-                placeholder=""
-                v-model="datasetName"/>
-              <p class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.destinationDatasetNote')}}</p>
+          <div v-else-if="queryIsValid" class="dataset-sync-card-container">
+            <DatasetSyncCard
+              :name="query"
+              @inputChange="changeSyncInterval"
+              fileType="SQL"
+              isActive>
+            </DatasetSyncCard>
+          </div>
+        </template>
+        <template v-else>
+          <div class="dataset-sync-card-container">
+            <div v-for="file in fileList" :key="file.id" class="u-mb--12">
+              <DatasetSyncCard
+                :id="file.id"
+                :name="file.title"
+                :size="file.size"
+                :fileType="file.extension"
+                :isActive="file.id === selectedFile"
+                @click="chooseFile(file)">
+                </DatasetSyncCard>
             </div>
           </div>
-          <div class="u-flex u-flex__justify--end u-mt--24">
-            <button @click="validateQuery" class="button is-primary" :disabled="!(query && datasetName) || sending"> {{$t('DataPage.addConnector.runQuery')}} </button>
-          </div>
-        </div>
-        <div v-else-if="queryIsValid" class="dataset-sync-card-container">
-          <DatasetSyncCard
-            :name="query"
-            @inputChange="changeSyncInterval"
-            fileType="SQL"
-            isActive>
-          </DatasetSyncCard>
-        </div>
+        </template>
       </div>
     </template>
-    <template v-if="queryIsValid" slot="footer">
+    <template v-if="queryIsValid || !isDatabase" slot="footer">
       <GuessPrivacyFooter
         :guess="uploadObject.content_guessing && uploadObject.type_guessing"
         :privacy="uploadObject.privacy"
-        :disabled="false"
+        :disabled="!isDatabase ? !selectedFile : false"
         @guessChanged="changeGuess"
         @privacyChanged="changePrivacy"
         @connect="connectDataset"
@@ -63,6 +85,7 @@
 
 <script>
 
+import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import CodeBlock from 'new-dashboard/components/Code/CodeBlock.vue';
 import FormInput from 'new-dashboard/components/forms/FormInput';
@@ -90,6 +113,8 @@ export default {
       connection: null,
       sending: false,
       queryIsValid: false,
+      fileList: null,
+      selectedFile: null,
       uploadObject: this.getUploadObject()
     };
   },
@@ -101,6 +126,10 @@ export default {
   async mounted () {
     const connId = this.$route.params.id;
     this.connection = await this.$store.dispatch('connectors/fetchConnectionById', connId);
+
+    if (!this.isDatabase) {
+      this.getOAuthFiles();
+    }
   },
   computed: {
     connector () {
@@ -108,6 +137,15 @@ export default {
     },
     placeholderQuery () {
       return this.connector && this.connector.options.placeholder_query;
+    },
+    isDatabase () {
+      return this.connector && this.connector.type === 'database';
+    },
+    logo () {
+      return this.connector && `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/${this.connector.name}.svg`;
+    },
+    title () {
+      return this.connector && this.connector.title;
     }
   },
   methods: {
@@ -123,6 +161,17 @@ export default {
       } finally {
         this.sending = false;
       }
+    },
+    async getOAuthFiles () {
+      const data = await this.$store.dispatch('connectors/fetchOAuthFileList', this.connection.connector);
+      this.fileList = data.files.map(file => {
+        const executed = /\.([0-9a-z]+)$/i.exec(file.filename);
+        const extension = executed ? executed[1] : '?';
+        return { ...file, extension };
+      });
+    },
+    chooseFile (file) {
+      this.selectedFile = file.id;
     },
     changeSyncInterval (value) {
       this.uploadObject.interval = value;

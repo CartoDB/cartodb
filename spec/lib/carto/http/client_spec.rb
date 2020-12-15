@@ -25,9 +25,10 @@ describe Carto::Http::Client do
         method: :post,
         body: "this is a request body",
         params: { field1: "a field" },
-        headers: { Accept: "text/html",
-                  "User-Agent" => Carto::Http::Request::DEFAULT_USER_AGENT
-                }
+        headers: {
+          Accept: 'text/html',
+          'User-Agent' => Carto::Http::Request::DEFAULT_USER_AGENT
+        }
       }
       Typhoeus::Request.expects(:new).once.with(expected_url, expected_options)
       @client.request(

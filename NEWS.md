@@ -23,7 +23,10 @@ sudo make install
 - Fix buffering of log traces in subscriber [#15980](https://github.com/CartoDB/cartodb/pull/15980)
 - Wrong param name in organization forms [#15975](https://github.com/CartoDB/cartodb/pull/15975)
 - Adding API Keys to Redis when user is unlocked [#15959](https://github.com/CartoDB/cartodb/pull/15959)
+- Bump version of cartodb-common to v0.4.9 and pubsub to 1.10 [#16007](https://github.com/CartoDB/cartodb/pull/16007)
 - Make subscriber wait for DB creation in development [#15982](https://github.com/CartoDB/cartodb/pull/15982)
+- `MessageBroker` now grabs the subscription name from `Config#central_subscription_name` [#16008](https://github.com/CartoDB/cartodb/pull/16008)
+- Fix an issue with autoloading of a model class [#16011](https://github.com/CartoDB/cartodb/pull/16011)
 - Public profile can be disabled via Feature Flag [#15982](https://github.com/CartoDB/cartodb/pull/15995)
 
 4.44.0 (2020-11-20)

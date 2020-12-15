@@ -116,7 +116,7 @@ export default {
       let cartoColor;
       switch (this.categoryId) {
         case CATEGORY_IDS.DEMOGRAPHICS: 
-          cartoColor = 'SunsetDark'
+          cartoColor = 'BrwnYl'
         break;
         case CATEGORY_IDS.ENVIRONMENTAL:
           cartoColor = 'BluGrn'
@@ -125,10 +125,10 @@ export default {
           cartoColor = 'Teal'
           break;
         case CATEGORY_IDS.HOUSING:
-          cartoColor = 'Magenta'
+          cartoColor = 'Burg'
           break;
         case CATEGORY_IDS.HUMAN_MOBILITY:
-          cartoColor = 'BurgYl'
+          cartoColor = 'RedOr'
           break;
         case CATEGORY_IDS.ROAD_TRAFFIC:
           cartoColor = 'Sunset'

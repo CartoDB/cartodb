@@ -15,6 +15,12 @@ module Carto
         user.reload
         CartoDB::Visualization::CommonDataService.load_common_data(user, nil) if user.should_load_common_data?
         user.update_feature_flags(params[:feature_flags])
+      else
+        Rails.logger.error(
+          message: 'Error creating user',
+          error_detail: user.errors.full_messages.inspect,
+          current_user: user
+        )
       end
       CartoGearsApi::Events::EventManager.instance.notify(
         CartoGearsApi::Events::UserCreationEvent.new(

@@ -15,7 +15,12 @@ module Carto
 
       def update_user(payload)
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
-          logger.info(message: 'Processing :update_user', class_name: self.class.name)
+          logger.info(
+            message: 'Processing command',
+            command_name: 'update_user',
+            class_name: self.class.name,
+            current_user: payload[:username]
+          )
 
           user_id = payload.delete('remote_user_id')
 
@@ -24,13 +29,22 @@ module Carto
           user = ::User.where(id: user_id).first
           Carto::UserUpdater.new(user).update(payload.except(:request_id))
 
-          logger.info(message: 'User updated', current_user: user, class_name: self.class.name)
+          logger.info(
+            message: 'User updated',
+            current_user: user,
+            class_name: self.class.name,
+          )
         end
       end
 
       def create_user(payload)
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
-          logger.info(message: 'Processing :create_user', class_name: self.class.name)
+          logger.info(
+            message: 'Processing command',
+            command_name: 'create_user',
+            class_name: self.class.name,
+            current_user: payload[:username]
+          )
 
           user = Carto::UserCreator.new.create(payload.except(:request_id))
           notifications_topic.publish(:user_created, {
@@ -44,7 +58,12 @@ module Carto
 
       def delete_user(payload)
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
-          logger.info(message: 'Processing :delete_user', class_name: self.class.name)
+          logger.info(
+            message: 'Processing command',
+            command_name: 'delete_user',
+            class_name: self.class.name,
+            user_id: payload[:id]
+          )
 
           user = ::User.where(id: payload[:id]).first
           user.set_force_destroy if payload[:force] == 'true'

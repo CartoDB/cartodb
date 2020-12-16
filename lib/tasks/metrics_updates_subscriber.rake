@@ -15,7 +15,7 @@ namespace :message_broker do
       subscription_name = Carto::Common::MessageBroker::Config.instance.metrics_subscription_name
       subscription = message_broker.get_subscription(subscription_name)
 
-      map_views_update = Carto::Subscribers::MapViewsUpdate.new()
+      map_views_update = Carto::Subscribers::MapViewsUpdate.new
 
       subscription.register_callback(
         'update_map_views', # `event` attribute of the message

@@ -2,9 +2,13 @@
   <div class="base-map">
     <div id="map"></div>
     <canvas id="deck-canvas"></canvas>
-    <div v-if="legend && !isGeography" class="legend">
+    <div v-if="legend" class="legend">
+      <BasicLegend
+        v-if="isGeography"
+        :title="variableName"
+      />
       <ColorBinsLegend
-        v-if="variableMax"
+        v-else-if="variableMax"
         :title="variableName"
         :min="variableMin"
         :max="variableMax"
@@ -12,7 +16,7 @@
         :bins="variableBins"
       />
       <ColorCategoriesLegend
-        v-if="variableCategories"
+        v-else-if="variableCategories"
         :title="variableName"
         :categories="variableCategories"
       />
@@ -37,6 +41,7 @@ import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
 import colorBinsStyle from './map-styles/colorBinsStyle';
 import colorCategoriesStyle from './map-styles/colorCategoriesStyle';
 
+import BasicLegend from './legends/BasicLegend';
 import ColorBinsLegend from './legends/ColorBinsLegend';
 import ColorCategoriesLegend from './legends/ColorCategoriesLegend';
 
@@ -68,6 +73,7 @@ export default {
     showInfo: Boolean
   },
   components: {
+    BasicLegend,
     ColorBinsLegend,
     ColorCategoriesLegend
   },
@@ -255,7 +261,8 @@ export default {
       this.geomType = tilestats.layers[0].geometry;
     },
     setVariable (tilestats) {
-      const variable = tilestats.layers[0].attributes[1];
+      const attributes = tilestats.layers[0].attributes;
+      const variable = attributes[1] || attributes[0]; // Default geoid
       if (!this.variables || !variable) return;
       const variableExtra = this.variables.find((v) => {
         return v.id.split('.').slice(-1)[0] === variable.attribute;

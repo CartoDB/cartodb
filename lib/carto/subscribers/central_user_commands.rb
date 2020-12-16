@@ -14,6 +14,7 @@ module Carto
       end
 
       def update_user(payload)
+        logger.info(debug_tag: 'amiedes', message: 'Processing CentralUserCommands#update_user', current_user: payload[:username], payload: payload, thread_id: syscall(186))
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
           logger.info(
             message: 'Processing command',
@@ -38,7 +39,7 @@ module Carto
       end
 
       def create_user(payload)
-        logger.info(debug_tag: 'amiedes', message: 'Processing CentralUserCommands#create_user', current_user: payload[:username], payload: payload)
+        logger.info(debug_tag: 'amiedes', message: 'Processing CentralUserCommands#create_user', current_user: payload[:username], payload: payload, thread_id: syscall(186))
 
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
           logger.info(
@@ -70,6 +71,7 @@ module Carto
       end
 
       def delete_user(payload)
+        logger.info(debug_tag: 'amiedes', message: 'Processing CentralUserCommands#delete_user', current_user: payload[:username], payload: payload, thread_id: syscall(186))
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
           logger.info(
             message: 'Processing command',

@@ -28,10 +28,10 @@
         <LoadingState v-else primary/>
       </div>
       <div v-else-if="selectedTab == TABS.yourDatasets || selectedTab == TABS.sharedWithYou">
-        <AddLayerFromDataset
+        <DatasetsList
           :sharedTab='selectedTab == TABS.sharedWithYou'
           @datasetSelected="updateDatasetSelection"
-        ></AddLayerFromDataset>
+        ></DatasetsList>
       </div>
     </template>
     <template #footer>
@@ -48,7 +48,7 @@ import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
-import AddLayerFromDataset from 'new-dashboard/components/AddLayer/AddLayerFromDataset';
+import DatasetsList from 'new-dashboard/components/Connector/DatasetsList';
 import Button from 'new-dashboard/components/Button';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
 import { mapState } from 'vuex';
@@ -109,13 +109,13 @@ export default {
     ConnectorSection,
     ConnectorsList,
     LoadingState,
-    AddLayerFromDataset,
+    DatasetsList,
     Button
   },
   props: {
     isDataPage: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   computed: {

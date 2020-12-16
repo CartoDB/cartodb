@@ -96,16 +96,27 @@ module CartoDB
 
       # INFO: main setup for non-org users
       def new_non_organization_user_main_db_setup
-        Thread.new do
-          create_db_user
-          create_user_db
-          grant_owner_in_database
-        end.join
+        Rails.logger.info(
+          debug_tag: 'amiedes',
+          message: 'CartoDB::UserModule::DBService#new_non_organization_user_main_db_setup (start)',
+          current_user: user&.username
+        )
+
+        create_db_user
+        create_user_db
+        grant_owner_in_database
         create_importer_schema
         create_geocoding_schema
         load_cartodb_functions
         install_and_configure_geocoder_api_extension
         install_odbc_fdw
+
+        Rails.logger.info(
+          debug_tag: 'amiedes',
+          message: 'CartoDB::UserModule::DBService#new_non_organization_user_main_db_setup (middle point)',
+          current_user: user&.username
+        )
+
         # We reset the connections to this database to be sure the change in default search_path is effective
         reset_pooled_connections
 
@@ -116,6 +127,12 @@ module CartoDB
         reset_user_schema_permissions
 
         configure_database
+
+        Rails.logger.info(
+          debug_tag: 'amiedes',
+          message: 'CartoDB::UserModule::DBService#new_non_organization_user_main_db_setup (end)',
+          current_user: user&.username
+        )
 
         revoke_cdb_conf_access
       end

@@ -14,8 +14,21 @@ module Carto
       end
 
       def update_user(payload)
+        logger.info(
+          debug_tag: 'amiedes',
+          message: 'Processing CentralUserCommands#update_user',
+          current_user: payload[:username],
+          payload: payload,
+          thread_id: syscall(186)
+        )
+
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
-          logger.info(message: 'Processing :update_user', class_name: self.class.name)
+          logger.info(
+            message: 'Processing command',
+            command_name: 'update_user',
+            class_name: self.class.name,
+            current_user: payload[:username]
+          )
 
           user_id = payload.delete('remote_user_id')
 
@@ -24,27 +37,72 @@ module Carto
           user = ::User.where(id: user_id).first
           Carto::UserUpdater.new(user).update(payload.except(:request_id))
 
-          logger.info(message: 'User updated', current_user: user, class_name: self.class.name)
+          logger.info(
+            message: 'User updated',
+            current_user: user,
+            class_name: self.class.name,
+          )
         end
       end
 
       def create_user(payload)
+        logger.info(
+          debug_tag: 'amiedes',
+          message: 'Processing CentralUserCommands#create_user',
+          current_user: payload[:username],
+          payload: payload,
+          thread_id: syscall(186)
+        )
+        logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
+
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
-          logger.info(message: 'Processing :create_user', class_name: self.class.name)
+          logger.info(
+            message: 'Processing command',
+            command_name: 'create_user',
+            class_name: self.class.name,
+            current_user: payload[:username]
+          )
+          logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
+
+          logger.info(
+            debug_tag: 'amiedes',
+            message: 'Before the Carto::UserCreator.new.create',
+            current_user: payload[:username]
+          )
+          logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
 
           user = Carto::UserCreator.new.create(payload.except(:request_id))
+
+          logger.info(
+            debug_tag: 'amiedes',
+            message: 'After the Carto::UserCreator.new.create',
+            current_user: payload[:username]
+          )
+          logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
+
           notifications_topic.publish(:user_created, {
                                         username: user.username,
                                         id: user.id
                                       })
 
+          logger.info(debug_tag: 'amiedes', message: 'After publishing the user_created message', current_user: payload[:username])
+
           logger.info(message: 'User created', current_user: user, class_name: self.class.name)
         end
+      rescue StandardError => e
+        logger.error(debug_tag: 'amiedes', message: 'Unhandled exception', exception: e)
+        raise e
       end
 
       def delete_user(payload)
+        logger.info(debug_tag: 'amiedes', message: 'Processing CentralUserCommands#delete_user', current_user: payload[:username], payload: payload, thread_id: syscall(186))
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
-          logger.info(message: 'Processing :delete_user', class_name: self.class.name)
+          logger.info(
+            message: 'Processing command',
+            command_name: 'delete_user',
+            class_name: self.class.name,
+            user_id: payload[:id]
+          )
 
           user = ::User.where(id: payload[:id]).first
           user.set_force_destroy if payload[:force] == 'true'

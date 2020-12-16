@@ -24,7 +24,7 @@
     <div v-show="showInfo && variableDescription" class="map-info">
       <p class="is-small">{{ variableDescription }}</p>
     </div>
-    <div v-if="recenter" class="recenter" @click="recenterMap">
+    <div v-show="recenter && !centered" class="recenter" @click="recenterMap">
       <img src="../../assets/icons/catalog/recenter.svg" alt="recenter">
       <p class="is-small is-semibold">Recenter</p>
     </div>
@@ -83,7 +83,8 @@ export default {
       showMap: false,
       variable: null,
       geomType: null,
-      initialViewState: null
+      initialViewState: null,
+      centered: false
     };
   },
   computed: {
@@ -210,6 +211,9 @@ export default {
         bearing: viewState.bearing,
         pitch: viewState.pitch
       });
+      this.centered = this.initialViewState.zoom === viewState.zoom &&
+        this.initialViewState.latitude === viewState.latitude &&
+        this.initialViewState.longitude === viewState.longitude;
     },
     recenterMap () {
       // Hack to force initialViewState to change

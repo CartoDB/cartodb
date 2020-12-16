@@ -62,7 +62,7 @@
                 :name="file.title"
                 :size="file.size"
                 :fileType="file.extension"
-                :isActive="file.id === selectedFile"
+                :isActive="selectedFile && file.id === selectedFile.id"
                 @click="chooseFile(file)">
                 </DatasetSyncCard>
             </div>
@@ -172,7 +172,7 @@ export default {
       });
     },
     chooseFile (file) {
-      this.selectedFile = file.id;
+      this.selectedFile = file;
     },
     changeSyncInterval (value) {
       this.uploadObject.interval = value;
@@ -186,14 +186,22 @@ export default {
     },
     connectDataset () {
       this.uploadObject.type = 'service';
-      this.uploadObject.connector = {
-        connection_id: this.connection.id,
-        sql_query: this.query,
-        import_as: this.datasetName
-      };
+
+      if (this.isDatabase) {
+        this.uploadObject.connector = {
+          connection_id: this.connection.id,
+          sql_query: this.query,
+          import_as: this.datasetName
+        };
+        this.uploadObject.value = this.query;
+      } else {
+        this.uploadObject.service_name = this.connector.options.service;
+        this.uploadObject.service_item_id = this.selectedFile.id;
+        this.uploadObject.value = this.selectedFile;
+      }
 
       const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
-      backgroundPollingView._addDataset({ ...this.uploadObject, value: this.query });
+      backgroundPollingView._addDataset({ ...this.uploadObject });
       this.$refs.dialog.closePoup();
     }
   }

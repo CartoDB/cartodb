@@ -49,18 +49,18 @@ let getLineWidth;
 let getRadius;
 
 const CATEGORY_IDS = {
-   DEMOGRAPHICS: 'demographics',
-   ENVIRONMENTAL: 'environmental',
-   DERIVED: 'derived',
-   POIS: 'points_of_interest',
-   GEOGRAPHY: 'geography',
-   HOUSING: 'housing',
-   HUMAN_MOBILITY: 'human_mobility',
-   ROAD_TRAFFIC: 'road_traffic',
-   FINANCIAL: 'financial',
-   COVID19: 'covid19',
-   BEHAVIORAL: 'behavioral'
-} 
+  DEMOGRAPHICS: 'demographics',
+  ENVIRONMENTAL: 'environmental',
+  DERIVED: 'derived',
+  POIS: 'points_of_interest',
+  GEOGRAPHY: 'geography',
+  HOUSING: 'housing',
+  HUMAN_MOBILITY: 'human_mobility',
+  ROAD_TRAFFIC: 'road_traffic',
+  FINANCIAL: 'financial',
+  COVID19: 'covid19',
+  BEHAVIORAL: 'behavioral'
+};
 
 export default {
   name: 'CatalogMap',
@@ -91,7 +91,7 @@ export default {
       return this.dataset.name;
     },
     categoryId () {
-      console.log('CATEGORY ID:', this.dataset.category_id)
+      console.log('CATEGORY ID:', this.dataset.category_id);
       return this.dataset.category_id;
     },
     isGeography () {
@@ -115,36 +115,36 @@ export default {
     categoryIdColor () {
       let cartoColor;
       switch (this.categoryId) {
-        case CATEGORY_IDS.DEMOGRAPHICS: 
-          cartoColor = 'BrwnYl'
-        break;
+        case CATEGORY_IDS.DEMOGRAPHICS:
+          cartoColor = 'BrwnYl';
+          break;
         case CATEGORY_IDS.ENVIRONMENTAL:
-          cartoColor = 'BluGrn'
+          cartoColor = 'BluGrn';
           break;
         case CATEGORY_IDS.DERIVED:
-          cartoColor = 'Teal'
+          cartoColor = 'Teal';
           break;
         case CATEGORY_IDS.HOUSING:
-          cartoColor = 'Burg'
+          cartoColor = 'Burg';
           break;
         case CATEGORY_IDS.HUMAN_MOBILITY:
-          cartoColor = 'RedOr'
+          cartoColor = 'RedOr';
           break;
         case CATEGORY_IDS.ROAD_TRAFFIC:
-          cartoColor = 'Sunset'
+          cartoColor = 'Sunset';
           break;
-        case CATEGORY_IDS.FINANCIAL: 
-          cartoColor = 'PurpOr'
-          break; 
+        case CATEGORY_IDS.FINANCIAL:
+          cartoColor = 'PurpOr';
+          break;
         case CATEGORY_IDS.COVID19:
-          cartoColor = 'Peach'
+          cartoColor = 'Peach';
           break;
         case CATEGORY_IDS.BEHAVIORAL:
-          cartoColor = 'TealGrn'
+          cartoColor = 'TealGrn';
           break;
         default:
-          cartoColor = 'OrYel'
-      } 
+          cartoColor = 'OrYel';
+      }
       return cartoColor;
     },
     variableBins () {

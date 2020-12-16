@@ -275,7 +275,7 @@ export default {
         if (!Number.isInteger(value)) {
           return value.toLocaleString(undefined, {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 3
+            maximumFractionDigits: 2
           });
         }
         return value.toLocaleString();

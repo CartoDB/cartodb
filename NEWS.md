@@ -12,6 +12,7 @@ sudo make install
 ### Features
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
+- Add `map views` to user metrics [#16018](https://github.com/CartoDB/cartodb/pull/16018)
 
 ### Bug fixes / enhancements
 - Replace DO metadata SQL with API request [#15983](https://github.com/CartoDB/cartodb/pull/15983)

@@ -9,7 +9,12 @@ exports[`QuotaSection.vue should render correct contents 1`] = `
         <li class="grid-cell grid-cell--col12 quota-listitem">
           <memoryquota-stub></memoryquota-stub>
         </li>
-        <!---->
+        <li class="grid-cell grid-cell--col12 quota-listitem">
+          <maploadsquota-stub></maploadsquota-stub>
+          <div class="quota-billing"><span class="quota-billingday text is-small is-txtSoftGrey">
+              QuotaSection.credits
+            </span></div>
+        </li>
         <li class="grid-cell grid-cell--col12 quota-listitem">
           <dataservicesquota-stub></dataservicesquota-stub>
         </li>

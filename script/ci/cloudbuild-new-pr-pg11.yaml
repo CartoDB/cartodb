@@ -1,0 +1,151 @@
+steps:
+
+# Cancel previous job on the same branch
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - 'gcloud builds list --ongoing --filter="buildTriggerId=056221c7-f5ef-4857-9706-3bc1054799a3 AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
+
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - 'gcloud builds cancel $(cat jobs_to_cancel | xargs) || true'
+
+# Decrypt github key
+- name: gcr.io/cloud-builders/gcloud
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=script/ci/.gh_helper.enc
+  - --plaintext-file=/root/.ssh/id_rsa
+  - --location=global
+  - --keyring=keyring-github-ci
+  - --key=github-key
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Set up git with key and domain
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    chmod 600 /root/.ssh/id_rsa
+    cat <<EOF >/root/.ssh/config
+    Hostname github.com
+    IdentityFile /root/.ssh/id_rsa
+    EOF
+    mv script/ci/known_hosts /root/.ssh/known_hosts
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Clean working directory
+- name: alpine
+  args: ['sh', '-c', 'rm -rf .* | true && rm -rf *']
+
+# Checkout repo with submodules (temp: to commit c6ce872fb8facbf046bd7bb33138194e071d61ec)
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/cartodb -b master --depth 2 --recursive .']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Checkout repo with submodules
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/cartodb-private.git -b "${BRANCH_NAME}" --depth 2 --recursive']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Some of this won't be necessary once everything is in the same repo
+- name: ubuntu
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      cp cartodb-private/script/ci/* .
+      cp cartodb-private/Dockerfile* .
+      cp -r cartodb-private/build_resources/ .
+      cp config/app_config.yml.sample config/app_config.yml
+      cp config/database.yml.sample config/database.yml
+      cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json
+
+# Stage build trigger
+- name: google/cloud-sdk
+  entrypoint: '/bin/bash'
+  args: 
+    - '-c'
+    - |
+      pip3 install gitpython
+      python3 trigger_build.py
+
+# Build image from stage 1
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      if [ -f /workspace/build_trigger_1 ]; then
+        docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:latest
+        docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:${SHORT_SHA} -f Dockerfile.stage1 --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:latest .
+        touch /workspace/build_trigger_2
+      else 
+        echo 'Skipping stage 1'
+      fi
+
+# Build image from stage 2
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      if [ -f /workspace/build_trigger_2 ]; then 
+        docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:latest
+        docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:${SHORT_SHA} -f Dockerfile.stage2 --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:latest . 
+        touch /workspace/build_trigger_3
+      else 
+        echo 'Skipping stage 2'
+      fi
+
+# Build image from stage 3
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      if [ -f /workspace/build_trigger_3 ]; then
+        docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder-tests
+        docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current -f Dockerfile.stage3 .
+      fi
+
+# Run tests
+- name: 'docker/compose:1.22.0'
+  args: ['-f', 'docker-compose-pg11.yml', 'up', '--build', '-d']
+  timeout: 900s
+
+# Push builder-tests image to registry to use it as cache on next builds
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - 'docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-tests:latest'
+
+- name: gcr.io/cloud-builders/docker
+  args: ['exec', '-i', 'builder_1', 'bash', '-c',
+         'until pg_isready -h localhost -p 5432 -d template_postgis; do sleep 10 && echo "Waiting for postgres before starting the tests..." ; done' ]
+  timeout: 120s 
+
+- name: gcr.io/cloud-builders/docker
+  args: ['exec', '-e', 'SLACK_TOKEN=$_SLACK_TOKEN', '-e', 'BUILD_ID=$BUILD_ID', '-e', 'BRANCH_NAME=$BRANCH_NAME', '-i', 'builder_1', 'bash', '-c',
+         "trap '/cartodb/script/ci/send_slack_notification.sh' ERR && /cartodb/runParallelTests.sh 24" ]
+  timeout: 2700s
+
+options:
+    machineType: 'N1_HIGHCPU_32'
+timeout: 3600s

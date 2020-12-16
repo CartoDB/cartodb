@@ -1,5 +1,5 @@
 <template>
-  <div class="dataset-sync-card" :class="{'is-active':isActive}" @click="$emit('click', $event)">
+  <div class="dataset-sync-card" :class="{'is-active':isActive}">
     <div class="dataset-info u-flex u-flex__align--center">
       <div class="file-type text is-caption u-flex u-flex__align--center u-flex__justify--center">
         {{fileType}}
@@ -12,24 +12,24 @@
     <div class="sync-options u-flex text is-small">
       <p class="">{{$t('DataPage.datasetCard.syncFrequency.title')}}</p>
       <div class="sync-option">
-        <input type="radio" :id="'never-' + id" name="syncFrequency" :value="syncValues.never" v-model="selectedInput">
-        <label :for="'never-' + id">{{$t('DataPage.datasetCard.syncFrequency.never')}}</label>
+        <input type="radio" :id="`never-${id}`" :value="syncValues.never" v-model="selectedInput">
+        <label :for="`never-${id}`">{{$t('DataPage.datasetCard.syncFrequency.never')}}</label>
       </div>
       <div class="sync-option">
-        <input type="radio" :id="'hour-' + id" name="syncFrequency" :value="syncValues.hour" v-model="selectedInput">
-        <label :for="'hour-' + id">{{$t('DataPage.datasetCard.syncFrequency.hourly')}}</label>
+        <input type="radio" :id="`hour-${id}`" :value="syncValues.hour" v-model="selectedInput">
+        <label :for="`hour-${id}`">{{$t('DataPage.datasetCard.syncFrequency.hourly')}}</label>
       </div>
       <div class="sync-option">
-        <input type="radio" :id="'day-' + id" name="syncFrequency" :value="syncValues.day" v-model="selectedInput">
-        <label :for="'day-' + id">{{$t('DataPage.datasetCard.syncFrequency.daily')}}</label>
+        <input type="radio" :id="`day-${id}`" :value="syncValues.day" v-model="selectedInput">
+        <label :for="`day-${id}`">{{$t('DataPage.datasetCard.syncFrequency.daily')}}</label>
       </div>
       <div class="sync-option">
-        <input type="radio" :id="'week-' + id" name="syncFrequency" :value="syncValues.week" v-model="selectedInput">
-        <label :for="'week-' + id">{{$t('DataPage.datasetCard.syncFrequency.weekly')}}</label>
+        <input type="radio" :id="`week-${id}`" :value="syncValues.week" v-model="selectedInput">
+        <label :for="`week-${id}`">{{$t('DataPage.datasetCard.syncFrequency.weekly')}}</label>
       </div>
       <div class="sync-option">
-        <input type="radio" :id="'month-' + id" name="syncFrequency" :value="syncValues.month" v-model="selectedInput">
-        <label :for="'month-' + id">{{$t('DataPage.datasetCard.syncFrequency.monthly')}}</label>
+        <input type="radio" :id="`month-${id}`" :value="syncValues.month" v-model="selectedInput">
+        <label :for="`month-${id}`">{{$t('DataPage.datasetCard.syncFrequency.monthly')}}</label>
       </div>
     </div>
   </div>

@@ -63,7 +63,8 @@
                 :size="file.size"
                 :fileType="file.extension"
                 :isActive="selectedFile && file.id === selectedFile.id"
-                @click="chooseFile(file)">
+                @inputChange="changeSyncInterval"
+                @click.native="chooseFile(file)">
                 </DatasetSyncCard>
             </div>
           </div>

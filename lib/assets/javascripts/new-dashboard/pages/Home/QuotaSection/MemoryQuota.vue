@@ -5,14 +5,14 @@
       :usedQuota="usedStorage"
       :availableQuota="getAmountInUnit(availableQuota)"
       :unit="getUnit(availableQuota)"
-      :formatToLocale="false"
+      :formatToLocale="true"
       :helpLink="storageHelpLink"/>
     <StackedQuotaWidget
       v-if="subscriptionsPremiumSizeInBytes"
       :name="$t(`QuotaSection.addOns`)"
       :usedQuota="usedPremiumDataSubscriptions"
       :unit="getUnit(subscriptionsPremiumSizeInBytes)"
-      :formatToLocale="false"
+      :formatToLocale="true"
       :helpLink="storageHelpLink" unlimited/>
   </QuotaContainer>
 </template>

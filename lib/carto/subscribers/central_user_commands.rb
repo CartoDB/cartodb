@@ -53,6 +53,7 @@ module Carto
           user = Carto::UserCreator.new.create(payload.except(:request_id))
 
           logger.info(debug_tag: 'amiedes', message: 'After the Carto::UserCreator.new.create', current_user: payload[:username])
+          logger.info(debug_tag: 'amiedes', message: 'After the Carto::UserCreator.new.create', full_user: user.inspect)
 
           notifications_topic.publish(:user_created, {
                                         username: user.username,

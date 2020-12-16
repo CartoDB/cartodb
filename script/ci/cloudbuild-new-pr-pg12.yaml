@@ -49,31 +49,23 @@ steps:
 - name: alpine
   args: ['sh', '-c', 'rm -rf .* | true && rm -rf *']
 
-# Checkout repo with submodules (temp: to commit c6ce872fb8facbf046bd7bb33138194e071d61ec)
-- name: 'gcr.io/cloud-builders/git'
-  entrypoint: 'sh'
-  args: ['-c', 'git clone git@github.com:CartoDB/cartodb -b master --depth 2 --recursive .']
-  volumes:
-  - name: 'ssh'
-    path: /root/.ssh
-
 # Checkout repo with submodules
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'sh'
-  args: ['-c', 'git clone git@github.com:CartoDB/cartodb-private.git -b "${BRANCH_NAME}" --depth 2 --recursive']
+  args: ['-c', 'git clone git@github.com:CartoDB/cartodb -b "${BRANCH_NAME}" --depth 2 --recursive .']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
 
-# Some of this won't be necessary once everything is in the same repo
+# Copy files to the right directories to run the tests
 - name: ubuntu
   entrypoint: /bin/bash
   args:
     - -c
     - |
-      cp cartodb-private/script/ci/* .
-      cp cartodb-private/Dockerfile* .
-      cp -r cartodb-private/build_resources/ .
+      cp docker/script/ci/* .
+      cp docker/Dockerfile* .
+      cp -r docker/build_resources/ .
       cp config/app_config.yml.sample config/app_config.yml
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json

@@ -2,8 +2,8 @@
 
 exports[`DataServicesQuota.vue should render correct contents 1`] = `
 <quotacontainer-stub title="QuotaSection.dataServices" permonth="true">
-  <quotawidget-stub name="QuotaSection.geocoding" availablequota="1200" usedquota="103" formattolocale="true" helplink="https://carto.com/help/working-with-data/geocoding/"></quotawidget-stub>
-  <quotawidget-stub name="QuotaSection.isolines" availablequota="1332" usedquota="134" formattolocale="true" helplink="https://carto.com/help/working-with-data/isolines/"></quotawidget-stub>
-  <quotawidget-stub name="QuotaSection.routing" availablequota="102" usedquota="54" formattolocale="true" helplink="https://carto.com/help/working-with-data/routing/"></quotawidget-stub>
+  <stackedquotawidget-stub name="QuotaSection.geocoding" availablequota="1200" usedquota="103" formattolocale="true" helplink="https://carto.com/help/working-with-data/geocoding/"></stackedquotawidget-stub>
+  <stackedquotawidget-stub name="QuotaSection.isolines" availablequota="1332" usedquota="134" formattolocale="true" helplink="https://carto.com/help/working-with-data/isolines/"></stackedquotawidget-stub>
+  <stackedquotawidget-stub name="QuotaSection.routing" availablequota="102" usedquota="54" formattolocale="true" helplink="https://carto.com/help/working-with-data/routing/"></stackedquotawidget-stub>
 </quotacontainer-stub>
 `;

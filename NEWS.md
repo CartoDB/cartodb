@@ -12,8 +12,10 @@ sudo make install
 ### Features
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 - Integrate new map_views metric. [#15969](https://github.com/CartoDB/cartodb/pull/15969)
+- Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 
 ### Bug fixes / enhancements
+- Replace DO metadata SQL with API request [#15983](https://github.com/CartoDB/cartodb/pull/15983)
 - Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
 - Improve the syncronization functions by using `CDB_GetTableQueries`.
 - Bump cartodb-common to v0.4.8
@@ -21,6 +23,12 @@ sudo make install
 - Generate a .pid file to control and manage the subscriber rake process [#15970](https://github.com/CartoDB/cartodb/pull/15970)
 - Fix buffering of log traces in subscriber [#15980](https://github.com/CartoDB/cartodb/pull/15980)
 - Wrong param name in organization forms [#15975](https://github.com/CartoDB/cartodb/pull/15975)
+- Adding API Keys to Redis when user is unlocked [#15959](https://github.com/CartoDB/cartodb/pull/15959)
+- Bump version of cartodb-common to v0.4.9 and pubsub to 1.10 [#16007](https://github.com/CartoDB/cartodb/pull/16007)
+- Make subscriber wait for DB creation in development [#15982](https://github.com/CartoDB/cartodb/pull/15982)
+- `MessageBroker` now grabs the subscription name from `Config#central_subscription_name` [#16008](https://github.com/CartoDB/cartodb/pull/16008)
+- Fix an issue with autoloading of a model class [#16011](https://github.com/CartoDB/cartodb/pull/16011)
+- Propagate request_id in MessageBroker logs [#16006](https://github.com/CartoDB/cartodb/pull/16006)
 
 4.44.0 (2020-11-20)
 -------------------

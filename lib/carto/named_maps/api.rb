@@ -191,7 +191,7 @@ module Carto
       end
 
       def log_context
-        super.merge(request_id: Carto::CurrentRequest.request_id, component: 'cartodb.named-maps-client')
+        super.merge(request_id: Carto::Common::CurrentRequest.request_id, component: 'cartodb.named-maps-client')
       end
     end
   end

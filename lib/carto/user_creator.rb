@@ -5,11 +5,20 @@ module Carto
     def create(params)
       Rails.logger.info(
         debug_tag: 'amiedes',
-        message: 'UserCreator: starting create method',
-        debug_params: params.inspect
+        message: 'UserCreator#create started',
+        debug_params: params.inspect,
+        current_user: params[:username]
       )
+      Rails.logger.flush
 
       user = ::User.new
+
+      Rails.logger.info(
+        debug_tag: 'amiedes',
+        message: 'UserCreator#create before User#set_fields_from_central',
+        current_user: params[:username]
+      )
+      Rails.logger.flush
 
       user.set_fields_from_central(params, :create)
       user.enabled = true
@@ -17,33 +26,20 @@ module Carto
       if params[:rate_limit].present?
         user.rate_limit_id = Carto::RateLimitsHelper.create_rate_limits(params[:rate_limit]).id
       end
+
+      Rails.logger.info(
+        debug_tag: 'amiedes',
+        message: 'UserCreator#create before User#save',
+        current_user: params[:username]
+      )
+      Rails.logger.flush
+
       if user.save
-        Rails.logger.info(
-          debug_tag: 'amiedes',
-          message: 'UserCreator: User saved successfully in CartoDB (Point A)'
-        )
-
         user.reload
-
-        Rails.logger.info(
-          debug_tag: 'amiedes',
-          message: 'UserCreator: User saved successfully in CartoDB (Point B)'
-        )
 
         CartoDB::Visualization::CommonDataService.load_common_data(user, nil) if user.should_load_common_data?
 
-        Rails.logger.info(
-          debug_tag: 'amiedes',
-          message: 'UserCreator: User saved successfully in CartoDB (Point C)'
-        )
-
         user.update_feature_flags(params[:feature_flags])
-
-        Rails.logger.info(
-          debug_tag: 'amiedes',
-          message: 'UserCreator: User saved successfully in CartoDB (Point D)'
-        )
-
       else
         Rails.logger.error(
           message: 'Error creating user',

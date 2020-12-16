@@ -2,19 +2,42 @@
   <Dialog
     :headerTitle="$t('DataPage.addDataset')"
     :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
-    :showSubHeader="false"
+    :showSubHeader="showSubheader"
+    :backText="false"
   >
+    <template #sub-header>
+      <ul class="modal-tab title is-small">
+        <li @click="selectTab(TABS.newDataset)" :class="{'is-selected' : selectedTab == TABS.newDataset}">{{$t('NewMapDatasetCard.tabs.newDataset')}}</li>
+        <li @click="selectTab(TABS.yourDatasets)" :class="{'is-selected' : selectedTab == TABS.yourDatasets, 'is-deactivated': datasetsMetadata.total_entries == 0}">{{$t('NewMapDatasetCard.tabs.yourDatasets')}}</li>
+        <li @click="selectTab(TABS.sharedWithYou)" :class="{'is-selected' : selectedTab == TABS.sharedWithYou}" v-if="datasetsMetadata.total_shared">
+          {{$tc('NewMapDatasetCard.tabs.sharedWithYou', datasetsMetadata.total_shared)}}
+        </li>
+      </ul>
+    </template>
     <template #default>
-      <template v-if="!loading">
-        <template v-if="connections.length > 0">
-          <h3 class="is-caption is-semibold">{{ $t('DataPage.fromYourConnections') }}</h3>
-          <ConnectorSection class="u-mt--24" :connectors="connections" @conenectionSelected="conenectionSelected"></ConnectorSection>
-          <h3 class="is-caption is-semibold u-mt--36 u-mb--16">{{ $t('DataPage.fromNewConnections') }}</h3>
+      <div v-if="selectedTab == TABS.newDataset">
+        <template v-if="!loading">
+          <template v-if="connections.length > 0">
+            <h3 class="is-caption is-semibold">{{ $t('DataPage.fromYourConnections') }}</h3>
+            <ConnectorSection class="u-mt--24" :connectors="connections" @conenectionSelected="conenectionSelected"></ConnectorSection>
+            <h3 class="is-caption is-semibold u-mt--36 u-mb--16">{{ $t('DataPage.fromNewConnections') }}</h3>
+          </template>
+          <ConnectorSection @connectorSelected="fileSelected" :label="$t('DataPage.localFiles')" :connectors="localFiles" carrousel></ConnectorSection>
+          <ConnectorsList @connectorSelected="connectorSelected"></ConnectorsList>
         </template>
-        <ConnectorSection @connectorSelected="fileSelected" :label="$t('DataPage.localFiles')" :connectors="localFiles" carrousel></ConnectorSection>
-        <ConnectorsList @connectorSelected="connectorSelected"></ConnectorsList>
-      </template>
-      <LoadingState v-else primary/>
+        <LoadingState v-else primary/>
+      </div>
+      <div v-else-if="selectedTab == TABS.yourDatasets || selectedTab == TABS.sharedWithYou">
+        <AddLayerFromDataset
+          :sharedTab='selectedTab == TABS.sharedWithYou'
+          @datasetSelected="updateDatasetSelection"
+        ></AddLayerFromDataset>
+      </div>
+    </template>
+    <template #footer>
+      <div class="modal-footer align-right">
+        <Button :disabled="selectedDatasetsIds.length == 0">Add layer</Button>
+      </div>
     </template>
   </Dialog>
 </template>
@@ -25,6 +48,8 @@ import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
+import AddLayerFromDataset from 'new-dashboard/components/AddLayer/AddLayerFromDataset';
+import Button from 'new-dashboard/components/Button';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
 import { mapState } from 'vuex';
 
@@ -71,18 +96,33 @@ const LOCAL_FILES = [
   }
 ];
 
+const TABS = {
+  newDataset: 'new-dataset',
+  yourDatasets: 'your-datasets',
+  sharedWithYou: 'shared-with-you'
+}
+
 export default {
-  name: 'NewDataset',
+  name: 'NewMap',
   components: {
     Dialog,
     ConnectorSection,
     ConnectorsList,
-    LoadingState
+    LoadingState,
+    AddLayerFromDataset,
+    Button
+  },
+  props: {
+    isDataPage: {
+      type: Boolean,
+      default: true
+    }
   },
   computed: {
     ...mapState({
       loading: state => state.connectors.loadingConnections,
-      rawConnections: state => state.connectors.connections
+      rawConnections: state => state.connectors.connections,
+      datasetsMetadata: state => state.datasets.metadata,
     }),
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {
@@ -92,15 +132,24 @@ export default {
     },
     getRouteNamePrefix () {
       return this.$route.name.replace('new-dataset', '');
+    },
+    showSubheader () {
+      return !this.isDataPage;
     }
   },
   data: () => {
     return {
-      localFiles: LOCAL_FILES
+      localFiles: LOCAL_FILES,
+      selectedTab: TABS.newDataset,
+      selectedDatasetsIds: []
     };
   },
   mounted: function () {
     this.$store.dispatch('connectors/fetchConnectionsList');
+    this.$store.dispatch('datasets/setURLOptions', {filter: 'mine'});
+  },
+  created: function () {
+    this.TABS = TABS;
   },
   methods: {
     fileSelected (id) {
@@ -118,6 +167,17 @@ export default {
     },
     conenectionSelected (id) {
       this.$router.push({ name: `${this.getRouteNamePrefix}new-dataset-connection-dataset`, params: { id: id } });
+    },
+    selectTab (tabName) {
+      this.selectedTab = tabName;
+    },
+    updateDatasetSelection (datasets) {
+      let selectedDatasets = []
+      for(let key in datasets) {
+        if (datasets[key])
+          selectedDatasets.push(key);
+      }
+      this.selectedDatasetsIds = selectedDatasets;
     }
   }
 };
@@ -125,4 +185,39 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+
+.modal-tab {
+  display: flex;
+
+  li {
+    margin-right: 24px;
+    padding: 8px 0 14px;
+    transition: border-color 0.1s;
+    border-bottom: 4px solid transparent;
+    color: $link__color;
+
+    &:hover {
+      border-color: $link__color;
+      cursor: pointer;
+    }
+
+    &.is-selected {
+      border-color: $text__color;
+      color: $text__color;
+    }
+
+    &.is-deactivated {
+      opacity: 0.48;
+      pointer-events: none;
+    }
+  }
+}
+
+.modal-footer {
+  padding: 24px 0;
+}
+
+.align-right {
+  text-align: right;
+}
 </style>

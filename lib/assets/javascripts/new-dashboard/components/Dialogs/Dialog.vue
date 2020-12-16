@@ -52,11 +52,15 @@ export default {
   },
   mounted () {
     document.body.classList.add('u-overflow-hidden');
-    this.backboneViews.mamufasImportView.mamufasView.disable();
+    if (this.backboneViews.mamufasImportView) {
+      this.backboneViews.mamufasImportView.mamufasView.disable();
+    }
   },
   beforeDestroy () {
     document.body.classList.remove('u-overflow-hidden');
-    this.backboneViews.mamufasImportView.mamufasView.enable();
+    if (this.backboneViews.mamufasImportView) {
+      this.backboneViews.mamufasImportView.mamufasView.enable();
+    }
   },
   computed: {},
   methods: {

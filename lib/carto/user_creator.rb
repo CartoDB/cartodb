@@ -9,7 +9,7 @@ module Carto
         debug_params: params.inspect,
         current_user: params[:username]
       )
-      Rails.logger.flush
+      Rails.logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
 
       user = ::User.new
 
@@ -18,7 +18,7 @@ module Carto
         message: 'UserCreator#create before User#set_fields_from_central',
         current_user: params[:username]
       )
-      Rails.logger.flush
+      Rails.logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
 
       user.set_fields_from_central(params, :create)
       user.enabled = true
@@ -32,7 +32,7 @@ module Carto
         message: 'UserCreator#create before User#save',
         current_user: params[:username]
       )
-      Rails.logger.flush
+      Rails.logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
 
       if user.save
         user.reload

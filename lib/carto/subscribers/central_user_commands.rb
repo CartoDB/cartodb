@@ -53,7 +53,7 @@ module Carto
           payload: payload,
           thread_id: syscall(186)
         )
-        logger.flush
+        logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
 
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
           logger.info(
@@ -62,14 +62,14 @@ module Carto
             class_name: self.class.name,
             current_user: payload[:username]
           )
-          logger.flush
+          logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
 
           logger.info(
             debug_tag: 'amiedes',
             message: 'Before the Carto::UserCreator.new.create',
             current_user: payload[:username]
           )
-          logger.flush
+          logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
 
           user = Carto::UserCreator.new.create(payload.except(:request_id))
 
@@ -78,7 +78,7 @@ module Carto
             message: 'After the Carto::UserCreator.new.create',
             current_user: payload[:username]
           )
-          logger.flush
+          logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).flush
 
           notifications_topic.publish(:user_created, {
                                         username: user.username,

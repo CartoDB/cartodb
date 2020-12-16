@@ -160,7 +160,7 @@ class ApplicationController < ActionController::Base
     if request.method == :options && check_cors_headers_for_whitelisted_origin
       common_cors_headers
       response.headers['Access-Control-Max-Age'] = '3600'
-    elsif !Rails.env.production? # && !Rails.env.staging? FIXME: this is provisional
+    elsif !Rails.env.production? && !Rails.env.staging?
       development_cors_headers
     end
   end

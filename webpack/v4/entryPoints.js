@@ -159,6 +159,7 @@ const entries = {
   ]),
 
   editor3: [
+    rootDir('lib/assets/javascripts/new-dashboard/styles/main.scss'),
     rootDir('node_modules/cartoassets/src/scss/entry.scss'),
     rootDir('node_modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css'),
     rootDir('assets/stylesheets/editor-3/entry.scss')

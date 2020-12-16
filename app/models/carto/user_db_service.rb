@@ -213,10 +213,42 @@ module Carto
         .first.with_indifferent_access[:version].to_i
     end
 
+    def sequences_for_tables(tables)
+      return [] unless tables.any?
+
+      tables_conditions = tables.map do |table|
+        "                                                               \
+        (                                                               \
+          QUOTE_IDENT(#{superuser_connection.quote(table[:schema])}) || \
+          '.' ||                                                        \
+          QUOTE_IDENT(#{superuser_connection.quote(table[:table_name])})\
+        )::regclass                                                     \
+        "
+      end.join(',')
+
+      execute_as_superuser(%{
+        SELECT
+          n.nspname, quote_ident(c.relname) as relname
+        FROM
+          pg_depend d
+          JOIN pg_class c ON d.objid = c.oid
+          JOIN pg_namespace n ON c.relnamespace = n.oid
+        WHERE
+          d.refobjsubid > 0 AND
+          d.classid = 'pg_class'::regclass AND
+          c.relkind = 'S'::"char" AND
+          d.refobjid IN (#{tables_conditions})
+      }).map { |r| "\"#{r['nspname']}\".#{r['relname']}" }
+    end
+
     private
 
+    def superuser_connection
+      @user.in_database(as: :superuser)
+    end
+
     def execute_as_superuser(query)
-      @user.in_database(as: :superuser).execute(query)
+      superuser_connection.execute(query)
     end
   end
 end

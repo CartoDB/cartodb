@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    :headerTitle="$t('DataPage.addDataset')"
+    :headerTitle="getHeaderTitleFromMode"
     :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
     :showSubHeader="showSubheader"
     :backText="false"
@@ -15,7 +15,7 @@
       </ul>
     </template>
     <template #default>
-      <div v-if="selectedTab == TABS.newDataset">
+      <div v-if="selectedTab === TABS.newDataset">
         <template v-if="!loading">
           <template v-if="connections.length > 0">
             <h3 class="is-caption is-semibold">{{ $t('DataPage.fromYourConnections') }}</h3>
@@ -27,16 +27,16 @@
         </template>
         <LoadingState v-else primary/>
       </div>
-      <div v-else-if="selectedTab == TABS.yourDatasets || selectedTab == TABS.sharedWithYou">
+      <div v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou">
         <DatasetsList
-          :sharedTab='selectedTab == TABS.sharedWithYou'
+          :sharedTab='selectedTab === TABS.sharedWithYou'
           @datasetSelected="updateDatasetSelection"
         ></DatasetsList>
       </div>
     </template>
     <template #footer>
-      <div class="modal-footer align-right">
-        <Button :disabled="selectedDatasetsIds.length == 0">Add layer</Button>
+      <div v-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou" class="modal-footer u-flex u-flex__justify--end">
+        <button :disabled="selectedDatasetsIds.length == 0" class="button is-primary">{{footerButtonText}}</button>
       </div>
     </template>
   </Dialog>
@@ -49,8 +49,8 @@ import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
 import DatasetsList from 'new-dashboard/components/Connector/DatasetsList';
-import Button from 'new-dashboard/components/Button';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
+import uploadData from 'new-dashboard/mixins/connector/uploadData';
 import { mapState } from 'vuex';
 
 const LOCAL_FILES = [
@@ -100,29 +100,26 @@ const TABS = {
   newDataset: 'new-dataset',
   yourDatasets: 'your-datasets',
   sharedWithYou: 'shared-with-you'
-}
+};
 
 export default {
-  name: 'NewMap',
+  name: 'NewDataset',
+  mixins: [uploadData],
   components: {
     Dialog,
     ConnectorSection,
     ConnectorsList,
     LoadingState,
-    DatasetsList,
-    Button
+    DatasetsList
   },
   props: {
-    isDataPage: {
-      type: Boolean,
-      default: false
-    }
+    mode: String
   },
   computed: {
     ...mapState({
       loading: state => state.connectors.loadingConnections,
       rawConnections: state => state.connectors.connections,
-      datasetsMetadata: state => state.datasets.metadata,
+      datasetsMetadata: state => state.datasets.metadata
     }),
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {
@@ -134,7 +131,10 @@ export default {
       return this.$route.name.replace('new-dataset', '');
     },
     showSubheader () {
-      return !this.isDataPage;
+      return this.mode === 'map' || this.mode === 'layer';
+    },
+    footerButtonText () {
+      return this.mode === 'map' ? this.$t(`DataPage.createMap`) : this.$t(`DataPage.createLayer`);
     }
   },
   data: () => {
@@ -150,6 +150,7 @@ export default {
   },
   created: function () {
     this.TABS = TABS;
+    this.selectedTab = this.mode === 'dataset' ? TABS.newDataset : TABS.yourDatasets;
   },
   methods: {
     fileSelected (id) {
@@ -172,12 +173,7 @@ export default {
       this.selectedTab = tabName;
     },
     updateDatasetSelection (datasets) {
-      let selectedDatasets = []
-      for(let key in datasets) {
-        if (datasets[key])
-          selectedDatasets.push(key);
-      }
-      this.selectedDatasetsIds = selectedDatasets;
+      this.selectedDatasetsIds = Object.keys(datasets).filter(key => datasets[key]);
     }
   }
 };

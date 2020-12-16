@@ -15,6 +15,7 @@
     <Footer :user="user"/>
     <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
     <MamufasImportView ref="mamufasImportView"/>
+    <div id="tooltip-portal"></div>
   </div>
 </template>
 

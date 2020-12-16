@@ -47,7 +47,7 @@ module Carto
         end
 
         def update
-          @connection_manager.update_db_connection(id: params[:id], parameters: params[:parameters])
+          @connection_manager.update_db_connection(id: params[:id], parameters: params[:parameters], name: params[:name])
           head :ok
         end
 
@@ -62,7 +62,40 @@ module Carto
           end
         end
 
+        def dryrun
+          connection = @connection_manager.show_connection(params[:id])
+          # TODO: check connection.type, must be a db-conector
+          provider_id = connection[:connector]
+          parameters = build_connector_parameters(provider_id, params)
+          if Carto::Connector.dry_run?(provider_id)
+            connector = Carto::Connector.new(parameters: parameters, user: current_user, logger: nil)
+            result = connector.dry_run
+            if result[:error]
+              result = { errors: result.message }
+              code = 400
+            else
+              result = result.except(:client_error, :error)
+              code = 200
+            end
+            render_jsonp(result, code)
+          else
+            render_jsonp({ errors: "Provider #{provider_id} doesn't support dry runs" }, 422)
+          end
+        end
+
         private
+
+        def build_connector_parameters(provider_id, request_params)
+          connector_parameters = {
+            provider: provider_id,
+            connection_id: request_params[:id]
+          }
+          provider_information = Carto::Connector.information(provider_id)
+          provider_information[:parameters].each do |key, _value|
+            connector_parameters[key.to_sym] = params[key.to_sym] if params[key.to_sym].present?
+          end
+          connector_parameters
+        end
 
         def rescue_from_connection_not_found(exception)
           render_jsonp({ errors: exception.message }, 404)

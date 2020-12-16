@@ -210,15 +210,21 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/delete/:id'       => 'visualizations#index', as: :your_connections_delete
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/new-dataset'                          => 'visualizations#index', as: :datasets_new
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/new-connection/:connector'                          => 'visualizations#index', as: :your_connections_new_from_new_dataset
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_new_dataset
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/add-local-file/:extension'               => 'visualizations#index', as: :datasets_local_new
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-new-connection/:connector'                          => 'visualizations#index', as: :your_connections_new_from_new_dataset
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_new_dataset
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-add-local-file/:extension'               => 'visualizations#index', as: :datasets_local_new
 
     # Datasets from home for new dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-dataset'             => 'visualizations#index', as: :datasets_new_from_home
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-connection/:connector'   => 'visualizations#index', as: :your_connections_new_from_home
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_home
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/add-local-file/:extension'   => 'visualizations#index', as: :datasets_local_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-new-connection/:connector'   => 'visualizations#index', as: :your_connections_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-add-local-file/:extension'   => 'visualizations#index', as: :datasets_local_new_from_home
+
+    # Maps from home for new dashboard
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-map'             => 'visualizations#index', as: :maps_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-new-connection/:connector'   => 'visualizations#index', as: :maps_your_connections_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-connection/:id/dataset'      => 'visualizations#index', as: :maps_your_connections_dataset_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-add-local-file/:extension'   => 'visualizations#index', as: :maps_datasets_local_new_from_home
 
     # Tables search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q'                    => 'visualizations#index', as: :tables_search
@@ -285,6 +291,10 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag/:page'        => 'visualizations#index', as: :maps_locked_tag_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/external'                     => 'visualizations#index', as: :maps_external
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/external/:page'               => 'visualizations#index', as: :maps_external_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/new-map'                  => 'visualizations#index', as: :maps_new
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-new-connection/:connector'    => 'visualizations#index', as: :your_connections_new_from_new_map
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-connection/:id/dataset'       => 'visualizations#index', as: :your_connections_dataset_from_new_map
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-add-local-file/:extension'    => 'visualizations#index', as: :datasets_local_new_from_new_map
 
     # Dashboards
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/deep-insights'                        => 'visualizations#index', as: :dashboards_index
@@ -632,7 +642,8 @@ CartoDB::Application.routes.draw do
       get 'connectors' => 'connections#list_connectors', as: :api_v4_connections_list_connectors
       delete 'connections/:id' => 'connections#destroy', as: :api_v4_connections_destroy
       put 'connections/:id' => 'connections#update', as: :api_v4_connections_update
-      get 'connections/check_oauth/:service' => 'connections#check_oauth', as: :api_v4_connectors_check_oauth
+      get 'connections/check_oauth/:service' => 'connections#check_oauth', as: :api_v4_connections_check_oauth
+      post 'connections/:id/dryrun' => 'connections#dryrun', as: :api_v4_connections_dryrun
 
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token
@@ -763,7 +774,6 @@ CartoDB::Application.routes.draw do
     end
 
     scope 'v1/' do
-      match '*path', via: [:OPTIONS], to: 'application#options'
       resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
 
       # Organization assets
@@ -776,7 +786,6 @@ CartoDB::Application.routes.draw do
 
       # EUMAPI
       scope 'organization/:id_or_name/' do
-        match '*path', via: [:OPTIONS], to: 'application#options'
         post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
         get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show
         delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v1_organization_users_delete

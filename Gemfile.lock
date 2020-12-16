@@ -8,12 +8,12 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 9b6eed36b18132693f360dc7f88a2f41371f7e13
-  tag: v0.4.7
+  revision: 0fe56adb6ffb5c2dadbded59713878395e768118
+  tag: v0.4.9
   specs:
-    cartodb-common (0.4.7)
+    cartodb-common (0.4.9)
       argon2 (~> 2)
-      google-cloud-pubsub (~> 1.2)
+      google-cloud-pubsub (~> 1.10)
       rails (>= 4, < 6)
       rollbar
 
@@ -205,7 +205,7 @@ GEM
     google-cloud-env (1.3.0)
       faraday (~> 0.11)
     google-cloud-errors (1.0.1)
-    google-cloud-pubsub (1.2.0)
+    google-cloud-pubsub (1.10.0)
       concurrent-ruby (~> 1.1)
       google-cloud-core (~> 1.2)
       google-gax (~> 1.8)
@@ -378,8 +378,7 @@ GEM
     retriable (3.1.2)
     rexml (3.2.4)
     rly (0.2.3)
-    rollbar (2.11.5)
-      multi_json
+    rollbar (3.1.1)
     roo (1.13.2)
       nokogiri
       rubyzip
@@ -463,7 +462,7 @@ GEM
     sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
-    sprockets-rails (3.2.1)
+    sprockets-rails (3.2.2)
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
@@ -489,7 +488,7 @@ GEM
     trollop (2.9.10)
     typhoeus (1.3.1)
       ethon (>= 0.9.0)
-    tzinfo (1.2.7)
+    tzinfo (1.2.8)
       thread_safe (~> 0.1)
     uber (0.1.0)
     unf (0.1.4)
@@ -553,7 +552,7 @@ DEPENDENCIES
   gibbon (= 1.1.4)
   google-api-client (= 0.34.1)
   google-cloud-bigquery-storage-v1 (~> 0.2.3)
-  google-cloud-pubsub (= 1.2.0)
+  google-cloud-pubsub (~> 1.10)
   hiredis (~> 0.6.1)
   instagram-continued-continued
   json-schema (= 2.1.9)
@@ -584,7 +583,7 @@ DEPENDENCIES
   responders (~> 2.0)
   resque (= 1.25.2)
   resque-metrics (= 0.1.1)
-  rollbar (~> 2.11.1)
+  rollbar
   roo (= 1.13.2)
   rotp (~> 3.3, >= 3.3.1)
   rqrcode (~> 0.10.1)

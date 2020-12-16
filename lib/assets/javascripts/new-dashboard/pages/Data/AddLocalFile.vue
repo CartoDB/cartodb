@@ -1,6 +1,6 @@
 <template>
   <Dialog ref="dialog"
-    :headerTitle="$t('DataPage.addDataset')"
+    :headerTitle="getHeaderTitleFromMode"
     :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
     :backRoute="{name: `${getRouteNamePrefix}new-dataset`}"
   >
@@ -65,7 +65,7 @@
 
 <script>
 
-import exportedScssVars from 'new-dashboard/styles/variables.scss';
+import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import Dropzone from 'dropzone';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';
@@ -80,6 +80,9 @@ export default {
   components: {
     Dialog,
     GuessPrivacyFooter
+  },
+  props: {
+    mode: String
   },
   data () {
     return {
@@ -114,7 +117,7 @@ export default {
       return this.$route.name.replace('add-local-file', '');
     },
     fileIcon () {
-      return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/file-${this.extension}.svg`;
+      return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/${this.extension}.svg`;
     },
     remainingByteQuota () {
       return this.$store.state.user && this.$store.state.user.remaining_byte_quota;

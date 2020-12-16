@@ -18,7 +18,7 @@ steps:
   args:
   - kms
   - decrypt
-  - --ciphertext-file=script/ci/.id_github_cartofante.enc
+  - --ciphertext-file=script/ci/.gh_helper.enc
   - --plaintext-file=/root/.ssh/id_rsa
   - --location=global
   - --keyring=keyring-github-ci

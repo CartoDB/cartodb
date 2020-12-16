@@ -38,6 +38,8 @@ module Carto
       end
 
       def create_user(payload)
+        logger.info(debug_tag: 'amiedes', message: 'Processing CentralUserCommands#create_user', current_user: payload[:username], payload: payload)
+
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do
           logger.info(
             message: 'Processing command',
@@ -46,14 +48,24 @@ module Carto
             current_user: payload[:username]
           )
 
+          logger.info(debug_tag: 'amiedes', message: 'Before the Carto::UserCreator.new.create', current_user: payload[:username])
+
           user = Carto::UserCreator.new.create(payload.except(:request_id))
+
+          logger.info(debug_tag: 'amiedes', message: 'After the Carto::UserCreator.new.create', current_user: payload[:username])
+
           notifications_topic.publish(:user_created, {
                                         username: user.username,
                                         id: user.id
                                       })
 
+          logger.info(debug_tag: 'amiedes', message: 'After publishing the user_created message', current_user: payload[:username])
+
           logger.info(message: 'User created', current_user: user, class_name: self.class.name)
         end
+      rescue StandardError => e
+        logger.error(debug_tag: 'amiedes', message: 'Unhandled exception', exception: e)
+        raise e
       end
 
       def delete_user(payload)

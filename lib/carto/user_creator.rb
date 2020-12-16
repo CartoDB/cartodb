@@ -15,6 +15,12 @@ module Carto
         user.reload
         CartoDB::Visualization::CommonDataService.load_common_data(user, nil) if user.should_load_common_data?
         user.update_feature_flags(params[:feature_flags])
+
+        Rails.logger.info(
+          debug_tag: 'amiedes',
+          message: 'UserCreator: User saved successfully in CartoDB'
+        )
+
       else
         Rails.logger.error(
           message: 'Error creating user',
@@ -22,10 +28,21 @@ module Carto
           current_user: user
         )
       end
+
+      Rails.logger.info(
+        debug_tag: 'amiedes',
+        message: 'UserCreator: before notifying via Gears API'
+      )
+
       CartoGearsApi::Events::EventManager.instance.notify(
         CartoGearsApi::Events::UserCreationEvent.new(
           CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_SUPERADMIN, user
         )
+      )
+
+      Rails.logger.info(
+        debug_tag: 'amiedes',
+        message: 'UserCreator: after notifying via Gears API'
       )
 
       user

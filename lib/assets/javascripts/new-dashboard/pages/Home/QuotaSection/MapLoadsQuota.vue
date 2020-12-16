@@ -5,7 +5,7 @@
       :usedQuota="mapViews"
       :availableQuota="mapViewsQuota"
       :formatToLocale="true"
-      :helpLink="storageHelpLink" qualitative/>
+      :helpLink="helpLink" qualitative/>
   </QuotaContainer>
 </template>
 
@@ -29,8 +29,8 @@ export default {
       mapViewsQuota: state => state.user.map_views_quota,
       mapViews: state => state.user.map_views
     }),
-    storageHelpLink () {
-      return 'https://carto.com/help/your-account/your-disk-storage/';
+    helpLink () {
+      return 'https://carto.com/help/glossary/#mapload';
     }
   },
   methods: {

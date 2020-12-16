@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  name: 'ColorCategoriesLegend',
+  name: 'ColorBinsLegend',
   props: {
     title: String,
     min: String,

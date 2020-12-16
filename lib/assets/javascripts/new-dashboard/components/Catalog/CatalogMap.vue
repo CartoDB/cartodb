@@ -121,7 +121,7 @@ export default {
     },
     variableBins () {
       if (this.variable && this.variable.quantiles && colorStyle) {
-        const breaks = [this.variable.min, ...this.variable.quantiles[2]['5']];
+        const breaks = [...this.variable.quantiles[2]['5'], this.variable.max];
         const bins = [...new Set(breaks)].map(q => ({
           color: `rgb(${colorStyle(q)})`
         }));

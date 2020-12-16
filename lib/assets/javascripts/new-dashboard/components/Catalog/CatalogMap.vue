@@ -48,6 +48,18 @@ let getLineColor;
 let getLineWidth;
 let getRadius;
 
+const CATEGORY_PALETTES = {
+  demographics: 'BrwnYl',
+  environmental: 'BluGrn',
+  derived: 'Teal',
+  housing: 'Burg',
+  human_mobility: 'RedOr',
+  road_traffic: 'Sunset',
+  financial: 'PurpOr',
+  covid19: 'Peach',
+  behavioral: 'TealGrn'
+};
+
 export default {
   name: 'CatalogMap',
   props: {
@@ -75,6 +87,13 @@ export default {
     }),
     title () {
       return this.dataset.name;
+    },
+    categoryId () {
+      console.log('CATEGORY ID:', this.dataset.category_id);
+      return this.dataset.category_id;
+    },
+    categoryIdPalette () {
+      return CATEGORY_PALETTES[this.categoryId] || 'OrYel';
     },
     isGeography () {
       return this.$route.params.entity_type === 'geography';
@@ -275,7 +294,7 @@ export default {
       if (g === 'Polygon' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
-          colors: 'OrYel'
+          colors: this.categoryIdPalette
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [44, 44, 44, 60];
@@ -284,7 +303,7 @@ export default {
       if (g === 'Polygon' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
-          colors: 'Bold'
+          colors: 'Prism'
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [44, 44, 44, 60];
@@ -297,7 +316,7 @@ export default {
       if (g === 'LineString' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
-          colors: 'SunsetDark'
+          colors: this.categoryIdPalette
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
         getLineWidth = 2;
@@ -305,7 +324,7 @@ export default {
       if (g === 'LineString' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
-          colors: 'Bold'
+          colors: 'Prism'
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
         getLineWidth = 2;
@@ -319,10 +338,10 @@ export default {
       if (g === 'Point' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
-          colors: 'SunsetDark'
+          colors: this.categoryIdPalette
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [44, 44, 44, 60];
+        getLineColor = [100, 100, 100, 255];
         getLineWidth = 1;
         getRadius = 4;
       }
@@ -332,7 +351,7 @@ export default {
           colors: 'Bold'
         });
         getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [44, 44, 44, 60];
+        getLineColor = [100, 100, 100, 255];
         getLineWidth = 1;
         getRadius = 4;
       }

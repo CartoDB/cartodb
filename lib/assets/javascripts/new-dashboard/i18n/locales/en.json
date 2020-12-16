@@ -95,6 +95,7 @@
     "requestConnectorSuccessButton": "Got it",
     "createDataset": "New Dataset",
     "addDataset": "Add new dataset",
+    "addLayer": "Add new layer",
     "addLocalFile": "Add local file",
     "formats": "Formats",
     "learnmore": "Learn more",

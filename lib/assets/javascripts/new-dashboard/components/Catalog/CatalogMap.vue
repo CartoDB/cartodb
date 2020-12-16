@@ -165,7 +165,9 @@ export default {
         if (!object || !this.variable) return false;
         const title = this.variable.attribute;
         let value = object.properties[this.variable.attribute];
-        if (value === undefined) return false;
+        if (value === undefined || value === null) {
+          value = 'No data';
+        }
         if (typeof value === 'number') {
           value = this.formatNumber(value);
         }

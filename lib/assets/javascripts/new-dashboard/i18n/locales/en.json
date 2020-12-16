@@ -272,6 +272,23 @@
     "tags": "tags",
     "maps": "0 maps | 1 map | {n} maps"
   },
+  "NewMapDatasetCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "tags": "No tags | 1 tag | {n} tags",
+    "lastUpdated": "{date} ago",
+    "numberRows": "0 rows | 1 row | {count} rows",
+    "noDescription": "No description",
+    "tabs": {
+      "newDataset": "New dataset",
+      "yourDatasets": "Your datasets",
+      "sharedWithYou": "{n} Shared with you"
+    }
+  },
   "DatasetListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",

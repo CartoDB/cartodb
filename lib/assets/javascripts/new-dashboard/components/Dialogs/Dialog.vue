@@ -91,6 +91,7 @@ export default {
 }
 .sub-header, .footer {
   position: sticky;
+  z-index: 1;
   background-color: $neutral--100;
 }
 .sub-header {

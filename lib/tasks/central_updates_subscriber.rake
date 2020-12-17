@@ -2,8 +2,8 @@ require './lib/carto/subscribers/central_user_commands'
 
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
-  task cartodb_subscribers: [:environment] do |_task, _args|
-    pid_file = ENV['PIDFILE'] || Rails.root.join('tmp/pids/cartodb_subscribers.pid')
+  task cartodb_central_subscriber: [:environment] do |_task, _args|
+    pid_file = ENV['CENTRAL_SUBSCRIBER_PIDFILE'] || Rails.root.join('tmp/pids/cartodb_central_subscriber.pid')
     raise "PID file exists: #{pid_file}" if File.exist?(pid_file)
 
     File.open(pid_file, 'w') { |f| f.puts Process.pid }

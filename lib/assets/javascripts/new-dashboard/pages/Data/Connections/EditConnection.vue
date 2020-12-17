@@ -19,10 +19,10 @@
         <DatabaseConnectionForm v-if="type === 'database'"
           :connector="importOption"
           :connection="connection"
-          @connectClicked="databaseConnected"></DatabaseConnectionForm>
+          @connectClicked="connectionSuccess"></DatabaseConnectionForm>
         <OAuthConnectionForm v-else-if="type === 'cloud'"
           :connector="importOption"
-          :connection="connection"></OAuthConnectionForm>
+          :connection="connection" @connectionSuccess="connectionSuccess"></OAuthConnectionForm>
       </template>
 
       <div v-else-if="connectionsSuccessfullId" class="connections-successfull u-flex u-flex__direction--column u-flex__align--center">
@@ -91,7 +91,7 @@ export default {
     }
   },
   methods: {
-    databaseConnected (id) {
+    connectionSuccess (id) {
       this.connectionsSuccessfullId = id;
     },
     navigateNext () {

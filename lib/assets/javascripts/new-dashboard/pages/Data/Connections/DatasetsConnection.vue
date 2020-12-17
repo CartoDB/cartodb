@@ -56,17 +56,36 @@
         </template>
         <template v-else>
           <div class="dataset-sync-card-container">
-            <div v-for="file in fileList" :key="file.id" class="u-mb--12">
-              <DatasetSyncCard
-                :id="file.id"
-                :name="file.title"
-                :size="file.size"
-                :fileType="file.extension"
-                :isActive="selectedFile && file.id === selectedFile.id"
-                @inputChange="changeSyncInterval"
-                @click.native="chooseFile(file)">
-                </DatasetSyncCard>
-            </div>
+            <LoadingState size="40px" v-if="loadingFiles" primary />
+            <template v-else>
+              <div class="IntermediateInfo ServiceList-empty" v-if="!fileList || !fileList.length">
+                <div class="LayoutIcon">
+                  <i class="CDB-IconFont CDB-IconFont-lens"></i>
+                </div>
+                <h4 class="text is-caption is-txtMidGrey u-mt--8">
+                  {{ $t('ConnectorsPage.oauthNoDataTitle') }}
+                </h4>
+                <p class="text is-small is-txtLightGrey u-mt--8">
+                  {{ $t('ConnectorsPage.oauthNoDataSubtitle') }}
+                </p>
+              </div>
+              <template v-else>
+                <div class="text is-small is-txtMidGrey u-mb--24">
+                  {{ $t('ConnectorsPage.itemList', {num: fileList.length, connector: title}) }}
+                </div>
+                <div v-for="file in fileList" :key="file.id" class="u-mb--12">
+                  <DatasetSyncCard
+                    :id="file.id"
+                    :name="file.title"
+                    :size="file.size"
+                    :fileType="file.extension"
+                    :isActive="selectedFile && file.id === selectedFile.id"
+                    @inputChange="changeSyncInterval"
+                    @click.native="chooseFile(file)">
+                    </DatasetSyncCard>
+                </div>
+              </template>
+            </template>
           </div>
         </template>
       </div>
@@ -89,6 +108,7 @@
 import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import CodeBlock from 'new-dashboard/components/Code/CodeBlock.vue';
+import LoadingState from 'new-dashboard/components/States/LoadingState';
 import FormInput from 'new-dashboard/components/forms/FormInput';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
@@ -104,7 +124,8 @@ export default {
     Dialog,
     FormInput,
     DatasetSyncCard,
-    GuessPrivacyFooter
+    GuessPrivacyFooter,
+    LoadingState
   },
   data () {
     return {
@@ -114,6 +135,7 @@ export default {
       connection: null,
       sending: false,
       queryIsValid: false,
+      loadingFiles: true,
       fileList: null,
       selectedFile: null,
       uploadObject: this.getUploadObject()
@@ -165,12 +187,18 @@ export default {
       }
     },
     async getOAuthFiles () {
-      const data = await this.$store.dispatch('connectors/fetchOAuthFileList', this.connection.connector);
-      this.fileList = data.files.map(file => {
-        const executed = /\.([0-9a-z]+)$/i.exec(file.filename);
-        const extension = executed ? executed[1] : '?';
-        return { ...file, extension };
-      });
+      this.loadingFiles = true;
+      try {
+        const data = await this.$store.dispatch('connectors/fetchOAuthFileList', this.connection.connector);
+        this.fileList = data.files.map(file => {
+          const executed = /\.([0-9a-z]+)$/i.exec(file.filename);
+          const extension = executed ? executed[1] : '?';
+          return { ...file, extension };
+        });
+        this.loadingFiles = false;
+      } catch (error) {
+        this.$router.push({ name: 'new-connection-connector-selected', params: { connector: this.connector.options.service } });
+      }
     },
     chooseFile (file) {
       this.selectedFile = file;

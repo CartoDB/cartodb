@@ -37,7 +37,7 @@
 
 <script>
 
-import { getAmountInUnit, getUnit } from 'new-dashboard/utils/storage-utils';
+import * as Formatter from 'new-dashboard/utils/formatter';
 
 const SYNC_VALUES = {
   never: 0,
@@ -72,7 +72,7 @@ export default {
   },
   computed: {
     sizeWithUnit () {
-      return `${(Math.round(getAmountInUnit(this.size) * 10) / 10).toLocaleString()}${getUnit(this.size)}`;
+      return `${Formatter.humanFileSize(this.size)}`;
     }
   },
   watch: {

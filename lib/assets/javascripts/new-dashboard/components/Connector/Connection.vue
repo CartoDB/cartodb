@@ -2,7 +2,7 @@
   <div class="connector">
     <div class="beta-label text is-small" v-if="beta">Beta</div>
     <div class="quickactions" @click="stopPropagation">
-      <ConnectorQuickActions :connection="id"/>
+      <ConnectorQuickActions :connection="id" :editable="isDatabase"/>
     </div>
     <div class="ConnectorInfo u-flex u-flex__direction--column u-flex__align--center u-flex__align--center u-pt--20 u-pb--16">
       <div :class="'is-' + type"></div>

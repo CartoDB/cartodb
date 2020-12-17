@@ -37,18 +37,26 @@
         </div>
       </div>
     </div>
-    <div v-show="isFileSelected" class="u-flex u-flex__align--center u-flex__justify--between u-pl--24 u-pr--24 file">
-      <div class="is-txtMainTextColor u-flex u-flex__direction--column file-main">
-        <template v-if="uploadObject.type === 'file'">
-          <span class="is-caption">{{uploadObject.value.name}}</span>
-          <span class="is-small" style="margin-top:2px;">{{humanFileSize(uploadObject.value.size)}}</span>
-        </template>
-        <span v-if="uploadObject.type === 'url'" class="is-caption url-text">{{uploadObject.value}}</span>
+    <template v-if="isFileSelected">
+      <div v-if="uploadObject.type === 'file'" class="u-flex u-flex__align--center u-flex__justify--between u-pl--24 u-pr--24 file">
+        <div class="is-txtMainTextColor u-flex u-flex__direction--column file-main">
+          <template >
+            <span class="is-caption">{{uploadObject.value.name}}</span>
+            <span class="is-small" style="margin-top:2px;">{{humanFileSize(uploadObject.value.size)}}</span>
+          </template>
+        </div>
+        <button @click="clearFile();">
+          <img src="../../assets/icons/common/delete.svg">
+        </button>
       </div>
-      <button @click="clearFile();">
-        <img src="../../assets/icons/common/delete.svg">
-      </button>
-    </div>
+      <div class="u-flex u-flex__align--center u-flex__justify--center" v-else>
+        <DatasetSyncCard
+          :name="uploadObject.value"
+          fileType="URL" isActive
+          @inputChange="changeSyncInterval">
+        </DatasetSyncCard>
+      </div>
+    </template>
   </template>
     <template slot="footer">
       <GuessPrivacyFooter
@@ -70,6 +78,7 @@ import Dropzone from 'dropzone';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
+import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import * as Formatter from 'new-dashboard/utils/formatter';
 require('dragster');
 
@@ -79,6 +88,7 @@ export default {
   mixins: [uploadData],
   components: {
     Dialog,
+    DatasetSyncCard,
     GuessPrivacyFooter
   },
   props: {
@@ -127,6 +137,9 @@ export default {
     }
   },
   methods: {
+    changeSyncInterval (interval) {
+      this.uploadObject.interval = interval;
+    },
     setAltImage (event) {
       event.target.src = require('../../assets/icons/datasets/local-file.svg');
     },

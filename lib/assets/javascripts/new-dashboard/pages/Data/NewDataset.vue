@@ -1,5 +1,5 @@
 <template>
-  <Dialog
+  <Dialog ref="dialog"
     :headerTitle="getHeaderTitleFromMode"
     :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
     :showSubHeader="showSubheader"
@@ -29,14 +29,17 @@
       </div>
       <div v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou">
         <DatasetListForConnectors
+          v-if="!creeatingMap"
           :sharedTab='selectedTab === TABS.sharedWithYou'
           @datasetSelected="updateDatasetSelection"
         ></DatasetListForConnectors>
+        <LoadingState v-else primary/>
       </div>
     </template>
     <template #footer>
       <div v-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou" class="modal-footer u-flex u-flex__justify--end">
-        <button @click="createMapOrLayer" :disabled="selectedDatasetsIds.length == 0" class="button is-primary">{{footerButtonText}}</button>
+        <button v-if="mode==='map'" @click="createMap" :disabled="!canCreateMaps || selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createMap`)}}</button>
+        <button v-if="mode==='layer'" :disabled="selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createLayer`)}}</button>
       </div>
     </template>
   </Dialog>
@@ -117,6 +120,7 @@ export default {
   },
   computed: {
     ...mapState({
+      baseUrl: state => state.user.base_url,
       loading: state => state.connectors.loadingConnections,
       rawConnections: state => state.connectors.connections,
       datasetsMetadata: state => state.datasets.metadata
@@ -133,24 +137,25 @@ export default {
     showSubheader () {
       return this.mode === 'map' || this.mode === 'layer';
     },
-    footerButtonText () {
-      return this.mode === 'map' ? this.$t(`DataPage.createMap`) : this.$t(`DataPage.createLayer`);
+    canCreateMaps () {
+      return this.$store.getters['user/canCreateMaps'];
     }
   },
   data: () => {
     return {
       localFiles: LOCAL_FILES,
       selectedTab: TABS.newDataset,
-      selectedDatasetsIds: []
+      selectedDatasets: [],
+      creeatingMap: false
     };
-  },
-  mounted: function () {
-    this.$store.dispatch('connectors/fetchConnectionsList');
-    this.$store.dispatch('datasets/setURLOptions', {filter: 'mine'});
   },
   created: function () {
     this.TABS = TABS;
     this.selectedTab = this.mode === 'dataset' ? TABS.newDataset : TABS.yourDatasets;
+  },
+  mounted: function () {
+    this.$store.dispatch('connectors/fetchConnectionsList');
+    this.$store.dispatch('datasets/setURLOptions', {filter: 'mine'});
   },
   methods: {
     fileSelected (id) {
@@ -173,11 +178,14 @@ export default {
       this.selectedTab = tabName;
     },
     updateDatasetSelection (datasets) {
-      this.selectedDatasetsIds = Object.keys(datasets).filter(key => datasets[key]);
+      this.selectedDatasets = datasets;
     },
-    createMapOrLayer () {
+    async createMap () {
       if (this.mode === 'map') {
-        console.log('ENTRO');
+        this.creeatingMap = true;
+        const id = await this.$store.dispatch('maps/createVisualizationFromDataset', this.selectedDatasets.map(d => d.name));
+        this.creeatingMap = false;
+        window.location.replace(`${this.baseUrl}/builder/${id}`);
       }
     }
   }

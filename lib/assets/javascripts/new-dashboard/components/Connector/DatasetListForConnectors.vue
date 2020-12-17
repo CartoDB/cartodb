@@ -62,7 +62,12 @@ export default {
       let newSelection = {...this.selectedDataset};
       newSelection[datasetId] = !newSelection[datasetId];
       this.selectedDataset = newSelection;
-      this.$emit('datasetSelected', {...newSelection});
+      this.$emit(
+        'datasetSelected',
+        Object.keys(this.selectedDataset)
+          .filter(key => this.selectedDataset[key])
+          .map(key => this.datasets[key])
+      );
     },
     goToPage (newPage) {
       this.currentPage = newPage;

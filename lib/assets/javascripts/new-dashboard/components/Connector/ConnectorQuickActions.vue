@@ -15,6 +15,10 @@ export default {
   },
   props: {
     connection: String,
+    editable: {
+      type: Boolean,
+      default: true
+    },
     storeActionType: {
       type: String,
       default: 'datasets'
@@ -22,15 +26,18 @@ export default {
   },
   computed: {
     actions () {
-      return [{
-        name: this.$t('QuickActions.editConnection'),
-        event: 'editConnection'
-      },
-      {
-        name: this.$t('QuickActions.delete'),
-        event: 'deleteConnection',
-        isDestructive: true
-      }];
+      return [
+        ...(this.editable
+          ? [{
+            name: this.$t('QuickActions.editConnection'),
+            event: 'editConnection'
+          }] : []
+        ),
+        {
+          name: this.$t('QuickActions.delete'),
+          event: 'deleteConnection',
+          isDestructive: true
+        }];
     }
   },
   methods: {

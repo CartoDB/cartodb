@@ -52,6 +52,11 @@ export default {
   components: {
     ConnectorSection
   },
+  props: {
+    showUrlOption: {
+      default: true
+    }
+  },
   data: () => {
     return {
       requestedConnector: '',
@@ -65,7 +70,9 @@ export default {
     },
     cloudConnectors () {
       const connectors = this.connectorsByType('cloud');
-      connectors.push({ id: 'url', label: 'URL' });
+      if (this.showUrlOption) {
+        connectors.push({ id: 'url', label: 'URL' });
+      }
       return connectors;
     }
   },

@@ -16,12 +16,13 @@
     <template #default>
 
       <template v-if="!connectionsSuccessfullId">
-        <DatabaseConnectionForm
-          v-if="type === 'database'"
+        <DatabaseConnectionForm v-if="type === 'database'"
           :connector="importOption"
           :connection="connection"
-          @connectClicked="databaseConnected"
-        ></DatabaseConnectionForm>
+          @connectClicked="connectionSuccess"></DatabaseConnectionForm>
+        <OAuthConnectionForm v-else-if="type === 'cloud'"
+          :connector="importOption"
+          :connection="connection" @connectionSuccess="connectionSuccess"></OAuthConnectionForm>
       </template>
 
       <div v-else-if="connectionsSuccessfullId" class="connections-successfull u-flex u-flex__direction--column u-flex__align--center">
@@ -34,7 +35,6 @@
           <button @click="navigateNext" class="button is-primary u-ml--36">{{ $t('DataPage.addYourData') }}</button>
         </div>
       </div>
-
     </template>
   </Dialog>
 </template>
@@ -44,6 +44,7 @@
 import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
+import OAuthConnectionForm from 'new-dashboard/components/Connector/OAuthConnectionForm';
 import DatabaseConnectionForm from 'new-dashboard/components/Connector/DatabaseConnectionForm';
 import { mapState } from 'vuex';
 
@@ -51,7 +52,8 @@ export default {
   name: 'EditConnection',
   components: {
     Dialog,
-    DatabaseConnectionForm
+    DatabaseConnectionForm,
+    OAuthConnectionForm
   },
   props: {
     backNamedRoute: {
@@ -89,7 +91,7 @@ export default {
     }
   },
   methods: {
-    databaseConnected (id) {
+    connectionSuccess (id) {
       this.connectionsSuccessfullId = id;
     },
     navigateNext () {

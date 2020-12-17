@@ -96,6 +96,8 @@
     "createDataset": "New Dataset",
     "addDataset": "Add new dataset",
     "addLayer": "Add new layer",
+    "createLayer": "Add layer",
+    "createMap": "Create map",
     "addLocalFile": "Add local file",
     "formats": "Formats",
     "learnmore": "Learn more",
@@ -272,6 +274,28 @@
     "numberRows": "0 rows | 1 row | {count} rows",
     "tags": "tags",
     "maps": "0 maps | 1 map | {n} maps"
+  },
+  "NewMapDatasetCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "tags": "No tags | 1 tag | {n} tags",
+    "lastUpdated": "{date} ago",
+    "numberRows": "0 rows | 1 row | {count} rows",
+    "noDescription": "No description",
+    "tabs": {
+      "newDataset": "New dataset",
+      "yourDatasets": "Your datasets",
+      "sharedWithYou": "{n} Shared with you"
+    },
+    "zeroCase": {
+      "title": "You have not connected any dataset yet",
+      "actionName": "Connect your data",
+      "actionDescription": "to CARTO whether it's a local file, a URL, a cloud storage or a database."
+    }
   },
   "DatasetListHeader": {
     "name": "Name",

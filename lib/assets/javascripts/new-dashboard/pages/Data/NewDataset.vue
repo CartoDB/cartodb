@@ -28,10 +28,10 @@
         <LoadingState v-else primary/>
       </div>
       <div v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou">
-        <DatasetsList
+        <DatasetListForConnectors
           :sharedTab='selectedTab === TABS.sharedWithYou'
           @datasetSelected="updateDatasetSelection"
-        ></DatasetsList>
+        ></DatasetListForConnectors>
       </div>
     </template>
     <template #footer>
@@ -48,7 +48,7 @@ import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
-import DatasetsList from 'new-dashboard/components/Connector/DatasetsList';
+import DatasetListForConnectors from 'new-dashboard/components/Connector/DatasetListForConnectors';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
 import uploadData from 'new-dashboard/mixins/connector/uploadData';
 import { mapState } from 'vuex';
@@ -110,7 +110,7 @@ export default {
     ConnectorSection,
     ConnectorsList,
     LoadingState,
-    DatasetsList
+    DatasetListForConnectors
   },
   props: {
     mode: String

@@ -28,7 +28,7 @@ import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
 import Pagination from 'new-dashboard/components/Pagination';
 
 export default {
-  name: 'DatasetsList',
+  name: 'DatasetListForConnectors',
   props: {
     sharedTab: Boolean
   },

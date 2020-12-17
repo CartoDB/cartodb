@@ -169,7 +169,7 @@ module Carto
     def delete_connection(id)
       connection = fetch_connection(id)
       if connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
-        conection.get_service_datasource.revoke_token
+        connection.get_service_datasource.revoke_token
       end
       connection.destroy!
       @user.reload

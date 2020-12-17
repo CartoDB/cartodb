@@ -8,7 +8,7 @@
     <template #sub-header>
       <ul class="modal-tab title is-small">
         <li @click="selectTab(TABS.newDataset)" :class="{'is-selected' : selectedTab == TABS.newDataset}">{{$t('NewMapDatasetCard.tabs.newDataset')}}</li>
-        <li @click="selectTab(TABS.yourDatasets)" :class="{'is-selected' : selectedTab == TABS.yourDatasets, 'is-deactivated': datasetsMetadata.total_entries == 0}">{{$t('NewMapDatasetCard.tabs.yourDatasets')}}</li>
+        <li @click="selectTab(TABS.yourDatasets)" :class="{'is-selected' : selectedTab == TABS.yourDatasets}">{{$t('NewMapDatasetCard.tabs.yourDatasets')}}</li>
         <li @click="selectTab(TABS.sharedWithYou)" :class="{'is-selected' : selectedTab == TABS.sharedWithYou}" v-if="datasetsMetadata.total_shared">
           {{$tc('NewMapDatasetCard.tabs.sharedWithYou', datasetsMetadata.total_shared)}}
         </li>
@@ -32,6 +32,7 @@
           v-if="!creeatingMap"
           :sharedTab='selectedTab === TABS.sharedWithYou'
           @datasetSelected="updateDatasetSelection"
+          @goToConnectTab="selectTab(TABS.newDataset)"
         ></DatasetListForConnectors>
         <LoadingState v-else primary/>
       </div>
@@ -213,11 +214,6 @@ export default {
     &.is-selected {
       border-color: $text__color;
       color: $text__color;
-    }
-
-    &.is-deactivated {
-      opacity: 0.48;
-      pointer-events: none;
     }
   }
 }

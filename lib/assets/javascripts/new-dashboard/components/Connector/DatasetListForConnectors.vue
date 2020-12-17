@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul class="" v-if="!isFetchingDatasets">
+    <ul class="" v-if="!isFetchingDatasets && !isEmpty">
       <li v-for="dataset in datasets" :key="dataset.id" class="u-mt--12">
         <DatasetCard
           :dataset="dataset"
@@ -9,13 +9,18 @@
         ></DatasetCard>
       </li>
     </ul>
-    <ul v-else>
+    <ul v-else-if="isFetchingDatasets">
       <li v-for="n in 3" :key="n" class="u-mt--12">
         <DatasetCardFake></DatasetCardFake>
       </li>
     </ul>
+    <div v-else-if="isEmpty" class="centered-text">
+      <img svg-inline src="../../assets/icons/datasets/add-dataset.svg"/>
+      <h4 class="text is-caption u-mt--16">{{ $t('NewMapDatasetCard.zeroCase.title') }}</h4>
+      <p class="text is-small u-mt--4"><span class="fake-link" @click="toConnectTab()">{{ $t('NewMapDatasetCard.zeroCase.actionName') }}</span> {{ $t('NewMapDatasetCard.zeroCase.actionDescription') }}</p>
+    </div>
 
-    <div v-if="!isFetchingDatasets">
+    <div v-if="!isFetchingDatasets && !isEmpty">
       <Pagination v-if="numberPages > 1" :page=currentPage :numPages=numberPages @pageChange="goToPage"></Pagination>
     </div>
   </div>
@@ -55,6 +60,10 @@ export default {
     }),
     numberPages () {
       return Math.ceil(this.datasetsMetadata.total_user_entries / this.elemsPerPage);
+    },
+    isEmpty () {
+      const length = Object.keys(this.datasets).length;
+      return (length == 0)
     }
   },
   methods: {
@@ -80,6 +89,9 @@ export default {
         filter: this.sharedTab ? 'shared' : 'mine'
       };
       this.$store.dispatch('datasets/setURLOptions', urlOptions);
+    },
+    toConnectTab () {
+      this.$emit('goToConnectTab');
     }
   },
   watch: {
@@ -93,4 +105,13 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+
+.centered-text {
+  text-align: center;
+}
+
+.fake-link {
+  color: $link__color;
+  cursor: pointer;
+}
 </style>

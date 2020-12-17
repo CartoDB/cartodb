@@ -290,6 +290,11 @@
       "newDataset": "New dataset",
       "yourDatasets": "Your datasets",
       "sharedWithYou": "{n} Shared with you"
+    },
+    "zeroCase": {
+      "title": "You have not connected any dataset yet",
+      "actionName": "Connect your data",
+      "actionDescription": "to CARTO whether it's a local file, a URL, a cloud storage or a database."
     }
   },
   "DatasetListHeader": {

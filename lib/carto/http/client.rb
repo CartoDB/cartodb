@@ -20,8 +20,8 @@ module Carto
       def self.get(tag, extra_options = {})
         logger = build_logger(tag, extra_options)
         curl_options = DEFAULT_CURL_OPTIONS
-                         .merge(extra_options)
-                         .select { |k, _v| Ethon::Curl.easy_options(nil).include?(k) }
+                       .merge(extra_options)
+                       .select { |k, _v| Ethon::Curl.easy_options(nil).include?(k) }
         new(logger, curl_options)
       end
 

@@ -27,6 +27,7 @@ sudo make install
 - Make subscriber wait for DB creation in development [#15982](https://github.com/CartoDB/cartodb/pull/15982)
 - `MessageBroker` now grabs the subscription name from `Config#central_subscription_name` [#16008](https://github.com/CartoDB/cartodb/pull/16008)
 - Fix an issue with autoloading of a model class [#16011](https://github.com/CartoDB/cartodb/pull/16011)
+- Add a default connection timeout of 30 seconds to Carto::Http::Client [#16020](https://github.com/CartoDB/cartodb/pull/16020)
 - Propagate request_id in MessageBroker logs [#16006](https://github.com/CartoDB/cartodb/pull/16006)
 
 4.44.0 (2020-11-20)

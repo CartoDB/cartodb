@@ -95,7 +95,7 @@ module Carto
 
       def perform_request(method, url, options = {})
         set_x_request_id!(options)
-        request = Request.new(@logger, url, @curl_options.merge(options))
+        request = Request.new(@logger, url, @curl_options.merge(options).merge(method: method))
         request.run
       end
 

@@ -113,7 +113,7 @@ describe Carto::Http::Client do
     end
 
     it 'creates a request with a default connecttimeout' do
-      expected_options = { connecttimeout: 30 }
+      expected_options = { connecttimeout: 30, method: :get }
       mocked_request = mock
       mocked_request.expects(:run).once
       Carto::Http::Request.expects(:new).with(anything, 'www.example.com', expected_options).returns(mocked_request)
@@ -121,7 +121,7 @@ describe Carto::Http::Client do
     end
 
     it 'can override the connecttimeout default value' do
-      expected_options = { connecttimeout: 45 }
+      expected_options = { connecttimeout: 45, method: :get }
       mocked_request = mock
       mocked_request.expects(:run).once
       Carto::Http::Request.expects(:new).with(anything, 'www.example.com', expected_options).returns(mocked_request)

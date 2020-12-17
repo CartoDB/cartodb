@@ -63,7 +63,7 @@ export default {
     },
     isEmpty () {
       const length = Object.keys(this.datasets).length;
-      return (length == 0)
+      return (length === 0);
     }
   },
   methods: {

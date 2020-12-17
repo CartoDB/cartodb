@@ -55,13 +55,14 @@ export default {
   data: () => {
     return {
       maxTagChars: 16
-    }
+    };
   },
   computed: {
     lastUpdated () {
       let updatedDate = this.$props.dataset.updated_at;
-      if (this.$props.dataset.synchronization && this.$props.dataset.synchronization.updated_at)
+      if (this.$props.dataset.synchronization && this.$props.dataset.synchronization.updated_at) {
         updatedDate = this.$props.dataset.synchronization.updated_at;
+      }
       return this.$t('NewMapDatasetCard.lastUpdated', { date: distanceInWordsStrict(updatedDate, new Date()) });
     },
     tagsChars () {
@@ -86,7 +87,7 @@ export default {
       }
       const currentGeometryType = geometry.toLowerCase();
       return geometryTypes[currentGeometryType] ? geometryTypes[currentGeometryType] : 'unknown';
-    },
+    }
   },
   methods: {
     humanFileSize (size) {

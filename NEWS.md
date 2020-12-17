@@ -29,6 +29,7 @@ sudo make install
 - Fix an issue with autoloading of a model class [#16011](https://github.com/CartoDB/cartodb/pull/16011)
 - Propagate request_id in MessageBroker logs [#16006](https://github.com/CartoDB/cartodb/pull/16006)
 - Don't report Coverband errors to Rollbar [#16021](https://github.com/CartoDB/cartodb/pull/16021)
+- Make the MessageBroker subscriber PIDFILE check more resilient [#16022](https://github.com/CartoDB/cartodb/pull/16022)
 
 4.44.0 (2020-11-20)
 -------------------

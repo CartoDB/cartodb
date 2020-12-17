@@ -1,7 +1,6 @@
 require_relative 'request'
 require_relative 'response_logger'
 require_relative 'null_logger'
-require_relative '../current_request'
 require './app/helpers/logger_helper'
 
 module Carto
@@ -99,7 +98,7 @@ module Carto
       end
 
       def request_id
-        Carto::CurrentRequest.request_id
+        Carto::Common::CurrentRequest.request_id
       end
 
     end

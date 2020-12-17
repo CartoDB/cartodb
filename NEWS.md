@@ -11,7 +11,7 @@ sudo make install
 
 ### Features
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
-- Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950) 
+- Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 
 ### Bug fixes / enhancements
 - Replace DO metadata SQL with API request [#15983](https://github.com/CartoDB/cartodb/pull/15983)
@@ -25,6 +25,9 @@ sudo make install
 - Adding API Keys to Redis when user is unlocked [#15959](https://github.com/CartoDB/cartodb/pull/15959)
 - Bump version of cartodb-common to v0.4.9 and pubsub to 1.10 [#16007](https://github.com/CartoDB/cartodb/pull/16007)
 - Make subscriber wait for DB creation in development [#15982](https://github.com/CartoDB/cartodb/pull/15982)
+- `MessageBroker` now grabs the subscription name from `Config#central_subscription_name` [#16008](https://github.com/CartoDB/cartodb/pull/16008)
+- Fix an issue with autoloading of a model class [#16011](https://github.com/CartoDB/cartodb/pull/16011)
+- Propagate request_id in MessageBroker logs [#16006](https://github.com/CartoDB/cartodb/pull/16006)
 
 4.44.0 (2020-11-20)
 -------------------

@@ -29,6 +29,9 @@ namespace :message_broker do
       subscription.register_callback(:delete_user,
                                      &central_user_commands.method(:delete_user))
 
+      subscription.register_callback(:test_timeout,
+                                     &central_user_commands.method(:test_timeout))
+
       at_exit do
         logger.info(message: 'Stopping subscriber...')
         subscription.stop!

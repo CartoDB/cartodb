@@ -66,6 +66,12 @@ module Carto
         end
       end
 
+      def test_timeout(payload)
+        logger.info(message: 'Processing :test_timeout', class_name: self.class.name, payload: payload)
+        sleep(payload[:sleep_seconds])
+        logger.info(message: 'Finished :test_timeout', class_name: self.class.name)
+      end
+
     end
   end
 end

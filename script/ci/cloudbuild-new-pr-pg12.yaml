@@ -62,7 +62,7 @@ steps:
     - -c
     - |
       cp private/script/ci/* .
-      cp private/Dockerfile* .
+      cp private/Dockerfile .
       cp -r private/build_resources/ .
       cp config/app_config.yml.sample config/app_config.yml
       cp config/database.yml.sample config/database.yml

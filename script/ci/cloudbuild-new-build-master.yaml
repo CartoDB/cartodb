@@ -68,58 +68,15 @@ steps:
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json
 
-# test script
-- name: google/cloud-sdk
-  entrypoint: '/bin/bash'
-  args: 
-    - '-c'
-    - |
-      pip3 install gitpython
-      python3 trigger_build.py
-
-# Build image from stage 1
+# Build and push image
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
   args:
     - -c
     - |
-      if [ -f /workspace/build_trigger_1 ]; then
-        docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:latest
-        docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:${SHORT_SHA} -f Dockerfile.stage1 --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:latest .
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:latest
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-stage1:${SHORT_SHA}
-        touch /workspace/build_trigger_2
-      else 
-        echo 'Skipping stage 1'
-      fi
-
-# Build image from stage 2
-- name: gcr.io/cloud-builders/docker
-  entrypoint: /bin/bash
-  args:
-    - -c
-    - |
-      if [ -f /workspace/build_trigger_2 ]; then 
-        docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:latest
-        docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:${SHORT_SHA} -f Dockerfile.stage2 --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:latest . 
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:latest
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-stage2:${SHORT_SHA}
-        touch /workspace/build_trigger_3
-      else 
-        echo 'Skipping stage 2'
-      fi
-
-# Build image from stage 3
-- name: gcr.io/cloud-builders/docker
-  entrypoint: /bin/bash
-  args:
-    - -c
-    - |
-      if [ -f /workspace/build_trigger_3 ]; then
-        docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder-tests
-        docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -f Dockerfile.stage3 .
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
-      fi
+      docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:latest
+      docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:latest .
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:${SHORT_SHA}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:latest
 
 timeout: 3600s

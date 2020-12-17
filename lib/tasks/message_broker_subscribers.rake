@@ -43,14 +43,11 @@ def init_central_subscriber(message_broker, logger)
     logger: logger
   )
 
-  subscription.register_callback(:update_user,
-                                  &central_user_commands.method(:update_user))
+  subscription.register_callback(:update_user, &central_user_commands.method(:update_user))
 
-  subscription.register_callback(:create_user,
-                                  &central_user_commands.method(:create_user))
+  subscription.register_callback(:create_user, &central_user_commands.method(:create_user))
 
-  subscription.register_callback(:delete_user,
-                                  &central_user_commands.method(:delete_user))
+  subscription.register_callback(:delete_user, &central_user_commands.method(:delete_user))
 
   at_exit do
     logger.info(message: 'Stopping subscriber...')

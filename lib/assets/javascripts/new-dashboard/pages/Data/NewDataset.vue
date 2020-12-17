@@ -36,7 +36,7 @@
     </template>
     <template #footer>
       <div v-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou" class="modal-footer u-flex u-flex__justify--end">
-        <button :disabled="selectedDatasetsIds.length == 0" class="button is-primary">{{footerButtonText}}</button>
+        <button @click="createMapOrLayer" :disabled="selectedDatasetsIds.length == 0" class="button is-primary">{{footerButtonText}}</button>
       </div>
     </template>
   </Dialog>
@@ -174,6 +174,11 @@ export default {
     },
     updateDatasetSelection (datasets) {
       this.selectedDatasetsIds = Object.keys(datasets).filter(key => datasets[key]);
+    },
+    createMapOrLayer () {
+      if (this.mode === 'map') {
+        console.log('ENTRO');
+      }
     }
   }
 };

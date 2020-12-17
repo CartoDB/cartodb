@@ -50,7 +50,7 @@ steps:
 # Checkout repo with submodules
 - name: 'gcr.io/cloud-builders/git'
   entrypoint: 'sh'
-  args: ['-c', 'git clone git@github.com:CartoDB/cartodb -b "${BRANCH_NAME}" --depth 2 --recursive .']
+  args: ['-c', 'git clone git@github.com:CartoDB/cartodb -b "${BRANCH_NAME}" --depth 1 --recursive .']
   volumes:
   - name: 'ssh'
     path: /root/.ssh
@@ -75,9 +75,9 @@ steps:
   args:
     - -c
     - |
-      docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:latest
-      docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:latest .
-      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:${SHORT_SHA}
-      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-albertoh-test:latest
+      docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
+      docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:latest .
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
 
-timeout: 3600s
+timeout: 1800s

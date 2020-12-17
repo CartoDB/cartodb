@@ -64,6 +64,7 @@ steps:
       cp private/script/ci/* .
       cp private/Dockerfile .
       cp -r private/build_resources/ .
+      cp script/ci/* .
       cp config/app_config.yml.sample config/app_config.yml
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json

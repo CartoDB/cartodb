@@ -23,8 +23,10 @@ Rollbar.configure do |config|
   )
 
   config.before_process << proc do |options|
-    raise Rollbar::Ignore if options.is_a?(Hash) &&
-                             options[:message]&.include?('ActionController::RoutingError')
+    raise Rollbar::Ignore if options.is_a?(Hash) && (
+      options[:message]&.include?('ActionController::RoutingError') ||
+      options[:message] == 'coverage failed to store'
+    )
   end
 end
 

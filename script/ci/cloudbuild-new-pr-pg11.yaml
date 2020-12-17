@@ -76,7 +76,7 @@ steps:
     - -c
     - |
       docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
-      docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:latest .
+      docker build --build-arg BUNDLE_JOBS=16 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:latest .
 
 # Run tests
 - name: 'docker/compose:1.22.0'

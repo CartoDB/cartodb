@@ -25,6 +25,7 @@ describe Carto::Http::Client do
         method: :post,
         body: "this is a request body",
         params: { field1: "a field" },
+        connecttimeout: Carto::Http::Client::DEFAULT_CONNECT_TIMEOUT_SECONDS,
         headers: {
           Accept: 'text/html',
           'User-Agent' => Carto::Http::Request::DEFAULT_USER_AGENT
@@ -38,6 +39,18 @@ describe Carto::Http::Client do
                      params: { field1: "a field" },
                      headers: { Accept: "text/html", "User-Agent" => Carto::Http::Request::DEFAULT_USER_AGENT}
                      )
+    end
+
+    it 'creates a request with a default connecttimeout' do
+      expected_options = { connecttimeout: 30 }
+      Typhoeus::Request.expects(:new).once.with('www.example.com', expected_options)
+      @client.request('www.example.com')
+    end
+
+    it 'can override the connecttimeout default value' do
+      expected_options = { connecttimeout: 45 }
+      Carto::Http::Request.expects(:new).once.with(anything, 'www.example.com', expected_options)
+      @client.request('www.example.com', connecttimeout: 45)
     end
   end
 
@@ -100,6 +113,22 @@ describe Carto::Http::Client do
       expected_response = Typhoeus::Response.new(code: 200, body: "{'name' : 'paul'}")
       Typhoeus.stub("www.example.com").and_return(expected_response)
       @client.get("www.example.com").should eq expected_response
+    end
+
+    it 'creates a request with a default connecttimeout' do
+      expected_options = { connecttimeout: 30 }
+      mocked_request = mock
+      mocked_request.expects(:run).once
+      Carto::Http::Request.expects(:new).with(anything, 'www.example.com', expected_options).returns(mocked_request)
+      @client.get('www.example.com')
+    end
+
+    it 'can override the connecttimeout default value' do
+      expected_options = { connecttimeout: 45 }
+      mocked_request = mock
+      mocked_request.expects(:run).once
+      Carto::Http::Request.expects(:new).with(anything, 'www.example.com', expected_options).returns(mocked_request)
+      @client.get('www.example.com', connecttimeout: 45)
     end
   end
 

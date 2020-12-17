@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     toggleDatasetSelection (datasetId) {
-      let newSelection = {...this.selectedDataset};
+      let newSelection = { ...this.selectedDataset };
       newSelection[datasetId] = !newSelection[datasetId];
       this.selectedDataset = newSelection;
       this.$emit(

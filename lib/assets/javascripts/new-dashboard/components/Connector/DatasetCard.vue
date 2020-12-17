@@ -41,13 +41,9 @@ import * as Formatter from 'new-dashboard/utils/formatter';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 
-import FeaturesDropdown from '../Dropdowns/FeaturesDropdown';
-
 export default {
   name: 'DatasetCard',
-  components: {
-    FeaturesDropdown
-  },
+  components: {},
   props: {
     dataset: Object,
     isSelected: Boolean

@@ -197,7 +197,8 @@ export default {
         });
         this.loadingFiles = false;
       } catch (error) {
-        this.$router.push({ name: 'new-connection-connector-selected', params: { connector: this.connector.options.service } });
+        const routeNamePrefix = this.$route.name.replace('connection-dataset', '');
+        this.$router.push({ name: `${routeNamePrefix}connector-selected`, params: { connector: this.connector.options.service } });
       }
     },
     chooseFile (file) {

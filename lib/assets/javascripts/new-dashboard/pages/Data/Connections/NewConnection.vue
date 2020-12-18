@@ -5,7 +5,7 @@
     :showSubHeader="false"
   >
     <template #default>
-      <ConnectorsList @connectorSelected="connectorSelected"></ConnectorsList>
+      <ConnectorsList @connectorSelected="connectorSelected" :showUrlOption="false"></ConnectorsList>
     </template>
   </Dialog>
 </template>

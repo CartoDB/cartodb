@@ -41,8 +41,7 @@ module Carto
         end
 
         def destroy
-          connection = @connection_manager.fetch_connection(params[:id])
-          connection.destroy!
+          @connection_manager.delete_connection(params[:id])
           head :ok
         end
 

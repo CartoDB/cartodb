@@ -14,6 +14,7 @@ sudo make install
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 
 ### Bug fixes / enhancements
+- Fix maximum of 50 projects in BQ connector billing project selector [16027](https://github.com/CartoDB/cartodb/pull/16027)
 - Replace DO metadata SQL with API request [#15983](https://github.com/CartoDB/cartodb/pull/15983)
 - Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
 - Improve the syncronization functions by using `CDB_GetTableQueries`.

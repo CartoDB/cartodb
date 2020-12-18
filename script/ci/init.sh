@@ -21,6 +21,6 @@ until [[ $n -eq $MAX_RETRIES ]]; do
 done
 
 createdb -T template0 -O postgres -h "${DB_IP}" -U postgres -E UTF8 template_postgis || true
-psql -h "${DB_IP}" -U postgres -d template_postgis -c 'CREATE EXTENSION IF NOT EXISTS postgis;CREATE EXTENSION IF NOT EXISTS postgis_topology;CREATE EXTENSION IF NOT EXISTS postgis_raster;'
+psql -h "${DB_IP}" -U postgres -d template_postgis -c 'CREATE EXTENSION IF NOT EXISTS postgis;CREATE EXTENSION IF NOT EXISTS postgis_topology;'
 RAILS_ENV=test bundle exec rake cartodb:test:prepare
 

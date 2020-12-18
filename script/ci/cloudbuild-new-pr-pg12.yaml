@@ -91,11 +91,6 @@ steps:
     - 'docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-tests:latest'
 
 - name: gcr.io/cloud-builders/docker
-  args: ['exec', '-i', 'builder_1', 'bash', '-c',
-         'until pg_isready -h localhost -p 5432 -d template_postgis; do sleep 10 && echo "Waiting for postgres before starting the tests..." ; done' ]
-  timeout: 120s 
-
-- name: gcr.io/cloud-builders/docker
   args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 24' ]
   timeout: 2700s
 

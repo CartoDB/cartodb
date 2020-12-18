@@ -2,6 +2,7 @@ module Carto
   class ConnectionManager
     DB_PASSWORD_PLACEHOLDER = '********'.freeze
     OAUTH_TOKEN_PLACEHOLDER = '********'.freeze
+    BQ_CONNECTOR = 'bq-v2'.freeze
 
     def initialize(user)
       @user = user
@@ -105,7 +106,9 @@ module Carto
 
     def create_db_connection(name:, provider:, parameters:)
       check_db_provider!(provider)
-      @user.connections.create!(name: name, connector: provider, parameters: parameters)
+      connection = @user.connections.create!(name: name, connector: provider, parameters: parameters)
+      update_redis_metadata(connection)
+      connection
     end
 
     # create Oauth connection logic
@@ -131,7 +134,7 @@ module Carto
     def create_oauth_connection_get_url(service:) # get_url_to_create_oauth_connection
       check_oauth_service!(service)
       existing_connection = find_oauth_connection(service)
-      existing_connection.destroy if existing_connection.present?
+      delete_connection(existing_connection.id) if existing_connection.present?
       oauth_connection_url(service)
     end
 
@@ -168,11 +171,10 @@ module Carto
 
     def delete_connection(id)
       connection = fetch_connection(id)
-      if connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
-        connection.get_service_datasource.revoke_token
-      end
+      revoke_token(connection)
       connection.destroy!
       @user.reload
+      remove_redis_metadata(connection)
     end
 
     def fetch_connection(id)
@@ -185,9 +187,37 @@ module Carto
       new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
       new_attributes[:name] = name if name.present?
       connection.update!(new_attributes) if new_attributes.present?
+      update_redis_metadata(connection)
+    end
+
+    def self.singleton_connector?(connector)
+      (connector == BQ_CONNECTOR) || connector.in?(valid_oauth_services)
     end
 
     private
+
+    def bigquery_redis_key
+      "google:bq_settings:#{@user.username}"
+    end
+
+    def update_redis_metadata(connection)
+      if connection.connector == BQ_CONNECTOR && connection.parameters['service_account'].present?
+        $users_metadata.hset bigquery_redis_key, 'service_account', connection.parameters['service_account']
+      end
+    end
+
+    def remove_redis_metadata(connection)
+      if connection.connector == BQ_CONNECTOR
+        $users_metadata.del bigquery_redis_key
+      end
+    end
+
+    def revoke_token(connection)
+      if connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+        connection.get_service_datasource.revoke_token
+      end
+    end
+
 
     def oauth_connection_url(service) # returns auth_url, doesn't actually create connection
       DataImportsService.new.get_service_auth_url(@user, service)

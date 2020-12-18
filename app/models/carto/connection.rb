@@ -1,24 +1,8 @@
-
 module Carto
   class Connection < ActiveRecord::Base
     TYPE_OAUTH_SERVICE = 'oauth-service'.freeze
     TYPE_DB_CONNECTOR = 'db-connector'.freeze
 
-    # id, user_id, name, connection_type, parameters, connector, token
-
-    # connection_type == 'db-connector'
-    #     provider = connector
-    #     parameters
-    # connection_type == 'oauth-service'
-    #   service = connector
-    #   token / synchronization_oauth
-    # connection_type == 'url-service'
-    #   service
-    #   parameters (for service='arcgis' parameters: { base_url: ...})
-
-    # there might be a connection_type='db-connector' (future service account support) with provider = 'bigquery'
-    # or a connection_type='oauth-service' record  with service = 'bigquery'
-    # (note that only token used in the latter case; no parameters as the billing project has been removed from the connection)
     belongs_to :user, class_name: 'Carto::User', inverse_of: :connections
 
     scope :oauth_connections, -> { where(connection_type: TYPE_OAUTH_SERVICE) }
@@ -27,6 +11,7 @@ module Carto
     validates :name, uniqueness: { scope: :user_id }
     validates :connection_type, inclusion: { in: [TYPE_OAUTH_SERVICE, TYPE_DB_CONNECTOR] }
     validate :validate_parameters
+    validates :connector, uniqueness: { scope: :user_id }, if: :singleton_connection?
 
     def get_service_datasource
       raise "Invalid connection type (#{connection_type}) to get service datasource" unless connection_type == TYPE_OAUTH_SERVICE
@@ -53,6 +38,10 @@ module Carto
     # before_validation :set_parameters
 
     private
+
+    def singleton_connection?
+      Carto::ConnectionManager.singleton_connector?(connector)
+    end
 
     def set_type
       return if connection_type.present?

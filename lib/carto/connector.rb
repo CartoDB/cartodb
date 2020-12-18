@@ -222,9 +222,9 @@ module Carto
         else
           @params.merge! provider: connection.connector
         end
-        @params.merge! connection: connection.parameters
-        # TODO: new convention for hybrid connectors (db-connectors using OAuth and connection parameters)
-        # @params.merge! connection: { refresh_token: token } if connection.parameters.blank? && token.present?
+        connection_params = connection.parameters
+        connection_params = connection_params.merge(refresh_token: connection.token) if connection.token.present?
+        @params.merge! connection: connection_params
         @params.delete :connection_id
       end
     end

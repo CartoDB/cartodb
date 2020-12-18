@@ -138,8 +138,11 @@ export default {
     },
     tilesetSampleId () {
       const TILESET_SAMPLE_PROJECT_MAP = {
-        'do-sample-prod': 'do-tileset-sample-stag',
-        'do-public-sample': 'do-public-tileset-sample-stag'
+        'do-sample-prod': 'do-tileset-sample',
+        'do-public-sample': 'do-public-tileset-sample'
+        // To test in staging
+        // 'do-sample-prod': 'do-tileset-sample-stag',
+        // 'do-public-sample': 'do-public-tileset-sample-stag'
       };
       const [project, dataset, table] = this.dataset.sample_info.id.split('.');
       return [TILESET_SAMPLE_PROJECT_MAP[project], dataset, table].join('.');
@@ -239,8 +242,9 @@ export default {
           data: this.tilesetSampleId,
           credentials: {
             username: 'public',
-            apiKey: 'default_public',
-            mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
+            apiKey: 'default_public'
+            // To test in staging:
+            // mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
           },
           getFillColor,
           getLineColor,

@@ -27,7 +27,7 @@ module Carto
             http_client.get(url, request_params)
           end
 
-          if response.code.to_s =~ /^2/
+          if response.code.to_s.match?(/^2/)
             ::JSON.parse(response.response_body).deep_symbolize_keys
           else
             log_response(response, 'index')
@@ -43,7 +43,7 @@ module Carto
           response = http_client.post(url, params)
 
           response_code = response.code
-          if response_code.to_s =~ /^2/
+          if response_code.to_s.match?(/^2/)
             ::JSON.parse(response.response_body).deep_symbolize_keys
           elsif response_code != 409 # Ignore when max number of templates is reached
             log_response(response, 'create')
@@ -60,7 +60,7 @@ module Carto
           end
 
           response_code = response.code
-          if response_code.to_s =~ /^2/
+          if response_code.to_s.match?(/^2/)
             ::JSON.parse(response.response_body).deep_symbolize_keys
           else
             log_response(response, 'show') unless response_code == 404
@@ -76,9 +76,9 @@ module Carto
           response = http_client.put(url(template_name: @named_map_template.name), params)
 
           response_code_string = response.code.to_s
-          if response_code_string =~ /^2/
+          if response_code_string.match?(/^2/)
             ::JSON.parse(response.response_body).deep_symbolize_keys
-          elsif response_code_string =~ /^5/ && retries < MAX_RETRY_ATTEMPTS
+          elsif (response_code_string.match?(/^5/) || response.code == 429) && retries < MAX_RETRY_ATTEMPTS
             sleep(RETRY_TIME_SECONDS**retries)
             update(retries: retries + 1)
           else
@@ -87,17 +87,20 @@ module Carto
         end
       end
 
-      def destroy
+      def destroy(retries: 0)
         stats_aggregator.timing('carto-named-maps-api.destroy') do
           url = url(template_name: @named_map_template.name)
 
           response = http_client.delete(url, request_params)
 
-          response_code = response.code
-          if response_code.to_s =~ /^2/
+          response_code_string = response.code.to_s
+          if response_code_string.match?(/^2/)
             response.response_body
+          elsif (response_code_string.match?(/^5/) || response.code == 429) && retries < MAX_RETRY_ATTEMPTS
+            sleep(RETRY_TIME_SECONDS**retries)
+            update(retries: retries + 1)
           else
-            log_response(response, 'destroy') unless response_code == 404
+            log_response(response, 'destroy') unless response.code == 404
           end
         end
       end

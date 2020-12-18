@@ -106,6 +106,7 @@ module Carto
     def create_db_connection(name:, provider:, parameters:)
       check_db_provider!(provider)
       @user.connections.create!(name: name, connector: provider, parameters: parameters)
+      # TODO: for BQ connector with service_account in parameters, save service account in redis
     end
 
     # create Oauth connection logic

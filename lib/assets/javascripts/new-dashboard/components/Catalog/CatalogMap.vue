@@ -130,7 +130,7 @@ export default {
           name: c.category
         }));
         categories.push({
-          name: 'Others',
+          name: 'OTHERS',
           color: 'rgb(165, 170, 153)'
         });
         return categories;

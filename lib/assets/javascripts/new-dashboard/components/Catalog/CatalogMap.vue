@@ -165,20 +165,33 @@ export default {
         this.syncMapboxViewState(viewState);
       },
       controller: true,
-      getTooltip: ({ object }) => {
+      getTooltip: ({ x, y, object }) => {
         if (!object || !this.variable) return false;
         const title = this.variable.attribute;
-        let value = object.properties[this.variable.attribute];
-        if (value === undefined || value === null) {
-          value = 'No data';
+        let html = `<p style="margin: 0 0 0 4px; color: #6f777c;">${title}</p>`;
+        const objects = deck.pickMultipleObjects({ x, y });
+        let countNoData = 0;
+        for (let o of objects) {
+          if (this.compare(o.object.geometry.coordinates, object.geometry.coordinates)) {
+            // Display the points that are fully overlapped (same coordinates)
+            let value = o.object.properties[this.variable.attribute];
+            if (value !== undefined && value !== null) {
+              if (typeof value === 'number') {
+                value = this.formatNumber(value);
+              }
+              html += `<p style="margin: 4px 0 0 4px;"><b>${value}</b></p>`;
+            } else {
+              countNoData += 1;
+            }
+          }
         }
-        if (typeof value === 'number') {
-          value = this.formatNumber(value);
+        if (countNoData > 0) {
+          let value = 'No data';
+          if (countNoData > 1) {
+            value += ` (${countNoData})`;
+          }
+          html += `<p style="margin: 4px 0 0 4px;"><b>${value}</b></p>`;
         }
-        const html = `
-          <p style="margin: 0 0 0 4px; color: #6f777c;">${title}</p>
-          <p style="margin: 4px 0 0 4px;"><b>${value}</b></p>
-        `;
         const style = {
           'padding': '8px 12px',
           'border-radius': '2px',
@@ -374,6 +387,9 @@ export default {
       getLineColor = undefined;
       getLineWidth = undefined;
       getRadius = undefined;
+    },
+    compare (a, b) {
+      return JSON.stringify(a) === JSON.stringify(b);
     }
   }
 };

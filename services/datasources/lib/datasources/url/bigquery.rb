@@ -237,7 +237,7 @@ module CartoDB
         end
 
         def list_tables(project_id, dataset_id)
-          tables = @bigquery_api.list_tables(project_id, dataset_id, max_results: MAX_DATASETS).tables
+          tables = @bigquery_api.list_tables(project_id, dataset_id, max_results: MAX_TABLES).tables
           if tables
             tables.map { |t|
               qualified_name = t.id.gsub(':', '.') # "#{project_id}.#{dataset_id}.#{t.table_reference.table_id}"

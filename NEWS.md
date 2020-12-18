@@ -31,6 +31,7 @@ sudo make install
 - Propagate request_id in MessageBroker logs [#16006](https://github.com/CartoDB/cartodb/pull/16006)
 - Don't report Coverband errors to Rollbar [#16021](https://github.com/CartoDB/cartodb/pull/16021)
 - Maps API client now honors 429 Too Many Requests error [#16025](https://github.com/CartoDB/cartodb/pull/16025)
+- Fix a loop between our logger and rollbar [#16026](https://github.com/CartoDB/cartodb/pull/16026)
 - Make the MessageBroker subscriber PIDFILE check more resilient [#16022](https://github.com/CartoDB/cartodb/pull/16022)
 
 4.44.0 (2020-11-20)

@@ -190,6 +190,10 @@ module Carto
       update_redis_metadata(connection)
     end
 
+    def self.singleton_connector?(connector)
+      (connector == BQ_CONNECTOR) || connector.in?(valid_oauth_services)
+    end
+
     private
 
     def bigquery_redis_key

@@ -183,6 +183,7 @@ export default {
           'padding': '8px 12px',
           'border-radius': '2px',
           'font-size': '12px',
+          'font-family': "'Open Sans', 'Helvetica Neue', Helvetica, sans-serif",
           'color': '#162945',
           'background-color': 'white',
           'border': 'solid 1px #e6e8eb'
@@ -384,6 +385,7 @@ export default {
 .base-map {
   position: relative;
   height: 600px;
+  font-family: $base__font-family;
 
   & > * {
     position: absolute;
@@ -420,7 +422,7 @@ export default {
     box-shadow: 0 2px 8px 0 rgba(44, 44, 44, 0.16);
 
     p {
-      color: $neutral--700;
+      color: $text__color--secondary;
     }
   }
 

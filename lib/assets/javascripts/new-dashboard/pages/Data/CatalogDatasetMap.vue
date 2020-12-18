@@ -2,13 +2,13 @@
   <div v-if="hasSample">
     <div class="catalog-dataset-map">
       <div class="header">
-        <h1 class="title is-caption is-txtMainTextColor">{{ title }}</h1>
+        <h1 class="is-txtMainTextColor">{{ title }}</h1>
         <img src="../../assets/icons/catalog/button-question.svg" alt="question" @click="infoVisible = !infoVisible">
       </div>
       <CatalogMap class="base-map" :showInfo="infoVisible" :legend="true" :recenter="true" />
     </div>
     <div class="footer" v-if="defaultSource">
-      <span class="is-small">
+      <span class="is-small is-txtMainTextColor">
         (*) Sample not available: this preview is for&nbsp;
         <i class="is-semibold is-italic">{{ defaultSource }}</i>
       </span>
@@ -62,10 +62,15 @@ export default {
   padding: 12px;
   border-radius: 4px;
   background: $color-primary--soft;
+  font-family: $base__font-family;
 
   .header {
     display: flex;
     justify-content: space-between;
+
+    h1 {
+      font-weight: 600;
+    }
 
     img {
       width: 30px;

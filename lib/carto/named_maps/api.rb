@@ -87,17 +87,20 @@ module Carto
         end
       end
 
-      def destroy
+      def destroy(retries: 0)
         stats_aggregator.timing('carto-named-maps-api.destroy') do
           url = url(template_name: @named_map_template.name)
 
           response = http_client.delete(url, request_params)
 
-          response_code = response.code
-          if response_code.to_s =~ /^2/
+          response_code_string = response.code.to_s
+          if response_code_string =~ /^2/
             response.response_body
+          elsif (response_code_string =~ /^5/ || response.code == 429) && retries < MAX_RETRY_ATTEMPTS
+            sleep(RETRY_TIME_SECONDS**retries)
+            update(retries: retries + 1)
           else
-            log_response(response, 'destroy') unless response_code == 404
+            log_response(response, 'destroy') unless response.code == 404
           end
         end
       end

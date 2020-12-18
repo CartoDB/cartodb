@@ -204,7 +204,7 @@ module Carto
 
     def remove_redis_metadata(connection)
       if connection.connector == BQ_CONNECTOR
-        @users_metadata.del bigquery_redis_key
+        $users_metadata.del bigquery_redis_key
       end
     end
 

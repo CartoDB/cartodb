@@ -12,6 +12,10 @@ module CartoDB
         # Required for all providers
         DATASOURCE_NAME = 'bigquery'
 
+        MAX_PROJECTS = 500000
+        MAX_DATASETS = 500000
+        MAX_TABLES = 500000
+
         # Constructor (hidden)
         # @param config
         # [
@@ -215,13 +219,13 @@ module CartoDB
         end
 
         def list_projects
-          projects = @bigquery_api.list_projects.projects
+          projects = @bigquery_api.list_projects(max_results: MAX_PROJECTS).projects
           return [] unless projects
           projects.map { |p| { id: p.id, friendly_name: p.friendly_name } }
         end
 
         def list_datasets(project_id)
-          datasets = @bigquery_api.list_datasets(project_id).datasets
+          datasets = @bigquery_api.list_datasets(project_id, max_results: MAX_DATASETS).datasets
           if datasets
             datasets.map { |d|
               qualified_name = d.id.gsub(':', '.') # "#{project_id}.#{d.dataset_reference.dataset_id}"
@@ -233,7 +237,7 @@ module CartoDB
         end
 
         def list_tables(project_id, dataset_id)
-          tables = @bigquery_api.list_tables(project_id, dataset_id).tables
+          tables = @bigquery_api.list_tables(project_id, dataset_id, max_results: MAX_DATASETS).tables
           if tables
             tables.map { |t|
               qualified_name = t.id.gsub(':', '.') # "#{project_id}.#{dataset_id}.#{t.table_reference.table_id}"

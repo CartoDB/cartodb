@@ -12,9 +12,9 @@ module CartoDB
         # Required for all providers
         DATASOURCE_NAME = 'bigquery'
 
-        MAX_PROJECTS = 500000
-        MAX_DATASETS = 500000
-        MAX_TABLES = 500000
+        MAX_PROJECTS = 500_000
+        MAX_DATASETS = 500_000
+        MAX_TABLES = 500_000
 
         # Constructor (hidden)
         # @param config

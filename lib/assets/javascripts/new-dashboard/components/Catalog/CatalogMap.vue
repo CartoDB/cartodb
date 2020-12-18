@@ -2,13 +2,9 @@
   <div class="base-map">
     <div id="map"></div>
     <canvas id="deck-canvas"></canvas>
-    <div v-if="legend" class="legend">
-      <BasicLegend
-        v-if="isGeography"
-        :title="variableName"
-      />
+    <div v-if="legend && !variableGeoid" class="legend">
       <ColorBinsLegend
-        v-else-if="variableMax"
+        v-if="variableMax"
         :title="variableName"
         :min="variableMin"
         :max="variableMax"
@@ -41,7 +37,6 @@ import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
 import colorBinsStyle from './map-styles/colorBinsStyle';
 import colorCategoriesStyle from './map-styles/colorCategoriesStyle';
 
-import BasicLegend from './legends/BasicLegend';
 import ColorBinsLegend from './legends/ColorBinsLegend';
 import ColorCategoriesLegend from './legends/ColorCategoriesLegend';
 
@@ -73,7 +68,6 @@ export default {
     showInfo: Boolean
   },
   components: {
-    BasicLegend,
     ColorBinsLegend,
     ColorCategoriesLegend
   },
@@ -110,6 +104,9 @@ export default {
     },
     variableDescription () {
       return this.variable && this.variable.description;
+    },
+    variableGeoid () {
+      return this.variableName === 'geoid';
     },
     variableMin () {
       return this.formatNumber(this.variable && this.variable.min);

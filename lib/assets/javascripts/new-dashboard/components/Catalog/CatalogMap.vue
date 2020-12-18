@@ -2,7 +2,7 @@
   <div class="base-map">
     <div id="map"></div>
     <canvas id="deck-canvas"></canvas>
-    <div v-if="legend && !variableGeoid" class="legend">
+    <div v-if="legend && !isGeography" class="legend">
       <ColorBinsLegend
         v-if="variableMax"
         :title="variableName"
@@ -105,9 +105,6 @@ export default {
     variableDescription () {
       return this.variable && this.variable.description;
     },
-    variableGeoid () {
-      return this.variableName === 'geoid';
-    },
     variableMin () {
       return this.formatNumber(this.variable && this.variable.min);
     },
@@ -169,7 +166,9 @@ export default {
         if (!object || !this.variable) return false;
         const title = this.variable.attribute;
         let html = `<p style="margin: 0 0 0 4px; color: #6f777c;">${title}</p>`;
-        const objects = deck.pickMultipleObjects({ x, y });
+        const objects = deck.pickMultipleObjects({ x, y })
+          // Remove duplicated objects
+          .filter((v, i, a) => a.findIndex(t => (t.index === v.index)) === i);
         let countNoData = 0;
         for (let o of objects) {
           if (this.compare(o.object.geometry.coordinates, object.geometry.coordinates)) {

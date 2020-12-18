@@ -7,7 +7,7 @@ Rollbar.configure do |config|
 
   # Avoid a loop between our logger (who sends errors through rollbar)
   # and rollbar itself when it cannot send an error to rollbar service
-  config.defaul_logger = Logger.new(STDERR)
+  config.logger = Logger.new(STDERR)
 
   # Add exception class names to the exception_level_filters hash to
   # change the level that exception is reported at. Note that if an exception

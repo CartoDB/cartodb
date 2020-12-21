@@ -127,10 +127,10 @@ export default {
       if (this.variable && this.variable.categories && colorStyle) {
         const categories = this.variable.categories.slice(0, 10).map(c => ({
           color: `rgb(${colorStyle(c.category)})`,
-          name: c.category
+          name: this.capitalize(c.category)
         }));
         categories.push({
-          name: 'OTHERS',
+          name: 'Others',
           color: 'rgb(165, 170, 153)'
         });
         return categories;
@@ -180,6 +180,8 @@ export default {
             if (value !== undefined && value !== null) {
               if (typeof value === 'number') {
                 value = this.formatNumber(value);
+              } else if (typeof value === 'string') {
+                value = this.capitalize(value);
               }
               html += `<p style="margin: 4px 0 0 4px;"><b>${value}</b></p>`;
             } else {
@@ -305,6 +307,9 @@ export default {
         }
         return value.toLocaleString();
       }
+    },
+    capitalize (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     },
     generateColorStyle () {
       const g = this.geomType;

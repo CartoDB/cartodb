@@ -172,8 +172,9 @@ export default {
         const objects = deck.pickMultipleObjects({ x, y })
           // Remove duplicated objects
           .filter((v, i, a) => a.findIndex(t => (t.index === v.index)) === i);
-        let countNoData = 0;
-        for (let o of objects) {
+        let index = 0;
+        const items = {};
+        for (const o of objects) {
           if (this.compare(o.object.geometry.coordinates, object.geometry.coordinates)) {
             // Display the points that are fully overlapped (same coordinates)
             let value = o.object.properties[this.variable.attribute];
@@ -183,16 +184,19 @@ export default {
               } else if (typeof value === 'string') {
                 value = this.capitalize(value);
               }
-              html += `<p style="margin: 4px 0 0 4px;"><b>${value}</b></p>`;
             } else {
-              countNoData += 1;
+              value = 'No data';
             }
+            items[value] ? items[value].count += 1 : items[value] = { index: index++, count: 1 };
           }
         }
-        if (countNoData > 0) {
-          let value = 'No data';
-          if (countNoData > 1) {
-            value += ` (${countNoData})`;
+        const orderedItems = Object.keys(items).map(key => ({
+          value: key, index: items[key].index, count: items[key].count
+        })).sort((a, b) => (a.index > b.index) ? 1 : -1);
+        for (const item of orderedItems) {
+          let value = item.value;
+          if (item.count > 1) {
+            value += ` (${item.count})`;
           }
           html += `<p style="margin: 4px 0 0 4px;"><b>${value}</b></p>`;
         }

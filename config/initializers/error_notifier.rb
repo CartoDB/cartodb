@@ -5,6 +5,10 @@ Rollbar.configure do |config|
   config.enabled = (Rails.env.production? || Rails.env.staging?) && config.access_token.present?
   config.net_retries = 1 # This is actually 6 requests (18s), as Rollbar retries two times (failsafes) and CartoDB once
 
+  # Avoid a loop between our logger (who sends errors through rollbar)
+  # and rollbar itself when it cannot send an error to rollbar service
+  config.logger = Logger.new($stderr)
+
   # Add exception class names to the exception_level_filters hash to
   # change the level that exception is reported at. Note that if an exception
   # has already been reported and logged the level will need to be changed
@@ -23,8 +27,10 @@ Rollbar.configure do |config|
   )
 
   config.before_process << proc do |options|
-    raise Rollbar::Ignore if options.is_a?(Hash) &&
-                             options[:message]&.include?('ActionController::RoutingError')
+    raise Rollbar::Ignore if options.is_a?(Hash) && (
+      options[:message]&.include?('ActionController::RoutingError') ||
+      options[:message] == 'coverage failed to store'
+    )
   end
 end
 

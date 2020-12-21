@@ -347,9 +347,11 @@ module Carto::UserCommons
   def update_feature_flags(feature_flag_ids = nil)
     return unless feature_flag_ids
 
-    self_feature_flags_user.where.not(
-      feature_flag_id: feature_flag_ids.reject { |e| e == '' }
-    ).destroy_all
+    # Ignore things like [''] due to incorrect argument parsing in controllers
+    # TODO: it shouldn't be the models responsability to handle this but the controller
+    feature_flag_ids = feature_flag_ids.select(&:present?)
+
+    self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all
 
     new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)
     new_feature_flags_ids.each do |feature_flag_id|

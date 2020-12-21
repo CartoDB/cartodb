@@ -313,12 +313,11 @@ export default {
 
       propId = this.variable && this.variable.attribute;
 
-      if (g === 'Polygon' && v === null || this.isGeography) {
+      if (g === 'Polygon' && this.isGeography) {
         getFillColor = [234, 200, 100, 168];
         getLineColor = [44, 44, 44, 60];
         getLineWidth = 1;
-      }
-      if (g === 'Polygon' && v === 'Number') {
+      } else if (g === 'Polygon' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
           colors: this.categoryIdPalette
@@ -326,8 +325,7 @@ export default {
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [44, 44, 44, 60];
         getLineWidth = 1;
-      }
-      if (g === 'Polygon' && v === 'String') {
+      } else if (g === 'Polygon' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
           colors: 'Prism'
@@ -335,34 +333,29 @@ export default {
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [44, 44, 44, 60];
         getLineWidth = 1;
-      }
-      if (g === 'LineString' && v === null || this.isGeography) {
+      } else if (g === 'LineString' && this.isGeography) {
         getLineColor = [234, 200, 100, 168];
         getLineWidth = 2;
-      }
-      if (g === 'LineString' && v === 'Number') {
+      } else if (g === 'LineString' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
           colors: this.categoryIdPalette
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
         getLineWidth = 2;
-      }
-      if (g === 'LineString' && v === 'String') {
+      } else if (g === 'LineString' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
           colors: 'Prism'
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
         getLineWidth = 2;
-      }
-      if (g === 'Point' && v === null || this.isGeography) {
+      } else if (g === 'Point' && this.isGeography) {
         getFillColor = [234, 200, 100, 168];
         getLineColor = [44, 44, 44, 60];
         getLineWidth = 1;
         getRadius = 4;
-      }
-      if (g === 'Point' && v === 'Number') {
+      } else if (g === 'Point' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
           colors: this.categoryIdPalette
@@ -371,8 +364,7 @@ export default {
         getLineColor = [100, 100, 100, 255];
         getLineWidth = 1;
         getRadius = 4;
-      }
-      if (g === 'Point' && v === 'String') {
+      } else if (g === 'Point' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
           colors: 'Bold'

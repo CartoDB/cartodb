@@ -53,6 +53,14 @@
           :messageHasHTML="true"
           @click.native="markPopupAsRead('dataObservatory.popupWasShown')"/>
 
+        <NotificationPopup
+          v-if="!popupWasShown('popups.DataObservatorySamples')"
+          class="notification-popup"
+          :title="$t('DataObservatorySamples.title')"
+          :message="$t('DataObservatorySamples.message', { path: this.$router.resolve({ name: 'spatial-data-catalog' }).href })"
+          :messageHasHTML="true"
+          @click.native="markPopupAsRead('popups.DataObservatorySamples')"/>
+
         <!-- <NotificationPopup
           v-if="!popupWasShown('popups.directDBConnection') && hasDBFFActive"
           class="notification-popup"

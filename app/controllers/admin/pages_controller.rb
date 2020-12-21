@@ -94,13 +94,6 @@ class Admin::PagesController < Admin::AdminController
     render :formats => [:xml]
   end
 
-  def public_profile_disabled?
-    if !@viewed_user.nil? && current_user != @viewed_user
-      user = Carto::User.find_by(id: @viewed_user.id)
-      user.has_feature_flag?('disable_public_profile_page')
-    end
-  end
-
   def datasets
     render_403 && return if public_profile_disabled?
 
@@ -512,6 +505,15 @@ class Admin::PagesController < Admin::AdminController
       ""
     else
       !url.blank? && url[/^https?:\/\//].nil? ? "http://#{url}" : url
+    end
+  end
+
+  private
+
+  def public_profile_disabled?
+    if !@viewed_user.nil? && current_user != @viewed_user
+      user = Carto::User.find_by(id: @viewed_user.id)
+      user.has_feature_flag?('disable_public_profile_page')
     end
   end
 

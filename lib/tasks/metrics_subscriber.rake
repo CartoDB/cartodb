@@ -1,4 +1,4 @@
-require './lib/carto/subscribers/central_user_commands'
+require './lib/carto/subscribers/map_views_update'
 
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'

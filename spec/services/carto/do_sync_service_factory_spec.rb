@@ -763,3 +763,4 @@ describe Carto::DoSyncServiceFactory do
     end
   end
 end
+# rubocop:enable RSpec/InstanceVariable

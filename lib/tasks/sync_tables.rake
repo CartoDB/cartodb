@@ -66,11 +66,13 @@ namespace :cartodb do
 
   end
 
-  desc "Port BQ syncs to beta connector"
-  task :port_bq_syncs_to_beta => [:environment] do |task, args|
+  desc 'Port BQ syncs to beta connector'
+  task port_bq_syncs_to_beta: [:environment] do |task, args|
     def report_incompatible_parameters(parameters)
-      invalid_params = parameters.keys - %w(connection table sql_query import_as project dataset billing_project)
-      invalid_conn_params = (parameters['connection'] || {}).keys - %w(billing_project service_account access_token refresh_token default_project default_dataset)
+      valid_params = %w(connection table sql_query import_as project dataset billing_project)
+      valid_conn_params = %w(billing_project service_account access_token refresh_token default_project default_dataset)
+      invalid_params = parameters.keys - valid_params
+      invalid_conn_params = (parameters['connection'] || {}).keys - valid_conn_params
       puts "  Invalid parameters: #{invalid_params.inspect}" if invalid_params.present?
       puts "  Invalid connection parameters: #{invalid_conn_params.inspect}" if invalid_conn_params.present?
     end
@@ -84,18 +86,21 @@ namespace :cartodb do
         AND ((service_item_id::JSON)#>>'{provider}') = 'bigquery'
     }).find_each do |synchronization|
       next unless synchronizatino.user.state == 'active'
+
       sleep 0.2
       synchroniation.transaction do
         synchronization.reload
-        parameters = JSON.load(synchronization.service_item_id)
-        if synchronization.state in? [Carto::Synchronization::STATE_CREATED, Carto::Synchronization::STATE_QUEUED, Carto::Synchronization::STATE_SYNCING]
+        parameters = JSON.parse(synchronization.service_item_id)
+        if synchronization.state in? [
+          Carto::Synchronization::STATE_CREATED,
+          Carto::Synchronization::STATE_QUEUED,
+          Carto::Synchronization::STATE_SYNCING
+        ]
           puts "Synchronization #{synchronization.id} could not be modifed because its state was #{synchronization.state}"
           number_of_pending_syncs += 1
         elsif dry_mode
           puts "Synchronization #{synchronization.id} would be modified to use bigquery-beta"
-          if parameters['billing_project'].present?
-            puts "  parameter billing_project would be moved to connection"
-          end
+          puts '  parameter billing_project would be moved to connection' if parameters['billing_project'].present?
           report_incompatible_parameters(parameters)
         else
           begin
@@ -112,17 +117,17 @@ namespace :cartodb do
               parameters['connection'] ||= {}
               parameters['connection']['billing_project'] = billing_project
             end
-            synchronization.update_attributes! service_item_id: parameters.to_json
+            synchronization.update! service_item_id: parameters.to_json
             report_incompatible_parameters(parameters)
           rescue
             raise
           ensure
-            synchronization.update_attributes! run_at: run_at
+            synchronization.update! run_at: run_at
           end
         end
       end
     end
-    if number_of_pending_syncs > 0
+    if number_of_pending_syncs.positive?
       puts "#{number_of_pending_syncs} syncs could not be modified. . Please try again later."
     end
   end

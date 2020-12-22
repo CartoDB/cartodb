@@ -347,8 +347,8 @@ module Carto::UserCommons
   def update_feature_flags(feature_flag_ids = nil)
     return unless feature_flag_ids
 
-    # Ignore things like [''] due to incorrect argument parsing in controllers
-    # TODO: it shouldn't be the models responsability to handle this but the controller
+    # Clear blank strings as things like [''] get parsed into SQL NULL values by ActiveRecord
+    # which will cause the query to return no records
     feature_flag_ids = feature_flag_ids.select(&:present?)
 
     self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all

@@ -12,7 +12,7 @@
         :bins="variableBins"
       />
       <ColorCategoriesLegend
-        v-if="variableCategories"
+        v-else-if="variableCategories"
         :title="variableName"
         :categories="variableCategories"
       />
@@ -20,7 +20,7 @@
     <div v-show="showInfo && variableDescription" class="map-info">
       <p class="is-small">{{ variableDescription }}</p>
     </div>
-    <div v-if="recenter" class="recenter" @click="recenterMap">
+    <div v-show="recenter && !centered" class="recenter" @click="recenterMap">
       <img src="../../assets/icons/catalog/recenter.svg" alt="recenter">
       <p class="is-small is-semibold">Recenter</p>
     </div>
@@ -77,7 +77,8 @@ export default {
       showMap: false,
       variable: null,
       geomType: null,
-      initialViewState: null
+      initialViewState: null,
+      centered: false
     };
   },
   computed: {
@@ -115,7 +116,7 @@ export default {
     },
     variableBins () {
       if (this.variable && this.variable.quantiles && colorStyle) {
-        const breaks = [this.variable.min, ...this.variable.quantiles[2]['5']];
+        const breaks = [...this.variable.quantiles[2]['5'], this.variable.max];
         const bins = [...new Set(breaks)].map(q => ({
           color: `rgb(${colorStyle(q)})`
         }));
@@ -126,7 +127,7 @@ export default {
       if (this.variable && this.variable.categories && colorStyle) {
         const categories = this.variable.categories.slice(0, 10).map(c => ({
           color: `rgb(${colorStyle(c.category)})`,
-          name: c.category
+          name: this.capitalize(c.category)
         }));
         categories.push({
           name: 'Others',
@@ -137,8 +138,11 @@ export default {
     },
     tilesetSampleId () {
       const TILESET_SAMPLE_PROJECT_MAP = {
-        'do-sample-prod': 'do-tileset-sample-stag',
-        'do-public-sample': 'do-public-tileset-sample-stag'
+        'do-sample-prod': 'do-tileset-sample',
+        'do-public-sample': 'do-public-tileset-sample'
+        // To test in staging
+        // 'do-sample-prod': 'do-tileset-sample-stag',
+        // 'do-public-sample': 'do-public-tileset-sample-stag'
       };
       const [project, dataset, table] = this.dataset.sample_info.id.split('.');
       return [TILESET_SAMPLE_PROJECT_MAP[project], dataset, table].join('.');
@@ -161,22 +165,46 @@ export default {
         this.syncMapboxViewState(viewState);
       },
       controller: true,
-      getTooltip: ({ object }) => {
+      getTooltip: ({ x, y, object }) => {
         if (!object || !this.variable) return false;
         const title = this.variable.attribute;
-        let value = object.properties[this.variable.attribute];
-        if (value === undefined) return false;
-        if (typeof value === 'number') {
-          value = this.formatNumber(value);
+        let html = `<p style="margin: 0 0 0 4px; color: #6f777c;">${title}</p>`;
+        const objects = deck.pickMultipleObjects({ x, y })
+          // Remove duplicated objects
+          .filter((v, i, a) => a.findIndex(t => (t.index === v.index)) === i);
+        let index = 0;
+        const items = {};
+        for (const o of objects) {
+          if (this.compare(o.object.geometry.coordinates, object.geometry.coordinates)) {
+            // Display the points that are fully overlapped (same coordinates)
+            let value = o.object.properties[this.variable.attribute];
+            if (value !== undefined && value !== null) {
+              if (typeof value === 'number') {
+                value = this.formatNumber(value);
+              } else if (typeof value === 'string') {
+                value = this.capitalize(value);
+              }
+            } else {
+              value = 'No data';
+            }
+            items[value] ? items[value].count += 1 : items[value] = { index: index++, count: 1 };
+          }
         }
-        const html = `
-          <p style="margin: 0 0 0 4px; color: #6f777c;">${title}</p>
-          <p style="margin: 4px 0 0 4px;"><b>${value}</b></p>
-        `;
+        const orderedItems = Object.keys(items).map(key => ({
+          value: key, index: items[key].index, count: items[key].count
+        })).sort((a, b) => (a.index > b.index) ? 1 : -1);
+        for (const item of orderedItems) {
+          let value = item.value;
+          if (item.count > 1) {
+            value += ` (${item.count})`;
+          }
+          html += `<p style="margin: 4px 0 0 4px;"><b>${value}</b></p>`;
+        }
         const style = {
           'padding': '8px 12px',
           'border-radius': '2px',
           'font-size': '12px',
+          'font-family': "'Open Sans', 'Helvetica Neue', Helvetica, sans-serif",
           'color': '#162945',
           'background-color': 'white',
           'border': 'solid 1px #e6e8eb'
@@ -202,6 +230,9 @@ export default {
         bearing: viewState.bearing,
         pitch: viewState.pitch
       });
+      this.centered = this.initialViewState.zoom === viewState.zoom &&
+        this.initialViewState.latitude === viewState.latitude &&
+        this.initialViewState.longitude === viewState.longitude;
     },
     recenterMap () {
       // Hack to force initialViewState to change
@@ -217,8 +248,9 @@ export default {
           data: this.tilesetSampleId,
           credentials: {
             username: 'public',
-            apiKey: 'default_public',
-            mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
+            apiKey: 'default_public'
+            // To test in staging:
+            // mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
           },
           getFillColor,
           getLineColor,
@@ -231,7 +263,7 @@ export default {
             console.log('TILEJSON', tileJSON);
             const { center, tilestats } = tileJSON;
             this.initialViewState = {
-              zoom: parseFloat(center[2]),
+              zoom: parseFloat(center[2]) - 1,
               latitude: parseFloat(center[1]),
               longitude: parseFloat(center[0]),
               bearing: 0,
@@ -253,7 +285,8 @@ export default {
       this.geomType = tilestats.layers[0].geometry;
     },
     setVariable (tilestats) {
-      const variable = tilestats.layers[0].attributes[1];
+      const attributes = tilestats.layers[0].attributes;
+      const variable = attributes[1] || attributes[0]; // Default geoid
       if (!this.variables || !variable) return;
       const variableExtra = this.variables.find((v) => {
         return v.id.split('.').slice(-1)[0] === variable.attribute;
@@ -273,11 +306,14 @@ export default {
         if (!Number.isInteger(value)) {
           return value.toLocaleString(undefined, {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 3
+            maximumFractionDigits: 2
           });
         }
         return value.toLocaleString();
       }
+    },
+    capitalize (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     },
     generateColorStyle () {
       const g = this.geomType;
@@ -286,12 +322,11 @@ export default {
 
       propId = this.variable && this.variable.attribute;
 
-      if (g === 'Polygon' && v === null || this.isGeography) {
+      if (g === 'Polygon' && this.isGeography) {
         getFillColor = [234, 200, 100, 168];
         getLineColor = [44, 44, 44, 60];
         getLineWidth = 1;
-      }
-      if (g === 'Polygon' && v === 'Number') {
+      } else if (g === 'Polygon' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
           colors: this.categoryIdPalette
@@ -299,8 +334,7 @@ export default {
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [44, 44, 44, 60];
         getLineWidth = 1;
-      }
-      if (g === 'Polygon' && v === 'String') {
+      } else if (g === 'Polygon' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
           colors: 'Prism'
@@ -308,34 +342,29 @@ export default {
         getFillColor = (d) => colorStyle(d.properties[propId]);
         getLineColor = [44, 44, 44, 60];
         getLineWidth = 1;
-      }
-      if (g === 'LineString' && v === null || this.isGeography) {
-        getLineColor = [234, 200, 100, 168];
+      } else if (g === 'LineString' && this.isGeography) {
+        getLineColor = [234, 200, 100, 255];
         getLineWidth = 2;
-      }
-      if (g === 'LineString' && v === 'Number') {
+      } else if (g === 'LineString' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
           colors: this.categoryIdPalette
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
         getLineWidth = 2;
-      }
-      if (g === 'LineString' && v === 'String') {
+      } else if (g === 'LineString' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
           colors: 'Prism'
         });
         getLineColor = (d) => colorStyle(d.properties[propId]);
         getLineWidth = 2;
-      }
-      if (g === 'Point' && v === null || this.isGeography) {
-        getFillColor = [234, 200, 100, 168];
-        getLineColor = [44, 44, 44, 60];
+      } else if (g === 'Point' && this.isGeography) {
+        getFillColor = [234, 200, 100, 255];
+        getLineColor = [44, 44, 44, 255];
         getLineWidth = 1;
         getRadius = 4;
-      }
-      if (g === 'Point' && v === 'Number') {
+      } else if (g === 'Point' && v === 'Number') {
         colorStyle = colorBinsStyle({
           breaks: { stats, method: 'quantiles', bins: 5 },
           colors: this.categoryIdPalette
@@ -344,8 +373,7 @@ export default {
         getLineColor = [100, 100, 100, 255];
         getLineWidth = 1;
         getRadius = 4;
-      }
-      if (g === 'Point' && v === 'String') {
+      } else if (g === 'Point' && v === 'String') {
         colorStyle = colorCategoriesStyle({
           categories: { stats, top: 10 },
           colors: 'Bold'
@@ -363,6 +391,9 @@ export default {
       getLineColor = undefined;
       getLineWidth = undefined;
       getRadius = undefined;
+    },
+    compare (a, b) {
+      return JSON.stringify(a) === JSON.stringify(b);
     }
   }
 };
@@ -374,6 +405,7 @@ export default {
 .base-map {
   position: relative;
   height: 600px;
+  font-family: $base__font-family;
 
   & > * {
     position: absolute;
@@ -410,7 +442,7 @@ export default {
     box-shadow: 0 2px 8px 0 rgba(44, 44, 44, 0.16);
 
     p {
-      color: $neutral--700;
+      color: $text__color--secondary;
     }
   }
 

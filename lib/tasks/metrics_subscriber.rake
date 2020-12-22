@@ -30,7 +30,7 @@ namespace :message_broker do
       end
 
       subscription.start
-      logger.info(message: 'Consuming messages from subscription')
+      logger.info(message: 'Consuming messages from subscription', subscription_name: subscription_name)
       sleep
     rescue StandardError => e
       logger.error(exception: e)

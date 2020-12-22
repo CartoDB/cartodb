@@ -77,21 +77,18 @@ namespace :cartodb do
 
     dry_mode = ENV['DRY_RUN'] != 'NO'
     number_of_pending_syncs = 0
-    Carto::Synchronization.find_by_sql %{
-      SELECT
-        s.*
-      FROM synchronizations s JOIN users u ON (s.user_id = u.id)
-        WHERE u.state = 'active'
-        AND  s.service_name = 'connector'
-        AND (s.state IN ('#{STATE_SUCCESS}', '#{STATE_SYNCING}', '#{STATE_QUEUED}', '#{STATE_CREATED}')
-          OR (s.state = '#{STATE_FAILURE}' AND s.retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES}))
+    Carto::Synchronization.where(%{
+        service_name = 'connector'
+        AND (state IN ('#{Carto::Synchronization::STATE_SUCCESS}', '#{Carto::Synchronization::STATE_SYNCING}', '#{Carto::Synchronization::STATE_QUEUED}', '#{Carto::Synchronization::STATE_CREATED}')
+          OR (state = '#{Carto::Synchronization::STATE_FAILURE}' AND retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES}))
         AND ((service_item_id::JSON)#>>'{provider}') = 'bigquery'
-    }.find_each do |synchronization|
+    }).find_each do |synchronization|
+      next unless synchronizatino.user.state == 'active'
       sleep 0.2
       synchroniation.transaction do
         synchronization.reload
         parameters = JSON.load(synchronization.service_item_id)
-        if synchronization.state in? [STATE_CREATED, STATE_QUEUED, STATE_SYNCING]
+        if synchronization.state in? [Carto::Synchronization::STATE_CREATED, Carto::Synchronization::STATE_QUEUED, Carto::Synchronization::STATE_SYNCING]
           puts "Synchronization #{synchronization.id} could not be modifed because its state was #{synchronization.state}"
           number_of_pending_syncs += 1
         elsif dry_mode

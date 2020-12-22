@@ -45,13 +45,13 @@
           :message="$t('FeedbackMessage.message')"
           @click.native.stop.prevent="toggleDropdown"/>
 
-        <NotificationPopup
+        <!-- <NotificationPopup
           v-if="!popupWasShown('dataObservatory.popupWasShown') && hasDOEnabled"
           class="notification-popup"
           :title="$t('DataObservatoryMessage.title')"
           :message="$t('DataObservatoryMessage.message', { path: this.$router.resolve({ name: 'spatial-data-catalog' }).href })"
           :messageHasHTML="true"
-          @click.native="markPopupAsRead('dataObservatory.popupWasShown')"/>
+          @click.native="markPopupAsRead('dataObservatory.popupWasShown')"/> -->
 
         <NotificationPopup
           v-if="!popupWasShown('popups.DataObservatorySamples')"

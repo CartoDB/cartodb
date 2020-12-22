@@ -20,6 +20,7 @@ $neutral--800: #2E3C43;
 $black: #000;
 
 /* Accents */
+$yellow--050: #FFF3D6;
 $yellow--100: #F2E24B;
 $yellow--300: #FEE600;
 $yellow--500: #FFC300;
@@ -69,6 +70,7 @@ $border-color: $neutral--200;
 $border-color--dark: $neutral--300;
 
 $success__bg-color: $green--700;
+$warning__bg-color-light: $yellow--050;
 $warning__bg-color: $yellow--500;
 $warning__border-color: $yellow--500;
 $danger__bg-color: $red--500;

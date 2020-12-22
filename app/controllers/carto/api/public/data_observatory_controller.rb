@@ -22,6 +22,7 @@ module Carto
         before_action :load_filters, only: [:subscriptions]
         before_action :load_id, only: [:subscription, :subscription_info, :subscribe, :unsubscribe]
         before_action :load_type, only: [:subscription, :subscription_info, :subscribe]
+        before_action :load_http_client, only: [:subscription_info, :subscribe]
         before_action :check_api_key_permissions
         before_action :check_do_enabled, only: [:subscription, :subscription_info, :subscriptions]
 
@@ -33,6 +34,8 @@ module Carto
         rescue_from Carto::EntityNotFoundError, with: :rescue_from_entity_not_found
 
         respond_to :json
+
+        HTTP_CLIENT_TAG = 'do_api'.freeze
 
         VALID_TYPES = %w(dataset geography).freeze
         VALID_STATUSES = %w(active requested).freeze
@@ -63,13 +66,13 @@ module Carto
         end
 
         def subscription_info
-          response = present_metadata(subscription_metadata)
+          response = present_metadata(subscription_metadata(@id, @type))
 
           render(json: response)
         end
 
         def subscribe
-          metadata = subscription_metadata
+          metadata = subscription_metadata(@id, @type)
 
           if metadata[:is_public_data] == true || instant_licensing_available?(metadata)
             instant_license(metadata)
@@ -93,7 +96,6 @@ module Carto
         end
 
         def regular_license(metadata)
-          DataObservatoryMailer.user_request(@user, metadata[:name], metadata[:provider_name]).deliver_now
           DataObservatoryMailer.carto_request(@user, metadata[:id], metadata[:estimated_delivery_days]).deliver_now
           licensing_service = Carto::DoLicensingService.new(@user.username)
           licensing_service.subscribe(license_info(metadata, 'requested'))
@@ -147,6 +149,10 @@ module Carto
 
         def rescue_from_entity_not_found(exception)
           render_jsonp({ errors: exception.message }, 404)
+        end
+
+        def load_http_client
+          @client = Carto::Http::Client.get(HTTP_CLIENT_TAG, log_requests: true)
         end
 
         def load_user
@@ -215,26 +221,42 @@ module Carto
           delivery_days
         end
 
-        def subscription_metadata
-          connection = Carto::Db::Connection.do_metadata_connection()
+        def subscription_metadata(dataset_id, type)
+          request = request_subscription_metadata(dataset_id, type)
 
-          query = "SELECT t.*, p.name as provider_name, '#{@type}' as type
-            FROM #{TABLES_BY_TYPE[@type]} t
-              INNER JOIN providers p ON t.provider_id = p.id
-            WHERE t.id = '#{@id}'"
-          result = connection.execute(query).first
-          raise Carto::LoadError.new("No metadata found for #{@id}") unless result
+          raise Carto::LoadError, "No metadata found for #{dataset_id}" if request.nil?
 
-          cast_metadata_result(result)
+          payload = request.with_indifferent_access
+
+          {
+            id: dataset_id,
+            name: payload[:name],
+            provider_name: payload[:provider_name],
+            type: type,
+            is_public_data: payload[:is_public_data],
+            geography_id: payload[:geography_id],
+            available_in: payload[:available_in] || [],
+            published_in_web: payload[:published_in_web],
+            subscription_list_price: payload[:subscription_list_price]&.to_f,
+            estimated_delivery_days: payload[:estimated_delivery_days]&.to_f,
+            tos: payload[:tos],
+            tos_link: payload[:tos_link],
+            licenses: payload[:licenses],
+            licenses_link: payload[:licenses_link],
+            rights: payload[:rights]
+          }.symbolize_keys
         end
 
-        def cast_metadata_result(metadata)
-          metadata = metadata.symbolize_keys
-          metadata[:subscription_list_price] = metadata[:subscription_list_price]&.to_f
-          metadata[:estimated_delivery_days] = metadata[:estimated_delivery_days]&.to_f
-          metadata[:available_in] = metadata[:available_in].delete('{}').split(',') unless metadata[:available_in].nil?
-          metadata[:is_public_data] = metadata[:is_public_data] == 't'
-          metadata
+        def request_subscription_metadata(dataset_id, type)
+          do_meta_config = Cartodb.config[:do_metadata_api]
+
+          base_url = "#{do_meta_config['scheme']}://#{do_meta_config['host']}:#{do_meta_config['port']}"
+          src_endpoint = TABLES_BY_TYPE[type]
+
+          url = "#{base_url}/api/v4/data/observatory/metadata/#{src_endpoint}/#{dataset_id}"
+
+          response = @client.get(url, timeout: 3)
+          JSON.parse(response.body)
         end
 
         def license_info(metadata, status)

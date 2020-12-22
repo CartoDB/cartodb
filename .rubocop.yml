@@ -102,7 +102,7 @@ RSpec/AnyInstance:
   Enabled: false
 
 RSpec/ExampleLength:
-  Max: 30
+  Max: 50
 
 # Incompatible until RSpec 3
 RSpec/ImplicitExpect:
@@ -121,6 +121,9 @@ RSpec/NestedGroups:
   Max: 5
 
 RSpec/StubbedMock:
+  Enabled: false
+
+RSpec/SubjectStub:
   Enabled: false
 
 ####################

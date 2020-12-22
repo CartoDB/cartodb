@@ -149,6 +149,7 @@ module CartoDB
           max_layers: max_layers
         },
         notification: notification,
+        email_notifications: decorate_email_notifications,
         avatar_url: avatar,
         feature_flags: feature_flags_names,
         base_url: public_url,
@@ -192,5 +193,6 @@ module CartoDB
         data
       end
     end
+
   end
 end

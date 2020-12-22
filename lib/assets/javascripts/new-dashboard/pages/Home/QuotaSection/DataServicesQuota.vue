@@ -1,20 +1,20 @@
 <template>
   <QuotaContainer :title="$t(`QuotaSection.dataServices`)" :perMonth="true">
-    <QuotaWidget :name="$t(`QuotaSection.geocoding`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable" :helpLink="geocodingHelpLink"></QuotaWidget>
-    <QuotaWidget :name="$t(`QuotaSection.isolines`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable" :helpLink="isolinesHelpLink"></QuotaWidget>
-    <QuotaWidget :name="$t(`QuotaSection.routing`)" :usedQuota="routingUsed" :availableQuota="routingAvailable" :helpLink="routingHelpLink"></QuotaWidget>
+    <StackedQuotaWidget :name="$t(`QuotaSection.geocoding`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable" :helpLink="geocodingHelpLink"></StackedQuotaWidget>
+    <StackedQuotaWidget :name="$t(`QuotaSection.isolines`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable" :helpLink="isolinesHelpLink"></StackedQuotaWidget>
+    <StackedQuotaWidget :name="$t(`QuotaSection.routing`)" :usedQuota="routingUsed" :availableQuota="routingAvailable" :helpLink="routingHelpLink"></StackedQuotaWidget>
   </QuotaContainer>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import QuotaWidget from './QuotaWidget';
+import StackedQuotaWidget from './StackedQuotaWidget';
 import QuotaContainer from './QuotaContainer';
 
 export default {
   name: 'DataServicesQuota',
   components: {
-    QuotaWidget,
+    StackedQuotaWidget,
     QuotaContainer
   },
   computed: {

@@ -10,7 +10,15 @@
         </SectionTitle>
         <ul class="grid quota-list">
           <li class="grid-cell grid-cell--col12 quota-listitem">
-            <AccountQuota></AccountQuota>
+            <MemoryQuota></MemoryQuota>
+          </li>
+          <li class="grid-cell grid-cell--col12 quota-listitem" v-if="!hideMapLoadsMetrics">
+            <MapLoadsQuota></MapLoadsQuota>
+            <div class="quota-billing">
+              <span class="quota-billingday text is-small is-txtSoftGrey">
+                {{ $t(`QuotaSection.credits`, { day: billingDay })}}
+              </span>
+            </div>
           </li>
           <li class="grid-cell grid-cell--col12 quota-listitem">
             <DataServicesQuota></DataServicesQuota>
@@ -28,8 +36,10 @@
 
 <script>
 import { mapState } from 'vuex';
+// import { hasFeatureEnabled } from 'new-dashboard/core/models/user';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import AccountQuota from './AccountQuota';
+import MemoryQuota from './MemoryQuota';
+import MapLoadsQuota from './MapLoadsQuota';
 import DataServicesQuota from './DataServicesQuota';
 import format from 'date-fns/format';
 
@@ -37,12 +47,14 @@ export default {
   name: 'QuotasModule',
   components: {
     SectionTitle,
-    AccountQuota,
+    MemoryQuota,
+    MapLoadsQuota,
     DataServicesQuota
   },
   computed: {
     ...mapState({
-      billingPeriod: state => state.user.next_billing_period
+      billingPeriod: state => state.user.next_billing_period,
+      hideMapLoadsMetrics: state => true // hasFeatureEnabled(state.user, 'map_loads_metric_disabled')
     }),
     billingDay () {
       return format(new Date(this.billingPeriod), 'Do');

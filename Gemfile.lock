@@ -8,13 +8,14 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: aebf468b520da4065ddb2ec6f9ddfdd0fc320de6
-  tag: v0.4.5
+  revision: bc046f0516831af6811f9cfd5748f659d104f1ba
+  tag: v0.5.1
   specs:
-    cartodb-common (0.4.5)
-      activesupport (>= 4, < 6)
+    cartodb-common (0.5.1)
       argon2 (~> 2)
-      google-cloud-pubsub (~> 1.2)
+      google-cloud-pubsub (~> 1.10)
+      rails (>= 4, < 6)
+      rollbar
 
 GIT
   remote: https://github.com/kuldeepaggarwal/fake_net_ldap.git
@@ -204,7 +205,7 @@ GEM
     google-cloud-env (1.3.0)
       faraday (~> 0.11)
     google-cloud-errors (1.0.1)
-    google-cloud-pubsub (1.2.0)
+    google-cloud-pubsub (1.10.0)
       concurrent-ruby (~> 1.1)
       google-cloud-core (~> 1.2)
       google-gax (~> 1.8)
@@ -217,7 +218,7 @@ GEM
       googleauth (~> 0.9)
       grpc (~> 1.24)
       rly (~> 0.2.3)
-    google-protobuf (3.12.4)
+    google-protobuf (3.14.0)
     googleapis-common-protos (1.3.10)
       google-protobuf (~> 3.11)
       googleapis-common-protos-types (>= 1.0.5, < 2.0)
@@ -231,8 +232,8 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (~> 0.12)
-    grpc (1.30.2)
-      google-protobuf (~> 3.12)
+    grpc (1.34.0)
+      google-protobuf (~> 3.13)
       googleapis-common-protos-types (~> 1.0)
     grpc-google-iam-v1 (0.6.10)
       google-protobuf (~> 3.11)
@@ -255,9 +256,9 @@ GEM
     jmespath (1.4.0)
     json (2.3.1)
     json-schema (2.1.9)
-    jwt (2.2.1)
+    jwt (2.2.2)
     kgio (2.11.3)
-    loofah (2.6.0)
+    loofah (2.8.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -310,7 +311,7 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
-    public_suffix (3.0.3)
+    public_suffix (4.0.6)
     rack (1.6.13)
     rack-protection (1.5.5)
       rack
@@ -377,8 +378,7 @@ GEM
     retriable (3.1.2)
     rexml (3.2.4)
     rly (0.2.3)
-    rollbar (2.11.5)
-      multi_json
+    rollbar (3.1.1)
     roo (1.13.2)
       nokogiri
       rubyzip
@@ -462,7 +462,7 @@ GEM
     sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
-    sprockets-rails (3.2.1)
+    sprockets-rails (3.2.2)
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
@@ -488,7 +488,7 @@ GEM
     trollop (2.9.10)
     typhoeus (1.3.1)
       ethon (>= 0.9.0)
-    tzinfo (1.2.7)
+    tzinfo (1.2.8)
       thread_safe (~> 0.1)
     uber (0.1.0)
     unf (0.1.4)
@@ -552,7 +552,7 @@ DEPENDENCIES
   gibbon (= 1.1.4)
   google-api-client (= 0.34.1)
   google-cloud-bigquery-storage-v1 (~> 0.2.3)
-  google-cloud-pubsub (= 1.2.0)
+  google-cloud-pubsub (~> 1.10)
   hiredis (~> 0.6.1)
   instagram-continued-continued
   json-schema (= 2.1.9)
@@ -583,7 +583,7 @@ DEPENDENCIES
   responders (~> 2.0)
   resque (= 1.25.2)
   resque-metrics (= 0.1.1)
-  rollbar (~> 2.11.1)
+  rollbar
   roo (= 1.13.2)
   rotp (~> 3.3, >= 3.3.1)
   rqrcode (~> 0.10.1)

@@ -487,7 +487,7 @@ describe Carto::DoSyncServiceFactory do
         id: @subscribed_synced_dataset_id,
         type: 'dataset'
       }
-      @service.subscription_from_sync_table(@synced_table).should eq expected_subscription_info
+      @service.subscription_from_sync_table(@synced_table.name).should eq expected_subscription_info
     end
 
     it 'returns synced even if synchronization is stopped' do
@@ -517,7 +517,7 @@ describe Carto::DoSyncServiceFactory do
         id: @subscribed_synced_dataset_id,
         type: 'dataset'
       }
-      @service.subscription_from_sync_table(@synced_table).should eq expected_subscription_info
+      @service.subscription_from_sync_table(@synced_table.name).should eq expected_subscription_info
     end
 
     it 'returns syncing for valid subscription being imported' do

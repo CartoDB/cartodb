@@ -90,7 +90,6 @@ export default {
       return this.dataset.name;
     },
     categoryId () {
-      console.log('CATEGORY ID:', this.dataset.category_id);
       return this.dataset.category_id;
     },
     categoryIdPalette () {
@@ -260,7 +259,6 @@ export default {
           pointRadiusUnits: 'pixels',
           pickable: true,
           onDataLoad: (tileJSON) => {
-            console.log('TILEJSON', tileJSON);
             const { center, tilestats } = tileJSON;
             this.initialViewState = {
               zoom: parseFloat(center[2]) - 1,
@@ -299,7 +297,6 @@ export default {
         ...variable,
         ...variableExtra
       };
-      console.log('VARIABLE', { ...this.variable });
     },
     formatNumber (value) {
       if (value !== undefined && value !== null) {

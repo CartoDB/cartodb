@@ -77,20 +77,20 @@ namespace :cartodb do
       puts "  Invalid connection parameters: #{invalid_conn_params.inspect}" if invalid_conn_params.present?
     end
 
-    def replicate_bq_config(user)
-      # Rake::Task["cartodb:connectors:set_user_config"].invoke('bigquery-beta',user.username,true,1000000)
+    def replicate_bq_config
+      puts "Replicating configuration"
       bigquery = Carto::ConnectorProvider.find_by(name: 'bigquery')
       bigquery_beta = Carto::ConnectorProvider.find_by(name: 'bigquery-beta')
-      bigquery_config = user.connector_configuration(bigquery.name)
-      bigquery_beta_config = user.connector_configuration(bigquery_beta.name)
-      # FIXME: configuration could be at organization level or default configuration
-      if bigquery_config.present? && bigquery_beta_config.blank?
-        Carto::ConnectorConfiguration.create!(
-          connector_provider: bigquery_beta,
-          user: user,
-          enabled: bigquery_config.enabled,
-          max_rows: bigquery_config.max_rows
-        )
+      Carto::ConnectorConfiguration.where(connector_provider_id: bigquery.id).find_each do |bq_config|
+        unless Carto::ConnectorConfiguration.where(connector_provider_id: bigquery_beta.id, user_id: bq_config.user_id, organization_id: bq_config.organization_id).exists?
+          Carto::ConnectorConfiguration.create!(
+            connector_provider: bigquery_beta,
+            user_id: bq_config.user_id,
+            configuration_id: bq_config.configuration_id,
+            enabled: bq_config.enabled,
+            max_rows: bq_config.max_rows
+          )
+        end
       end
     end
 
@@ -98,8 +98,8 @@ namespace :cartodb do
 
     unless dry_mode
       Rake::Task["cartodb:connectors:create_providers"].invoke
+      replicate_bq_config
     end
-    sync_users = []
 
     number_of_pending_syncs = 0
     Carto::Synchronization.where(%{
@@ -126,11 +126,6 @@ namespace :cartodb do
           puts '  parameter billing_project would be moved to connection' if parameters['billing_project'].present?
           report_incompatible_parameters(parameters)
         else
-          user = synchronization.user
-          unless user.username.in?(sync_users)
-            sync_users << user.username
-            replicate_bq_config(user)
-          end
           begin
             puts "Modifying #{synchronization.id} to use bigquery-beta"
             run_at = synchronization.run_at

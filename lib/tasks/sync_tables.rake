@@ -69,7 +69,7 @@ namespace :cartodb do
   desc 'Port BQ syncs to beta connector'
   task port_bq_syncs_to_beta: [:environment] do |task, args|
     def report_incompatible_parameters(parameters)
-      valid_params = %w(connection table sql_query import_as project dataset billing_project)
+      valid_params = %w(provider connection table sql_query import_as project dataset billing_project)
       valid_conn_params = %w(billing_project service_account access_token refresh_token default_project default_dataset)
       invalid_params = parameters.keys - valid_params
       invalid_conn_params = (parameters['connection'] || {}).keys - valid_conn_params
@@ -85,13 +85,13 @@ namespace :cartodb do
           OR (state = '#{Carto::Synchronization::STATE_FAILURE}' AND retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES}))
         AND ((service_item_id::JSON)#>>'{provider}') = 'bigquery'
     }).find_each do |synchronization|
-      next unless synchronizatino.user.state == 'active'
+      next unless synchronization.user.state == 'active'
 
       sleep 0.2
-      synchroniation.transaction do
+      synchronization.transaction do
         synchronization.reload
         parameters = JSON.parse(synchronization.service_item_id)
-        if synchronization.state in? [
+        if synchronization.state.in? [
           Carto::Synchronization::STATE_CREATED,
           Carto::Synchronization::STATE_QUEUED,
           Carto::Synchronization::STATE_SYNCING

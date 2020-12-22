@@ -95,12 +95,16 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def datasets
+    render_403 && return if public_profile_disabled?
+
     datasets = CartoDB::ControllerFlows::Public::Datasets.new(self)
     content = CartoDB::ControllerFlows::Public::Content.new(self, request, datasets)
     content.render()
   end
 
   def maps
+    render_403 && return if public_profile_disabled?
+
     maps = CartoDB::ControllerFlows::Public::Maps.new(self)
     content = CartoDB::ControllerFlows::Public::Content.new(self, request, maps)
     content.render()
@@ -117,6 +121,8 @@ class Admin::PagesController < Admin::AdminController
   def user_feed
     # The template of this endpoint get the user_feed data calling
     # to another endpoint in the front-end part
+    render_403 && return if public_profile_disabled?
+
     if @viewed_user.nil?
       username = CartoDB.extract_subdomain(request).strip.downcase
       org = get_organization_if_exists(username)
@@ -499,6 +505,15 @@ class Admin::PagesController < Admin::AdminController
       ""
     else
       !url.blank? && url[/^https?:\/\//].nil? ? "http://#{url}" : url
+    end
+  end
+
+  private
+
+  def public_profile_disabled?
+    if !@viewed_user.nil? && current_user != @viewed_user
+      user = Carto::User.find_by(id: @viewed_user.id)
+      user.has_feature_flag?('disable_public_profile_page')
     end
   end
 

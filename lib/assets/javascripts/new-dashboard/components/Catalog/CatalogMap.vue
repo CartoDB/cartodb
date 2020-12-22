@@ -343,7 +343,7 @@ export default {
         getLineColor = [44, 44, 44, 60];
         getLineWidth = 1;
       } else if (g === 'LineString' && this.isGeography) {
-        getLineColor = [234, 200, 100, 168];
+        getLineColor = [234, 200, 100, 255];
         getLineWidth = 2;
       } else if (g === 'LineString' && v === 'Number') {
         colorStyle = colorBinsStyle({
@@ -360,8 +360,8 @@ export default {
         getLineColor = (d) => colorStyle(d.properties[propId]);
         getLineWidth = 2;
       } else if (g === 'Point' && this.isGeography) {
-        getFillColor = [234, 200, 100, 168];
-        getLineColor = [44, 44, 44, 60];
+        getFillColor = [234, 200, 100, 255];
+        getLineColor = [44, 44, 44, 255];
         getLineWidth = 1;
         getRadius = 4;
       } else if (g === 'Point' && v === 'Number') {

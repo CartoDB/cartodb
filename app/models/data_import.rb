@@ -827,13 +827,13 @@ class DataImport < Sequel::Model
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
       synchronization.name    = self.table_name
       synchronization.log_id  = log.id
-      
+
       if importer.success?
         imported_table = ::Table.get_by_table_id(self.table_id)
         if !imported_table.nil? && imported_table.table_visualization
           synchronization.visualization_id = imported_table.table_visualization.id
         end
-        
+
         synchronization.state = 'success'
         synchronization.error_code = nil
         synchronization.error_message = nil
@@ -927,7 +927,7 @@ class DataImport < Sequel::Model
                   'import_timestamp'       => Time.now,
                   'queue_server'           => `hostname`.strip,
                   'database_host'          => owner.database_host,
-                  'service_name'           => self.service_name,
+                  data_import_service_name: service_name,
                   'data_type'              => self.data_type,
                   'is_sync_import'         => sync?,
                   'import_time'            => import_time,

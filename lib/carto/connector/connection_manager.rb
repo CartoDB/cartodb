@@ -204,7 +204,7 @@ module Carto
       when Carto::Connection::TYPE_OAUTH_SERVICE
         errors << "Not a valid OAuth connector: #{connector}" unless connector.in?(valid_oauth_services)
       when Carto::Connection::TYPE_DB_CONNECTOR
-        unless connector.in?(valid_db_connectors)
+        if !connector.in?(valid_db_connectors)
           errors << "Not a valid DB connector: #{connector}"
         elsif connector == BQ_CONNECTOR
           errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if connection_parameters['refresh_token'].present?

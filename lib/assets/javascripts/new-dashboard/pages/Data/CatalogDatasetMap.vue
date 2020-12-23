@@ -1,17 +1,17 @@
 <template>
   <div v-if="hasSample">
+    <div class="catalog-dataset-info" v-if="defaultSource">
+      <span class="is-small is-txtMainTextColor">
+        (*) Map preview not available: this one is for&nbsp;
+        <i class="is-semibold is-italic">{{ defaultSource }}</i>
+      </span>
+    </div>
     <div class="catalog-dataset-map">
       <div class="header">
         <h1 class="is-txtMainTextColor">{{ title }}</h1>
         <img src="../../assets/icons/catalog/button-question.svg" alt="question" @click="infoVisible = !infoVisible">
       </div>
       <CatalogMap class="base-map" :showInfo="infoVisible" :legend="true" :recenter="true" />
-    </div>
-    <div class="footer" v-if="defaultSource">
-      <span class="is-small is-txtMainTextColor">
-        (*) Sample not available: this preview is for&nbsp;
-        <i class="is-semibold is-italic">{{ defaultSource }}</i>
-      </span>
     </div>
   </div>
 </template>
@@ -82,10 +82,11 @@ export default {
   }
 }
 
-.footer {
+.catalog-dataset-info {
   display: flex;
   justify-content: flex-end;
-  margin: 0 12px 24px 12px;
+  margin: 28px 20px 20px;
+  font-family: $base__font-family;
 
   span {
     display: flex;

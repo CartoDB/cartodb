@@ -218,7 +218,6 @@ services/importer/spec/acceptance/osm_spec.rb
 services/importer/spec/acceptance/mapinfo_spec.rb
 spec/services/carto/user_multifactor_auth_update_service_spec.rb
 spec/services/carto/do_licensing_service_spec.rb
-spec/services/carto/do_sync_service_factory_spec.rb
 spec/requests/superadmin/feature_flag_spec.rb
 spec/requests/carto/api/data_import_presenter_spec.rb
 spec/queries/carto/visualization_query_searcher_spec.rb

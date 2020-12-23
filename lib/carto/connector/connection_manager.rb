@@ -190,8 +190,13 @@ module Carto
       update_redis_metadata(connection)
     end
 
-    def self.singleton_connector?(connector)
-      (connector == BQ_CONNECTOR) || connector.in?(valid_oauth_services)
+    def self.singleton_connector?(connector, connector_type)
+      # All OAuth connections are singleton (per user/connector/connector_type)
+      return true if connector_type == Carto::Connection::TYPE_OAUTH_SERVICE
+
+      # BigQuery as db connection (with service account) is singleton for the time being
+      return connector == BQ_CONNECTOR
+    end
     end
 
     private

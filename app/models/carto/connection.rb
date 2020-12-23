@@ -11,7 +11,7 @@ module Carto
     validates :name, uniqueness: { scope: :user_id }
     validates :connection_type, inclusion: { in: [TYPE_OAUTH_SERVICE, TYPE_DB_CONNECTOR] }
     validate :validate_parameters
-    validates :connector, uniqueness: { scope: :user_id }, if: :singleton_connection?
+    validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
 
     def get_service_datasource
       raise "Invalid connection type (#{connection_type}) to get service datasource" unless connection_type == TYPE_OAUTH_SERVICE
@@ -40,7 +40,7 @@ module Carto
     private
 
     def singleton_connection?
-      Carto::ConnectionManager.singleton_connector?(connector)
+      Carto::ConnectionManager.singleton_connector?(connector, connector_type)
     end
 
     def set_type

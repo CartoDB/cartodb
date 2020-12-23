@@ -75,8 +75,7 @@ module Cartodb
       payload = {
         organization_name: organization_name
       }.merge(user_attributes)
-      topic = Carto::Common::MessageBroker.new(logger: Rails.logger).get_topic(:cartodb_central)
-      topic.publish(:create_org_user, payload)
+      cartodb_central_topic.publish(:create_org_user, payload)
     end
 
     def update_organization_user(organization_name, username, user_attributes)

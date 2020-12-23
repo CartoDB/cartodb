@@ -197,6 +197,21 @@ module Carto
       # BigQuery as db connection (with service account) is singleton for the time being
       return connector == BQ_CONNECTOR
     end
+
+    def self.validate_connector(connector, connector_type, connection_parameters)
+      errors = []
+      case connector_type
+      when Carto::Connection::TYPE_OAUTH_SERVICE
+        errors << "Not a valid OAuth connector: #{connector}" unless connector.in?(valid_oauth_services)
+      when Carto::Connection::TYPE_DB_CONNECTOR
+        unless connector.in?(valid_db_connectors)
+          errors << "Not a valid DB connector: #{connector}"
+        elsif connector == BQ_CONNECTOR
+          errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if connection_parameters['refresh_token'].present?
+          errors << "Parameter access_token not supported through connections; use import API" if connection_parameters['access_token'].present?
+        end
+      end
+      errors
     end
 
     private

@@ -70,6 +70,9 @@ module Carto
     end
 
     def validate_parameters
+      Carto::ConnectionManager.validate_connector(connector, connector_type, parameters).each do |error|
+        errors.add :connector, error
+      end
       case connection_type
       when TYPE_OAUTH_SERVICE
         if !get_service_datasource&.token_valid? # !Carto::ConnectionManager.new(user).oauth_connection_valid?(self)

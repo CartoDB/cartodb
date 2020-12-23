@@ -137,7 +137,7 @@ export default {
       container: 'map',
       style: BASEMAP.POSITRON,
       interactive: false,
-      attributionControl: false
+      attributionControl: true
     });
 
     deck = new Deck({
@@ -297,6 +297,8 @@ export default {
 .base-map {
   position: relative;
   height: 600px;
+  font-size: 12px;
+  line-height: 20px;
   font-family: $base__font-family;
 
   & > * {

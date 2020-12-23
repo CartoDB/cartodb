@@ -2,7 +2,7 @@ module Carto
   class ConnectionManager
     DB_PASSWORD_PLACEHOLDER = '********'.freeze
     OAUTH_TOKEN_PLACEHOLDER = '********'.freeze
-    BQ_CONNECTOR = 'bq-v2'.freeze
+    BQ_CONNECTOR = 'bigquery'.freeze
 
     def initialize(user)
       @user = user
@@ -190,8 +190,28 @@ module Carto
       update_redis_metadata(connection)
     end
 
-    def self.singleton_connector?(connector)
-      (connector == BQ_CONNECTOR) || connector.in?(valid_oauth_services)
+    def self.singleton_connector?(connector, connector_type)
+      # All OAuth connections are singleton (per user/connector/connector_type)
+      return true if connector_type == Carto::Connection::TYPE_OAUTH_SERVICE
+
+      # BigQuery as db connection (with service account) is singleton for the time being
+      return connector == BQ_CONNECTOR
+    end
+
+    def self.validate_connector(connector, connector_type, connection_parameters)
+      errors = []
+      case connector_type
+      when Carto::Connection::TYPE_OAUTH_SERVICE
+        errors << "Not a valid OAuth connector: #{connector}" unless connector.in?(valid_oauth_services)
+      when Carto::Connection::TYPE_DB_CONNECTOR
+        unless connector.in?(valid_db_connectors)
+          errors << "Not a valid DB connector: #{connector}"
+        elsif connector == BQ_CONNECTOR
+          errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if connection_parameters['refresh_token'].present?
+          errors << "Parameter access_token not supported through connections; use import API" if connection_parameters['access_token'].present?
+        end
+      end
+      errors
     end
 
     private
@@ -217,7 +237,6 @@ module Carto
         connection.get_service_datasource.revoke_token
       end
     end
-
 
     def oauth_connection_url(service) # returns auth_url, doesn't actually create connection
       DataImportsService.new.get_service_auth_url(@user, service)

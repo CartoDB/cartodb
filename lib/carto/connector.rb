@@ -9,10 +9,10 @@ module Carto
 
     attr_reader :provider_name
 
-    def initialize(parameters:, user:, **args)
+    def initialize(parameters:, user:, connection: nil, **args)
       @params = Parameters.new(parameters)
       @user = user
-      set_connection_from_connection_id!
+      set_connection_from_connection_id!(connection)
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
@@ -211,11 +211,13 @@ module Carto
       @provider.log message, truncate
     end
 
-    def set_connection_from_connection_id!
+    def set_connection_from_connection_id!(connection)
       connection_id = @params[:connection_id]
       provider = @params[:provider]
       if connection_id.present?
         connection = Carto::ConnectionManager.new(@user).fetch_connection(connection_id)
+      end
+      if connection.present?
         if provider.present?
           raise "Invalid connection" if provider != connection.connector
         else

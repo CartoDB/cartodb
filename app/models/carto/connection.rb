@@ -89,11 +89,7 @@ module Carto
     end
 
     def validate_db_connection
-      connector_parameters = {
-        provider: connector,
-        connection: parameters
-      }
-      connector = Carto::Connector.new(parameters: connector_parameters, user: user, logger: nil)
+      connector = Carto::Connector.new(parameters: {}, connection: self, user: user, logger: nil)
       connector.check_connection
     rescue Carto::Connector::InvalidParametersError => error
       if error.to_s =~ /Invalid provider/im

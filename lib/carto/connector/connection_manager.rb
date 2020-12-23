@@ -238,7 +238,6 @@ module Carto
       end
     end
 
-
     def oauth_connection_url(service) # returns auth_url, doesn't actually create connection
       DataImportsService.new.get_service_auth_url(@user, service)
     end

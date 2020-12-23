@@ -34,14 +34,16 @@ import mapboxgl from 'mapbox-gl';
 import { Deck } from '@deck.gl/core';
 import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
 
-import { formatNumber, capitalize, compare } from './map-styles/utils';
 import { generateColorStyleProps, resetColorStyleProps } from './map-styles/colorStyles';
+import { getQuantiles, formatNumber, capitalize, compare } from './map-styles/utils';
 
 import ColorBinsLegend from './legends/ColorBinsLegend';
 import ColorCategoriesLegend from './legends/ColorCategoriesLegend';
 
 let deck;
 let styleProps = {};
+
+const BINS = 5;
 
 export default {
   name: 'CatalogMap',
@@ -95,7 +97,7 @@ export default {
     },
     variableBins () {
       if (this.variable && this.variable.quantiles && styleProps.colorStyle) {
-        const breaks = [...this.variable.quantiles[2]['5'], this.variable.max];
+        const breaks = [...getQuantiles(this.variable, BINS), this.variable.max];
         const bins = [...new Set(breaks)].map(q => ({
           color: `rgb(${styleProps.colorStyle(q)})`
         }));
@@ -144,52 +146,7 @@ export default {
         this.syncMapboxViewState(viewState);
       },
       controller: true,
-      getTooltip: ({ x, y, object }) => {
-        if (!object || !this.variable) return false;
-        const title = this.variable.attribute;
-        let html = `<p style="margin: 0 0 0 4px; color: #6f777c;">${title}</p>`;
-        const objects = deck.pickMultipleObjects({ x, y })
-          // Remove duplicated objects
-          .filter((v, i, a) => a.findIndex(t => (t.index === v.index)) === i);
-        let index = 0;
-        const items = {};
-        for (const o of objects) {
-          if (compare(o.object.geometry.coordinates, object.geometry.coordinates)) {
-            // Display the points that are fully overlapped (same coordinates)
-            let value = o.object.properties[this.variable.attribute];
-            if (value !== undefined && value !== null) {
-              if (typeof value === 'number') {
-                value = formatNumber(value);
-              } else if (typeof value === 'string') {
-                value = capitalize(value);
-              }
-            } else {
-              value = 'No data';
-            }
-            items[value] ? items[value].count += 1 : items[value] = { index: index++, count: 1 };
-          }
-        }
-        const orderedItems = Object.keys(items).map(key => ({
-          value: key, index: items[key].index, count: items[key].count
-        })).sort((a, b) => (a.index > b.index) ? 1 : -1);
-        for (const item of orderedItems) {
-          let value = item.value;
-          if (item.count > 1) {
-            value += ` (${item.count})`;
-          }
-          html += `<p style="margin: 4px 0 0 4px;"><b>${value}</b></p>`;
-        }
-        const style = {
-          'padding': '8px 12px',
-          'border-radius': '2px',
-          'font-size': '12px',
-          'font-family': "'Open Sans', 'Helvetica Neue', Helvetica, sans-serif",
-          'color': '#162945',
-          'background-color': 'white',
-          'border': 'solid 1px #e6e8eb'
-        };
-        return { html, style };
-      }
+      getTooltip: this.getTooltip
     });
 
     this.renderLayer();
@@ -283,6 +240,52 @@ export default {
         categoryId: this.categoryId,
         isGeography: this.isGeography
       });
+    },
+    getTooltip ({ x, y, object }) {
+      if (!object || !this.variable) return false;
+      const title = this.variable.attribute;
+      let html = `<p style="margin: 0 0 0 4px; color: #6f777c;">${title}</p>`;
+      const objects = deck.pickMultipleObjects({ x, y })
+        // Remove duplicated objects
+        .filter((v, i, a) => a.findIndex(t => (t.index === v.index)) === i);
+      let index = 0;
+      const items = {};
+      for (const o of objects) {
+        if (compare(o.object.geometry.coordinates, object.geometry.coordinates)) {
+          // Display the points that are fully overlapped (same coordinates)
+          let value = o.object.properties[this.variable.attribute];
+          if (value !== undefined && value !== null) {
+            if (typeof value === 'number') {
+              value = formatNumber(value);
+            } else if (typeof value === 'string') {
+              value = capitalize(value);
+            }
+          } else {
+            value = 'No data';
+          }
+          items[value] ? items[value].count += 1 : items[value] = { index: index++, count: 1 };
+        }
+      }
+      const orderedItems = Object.keys(items).map(key => ({
+        value: key, index: items[key].index, count: items[key].count
+      })).sort((a, b) => (a.index > b.index) ? 1 : -1);
+      for (const item of orderedItems) {
+        let value = item.value;
+        if (item.count > 1) {
+          value += ` (${item.count})`;
+        }
+        html += `<p style="margin: 4px 0 0 4px;"><b>${value}</b></p>`;
+      }
+      const style = {
+        'padding': '8px 12px',
+        'border-radius': '2px',
+        'font-size': '12px',
+        'font-family': "'Open Sans', 'Helvetica Neue', Helvetica, sans-serif",
+        'color': '#162945',
+        'background-color': 'white',
+        'border': 'solid 1px #e6e8eb'
+      };
+      return { html, style };
     }
   }
 };

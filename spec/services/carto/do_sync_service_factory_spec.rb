@@ -1,6 +1,5 @@
 require 'spec_helper_min'
 
-# rubocop:disable RSpec/InstanceVariable
 describe Carto::DoSyncServiceFactory do
 
   before(:all) do
@@ -463,7 +462,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns synced for valid subscription imported' do
-      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -763,4 +762,3 @@ describe Carto::DoSyncServiceFactory do
     end
   end
 end
-# rubocop:enable RSpec/InstanceVariable

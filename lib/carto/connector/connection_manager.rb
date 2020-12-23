@@ -2,7 +2,7 @@ module Carto
   class ConnectionManager
     DB_PASSWORD_PLACEHOLDER = '********'.freeze
     OAUTH_TOKEN_PLACEHOLDER = '********'.freeze
-    BQ_CONNECTOR = 'bq-v2'.freeze
+    BQ_CONNECTOR = 'bigquery'.freeze
 
     def initialize(user)
       @user = user

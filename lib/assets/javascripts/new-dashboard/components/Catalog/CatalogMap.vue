@@ -34,31 +34,14 @@ import mapboxgl from 'mapbox-gl';
 import { Deck } from '@deck.gl/core';
 import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
 
-import colorBinsStyle from './map-styles/colorBinsStyle';
-import colorCategoriesStyle from './map-styles/colorCategoriesStyle';
+import { formatNumber, capitalize, compare } from './map-styles/utils';
+import { generateColorStyleProps, resetColorStyleProps } from './map-styles/colorStyles';
 
 import ColorBinsLegend from './legends/ColorBinsLegend';
 import ColorCategoriesLegend from './legends/ColorCategoriesLegend';
 
 let deck;
-let propId;
-let colorStyle;
-let getFillColor;
-let getLineColor;
-let getLineWidth;
-let getRadius;
-
-const CATEGORY_PALETTES = {
-  demographics: 'BrwnYl',
-  environmental: 'BluGrn',
-  derived: 'Teal',
-  housing: 'Burg',
-  human_mobility: 'RedOr',
-  road_traffic: 'Sunset',
-  financial: 'PurpOr',
-  covid19: 'Peach',
-  behavioral: 'TealGrn'
-};
+let styleProps = {};
 
 export default {
   name: 'CatalogMap',
@@ -92,9 +75,6 @@ export default {
     categoryId () {
       return this.dataset.category_id;
     },
-    categoryIdPalette () {
-      return CATEGORY_PALETTES[this.categoryId] || 'OrYel';
-    },
     isGeography () {
       return this.$route.params.entity_type === 'geography';
     },
@@ -105,28 +85,28 @@ export default {
       return this.variable && this.variable.description;
     },
     variableMin () {
-      return this.formatNumber(this.variable && this.variable.min);
+      return formatNumber(this.variable && this.variable.min);
     },
     variableMax () {
-      return this.formatNumber(this.variable && this.variable.max);
+      return formatNumber(this.variable && this.variable.max);
     },
     variableAvg () {
-      return this.formatNumber(this.variable && this.variable.avg);
+      return formatNumber(this.variable && this.variable.avg);
     },
     variableBins () {
-      if (this.variable && this.variable.quantiles && colorStyle) {
+      if (this.variable && this.variable.quantiles && styleProps.colorStyle) {
         const breaks = [...this.variable.quantiles[2]['5'], this.variable.max];
         const bins = [...new Set(breaks)].map(q => ({
-          color: `rgb(${colorStyle(q)})`
+          color: `rgb(${styleProps.colorStyle(q)})`
         }));
         return bins;
       }
     },
     variableCategories () {
-      if (this.variable && this.variable.categories && colorStyle) {
+      if (this.variable && this.variable.categories && styleProps.colorStyle) {
         const categories = this.variable.categories.slice(0, 10).map(c => ({
-          color: `rgb(${colorStyle(c.category)})`,
-          name: this.capitalize(c.category)
+          color: `rgb(${styleProps.colorStyle(c.category)})`,
+          name: capitalize(c.category)
         }));
         categories.push({
           name: 'Others',
@@ -174,14 +154,14 @@ export default {
         let index = 0;
         const items = {};
         for (const o of objects) {
-          if (this.compare(o.object.geometry.coordinates, object.geometry.coordinates)) {
+          if (compare(o.object.geometry.coordinates, object.geometry.coordinates)) {
             // Display the points that are fully overlapped (same coordinates)
             let value = o.object.properties[this.variable.attribute];
             if (value !== undefined && value !== null) {
               if (typeof value === 'number') {
-                value = this.formatNumber(value);
+                value = formatNumber(value);
               } else if (typeof value === 'string') {
-                value = this.capitalize(value);
+                value = capitalize(value);
               }
             } else {
               value = 'No data';
@@ -219,7 +199,7 @@ export default {
       let style = document.createElement('link');
       style.type = 'text/css';
       style.rel = 'stylesheet';
-      style.href = 'https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css';
+      style.href = 'https://libs.cartocdn.com/mapbox-gl/v1.13.0/mapbox-gl.css';
       document.head.appendChild(style);
     },
     syncMapboxViewState (viewState) {
@@ -251,16 +231,14 @@ export default {
             // To test in staging:
             // mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
           },
-          getFillColor,
-          getLineColor,
-          getLineWidth,
-          getRadius,
+          ...styleProps.deck,
           lineWidthUnits: 'pixels',
           pointRadiusUnits: 'pixels',
           pickable: true,
           onDataLoad: (tileJSON) => {
             const { center, tilestats } = tileJSON;
             this.initialViewState = {
+              // Zoom out the original zoom value
               zoom: parseFloat(center[2]) - 1,
               latitude: parseFloat(center[1]),
               longitude: parseFloat(center[0]),
@@ -270,8 +248,7 @@ export default {
             this.recenterMap();
             this.setGeomType(tilestats);
             this.setVariable(tilestats);
-            this.resetColorStyle();
-            this.generateColorStyle();
+            this.setStyleProps();
             this.renderLayer();
             this.showMap = true;
           }
@@ -298,99 +275,14 @@ export default {
         ...variableExtra
       };
     },
-    formatNumber (value) {
-      if (value !== undefined && value !== null) {
-        if (!Number.isInteger(value)) {
-          return value.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          });
-        }
-        return value.toLocaleString();
-      }
-    },
-    capitalize (string) {
-      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-    },
-    generateColorStyle () {
-      const g = this.geomType;
-      const v = this.variable && this.variable.type;
-      const stats = this.variable;
-
-      propId = this.variable && this.variable.attribute;
-
-      if (g === 'Polygon' && this.isGeography) {
-        getFillColor = [234, 200, 100, 168];
-        getLineColor = [44, 44, 44, 60];
-        getLineWidth = 1;
-      } else if (g === 'Polygon' && v === 'Number') {
-        colorStyle = colorBinsStyle({
-          breaks: { stats, method: 'quantiles', bins: 5 },
-          colors: this.categoryIdPalette
-        });
-        getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [44, 44, 44, 60];
-        getLineWidth = 1;
-      } else if (g === 'Polygon' && v === 'String') {
-        colorStyle = colorCategoriesStyle({
-          categories: { stats, top: 10 },
-          colors: 'Prism'
-        });
-        getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [44, 44, 44, 60];
-        getLineWidth = 1;
-      } else if (g === 'LineString' && this.isGeography) {
-        getLineColor = [234, 200, 100, 255];
-        getLineWidth = 2;
-      } else if (g === 'LineString' && v === 'Number') {
-        colorStyle = colorBinsStyle({
-          breaks: { stats, method: 'quantiles', bins: 5 },
-          colors: this.categoryIdPalette
-        });
-        getLineColor = (d) => colorStyle(d.properties[propId]);
-        getLineWidth = 2;
-      } else if (g === 'LineString' && v === 'String') {
-        colorStyle = colorCategoriesStyle({
-          categories: { stats, top: 10 },
-          colors: 'Prism'
-        });
-        getLineColor = (d) => colorStyle(d.properties[propId]);
-        getLineWidth = 2;
-      } else if (g === 'Point' && this.isGeography) {
-        getFillColor = [234, 200, 100, 255];
-        getLineColor = [44, 44, 44, 255];
-        getLineWidth = 1;
-        getRadius = 4;
-      } else if (g === 'Point' && v === 'Number') {
-        colorStyle = colorBinsStyle({
-          breaks: { stats, method: 'quantiles', bins: 5 },
-          colors: this.categoryIdPalette
-        });
-        getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [100, 100, 100, 255];
-        getLineWidth = 1;
-        getRadius = 4;
-      } else if (g === 'Point' && v === 'String') {
-        colorStyle = colorCategoriesStyle({
-          categories: { stats, top: 10 },
-          colors: 'Bold'
-        });
-        getFillColor = (d) => colorStyle(d.properties[propId]);
-        getLineColor = [100, 100, 100, 255];
-        getLineWidth = 1;
-        getRadius = 4;
-      }
-    },
-    resetColorStyle () {
-      propId = undefined;
-      colorStyle = undefined;
-      getFillColor = undefined;
-      getLineColor = undefined;
-      getLineWidth = undefined;
-      getRadius = undefined;
-    },
-    compare (a, b) {
-      return JSON.stringify(a) === JSON.stringify(b);
+    setStyleProps () {
+      styleProps = resetColorStyleProps();
+      styleProps = generateColorStyleProps({
+        geomType: this.geomType,
+        variable: this.variable,
+        categoryId: this.categoryId,
+        isGeography: this.isGeography
+      });
     }
   }
 };
@@ -463,5 +355,4 @@ export default {
     }
   }
 }
-
 </style>

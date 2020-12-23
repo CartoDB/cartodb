@@ -48,8 +48,6 @@ export default {
     hasSample () {
       return this.dataset.sample_info && !!this.dataset.sample_info.id;
     }
-  },
-  methods: {
   }
 };
 </script>

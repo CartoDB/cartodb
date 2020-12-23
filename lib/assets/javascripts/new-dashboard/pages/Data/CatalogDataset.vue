@@ -32,7 +32,7 @@
     </section>
 
     <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center website-header': publicWebsite }">
-      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite || responsive, 'grid-cell--col10': publicWebsite && !responsive }">
         <transition name="fade">
           <div>
             <div v-if="publicWebsite" class="catalogDetail__catalog">
@@ -57,9 +57,9 @@
     </section>
 
     <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center': publicWebsite }">
-      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite || responsive, 'grid-cell--col10': publicWebsite && !responsive }">
         <transition name="fade">
-          <div >
+          <div :class="{ 'u-pb--120': responsive }">
             <div class="grid grid-cell u-flex__justify--center">
               <NavigationTabs class="grid-cell--col12">
                 <router-link :to="{ name: 'catalog-dataset-summary' }" replace>Summary</router-link>
@@ -124,6 +124,9 @@ export default {
     },
     hasSample () {
       return this.dataset.sample_info && !!this.dataset.sample_info.id;
+    },
+    responsive () {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
   },
   methods: {

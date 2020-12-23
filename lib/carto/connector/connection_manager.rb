@@ -155,8 +155,8 @@ module Carto
     # end
 
     def oauth_connection_valid?(connection)
-      # conection.token.present? && @user.oauths.select(connection.service)&.get_service_datasource&.token_valid?
-      conection.get_service_datasource&.token_valid?
+      # connection.token.present? && @user.oauths.select(connection.service)&.get_service_datasource&.token_valid?
+      connection.get_service_datasource&.token_valid?
     end
 
     def connection_ready?(id)
@@ -190,17 +190,17 @@ module Carto
       update_redis_metadata(connection)
     end
 
-    def self.singleton_connector?(connector, connector_type)
-      # All OAuth connections are singleton (per user/connector/connector_type)
-      return true if connector_type == Carto::Connection::TYPE_OAUTH_SERVICE
+    def self.singleton_connector?(connector, connection_type)
+      # All OAuth connections are singleton (per user/connector/connection_type)
+      return true if connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
 
       # BigQuery as db connection (with service account) is singleton for the time being
       return connector == BQ_CONNECTOR
     end
 
-    def self.validate_connector(connector, connector_type, connection_parameters)
+    def self.validate_connector(connector, connection_type, connection_parameters)
       errors = []
-      case connector_type
+      case connection_type
       when Carto::Connection::TYPE_OAUTH_SERVICE
         errors << "Not a valid OAuth connector: #{connector}" unless connector.in?(valid_oauth_services)
       when Carto::Connection::TYPE_DB_CONNECTOR

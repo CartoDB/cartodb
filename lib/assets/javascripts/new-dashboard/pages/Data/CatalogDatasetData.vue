@@ -215,12 +215,6 @@ export default {
     }
   },
   methods: {
-    fetchVariables () {
-      this.$store.dispatch('catalog/fetchVariables', {
-        id: this.$route.params.entity_id,
-        type: this.$route.params.entity_type
-      });
-    },
     findVariableInfo (variableName) {
       return this.variables.find(e => e.column_name === variableName);
     },
@@ -265,9 +259,6 @@ export default {
         behavior: 'smooth'
       });
     }
-  },
-  mounted () {
-    this.fetchVariables();
   }
 };
 </script>

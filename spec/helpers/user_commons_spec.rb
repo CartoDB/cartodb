@@ -163,6 +163,12 @@ describe Carto::UserCommons do
 
         expect(user.reload.feature_flags).not_to be_empty
       end
+
+      it 'ignores blank strings passed as arguments' do
+        user.update_feature_flags([''])
+
+        expect(user.feature_flags).to be_empty
+      end
     end
   end
 

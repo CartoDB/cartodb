@@ -1,3 +1,4 @@
+require './lib/carto/subscribers/base'
 require './lib/carto/user_creator'
 require './lib/carto/user_updater'
 

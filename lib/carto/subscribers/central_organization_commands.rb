@@ -1,3 +1,5 @@
+require './lib/carto/subscribers/base'
+
 module Carto
   module Subscribers
     class CentralOrganizationCommands < ::Carto::Subscribers::Base

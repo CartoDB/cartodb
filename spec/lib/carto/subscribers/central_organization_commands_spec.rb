@@ -4,7 +4,7 @@ describe Carto::Subscribers::CentralOrganizationCommands do
   include CartoDB::Factories
 
   let(:notifications_topic) { mock }
-  let(:central_organization_commands) { described_class.new(notifications_topic) }
+  let(:central_organization_commands) { described_class.new(notifications_topic: notifications_topic) }
   let(:organization) { create_organization_with_users(seats: 10) }
 
   describe '#update_organization' do

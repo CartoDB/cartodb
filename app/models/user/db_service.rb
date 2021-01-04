@@ -519,45 +519,41 @@ module CartoDB
       # Org users share the same db, so must only delete the schema unless he's the owner
       def drop_organization_user(org_id, is_owner: false, force_destroy: false)
         raise CartoDB::BaseCartoDBError.new('Tried to delete an organization user without org id') if org_id.nil?
-        Thread.new do
-          @user.in_database(as: :superuser) do |database|
-            if is_owner
-              schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', @user.database_schema] +
-                        ::User.select(:database_schema).where(organization_id: org_id).all.collect(&:database_schema)
-              schemas.uniq.each do |s|
-                drop_users_privileges_in_schema(
-                  s,
-                  [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER])
-              end
 
-              # To avoid "cannot drop function" errors
-              database.run("drop extension if exists plproxy cascade")
+        @user.in_database(as: :superuser) do |database|
+          if is_owner
+            schemas = ['cdb', 'cdb_importer', 'cartodb', 'public', @user.database_schema] +
+                      ::User.select(:database_schema).where(organization_id: org_id).all.collect(&:database_schema)
+            schemas.uniq.each do |s|
+              drop_users_privileges_in_schema(
+                s,
+                [@user.database_username, @user.database_public_username, CartoDB::PUBLIC_DB_USER]
+              )
             end
 
-            # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
-            unless @user.database_schema == SCHEMA_PUBLIC
-              database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
-              drop_analysis_cache(@user)
-              drop_all_functions_from_schema(@user.database_schema)
-
-              cascade_drop = force_destroy ? 'CASCADE' : ''
-              database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" #{cascade_drop}})
-            end
+            # To avoid "cannot drop function" errors
+            database.run('drop extension if exists plproxy cascade')
           end
-
-          conn = @user.in_database(as: :cluster_admin)
-          CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
 
           # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
           unless @user.database_schema == SCHEMA_PUBLIC
-            drop_user(conn, @user.database_public_username)
-          end
+            database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
+            drop_analysis_cache(@user)
+            drop_all_functions_from_schema(@user.database_schema)
 
-          if is_owner
-            conn.run("DROP DATABASE \"#{@user.database_name}\"")
+            cascade_drop = force_destroy ? 'CASCADE' : ''
+            database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" #{cascade_drop}})
           end
-          drop_user(conn)
-        end.join
+        end
+
+        conn = @user.in_database(as: :cluster_admin)
+        CartoDB::UserModule::DBService.terminate_database_connections(@user.database_name, @user.database_host)
+
+        # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
+        drop_user(conn, @user.database_public_username) unless @user.database_schema == SCHEMA_PUBLIC
+
+        conn.run("DROP DATABASE \"#{@user.database_name}\"") if is_owner
+        drop_user(conn)
 
         monitor_user_notification
       end

@@ -32,7 +32,7 @@
     </section>
 
     <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center website-header': publicWebsite }">
-      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite || responsive, 'grid-cell--col10': publicWebsite && !responsive }">
         <transition name="fade">
           <div>
             <div v-if="publicWebsite" class="catalogDetail__catalog">
@@ -57,13 +57,14 @@
     </section>
 
     <section v-if="!loading" class="catalogDetail" :class="{ 'container grid': !publicWebsite, 'u-flex u-flex__justify--center': publicWebsite }">
-      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite, 'grid-cell--col10': publicWebsite }">
+      <div class="grid-cell" :class="{ 'grid-cell--col12': !publicWebsite || responsive, 'grid-cell--col10': publicWebsite && !responsive }">
         <transition name="fade">
-          <div >
+          <div :class="{ 'u-pb--120': responsive }">
             <div class="grid grid-cell u-flex__justify--center">
               <NavigationTabs class="grid-cell--col12">
                 <router-link :to="{ name: 'catalog-dataset-summary' }" replace>Summary</router-link>
                 <router-link :to="{ name: 'catalog-dataset-data' }" replace>Data</router-link>
+                <router-link :to="{ name: 'catalog-dataset-map' }" replace v-if="hasSample">Map</router-link>
               </NavigationTabs>
             </div>
             <router-view></router-view>
@@ -120,6 +121,12 @@ export default {
     },
     isSubscriptionSyncing () {
       return this.subscription && this.subscription.sync_status === 'syncing';
+    },
+    hasSample () {
+      return this.dataset.sample_info && !!this.dataset.sample_info.id;
+    },
+    responsive () {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
   },
   methods: {
@@ -129,6 +136,10 @@ export default {
         Promise.all([
           this.$store.dispatch('catalog/fetchSubscriptionsList'),
           this.$store.dispatch('catalog/fetchDataset', {
+            id: this.$route.params.entity_id,
+            type: this.$route.params.entity_type
+          }),
+          this.$store.dispatch('catalog/fetchVariables', {
             id: this.$route.params.entity_id,
             type: this.$route.params.entity_type
           })

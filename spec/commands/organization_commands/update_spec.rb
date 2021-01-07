@@ -17,13 +17,11 @@ describe OrganizationCommands::Update do
     end
 
     context 'when error occurs' do
-      let(:organization_params) { { name: 'New name', seats: 100 } }
+      let(:organization_params) { { here_isolines_quota: 1.2 } }
 
-      before { command.run }
-
-      # TODO: this should reaise an exception?
-      it 'fails silently and does not update attributes' do
-        expect(organization.reload.seats).to eq(10)
+      it 'raises an error and does not update attributes' do
+        expect { command.run }.to raise_error(ActiveRecord::RecordInvalid)
+        expect(organization.reload.quota_in_bytes).not_to eq(1.2)
       end
     end
   end

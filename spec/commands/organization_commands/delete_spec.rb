@@ -7,11 +7,11 @@ describe OrganizationCommands::Delete do
   let(:command) { described_class.new(id: organization_id) }
 
   describe '#run' do
-    before do
-      BaseCommand.any_instance.expects(:notifications_topic).returns(notifications_topic)
-    end
-
     context 'when everything is ok' do
+      before do
+        BaseCommand.any_instance.expects(:notifications_topic).returns(notifications_topic)
+      end
+
       it 'deletes the organization and publishes an organization_deleted event' do
         notifications_topic.expects(:publish).with(:organization_deleted, id: organization_id)
 
@@ -22,6 +22,10 @@ describe OrganizationCommands::Delete do
     end
 
     context 'when the organization does not exist' do
+      before do
+        BaseCommand.any_instance.expects(:notifications_topic).returns(notifications_topic)
+      end
+
       let(:organiation_id) { 'fake-id' }
 
       it 'finishes successfully and publishes an organization_deleted event' do

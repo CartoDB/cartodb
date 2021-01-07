@@ -1,10 +1,17 @@
-require './lib/carto/subscribers/base'
 require './lib/carto/user_creator'
 require './lib/carto/user_updater'
 
 module Carto
   module Subscribers
-    class CentralUserCommands < ::Carto::Subscribers::Base
+    class CentralUserCommands
+
+      attr_reader :notifications_topic,
+                  :logger
+
+      def initialize(notifications_topic:, logger:)
+        @notifications_topic = notifications_topic
+        @logger = logger
+      end
 
       def update_user(payload)
         Carto::Common::CurrentRequest.with_request_id(payload[:request_id]) do

@@ -12,18 +12,22 @@ class BaseCommand
 
   def initialize(params = {}, extra_context = {})
     self.params = params.with_indifferent_access
-    self.request_id = Carto::Common::CurrentRequest.request_id || params[:request_id]
+    self.request_id = Carto::Common::CurrentRequest.request_id || params.delete(:request_id)
     self.notifications_topic = extra_context[:notifications_topic]
   end
 
   def run
-    before_run_hooks
-    run_command
-  rescue StandardError => e
-    Rails.logger.error(log_context.merge(message: 'Command failed', exception: e))
-    raise e
-  ensure
-    after_run_hooks
+    Carto::Common::CurrentRequest.with_request_id(request_id) do
+      begin
+        before_run_hooks
+        run_command
+      rescue StandardError => e
+        Rails.logger.error(log_context.merge(message: 'Command failed', exception: e))
+        raise e
+      ensure
+        after_run_hooks
+      end
+    end
   end
 
   private

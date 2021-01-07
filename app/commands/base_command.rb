@@ -33,12 +33,7 @@ class BaseCommand
   end
 
   def before_run_hooks
-    Rails.logger.info(
-      log_context.merge(
-        message: 'Started command',
-        params: Rails.env.production? ? loggable_params : params
-      )
-    )
+    Rails.logger.info(log_context.merge(message: 'Started command', params: loggable_params))
   end
 
   def after_run_hooks

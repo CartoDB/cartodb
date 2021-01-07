@@ -44,10 +44,4 @@ class BaseCommand
     { command_class: self.class.name, request_id: request_id }
   end
 
-  # Can be overriden in specific commands in order to make debugging easier.
-  # Shouldn't contain any sensitive information
-  def loggable_params
-    {}
-  end
-
 end

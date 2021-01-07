@@ -1,14 +1,19 @@
 class BaseCommand
 
-  attr_accessor :params, :request_id
+  attr_accessor(
+    :notifications_topic,
+    :params,
+    :request_id
+  )
 
   def self.run(params = {})
     new(params).run
   end
 
-  def initialize(params = {})
+  def initialize(params = {}, extra_context = {})
     self.params = params.with_indifferent_access
     self.request_id = Carto::Common::CurrentRequest.request_id || params[:request_id]
+    self.notifications_topic = extra_context[:notifications_topic]
   end
 
   def run
@@ -41,20 +46,6 @@ class BaseCommand
 
   def log_context
     { command_class: self.class.name, request_id: request_id }
-  end
-
-  # TODO: parameterize so notifications_topic is passed as argument from the subscriber rake
-  def message_broker
-    @message_broker ||= begin
-      $stdout.sync = true
-      logger = Carto::Common::Logger.new($stdout)
-      Carto::Common::MessageBroker.new(logger: logger)
-    end
-  end
-
-  # TODO: parameterize so notifications_topic is passed as argument from the subscriber rake
-  def notifications_topic
-    @notifications_topic ||= message_broker.get_topic(:cartodb_central)
   end
 
 end

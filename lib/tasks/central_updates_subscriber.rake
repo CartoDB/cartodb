@@ -48,11 +48,13 @@ namespace :message_broker do
       subscription.register_callback(:update_organization,
                                      &OrganizationCommands::Update.method(:run))
 
-      subscription.register_callback(:create_organization,
-                                     &OrganizationCommands::Create.method(:run))
+      subscription.register_callback(:create_organization) do |payload|
+        OrganizationCommands::Create.new(payload, { notifications_topic: notifications_topic }).run
+      end
 
-      subscription.register_callback(:delete_organization,
-                                     &OrganizationCommands::Delete.method(:run))
+      subscription.register_callback(:delete_organization) do |payload|
+        OrganizationCommands::Delete.new(payload, { notifications_topic: notifications_topic }).run
+      end
 
       at_exit do
         logger.info(message: 'Stopping subscriber...')

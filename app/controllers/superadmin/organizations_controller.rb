@@ -18,7 +18,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   end
 
   def create
-    raise 'This endpoint is deprecated' if Rails.env.development? || Rails.env.staging?
+    Rails.logger.error(message: 'Deprecated endpoint', controller_id: controller_id)
 
     @organization = Carto::Organization.new
     @organization.set_fields_from_central(params[:organization], :create)
@@ -40,7 +40,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   end
 
   def update
-    raise 'This endpoint is deprecated' if Rails.env.development? || Rails.env.staging?
+    Rails.logger.error(message: 'Deprecated endpoint', controller_id: controller_id)
 
     @organization.set_fields_from_central(params[:organization], :update)
     @organization.save
@@ -48,7 +48,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   end
 
   def destroy
-    raise 'This endpoint is deprecated' if Rails.env.development? || Rails.env.staging?
+    Rails.logger.error(message: 'Deprecated endpoint', controller_id: controller_id)
 
     @organization.destroy_cascade(delete_in_central: false)
     respond_with(:superadmin, @organization)

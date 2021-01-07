@@ -33,11 +33,12 @@ class BaseCommand
   end
 
   def before_run_hooks
-    if Rails.env.production?
-      Rails.logger.info(log_context.merge(message: 'Started command'))
-    else
-      Rails.logger.info(log_context.merge(message: 'Started command', params: params))
-    end
+    Rails.logger.info(
+      log_context.merge(
+        message: 'Started command',
+        params: Rails.env.production? ? loggable_params : params
+      )
+    )
   end
 
   def after_run_hooks
@@ -46,6 +47,12 @@ class BaseCommand
 
   def log_context
     { command_class: self.class.name, request_id: request_id }
+  end
+
+  # Can be overriden in specific commands in order to make debugging easier.
+  # Shouldn't contain any sensitive information
+  def loggable_params
+    {}
   end
 
 end

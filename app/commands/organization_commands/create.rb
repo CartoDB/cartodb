@@ -16,5 +16,9 @@ module OrganizationCommands
       notifications_topic.publish(:organization_created, organization.attributes.slice('id', 'name'))
     end
 
+    def loggable_params
+      { organization_name: params[:organization][:name] }
+    end
+
   end
 end

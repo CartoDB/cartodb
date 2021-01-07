@@ -9,5 +9,9 @@ module OrganizationCommands
       organization.save!
     end
 
+    def loggable_params
+      { organization_id: params[:id] }
+    end
+
   end
 end

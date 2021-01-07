@@ -17,5 +17,9 @@ module OrganizationCommands
       notifications_topic.publish(:organization_deleted, id: params[:id])
     end
 
+    def loggable_params
+      { organization_id: params[:id] }
+    end
+
   end
 end

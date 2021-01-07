@@ -1,6 +1,6 @@
 class BaseCommand
 
-  attr_accessor :params
+  attr_accessor :params, :request_id
 
   def self.run(params = {})
     new(params).run
@@ -8,6 +8,7 @@ class BaseCommand
 
   def initialize(params = {})
     self.params = params.with_indifferent_access
+    self.request_id = Carto::Common::CurrentRequest.request_id || params[:request_id]
   end
 
   def run
@@ -39,7 +40,7 @@ class BaseCommand
   end
 
   def log_context
-    { command_class: self.class.name }
+    { command_class: self.class.name, request_id: request_id }
   end
 
   # TODO: parameterize so notifications_topic is passed as argument from the subscriber rake

@@ -158,7 +158,7 @@ describe Table do
       end
 
       it 'receives a name change if table visualization name changed' do
-        Table.any_instance.stubs(:update_cdb_tablemetadata)
+        allow_any_instance_of(Table).to receive(:update_cdb_tablemetadata)
 
         table = create_table(name: 'bogus_name', user_id: @user.id)
 
@@ -1868,13 +1868,13 @@ describe Table do
 
         allow_any_instance_of(::Table).to receive(:get_valid_name).and_return('test')
         allow_any_instance_of(::Table).to receive(:owner).and_return(user_mock)
-        ::Table.any_instance.stubs(:create_table_in_database!)
+        allow_any_instance_of(::Table).to receive(:create_table_in_database!)
         allow_any_instance_of(::Table).to receive(:set_table_id).and_return(table_id)
         allow_any_instance_of(::Table).to receive(:set_the_geom_column!).and_return(true)
-        ::UserTable.any_instance.stubs(:after_create)
-        ::Table.any_instance.stubs(:after_save)
-        ::Table.any_instance.stubs(:cartodbfy)
-        ::Table.any_instance.stubs(:schema)
+        allow_any_instance_of(::UserTable).to receive(:after_create)
+        allow_any_instance_of(::Table).to receive(:after_save)
+        allow_any_instance_of(::Table).to receive(:cartodbfy)
+        allow_any_instance_of(::Table).to receive(:schema)
         allow_any_instance_of(CartoDB::TablePrivacyManager).to receive(:owner).and_return(user_mock)
 
         # A user who can create private tables has by default private tables
@@ -2500,7 +2500,7 @@ describe Table do
     before(:each) do
       allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
-      Table.any_instance.stubs(:update_cdb_tablemetadata)
+      allow_any_instance_of(Table).to receive(:update_cdb_tablemetadata)
 
       bypass_named_maps
     end

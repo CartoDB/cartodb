@@ -20,7 +20,7 @@ describe Carto::SamlController do
   end
 
   it 'returns an error for non-configured organizations' do
-    Carto::Organization.any_instance.stubs(:auth_saml_enabled?).returns(false)
+    allow_any_instance_of(Carto::Organization).to receive(:auth_saml_enabled?).and_return(false)
     get saml_metadata_url(user_domain: @organization.name)
     response.status.should eq 403
   end

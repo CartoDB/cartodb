@@ -311,7 +311,7 @@ describe Carto::Superadmin::UsersController do
     end
 
     it 'should remove user with shared entities if force is present' do
-      User.any_instance.stubs(:has_shared_entities?).returns(true)
+      allow_any_instance_of(User).to receive(:has_shared_entities?).and_return(true)
       delete_json(superadmin_user_url(@user), { force: true }, superadmin_headers) do |response|
         response.status.should eq 204
       end

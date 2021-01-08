@@ -392,7 +392,7 @@ describe Carto::Api::AnalysesController do
     end
 
     it '#show returns tile styles for torque layers' do
-      Carto::Layer.any_instance.stubs(:kind).returns('torque')
+      allow_any_instance_of(Carto::Layer).to receive(:kind).and_return('torque')
       get_json viz_analysis_url(@user, @visualization, @styled_analysis.id) do |response|
         response.status.should eq 200
         Carto::AnalysisNode.new(response[:body][:analysis_definition].deep_symbolize_keys).descendants.each do |node|

@@ -4,7 +4,7 @@ require_relative '../../../app/controllers/superadmin/platform_controller'
 describe Superadmin::PlatformController do
   before(:all) do
     @dbhost = '127.0.0.127'
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     @user1 = FactoryGirl.create(:valid_user)
     @user2 = FactoryGirl.create(:valid_user)
     [@user1, @user2].each do |u|

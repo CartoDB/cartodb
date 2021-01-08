@@ -88,7 +88,7 @@ describe CartoGearsApi::Users::UsersService do
         expect {
           organization = mock
           organization.stubs(:strong_passwords_enabled).returns(true)
-          User.any_instance.stubs(:organization).returns(organization)
+          allow_any_instance_of(User).to receive(:organization).and_return(organization)
           service.change_password(@user.id, 'galinaa')
         }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /must be at least 8 characters long/)
       end

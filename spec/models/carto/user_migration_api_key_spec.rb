@@ -14,7 +14,7 @@ describe 'UserMigration' do
   include UserMigrationHelper
 
   it 'exports and imports a user with raster overviews because exporting skips them' do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     user = FactoryGirl.build(:valid_user).save
     next unless user.in_database.table_exists?('raster_overviews')
     carto_user = Carto::User.find(user.id)
@@ -88,7 +88,7 @@ describe 'UserMigration' do
     end
 
     it 'skips importing legacy functions using fixture' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)", "FUNCTION sumita(integer,integer)"].freeze
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
@@ -125,7 +125,7 @@ describe 'UserMigration' do
     end
 
     it 'imports functions and tables that are not on the legacy list using fixture' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes

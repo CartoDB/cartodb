@@ -211,7 +211,7 @@ describe Carto::Api::ImportsController do
     end
 
     it 'returns oauth_valid false for not valid tokens and deletes them' do
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:token_valid?).returns(false)
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:token_valid?).and_return(false)
       synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'mailchimp', token: 'kk-t')
       synchronization_oauth.save
       get api_v1_imports_service_token_valid_url(id: synchronization_oauth.service), params
@@ -271,7 +271,7 @@ describe Carto::Api::ImportsController do
     it 'returns datasource resources list for known, valid tokens' do
       service = 'mailchimp'
       fake_files = fake_resource_list(service)
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:get_resources_list).returns(fake_files)
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:get_resources_list).and_return(fake_files)
       synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: service, token: 'kk-t')
       synchronization_oauth.save
       get api_v1_imports_service_list_files_url(id: service), params
@@ -310,7 +310,7 @@ describe Carto::Api::ImportsController do
     it 'returns auth url for known, valid tokens' do
       service = 'mailchimp'
       fake_url = 'http://www.fakeurl.com'
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:get_auth_url).returns(fake_url)
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:get_auth_url).and_return(fake_url)
       get api_v1_imports_service_auth_url_url(id: service), params
       response.code.should == '200'
       response_json = JSON.parse(response.body)
@@ -379,7 +379,7 @@ describe Carto::Api::ImportsController do
 
     it 'returns success 200 and stores oauth for valid codes' do
       token = 'kk'
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:validate_auth_code).returns(token)
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:validate_auth_code).and_return(token)
 
       get api_v1_imports_service_validate_code_url(id: 'mailchimp', code: 'kk'), params
       response.code.should == '200'
@@ -417,7 +417,7 @@ describe Carto::Api::ImportsController do
 
     it 'returns success 200 and stores oauth for valid params' do
       token = 'kk'
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:validate_callback).returns(token)
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:validate_callback).and_return(token)
 
       get api_v1_imports_service_oauth_callback_url(id: 'mailchimp'), params
       response.code.should == '200'

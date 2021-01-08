@@ -101,7 +101,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @intruder.id)
 
-            Carto::Visualization.any_instance.stubs(:is_accesible_by_user?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:is_accesible_by_user?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -211,7 +211,7 @@ module Carto
                                      origin: 'import',
                                      user_id: @intruder.id)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -343,7 +343,7 @@ module Carto
                                      sql: 'import',
                                      user_id: @intruder.id)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -447,7 +447,7 @@ module Carto
                                      layer_id: @visualization.data_layers.first.id,
                                      cartocss: 'bla')
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -568,7 +568,7 @@ module Carto
                                      cartocss: 'bla',
                                      style_properties: 'bla')
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -642,7 +642,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @intruder.id)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -736,7 +736,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @intruder.id)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -1082,7 +1082,7 @@ module Carto
                                      user_id: @intruder.id,
                                      mapviews: 123)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -1211,7 +1211,7 @@ module Carto
                                      origin: 'import',
                                      user_id: @intruder.id)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -1307,7 +1307,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @intruder.id)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -1424,7 +1424,7 @@ module Carto
                                      user_id: @intruder.id,
                                      analysis: analysis)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -1546,7 +1546,7 @@ module Carto
                                      user_id: @intruder.id,
                                      analysis: analysis)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -1696,7 +1696,7 @@ module Carto
                                      user_id: @intruder.id,
                                      analysis: analysis)
 
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+            allow_any_instance_of(Carto::Visualization).to receive(:writable_by?).with(@intruder).and_return(true)
 
             expect { event.report! }.to_not raise_error
           end

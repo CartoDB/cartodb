@@ -17,10 +17,10 @@ describe Visualization::Member do
 
     user_name = 'whatever'
     @user_mock = FactoryGirl.build(:user, username: user_name)
-    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+    allow_any_instance_of(CartoDB::Visualization::Relator).to receive(:user).and_return(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
-    Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
+    allow_any_instance_of(Visualization::Relator).to receive(:support_tables).and_return(support_tables_mock)
   end
 
   describe '#privacy_for_vizjson' do
@@ -35,7 +35,7 @@ describe Visualization::Member do
       user_mock = mock
       user_mock.stubs(:private_tables_enabled).returns(true)
       user_mock.stubs(:id).returns(@user_mock.id)
-      Visualization::Member.any_instance.stubs(:user).returns(user_mock)
+      allow_any_instance_of(Visualization::Member).to receive(:user).and_return(user_mock)
 
       presenter = Visualization::Presenter.new(visualization)
       presenter.send(:privacy_for_vizjson).should eq Visualization::Member::PRIVACY_PUBLIC
@@ -119,9 +119,9 @@ describe Visualization::Member do
 
   describe '#children' do
     it 'tests .children and its sorting' do
-      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      allow_any_instance_of(Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
-      Carto::Permission.any_instance.stubs(:owner).returns(@user_mock)
+      allow_any_instance_of(Carto::Permission).to receive(:owner).and_return(@user_mock)
 
       parent = Visualization::Member.new(random_attributes_for_vis_member({
                                                                             name:'PARENT',

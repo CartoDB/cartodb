@@ -281,8 +281,8 @@ describe Carto::Organization do
   describe '#org_members_and_owner_removal' do
 
     it 'Tests removing a normal member from the organization' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
 
       org_name = unique_name('org')
       organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5)
@@ -342,8 +342,8 @@ describe Carto::Organization do
       expect { organization.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
     it 'Tests removing a normal member with analysis tables' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
 
       org_name = unique_name('org')
       organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5)

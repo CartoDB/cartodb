@@ -57,7 +57,7 @@ describe Admin::VisualizationsController do
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
       login_as(@user, scope: @user.username)
 
       get "/viz", {}, @headers
@@ -507,7 +507,7 @@ describe Admin::VisualizationsController do
   describe 'org user visualization redirection' do
     it 'if A shares a (shared) vis link to B with A username, performs a redirect to B username' do
       Carto::ApiKey.any_instance.stubs(:save_cdb_conf_info)
-      CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:move_to_own_schema).and_return(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
           :set_from_table_privacy => nil,
           :propagate_to_varnish => nil
@@ -555,7 +555,7 @@ describe Admin::VisualizationsController do
       org.builder_enabled = false
       org.save
 
-      ::User.any_instance.stubs(:remaining_quota).returns(1000)
+      allow_any_instance_of(::User).to receive(:remaining_quota).and_return(1000)
       user_a = create_user(username: 'user-a', quota_in_bytes: 123456789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
@@ -614,7 +614,7 @@ describe Admin::VisualizationsController do
     # @see https://github.com/CartoDB/cartodb/issues/6081
     it 'If logged user navigates to legacy url from org user without org name, gets redirected properly' do
       Carto::ApiKey.any_instance.stubs(:save_cdb_conf_info)
-      CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:move_to_own_schema).and_return(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
         set_from_table_privacy: nil,
         propagate_to_varnish: nil
@@ -663,7 +663,7 @@ describe Admin::VisualizationsController do
       org.builder_enabled = false
       org.save
 
-      ::User.any_instance.stubs(:remaining_quota).returns(1000)
+      allow_any_instance_of(::User).to receive(:remaining_quota).and_return(1000)
       user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin

@@ -36,7 +36,7 @@ describe Carto::Log do
       text5 = '5'
       text6 = '6'
 
-      Carto::Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half)
+      allow_any_instance_of(Carto::Log).to receive(:half_max_size).and_return(max_entries_per_half)
 
       log = Carto::Log.new_data_import
 
@@ -85,7 +85,7 @@ describe Carto::Log do
       text5 = 'five'
       text6 = 'six'
 
-      Carto::Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half)
+      allow_any_instance_of(Carto::Log).to receive(:half_max_size).and_return(max_entries_per_half)
 
       log = Carto::Log.new_data_import
 

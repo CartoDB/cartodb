@@ -5,7 +5,7 @@ require_dependency 'carto/bounding_box_utils'
 
 describe Map do
   before(:each) do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     bypass_named_maps
 
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
@@ -463,7 +463,7 @@ describe Map do
 
     # When the table data is newer
     time = Time.now + 2.minutes
-    Table.any_instance.stubs(:data_last_modified).returns(time)
+    allow_any_instance_of(Table).to receive(:data_last_modified).and_return(time)
     map.viz_updated_at.to_s.should == time.to_s
 
     # When the data layer is newer

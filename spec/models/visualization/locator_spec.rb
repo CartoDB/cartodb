@@ -17,7 +17,7 @@ describe Visualization::Locator do
 
   before(:each) do
     support_tables_mock = Doubles::Visualization::SupportTables.new
-    Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
+    allow_any_instance_of(Visualization::Relator).to receive(:support_tables).and_return(support_tables_mock)
   end
 
   before do
@@ -34,7 +34,7 @@ describe Visualization::Locator do
 
     # For relator->permission
     @user_mock = create_mocked_user
-    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+    allow_any_instance_of(CartoDB::Visualization::Relator).to receive(:user).and_return(@user_mock)
 
     @visualization  = Visualization::Member.new(
       {
@@ -63,7 +63,7 @@ describe Visualization::Locator do
     end
 
     it 'fetches a Visualization::Member if passed a visualization name' do
-      Visualization::Collection.any_instance.stubs(:user_shared_vis).returns([])
+      allow_any_instance_of(Visualization::Collection).to receive(:user_shared_vis).and_return([])
       rehydrated  = @locator.get(@visualization.name, @subdomain).first
 
       rehydrated.id.should == @visualization.id
@@ -88,7 +88,7 @@ describe Visualization::Locator do
     end
 
     it 'returns nil if no visualization or table found' do
-      Visualization::Collection.any_instance.stubs(:user_shared_vis).returns([])
+      allow_any_instance_of(Visualization::Collection).to receive(:user_shared_vis).and_return([])
       @locator.get('220d2f46-b371-11e4-93f7-080027880ca6', @subdomain).should == [nil, nil]
     end
   end #get

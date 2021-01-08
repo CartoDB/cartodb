@@ -23,7 +23,7 @@ describe Visualization::Overlays do
     map_mock.stubs(:scrollwheel)
     map_mock.stubs(:id)
     map_mock.stubs(:save)
-    Visualization::Member.any_instance.stubs(:map).returns(map_mock)
+    allow_any_instance_of(Visualization::Member).to receive(:map).and_return(map_mock)
     @visualization = member
 
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)

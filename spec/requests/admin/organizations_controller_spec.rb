@@ -36,7 +36,7 @@ describe Admin::OrganizationsController do
 
     before(:each) do
       host! "#{@organization.name}.localhost.lan"
-      Carto::Organization.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(Carto::Organization).to receive(:update_in_central).and_return(true)
     end
 
     it 'cannot be accessed by non owner users' do
@@ -126,7 +126,7 @@ describe Admin::OrganizationsController do
 
     before(:each) do
       host! "#{@delete_org.name}.localhost.lan"
-      Carto::Organization.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(Carto::Organization).to receive(:update_in_central).and_return(true)
     end
 
     it 'cannot be accessed by non owner users' do
@@ -205,7 +205,7 @@ describe Admin::OrganizationsController do
     before(:each) do
       host! "#{@organization.name}.localhost.lan"
       login_as(@org_user_owner, scope: @org_user_owner.username)
-      Carto::Organization.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(Carto::Organization).to receive(:update_in_central).and_return(true)
     end
 
     it 'cannot be accessed by non owner users' do

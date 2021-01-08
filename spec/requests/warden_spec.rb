@@ -84,7 +84,7 @@ describe 'Warden' do
 
     it 'allows access for non-expired session' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
       Cartodb.with_config(passwords: { 'expiration_in_d' => nil }) do
         login
@@ -117,7 +117,7 @@ describe 'Warden' do
 
     it 'redirects to the original url after changing the expired password' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
       Cartodb::Central.any_instance.stubs(:send_request)
 
       login
@@ -192,9 +192,9 @@ describe 'Warden' do
     include HelperMethods
 
     before(:each) do
-      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+      allow_any_instance_of(SessionsController).to receive(:central_enabled?).and_return(false)
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
     end
 
     def expect_password_locked
@@ -346,7 +346,7 @@ describe 'Warden' do
 
     it 'should be valid for current security token ' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
       login
       cookies["_cartodb_session"] = response.cookies["_cartodb_session"]

@@ -36,7 +36,7 @@ describe CartoDB::TableRegistrar do
     end
 
     it 'registers description from external sources' do
-      CartoDB::Visualization::Member.any_instance.stubs(:save_named_map).returns(true)
+      allow_any_instance_of(CartoDB::Visualization::Member).to receive(:save_named_map).and_return(true)
 
       @user.in_database.run(%{CREATE TABLE xxx (id serial)})
 
@@ -51,7 +51,7 @@ describe CartoDB::TableRegistrar do
     end
 
     it 'registers tags from external sources' do
-      CartoDB::Visualization::Member.any_instance.stubs(:save_named_map).returns(true)
+      allow_any_instance_of(CartoDB::Visualization::Member).to receive(:save_named_map).and_return(true)
 
       @user.in_database.run(%{CREATE TABLE xxx (id serial)})
 
@@ -66,7 +66,7 @@ describe CartoDB::TableRegistrar do
     end
 
     it 'creates a default visualization with external source description, attributions and source' do
-      CartoDB::Visualization::Member.any_instance.stubs(:save_named_map).returns(true)
+      allow_any_instance_of(CartoDB::Visualization::Member).to receive(:save_named_map).and_return(true)
 
       @user.in_database.run(%{CREATE TABLE xxx (id serial)})
 

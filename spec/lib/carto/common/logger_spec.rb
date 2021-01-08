@@ -37,7 +37,7 @@ describe(Carto::Common::Logger, type: :request) do
   let(:visualization_url) { builder_visualization_url(id: visualization.id) }
   let(:output) { LogDeviceMock.capture_output { get(visualization_url) } }
 
-  before { ActionDispatch::Request.any_instance.stubs(:uuid).returns('1234') }
+  before { allow_any_instance_of(ActionDispatch::Request).to receive(:uuid).and_return('1234')
 
   it 'logs request arrival' do
     login(user)

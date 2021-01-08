@@ -5,7 +5,7 @@ describe Carto::Builder::DatasetsController do
 
   describe '#show' do
     before(:all) do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       bypass_named_maps
       @user = FactoryGirl.build(:valid_user, builder_enabled: true).save
       @table = FactoryGirl.create(:carto_user_table, :full, user_id: @user.id, map: @map)
@@ -21,7 +21,7 @@ describe Carto::Builder::DatasetsController do
       @visualization.destroy
       @table.destroy
       @map.destroy
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       @user.destroy
       @feature_flag.destroy
     end
@@ -59,7 +59,7 @@ describe Carto::Builder::DatasetsController do
     end
 
     it 'does not show derived visualizations' do
-      Carto::Visualization.any_instance.stubs(:type).returns(Carto::Visualization::TYPE_DERIVED)
+      allow_any_instance_of(Carto::Visualization).to receive(:type).and_return(Carto::Visualization::TYPE_DERIVED)
 
       get builder_dataset_url(id: @visualization.id)
 
@@ -67,7 +67,7 @@ describe Carto::Builder::DatasetsController do
     end
 
     it 'does not show raster visualizations' do
-      Carto::Visualization.any_instance.stubs(:kind).returns(Carto::Visualization::KIND_RASTER)
+      allow_any_instance_of(Carto::Visualization).to receive(:kind).and_return(Carto::Visualization::KIND_RASTER)
 
       get builder_dataset_url(id: @visualization.id)
 

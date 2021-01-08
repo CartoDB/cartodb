@@ -10,7 +10,7 @@ describe Carto::Api::TablesController do
       @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
       @carto_user = Carto::User.find(@user.id)
 
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
       host! "#{@user.username}.localhost.lan"
     end
 

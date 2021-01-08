@@ -177,11 +177,11 @@ describe 'legacy behaviour tests' do
       get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text'}
       JSON.parse(last_response.body).should eq ['point', 'polygon']
 
-      CartoDB::SQLApi.any_instance.stubs(:fetch).returns([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_points' => 1 }])
+      allow_any_instance_of(CartoDB::SQLApi).to receive(:fetch).and_return([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_points' => 1 }])
       get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text'}
       JSON.parse(last_response.body).should eq ['point']
 
-      CartoDB::SQLApi.any_instance.stubs(:fetch).returns([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_polygons' => 1 }])
+      allow_any_instance_of(CartoDB::SQLApi).to receive(:fetch).and_return([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_polygons' => 1 }])
       get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text'}
       JSON.parse(last_response.body).should eq ['polygon']
     end

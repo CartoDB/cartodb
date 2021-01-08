@@ -121,8 +121,8 @@ describe Carto::Visualization do
   describe '#estimated_row_count and #actual_row_count' do
 
     it 'should query Table estimated an actual row count methods' do
-      ::Table.any_instance.stubs(:row_count_and_size).returns(row_count: 999)
-      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
+      allow_any_instance_of(::Table).to receive(:row_count_and_size).and_return(row_count: 999)
+      allow_any_instance_of(::Table).to receive(:actual_row_count).and_return(1000)
       table = create_table(name: 'table1', user_id: @user.id)
       vis = Carto::Visualization.find(table.table_visualization.id)
       vis.estimated_row_count.should == 999

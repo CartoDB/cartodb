@@ -158,7 +158,7 @@ describe 'UserMigration' do
     describe 'with orgs' do
       include_context 'organization with users helper'
       it 'exports and imports org with users with viz' do
-        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
         export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
         export.run_export
 
@@ -191,7 +191,7 @@ describe 'UserMigration' do
       end
 
       it 'does not drop database if visualizations import fails' do
-        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
         export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
         export.run_export
 
@@ -230,7 +230,7 @@ describe 'UserMigration' do
     end
 
     it 'exports and imports a user with a data import with two tables' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
 
       user = create_user_with_visualizations
 
@@ -318,7 +318,7 @@ describe 'UserMigration' do
     end
 
     it 'exporting and then importing to the same DB host fails but DB is not deleted (#c1945)' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
 
       user = create_user_with_visualizations
 
@@ -350,7 +350,7 @@ describe 'UserMigration' do
     end
 
     it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
 
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
@@ -377,7 +377,7 @@ describe 'UserMigration' do
     end
 
     it 'does export users with a canonical viz without user table if metadata export is requested (see #12588)' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
 
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)

@@ -45,7 +45,7 @@ feature "Superadmin's users API" do
     @user_atts.delete(:crypted_password)
     @user_atts.merge!(password: "this_is_a_password")
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
@@ -62,7 +62,7 @@ feature "Superadmin's users API" do
   end
 
   scenario "user create with crypted_password success" do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
@@ -85,7 +85,7 @@ feature "Superadmin's users API" do
     t = Time.now
     @user_atts[:upgraded_at] = t
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600
@@ -120,7 +120,7 @@ feature "Superadmin's users API" do
     rate_limits = FactoryGirl.create(:rate_limits)
     @user_atts[:rate_limit] = rate_limits.api_attributes
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:rate_limit_id].should_not be_nil
@@ -154,7 +154,7 @@ feature "Superadmin's users API" do
     @user_atts[:obs_general_block_price] = 5
     @user_atts[:notification] = 'Test'
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 2000

@@ -258,7 +258,7 @@ module Carto
         @app_user = OauthAppUser.create!(user: @carto_user, oauth_app: @app)
         @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
         @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
-        Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
+        allow_any_instance_of(Carto::ApiKey).to receive(:db_role).and_return(@db_role)
       end
 
       after(:all) do

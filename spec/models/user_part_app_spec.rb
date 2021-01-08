@@ -146,8 +146,8 @@ describe User do
       redis_spy = RedisDoubles::RedisSpy.new
       redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new()
       redis_embed_cache = EmbedRedisCache.new()
-      CartoDB::Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_spy)
-      EmbedRedisCache.any_instance.stubs(:redis).returns(redis_spy)
+      allow_any_instance_of(CartoDB::Visualization::RedisVizjsonCache).to receive(:redis).and_return(redis_spy)
+      allow_any_instance_of(EmbedRedisCache).to receive(:redis).and_return(redis_spy)
 
 
       redis_vizjson_keys = collection.map { |v|
@@ -366,7 +366,7 @@ describe User do
 
         context 'due to anything else' do
           before do
-            User.any_instance.stubs(:update_in_central).returns(false)
+            allow_any_instance_of(User).to receive(:update_in_central).and_return(false)
           end
 
           it 'logs an error' do

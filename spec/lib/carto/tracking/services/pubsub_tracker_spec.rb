@@ -102,7 +102,7 @@ describe PubSubTracker do
     it 'should do nothing when not enabled' do
       Rails.logger.expects(:error).never
 
-      PubSubTracker.any_instance.stubs(:enabled?).returns(false)
+      allow_any_instance_of(PubSubTracker).to receive(:enabled?).and_return(false)
 
       result = PubSubTracker.instance.send_event(:metrics, 'user_id', 'disabled')
 

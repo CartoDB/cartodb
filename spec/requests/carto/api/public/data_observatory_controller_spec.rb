@@ -68,7 +68,7 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     before(:each) do
-      Cartodb::Central.any_instance.stubs(:get_do_token).returns(@expected_body.to_json)
+      allow_any_instance_of(Cartodb::Central).to receive(:get_do_token).and_return(@expected_body.to_json)
     end
 
     after(:each) do
@@ -377,8 +377,8 @@ describe Carto::Api::Public::DataObservatoryController do
 
   describe 'subscription_info' do
     before(:each) do
-      # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
-      Carto::DoLicensingService.any_instance.stubs(:subscriptions).returns([@params])
+      # allow_any_instance_of(Cartodb::Central).to receive(:check_do_enabled).and_return(true)
+      allow_any_instance_of(Carto::DoLicensingService).to receive(:subscriptions).and_return([@params])
     end
 
     after(:each) do
@@ -448,7 +448,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       it 'returns 200 with the metadata for a geography' do
         subscription = { id: 'carto.abc.geography1', type: 'geography' }
-        Carto::DoLicensingService.any_instance.stubs(:subscriptions).returns([subscription])
+        allow_any_instance_of(Carto::DoLicensingService).to receive(:subscriptions).and_return([subscription])
 
         get_json endpoint_url(subscription.merge(api_key: @master)), @headers do |response|
           expect(response.status).to eq(200)
@@ -545,7 +545,7 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     before(:each) do
-      # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+      # allow_any_instance_of(Cartodb::Central).to receive(:check_do_enabled).and_return(true)
       @doss = mock
       Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
       @doss.stubs(:parsed_entity_id).returns({})
@@ -834,7 +834,7 @@ describe Carto::Api::Public::DataObservatoryController do
   def mock_do_metadata
     (datasets_provider + cartographies_provider + special_cases_provider).each do |entry|
       Carto::Api::Public::DataObservatoryController
-        .any_instance.stubs(:request_subscription_metadata).with(entry[:id], entry[:type]).returns(entry[:metadata])
+.any_instance.stubs(:request_subscription_metadata).with(entry[:id],allow_any_instance_of().to receive(:request_subscription_metadata).with(entry[:id], entry[:type]).and_return(entry[:metadata])
     end
   end
 

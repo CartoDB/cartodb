@@ -23,7 +23,7 @@ describe SessionsController do
 
     create_admin_user(admin_user_username, admin_user_email, admin_user_password)
     @admin_user.save.reload
-    Carto::Organization.any_instance.stubs(:owner).returns(@admin_user)
+    allow_any_instance_of(Carto::Organization).to receive(:owner).and_return(@admin_user)
 
     # INFO: Again, hack to act as if user had organization
     ::User.stubs(:where).with(username: admin_user_username,
@@ -109,7 +109,7 @@ describe SessionsController do
       @admin_user.save.reload
 
       # INFO: Hack to avoid having to destroy and recreate later the organization
-      Carto::Organization.any_instance.stubs(:owner).returns(@admin_user)
+      allow_any_instance_of(Carto::Organization).to receive(:owner).and_return(@admin_user)
 
       normal_user_username = "ldap-user"
       normal_user_password = "foobar"
@@ -173,7 +173,7 @@ describe SessionsController do
         organization: nil
       )
       @admin_user.save.reload
-      Carto::Organization.any_instance.stubs(:owner).returns(@admin_user)
+      allow_any_instance_of(Carto::Organization).to receive(:owner).and_return(@admin_user)
 
       # INFO: Again, hack to act as if user had organization
       ::User.stubs(:where).with(username: admin_user_username,
@@ -323,14 +323,14 @@ describe SessionsController do
 
   shared_examples_for 'SAML' do
     def stub_saml_service(user)
-      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-      Carto::SamlService.any_instance.stubs(:get_user_email).returns(user.email)
+      allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+      allow_any_instance_of(Carto::SamlService).to receive(:get_user_email).and_return(user.email)
     end
 
     it 'redirects to SAML authentication request if enabled' do
       authentication_request = "http://fakesaml.com/authenticate"
-      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-      Carto::SamlService.any_instance.stubs(:authentication_request).returns(authentication_request)
+      allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+      allow_any_instance_of(Carto::SamlService).to receive(:authentication_request).and_return(authentication_request)
 
       get login_url(user_domain: user_domain)
       response.location.should eq authentication_request
@@ -377,8 +377,8 @@ describe SessionsController do
     end
 
     it "Fails to authenticate if SAML request fails" do
-      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-      Carto::SamlService.any_instance.stubs(:get_user_email).returns(nil)
+      allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+      allow_any_instance_of(Carto::SamlService).to receive(:get_user_email).and_return(nil)
 
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -393,7 +393,7 @@ describe SessionsController do
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
         # needs returning an url to do a redirection
-        Carto::SamlService.any_instance.stubs(:sp_logout_request).returns('http://carto.com').once
+        allow_any_instance_of(Carto::SamlService).to receive(:sp_logout_request).and_return('http://carto.com')
         get logout_url(user_domain: user_domain)
       end
 
@@ -404,20 +404,20 @@ describe SessionsController do
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
         # needs returning an url to do a redirection
-        Carto::SamlService.any_instance.stubs(:logout_url_configured?).returns(false)
-        Carto::SamlService.any_instance.stubs(:sp_logout_request).returns('http://carto.com').never
+        allow_any_instance_of(Carto::SamlService).to receive(:logout_url_configured?).and_return(false)
+        allow_any_instance_of(Carto::SamlService).to receive(:sp_logout_request).and_return('http://carto.com')
         get logout_url(user_domain: user_domain)
       end
 
       it 'calls SamlService#idp_logout_request if SAMLRequest is present' do
         # needs returning an url to do a redirection
-        Carto::SamlService.any_instance.stubs(:idp_logout_request).returns('http://carto.com').once
+        allow_any_instance_of(Carto::SamlService).to receive(:idp_logout_request).and_return('http://carto.com')
         get logout_url(user_domain: user_domain, SAMLRequest: 'xx')
       end
 
       it 'calls SamlService#process_logout_response if SAMLResponse is present' do
         # needs returning an url to do a redirection
-        Carto::SamlService.any_instance.stubs(:process_logout_response).returns('http://carto.com').once
+        allow_any_instance_of(Carto::SamlService).to receive(:process_logout_response).and_return('http://carto.com')
         get logout_url(user_domain: user_domain, SAMLResponse: 'xx')
       end
     end
@@ -425,10 +425,10 @@ describe SessionsController do
     shared_examples_for 'SAML no MFA' do
       it "authenticates users with casing differences in email" do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
-        Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-        Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email.upcase)
+        allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+        allow_any_instance_of(Carto::SamlService).to receive(:get_user_email).and_return(@user.email.upcase)
 
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -518,10 +518,10 @@ describe SessionsController do
 
       it "redirects to multifactor_authentication" do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
-        Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-        Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email)
+        allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+        allow_any_instance_of(Carto::SamlService).to receive(:get_user_email).and_return(@user.email)
 
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -577,19 +577,19 @@ describe SessionsController do
       end
 
       it 'redirects to Central for orgs without any auth method enabled' do
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(false)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(false)
         get login_url(user_domain: @organization.name)
         response.status.should == 302
       end
 
       it 'uses the box login for orgs with any auth enabled' do
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(true)
         get login_url(user_domain: @organization.name)
         response.status.should == 200
       end
 
       it 'disallows login from an organization login page to a non-member' do
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(true)
         post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
         response.status.should == 200
         response.body.should include 'Not a member'
@@ -607,7 +607,7 @@ describe SessionsController do
       end
 
       it 'allows login from an organization login page to a non-member' do
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(true)
         post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
         response.status.should == 302
       end
@@ -768,8 +768,8 @@ describe SessionsController do
 
         login
         post create_session_url(email: @user.username, password: @user.password)
-        ApplicationController.any_instance.stubs(:current_viewer).returns(@user)
-        ApplicationController.any_instance.stubs(:multifactor_authentication_required?).returns(true)
+        allow_any_instance_of(ApplicationController).to receive(:current_viewer).and_return(@user)
+        allow_any_instance_of(ApplicationController).to receive(:multifactor_authentication_required?).and_return(true)
         follow_redirect!
 
         request.path.should eq multifactor_authentication_verify_code_path
@@ -1001,7 +1001,7 @@ describe SessionsController do
     describe 'as org without user pass enabled' do
       before(:all) do
         Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(true)
         @organization = FactoryGirl.create(:organization_with_users,
                                            :mfa_enabled,
                                            auth_username_password_enabled: false)

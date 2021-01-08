@@ -8,7 +8,7 @@ class MockObject
 end
 
 describe LoggerHelper do
-  before { allow_any_instance_of(User).to receive(:update_in_central).and_return(true)
+  before { allow_any_instance_of(User).to receive(:update_in_central).and_return(true) }
 
   let(:mock_object) { MockObject.new }
   let(:exception) { StandardError.new('Exception message') }

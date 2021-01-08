@@ -4,8 +4,6 @@ shared_examples_for 'permission models' do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    ::User.any_instance.stubs(:gravatar).returns(nil)
     @user = create_user(quota_in_bytes: 524288000, table_quota: 500)
     @carto_user = Carto::User.find(@user.id)
 
@@ -16,14 +14,20 @@ shared_examples_for 'permission models' do
     @viewer_user = create_user(viewer: true)
   end
 
+  before do
+    allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
+    allow_any_instance_of(::User).to receive(:gravatar).and_return(nil)
+  end
+
   after(:all) do
-    bypass_named_maps
     @viewer_user&.destroy
     @user4&.destroy
     @user3&.destroy
     @user2&.destroy
     @user&.destroy
   end
+
+  after { bypass_named_maps }
 
   describe '#create' do
     it 'tests basic creation' do
@@ -251,15 +255,15 @@ shared_examples_for 'permission models' do
           access: Carto::Permission::ACCESS_READWRITE
         }
       ]
-      Table.any_instance.expects(:add_read_write_permission).once.returns(true)
+      allow_any_instance_of(Table).to receive(:add_read_write_permission).and_return(true)
       permission.save
       permission.reload
 
       permission.permission_for_user(changing_user).should eq Carto::Permission::ACCESS_READWRITE
 
       changing_user.viewer = true
-      Table.any_instance.expects(:remove_access).once.returns(true)
-      Table.any_instance.expects(:add_read_permission).once.returns(true)
+      expect_any_instance_of(Table).to receive(:remove_access).and_return(true)
+      expect_any_instance_of(Table).to receive(:add_read_permission).and_return(true)
       changing_user.save
       changing_user.reload
 

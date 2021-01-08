@@ -56,8 +56,8 @@ describe Carto::Organization do
 
     before(:each) do
       @organization = FactoryGirl.create(:organization)
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
     end
 
     after(:each) do
@@ -143,8 +143,7 @@ describe Carto::Organization do
     it 'destroys its groups through the extension' do
       organization = create(:organization_with_users)
       create(:carto_group, organization: Carto::Organization.find(organization.id))
-
-      Carto::Group.any_instance.expects(:destroy_group_with_extension).once
+      expect_any_instance_of(Carto::Group).to receive(:destroy_group_with_extension)
 
       organization.destroy
     end

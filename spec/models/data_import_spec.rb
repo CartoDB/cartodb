@@ -374,7 +374,7 @@ describe DataImport do
 
   it 'should allow to create a table from a url' do
     data_import = nil
-    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
       data_import = DataImport.create(
         user_id: @user.id,
@@ -392,7 +392,7 @@ describe DataImport do
     data_import = nil
     sync_job = FactoryGirl.create(:enqueued_sync)
     Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_QUEUED
-    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
       data_import = DataImport.create(
         user_id: @user.id,
@@ -423,7 +423,7 @@ describe DataImport do
 
   it 'should allow to create a table from a url with params' do
     data_import = nil
-    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv?param=wadus'),
                headers: { "content-type" => "text/plain" } do |url|
       data_import = DataImport.create(
@@ -473,7 +473,7 @@ describe DataImport do
   end
 
   it 'should add a common_data extra_option' do
-    DataImport.any_instance.stubs(:from_common_data?).returns(true)
+    allow_any_instance_of(DataImport).to receive(:from_common_data?).and_return(true)
     data_import = DataImport.create(
       user_id: @user.id,
       data_source: "http://127.0.0.1/foo.csv"
@@ -526,10 +526,6 @@ describe DataImport do
   end
 
   describe 'arcgis connector' do
-    after :each do
-      CartoDB::Importer2::QueryBatcher.any_instance.unstub(:execute_update)
-    end
-
     it 'should complete with a warning when the query batcher raises a timeout exception' do
       stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_valid.json'))
       CartoDB::Importer2::QueryBatcher.any_instance
@@ -575,7 +571,7 @@ describe DataImport do
     end
 
     it 'fail with error 1020 if timeout' do
-      Typhoeus::Response.any_instance.stubs(:timed_out?).returns(true)
+      allow_any_instance_of(Typhoeus::Response).to receive(:timed_out?).and_return(true)
       stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'))
 
       data_import = DataImport.create(

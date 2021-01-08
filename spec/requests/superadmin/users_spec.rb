@@ -507,7 +507,7 @@ feature "Superadmin's users API" do
         'username1' => 1111,
         'username2' => 2222
       }
-      Carto::UserDbSizeCache.any_instance.expects(:db_size_in_bytes_change_users).once.returns(cached_users_mock)
+      expect_any_instance_of(Carto::UserDbSizeCache).to receive(:db_size_in_bytes_change_users).once.returns(cached_users_mock)
 
       get_json superadmin_users_path, { db_size_in_bytes_change: true }, superadmin_headers do |response|
         response.status.should == 200

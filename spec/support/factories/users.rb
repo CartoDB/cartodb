@@ -23,12 +23,9 @@ module CartoDB
       user_class = attributes.fetch(:class, ::User)
 
       if attributes[:fake_user]
-        user_class.any_instance.stubs(
-          after_create: nil
-        )
+        allow_any_instance_of(user_class).to receive(after_create: nil)
 
-        CartoDB::UserModule::DBService.any_instance.stubs(
-          grant_user_in_database: nil,
+        allow_any_instance_of(CartoDB::UserModule::DBService).to receive(grant_user_in_database: nil,
           set_user_privileges_at_db: nil,
           set_statement_timeouts: nil,
           set_user_as_organization_member: nil,
@@ -39,8 +36,7 @@ module CartoDB
           create_schema: nil,
           create_public_db_user: nil,
           enable_remote_db_user: nil,
-          monitor_user_notification: nil
-        )
+          monitor_user_notification: nil)
       end
 
       attributes = attributes.dup

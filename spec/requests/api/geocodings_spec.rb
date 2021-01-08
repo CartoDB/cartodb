@@ -139,7 +139,7 @@ describe "Geocodings API" do
 
     it 'responds with 500 on failure' do
       payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
-      Geocoding.any_instance.stubs(:save).raises(RuntimeError.new)
+      allow_any_instance_of(Geocoding).to receive(:save).raises(RuntimeError.new)
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 500
         response.body[:description].should eq "RuntimeError"
@@ -150,7 +150,7 @@ describe "Geocodings API" do
   describe 'PUT /api/v1/geocodings/:id' do
     it 'fails gracefully on job cancel failure' do
       geocoding = FactoryGirl.create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user)
-      Geocoding.any_instance.stubs(:cancel).raises('wadus')
+      allow_any_instance_of(Geocoding).to receive(:cancel).raises('wadus')
 
       put_json api_v1_geocodings_update_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|
         response.status.should eq 400

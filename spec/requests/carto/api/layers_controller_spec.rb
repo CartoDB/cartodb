@@ -139,7 +139,7 @@ describe Carto::Api::LayersController do
           options: { random: '1' },
           order: new_order
         )
-        Carto::Layer.any_instance.expects(:register_table_dependencies).once
+        expect_any_instance_of(Carto::Layer).to receive(:register_table_dependencies).once
         put_json update_map_layer_url(map.id, @layer.id), new_layer_json do |response|
           response.status.should eq 200
         end
@@ -455,8 +455,8 @@ describe Carto::Api::LayersController do
       it "Update a layer > tiler error" do
         layer = Layer.create kind: 'carto', order: 0
         @map.add_layer layer
-        Layer.any_instance.stubs(:after_save).raises(RuntimeError)
-        Carto::Layer.any_instance.stubs(:invalidate_maps).raises(RuntimeError)
+        allow_any_instance_of(Layer).to receive(:after_save).raises(RuntimeError)
+        allow_any_instance_of(Carto::Layer).to receive(:invalidate_maps).raises(RuntimeError)
 
         data = { options: { opt1: 'value' }, infowindow: { fields: ['column1', 'column2'] }, order: 999, kind: 'carto' }
 

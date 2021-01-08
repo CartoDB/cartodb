@@ -398,7 +398,7 @@ describe Admin::OrganizationUsersController do
     describe '#create' do
       it 'creates users' do
         ::User.any_instance.stubs(:create_in_central).returns(true)
-        User.any_instance.expects(:load_common_data).once.returns(true)
+        expect_any_instance_of(User).to receive(:load_common_data).once.returns(true)
 
         post create_organization_user_url(user_domain: @org_user_owner.username),
              user: user_params,
@@ -438,7 +438,7 @@ describe Admin::OrganizationUsersController do
         end
 
         it 'does not update users in case of Central failure' do
-          ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
+          allow_any_instance_of(::User).to receive(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
           new_quota = @existing_user.quota_in_bytes * 2
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
               user: { quota_in_bytes: new_quota },
@@ -450,7 +450,7 @@ describe Admin::OrganizationUsersController do
         end
 
         it 'validates before updating in Central' do
-          ::User.any_instance.stubs(:update_in_central).never
+          allow_any_instance_of(::User).to receive(:update_in_central).never
           params = {
             password:         'zyx',
             confirm_password: 'abc'
@@ -464,7 +464,7 @@ describe Admin::OrganizationUsersController do
 
         it 'cannot update password if it does not change old_password' do
           last_change = @existing_user.last_password_change_date
-          ::User.any_instance.stubs(:update_in_central).never
+          allow_any_instance_of(::User).to receive(:update_in_central).never
           params = {
             password:         'abcdefgh',
             confirm_password: 'abcdefgh'
@@ -500,7 +500,7 @@ describe Admin::OrganizationUsersController do
         end
 
         it 'does not update the user multifactor authentications if the user saving operation fails' do
-          User.any_instance.stubs(:save).raises(Sequel::ValidationFailed.new('error!'))
+          allow_any_instance_of(User).to receive(:save).raises(Sequel::ValidationFailed.new('error!'))
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
               user: { mfa: '1' },

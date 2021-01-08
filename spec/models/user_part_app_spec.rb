@@ -328,7 +328,7 @@ describe User do
 
     describe '#invalidate_all_sessions!' do
       before(:each) do
-        Cartodb::Central.any_instance.stubs(:send_request)
+        allow_any_instance_of(Cartodb::Central).to receive(:send_request)
       end
 
       after(:each) do
@@ -345,7 +345,7 @@ describe User do
         end
 
         it 'updates the user in Central' do
-          Cartodb::Central.any_instance.expects(:send_request).once
+          expect_any_instance_of(Cartodb::Central).to receive(:send_request).once
 
           @user.invalidate_all_sessions!
         end
@@ -354,7 +354,7 @@ describe User do
       context 'when syncing to Central fails' do
         context 'due to a newtork error' do
           before do
-            User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure, 'Error')
+            allow_any_instance_of(User).to receive(:update_in_central).raises(CartoDB::CentralCommunicationFailure, 'Error')
           end
 
           it 'logs an error' do

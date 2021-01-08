@@ -41,7 +41,7 @@ shared_examples_for 'vizjson generator' do
     end
 
     it 'tests privacy of vizjsons' do
-      Carto::NamedMaps::Api.any_instance.stubs(show: { template: { auth: { valid_tokens: ['mammas', 'pappas'] } } },
+      allow_any_instance_of(Carto::NamedMaps::Api).to receive(show: { template: { auth: { valid_tokens: ['mammas', 'pappas'] } } },
                                                create: true,
                                                update: true,
                                                destroy: true)
@@ -222,7 +222,7 @@ shared_examples_for 'vizjson generator' do
 
     describe 'get vizjson' do
       before(:each) do
-        Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
+        allow_any_instance_of(Carto::NamedMaps::Api).to receive(show: nil, create: true, update: true, destroy: true)
         delete_user_data(@user_1)
       end
 
@@ -255,7 +255,7 @@ shared_examples_for 'vizjson generator' do
       end
 
       it "comes with proper surrogate-key" do
-        Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+        allow_any_instance_of(Carto::NamedMaps::Api).to receive(get: nil, create: true, update: true)
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
         map_id = source_visualization[:map_id]
@@ -348,7 +348,7 @@ shared_examples_for 'vizjson generator' do
         visualization = JSON.parse(last_response.body)
 
         # Stubs privacy of the visualization so that the viz_json generates a named_map
-        Carto::Visualization.any_instance.stubs('retrieve_named_map?' => true)
+        allow_any_instance_of(Carto::Visualization).to receive('retrieve_named_map?' => true)
 
         get api_vx_visualizations_vizjson_url(id: visualization.fetch('id'), api_key: @api_key), {}, @headers
 

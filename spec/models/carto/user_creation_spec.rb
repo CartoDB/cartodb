@@ -212,7 +212,7 @@ describe Carto::UserCreation do
 
     it 'neither creates a new User nor sends the mail and marks creation as failure if saving fails' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      ::User.any_instance.stubs(:save).raises('saving error')
+      allow_any_instance_of(::User).to receive(:save).raises('saving error')
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
 
@@ -236,7 +236,7 @@ describe Carto::UserCreation do
 
     it 'neither creates a new User nor sends the mail and marks creation as failure if Central fails' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      ::User.any_instance.stubs(:create_in_central).raises('Error on state creating_user_in_central, mark_as_failure: false. Error: Application server responded with http 422: {"errors":["Existing username."]}')
+      allow_any_instance_of(::User).to receive(:create_in_central).raises('Error on state creating_user_in_central, mark_as_failure: false. Error: Application server responded with http 422: {"errors":["Existing username."]}')
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
 
@@ -339,7 +339,7 @@ describe Carto::UserCreation do
     it 'should trigger load_common_data in the user if common_data_url is setted' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      ::User.any_instance.expects(:load_common_data).with('http://www.example.com').once
+      expect_any_instance_of(::User).to receive(:load_common_data).with('http://www.example.com').once
 
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
@@ -353,7 +353,7 @@ describe Carto::UserCreation do
     it 'should not trigger load_common_data in the user if common_data_url is not setted' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      ::User.any_instance.expects(:load_common_data).with('http://www.example.com').never
+      expect_any_instance_of(::User).to receive(:load_common_data).with('http://www.example.com').never
 
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization

@@ -100,7 +100,7 @@ describe Geocoding do
                                     kind: 'admin0')
       geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::TableGeocoder.any_instance.stubs(:used_batch_request?).returns false
-      CartoDB::TableGeocoder.any_instance.stubs(:run).raises("Error")
+      allow_any_instance_of(CartoDB::TableGeocoder).to receive(:run).raises("Error")
       CartoDB.expects(:notify_exception).times(1)
 
       geocoding.run!
@@ -124,8 +124,8 @@ describe Geocoding do
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:update_geocoding_status).returns(processed_rows: 10, state: 'completed')
 
       # metrics_payload is sent to the log in json
-      Logger.any_instance.expects(:info).once.with { |str| is_metrics_payload?(str) }
-      Logger.any_instance.stubs(:info).with { |str| !is_metrics_payload?(str) }
+      expect_any_instance_of(Logger).to receive(:info).once.with { |str| is_metrics_payload?(str) }
+      allow_any_instance_of(Logger).to receive(:info).with { |str| !is_metrics_payload?(str) }
 
       geocoding.run!
       geocoding.reload.state.should eq 'finished'

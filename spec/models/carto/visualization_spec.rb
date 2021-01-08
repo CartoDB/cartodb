@@ -291,7 +291,7 @@ describe Carto::Visualization do
     it 'should save named map with layers on map creation' do
       @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user, map: FactoryGirl.build(:carto_map))
       @visualization.layers << FactoryGirl.build(:carto_layer)
-      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
+      expect_any_instance_of(Carto::VisualizationInvalidationService).to receive(:invalidate).once
       @visualization.save
     end
 
@@ -401,7 +401,7 @@ describe Carto::Visualization do
       visualization.create_mapcap!
       visualization.state.save
 
-      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
+      expect_any_instance_of(Carto::VisualizationInvalidationService).to receive(:invalidate).once
       expect_visualization_to_be_destroyed(visualization) { visualization.destroy }
     end
   end

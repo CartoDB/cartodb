@@ -71,7 +71,7 @@ module UserMigrationHelper
 
       Cartodb.with_config(agg_ds_config) do
         # Do not depend on dataservices_client to be installed
-        CartoDB::UserModule::DBService.any_instance.stubs(:install_geocoder_api_extension)
+        allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:install_geocoder_api_extension)
 
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,

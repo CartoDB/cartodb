@@ -301,7 +301,7 @@ describe Admin::PagesController do
 
   def mock_explore_feature_flag
     anyuser = prepare_user('anyuser')
-    ::User.any_instance.stubs(:has_feature_flag?)
+    allow_any_instance_of(::User).to receive(:has_feature_flag?)
                           .with('explore_site')
                           .returns(true)
     ::User.stubs(:where).returns(anyuser)

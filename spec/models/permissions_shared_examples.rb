@@ -251,15 +251,15 @@ shared_examples_for 'permission models' do
           access: Carto::Permission::ACCESS_READWRITE
         }
       ]
-      Table.any_instance.expects(:add_read_write_permission).once.returns(true)
+      expect_any_instance_of(Table).to receive(:add_read_write_permission).once.returns(true)
       permission.save
       permission.reload
 
       permission.permission_for_user(changing_user).should eq Carto::Permission::ACCESS_READWRITE
 
       changing_user.viewer = true
-      Table.any_instance.expects(:remove_access).once.returns(true)
-      Table.any_instance.expects(:add_read_permission).once.returns(true)
+      expect_any_instance_of(Table).to receive(:remove_access).once.returns(true)
+      expect_any_instance_of(Table).to receive(:add_read_permission).once.returns(true)
       changing_user.save
       changing_user.reload
 
@@ -580,7 +580,7 @@ shared_examples_for 'permission models' do
         }
       ]
       # Twice: once at model `update_changes` and one on permission destroy (at cleanup)
-      ::Table.any_instance.expects(:update_cdb_tablemetadata).twice
+      expect_any_instance_of(::Table).to receive(:update_cdb_tablemetadata).twice
       permission.save
     end
   end
@@ -805,7 +805,7 @@ shared_examples_for 'permission models' do
       it 'deletes ACL entries from permissions on deletion' do
         map, table, table_visualization, visualization = create_full_visualization(@carto_org_user_1)
 
-        Carto::Group.any_instance.expects(:grant_db_permission).once
+        expect_any_instance_of(Carto::Group).to receive(:grant_db_permission).once
         permission = table.permission
         permission.acl = [
           {

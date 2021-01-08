@@ -218,7 +218,7 @@ describe Map do
       @table.save
 
       # Upon save of the original map, will sanitize all visualizations pointing to old one, saving with new one
-      CartoDB::Visualization::Member.any_instance.expects(:store_from_map).at_least_once
+      expect_any_instance_of(CartoDB::Visualization::Member).to receive(:store_from_map).at_least_once
       map.save
 
       map.destroy
@@ -355,9 +355,9 @@ describe Map do
     end
 
     it 'invalidates vizjson cache' do
-      CartoDB::Varnish.any_instance.stubs(:purge).with(@map.visualization.varnish_vizjson_key).once
+      allow_any_instance_of(CartoDB::Varnish).to receive(:purge).with(@map.visualization.varnish_vizjson_key).once
       @map.notify_map_change
-      CartoDB::Varnish.any_instance.stubs(:purge) # Needed to avoid counting the call from destroy
+      allow_any_instance_of(CartoDB::Varnish).to receive(:purge) # Needed to avoid counting the call from destroy
     end
 
     it 'updates_named_maps' do

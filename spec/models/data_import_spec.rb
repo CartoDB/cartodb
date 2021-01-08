@@ -76,7 +76,7 @@ describe DataImport do
   end
 
   it 'raises a meaningful error if cartodb_id is not valid' do
-    Table.any_instance.stubs(:cartodbfy).raises(CartoDB::CartoDBfyInvalidID)
+    allow_any_instance_of(Table).to receive(:cartodbfy).raises(CartoDB::CartoDBfyInvalidID)
     data_import = DataImport.create(
       user_id: @user.id,
       data_source: fake_data_path('clubbing.csv'),
@@ -532,8 +532,7 @@ describe DataImport do
 
     it 'should complete with a warning when the query batcher raises a timeout exception' do
       stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_valid.json'))
-      CartoDB::Importer2::QueryBatcher.any_instance
-                                      .stubs(:execute_update)
+      allow_any_instance_of(CartoDB::Importer2::QueryBatcher).to receive(:execute_update)
                                       .raises(Sequel::DatabaseError, 'canceling statement due to statement timeout')
 
       data_import = DataImport.create(
@@ -548,8 +547,7 @@ describe DataImport do
 
     it 'should raise invalid data error when the query batcher raise any other exception' do
       stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_valid.json'))
-      CartoDB::Importer2::QueryBatcher.any_instance
-                                      .stubs(:execute_update)
+      allow_any_instance_of(CartoDB::Importer2::QueryBatcher).to receive(:execute_update)
                                       .raises(Sequel::DatabaseError, 'GEOSisValid(): InterruptedException: Interrupted!')
 
       data_import = DataImport.create(

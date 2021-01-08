@@ -18,9 +18,9 @@ describe Url::GDrive do
   describe '#filters' do
     it 'test that filter options work correctly' do
       # Stubs Google Drive client for connectionless testing
-      Google::Apis::DriveV2::DriveService.any_instance.stubs(:get_file)
-      Google::Apis::DriveV2::DriveService.any_instance.stubs(:export_file)
-      Google::Apis::DriveV2::DriveService.any_instance.stubs(:list_files)
+      allow_any_instance_of(Google::Apis::DriveV2::DriveService).to receive(:get_file)
+      allow_any_instance_of(Google::Apis::DriveV2::DriveService).to receive(:export_file)
+      allow_any_instance_of(Google::Apis::DriveV2::DriveService).to receive(:list_files)
       user_mock = CartoDB::Datasources::Doubles::User.new
 
       gdrive_provider = Url::GDrive.get_new(get_config, user_mock)

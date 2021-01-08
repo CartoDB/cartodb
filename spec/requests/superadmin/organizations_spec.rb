@@ -59,7 +59,7 @@ feature "Superadmin's organization API" do
     org_atts[:owner_id] = user.id
 
     simulated_error = StandardError.new('promote_user_to_admin failure simulation')
-    CartoDB::UserOrganization.any_instance.stubs(:promote_user_to_admin).raises(simulated_error)
+    allow_any_instance_of(CartoDB::UserOrganization).to receive(:promote_user_to_admin).raises(simulated_error)
 
     post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
       response.status.should == 500

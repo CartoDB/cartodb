@@ -383,7 +383,7 @@ describe Carto::ApiKey do
       end
 
       it 'invalidates varnish cache' do
-        CartoDB::Varnish.any_instance.expects(:purge).with("#{@user1.database_name}.*").at_least(1)
+        expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with("#{@user1.database_name}.*").at_least(1)
 
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
         api_key.destroy
@@ -414,7 +414,7 @@ describe Carto::ApiKey do
       it 'invalidates varnish cache' do
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
 
-        CartoDB::Varnish.any_instance.expects(:purge).with("#{@user1.database_name}.*").at_least(1)
+        expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with("#{@user1.database_name}.*").at_least(1)
 
         api_key.regenerate_token!
         api_key.save!

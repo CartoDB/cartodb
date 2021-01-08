@@ -339,7 +339,7 @@ describe SessionsController do
 
     it 'authenticates with SAML if SAMLResponse is present and SAML is enabled' do
       stub_saml_service(@user)
-      SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
+      expect_any_instance_of(SessionsController).to receive(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
 
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
     end
@@ -388,7 +388,7 @@ describe SessionsController do
     describe 'SAML logout' do
       it 'calls SamlService#sp_logout_request from user-initiated logout' do
         stub_saml_service(@user)
-        SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
+        expect_any_instance_of(SessionsController).to receive(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
 
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -399,7 +399,7 @@ describe SessionsController do
 
       it 'does not call SamlService#sp_logout_request if logout URL is not configured' do
         stub_saml_service(@user)
-        SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
+        expect_any_instance_of(SessionsController).to receive(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
 
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -657,7 +657,7 @@ describe SessionsController do
       include Warden::Test::Helpers
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent' do
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+        expect_any_instance_of(CartoGearsApi::Events::EventManager).to receive(:notify).once.with do |event|
           event.class.should eq CartoGearsApi::Events::UserLoginEvent
         end
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
@@ -681,7 +681,7 @@ describe SessionsController do
         login(::User.where(id: @user.id).first)
         logout
 
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+        expect_any_instance_of(CartoGearsApi::Events::EventManager).to receive(:notify).once.with do |event|
           event.first_login?.should be_false
         end
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
@@ -689,7 +689,7 @@ describe SessionsController do
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling first login' do
         @new_user = FactoryGirl.create(:carto_user)
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+        expect_any_instance_of(CartoGearsApi::Events::EventManager).to receive(:notify).once.with do |event|
           event.first_login?.should be_true
         end
         post create_session_url(user_domain: @new_user.username, email: @new_user.username, password: @new_user.password)
@@ -697,7 +697,7 @@ describe SessionsController do
       end
 
       it 'returns a CartoGearsApi::Users::User matching the logged user' do
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+        expect_any_instance_of(CartoGearsApi::Events::EventManager).to receive(:notify).once.with do |event|
           event_user = event.user
           event_user.class.should eq CartoGearsApi::Users::User
           event_user.username.should eq @user.username
@@ -1082,6 +1082,6 @@ describe SessionsController do
   private
 
   def bypass_named_maps
-    Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
+    allow_any_instance_of(Carto::NamedMaps::Api).to receive(show: nil, create: true, update: true, destroy: true)
   end
 end

@@ -99,7 +99,7 @@ describe Carto::Widget do
 
     it 'retrieves all visualization widgets' do
       # Twice expectation: creation + destroy
-      Map.any_instance.expects(:update_related_named_maps).times(2).returns(true)
+      expect_any_instance_of(Map).to receive(:update_related_named_maps).times(2).returns(true)
       layer = @visualization.data_layers.first
       widget = FactoryGirl.create(:widget, layer: layer)
       widget2 = FactoryGirl.create(:widget_with_layer)
@@ -116,7 +116,7 @@ describe Carto::Widget do
 
   context 'viewer users' do
     before(:all) do
-      Map.any_instance.stubs(:update_related_named_maps)
+      allow_any_instance_of(Map).to receive(:update_related_named_maps)
       @user = FactoryGirl.create(:carto_user)
       @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
       @visualization = FactoryGirl.create(:carto_visualization, map: @map, user: @user)

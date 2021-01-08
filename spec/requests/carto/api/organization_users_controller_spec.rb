@@ -279,7 +279,7 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     it 'can create viewers' do
-      Carto::UserCreation.any_instance.expects(:load_common_data).never
+      expect_any_instance_of(Carto::UserCreation).to receive(:load_common_data).never
       login(@organization.owner)
       username = 'viewer-user'
       params = user_params(username, viewer: true, with_password: true)
@@ -729,7 +729,7 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     it 'should not update if it cannot update in central' do
-      ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
+      allow_any_instance_of(::User).to receive(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
       login(@organization.owner)
 
       user_to_update = @organization.non_owner_users[0]
@@ -744,7 +744,7 @@ describe Carto::Api::OrganizationUsersController do
 
     it 'should validate password before updating in Central' do
       ::User.any_instance.unstub(:update_in_central)
-      ::User.any_instance.stubs(:update_in_central).never
+      allow_any_instance_of(::User).to receive(:update_in_central).never
       login(@organization.owner)
 
       user_to_update = @organization.non_owner_users[0]
@@ -757,7 +757,7 @@ describe Carto::Api::OrganizationUsersController do
 
     it 'should validate before updating in Central' do
       ::User.any_instance.unstub(:update_in_central)
-      ::User.any_instance.stubs(:update_in_central).never
+      allow_any_instance_of(::User).to receive(:update_in_central).never
       login(@organization.owner)
 
       user_to_update = @organization.non_owner_users[0]
@@ -875,7 +875,7 @@ describe Carto::Api::OrganizationUsersController do
       end
 
       it 'should delete users in Central' do
-        ::User.any_instance.stubs(:destroy).once
+        allow_any_instance_of(::User).to receive(:destroy).once
         mock_delete_request(204)
         login(@organization.owner)
 
@@ -886,7 +886,7 @@ describe Carto::Api::OrganizationUsersController do
       end
 
       it 'should delete users missing from Central' do
-        ::User.any_instance.stubs(:destroy).once
+        allow_any_instance_of(::User).to receive(:destroy).once
         mock_delete_request(404)
         login(@organization.owner)
 
@@ -897,8 +897,8 @@ describe Carto::Api::OrganizationUsersController do
       end
 
       it 'should not delete users from Central that failed to delete in the box' do
-        ::User.any_instance.stubs(:delete_in_central).never
-        ::User.any_instance.stubs(:destroy).raises("BOOM")
+        allow_any_instance_of(::User).to receive(:delete_in_central).never
+        allow_any_instance_of(::User).to receive(:destroy).raises("BOOM")
         login(@organization.owner)
 
         delete api_v2_organization_users_delete_url(id_or_name: @organization.name,

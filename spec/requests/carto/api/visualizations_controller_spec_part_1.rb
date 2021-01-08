@@ -108,7 +108,7 @@ describe Carto::Api::VisualizationsController do
     include_context 'users helper'
 
     before(:all) do
-      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+      allow_any_instance_of(Carto::NamedMaps::Api).to receive(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
       @table1 = create_random_table(@user_1)
@@ -246,7 +246,7 @@ describe Carto::Api::VisualizationsController do
     include_context 'users helper'
 
     before(:all) do
-      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+      allow_any_instance_of(Carto::NamedMaps::Api).to receive(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
     end

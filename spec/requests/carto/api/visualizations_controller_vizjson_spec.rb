@@ -442,7 +442,7 @@ describe Carto::Api::VisualizationsController do
 
         table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
 
-        Carto::NamedMaps::Api.any_instance.stubs(:create).raises('fake named maps failure')
+        allow_any_instance_of(Carto::NamedMaps::Api).to receive(:create).raises('fake named maps failure')
 
         payload = { id: table.table_visualization.id, privacy: Carto::Visualization::PRIVACY_PRIVATE }
         put_json api_v1_visualizations_update_url(id: table.table_visualization.id), payload do |response|

@@ -302,7 +302,7 @@ describe Carto::Superadmin::UsersController do
     end
 
     it 'should return specific error when user has related entities' do
-      User.any_instance.stubs(:destroy).raises(CartoDB::SharedEntitiesError, 'Cannot delete user, has shared entities')
+      allow_any_instance_of(User).to receive(:destroy).raises(CartoDB::SharedEntitiesError, 'Cannot delete user, has shared entities')
       delete_json(superadmin_user_url(@user), {}, superadmin_headers) do |response|
         response.status.should eq 422
         response.body[:errorCode].should eq 'userHasSharedEntities'

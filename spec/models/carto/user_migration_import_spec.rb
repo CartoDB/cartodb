@@ -119,17 +119,17 @@ describe Carto::UserMigrationImport do
 
     def should_import_metadata_for_user(user)
       @user_migration_package_mock.stubs(:meta_dir).returns 'irrelevant_meta_dir'
-      Carto::UserMetadataExportService.any_instance.expects(:import_from_directory).with('irrelevant_meta_dir')
+      expect_any_instance_of(Carto::UserMetadataExportService).to receive(:import_from_directory).with('irrelevant_meta_dir')
                                       .returns user
-      Carto::UserMetadataExportService.any_instance.expects(:import_metadata_from_directory)
+      expect_any_instance_of(Carto::UserMetadataExportService).to receive(:import_metadata_from_directory)
                                       .with(user, 'irrelevant_meta_dir')
     end
 
     def should_import_metadata_for_organization(organization)
       @user_migration_package_mock.stubs(:meta_dir).returns 'irrelevant_meta_dir'
-      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_from_directory).with('irrelevant_meta_dir')
+      allow_any_instance_of(Carto::OrganizationMetadataExportService).to receive(:import_from_directory).with('irrelevant_meta_dir')
                                               .once.returns organization
-      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_metadata_from_directory)
+      allow_any_instance_of(Carto::OrganizationMetadataExportService).to receive(:import_metadata_from_directory)
                                               .once.with(organization, 'irrelevant_meta_dir')
     end
 

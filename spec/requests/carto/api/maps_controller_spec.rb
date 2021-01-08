@@ -55,7 +55,7 @@ describe Carto::Api::MapsController do
     end
 
     it 'invalidates VizJSON upon update' do
-      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
+      expect_any_instance_of(Carto::VisualizationInvalidationService).to receive(:invalidate).once
       put_json create_show_map_url, payload do |response|
         response.status.should eq 200
       end
@@ -188,7 +188,7 @@ describe Carto::Api::MapsController do
     end
 
     it 'does not invalidate VizJSON upon show' do
-      Carto::Map.any_instance.expects(:force_notify_map_change).never
+      expect_any_instance_of(Carto::Map).to receive(:force_notify_map_change).never
       get_json create_show_map_url, {} do |response|
         response.status.should eq 200
       end

@@ -15,7 +15,7 @@ describe Carto::OauthLoginController do
     Carto::Oauth::Client.any_instance.stubs(:exchange_code_for_token).returns('123')
     Carto::OauthLoginController.any_instance.stubs(:valid_authenticity_token?).returns(true)
 
-    CartoDB::UserAccountCreator.any_instance.expects(:new).never
+    expect_any_instance_of(CartoDB::UserAccountCreator).to receive(:new).never
     get google_oauth_url(user_domain: @organization.name,
                         code: 'blabla',
                         state: '{"organization_name": "' + @organization.name + '"}')
@@ -33,7 +33,7 @@ describe Carto::OauthLoginController do
     Carto::Oauth::Client.any_instance.stubs(:exchange_code_for_token).returns('123')
     Carto::OauthLoginController.any_instance.stubs(:valid_authenticity_token?).returns(true)
 
-    CartoDB::UserAccountCreator.any_instance.expects(:valid?).once
+    expect_any_instance_of(CartoDB::UserAccountCreator).to receive(:valid?).once
     get google_oauth_url(user_domain: @organization.name,
                         code: 'blabla',
                         state: '{"organization_name": "' + @organization.name + '"}')

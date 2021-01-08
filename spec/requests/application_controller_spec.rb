@@ -22,18 +22,18 @@ describe ApplicationController do
     describe 'triggering' do
       it 'enabled if http_header_authentication is configured and header is sent' do
         stub_http_header_authentication_configuration
-        ApplicationController.any_instance.expects(:http_header_authentication)
+        expect_any_instance_of(ApplicationController).to receive(:http_header_authentication)
         get dashboard_url, {}, authentication_headers('oso@panda.com')
       end
 
       it 'disabled if http_header_authentication is configured and header is not set' do
         stub_http_header_authentication_configuration
-        ApplicationController.any_instance.expects(:http_header_authentication).never
+        expect_any_instance_of(ApplicationController).to receive(:http_header_authentication).never
         get dashboard_url, {}, {}
       end
 
       it 'disabled if http_header_authentication is not configured' do
-        ApplicationController.any_instance.expects(:http_header_authentication).never
+        expect_any_instance_of(ApplicationController).to receive(:http_header_authentication).never
         get dashboard_url, {}, {}
         get dashboard_url, {}, authentication_headers('oso@panda.com')
       end

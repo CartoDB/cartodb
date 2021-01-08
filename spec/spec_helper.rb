@@ -51,7 +51,7 @@ RSpec.configure do |config|
       drop_leaked_test_user_databases
     end
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:create_ghost_tables_event_trigger)
   end
 
   config.after(:all) do

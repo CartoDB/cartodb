@@ -49,9 +49,7 @@ describe Carto::UserMultifactorAuth do
 
     it 'syncs to central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central
-        .any_instance
-        .expects(:update_user)
+      expect_any_instance_of(Cartodb::Central).to receive(:update_user)
         .with(@carto_user.username,
               has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP))
         .once
@@ -64,9 +62,7 @@ describe Carto::UserMultifactorAuth do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
 
-      Cartodb::Central
-        .any_instance
-        .expects(:update_user)
+      expect_any_instance_of(Cartodb::Central).to receive(:update_user)
         .with(@carto_user.username,
               has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_ENABLED))
         .once
@@ -79,9 +75,7 @@ describe Carto::UserMultifactorAuth do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type, enabled: true)
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
 
-      Cartodb::Central
-        .any_instance
-        .expects(:update_user)
+      expect_any_instance_of(Cartodb::Central).to receive(:update_user)
         .with(@carto_user.username,
               has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP))
         .once
@@ -94,9 +88,7 @@ describe Carto::UserMultifactorAuth do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
 
-      Cartodb::Central
-        .any_instance
-        .expects(:update_user)
+      expect_any_instance_of(Cartodb::Central).to receive(:update_user)
         .with(@carto_user.username,
               has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_DISABLED))
         .once

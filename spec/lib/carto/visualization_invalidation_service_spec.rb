@@ -15,9 +15,9 @@ describe Carto::VisualizationInvalidationService do
 
   shared_examples_for 'cache invalidator' do
     it 'should invalidate all caches: redis/varnish vizjson and embed' do
-      CartoDB::Visualization::RedisVizjsonCache.any_instance.expects(:invalidate).with(@visualization.id)
-      CartoDB::Varnish.any_instance.expects(:purge).with(".*#{@visualization.id}:vizjson")
-      EmbedRedisCache.any_instance.expects(:invalidate).with(@visualization.id)
+      expect_any_instance_of(CartoDB::Visualization::RedisVizjsonCache).to receive(:invalidate).with(@visualization.id)
+      expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with(".*#{@visualization.id}:vizjson")
+      expect_any_instance_of(EmbedRedisCache).to receive(:invalidate).with(@visualization.id)
       @service.invalidate
     end
   end
@@ -35,21 +35,21 @@ describe Carto::VisualizationInvalidationService do
     describe 'named map invalidation' do
       it 'should create/update named map' do
         Carto::NamedMaps::Api.any_instance.stubs(:show).returns(nil)
-        Carto::NamedMaps::Api.any_instance.expects(:create).once
+        expect_any_instance_of(Carto::NamedMaps::Api).to receive(:create).once
         @service.invalidate
       end
 
       it 'should not create/update named map for maps without layers' do
         @map.layers.each(&:destroy)
         Carto::NamedMaps::Api.any_instance.stubs(:show).returns(nil)
-        Carto::NamedMaps::Api.any_instance.expects(:create).never
+        expect_any_instance_of(Carto::NamedMaps::Api).to receive(:create).never
         @service.invalidate
       end
 
       it 'should not create/update named map for remote visualizations' do
         @visualization.update_attribute(:type, 'remote')
         Carto::NamedMaps::Api.any_instance.stubs(:show).returns(nil)
-        Carto::NamedMaps::Api.any_instance.expects(:create).never
+        expect_any_instance_of(Carto::NamedMaps::Api).to receive(:create).never
         @service.invalidate
       end
     end
@@ -70,9 +70,9 @@ describe Carto::VisualizationInvalidationService do
           @table_visualization.description = 'wadus'
           @table_visualization.save
 
-          CartoDB::Visualization::RedisVizjsonCache.any_instance.expects(:invalidate).with(@table_visualization.id)
-          CartoDB::Varnish.any_instance.expects(:purge).with(".*#{@table_visualization.id}:vizjson")
-          EmbedRedisCache.any_instance.expects(:invalidate).with(@table_visualization.id)
+          expect_any_instance_of(CartoDB::Visualization::RedisVizjsonCache).to receive(:invalidate).with(@table_visualization.id)
+          expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with(".*#{@table_visualization.id}:vizjson")
+          expect_any_instance_of(EmbedRedisCache).to receive(:invalidate).with(@table_visualization.id)
         end
 
         # Should run all invalidations on the affected map, when invalidating the canonical visualization
@@ -91,7 +91,7 @@ describe Carto::VisualizationInvalidationService do
     it_behaves_like 'cache invalidator'
 
     it 'should destroy named map' do
-      Carto::NamedMaps::Api.any_instance.expects(:destroy).once
+      expect_any_instance_of(Carto::NamedMaps::Api).to receive(:destroy).once
       @service.invalidate
     end
   end

@@ -17,7 +17,7 @@ module Carto
     end
 
     it 'updates a non-mapcapped visualization' do
-      Map.any_instance.stubs(:notify_map_change).once
+      allow_any_instance_of(Map).to receive(:notify_map_change).once
 
       success = update_visualization_and_mapcap(@visualization) do |visualization, persisted|
         layer = visualization.layers.first
@@ -34,7 +34,7 @@ module Carto
     it 'updates a mapcapped visualization' do
       @visualization.create_mapcap!
       @visualization.layers.first.update_attribute(:tooltip, do_not_publish_this: true)
-      Map.any_instance.stubs(:notify_map_change).once
+      allow_any_instance_of(Map).to receive(:notify_map_change).once
 
       success = update_visualization_and_mapcap(@visualization) do |visualization, persisted|
         layer = visualization.layers.first

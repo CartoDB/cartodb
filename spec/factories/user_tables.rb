@@ -16,7 +16,7 @@ FactoryGirl.define do
       user_table.service.stubs(:before_create)
       user_table.service.stubs(:after_create)
       user_table.stubs(:create_canonical_visualization)
-      CartoDB::TablePrivacyManager.any_instance.stubs(:apply_privacy_change)
+      allow_any_instance_of(CartoDB::TablePrivacyManager).to receive(:apply_privacy_change)
     end
 
     after(:create) do |user_table|

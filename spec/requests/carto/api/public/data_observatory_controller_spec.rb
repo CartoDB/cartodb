@@ -78,7 +78,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it_behaves_like 'an endpoint validating a DO API key'
 
     it 'calls Central to request the token' do
-      Cartodb::Central.any_instance.expects(:get_do_token).with(@user1.username).once.returns(@expected_body.to_json)
+      expect_any_instance_of(Cartodb::Central).to receive(:get_do_token).with(@user1.username).once.returns(@expected_body.to_json)
 
       get_json endpoint_url(api_key: @master), @headers
     end
@@ -93,7 +93,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'returns 500 with an explicit message if the central call fails' do
       central_response = OpenStruct.new(code: 500, body: { errors: ['boom'] }.to_json)
       central_error = CartoDB::CentralCommunicationFailure.new(central_response)
-      Cartodb::Central.any_instance.stubs(:get_do_token).raises(central_error)
+      allow_any_instance_of(Cartodb::Central).to receive(:get_do_token).raises(central_error)
 
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(500)
@@ -146,7 +146,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it_behaves_like 'an endpoint validating a DO API key'
 
     it 'checks if DO is enabled' do
-      Carto::User.any_instance.expects(:do_enabled?).once
+      expect_any_instance_of(Carto::User).to receive(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master), @headers
     end
@@ -354,7 +354,7 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'checks if DO is enabled' do
-      Carto::User.any_instance.expects(:do_enabled?).once
+      expect_any_instance_of(Carto::User).to receive(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master, subscription_id: 'proj.dat.tab'), @headers
     end
@@ -392,7 +392,7 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'checks if DO is enabled' do
-      Carto::User.any_instance.expects(:do_enabled?).once
+      expect_any_instance_of(Carto::User).to receive(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers
     end
@@ -833,8 +833,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
   def mock_do_metadata
     (datasets_provider + cartographies_provider + special_cases_provider).each do |entry|
-      Carto::Api::Public::DataObservatoryController
-        .any_instance.stubs(:request_subscription_metadata).with(entry[:id], entry[:type]).returns(entry[:metadata])
+      allow_any_instance_of(Carto::Api::Public::DataObservatoryController).to receive(:request_subscription_metadata).with(entry[:id], entry[:type]).returns(entry[:metadata])
     end
   end
 

@@ -143,7 +143,7 @@ describe Carto::Organization do
       organization = create(:organization_with_users)
       create(:carto_group, organization: Carto::Organization.find(organization.id))
 
-      Carto::Group.any_instance.expects(:destroy_group_with_extension).once
+      expect_any_instance_of(Carto::Group).to receive(:destroy_group_with_extension).once
 
       organization.destroy
     end

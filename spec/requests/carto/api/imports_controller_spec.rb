@@ -225,7 +225,7 @@ describe Carto::Api::ImportsController do
     end
 
     it 'returns 401 for expired tokens on assignment and deletes them' do
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:token=).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:token=).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
       synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'mailchimp', token: 'kk-t')
       synchronization_oauth.save
 
@@ -237,7 +237,7 @@ describe Carto::Api::ImportsController do
     end
 
     it 'returns 401 for expired tokens on validation and deletes them' do
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:token_valid?).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:token_valid?).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
       synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'mailchimp', token: 'kk-t')
       synchronization_oauth.save
 
@@ -283,7 +283,7 @@ describe Carto::Api::ImportsController do
     end
 
     it 'returns 401 for expired tokens on resource listing and deletes them' do
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:get_resources_list).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:get_resources_list).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
       synchronization_oauth = Carto::SynchronizationOauth.new(user_id: @user.id, service: 'mailchimp', token: 'kk-t')
       synchronization_oauth.save
 
@@ -319,7 +319,7 @@ describe Carto::Api::ImportsController do
     end
 
     it 'returns 401 for expired tokens on url and deletes them' do
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:get_auth_url).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:get_auth_url).raises(CartoDB::Datasources::TokenExpiredOrInvalidError.new('kk', 'mailchimp'))
 
       get api_v1_imports_service_auth_url_url(id: 'mailchimp'), params
       response.code.should == '401'
@@ -357,7 +357,7 @@ describe Carto::Api::ImportsController do
     end
 
     it 'returns not success 200 and does not store oauth for not valid codes' do
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:validate_auth_code).raises(CartoDB::Datasources::AuthError.new)
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:validate_auth_code).raises(CartoDB::Datasources::AuthError.new)
 
       get api_v1_imports_service_validate_code_url(id: 'mailchimp', code: 'kk'), params
       response.code.should == '200'
@@ -368,7 +368,7 @@ describe Carto::Api::ImportsController do
     end
 
     it 'returns 400 if validation fails catastrophically' do
-      CartoDB::Datasources::Url::MailChimp.any_instance.stubs(:validate_auth_code).raises(StandardError.new)
+      allow_any_instance_of(CartoDB::Datasources::Url::MailChimp).to receive(:validate_auth_code).raises(StandardError.new)
 
       get api_v1_imports_service_validate_code_url(id: 'mailchimp', code: 'kk'), params
       response.code.should == '400'

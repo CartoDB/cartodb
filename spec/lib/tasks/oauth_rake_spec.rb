@@ -91,10 +91,10 @@ describe 'oauth.rake' do
 
     it 'does nothing for a user with ownership role' do
       expect(@oauth_app_user.exists_ownership_role?).to(be_true)
-      Carto::OauthAppUser.any_instance.expects(:create_ownership_role).never
-      Carto::OauthAppUser.any_instance.expects(:grant_ownership_role_privileges).never
-      Carto::ApiKey.any_instance.expects(:grant_ownership_role_privileges).never
-      Carto::ApiKey.any_instance.expects(:save_cdb_conf_info).never
+      expect_any_instance_of(Carto::OauthAppUser).to receive(:create_ownership_role).never
+      expect_any_instance_of(Carto::OauthAppUser).to receive(:grant_ownership_role_privileges).never
+      expect_any_instance_of(Carto::ApiKey).to receive(:grant_ownership_role_privileges).never
+      expect_any_instance_of(Carto::ApiKey).to receive(:save_cdb_conf_info).never
       Rake::Task['cartodb:oauth:create_ownership_role'].invoke
     end
 
@@ -103,7 +103,7 @@ describe 'oauth.rake' do
       @developer.in_database(as: :superuser).execute(drop_role_query)
       expect(@oauth_app_user.exists_ownership_role?).to(be_false)
 
-      Carto::OauthAppUser.any_instance.expects(:grant_ownership_role_privileges).once
+      expect_any_instance_of(Carto::OauthAppUser).to receive(:grant_ownership_role_privileges).once
       Rake::Task['cartodb:oauth:create_ownership_role'].invoke
 
       expect(@oauth_app_user.exists_ownership_role?).to(be_true)

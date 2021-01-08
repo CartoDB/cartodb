@@ -75,7 +75,7 @@ describe(Carto::Common::Logger, type: :request) do
 
   it 'logs request completion when failed' do
     login(user)
-    Carto::Builder::VisualizationsController.any_instance.stubs(:show).raises(StandardError, 'Unexpected error')
+    allow_any_instance_of(Carto::Builder::VisualizationsController).to receive(:show).raises(StandardError, 'Unexpected error')
 
     output = LogDeviceMock.capture_output do
       begin

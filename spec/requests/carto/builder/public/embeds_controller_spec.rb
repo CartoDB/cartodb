@@ -32,7 +32,7 @@ describe Carto::Builder::Public::EmbedsController do
   def stub_passwords(password)
     Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
     Carto::Visualization.any_instance.stubs(:password_valid?).returns(false)
-    Carto::Visualization.any_instance.stubs(:password_valid?).with(password).returns(true)
+    allow_any_instance_of(Carto::Visualization).to receive(:password_valid?).with(password).returns(true)
   end
 
   TEST_PASSWORD = 'manolo'.freeze

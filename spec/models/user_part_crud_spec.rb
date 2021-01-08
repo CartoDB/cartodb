@@ -15,7 +15,7 @@ describe User do
                          account_type: 'ORGANIZATION USER'
       user.organization = organization
       user.save
-      Cartodb::Central.any_instance.expects(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
+      expect_any_instance_of(Cartodb::Central).to receive(:create_organization_user).with(organization.name, user.allowed_attributes_to_central(:create)).once
       user.create_in_central.should be_true
       organization.destroy
     end
@@ -121,11 +121,11 @@ describe User do
     table_id = data_import.table_id
     uuid = UserTable.where(id: table_id).first.table_visualization.id
 
-    CartoDB::Varnish.any_instance.expects(:purge)
+    expect_any_instance_of(CartoDB::Varnish).to receive(:purge)
       .with("#{doomed_user.database_name}.*")
       .at_least(1)
       .returns(true)
-    CartoDB::Varnish.any_instance.expects(:purge)
+    expect_any_instance_of(CartoDB::Varnish).to receive(:purge)
       .with(".*#{uuid}:vizjson")
       .at_least_once
       .returns(true)

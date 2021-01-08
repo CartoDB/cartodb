@@ -158,7 +158,7 @@ describe Table do
       end
 
       it 'receives a name change if table visualization name changed' do
-        Table.any_instance.stubs(:update_cdb_tablemetadata)
+        allow_any_instance_of(Table).to receive(:update_cdb_tablemetadata)
 
         table = create_table(name: 'bogus_name', user_id: @user.id)
 
@@ -664,7 +664,7 @@ describe Table do
 
       id = table.table_visualization.id
 
-      CartoDB::Varnish.any_instance.expects(:purge)
+      expect_any_instance_of(CartoDB::Varnish).to receive(:purge)
                       .once
                       .with(".*#{id}:vizjson")
                       .returns(true)
@@ -968,7 +968,7 @@ describe Table do
         table.save
         pk = table.insert_row!({:name => "name #1", :description => "description #1"})
 
-        Table.any_instance.stubs(:the_geom_type=).raises(CartoDB::InvalidGeomType)
+        allow_any_instance_of(Table).to receive(:the_geom_type=).raises(CartoDB::InvalidGeomType)
 
         table = new_table({:name => 'table1', :user_id => @user.id})
         lambda {
@@ -984,7 +984,7 @@ describe Table do
 
         pk = table.insert_row!({:name => "name #1", :description => "description #1"})
 
-        Table.any_instance.stubs(:schema).raises(CartoDB::QueryNotAllowed)
+        allow_any_instance_of(Table).to receive(:schema).raises(CartoDB::QueryNotAllowed)
 
         data_import = DataImport.create( :user_id       => @user.id,
                                       :table_name    => 'rescol',
@@ -1332,7 +1332,7 @@ describe Table do
 
       it "should optimize the table" do
         fixture = fake_data_path("SHP1.zip")
-        Table.any_instance.expects(:optimize).once
+        expect_any_instance_of(Table).to receive(:optimize).once
         data_import = create_import(@user, fixture)
       end
 
@@ -2428,7 +2428,7 @@ describe Table do
 
         table.privacy = UserTable::PRIVACY_PRIVATE
 
-        (table.model_class == ::UserTable ? ::Map : Carto::Map).any_instance.stubs(:save).once.raises(StandardError)
+        allow_any_instance_of((table.model_class == ::UserTable ? ::Map : Carto::Map)).to receive(:save).once.raises(StandardError)
 
         expect { table.save }.to raise_exception StandardError
 
@@ -2449,7 +2449,7 @@ describe Table do
 
         viz_class = table.model_class == ::UserTable ? CartoDB::Visualization::Member : Carto::Visualization
 
-        viz_class.any_instance.stubs(:store_using_table)
+        allow_any_instance_of(viz_class).to receive(:store_using_table)
                  .raises('Manolo is a nice guy, this test is not.')
                  .then.returns(nil).at_least(2)
 
@@ -2464,7 +2464,7 @@ describe Table do
 
         # Scenario 4: Fail saving affected visualizations named map
 
-        viz_class.any_instance.stubs(:store_using_table)
+        allow_any_instance_of(viz_class).to receive(:store_using_table)
                  .raises('Manolo is a nice guy, this test is not.')
                  .then.returns(nil).at_least(2)
 

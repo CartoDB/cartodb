@@ -212,9 +212,9 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
       end
 
       it 'downloads the visualization export' do
-        Carto::Api::VisualizationExportsController.any_instance.expects(:send_file).
+        expect_any_instance_of(Carto::Api::VisualizationExportsController).to receive(:send_file).
           with(@export.file, type: 'application/zip')
-        Carto::Api::VisualizationExportsController.any_instance.stubs(:render)
+        allow_any_instance_of(Carto::Api::VisualizationExportsController).to receive(:render)
         get URI::encode("/u/#{@user.username}/#{@export.url}?api_key=#{@user.api_key}"), nil, nil
         response.status.should eq 200
       end

@@ -153,7 +153,7 @@ describe Visualization::Member do
       CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
 
       member = Visualization::Member.new(id: member.id).fetch
-      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizjson_key)
+      expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with(member.varnish_vizjson_key)
       member.name = 'changed'
       member.store
     end
@@ -166,7 +166,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizjson_key)
+      expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with(member.varnish_vizjson_key)
       member.privacy = Visualization::Member::PRIVACY_PRIVATE
       member.store
     end
@@ -176,7 +176,7 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      CartoDB::Varnish.any_instance.expects(:purge).with(member.varnish_vizjson_key)
+      expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with(member.varnish_vizjson_key)
       member.description = 'changed description'
       member.store
     end
@@ -212,7 +212,7 @@ describe Visualization::Member do
     end
 
     it 'invalidates vizjson cache' do
-      Carto::Visualization.any_instance.stubs(:perform_invalidations).once
+      allow_any_instance_of(Carto::Visualization).to receive(:perform_invalidations).once
 
       member.delete
     end
@@ -285,7 +285,7 @@ describe Visualization::Member do
         layer.user_tables << @other_table
 
         # We are doing dependencies manually because the physical table does not exist
-        Carto::Map.any_instance.stubs(:update_dataset_dependencies)
+        allow_any_instance_of(Carto::Map).to receive(:update_dataset_dependencies)
         analysis_to_be_deleted = @visualization.analyses.create(user: @user, analysis_definition: { id: 'a0' })
         analysis_to_keep = @visualization.analyses.create(user: @user, analysis_definition: { id: 'b0' })
 
@@ -302,7 +302,7 @@ describe Visualization::Member do
       it 'does not delete any metadata in case of deletion error' do
         canonical_map = @table_visualization.map
         canonical_layer = @table_visualization.data_layers.first
-        Table.any_instance.stubs(:remove_table_from_user_database).raises(Sequel::DatabaseError.new('cannot drop'))
+        allow_any_instance_of(Table).to receive(:remove_table_from_user_database).raises(Sequel::DatabaseError.new('cannot drop'))
 
         table_visualization = CartoDB::Visualization::Member.new(id: @table_visualization.id).fetch
         expect { table_visualization.delete }.to raise_error
@@ -1058,7 +1058,7 @@ describe Visualization::Member do
       member_a.set_next_list_item! member_b
       member_a.privacy = 'invalid value'
 
-      CartoDB::Visualization::Relator.any_instance.stubs(:next_list_item) do
+      allow_any_instance_of(CartoDB::Visualization::Relator).to receive(:next_list_item) do
         raise "Forced error"
       end
 

@@ -103,7 +103,7 @@ describe PasswordChangeController do
     it 'does not require to authenticate again' do
       login_as(@user, scope: @user.username)
 
-      PasswordChangeController.any_instance.expects(:authenticate!).never
+      expect_any_instance_of(PasswordChangeController).to receive(:authenticate!).never
 
       put password_change_url(@user.username), payload_ok, @headers
     end

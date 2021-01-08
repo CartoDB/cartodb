@@ -110,7 +110,7 @@ describe 'UserMigration' do
         import_data: false,
         dry: false
       )
-      Carto::UserMetadataExportService.any_instance.stubs(:import_metadata_from_directory).raises('Something went bad')
+      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_metadata_from_directory).raises('Something went bad')
 
       import.run_import
 
@@ -143,7 +143,7 @@ describe 'UserMigration' do
         dry: false
       )
 
-      Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+      allow_any_instance_of(Carto::UserMigrationImport).to receive(:import_visualizations).raises('wadus')
 
       import.run_import
 
@@ -216,7 +216,7 @@ describe 'UserMigration' do
           dry: false
         )
 
-        Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+        allow_any_instance_of(Carto::UserMigrationImport).to receive(:import_visualizations).raises('wadus')
 
         import.run_import
 

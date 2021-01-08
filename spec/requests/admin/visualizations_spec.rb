@@ -292,7 +292,7 @@ describe Admin::VisualizationsController do
 
     it 'does not load daily mapviews stats' do
       CartoDB::Visualization::Stats.expects(:mapviews).never
-      CartoDB::Visualization::Stats.any_instance.expects(:to_poro).never
+      expect_any_instance_of(CartoDB::Visualization::Stats).to receive(:to_poro).never
       CartoDB::Visualization.expects(:stats).never
       Carto::Visualization.expects(:stats).never
 
@@ -315,8 +315,8 @@ describe Admin::VisualizationsController do
 
     it 'does not load daily mapviews stats' do
       CartoDB::Visualization::Stats.expects(:mapviews).never
-      CartoDB::Visualization::Stats.any_instance.expects(:to_poro).never
-      CartoDB::Stats::APICalls.any_instance.expects(:get_api_calls_from_redis_source).never
+      expect_any_instance_of(CartoDB::Visualization::Stats).to receive(:to_poro).never
+      expect_any_instance_of(CartoDB::Stats::APICalls).to receive(:get_api_calls_from_redis_source).never
 
       CartoDB::Visualization.expects(:stats).never
       Carto::Visualization.expects(:stats).never

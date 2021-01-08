@@ -232,7 +232,7 @@ describe User do
   it "should invalidate all their vizjsons when their account type changes" do
     @account_type = create_account_type_fg('WADUS')
     @user.account_type = 'WADUS'
-    CartoDB::Varnish.any_instance.expects(:purge)
+    expect_any_instance_of(CartoDB::Varnish).to receive(:purge)
       .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
     @user.save
   end
@@ -396,21 +396,21 @@ describe User do
 
   it "should invalidate its Varnish cache after deletion" do
     doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
-    CartoDB::Varnish.any_instance.expects(:purge).with("#{doomed_user.database_name}.*").at_least(2).returns(true)
+    expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with("#{doomed_user.database_name}.*").at_least(2).returns(true)
 
     doomed_user.destroy
   end
 
   it "should invalidate all their vizjsons when their disqus_shortname changes" do
     @user.disqus_shortname = 'WADUS'
-    CartoDB::Varnish.any_instance.expects(:purge)
+    expect_any_instance_of(CartoDB::Varnish).to receive(:purge)
       .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
     @user.save
   end
 
   it "should not invalidate anything when their quota_in_bytes changes" do
     @user.quota_in_bytes = @user.quota_in_bytes + 1.megabytes
-    CartoDB::Varnish.any_instance.expects(:purge).times(0)
+    expect_any_instance_of(CartoDB::Varnish).to receive(:purge).times(0)
     @user.save
   end
 
@@ -486,11 +486,9 @@ describe User do
 
   describe 'User creation and DB critical calls' do
     it 'Properly setups a new user (not belonging to an organization)' do
-      CartoDB::UserModule::DBService.any_instance.stubs(
-        cartodb_extension_version_pre_mu?: nil,
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(cartodb_extension_version_pre_mu?: nil,
         monitor_user_notification: nil,
-        enable_remote_db_user: nil
-      )
+        enable_remote_db_user: nil)
 
       user_timeout_secs = 666
 
@@ -699,11 +697,9 @@ describe User do
     end
 
     it 'Properly setups a new organization user' do
-      CartoDB::UserModule::DBService.any_instance.stubs(
-        cartodb_extension_version_pre_mu?: nil,
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(cartodb_extension_version_pre_mu?: nil,
         monitor_user_notification: nil,
-        enable_remote_db_user: nil
-      )
+        enable_remote_db_user: nil)
 
       disk_quota = 1234567890
       user_timeout_secs = 666
@@ -938,7 +934,7 @@ describe User do
 
     after(:all) do
       @ghost_tables_user.destroy
-      CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:create_ghost_tables_event_trigger)
     end
 
     it 'creates the cdb_ddl_execution table with the user' do

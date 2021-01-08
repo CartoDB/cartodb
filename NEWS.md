@@ -38,6 +38,7 @@ sudo make install
 - Make the MessageBroker subscriber PIDFILE check more resilient [#16022](https://github.com/CartoDB/cartodb/pull/16022)
 - Bump version of lib/sql submodule to 0.37.1
 - Public profile can be disabled via Feature Flag [#15982](https://github.com/CartoDB/cartodb/pull/15995)
+- Bump RSpec to the latest version [#15997](https://github.com/CartoDB/cartodb/pull/15997)
 
 4.44.0 (2020-11-20)
 -------------------

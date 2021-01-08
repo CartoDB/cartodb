@@ -5,6 +5,8 @@ require:
   - rubocop-rails
   - rubocop-rspec
   - ./rubocop/cop/mocha_to_rspec/any_instance.rb
+  - ./rubocop/cop/mocha_to_rspec/any_instance_returns.rb
+  - ./rubocop/cop/mocha_to_rspec/raises.rb
 AllCops:
   TargetRubyVersion: 2.4
   Exclude:

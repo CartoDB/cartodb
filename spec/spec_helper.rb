@@ -33,6 +33,10 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   config.include FactoryGirl::Syntax::Methods
 
+  config.mock_with :rspec do |mocks|
+    mocks.syntax = [:expect, :should]
+  end
+
   config.after(:each) do
     Delorean.back_to_the_present
   end
@@ -50,7 +54,9 @@ RSpec.configure do |config|
       close_pool_connections
       drop_leaked_test_user_databases
     end
+  end
 
+  config.before do
     allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:create_ghost_tables_event_trigger)
   end
 

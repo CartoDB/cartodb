@@ -39,7 +39,7 @@ describe 'KML regression tests' do
   end
 
   it 'imports KML files from url' do
-    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
     serve_file 'services/importer/spec/fixtures/one_layer.kml' do |filepath|
       downloader  = CartoDB::Importer2::Downloader.new(@user.id, filepath)
       runner      = CartoDB::Importer2::Runner.new(

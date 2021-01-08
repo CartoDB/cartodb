@@ -11,7 +11,7 @@ end
 describe CartoDB::InternalGeocoder::InputTypeResolver do
 
   before(:each) do
-    @internal_geocoder = mock
+    @internal_geocoder = double
     @input_type_resolver = CartoDB::InternalGeocoder::InputTypeResolver.new(@internal_geocoder)
   end
 

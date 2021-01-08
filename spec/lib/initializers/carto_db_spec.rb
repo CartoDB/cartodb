@@ -28,7 +28,7 @@ describe CartoDB do
       expected_session_domain = '.carto.com'
 
       CartoDB.clear_internal_cache
-      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+      expect(CartoDB).to receive(:get_session_domain).and_return(expected_session_domain)
 
       request = Doubles::Request.new({
                                        host: "#{username}#{expected_session_domain}"
@@ -40,7 +40,7 @@ describe CartoDB do
       username = 'test'
       expected_session_domain = '.carto.com'
 
-      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+      expect(CartoDB).to receive(:get_session_domain).and_return(expected_session_domain)
 
       # test.carto.com
       request = Doubles::Request.new({
@@ -106,10 +106,10 @@ describe CartoDB do
       protocol_override_https = 'https'
       protocol_override_http = 'http'
 
-      CartoDB.expects(:get_subdomainless_urls).returns(false)
+      expect(CartoDB).to receive(:get_subdomainless_urls).and_return(false)
 
       CartoDB.expects(:use_https?).at_least(0).returns(false)
-      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+      expect(CartoDB).to receive(:get_session_domain).and_return(expected_session_domain)
       CartoDB.expects(:get_http_port).at_least(1).returns(expected_http_port)
       CartoDB.expects(:get_https_port).at_least(1).returns(expected_https_port)
 
@@ -139,10 +139,10 @@ describe CartoDB do
       expected_session_domain = 'carto.com'
 
       CartoDB.unstub(:get_subdomainless_urls)
-      CartoDB.expects(:get_subdomainless_urls).returns(true)
+      expect(CartoDB).to receive(:get_subdomainless_urls).and_return(true)
 
       CartoDB.unstub(:get_session_domain)
-      CartoDB.expects(:get_session_domain).returns(expected_session_domain)
+      expect(CartoDB).to receive(:get_session_domain).and_return(expected_session_domain)
       CartoDB.expects(:use_https?).at_least(0).returns(false)
 
       CartoDB.base_url(username, nil, nil)
@@ -174,14 +174,14 @@ describe CartoDB do
       expected_https_port = ':67890'
 
       CartoDB.clear_internal_cache
-      CartoDB.stubs(:use_https?).returns(true)
-      CartoDB.stubs(:get_https_port).returns(expected_https_port)
+      allow(CartoDB).to receive(:use_https?).and_return(true)
+      allow(CartoDB).to receive(:get_https_port).and_return(expected_https_port)
 
-      CartoDB.stubs(:get_subdomainless_urls).returns(true)
-      CartoDB.stubs(:get_session_domain).returns(expected_session_domain)
+      allow(CartoDB).to receive(:get_subdomainless_urls).and_return(true)
+      allow(CartoDB).to receive(:get_session_domain).and_return(expected_session_domain)
       CartoDB.base_url(nil, nil, nil).should eq "https://#{expected_session_domain}#{expected_https_port}"
 
-      CartoDB.stubs(:request_host).returns(expected_ip)
+      allow(CartoDB).to receive(:request_host).and_return(expected_ip)
       CartoDB.base_url(nil, nil, nil).should eq "https://#{expected_ip}#{expected_https_port}"
     end
 
@@ -189,9 +189,9 @@ describe CartoDB do
 
   describe '#base_domain_from_request' do
     it 'extracts subdomain without domain based urls' do
-      CartoDB.stubs(:subdomainless_urls?).returns(false)
-      CartoDB.stubs(:session_domain).returns('.localhost.lan')
-      CartoDB.stubs(:protocol).returns('http')
+      allow(CartoDB).to receive(:subdomainless_urls?).and_return(false)
+      allow(CartoDB).to receive(:session_domain).and_return('.localhost.lan')
+      allow(CartoDB).to receive(:protocol).and_return('http')
 
       CartoDB.base_domain_from_request(
         OpenStruct.new(host: 'auser.localhost.lan', params: { user_domain: 'buser' })
@@ -202,9 +202,9 @@ describe CartoDB do
     end
 
     it 'extracts subdomain with subdomainless urls' do
-      CartoDB.stubs(:subdomainless_urls?).returns(true)
-      CartoDB.stubs(:session_domain).returns('localhost.lan')
-      CartoDB.stubs(:protocol).returns('http')
+      allow(CartoDB).to receive(:subdomainless_urls?).and_return(true)
+      allow(CartoDB).to receive(:session_domain).and_return('localhost.lan')
+      allow(CartoDB).to receive(:protocol).and_return('http')
 
       CartoDB.base_domain_from_request(
         OpenStruct.new(host: 'localhost.lan', params: { user_domain: 'auser' })

@@ -34,25 +34,25 @@ describe CartoDB::Connector::Importer do
     # this basically validates the empty rescue handling in rename_the_geom_index_if_exists,
     # if you remove that rescue this test will fail
 
-    runner = mock
-    log = mock
-    runner.stubs(:log).returns(log)
+    runner = double
+    log = double
+    allow(runner).to receive(:log).and_return(log)
     log.expects(:append).at_least(0)
-    quota_checker = mock
+    quota_checker = double
     id = Carto::UUIDHelper.random_uuid
     destination_schema = 'public'
 
-    database = mock
-    database.stubs(:execute).with { |query|
+    database = double
+    allow(database).to receive(:execute).with { |query|
       /ALTER INDEX/.match(query)
-    }.raises('wadus')
+    }.and_raise('wadus')
 
-    database.stubs(:execute).with { |query|
+    allow(database).to receive(:execute).with { |query|
       /ALTER TABLE/.match(query)
     }.returns(nil)
 
-    table_registrar = mock
-    table_registrar.stubs(:user).returns(@user)
+    table_registrar = double
+    allow(table_registrar).to receive(:user).and_return(@user)
 
     importer_table_name = "table_#{Carto::UUIDHelper.random_uuid}"
     desired_table_name = 'european_countries'

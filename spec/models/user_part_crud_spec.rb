@@ -31,10 +31,10 @@ describe User do
   describe '#shared_tables' do
     it 'Checks that shared tables include not only owned ones' do
       require_relative '../../app/models/visualization/collection'
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
       bypass_named_maps
       # No need to really touch the DB for the permissions
-      Table::any_instance.stubs(:add_read_permission).returns(nil)
+      allow_any_instance_of(Table).to receive(:add_read_permission).and_return(nil)
 
       # We're leaking tables from some tests, make sure there are no tables
       @user.tables.all.each { |t| t.destroy }
@@ -127,7 +127,7 @@ describe User do
       .returns(true)
     expect_any_instance_of(CartoDB::Varnish).to receive(:purge)
       .with(".*#{uuid}:vizjson")
-      .at_least_once
+      .at_least(:once)
       .returns(true)
 
     doomed_user.destroy

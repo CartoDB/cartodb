@@ -12,7 +12,7 @@ shared_examples_for 'user table models' do
     end
 
     it 'validates that viewer user cannot modify tables' do
-      @user.stubs(:viewer).returns(true)
+      allow(@user).to receive(:viewer).and_return(true)
       ut = build_user_table(user: @user)
       expect(ut.valid?).to be_false
       expect(ut.errors.keys).to include :user
@@ -44,21 +44,21 @@ shared_examples_for 'user table models' do
     end
 
     it 'defaults to public privacy for users without private tables' do
-      @user.stubs(:private_tables_enabled).returns(false)
+      allow(@user).to receive(:private_tables_enabled).and_return(false)
       ut = build_user_table(user: @user)
       expect(ut.valid?).to be_true
       expect(ut.privacy).to eq Carto::UserTable::PRIVACY_PUBLIC
     end
 
     it 'defaults to private privacy for users with private tables' do
-      @user.stubs(:private_tables_enabled).returns(true)
+      allow(@user).to receive(:private_tables_enabled).and_return(true)
       ut = build_user_table(user: @user)
       expect(ut.valid?).to be_true
       expect(ut.privacy).to eq Carto::UserTable::PRIVACY_PRIVATE
     end
 
     it 'validates privacy option for user without private tables' do
-      @user.stubs(:private_tables_enabled).returns(false)
+      allow(@user).to receive(:private_tables_enabled).and_return(false)
       ut = build_user_table(user: @user, privacy: Carto::UserTable::PRIVACY_PUBLIC)
       expect(ut.valid?).to be_true
 
@@ -68,7 +68,7 @@ shared_examples_for 'user table models' do
     end
 
     it 'validates privacy option for user with private tables' do
-      @user.stubs(:private_tables_enabled).returns(true)
+      allow(@user).to receive(:private_tables_enabled).and_return(true)
       ut = build_user_table(user: @user, privacy: Carto::UserTable::PRIVACY_PUBLIC)
       expect(ut.valid?).to be_true
 
@@ -79,8 +79,8 @@ shared_examples_for 'user table models' do
 
   describe '#estimated_row_count and #actual_row_count' do
     it 'should query Table estimated an actual row count methods' do
-      ::Table.any_instance.stubs(:estimated_row_count).returns(999)
-      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
+      allow_any_instance_of(::Table).to receive(:estimated_row_count).and_return(999)
+      allow_any_instance_of(::Table).to receive(:actual_row_count).and_return(1000)
 
       @user_table.estimated_row_count.should == 999
       @user_table.actual_row_count.should == 1000

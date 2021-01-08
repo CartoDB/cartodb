@@ -218,7 +218,7 @@ describe Carto::Api::GroupsController do
       fake_database_role = 'fake_database_role'
       fake_group_creation = Carto::Group.new_instance(@carto_organization.database_name, name, fake_database_role)
       fake_group_creation.save
-      Carto::Group.expects(:create_group_extension_query).with(anything, name).returns(fake_group_creation)
+      expect(Carto::Group).to receive(:create_group_extension_query).with(anything, name).and_return(fake_group_creation)
 
       post_json api_v1_organization_groups_create_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, api_key: @admin_user.api_key), { display_name: display_name }, @headers do |response|
         response.status.should == 200
@@ -241,7 +241,7 @@ describe Carto::Api::GroupsController do
       new_display_name = 'A Group %Renamed'
       expected_new_name = 'A Group _Renamed'
 
-      Carto::Group.expects(:rename_group_extension_query).with(anything, group.name, expected_new_name)
+      expect(Carto::Group).to receive(:rename_group_extension_query).with(anything, group.name, expected_new_name)
 
       put_json api_v1_organization_groups_update_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @admin_user.api_key), { display_name: new_display_name }, @headers do |response|
         response.status.should == 200
@@ -265,7 +265,7 @@ describe Carto::Api::GroupsController do
       group = @carto_organization.groups[0]
       group_2 = @carto_organization.groups[1]
 
-      Carto::Group.expects(:rename_group_extension_query).with(anything, anything, anything).never
+      expect(Carto::Group).to receive(:rename_group_extension_query).with(anything, anything, anything).never
 
       put_json api_v1_organization_groups_update_url(user_domain: @admin_user.username, organization_id: @carto_organization.id, group_id: group.id, api_key: @admin_user.api_key), { display_name: group_2.display_name }, @headers do |response|
         response.status.should == 409
@@ -277,7 +277,7 @@ describe Carto::Api::GroupsController do
       group = @carto_organization.groups.first
       user = @org_user_1
 
-      Carto::Group.expects(:add_users_group_extension_query).with(anything, group.name, [user.username])
+      expect(Carto::Group).to receive(:add_users_group_extension_query).with(anything, group.name, [user.username])
 
       post_json api_v1_organization_groups_add_users_url(
         user_domain: @admin_user.username,
@@ -319,7 +319,7 @@ describe Carto::Api::GroupsController do
       group.reload
       group.users.include?(user)
 
-      Carto::Group.expects(:remove_users_group_extension_query).with(anything, group.name, [user.username])
+      expect(Carto::Group).to receive(:remove_users_group_extension_query).with(anything, group.name, [user.username])
 
       delete_json api_v1_organization_groups_remove_users_url(
         user_domain: @admin_user.username,
@@ -362,7 +362,7 @@ describe Carto::Api::GroupsController do
       user_1 = @org_user_1
       user_2 = @org_user_2
 
-      Carto::Group.expects(:add_users_group_extension_query)
+      expect(Carto::Group).to receive(:add_users_group_extension_query)
                   .with(anything, group.name, [user_1.username, user_2.username])
 
       post_json api_v1_organization_groups_add_users_url(
@@ -389,7 +389,7 @@ describe Carto::Api::GroupsController do
       group.users.include?(user_1)
       group.users.include?(user_2)
 
-      Carto::Group.expects(:remove_users_group_extension_query)
+      expect(Carto::Group).to receive(:remove_users_group_extension_query)
                   .with(anything, group.name, [user_1.username, user_2.username])
 
       delete_json api_v1_organization_groups_remove_users_url(
@@ -409,7 +409,7 @@ describe Carto::Api::GroupsController do
     it '#drops triggers deletion of existing groups' do
       group = @carto_organization.groups.first
 
-      Carto::Group.expects(:destroy_group_extension_query).with(anything, group.name)
+      expect(Carto::Group).to receive(:destroy_group_extension_query).with(anything, group.name)
 
       delete_json api_v1_organization_groups_destroy_url(
         user_domain: @admin_user.username,

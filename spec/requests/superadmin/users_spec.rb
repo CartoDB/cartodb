@@ -45,7 +45,7 @@ feature "Superadmin's users API" do
     @user_atts.delete(:crypted_password)
     @user_atts.merge!(password: "this_is_a_password")
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
@@ -62,7 +62,7 @@ feature "Superadmin's users API" do
   end
 
   scenario "user create with crypted_password success" do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
@@ -85,7 +85,7 @@ feature "Superadmin's users API" do
     t = Time.now
     @user_atts[:upgraded_at] = t
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600
@@ -120,7 +120,7 @@ feature "Superadmin's users API" do
     rate_limits = FactoryGirl.create(:rate_limits)
     @user_atts[:rate_limit] = rate_limits.api_attributes
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:rate_limit_id].should_not be_nil
@@ -154,7 +154,7 @@ feature "Superadmin's users API" do
     @user_atts[:obs_general_block_price] = 5
     @user_atts[:notification] = 'Test'
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 2000
@@ -365,7 +365,7 @@ feature "Superadmin's users API" do
         remote_file: 's3://foo-bucket/backups/foo.sql.gz'
       }
     }
-    Typhoeus.stub(dump_url,
+    Typhoeus.double(dump_url,
                   method: :post
                  )
       .and_return(
@@ -383,7 +383,7 @@ feature "Superadmin's users API" do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
     json_data = { database: user.database_name, username: user.username }
-    Typhoeus.stub(dump_url,
+    Typhoeus.double(dump_url,
                   method: :post
                  )
       .and_return(
@@ -401,7 +401,7 @@ feature "Superadmin's users API" do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
     json_data = { database: user.database_name, username: user.username }
-    Typhoeus.stub(dump_url,
+    Typhoeus.double(dump_url,
                   method: :post
                  )
       .and_return(
@@ -468,8 +468,8 @@ feature "Superadmin's users API" do
     end
 
     it "gets overquota users" do
-      ::User.stubs(:overquota).returns [@user]
-      Carto::OverquotaUsersService.any_instance.stubs(:get_stored_overquota_users).returns [@user.data]
+      allow(::User).to receive(:overquota).and_return([@user])
+      allow_any_instance_of(Carto::OverquotaUsersService).to receive(:get_stored_overquota_users).and_return([@user.data])
       get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["username"].should == @user.username
@@ -522,8 +522,8 @@ feature "Superadmin's users API" do
     end
 
     it "doesn't get organization users" do
-      ::User.stubs(:organization).returns(Carto::Organization.new)
-      ::User.stubs(:organization_id).returns("organization-id")
+      allow(::User).to receive(:organization).and_return(Carto::Organization.new)
+      allow(::User).to receive(:organization_id).and_return("organization-id")
       get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body.length.should == 0

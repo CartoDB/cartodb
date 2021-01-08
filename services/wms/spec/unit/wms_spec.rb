@@ -56,7 +56,7 @@ describe Proxy do
   describe '#layers' do
     it 'returns available layers' do
       nasa_wms = File.read(File.expand_path('../../fixtures/wms_nasa.xml', __FILE__))
-      Typhoeus.stub(
+      Typhoeus.double(
         'http://wms.jpl.nasa.gov/wms.cgi?Service=WMS&Version=1.1.1&Request=GetCapabilities',
        { method: :get}  )
       .and_return(
@@ -64,7 +64,7 @@ describe Proxy do
       )
 
       noaa_wms = File.read(File.expand_path('../../fixtures/wms_noaa.xml', __FILE__))
-      Typhoeus.stub(
+      Typhoeus.double(
           'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/obs?service=WMS&request=GetCapabilities',
           { method: :get}  )
       .and_return(

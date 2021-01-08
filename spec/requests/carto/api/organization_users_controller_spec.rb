@@ -90,12 +90,12 @@ describe Carto::Api::OrganizationUsersController do
   end
 
   before(:each) do
-    ::User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
-    ::User.any_instance.stubs(:create_in_central).returns(true)
-    ::User.any_instance.stubs(:update_in_central).returns(true)
-    ::User.any_instance.stubs(:delete_in_central).returns(true)
-    ::User.any_instance.stubs(:load_common_data).returns(true)
-    ::User.any_instance.stubs(:reload_avatar).returns(true)
+    allow_any_instance_of(::User).to receive(:validate_credentials_not_taken_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:delete_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:load_common_data).and_return(true)
+    allow_any_instance_of(::User).to receive(:reload_avatar).and_return(true)
   end
 
   before(:each) do
@@ -193,7 +193,7 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     it 'returns 410 if password is not strong' do
-      Carto::Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+      allow_any_instance_of(Carto::Organization).to receive(:strong_passwords_enabled).and_return(true)
       login(@organization.owner)
 
       username = 'manolo'
@@ -523,7 +523,7 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     it 'fails to update password if strongs passwords enabled' do
-      Carto::Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+      allow_any_instance_of(Carto::Organization).to receive(:strong_passwords_enabled).and_return(true)
       login(@organization.owner)
 
       user_to_update = @organization.non_owner_users[0]
@@ -729,7 +729,7 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     it 'should not update if it cannot update in central' do
-      allow_any_instance_of(::User).to receive(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
+      allow_any_instance_of(::User).to receive(:update_in_central).and_raise(CartoDB::CentralCommunicationFailure.new('Failed'))
       login(@organization.owner)
 
       user_to_update = @organization.non_owner_users[0]
@@ -862,16 +862,16 @@ describe Carto::Api::OrganizationUsersController do
     describe 'with Central' do
       before(:each) do
         ::User.any_instance.unstub(:delete_in_central)
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(true)
         @organization.reload
         @user_to_be_deleted = @organization.non_owner_users.first
       end
 
       def mock_delete_request(code)
-        response_mock = mock
-        response_mock.stubs(:code).returns(code)
-        response_mock.stubs(:body).returns('{"errors": []}')
-        Carto::Http::Request.any_instance.stubs(:run).returns(response_mock)
+        response_mock = double
+        allow(response_mock).to receive(:code).and_return(code)
+        allow(response_mock).to receive(:body).and_return('{"errors": []}')
+        allow_any_instance_of(Carto::Http::Request).to receive(:run).and_return(response_mock)
       end
 
       it 'should delete users in Central' do
@@ -898,7 +898,7 @@ describe Carto::Api::OrganizationUsersController do
 
       it 'should not delete users from Central that failed to delete in the box' do
         allow_any_instance_of(::User).to receive(:delete_in_central).never
-        allow_any_instance_of(::User).to receive(:destroy).raises("BOOM")
+        allow_any_instance_of(::User).to receive(:destroy).and_raise("BOOM")
         login(@organization.owner)
 
         delete api_v2_organization_users_delete_url(id_or_name: @organization.name,

@@ -16,7 +16,7 @@ describe DatasourcesFactory do
   describe '#provider_instantiations' do
     it 'tests all available provider instantiations' do
       user = FactoryGirl.build(:user)
-      user.stubs('has_feature_flag?').with('gnip_v2').returns(false)
+      allow(user).to receive('has_feature_flag?').with('gnip_v2').and_return(false)
       DatasourcesFactory.set_config(get_config)
 
       dropbox_provider = DatasourcesFactory.get_datasource(Url::Dropbox::DATASOURCE_NAME, user)
@@ -26,9 +26,9 @@ describe DatasourcesFactory do
       dropbox_provider.is_a?(Url::Box).should eq true
 
       # Stubs Google Drive client for connectionless testing
-      Google::Apis::DriveV2::DriveService.any_instance.stubs(:get_file)
-      Google::Apis::DriveV2::DriveService.any_instance.stubs(:export_file)
-      Google::Apis::DriveV2::DriveService.any_instance.stubs(:list_files)
+      allow_any_instance_of(Google::Apis::DriveV2::DriveService).to receive(:get_file)
+      allow_any_instance_of(Google::Apis::DriveV2::DriveService).to receive(:export_file)
+      allow_any_instance_of(Google::Apis::DriveV2::DriveService).to receive(:list_files)
       gdrive_provider = DatasourcesFactory.get_datasource(Url::GDrive::DATASOURCE_NAME, user)
       gdrive_provider.is_a?(Url::GDrive).should eq true
 

@@ -212,9 +212,7 @@ module Carto
       it 'is memoized' do
         validator = LegendDefinitionValidator.new('bubble', random_definition)
 
-        JSON::Validator.expects(:fully_validate)
-                       .with(bubble_definition, random_definition)
-                       .returns(['Cool validation error'])
+        expect(JSON::Validator).to receive(:fully_validate).with(bubble_definition, random_definition).and_return(['Cool validation error'])
                        .once
 
         2.times { validator.errors.should_not be_empty }
@@ -246,9 +244,7 @@ module Carto
         expected_location = "#{Rails.root}/lib/formats/legends/definitions/bubble.json"
         validator = LegendDefinitionValidator.new('bubble', nil)
 
-        File.expects(:exists?)
-            .with(expected_location)
-            .returns(true)
+        expect(File).to receive(:exists?).with(expected_location).and_return(true)
             .once
 
         validator.send(:location).should eq expected_location

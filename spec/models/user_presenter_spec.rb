@@ -4,7 +4,7 @@ require_relative '../factories/organizations_contexts'
 describe Carto::Api::UserPresenter do
 
   before(:each) do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
   end
 
   describe '#current_viewer' do

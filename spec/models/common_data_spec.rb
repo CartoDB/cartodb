@@ -8,11 +8,11 @@ describe CommonData do
   before(:each) do
     Typhoeus::Expectation.clear
     @common_data = CommonData.new(common_data_url)
-    @common_data.stubs(:config).with('protocol', 'https').returns('https')
-    @common_data.stubs(:config).with('username').returns('common-data')
-    @common_data.stubs(:config).with('base_url').returns(nil)
-    @common_data.stubs(:config).with('api_key').returns('wadus')
-    @common_data.stubs(:config).with('format', 'gpkg').returns('gpkg')
+    allow(@common_data).to receive(:config).with('protocol', 'https').and_return('https')
+    allow(@common_data).to receive(:config).with('username').and_return('common-data')
+    allow(@common_data).to receive(:config).with('base_url').and_return(nil)
+    allow(@common_data).to receive(:config).with('api_key').and_return('wadus')
+    allow(@common_data).to receive(:config).with('format', 'gpkg').and_return('gpkg')
     CommonDataRedisCache.new.invalidate
   end
 
@@ -22,7 +22,7 @@ describe CommonData do
 
   it 'should return empty datasets response and notify error for SQL API error response' do
     stub_api_response(503)
-    Rails.logger.expects(:error).with('message' => 'common-data empty', 'url' => common_data_url)
+    expect(Rails.logger).to receive(:error).with('message' => 'common-data empty', 'url' => common_data_url)
 
     @common_data.datasets.should eq []
   end
@@ -30,17 +30,17 @@ describe CommonData do
   it 'should return empty datasets and notify error for invalid json' do
     stub_api_response(200, INVALID_JSON_RESPONSE)
 
-    Rails.logger.expects(:error).with(
+    expect(Rails.logger).to receive(:error).with(
       has_entries('exception' => is_a(JSON::ParserError))
     )
-    Rails.logger.expects(:error).with('message' => 'common-data empty', 'url' => common_data_url)
+    expect(Rails.logger).to receive(:error).with('message' => 'common-data empty', 'url' => common_data_url)
 
     expect(@common_data.datasets).to be_empty
   end
 
   it 'should return correct datasets for default stub response' do
     stub_valid_api_response
-    Rails.logger.expects(:error).never
+    expect(Rails.logger).to receive(:error).never
 
     @common_data.datasets.select{ |d| d["name"] =~ /meta_/}.length.should eq 0
     @common_data.datasets.length.should eq 6
@@ -48,7 +48,7 @@ describe CommonData do
 
   it 'should use name if the display_name is null' do
     stub_valid_api_response
-    Rails.logger.expects(:error).never
+    expect(Rails.logger).to receive(:error).never
 
     @common_data.datasets.first['display_name'].should eq @common_data.datasets.first['name']
   end
@@ -61,7 +61,7 @@ describe CommonData do
 
   it 'categories should be an array' do
     stub_valid_api_response
-    Rails.logger.expects(:error).never
+    expect(Rails.logger).to receive(:error).never
 
     (@common_data.datasets.first['tags'].is_a? Array).should eq true
   end
@@ -74,7 +74,7 @@ describe CommonData do
   end
 
   it 'should use SQL API V2 from user defined base url for export URLs' do
-    @common_data.stubs(:config).with('base_url').returns("https://www.userdefinedurl.com")
+    allow(@common_data).to receive(:config).with('base_url').and_return("https://www.userdefinedurl.com")
     stub_valid_api_response
 
     @common_data.datasets.first['url'].should match (/^https:\/\/www\.userdefinedurl\.com\/api\/v2/)
@@ -90,7 +90,7 @@ describe CommonData do
     else
       response = Typhoeus::Response.new(code: code)
     end
-    Typhoeus.stub(/common-data/).and_return(response)
+    Typhoeus.double(/common-data/).and_return(response)
   end
 
   VALID_JSON_RESPONSE = <<-response

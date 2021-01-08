@@ -116,8 +116,8 @@ describe Admin::PagesController do
       Cartodb.with_config(cartodb_central_api: {}) do
         prepare_user('anyuser')
         host! 'localhost.lan'
-        CartoDB.stubs(:session_domain).returns('localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(true)
+        allow(CartoDB).to receive(:session_domain).and_return('localhost.lan')
+        allow(CartoDB).to receive(:subdomainless_urls?).and_return(true)
 
         get '', {}, JSON_HEADER
 
@@ -143,8 +143,8 @@ describe Admin::PagesController do
       ) do
         prepare_user('anyuser')
         host! 'localhost.lan'
-        CartoDB.stubs(:session_domain).returns('localhost.lan')
-        CartoDB.stubs(:subdomainless_urls?).returns(true)
+        allow(CartoDB).to receive(:session_domain).and_return('localhost.lan')
+        allow(CartoDB).to receive(:subdomainless_urls?).and_return(true)
 
         get '', {}, JSON_HEADER
 
@@ -167,8 +167,8 @@ describe Admin::PagesController do
       anyuser = prepare_user('anyuser')
       host! 'localhost.lan'
       login_as(anyuser, scope: anyuser.username)
-      CartoDB.stubs(:session_domain).returns('localhost.lan')
-      CartoDB.stubs(:subdomainless_urls?).returns(true)
+      allow(CartoDB).to receive(:session_domain).and_return('localhost.lan')
+      allow(CartoDB).to receive(:subdomainless_urls?).and_return(true)
 
       get '', {}, JSON_HEADER
 
@@ -180,14 +180,14 @@ describe Admin::PagesController do
 
     it 'extracts username from redirection for dashboard with subdomainless' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
       username = 'endedwithu'
       anyuser = prepare_user(username)
       host! 'localhost.lan'
       login_as(anyuser, scope: anyuser.username)
-      CartoDB.stubs(:session_domain).returns('localhost.lan')
-      CartoDB.stubs(:subdomainless_urls?).returns(true)
+      allow(CartoDB).to receive(:session_domain).and_return('localhost.lan')
+      allow(CartoDB).to receive(:subdomainless_urls?).and_return(true)
 
       get '', {}, JSON_HEADER
 
@@ -198,7 +198,7 @@ describe Admin::PagesController do
 
       login_as(anyuser, scope: anyuser.username)
       location = last_response.location
-      User.any_instance.stubs(:db_size_in_bytes).returns(0)
+      allow_any_instance_of(User).to receive(:db_size_in_bytes).and_return(0)
       get location
       last_response.status.should == 200
     end
@@ -304,8 +304,8 @@ describe Admin::PagesController do
     allow_any_instance_of(::User).to receive(:has_feature_flag?)
                           .with('explore_site')
                           .returns(true)
-    ::User.stubs(:where).returns(anyuser)
-    anyuser.stubs(:first).returns(anyuser)
+    allow(::User).to receive(:where).and_return(anyuser)
+    allow(anyuser).to receive(:first).and_return(anyuser)
     anyuser
   end
 

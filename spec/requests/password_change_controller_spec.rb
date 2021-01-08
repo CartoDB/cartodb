@@ -3,8 +3,8 @@ require_relative '../spec_helper'
 describe PasswordChangeController do
 
   before(:each) do
-    User.any_instance.stubs(:update_in_central).returns(true)
-    PasswordChangeController.any_instance.stubs(:check_password_expired)
+    allow_any_instance_of(User).to receive(:update_in_central).and_return(true)
+    allow_any_instance_of(PasswordChangeController).to receive(:check_password_expired)
     @user = FactoryGirl.create(:user)
   end
 

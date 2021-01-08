@@ -10,11 +10,11 @@ describe TableBlender do
   end
 
   let(:map_mock) do
-    map = mock
-    map.stubs(:to_hash).returns({})
-    map.stubs(:user).returns(user)
-    map.stubs(:user_layers).returns([])
-    map.stubs(:data_layers).returns([])
+    map = double
+    allow(map).to receive(:to_hash).and_return({})
+    allow(map).to receive(:user).and_return(user)
+    allow(map).to receive(:user_layers).and_return([])
+    allow(map).to receive(:data_layers).and_return([])
     map
   end
 
@@ -108,18 +108,18 @@ describe TableBlender do
   end
 
   def fake_public_table
-    table = mock
-    table.stubs(:private?).returns(false)
-    table.stubs(:public_with_link_only?).returns(false)
-    table.stubs(:map).returns(map_mock)
+    table = double
+    allow(table).to receive(:private?).and_return(false)
+    allow(table).to receive(:public_with_link_only?).and_return(false)
+    allow(table).to receive(:map).and_return(map_mock)
     table
   end
 
   def fake_private_table
-    table = mock
-    table.stubs(:private?).returns(true)
-    table.stubs(:public_with_link_only?).returns(false)
-    table.stubs(:map).returns(map_mock)
+    table = double
+    allow(table).to receive(:private?).and_return(true)
+    allow(table).to receive(:public_with_link_only?).and_return(false)
+    allow(table).to receive(:map).and_return(map_mock)
     table
   end
 end

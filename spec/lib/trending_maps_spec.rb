@@ -94,8 +94,8 @@ describe CartoDB::TrendingMaps do
     end
 
     def stub_find_visualization(visualization, user)
-      Carto::Visualization.stubs("find").with(visualization.id).returns(visualization)
-      visualization.stubs("user").returns(user)
+      allow(Carto::Visualization).to receive("find").with(visualization.id).and_return(visualization)
+      allow(visualization).to receive("user").and_return(user)
     end
 
   end

@@ -4,8 +4,8 @@ shared_examples_for 'permission models' do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    ::User.any_instance.stubs(:gravatar).returns(nil)
+    allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
+    allow_any_instance_of(::User).to receive(:gravatar).and_return(nil)
     @user = create_user(quota_in_bytes: 524288000, table_quota: 500)
     @carto_user = Carto::User.find(@user.id)
 
@@ -600,10 +600,10 @@ shared_examples_for 'permission models' do
         }
       }
 
-      ::Resque.stubs(:enqueue).returns(nil)
+      allow(::Resque).to receive(:enqueue).and_return(nil)
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization,
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization,
                                       permission.entity.name, permission.owner_username, user3_id).once
 
       permission.notify_permissions_change(permissions_changes)
@@ -624,10 +624,10 @@ shared_examples_for 'permission models' do
         }
       }
 
-      ::Resque.stubs(:enqueue).returns(nil)
+      allow(::Resque).to receive(:enqueue).and_return(nil)
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization,
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization,
                                       permission.entity.name, permission.owner_username, user3_id).once
 
       permission.notify_permissions_change(permissions_changes)
@@ -648,10 +648,10 @@ shared_examples_for 'permission models' do
         }
       }
 
-      ::Resque.stubs(:enqueue).returns(nil)
+      allow(::Resque).to receive(:enqueue).and_return(nil)
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization,
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization,
                                       permission.entity.name, permission.owner_username, user3_id).once
 
       permission.notify_permissions_change(permissions_changes)
@@ -663,7 +663,7 @@ shared_examples_for 'permission models' do
       entity_id = visualization.id
       permission = permission_from_visualization_id(entity_id)
 
-      Resque.stubs(:enqueue).returns(nil)
+      allow(Resque).to receive(:enqueue).and_return(nil)
 
       permission.acl = [
         {
@@ -701,16 +701,16 @@ shared_examples_for 'permission models' do
       ]
       acl2 = permission.acl
 
-      Carto::Permission.expects(:compare_new_acl).with(acl1, acl2).once
+      expect(Carto::Permission).to receive(:compare_new_acl).with(acl1, acl2).once
       permission.save
 
-      Carto::Permission.expects(:compare_new_acl).with(acl2, []).once
+      expect(Carto::Permission).to receive(:compare_new_acl).with(acl2, []).once
       # Hack to workaround FK while keeping the destroy test
       fake_permission = FactoryGirl.create(:carto_permission, owner_id: @user.id)
       visualization.update_column(:permission_id, fake_permission.id)
       permission.destroy
 
-      Carto::Permission.expects(:compare_new_acl).with([], []).at_least_once
+      expect(Carto::Permission).to receive(:compare_new_acl).with([], []).at_least(:once)
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
 

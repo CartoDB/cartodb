@@ -86,7 +86,7 @@ describe Carto::UserTable do
   describe('#affected_visualizations') do
     before(:each) do
       # We recreate an inconsistent state where a layer has no visualization
-      @user_table.stubs(:layers).returns([Carto::Layer.new])
+      allow(@user_table).to receive(:layers).and_return([Carto::Layer.new])
     end
 
     describe('#fully_dependent_visualizations') do

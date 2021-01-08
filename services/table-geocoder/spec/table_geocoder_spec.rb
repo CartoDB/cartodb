@@ -10,16 +10,16 @@ describe CartoDB::TableGeocoder do
     app_id: '',
     token: '',
     mailto: '',
-    usage_metrics: mock('usage_metrics')
+    usage_metrics: double('usage_metrics')
     }}
   before do
     conn          = CartoDB::Importer2::Factories::PGConnection.new
     @db           = conn.connection
     @pg_options   = conn.pg_options
     @table_name   = "ne_10m_populated_places_simple_#{rand.to_s[2..11]}"
-    @log = mock
-    @log.stubs(:append)
-    @log.stubs(:append_and_store)
+    @log = double
+    allow(@log).to receive(:append)
+    allow(@log).to receive(:append_and_store)
     @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution',
                                           formatter: '{street}', remote_id: 'dummy_request_id')
 
@@ -41,10 +41,10 @@ describe CartoDB::TableGeocoder do
       empty_rows = 3
       failed_rows = 4
       total = success_rows + empty_rows + failed_rows
-      default_params[:usage_metrics].expects(:incr).with(:geocoder_here, :success_responses, success_rows)
-      default_params[:usage_metrics].expects(:incr).with(:geocoder_here, :empty_responses, empty_rows)
-      default_params[:usage_metrics].expects(:incr).with(:geocoder_here, :failed_responses, failed_rows)
-      default_params[:usage_metrics].expects(:incr).with(:geocoder_here, :total_requests, total)
+      expect(default_params[:usage_metrics]).to receive(:incr).with(:geocoder_here, :success_responses, success_rows)
+      expect(default_params[:usage_metrics]).to receive(:incr).with(:geocoder_here, :empty_responses, empty_rows)
+      expect(default_params[:usage_metrics]).to receive(:incr).with(:geocoder_here, :failed_responses, failed_rows)
+      expect(default_params[:usage_metrics]).to receive(:incr).with(:geocoder_here, :total_requests, total)
 
       @tg = CartoDB::TableGeocoder.new(default_params.merge(table_name: @table_name,
                                                             qualified_table_name: @table_name,
@@ -54,19 +54,19 @@ describe CartoDB::TableGeocoder do
                                                             log: @log,
                                                             geocoding_model: @geocoding_model,
                                                             max_rows: 1000))
-      geocoder = mock
-      geocoder.stubs(:upload).returns(true)
-      geocoder.stubs(:request_id).returns('dummy_request_id')
-      geocoder.stubs(:run).returns(true)
-      geocoder.stubs(:status).returns('foo')
+      geocoder = double
+      allow(geocoder).to receive(:upload).and_return(true)
+      allow(geocoder).to receive(:request_id).and_return('dummy_request_id')
+      allow(geocoder).to receive(:run).and_return(true)
+      allow(geocoder).to receive(:status).and_return('foo')
 
       # TODO: Note the coupling of the geocoder object and the metrics
-      geocoder.stubs(:successful_processed_rows).returns(success_rows)
-      geocoder.stubs(:empty_processed_rows).returns(empty_rows)
-      geocoder.stubs(:failed_processed_rows).returns(failed_rows)
+      allow(geocoder).to receive(:successful_processed_rows).and_return(success_rows)
+      allow(geocoder).to receive(:empty_processed_rows).and_return(empty_rows)
+      allow(geocoder).to receive(:failed_processed_rows).and_return(failed_rows)
 
-      @tg.stubs(:geocoder).returns(geocoder)
-      @tg.stubs(:cache_disabled?).returns(true)
+      allow(@tg).to receive(:geocoder).and_return(geocoder)
+      allow(@tg).to receive(:cache_disabled?).and_return(true)
       @tg.run
     end
 
@@ -107,7 +107,7 @@ describe CartoDB::TableGeocoder do
 
     it "honors max_rows" do
       max_rows = 10
-      @tg.stubs(:max_rows).returns max_rows
+      allow(@tg).to receive(:max_rows).and_return(max_rows)
       @tg.send(:mark_rows_to_geocode)
       @tg.send(:generate_csv)
 
@@ -121,9 +121,9 @@ describe CartoDB::TableGeocoder do
     it 'gets the geocoder results' do
       tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000,
                                       usage_metrics: nil, log: @log, geocoding_model: @geocoding_model)
-      geocoder = mock
+      geocoder = double
       geocoder.expects(:result).times(1).returns('a')
-      tg.stubs(:geocoder).returns(geocoder)
+      allow(tg).to receive(:geocoder).and_return(geocoder)
       tg.send(:download_results)
       tg.result.should == 'a'
     end
@@ -186,7 +186,7 @@ describe CartoDB::TableGeocoder do
     end
 
     it 'loads the Nokia output format to an existing temp table' do
-      @tg.stubs(:deflated_results_path).returns(path_to('nokia_output.txt'))
+      allow(@tg).to receive(:deflated_results_path).and_return(path_to('nokia_output.txt'))
       @tg.send(:import_results_to_temp_table)
       @db.fetch(%{
         SELECT count(*) FROM #{@tg.send(:temp_table_name)}
@@ -220,7 +220,7 @@ describe CartoDB::TableGeocoder do
     end
 
     it 'does nothing when the column already exists' do
-      @tg.expects(:cast_georef_status_column).once
+      expect(@tg).to receive(:cast_georef_status_column).once
       @tg.send(:ensure_georef_status_colummn_valid)
       @tg.send(:ensure_georef_status_colummn_valid)
     end
@@ -256,7 +256,7 @@ describe CartoDB::TableGeocoder do
                                                 log: @log,
                                                 geocoding_model: @geocoding_model,
                                                 max_rows: 1000))
-    t.geocoder.stubs("use_batch_process?").returns(true)
+    allow(t.geocoder).to receive("use_batch_process?").and_return(true)
 
     @db.fetch("select count(*) from #{@table_name} where the_geom is null").first[:count].should eq 14
     t.run

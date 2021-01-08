@@ -33,17 +33,17 @@ describe Visualization::Member do
     user_id = Carto::UUIDHelper.random_uuid
     user_name = 'whatever'
     user_apikey = '123'
-    @user_mock = mock
-    @user_mock.stubs(:id).returns(user_id)
-    @user_mock.stubs(:username).returns(user_name)
-    @user_mock.stubs(:api_key).returns(user_apikey)
-    @user_mock.stubs(:viewer).returns(false)
-    @user_mock.stubs(:has_feature_flag?).returns(false)
-    @user_mock.stubs(:new_visualizations_version).returns(2)
-    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+    @user_mock = double
+    allow(@user_mock).to receive(:id).and_return(user_id)
+    allow(@user_mock).to receive(:username).and_return(user_name)
+    allow(@user_mock).to receive(:api_key).and_return(user_apikey)
+    allow(@user_mock).to receive(:viewer).and_return(false)
+    allow(@user_mock).to receive(:has_feature_flag?).and_return(false)
+    allow(@user_mock).to receive(:new_visualizations_version).and_return(2)
+    allow_any_instance_of(CartoDB::Visualization::Relator).to receive(:user).and_return(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
-    Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
+    allow_any_instance_of(Visualization::Relator).to receive(:support_tables).and_return(support_tables_mock)
   end
 
   it_behaves_like 'visualization models' do
@@ -73,12 +73,12 @@ describe Visualization::Member do
     end
 
     it 'should fail for new visualizations and viewer users' do
-      @user_mock.stubs(:viewer).returns(true)
+      allow(@user_mock).to receive(:viewer).and_return(true)
       attributes = random_attributes_for_vis_member(user_id: @user_mock.id)
       member = Visualization::Member.new(attributes)
       expect { member.store }.to raise_error(CartoDB::InvalidMember, /Viewer users can't store visualizations/)
 
-      @user_mock.stubs(:viewer).returns(false)
+      allow(@user_mock).to receive(:viewer).and_return(false)
     end
 
     it 'should fail for existing visualizations if user is now a viewer' do
@@ -86,11 +86,11 @@ describe Visualization::Member do
       member.store
 
       member = Visualization::Member.new(id: member.id).fetch
-      @user_mock.stubs(:viewer).returns(true)
+      allow(@user_mock).to receive(:viewer).and_return(true)
       member.name = 'changed'
       expect { member.store }.to raise_error(CartoDB::InvalidMember, /Viewer users can't store visualizations/)
 
-      @user_mock.stubs(:viewer).returns(false)
+      allow(@user_mock).to receive(:viewer).and_return(false)
     end
 
     it 'persists attributes to the data repository' do
@@ -112,7 +112,7 @@ describe Visualization::Member do
     end
 
     it 'persists tags as an array if the backend supports it' do
-      Carto::Permission.any_instance.stubs(:update_shared_entities).returns(nil)
+      allow_any_instance_of(Carto::Permission).to receive(:update_shared_entities).and_return(nil)
 
       attributes  = random_attributes_for_vis_member(user_id: @user_mock.id, tags: ['tag 1', 'tag 2'])
       member      = Visualization::Member.new(attributes)
@@ -150,7 +150,7 @@ describe Visualization::Member do
       member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
 
-      CartoDB::Visualization::NameChecker.any_instance.stubs(:available?).returns(true)
+      allow_any_instance_of(CartoDB::Visualization::NameChecker).to receive(:available?).and_return(true)
 
       member = Visualization::Member.new(id: member.id).fetch
       expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with(member.varnish_vizjson_key)
@@ -160,7 +160,7 @@ describe Visualization::Member do
 
     it 'invalidates vizjson cache in varnish if privacy changed' do
       # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-      CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      allow_any_instance_of(CartoDB::Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
       member      = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
@@ -302,7 +302,7 @@ describe Visualization::Member do
       it 'does not delete any metadata in case of deletion error' do
         canonical_map = @table_visualization.map
         canonical_layer = @table_visualization.data_layers.first
-        allow_any_instance_of(Table).to receive(:remove_table_from_user_database).raises(Sequel::DatabaseError.new('cannot drop'))
+        allow_any_instance_of(Table).to receive(:remove_table_from_user_database).and_raise(Sequel::DatabaseError.new('cannot drop'))
 
         table_visualization = CartoDB::Visualization::Member.new(id: @table_visualization.id).fetch
         expect { table_visualization.delete }.to raise_error
@@ -323,8 +323,8 @@ describe Visualization::Member do
 
     it 'invalidates varnish cache' do
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id)).store
-      member.expects(:invalidate_cache)
-      member.expects(:remove_layers_from)
+      expect(member).to receive(:invalidate_cache)
+      expect(member).to receive(:remove_layers_from)
       member.unlink_from(Object.new)
     end
   end
@@ -359,17 +359,17 @@ describe Visualization::Member do
     end
 
     def mock_user(username, viewer: false)
-      user_mock = mock
-      user_mock.stubs(:id).returns(Carto::UUIDHelper.random_uuid)
-      user_mock.stubs(:username).returns(username)
-      user_mock.stubs(:organization).returns(nil)
-      user_mock.stubs(:viewer).returns(viewer)
+      user_mock = double
+      allow(user_mock).to receive(:id).and_return(Carto::UUIDHelper.random_uuid)
+      allow(user_mock).to receive(:username).and_return(username)
+      allow(user_mock).to receive(:organization).and_return(nil)
+      allow(user_mock).to receive(:viewer).and_return(viewer)
       user_mock
     end
 
     it 'checks has_permission? permissions' do
-      Carto::Permission.any_instance.stubs(:grant_db_permission).returns(nil)
-      Carto::Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
+      allow_any_instance_of(Carto::Permission).to receive(:grant_db_permission).and_return(nil)
+      allow_any_instance_of(Carto::Permission).to receive(:notify_permissions_change).and_return(nil)
 
       read_user = create(:carto_user)
       write_user = create(:carto_user)
@@ -520,11 +520,11 @@ describe Visualization::Member do
       visualization.name = 'test'
       visualization.user_id = user_id
 
-      @user_mock.stubs(:invalidate_varnish_cache)
+      allow(@user_mock).to receive(:invalidate_varnish_cache)
 
 
       # Private maps allowed
-      @user_mock.stubs(:private_maps_enabled?).returns(true)
+      allow(@user_mock).to receive(:private_maps_enabled?).and_return(true)
 
       # Forces internal "dirty" flag
       visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
@@ -535,7 +535,7 @@ describe Visualization::Member do
       # -------------
 
       # No private maps allowed
-      @user_mock.stubs(:private_maps_enabled?).returns(false)
+      allow(@user_mock).to receive(:private_maps_enabled?).and_return(false)
 
       visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
       visualization.privacy = Visualization::Member::PRIVACY_PRIVATE
@@ -565,7 +565,7 @@ describe Visualization::Member do
 
     it 'checks that only users with private tables enabled can set LINK privacy' do
       user_id = Carto::UUIDHelper.random_uuid
-      Visualization::Member.any_instance.stubs(:named_maps)
+      allow_any_instance_of(Visualization::Member).to receive(:named_maps)
 
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
@@ -573,14 +573,14 @@ describe Visualization::Member do
           type:     Visualization::Member::TYPE_CANONICAL,
           user_id:  user_id
       )
-      @user_mock.stubs(:private_maps_enabled?).returns(true)
+      allow(@user_mock).to receive(:private_maps_enabled?).and_return(true)
 
       # Careful, do a user mock after touching user_data as it does some checks about user too
-      user_mock = mock
-      user_mock.stubs(:viewer).returns(false)
-      user_mock.stubs(:private_tables_enabled).returns(true)
-      user_mock.stubs(:id).returns(user_id)
-      Visualization::Member.any_instance.stubs(:user).returns(user_mock)
+      user_mock = double
+      allow(user_mock).to receive(:viewer).and_return(false)
+      allow(user_mock).to receive(:private_tables_enabled).and_return(true)
+      allow(user_mock).to receive(:id).and_return(user_id)
+      allow_any_instance_of(Visualization::Member).to receive(:user).and_return(user_mock)
 
       visualization.valid?.should eq true
 
@@ -593,7 +593,7 @@ describe Visualization::Member do
 
       visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
 
-      user_mock.stubs(:private_tables_enabled).returns(false)
+      allow(user_mock).to receive(:private_tables_enabled).and_return(false)
 
       visualization.valid?.should eq true
 
@@ -611,7 +611,7 @@ describe Visualization::Member do
       visualization.valid?.should eq true
 
       # Simulate editing the privacy
-      visualization.stubs(:privacy_changed).returns(true)
+      allow(visualization).to receive(:privacy_changed).and_return(true)
       # Now it can't
       visualization.valid?.should eq false
     end
@@ -622,8 +622,8 @@ describe Visualization::Member do
 
     it 'Checks deault privacies for visualizations' do
       user_id = Carto::UUIDHelper.random_uuid
-      user_mock = mock
-      user_mock.stubs(:id).returns(user_id)
+      user_mock = double
+      allow(user_mock).to receive(:id).and_return(user_id)
 
       # We don't care about values, just want an instance
       visualization = Visualization::Member.new(
@@ -633,12 +633,12 @@ describe Visualization::Member do
           user_id: user_id
       )
 
-      user_mock.stubs(:private_tables_enabled).returns(true)
-      visualization.stubs(:user).returns(user_mock)
+      allow(user_mock).to receive(:private_tables_enabled).and_return(true)
+      allow(visualization).to receive(:user).and_return(user_mock)
       visualization.default_privacy.should eq Visualization::Member::PRIVACY_LINK
 
-      user_mock.stubs(:private_tables_enabled).returns(false)
-      visualization.stubs(:user).returns(user_mock)
+      allow(user_mock).to receive(:private_tables_enabled).and_return(false)
+      allow(visualization).to receive(:user).and_return(user_mock)
       visualization.default_privacy.should eq Visualization::Member::PRIVACY_PUBLIC
     end
   end
@@ -656,7 +656,7 @@ describe Visualization::Member do
   it 'checks that slides can have a parent_id' do
     stub_visualization_member_user
 
-    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+    allow_any_instance_of(Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
     expected_errors = { parent_id: 'Type slide must have a parent' }
 
@@ -732,7 +732,7 @@ describe Visualization::Member do
   it 'tests transition_options field jsonification' do
     stub_visualization_member_user
 
-    Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+    allow_any_instance_of(Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
     transition_options = { first: true, second: 6 }
 
@@ -758,7 +758,7 @@ describe Visualization::Member do
     before { stub_visualization_member_user }
 
     it 'checks set_next! and unlink_self_from_list! on visualizations when set' do
-      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      allow_any_instance_of(Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
       member_a = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
                                                                               name:'A',
@@ -859,7 +859,7 @@ describe Visualization::Member do
     end
 
     it 'checks reordering visualizations items' do
-      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      allow_any_instance_of(Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
       member_a = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
                                                                               name:'A',
@@ -976,9 +976,9 @@ describe Visualization::Member do
     end
 
     it 'checks that upon destruction children are destroyed too' do
-      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      allow_any_instance_of(Visualization::Member).to receive(:supports_private_maps?).and_return(true)
       support_tables_mock = Doubles::Visualization::SupportTables.new
-      Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
+      allow_any_instance_of(Visualization::Relator).to receive(:support_tables).and_return(support_tables_mock)
 
       starting_collection_count = Visualization::Collection.new.fetch.count
 
@@ -1017,7 +1017,7 @@ describe Visualization::Member do
     end
 
     it 'checks transactional wrappings for prev-next' do
-      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      allow_any_instance_of(Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
       member_a = Visualization::Member.new(random_attributes_for_vis_member({ user_id: @user_mock.id,
                                                                               name:'A',
@@ -1080,7 +1080,7 @@ describe Visualization::Member do
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
       mocked_vizjson = {mocked: 'vizjson'}
-      member.expects(:calculate_vizjson).returns(mocked_vizjson).once
+      expect(member).to receive(:calculate_vizjson).and_return(mocked_vizjson).once
 
       member.to_vizjson.should eq mocked_vizjson
     end
@@ -1089,7 +1089,7 @@ describe Visualization::Member do
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
       mocked_vizjson = {mocked: 'vizjson'}
-      member.expects(:calculate_vizjson).returns(mocked_vizjson).once
+      expect(member).to receive(:calculate_vizjson).and_return(mocked_vizjson).once
 
       vizjson = member.to_vizjson # calculate and cache
       member.to_vizjson.should eq vizjson
@@ -1102,10 +1102,10 @@ describe Visualization::Member do
     it "Uses the block given to calculate a hash if there's a cache miss" do
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
 
-      redis_cache = mock
-      redis_cache.expects(:get).returns(nil).once # cache miss
+      redis_cache = double
+      expect(redis_cache).to receive(:get).and_return(nil).once # cache miss
       redis_cache.expects(:setex).once
-      Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_cache)
+      allow_any_instance_of(Visualization::RedisVizjsonCache).to receive(:redis).and_return(redis_cache)
 
       any_hash = {
         any_key: 'any_value'
@@ -1123,11 +1123,11 @@ describe Visualization::Member do
       }
 
       key = 'any_key'
-      Visualization::RedisVizjsonCache.any_instance.stubs(:key).returns(key)
-      redis_cache = mock
-      redis_cache.expects(:get).returns(nil).once # cache miss
-      redis_cache.expects(:setex).once.with(key, 24.hours.to_i, any_hash.to_json)
-      Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_cache)
+      allow_any_instance_of(Visualization::RedisVizjsonCache).to receive(:key).and_return(key)
+      redis_cache = double
+      expect(redis_cache).to receive(:get).and_return(nil).once # cache miss
+      expect(redis_cache).to receive(:setex).once.with(key, 24.hours.to_i, any_hash.to_json)
+      allow_any_instance_of(Visualization::RedisVizjsonCache).to receive(:redis).and_return(redis_cache)
       member.expects(:calculate_vizjson).once.returns(any_hash)
 
       member.to_vizjson.should eq any_hash
@@ -1142,11 +1142,11 @@ describe Visualization::Member do
       any_hash_serialized = any_hash.to_json
 
       key = 'any_key'
-      redis_cache = mock
-      redis_cache.expects(:get).returns(any_hash_serialized).once # cache hit
-      redis_cache.expects(:setex).never
-      Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_cache)
-      member.expects(:calculate_vizjson).never
+      redis_cache = double
+      expect(redis_cache).to receive(:get).and_return(any_hash_serialized).once # cache hit
+      expect(redis_cache).to receive(:setex).never
+      allow_any_instance_of(Visualization::RedisVizjsonCache).to receive(:redis).and_return(redis_cache)
+      expect(member).to receive(:calculate_vizjson).never
 
       member.to_vizjson.should eq any_hash
     end
@@ -1157,10 +1157,10 @@ describe Visualization::Member do
       any_hash_serialized = {}.to_json
 
       key = 'any_key'
-      redis_cache = mock
+      redis_cache = double
       redis_cache.expects(:get).once.returns(any_hash_serialized) # cache hit
       redis_cache.expects(:setex).never
-      Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_cache)
+      allow_any_instance_of(Visualization::RedisVizjsonCache).to receive(:redis).and_return(redis_cache)
       member.expects(:calculate_vizjson).never
 
       member.to_vizjson
@@ -1172,8 +1172,8 @@ describe Visualization::Member do
 
     it "Invalidates the varnish and redis caches" do
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
-      member.expects(:invalidate_varnish_vizjson_cache).once
-      member.expects(:invalidate_redis_cache).once
+      expect(member).to receive(:invalidate_varnish_vizjson_cache).once
+      expect(member).to receive(:invalidate_redis_cache).once
 
       member.invalidate_cache
     end
@@ -1186,7 +1186,7 @@ describe Visualization::Member do
       member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
       member.store
       mocked_vizjson = {mocked: 'vizjson'}
-      member.expects(:calculate_vizjson).returns(mocked_vizjson).once
+      expect(member).to receive(:calculate_vizjson).and_return(mocked_vizjson).once
 
       vizjson = member.to_vizjson
       redis_vizjson_cache = Visualization::RedisVizjsonCache.new($tables_metadata)
@@ -1230,7 +1230,7 @@ describe Visualization::Member do
       vis.fetch
       vis.license_info.nil?.should eq true
       # I cant save with a wrong value
-      vis.stubs(:license).returns("lololo")
+      allow(vis).to receive(:license).and_return("lololo")
       vis.license_info.nil?.should eq true
     end
 

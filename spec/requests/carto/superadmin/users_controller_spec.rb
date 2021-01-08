@@ -41,7 +41,7 @@ describe Carto::Superadmin::UsersController do
       before(:each) do
         @date = Date.today
         usage_metrics = @class.new(@user.username, nil, MockRedis.new)
-        @class.stubs(:new).returns(usage_metrics)
+        allow(@class).to receive(:new).and_return(usage_metrics)
         usage_metrics.incr(@service, :success_responses, 10, @date)
         usage_metrics.incr(@service, :success_responses, 100, @date - 2)
         usage_metrics.incr(@service, :empty_responses, 20, @date - 2)
@@ -302,7 +302,7 @@ describe Carto::Superadmin::UsersController do
     end
 
     it 'should return specific error when user has related entities' do
-      allow_any_instance_of(User).to receive(:destroy).raises(CartoDB::SharedEntitiesError, 'Cannot delete user, has shared entities')
+      allow_any_instance_of(User).to receive(:destroy).and_raise(CartoDB::SharedEntitiesError)
       delete_json(superadmin_user_url(@user), {}, superadmin_headers) do |response|
         response.status.should eq 422
         response.body[:errorCode].should eq 'userHasSharedEntities'
@@ -311,7 +311,7 @@ describe Carto::Superadmin::UsersController do
     end
 
     it 'should remove user with shared entities if force is present' do
-      User.any_instance.stubs(:has_shared_entities?).returns(true)
+      allow_any_instance_of(User).to receive(:has_shared_entities?).and_return(true)
       delete_json(superadmin_user_url(@user), { force: true }, superadmin_headers) do |response|
         response.status.should eq 204
       end

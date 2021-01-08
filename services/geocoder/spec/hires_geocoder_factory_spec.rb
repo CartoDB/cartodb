@@ -11,9 +11,9 @@ describe CartoDB::HiresGeocoderFactory do
   end
 
   before(:each) do
-    @log = mock
-    @log.stubs(:append)
-    @log.stubs(:append_and_store)
+    @log = double
+    allow(@log).to receive(:append)
+    allow(@log).to receive(:append_and_store)
     @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}')
   end
 
@@ -28,7 +28,7 @@ describe CartoDB::HiresGeocoderFactory do
       dummy_input_file = 'dummy_input_file.csv'
       working_dir = '/tmp/any_dir'
       input_rows = CartoDB::HiresGeocoderFactory::BATCH_FILES_OVER - 1
-      CartoDB::HiresGeocoderFactory.expects(:input_rows).once.with(dummy_input_file).returns(input_rows)
+      expect(CartoDB::HiresGeocoderFactory).to receive(:input_rows).once.with(dummy_input_file).returns(input_rows)
 
       CartoDB::HiresGeocoderFactory.get(dummy_input_file, working_dir, @log, @geocoding_model).class.should == CartoDB::HiresGeocoder
     end
@@ -43,7 +43,7 @@ describe CartoDB::HiresGeocoderFactory do
       dummy_input_file = 'dummy_input_file.csv'
       working_dir = '/tmp/any_dir'
       input_rows = CartoDB::HiresGeocoderFactory::BATCH_FILES_OVER + 1
-      CartoDB::HiresGeocoderFactory.expects(:input_rows).once.with(dummy_input_file).returns(input_rows)
+      expect(CartoDB::HiresGeocoderFactory).to receive(:input_rows).once.with(dummy_input_file).returns(input_rows)
 
       CartoDB::HiresGeocoderFactory.get(dummy_input_file, working_dir, @log, @geocoding_model).class.should == CartoDB::HiresBatchGeocoder
     end
@@ -58,7 +58,7 @@ describe CartoDB::HiresGeocoderFactory do
         })
       dummy_input_file = 'dummy_input_file.csv'
       working_dir = '/tmp/any_dir'
-      CartoDB::HiresGeocoderFactory.expects(:input_rows).never
+      expect(CartoDB::HiresGeocoderFactory).to receive(:input_rows).never
 
       CartoDB::HiresGeocoderFactory.get(dummy_input_file, working_dir, @log, @geocoding_model).class.should == CartoDB::HiresBatchGeocoder
     end

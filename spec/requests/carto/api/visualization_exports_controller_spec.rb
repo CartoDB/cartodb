@@ -95,7 +95,7 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
           download_path: regexp_matches(/download$/),
           job_id: regexp_matches(Carto::UUIDHelper::UUID_REGEXP)
         )
-        Resque.expects(:enqueue).with(Resque::ExporterJobs, job_params).once
+        expect(Resque).to receive(:enqueue).with(Resque::ExporterJobs, job_params).once
         post_json create_visualization_export_url(@user), visualization_id: @visualization.id do |response|
           response.status.should eq 201
           visualization_export_id = response.body[:id]
@@ -111,7 +111,7 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
         @visualization.privacy = Carto::Visualization::PRIVACY_LINK
         @visualization.save
 
-        Resque.expects(:enqueue).with(Resque::ExporterJobs, anything).once
+        expect(Resque).to receive(:enqueue).with(Resque::ExporterJobs, anything).once
         post_json create_visualization_export_url, visualization_id: @visualization.id do |response|
           response.status.should eq 201
           visualization_export_id = response.body[:id]
@@ -229,7 +229,7 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
       visualization = FactoryGirl.create(:carto_private_visualization, user: @carto_org_user_1)
       share_visualization(CartoDB::Visualization::Member.new(id: visualization.id).fetch, @org_user_2)
 
-      Resque.expects(:enqueue).with(Resque::ExporterJobs, anything).once
+      expect(Resque).to receive(:enqueue).with(Resque::ExporterJobs, anything).once
       post_json create_visualization_export_url(@carto_org_user_2), visualization_id: visualization.id do |res|
         res.status.should eq 201
         visualization_export_id = res.body[:id]

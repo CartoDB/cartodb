@@ -36,7 +36,7 @@ describe Admin::VisualizationsController do
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
     @api_key = @user.api_key
-    @user.stubs(:should_load_common_data?).returns(false)
+    allow(@user).to receive(:should_load_common_data?).and_return(false)
 
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
@@ -57,7 +57,7 @@ describe Admin::VisualizationsController do
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
       login_as(@user, scope: @user.username)
 
       get "/viz", {}, @headers
@@ -101,8 +101,8 @@ describe Admin::VisualizationsController do
           @id = table_factory.id
         end
         it 'if forced' do
-          @user.stubs(:builder_enabled).returns(true)
-          @user.stubs(:builder_enabled?).returns(true)
+          allow(@user).to receive(:builder_enabled).and_return(true)
+          allow(@user).to receive(:builder_enabled?).and_return(true)
 
           login_as(@user, scope: @user.username)
           get "/tables/#{@id}", {}, @headers
@@ -112,8 +112,8 @@ describe Admin::VisualizationsController do
         end
 
         it 'only if enabled' do
-          @user.stubs(:builder_enabled).returns(true)
-          @user.stubs(:builder_enabled?).returns(false)
+          allow(@user).to receive(:builder_enabled).and_return(true)
+          allow(@user).to receive(:builder_enabled?).and_return(false)
 
           login_as(@user, scope: @user.username)
           get "/tables/#{@id}", {}, @headers
@@ -121,8 +121,8 @@ describe Admin::VisualizationsController do
         end
 
         it 'only if forced' do
-          @user.stubs(:builder_enabled).returns(nil)
-          @user.stubs(:builder_enabled?).returns(false)
+          allow(@user).to receive(:builder_enabled).and_return(nil)
+          allow(@user).to receive(:builder_enabled?).and_return(false)
 
           login_as(@user, scope: @user.username)
           get "/tables/#{@id}", {}, @headers
@@ -135,8 +135,8 @@ describe Admin::VisualizationsController do
           @id = factory.fetch('id')
         end
         it 'if forced' do
-          @user.stubs(:builder_enabled).returns(true)
-          @user.stubs(:builder_enabled?).returns(true)
+          allow(@user).to receive(:builder_enabled).and_return(true)
+          allow(@user).to receive(:builder_enabled?).and_return(true)
 
           login_as(@user, scope: @user.username)
           get "/viz/#{@id}", {}, @headers
@@ -146,8 +146,8 @@ describe Admin::VisualizationsController do
         end
 
         it 'only if enabled' do
-          @user.stubs(:builder_enabled).returns(true)
-          @user.stubs(:builder_enabled?).returns(false)
+          allow(@user).to receive(:builder_enabled).and_return(true)
+          allow(@user).to receive(:builder_enabled?).and_return(false)
 
           login_as(@user, scope: @user.username)
           get "/viz/#{@id}", {}, @headers
@@ -155,8 +155,8 @@ describe Admin::VisualizationsController do
         end
 
         it 'only if forced' do
-          @user.stubs(:builder_enabled).returns(nil)
-          @user.stubs(:builder_enabled?).returns(false)
+          allow(@user).to receive(:builder_enabled).and_return(nil)
+          allow(@user).to receive(:builder_enabled?).and_return(false)
 
           login_as(@user, scope: @user.username)
           get "/viz/#{@id}", {}, @headers
@@ -164,9 +164,9 @@ describe Admin::VisualizationsController do
         end
 
         it 'never for vizjson2 visualizations' do
-          @user.stubs(:builder_enabled).returns(true)
-          @user.stubs(:builder_enabled?).returns(true)
-          Carto::Visualization::any_instance.stubs(:uses_vizjson2?).returns(true)
+          allow(@user).to receive(:builder_enabled).and_return(true)
+          allow(@user).to receive(:builder_enabled?).and_return(true)
+          allow_any_instance_of(Carto::Visualization).to receive(:uses_vizjson2?).and_return(true)
 
           login_as(@user, scope: @user.username)
           get public_visualizations_show_path(id: @id), {}, @headers
@@ -175,8 +175,8 @@ describe Admin::VisualizationsController do
 
         it 'embed redirects to builder for v3 when needed' do
           # These two tests are in the same testcase to test proper embed cache invalidation
-          @user.stubs(:builder_enabled).returns(false)
-          @user.stubs(:builder_enabled?).returns(false)
+          allow(@user).to receive(:builder_enabled).and_return(false)
+          allow(@user).to receive(:builder_enabled?).and_return(false)
           visualization = CartoDB::Visualization::Member.new(id: @id).fetch
           visualization.version = 2
           visualization.store
@@ -291,10 +291,10 @@ describe Admin::VisualizationsController do
     end
 
     it 'does not load daily mapviews stats' do
-      CartoDB::Visualization::Stats.expects(:mapviews).never
+      expect(CartoDB::Visualization::Stats).to receive(:mapviews).never
       expect_any_instance_of(CartoDB::Visualization::Stats).to receive(:to_poro).never
-      CartoDB::Visualization.expects(:stats).never
-      Carto::Visualization.expects(:stats).never
+      expect(CartoDB::Visualization).to receive(:stats).never
+      expect(Carto::Visualization).to receive(:stats).never
 
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
@@ -314,12 +314,12 @@ describe Admin::VisualizationsController do
   describe 'public_visualizations_show_map' do
 
     it 'does not load daily mapviews stats' do
-      CartoDB::Visualization::Stats.expects(:mapviews).never
+      expect(CartoDB::Visualization::Stats).to receive(:mapviews).never
       expect_any_instance_of(CartoDB::Visualization::Stats).to receive(:to_poro).never
       expect_any_instance_of(CartoDB::Stats::APICalls).to receive(:get_api_calls_from_redis_source).never
 
-      CartoDB::Visualization.expects(:stats).never
-      Carto::Visualization.expects(:stats).never
+      expect(CartoDB::Visualization).to receive(:stats).never
+      expect(Carto::Visualization).to receive(:stats).never
 
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
@@ -506,19 +506,14 @@ describe Admin::VisualizationsController do
 
   describe 'org user visualization redirection' do
     it 'if A shares a (shared) vis link to B with A username, performs a redirect to B username' do
-      Carto::ApiKey.any_instance.stubs(:save_cdb_conf_info)
-      CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
-      CartoDB::TablePrivacyManager.any_instance.stubs(
-          :set_from_table_privacy => nil,
-          :propagate_to_varnish => nil
-      )
+      allow_any_instance_of(Carto::ApiKey).to receive(:save_cdb_conf_info)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:move_to_own_schema).and_return(nil)
+      allow_any_instance_of(CartoDB::TablePrivacyManager).to receive(:set_from_table_privacy => nil,
+          :propagate_to_varnish => nil)
 
-      ::User.any_instance.stubs(
-        after_create: nil
-      )
+      allow_any_instance_of(::User).to receive(after_create: nil)
 
-      CartoDB::UserModule::DBService.any_instance.stubs(
-        grant_user_in_database: nil,
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(grant_user_in_database: nil,
         grant_publicuser_in_database: nil,
         set_user_privileges_at_db: nil,
         set_statement_timeouts: nil,
@@ -532,12 +527,11 @@ describe Admin::VisualizationsController do
         move_tables_to_schema: nil,
         create_public_db_user: nil,
         monitor_user_notification: nil,
-        enable_remote_db_user: nil
-      )
+        enable_remote_db_user: nil)
 
-      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+      allow_any_instance_of(Carto::NamedMaps::Api).to receive(get: nil, create: true, update: true)
 
-      Table.any_instance.stubs(perform_cartodb_function: nil,
+      allow_any_instance_of(Table).to receive(perform_cartodb_function: nil,
                                update_cdb_tablemetadata: nil,
                                update_table_pg_stats: nil,
                                create_table_in_database!: nil,
@@ -555,7 +549,7 @@ describe Admin::VisualizationsController do
       org.builder_enabled = false
       org.save
 
-      ::User.any_instance.stubs(:remaining_quota).returns(1000)
+      allow_any_instance_of(::User).to receive(:remaining_quota).and_return(1000)
       user_a = create_user(username: 'user-a', quota_in_bytes: 123456789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin
@@ -613,19 +607,14 @@ describe Admin::VisualizationsController do
 
     # @see https://github.com/CartoDB/cartodb/issues/6081
     it 'If logged user navigates to legacy url from org user without org name, gets redirected properly' do
-      Carto::ApiKey.any_instance.stubs(:save_cdb_conf_info)
-      CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
-      CartoDB::TablePrivacyManager.any_instance.stubs(
-        set_from_table_privacy: nil,
-        propagate_to_varnish: nil
-      )
+      allow_any_instance_of(Carto::ApiKey).to receive(:save_cdb_conf_info)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:move_to_own_schema).and_return(nil)
+      allow_any_instance_of(CartoDB::TablePrivacyManager).to receive(set_from_table_privacy: nil,
+        propagate_to_varnish: nil)
 
-      ::User.any_instance.stubs(
-        after_create: nil
-      )
+      allow_any_instance_of(::User).to receive(after_create: nil)
 
-      CartoDB::UserModule::DBService.any_instance.stubs(
-        grant_user_in_database: nil,
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(grant_user_in_database: nil,
         grant_publicuser_in_database: nil,
         set_user_privileges_at_db: nil,
         set_statement_timeouts: nil,
@@ -639,20 +628,17 @@ describe Admin::VisualizationsController do
         move_tables_to_schema: nil,
         create_public_db_user: nil,
         monitor_user_notification: nil,
-        enable_remote_db_user: nil
-      )
+        enable_remote_db_user: nil)
 
-      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
-      Table.any_instance.stubs(
-        perform_cartodb_function: nil,
+      allow_any_instance_of(Carto::NamedMaps::Api).to receive(get: nil, create: true, update: true)
+      allow_any_instance_of(Table).to receive(perform_cartodb_function: nil,
         update_cdb_tablemetadata: nil,
         update_table_pg_stats: nil,
         create_table_in_database!: nil,
         get_table_id: 1,
         grant_select_to_tiler_user: nil,
         cartodbfy: nil,
-        set_the_geom_column!: nil
-      )
+        set_the_geom_column!: nil)
 
       # --------TEST ITSELF-----------
 
@@ -663,7 +649,7 @@ describe Admin::VisualizationsController do
       org.builder_enabled = false
       org.save
 
-      ::User.any_instance.stubs(:remaining_quota).returns(1000)
+      allow_any_instance_of(::User).to receive(:remaining_quota).and_return(1000)
       user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
       user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
       user_org.promote_user_to_admin

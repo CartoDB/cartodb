@@ -6,7 +6,7 @@ describe CartoDB::Map::Copier do
   before do
     @user_id  = Carto::UUIDHelper.random_uuid
     @map      = Map.new(user_id: @user_id)
-    @map.stubs(:layers).returns((1..5).map { Layer.new(kind: 'carto') })
+    allow(@map).to receive(:layers).and_return((1..5).map { Layer.new(kind: 'carto') })
     @copier = CartoDB::Map::Copier.new
   end
 

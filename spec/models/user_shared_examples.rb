@@ -130,9 +130,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      allow(Date).to receive(:today).and_return(Date.new(2016,02,28))
+      allow(Date).to receive(:current).and_return(Date.new(2016,02,28))
+      allow(DateTime).to receive(:current).and_return(DateTime.new(2016,02,28))
       @mock_redis = MockRedis.new
       @user1.geocoding_quota = 500
       @user1.geocoder_provider = 'heremaps'
@@ -147,7 +147,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used geocoder quota in the current billing cycle' do
       usage_metrics = CartoDB::GeocoderUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::GeocoderUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::GeocoderUsageMetrics).to receive(:new).and_return(usage_metrics)
       Geocoding.new(kind: 'high-resolution',
                     user: @user1,
                     formatter: '{dummy}',
@@ -178,7 +178,7 @@ shared_examples_for "user models" do
       usage_metrics_2 = CartoDB::GeocoderUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
       @organization.owner.geocoder_provider = 'heremaps'
       # We are going to get the organization data show we could use both usage_metrics objects
-      CartoDB::GeocoderUsageMetrics.stubs(:new).returns(usage_metrics_1)
+      allow(CartoDB::GeocoderUsageMetrics).to receive(:new).and_return(usage_metrics_1)
       Geocoding.new(kind: 'high-resolution',
                     user: @org_user_1,
                     formatter: '{dummy}',
@@ -201,7 +201,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used geocoder quota in the current billing cycle including empty requests' do
       usage_metrics = CartoDB::GeocoderUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::GeocoderUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::GeocoderUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:geocoder_here, :success_responses, 10, Date.current)
       usage_metrics.incr(:geocoder_here, :success_responses, 100, (Date.current - 2))
       usage_metrics.incr(:geocoder_here, :empty_responses, 10, (Date.current - 2))
@@ -216,9 +216,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      allow(Date).to receive(:today).and_return(Date.new(2016,02,28))
+      allow(Date).to receive(:current).and_return(Date.new(2016,02,28))
+      allow(DateTime).to receive(:current).and_return(DateTime.new(2016,02,28))
       @mock_redis = MockRedis.new
       @user1.here_isolines_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -233,7 +233,7 @@ shared_examples_for "user models" do
 
     it 'calculates the remaining quota for a non-org user correctly' do
       usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::IsolinesUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::IsolinesUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:here_isolines, :isolines_generated, 100, Date.current)
 
       @user1.remaining_here_isolines_quota.should == 400
@@ -242,9 +242,7 @@ shared_examples_for "user models" do
     it 'takes into account here isoline requests performed by the org users' do
       usage_metrics_1 = CartoDB::IsolinesUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::IsolinesUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::IsolinesUsageMetrics.stubs(:new).
-        with(@organization.owner.username, @organization.name).
-        returns(usage_metrics_1)
+      allow(CartoDB::IsolinesUsageMetrics).to receive(:new).with(@organization.owner.username, @organization.name).and_return(usage_metrics_1)
       usage_metrics_1.incr(:here_isolines, :isolines_generated, 100, Date.current)
       usage_metrics_2.incr(:here_isolines, :isolines_generated, 100, Date.current)
 
@@ -258,9 +256,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      allow(Date).to receive(:today).and_return(Date.new(2016,02,28))
+      allow(Date).to receive(:current).and_return(Date.new(2016,02,28))
+      allow(DateTime).to receive(:current).and_return(DateTime.new(2016,02,28))
       @mock_redis = MockRedis.new
       @user1.here_isolines_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -275,7 +273,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used here isolines quota in the current billing cycle' do
       usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::IsolinesUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::IsolinesUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:here_isolines, :isolines_generated, 10, Date.current)
       usage_metrics.incr(:here_isolines, :isolines_generated, 100, (Date.current - 2))
 
@@ -285,9 +283,7 @@ shared_examples_for "user models" do
     it 'calculates the used here isolines quota for an organization' do
       usage_metrics_1 = CartoDB::IsolinesUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::IsolinesUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::IsolinesUsageMetrics.stubs(:new).
-        with(@organization.owner.username, @organization.name).
-        returns(usage_metrics_1)
+      allow(CartoDB::IsolinesUsageMetrics).to receive(:new).with(@organization.owner.username, @organization.name).and_return(usage_metrics_1)
       usage_metrics_1.incr(:here_isolines, :isolines_generated, 100, Date.current)
       usage_metrics_2.incr(:here_isolines, :isolines_generated, 120, Date.current - 1)
 
@@ -296,7 +292,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used here isolines quota in the current billing cycle including empty requests' do
       usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::IsolinesUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::IsolinesUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:here_isolines, :isolines_generated, 10, Date.current)
       usage_metrics.incr(:here_isolines, :isolines_generated, 100, (Date.current - 2))
       usage_metrics.incr(:here_isolines, :empty_responses, 10, (Date.current - 2))
@@ -310,9 +306,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016, 02, 28))
-      Date.stubs(:current).returns(Date.new(2016, 02, 28))
-      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      allow(Date).to receive(:today).and_return(Date.new(2016, 02, 28))
+      allow(Date).to receive(:current).and_return(Date.new(2016, 02, 28))
+      allow(DateTime).to receive(:current).and_return(DateTime.new(2016, 02, 28))
       @mock_redis = MockRedis.new
       @user1.obs_snapshot_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -325,7 +321,7 @@ shared_examples_for "user models" do
 
     it 'calculates the remaining quota for a non-org user correctly' do
       usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::ObservatorySnapshotUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:obs_snapshot, :success_responses, 100, Date.current)
 
       @user1.remaining_obs_snapshot_quota.should == 400
@@ -334,9 +330,7 @@ shared_examples_for "user models" do
     it 'takes into account data observatory requests performed by the org users' do
       usage_metrics_1 = CartoDB::ObservatorySnapshotUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::ObservatorySnapshotUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).
-        with(@organization.owner.username, @organization.name).
-        returns(usage_metrics_1)
+      allow(CartoDB::ObservatorySnapshotUsageMetrics).to receive(:new).with(@organization.owner.username, @organization.name).and_return(usage_metrics_1)
       usage_metrics_1.incr(:obs_snapshot, :success_responses, 100, Date.current)
       usage_metrics_2.incr(:obs_snapshot, :success_responses, 100, Date.current)
 
@@ -350,9 +344,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016, 02, 28))
-      Date.stubs(:current).returns(Date.new(2016, 02, 28))
-      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      allow(Date).to receive(:today).and_return(Date.new(2016, 02, 28))
+      allow(Date).to receive(:current).and_return(Date.new(2016, 02, 28))
+      allow(DateTime).to receive(:current).and_return(DateTime.new(2016, 02, 28))
       @mock_redis = MockRedis.new
       @user1.obs_general_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -365,7 +359,7 @@ shared_examples_for "user models" do
 
     it 'calculates the remaining quota for a non-org user correctly' do
       usage_metrics = CartoDB::ObservatoryGeneralUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::ObservatoryGeneralUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::ObservatoryGeneralUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:obs_general, :success_responses, 100, Date.current)
 
       @user1.remaining_obs_general_quota.should == 400
@@ -374,9 +368,7 @@ shared_examples_for "user models" do
     it 'takes into account data observatory requests performed by the org users' do
       usage_metrics_1 = CartoDB::ObservatoryGeneralUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::ObservatoryGeneralUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::ObservatoryGeneralUsageMetrics.stubs(:new).
-        with(@organization.owner.username, @organization.name).
-        returns(usage_metrics_1)
+      allow(CartoDB::ObservatoryGeneralUsageMetrics).to receive(:new).with(@organization.owner.username, @organization.name).and_return(usage_metrics_1)
       usage_metrics_1.incr(:obs_general, :success_responses, 100, Date.current)
       usage_metrics_2.incr(:obs_general, :success_responses, 100, Date.current)
 
@@ -390,9 +382,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016, 02, 28))
-      Date.stubs(:current).returns(Date.new(2016, 02, 28))
-      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      allow(Date).to receive(:today).and_return(Date.new(2016, 02, 28))
+      allow(Date).to receive(:current).and_return(Date.new(2016, 02, 28))
+      allow(DateTime).to receive(:current).and_return(DateTime.new(2016, 02, 28))
       @mock_redis = MockRedis.new
       @user1.obs_snapshot_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -405,7 +397,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used data observatory snapshot quota in the current billing cycle' do
       usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::ObservatorySnapshotUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:obs_snapshot, :success_responses, 10, Date.current)
       usage_metrics.incr(:obs_snapshot, :success_responses, 100, (Date.current - 2))
 
@@ -415,9 +407,7 @@ shared_examples_for "user models" do
     it 'calculates the used data observatory snapshot quota for an organization' do
       usage_metrics_1 = CartoDB::ObservatorySnapshotUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::ObservatorySnapshotUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).
-        with(@organization.owner.username, @organization.name).
-        returns(usage_metrics_1)
+      allow(CartoDB::ObservatorySnapshotUsageMetrics).to receive(:new).with(@organization.owner.username, @organization.name).and_return(usage_metrics_1)
       usage_metrics_1.incr(:obs_snapshot, :success_responses, 100, Date.current)
       usage_metrics_2.incr(:obs_snapshot, :success_responses, 120, Date.current - 1)
 
@@ -426,7 +416,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used data observatory snapshot quota in the current billing cycle including empty requests' do
       usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::ObservatorySnapshotUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:obs_snapshot, :success_responses, 10, Date.current)
       usage_metrics.incr(:obs_snapshot, :success_responses, 100, (Date.current - 2))
       usage_metrics.incr(:obs_snapshot, :empty_responses, 10, (Date.current - 2))
@@ -440,9 +430,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016, 02, 28))
-      Date.stubs(:current).returns(Date.new(2016, 02, 28))
-      DateTime.stubs(:current).returns(DateTime.new(2016, 02, 28))
+      allow(Date).to receive(:today).and_return(Date.new(2016, 02, 28))
+      allow(Date).to receive(:current).and_return(Date.new(2016, 02, 28))
+      allow(DateTime).to receive(:current).and_return(DateTime.new(2016, 02, 28))
       @mock_redis = MockRedis.new
       @user1.obs_general_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -455,7 +445,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used data observatory general quota in the current billing cycle' do
       usage_metrics = CartoDB::ObservatoryGeneralUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::ObservatoryGeneralUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::ObservatoryGeneralUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:obs_general, :success_responses, 10, Date.current)
       usage_metrics.incr(:obs_general, :success_responses, 100, (Date.current - 2))
 
@@ -465,9 +455,7 @@ shared_examples_for "user models" do
     it 'calculates the used data observatory general quota for an organization' do
       usage_metrics_1 = CartoDB::ObservatoryGeneralUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::ObservatoryGeneralUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::ObservatoryGeneralUsageMetrics.stubs(:new).
-        with(@organization.owner.username, @organization.name).
-        returns(usage_metrics_1)
+      allow(CartoDB::ObservatoryGeneralUsageMetrics).to receive(:new).with(@organization.owner.username, @organization.name).and_return(usage_metrics_1)
       usage_metrics_1.incr(:obs_general, :success_responses, 100, Date.current)
       usage_metrics_2.incr(:obs_general, :success_responses, 120, Date.current - 1)
 
@@ -476,7 +464,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used data observatory general quota in the current billing cycle including empty requests' do
       usage_metrics = CartoDB::ObservatoryGeneralUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::ObservatoryGeneralUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::ObservatoryGeneralUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:obs_general, :success_responses, 10, Date.current)
       usage_metrics.incr(:obs_general, :success_responses, 100, (Date.current - 2))
       usage_metrics.incr(:obs_general, :empty_responses, 10, (Date.current - 2))
@@ -490,9 +478,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      allow(Date).to receive(:today).and_return(Date.new(2016,02,28))
+      allow(Date).to receive(:current).and_return(Date.new(2016,02,28))
+      allow(DateTime).to receive(:current).and_return(DateTime.new(2016,02,28))
       @mock_redis = MockRedis.new
       @user1.mapzen_routing_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -508,7 +496,7 @@ shared_examples_for "user models" do
 
     it 'calculates the remaining quota for a non-org user correctly' do
       usage_metrics = CartoDB::RoutingUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::RoutingUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::RoutingUsageMetrics).to receive(:new).and_return(usage_metrics)
 
       usage_metrics.incr(:routing_mapbox, :total_requests, 100, Date.current)
       usage_metrics.incr(:routing_mapbox, :success_responses, 100, Date.current)
@@ -519,9 +507,7 @@ shared_examples_for "user models" do
     it 'takes into account routing requests performed by the org users' do
       usage_metrics_1 = CartoDB::RoutingUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::RoutingUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::RoutingUsageMetrics.stubs(:new).
-        with(@organization.owner.username, @organization.name).
-        returns(usage_metrics_1)
+      allow(CartoDB::RoutingUsageMetrics).to receive(:new).with(@organization.owner.username, @organization.name).and_return(usage_metrics_1)
       usage_metrics_1.incr(:routing_mapbox, :total_requests, 100, Date.current)
       usage_metrics_1.incr(:routing_mapbox, :success_responses, 100, Date.current)
       usage_metrics_2.incr(:routing_mapbox, :total_requests, 100, Date.current)
@@ -537,9 +523,9 @@ shared_examples_for "user models" do
     include_context 'organization with users helper'
 
     before(:each) do
-      Date.stubs(:today).returns(Date.new(2016,02,28))
-      Date.stubs(:current).returns(Date.new(2016,02,28))
-      DateTime.stubs(:current).returns(DateTime.new(2016,02,28))
+      allow(Date).to receive(:today).and_return(Date.new(2016,02,28))
+      allow(Date).to receive(:current).and_return(Date.new(2016,02,28))
+      allow(DateTime).to receive(:current).and_return(DateTime.new(2016,02,28))
       @mock_redis = MockRedis.new
       @user1.mapzen_routing_quota = 500
       @user1.period_end_date = (Date.current + 1) << 1
@@ -555,7 +541,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used mapzen routing quota in the current billing cycle' do
       usage_metrics = CartoDB::RoutingUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::RoutingUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::RoutingUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:routing_mapbox, :total_requests, 10, Date.current)
       usage_metrics.incr(:routing_mapbox, :total_requests, 100, (Date.current - 2))
       usage_metrics.incr(:routing_mapbox, :success_responses, 10, Date.current)
@@ -567,9 +553,7 @@ shared_examples_for "user models" do
     it 'calculates the used mapzen routing quota for an organization' do
       usage_metrics_1 = CartoDB::RoutingUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
       usage_metrics_2 = CartoDB::RoutingUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::RoutingUsageMetrics.stubs(:new).
-        with(@organization.owner.username, @organization.name).
-        returns(usage_metrics_1)
+      allow(CartoDB::RoutingUsageMetrics).to receive(:new).with(@organization.owner.username, @organization.name).and_return(usage_metrics_1)
       usage_metrics_1.incr(:routing_mapbox, :total_requests, 100, Date.current)
       usage_metrics_2.incr(:routing_mapbox, :total_requests, 120, Date.current - 1)
       usage_metrics_1.incr(:routing_mapbox, :success_responses, 100, Date.current)
@@ -580,7 +564,7 @@ shared_examples_for "user models" do
 
     it 'calculates the used mapzen routing quota in the current billing cycle including empty requests' do
       usage_metrics = CartoDB::RoutingUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::RoutingUsageMetrics.stubs(:new).returns(usage_metrics)
+      allow(CartoDB::RoutingUsageMetrics).to receive(:new).and_return(usage_metrics)
       usage_metrics.incr(:routing_mapbox, :total_requests, 10, Date.current)
       usage_metrics.incr(:routing_mapbox, :total_requests, 100, (Date.current - 2))
       usage_metrics.incr(:routing_mapbox, :success_responses, 10, Date.current)
@@ -668,7 +652,7 @@ shared_examples_for "user models" do
     it "Should properly report ability to change (or not) email & password when proceeds" do
       @user.google_sign_in = false
       password_change_date = @user.last_password_change_date
-      Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(false)
+      allow_any_instance_of(Carto::Ldap::Manager).to receive(:configuration_present?).and_return(false)
 
       @user.can_change_email?.should eq true
       @user.can_change_password?.should eq true
@@ -679,7 +663,7 @@ shared_examples_for "user models" do
       @user.last_password_change_date = nil
       @user.can_change_email?.should eq false
 
-      Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(true)
+      allow_any_instance_of(Carto::Ldap::Manager).to receive(:configuration_present?).and_return(true)
       @user.can_change_email?.should eq false
 
       @user.last_password_change_date = password_change_date
@@ -729,8 +713,8 @@ shared_examples_for "user models" do
     include_context 'users helper'
 
     it 'batch_queries_statement_timeout is not touched at all when creating a user' do
-      User.expects(:batch_queries_statement_timeout).never
-      User.expects(:batch_queries_statement_timeout=).never
+      expect(User).to receive(:batch_queries_statement_timeout).never
+      expect(User).to receive(:batch_queries_statement_timeout=).never
       begin
         user = create_user
       ensure
@@ -739,14 +723,14 @@ shared_examples_for "user models" do
     end
 
     it 'batch_queries_statement_timeout is not touched at all when saving a user' do
-      @user1.expects(:batch_queries_statement_timeout).never
-      @user1.expects(:batch_queries_statement_timeout=).never
+      expect(@user1).to receive(:batch_queries_statement_timeout).never
+      expect(@user1).to receive(:batch_queries_statement_timeout=).never
       @user1.save
     end
 
     it 'synces with central upon update_to_central' do
-      cartodb_central_client_mock = mock
-      cartodb_central_client_mock.expects(:update_user).once.with { |username, attributes|
+      cartodb_central_client_mock = double
+      expect(cartodb_central_client_mock).to receive(:update_user).once.with { |username, attributes|
         username == @user1.username && attributes[:batch_queries_statement_timeout] == 42
       }
       @user1.expects(:sync_data_with_cartodb_central?).once.returns(true)
@@ -759,7 +743,7 @@ shared_examples_for "user models" do
     it 'reads from redis just once' do
       begin
         user = create_user
-        $users_metadata.expects(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([42])
+        expect($users_metadata).to receive(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([42])
         user.batch_queries_statement_timeout.should be 42
         user.batch_queries_statement_timeout.should be 42
       ensure
@@ -770,7 +754,7 @@ shared_examples_for "user models" do
     it 'reads from redis just once, even if nil' do
       begin
         user = create_user
-        $users_metadata.expects(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([nil])
+        expect($users_metadata).to receive(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([nil])
         user.batch_queries_statement_timeout.should be_nil
         user.batch_queries_statement_timeout.should be_nil
       ensure
@@ -779,42 +763,42 @@ shared_examples_for "user models" do
     end
 
     it 'deletes the key in redis when set to nil' do
-      $users_metadata.expects(:HDEL).with("limits:batch:#{@user1.username}", 'timeout').once
-      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', nil).never
+      expect($users_metadata).to receive(:HDEL).with("limits:batch:#{@user1.username}", 'timeout').once
+      expect($users_metadata).to receive(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', nil).never
       @user1.batch_queries_statement_timeout = nil
       @user1.batch_queries_statement_timeout.should be_nil
     end
 
     it 'deletes the key in redis when set to the empty string' do
       # This is important to sync from central and use the default value instead
-      $users_metadata.expects(:HDEL).with("limits:batch:#{@user1.username}", 'timeout').once
-      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', "").never
+      expect($users_metadata).to receive(:HDEL).with("limits:batch:#{@user1.username}", 'timeout').once
+      expect($users_metadata).to receive(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', "").never
       @user1.batch_queries_statement_timeout = ""
       @user1.batch_queries_statement_timeout.should be_nil
     end
 
     it 'sets the value in redis to the integer specified' do
-      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 42).once
+      expect($users_metadata).to receive(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 42).once
       @user1.batch_queries_statement_timeout = 42
       @user1.batch_queries_statement_timeout.should eq 42
     end
 
     it 'raises an error if set to zero' do
-      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 0).never
+      expect($users_metadata).to receive(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 0).never
       expect {
         @user1.batch_queries_statement_timeout = 0
       }.to raise_exception
     end
 
     it 'raises an error if set to a negative value' do
-      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', -42).never
+      expect($users_metadata).to receive(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', -42).never
       expect {
         @user1.batch_queries_statement_timeout = -42
       }.to raise_exception
     end
 
     it 'can cast to integer values' do
-      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 42).once
+      expect($users_metadata).to receive(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 42).once
       @user1.batch_queries_statement_timeout = "42"
       @user1.batch_queries_statement_timeout.should eq 42
     end
@@ -858,8 +842,8 @@ shared_examples_for "user models" do
     end
 
     def set_organization_field(value)
-      @user.stubs(:organization).returns(mock)
-      @user.organization.stubs(write_field).returns(value)
+      allow(@user).to receive(:organization).and_return(double)
+      allow(@user.organization).to receive(write_field).and_return(value)
     end
 
     def get_field
@@ -971,7 +955,7 @@ shared_examples_for "user models" do
 
     describe "when user doesn't have user_frontend_version set" do
       it 'should return application frontend version' do
-        CartoDB::Application.stubs(:frontend_version).returns('app_frontend_version')
+        allow(CartoDB::Application).to receive(:frontend_version).and_return('app_frontend_version')
 
         @user.relevant_frontend_version.should eq 'app_frontend_version'
       end

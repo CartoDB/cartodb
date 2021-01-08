@@ -65,11 +65,11 @@ shared_examples_for 'Layer model' do
       end
 
       it "should invalidate its maps" do
-        CartoDB::Varnish.any_instance.stubs(:purge).returns(true)
+        allow_any_instance_of(CartoDB::Varnish).to receive(:purge).and_return(true)
 
         @layer.maps.count.should eq 1
         @layer.maps.each do |map|
-          map.expects(:notify_map_change).times(1)
+          expect(map).to receive(:notify_map_change).times(1)
         end
 
         @layer.save
@@ -85,11 +85,11 @@ shared_examples_for 'Layer model' do
 
       it "should not invalidate its related tables varnish cache" do
         @layer.maps.each do |map|
-          map.expects(:notify_map_change).times(1)
+          expect(map).to receive(:notify_map_change).times(1)
         end
 
         @layer.send(:affected_tables).each do |table|
-          table.expects(:update_cdb_tablemetadata).times(0)
+          expect(table).to receive(:update_cdb_tablemetadata).times(0)
         end
 
         @layer.save
@@ -213,7 +213,7 @@ shared_examples_for 'Layer model' do
       add_layer_to_entity(map, layer)
 
       # TODO: should be once
-      expect_any_instance_of(map.class).to receive(:notify_map_change).at_least_once
+      expect_any_instance_of(map.class).to receive(:notify_map_change).at_least(:once)
       layer.destroy
     end
 

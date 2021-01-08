@@ -54,8 +54,8 @@ describe User do
 
     it "should load a cartodb avatar url if no gravatar associated" do
       gravatar_url = %r{gravatar.com}
-      Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 404))
-      user1.stubs(:gravatar_enabled?).returns(true)
+      Typhoeus.double(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 404))
+      allow(user1).to receive(:gravatar_enabled?).and_return(true)
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
@@ -68,8 +68,8 @@ describe User do
 
     it "should load a cartodb avatar url if gravatar disabled" do
       gravatar_url = %r{gravatar.com}
-      Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
-      user1.stubs(:gravatar_enabled?).returns(false)
+      Typhoeus.double(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
+      allow(user1).to receive(:gravatar_enabled?).and_return(false)
       user1.avatar_url = nil
       user1.save
       user1.reload_avatar
@@ -82,8 +82,8 @@ describe User do
 
     it "should load a the user gravatar url" do
       gravatar_url = %r{gravatar.com}
-      Typhoeus.stub(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
-      user1.stubs(:gravatar_enabled?).returns(true)
+      Typhoeus.double(gravatar_url, { method: :get }).and_return(Typhoeus::Response.new(code: 200))
+      allow(user1).to receive(:gravatar_enabled?).and_return(true)
       user1.reload_avatar
       user1.avatar_url.should == "//#{user1.gravatar_user_url}"
     end
@@ -146,8 +146,8 @@ describe User do
       redis_spy = RedisDoubles::RedisSpy.new
       redis_vizjson_cache = CartoDB::Visualization::RedisVizjsonCache.new()
       redis_embed_cache = EmbedRedisCache.new()
-      CartoDB::Visualization::RedisVizjsonCache.any_instance.stubs(:redis).returns(redis_spy)
-      EmbedRedisCache.any_instance.stubs(:redis).returns(redis_spy)
+      allow_any_instance_of(CartoDB::Visualization::RedisVizjsonCache).to receive(:redis).and_return(redis_spy)
+      allow_any_instance_of(EmbedRedisCache).to receive(:redis).and_return(redis_spy)
 
 
       redis_vizjson_keys = collection.map { |v|
@@ -185,7 +185,7 @@ describe User do
       redis_keys = collection.map { |item| item.redis_vizjson_key(true) }
       redis_keys.should be_empty
 
-      CartoDB::Visualization::Member.expects(:redis_cache).never
+      expect(CartoDB::Visualization::Member).to receive(:redis_cache).never
 
       user.purge_redis_vizjson_cache
 
@@ -307,7 +307,7 @@ describe User do
 
   describe 'session' do
     before(:all) do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(true)
       @user = FactoryGirl.create(:valid_user)
     end
 
@@ -354,11 +354,11 @@ describe User do
       context 'when syncing to Central fails' do
         context 'due to a newtork error' do
           before do
-            allow_any_instance_of(User).to receive(:update_in_central).raises(CartoDB::CentralCommunicationFailure, 'Error')
+            allow_any_instance_of(User).to receive(:update_in_central).and_raise(CartoDB::CentralCommunicationFailure)
           end
 
           it 'logs an error' do
-            Rails.logger.expects(:error).once
+            expect(Rails.logger).to receive(:error).once
 
             @user.invalidate_all_sessions!
           end
@@ -366,11 +366,11 @@ describe User do
 
         context 'due to anything else' do
           before do
-            User.any_instance.stubs(:update_in_central).returns(false)
+            allow_any_instance_of(User).to receive(:update_in_central).and_return(false)
           end
 
           it 'logs an error' do
-            Rails.logger.expects(:error).once
+            expect(Rails.logger).to receive(:error).once
 
             @user.invalidate_all_sessions!
           end
@@ -380,7 +380,7 @@ describe User do
       context 'when saving in local fails' do
         it 'logs an error' do
           @user.email = nil
-          Rails.logger.expects(:error).once
+          expect(Rails.logger).to receive(:error).once
 
           @user.invalidate_all_sessions!
         end

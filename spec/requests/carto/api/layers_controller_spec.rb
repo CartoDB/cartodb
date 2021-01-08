@@ -455,8 +455,8 @@ describe Carto::Api::LayersController do
       it "Update a layer > tiler error" do
         layer = Layer.create kind: 'carto', order: 0
         @map.add_layer layer
-        allow_any_instance_of(Layer).to receive(:after_save).raises(RuntimeError)
-        allow_any_instance_of(Carto::Layer).to receive(:invalidate_maps).raises(RuntimeError)
+        allow_any_instance_of(Layer).to receive(:after_save).and_raise(RuntimeError)
+        allow_any_instance_of(Carto::Layer).to receive(:invalidate_maps).and_raise(RuntimeError)
 
         data = { options: { opt1: 'value' }, infowindow: { fields: ['column1', 'column2'] }, order: 999, kind: 'carto' }
 
@@ -543,7 +543,7 @@ describe Carto::Api::LayersController do
     include Warden::Test::Helpers
 
     before(:all) do
-      CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
+      allow_any_instance_of(CartoDB::Visualization::Member).to receive(:invalidate_cache).and_return(nil)
 
       @headers = { 'CONTENT_TYPE' => 'application/json' }
 
@@ -621,7 +621,7 @@ describe Carto::Api::LayersController do
     include_context 'users helper'
 
     it 'fetches layers from shared visualizations' do
-      CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
+      allow_any_instance_of(CartoDB::Visualization::Member).to receive(:invalidate_cache).and_return(nil)
       @headers = { 'CONTENT_TYPE' => 'application/json' }
 
       def factory(user, attributes = {})

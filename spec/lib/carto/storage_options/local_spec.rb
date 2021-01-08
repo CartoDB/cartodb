@@ -10,7 +10,7 @@ describe Carto::StorageOptions::Local do
     before(:all) do
       @prefix = unique_name('prefix')
       @storage = Carto::StorageOptions::Local.new(@prefix)
-      @storage.stubs(:public_uploaded_assets_path).returns(upload_path)
+      allow(@storage).to receive(:public_uploaded_assets_path).and_return(upload_path)
 
       @file = Tempfile.new('test')
       @file.write('wadus')

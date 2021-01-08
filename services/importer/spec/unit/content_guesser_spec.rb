@@ -4,7 +4,7 @@ require_relative '../../../../spec/rspec_configuration.rb'
 describe CartoDB::Importer2::ContentGuesser do
 
   before(:each) do
-    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+    allow(CartoDB::Stats::Aggregator).to receive(:read_config).and_return({})
   end
 
   describe '#enabled?' do
@@ -38,10 +38,10 @@ describe CartoDB::Importer2::ContentGuesser do
         {column_name: 'country_column'},
         {column_name: 'any_other_column'}
       ]
-      guesser.stubs(:columns).returns(columns)
-      guesser.stubs(:is_country_column?).with({column_name: 'any_column'}).returns(false)
-      guesser.stubs(:is_country_column?).with({column_name: 'country_column'}).returns(true)
-      guesser.stubs(:is_country_column?).with({column_name: 'any_other_column'}).returns(false)
+      allow(guesser).to receive(:columns).and_return(columns)
+      allow(guesser).to receive(:is_country_column?).with({column_name: 'any_column'}).and_return(false)
+      allow(guesser).to receive(:is_country_column?).with({column_name: 'country_column'}).and_return(true)
+      allow(guesser).to receive(:is_country_column?).with({column_name: 'any_other_column'}).and_return(false)
 
       guesser.country_column.should eq 'country_column'
     end
@@ -52,8 +52,8 @@ describe CartoDB::Importer2::ContentGuesser do
         {column_name: 'any_column' },
         {column_name: 'any_other_column'}
       ]
-      guesser.stubs(:columns).returns(columns)
-      guesser.stubs(:is_country_column?).returns(false)
+      allow(guesser).to receive(:columns).and_return(columns)
+      allow(guesser).to receive(:is_country_column?).and_return(false)
 
       guesser.country_column.should be_nil
     end
@@ -61,8 +61,8 @@ describe CartoDB::Importer2::ContentGuesser do
 
   describe '#columns' do
     it 'queries the db to get a list of columns with their corresponding data types' do
-      db = mock
-      db.expects(:[]).returns(:any_iterable_list_of_columns)
+      db = double
+      expect(db).to receive(:[]).and_return(:any_iterable_list_of_columns)
       table_name = 'any_table_name'
       schema = 'any_schema'
       guesser = CartoDB::Importer2::ContentGuesser.new db, table_name, schema, nil
@@ -74,16 +74,16 @@ describe CartoDB::Importer2::ContentGuesser do
     it 'returns true if a sample proportion is above a given threshold' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
-      guesser.stubs(:sample).returns [
+      allow(guesser).to receive(:sample).and_return([
          {candidate_column_name: 'USA'},
          {candidate_column_name: 'Spain'},
          {candidate_column_name: 'not a country'}
-      ]
-      guesser.stubs(:countries).returns Set.new ['usa', 'spain', 'france', 'canada']
-      guesser.stubs(:threshold).returns 0.5
-      importer_stats_mock = mock
+      ])
+      allow(guesser).to receive(:countries).and_return(Set.new ['usa', 'spain', 'france', 'canada'])
+      allow(guesser).to receive(:threshold).and_return(0.5)
+      importer_stats_mock = double
       proportion = 2.0/3.0
-      importer_stats_mock.expects(:gauge).once().with('country_proportion', proportion)
+      expect(importer_stats_mock).to receive(:gauge).once().with('country_proportion', proportion)
       guesser.set_importer_stats(importer_stats_mock)
 
       guesser.is_country_column?(column).should eq true
@@ -92,9 +92,9 @@ describe CartoDB::Importer2::ContentGuesser do
     it 'returns false if sample.count == 0' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
-      guesser.stubs(:sample).returns []
-      guesser.stubs(:countries).returns Set.new ['usa', 'spain', 'france', 'canada']
-      guesser.stubs(:threshold).returns 0.5
+      allow(guesser).to receive(:sample).and_return([])
+      allow(guesser).to receive(:countries).and_return(Set.new ['usa', 'spain', 'france', 'canada'])
+      allow(guesser).to receive(:threshold).and_return(0.5)
 
       guesser.is_country_column?(column).should eq false
     end
@@ -102,13 +102,13 @@ describe CartoDB::Importer2::ContentGuesser do
     it 'returns false if countries.count == 0' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
-      guesser.stubs(:sample).returns [
+      allow(guesser).to receive(:sample).and_return([
          {candidate_column_name: 'USA'},
          {candidate_column_name: 'Spain'},
          {candidate_column_name: 'not a country'}
-      ]
-      guesser.stubs(:countries).returns Set.new []
-      guesser.stubs(:threshold).returns 0.5
+      ])
+      allow(guesser).to receive(:countries).and_return(Set.new [])
+      allow(guesser).to receive(:threshold).and_return(0.5)
 
       guesser.is_country_column?(column).should eq false
     end
@@ -116,9 +116,9 @@ describe CartoDB::Importer2::ContentGuesser do
     it 'returns false if sample.count == 0 and countries.count == 0' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
-      guesser.stubs(:sample).returns []
-      guesser.stubs(:countries).returns Set.new []
-      guesser.stubs(:threshold).returns 0.5
+      allow(guesser).to receive(:sample).and_return([])
+      allow(guesser).to receive(:countries).and_return(Set.new [])
+      allow(guesser).to receive(:threshold).and_return(0.5)
 
       guesser.is_country_column?(column).should eq false
     end
@@ -142,11 +142,8 @@ describe CartoDB::Importer2::ContentGuesser do
   describe '#countries' do
     it 'queries the sql api to get a Set of countries' do
       countries_column = CartoDB::Importer2::ContentGuesser::COUNTRIES_COLUMN
-      api_mock = mock
-      api_mock
-        .expects(:fetch)
-        .with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY)
-        .returns([
+      api_mock = double
+      expect(api_mock).to receive(:fetch).with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY).and_return([
           {countries_column => 'usa'},
           {countries_column => 'united states'},
           {countries_column => 'spain'},
@@ -160,9 +157,8 @@ describe CartoDB::Importer2::ContentGuesser do
     end
 
     it 'caches the response so no need to call the sql api on successive calls' do
-      api_mock = mock
-      api_mock
-        .expects(:fetch)
+      api_mock = double
+      expect(api_mock).to receive(:fetch)
         .once
         .with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY)
         .returns([])
@@ -175,11 +171,8 @@ describe CartoDB::Importer2::ContentGuesser do
 
     it 'shall not add countries from DB if length < 2' do
       countries_column = CartoDB::Importer2::ContentGuesser::COUNTRIES_COLUMN
-      api_mock = mock
-      api_mock
-        .expects(:fetch)
-        .with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY)
-        .returns([
+      api_mock = double
+      expect(api_mock).to receive(:fetch).with(CartoDB::Importer2::ContentGuesser::COUNTRIES_QUERY).and_return([
           {countries_column => 'usa'},
           {countries_column => 'united states'},
           {countries_column => 'fr'},
@@ -195,7 +188,7 @@ describe CartoDB::Importer2::ContentGuesser do
 
   describe '#id_column' do
     it 'should return a column name known to be sequential and with index' do
-      db = mock
+      db = double
       list_of_columns = [
         { column_name: "data", data_type: "string" },
         { column_name: "ogc_fid", data_type: "integer" },
@@ -207,7 +200,7 @@ describe CartoDB::Importer2::ContentGuesser do
     end
 
     it "should use objectid in case the file is a gdb one" do
-      db = mock
+      db = double
       list_of_columns = [
         { column_name: "data", data_type: "string" },
         { column_name: "objectid", data_type: "integer" },
@@ -219,7 +212,7 @@ describe CartoDB::Importer2::ContentGuesser do
     end
 
     it "should raise an exception if there's no suitable id column" do
-      db = mock
+      db = double
       list_of_columns = [
         { column_name: "data", data_type: "string" },
         { column_name: "more_data", data_type: "string" }
@@ -235,11 +228,11 @@ describe CartoDB::Importer2::ContentGuesser do
     it 'should be low for repeated elements after normalization' do
       column = { column_name: 'candidate_column_name' }
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, nil
-      guesser.stubs(:sample).returns [
+      allow(guesser).to receive(:sample).and_return([
          {candidate_column_name: '1400US600'},
          {candidate_column_name: '1400US601'},
          {candidate_column_name: '1400US602'}
-      ]
+      ])
       guesser.metric_entropy(column).should > 0.99
       guesser.metric_entropy(column, guesser.country_name_normalizer).should < 0.5
     end
@@ -257,12 +250,12 @@ describe CartoDB::Importer2::ContentGuesser do
     it "returns true if column contains IP's" do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
-      guesser.stubs(:sample).returns [
+      allow(guesser).to receive(:sample).and_return([
          {candidate_column_name: '192.168.1.1'},
          {candidate_column_name: '162.243.83.87'},
          {candidate_column_name: '173.194.66.104'}
-      ]
-      guesser.stubs(:threshold).returns 0.9
+      ])
+      allow(guesser).to receive(:threshold).and_return(0.9)
 
       guesser.is_ip_column?(column).should eq true
     end
@@ -270,12 +263,12 @@ describe CartoDB::Importer2::ContentGuesser do
     it 'returns false if sample contains a bunch of integers #1803' do
       guesser = CartoDB::Importer2::ContentGuesser.new nil, nil, nil, {guessing: {enabled: true}}
       column = {column_name: 'candidate_column_name', data_type: 'text'}
-      guesser.stubs(:sample).returns [
+      allow(guesser).to receive(:sample).and_return([
          {candidate_column_name: '12345'},
          {candidate_column_name: '67891'},
          {candidate_column_name: '1024'}
-      ]
-      guesser.stubs(:threshold).returns 0.9
+      ])
+      allow(guesser).to receive(:threshold).and_return(0.9)
 
       guesser.is_ip_column?(column).should eq false
     end

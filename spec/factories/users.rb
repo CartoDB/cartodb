@@ -72,7 +72,7 @@ FactoryGirl.define do
     end
 
     before(:create) do |user|
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       create_account_type_fg(user.account_type)
     end
   end
@@ -98,7 +98,7 @@ FactoryGirl.define do
     end
 
     before(:create) do |carto_user|
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       create_account_type_fg(carto_user.account_type)
     end
 

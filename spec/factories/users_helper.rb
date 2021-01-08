@@ -3,7 +3,7 @@ shared_context 'users helper' do
   include CartoDB::Factories
 
   before(:each) do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
   end
 
   before(:all) do

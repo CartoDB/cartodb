@@ -14,29 +14,29 @@ describe Carto::Visualization::Watcher do
       watcher_ttl = 2
 
       org_id = Carto::UUIDHelper.random_uuid
-      organization_mock = mock
-      organization_mock.stubs(:id).returns(org_id)
+      organization_mock = double
+      allow(organization_mock).to receive(:id).and_return(org_id)
 
       # Normal user
       user1_name = 'wadus1'
-      user1_mock = mock
-      user1_mock.stubs(:username).returns(user1_name)
-      user1_mock.stubs(:organization).returns(organization_mock)
+      user1_mock = double
+      allow(user1_mock).to receive(:username).and_return(user1_name)
+      allow(user1_mock).to receive(:organization).and_return(organization_mock)
 
       #Another org user
       user2_name = 'wadus2'
-      user2_mock = mock
-      user2_mock.stubs(:username).returns(user2_name)
-      user2_mock.stubs(:organization).returns(organization_mock)
+      user2_mock = double
+      allow(user2_mock).to receive(:username).and_return(user2_name)
+      allow(user2_mock).to receive(:organization).and_return(organization_mock)
 
       vis_id = Carto::UUIDHelper.random_uuid
-      visualization_mock = mock
-      visualization_mock.stubs(:id).returns(vis_id)
+      visualization_mock = double
+      allow(visualization_mock).to receive(:id).and_return(vis_id)
 
       # Try to create a watcher from a non-org user
       expect {
-        non_org_user_mock = mock
-        non_org_user_mock.stubs(:organization).returns(nil)
+        non_org_user_mock = double
+        allow(non_org_user_mock).to receive(:organization).and_return(nil)
         Carto::Visualization::Watcher.new(non_org_user_mock, visualization_mock)
       }.to raise_exception Carto::Visualization::WatcherError
 

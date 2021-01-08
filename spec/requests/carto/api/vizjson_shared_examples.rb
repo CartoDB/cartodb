@@ -237,7 +237,7 @@ shared_examples_for 'vizjson generator' do
       it 'returns 200 if subdomain is empty' do
         viz = api_visualization_creation(@user_1, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
         # INFO: I couldn't get rid of subdomain, so I stubbed
-        CartoDB.stubs(:extract_subdomain).returns('')
+        allow(CartoDB).to receive(:extract_subdomain).and_return('')
         get api_vx_visualizations_vizjson_url(id: viz.id)
         last_response.status.should == 200
       end

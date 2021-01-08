@@ -9,19 +9,19 @@ module Carto
 
       let!(:user) { create(:user) }
       let(:valid_session) { { sec_token: user.security_token } }
-      let(:warden_context) { mock }
-      let(:request) { mock }
+      let(:warden_context) { double }
+      let(:request) { double }
 
       context 'when session is valid' do
-        before { warden_context.expects(:session).returns(valid_session) }
+        before { expect(warden_context).to receive(:session).and_return(valid_session) }
 
         it { should be_true }
       end
 
       context 'when no session' do
         before do
-          request.expects(:reset_session)
-          warden_context.expects(:session).returns({})
+          expect(request).to receive(:reset_session)
+          expect(warden_context).to receive(:session).and_return({})
         end
 
         it { should be_false }
@@ -30,7 +30,7 @@ module Carto
       context 'when session was invalidated' do
         let(:session) { { sec_token: 'old-security-token' } }
 
-        before { warden_context.expects(:session).returns(session) }
+        before { expect(warden_context).to receive(:session).and_return(session) }
 
         it 'raises an error' do
           expect { subject }.to raise_error(Carto::ExpiredSessionError)
@@ -39,8 +39,8 @@ module Carto
 
       context 'when authenticating with a valid method and no session' do
         before do
-          request.expects(:reset_session)
-          warden_context.expects(:session).raises(Warden::NotAuthenticated)
+          expect(request).to receive(:reset_session)
+          expect(warden_context).to receive(:session).and_raise(Warden::NotAuthenticated)
         end
 
         it { should be_false }

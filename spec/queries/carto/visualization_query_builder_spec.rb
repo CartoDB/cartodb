@@ -258,14 +258,12 @@ describe Carto::VisualizationQueryBuilder do
     mocked_vis2 = Carto::Visualization.where(id: table2.table_visualization.id).first
     mocked_vis3 = Carto::Visualization.where(id: table3.table_visualization.id).first
 
-    mocked_vis1.stubs(:size).returns(200)
-    mocked_vis2.stubs(:size).returns(1)
-    mocked_vis3.stubs(:size).returns(600)
+    allow(mocked_vis1).to receive(:size).and_return(200)
+    allow(mocked_vis2).to receive(:size).and_return(1)
+    allow(mocked_vis3).to receive(:size).and_return(600)
 
     # Careful to not do anything else on this spec after this size assertions
-    Carto::Visualization::ActiveRecord_Relation.any_instance.stubs(:all).returns(
-      [mocked_vis3, mocked_vis1, mocked_vis2]
-    )
+    allow_any_instance_of(Carto::Visualization::ActiveRecord_Relation).to receive(:all).and_return([mocked_vis3, mocked_vis1, mocked_vis2])
 
     ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('size', :desc).build.map(&:id)
     ids.should == [table3.table_visualization.id, table1.table_visualization.id, table2.table_visualization.id]
@@ -431,14 +429,12 @@ describe Carto::VisualizationQueryBuilder do
     mocked_vis2 = Carto::Visualization.where(id: table2.table_visualization.id).first
     mocked_vis3 = Carto::Visualization.where(id: table3.table_visualization.id).first
 
-    mocked_vis1.stubs(:size).returns(200)
-    mocked_vis2.stubs(:size).returns(1)
-    mocked_vis3.stubs(:size).returns(600)
+    allow(mocked_vis1).to receive(:size).and_return(200)
+    allow(mocked_vis2).to receive(:size).and_return(1)
+    allow(mocked_vis3).to receive(:size).and_return(600)
 
     # Careful to not do anything else on this spec after this size assertions
-    Carto::Visualization::ActiveRecord_Relation.any_instance.stubs(:all).returns(
-      [mocked_vis3, mocked_vis1, mocked_vis2]
-    )
+    allow_any_instance_of(Carto::Visualization::ActiveRecord_Relation).to receive(:all).and_return([mocked_vis3, mocked_vis1, mocked_vis2])
 
     page = 2
     per_page = 1
@@ -482,7 +478,7 @@ describe Carto::VisualizationQueryBuilder do
     end
 
     it 'does not select private v2 maps' do
-      @carto_user1.stubs(:private_maps_enabled?).returns(true)
+      allow(@carto_user1).to receive(:private_maps_enabled?).and_return(true)
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PRIVATE })
 
       visualizations = @vqb.with_published.build

@@ -23,7 +23,7 @@ describe Carto::UserCommons do
     end
 
     context 'in production' do
-      before { Rails.env.stubs(:production?).returns(true) }
+      before { allow(Rails.env).to receive(:production?).and_return(true) }
 
       context 'when belongs to team' do
         before { user.update!(organization: team_organization) }

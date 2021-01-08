@@ -45,7 +45,7 @@ describe 'legacy behaviour tests' do
         @user.save.reload
         redis_mock = MockRedis.new
         user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, _orgname = nil, _redis = redis_mock)
-        CartoDB::GeocoderUsageMetrics.stubs(:new).returns(user_geocoder_metrics)
+        allow(CartoDB::GeocoderUsageMetrics).to receive(:new).and_return(user_geocoder_metrics)
         user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
         geocoding = FactoryGirl.create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
 
@@ -71,20 +71,20 @@ describe 'legacy behaviour tests' do
 
       it 'returns the estimated geocoding cost for the specified table' do
         table = create_table(user_id: @user.id)
-        Geocoding.stubs(:processable_rows).returns(2)
-        Carto::Geocoding.stubs(:processable_rows).returns(2)
+        allow(Geocoding).to receive(:processable_rows).and_return(2)
+        allow(Carto::Geocoding).to receive(:processable_rows).and_return(2)
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
           response.status.should be_success
           response.body.should == {:rows=>2, :estimation=>0}
         end
-        Geocoding.stubs(:processable_rows).returns(1400)
-        Carto::Geocoding.stubs(:processable_rows).returns(1400)
+        allow(Geocoding).to receive(:processable_rows).and_return(1400)
+        allow(Carto::Geocoding).to receive(:processable_rows).and_return(1400)
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
           response.status.should be_success
           response.body.should == {:rows=>1400, :estimation=>600}
         end
-        Geocoding.stubs(:processable_rows).returns(1001)
-        Carto::Geocoding.stubs(:processable_rows).returns(1001)
+        allow(Geocoding).to receive(:processable_rows).and_return(1001)
+        allow(Carto::Geocoding).to receive(:processable_rows).and_return(1001)
         get_json api_v1_geocodings_estimation_url(params.merge(table_name: table.name)) do |response|
           response.status.should be_success
           response.body.should == {:rows=>1001, :estimation=>1.5}
@@ -177,11 +177,11 @@ describe 'legacy behaviour tests' do
       get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text'}
       JSON.parse(last_response.body).should eq ['point', 'polygon']
 
-      CartoDB::SQLApi.any_instance.stubs(:fetch).returns([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_points' => 1 }])
+      allow_any_instance_of(CartoDB::SQLApi).to receive(:fetch).and_return([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_points' => 1 }])
       get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text'}
       JSON.parse(last_response.body).should eq ['point']
 
-      CartoDB::SQLApi.any_instance.stubs(:fetch).returns([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_polygons' => 1 }])
+      allow_any_instance_of(CartoDB::SQLApi).to receive(:fetch).and_return([ { 'postal_code_points' => 1, 'postal_code_polygons' => 1 }, { 'postal_code_polygons' => 1 }])
       get api_v1_geocodings_available_geometries_url, { kind: 'postalcode', free_text: 'my free text'}
       JSON.parse(last_response.body).should eq ['polygon']
     end

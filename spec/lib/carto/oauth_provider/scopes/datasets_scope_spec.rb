@@ -84,8 +84,8 @@ describe Carto::OauthProvider::Scopes::DatasetsScope do
     end
 
     before(:all) do
-      @user = mock
-      @user.stubs(:database_schema).returns('wadus')
+      @user = double
+      allow(@user).to receive(:database_schema).and_return('wadus')
     end
 
     it 'adds full access permissions' do

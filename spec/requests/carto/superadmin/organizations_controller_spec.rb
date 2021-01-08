@@ -36,7 +36,7 @@ describe Carto::Superadmin::OrganizationsController do
       before(:each) do
         @date = Date.today
         usage_metrics = @class.new(@org_user_owner.username, @organization.name, MockRedis.new)
-        @class.stubs(:new).returns(usage_metrics)
+        allow(@class).to receive(:new).and_return(usage_metrics)
         usage_metrics.incr(@service, :success_responses, 10, @date)
         usage_metrics.incr(@service, :success_responses, 100, @date - 2)
         usage_metrics.incr(@service, :empty_responses, 20, @date - 2)

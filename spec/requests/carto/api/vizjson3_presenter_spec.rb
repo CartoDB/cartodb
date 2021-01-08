@@ -39,8 +39,8 @@ describe Carto::Api::VizJSON3Presenter do
     let(:fake_vizjson) { { fake: 'sure!', layers: [] } }
 
     it 'to_vizjson uses the redis vizjson cache' do
-      cache_mock = mock
-      cache_mock.expects(:cached).with(@visualization.id, false, 3).twice.returns(fake_vizjson)
+      cache_mock = double
+      expect(cache_mock).to receive(:cached).with(@visualization.id, false, 3).twice.returns(fake_vizjson)
       presenter = Carto::Api::VizJSON3Presenter.new(@visualization, cache_mock)
       v1 = presenter.to_vizjson
       v2 = presenter.to_vizjson
@@ -87,8 +87,8 @@ describe Carto::Api::VizJSON3Presenter do
     it 'to_named_map_vizjson uses the redis vizjson cache' do
       fake_vizjson = { fake: 'sure!', layers: [] }
 
-      cache_mock = mock
-      cache_mock.expects(:cached).with(@visualization.id, false, anything).returns(fake_vizjson).twice
+      cache_mock = double
+      expect(cache_mock).to receive(:cached).with(@visualization.id, false, anything).and_return(fake_vizjson).twice
       presenter = Carto::Api::VizJSON3Presenter.new(@visualization, cache_mock)
       v1 = presenter.to_named_map_vizjson
       v2 = presenter.to_named_map_vizjson

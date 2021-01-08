@@ -675,7 +675,7 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'imports protected maps as public if the user does not have private maps enabled' do
-        @user.stubs(:private_maps_enabled).returns(false)
+        allow(@user).to receive(:private_maps_enabled).and_return(false)
         imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
         imported.privacy = Carto::Visualization::PRIVACY_PROTECTED
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
@@ -900,9 +900,9 @@ describe Carto::VisualizationsExportService2 do
 
             service = Carto::VisualizationsExportService2.new
             built_viz = service.build_visualization_from_json_export(export_2_0_1.to_json)
-            Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
-            Carto::AnalysisNode.any_instance.stubs(:test_query).returns(true)
-            Carto::Layer.any_instance.stubs(:test_query).returns(true)
+            allow_any_instance_of(Carto::VisualizationsExportPersistenceService).to receive(:test_query).and_return(true)
+            allow_any_instance_of(Carto::AnalysisNode).to receive(:test_query).and_return(true)
+            allow_any_instance_of(Carto::Layer).to receive(:test_query).and_return(true)
             imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
             imported_viz.layers[1].options[:user_name].should eq @user.username
           end
@@ -1036,9 +1036,9 @@ describe Carto::VisualizationsExportService2 do
         bypass_named_maps
         delete_user_data @org_user_with_dash_1
         delete_user_data @org_user_with_dash_2
-        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
-        Carto::AnalysisNode.any_instance.stubs(:test_query).returns(true)
-        Carto::Layer.any_instance.stubs(:test_query).returns(true)
+        allow_any_instance_of(Carto::VisualizationsExportPersistenceService).to receive(:test_query).and_return(true)
+        allow_any_instance_of(Carto::AnalysisNode).to receive(:test_query).and_return(true)
+        allow_any_instance_of(Carto::Layer).to receive(:test_query).and_return(true)
       end
 
       let(:table_name) { 'a_shared_table' }
@@ -1184,9 +1184,9 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'does not replace owner name with new user name on import when new query fails' do
-        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(false)
-        Carto::AnalysisNode.any_instance.stubs(:test_query).returns(false)
-        Carto::Layer.any_instance.stubs(:test_query).returns(false)
+        allow_any_instance_of(Carto::VisualizationsExportPersistenceService).to receive(:test_query).and_return(false)
+        allow_any_instance_of(Carto::AnalysisNode).to receive(:test_query).and_return(false)
+        allow_any_instance_of(Carto::Layer).to receive(:test_query).and_return(false)
         source_user = @carto_org_user_1
         target_user = @carto_org_user_2
         setup_visualization_with_layer_query(source_user, target_user)
@@ -1204,9 +1204,9 @@ describe Carto::VisualizationsExportService2 do
       end
 
       before(:each) do
-        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
-        Carto::AnalysisNode.any_instance.stubs(:test_query).returns(true)
-        Carto::Layer.any_instance.stubs(:test_query).returns(true)
+        allow_any_instance_of(Carto::VisualizationsExportPersistenceService).to receive(:test_query).and_return(true)
+        allow_any_instance_of(Carto::AnalysisNode).to receive(:test_query).and_return(true)
+        allow_any_instance_of(Carto::Layer).to receive(:test_query).and_return(true)
       end
 
       def default_query(table_name = @table.name)
@@ -1295,9 +1295,9 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'does not replace table name when query fails' do
-        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(false)
-        Carto::AnalysisNode.any_instance.stubs(:test_query).returns(false)
-        Carto::Layer.any_instance.stubs(:test_query).returns(false)
+        allow_any_instance_of(Carto::VisualizationsExportPersistenceService).to receive(:test_query).and_return(false)
+        allow_any_instance_of(Carto::AnalysisNode).to receive(:test_query).and_return(false)
+        allow_any_instance_of(Carto::Layer).to receive(:test_query).and_return(false)
         setup_visualization_with_layer_query('tabula', 'SELECT * FROM tabula WHERE tabulacol=2')
         renamed_tables = { 'tabula' => 'rasa' }
         import_and_check_query(renamed_tables, 'rasa', 'SELECT * FROM tabula WHERE tabulacol=2')
@@ -1607,7 +1607,7 @@ describe Carto::VisualizationsExportService2 do
         @visualization.password = 'super_secure_secret'
         @visualization.save!
 
-        @user2.stubs(:public_map_quota).returns(1)
+        allow(@user2).to receive(:public_map_quota).and_return(1)
         exported_string = export_service.export_visualization_json_string(@visualization.id, @user, with_password: true)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
         expect {
@@ -1621,7 +1621,7 @@ describe Carto::VisualizationsExportService2 do
         @visualization.user_id = @user2.id
         @visualization.save!
 
-        @user2.stubs(:private_map_quota).returns(1)
+        allow(@user2).to receive(:private_map_quota).and_return(1)
         exported_string = export_service.export_visualization_json_string(@visualization.id, @user, with_password: true)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
         expect {

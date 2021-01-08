@@ -82,7 +82,7 @@ describe Visualization::Collection do
       )
 
       collection = Visualization::Collection.new
-      collection.stubs(:user_shared_vis).with(@user_1.id).returns([vis2.id])
+      allow(collection).to receive(:user_shared_vis).with(@user_1.id).and_return([vis2.id])
 
       # Filter by user_id and non-owned id (excluding shared)
       records = collection.fetch(user_id: @user_1.id, id: vis3.id, exclude_shared: true)
@@ -166,7 +166,7 @@ describe Visualization::Collection do
       )
 
       collection = Visualization::Collection.new
-      collection.stubs(:user_shared_vis).with(@user_1.id).returns([vis2.id, vis3.id])
+      allow(collection).to receive(:user_shared_vis).with(@user_1.id).and_return([vis2.id, vis3.id])
 
       # Non-locked vis, all shared vis
       records = collection.fetch(user_id: @user_1.id)
@@ -352,7 +352,7 @@ describe Visualization::Collection do
       )
 
       collection = Visualization::Collection.new
-      collection.stubs(:user_shared_vis).with(@user_1.id).returns([vis_user2.id])
+      allow(collection).to receive(:user_shared_vis).with(@user_1.id).and_return([vis_user2.id])
 
       records = collection.fetch(user_id: @user_1.id)
       records.count.should eq 3

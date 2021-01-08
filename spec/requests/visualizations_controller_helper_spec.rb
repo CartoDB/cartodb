@@ -25,8 +25,8 @@ describe VisualizationsControllerHelper do
   end
 
   def setup_for_user(user)
-    user_request = mock
-    user_request.stubs(:params).returns(user_domain: user.username)
+    user_request = double
+    allow(user_request).to receive(:params).and_return(user_domain: user.username)
     stubs(:request).returns(user_request)
   end
 

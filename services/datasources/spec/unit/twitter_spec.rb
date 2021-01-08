@@ -159,7 +159,7 @@ describe Search::Twitter do
       input_terms = terms_fixture
       input_dates = dates_fixture
 
-      Typhoeus.stub(/fakeurl\.carto/) do |request|
+      Typhoeus.double(/fakeurl\.carto/) do |request|
         accept = (request.options[:headers]||{})['Accept'] || 'application/json'
         format = accept.split(',').first
 
@@ -220,7 +220,7 @@ describe Search::Twitter do
       input_terms = terms_fixture
       input_dates = dates_fixture
 
-      Typhoeus.stub(/fakeurl\.carto/) do |request|
+      Typhoeus.double(/fakeurl\.carto/) do |request|
         accept = (request.options[:headers]||{})['Accept'] || 'application/json'
         format = accept.split(',').first
 

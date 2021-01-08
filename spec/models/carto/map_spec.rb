@@ -91,19 +91,19 @@ describe Carto::Map do
     end
 
     it 'updates dependencies of carto layers' do
-      @map.layers.select(&:carto?).first.expects(:register_table_dependencies).once
+      expect(@map.layers.select(&:carto?).first).to receive(:register_table_dependencies).once
       @map.update_dataset_dependencies
     end
 
     it 'updates dependencies of carto layers' do
-      @map.layers.select(&:torque?).first.expects(:register_table_dependencies).once
+      expect(@map.layers.select(&:torque?).first).to receive(:register_table_dependencies).once
       @map.update_dataset_dependencies
     end
   end
 
   it '#save should trigger invalidation' do
     @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
-    @visualization.send(:invalidation_service).expects(:invalidate)
+    expect(@visualization.send(:invalidation_service)).to receive(:invalidate)
     @map.save
   end
 end

@@ -39,7 +39,7 @@ describe Api::Json::SynchronizationsController do
 
       it 'creates a synchronization and enqueues a import job for external sources' do
         begin
-          Resque::ImporterJobs.expects(:perform).once
+          expect(Resque::ImporterJobs).to receive(:perform).once
           carto_visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id)
           external_source = FactoryGirl.create(:external_source, visualization: carto_visualization)
           remote_id = external_source.visualization_id
@@ -59,7 +59,7 @@ describe Api::Json::SynchronizationsController do
     end
 
     it 'creates a synchronization and enqueues a import job' do
-      Resque::ImporterJobs.expects(:perform).once
+      expect(Resque::ImporterJobs).to receive(:perform).once
       expect {
         post_json api_v1_synchronizations_create_url(params) do |r|
           r.status.should eq 200
@@ -73,7 +73,7 @@ describe Api::Json::SynchronizationsController do
     it 'syncs... now :D' do
       sync = FactoryGirl.create(:carto_synchronization, user_id: @user1.id)
       sync.state.should eq Carto::Synchronization::STATE_SUCCESS
-      Resque::SynchronizationJobs.expects(:perform).once
+      expect(Resque::SynchronizationJobs).to receive(:perform).once
       put_json api_v1_synchronizations_sync_now_url(id: sync.id) do |r|
         r.status.should eq 200
         sync.reload

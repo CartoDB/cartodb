@@ -27,9 +27,9 @@ describe Carto::Api::VisualizationsController do
 
   describe 'main behaviour' do
     before(:all) do
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+      allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
 
-      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+      allow_any_instance_of(Carto::NamedMaps::Api).to receive(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
       @carto_user1 = Carto::User.find(@user_1.id)
@@ -912,8 +912,8 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'does not need connection to the user db if the viewer is the owner' do
-          Rails.logger.expects(:warning).never
-          Rails.logger.expects(:error).never
+          expect(Rails.logger).to receive(:warning).never
+          expect(Rails.logger).to receive(:error).never
 
           get_json api_v1_visualizations_show_url(id: @visualization.id),
                    api_key: @visualization.user.api_key,
@@ -1138,8 +1138,8 @@ describe Carto::Api::VisualizationsController do
               end
 
               it 'does not need connection to the user db if viewer is anonymous' do
-                Rails.logger.expects(:warning).never
-                Rails.logger.expects(:error).never
+                expect(Rails.logger).to receive(:warning).never
+                expect(Rails.logger).to receive(:error).never
                 get_json api_v1_visualizations_show_url(id: @visualization.id),
                          fetch_related_canonical_visualizations: true,
                          fetch_user: true,
@@ -1269,7 +1269,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns an empty array if no other user is watching' do
-        Carto::Visualization::Watcher.any_instance.stubs(:list).returns([])
+        allow_any_instance_of(Carto::Visualization::Watcher).to receive(:list).and_return([])
 
         bypass_named_maps
 

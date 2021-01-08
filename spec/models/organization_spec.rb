@@ -55,8 +55,8 @@ describe Carto::Organization do
 
     before(:each) do
       @organization = FactoryGirl.create(:organization)
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
     end
 
     after(:each) do
@@ -281,8 +281,8 @@ describe Carto::Organization do
   describe '#org_members_and_owner_removal' do
 
     it 'Tests removing a normal member from the organization' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
 
       org_name = unique_name('org')
       organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5)
@@ -342,8 +342,8 @@ describe Carto::Organization do
       expect { organization.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
     it 'Tests removing a normal member with analysis tables' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
 
       org_name = unique_name('org')
       organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5)
@@ -432,7 +432,7 @@ describe Carto::Organization do
   describe '#get_api_calls and #get_geocodings' do
     let(:organization) { create_organization_with_users }
 
-    before { Carto::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a }
+    before { allow_any_instance_of(Carto::User).to receive(:get_api_calls).and_return((0..30).to_a) }
 
     it 'should return the sum of the api_calls for all organization users' do
       expect(organization.get_api_calls).to eq((0..30).to_a.sum * organization.users.size)

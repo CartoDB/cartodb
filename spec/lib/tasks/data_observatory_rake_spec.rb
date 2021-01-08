@@ -35,10 +35,10 @@ describe 'data_observatory.rake' do
     end
 
     it 'calls subscribe from Carto::DoLicensingService with the expected parameters' do
-      File.stubs(:open).returns(csv_example)
-      service_mock = mock
+      allow(File).to receive(:open).and_return(csv_example)
+      service_mock = double
       service_mock.expects(:subscribe).twice
-      Carto::DoLicensingService.expects(:new).twice.with('fulano').returns(service_mock)
+      expect(Carto::DoLicensingService).to receive(:new).twice.with('fulano').returns(service_mock)
       Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke('fulano', 'datasets.csv')
     end
   end
@@ -61,9 +61,9 @@ describe 'data_observatory.rake' do
     end
 
     it 'calls unsubscribe from Carto::DoLicensingService with the expected parameters' do
-      service_mock = mock
-      service_mock.expects(:unsubscribe).once.with('carto.abc.dataset')
-      Carto::DoLicensingService.expects(:new).once.with('fulano').returns(service_mock)
+      service_mock = double
+      expect(service_mock).to receive(:unsubscribe).once.with('carto.abc.dataset')
+      expect(Carto::DoLicensingService).to receive(:new).once.with('fulano').returns(service_mock)
 
       Rake::Task['cartodb:data_observatory:remove_purchase'].invoke('fulano', 'carto.abc.dataset')
     end

@@ -14,7 +14,7 @@ module Carto
 
     before(:each) do
       bypass_named_maps
-      Rails.logger.expects(:error).never
+      expect(Rails.logger).to receive(:error).never
     end
 
     after { Carto::User.destroy_all }
@@ -24,27 +24,23 @@ module Carto
     end
 
     it 'should be consistent when no new/renamed/dropped tables' do
-      ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
-      ghost_tables_manager.expects(:link_ghost_tables_asynchronously).never
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_synchronously).never
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_asynchronously).never
       ghost_tables_manager.send(:link_ghost_tables)
     end
 
     it 'should not run sync when the user has more than MAX_USERTABLES_FOR_SYNC_CHECK tables' do
       # We simulate the deletion of 2 tables, which would trigger a sync run in a small user
-      ghost_tables_manager.stubs(:fetch_user_tables)
-                           .returns([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK + 2].map do |id|
+      allow(ghost_tables_manager).to receive(:fetch_user_tables).and_return([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK + 2].map do |id|
                                         Carto::TableFacade.new(id, "name #{id}", user.id)
-                                    end
-                                   )
+                                    end)
 
-      ghost_tables_manager.stubs(:fetch_cartodbfied_tables)
-                           .returns([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK].map do |id|
+      allow(ghost_tables_manager).to receive(:fetch_cartodbfied_tables).and_return([*1..Carto::GhostTablesManager::MAX_USERTABLES_FOR_SYNC_CHECK].map do |id|
                                         Carto::TableFacade.new(id, "name #{id}", user.id)
-                                    end
-                                   )
-      ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
+                                    end)
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_asynchronously).once
       # In big databases, `:should_run_synchronously?` is expensive so we want to ensure it isn't called at all
-      ghost_tables_manager.expects(:should_run_synchronously?).never
+      expect(ghost_tables_manager).to receive(:should_run_synchronously?).never
 
       ghost_tables_manager.send(:link_ghost_tables)
     end
@@ -54,11 +50,10 @@ module Carto
       renamed_tables = []
       new_tables = []
       dropped_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN]
-      ghost_tables_manager.stubs(:fetch_altered_tables)
-                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
+      allow(ghost_tables_manager).to receive(:fetch_altered_tables).and_return([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
-      ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
-      ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_synchronously).never
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_asynchronously).once
       ghost_tables_manager.send(:link_ghost_tables)
     end
 
@@ -67,11 +62,10 @@ module Carto
       renamed_tables = []
       new_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN - 2]
       dropped_tables = ['manolo', 'pepito']
-      ghost_tables_manager.stubs(:fetch_altered_tables)
-                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
+      allow(ghost_tables_manager).to receive(:fetch_altered_tables).and_return([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
-      ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
-      ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_synchronously).never
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_asynchronously).once
       ghost_tables_manager.send(:link_ghost_tables)
     end
 
@@ -80,11 +74,10 @@ module Carto
       renamed_tables = []
       new_tables = []
       dropped_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN - 1]
-      ghost_tables_manager.stubs(:fetch_altered_tables)
-                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
+      allow(ghost_tables_manager).to receive(:fetch_altered_tables).and_return([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
-      ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
-      ghost_tables_manager.expects(:link_ghost_tables_asynchronously).never
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_synchronously).once
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_asynchronously).never
       ghost_tables_manager.send(:link_ghost_tables)
     end
 
@@ -93,11 +86,10 @@ module Carto
       renamed_tables = []
       new_tables = [*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN]
       dropped_tables = []
-      ghost_tables_manager.stubs(:fetch_altered_tables)
-                           .returns([regenerated_tables, renamed_tables, new_tables, dropped_tables])
+      allow(ghost_tables_manager).to receive(:fetch_altered_tables).and_return([regenerated_tables, renamed_tables, new_tables, dropped_tables])
 
-      ghost_tables_manager.expects(:link_ghost_tables_synchronously).never
-      ghost_tables_manager.expects(:link_ghost_tables_asynchronously).once
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_synchronously).never
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_asynchronously).once
       ghost_tables_manager.send(:link_ghost_tables)
     end
 
@@ -110,7 +102,7 @@ module Carto
       user.tables.count.should eq 0
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
 
       ghost_tables_manager.link_ghost_tables_synchronously
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
@@ -171,7 +163,7 @@ module Carto
       user.tables.count.should eq 0
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
 
       ghost_tables_manager.link_ghost_tables_synchronously
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
@@ -211,7 +203,7 @@ module Carto
       user.tables.count.should eq 0
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
 
       ghost_tables_manager.link_ghost_tables_synchronously
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
@@ -293,7 +285,7 @@ module Carto
       user.tables.count.should eq 0
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
 
       ghost_tables_manager.link_ghost_tables_synchronously
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
@@ -338,7 +330,7 @@ module Carto
       user.tables.count.should eq 0
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, user.username).never
 
       ghost_tables_manager.link_ghost_tables_synchronously
       ghost_tables_manager.instance_eval { fetch_user_tables_synced_with_db? }.should be_true
@@ -381,14 +373,14 @@ module Carto
     end
 
     it 'perform a successfully ghost tables execution when is called from LinkGhostTablesByUsername' do
-      Carto::GhostTablesManager.expects(:new).with(user.id).returns(ghost_tables_manager).once
-      ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
+      expect(Carto::GhostTablesManager).to receive(:new).with(user.id).and_return(ghost_tables_manager).once
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_synchronously).once
       ::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername.perform(user.username)
     end
 
     it 'perform a successfully ghost tables execution when is called from LinkGhostTables' do
-      Carto::GhostTablesManager.expects(:new).with(user.id).returns(ghost_tables_manager).once
-      ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
+      expect(Carto::GhostTablesManager).to receive(:new).with(user.id).and_return(ghost_tables_manager).once
+      expect(ghost_tables_manager).to receive(:link_ghost_tables_synchronously).once
       ::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables.perform(user.id)
     end
 

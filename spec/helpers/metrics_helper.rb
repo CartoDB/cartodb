@@ -1,5 +1,5 @@
 module MetricsHelper
   def bypass_metrics
-    Carto::Tracking::Events::Event.any_instance.stubs(:report!).returns(true)
+    allow_any_instance_of(Carto::Tracking::Events::Event).to receive(:report!).and_return(true)
   end
 end

@@ -38,7 +38,7 @@ describe Asset do
     it 'validates file size' do
       asset = Asset.new user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/images/pattern.jpg').to_s
 
-      asset.stubs(:max_size).returns(10)
+      allow(asset).to receive(:max_size).and_return(10)
 
       asset.valid?.should be_false
       asset.errors.full_messages.should include("file is too big, 0.0MB max")
@@ -65,7 +65,7 @@ describe Asset do
   describe '#create' do
     describe 'on local filesystem' do
       before(:each) do
-        Asset.any_instance.stubs("use_s3?").returns(false)
+        allow_any_instance_of(Asset).to receive("use_s3?").and_return(false)
       end
 
       it 'should save the file when passing a full path as an argument' do
@@ -111,7 +111,7 @@ describe Asset do
 
   describe '#destroy' do
     it 'removes the file from storage if needed' do
-      Asset.any_instance.stubs("use_s3?").returns(false)
+      allow_any_instance_of(Asset).to receive("use_s3?").and_return(false)
       asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/cartofante_blue.png').to_s
       path = local_path(asset)
       File.exists?(path).should be_true
@@ -120,7 +120,7 @@ describe Asset do
     end
 
     it 'removes the file with special characters from storage' do
-      Asset.any_instance.stubs("use_s3?").returns(false)
+      allow_any_instance_of(Asset).to receive("use_s3?").and_return(false)
       asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/cartofante blue.png').to_s
       path = local_path(asset)
       File.exists?(path).should be_true

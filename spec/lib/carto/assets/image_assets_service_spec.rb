@@ -5,7 +5,7 @@ describe Carto::ImageAssetsService do
   describe('#fetch_file') do
     it 'reject files that are too big' do
       max_size = Carto::ImageAssetsService.new.max_size_in_bytes
-      IO.stubs(:copy_stream).returns(max_size + 1)
+      allow(IO).to receive(:copy_stream).and_return(max_size + 1)
 
       expect {
         Carto::ImageAssetsService.new.fetch_file(Tempfile.new(['manolo', '.png']))

@@ -15,8 +15,8 @@ describe Carto::Api::TablePresenter do
       canonical_layer.options["query"] = "SELECT * FROM #{main_table.name} JOIN #{aux_table.name} ON true"
       canonical_layer.save
 
-      context = mock
-      context.stubs(request: nil, polymorphic_path: '')
+      context = double
+      allow(context).to receive_messages(request: nil, polymorphic_path: '')
 
       presentation = Carto::Api::TablePresenter.new(main_table, @user, context).to_poro
       presentation[:table_visualization][:related_tables].count.should eq 1

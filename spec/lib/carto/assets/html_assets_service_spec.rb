@@ -12,7 +12,7 @@ describe Carto::HTMLAssetsService do
 
     it 'rejects files that are too big' do
       max_size = Carto::HTMLAssetsService.instance.max_size_in_bytes
-      IO.stubs(:copy_stream).returns(max_size + 1)
+      allow(IO).to receive(:copy_stream).and_return(max_size + 1)
 
       expect {
         Carto::HTMLAssetsService.instance.fetch_file(StringIO.new('test'))

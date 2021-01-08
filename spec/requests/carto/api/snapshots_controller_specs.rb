@@ -57,9 +57,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects unauthenticated access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_publically_accesible?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_publically_accesible?).and_return(false)
 
       get_json(snapshots_index_url(api_key: nil), Hash.new) do |response|
         response.status.should eq 401
@@ -67,9 +65,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects users with no read access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_viewable_by_user?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_viewable_by_user?).and_return(false)
 
       intruder_url = snapshots_index_url(user_domain: @intruder.subdomain,
                                          api_key: @intruder.api_key)
@@ -130,9 +126,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects unauthenticated access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_publically_accesible?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_publically_accesible?).and_return(false)
 
       get_json(snapshots_show_url(api_key: nil), Hash.new) do |response|
         response.status.should eq 401
@@ -140,9 +134,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects users with no read access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_viewable_by_user?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_viewable_by_user?).and_return(false)
 
       intruder_url = snapshots_show_url(user_domain: @intruder.subdomain,
                                         api_key: @intruder.api_key)
@@ -200,9 +192,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects unauthenticated access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_publically_accesible?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_publically_accesible?).and_return(false)
 
       nil_api_key_url = snapshots_create_url(api_key: nil)
       post_json(nil_api_key_url, state: fake_state) do |response|
@@ -211,9 +201,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects users with no read access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_viewable_by_user?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_viewable_by_user?).and_return(false)
 
       intruder_url = snapshots_create_url(user_domain: @intruder.subdomain,
                                           api_key: @intruder.api_key)
@@ -265,9 +253,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects unauthenticated access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_publically_accesible?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_publically_accesible?).and_return(false)
 
       put_json(snapshots_update_url(api_key: nil), Hash.new) do |response|
         response.status.should eq 401
@@ -275,9 +261,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects users with no read access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_viewable_by_user?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_viewable_by_user?).and_return(false)
 
       intruder_url = snapshots_update_url(user_domain: @intruder.subdomain,
                                           api_key: @intruder.api_key)
@@ -342,9 +326,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects unauthenticated access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_publically_accesible?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_publically_accesible?).and_return(false)
 
       delete_json(snapshots_delete_url(api_key: nil), Hash.new) do |response|
         response.status.should eq 401
@@ -352,9 +334,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'rejects users with no read access' do
-      Carto::Visualization.any_instance
-                          .stubs(:is_viewable_by_user?)
-                          .returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:is_viewable_by_user?).and_return(false)
 
       intruder_url = snapshots_delete_url(user_domain: @intruder.subdomain,
                                           api_key: @intruder.api_key)

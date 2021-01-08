@@ -12,12 +12,12 @@ describe Admin::TablesController do
   include Warden::Test::Helpers
 
   before(:all) do
-    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+    allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
 
     @user = FactoryGirl.create(:valid_user)
 
     @api_key = @user.api_key
-    @user.stubs(:should_load_common_data?).returns(false)
+    allow(@user).to receive(:should_load_common_data?).and_return(false)
   end
 
   after(:all) do
@@ -26,7 +26,7 @@ describe Admin::TablesController do
 
   before(:each) do
     bypass_named_maps
-    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+    allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
     @db = SequelRails.connection
     delete_user_data @user
     @headers = {
@@ -44,7 +44,7 @@ describe Admin::TablesController do
   describe 'GET /dashboard' do
     it 'returns a list of tables' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
       login_as(@user, scope: @user.username)
 

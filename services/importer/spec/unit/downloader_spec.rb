@@ -192,7 +192,7 @@ describe Downloader do
     end
 
     it 'supports accented URLs' do
-      CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+      allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
 
       [
         { url: 'spec/fixtures/política_agraria_común.csv', name: 'política_agraria_común' },
@@ -251,8 +251,8 @@ describe Downloader do
         headers:  {}
       )
 
-      Typhoeus::Response.any_instance.stubs(:mock).returns(false)
-      Typhoeus::Response.any_instance.stubs(:return_code).returns(:partial_file)
+      allow_any_instance_of(Typhoeus::Response).to receive(:mock).and_return(false)
+      allow_any_instance_of(Typhoeus::Response).to receive(:return_code).and_return(:partial_file)
 
       downloader = Downloader.new(@user.id, @file_url)
       lambda { downloader.run }.should raise_error PartialDownloadError
@@ -285,7 +285,7 @@ describe Downloader do
       end
 
       it 'raises when file size is bigger than available quota before download' do
-        CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+        allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
         serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
           downloader = Downloader.new(@user.id, url)
           expect { downloader.run }.to raise_error(CartoDB::Importer2::StorageQuotaExceededError)
@@ -293,12 +293,12 @@ describe Downloader do
       end
 
       it 'raises when file size is bigger than available quota during download' do
-        CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+        allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
 
         # We stub the `content_length` so to simulate a situation where we can't infer the
         # file size from the headers, and we're forced to do it counting chunk sizes during
         # download time.
-        CartoDB::Importer2::Downloader.any_instance.stubs(:content_length)
+        allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:content_length)
 
         serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
           downloader = Downloader.new(@user.id, url)
@@ -321,7 +321,7 @@ describe Downloader do
     end
 
     it 'returns a source_file name' do
-      CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+      allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
       serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
         downloader = Downloader.new(@user.id, url)
         downloader.run
@@ -330,7 +330,7 @@ describe Downloader do
     end
 
     it 'returns a local filepath' do
-      CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+      allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
       serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
         downloader = Downloader.new(@user.id, url)
         downloader.run

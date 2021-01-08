@@ -27,10 +27,10 @@ describe Carto::DoLicensingService do
 
   describe '#subscribe' do
     before(:each) do
-      @central_mock = mock
-      Cartodb::Central.stubs(:new).returns(@central_mock)
-      @service.stubs(:get_initial_sync_status).returns('unsynced')
-      @service.stubs(:get_entity_info).returns({})
+      @central_mock = double
+      allow(Cartodb::Central).to receive(:new).and_return(@central_mock)
+      allow(@service).to receive(:get_initial_sync_status).and_return('unsynced')
+      allow(@service).to receive(:get_entity_info).and_return({})
     end
 
     after(:each) do
@@ -39,12 +39,12 @@ describe Carto::DoLicensingService do
     end
 
     it 'calls create_do_datasets from Central with the expected parameters' do
-      @central_mock.expects(:create_do_datasets).once.with(username: 'fulano', datasets: [@dataset])
+      expect(@central_mock).to receive(:create_do_datasets).once.with(username: 'fulano', datasets: [@dataset])
       @service.subscribe(@dataset)
     end
 
     it 'stores the metadata in Redis' do
-      @central_mock.stubs(:create_do_datasets)
+      allow(@central_mock).to receive(:create_do_datasets)
 
       bq_redis = [
         {
@@ -63,7 +63,7 @@ describe Carto::DoLicensingService do
     end
 
     it 'allows to add more data in the same Redis key' do
-      @central_mock.stubs(:create_do_datasets)
+      allow(@central_mock).to receive(:create_do_datasets)
 
       new_dataset = {
         dataset_id: 'carto.abc.dataset3',
@@ -84,9 +84,9 @@ describe Carto::DoLicensingService do
 
   describe '#unsubscribe' do
     before(:each) do
-      @central_mock = mock
-      Cartodb::Central.stubs(:new).returns(@central_mock)
-      @service.stubs(:get_initial_sync_status).returns('unsynced')
+      @central_mock = double
+      allow(Cartodb::Central).to receive(:new).and_return(@central_mock)
+      allow(@service).to receive(:get_initial_sync_status).and_return('unsynced')
     end
 
     after(:each) do
@@ -94,15 +94,15 @@ describe Carto::DoLicensingService do
     end
 
     it 'calls remove_do_dataset from Central with the expected parameters' do
-      @central_mock.expects(:remove_do_dataset).once.with(username: 'fulano', id: @dataset_id)
+      expect(@central_mock).to receive(:remove_do_dataset).once.with(username: 'fulano', id: @dataset_id)
 
       @service.unsubscribe(@dataset_id)
     end
 
     it 'removes the metadata from Redis' do
-      @service.stubs(:get_entity_info).returns(@dataset)
-      @central_mock.stubs(:create_do_datasets)
-      @central_mock.stubs(:remove_do_dataset)
+      allow(@service).to receive(:get_entity_info).and_return(@dataset)
+      allow(@central_mock).to receive(:create_do_datasets)
+      allow(@central_mock).to receive(:remove_do_dataset)
 
       bq_datasets = [].to_json
 

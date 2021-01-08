@@ -59,10 +59,10 @@ describe Layer do
 
     before(:each) do
       @hyphen_user_layer = Layer.new
-      @hyphen_user_layer.stubs(:user).returns(@hyphen_user)
+      allow(@hyphen_user_layer).to receive(:user).and_return(@hyphen_user)
 
       @nonhyphen_layer = Layer.new
-      @nonhyphen_layer.stubs(:user).returns(@nonhyphen_user)
+      allow(@nonhyphen_layer).to receive(:user).and_return(@nonhyphen_user)
     end
 
     it 'returns normal tables' do

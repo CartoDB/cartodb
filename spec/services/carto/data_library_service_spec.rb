@@ -47,11 +47,9 @@ describe Carto::DataLibraryService do
         format: 'gpkg'
       }
 
-      client.expects(:get_visualization_v1)
-            .with(username: params[:source_username],
+      expect(client).to receive(:get_visualization_v1).with(username: params[:source_username],
                   name: params[:source_dataset],
-                  params: { api_key: params[:source_api_key] })
-            .returns(mocked_get_visualization_v1_response)
+                  params: { api_key: params[:source_api_key] }).and_return(mocked_get_visualization_v1_response)
       visualization = @carto_user1.visualizations
                                   .where(type: Carto::Visualization::TYPE_REMOTE)
                                   .where(name: source_dataset)
@@ -122,14 +120,12 @@ describe Carto::DataLibraryService do
         format: 'gpkg'
       }
 
-      client.expects(:get_api_keys_v3)
-            .with(username: params[:source_username],
-                  params: { api_key: params[:granted_api_key] })
-            .returns(api_keys_response)
+      expect(client).to receive(:get_api_keys_v3).with(username: params[:source_username],
+                  params: { api_key: params[:granted_api_key] }).and_return(api_keys_response)
 
       service = Carto::DataLibraryService.new
       params_load_one = { source_dataset: source_dataset }.merge(params)
-      service.expects(:load_dataset!).once.with(client, **params_load_one)
+      expect(service).to receive(:load_dataset!).once.with(client, **params_load_one)
       service.load_datasets!(client, **params)
     end
   end

@@ -14,8 +14,8 @@ describe Carto::Api::UsersController do
   end
 
   before(:each) do
-    ::User.any_instance.stubs(:create_in_central).returns(true)
-    ::User.any_instance.stubs(:update_in_central).returns(true)
+    allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
     FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, privacy: Carto::Visualization::PRIVACY_PUBLIC)
     FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner,
                                              privacy: Carto::Visualization::PRIVACY_PRIVATE)
@@ -31,8 +31,8 @@ describe Carto::Api::UsersController do
 
   describe 'me' do
     it 'contains hubspot_form_ids in config' do
-      CartoDB::Hubspot.any_instance.stubs(:enabled?).returns(true)
-      CartoDB::Hubspot.any_instance.stubs(:token).returns('something')
+      allow_any_instance_of(CartoDB::Hubspot).to receive(:enabled?).and_return(true)
+      allow_any_instance_of(CartoDB::Hubspot).to receive(:token).and_return('something')
 
       params = { user_domain: @org_user_1.username, api_key: @org_user_1.api_key }
 
@@ -104,7 +104,7 @@ describe Carto::Api::UsersController do
       end
 
       it 'is nil for cloud' do
-        Carto::Api::UsersController.any_instance.stubs(:license_expiration_date).returns(@expiration_date)
+        allow_any_instance_of(Carto::Api::UsersController).to receive(:license_expiration_date).and_return(@expiration_date)
 
         Cartodb.with_config(cartodb_com_hosted: false) do
           get_json api_v3_users_me_url, @headers do |response|
@@ -124,7 +124,7 @@ describe Carto::Api::UsersController do
       end
 
       it 'gets the date from the license' do
-        Carto::Api::UsersController.any_instance.stubs(:license_expiration_date).returns(@expiration_date)
+        allow_any_instance_of(Carto::Api::UsersController).to receive(:license_expiration_date).and_return(@expiration_date)
 
         params = { user_domain: @org_user_1.username, api_key: @org_user_1.api_key }
 
@@ -312,7 +312,7 @@ describe Carto::Api::UsersController do
         end
 
         it 'does not update the user multifactor authentications if the user saving operation fails' do
-          allow_any_instance_of(User).to receive(:save).raises(Sequel::ValidationFailed.new('error!'))
+          allow_any_instance_of(User).to receive(:save).and_raise(Sequel::ValidationFailed.new('error!'))
           payload = { user: { password_confirmation: 'foobarbaz', mfa: false } }
 
           put_json api_v3_users_update_me_url(url_options), payload, @headers
@@ -323,10 +323,10 @@ describe Carto::Api::UsersController do
 
         it 'does not save the user if the multifactor authentication updating operation fails' do
           mfa = Carto::UserMultifactorAuth.new
-          Carto::UserMultifactorAuth.stubs(:create!).raises(ActiveRecord::RecordInvalid.new(mfa))
+          allow(Carto::UserMultifactorAuth).to receive(:create!).and_raise(ActiveRecord::RecordInvalid.new(mfa))
           payload = { user: { password_confirmation: 'foobarbaz', mfa: true } }
 
-          @user.expects(:save).never
+          expect(@user).to receive(:save).never
 
           put_json api_v3_users_update_me_url(url_options), payload, @headers
 

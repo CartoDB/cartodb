@@ -23,7 +23,7 @@ describe Carto::UserMetadataExportService do
   end
 
   before(:each) do
-    Cartodb::Central.any_instance.stubs(:update_user).returns(true)
+    allow_any_instance_of(Cartodb::Central).to receive(:update_user).and_return(true)
   end
 
   def create_user_with_basemaps_assets_visualizations
@@ -140,7 +140,7 @@ describe Carto::UserMetadataExportService do
 
   describe '#export' do
     before(:all) do
-      Cartodb::Central.any_instance.stubs(:update_user).returns(true)
+      allow_any_instance_of(Cartodb::Central).to receive(:update_user).and_return(true)
       create_user_with_basemaps_assets_visualizations
     end
 

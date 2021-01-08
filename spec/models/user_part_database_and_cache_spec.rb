@@ -266,7 +266,7 @@ describe User do
   end
 
   it "replicates some user metadata in redis after saving" do
-    @user.stubs(:database_name).returns('wadus')
+    allow(@user).to receive(:database_name).and_return('wadus')
     @user.save
     $users_metadata.HGET(@user.key, 'id').should == @user.id.to_s
     $users_metadata.HGET(@user.key, 'database_name').should == 'wadus'
@@ -479,7 +479,7 @@ describe User do
     end
 
     def stub_and_check_version_pre_mu(version, is_pre_mu)
-      @user.db_service.stubs(:cartodb_extension_version).returns(version)
+      allow(@user.db_service).to receive(:cartodb_extension_version).and_return(version)
       @user.db_service.cartodb_extension_version_pre_mu?.should eq is_pre_mu
     end
   end

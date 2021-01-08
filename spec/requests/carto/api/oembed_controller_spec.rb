@@ -109,7 +109,7 @@ describe Carto::Api::OembedController do
       CartoDB.expects(:get_subdomainless_urls).at_least(0).returns(false)
 
       CartoDB.expects(:get_http_port).at_least(0).returns(nil)
-      CartoDB.expects(:get_session_domain).returns(domain)
+      expect(CartoDB).to receive(:get_session_domain).and_return(domain)
 
       # .test.local
       url_fragments = [ '', '', "#{domain}", '', '', '' ]
@@ -168,7 +168,7 @@ describe Carto::Api::OembedController do
       CartoDB.clear_internal_cache
       domain = 'carto.com'
       orgname = 'testorg'
-      CartoDB.expects(:get_session_domain).returns(domain)
+      expect(CartoDB).to receive(:get_session_domain).and_return(domain)
       CartoDB.expects(:get_http_port).at_least(0).returns(nil)            # Easier to test without port specified
 
       expected_results = {

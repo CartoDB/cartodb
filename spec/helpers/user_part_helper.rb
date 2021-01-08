@@ -34,9 +34,9 @@ module UserPartHelper
 
     before(:each) do
       bypass_named_maps
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      Table.any_instance.stubs(:update_cdb_tablemetadata)
+      allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
+      allow_any_instance_of(Table).to receive(:update_cdb_tablemetadata)
     end
 
     after(:all) do

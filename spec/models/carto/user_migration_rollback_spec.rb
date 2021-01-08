@@ -36,7 +36,7 @@ describe 'UserMigration' do
     end
 
     it 'import failing in import_metadata should rollback' do
-      allow_any_instance_of(Carto::RedisExportService).to receive(:restore_redis_from_hash_export).raises('Some exception')
+      allow_any_instance_of(Carto::RedisExportService).to receive(:restore_redis_from_hash_export).and_raise('Some exception')
 
       imp = import
       imp.run_import.should eq false
@@ -48,7 +48,7 @@ describe 'UserMigration' do
     end
 
     it 'import failing in JobImport#run!' do
-      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:grant_user_role).raises('Some exception')
+      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:grant_user_role).and_raise('Some exception')
 
       imp = import
       imp.run_import.should eq false
@@ -60,7 +60,7 @@ describe 'UserMigration' do
     end
 
     it 'import failing creating user database and roles' do
-      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:import_pgdump).raises('Some exception')
+      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:import_pgdump).and_raise('Some exception')
 
       imp = import
       imp.run_import.should eq false
@@ -72,7 +72,7 @@ describe 'UserMigration' do
     end
 
     it 'import failing importing visualizations' do
-      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).raises('Some exception')
+      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).and_raise('Some exception')
 
       imp = import
       imp.run_import.should eq false
@@ -89,8 +89,8 @@ describe 'UserMigration' do
     end
 
     it 'should continue with rollback if data import rollback fails' do
-      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:grant_user_role).raises('Some exception')
-      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:rollback_user).raises('Some exception')
+      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:grant_user_role).and_raise('Some exception')
+      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:rollback_user).and_raise('Some exception')
       import.run_import.should eq false
       CartoDB::DataMover::ImportJob.any_instance.unstub(:grant_user_role)
       CartoDB::DataMover::ImportJob.any_instance.unstub(:rollback_user)
@@ -104,7 +104,7 @@ describe 'UserMigration' do
     end
 
     it 'import record should exist if import_data fails and rollbacks' do
-      allow_any_instance_of(Carto::UserMigrationImport).to receive(:do_import_data).raises('Some exception')
+      allow_any_instance_of(Carto::UserMigrationImport).to receive(:do_import_data).and_raise('Some exception')
 
       imp = import
       imp.run_import.should eq false
@@ -117,8 +117,8 @@ describe 'UserMigration' do
     end
 
     it 'import failing importing visualizations does not remove assets' do
-      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).raises('Some exception')
-      Asset.any_instance.stubs(:use_s3?).returns(false)
+      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).and_raise('Some exception')
+      allow_any_instance_of(Asset).to receive(:use_s3?).and_return(false)
       asset = Asset.create(asset_file: Rails.root + 'spec/support/data/cartofante_blue.png', user: @user)
       local_url = CGI.unescape(asset.public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
       imp = import
@@ -142,8 +142,8 @@ describe 'UserMigration' do
         import_metadata: true,
         dry: false
       )
-      import.stubs(:assert_organization_does_not_exist)
-      import.stubs(:assert_user_does_not_exist)
+      allow(import).to receive(:assert_organization_does_not_exist)
+      allow(import).to receive(:assert_user_does_not_exist)
       import
     end
 
@@ -167,7 +167,7 @@ describe 'UserMigration' do
     end
 
     it 'import failing in import_metadata should rollback' do
-      allow_any_instance_of(Carto::RedisExportService).to receive(:restore_redis_from_hash_export).raises('Some exception')
+      allow_any_instance_of(Carto::RedisExportService).to receive(:restore_redis_from_hash_export).and_raise('Some exception')
 
       organization_import.run_import.should eq false
       organization_import.reload.state.should eq 'failure'
@@ -178,7 +178,7 @@ describe 'UserMigration' do
     end
 
     it 'import failing in JobImport#run!' do
-      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:grant_user_role).raises('Some exception')
+      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:grant_user_role).and_raise('Some exception')
 
       organization_import.run_import.should eq false
       organization_import.reload.state.should eq 'failure'
@@ -189,7 +189,7 @@ describe 'UserMigration' do
     end
 
     it 'import failing creating user database and roles' do
-      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:import_pgdump).raises('Some exception')
+      allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:import_pgdump).and_raise('Some exception')
 
       organization_import.run_import.should eq false
       organization_import.reload.state.should eq 'failure'
@@ -200,7 +200,7 @@ describe 'UserMigration' do
     end
 
     it 'import failing importing visualizations' do
-      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).raises('Some exception')
+      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).and_raise('Some exception')
 
       organization_import.run_import.should eq false
       organization_import.reload.state.should eq 'failure'
@@ -211,7 +211,7 @@ describe 'UserMigration' do
     end
 
     it 'import failing import visualizations with metadata_only option' do
-      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).raises('Some exception')
+      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).and_raise('Some exception')
 
       organization_import.import_data = false
       organization_import.save!
@@ -227,7 +227,7 @@ describe 'UserMigration' do
     end
 
     it 'import record should exist if import_data fails and rollbacks' do
-      allow_any_instance_of(Carto::UserMigrationImport).to receive(:do_import_data).raises('Some exception')
+      allow_any_instance_of(Carto::UserMigrationImport).to receive(:do_import_data).and_raise('Some exception')
 
       organization_import.run_import.should eq false
       organization_import.reload.state.should eq 'failure'
@@ -239,8 +239,8 @@ describe 'UserMigration' do
     end
 
     it 'import failing importing visualizations does not remove assets' do
-      Carto::StorageOptions::S3.stubs(:enabled?).returns(false)
-      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).raises('Some exception')
+      allow(Carto::StorageOptions::S3).to receive(:enabled?).and_return(false)
+      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_search_tweets_from_directory).and_raise('Some exception')
       asset = Carto::Asset.for_organization(
         organization: organization,
         resource: File.open(Rails.root + 'spec/support/data/cartofante_blue.png')

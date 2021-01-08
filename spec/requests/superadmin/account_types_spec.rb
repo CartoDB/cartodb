@@ -54,7 +54,7 @@ describe Superadmin::AccountTypesController do
     end
 
     it 'should update an account type' do
-      ::Resque.expects(:enqueue)
+      expect(::Resque).to receive(:enqueue)
               .once
               .with(Resque::UserJobs::RateLimitsJobs::SyncRedis, @account_type.account_type)
       expect {
@@ -68,7 +68,7 @@ describe Superadmin::AccountTypesController do
     end
 
     it 'should not update an account type with empty rate limits' do
-      ::Resque.expects(:enqueue).never
+      expect(::Resque).to receive(:enqueue).never
 
       api_attributes = @account_type.rate_limit.api_attributes
       put_json superadmin_account_type_url(@account_type.account_type),
@@ -82,7 +82,7 @@ describe Superadmin::AccountTypesController do
     end
 
     it 'should raise an error if non-existent account type' do
-      ::Resque.expects(:enqueue).never
+      expect(::Resque).to receive(:enqueue).never
 
       put_json superadmin_account_type_url("non_existent"),
                { account_type: { account_type: @account_type.account_type } }.to_json,
@@ -94,7 +94,7 @@ describe Superadmin::AccountTypesController do
     end
 
     it 'should not sync redis if rate limits do not change' do
-      ::Resque.expects(:enqueue).never
+      expect(::Resque).to receive(:enqueue).never
 
       current_rate_limits = @account_type.rate_limit.api_attributes
       @account_type_param = {

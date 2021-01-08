@@ -16,14 +16,14 @@ describe Visualization::Overlays do
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
     member = Visualization::Member.new
-    map_mock = mock
-    map_mock.stubs(:scrollwheel=)
-    map_mock.stubs(:legends=)
-    map_mock.stubs(:legends)
-    map_mock.stubs(:scrollwheel)
-    map_mock.stubs(:id)
-    map_mock.stubs(:save)
-    Visualization::Member.any_instance.stubs(:map).returns(map_mock)
+    map_mock = double
+    allow(map_mock).to receive(:scrollwheel=)
+    allow(map_mock).to receive(:legends=)
+    allow(map_mock).to receive(:legends)
+    allow(map_mock).to receive(:scrollwheel)
+    allow(map_mock).to receive(:id)
+    allow(map_mock).to receive(:save)
+    allow_any_instance_of(Visualization::Member).to receive(:map).and_return(map_mock)
     @visualization = member
 
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
@@ -39,9 +39,9 @@ describe Visualization::Overlays do
     end
 
     it 'should not create logo if user has disabled_cartodb_logo feature_flag' do
-      user_mock = mock
-      user_mock.stubs(:has_feature_flag?).with('disabled_cartodb_logo').returns(true)
-      @visualization.stubs(:user).returns(user_mock)
+      user_mock = double
+      allow(user_mock).to receive(:has_feature_flag?).with('disabled_cartodb_logo').and_return(true)
+      allow(@visualization).to receive(:user).and_return(user_mock)
 
       Visualization::Overlays.new(@visualization).create_default_overlays
 

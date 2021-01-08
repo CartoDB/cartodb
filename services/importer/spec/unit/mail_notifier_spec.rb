@@ -9,8 +9,8 @@ describe CartoDB::Importer2::MailNotifier do
 
   before(:each) do
     @data_import = FactoryGirl.build(:data_import)
-    @resque = mock
-    @result = mock
+    @resque = double
+    @result = double
     results = [@result]
     @mail_notifier = CartoDB::Importer2::MailNotifier.new(@data_import, results, @resque)
   end
@@ -28,11 +28,11 @@ describe CartoDB::Importer2::MailNotifier do
       @data_import.expects(:get_error_text).once.returns(error_text)
       set_import_duration(CartoDB::Importer2::MailNotifier::MIN_IMPORT_TIME_TO_NOTIFY + 1)
       @data_import.stubs(:user_id).once.returns(:any_user_id)
-      @data_import.stubs(:stats).returns('[]')
-      @data_import.stubs(:service_item_id).returns('filename.txt')
-      @result.stubs(:success).returns(true)
+      allow(@data_import).to receive(:stats).and_return('[]')
+      allow(@data_import).to receive(:service_item_id).and_return('filename.txt')
+      allow(@result).to receive(:success).and_return(true)
       enqueue_params = :any_user_id, 1, 1, @result, @result, error_text, ['filename.txt']
-      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, *enqueue_params).returns(true)
+      expect(@resque).to receive(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, *enqueue_params).and_return(true)
 
       @mail_notifier.notify_if_needed
 
@@ -44,8 +44,8 @@ describe CartoDB::Importer2::MailNotifier do
     def stub_notifiable_data_import
       set_import_duration(CartoDB::Importer2::MailNotifier::MIN_IMPORT_TIME_TO_NOTIFY + 1)
       @data_import.stubs(:synchronization_id).once.returns(nil)
-      @data_import.stubs(:stats).returns('[]')
-      @data_import.stubs(:service_item_id).returns('filename.txt')
+      allow(@data_import).to receive(:stats).and_return('[]')
+      allow(@data_import).to receive(:service_item_id).and_return('filename.txt')
     end
 
     it 'should return true if the import took more than MIN_IMPORT_TIME_TO_NOTIFY and was not a sync' do
@@ -56,7 +56,7 @@ describe CartoDB::Importer2::MailNotifier do
 
     it 'should return false if the import state is not finished' do
       stub_notifiable_data_import
-      @data_import.stubs(:state).returns('pending')
+      allow(@data_import).to receive(:state).and_return('pending')
 
       @mail_notifier.should_notify?.should == false
     end
@@ -79,13 +79,13 @@ describe CartoDB::Importer2::MailNotifier do
   describe '#send!' do
     it 'should inconditionally send a mail to the user who triggered the import' do
       @data_import.stubs(:user_id).once.returns(:any_user_id)
-      @data_import.stubs(:stats).returns('[]')
-      @data_import.stubs(:service_item_id).returns('filename.txt')
+      allow(@data_import).to receive(:stats).and_return('[]')
+      allow(@data_import).to receive(:service_item_id).and_return('filename.txt')
       error_text = { title: 'error stubbing' }
       @data_import.expects(:get_error_text).once.returns(error_text)
       enqueue_params = :any_user_id, 1, 1, @result, @result, error_text, ['filename.txt']
-      @resque.expects(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, *enqueue_params).returns(true)
-      @result.stubs(:success).returns(true)
+      expect(@resque).to receive(:enqueue).with(::Resque::UserJobs::Mail::DataImportFinished, *enqueue_params).and_return(true)
+      allow(@result).to receive(:success).and_return(true)
       @mail_notifier.send!
       @mail_notifier.mail_sent?.should == true
     end

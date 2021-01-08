@@ -45,7 +45,7 @@ describe Carto::Api::VisualizationsController do
 
       it 'marks visualizations as using vizjson2' do
         visualization = FactoryGirl.create(:carto_visualization)
-        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        allow_any_instance_of(Carto::Api::VisualizationsController).to receive(:generate_vizjson2).and_return({})
         get(
           api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
           {},
@@ -56,7 +56,7 @@ describe Carto::Api::VisualizationsController do
 
       it 'marks visualizations as using vizjson2 with invalid referer' do
         visualization = FactoryGirl.create(:carto_visualization)
-        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        allow_any_instance_of(Carto::Api::VisualizationsController).to receive(:generate_vizjson2).and_return({})
         get(
           api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
           {},
@@ -67,14 +67,14 @@ describe Carto::Api::VisualizationsController do
 
       it 'marks visualizations as using vizjson2 without referer' do
         visualization = FactoryGirl.create(:carto_visualization)
-        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        allow_any_instance_of(Carto::Api::VisualizationsController).to receive(:generate_vizjson2).and_return({})
         get api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id)
         visualization.uses_vizjson2?.should be_true
       end
 
       it 'does not mark visualizations as using vizjson2 with carto referer' do
         visualization = FactoryGirl.create(:carto_visualization)
-        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        allow_any_instance_of(Carto::Api::VisualizationsController).to receive(:generate_vizjson2).and_return({})
         get(
           api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
           {},
@@ -125,11 +125,8 @@ describe Carto::Api::VisualizationsController do
       width = 123
       height = 456
 
-      Carto::StaticMapsURLHelper.any_instance
-                                .stubs(:get_cdn_config)
-                                .returns(nil)
-      ApplicationHelper.stubs(:maps_api_template)
-                       .returns("http://#{@user_1.username}.localhost.lan:8181")
+      allow_any_instance_of(Carto::StaticMapsURLHelper).to receive(:get_cdn_config).and_return(nil)
+      allow(ApplicationHelper).to receive(:maps_api_template).and_return("http://#{@user_1.username}.localhost.lan:8181")
 
       get api_v2_visualizations_static_map_url(
         user_domain: @user_1.username,
@@ -146,9 +143,7 @@ describe Carto::Api::VisualizationsController do
       width = 123
       height = 456
 
-      Carto::StaticMapsURLHelper.any_instance
-                                .stubs(:get_cdn_config)
-                                .returns("http" => "cdn.local.lan")
+      allow_any_instance_of(Carto::StaticMapsURLHelper).to receive(:get_cdn_config).and_return("http" => "cdn.local.lan")
 
       get api_v2_visualizations_static_map_url(
         user_domain: @user_1.username,
@@ -176,11 +171,8 @@ describe Carto::Api::VisualizationsController do
       @user_1.private_tables_enabled = false
       @user_1.save
 
-      Carto::StaticMapsURLHelper.any_instance
-                                .stubs(:get_cdn_config)
-                                .returns(nil)
-      ApplicationHelper.stubs(:maps_api_template)
-                       .returns("http://#{@user_1.username}.localhost.lan:8181")
+      allow_any_instance_of(Carto::StaticMapsURLHelper).to receive(:get_cdn_config).and_return(nil)
+      allow(ApplicationHelper).to receive(:maps_api_template).and_return("http://#{@user_1.username}.localhost.lan:8181")
 
       get api_v2_visualizations_static_map_url(
         user_domain: @user_1.username,
@@ -220,9 +212,7 @@ describe Carto::Api::VisualizationsController do
       width = 123
       height = 456
 
-      Carto::StaticMapsURLHelper.any_instance
-                                .stubs(:get_cdn_config)
-                                .returns("http" => "cdn.local.lan")
+      allow_any_instance_of(Carto::StaticMapsURLHelper).to receive(:get_cdn_config).and_return("http" => "cdn.local.lan")
 
       get api_v2_visualizations_static_map_url(
         user_domain: @user_1.username,

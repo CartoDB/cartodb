@@ -64,18 +64,18 @@ describe Carto::Organization do
     let(:mapzen_routing_calls) { 0 }
 
     before do
-      organization.stubs(:get_api_calls).returns(api_calls)
-      organization.stubs(:map_view_quota).returns(100)
-      organization.stubs(:get_geocoding_calls).returns(geocoding_calls)
-      organization.stubs(:geocoding_quota).returns(100)
-      organization.stubs(:get_obs_snapshot_calls).returns(obs_snapshot_calls)
-      organization.stubs(:obs_snapshot_quota).returns(100)
-      organization.stubs(:obs_general_quota).returns(100)
-      organization.stubs(:get_obs_general_calls).returns(obs_general_calls)
-      organization.stubs(:mapzen_routing_quota).returns(100)
-      organization.stubs(:get_mapzen_routing_calls).returns(mapzen_routing_calls)
-      organization.stubs(:here_isolines_quota).returns(100)
-      organization.stubs(:get_here_isolines_calls).returns(here_isolines_calls)
+      allow(organization).to receive(:get_api_calls).and_return(api_calls)
+      allow(organization).to receive(:map_view_quota).and_return(100)
+      allow(organization).to receive(:get_geocoding_calls).and_return(geocoding_calls)
+      allow(organization).to receive(:geocoding_quota).and_return(100)
+      allow(organization).to receive(:get_obs_snapshot_calls).and_return(obs_snapshot_calls)
+      allow(organization).to receive(:obs_snapshot_quota).and_return(100)
+      allow(organization).to receive(:obs_general_quota).and_return(100)
+      allow(organization).to receive(:get_obs_general_calls).and_return(obs_general_calls)
+      allow(organization).to receive(:mapzen_routing_quota).and_return(100)
+      allow(organization).to receive(:get_mapzen_routing_calls).and_return(mapzen_routing_calls)
+      allow(organization).to receive(:here_isolines_quota).and_return(100)
+      allow(organization).to receive(:get_here_isolines_calls).and_return(here_isolines_calls)
     end
 
     context 'when over geocoding quota' do

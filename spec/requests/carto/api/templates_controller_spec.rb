@@ -7,7 +7,7 @@ describe Carto::Api::TemplatesController do
   include Warden::Test::Helpers
 
   before(:each) do
-    ::User.any_instance.stubs(:has_feature_flag?).returns(false)
+    allow_any_instance_of(::User).to receive(:has_feature_flag?).and_return(false)
     allow_any_instance_of(::User).to receive(:has_feature_flag?).with('templated_workflows').returns(true)
     allow_any_instance_of(Carto::User).to receive(:has_feature_flag?).with('templated_workflows').returns(true)
     allow_any_instance_of(Carto::User).to receive(:has_feature_flag?).with('disabled_cartodb_logo').returns(false)

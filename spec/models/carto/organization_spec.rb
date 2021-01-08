@@ -33,10 +33,10 @@ describe Carto::Organization do
   describe '#destroy' do
     before(:each) do
       @organization = described_class.find(create(:organization).id)
+      allow_any_instance_of(Carto::Group).to receive(:destroy_group_with_extension)
     end
 
     it 'destroys its groups through the extension' do
-      Carto::Group.any_instance.expects(:destroy_group_with_extension).once
       create(:carto_group, organization: @organization)
       @organization.destroy
     end

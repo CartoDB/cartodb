@@ -43,6 +43,10 @@ RSpec.configure do |config|
     end
   end
 
+  config.mock_with :rspec do |mocks|
+    mocks.syntax = [:expect, :should]
+  end
+
   config.before(:all) do
     unless ENV['PARALLEL']
       clean_redis_databases

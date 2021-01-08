@@ -37,8 +37,9 @@ describe Carto::Organization do
     @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
   end
 
+  after { bypass_named_maps }
+
   after(:all) do
-    bypass_named_maps
     begin
       @user.destroy
     rescue StandardError

@@ -153,7 +153,7 @@ describe Carto::User do
     end
 
     it 'creates a fresh set of notifications' do
-      Carto::UserEmailNotification.any_instance.stubs(:valid_notification).returns(true)
+      allow_any_instance_of(Carto::UserEmailNotification).to receive(:valid_notification).and_return(true)
       @carto_user.email_notifications = {
         notif_a: true,
         notif_b: false
@@ -165,7 +165,7 @@ describe Carto::User do
     end
 
     it 'updates notifications if they already exist' do
-      Carto::UserEmailNotification.any_instance.stubs(:valid_notification).returns(true)
+      allow_any_instance_of(Carto::UserEmailNotification).to receive(:valid_notification).and_return(true)
       Carto::UserEmailNotification.create(
         user_id: @carto_user.id,
         notification: 'existing_notification',

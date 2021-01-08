@@ -328,7 +328,7 @@ describe User do
 
     describe '#invalidate_all_sessions!' do
       before(:each) do
-        Cartodb::Central.any_instance.stubs(:send_request)
+        allow_any_instance_of(Cartodb::Central).to receive(:send_request)
       end
 
       after(:each) do

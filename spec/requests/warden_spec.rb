@@ -97,7 +97,7 @@ describe 'Warden' do
     end
 
     it 'UI redirects to login page if password is expired' do
-      Cartodb::Central.any_instance.stubs(:send_request)
+      allow_any_instance_of(Cartodb::Central).to receive(:send_request)
 
       login
 
@@ -118,7 +118,7 @@ describe 'Warden' do
     it 'redirects to the original url after changing the expired password' do
       # we use this to avoid generating the static assets in CI
       allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
-      Cartodb::Central.any_instance.stubs(:send_request)
+      allow_any_instance_of(Cartodb::Central).to receive(:send_request)
 
       login
 
@@ -147,7 +147,7 @@ describe 'Warden' do
     end
 
     it 'API returns 403 with an error if password is expired' do
-      Cartodb::Central.any_instance.stubs(:send_request)
+      allow_any_instance_of(Cartodb::Central).to receive(:send_request)
 
       login
 
@@ -332,7 +332,7 @@ describe 'Warden' do
 
     before(:each) do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:send_request)
+      allow_any_instance_of(Cartodb::Central).to receive(:send_request)
     end
 
     after(:all) do

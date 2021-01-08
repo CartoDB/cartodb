@@ -938,7 +938,7 @@ describe User do
 
     after(:all) do
       @ghost_tables_user.destroy
-      CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:create_ghost_tables_event_trigger)
     end
 
     it 'creates the cdb_ddl_execution table with the user' do

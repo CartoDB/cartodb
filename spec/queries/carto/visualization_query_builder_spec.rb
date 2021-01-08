@@ -239,13 +239,13 @@ describe Carto::VisualizationQueryBuilder do
 
     # visualization.mapviews -> visualization.stats -> CartoDB::Visualization::Stats ->
     #   CartoDB::Stats::APICalls.get_api_calls_with_dates
-    CartoDB::Stats::APICalls.any_instance.stubs(:get_api_calls_with_dates)
+    allow_any_instance_of(CartoDB::Stats::APICalls).to receive(:get_api_calls_with_dates)
                             .with(@user1.username, {stat_tag: table1.table_visualization.id})
                             .returns({ "2015-04-15" => 1, "2015-04-14" => 0 })
-    CartoDB::Stats::APICalls.any_instance.stubs(:get_api_calls_with_dates)
+    allow_any_instance_of(CartoDB::Stats::APICalls).to receive(:get_api_calls_with_dates)
                             .with(@user1.username, {stat_tag: table2.table_visualization.id})
                             .returns({ "2015-04-15" => 333, "2015-04-14" => 666 })
-    CartoDB::Stats::APICalls.any_instance.stubs(:get_api_calls_with_dates)
+    allow_any_instance_of(CartoDB::Stats::APICalls).to receive(:get_api_calls_with_dates)
                             .with(@user1.username, {stat_tag: table3.table_visualization.id})
                             .returns({ "2015-04-15" => 12, "2015-04-14" => 20 })
 

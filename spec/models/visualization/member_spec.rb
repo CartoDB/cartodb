@@ -285,7 +285,7 @@ describe Visualization::Member do
         layer.user_tables << @other_table
 
         # We are doing dependencies manually because the physical table does not exist
-        Carto::Map.any_instance.stubs(:update_dataset_dependencies)
+        allow_any_instance_of(Carto::Map).to receive(:update_dataset_dependencies)
         analysis_to_be_deleted = @visualization.analyses.create(user: @user, analysis_definition: { id: 'a0' })
         analysis_to_keep = @visualization.analyses.create(user: @user, analysis_definition: { id: 'b0' })
 
@@ -565,7 +565,7 @@ describe Visualization::Member do
 
     it 'checks that only users with private tables enabled can set LINK privacy' do
       user_id = Carto::UUIDHelper.random_uuid
-      Visualization::Member.any_instance.stubs(:named_maps)
+      allow_any_instance_of(Visualization::Member).to receive(:named_maps)
 
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,

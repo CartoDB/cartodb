@@ -28,7 +28,7 @@ describe Carto::Api::VisualizationsController do
   before(:all) do
     allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
 
-    Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+    allow_any_instance_of(Carto::NamedMaps::Api).to receive(get: nil, create: true, update: true)
 
     @user_1 = FactoryGirl.create(:valid_user)
     @carto_user1 = Carto::User.find(@user_1.id)

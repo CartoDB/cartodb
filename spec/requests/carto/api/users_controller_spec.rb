@@ -147,7 +147,7 @@ describe Carto::Api::UsersController do
       end
 
       it 'returns false for Individual plan' do
-        Carto::User.any_instance.stubs(account_type: 'Individual')
+        allow_any_instance_of(Carto::User).to receive(account_type: 'Individual')
 
         get_json api_v3_users_me_url(@params), @headers do |response|
           expect(response.status).to eq(200)
@@ -156,7 +156,7 @@ describe Carto::Api::UsersController do
       end
 
       it 'returns true for an enterprise plan' do
-        Carto::User.any_instance.stubs(account_type: 'ENTERPRISE LUMP-SUM')
+        allow_any_instance_of(Carto::User).to receive(account_type: 'ENTERPRISE LUMP-SUM')
 
         get_json api_v3_users_me_url(@params), @headers do |response|
           expect(response.status).to eq(200)
@@ -469,7 +469,7 @@ describe Carto::Api::UsersController do
   describe 'delete_me' do
     before(:each) do
       @user = FactoryGirl.create(:user, password: 'foobarbaz', password_confirmation: 'foobarbaz')
-      User.any_instance.stubs(:delete_in_central)
+      allow_any_instance_of(User).to receive(:delete_in_central)
     end
 
     let(:url_options) do

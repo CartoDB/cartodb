@@ -19,12 +19,12 @@ describe CartoDB::HiresBatchGeocoder do
     @log.stubs(:append_and_store)
     @working_dir = Dir.mktmpdir
     @input_csv_file = path_to '../../table-geocoder/spec/fixtures/nokia_input.csv'
-    CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
-        'base_url' => 'batch.example.com',
-        'app_id' => '',
-        'token' => '',
-        'mailto' => ''
-      })
+    allow_any_instance_of(CartoDB::HiresBatchGeocoder).to receive(:config).and_return(
+      'base_url' => 'batch.example.com',
+      'app_id' => '',
+      'token' => '',
+      'mailto' => ''
+    )
     @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}' )
     @batch_geocoder = CartoDB::HiresBatchGeocoder.new(@input_csv_file, @working_dir, @log, @geocoding_model)
   end

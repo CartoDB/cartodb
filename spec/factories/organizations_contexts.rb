@@ -79,12 +79,13 @@ shared_context 'organization with users helper' do
   end
 
   after(:all) do
-    bypass_named_maps
     delete_user_data @org_user_owner if @org_user_owner
     @organization.destroy_cascade
 
     @organization_2.destroy_cascade
   end
+
+  after { bypass_named_maps }
 
   def share_table(table, owner, user)
     bypass_named_maps

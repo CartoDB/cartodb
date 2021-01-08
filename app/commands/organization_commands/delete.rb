@@ -10,7 +10,7 @@ module OrganizationCommands
       if organization
         organization.destroy_cascade(delete_in_central: false)
       else
-        Rails.logger.info(message: 'Organization does not exist', organization_id: params[:id])
+        logger.info(message: 'Organization does not exist', organization_id: params[:id])
       end
 
       # Notify even if the organization didn't exist, so it is deleted in Central.

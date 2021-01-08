@@ -1,6 +1,7 @@
 class BaseCommand
 
   attr_accessor(
+    :logger,
     :notifications_topic,
     :params,
     :request_id
@@ -14,6 +15,7 @@ class BaseCommand
     self.params = params.with_indifferent_access
     self.request_id = Carto::Common::CurrentRequest.request_id || params.delete(:request_id)
     self.notifications_topic = extra_context[:notifications_topic]
+    self.logger = extra_context[:logger] || Rails.logger
   end
 
   def run
@@ -22,7 +24,7 @@ class BaseCommand
         before_run_hooks
         run_command
       rescue StandardError => e
-        Rails.logger.error(log_context.merge(message: 'Command failed', exception: e))
+        logger.error(log_context.merge(message: 'Command failed', exception: e))
         raise e
       ensure
         after_run_hooks
@@ -37,11 +39,11 @@ class BaseCommand
   end
 
   def before_run_hooks
-    Rails.logger.info(log_context.merge(message: 'Started command'))
+    logger.info(log_context.merge(message: 'Started command'))
   end
 
   def after_run_hooks
-    Rails.logger.info(log_context.merge(message: 'Finished command'))
+    logger.info(log_context.merge(message: 'Finished command'))
   end
 
   def log_context

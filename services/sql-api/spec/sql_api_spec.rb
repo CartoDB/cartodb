@@ -6,7 +6,7 @@ module Cartodb; end
 describe CartoDB::SQLApi do
 
   before(:each) do
-    Cartodb.stubs(:config).returns(TEST_SQL_API_CONFIG)
+    allow(Cartodb).to receive(:config).and_return(TEST_SQL_API_CONFIG)
   end
 
   describe '#fetch' do
@@ -41,7 +41,7 @@ describe CartoDB::SQLApi do
 
   def stub_api_request(code, response_file)
     response = File.open(path_to(response_file)).read
-    Typhoeus.stub(/.*carto.com\/api\/v[12]/).and_return(
+    Typhoeus.double(/.*carto.com\/api\/v[12]/).and_return(
       Typhoeus::Response.new(code: code, body: response)
     )
   end # stub_api_request

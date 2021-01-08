@@ -14,7 +14,7 @@ module Carto
     it 'doesn\'t read the same file twice' do
       file_path = 'lib/assets/javascripts/builder/data/default-cartography.json'
 
-      File.expects(:read).with(file_path).returns('{}').at_most(1)
+      expect(File).to receive(:read).with(file_path).and_return('{}').at_most(1)
 
       2.times do
         @definition.load_from_file(file_path)

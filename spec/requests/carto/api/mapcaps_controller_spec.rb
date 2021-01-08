@@ -8,8 +8,8 @@ describe Carto::Api::MapcapsController do
   include HelperMethods
 
   let(:dummy_mapcap) do
-    dummy = mock
-    dummy.stubs(:id).returns(Carto::UUIDHelper.random_uuid)
+    dummy = double
+    allow(dummy).to receive(:id).and_return(Carto::UUIDHelper.random_uuid)
     dummy
   end
 
@@ -82,7 +82,7 @@ describe Carto::Api::MapcapsController do
     end
 
     it 'triggers autoindex regeneration' do
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, @table.id).once
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, @table.id).once
       post_json create_mapcap_url, {} do |response|
         response.status.should eq 201
 
@@ -92,7 +92,7 @@ describe Carto::Api::MapcapsController do
 
     it 'triggers autoindex regeneration for torque layers' do
       @map.data_layers.first.update_attribute(:kind, 'torque')
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, @table.id).once
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, @table.id).once
       post_json create_mapcap_url, {} do |response|
         response.status.should eq 201
 

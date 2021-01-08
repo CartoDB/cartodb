@@ -119,13 +119,13 @@ describe Carto::Analysis do
     end
 
     it 'triggers notify_map_change on related map(s)' do
-      map = mock
-      map.stubs(:id).returns(@map.id)
-      map.stubs(:data_layers).returns([])
-      map.expects(:update_dataset_dependencies).once
-      map.expects(:notify_map_change).once
-      Map.stubs(:where).with(id: map.id).returns([map])
-      @analysis.stubs(:map).returns(map)
+      map = double
+      allow(map).to receive(:id).and_return(@map.id)
+      allow(map).to receive(:data_layers).and_return([])
+      expect(map).to receive(:update_dataset_dependencies).once
+      expect(map).to receive(:notify_map_change).once
+      allow(Map).to receive(:where).with(id: map.id).and_return([map])
+      allow(@analysis).to receive(:map).and_return(map)
 
       @analysis.analysis_definition = definition_with_options
       @analysis.save

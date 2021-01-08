@@ -38,7 +38,7 @@ describe CartoDB::Visualization::CommonDataService do
   end
 
   def stub_datasets(datasets)
-    CommonDataSingleton.instance.stubs(:datasets).returns(datasets)
+    allow(CommonDataSingleton.instance).to receive(:datasets).and_return(datasets)
   end
 
   it 'should import common data datasets' do
@@ -136,9 +136,9 @@ describe CartoDB::Visualization::CommonDataService do
     Carto::ExternalSource.count.should eq 2
     expect(remote_visualizations(@user).count).to eq 2
 
-    common_data_singleton_mock = mock
-    common_data_singleton_mock.stubs(:datasets).raises("error!")
-    CommonDataSingleton.stubs(:instance).returns(common_data_singleton_mock)
+    common_data_singleton_mock = double
+    allow(common_data_singleton_mock).to receive(:datasets).and_raise("error!")
+    allow(CommonDataSingleton).to receive(:instance).and_return(common_data_singleton_mock)
     service.load_common_data_for_user(@user, 'some_url').should be_nil
 
     Carto::ExternalSource.count.should eq 2

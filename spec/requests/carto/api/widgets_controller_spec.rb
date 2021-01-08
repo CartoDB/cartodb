@@ -136,7 +136,7 @@ describe Carto::Api::WidgetsController do
     end
 
     it 'returns 403 if visualization is public and current user is not the owner' do
-      Carto::Visualization.stubs(:privacy).returns('public')
+      allow(Carto::Visualization).to receive(:privacy).and_return('public')
       get_json widget_url(user_domain: @user2.username, map_id: @map.id, map_layer_id: @widget.layer_id, id: @widget.id, api_key: @user2.api_key), {}, http_json_headers do |response|
         response.status.should == 403
       end
@@ -337,7 +337,7 @@ describe Carto::Api::WidgetsController do
 
     it 'fails with 404 if widget does not belong to map' do
       payload = [serialize_widget(@widget).merge(title: 'wadus')]
-      Carto::Widget.any_instance.stubs(:belongs_to_map?).with(@map.id).returns(false)
+      allow_any_instance_of(Carto::Widget).to receive(:belongs_to_map?).with(@map.id).returns(false)
 
       url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
                                                        map_id: @map.id,
@@ -351,7 +351,7 @@ describe Carto::Api::WidgetsController do
 
     it 'fails with 404 if not writable by user' do
       payload = [serialize_widget(@widget).merge(title: 'wadus')]
-      Carto::Widget.any_instance.stubs(:writable_by_user?).returns(false)
+      allow_any_instance_of(Carto::Widget).to receive(:writable_by_user?).and_return(false)
 
       url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
                                                        map_id: @map.id,
@@ -365,8 +365,8 @@ describe Carto::Api::WidgetsController do
 
     it 'fails if any of the widgets fails and doesn\'t update any' do
       widget2 = FactoryGirl.create(:widget, layer: @layer)
-      Carto::Widget.stubs(:find).with(@widget.id).returns(@widget)
-      Carto::Widget.stubs(:find).with(widget2.id).raises(ActiveRecord::RecordNotFound.new)
+      allow(Carto::Widget).to receive(:find).with(@widget.id).and_return(@widget)
+      allow(Carto::Widget).to receive(:find).with(widget2.id).and_raise(ActiveRecord::RecordNotFound.new)
 
       payload = [serialize_widget(@widget).merge(title: 'wadus'), serialize_widget(widget2).merge(title: 'wadus2')]
       url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,

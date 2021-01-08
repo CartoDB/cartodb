@@ -31,17 +31,17 @@ describe CartoDB do
     describe '#user_message' do
       it 'supports single error JSON messages' do
         error = 'Something is really broken'
-        response = mock
-        response.stubs(:code).returns(403)
-        response.stubs(:body).returns("{\"errors\":\"#{error}\"}")
+        response = double
+        allow(response).to receive(:code).and_return(403)
+        allow(response).to receive(:body).and_return("{\"errors\":\"#{error}\"}")
         e = CartoDB::CentralCommunicationFailure.new(response)
         e.user_message.should eq "There was a problem with authentication server. #{error}"
       end
 
       it 'supports multiple error JSON messages' do
-        response = mock
-        response.stubs(:code).returns(403)
-        response.stubs(:body).returns("{\"errors\":[\"A\", \"B\"]}")
+        response = double
+        allow(response).to receive(:code).and_return(403)
+        allow(response).to receive(:body).and_return("{\"errors\":[\"A\", \"B\"]}")
         e = CartoDB::CentralCommunicationFailure.new(response)
         e.user_message.should eq "There was a problem with authentication server. A ; B"
       end

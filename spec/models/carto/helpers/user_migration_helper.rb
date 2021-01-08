@@ -51,7 +51,7 @@ module UserMigrationHelper
     end
 
     it "exports and reimports a user #{migrate_metadata ? 'with' : 'without'} metadata" do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
 
       export = Carto::UserMigrationExport.create(
         user: @carto_user,
@@ -71,7 +71,7 @@ module UserMigrationHelper
 
       Cartodb.with_config(agg_ds_config) do
         # Do not depend on dataservices_client to be installed
-        CartoDB::UserModule::DBService.any_instance.stubs(:install_geocoder_api_extension)
+        allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:install_geocoder_api_extension)
 
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,
@@ -161,8 +161,8 @@ module UserMigrationHelper
       dry: false
     )
 
-    imp.stubs(:assert_organization_does_not_exist)
-    imp.stubs(:assert_user_does_not_exist)
+    allow(imp).to receive(:assert_organization_does_not_exist)
+    allow(imp).to receive(:assert_user_does_not_exist)
     imp
   end
 
@@ -175,8 +175,8 @@ module UserMigrationHelper
       import_metadata: true,
       dry: false
     )
-    imp.stubs(:assert_organization_does_not_exist)
-    imp.stubs(:assert_user_does_not_exist)
+    allow(imp).to receive(:assert_organization_does_not_exist)
+    allow(imp).to receive(:assert_user_does_not_exist)
     imp
   end
 

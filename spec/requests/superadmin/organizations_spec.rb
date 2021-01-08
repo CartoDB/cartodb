@@ -59,7 +59,7 @@ feature "Superadmin's organization API" do
     org_atts[:owner_id] = user.id
 
     simulated_error = StandardError.new('promote_user_to_admin failure simulation')
-    CartoDB::UserOrganization.any_instance.stubs(:promote_user_to_admin).raises(simulated_error)
+    allow_any_instance_of(CartoDB::UserOrganization).to receive(:promote_user_to_admin).and_raise(simulated_error)
 
     post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
       response.status.should == 500
@@ -120,7 +120,7 @@ feature "Superadmin's organization API" do
       end
     end
     it "gets overquota organizations" do
-      Carto::Organization.stubs(:overquota).returns [@organization1]
+      allow(Carto::Organization).to receive(:overquota).and_return([@organization1])
       get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["name"].should == @organization1.name
@@ -128,9 +128,9 @@ feature "Superadmin's organization API" do
       end
     end
     it "returns geocoding and mapviews quotas and uses for all organizations" do
-      Carto::Organization.stubs(:overquota).returns [@organization1]
-      ::User.any_instance.stubs(:get_geocoding_calls).returns(100)
-      ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
+      allow(Carto::Organization).to receive(:overquota).and_return([@organization1])
+      allow_any_instance_of(::User).to receive(:get_geocoding_calls).and_return(100)
+      allow_any_instance_of(::User).to receive(:get_api_calls).and_return((0..30).to_a)
       get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["name"].should == @organization1.name

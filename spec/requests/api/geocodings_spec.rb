@@ -22,7 +22,7 @@ describe "Geocodings API" do
     let(:table) { create_table(user_id: @user.id) }
 
     it 'creates a new geocoding' do
-      Geocoding.any_instance.stubs("run!").returns(true)
+      allow_any_instance_of(Geocoding).to receive("run!").and_return(true)
       payload = params.merge table_name: table.name, formatter:  'name, description', kind: 'high-resolution'
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 200
@@ -36,7 +36,7 @@ describe "Geocodings API" do
     end
 
     it 'uses column_name instead of formatter if present' do
-      Geocoding.any_instance.stubs("run!").returns(true)
+      allow_any_instance_of(Geocoding).to receive("run!").and_return(true)
       payload = params.merge table_name: table.name, column_name:  'name', kind: 'high-resolution'
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 200
@@ -47,7 +47,7 @@ describe "Geocodings API" do
 
     describe 'namedplace geocodings' do
       it "should set the country_code when the name of the country is present" do
-        Geocoding.any_instance.stubs("run!").returns(true)
+        allow_any_instance_of(Geocoding).to receive("run!").and_return(true)
         payload = params.merge \
           table_name: table.name,
           column_name:  'name',
@@ -69,7 +69,7 @@ describe "Geocodings API" do
         table.insert_row!(country: "us")
         table.reload
 
-        Geocoding.any_instance.stubs("run!").returns(true)
+        allow_any_instance_of(Geocoding).to receive("run!").and_return(true)
         payload = params.merge \
           table_name: table.name,
           column_name:  'name',
@@ -85,7 +85,7 @@ describe "Geocodings API" do
       end
 
       it "should set the region_code when the name of the region is present" do
-        Geocoding.any_instance.stubs("run!").returns(true)
+        allow_any_instance_of(Geocoding).to receive("run!").and_return(true)
         payload = params.merge \
           table_name: table.name,
           column_name:  'name',
@@ -110,7 +110,7 @@ describe "Geocodings API" do
         table.insert_row!(country: "us", region: "minnesota")
         table.reload
 
-        Geocoding.any_instance.stubs("run!").returns(true)
+        allow_any_instance_of(Geocoding).to receive("run!").and_return(true)
         payload = params.merge \
           table_name: table.name,
           column_name:  'name',
@@ -139,7 +139,7 @@ describe "Geocodings API" do
 
     it 'responds with 500 on failure' do
       payload = params.merge(table_name: '', formatter:  '', kind: 'high-resolution')
-      Geocoding.any_instance.stubs(:save).raises(RuntimeError.new)
+      allow_any_instance_of(Geocoding).to receive(:save).and_raise(RuntimeError.new)
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 500
         response.body[:description].should eq "RuntimeError"
@@ -150,7 +150,7 @@ describe "Geocodings API" do
   describe 'PUT /api/v1/geocodings/:id' do
     it 'fails gracefully on job cancel failure' do
       geocoding = FactoryGirl.create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user)
-      Geocoding.any_instance.stubs(:cancel).raises('wadus')
+      allow_any_instance_of(Geocoding).to receive(:cancel).and_raise('wadus')
 
       put_json api_v1_geocodings_update_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|
         response.status.should eq 400

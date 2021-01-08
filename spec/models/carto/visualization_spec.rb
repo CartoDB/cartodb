@@ -121,8 +121,8 @@ describe Carto::Visualization do
   describe '#estimated_row_count and #actual_row_count' do
 
     it 'should query Table estimated an actual row count methods' do
-      ::Table.any_instance.stubs(:row_count_and_size).returns(row_count: 999)
-      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
+      allow_any_instance_of(::Table).to receive(:row_count_and_size).and_return(row_count: 999)
+      allow_any_instance_of(::Table).to receive(:actual_row_count).and_return(1000)
       table = create_table(name: 'table1', user_id: @user.id)
       vis = Carto::Visualization.find(table.table_visualization.id)
       vis.estimated_row_count.should == 999
@@ -254,7 +254,7 @@ describe Carto::Visualization do
 
     it 'returns true for mapcapped v3 visualizations' do
       @visualization.version = 3
-      @visualization.stubs(:mapcapped?).returns(true)
+      allow(@visualization).to receive(:mapcapped?).and_return(true)
       @visualization.published?.should eq true
     end
   end
@@ -284,14 +284,14 @@ describe Carto::Visualization do
   describe '#save_named_map' do
     it 'should not save named map without layers' do
       @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user)
-      @visualization.expects(:named_maps_api).never
+      expect(@visualization).to receive(:named_maps_api).never
       @visualization.save
     end
 
     it 'should save named map with layers on map creation' do
       @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user, map: FactoryGirl.build(:carto_map))
       @visualization.layers << FactoryGirl.build(:carto_layer)
-      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
+      expect_any_instance_of(Carto::VisualizationInvalidationService).to receive(:invalidate).once
       @visualization.save
     end
 
@@ -309,21 +309,21 @@ describe Carto::Visualization do
         layer = @visualization.data_layers.first
         layer.options[:tile_style] = fake_style
 
-        named_maps_api_mock = mock
+        named_maps_api_mock = double
         named_maps_api_mock.expects(:upsert)
 
-        Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
-                             .returns(named_maps_api_mock).at_least_once
+        expect(Carto::NamedMaps::Api).to receive(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
+                             .returns(named_maps_api_mock).at_least(:once)
         layer.save
       end
 
       it 'publishes privacy changes' do
         @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
 
-        named_maps_api_mock = mock
-        named_maps_api_mock.expects(:upsert)
+        named_maps_api_mock = double
+        expect(named_maps_api_mock).to receive(:upsert)
 
-        Carto::NamedMaps::Api.expects(:new).returns(named_maps_api_mock).at_least_once
+        expect(Carto::NamedMaps::Api).to receive(:new).and_return(named_maps_api_mock).at_least(:once)
         @visualization.save
       end
     end
@@ -344,12 +344,12 @@ describe Carto::Visualization do
         layer = @visualization.data_layers.first
         layer.options[:tile_style] = fake_style
 
-        named_maps_api_mock = mock
-        named_maps_api_mock.stubs(upsert: true)
+        named_maps_api_mock = double
+        allow(named_maps_api_mock).to receive(:upsert).and_return(true)
 
-        Carto::NamedMaps::Api.stubs(:new).with { |v| v.data_layers.first.options[:tile_style] != fake_style }
+        allow(Carto::NamedMaps::Api).to receive(:new).with { |v| v.data_layers.first.options[:tile_style] != fake_style }
                              .returns(named_maps_api_mock)
-        Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
+        expect(Carto::NamedMaps::Api).to receive(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
                              .never
         layer.save
       end
@@ -360,21 +360,21 @@ describe Carto::Visualization do
         layer.options[:tile_style] = fake_style
         layer.save
 
-        named_maps_api_mock = mock
-        named_maps_api_mock.expects(:upsert).at_least_once
+        named_maps_api_mock = double
+        named_maps_api_mock.expects(:upsert).at_least(:once)
 
-        Carto::NamedMaps::Api.expects(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
-                             .returns(named_maps_api_mock).at_least_once
+        expect(Carto::NamedMaps::Api).to receive(:new).with { |v| v.data_layers.first.options[:tile_style] == fake_style }
+                             .returns(named_maps_api_mock).at_least(:once)
         @visualization.create_mapcap!
       end
 
       it 'publishes privacy changes' do
         @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
 
-        named_maps_api_mock = mock
-        named_maps_api_mock.expects(:upsert)
+        named_maps_api_mock = double
+        expect(named_maps_api_mock).to receive(:upsert)
 
-        Carto::NamedMaps::Api.expects(:new).returns(named_maps_api_mock).at_least_once
+        expect(Carto::NamedMaps::Api).to receive(:new).and_return(named_maps_api_mock).at_least(:once)
         @visualization.save
       end
     end
@@ -401,7 +401,7 @@ describe Carto::Visualization do
       visualization.create_mapcap!
       visualization.state.save
 
-      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
+      expect_any_instance_of(Carto::VisualizationInvalidationService).to receive(:invalidate).once
       expect_visualization_to_be_destroyed(visualization) { visualization.destroy }
     end
   end
@@ -460,23 +460,23 @@ describe Carto::Visualization do
     end
 
     it 'triggers invalidation after saving' do
-      @visualization.send(:invalidation_service).expects(:invalidate)
+      expect(@visualization.send(:invalidation_service)).to receive(:invalidate)
       @visualization.update_attributes(name: @visualization.name + '-renamed')
     end
 
     it 'triggers invalidation of affected maps after updating description field' do
       # Not a great test, it tests invalidation service internal implementation
-      @visualization.send(:invalidation_service).expects(:invalidate_affected_visualizations)
+      expect(@visualization.send(:invalidation_service)).to receive(:invalidate_affected_visualizations)
       @visualization.update_attributes(description: 'something')
     end
 
     it 'triggers invalidation of affected maps after updating attributions field' do
-      @visualization.send(:invalidation_service).expects(:invalidate_affected_visualizations)
+      expect(@visualization.send(:invalidation_service)).to receive(:invalidate_affected_visualizations)
       @visualization.update_attributes(attributions: 'something')
     end
 
     it 'triggers invalidation after destroying' do
-      @visualization.send(:invalidation_service).expects(:invalidate)
+      expect(@visualization.send(:invalidation_service)).to receive(:invalidate)
       @visualization.destroy
     end
   end
@@ -499,8 +499,8 @@ describe Carto::Visualization do
 
       it 'fail if a user try to favorite a visualization without permissions' do
         user_id = Carto::UUIDHelper.random_uuid
-        user_mock = mock
-        user_mock.stubs(:id).returns(user_id)
+        user_mock = double
+        allow(user_mock).to receive(:id).and_return(user_id)
         expect(@visualization.likes.count).to eq(0)
 
         expect {
@@ -510,8 +510,8 @@ describe Carto::Visualization do
 
       it 'raises an error if same user tries to like again the same content' do
         user_id  = Carto::UUIDHelper.random_uuid
-        user_mock = mock
-        user_mock.stubs(:id).returns(user_id)
+        user_mock = double
+        allow(user_mock).to receive(:id).and_return(user_id)
 
         @visualization.add_like_from(@carto_user)
 
@@ -563,8 +563,8 @@ describe Carto::Visualization do
 
       it 'raises an error if you try to remove a favorite in a visualization you dont have permission' do
         user_id = Carto::UUIDHelper.random_uuid
-        user_mock = mock
-        user_mock.stubs(:id).returns(user_id)
+        user_mock = double
+        allow(user_mock).to receive(:id).and_return(user_id)
 
         @visualization.add_like_from(@carto_user)
         expect(@visualization.likes.count).to eq(1)
@@ -611,8 +611,8 @@ describe Carto::Visualization do
 
       it 'returns false when checking a user without likes on the visualization' do
         user_id = Carto::UUIDHelper.random_uuid
-        user_mock = mock
-        user_mock.stubs(:id).returns(user_id)
+        user_mock = double
+        allow(user_mock).to receive(:id).and_return(user_id)
 
         @visualization.add_like_from(@carto_user)
         expect(@visualization.liked_by?(user_mock)).to be_false

@@ -36,8 +36,8 @@ describe Visualization::Relator do
   describe '#estimated_row_count and #actual_row_count' do
 
     it 'should query Table estimated an actual row count methods' do
-      ::Table.any_instance.stubs(:row_count_and_size).returns(row_count: 999)
-      ::Table.any_instance.stubs(:actual_row_count).returns(1000)
+      allow_any_instance_of(::Table).to receive(:row_count_and_size).and_return(row_count: 999)
+      allow_any_instance_of(::Table).to receive(:actual_row_count).and_return(1000)
       table = create_table(name: 'table1', user_id: @user.id)
       vis = table.table_visualization
       vis.estimated_row_count.should == 999
@@ -49,10 +49,10 @@ describe Visualization::Relator do
   before(:each) do
     # For relator->permission
     @user_mock = create_mocked_user
-    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+    allow_any_instance_of(CartoDB::Visualization::Relator).to receive(:user).and_return(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
-    Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
+    allow_any_instance_of(Visualization::Relator).to receive(:support_tables).and_return(support_tables_mock)
   end
 
   describe '#related_canonical_visualizations' do
@@ -69,7 +69,7 @@ describe Visualization::Relator do
 
   describe '#children' do
     it 'tests .children and its sorting' do
-      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      allow_any_instance_of(Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
       parent = Visualization::Member.new(random_attributes_for_vis_member({
                                                             name:'PARENT',

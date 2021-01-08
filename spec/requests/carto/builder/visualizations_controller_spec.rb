@@ -36,7 +36,7 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'redirects to embed for non-editor users requests' do
-      @user1.stubs(:builder_enabled).returns(false)
+      allow(@user1).to receive(:builder_enabled).and_return(false)
 
       get builder_visualization_url(id: @visualization.id)
 
@@ -47,7 +47,7 @@ describe Carto::Builder::VisualizationsController do
     it 'redirects to editor for vizjson2 visualizations' do
       @visualization.version = 2
       @visualization.save
-      Carto::Visualization.any_instance.stubs(:uses_vizjson2?).returns(true)
+      allow_any_instance_of(Carto::Visualization).to receive(:uses_vizjson2?).and_return(true)
 
       get builder_visualization_url(id: @visualization.id)
 

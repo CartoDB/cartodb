@@ -277,7 +277,7 @@ module Carto
 
             describe 'and builder' do
               before(:all) do
-                @visualization.stubs(:version).returns(3)
+                allow(@visualization).to receive(:version).and_return(3)
                 @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
               end
 
@@ -292,7 +292,7 @@ module Carto
 
             describe 'and editor' do
               before(:all) do
-                @visualization.stubs(:version).returns(2)
+                allow(@visualization).to receive(:version).and_return(2)
                 @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
               end
 
@@ -520,9 +520,9 @@ module Carto
           end
 
           it 'should use non-mapcapped visualization for auth' do
-            @visualization.stubs(:password_protected?).returns(true)
-            @visualization.stubs(:has_password?).returns(true)
-            @visualization.stubs(:non_mapcapped).returns(@visualization) # return stubbed object
+            allow(@visualization).to receive(:password_protected?).and_return(true)
+            allow(@visualization).to receive(:has_password?).and_return(true)
+            allow(@visualization).to receive(:non_mapcapped).and_return(@visualization) # return stubbed object
 
             @regenerated_visualization.password_protected?.should be_false
 
@@ -565,7 +565,7 @@ module Carto
 
           it 'for organization private visualizations' do
             @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
-            @visualization.stubs(:organization?).returns(true)
+            allow(@visualization).to receive(:organization?).and_return(true)
           end
 
           it 'for private visualizations' do
@@ -574,17 +574,17 @@ module Carto
 
           describe 'and include tokens' do
             before(:all) do
-              @org = mock
-              @org.stubs(:get_auth_token).returns(SecureRandom.urlsafe_base64(nil, false))
-              @group = mock
-              @group.stubs(:get_auth_token).returns(SecureRandom.urlsafe_base64(nil, false))
-              @other_user = mock
-              @other_user.stubs(:get_auth_token).returns(SecureRandom.urlsafe_base64(nil, false))
+              @org = double
+              allow(@org).to receive(:get_auth_token).and_return(SecureRandom.urlsafe_base64(nil, false))
+              @group = double
+              allow(@group).to receive(:get_auth_token).and_return(SecureRandom.urlsafe_base64(nil, false))
+              @other_user = double
+              allow(@other_user).to receive(:get_auth_token).and_return(SecureRandom.urlsafe_base64(nil, false))
             end
 
             before(:each) do
               @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
-              @visualization.stubs(:organization?).returns(true)
+              allow(@visualization).to receive(:organization?).and_return(true)
             end
 
             it 'for owner user always' do
@@ -593,7 +593,7 @@ module Carto
             end
 
             it 'for organization' do
-              @visualization.permission.stubs(:entities_with_read_permission).returns([@org])
+              allow(@visualization.permission).to receive(:entities_with_read_permission).and_return([@org])
               template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
               auth_tokens = template_hash[:auth][:valid_tokens]
               auth_tokens.count.should eq 2
@@ -602,7 +602,7 @@ module Carto
             end
 
             it 'for group' do
-              @visualization.permission.stubs(:entities_with_read_permission).returns([@group])
+              allow(@visualization.permission).to receive(:entities_with_read_permission).and_return([@group])
               template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
               auth_tokens = template_hash[:auth][:valid_tokens]
               auth_tokens.count.should eq 2
@@ -611,7 +611,7 @@ module Carto
             end
 
             it 'for other user' do
-              @visualization.permission.stubs(:entities_with_read_permission).returns([@other_user])
+              allow(@visualization.permission).to receive(:entities_with_read_permission).and_return([@other_user])
               template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
               auth_tokens = template_hash[:auth][:valid_tokens]
               auth_tokens.count.should eq 2
@@ -620,7 +620,7 @@ module Carto
             end
 
             it 'for multiple entities' do
-              @visualization.permission.stubs(:entities_with_read_permission).returns([@other_user, @group, @org])
+              allow(@visualization.permission).to receive(:entities_with_read_permission).and_return([@other_user, @group, @org])
               template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
               auth_tokens = template_hash[:auth][:valid_tokens]
               auth_tokens.count.should eq 4

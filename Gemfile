@@ -114,12 +114,14 @@ group :test, :development do
   gem 'memory_profiler'
 end
 
+gem 'mocha_to_rspec', git: 'https://github.com/andyw8/mocha_to_rspec.git'
+
 group :development, :test do
   gem 'byebug'
   gem 'pry-byebug', '3.9.0'
   gem 'rack'
   gem 'rb-readline'
-  gem 'rspec-rails', '2.12.0'
+  gem 'rspec-rails', '2.14.1'
   gem 'rubocop', '~> 0.93', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false

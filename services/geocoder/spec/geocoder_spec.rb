@@ -7,10 +7,10 @@ require_relative '../lib/hires_batch_geocoder'
 describe CartoDB::HiresBatchGeocoder do
 
   before(:each) do
-    @log = mock
-    @log.stubs(:append)
-    @log.stubs(:append_and_store)
-    CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
+    @log = double
+    allow(@log).to receive(:append)
+    allow(@log).to receive(:append_and_store)
+    allow_any_instance_of(CartoDB::HiresBatchGeocoder).to receive(:config).and_return({
         'base_url' => 'http://wadus.nokia.com',
         'app_id' => '',
         'token' => '',
@@ -45,7 +45,7 @@ describe CartoDB::HiresBatchGeocoder do
   describe '#update_status' do
     before {
       stub_api_request(200, 'response_status.xml')
-      CartoDB::HiresBatchGeocoder.any_instance.stubs(:request_id).returns('wadus')
+      allow_any_instance_of(CartoDB::HiresBatchGeocoder).to receive(:request_id).and_return('wadus')
     }
     let(:geocoder) { CartoDB::HiresBatchGeocoder.new('/tmp/dummy_input_file.csv', @working_dir, @log, @geocoding_model) }
 
@@ -79,7 +79,7 @@ describe CartoDB::HiresBatchGeocoder do
       stub_api_request(200, 'response_cancel.xml')
       @geocoding_model.remote_id = 'wadus'
       @geocoding_model.save
-      CartoDB::HiresBatchGeocoder.any_instance.stubs(:request_id).returns('wadus')
+      allow_any_instance_of(CartoDB::HiresBatchGeocoder).to receive(:request_id).and_return('wadus')
     }
     let(:geocoder) { CartoDB::HiresBatchGeocoder.new('dummy_input_file.csv', @working_dir, @log, @geocoding_model) }
 
@@ -98,7 +98,7 @@ describe CartoDB::HiresBatchGeocoder do
     end
 
     it 'returns nil for missing elements' do
-      CartoDB.expects(:notify_exception).once
+      expect(CartoDB).to receive(:notify_exception).once
       geocoder.send(:extract_response_field, response, 'MissingField').should == nil
     end
   end
@@ -106,7 +106,7 @@ describe CartoDB::HiresBatchGeocoder do
   describe '#api_url' do
     # TODO move to common place for both geocoders
     before(:each) {
-      CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
+      allow_any_instance_of(CartoDB::HiresBatchGeocoder).to receive(:config).and_return({
         'base_url' => '',
         'app_id' => 'a',
         'token' => 'b',
@@ -164,7 +164,7 @@ describe CartoDB::HiresBatchGeocoder do
 
   def stub_api_request(code, response_file)
     response = File.open(path_to(response_file)).read
-    Typhoeus.stub(/.*nokia.com/).and_return(
+    Typhoeus.double(/.*nokia.com/).and_return(
       Typhoeus::Response.new(code: code, body: response)
     )
   end

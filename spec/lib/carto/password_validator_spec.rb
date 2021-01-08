@@ -16,9 +16,9 @@ module Carto
     it 'should be invalid when same as username' do
       validator = Carto::PasswordValidator.new
 
-      user = mock
-      user.stubs(:username).returns(PASSWORD)
-      user.stubs(:organization).returns(nil)
+      user = double
+      allow(user).to receive(:username).and_return(PASSWORD)
+      allow(user).to receive(:organization).and_return(nil)
 
       errors = validator.validate(PASSWORD, PASSWORD, user)
       errors.empty?.should be_false
@@ -26,12 +26,12 @@ module Carto
     end
 
     it 'should check strong passwords for org users with strong_passwords_enabled' do
-      user = mock
-      org = mock
-      org.stubs(:strong_passwords_enabled).returns(true)
-      user.stubs(:username).returns(PASSWORD)
-      user.stubs(:organization_user?).returns(true)
-      user.stubs(:organization).returns(org)
+      user = double
+      org = double
+      allow(org).to receive(:strong_passwords_enabled).and_return(true)
+      allow(user).to receive(:username).and_return(PASSWORD)
+      allow(user).to receive(:organization_user?).and_return(true)
+      allow(user).to receive(:organization).and_return(org)
 
       strategy = Carto::StrongPasswordStrategy.new(min_length: PASSWORD.length + 1)
       validator = Carto::PasswordValidator.new(strategy)

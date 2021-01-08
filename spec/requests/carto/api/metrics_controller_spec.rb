@@ -28,7 +28,7 @@ describe Carto::Api::MetricsController do
 
       event = event_class.new(user_id, user_id: user_id)
 
-      event_class.any_instance.stubs(:report!)
+      allow_any_instance_of(event_class).to receive(:report!)
 
       post_json metrics_url, name: event.name, properties: user_properties do |response|
         response.status.should eq 201

@@ -61,8 +61,8 @@ describe Carto::Api::StatesController do
     end
 
     it 'does not trigger named map updates' do
-      Carto::NamedMaps::Api.any_instance.expects(:create).never
-      Carto::NamedMaps::Api.any_instance.expects(:update).never
+      expect_any_instance_of(Carto::NamedMaps::Api).to receive(:create).never
+      expect_any_instance_of(Carto::NamedMaps::Api).to receive(:update).never
       put_json update_state_url, json: state do |response|
         response.status.should eq 200
 

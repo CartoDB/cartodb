@@ -18,8 +18,8 @@ describe Carto::Builder::Public::EmbedsController do
 
   before(:each) do
     bypass_named_maps
-    Carto::Visualization.any_instance.stubs(:organization?).returns(false)
-    Carto::Visualization.any_instance.stubs(:get_auth_tokens).returns(['trusty_token'])
+    allow_any_instance_of(Carto::Visualization).to receive(:organization?).and_return(false)
+    allow_any_instance_of(Carto::Visualization).to receive(:get_auth_tokens).and_return(['trusty_token'])
   end
 
   after(:all) do
@@ -30,9 +30,9 @@ describe Carto::Builder::Public::EmbedsController do
   end
 
   def stub_passwords(password)
-    Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
-    Carto::Visualization.any_instance.stubs(:password_valid?).returns(false)
-    Carto::Visualization.any_instance.stubs(:password_valid?).with(password).returns(true)
+    allow_any_instance_of(Carto::Visualization).to receive(:has_password?).and_return(true)
+    allow_any_instance_of(Carto::Visualization).to receive(:password_valid?).and_return(false)
+    allow_any_instance_of(Carto::Visualization).to receive(:password_valid?).with(password).returns(true)
   end
 
   TEST_PASSWORD = 'manolo'.freeze
@@ -109,7 +109,7 @@ describe Carto::Builder::Public::EmbedsController do
         actual_database_name = visualization.user.database_name
         visualization.user.update_attribute(:database_name, 'wadus')
 
-        Rails.logger.expects(:warning).never
+        expect(Rails.logger).to receive(:warning).never
         get builder_visualization_public_embed_url(visualization_id: visualization.id)
         response.status.should == 200
 
@@ -119,7 +119,7 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'redirects to builder for v2 visualizations' do
-      Carto::Visualization.any_instance.stubs(:version).returns(2)
+      allow_any_instance_of(Carto::Visualization).to receive(:version).and_return(2)
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 302
@@ -277,7 +277,7 @@ describe Carto::Builder::Public::EmbedsController do
 
         share_visualization(@org_visualization, @org_user_1)
         Carto::Visualization.any_instance.unstub(:organization?)
-        Carto::Visualization.any_instance.stubs(:needed_auth_tokens).returns([])
+        allow_any_instance_of(Carto::Visualization).to receive(:needed_auth_tokens).and_return([])
 
         @org_map2 = FactoryGirl.create(:map, user_id: @org_user_owner.id)
 

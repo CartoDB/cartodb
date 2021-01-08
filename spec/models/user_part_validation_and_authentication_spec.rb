@@ -238,7 +238,7 @@ describe User do
 
     it 'is false for users that were created with http authentication' do
       user = FactoryGirl.build(:valid_user, last_password_change_date: nil)
-      Carto::UserCreation.stubs(:http_authentication).returns(stub(find_by_user_id: FactoryGirl.build(:user_creation)))
+      allow(Carto::UserCreation).to receive(:http_authentication).and_return(double(find_by_user_id: FactoryGirl.build(:user_creation)))
       user.needs_password_confirmation?.should == false
     end
   end
@@ -314,7 +314,7 @@ describe User do
     end
 
     it 'never expires for org users with no password_expiration set' do
-      organization.stubs(:password_expiration_in_d).returns(nil)
+      allow(organization).to receive(:password_expiration_in_d).and_return(nil)
       org_user2 = create(:valid_user, organization: organization)
 
       Cartodb.with_config(passwords: { 'expiration_in_d' => 5 }) do

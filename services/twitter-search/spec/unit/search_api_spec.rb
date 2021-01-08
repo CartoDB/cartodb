@@ -11,7 +11,7 @@ describe SearchAPI do
         SearchAPI::PARAM_MAXRESULTS => 10
       }
 
-      Typhoeus.stub(/.*sample_tweets.json/).and_return(
+      Typhoeus.double(/.*sample_tweets.json/).and_return(
         Typhoeus::Response.new(code: 200, body: data_from_file('sample_tweets.json'))
       )
 

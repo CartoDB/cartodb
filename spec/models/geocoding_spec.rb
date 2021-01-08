@@ -98,10 +98,10 @@ describe Geocoding do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a',
                                     user_table: @table, geometry_type: 'polygon',
                                     kind: 'admin0')
-      geocoding.class.stubs(:processable_rows).returns 10
-      CartoDB::TableGeocoder.any_instance.stubs(:used_batch_request?).returns false
-      CartoDB::TableGeocoder.any_instance.stubs(:run).raises("Error")
-      CartoDB.expects(:notify_exception).times(1)
+      allow(geocoding.class).to receive(:processable_rows).and_return(10)
+      allow_any_instance_of(CartoDB::TableGeocoder).to receive(:used_batch_request?).and_return(false)
+      allow_any_instance_of(CartoDB::TableGeocoder).to receive(:run).and_raise("Error")
+      expect(CartoDB).to receive(:notify_exception).times(1)
 
       geocoding.run!
       geocoding.state.should eq 'failed'
@@ -118,14 +118,14 @@ describe Geocoding do
 
       geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, kind: 'admin0',
                                                  geometry_type: 'polygon', formatter: 'b')
-      geocoding.class.stubs(:processable_rows).returns 10
-      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:run).returns true
-      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:process_results).returns true
-      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:update_geocoding_status).returns(processed_rows: 10, state: 'completed')
+      allow(geocoding.class).to receive(:processable_rows).and_return(10)
+      allow_any_instance_of(CartoDB::InternalGeocoder::Geocoder).to receive(:run).and_return(true)
+      allow_any_instance_of(CartoDB::InternalGeocoder::Geocoder).to receive(:process_results).and_return(true)
+      allow_any_instance_of(CartoDB::InternalGeocoder::Geocoder).to receive(:update_geocoding_status).and_return(processed_rows: 10, state: 'completed')
 
       # metrics_payload is sent to the log in json
-      Logger.any_instance.expects(:info).once.with { |str| is_metrics_payload?(str) }
-      Logger.any_instance.stubs(:info).with { |str| !is_metrics_payload?(str) }
+      expect_any_instance_of(Logger).to receive(:info).once.with { |str| is_metrics_payload?(str) }
+      allow_any_instance_of(Logger).to receive(:info).with { |str| !is_metrics_payload?(str) }
 
       geocoding.run!
       geocoding.reload.state.should eq 'finished'
@@ -143,7 +143,7 @@ describe Geocoding do
 
       it 'marks rows to geocode with cartodb_georef_status = null' do
         geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @my_table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b')
-        geocoding.stubs(:run_geocoding!)
+        allow(geocoding).to receive(:run_geocoding!)
         @my_table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
         @my_table.service.insert_row!(cartodb_georef_status: nil)
         @my_table.service.insert_row!(cartodb_georef_status: true)
@@ -155,7 +155,7 @@ describe Geocoding do
 
       it 'sets cartodb_georef_status to null on all rows if force_all_rows=true' do
         geocoding = FactoryGirl.build(:geocoding, user: @user, user_table: @my_table, kind: 'admin0', geometry_type: 'polygon', formatter: 'b', force_all_rows: true)
-        geocoding.stubs(:run_geocoding!)
+        allow(geocoding).to receive(:run_geocoding!)
         @my_table.service.add_column!(name: 'cartodb_georef_status', type: 'bool')
         @my_table.service.insert_row!(cartodb_georef_status: nil)
         @my_table.service.insert_row!(cartodb_georef_status: true)
@@ -171,7 +171,7 @@ describe Geocoding do
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a',
                                     user_table: @table, geometry_type: 'polygon',
                                     kind: 'admin0')
-      geocoding.class.stubs(:processable_rows).returns 0
+      allow(geocoding.class).to receive(:processable_rows).and_return(0)
       geocoding.run!
       geocoding.processed_rows.should eq 0
       geocoding.state.should eq 'finished'
@@ -181,12 +181,12 @@ describe Geocoding do
 
     pending 'raises an exception if the geocoding times out' do
       geocoding = FactoryGirl.create(:geocoding, user: @user, user_table: @table, formatter: 'b', kind: 'high-resolution')
-      geocoding.class.stubs(:processable_rows).returns 10
-      geocoding.stubs(:processing_timeout_seconds).returns 0.01 # set timeout to 10 ms
+      allow(geocoding.class).to receive(:processable_rows).and_return(10)
+      allow(geocoding).to receive(:processing_timeout_seconds).and_return(0.01) # set timeout to 10 ms
 
-      table_geocoder_mock = mock
-      table_geocoder_mock.stubs(:run).with() { sleep(5) } # force it to sleep beyond timeout
-      geocoding.stubs(:table_geocoder).returns(table_geocoder_mock)
+      table_geocoder_mock = double
+      allow(table_geocoder_mock).to receive(:run).with() { sleep(5) } # force it to sleep beyond timeout
+      allow(geocoding).to receive(:table_geocoder).and_return(table_geocoder_mock)
 
       geocoding.run!
       geocoding.reload.state.should eq 'failed'
@@ -194,14 +194,14 @@ describe Geocoding do
 
     it 'sends a track event through hubspot client' do
       hubspot_instance = CartoDB::Hubspot.instance
-      hubspot_instance.expects(:track_geocoding_success).once.with() { |payload|
+      expect(hubspot_instance).to receive(:track_geocoding_success).once.with() { |payload|
         payload[:email] == @user.email && payload[:processed_rows] == 0
       }
 
       geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a',
                                     user_table: @table, geometry_type: 'polygon',
                                     kind: 'admin0')
-      geocoding.class.stubs(:processable_rows).returns 0
+      allow(geocoding.class).to receive(:processable_rows).and_return(0)
       geocoding.run!
     end
   end
@@ -210,7 +210,7 @@ describe Geocoding do
     let(:geocoding) { FactoryGirl.build(:geocoding, user: @user) }
 
     it 'returns the remaining quota if the user has hard limit' do
-      @user.stubs('hard_geocoding_limit?').returns(true)
+      allow(@user).to receive('hard_geocoding_limit?').and_return(true)
       delete_user_data @user
       geocoding.max_geocodable_rows.should eq 200
       user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil)
@@ -219,7 +219,7 @@ describe Geocoding do
     end
 
     it 'returns 50000 if the user has soft limit' do
-      @user.stubs('soft_geocoding_limit?').returns(true)
+      allow(@user).to receive('soft_geocoding_limit?').and_return(true)
       user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil)
       user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
       geocoding.max_geocodable_rows.should eq 50000
@@ -230,7 +230,7 @@ describe Geocoding do
       organization.owner.geocoder_provider = 'heremaps'
       organization.owner.save
       org_user = organization.users.last
-      org_user.stubs('soft_geocoding_limit?').returns(false)
+      allow(org_user).to receive('soft_geocoding_limit?').and_return(false)
       org_geocoding = build(:geocoding, user: org_user.sequel_user)
       organization.geocoding_quota.should eq 150
       org_geocoding.max_geocodable_rows.should eq 150
@@ -251,8 +251,8 @@ describe Geocoding do
     end
 
     it 'tries 5 times to cancel the geocoding job if that fails and after that sends an error report' do
-      CartoDB.expects(:notify_exception).times(1)
-      geocoding.table_geocoder.expects(:cancel).times(5).raises("error")
+      expect(CartoDB).to receive(:notify_exception).times(1)
+      expect(geocoding.table_geocoder).to receive(:cancel).times(5).and_raise("error")
       geocoding.cancel
     end
   end
@@ -276,7 +276,7 @@ describe Geocoding do
     it 'returns the used credits when the user is over geocoding quota' do
       redis_mock = MockRedis.new
       user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, _org = nil, _redis = redis_mock)
-      CartoDB::GeocoderUsageMetrics.stubs(:new).returns(user_geocoder_metrics)
+      allow(CartoDB::GeocoderUsageMetrics).to receive(:new).and_return(user_geocoder_metrics)
       geocoding = FactoryGirl.create(:geocoding, user: @user, processed_rows: 0, cache_hits: 100, kind: 'high-resolution', geocoder_type: 'heremaps', formatter: 'foo')
       user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
       # 100 total (user has 200) => 0 used credits

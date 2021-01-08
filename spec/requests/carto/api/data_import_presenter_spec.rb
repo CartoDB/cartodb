@@ -75,7 +75,7 @@ describe Carto::Api::DataImportPresenter do
     end
 
     it 'extracts id if neither service_item_id nor data_source given without throwing errors' do
-      CartoDB.expects(:notify_debug).never
+      expect(CartoDB).to receive(:notify_debug).never
       presenter = Carto::Api::DataImportPresenter.new(@data_import)
       presenter.api_public_values['display_name'].should eq @data_import.id
     end
@@ -83,13 +83,13 @@ describe Carto::Api::DataImportPresenter do
     it 'extracts id if empty service_item_id and data_source are given without throwing errors' do
       @data_import.service_item_id = ''
       @data_import.data_source = ''
-      CartoDB.expects(:notify_debug).never
+      expect(CartoDB).to receive(:notify_debug).never
       presenter = Carto::Api::DataImportPresenter.new(@data_import)
       presenter.api_public_values['display_name'].should eq @data_import.id
     end
 
     it 'gets warnings' do
-      CartoDB.expects(:notify_debug).never
+      expect(CartoDB).to receive(:notify_debug).never
       presenter = Carto::Api::DataImportPresenter.new(@data_import)
       expected = { :rejected_layers => ["manolo", "escobar"], :user_max_layers => 4, "max_tables_per_import" => 10 }
       presenter.api_public_values[:warnings].should eq expected

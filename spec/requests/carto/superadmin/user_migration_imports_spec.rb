@@ -53,14 +53,14 @@ describe Carto::Superadmin::UserMigrationImportsController do
     end
 
     it 'returns 401 if not authorized' do
-      Resque.expects(:enqueue).with(Resque::UserMigrationJobs::Import, anything).never
+      expect(Resque).to receive(:enqueue).with(Resque::UserMigrationJobs::Import, anything).never
       post_json(superadmin_user_migration_imports_path, import_for_user, invalid_headers) do |response|
         response.status.should eq 401
       end
     end
 
     it 'creates an import for user' do
-      Resque.expects(:enqueue).with(Resque::UserMigrationJobs::Import, anything).once
+      expect(Resque).to receive(:enqueue).with(Resque::UserMigrationJobs::Import, anything).once
       post_json(superadmin_user_migration_imports_path, import_for_user, superadmin_headers) do |response|
         response.status.should eq 201
         response.body[:id].should be
@@ -75,7 +75,7 @@ describe Carto::Superadmin::UserMigrationImportsController do
     end
 
     it 'creates an import for organization' do
-      Resque.expects(:enqueue).with(Resque::UserMigrationJobs::Import, anything).once
+      expect(Resque).to receive(:enqueue).with(Resque::UserMigrationJobs::Import, anything).once
       post_json(superadmin_user_migration_imports_path, import_for_organization, superadmin_headers) do |response|
         response.status.should eq 201
         response.body[:id].should be
@@ -90,7 +90,7 @@ describe Carto::Superadmin::UserMigrationImportsController do
     end
 
     it 'returns an error if not passing parameters' do
-      Resque.expects(:enqueue).with(Resque::UserMigrationJobs::Import, anything).never
+      expect(Resque).to receive(:enqueue).with(Resque::UserMigrationJobs::Import, anything).never
       post_json(superadmin_user_migration_imports_path, {}, superadmin_headers) do |response|
         response.status.should eq 422
         response.body[:errors].should be

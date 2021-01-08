@@ -68,7 +68,7 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     before(:each) do
-      Cartodb::Central.any_instance.stubs(:get_do_token).returns(@expected_body.to_json)
+      allow_any_instance_of(Cartodb::Central).to receive(:get_do_token).and_return(@expected_body.to_json)
     end
 
     after(:each) do
@@ -78,7 +78,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it_behaves_like 'an endpoint validating a DO API key'
 
     it 'calls Central to request the token' do
-      Cartodb::Central.any_instance.expects(:get_do_token).with(@user1.username).once.returns(@expected_body.to_json)
+      expect_any_instance_of(Cartodb::Central).to receive(:get_do_token).with(@user1.username).once.returns(@expected_body.to_json)
 
       get_json endpoint_url(api_key: @master), @headers
     end
@@ -93,7 +93,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'returns 500 with an explicit message if the central call fails' do
       central_response = OpenStruct.new(code: 500, body: { errors: ['boom'] }.to_json)
       central_error = CartoDB::CentralCommunicationFailure.new(central_response)
-      Cartodb::Central.any_instance.stubs(:get_do_token).raises(central_error)
+      allow_any_instance_of(Cartodb::Central).to receive(:get_do_token).and_raise(central_error)
 
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(500)
@@ -137,16 +137,16 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     before(:each) do
-      @doss = mock
-      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-      @doss.stubs(:sync).returns({sync_status: 'synced', sync_table: 'my_do_subscription'})
-      @doss.stubs(:parsed_entity_id).returns({})
+      @doss = double
+      allow(Carto::DoSyncServiceFactory).to receive(:get_for_user).and_return(@doss)
+      allow(@doss).to receive(:sync).and_return({sync_status: 'synced', sync_table: 'my_do_subscription'})
+      allow(@doss).to receive(:parsed_entity_id).and_return({})
     end
 
     it_behaves_like 'an endpoint validating a DO API key'
 
     it 'checks if DO is enabled' do
-      Carto::User.any_instance.expects(:do_enabled?).once
+      expect_any_instance_of(Carto::User).to receive(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master), @headers
     end
@@ -246,10 +246,10 @@ describe Carto::Api::Public::DataObservatoryController do
 
     describe 'sync_info' do
       before(:each) do
-        @doss = mock
-        Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-        @doss.stubs(:sync).returns({sync_status: 'unsynced'})
-        @doss.stubs(:parsed_entity_id).returns({})
+        @doss = double
+        allow(Carto::DoSyncServiceFactory).to receive(:get_for_user).and_return(@doss)
+        allow(@doss).to receive(:sync).and_return({sync_status: 'unsynced'})
+        allow(@doss).to receive(:parsed_entity_id).and_return({})
       end
 
       it 'returns 404 if the subscription_id is not a valid user subscription' do
@@ -270,10 +270,10 @@ describe Carto::Api::Public::DataObservatoryController do
 
     describe 'create_sync' do
       before(:each) do
-        @doss = mock
-        Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-        @doss.stubs(:create_sync!).returns({sync_status: 'syncing'})
-        @doss.stubs(:parsed_entity_id).returns({})
+        @doss = double
+        allow(Carto::DoSyncServiceFactory).to receive(:get_for_user).and_return(@doss)
+        allow(@doss).to receive(:create_sync!).and_return({sync_status: 'syncing'})
+        allow(@doss).to receive(:parsed_entity_id).and_return({})
       end
 
       it 'returns 404 if the subscription_id is not a valid user subscription' do
@@ -294,10 +294,10 @@ describe Carto::Api::Public::DataObservatoryController do
 
     describe 'destroy_sync' do
       before(:each) do
-        @doss = mock
-        Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-        @doss.stubs(:remove_sync!).returns(nil)
-        @doss.stubs(:parsed_entity_id).returns({})
+        @doss = double
+        allow(Carto::DoSyncServiceFactory).to receive(:get_for_user).and_return(@doss)
+        allow(@doss).to receive(:remove_sync!).and_return(nil)
+        allow(@doss).to receive(:parsed_entity_id).and_return({})
       end
 
       it 'returns 404 if the subscription_id is not a valid user subscription' do
@@ -318,9 +318,9 @@ describe Carto::Api::Public::DataObservatoryController do
 
   describe 'create_sample' do
     before(:each) do
-      @doss = mock
-      Carto::DoSampleServiceFactory.stubs(:get_for_user).returns(@doss)
-      @doss.stubs(:import_sample!).returns(nil)
+      @doss = double
+      allow(Carto::DoSampleServiceFactory).to receive(:get_for_user).and_return(@doss)
+      allow(@doss).to receive(:import_sample!).and_return(nil)
     end
 
     it 'returns 200 if the dataset_id is valid' do
@@ -348,13 +348,13 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     before(:each) do
-      @doss = mock
-      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-      @doss.stubs(:parsed_entity_id).returns({type: 'dataset'})
+      @doss = double
+      allow(Carto::DoSyncServiceFactory).to receive(:get_for_user).and_return(@doss)
+      allow(@doss).to receive(:parsed_entity_id).and_return({type: 'dataset'})
     end
 
     it 'checks if DO is enabled' do
-      Carto::User.any_instance.expects(:do_enabled?).once
+      expect_any_instance_of(Carto::User).to receive(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master, subscription_id: 'proj.dat.tab'), @headers
     end
@@ -378,7 +378,7 @@ describe Carto::Api::Public::DataObservatoryController do
   describe 'subscription_info' do
     before(:each) do
       # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
-      Carto::DoLicensingService.any_instance.stubs(:subscriptions).returns([@params])
+      allow_any_instance_of(Carto::DoLicensingService).to receive(:subscriptions).and_return([@params])
     end
 
     after(:each) do
@@ -392,7 +392,7 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'checks if DO is enabled' do
-      Carto::User.any_instance.expects(:do_enabled?).once
+      expect_any_instance_of(Carto::User).to receive(:do_enabled?).once
 
       get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers
     end
@@ -448,7 +448,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       it 'returns 200 with the metadata for a geography' do
         subscription = { id: 'carto.abc.geography1', type: 'geography' }
-        Carto::DoLicensingService.any_instance.stubs(:subscriptions).returns([subscription])
+        allow_any_instance_of(Carto::DoLicensingService).to receive(:subscriptions).and_return([subscription])
 
         get_json endpoint_url(subscription.merge(api_key: @master)), @headers do |response|
           expect(response.status).to eq(200)
@@ -546,9 +546,9 @@ describe Carto::Api::Public::DataObservatoryController do
 
     before(:each) do
       # Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
-      @doss = mock
-      Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
-      @doss.stubs(:parsed_entity_id).returns({})
+      @doss = double
+      allow(Carto::DoSyncServiceFactory).to receive(:get_for_user).and_return(@doss)
+      allow(@doss).to receive(:parsed_entity_id).and_return({})
     end
 
     after(:each) do
@@ -561,7 +561,7 @@ describe Carto::Api::Public::DataObservatoryController do
         id: dataset_id, project: 'carto', dataset: 'zzz', table: 'table1',
         estimated_size: 10000, estimated_row_count: 1000, estimated_columns_count: 1000
       }
-      @doss.stubs(:entity_info).with(dataset_id).returns(dataset_info)
+      allow(@doss).to receive(:entity_info).with(dataset_id).and_return(dataset_info)
       get_json endpoint_url(api_key: @master, entity_id: dataset_id), @headers do |response|
         expect(response.status).to eq(200)
         expect(response.body).to eq(dataset_info)
@@ -570,7 +570,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
     it 'returns 404 if the dataset does not exist ' do
       dataset_id = 'carto.zzz.table1'
-      @doss.stubs(:entity_info).with(dataset_id).returns({ error: 'bad entity id'})
+      allow(@doss).to receive(:entity_info).with(dataset_id).and_return({ error: 'bad entity id'})
       get_json endpoint_url(api_key: @master, entity_id: dataset_id), @headers do |response|
         expect(response.status).to eq(404)
       end
@@ -612,7 +612,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'returns 500 with an explicit message if the central call fails' do
       central_response = OpenStruct.new(code: 500, body: { errors: ['boom'] }.to_json)
       central_error = CartoDB::CentralCommunicationFailure.new(central_response)
-      Carto::DoLicensingService.expects(:new).with(@user1.username).once.raises(central_error)
+      expect(Carto::DoLicensingService).to receive(:new).with(@user1.username).once.and_raise(central_error)
 
       post_json endpoint_url(api_key: @master), @payload do |response|
         expect(response.status).to eq(500)
@@ -634,15 +634,15 @@ describe Carto::Api::Public::DataObservatoryController do
         status: 'active'
       }
 
-      mock_sync_service = mock
+      mock_sync_service = double
       Carto::DoSyncServiceFactory.expects(:get_for_user).once.returns(mock_sync_service)
-      mock_sync_service.stubs(:parsed_entity_id).returns(expected_params)
+      allow(mock_sync_service).to receive(:parsed_entity_id).and_return(expected_params)
 
-      mock_service = mock
-      mock_service.expects(:subscribe).with(expected_params).once
-      Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
+      mock_service = double
+      expect(mock_service).to receive(:subscribe).with(expected_params).once
+      expect(Carto::DoLicensingService).to receive(:new).with(@user1.username).once.returns(mock_service)
 
-      Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
+      allow(Time).to receive(:now).and_return(Time.parse('2018/01/01 00:00:00'))
 
       post_json endpoint_url(api_key: @master), id: dataset_id, type: 'dataset' do |response|
         expect(response.status).to eq(200)
@@ -662,16 +662,16 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'creates a proper subscription request to premium data' do
-      mailer_mock = stub(:deliver_now)
+      mailer_mock = double(:deliver_now)
       dataset_id = 'carto.abc.geography1'
       dataset_name = 'CARTO geography 1'
       provider_name = 'CARTO'
-      DataObservatoryMailer.expects(:user_request).with(
+      expect(DataObservatoryMailer).to receive(:user_request).with(
         @carto_user1,
         dataset_name,
         provider_name
       ).never
-      DataObservatoryMailer.expects(:carto_request).with(
+      expect(DataObservatoryMailer).to receive(:carto_request).with(
         @carto_user1,
         dataset_id,
         3.0
@@ -686,14 +686,14 @@ describe Carto::Api::Public::DataObservatoryController do
         status: 'requested'
       }
 
-      mock_sync_service = mock
+      mock_sync_service = double
       Carto::DoSyncServiceFactory.expects(:get_for_user).once.returns(mock_sync_service)
-      mock_sync_service.stubs(:parsed_entity_id).returns(expected_params)
+      allow(mock_sync_service).to receive(:parsed_entity_id).and_return(expected_params)
 
-      mock_service = mock
-      mock_service.expects(:subscribe).with(expected_params).once
-      Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
-      Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
+      mock_service = double
+      expect(mock_service).to receive(:subscribe).with(expected_params).once
+      expect(Carto::DoLicensingService).to receive(:new).with(@user1.username).once.returns(mock_service)
+      allow(Time).to receive(:now).and_return(Time.parse('2018/01/01 00:00:00'))
 
       post_json endpoint_url(api_key: @master), id: 'carto.abc.geography1', type: 'geography' do |response|
         expect(response.status).to eq(200)
@@ -724,14 +724,14 @@ describe Carto::Api::Public::DataObservatoryController do
           status: 'active'
         }
 
-        mock_sync_service = mock
+        mock_sync_service = double
         Carto::DoSyncServiceFactory.expects(:get_for_user).once.returns(mock_sync_service)
-        mock_sync_service.stubs(:parsed_entity_id).returns(expected_params)
+        allow(mock_sync_service).to receive(:parsed_entity_id).and_return(expected_params)
 
-        mock_service = mock
-        mock_service.expects(:subscribe).with(expected_params).once
-        Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
-        Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
+        mock_service = double
+        expect(mock_service).to receive(:subscribe).with(expected_params).once
+        expect(Carto::DoLicensingService).to receive(:new).with(@user1.username).once.returns(mock_service)
+        allow(Time).to receive(:now).and_return(Time.parse('2018/01/01 00:00:00'))
 
         post_json endpoint_url(api_key: @master), @payload do |response|
           expect(response.status).to eq(200)
@@ -754,16 +754,16 @@ describe Carto::Api::Public::DataObservatoryController do
 
     it 'creates a proper subscription request when instant licensing is enabled and delivery time is not 0' do
       with_feature_flag @user1, 'do-instant-licensing', true do
-        mailer_mock = stub(:deliver_now)
+        mailer_mock = double(:deliver_now)
         dataset_id = 'carto.abc.deliver_1day'
         dataset_name = 'CARTO dataset 1'
         provider_name = 'CARTO'
-        DataObservatoryMailer.expects(:user_request).with(
+        expect(DataObservatoryMailer).to receive(:user_request).with(
           @carto_user1,
           dataset_name,
           provider_name
         ).never
-        DataObservatoryMailer.expects(:carto_request).with(
+        expect(DataObservatoryMailer).to receive(:carto_request).with(
           @carto_user1,
           dataset_id,
           1.0
@@ -778,14 +778,14 @@ describe Carto::Api::Public::DataObservatoryController do
           status: 'requested'
         }
 
-        mock_sync_service = mock
+        mock_sync_service = double
         Carto::DoSyncServiceFactory.expects(:get_for_user).once.returns(mock_sync_service)
-        mock_sync_service.stubs(:parsed_entity_id).returns(expected_params)
+        allow(mock_sync_service).to receive(:parsed_entity_id).and_return(expected_params)
 
-        mock_service = mock
-        mock_service.expects(:subscribe).with(expected_params).once
-        Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
-        Time.stubs(:now).returns(Time.parse('2018/01/01 00:00:00'))
+        mock_service = double
+        expect(mock_service).to receive(:subscribe).with(expected_params).once
+        expect(Carto::DoLicensingService).to receive(:new).with(@user1.username).once.returns(mock_service)
+        allow(Time).to receive(:now).and_return(Time.parse('2018/01/01 00:00:00'))
 
         post_json endpoint_url(api_key: @master), id: dataset_id, type: 'dataset' do |response|
           expect(response.status).to eq(200)
@@ -821,9 +821,9 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     it 'returns 204 calls the DoLicensingService with the expected params' do
-      mock_service = mock
-      mock_service.expects(:unsubscribe).with('carto.abc.dataset1').once
-      Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
+      mock_service = double
+      expect(mock_service).to receive(:unsubscribe).with('carto.abc.dataset1').once
+      expect(Carto::DoLicensingService).to receive(:new).with(@user1.username).once.returns(mock_service)
 
       delete_json endpoint_url(@params) do |response|
         expect(response.status).to eq(204)
@@ -833,8 +833,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
   def mock_do_metadata
     (datasets_provider + cartographies_provider + special_cases_provider).each do |entry|
-      Carto::Api::Public::DataObservatoryController
-        .any_instance.stubs(:request_subscription_metadata).with(entry[:id], entry[:type]).returns(entry[:metadata])
+      allow_any_instance_of(Carto::Api::Public::DataObservatoryController).to receive(:request_subscription_metadata).with(entry[:id], entry[:type]).returns(entry[:metadata])
     end
   end
 

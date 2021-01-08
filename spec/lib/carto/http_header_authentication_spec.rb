@@ -52,7 +52,7 @@ describe Carto::HttpHeaderAuthentication do
     end
 
     it 'searches by email with header' do
-      User.expects(:where).with("email = ?", mock_email_request.headers[authenticated_header]).returns mock_user_search
+      expect(User).to receive(:where).with("email = ?", mock_email_request.headers[authenticated_header]).and_return(mock_user_search)
       Carto::HttpHeaderAuthentication.new.get_user(mock_email_request).should == mock_user
     end
 
@@ -62,13 +62,13 @@ describe Carto::HttpHeaderAuthentication do
       end
 
       it 'searches by field depending on header' do
-        User.expects(:where).with("email = ?", mock_email_request.headers[authenticated_header]).once.returns mock_user_search
+        expect(User).to receive(:where).with("email = ?", mock_email_request.headers[authenticated_header]).once.returns mock_user_search
         Carto::HttpHeaderAuthentication.new.get_user(mock_email_request).should == mock_user
 
-        User.expects(:where).with("username = ?", mock_username_request.headers[authenticated_header]).once.returns mock_user_search
+        expect(User).to receive(:where).with("username = ?", mock_username_request.headers[authenticated_header]).once.returns mock_user_search
         Carto::HttpHeaderAuthentication.new.get_user(mock_username_request).should == mock_user
 
-        User.expects(:where).with("id = ?", mock_id_request.headers[authenticated_header]).once.returns mock_user_search
+        expect(User).to receive(:where).with("id = ?", mock_id_request.headers[authenticated_header]).once.returns mock_user_search
         Carto::HttpHeaderAuthentication.new.get_user(mock_id_request).should == mock_user
       end
     end

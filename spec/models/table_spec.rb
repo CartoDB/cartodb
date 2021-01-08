@@ -158,7 +158,7 @@ describe Table do
       end
 
       it 'receives a name change if table visualization name changed' do
-        Table.any_instance.stubs(:update_cdb_tablemetadata)
+        allow_any_instance_of(Table).to receive(:update_cdb_tablemetadata)
 
         table = create_table(name: 'bogus_name', user_id: @user.id)
 
@@ -334,7 +334,7 @@ describe Table do
 
       it 'propagates privacy changes to the associated visualization' do
         # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
         table = create_table(user_id: @user.id)
         table.should be_private
@@ -363,7 +363,7 @@ describe Table do
 
       it 'receives privacy changes from the associated visualization' do
         # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
         table = create_table(user_id: @user.id)
         table.should be_private
@@ -592,14 +592,14 @@ describe Table do
         table = create_table(name: 'Wadus table', user_id: @user.id)
         CartoDB::TablePrivacyManager.any_instance
 
-        table.expects(:update_cdb_tablemetadata)
+        expect(table).to receive(:update_cdb_tablemetadata)
         table.name = 'Wadus table #23'
         table.save
       end
 
       it "should rename the pk sequence when renaming the table" do
         table1 = new_table(name: 'table 1', user_id: @user.id)
-        table1.stubs(:update_cdb_tablemetadata)
+        allow(table1).to receive(:update_cdb_tablemetadata)
 
         table1.save.reload
         table1.name.should == 'table_1'
@@ -609,7 +609,7 @@ describe Table do
         table1.name.should == 'table_2'
 
         table2 = new_table(name: 'table 1', user_id: @user.id)
-        table2.stubs(:update_cdb_tablemetadata)
+        allow(table2).to receive(:update_cdb_tablemetadata)
 
         table2.save.reload
         table2.name.should == 'table_1'
@@ -664,7 +664,7 @@ describe Table do
 
       id = table.table_visualization.id
 
-      CartoDB::Varnish.any_instance.expects(:purge)
+      expect_any_instance_of(CartoDB::Varnish).to receive(:purge)
                       .once
                       .with(".*#{id}:vizjson")
                       .returns(true)
@@ -678,7 +678,7 @@ describe Table do
       before(:all) do
         bypass_named_maps
 
-        CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+        allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
         @doomed_table = create_table(user_id: @user.id)
         @doomed_table.destroy
       end
@@ -787,13 +787,13 @@ describe Table do
       it "should invoke update_cdb_tablemetadata after modifying a column" do
         table = create_table(user_id: @user.id)
 
-        table.expects(:update_cdb_tablemetadata)
+        expect(table).to receive(:update_cdb_tablemetadata)
         table.modify_column!(name: 'name', type: 'number')
       end
 
       it "should update public.cdb_tablemetadata after modifying a column" do
         table = create_table(:user_id => @user.id)
-        table.expects(:update_cdb_tablemetadata).once
+        expect(table).to receive(:update_cdb_tablemetadata).once
         table.modify_column!(:name => "name", :type => "number")
       end
 
@@ -968,7 +968,7 @@ describe Table do
         table.save
         pk = table.insert_row!({:name => "name #1", :description => "description #1"})
 
-        Table.any_instance.stubs(:the_geom_type=).raises(CartoDB::InvalidGeomType)
+        allow_any_instance_of(Table).to receive(:the_geom_type=).and_raise(CartoDB::InvalidGeomType)
 
         table = new_table({:name => 'table1', :user_id => @user.id})
         lambda {
@@ -984,7 +984,7 @@ describe Table do
 
         pk = table.insert_row!({:name => "name #1", :description => "description #1"})
 
-        Table.any_instance.stubs(:schema).raises(CartoDB::QueryNotAllowed)
+        allow_any_instance_of(Table).to receive(:schema).and_raise(CartoDB::QueryNotAllowed)
 
         data_import = DataImport.create( :user_id       => @user.id,
                                       :table_name    => 'rescol',
@@ -1332,7 +1332,7 @@ describe Table do
 
       it "should optimize the table" do
         fixture = fake_data_path("SHP1.zip")
-        Table.any_instance.expects(:optimize).once
+        expect_any_instance_of(Table).to receive(:optimize).once
         data_import = create_import(@user, fixture)
       end
 
@@ -1859,27 +1859,27 @@ describe Table do
       it 'checks that only users with private tables enabled can set LINK privacy' do
         table_id = Carto::UUIDHelper.random_uuid
 
-        user_mock = mock
-        user_mock.stubs(:private_tables_enabled).returns(true)
-        user_mock.stubs(:database_name).returns(nil)
-        user_mock.stubs(:over_table_quota?).returns(false)
-        user_mock.stubs(:database_schema).returns('public')
-        user_mock.stubs(:viewer).returns(false)
+        user_mock = double
+        allow(user_mock).to receive(:private_tables_enabled).and_return(true)
+        allow(user_mock).to receive(:database_name).and_return(nil)
+        allow(user_mock).to receive(:over_table_quota?).and_return(false)
+        allow(user_mock).to receive(:database_schema).and_return('public')
+        allow(user_mock).to receive(:viewer).and_return(false)
 
-        ::Table.any_instance.stubs(:get_valid_name).returns('test')
-        ::Table.any_instance.stubs(:owner).returns(user_mock)
-        ::Table.any_instance.stubs(:create_table_in_database!)
-        ::Table.any_instance.stubs(:set_table_id).returns(table_id)
-        ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
-        ::UserTable.any_instance.stubs(:after_create)
-        ::Table.any_instance.stubs(:after_save)
-        ::Table.any_instance.stubs(:cartodbfy)
-        ::Table.any_instance.stubs(:schema)
-        CartoDB::TablePrivacyManager.any_instance.stubs(:owner).returns(user_mock)
+        allow_any_instance_of(::Table).to receive(:get_valid_name).and_return('test')
+        allow_any_instance_of(::Table).to receive(:owner).and_return(user_mock)
+        allow_any_instance_of(::Table).to receive(:create_table_in_database!)
+        allow_any_instance_of(::Table).to receive(:set_table_id).and_return(table_id)
+        allow_any_instance_of(::Table).to receive(:set_the_geom_column!).and_return(true)
+        allow_any_instance_of(::UserTable).to receive(:after_create)
+        allow_any_instance_of(::Table).to receive(:after_save)
+        allow_any_instance_of(::Table).to receive(:cartodbfy)
+        allow_any_instance_of(::Table).to receive(:schema)
+        allow_any_instance_of(CartoDB::TablePrivacyManager).to receive(:owner).and_return(user_mock)
 
         # A user who can create private tables has by default private tables
         user_table = ::UserTable.new
-        user_table.stubs(:user).returns(user_mock)
+        allow(user_table).to receive(:user).and_return(user_mock)
         user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PRIVATE
 
         user_table.user_id = Carto::UUIDHelper.random_uuid
@@ -1897,7 +1897,7 @@ describe Table do
         user_table.errors.size.should eq 0
 
         user_table.privacy = UserTable::PRIVACY_PUBLIC
-        user_mock.stubs(:private_tables_enabled).returns(false)
+        allow(user_mock).to receive(:private_tables_enabled).and_return(false)
 
         # Anybody can "keep" a table being type link if it is new or hasn't changed (changed meaning had a previous privacy value)
         user_table.privacy = UserTable::PRIVACY_LINK
@@ -1916,7 +1916,7 @@ describe Table do
 
         # A user who cannot create private tables has by default public
         user_table = ::UserTable.new
-        user_table.stubs(:user).returns(user_mock)
+        allow(user_table).to receive(:user).and_return(user_mock)
         user_table.send(:default_privacy_value).should eq ::UserTable::PRIVACY_PUBLIC
       end
     end #validation_for_link_privacy
@@ -2125,11 +2125,11 @@ describe Table do
       it "returns an empty array and does not cache if there's no column the_geom" do
         table = create_table(user_id: @user.id)
 
-        cache = mock()
-        cache.expects(:get).once
-        cache.expects(:setex).once
+        cache = double()
+        expect(cache).to receive(:get).once
+        expect(cache).to receive(:setex).once
 
-        table.stubs(:cache).returns(cache)
+        allow(table).to receive(:cache).and_return(cache)
 
         # A bit extreme way of getting a table without the_geom
         table.owner.in_database.run(%Q{ALTER TABLE #{table.name} DROP COLUMN "the_geom" CASCADE})
@@ -2141,11 +2141,11 @@ describe Table do
       it "returns an empty array and does not cache if there are no geometries in the query" do
         table = create_table(user_id: @user.id)
 
-        cache = mock()
+        cache = double()
         cache.expects(:get).once.returns(nil)
         cache.expects(:setex).once
 
-        table.stubs(:cache).returns(cache)
+        allow(table).to receive(:cache).and_return(cache)
 
         table.geometry_types.should == []
       end
@@ -2153,11 +2153,11 @@ describe Table do
       it "caches if there are geometries" do
         table = create_table(user_id: @user.id)
 
-        cache = mock()
-        cache.expects(:get).once
-        cache.expects(:setex).once
+        cache = double()
+        expect(cache).to receive(:get).once
+        expect(cache).to receive(:setex).once
 
-        table.stubs(:cache).returns(cache)
+        allow(table).to receive(:cache).and_return(cache)
         table.owner.in_database.run(%Q{
           INSERT INTO #{table.name}(the_geom)
           VALUES(ST_GeomFromText('POINT(-71.060316 48.432044)', 4326))
@@ -2269,7 +2269,7 @@ describe Table do
 
       it 'propagates changes to affected visualizations if privacy set to PRIVATE' do
         # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
         table = create_table(user_id: @user.id)
         table.should be_private
@@ -2300,7 +2300,7 @@ describe Table do
 
       it "doesn't propagates changes to affected visualizations if privacy set to public with link" do
         # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
         table = create_table(user_id: @user.id)
 
@@ -2330,7 +2330,7 @@ describe Table do
       before(:all) do
         bypass_named_maps
 
-        CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+        allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
       end
 
       before(:each) do
@@ -2392,15 +2392,15 @@ describe Table do
         table.save
         table.should be_private
 
-        Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+        allow_any_instance_of(Carto::NamedMaps::Api).to receive(get: nil, create: true, update: true)
 
         map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
         derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
         derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
         # Do not create all member objects anew to be able to set expectations
-        CartoDB::Visualization::Member.stubs(:new).with(has_entry(id: derived.id)).returns(derived)
-        CartoDB::Visualization::Member.stubs(:new).with(has_entry(type: 'table')).returns(table.table_visualization)
+        allow(CartoDB::Visualization::Member).to receive(:new).with(has_entry(id: derived.id)).and_return(derived)
+        allow(CartoDB::Visualization::Member).to receive(:new).with(has_entry(type: 'table')).and_return(table.table_visualization)
 
         # Hack to get the correct (Sequel/AR) model
         CartoDB::Varnish.new.purge(derived.varnish_vizjson_key)
@@ -2428,7 +2428,7 @@ describe Table do
 
         table.privacy = UserTable::PRIVACY_PRIVATE
 
-        (table.model_class == ::UserTable ? ::Map : Carto::Map).any_instance.stubs(:save).once.raises(StandardError)
+        allow_any_instance_of((table.model_class == ::UserTable ? ::Map : Carto::Map)).to receive(:save).once.and_raise(StandardError)
 
         expect { table.save }.to raise_exception StandardError
 
@@ -2439,7 +2439,7 @@ describe Table do
           table.instance_variable_set(:@user_table, Carto::UserTable.find(table.id))
         end
 
-        (table.model_class == ::UserTable ? ::Map : Carto::Map).any_instance.stubs(:save).returns(true)
+        allow_any_instance_of((table.model_class == ::UserTable ? ::Map : Carto::Map)).to receive(:save).and_return(true)
 
         # Scenario 2: Fail setting user table privacy (unlikely, but just in case)
 
@@ -2449,8 +2449,7 @@ describe Table do
 
         viz_class = table.model_class == ::UserTable ? CartoDB::Visualization::Member : Carto::Visualization
 
-        viz_class.any_instance.stubs(:store_using_table)
-                 .raises('Manolo is a nice guy, this test is not.')
+        allow_any_instance_of(viz_class).to receive(:store_using_table).and_raise('Manolo is a nice guy, this test is not.')
                  .then.returns(nil).at_least(2)
 
         table.privacy = UserTable::PRIVACY_PRIVATE
@@ -2464,8 +2463,7 @@ describe Table do
 
         # Scenario 4: Fail saving affected visualizations named map
 
-        viz_class.any_instance.stubs(:store_using_table)
-                 .raises('Manolo is a nice guy, this test is not.')
+        allow_any_instance_of(viz_class).to receive(:store_using_table).and_raise('Manolo is a nice guy, this test is not.')
                  .then.returns(nil).at_least(2)
 
         table.privacy = UserTable::PRIVACY_PRIVATE
@@ -2498,9 +2496,9 @@ describe Table do
     end
 
     before(:each) do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      Table.any_instance.stubs(:update_cdb_tablemetadata)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
+      allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
+      allow_any_instance_of(Table).to receive(:update_cdb_tablemetadata)
 
       bypass_named_maps
     end

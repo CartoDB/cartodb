@@ -30,9 +30,9 @@ describe CartoGearsApi::Events::EventManager do
 
   describe '#notify' do
     it 'triggers all subscribed events' do
-      handler = mock
+      handler = double
       handler.should_receive(:do).once
-      handler2 = mock
+      handler2 = double
       handler2.should_receive(:do).once
 
       manager.subscribe(TestEvent) { handler.do }
@@ -41,7 +41,7 @@ describe CartoGearsApi::Events::EventManager do
     end
 
     it 'should not trigger subscribers to other events' do
-      handler = mock
+      handler = double
       handler.should_receive(:do).never
 
       manager.subscribe(TestEvent) { handler.do }
@@ -49,7 +49,7 @@ describe CartoGearsApi::Events::EventManager do
     end
 
     it 'should not trigger unsubscribed handlers' do
-      handler = mock
+      handler = double
       handler.should_receive(:do).never
 
       descriptor = manager.subscribe(TestEvent) { handler.do }

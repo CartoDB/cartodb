@@ -27,7 +27,7 @@ describe CartoDB::ServiceUsageMetrics do
     end
 
     it "does not request redis twice when there's no need" do
-      @redis_mock.expects(:zscore).once.with('org:team:dummy_service:dummy_metric:201606', '20').returns(3141592)
+      expect(@redis_mock).to receive(:zscore).once.with('org:team:dummy_service:dummy_metric:201606', '20').returns(3141592)
       @usage_metrics.get(:dummy_service, :dummy_metric, Date.new(2016, 6, 20)).should eq 3141592
     end
 
@@ -97,7 +97,7 @@ describe CartoDB::ServiceUsageMetrics do
     end
 
     it 'performs just one request/month to redis' do
-      @redis_mock.expects(:zrange).twice
+      expect(@redis_mock).to receive(:zrange).twice
       @usage_metrics.get_sum_by_date_range(:dummy_service,
                                            :dummy_metric,
                                            Date.new(2017, 2, 15),
@@ -163,7 +163,7 @@ describe CartoDB::ServiceUsageMetrics do
     end
 
     it 'performs just one request/month to redis' do
-      @redis_mock.expects(:zrange).twice
+      expect(@redis_mock).to receive(:zrange).twice
       @usage_metrics.get_date_range(:dummy_service,
                                     :dummy_metric,
                                     Date.new(2017, 2, 15),

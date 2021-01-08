@@ -28,7 +28,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
     end
 
     before(:each) do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     end
 
     before(:each) do
@@ -380,8 +380,8 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       sql_api_template = "http://{user}.localhost.lan:8080"
 
       # Modules do not use '.any_instance' for stubbing
-      ApplicationHelper.stubs(:maps_api_template).returns(maps_api_template)
-      ApplicationHelper.stubs(:sql_api_template).returns(sql_api_template)
+      allow(ApplicationHelper).to receive(:maps_api_template).and_return(maps_api_template)
+      allow(ApplicationHelper).to receive(:sql_api_template).and_return(sql_api_template)
 
 
       stat_tag = '00000000-0000-0000-0000-000000000000'

@@ -86,9 +86,9 @@ describe CartoGearsApi::Users::UsersService do
 
       it 'raises a validation error if the new password is not strong' do
         expect {
-          organization = mock
-          organization.stubs(:strong_passwords_enabled).returns(true)
-          User.any_instance.stubs(:organization).returns(organization)
+          organization = double
+          allow(organization).to receive(:strong_passwords_enabled).and_return(true)
+          allow_any_instance_of(User).to receive(:organization).and_return(organization)
           service.change_password(@user.id, 'galinaa')
         }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /must be at least 8 characters long/)
       end
@@ -112,7 +112,7 @@ describe CartoGearsApi::Users::UsersService do
       end
 
       it 'raises an exception if the save operation fails' do
-        User.any_instance.stubs(:save).raises(Sequel::ValidationFailed, 'Saving error')
+        allow_any_instance_of(User).to receive(:save).and_raise(Sequel::ValidationFailed)
 
         expect {
           service.change_password(@user.id, 'new_password')
@@ -120,7 +120,7 @@ describe CartoGearsApi::Users::UsersService do
       end
 
       it 'raises an exception if update_in_central operation fails' do
-        User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure, 'Updating error')
+        allow_any_instance_of(User).to receive(:update_in_central).and_raise(CartoDB::CentralCommunicationFailure)
 
         expect {
           service.change_password(@user.id, 'new_password')

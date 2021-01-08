@@ -8,12 +8,12 @@ RSpec.configure do |c|
 end
 describe CartoDB::DataMover::ExportJob do
   def stub_api_keys
-    CartoDB::DataMover::ImportJob.any_instance.stubs(:create_org_api_key_roles)
-    CartoDB::DataMover::ImportJob.any_instance.stubs(:create_user_api_key_roles)
-    CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_org_api_key_roles)
-    CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_api_key_roles)
-    CartoDB::DataMover::ImportJob.any_instance.stubs(:create_user_oauth_app_user_roles)
-    CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_oauth_app_user_roles)
+    allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:create_org_api_key_roles)
+    allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:create_user_api_key_roles)
+    allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:grant_org_api_key_roles)
+    allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:grant_user_api_key_roles)
+    allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:create_user_oauth_app_user_roles)
+    allow_any_instance_of(CartoDB::DataMover::ImportJob).to receive(:grant_user_oauth_app_user_roles)
   end
 
   before :each do

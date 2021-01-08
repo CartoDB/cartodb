@@ -23,11 +23,11 @@ describe SessionsController do
 
     create_admin_user(admin_user_username, admin_user_email, admin_user_password)
     @admin_user.save.reload
-    Carto::Organization.any_instance.stubs(:owner).returns(@admin_user)
+    allow_any_instance_of(Carto::Organization).to receive(:owner).and_return(@admin_user)
 
     # INFO: Again, hack to act as if user had organization
-    ::User.stubs(:where).with(username: admin_user_username,
-                              organization_id: @organization.id).returns([@admin_user])
+    allow(::User).to receive(:where).with(username: admin_user_username,
+                              organization_id: @organization.id).and_return([@admin_user])
   end
 
   def create_admin_user(admin_user_username, admin_user_email, admin_user_password)
@@ -43,7 +43,7 @@ describe SessionsController do
 
   shared_examples_for 'LDAP' do
     it "doesn't allows to login until admin does first" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       normal_user_username = "ldap-user"
       normal_user_password = "2{Patrañas}"
       normal_user_email = "ldap-user@test.com"
@@ -61,7 +61,7 @@ describe SessionsController do
           organization: ["Organization owner is not set. Administrator must login first."]
         }
       }
-      ::CartoDB.expects(:notify_debug).with('User not valid at signup', errors).returns(nil)
+      expect(::CartoDB).to receive(:notify_debug).with('User not valid at signup', errors).and_return(nil)
 
       post create_session_url(user_domain: user_domain, email: normal_user_username, password: normal_user_password)
 
@@ -70,7 +70,7 @@ describe SessionsController do
     end
 
     it "Allows to login and triggers creation if using the org admin account" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       # @See lib/user_account_creator.rb -> promote_to_organization_owner?
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
@@ -84,8 +84,7 @@ describe SessionsController do
       FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-                                      instance_of(String), anything, instance_of(TrueClass)).returns(true)
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Signup::NewUser, instance_of(String), anything, instance_of(TrueClass)).and_return(true)
 
       post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
 
@@ -94,7 +93,7 @@ describe SessionsController do
     end
 
     it "Allows to login and triggers creation of normal users if admin already present" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
@@ -109,7 +108,7 @@ describe SessionsController do
       @admin_user.save.reload
 
       # INFO: Hack to avoid having to destroy and recreate later the organization
-      Carto::Organization.any_instance.stubs(:owner).returns(@admin_user)
+      allow_any_instance_of(Carto::Organization).to receive(:owner).and_return(@admin_user)
 
       normal_user_username = "ldap-user"
       normal_user_password = "foobar"
@@ -123,8 +122,7 @@ describe SessionsController do
       FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
       FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), [ldap_entry_data])
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Signup::NewUser, instance_of(String), anything, instance_of(FalseClass)).and_return(true)
 
       post create_session_url(user_domain: user_domain, email: normal_user_username, password: normal_user_password)
 
@@ -135,7 +133,7 @@ describe SessionsController do
     end
 
     it "Just logs in if finds a cartodb username that matches with LDAP credentials " do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
       create_ldap_user(admin_user_username, admin_user_password)
@@ -151,7 +149,7 @@ describe SessionsController do
     end
 
     it "Falls back to credentials if user is not present at LDAP" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
@@ -173,11 +171,11 @@ describe SessionsController do
         organization: nil
       )
       @admin_user.save.reload
-      Carto::Organization.any_instance.stubs(:owner).returns(@admin_user)
+      allow_any_instance_of(Carto::Organization).to receive(:owner).and_return(@admin_user)
 
       # INFO: Again, hack to act as if user had organization
-      ::User.stubs(:where).with(username: admin_user_username,
-                                organization_id: @organization.id).returns([@admin_user])
+      allow(::User).to receive(:where).with(username: admin_user_username,
+                                organization_id: @organization.id).and_return([@admin_user])
 
       post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
 
@@ -191,7 +189,7 @@ describe SessionsController do
 
     shared_examples_for 'MFA' do
       it "Redirects to multifactor_authentication if finds a cartodb username that matches with LDAP credentials" do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
         admin_user_username = "#{@organization.name}-admin"
         admin_user_password = '2{Patrañas}'
         create_ldap_user(admin_user_username, admin_user_password)
@@ -323,14 +321,14 @@ describe SessionsController do
 
   shared_examples_for 'SAML' do
     def stub_saml_service(user)
-      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-      Carto::SamlService.any_instance.stubs(:get_user_email).returns(user.email)
+      allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+      allow_any_instance_of(Carto::SamlService).to receive(:get_user_email).and_return(user.email)
     end
 
     it 'redirects to SAML authentication request if enabled' do
       authentication_request = "http://fakesaml.com/authenticate"
-      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-      Carto::SamlService.any_instance.stubs(:authentication_request).returns(authentication_request)
+      allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+      allow_any_instance_of(Carto::SamlService).to receive(:authentication_request).and_return(authentication_request)
 
       get login_url(user_domain: user_domain)
       response.location.should eq authentication_request
@@ -339,7 +337,7 @@ describe SessionsController do
 
     it 'authenticates with SAML if SAMLResponse is present and SAML is enabled' do
       stub_saml_service(@user)
-      SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
+      expect_any_instance_of(SessionsController).to receive(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
 
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
     end
@@ -347,10 +345,9 @@ describe SessionsController do
     it "Allows to login and triggers creation of normal users if user is not present" do
       new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Signup::NewUser, instance_of(String), anything, instance_of(FalseClass)).and_return(true)
 
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -363,10 +360,9 @@ describe SessionsController do
     it "Allows to login and triggers creation of normal users if user is not present" do
       new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
 
-      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
-                                      instance_of(String), anything, instance_of(FalseClass)).returns(true)
+      expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Signup::NewUser, instance_of(String), anything, instance_of(FalseClass)).and_return(true)
 
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -377,8 +373,8 @@ describe SessionsController do
     end
 
     it "Fails to authenticate if SAML request fails" do
-      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-      Carto::SamlService.any_instance.stubs(:get_user_email).returns(nil)
+      allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+      allow_any_instance_of(Carto::SamlService).to receive(:get_user_email).and_return(nil)
 
       post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -388,36 +384,36 @@ describe SessionsController do
     describe 'SAML logout' do
       it 'calls SamlService#sp_logout_request from user-initiated logout' do
         stub_saml_service(@user)
-        SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
+        expect_any_instance_of(SessionsController).to receive(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
 
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
         # needs returning an url to do a redirection
-        Carto::SamlService.any_instance.stubs(:sp_logout_request).returns('http://carto.com').once
+        allow_any_instance_of(Carto::SamlService).to receive(:sp_logout_request).and_return('http://carto.com').once
         get logout_url(user_domain: user_domain)
       end
 
       it 'does not call SamlService#sp_logout_request if logout URL is not configured' do
         stub_saml_service(@user)
-        SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
+        expect_any_instance_of(SessionsController).to receive(:authenticate!).with(:saml, scope: @user.username).returns(@user).once
 
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
         # needs returning an url to do a redirection
-        Carto::SamlService.any_instance.stubs(:logout_url_configured?).returns(false)
-        Carto::SamlService.any_instance.stubs(:sp_logout_request).returns('http://carto.com').never
+        allow_any_instance_of(Carto::SamlService).to receive(:logout_url_configured?).and_return(false)
+        allow_any_instance_of(Carto::SamlService).to receive(:sp_logout_request).and_return('http://carto.com').never
         get logout_url(user_domain: user_domain)
       end
 
       it 'calls SamlService#idp_logout_request if SAMLRequest is present' do
         # needs returning an url to do a redirection
-        Carto::SamlService.any_instance.stubs(:idp_logout_request).returns('http://carto.com').once
+        allow_any_instance_of(Carto::SamlService).to receive(:idp_logout_request).and_return('http://carto.com').once
         get logout_url(user_domain: user_domain, SAMLRequest: 'xx')
       end
 
       it 'calls SamlService#process_logout_response if SAMLResponse is present' do
         # needs returning an url to do a redirection
-        Carto::SamlService.any_instance.stubs(:process_logout_response).returns('http://carto.com').once
+        allow_any_instance_of(Carto::SamlService).to receive(:process_logout_response).and_return('http://carto.com').once
         get logout_url(user_domain: user_domain, SAMLResponse: 'xx')
       end
     end
@@ -425,10 +421,10 @@ describe SessionsController do
     shared_examples_for 'SAML no MFA' do
       it "authenticates users with casing differences in email" do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
-        Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-        Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email.upcase)
+        allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+        allow_any_instance_of(Carto::SamlService).to receive(:get_user_email).and_return(@user.email.upcase)
 
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -518,10 +514,10 @@ describe SessionsController do
 
       it "redirects to multifactor_authentication" do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
-        Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-        Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email)
+        allow_any_instance_of(Carto::SamlService).to receive(:enabled?).and_return(true)
+        allow_any_instance_of(Carto::SamlService).to receive(:get_user_email).and_return(@user.email)
 
         post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
 
@@ -540,7 +536,7 @@ describe SessionsController do
 
       before(:all) do
         create
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
         @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
         @user.save
 
@@ -556,7 +552,7 @@ describe SessionsController do
 
   describe '#login' do
     before(:all) do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(true)
       @organization = FactoryGirl.create(:organization)
       @user = FactoryGirl.create(:carto_user)
     end
@@ -568,7 +564,7 @@ describe SessionsController do
 
     describe 'with Central' do
       before(:each) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(true)
       end
 
       it 'redirects to Central for user logins' do
@@ -577,19 +573,19 @@ describe SessionsController do
       end
 
       it 'redirects to Central for orgs without any auth method enabled' do
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(false)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(false)
         get login_url(user_domain: @organization.name)
         response.status.should == 302
       end
 
       it 'uses the box login for orgs with any auth enabled' do
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(true)
         get login_url(user_domain: @organization.name)
         response.status.should == 200
       end
 
       it 'disallows login from an organization login page to a non-member' do
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(true)
         post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
         response.status.should == 200
         response.body.should include 'Not a member'
@@ -598,7 +594,7 @@ describe SessionsController do
 
     describe 'without Central' do
       before(:each) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       end
 
       it 'does not redirect' do
@@ -607,7 +603,7 @@ describe SessionsController do
       end
 
       it 'allows login from an organization login page to a non-member' do
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(true)
         post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
         response.status.should == 302
       end
@@ -657,7 +653,7 @@ describe SessionsController do
       include Warden::Test::Helpers
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent' do
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+        expect_any_instance_of(CartoGearsApi::Events::EventManager).to receive(:notify).once.with do |event|
           event.class.should eq CartoGearsApi::Events::UserLoginEvent
         end
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
@@ -677,11 +673,11 @@ describe SessionsController do
       include Warden::Test::Helpers
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling not first login' do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
         login(::User.where(id: @user.id).first)
         logout
 
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+        expect_any_instance_of(CartoGearsApi::Events::EventManager).to receive(:notify).once.with do |event|
           event.first_login?.should be_false
         end
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
@@ -689,7 +685,7 @@ describe SessionsController do
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling first login' do
         @new_user = FactoryGirl.create(:carto_user)
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+        expect_any_instance_of(CartoGearsApi::Events::EventManager).to receive(:notify).once.with do |event|
           event.first_login?.should be_true
         end
         post create_session_url(user_domain: @new_user.username, email: @new_user.username, password: @new_user.password)
@@ -697,7 +693,7 @@ describe SessionsController do
       end
 
       it 'returns a CartoGearsApi::Users::User matching the logged user' do
-        CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
+        expect_any_instance_of(CartoGearsApi::Events::EventManager).to receive(:notify).once.with do |event|
           event_user = event.user
           event_user.class.should eq CartoGearsApi::Users::User
           event_user.username.should eq @user.username
@@ -742,7 +738,7 @@ describe SessionsController do
 
     shared_examples_for 'all users workflow' do
       before(:each) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
         @user.user_multifactor_auths.each(&:destroy)
         @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
         @user.reload
@@ -768,8 +764,8 @@ describe SessionsController do
 
         login
         post create_session_url(email: @user.username, password: @user.password)
-        ApplicationController.any_instance.stubs(:current_viewer).returns(@user)
-        ApplicationController.any_instance.stubs(:multifactor_authentication_required?).returns(true)
+        allow_any_instance_of(ApplicationController).to receive(:current_viewer).and_return(@user)
+        allow_any_instance_of(ApplicationController).to receive(:multifactor_authentication_required?).and_return(true)
         follow_redirect!
 
         request.path.should eq multifactor_authentication_verify_code_path
@@ -847,7 +843,7 @@ describe SessionsController do
             }
           }
         ) do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+          allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
           @user.reset_password_rate_limit
           login
 
@@ -945,7 +941,7 @@ describe SessionsController do
 
     describe 'as individual user' do
       before(:all) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
         @user = FactoryGirl.create(:carto_user_mfa)
       end
 
@@ -958,7 +954,7 @@ describe SessionsController do
 
     describe 'as org owner' do
       before(:all) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.owner
         @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
@@ -979,7 +975,7 @@ describe SessionsController do
 
     describe 'as org user' do
       before(:all) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.users.last
         @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
@@ -1000,8 +996,8 @@ describe SessionsController do
 
     describe 'as org without user pass enabled' do
       before(:all) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
+        allow_any_instance_of(Carto::Organization).to receive(:auth_enabled?).and_return(true)
         @organization = FactoryGirl.create(:organization_with_users,
                                            :mfa_enabled,
                                            auth_username_password_enabled: false)
@@ -1039,7 +1035,7 @@ describe SessionsController do
 
     shared_examples_for 'logout endpoint' do
       it 'redirects to user dashboard' do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
         post create_session_url(email: @user.username, password: @user.password)
         get CartoDB.base_url(@user.username) + logout_path
         response.status.should eq 302
@@ -1052,7 +1048,7 @@ describe SessionsController do
 
       before(:each) do
         stub_domainful(@user.username)
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       end
     end
 
@@ -1061,14 +1057,14 @@ describe SessionsController do
 
       before(:each) do
         stub_subdomainless
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       end
     end
   end
 
   describe '#destroy' do
     it 'deletes the _cartodb_base_url cookie' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       @user = FactoryGirl.create(:carto_user)
       login_as(@user, scope: @user.username)
       host! "localhost.lan"
@@ -1082,6 +1078,6 @@ describe SessionsController do
   private
 
   def bypass_named_maps
-    Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
+    allow_any_instance_of(Carto::NamedMaps::Api).to receive(show: nil, create: true, update: true, destroy: true)
   end
 end

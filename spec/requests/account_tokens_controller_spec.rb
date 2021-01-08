@@ -12,7 +12,7 @@ describe AccountTokensController do
     describe 'account validation' do
 
       before(:each) do
-        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
         @user = FactoryGirl.create(:valid_user)
       end
 
@@ -43,7 +43,7 @@ describe AccountTokensController do
       describe 'valid user behaviour' do
 
         before(:each) do
-          CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+          allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
           @user = FactoryGirl.create(:valid_user)
         end
 
@@ -52,7 +52,7 @@ describe AccountTokensController do
         end
 
         it 'triggers a NewOrganizationUser job with user_id' do
-          ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, @user.id).returns(true)
+          expect(::Resque).to receive(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser, @user.id).and_return(true)
           get resend_validation_mail_url(user_id: @user.id)
           response.status.should == 200
         end

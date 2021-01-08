@@ -129,7 +129,7 @@ describe Carto::Api::AnalysesController do
     it 'registers table dependencies when creating analysis' do
       bypass_named_maps
       # Twice because of destroy
-      Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count * 2)
+      expect_any_instance_of(Carto::Layer).to receive(:register_table_dependencies).times(@visualization.data_layers.count * 2)
       post_json create_analysis_url(@user, @visualization), payload do |response|
         response.status.should eq 201
 
@@ -261,7 +261,7 @@ describe Carto::Api::AnalysesController do
 
     it 'registers table dependencies when updating existing analysis' do
       bypass_named_maps
-      Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count)
+      expect_any_instance_of(Carto::Layer).to receive(:register_table_dependencies).times(@visualization.data_layers.count)
       put_json viz_analysis_url(@user, @visualization, @analysis), new_payload do |response|
         response.status.should eq 200
       end
@@ -344,7 +344,7 @@ describe Carto::Api::AnalysesController do
     it 'registers table dependencies when destroying existing analysis' do
       bypass_named_maps
       analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
-      Carto::Layer.any_instance.expects(:register_table_dependencies).times(@visualization.data_layers.count)
+      expect_any_instance_of(Carto::Layer).to receive(:register_table_dependencies).times(@visualization.data_layers.count)
       delete_json viz_analysis_url(@user, @visualization, analysis) do |response|
         response.status.should eq 200
         Carto::Analysis.where(id: analysis.id).first.should be_nil
@@ -392,7 +392,7 @@ describe Carto::Api::AnalysesController do
     end
 
     it '#show returns tile styles for torque layers' do
-      Carto::Layer.any_instance.stubs(:kind).returns('torque')
+      allow_any_instance_of(Carto::Layer).to receive(:kind).and_return('torque')
       get_json viz_analysis_url(@user, @visualization, @styled_analysis.id) do |response|
         response.status.should eq 200
         Carto::AnalysisNode.new(response[:body][:analysis_definition].deep_symbolize_keys).descendants.each do |node|

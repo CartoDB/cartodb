@@ -16,18 +16,18 @@ describe PubSubTracker do
     end
 
     it 'should log an error if an exception occurs during Pubsub initialization' do
-      Google::Cloud::Pubsub.stubs(:new).raises('Error')
-      Rails.logger.expects(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
+      allow(Google::Cloud::Pubsub).to receive(:new).and_raise('Error')
+      expect(Rails.logger).to receive(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
 
       PubSubTracker.instance
     end
 
     it 'should log an error if an exception occurs during topic configuration' do
       @pubsub = Object.new
-      @pubsub.stubs(:topic).raises('Error')
-      Google::Cloud::Pubsub.stubs(:new).returns(@pubsub)
+      allow(@pubsub).to receive(:topic).and_raise('Error')
+      allow(Google::Cloud::Pubsub).to receive(:new).and_return(@pubsub)
 
-      Rails.logger.expects(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
+      expect(Rails.logger).to receive(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
 
       PubSubTracker.instance
     end
@@ -40,18 +40,18 @@ describe PubSubTracker do
 
       @topic_name_and_path = '/projects/project-identifier/topics/topic-name'
       @topic = Object.new
-      @topic.stubs(:name).returns(@topic_name_and_path)
+      allow(@topic).to receive(:name).and_return(@topic_name_and_path)
       @pubsub = Object.new
-      @pubsub.stubs(:topic).returns(@topic)
+      allow(@pubsub).to receive(:topic).and_return(@topic)
 
-      Google::Cloud::Pubsub.stubs(:new).returns(@pubsub)
+      allow(Google::Cloud::Pubsub).to receive(:new).and_return(@pubsub)
     end
 
     it 'should succeed if topic exists and all parameters are filled' do
       success_response = Object.new
-      success_response.stubs(:succeeded?).returns(true)
+      allow(success_response).to receive(:succeeded?).and_return(true)
       success_response
-      @topic.stubs(:publish).returns(success_response)
+      allow(@topic).to receive(:publish).and_return(success_response)
 
       user_id = 'ff5d41c7-e599-4876-9646-8ba023031287'
       event = 'map_created'
@@ -74,25 +74,25 @@ describe PubSubTracker do
     end
 
     it 'should log error when no event type is sent' do
-      Rails.logger.expects(:error).with(message: 'PubSubTracker: error topic key  not found')
+      expect(Rails.logger).to receive(:error).with(message: 'PubSubTracker: error topic key  not found')
 
-      @topic.stubs(:publish)
+      allow(@topic).to receive(:publish)
 
       PubSubTracker.instance.send_event(nil, 'user_id', 'event_name')
     end
 
     it 'should log error when unknown event type sent' do
-      Rails.logger.expects(:error).with(message: 'PubSubTracker: error topic key fake_topic not found')
+      expect(Rails.logger).to receive(:error).with(message: 'PubSubTracker: error topic key fake_topic not found')
 
-      @topic.stubs(:publish)
+      allow(@topic).to receive(:publish)
 
       PubSubTracker.instance.send_event(:fake_topic, 'user_id', 'event_name')
     end
 
     it 'should do nothing when no user id sent' do
-      Rails.logger.expects(:error).never
+      expect(Rails.logger).to receive(:error).never
 
-      @topic.stubs(:publish)
+      allow(@topic).to receive(:publish)
 
       result = PubSubTracker.instance.send_event(:metrics, '', 'event_name')
 
@@ -100,9 +100,9 @@ describe PubSubTracker do
     end
 
     it 'should do nothing when not enabled' do
-      Rails.logger.expects(:error).never
+      expect(Rails.logger).to receive(:error).never
 
-      PubSubTracker.any_instance.stubs(:enabled?).returns(false)
+      allow_any_instance_of(PubSubTracker).to receive(:enabled?).and_return(false)
 
       result = PubSubTracker.instance.send_event(:metrics, 'user_id', 'disabled')
 
@@ -110,9 +110,9 @@ describe PubSubTracker do
     end
 
     it 'should log error if publishing did not succeeded' do
-      Rails.logger.expects(:error).with(has_entry(message: "PubSubTracker: error publishing to topic #{@topic_name_and_path} for event track user"))
+      expect(Rails.logger).to receive(:error).with(has_entry(message: "PubSubTracker: error publishing to topic #{@topic_name_and_path} for event track user"))
 
-      @topic.stubs(:publish).yields(nil)
+      allow(@topic).to receive(:publish).yields(nil)
 
       user_id = 'jane'
       event = 'track user'

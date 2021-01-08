@@ -20,15 +20,15 @@ describe CartoDB::Stats::APICalls do
     end
 
     it "should sum correctly api calls from all sources and return array without date" do
-      @api_calls.stubs(:get_old_api_calls).returns(@dates_example_values.values)
-      @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
+      allow(@api_calls).to receive(:get_old_api_calls).and_return(@dates_example_values.values)
+      allow(@api_calls).to receive(:get_api_calls_from_redis_source).and_return(@dates_example_values)
       expected_total_calls = @dates_example_values.values.map {|v| v * (@redis_sources_count + 1)}
       @api_calls.get_api_calls_without_dates('wadus', {old_api_calls: true}).should == expected_total_calls
 
     end
 
     it "should sum correctly api calls from all redis sources and return hash with dates" do
-      @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
+      allow(@api_calls).to receive(:get_api_calls_from_redis_source).and_return(@dates_example_values)
       expected_total_calls = {}
       @dates_example_values.each do |d, value|
         expected_total_calls[d] = value * @redis_sources_count
@@ -38,7 +38,7 @@ describe CartoDB::Stats::APICalls do
 
     it "should sum correctly api calls from all redis sources and return absolute value" do
       api_calls_value = 3
-      @api_calls.stubs(:get_total_api_calls_from_redis_source).returns(api_calls_value)
+      allow(@api_calls).to receive(:get_total_api_calls_from_redis_source).and_return(api_calls_value)
       expected_total_calls = @redis_sources_count * api_calls_value
       @api_calls.get_total_api_calls('wadus', '123456').should == expected_total_calls
     end
@@ -46,7 +46,7 @@ describe CartoDB::Stats::APICalls do
     it "should sum correctly api calls with custom dates from all redis sources and return hash with dates" do
       pending "Find a way to stub only redis call"
 
-      @api_calls.stubs(:get_api_calls_from_redis_source).returns(@dates_example_values)
+      allow(@api_calls).to receive(:get_api_calls_from_redis_source).and_return(@dates_example_values)
       expected_total_calls = {}
       @dates_example_values.each do |d, value|
         expected_total_calls[d] = value * @redis_sources_count
@@ -158,21 +158,21 @@ describe CartoDB::Stats::APICalls do
     describe 'should execute ZSCAN' do
       it 'once for a single month' do
         key = @api_calls.redis_api_call_key(@username, @type)
-        $users_metadata.stubs(:zscan_each).with(key, match: '201612*').once.returns([])
+        allow($users_metadata).to receive(:zscan_each).with(key, match: '201612*').once.returns([])
         @api_calls.get_api_calls_from_redis_source(@username, @type, from: '20161201', to: '20161202')
       end
 
       it 'twice across month boundaries' do
         key = @api_calls.redis_api_call_key(@username, @type)
-        $users_metadata.stubs(:zscan_each).with(key, match: '201611*').once.returns([])
-        $users_metadata.stubs(:zscan_each).with(key, match: '201612*').once.returns([])
+        allow($users_metadata).to receive(:zscan_each).with(key, match: '201611*').once.returns([])
+        allow($users_metadata).to receive(:zscan_each).with(key, match: '201612*').once.returns([])
         @api_calls.get_api_calls_from_redis_source(@username, @type, from: '20161101', to: '20161211')
       end
 
       it 'twice across year boundaries' do
         key = @api_calls.redis_api_call_key(@username, @type)
-        $users_metadata.stubs(:zscan_each).with(key, match: '201612*').once.returns([])
-        $users_metadata.stubs(:zscan_each).with(key, match: '201701*').once.returns([])
+        allow($users_metadata).to receive(:zscan_each).with(key, match: '201612*').once.returns([])
+        allow($users_metadata).to receive(:zscan_each).with(key, match: '201701*').once.returns([])
         @api_calls.get_api_calls_from_redis_source(@username, @type, from: '20161231', to: '20170101')
       end
     end

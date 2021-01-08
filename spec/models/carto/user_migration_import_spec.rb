@@ -63,7 +63,7 @@ describe Carto::UserMigrationImport do
     it 'updates database host for all users in org' do
       users = create_and_add_users_to_organizaton
       should_import_metadata_for_organization(@organization_mock)
-      @import.stubs(:update_attributes)
+      allow(@import).to receive(:update_attributes)
       @import.org_import = true
       @import.user_id = nil
       should_update_database_host_for_users(users)
@@ -75,11 +75,11 @@ describe Carto::UserMigrationImport do
 
     def should_update_database_host_for_users(users)
       sequel_user_mock = Object.new
-      ::User.stubs(:[]).returns(sequel_user_mock)
-      sequel_user_mock.expects(:reload).times(users.length)
+      allow(::User).to receive(:[]).and_return(sequel_user_mock)
+      expect(sequel_user_mock).to receive(:reload).times(users.length)
       users.each do |user|
-        user.expects(:database_host=).with('database_host').once
-        user.expects(:save!).once
+        expect(user).to receive(:database_host=).with('database_host').once
+        expect(user).to receive(:save!).once
       end
     end
 
@@ -88,16 +88,16 @@ describe Carto::UserMigrationImport do
       @import.stubs(:assert_organization_does_not_exist)
       @import.stubs(:assert_user_does_not_exist)
       @user_migration_package_mock = Object.new
-      Carto::UserMigrationPackage.stubs(:for_import).returns @user_migration_package_mock
+      allow(Carto::UserMigrationPackage).to receive(:for_import).and_return(@user_migration_package_mock)
       @user_migration_package_mock.stubs(:download).with('irrelevant_file')
-      @user_migration_package_mock.stubs(:meta_dir).returns('irrelevant_meta_dir')
-      @user_migration_package_mock.stubs(:data_dir).returns('irrelevant_data_dir')
+      allow(@user_migration_package_mock).to receive(:meta_dir).and_return('irrelevant_meta_dir')
+      allow(@user_migration_package_mock).to receive(:data_dir).and_return('irrelevant_data_dir')
       @user_mock = Carto::User.new
       @import_job_mock = Object.new
-      @import_job_mock.stubs(:db_exists?).returns false
+      allow(@import_job_mock).to receive(:db_exists?).and_return(false)
       @import_job_mock.expects(:run!).once
       @import_job_mock.expects(:terminate_connections).once
-      CartoDB::DataMover::ImportJob.stubs(:new).returns @import_job_mock
+      allow(CartoDB::DataMover::ImportJob).to receive(:new).and_return(@import_job_mock)
       @user_migration_package_mock.stubs(:cleanup)
       @import.expects(:save!).once.returns @import
     end
@@ -118,18 +118,18 @@ describe Carto::UserMigrationImport do
     end
 
     def should_import_metadata_for_user(user)
-      @user_migration_package_mock.stubs(:meta_dir).returns 'irrelevant_meta_dir'
-      Carto::UserMetadataExportService.any_instance.expects(:import_from_directory).with('irrelevant_meta_dir')
+      allow(@user_migration_package_mock).to receive(:meta_dir).and_return('irrelevant_meta_dir')
+      expect_any_instance_of(Carto::UserMetadataExportService).to receive(:import_from_directory).with('irrelevant_meta_dir')
                                       .returns user
-      Carto::UserMetadataExportService.any_instance.expects(:import_metadata_from_directory)
+      expect_any_instance_of(Carto::UserMetadataExportService).to receive(:import_metadata_from_directory)
                                       .with(user, 'irrelevant_meta_dir')
     end
 
     def should_import_metadata_for_organization(organization)
-      @user_migration_package_mock.stubs(:meta_dir).returns 'irrelevant_meta_dir'
-      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_from_directory).with('irrelevant_meta_dir')
+      allow(@user_migration_package_mock).to receive(:meta_dir).and_return('irrelevant_meta_dir')
+      allow_any_instance_of(Carto::OrganizationMetadataExportService).to receive(:import_from_directory).with('irrelevant_meta_dir')
                                               .once.returns organization
-      Carto::OrganizationMetadataExportService.any_instance.stubs(:import_metadata_from_directory)
+      allow_any_instance_of(Carto::OrganizationMetadataExportService).to receive(:import_metadata_from_directory)
                                               .once.with(organization, 'irrelevant_meta_dir')
     end
 

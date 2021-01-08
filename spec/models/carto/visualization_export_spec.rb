@@ -22,7 +22,7 @@ describe Carto::DataExporter do
       FileUtils.mkdir_p tmp_dir
 
       begin
-        Carto::Http::Request.any_instance.stubs(:run)
+        allow_any_instance_of(Carto::Http::Request).to receive(:run)
         file = File.new(Carto::DataExporter.new.export_table(user_table, tmp_dir, format))
         file.path.should match(/.#{format}$/)
         file.close
@@ -185,9 +185,9 @@ describe Carto::VisualizationExport do
 
       fake_path = "/tmp/fakepath"
       touch(fake_path)
-      ve.expects(:export).returns(fake_path)
-      file_upload_helper_mock = mock
-      file_upload_helper_mock.expects(:upload_file_to_storage)
+      expect(ve).to receive(:export).and_return(fake_path)
+      file_upload_helper_mock = double
+      expect(file_upload_helper_mock).to receive(:upload_file_to_storage)
 
       ve.run_export!(file_upload_helper: file_upload_helper_mock)
 
@@ -212,10 +212,10 @@ describe Carto::VisualizationExport do
 
         FileUtils.mkdir_p test_dir
         FileUtils.touch(fake_path).first
-        ve.expects(:export).returns(fake_path)
+        expect(ve).to receive(:export).and_return(fake_path)
 
-        file_upload_helper_mock = mock
-        file_upload_helper_mock.expects(:upload_file_to_storage).returns(file_url: fake_path)
+        file_upload_helper_mock = double
+        expect(file_upload_helper_mock).to receive(:upload_file_to_storage).and_return(file_url: fake_path)
 
         ve.run_export!(file_upload_helper: file_upload_helper_mock)
         ve.reload

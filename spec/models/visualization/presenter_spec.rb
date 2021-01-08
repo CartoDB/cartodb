@@ -17,10 +17,10 @@ describe Visualization::Member do
 
     user_name = 'whatever'
     @user_mock = FactoryGirl.build(:user, username: user_name)
-    CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+    allow_any_instance_of(CartoDB::Visualization::Relator).to receive(:user).and_return(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
-    Visualization::Relator.any_instance.stubs(:support_tables).returns(support_tables_mock)
+    allow_any_instance_of(Visualization::Relator).to receive(:support_tables).and_return(support_tables_mock)
   end
 
   describe '#privacy_for_vizjson' do
@@ -32,10 +32,10 @@ describe Visualization::Member do
       )
 
       # Careful, do a user mock after touching user_data as it does some checks about user too
-      user_mock = mock
-      user_mock.stubs(:private_tables_enabled).returns(true)
-      user_mock.stubs(:id).returns(@user_mock.id)
-      Visualization::Member.any_instance.stubs(:user).returns(user_mock)
+      user_mock = double
+      allow(user_mock).to receive(:private_tables_enabled).and_return(true)
+      allow(user_mock).to receive(:id).and_return(@user_mock.id)
+      allow_any_instance_of(Visualization::Member).to receive(:user).and_return(user_mock)
 
       presenter = Visualization::Presenter.new(visualization)
       presenter.send(:privacy_for_vizjson).should eq Visualization::Member::PRIVACY_PUBLIC
@@ -55,38 +55,38 @@ describe Visualization::Member do
     it 'basic fields expected at the to_poro method' do
       perm_mock = FactoryGirl.build(:carto_permission)
 
-      vis_mock = mock
-      vis_mock.stubs(:id).returns(Carto::UUIDHelper.random_uuid)
-      vis_mock.stubs(:name).returns('vis1')
-      vis_mock.stubs(:display_name).returns('vis1')
-      vis_mock.stubs(:map_id).returns(Carto::UUIDHelper.random_uuid)
-      vis_mock.stubs(:active_layer_id).returns(1)
-      vis_mock.stubs(:type).returns(Visualization::Member::TYPE_CANONICAL)
-      vis_mock.stubs(:tags).returns(['tag1'])
-      vis_mock.stubs(:description).returns('desc')
-      vis_mock.stubs(:privacy).returns(Visualization::Member::PRIVACY_PUBLIC)
-      vis_mock.stubs(:stats).returns('123')
-      vis_mock.stubs(:created_at).returns(Time.now)
-      vis_mock.stubs(:updated_at).returns(Time.now)
-      vis_mock.stubs(:permission).returns(perm_mock)
-      vis_mock.stubs(:locked).returns(true)
-      vis_mock.stubs(:source).returns('')
-      vis_mock.stubs(:license).returns('')
-      vis_mock.stubs(:attributions).returns('')
-      vis_mock.stubs(:title).returns('')
-      vis_mock.stubs(:parent_id).returns(nil)
-      vis_mock.stubs(:children).returns([])
-      vis_mock.stubs(:kind).returns(Visualization::Member::KIND_GEOM)
-      vis_mock.stubs(:table).returns(nil)
-      vis_mock.stubs(:related_tables).returns([])
-      vis_mock.stubs(:prev_id).returns(nil)
-      vis_mock.stubs(:next_id).returns(nil)
-      vis_mock.stubs(:transition_options).returns({})
-      vis_mock.stubs(:active_child).returns(nil)
-      vis_mock.stubs(:likes).returns([])
+      vis_mock = double
+      allow(vis_mock).to receive(:id).and_return(Carto::UUIDHelper.random_uuid)
+      allow(vis_mock).to receive(:name).and_return('vis1')
+      allow(vis_mock).to receive(:display_name).and_return('vis1')
+      allow(vis_mock).to receive(:map_id).and_return(Carto::UUIDHelper.random_uuid)
+      allow(vis_mock).to receive(:active_layer_id).and_return(1)
+      allow(vis_mock).to receive(:type).and_return(Visualization::Member::TYPE_CANONICAL)
+      allow(vis_mock).to receive(:tags).and_return(['tag1'])
+      allow(vis_mock).to receive(:description).and_return('desc')
+      allow(vis_mock).to receive(:privacy).and_return(Visualization::Member::PRIVACY_PUBLIC)
+      allow(vis_mock).to receive(:stats).and_return('123')
+      allow(vis_mock).to receive(:created_at).and_return(Time.now)
+      allow(vis_mock).to receive(:updated_at).and_return(Time.now)
+      allow(vis_mock).to receive(:permission).and_return(perm_mock)
+      allow(vis_mock).to receive(:locked).and_return(true)
+      allow(vis_mock).to receive(:source).and_return('')
+      allow(vis_mock).to receive(:license).and_return('')
+      allow(vis_mock).to receive(:attributions).and_return('')
+      allow(vis_mock).to receive(:title).and_return('')
+      allow(vis_mock).to receive(:parent_id).and_return(nil)
+      allow(vis_mock).to receive(:children).and_return([])
+      allow(vis_mock).to receive(:kind).and_return(Visualization::Member::KIND_GEOM)
+      allow(vis_mock).to receive(:table).and_return(nil)
+      allow(vis_mock).to receive(:related_tables).and_return([])
+      allow(vis_mock).to receive(:prev_id).and_return(nil)
+      allow(vis_mock).to receive(:next_id).and_return(nil)
+      allow(vis_mock).to receive(:transition_options).and_return({})
+      allow(vis_mock).to receive(:active_child).and_return(nil)
+      allow(vis_mock).to receive(:likes).and_return([])
 
-      vis_mock.stubs(:synchronization).returns(nil)
-      vis_mock.stubs(:subscription).returns(nil)
+      allow(vis_mock).to receive(:synchronization).and_return(nil)
+      allow(vis_mock).to receive(:subscription).and_return(nil)
 
       presenter = Visualization::Presenter.new(vis_mock)
       data = presenter.to_poro
@@ -119,9 +119,9 @@ describe Visualization::Member do
 
   describe '#children' do
     it 'tests .children and its sorting' do
-      Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+      allow_any_instance_of(Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
-      Carto::Permission.any_instance.stubs(:owner).returns(@user_mock)
+      allow_any_instance_of(Carto::Permission).to receive(:owner).and_return(@user_mock)
 
       parent = Visualization::Member.new(random_attributes_for_vis_member({
                                                                             name:'PARENT',
@@ -180,9 +180,9 @@ describe Visualization::Member do
 
       parent.fetch
 
-      @request_mock = mock
-      @request_mock.stubs(:host).returns("#{@user_mock.username}#{CartoDB.session_domain}")
-      @request_mock.stubs(:fullpath).returns('')
+      @request_mock = double
+      allow(@request_mock).to receive(:host).and_return("#{@user_mock.username}#{CartoDB.session_domain}")
+      allow(@request_mock).to receive(:fullpath).and_return('')
 
       data = Visualization::Presenter.new(parent,{request:@request_mock}).to_poro
 

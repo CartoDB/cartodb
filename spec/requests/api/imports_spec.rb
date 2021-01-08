@@ -51,7 +51,7 @@ describe "Imports API" do
   end
 
   it 'performs asynchronous url imports' do
-    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
       post api_v1_imports_create_url(params.merge(:url        => url,
                                        :table_name => "wadus"))
@@ -133,7 +133,7 @@ describe "Imports API" do
   it 'imports all the sample data' do
     @user.update table_quota: 10
 
-    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
     serve_file(Rails.root.join('spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip')) do |url|
       post api_v1_imports_create_url(params.merge(url: url, table_name: "wadus"))
 
@@ -157,7 +157,7 @@ describe "Imports API" do
     @user.update table_quota: 1
 
     # This file contains 6 data sources
-    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
       post api_v1_imports_create_url, params.merge(:url        => url,
                                        :table_name => "wadus")
@@ -173,7 +173,7 @@ describe "Imports API" do
 
   it 'raises an error if the user attempts to import tables when being over disk quota' do
     @user.update quota_in_bytes: 1000, table_quota: 200
-    CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
+    allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:validate_url!).and_return(true)
     serve_file(Rails.root.join('spec/support/data/ESP_adm.zip')) do |url|
       post api_v1_imports_create_url, params.merge(:url        => url,
                                        :table_name => "wadus")
@@ -235,7 +235,7 @@ describe "Imports API" do
     @user.update max_import_table_row_count: 2
 
     # Internally uses reltuples from pg_class which is an estimation and non-deterministic so...
-    CartoDB::PlatformLimits::Importer::TableRowCount.any_instance.expects(:get).returns(5)
+    expect_any_instance_of(CartoDB::PlatformLimits::Importer::TableRowCount).to receive(:get).and_return(5)
 
     post api_v1_imports_create_url,
          params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))

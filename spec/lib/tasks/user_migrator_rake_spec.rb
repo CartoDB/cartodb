@@ -18,7 +18,7 @@ describe 'user_migrator.rake' do
         user: org.owner,
         organization_id: org.id
       )
-      Asset.any_instance.stubs(:remove).raises("NOOOO!")
+      allow_any_instance_of(Asset).to receive(:remove).and_raise("NOOOO!")
       Rake::Task['cartodb:user_migrator:cleanup:organization'].invoke(org.name)
     end
 
@@ -28,7 +28,7 @@ describe 'user_migrator.rake' do
         asset_file: Rails.root + 'spec/support/data/cartofante_blue.png',
         user: user
       )
-      Asset.any_instance.stubs(:remove).raises("NOOOO!")
+      allow_any_instance_of(Asset).to receive(:remove).and_raise("NOOOO!")
       Rake::Task['cartodb:user_migrator:cleanup:user'].invoke(user.username)
     end
   end

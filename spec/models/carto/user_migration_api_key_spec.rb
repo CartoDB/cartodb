@@ -14,7 +14,7 @@ describe 'UserMigration' do
   include UserMigrationHelper
 
   it 'exports and imports a user with raster overviews because exporting skips them' do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     user = FactoryGirl.build(:valid_user).save
     next unless user.in_database.table_exists?('raster_overviews')
     carto_user = Carto::User.find(user.id)
@@ -88,7 +88,7 @@ describe 'UserMigration' do
     end
 
     it 'skips importing legacy functions using fixture' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)", "FUNCTION sumita(integer,integer)"].freeze
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
@@ -125,7 +125,7 @@ describe 'UserMigration' do
     end
 
     it 'imports functions and tables that are not on the legacy list using fixture' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
@@ -267,7 +267,7 @@ describe 'UserMigration' do
 
         Cartodb.with_config(agg_ds_config) do
           # Do not depend on dataservices_client to be installed
-          CartoDB::UserModule::DBService.any_instance.stubs(:install_geocoder_api_extension)
+          allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:install_geocoder_api_extension)
 
           import = Carto::UserMigrationImport.create(
             exported_file: export.exported_file,
@@ -276,8 +276,8 @@ describe 'UserMigration' do
             json_file: export.json_file,
             import_metadata: migrate_metadata
           )
-          import.stubs(:assert_organization_does_not_exist)
-          import.stubs(:assert_user_does_not_exist)
+          allow(import).to receive(:assert_organization_does_not_exist)
+          allow(import).to receive(:assert_user_does_not_exist)
           import.run_import
 
           puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
@@ -430,8 +430,8 @@ describe 'UserMigration' do
         dry: false
       )
 
-      import.stubs(:assert_organization_does_not_exist)
-      import.stubs(:assert_user_does_not_exist)
+      allow(import).to receive(:assert_organization_does_not_exist)
+      allow(import).to receive(:assert_user_does_not_exist)
       import.run_import
 
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
@@ -447,7 +447,7 @@ describe 'UserMigration' do
     end
 
     it 'keeps roles for oauth api keys with schemas grants and you can drop tables after migration' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
       oauth_app = Carto::OauthApp.create!(name: 'test',
                                           user_id: @carto_user.id,
                                           redirect_uris: ['https://example.com'],
@@ -484,8 +484,8 @@ describe 'UserMigration' do
 
       # oauth_app must exist in the destination
       # so we remove the user_id to avoid it being cascade deleted with the user
-      oauth_app.stubs(:sync_with_central?).returns(false)
-      oauth_app.stubs(:central_enabled?).returns(true)
+      allow(oauth_app).to receive(:sync_with_central?).and_return(false)
+      allow(oauth_app).to receive(:central_enabled?).and_return(true)
       oauth_app.user_id = nil
       oauth_app.save!
 
@@ -502,8 +502,8 @@ describe 'UserMigration' do
         dry: false
       )
 
-      import.stubs(:assert_organization_does_not_exist)
-      import.stubs(:assert_user_does_not_exist)
+      allow(import).to receive(:assert_organization_does_not_exist)
+      allow(import).to receive(:assert_user_does_not_exist)
       import.run_import
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
       expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
@@ -575,8 +575,8 @@ describe 'UserMigration' do
         dry: false
       )
 
-      import.stubs(:assert_organization_does_not_exist)
-      import.stubs(:assert_user_does_not_exist)
+      allow(import).to receive(:assert_organization_does_not_exist)
+      allow(import).to receive(:assert_user_does_not_exist)
       import.run_import
 
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE

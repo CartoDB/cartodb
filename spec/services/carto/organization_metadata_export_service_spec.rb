@@ -121,7 +121,7 @@ describe Carto::OrganizationMetadataExportService do
 
         # Destroy, keeping the database
         clean_redis
-        Table.any_instance.stubs(:remove_table_from_user_database)
+        allow_any_instance_of(Table).to receive(:remove_table_from_user_database)
         organization.notifications.each(&:destroy)
         organization.assets.each { |a| a.update_attribute(:storage_info, nil) } # Avoids remote deletion attempt
         organization.assets.each(&:delete)

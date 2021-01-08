@@ -26,7 +26,7 @@ describe Carto::Invitation do
     end
 
     it 'sends invitations' do
-      ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
+      expect(::Resque).to receive(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
       emails = ['w_1@carto.com', 'w_2@carto.com']
       invitation = Carto::Invitation.create_new(@carto_org_user_owner, emails, 'hi', false)
       invitation.inviter_user_id.should == @carto_org_user_owner.id

@@ -28,8 +28,8 @@ describe 'CartoDB' do
 
   describe 'extract_subdomain' do
     it 'extracts subdomain without subdomainless_urls' do
-      CartoDB::Cartodb.stubs(:config).returns(subdomainless_urls: false)
-      CartoDB.stubs(:session_domain).returns('.localhost.lan')
+      allow(CartoDB::Cartodb).to receive(:config).and_return(subdomainless_urls: false)
+      allow(CartoDB).to receive(:session_domain).and_return('.localhost.lan')
       CartoDB.extract_subdomain(OpenStruct.new(host: 'localhost.lan', params: { user_domain: '' })).should == ''
       CartoDB.extract_subdomain(OpenStruct.new(host: 'localhost.lan', params: { user_domain: nil })).should == ''
       CartoDB.extract_subdomain(OpenStruct.new(host: 'auser.localhost.lan', params: { user_domain: 'auser' })).should == 'auser'
@@ -38,8 +38,8 @@ describe 'CartoDB' do
     end
 
     it 'extracts subdomain with subdomainless_urls' do
-      CartoDB::Cartodb.stubs(:config).returns(subdomainless_urls: true)
-      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      allow(CartoDB::Cartodb).to receive(:config).and_return(subdomainless_urls: true)
+      allow(CartoDB).to receive(:session_domain).and_return('localhost.lan')
 
       CartoDB.extract_subdomain(OpenStruct.new(host: 'localhost.lan', params: { user_domain: '' })).should == ''
       CartoDB.extract_subdomain(OpenStruct.new(host: 'localhost.lan', params: { user_domain: nil })).should == ''

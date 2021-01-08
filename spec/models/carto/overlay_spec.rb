@@ -20,7 +20,7 @@ describe Carto::Overlay do
   describe '#create' do
     it 'creates a new overlay' do
       overlay = @visualization.overlays.new(type: 'header', template: 'wadus', order: 0)
-      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
+      expect_any_instance_of(Carto::VisualizationInvalidationService).to receive(:invalidate).once
       overlay.save.should be_true
 
       overlay.id.should be
@@ -66,7 +66,7 @@ describe Carto::Overlay do
       overlay.template = 'image'
       overlay.type = 'logo'
       overlay.order = 5
-      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
+      expect_any_instance_of(Carto::VisualizationInvalidationService).to receive(:invalidate).once
       overlay.save.should be_true
 
       overlay.reload
@@ -92,7 +92,7 @@ describe Carto::Overlay do
       overlay = @visualization.overlays.new(type: 'text', template: 'wadus', order: 0)
       overlay.save.should be_true
 
-      Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
+      expect_any_instance_of(Carto::VisualizationInvalidationService).to receive(:invalidate).once
       overlay.destroy.should be_true
       overlay.persisted?.should be_false
     end

@@ -11,16 +11,16 @@ describe CartoDB::ImageMetadata do
   describe '#extract_metadata' do
     let(:metadata) { CartoDB::ImageMetadata.new(png_path) }
     it 'should call parse_identify if magick is installed' do
-      metadata.stubs(:has_magick?).returns(true)
-      metadata.expects(:parse_identify).once
-      metadata.expects(:parse_file).never
+      allow(metadata).to receive(:has_magick?).and_return(true)
+      expect(metadata).to receive(:parse_identify).once
+      expect(metadata).to receive(:parse_file).never
       metadata.extract_metadata
     end
 
     it 'should call parse_file if magick is not installed' do
-      metadata.stubs(:has_magick?).returns(false)
-      metadata.expects(:parse_file).once
-      metadata.expects(:parse_identify).never
+      allow(metadata).to receive(:has_magick?).and_return(false)
+      expect(metadata).to receive(:parse_file).once
+      expect(metadata).to receive(:parse_identify).never
       metadata.extract_metadata
     end
   end

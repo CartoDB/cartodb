@@ -31,7 +31,7 @@ shared_examples_for "organization models" do
       user1_geocoder_metrics.incr(:geocoder_here, :success_responses, 2)
       user1_geocoder_metrics.incr(:geocoder_cache, :success_responses, 3)
 
-      ::User.any_instance.expects(:get_geocoding_calls).never
+      expect_any_instance_of(::User).to receive(:get_geocoding_calls).never
       get_geocoding_calls_by_organization_id(@organization.id).should == base_line + 14
     end
 
@@ -57,7 +57,7 @@ shared_examples_for "organization models" do
       user1_geocoder_metrics.incr(:geocoder_here, :success_responses, 2)
       user1_geocoder_metrics.incr(:geocoder_cache, :success_responses, 3)
 
-      ::User.any_instance.expects(:get_geocoding_calls).never
+      expect_any_instance_of(::User).to receive(:get_geocoding_calls).never
       get_geocoding_calls_by_organization_id(get_organization.id).should == base_line + 14
     end
 

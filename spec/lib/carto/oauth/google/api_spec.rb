@@ -52,7 +52,7 @@ describe Carto::Oauth::Google::Api do
     response_path = File.join(File.dirname(__FILE__), response_filename)
     response = File.open(response_path).read
 
-    Typhoeus.stub(/openidconnect\.googleapis\.com\/v1\/userinfo\?access_token=#{@valid_}/).and_return(
+    Typhoeus.double(/openidconnect\.googleapis\.com\/v1\/userinfo\?access_token=#{@valid_}/).and_return(
       Typhoeus::Response.new(code: code, body: response)
     )
   end

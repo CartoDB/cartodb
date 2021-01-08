@@ -11,7 +11,7 @@ describe User do
   end
 
   before(:each) do
-    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+    allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
   end
 
   it "should pass all the sql tests" do

@@ -32,7 +32,7 @@ describe Api::Json::GeocodingsController do
 
     it 'takes an optional argument force_all_rows and stores it in the model' do
       table = create_table(user_id: @user.id)
-      Resque.expects(:enqueue).once
+      expect(Resque).to receive(:enqueue).once
 
       geocoding_id = nil
 
@@ -50,7 +50,7 @@ describe Api::Json::GeocodingsController do
 
     it 'sets force_all_rows to nil if not present' do
       table = create_table(user_id: @user.id)
-      Resque.expects(:enqueue).once
+      expect(Resque).to receive(:enqueue).once
 
       geocoding_id = nil
 

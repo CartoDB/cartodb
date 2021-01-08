@@ -45,14 +45,14 @@ describe Carto::Superadmin::UserMigrationExportsController do
     end
 
     it 'returns 401 if not authorized' do
-      Resque.expects(:enqueue).with(Resque::UserMigrationJobs::Export, anything).never
+      expect(Resque).to receive(:enqueue).with(Resque::UserMigrationJobs::Export, anything).never
       post_json(superadmin_user_migration_exports_path, export_for_user, invalid_headers) do |response|
         response.status.should eq 401
       end
     end
 
     it 'creates an export for user' do
-      Resque.expects(:enqueue).with(Resque::UserMigrationJobs::Export, anything).once
+      expect(Resque).to receive(:enqueue).with(Resque::UserMigrationJobs::Export, anything).once
       post_json(superadmin_user_migration_exports_path, export_for_user, superadmin_headers) do |response|
         response.status.should eq 201
         response.body[:id].should be
@@ -67,7 +67,7 @@ describe Carto::Superadmin::UserMigrationExportsController do
     end
 
     it 'creates an export for organization' do
-      Resque.expects(:enqueue).with(Resque::UserMigrationJobs::Export, anything).once
+      expect(Resque).to receive(:enqueue).with(Resque::UserMigrationJobs::Export, anything).once
       post_json(superadmin_user_migration_exports_path, export_for_organization, superadmin_headers) do |response|
         response.status.should eq 201
         response.body[:id].should be
@@ -82,7 +82,7 @@ describe Carto::Superadmin::UserMigrationExportsController do
     end
 
     it 'returns an error if passing both user and organization' do
-      Resque.expects(:enqueue).with(Resque::UserMigrationJobs::Export, anything).never
+      expect(Resque).to receive(:enqueue).with(Resque::UserMigrationJobs::Export, anything).never
       export_for_user_and_org = export_for_organization.merge(export_for_user)
       post_json(superadmin_user_migration_exports_path, export_for_user_and_org, superadmin_headers) do |response|
         response.status.should eq 422
@@ -91,7 +91,7 @@ describe Carto::Superadmin::UserMigrationExportsController do
     end
 
     it 'returns an error if not passing parameters' do
-      Resque.expects(:enqueue).with(Resque::UserMigrationJobs::Export, anything).never
+      expect(Resque).to receive(:enqueue).with(Resque::UserMigrationJobs::Export, anything).never
       post_json(superadmin_user_migration_exports_path, {}, superadmin_headers) do |response|
         response.status.should eq 422
         response.body[:errors].should be

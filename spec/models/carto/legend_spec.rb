@@ -17,7 +17,7 @@ module Carto
     end
 
     it 'notifies layer change on commit' do
-      @layer.visualization.send(:invalidation_service).expects(:invalidate).times(3)
+      expect(@layer.visualization.send(:invalidation_service)).to receive(:invalidate).times(3)
 
       legend = Legend.create!(layer: @layer,
                               type: 'bubble',
@@ -59,8 +59,8 @@ module Carto
 
       it 'requires a layer' do
         legend = Carto::Legend.new
-        legend.stubs(:on_data_layer)
-        legend.stubs(:under_max_legends_per_layer)
+        allow(legend).to receive(:on_data_layer)
+        allow(legend).to receive(:under_max_legends_per_layer)
 
         legend.valid?
 
@@ -76,8 +76,7 @@ module Carto
       end
 
       it 'accepts torque layers' do
-        Carto::Layer.any_instance.stubs(:kind)
-                    .returns('torque')
+        allow_any_instance_of(Carto::Layer).to receive(:kind).and_return('torque')
         legend = Legend.new(layer_id: @layer.id)
         legend.valid?
 

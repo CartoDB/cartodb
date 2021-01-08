@@ -9,10 +9,10 @@ describe Carto::Api::UserTablePresenter do
         table = FactoryGirl.create(:carto_user_table, user_id: @user.id)
         visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
         dependencies = [visualization] * 5
-        table.stubs(:accessible_dependent_derived_maps).returns(dependencies)
+        allow(table).to receive(:accessible_dependent_derived_maps).and_return(dependencies)
         presenter = Carto::Api::UserTablePresenter.new(table, @user)
-        context = mock
-        context.stubs(request: nil, polymorphic_path: '')
+        context = double
+        allow(context).to receive_messages(request: nil, polymorphic_path: '')
         @presentation = presenter.to_poro(accessible_dependent_derived_maps: true, context: context)
       end
 

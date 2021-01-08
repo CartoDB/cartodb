@@ -383,7 +383,7 @@ describe Carto::ApiKey do
       end
 
       it 'invalidates varnish cache' do
-        CartoDB::Varnish.any_instance.expects(:purge).with("#{@user1.database_name}.*").at_least(1)
+        expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with("#{@user1.database_name}.*").at_least(1)
 
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
         api_key.destroy
@@ -414,7 +414,7 @@ describe Carto::ApiKey do
       it 'invalidates varnish cache' do
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
 
-        CartoDB::Varnish.any_instance.expects(:purge).with("#{@user1.database_name}.*").at_least(1)
+        expect_any_instance_of(CartoDB::Varnish).to receive(:purge).with("#{@user1.database_name}.*").at_least(1)
 
         api_key.regenerate_token!
         api_key.save!
@@ -745,7 +745,7 @@ describe Carto::ApiKey do
     describe 'data services api key' do
       before :each do
         @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
-        Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
+        allow_any_instance_of(Carto::ApiKey).to receive(:db_role).and_return(@db_role)
       end
 
       after :each do
@@ -826,7 +826,7 @@ describe Carto::ApiKey do
     describe 'data observatory datasets api key' do
       before do
         db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
-        described_class.any_instance.stubs(:db_role).returns(db_role)
+        allow_any_instance_of(described_class).to receive(:db_role).and_return(db_role)
       end
 
       it 'grants with data observatory datasets' do

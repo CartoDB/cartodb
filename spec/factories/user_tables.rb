@@ -13,10 +13,10 @@ FactoryGirl.define do
     name { unique_name('user_table') }
 
     before(:create) do |user_table|
-      user_table.service.stubs(:before_create)
-      user_table.service.stubs(:after_create)
-      user_table.stubs(:create_canonical_visualization)
-      CartoDB::TablePrivacyManager.any_instance.stubs(:apply_privacy_change)
+      allow(user_table.service).to receive(:before_create)
+      allow(user_table.service).to receive(:after_create)
+      allow(user_table).to receive(:create_canonical_visualization)
+      allow_any_instance_of(CartoDB::TablePrivacyManager).to receive(:apply_privacy_change)
     end
 
     after(:create) do |user_table|
@@ -36,7 +36,7 @@ FactoryGirl.define do
 
     trait :with_canonical_visualization do
       before(:create) do |user_table|
-        user_table.service.stubs(:is_raster?).returns(false)
+        allow(user_table.service).to receive(:is_raster?).and_return(false)
         user_table.unstub(:create_canonical_visualization)
       end
 

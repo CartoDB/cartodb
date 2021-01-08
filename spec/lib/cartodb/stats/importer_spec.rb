@@ -138,11 +138,11 @@ module CartoDB
 
       def expected_send(buf)
         buf_re = %r{^#{buf}:}
-        UDPSocket.any_instance.expects(:send).with(regexp_matches(buf_re), 0, TEST_HOST, TEST_PORT).once
+        expect_any_instance_of(UDPSocket).to receive(:send).with(regexp_matches(buf_re), 0, TEST_HOST, TEST_PORT).once
       end
 
       def expected_send_nothing
-        UDPSocket.any_instance.expects(:send).never
+        expect_any_instance_of(UDPSocket).to receive(:send).never
       end
     end
   end

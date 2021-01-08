@@ -4,7 +4,7 @@ require:
   - rubocop-performance
   - rubocop-rails
   - rubocop-rspec
-
+  - mocha_to_rspec
 AllCops:
   TargetRubyVersion: 2.4
   Exclude:
@@ -28,153 +28,153 @@ AllCops:
 #  Layout
 ####################
 
-Layout/LineLength:
-  Description: Checks that line length does not exceed the configured limit.
-  Max: 120
+# Layout/LineLength:
+#   Description: Checks that line length does not exceed the configured limit.
+#   Max: 120
 
-Layout/EmptyLinesAroundClassBody:
-  Description: Keeps track of empty lines around class bodies.
-  EnforcedStyle: empty_lines_except_namespace
+# Layout/EmptyLinesAroundClassBody:
+#   Description: Keeps track of empty lines around class bodies.
+#   EnforcedStyle: empty_lines_except_namespace
 
-Layout/EmptyLinesAroundModuleBody:
-  Description: Keeps track of empty lines around module bodies.
-  EnforcedStyle: empty_lines_except_namespace
+# Layout/EmptyLinesAroundModuleBody:
+#   Description: Keeps track of empty lines around module bodies.
+#   EnforcedStyle: empty_lines_except_namespace
 
-####################
-#  Metrics
-####################
+# ####################
+# #  Metrics
+# ####################
 
-Metrics/AbcSize:
-  Description: >-
-                 A calculated magnitude based on number of assignments,
-                 branches, and conditions.
-  Max: 35
+# Metrics/AbcSize:
+#   Description: >-
+#                  A calculated magnitude based on number of assignments,
+#                  branches, and conditions.
+#   Max: 35
 
-Metrics/BlockLength:
-  Description: Avoid long blocks with many lines.
-  Max: 50
-  Exclude:
-    - '**/*.gemspec'
-    - spec/**/*_spec.rb
+# Metrics/BlockLength:
+#   Description: Avoid long blocks with many lines.
+#   Max: 50
+#   Exclude:
+#     - '**/*.gemspec'
+#     - spec/**/*_spec.rb
 
-Metrics/ClassLength:
-  Description: Avoid classes longer than 400 lines of code.
-  Max: 400
+# Metrics/ClassLength:
+#   Description: Avoid classes longer than 400 lines of code.
+#   Max: 400
 
-Metrics/CyclomaticComplexity:
-  Description: >-
-                  A complexity metric that is strongly correlated to the number
-                  of test cases needed to validate a method.
-  Max: 15
+# Metrics/CyclomaticComplexity:
+#   Description: >-
+#                   A complexity metric that is strongly correlated to the number
+#                   of test cases needed to validate a method.
+#   Max: 15
 
-Metrics/MethodLength:
-  Description: Avoid methods longer than 100 lines of code.
-  Max: 100
+# Metrics/MethodLength:
+#   Description: Avoid methods longer than 100 lines of code.
+#   Max: 100
 
-Metrics/ModuleLength:
-  Description: Avoid modules longer than 400 lines of code.
-  Max: 400
+# Metrics/ModuleLength:
+#   Description: Avoid modules longer than 400 lines of code.
+#   Max: 400
 
-Metrics/PerceivedComplexity:
-  Description: >-
-                  A complexity metric geared towards measuring complexity for a
-                  human reader.
-  Max: 15
+# Metrics/PerceivedComplexity:
+#   Description: >-
+#                   A complexity metric geared towards measuring complexity for a
+#                   human reader.
+#   Max: 15
 
-####################
-#  Naming
-####################
+# ####################
+# #  Naming
+# ####################
 
-Naming/PredicateName:
-  ForbiddenPrefixes:
-    - is_
-    - have_
+# Naming/PredicateName:
+#   ForbiddenPrefixes:
+#     - is_
+#     - have_
 
-Naming/VariableNumber:
-  Description: Use the configured style when numbering variables.
-  Enabled: false
+# Naming/VariableNumber:
+#   Description: Use the configured style when numbering variables.
+#   Enabled: false
 
-####################
-#  RSpec
-####################
+# ####################
+# #  RSpec
+# ####################
 
-RSpec/AnyInstance:
-  Enabled: false
+# RSpec/AnyInstance:
+#   Enabled: false
 
-RSpec/ExampleLength:
-  Max: 50
+# RSpec/ExampleLength:
+#   Max: 50
 
-# Incompatible until RSpec 3
-RSpec/ImplicitExpect:
-  Enabled: false
+# # Incompatible until RSpec 3
+# RSpec/ImplicitExpect:
+#   Enabled: false
 
-RSpec/MessageSpies:
-  Enabled: false
+# RSpec/MessageSpies:
+#   Enabled: false
 
-RSpec/MultipleExpectations:
-  Max: 10
+# RSpec/MultipleExpectations:
+#   Max: 10
 
-RSpec/MultipleMemoizedHelpers:
-  Max: 15
+# RSpec/MultipleMemoizedHelpers:
+#   Max: 15
 
-RSpec/NestedGroups:
-  Max: 5
+# RSpec/NestedGroups:
+#   Max: 5
 
-RSpec/StubbedMock:
-  Enabled: false
+# RSpec/StubbedMock:
+#   Enabled: false
 
-RSpec/SubjectStub:
-  Enabled: false
+# RSpec/SubjectStub:
+#   Enabled: false
 
-####################
-#  Style
-####################
+# ####################
+# #  Style
+# ####################
 
-Style/PercentLiteralDelimiters:
-  Description: Use `%`-literal delimiters consistently.
-  Enabled: false
+# Style/PercentLiteralDelimiters:
+#   Description: Use `%`-literal delimiters consistently.
+#   Enabled: false
 
-Style/StringLiterals:
-  Description: Checks if uses of quotes match the configured preference.
-  EnforcedStyle: single_quotes
+# Style/StringLiterals:
+#   Description: Checks if uses of quotes match the configured preference.
+#   EnforcedStyle: single_quotes
 
-Style/Documentation:
-  Description: Document classes and non-namespace modules.
-  Enabled: false
+# Style/Documentation:
+#   Description: Document classes and non-namespace modules.
+#   Enabled: false
 
-Style/DoubleNegation:
-  Description: Checks for uses of double negation (!!).
-  Enabled: false
+# Style/DoubleNegation:
+#   Description: Checks for uses of double negation (!!).
+#   Enabled: false
 
-Style/FrozenStringLiteralComment:
-  Description: >-
-                  Add the frozen_string_literal comment to the top of files
-                  to help transition to frozen string literals by default.
-  Enabled: false
+# Style/FrozenStringLiteralComment:
+#   Description: >-
+#                   Add the frozen_string_literal comment to the top of files
+#                   to help transition to frozen string literals by default.
+#   Enabled: false
 
-Style/GuardClause:
-  Enabled: false
+# Style/GuardClause:
+#   Enabled: false
 
-Style/SymbolArray:
-  Description: Use %i or %I for arrays of symbols.
-  Enabled: false
+# Style/SymbolArray:
+#   Description: Use %i or %I for arrays of symbols.
+#   Enabled: false
 
-Style/WordArray:
-  Description: Use %w or %W for arrays of words.
-  Enabled: false
+# Style/WordArray:
+#   Description: Use %w or %W for arrays of words.
+#   Enabled: false
 
 
-####################
-#  Rails
-####################
+# ####################
+# #  Rails
+# ####################
 
-Rails/CreateTableWithTimestamps:
-  Description: Create new tables with created_at and updated_at timestamps
-  Enabled: false
+# Rails/CreateTableWithTimestamps:
+#   Description: Create new tables with created_at and updated_at timestamps
+#   Enabled: false
 
-Rails/UnknownEnv:
-  Environments:
-    - development
-    - production
-    - staging
-    - test
+# Rails/UnknownEnv:
+#   Environments:
+#     - development
+#     - production
+#     - staging
+#     - test

@@ -32,13 +32,13 @@ describe 'UserMigration' do
   describe 'database version' do
     before(:each) do
       @conn_mock = Object.new
-      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 9.5.2 on x86_64-pc-linux-gnu...'])
+      allow(@conn_mock).to receive(:query).and_return(['version' => 'PostgreSQL 9.5.2 on x86_64-pc-linux-gnu...'])
     end
 
     it 'should get proper database version for pg_* binaries' do
       get_database_version_for_binaries(@conn_mock).should eq '9.5'
 
-      @conn_mock.stubs(:query).returns(['version' => 'PostgreSQL 10.1 on x86_64-pc-linux-gnu...'])
+      allow(@conn_mock).to receive(:query).and_return(['version' => 'PostgreSQL 10.1 on x86_64-pc-linux-gnu...'])
       get_database_version_for_binaries(@conn_mock).should eq '10'
     end
 
@@ -110,7 +110,7 @@ describe 'UserMigration' do
         import_data: false,
         dry: false
       )
-      Carto::UserMetadataExportService.any_instance.stubs(:import_metadata_from_directory).raises('Something went bad')
+      allow_any_instance_of(Carto::UserMetadataExportService).to receive(:import_metadata_from_directory).and_raise('Something went bad')
 
       import.run_import
 
@@ -143,7 +143,7 @@ describe 'UserMigration' do
         dry: false
       )
 
-      Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+      allow_any_instance_of(Carto::UserMigrationImport).to receive(:import_visualizations).and_raise('wadus')
 
       import.run_import
 
@@ -158,7 +158,7 @@ describe 'UserMigration' do
     describe 'with orgs' do
       include_context 'organization with users helper'
       it 'exports and imports org with users with viz' do
-        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
         export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
         export.run_export
 
@@ -191,7 +191,7 @@ describe 'UserMigration' do
       end
 
       it 'does not drop database if visualizations import fails' do
-        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
         export = create(:user_migration_export, organization_id: @carto_organization.id, export_data: false)
         export.run_export
 
@@ -216,7 +216,7 @@ describe 'UserMigration' do
           dry: false
         )
 
-        Carto::UserMigrationImport.any_instance.stubs(:import_visualizations).raises('wadus')
+        allow_any_instance_of(Carto::UserMigrationImport).to receive(:import_visualizations).and_raise('wadus')
 
         import.run_import
 
@@ -230,7 +230,7 @@ describe 'UserMigration' do
     end
 
     it 'exports and imports a user with a data import with two tables' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
 
       user = create_user_with_visualizations
 
@@ -256,8 +256,8 @@ describe 'UserMigration' do
         import_metadata: true,
         dry: false
       )
-      import.stubs(:assert_organization_does_not_exist)
-      import.stubs(:assert_user_does_not_exist)
+      allow(import).to receive(:assert_organization_does_not_exist)
+      allow(import).to receive(:assert_user_does_not_exist)
       import.run_import
 
       import.log.collect_entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
@@ -304,8 +304,8 @@ describe 'UserMigration' do
         import_metadata: true,
         dry: false
       )
-      import.stubs(:assert_organization_does_not_exist)
-      import.stubs(:assert_user_does_not_exist)
+      allow(import).to receive(:assert_organization_does_not_exist)
+      allow(import).to receive(:assert_user_does_not_exist)
       import.run_import
 
       import.log.collect_entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
@@ -318,7 +318,7 @@ describe 'UserMigration' do
     end
 
     it 'exporting and then importing to the same DB host fails but DB is not deleted (#c1945)' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
 
       user = create_user_with_visualizations
 
@@ -350,7 +350,7 @@ describe 'UserMigration' do
     end
 
     it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
 
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
@@ -377,7 +377,7 @@ describe 'UserMigration' do
     end
 
     it 'does export users with a canonical viz without user table if metadata export is requested (see #12588)' do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
 
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)

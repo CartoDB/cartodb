@@ -16,24 +16,24 @@ describe ApplicationController do
   # tests are based in dashboard requests because of genericity.
   describe '#http_header_authentication' do
     def stub_load_common_data
-      Admin::VisualizationsController.any_instance.stubs(:load_common_data).returns(true)
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:load_common_data).and_return(true)
     end
 
     describe 'triggering' do
       it 'enabled if http_header_authentication is configured and header is sent' do
         stub_http_header_authentication_configuration
-        ApplicationController.any_instance.expects(:http_header_authentication)
+        expect_any_instance_of(ApplicationController).to receive(:http_header_authentication)
         get dashboard_url, {}, authentication_headers('oso@panda.com')
       end
 
       it 'disabled if http_header_authentication is configured and header is not set' do
         stub_http_header_authentication_configuration
-        ApplicationController.any_instance.expects(:http_header_authentication).never
+        expect_any_instance_of(ApplicationController).to receive(:http_header_authentication).never
         get dashboard_url, {}, {}
       end
 
       it 'disabled if http_header_authentication is not configured' do
-        ApplicationController.any_instance.expects(:http_header_authentication).never
+        expect_any_instance_of(ApplicationController).to receive(:http_header_authentication).never
         get dashboard_url, {}, {}
         get dashboard_url, {}, authentication_headers('oso@panda.com')
       end
@@ -46,7 +46,7 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user email' do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.email)
@@ -71,7 +71,7 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user username' do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.username)
@@ -96,7 +96,7 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user id' do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.id)
@@ -121,7 +121,7 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user id' do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.id)
@@ -130,7 +130,7 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user username' do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.username)
@@ -139,7 +139,7 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user email' do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
         stub_load_common_data
         get dashboard_url, {}, authentication_headers(@user.email)

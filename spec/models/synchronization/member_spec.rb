@@ -58,7 +58,7 @@ describe Synchronization::Member do
 
     before(:each) do
       bypass_named_maps
-      ::Hubspot::EventsAPI.any_instance.stubs(:enabled?).returns(false)
+      allow_any_instance_of(::Hubspot::EventsAPI).to receive(:enabled?).and_return(false)
     end
 
     after(:all) do
@@ -71,7 +71,7 @@ describe Synchronization::Member do
         member = Synchronization::Member.new(random_attributes(user_id: @user1.id)).store
         member.fetch
 
-        member.expects(:from_external_source?).returns(true)
+        expect(member).to receive(:from_external_source?).and_return(true)
 
         @user1.sync_tables_enabled = true
         @user2.sync_tables_enabled = true
@@ -107,7 +107,7 @@ describe Synchronization::Member do
         @user1.state = Carto::User::STATE_LOCKED
         @user1.save
 
-        Rails.logger.expects(:error).once
+        expect(Rails.logger).to receive(:error).once
 
         member.fetch.run
 
@@ -196,8 +196,8 @@ describe Synchronization::Member do
           File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'),
           'arcgis_response_missing_ogc_fid.json'
         )
-        CartoDB::Importer2::Downloader.any_instance.stubs(:download_and_store).returns(source_file)
-        CartoDB::Importer2::Downloader.any_instance.stubs(:source_file).returns(source_file)
+        allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:download_and_store).and_return(source_file)
+        allow_any_instance_of(CartoDB::Importer2::Downloader).to receive(:source_file).and_return(source_file)
         member.run
         expect(member.state).to eq 'success'
       end

@@ -10,10 +10,10 @@ require_relative '../../spec/doubles/importer_stats'
 
 describe CartoDB::Importer2::Loader do
   before do
-    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+    allow(CartoDB::Stats::Aggregator).to receive(:read_config).and_return({})
     resultset = OpenStruct.new(:first => {:num_rows => 10})
     db = Object.new
-    db.stubs(:fetch).returns(resultset)
+    allow(db).to receive(:fetch).and_return(resultset)
     @job            = CartoDB::Importer2::Doubles::Job.new(db)
     @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
     @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new
@@ -22,7 +22,7 @@ describe CartoDB::Importer2::Loader do
   end
 
   before(:each) do
-    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+    allow(CartoDB::Stats::Aggregator).to receive(:read_config).and_return({})
   end
 
   describe '#run' do
@@ -33,25 +33,25 @@ describe CartoDB::Importer2::Loader do
     end
 
     it 'runs the ogr2ogr command to load the file' do
-      ogr2ogr_mock = mock
-      ogr2ogr_mock.stubs(:generic_error?).returns(false).twice
-      ogr2ogr_mock.stubs(:command).returns('')
-      ogr2ogr_mock.stubs(:command_output).returns('')
-      ogr2ogr_mock.stubs(:encoding_error?).returns(false)
-      ogr2ogr_mock.stubs(:invalid_dates?).returns(false)
-      ogr2ogr_mock.stubs(:duplicate_column?).returns(false)
-      ogr2ogr_mock.stubs(:invalid_geojson?).returns(false)
-      ogr2ogr_mock.stubs(:too_many_columns?).returns(false)
-      ogr2ogr_mock.stubs(:unsupported_format?).returns(false)
-      ogr2ogr_mock.stubs(:file_too_big?).returns(false)
-      ogr2ogr_mock.stubs(:statement_timeout?).returns(false)
-      ogr2ogr_mock.stubs(:duplicate_column?).returns(false)
-      ogr2ogr_mock.stubs(:segfault_error?).returns(false)
-      ogr2ogr_mock.stubs(:kml_style_missing?).returns(false)
-      ogr2ogr_mock.stubs(:missing_srs?).returns(false)
-      ogr2ogr_mock.stubs(:geometry_validity_error?).returns(false)
-      ogr2ogr_mock.stubs(:exit_code).returns(0)
-      ogr2ogr_mock.stubs(:run).returns(Object.new).at_least_once
+      ogr2ogr_mock = double
+      allow(ogr2ogr_mock).to receive(:generic_error?).and_return(false).twice
+      allow(ogr2ogr_mock).to receive(:command).and_return('')
+      allow(ogr2ogr_mock).to receive(:command_output).and_return('')
+      allow(ogr2ogr_mock).to receive(:encoding_error?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:invalid_dates?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:duplicate_column?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:invalid_geojson?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:too_many_columns?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:unsupported_format?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:file_too_big?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:statement_timeout?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:duplicate_column?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:segfault_error?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:kml_style_missing?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:missing_srs?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:geometry_validity_error?).and_return(false)
+      allow(ogr2ogr_mock).to receive(:exit_code).and_return(0)
+      allow(ogr2ogr_mock).to receive(:run).and_return(Object.new).at_least(:once)
 
       loader   = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, ogr2ogr_mock, @georeferencer)
 
@@ -71,15 +71,15 @@ describe CartoDB::Importer2::Loader do
     it 'encoding problem importing but return 0, should try fallback and then raise an error' do
       resultset = OpenStruct.new(:first => {:num_rows => 0})
       db = Object.new
-      db.stubs(:fetch).returns(resultset)
+      allow(db).to receive(:fetch).and_return(resultset)
       @job  = CartoDB::Importer2::Doubles::Job.new(db)
       # Enter fallback
-      @ogr2ogr.stubs(:generic_error?).returns(true)
+      allow(@ogr2ogr).to receive(:generic_error?).and_return(true)
       # Fails after fallback
-      @ogr2ogr.stubs(:encoding_error?).returns(true)
-      @ogr2ogr.stubs(:exit_code).returns(0)
+      allow(@ogr2ogr).to receive(:encoding_error?).and_return(true)
+      allow(@ogr2ogr).to receive(:exit_code).and_return(0)
       loader = CartoDB::Importer2::Loader.new(@job, @source_file, layer=nil, @ogr2ogr, @georeferencer)
-      loader.expects(:try_fallback).once
+      expect(loader).to receive(:try_fallback).once
       expect { loader.run }.to raise_error(CartoDB::Importer2::RowsEncodingColumnError)
     end
   end
@@ -100,8 +100,8 @@ describe CartoDB::Importer2::Loader do
 
     it 'processes ogr2ogr generic errors' do
       loader = CartoDB::Importer2::Loader.new(@job, @source_file)
-      loader.ogr2ogr.stubs(generic_error?: true, command: ['ogr2ogr', '-some', '-option'])
-      loader.send(:job).logger.stubs(:append)
+      allow(loader.ogr2ogr).to receive_messages(generic_error?: true, command: ['ogr2ogr', '-some', '-option'])
+      allow(loader.send(:job).logger).to receive(:append)
 
       expect { loader.send(:check_for_import_errors) }.to raise_error CartoDB::Importer2::LoadError
     end
@@ -111,7 +111,7 @@ describe CartoDB::Importer2::Loader do
     before do
       resultset = OpenStruct.new(:first => {:num_rows => 10})
       db = Object.new
-      db.stubs(:fetch).returns(resultset)
+      allow(db).to receive(:fetch).and_return(resultset)
       @job            = CartoDB::Importer2::Doubles::Job.new(db)
       @source_file    = CartoDB::Importer2::SourceFile.new('/var/tmp/foo')
       @ogr2ogr        = CartoDB::Importer2::Doubles::Ogr2ogr.new

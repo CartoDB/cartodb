@@ -28,34 +28,34 @@ describe Carto::SamlService do
   end
 
   describe 'Integration logic' do
-    let(:response_mock) { mock }
-    let(:saml_response_param_mock) { mock }
+    let(:response_mock) { double }
+    let(:saml_response_param_mock) { double }
 
     before do
-      Cartodb.stubs(:config).returns(saml_authentication: saml_config)
-      service.stubs(:get_saml_response).returns(response_mock)
-      service.stubs(:debug_response)
+      allow(Cartodb).to receive(:config).and_return(saml_authentication: saml_config)
+      allow(service).to receive(:get_saml_response).and_return(response_mock)
+      allow(service).to receive(:debug_response)
     end
 
     describe '#get_user_email' do
       it 'returns nil if response is invalid' do
-        response_mock.stubs(:is_valid?).raises(OneLogin::RubySaml::ValidationError.new)
+        allow(response_mock).to receive(:is_valid?).and_raise(OneLogin::RubySaml::ValidationError.new)
 
         service.get_user_email(saml_response_param_mock).should be_nil
       end
 
       it 'returns nil if response lacks email' do
-        response_mock.stubs(:is_valid?).returns(true)
-        response_mock.stubs(:attributes).returns(saml_config.except(:email_attribute))
+        allow(response_mock).to receive(:is_valid?).and_return(true)
+        allow(response_mock).to receive(:attributes).and_return(saml_config.except(:email_attribute))
 
         service.get_user_email(saml_response_param_mock).should be_nil
       end
 
       it 'returns the user with matching email' do
-        ::User.any_instance.stubs(:after_create).returns(true)
+        allow_any_instance_of(::User).to receive(:after_create).and_return(true)
         user = create(:carto_user)
-        response_mock.stubs(:is_valid?).returns(true)
-        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => user.email)
+        allow(response_mock).to receive(:is_valid?).and_return(true)
+        allow(response_mock).to receive(:attributes).and_return(saml_config[:email_attribute] => user.email)
 
         service.get_user_email(saml_response_param_mock).should eq user.email
       end

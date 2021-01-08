@@ -23,7 +23,7 @@ The class should generate queries to be used by the InternalGeocoder depending o
 describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
 
   before(:each) do
-    @internal_geocoder = mock
+    @internal_geocoder = double
   end
 
   describe '#dataservices' do
@@ -46,7 +46,7 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
     it 'should get the search terms for <namedplace, country_name, region_name, point>' do
       @internal_geocoder.stubs('column_name').once.returns('city')
       @internal_geocoder.stubs('qualified_table_name').once.returns(%Q{"public"."untitled_table"})
-      @internal_geocoder.stubs('batch_size').returns(5000)
+      allow(@internal_geocoder).to receive('batch_size').and_return(5000)
       query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :text, :point])
 
       query = query_generator.search_terms_query(0)
@@ -57,7 +57,7 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
 
   describe '#copy_results_to_table_query' do
     it 'should generate a suitable query to update geocoded table with temp table' do
-      @internal_geocoder.stubs('qualified_table_name').returns(%Q{"public"."untitled_table"})
+      allow(@internal_geocoder).to receive('qualified_table_name').and_return(%Q{"public"."untitled_table"})
       @internal_geocoder.stubs('temp_table_name').once.returns('any_temp_table')
       @internal_geocoder.stubs('column_name').once.returns('any_column_name')
       query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get(@internal_geocoder, [:namedplace, :text, :text, :point])
@@ -77,7 +77,7 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
   describe 'CDB-4269' do
     it 'should generate a suitable query generator for [:admin1, :column, nil, :polygon]' do
       @internal_geocoder.stubs('column_name').twice.returns('region_column_name')
-      @internal_geocoder.stubs('qualified_table_name').returns('any_table_name')
+      allow(@internal_geocoder).to receive('qualified_table_name').and_return('any_table_name')
       @internal_geocoder.stubs('country_column').twice.returns('country_column_name')
       @internal_geocoder.stubs('batch_size').twice.returns(10)
       @internal_geocoder.stubs('temp_table_name').once.returns('any_temp_tablename')

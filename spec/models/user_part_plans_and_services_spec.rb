@@ -13,19 +13,19 @@ describe User do
   it "should correctly identify last billing cycle" do
     user = create_user :email => 'example@example.com', :username => 'example', :password => 'testingbilling'
     Delorean.time_travel_to(Date.parse("2013-01-01")) do
-      user.stubs(:period_end_date).returns(Date.parse("2012-12-15"))
+      allow(user).to receive(:period_end_date).and_return(Date.parse("2012-12-15"))
       user.last_billing_cycle.should == Date.parse("2012-12-15")
     end
     Delorean.time_travel_to(Date.parse("2013-01-01")) do
-      user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
+      allow(user).to receive(:period_end_date).and_return(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2012-12-02")
     end
     Delorean.time_travel_to(Date.parse("2013-03-01")) do
-      user.stubs(:period_end_date).returns(Date.parse("2012-12-31"))
+      allow(user).to receive(:period_end_date).and_return(Date.parse("2012-12-31"))
       user.last_billing_cycle.should == Date.parse("2013-02-28")
     end
     Delorean.time_travel_to(Date.parse("2013-03-15")) do
-      user.stubs(:period_end_date).returns(Date.parse("2012-12-02"))
+      allow(user).to receive(:period_end_date).and_return(Date.parse("2012-12-02"))
       user.last_billing_cycle.should == Date.parse("2013-03-02")
     end
     user.destroy
@@ -51,7 +51,7 @@ describe User do
   end
 
   it "should rebuild the quota trigger after changing the quota" do
-    @user.db_service.expects(:rebuild_quota_trigger).once
+    expect(@user.db_service).to receive(:rebuild_quota_trigger).once
     @user.quota_in_bytes = @user.quota_in_bytes + 1.megabytes
     @user.save
   end
@@ -162,12 +162,12 @@ describe User do
 
   it "should read api calls from external service" do
     pending "This is deprecated. This code has been moved"
-    @user.stubs(:get_old_api_calls).returns({
+    allow(@user).to receive(:get_old_api_calls).and_return({
                                               "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0],
                                               "total"=>49,
                                               "updated_at"=>1370362756
                                             })
-    @user.stubs(:get_es_api_calls_from_redis).returns([
+    allow(@user).to receive(:get_es_api_calls_from_redis).and_return([
                                                         21, 0, 0, 0, 2, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                                                       ])
     @user.get_api_calls.should == [21, 0, 0, 0, 6, 17, 0, 5, 0, 0, 0, 0, 0, 0, 8, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
@@ -199,7 +199,7 @@ describe User do
         }
       }
     }
-    Typhoeus.stub(api_url,
+    Typhoeus.double(api_url,
                   { method: :post }
     )
       .and_return(
@@ -212,14 +212,14 @@ describe User do
     before do
       delete_user_data @user
       @user.geocoder_provider = 'heremaps'
-      @user.stubs(:last_billing_cycle).returns(Date.today)
+      allow(@user).to receive(:last_billing_cycle).and_return(Date.today)
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, nil, @mock_redis)
       @usage_metrics.incr(:geocoder_here, :success_responses, 1, Time.now)
       @usage_metrics.incr(:geocoder_internal, :success_responses, 1, Time.now)
       @usage_metrics.incr(:geocoder_here, :success_responses, 1, Time.now - 5.days)
       @usage_metrics.incr(:geocoder_cache, :success_responses, 1, Time.now - 5.days)
-      CartoDB::GeocoderUsageMetrics.stubs(:new).returns(@usage_metrics)
+      allow(CartoDB::GeocoderUsageMetrics).to receive(:new).and_return(@usage_metrics)
     end
 
     it "should return the sum of geocoded rows for the current billing period" do
@@ -242,8 +242,8 @@ describe User do
       @user.isolines_provider = 'heremaps'
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user.username, nil, @mock_redis)
-      CartoDB::IsolinesUsageMetrics.stubs(:new).returns(@usage_metrics)
-      @user.stubs(:last_billing_cycle).returns(Date.today)
+      allow(CartoDB::IsolinesUsageMetrics).to receive(:new).and_return(@usage_metrics)
+      allow(@user).to receive(:last_billing_cycle).and_return(Date.today)
       @user.period_end_date = (DateTime.current + 1) << 1
       @user.save.reload
     end
@@ -272,8 +272,8 @@ describe User do
       delete_user_data @user
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(@user.username, nil, @mock_redis)
-      CartoDB::ObservatorySnapshotUsageMetrics.stubs(:new).returns(@usage_metrics)
-      @user.stubs(:last_billing_cycle).returns(Date.today)
+      allow(CartoDB::ObservatorySnapshotUsageMetrics).to receive(:new).and_return(@usage_metrics)
+      allow(@user).to receive(:last_billing_cycle).and_return(Date.today)
       @user.period_end_date = (DateTime.current + 1) << 1
       @user.save.reload
     end
@@ -302,8 +302,8 @@ describe User do
       delete_user_data @user
       @mock_redis = MockRedis.new
       @usage_metrics = CartoDB::ObservatoryGeneralUsageMetrics.new(@user.username, nil, @mock_redis)
-      CartoDB::ObservatoryGeneralUsageMetrics.stubs(:new).returns(@usage_metrics)
-      @user.stubs(:last_billing_cycle).returns(Date.today)
+      allow(CartoDB::ObservatoryGeneralUsageMetrics).to receive(:new).and_return(@usage_metrics)
+      allow(@user).to receive(:last_billing_cycle).and_return(Date.today)
       @user.period_end_date = (DateTime.current + 1) << 1
       @user.save.reload
     end
@@ -331,13 +331,13 @@ describe User do
     it 'returns true when the plan is AMBASSADOR or FREE unless it has been manually set to false' do
       @user[:soft_geocoding_limit].should be_nil
 
-      @user.stubs(:account_type).returns('AMBASSADOR')
+      allow(@user).to receive(:account_type).and_return('AMBASSADOR')
       @user.soft_geocoding_limit?.should be_false
       @user.soft_geocoding_limit.should be_false
       @user.hard_geocoding_limit?.should be_true
       @user.hard_geocoding_limit.should be_true
 
-      @user.stubs(:account_type).returns('FREE')
+      allow(@user).to receive(:account_type).and_return('FREE')
       @user.soft_geocoding_limit?.should be_false
       @user.soft_geocoding_limit.should be_false
       @user.hard_geocoding_limit?.should be_true
@@ -346,13 +346,13 @@ describe User do
       @user.hard_geocoding_limit = false
       @user[:soft_geocoding_limit].should_not be_nil
 
-      @user.stubs(:account_type).returns('AMBASSADOR')
+      allow(@user).to receive(:account_type).and_return('AMBASSADOR')
       @user.soft_geocoding_limit?.should be_true
       @user.soft_geocoding_limit.should be_true
       @user.hard_geocoding_limit?.should be_false
       @user.hard_geocoding_limit.should be_false
 
-      @user.stubs(:account_type).returns('FREE')
+      allow(@user).to receive(:account_type).and_return('FREE')
       @user.soft_geocoding_limit?.should be_true
       @user.soft_geocoding_limit.should be_true
       @user.hard_geocoding_limit?.should be_false
@@ -361,7 +361,7 @@ describe User do
 
     it 'returns true for enterprise accounts unless it has been manually set to false' do
       Carto::AccountType::ENTERPRISE_PLANS.each do |account_type|
-        @user.stubs(:account_type).returns(account_type)
+        allow(@user).to receive(:account_type).and_return(account_type)
 
         @user.soft_geocoding_limit = nil
 
@@ -380,12 +380,12 @@ describe User do
     end
 
     it 'returns false when the plan is MERCATOR unless it has been manually set to true' do
-      @user.stubs(:account_type).returns('MERCATOR')
+      allow(@user).to receive(:account_type).and_return('MERCATOR')
       @user.hard_geocoding_limit?.should be_false
 
       @user.hard_geocoding_limit = true
 
-      @user.stubs(:account_type).returns('MERCATOR')
+      allow(@user).to receive(:account_type).and_return('MERCATOR')
       @user.hard_geocoding_limit?.should be_true
     end
   end
@@ -398,13 +398,13 @@ describe User do
 
     it 'returns true with every plan unless it has been manually set to false' do
       @user_account[:soft_here_isolines_limit].should be_nil
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      allow(@user_account).to receive(:account_type).and_return('AMBASSADOR')
       @user_account.soft_here_isolines_limit?.should be_false
       @user_account.soft_here_isolines_limit.should be_false
       @user_account.hard_here_isolines_limit?.should be_true
       @user_account.hard_here_isolines_limit.should be_true
 
-      @user_account.stubs(:account_type).returns('FREE')
+      allow(@user_account).to receive(:account_type).and_return('FREE')
       @user_account.soft_here_isolines_limit?.should be_false
       @user_account.soft_here_isolines_limit.should be_false
       @user_account.hard_here_isolines_limit?.should be_true
@@ -413,13 +413,13 @@ describe User do
       @user_account.hard_here_isolines_limit = false
       @user_account[:soft_here_isolines_limit].should_not be_nil
 
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      allow(@user_account).to receive(:account_type).and_return('AMBASSADOR')
       @user_account.soft_here_isolines_limit?.should be_true
       @user_account.soft_here_isolines_limit.should be_true
       @user_account.hard_here_isolines_limit?.should be_false
       @user_account.hard_here_isolines_limit.should be_false
 
-      @user_account.stubs(:account_type).returns('FREE')
+      allow(@user_account).to receive(:account_type).and_return('FREE')
       @user_account.soft_here_isolines_limit?.should be_true
       @user_account.soft_here_isolines_limit.should be_true
       @user_account.hard_here_isolines_limit?.should be_false
@@ -436,13 +436,13 @@ describe User do
 
     it 'returns true with every plan unless it has been manually set to false' do
       @user_account[:soft_obs_snapshot_limit].should be_nil
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      allow(@user_account).to receive(:account_type).and_return('AMBASSADOR')
       @user_account.soft_obs_snapshot_limit?.should be_false
       @user_account.soft_obs_snapshot_limit.should be_false
       @user_account.hard_obs_snapshot_limit?.should be_true
       @user_account.hard_obs_snapshot_limit.should be_true
 
-      @user_account.stubs(:account_type).returns('FREE')
+      allow(@user_account).to receive(:account_type).and_return('FREE')
       @user_account.soft_obs_snapshot_limit?.should be_false
       @user_account.soft_obs_snapshot_limit.should be_false
       @user_account.hard_obs_snapshot_limit?.should be_true
@@ -451,13 +451,13 @@ describe User do
       @user_account.hard_obs_snapshot_limit = false
       @user_account[:soft_obs_snapshot_limit].should_not be_nil
 
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      allow(@user_account).to receive(:account_type).and_return('AMBASSADOR')
       @user_account.soft_obs_snapshot_limit?.should be_true
       @user_account.soft_obs_snapshot_limit.should be_true
       @user_account.hard_obs_snapshot_limit?.should be_false
       @user_account.hard_obs_snapshot_limit.should be_false
 
-      @user_account.stubs(:account_type).returns('FREE')
+      allow(@user_account).to receive(:account_type).and_return('FREE')
       @user_account.soft_obs_snapshot_limit?.should be_true
       @user_account.soft_obs_snapshot_limit.should be_true
       @user_account.hard_obs_snapshot_limit?.should be_false
@@ -474,13 +474,13 @@ describe User do
 
     it 'returns true with every plan unless it has been manually set to false' do
       @user_account[:soft_obs_general_limit].should be_nil
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      allow(@user_account).to receive(:account_type).and_return('AMBASSADOR')
       @user_account.soft_obs_general_limit?.should be_false
       @user_account.soft_obs_general_limit.should be_false
       @user_account.hard_obs_general_limit?.should be_true
       @user_account.hard_obs_general_limit.should be_true
 
-      @user_account.stubs(:account_type).returns('FREE')
+      allow(@user_account).to receive(:account_type).and_return('FREE')
       @user_account.soft_obs_general_limit?.should be_false
       @user_account.soft_obs_general_limit.should be_false
       @user_account.hard_obs_general_limit?.should be_true
@@ -489,13 +489,13 @@ describe User do
       @user_account.hard_obs_general_limit = false
       @user_account[:soft_obs_general_limit].should_not be_nil
 
-      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      allow(@user_account).to receive(:account_type).and_return('AMBASSADOR')
       @user_account.soft_obs_general_limit?.should be_true
       @user_account.soft_obs_general_limit.should be_true
       @user_account.hard_obs_general_limit?.should be_false
       @user_account.hard_obs_general_limit.should be_false
 
-      @user_account.stubs(:account_type).returns('FREE')
+      allow(@user_account).to receive(:account_type).and_return('FREE')
       @user_account.soft_obs_general_limit?.should be_true
       @user_account.soft_obs_general_limit.should be_true
       @user_account.hard_obs_general_limit?.should be_false

@@ -30,7 +30,7 @@ describe CartoDB::Importer2::Runner do
   end
 
   before(:each) do
-    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+    allow(CartoDB::Stats::Aggregator).to receive(:read_config).and_return({})
   end
 
   after(:all) do
@@ -64,9 +64,9 @@ describe CartoDB::Importer2::Runner do
                             unpacker: fake_loader
                           })
 
-      runner.stubs(:import)
+      allow(runner).to receive(:import)
 
-      runner.expects(:import).once
+      expect(runner).to receive(:import).once
 
       runner.run
     end
@@ -197,7 +197,7 @@ describe CartoDB::Importer2::Runner do
     end
 
     it 'uses a default quota if the user remaining quota cannot be calculated' do
-      @user.stubs(:remaining_quota).returns(nil)
+      allow(@user).to receive(:remaining_quota).and_return(nil)
 
       source_file = CartoDB::Importer2::SourceFile.new(@filepath)
       job = CartoDB::Importer2::Job.new(pg_options: @pg_options, logger: @fake_log)

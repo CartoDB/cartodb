@@ -13,10 +13,10 @@ describe CartoDB::GeocoderCache do
     @db           = conn.connection
     @pg_options   = conn.pg_options
     @table_name   = "ne_10m_populated_places_simple"
-    @usage_metrics_stub = stub
-    @log = mock
-    @log.stubs(:append)
-    @log.stubs(:append_and_store)
+    @usage_metrics_stub = double
+    @log = double
+    allow(@log).to receive(:append)
+    allow(@log).to receive(:append_and_store)
 
     # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
     filename = 'populated_places_short.csv'

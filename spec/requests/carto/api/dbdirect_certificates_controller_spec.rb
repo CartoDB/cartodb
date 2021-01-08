@@ -84,7 +84,7 @@ describe Carto::Api::DbdirectCertificatesController do
   describe '#create' do
     before(:each) do
       @params = { api_key: @user1.api_key }
-      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestCertificateManager)
+      allow(Carto::DbdirectCertificate).to receive(:certificate_manager_class).and_return(TestCertificateManager)
     end
 
     after(:each) do
@@ -341,7 +341,7 @@ describe Carto::Api::DbdirectCertificatesController do
     end
 
     it 'returns error response if certificates manager fails' do
-      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestFailCertificateManager)
+      allow(Carto::DbdirectCertificate).to receive(:certificate_manager_class).and_return(TestFailCertificateManager)
       params = {
         name: 'cert_name',
         api_key: @user1.api_key
@@ -360,7 +360,7 @@ describe Carto::Api::DbdirectCertificatesController do
   describe '#destroy' do
     before(:each) do
       @params = { api_key: @user1.api_key }
-      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestCertificateManager)
+      allow(Carto::DbdirectCertificate).to receive(:certificate_manager_class).and_return(TestCertificateManager)
       @certificate_data, @dbdirect_certificate = Carto::DbdirectCertificate.generate(
         user: @user1,
         name:'cert_name',
@@ -452,7 +452,7 @@ describe Carto::Api::DbdirectCertificatesController do
     end
 
     it 'returns error response if certificates manager fails' do
-      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestFailCertificateManager)
+      allow(Carto::DbdirectCertificate).to receive(:certificate_manager_class).and_return(TestFailCertificateManager)
       params = {
         id: @dbdirect_certificate.id,
         api_key: @user1.api_key
@@ -474,7 +474,7 @@ describe Carto::Api::DbdirectCertificatesController do
   describe '#index' do
     before(:each) do
       @params = { api_key: @user1.api_key }
-      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestCertificateManager)
+      allow(Carto::DbdirectCertificate).to receive(:certificate_manager_class).and_return(TestCertificateManager)
       @certificate_data1, @dbdirect_certificate1 = Carto::DbdirectCertificate.generate(
         user: @user1,
         name:'cert_1',
@@ -580,7 +580,7 @@ describe Carto::Api::DbdirectCertificatesController do
   describe '#show' do
     before(:each) do
       @params = { api_key: @user1.api_key }
-      Carto::DbdirectCertificate.stubs(:certificate_manager_class).returns(TestCertificateManager)
+      allow(Carto::DbdirectCertificate).to receive(:certificate_manager_class).and_return(TestCertificateManager)
       @certificate_data, @dbdirect_certificate = Carto::DbdirectCertificate.generate(
         user: @user1,
         name:'cert_name',

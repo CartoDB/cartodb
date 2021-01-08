@@ -84,7 +84,7 @@ describe 'Warden' do
 
     it 'allows access for non-expired session' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
       Cartodb.with_config(passwords: { 'expiration_in_d' => nil }) do
         login
@@ -97,7 +97,7 @@ describe 'Warden' do
     end
 
     it 'UI redirects to login page if password is expired' do
-      Cartodb::Central.any_instance.stubs(:send_request)
+      allow_any_instance_of(Cartodb::Central).to receive(:send_request)
 
       login
 
@@ -117,8 +117,8 @@ describe 'Warden' do
 
     it 'redirects to the original url after changing the expired password' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
-      Cartodb::Central.any_instance.stubs(:send_request)
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
+      allow_any_instance_of(Cartodb::Central).to receive(:send_request)
 
       login
 
@@ -147,7 +147,7 @@ describe 'Warden' do
     end
 
     it 'API returns 403 with an error if password is expired' do
-      Cartodb::Central.any_instance.stubs(:send_request)
+      allow_any_instance_of(Cartodb::Central).to receive(:send_request)
 
       login
 
@@ -192,9 +192,9 @@ describe 'Warden' do
     include HelperMethods
 
     before(:each) do
-      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+      allow_any_instance_of(SessionsController).to receive(:central_enabled?).and_return(false)
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
     end
 
     def expect_password_locked
@@ -331,8 +331,8 @@ describe 'Warden' do
     end
 
     before(:each) do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:send_request)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(true)
+      allow_any_instance_of(Cartodb::Central).to receive(:send_request)
     end
 
     after(:all) do
@@ -346,7 +346,7 @@ describe 'Warden' do
 
     it 'should be valid for current security token ' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
       login
       cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
@@ -383,7 +383,7 @@ describe 'Warden' do
     end
 
     it 'updates the user in Central at logout' do
-      Cartodb::Central.any_instance.expects(:send_request).once
+      expect_any_instance_of(Cartodb::Central).to receive(:send_request).once
 
       logout
     end

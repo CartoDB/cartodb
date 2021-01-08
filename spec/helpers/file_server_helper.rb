@@ -42,7 +42,7 @@ module FileServerHelper
   end
 
   def stub_download(url:, filepath:, headers: {}, content_disposition: true)
-    Typhoeus.stub(url).and_return(response_for(filepath, headers, content_disposition: content_disposition))
+    Typhoeus.double(url).and_return(response_for(filepath, headers, content_disposition: content_disposition))
   end
 
   def stub_failed_download(options)
@@ -50,7 +50,7 @@ module FileServerHelper
     filepath  = options.fetch(:filepath)
     headers   = options.fetch(:headers, {})
 
-    Typhoeus.stub(url).and_return(failed_response_for(filepath, headers))
+    Typhoeus.double(url).and_return(failed_response_for(filepath, headers))
   end
 
   def response_for(filepath, headers = {}, content_disposition: true)
@@ -77,7 +77,7 @@ module FileServerHelper
     absolute_metadata_filepath = File.expand_path('spec/fixtures/arcgis_metadata.json')
   )
     # Metadata of a layer
-    Typhoeus.stub(/\/arcgis\/rest\/services\/Planning\/EPI_Primary_Planning_Layers\/MapServer\/2\?f=json/) do
+    Typhoeus.double(/\/arcgis\/rest\/services\/Planning\/EPI_Primary_Planning_Layers\/MapServer\/2\?f=json/) do
       body = File.read(absolute_metadata_filepath)
       Typhoeus::Response.new(
         code: 200,
@@ -87,7 +87,7 @@ module FileServerHelper
     end
 
     # IDs list of a layer
-    Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
+    Typhoeus.double(/\/arcgis\/rest\/(.*)query\?where=/) do
       json_file = JSON.parse(File.read(absolute_filepath))
       Typhoeus::Response.new(
         code: 200,
@@ -99,7 +99,7 @@ module FileServerHelper
       )
     end
 
-    Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |request|
+    Typhoeus.double(/\/arcgis\/rest\/(.*)query$/) do |request|
       response_body = File.read(absolute_filepath)
       response_body = ::JSON.parse(response_body)
 

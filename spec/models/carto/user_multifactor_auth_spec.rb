@@ -12,7 +12,7 @@ describe Carto::UserMultifactorAuth do
   end
 
   before :each do
-    Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+    allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(false)
     @carto_user.reload.user_multifactor_auths.each(&:destroy!)
   end
 
@@ -48,10 +48,8 @@ describe Carto::UserMultifactorAuth do
     end
 
     it 'syncs to central' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central
-        .any_instance
-        .expects(:update_user)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(true)
+      expect_any_instance_of(Cartodb::Central).to receive(:update_user)
         .with(@carto_user.username,
               has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP))
         .once
@@ -62,11 +60,9 @@ describe Carto::UserMultifactorAuth do
   describe '#update' do
     it 'syncs enabled to central' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(true)
 
-      Cartodb::Central
-        .any_instance
-        .expects(:update_user)
+      expect_any_instance_of(Cartodb::Central).to receive(:update_user)
         .with(@carto_user.username,
               has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_ENABLED))
         .once
@@ -77,11 +73,9 @@ describe Carto::UserMultifactorAuth do
 
     it 'syncs needs setup to central' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type, enabled: true)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(true)
 
-      Cartodb::Central
-        .any_instance
-        .expects(:update_user)
+      expect_any_instance_of(Cartodb::Central).to receive(:update_user)
         .with(@carto_user.username,
               has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP))
         .once
@@ -92,11 +86,9 @@ describe Carto::UserMultifactorAuth do
 
     it 'syncs disabled to central' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      allow(Cartodb::Central).to receive(:sync_data_with_cartodb_central?).and_return(true)
 
-      Cartodb::Central
-        .any_instance
-        .expects(:update_user)
+      expect_any_instance_of(Cartodb::Central).to receive(:update_user)
         .with(@carto_user.username,
               has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_DISABLED))
         .once

@@ -47,7 +47,7 @@ describe User do
 
     it 'should be valid if their organization has enough disk space' do
       organization = create_org('testorg', 10.megabytes, 1)
-      organization.stubs(:assigned_quota).returns(9.megabytes)
+      allow(organization).to receive(:assigned_quota).and_return(9.megabytes)
       user = ::User.new
       user.organization = organization
       user.quota_in_bytes = 1.megabyte
@@ -243,13 +243,13 @@ describe User do
       organization.save
       organization.twitter_datasource_enabled.should be_true
       organization.users.reject(&:organization_owner?).each do |u|
-        CartoDB::Datasources::DatasourcesFactory.stubs(:customized_config?).with(Search::Twitter::DATASOURCE_NAME, u).returns(true)
+        allow(CartoDB::Datasources::DatasourcesFactory).to receive(:customized_config?).with(Search::Twitter::DATASOURCE_NAME, u).and_return(true)
         u.twitter_datasource_enabled.should be_true
       end
-      CartoDB::Datasources::DatasourcesFactory.stubs(:customized_config?).returns(true)
+      allow(CartoDB::Datasources::DatasourcesFactory).to receive(:customized_config?).and_return(true)
       user = create_user(organization: organization)
       user.save
-      CartoDB::Datasources::DatasourcesFactory.stubs(:customized_config?).with(Search::Twitter::DATASOURCE_NAME, user).returns(true)
+      allow(CartoDB::Datasources::DatasourcesFactory).to receive(:customized_config?).with(Search::Twitter::DATASOURCE_NAME, user).and_return(true)
       user.twitter_datasource_enabled.should be_true
       organization.destroy
     end

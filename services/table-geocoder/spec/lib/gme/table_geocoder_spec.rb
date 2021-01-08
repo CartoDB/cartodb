@@ -8,12 +8,12 @@ require_relative '../../../../../spec/rspec_configuration.rb'
 
 describe Carto::Gme::TableGeocoder do
   before(:all) do
-    connection_stub = mock
-    connection_stub.stubs(:run)
-    @usage_metrics_stub = stub
-    @log = mock
-    @log.stubs(:append)
-    @log.stubs(:append_and_store)
+    connection_stub = double
+    allow(connection_stub).to receive(:run)
+    @usage_metrics_stub = double
+    @log = double
+    allow(@log).to receive(:append)
+    allow(@log).to receive(:append_and_store)
     @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}')
 
     @mandatory_args = {
@@ -52,16 +52,16 @@ describe Carto::Gme::TableGeocoder do
     end
 
     it 'creates a client with the provided credentials' do
-      gme_client_mock = mock
-      Carto::Gme::Client.expects(:new).with('my_client_id', 'my_private_key').once.returns(gme_client_mock)
-      Carto::Gme::GeocoderClient.expects(:new).with(gme_client_mock).once
+      gme_client_mock = double
+      expect(Carto::Gme::Client).to receive(:new).with('my_client_id', 'my_private_key').once.returns(gme_client_mock)
+      expect(Carto::Gme::GeocoderClient).to receive(:new).with(gme_client_mock).once
       Carto::Gme::TableGeocoder.new(@mandatory_args)
     end
   end
 
   describe '#run' do
     before(:each) do
-      Carto::UrlSigner.any_instance.stubs(:sign_url).returns('https://maps.googleapis.com/maps/api/geocode/json')
+      allow_any_instance_of(Carto::UrlSigner).to receive(:sign_url).and_return('https://maps.googleapis.com/maps/api/geocode/json')
       @table_geocoder = Carto::Gme::TableGeocoder.new(@mandatory_args)
     end
 
@@ -71,13 +71,13 @@ describe Carto::Gme::TableGeocoder do
 
     it "set's the state to 'completed' when it ends" do
       # TODO: there's something weird that needs review here
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :total_requests, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :success_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :empty_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :failed_responses, 0)
 
-      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
-      @table_geocoder.stubs(:data_input_blocks).returns([])
+      allow(@table_geocoder).to receive(:ensure_georef_status_colummn_valid)
+      allow(@table_geocoder).to receive(:data_input_blocks).and_return([])
 
       @table_geocoder.run
       @geocoding_model.state.should == 'completed'
@@ -85,14 +85,14 @@ describe Carto::Gme::TableGeocoder do
 
     it "if there's an uncontrolled exception, sets the state to 'failed' and raises it" do
       # TODO: there's something weird that needs review here
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :total_requests, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :success_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :empty_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :failed_responses, 0)
 
-      @table_geocoder.stubs(:ensure_georef_status_aolummn_valid)
-      @table_geocoder.stubs(:data_input_blocks).returns([{ cartodb_id: 1, searchtext: 'dummy text' }])
-      @table_geocoder.stubs(:geocode).raises(StandardError, 'unexpected exception')
+      allow(@table_geocoder).to receive(:ensure_georef_status_aolummn_valid)
+      allow(@table_geocoder).to receive(:data_input_blocks).and_return([{ cartodb_id: 1, searchtext: 'dummy text' }])
+      allow(@table_geocoder).to receive(:geocode).and_raise(StandardError)
 
       expect { @table_geocoder.run }.to raise_error('unexpected exception')
       @geocoding_model.state.should == 'failed'
@@ -100,78 +100,78 @@ describe Carto::Gme::TableGeocoder do
 
     it "processes 1 block at a time, keeping track of processed rows in each block" do
       # TODO: there's something weird that needs review here
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 4)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 4)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :total_requests, 4)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :success_responses, 4)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :empty_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :failed_responses, 0)
 
-      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
+      allow(@table_geocoder).to receive(:ensure_georef_status_colummn_valid)
       mocked_input = Enumerator.new do |enum|
         # 2 blocks of 2 rows each as input
         enum.yield [{ cartodb_id: 1, searchtext: 'dummy text' }, { cartodb_id: 2, searchtext: 'dummy text' }]
         enum.yield [{ cartodb_id: 3, searchtext: 'dummy text' }, { cartodb_id: 4, searchtext: 'dummy text' }]
       end
-      @table_geocoder.stubs(:data_input_blocks).returns(mocked_input)
+      allow(@table_geocoder).to receive(:data_input_blocks).and_return(mocked_input)
       response = Typhoeus::Response.new(code: 200, body: read_fixture_file('gme_output_ok.json'))
-      Typhoeus.stub('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
-      @table_geocoder.expects(:update_table).twice
+      Typhoeus.double('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
+      expect(@table_geocoder).to receive(:update_table).twice
 
       @table_geocoder.run
       @table_geocoder.processed_rows.should == 4
     end
 
     it "processes empty response" do
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 1)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 1)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :total_requests, 1)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :success_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :empty_responses, 1)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :failed_responses, 0)
 
-      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
+      allow(@table_geocoder).to receive(:ensure_georef_status_colummn_valid)
       mocked_input = Enumerator.new do |enum|
         enum.yield [{ cartodb_id: 1, searchtext: 'dummy text' }]
       end
-      @table_geocoder.stubs(:data_input_blocks).returns(mocked_input)
+      allow(@table_geocoder).to receive(:data_input_blocks).and_return(mocked_input)
       response = Typhoeus::Response.new(code: 200, body: read_fixture_file('gme_output_empty.json'))
-      Typhoeus.stub('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
-      @table_geocoder.expects(:update_table).once
+      Typhoeus.double('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
+      expect(@table_geocoder).to receive(:update_table).once
 
       @table_geocoder.run
       @table_geocoder.processed_rows.should == 1
     end
 
     it "processes error rows response" do
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 1)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 1)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :total_requests, 1)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :success_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :empty_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :failed_responses, 1)
 
-      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
+      allow(@table_geocoder).to receive(:ensure_georef_status_colummn_valid)
       mocked_input = Enumerator.new do |enum|
         enum.yield [{ cartodb_id: 1, searchtext: 'dummy text' }]
       end
-      @table_geocoder.stubs(:data_input_blocks).returns(mocked_input)
+      allow(@table_geocoder).to receive(:data_input_blocks).and_return(mocked_input)
       response = Typhoeus::Response.new(code: 200, body: read_fixture_file('gme_output_error.json'))
-      Typhoeus.stub('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
-      @table_geocoder.expects(:update_table).once
+      Typhoeus.double('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
+      expect(@table_geocoder).to receive(:update_table).once
 
       @table_geocoder.run
       @table_geocoder.processed_rows.should == 1
     end
 
     it "processes error with message response" do
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :total_requests, 1)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :success_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :empty_responses, 0)
-      @usage_metrics_stub.expects(:incr).with(:geocoder_google, :failed_responses, 1)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :total_requests, 1)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :success_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :empty_responses, 0)
+      expect(@usage_metrics_stub).to receive(:incr).with(:geocoder_google, :failed_responses, 1)
 
-      @table_geocoder.stubs(:ensure_georef_status_colummn_valid)
+      allow(@table_geocoder).to receive(:ensure_georef_status_colummn_valid)
       mocked_input = Enumerator.new do |enum|
         enum.yield [{ cartodb_id: 1, searchtext: 'dummy text' }]
       end
-      @table_geocoder.stubs(:data_input_blocks).returns(mocked_input)
+      allow(@table_geocoder).to receive(:data_input_blocks).and_return(mocked_input)
       response = Typhoeus::Response.new(code: 200, body: read_fixture_file('gme_output_error_with_message.json'))
-      Typhoeus.stub('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
-      @table_geocoder.expects(:update_table).once
+      Typhoeus.double('https://maps.googleapis.com/maps/api/geocode/json', method: :get).and_return(response)
+      expect(@table_geocoder).to receive(:update_table).once
       # CartoDB.expects(:notify_error).once
 
       @table_geocoder.run

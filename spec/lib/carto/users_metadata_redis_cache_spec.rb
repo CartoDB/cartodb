@@ -20,7 +20,7 @@ describe Carto::UserDbSizeCache do
 
   describe '#update_if_old' do
     it 'sets db_size_in_bytes for users that have not been updated in 2 days' do
-      umrc.expects(:set_db_size_in_bytes).with(user_mock).once
+      expect(umrc).to receive(:set_db_size_in_bytes).with(user_mock).once
       umrc.update_if_old(user_mock)
 
       umrc.db_size_in_bytes(user_mock).should eq 0
@@ -28,7 +28,7 @@ describe Carto::UserDbSizeCache do
 
     it 'does not set db_size_in_bytes for users that have been updated in an hour' do
       $users_metadata.setex(redis_key, 2.days - 1.hour, 456)
-      umrc.expects(:set_db_size_in_bytes).never
+      expect(umrc).to receive(:set_db_size_in_bytes).never
 
       umrc.update_if_old(user_mock)
     end

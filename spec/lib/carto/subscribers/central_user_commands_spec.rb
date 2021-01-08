@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Carto::Subscribers::CentralUserCommands do
-  let(:notifications_topic) { mock }
+  let(:notifications_topic) { double }
   let(:logger) { Carto::Common::Logger.new(nil) }
   let(:central_user_commands) do
     described_class.new(notifications_topic: notifications_topic,
@@ -46,7 +46,7 @@ describe Carto::Subscribers::CentralUserCommands do
         password: 'supersecret',
         account_type: account_type.account_type
       }.with_indifferent_access
-      notifications_topic.stubs(:publish)
+      allow(notifications_topic).to receive(:publish)
       central_user_commands.create_user(user_params)
       expect(Carto::User.exists?(username: 'testuser')).to eq true
     end
@@ -57,7 +57,7 @@ describe Carto::Subscribers::CentralUserCommands do
 
     it 'deletes the inteded user' do
       user_params = { id: user.id }.with_indifferent_access
-      notifications_topic.expects(:publish).once.with(
+      expect(notifications_topic).to receive(:publish).once.with(
         :user_deleted,
         { username: user.username }
       )

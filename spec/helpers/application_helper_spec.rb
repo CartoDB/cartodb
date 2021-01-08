@@ -3,19 +3,19 @@ require 'spec_helper_min'
 describe ApplicationHelper do
   describe '#app_assets_base_url' do
     before(:each) do
-      CartoDB.stubs(:protocol).returns('http')
-      CartoDB.stubs(:http_port).returns(nil)
+      allow(CartoDB).to receive(:protocol).and_return('http')
+      allow(CartoDB).to receive(:http_port).and_return(nil)
     end
 
     describe 'with asset_host (SaaS)' do
       it 'returns asset_host' do
-        Cartodb.stubs(:get_config).with(:app_assets, 'asset_host').returns('https://carto.global.ssl.fastly.net/cartodbui')
+        allow(Cartodb).to receive(:get_config).with(:app_assets, 'asset_host').and_return('https://carto.global.ssl.fastly.net/cartodbui')
 
         ApplicationHelper.app_assets_base_url.should eq 'https://carto.global.ssl.fastly.net/cartodbui/assets'
       end
 
       it 'returns asset_host and adds the protocol if needed' do
-        Cartodb.stubs(:get_config).with(:app_assets, 'asset_host').returns('//carto.global.ssl.fastly.net/cartodbui')
+        allow(Cartodb).to receive(:get_config).with(:app_assets, 'asset_host').and_return('//carto.global.ssl.fastly.net/cartodbui')
 
         ApplicationHelper.app_assets_base_url.should eq 'http://carto.global.ssl.fastly.net/cartodbui/assets'
       end
@@ -23,24 +23,24 @@ describe ApplicationHelper do
 
     describe 'without asset_host' do
       before(:each) do
-        Cartodb.stubs(:get_config).with(:app_assets, 'asset_host').returns('')
-        request = mock
-        request.stubs(:params).returns(user_domain: 'pepe')
-        request.stubs(:host).returns('org.localhost.lan')
+        allow(Cartodb).to receive(:get_config).with(:app_assets, 'asset_host').and_return('')
+        request = double
+        allow(request).to receive(:params).and_return(user_domain: 'pepe')
+        allow(request).to receive(:host).and_return('org.localhost.lan')
 
-        ApplicationHelper.stubs(:request).returns(request)
+        allow(ApplicationHelper).to receive(:request).and_return(request)
       end
 
       it 'with subdomainful urls (OSS/dev) returns a subdomain' do
-        CartoDB.stubs(:subdomainless_urls?).returns(false)
-        CartoDB.stubs(:session_domain).returns('.localhost.lan')
+        allow(CartoDB).to receive(:subdomainless_urls?).and_return(false)
+        allow(CartoDB).to receive(:session_domain).and_return('.localhost.lan')
 
         ApplicationHelper.app_assets_base_url.should eq 'http://org.localhost.lan/assets'
       end
 
       it 'with subdomainless urls (onpremise) returns the domain' do
-        CartoDB.stubs(:subdomainless_urls?).returns(true)
-        CartoDB.stubs(:session_domain).returns('localhost.lan')
+        allow(CartoDB).to receive(:subdomainless_urls?).and_return(true)
+        allow(CartoDB).to receive(:session_domain).and_return('localhost.lan')
 
         ApplicationHelper.app_assets_base_url.should eq 'http://localhost.lan/assets'
       end

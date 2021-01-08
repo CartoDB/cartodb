@@ -85,12 +85,12 @@ describe Carto::UserTableIndexService do
       bypass_named_maps
       Carto::Widget.all.map(&:destroy)
       @table1.reload
-      Carto::UserTableIndexService.any_instance.stubs(:indexable_column?).returns(true)
+      allow_any_instance_of(Carto::UserTableIndexService).to receive(:indexable_column?).and_return(true)
     end
 
     it 'creates indices for all widgets' do
-      @table1.service.stubs(:pg_indexes).returns([])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      allow(@table1.service).to receive(:pg_indexes).and_return([])
+      allow(@table1.service).to receive(:estimated_row_count).and_return(100000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
 
@@ -100,8 +100,8 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not create indices for small tables' do
-      @table1.service.stubs(:pg_indexes).returns([])
-      @table1.service.stubs(:estimated_row_count).returns(100)
+      allow(@table1.service).to receive(:pg_indexes).and_return([])
+      allow(@table1.service).to receive(:estimated_row_count).and_return(100)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
 
@@ -111,8 +111,8 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not create indices for formula widgets' do
-      @table1.service.stubs(:pg_indexes).returns([])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      allow(@table1.service).to receive(:pg_indexes).and_return([])
+      allow(@table1.service).to receive(:estimated_row_count).and_return(100000)
       create_widget(@analysis1, column: 'number', type: 'formula')
 
       stub_create_index('number').never
@@ -120,8 +120,8 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not create indices for indexed columns' do
-      @table1.service.stubs(:pg_indexes).returns([{ name: 'wadus', column: 'number', valid: true }])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      allow(@table1.service).to receive(:pg_indexes).and_return([{ name: 'wadus', column: 'number', valid: true }])
+      allow(@table1.service).to receive(:estimated_row_count).and_return(100000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
 
@@ -131,9 +131,9 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not create indices for indexed columns (in multi-column indexes)' do
-      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number', valid: true },
+      allow(@table1.service).to receive(:pg_indexes).and_return([{ name: 'idx', column: 'number', valid: true },
                                                   { name: 'idx', column: 'date', valid: true }])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      allow(@table1.service).to receive(:estimated_row_count).and_return(100000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
 
@@ -143,16 +143,16 @@ describe Carto::UserTableIndexService do
     end
 
     it 'drops unneeded indices' do
-      @table1.service.stubs(:pg_indexes).returns([automatic_index_record(@table1, 'number')])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      allow(@table1.service).to receive(:pg_indexes).and_return([automatic_index_record(@table1, 'number')])
+      allow(@table1.service).to receive(:estimated_row_count).and_return(100000)
 
       stub_drop_index('number').once
       Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
 
     it 'drops indices for small tables' do
-      @table1.service.stubs(:pg_indexes).returns([automatic_index_record(@table1, 'number')])
-      @table1.service.stubs(:estimated_row_count).returns(100)
+      allow(@table1.service).to receive(:pg_indexes).and_return([automatic_index_record(@table1, 'number')])
+      allow(@table1.service).to receive(:estimated_row_count).and_return(100)
       create_widget(@analysis1, column: 'number')
 
       stub_drop_index('number').once
@@ -160,18 +160,18 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not drop manual indices' do
-      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number', valid: true },
+      allow(@table1.service).to receive(:pg_indexes).and_return([{ name: 'idx', column: 'number', valid: true },
                                                   { name: 'idx', column: 'date', valid: false }])
-      @table1.service.stubs(:estimated_row_count).returns(100)
+      allow(@table1.service).to receive(:estimated_row_count).and_return(100)
       create_widget(@analysis1, column: 'number')
 
-      @table1.service.stubs(:drop_index).never
+      allow(@table1.service).to receive(:drop_index).never
       Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
 
     it 'drops and recreates invalid auto indices' do
-      @table1.service.stubs(:pg_indexes).returns([automatic_index_record(@table1, 'number', valid: false)])
-      @table1.service.stubs(:estimated_row_count).returns(100000)
+      allow(@table1.service).to receive(:pg_indexes).and_return([automatic_index_record(@table1, 'number', valid: false)])
+      allow(@table1.service).to receive(:estimated_row_count).and_return(100000)
       create_widget(@analysis1, column: 'number')
 
       stub_drop_index('number').once
@@ -186,91 +186,79 @@ describe Carto::UserTableIndexService do
     end
 
     it 'returns true for a random numbers column' do
-      @service.stubs(:pg_stats_by_column).returns(
-        'col' => {
+      allow(@service).to receive(:pg_stats_by_column).and_return('col' => {
           null_frac: 0,
           n_distinct: -1,
           most_common_vals: [],
           most_common_freqs: [],
           histogram_bounds: [4, 10, 20, 50, 100],
           correlation: 0.4
-        }
-      )
+        })
       @service.send(:indexable_column?, 'col').should be_true
     end
 
     it 'returns true for a column with several categories' do
-      @service.stubs(:pg_stats_by_column).returns(
-        'col' => {
+      allow(@service).to receive(:pg_stats_by_column).and_return('col' => {
           null_frac: 0,
           n_distinct: 20,
           most_common_vals: ['a', 'b', 'c', 'd', 'e', 'f'],
           most_common_freqs: [0.2, 0.1, 0.1, 0.05, 0.05, 0.02],
           histogram_bounds: ['a', 'c', 'e', 'f'],
           correlation: 0.4
-        }
-      )
+        })
       @service.send(:indexable_column?, 'col').should be_true
     end
 
     it 'returns true for a column with several and no histogram' do
-      @service.stubs(:pg_stats_by_column).returns(
-        'col' => {
+      allow(@service).to receive(:pg_stats_by_column).and_return('col' => {
           null_frac: 0,
           n_distinct: 20,
           most_common_vals: nil,
           most_common_freqs: nil,
           histogram_bounds: nil,
           correlation: 0.4
-        }
-      )
+        })
       @service.send(:indexable_column?, 'col').should be_true
     end
 
     it 'returns false for a balance boolean column' do
-      @service.stubs(:pg_stats_by_column).returns(
-        'col' => {
+      allow(@service).to receive(:pg_stats_by_column).and_return('col' => {
           null_frac: 0,
           n_distinct: 2,
           most_common_vals: [true, false],
           most_common_freqs: [0.51, 0.49],
           histogram_bounds: nil,
           correlation: 0.502
-        }
-      )
+        })
       @service.send(:indexable_column?, 'col').should be_false
     end
 
     it 'returns true for an unbalance boolean column' do
-      @service.stubs(:pg_stats_by_column).returns(
-        'col' => {
+      allow(@service).to receive(:pg_stats_by_column).and_return('col' => {
           null_frac: 0,
           n_distinct: 2,
           most_common_vals: [true, false],
           most_common_freqs: [0.89, 0.11],
           histogram_bounds: nil,
           correlation: 0.602
-        }
-      )
+        })
       @service.send(:indexable_column?, 'col').should be_true
     end
 
     it 'returns true for a boolean column used as cluster (table sorted by it)' do
-      @service.stubs(:pg_stats_by_column).returns(
-        'col' => {
+      allow(@service).to receive(:pg_stats_by_column).and_return('col' => {
           null_frac: 0,
           n_distinct: 2,
           most_common_vals: [true, false],
           most_common_freqs: [0.51, 0.49],
           histogram_bounds: nil,
           correlation: -1
-        }
-      )
+        })
       @service.send(:indexable_column?, 'col').should be_true
     end
 
     it 'returns false if no stats can be gathered' do
-      @service.stubs(:pg_stats_by_column).returns({})
+      allow(@service).to receive(:pg_stats_by_column).and_return({})
       @service.send(:indexable_column?, 'col').should be_false
     end
   end
@@ -286,11 +274,11 @@ describe Carto::UserTableIndexService do
   end
 
   def stub_create_index(column)
-    @table1.service.stubs(:create_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX, concurrent: true)
+    allow(@table1.service).to receive(:create_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX, concurrent: true)
   end
 
   def stub_drop_index(column)
-    @table1.service.stubs(:drop_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX, concurrent: true)
+    allow(@table1.service).to receive(:drop_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX, concurrent: true)
   end
 
   def create_widget(analysis, child: false, column: 'col', type: 'histogram')

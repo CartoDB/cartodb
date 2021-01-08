@@ -37,7 +37,7 @@ describe Importer2::Georeferencer do
   end
 
   before(:each) do
-    CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+    allow(CartoDB::Stats::Aggregator).to receive(:read_config).and_return({})
   end
 
   describe '#initialize' do

@@ -258,7 +258,7 @@ module Carto
         @app_user = OauthAppUser.create!(user: @carto_user, oauth_app: @app)
         @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
         @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
-        Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
+        allow_any_instance_of(Carto::ApiKey).to receive(:db_role).and_return(@db_role)
       end
 
       after(:all) do
@@ -269,11 +269,10 @@ module Carto
       end
 
       it 'saves ownership_role_name in cdb_conf_info if schemas granted' do
-        Carto::ApiKey.any_instance.expects(:cdb_conf_info)
-                     .returns(username: @app_user.user.username,
+        expect_any_instance_of(Carto::ApiKey).to receive(:cdb_conf_info).and_return(username: @app_user.user.username,
                               permissions: [],
                               ownership_role_name: @app_user.ownership_role_name)
-                     .at_least_once
+                     .at_least(:once)
         OauthAccessToken.create!(oauth_app_user: @app_user,
                                  scopes: [
                                    "schemas:c"
@@ -281,11 +280,10 @@ module Carto
       end
 
       it 'does not save ownership_role_name in cdb_conf_info if schemas not granted' do
-        Carto::ApiKey.any_instance.expects(:cdb_conf_info)
-                     .returns(username: @app_user.user.username,
+        expect_any_instance_of(Carto::ApiKey).to receive(:cdb_conf_info).and_return(username: @app_user.user.username,
                               permissions: [],
                               ownership_role_name: '')
-                     .at_least_once
+                     .at_least(:once)
         OauthAccessToken.create!(oauth_app_user: @app_user,
                                  scopes: [
                                    "datasets:r:#{@user_table.name}"

@@ -5,7 +5,7 @@ require_dependency 'carto/bounding_box_utils'
 
 describe Map do
   before(:each) do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
     bypass_named_maps
 
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
@@ -20,25 +20,25 @@ describe Map do
   describe 'viewer role support' do
     describe '#save' do
       it 'should fail for viewer users' do
-        @user.stubs(:viewer).returns(true)
+        allow(@user).to receive(:viewer).and_return(true)
         new_map = Map.new(user: @user, table_id: @table.id)
 
         new_map.save.should eq nil
         new_map.errors[:user].should eq ["Viewer users can't save maps"]
 
-        @user.stubs(:viewer).returns(false)
+        allow(@user).to receive(:viewer).and_return(false)
       end
     end
 
     describe '#update' do
       it 'should fail for existing maps and viewer users' do
         new_map = Map.create(user_id: @user.id, table_id: @table.id)
-        new_map.user.stubs(:viewer).returns(true)
+        allow(new_map.user).to receive(:viewer).and_return(true)
 
         new_map.save.should eq nil
         new_map.errors[:user].should eq ["Viewer users can't save maps"]
 
-        new_map.user.stubs(:viewer).returns(false)
+        allow(new_map.user).to receive(:viewer).and_return(false)
         new_map.destroy
       end
     end
@@ -152,11 +152,11 @@ describe Map do
     describe '#destroy' do
       it 'should fail for existing maps and viewer users' do
         new_map = Map.create(user_id: @user.id, table_id: @table.id)
-        new_map.user.stubs(:viewer).returns(true)
+        allow(new_map.user).to receive(:viewer).and_return(true)
 
         expect { new_map.destroy }.to raise_error(CartoDB::InvalidMember, /Viewer users can't destroy maps/)
 
-        new_map.user.stubs(:viewer).returns(false)
+        allow(new_map.user).to receive(:viewer).and_return(false)
         new_map.destroy
       end
     end
@@ -218,7 +218,7 @@ describe Map do
       @table.save
 
       # Upon save of the original map, will sanitize all visualizations pointing to old one, saving with new one
-      CartoDB::Visualization::Member.any_instance.expects(:store_from_map).at_least_once
+      expect_any_instance_of(CartoDB::Visualization::Member).to receive(:store_from_map).at_least(:once)
       map.save
 
       map.destroy
@@ -267,7 +267,7 @@ describe Map do
     it 'invalidates varnish cache' do
       map = ::Map[@table.map.id]
       # One per save, one per destroy
-      map.expects(:invalidate_vizjson_varnish_cache).twice
+      expect(map).to receive(:invalidate_vizjson_varnish_cache).twice
       map.save
       map.destroy
     end
@@ -314,29 +314,24 @@ describe Map do
       table.save
 
       # Out of usual bounds by being bigger than "full world bounding box"
-      table.map.stubs(:get_map_bounds)
-               .returns({ minx: -379, maxx: 379, miny: -285 , maxy: 285.0511})
+      allow(table.map).to receive(:get_map_bounds).and_return({ minx: -379, maxx: 379, miny: -285 , maxy: 285.0511})
       table.map.set_default_boundaries!
       table.map.zoom.should == 1
 
-      table.map.stubs(:get_map_bounds)
-               .returns({ minx: -179, maxx: 179, miny: -85 , maxy: 85.0511})
+      allow(table.map).to receive(:get_map_bounds).and_return({ minx: -179, maxx: 179, miny: -85 , maxy: 85.0511})
       table.map.set_default_boundaries!
       table.map.zoom.should == 1
 
-      table.map.stubs(:get_map_bounds)
-               .returns({ minx: 1, maxx: 2, miny: 1 , maxy: 2})
+      allow(table.map).to receive(:get_map_bounds).and_return({ minx: 1, maxx: 2, miny: 1 , maxy: 2})
       table.map.set_default_boundaries!
       table.map.zoom.should == 8
 
-      table.map.stubs(:get_map_bounds)
-               .returns({ minx: 0.025, maxx: 0.05, miny: 0.025 , maxy: 0.05})
+      allow(table.map).to receive(:get_map_bounds).and_return({ minx: 0.025, maxx: 0.05, miny: 0.025 , maxy: 0.05})
       table.map.set_default_boundaries!
       table.map.zoom.should == 14
 
       # Smaller than our max zoom level
-      table.map.stubs(:get_map_bounds)
-               .returns({ minx: 0.000001, maxx: 0.000002, miny: 0.000001 , maxy: 0.000002})
+      allow(table.map).to receive(:get_map_bounds).and_return({ minx: 0.000001, maxx: 0.000002, miny: 0.000001 , maxy: 0.000002})
       table.map.set_default_boundaries!
       table.map.zoom.should == 18
 
@@ -355,15 +350,15 @@ describe Map do
     end
 
     it 'invalidates vizjson cache' do
-      CartoDB::Varnish.any_instance.stubs(:purge).with(@map.visualization.varnish_vizjson_key).once
+      allow_any_instance_of(CartoDB::Varnish).to receive(:purge).with(@map.visualization.varnish_vizjson_key).once
       @map.notify_map_change
-      CartoDB::Varnish.any_instance.stubs(:purge) # Needed to avoid counting the call from destroy
+      allow_any_instance_of(CartoDB::Varnish).to receive(:purge) # Needed to avoid counting the call from destroy
     end
 
     it 'updates_named_maps' do
-      named_maps_api_mock = mock
-      Carto::NamedMaps::Api.stubs(:new).with { |vis| vis.id == @map.visualization.id }.returns(named_maps_api_mock)
-      named_maps_api_mock.stubs(:show).returns(true)
+      named_maps_api_mock = double
+      allow(Carto::NamedMaps::Api).to receive(:new).with { |vis| vis.id == @map.visualization.id }.returns(named_maps_api_mock)
+      allow(named_maps_api_mock).to receive(:show).and_return(true)
       named_maps_api_mock.stubs(:update).once
       @map.notify_map_change
       Carto::NamedMaps::Api.unstub(:new)
@@ -463,19 +458,19 @@ describe Map do
 
     # When the table data is newer
     time = Time.now + 2.minutes
-    Table.any_instance.stubs(:data_last_modified).returns(time)
+    allow_any_instance_of(Table).to receive(:data_last_modified).and_return(time)
     map.viz_updated_at.to_s.should == time.to_s
 
     # When the data layer is newer
     time = Time.now + 3.minutes
-    map.stubs(:data_layers).returns([Layer.new(updated_at: time)])
+    allow(map).to receive(:data_layers).and_return([Layer.new(updated_at: time)])
     map.viz_updated_at.to_s.should == time.to_s
   end
 
   describe '#before_destroy' do
     it 'invalidates varnish cache' do
       map = ::Map[@table.map.id]
-      map.expects(:invalidate_vizjson_varnish_cache)
+      expect(map).to receive(:invalidate_vizjson_varnish_cache)
       map.destroy
     end
   end

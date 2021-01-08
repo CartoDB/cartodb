@@ -19,10 +19,10 @@ describe CartoDB::HiresGeocoder do
   before(:each) do
     @working_dir = Dir.mktmpdir
     @input_csv_file = path_to '../../table-geocoder/spec/fixtures/nokia_input.csv'
-    @log = mock
-    @log.stubs(:append)
-    @log.stubs(:append_and_store)
-    CartoDB::HiresGeocoder.any_instance.stubs(:config).returns({
+    @log = double
+    allow(@log).to receive(:append)
+    allow(@log).to receive(:append_and_store)
+    allow_any_instance_of(CartoDB::HiresGeocoder).to receive(:config).and_return({
         'non_batch_base_url' => 'batch.example.com',
         'app_id' => '',
         'token' => '',
@@ -47,7 +47,7 @@ describe CartoDB::HiresGeocoder do
 
   describe '#process_row' do
     it 'increments the number of processed rows by one when called' do
-      output_csv_mock = mock
+      output_csv_mock = double
       output_csv_mock.expects(:add_row).once
       input_row = {'searchtext' => 'olakase'}
       @geocoder.expects(:geocode_text).once.returns(MOCK_COORDINATES)
@@ -57,15 +57,15 @@ describe CartoDB::HiresGeocoder do
     end
 
     it 'adds a row with the expected format when success' do
-      output_csv_mock = mock
-      output_csv_mock.expects(:add_row).once.with ['olakase', 1, 1, MOCK_COORDINATES[0], MOCK_COORDINATES[1]]
+      output_csv_mock = double
+      expect(output_csv_mock).to receive(:add_row).once.with ['olakase', 1, 1, MOCK_COORDINATES[0], MOCK_COORDINATES[1]]
       input_row = {'searchtext' => 'olakase'}
       @geocoder.expects(:geocode_text).once.returns(MOCK_COORDINATES)
       @geocoder.send(:process_row, input_row, output_csv_mock)
     end
 
     it 'does not add any row when it when geolocation fails' do
-      output_csv_mock = mock
+      output_csv_mock = double
       output_csv_mock.expects(:add_row).never
       input_row = {'searchtext' => 'olakase'}
       @geocoder.expects(:geocode_text).once.returns([nil, nil])
@@ -91,15 +91,15 @@ describe CartoDB::HiresGeocoder do
         }
       }.to_json
       mocked_response  = Typhoeus::Response.new(code: 200, body: json_response_body)
-      Typhoeus.stub(//, method: :get).and_return(mocked_response)
+      Typhoeus.double(//, method: :get).and_return(mocked_response)
 
       @geocoder.send(:geocode_text, 'Dummy address').should == MOCK_COORDINATES
     end
 
     it "returns nil coordinates if the http request doesn't succeed" do
       mocked_response  = Typhoeus::Response.new(code: 500)
-      Typhoeus.stub(//, method: :get).and_return(mocked_response)
-      CartoDB.expects(:notify_debug).with('Non-batched geocoder failed request', mocked_response).once
+      Typhoeus.double(//, method: :get).and_return(mocked_response)
+      expect(CartoDB).to receive(:notify_debug).with('Non-batched geocoder failed request', mocked_response).once
 
       @geocoder.send(:geocode_text, 'Dummy address').should == [nil, nil]
     end
@@ -110,8 +110,8 @@ describe CartoDB::HiresGeocoder do
         unexpected: 'this response body has unexpected format for whatever reason'
       }.to_json
       mocked_response  = Typhoeus::Response.new(code: 200, body: json_response_body)
-      Typhoeus.stub(//, method: :get).and_return(mocked_response)
-      CartoDB.expects(:notify_debug).with("Non-batched geocoder couldn't parse response", anything()).once
+      Typhoeus.double(//, method: :get).and_return(mocked_response)
+      expect(CartoDB).to receive(:notify_debug).with("Non-batched geocoder couldn't parse response", anything()).once
 
       @geocoder.send(:geocode_text, input_text).should == [nil, nil]
     end
@@ -120,7 +120,7 @@ describe CartoDB::HiresGeocoder do
       input_text = 'Dummy address'
       json_response_body = '{"response":{"metaInfo":{"timestamp":"2015-07-14T15:33:35.023+0000"},"view":[]}}'
       mocked_response  = Typhoeus::Response.new(code: 200, body: json_response_body)
-      Typhoeus.stub(//, method: :get).and_return(mocked_response)
+      Typhoeus.double(//, method: :get).and_return(mocked_response)
 
       @geocoder.send(:geocode_text, input_text).should == [nil, nil]
     end

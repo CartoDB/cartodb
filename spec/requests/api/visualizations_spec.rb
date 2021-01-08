@@ -12,7 +12,7 @@ describe Carto::Api::VisualizationsController do
   include DataRepository
 
   before(:all) do
-    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+    allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
     @user = create_user(
       private_tables_enabled: true,
       private_maps_enabled: true
@@ -21,7 +21,7 @@ describe Carto::Api::VisualizationsController do
   end
 
   before(:each) do
-    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+    allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
     bypass_named_maps_requests
 
     begin

@@ -25,7 +25,7 @@ describe Carto::UserService do
       }
       expected_params = [carto_user.database_host, carto_user.database_name, default_opts]
 
-      Carto::Db::Connection.expects(:connect).with(*expected_params)
+      expect(Carto::Db::Connection).to receive(:connect).with(*expected_params)
 
       carto_user.in_database
     end

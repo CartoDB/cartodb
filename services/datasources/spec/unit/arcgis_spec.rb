@@ -64,7 +64,7 @@ describe Url::ArcGIS do
       sub_id = '0'
 
       # 'general http error (non-200)'
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do
+      Typhoeus.double(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do
         Typhoeus::Response.new(
           code: 400,
           headers: { 'Content-Type' => 'application/json' },
@@ -77,7 +77,7 @@ describe Url::ArcGIS do
       }.to raise_error DataDownloadError
 
       # Stub layers request (so now works)
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
+      Typhoeus.double(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_layers.json"))
         Typhoeus::Response.new(
           code: 200,
@@ -97,7 +97,7 @@ describe Url::ArcGIS do
       layers_data.should eq layers_data_expected
 
       # 'fields' part
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
+      Typhoeus.double(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
 
         body = ::JSON.parse(body)
@@ -114,7 +114,7 @@ describe Url::ArcGIS do
       }.to raise_error ResponseError
 
       # Another required field
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
+      Typhoeus.double(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
 
         body = ::JSON.parse(body)
@@ -131,7 +131,7 @@ describe Url::ArcGIS do
       }.to raise_error ResponseError
 
       # Invalid ArcGIS version
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
+      Typhoeus.double(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
 
         body = ::JSON.parse(body)
@@ -157,7 +157,7 @@ describe Url::ArcGIS do
       arcgis = Url::ArcGIS.get_new(@user)
 
       # Stub layers request (so now works)
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
+      Typhoeus.double(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_layers.json"))
         Typhoeus::Response.new(
           code: 200,
@@ -166,7 +166,7 @@ describe Url::ArcGIS do
         )
       end
 
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
+      Typhoeus.double(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0/) do |request|
         accept = (request.options[:headers]||{})['Accept'] || 'application/json'
         format = accept.split(',').first
 
@@ -228,7 +228,7 @@ describe Url::ArcGIS do
       id = arcgis.send(:sanitize_id, @url)
 
       # 'general http error (non-200)'
-      Typhoeus.stub(/\/arcgis\/rest\//) do
+      Typhoeus.double(/\/arcgis\/rest\//) do
         Typhoeus::Response.new(
           code: 400,
           headers: { 'Content-Type' => 'application/json' },
@@ -242,7 +242,7 @@ describe Url::ArcGIS do
 
       # 'objectIds' not present
       Typhoeus::Expectation.clear
-      Typhoeus.stub(/\/arcgis\/rest\//) do
+      Typhoeus.double(/\/arcgis\/rest\//) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
 
         body = ::JSON.parse(body)
@@ -260,7 +260,7 @@ describe Url::ArcGIS do
 
       # 'objectIds' empty
       Typhoeus::Expectation.clear
-      Typhoeus.stub(/\/arcgis\/rest\//) do
+      Typhoeus.double(/\/arcgis\/rest\//) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
 
         body = ::JSON.parse(body)
@@ -283,7 +283,7 @@ describe Url::ArcGIS do
 
       id = arcgis.send(:sanitize_id, @url)
 
-      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+      Typhoeus.double(/\/arcgis\/rest\//) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list.json"))
         Typhoeus::Response.new(
           code: 200,
@@ -305,7 +305,7 @@ describe Url::ArcGIS do
 
       id = arcgis.send(:sanitize_id, @url)
 
-      Typhoeus.stub(/\/arcgis\/rest\//) do |request|
+      Typhoeus.double(/\/arcgis\/rest\//) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_unordered_ids_list.json"))
         Typhoeus::Response.new(
           code: 200,
@@ -339,7 +339,7 @@ describe Url::ArcGIS do
 
 
       # 'general http error (non-200)'
-      Typhoeus.stub(/\/arcgis\/rest\//) do
+      Typhoeus.double(/\/arcgis\/rest\//) do
         Typhoeus::Response.new(
           code: 400,
           headers: { 'Content-Type' => 'application/json' },
@@ -357,7 +357,7 @@ describe Url::ArcGIS do
 
       id = arcgis.send(:sanitize_id, @url)
 
-      Typhoeus.stub(/\/arcgis\/rest\//) do
+      Typhoeus.double(/\/arcgis\/rest\//) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))
         Typhoeus::Response.new(
           code: 200,
@@ -423,7 +423,7 @@ describe Url::ArcGIS do
       feature_names = []
 
       # Layers request
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
+      Typhoeus.double(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/layers/) do |request|
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_layers.json"))
         Typhoeus::Response.new(
           code: 200,
@@ -433,7 +433,7 @@ describe Url::ArcGIS do
       end
 
       # Metadata of a layer
-      Typhoeus.stub(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0\?f=json/) do
+      Typhoeus.double(/\/arcgis\/rest\/services\/MyFakeService\/featurename\/0\?f=json/) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_metadata_minimal.json"))
         Typhoeus::Response.new(
           code: 200,
@@ -443,7 +443,7 @@ describe Url::ArcGIS do
       end
 
       # IDs list of a layer
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
+      Typhoeus.double(/\/arcgis\/rest\/(.*)query\?where=/) do
         body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_ids_list_01.json"))
         Typhoeus::Response.new(
           code: 200,
@@ -452,7 +452,7 @@ describe Url::ArcGIS do
         )
       end
 
-      Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |response|
+      Typhoeus.double(/\/arcgis\/rest\/(.*)query$/) do |response|
         if response.options[:body][:objectIds].to_i == 1
           # First item fetch of a layer
           body = File.read(File.join(File.dirname(__FILE__), "../fixtures/arcgis_data_01.json"))

@@ -38,8 +38,8 @@ module Carto
         create(:carto_search_overlay, visualization: visualization)
 
         # Need to mock the nonexistant table because factories use Carto::* models
-        CartoDB::Visualization::Member.any_instance.stubs(:propagate_name_to).returns(true)
-        CartoDB::Visualization::Member.any_instance.stubs(:propagate_privacy_to).returns(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:propagate_name_to).and_return(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:propagate_privacy_to).and_return(true)
 
         [map, table, table_visualization, visualization.reload]
       end

@@ -8,7 +8,7 @@ module HttpAuthenticationHelper
   end
 
   def stub_http_header_authentication_configuration(field: 'email', autocreation: false, enabled: true)
-    Cartodb.stubs(:get_config)
+    allow(Cartodb).to receive(:get_config)
 
     config = {
       'header' => authenticated_header,
@@ -17,8 +17,7 @@ module HttpAuthenticationHelper
     }
 
     config.each do |f, v|
-      Cartodb.stubs(:get_config).with(:http_header_authentication, f).
-        returns(enabled ? v : nil)
+      allow(Cartodb).to receive(:get_config).with(:http_header_authentication, f).and_return(enabled ? v : nil)
     end
 
     config

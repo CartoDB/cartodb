@@ -53,7 +53,7 @@ describe CartoDB::Importer2::TableSampler do
       db = nil
       sample_size = 5
       sampler = CartoDB::Importer2::TableSampler.new db, 'table_name', 'ogc_fid', sample_size
-      sampler.expects(:sample_indices_add_method).once
+      expect(sampler).to receive(:sample_indices_add_method).once
       sampler.ids_count = 250
       sampler.sample_indices
     end
@@ -62,7 +62,7 @@ describe CartoDB::Importer2::TableSampler do
       db = nil
       sample_size = 300
       sampler = CartoDB::Importer2::TableSampler.new db, 'table_name', 'ogc_fid', sample_size
-      sampler.expects(:sample_indices_delete_method).once
+      expect(sampler).to receive(:sample_indices_delete_method).once
       sampler.ids_count = 400
       sampler.sample_indices
     end

@@ -114,6 +114,8 @@ group :test, :development do
   gem 'memory_profiler'
 end
 
+gem 'mocha_to_rspec', git: 'https://github.com/andyw8/mocha_to_rspec.git'
+
 group :development, :test do
   gem 'byebug'
   gem 'pry-byebug', '3.9.0'

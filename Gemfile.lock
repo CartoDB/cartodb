@@ -7,6 +7,15 @@ GIT
       oauth (>= 0.4.4)
 
 GIT
+  remote: https://github.com/andyw8/mocha_to_rspec.git
+  revision: 20c224b2d14bde3dca6a4d6a1b7ca6dbb8d3bfb3
+  specs:
+    mocha_to_rspec (0.1.0)
+      activesupport
+      rubocop
+      rubocop-rspec
+
+GIT
   remote: https://github.com/cartodb/cartodb-common.git
   revision: bc046f0516831af6811f9cfd5748f659d104f1ba
   tag: v0.5.1
@@ -560,6 +569,7 @@ DEPENDENCIES
   memory_profiler
   mime-types (= 3.1)
   mocha (= 1.1.0)
+  mocha_to_rspec!
   mock_redis
   net-ldap (= 0.16.0)
   net-telnet

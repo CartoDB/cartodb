@@ -72,7 +72,6 @@ FactoryGirl.define do
     end
 
     before(:create) do |user|
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       create_account_type_fg(user.account_type)
     end
   end

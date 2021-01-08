@@ -5,7 +5,7 @@ describe Carto::RateLimit do
   include CartoDB::Factories
 
   before :each do
-    User.any_instance.stubs(:save_rate_limits).returns(true)
+    allow_any_instance_of(User).to receive(:save_rate_limits).and_return(true)
     @user = FactoryGirl.create(:valid_user)
     @rate_limit = Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([0, 1, 2]),
                                            maps_static: Carto::RateLimitValues.new([3, 4, 5]),

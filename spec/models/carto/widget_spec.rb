@@ -116,7 +116,7 @@ describe Carto::Widget do
 
   context 'viewer users' do
     before(:all) do
-      Map.any_instance.stubs(:update_related_named_maps)
+      allow_any_instance_of(Map).to receive(:update_related_named_maps)
       @user = FactoryGirl.create(:carto_user)
       @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
       @visualization = FactoryGirl.create(:carto_visualization, map: @map, user: @user)

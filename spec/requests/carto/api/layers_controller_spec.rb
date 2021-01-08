@@ -543,7 +543,7 @@ describe Carto::Api::LayersController do
     include Warden::Test::Helpers
 
     before(:all) do
-      CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
+      allow_any_instance_of(CartoDB::Visualization::Member).to receive(:invalidate_cache).and_return(nil)
 
       @headers = { 'CONTENT_TYPE' => 'application/json' }
 
@@ -621,7 +621,7 @@ describe Carto::Api::LayersController do
     include_context 'users helper'
 
     it 'fetches layers from shared visualizations' do
-      CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
+      allow_any_instance_of(CartoDB::Visualization::Member).to receive(:invalidate_cache).and_return(nil)
       @headers = { 'CONTENT_TYPE' => 'application/json' }
 
       def factory(user, attributes = {})

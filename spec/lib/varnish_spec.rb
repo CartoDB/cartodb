@@ -23,7 +23,7 @@ describe "Varnish" do
     it "goes over HTTP when http_port is specified" do
       @mock_request = mock('Typhoeus::Request')
       @mock_request.stubs(:code).returns(200)
-      Typhoeus::Request.any_instance.stubs(:run).returns(@mock_request)
+      allow_any_instance_of(Typhoeus::Request).to receive(:run).and_return(@mock_request)
       CartoDB::Varnish.new.purge('/')
     end
   end

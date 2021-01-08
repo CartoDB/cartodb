@@ -8,7 +8,7 @@ describe OrganizationPresenter do
 
   describe '#data' do
     before do
-      CartoDB::ServiceUsageMetrics.any_instance.stubs(:get_date_range).returns(date_range)
+      allow_any_instance_of(CartoDB::ServiceUsageMetrics).to receive(:get_date_range).and_return(date_range)
     end
 
     it 'returns the default representation' do

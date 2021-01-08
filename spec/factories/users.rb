@@ -72,7 +72,6 @@ FactoryGirl.define do
     end
 
     before(:create) do |user|
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       create_account_type_fg(user.account_type)
     end
   end
@@ -98,13 +97,11 @@ FactoryGirl.define do
     end
 
     before(:create) do |carto_user|
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       create_account_type_fg(carto_user.account_type)
     end
 
     after(:create) do |carto_user|
       ::User.where(id: carto_user.id).first.after_create
-      CartoDB::UserModule::DBService.any_instance.unstub
     end
 
     trait :locked do

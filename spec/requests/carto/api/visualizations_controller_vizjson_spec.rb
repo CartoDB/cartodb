@@ -26,9 +26,9 @@ describe Carto::Api::VisualizationsController do
   end
 
   before(:all) do
-    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+    allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
 
-    Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+    allow_any_instance_of(Carto::NamedMaps::Api).to receive(get: nil, create: true, update: true)
 
     @user_1 = FactoryGirl.create(:valid_user)
     @carto_user1 = Carto::User.find(@user_1.id)
@@ -134,7 +134,7 @@ describe Carto::Api::VisualizationsController do
         it "duplicates someone else's map if has at least read permission to it" do
           new_name = @visualization.name + ' patatas'
 
-          Carto::Visualization.any_instance.stubs(:is_viewable_by_user?).returns(true)
+          allow_any_instance_of(Carto::Visualization).to receive(:is_viewable_by_user?).and_return(true)
 
           post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
                     source_visualization_id: @visualization.id,
@@ -292,7 +292,7 @@ describe Carto::Api::VisualizationsController do
 
             it 'resets the styles' do
               table1 = create_table(user_id: @org_user_1.id)
-              Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+              allow_any_instance_of(Table).to receive(:geometry_types).and_return(['ST_Point'])
               payload = {
                 tables: [table1.name]
               }
@@ -310,7 +310,7 @@ describe Carto::Api::VisualizationsController do
 
             it 'adds style properties' do
               table1 = create_table(user_id: @org_user_1.id)
-              Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+              allow_any_instance_of(Table).to receive(:geometry_types).and_return(['ST_Point'])
               payload = {
                 tables: [table1.name]
               }
@@ -630,8 +630,8 @@ describe Carto::Api::VisualizationsController do
 
       describe 'named maps' do
         before(:each) do
-          Carto::User.any_instance.stubs(:private_tables_enabled?).returns(true)
-          Carto::User.any_instance.stubs(:private_tables_enabled).returns(true)
+          allow_any_instance_of(Carto::User).to receive(:private_tables_enabled?).and_return(true)
+          allow_any_instance_of(Carto::User).to receive(:private_tables_enabled).and_return(true)
           @table.user.reload
           @table.privacy = UserTable::PRIVACY_PRIVATE
           @table.save!
@@ -723,8 +723,8 @@ describe Carto::Api::VisualizationsController do
 
       describe 'named maps' do
         before(:each) do
-          Carto::User.any_instance.stubs(:private_tables_enabled?).returns(true)
-          Carto::User.any_instance.stubs(:private_tables_enabled).returns(true)
+          allow_any_instance_of(Carto::User).to receive(:private_tables_enabled?).and_return(true)
+          allow_any_instance_of(Carto::User).to receive(:private_tables_enabled).and_return(true)
           @table.user.reload
           @table.privacy = UserTable::PRIVACY_PRIVATE
           @table.save
@@ -805,7 +805,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'returns datasource.template_name for visualizations with retrieve_named_map? true' do
-      Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(true)
+      allow_any_instance_of(Carto::Visualization).to receive(:retrieve_named_map?).and_return(true)
       get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
         response.status.should == 200
         vizjson3 = response.body
@@ -814,7 +814,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'returns nil datasource.template_name for visualizations with retrieve_named_map? false' do
-      Carto::Visualization.any_instance.stubs(:retrieve_named_map?).returns(false)
+      allow_any_instance_of(Carto::Visualization).to receive(:retrieve_named_map?).and_return(false)
       get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
         response.status.should == 200
         vizjson3 = response.body

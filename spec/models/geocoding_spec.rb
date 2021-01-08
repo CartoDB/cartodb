@@ -121,7 +121,7 @@ describe Geocoding do
       geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:run).returns true
       CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:process_results).returns true
-      CartoDB::InternalGeocoder::Geocoder.any_instance.stubs(:update_geocoding_status).returns(processed_rows: 10, state: 'completed')
+      allow_any_instance_of(CartoDB::InternalGeocoder::Geocoder).to receive(:update_geocoding_status).and_return(processed_rows: 10, state: 'completed')
 
       # metrics_payload is sent to the log in json
       Logger.any_instance.expects(:info).once.with { |str| is_metrics_payload?(str) }

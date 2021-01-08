@@ -76,7 +76,7 @@ module Carto
       end
 
       it 'accepts torque layers' do
-        Carto::Layer.any_instance.stubs(:kind)
+        allow_any_instance_of(Carto::Layer).to receive(:kind)
                     .returns('torque')
         legend = Legend.new(layer_id: @layer.id)
         legend.valid?

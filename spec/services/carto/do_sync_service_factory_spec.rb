@@ -344,7 +344,7 @@ describe Carto::DoSyncServiceFactory do
 
     it 'returns unsyncable for dataset too big' do
       max_bytes = 1000
-      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_dataset_id).and_return({})
       @service.stubs(:max_bytes).returns(max_bytes)
       bq_mock = mock
       table_mock = stub(
@@ -364,7 +364,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns unsyncable for dataset with too many rows' do
-      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -383,7 +383,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns unsyncable for dataset with too many columns' do
-      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -402,7 +402,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns unsyncable if user quota is exceeded' do
-    @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+    allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_dataset_id).and_return({})
      bq_mock = mock
      table_mock = stub(
        num_bytes: 1000,
@@ -421,7 +421,7 @@ describe Carto::DoSyncServiceFactory do
    end
 
     it 'reports all limits exceeded' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000000000000,
@@ -442,7 +442,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns unsynced for valid subscription' do
-      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+      allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -462,7 +462,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns synced for valid subscription imported' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_synced_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -490,7 +490,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns synced even if synchronization is stopped' do
-      @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+      allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_synced_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -520,7 +520,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns syncing for valid subscription being imported' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_syncing_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -537,7 +537,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'returns unsynced for valid subscription failed importing' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_sync_error_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_sync_error_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -575,7 +575,7 @@ describe Carto::DoSyncServiceFactory do
 
   describe '#remove_sync!' do
     it 'removes syncs' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_synced_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -597,7 +597,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'does nothing for unsynced subscription' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -632,7 +632,7 @@ describe Carto::DoSyncServiceFactory do
 
   describe '#create_sync!' do
     it 'creates a synchronization and enqueues a import job' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -673,7 +673,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'does nothing for synced subscriptions' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_synced_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_synced_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -696,7 +696,7 @@ describe Carto::DoSyncServiceFactory do
     end
 
     it 'does nothing for syncing subscriptions' do
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_syncing_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_syncing_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000,
@@ -739,7 +739,7 @@ describe Carto::DoSyncServiceFactory do
     it 'does nothing for subscriptions over limits' do
       # TODO: should raise exception?
 
-       @do_api_class.any_instance.stubs(:dataset).with(@subscribed_dataset_id).returns({})
+       allow_any_instance_of(@do_api_class).to receive(:dataset).with(@subscribed_dataset_id).and_return({})
       bq_mock = mock
       table_mock = stub(
         num_bytes: 1000000000000,

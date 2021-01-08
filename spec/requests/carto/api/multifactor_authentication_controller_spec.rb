@@ -6,12 +6,12 @@ describe Carto::Api::MultifactorAuthenticationController do
   include Warden::Test::Helpers
 
   before(:each) do
-    ::User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
-    ::User.any_instance.stubs(:create_in_central).returns(true)
-    ::User.any_instance.stubs(:update_in_central).returns(true)
-    ::User.any_instance.stubs(:delete_in_central).returns(true)
-    ::User.any_instance.stubs(:load_common_data).returns(true)
-    ::User.any_instance.stubs(:reload_avatar).returns(true)
+    allow_any_instance_of(::User).to receive(:validate_credentials_not_taken_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:delete_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:load_common_data).and_return(true)
+    allow_any_instance_of(::User).to receive(:reload_avatar).and_return(true)
   end
 
   describe 'MFA show' do

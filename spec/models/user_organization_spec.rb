@@ -8,8 +8,8 @@ describe UserOrganization do
     include_context 'visualization creation helpers'
 
     before(:each) do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
       @organization = Carto::Organization.create(quota_in_bytes: 1_234_567_890, name: 'wadus', seats: 5)
 
       @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
@@ -189,8 +189,8 @@ describe UserOrganization do
 
   # See #5477 Error assigning as owner a user with non-cartodbfied tables
   it 'can assign an owner user having non-cartodbfied tables' do
-    ::User.any_instance.stubs(:create_in_central).returns(true)
-    ::User.any_instance.stubs(:update_in_central).returns(true)
+    allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
     @organization = Carto::Organization.create(quota_in_bytes: 1_234_567_890, name: 'non-cartodbfied-org', seats: 5)
     @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
     @owner.in_database.run('create table no_cartodbfied_table (test integer)')
@@ -207,8 +207,8 @@ describe UserOrganization do
   end
 
   it 'keeps tables and metadata if table movement fails' do
-    ::User.any_instance.stubs(:create_in_central).returns(true)
-    ::User.any_instance.stubs(:update_in_central).returns(true)
+    allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
 
     # This is coupled to DBService#move_tables_to_schema implementation, but we need a way to simulate a failure
     Carto::UserTable.stubs(:find_by_user_id_and_name).raises(StandardError.new("Simulation of table movement failure"))
@@ -236,8 +236,8 @@ describe UserOrganization do
   end
 
   it 'keeps tables and metadata if rebuild_quota_trigger fails' do
-    ::User.any_instance.stubs(:create_in_central).returns(true)
-    ::User.any_instance.stubs(:update_in_central).returns(true)
+    allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
 
     @organization = Carto::Organization.create(quota_in_bytes: 1_234_567_890, name: 'org-that-will-fail-2', seats: 5)
     @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
@@ -265,8 +265,8 @@ describe UserOrganization do
   # Currently, an existing, active organization is the only cause
   # that might match #6202 sympthoms, but this is a guess.
   it 'keeps tables and metadata if organization is already active' do
-    ::User.any_instance.stubs(:create_in_central).returns(true)
-    ::User.any_instance.stubs(:update_in_central).returns(true)
+    allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+    allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
 
     @owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
     @organization = Carto::Organization.create(
@@ -299,7 +299,7 @@ describe UserOrganization do
     it_behaves_like 'promoting a user to owner'
 
     before(:each) do
-      Carto::Db::UserSchemaMover.any_instance.stubs(:default_strategy).returns(Carto::Db::UserSchemaMover::STEPS_STRATEGY)
+      allow_any_instance_of(Carto::Db::UserSchemaMover).to receive(:default_strategy).and_return(Carto::Db::UserSchemaMover::STEPS_STRATEGY)
     end
   end
 end

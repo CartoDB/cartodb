@@ -16,7 +16,7 @@ describe "Assets API" do
   let(:params) { { :api_key => @user.api_key } }
 
   it 'creates a new asset' do
-    Asset.any_instance.stubs('use_s3?').returns(false)
+    allow_any_instance_of(Asset).to receive('use_s3?').and_return(false)
 
     file_path = Rails.root.join('spec', 'support', 'data', 'cartofante_blue.png')
     if File.exist?(file_path) && File.file?(file_path)
@@ -42,7 +42,7 @@ describe "Assets API" do
   end
 
   it 'creates a new asset with spaces in name' do
-    Asset.any_instance.stubs('use_s3?').returns(false)
+    allow_any_instance_of(Asset).to receive('use_s3?').and_return(false)
 
     file_path = Rails.root.join('spec', 'support', 'data', 'cartofante blue.png')
     if File.exist?(file_path) && File.file?(file_path)
@@ -95,7 +95,7 @@ describe "Assets API" do
   end
 
   it "deletes an asset" do
-    Asset.any_instance.stubs('use_s3?').returns(false)
+    allow_any_instance_of(Asset).to receive('use_s3?').and_return(false)
 
     FactoryGirl.create(:asset, user_id: @user.id)
     @user.reload

@@ -30,7 +30,7 @@ describe Carto::Admin::MobileAppsController do
   describe '#index' do
     it 'loads apps from Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:get_mobile_apps).returns(mobile_apps: [], monthly_users: { open: 10000, private: 0 }).once
+      allow_any_instance_of(Cartodb::Central).to receive(:get_mobile_apps).and_return(mobile_apps: [], monthly_users: { open: 10000, private: 0 })
       login(@user)
       get mobile_apps_path
       response.status.should eq 200
@@ -52,7 +52,7 @@ describe Carto::Admin::MobileAppsController do
   describe '#show' do
     it 'loads app from Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:get_mobile_app).returns(id: TEST_UUID, monthly_users: 0, app_type: 'open', platform: 'android').once
+      allow_any_instance_of(Cartodb::Central).to receive(:get_mobile_app).and_return(id: TEST_UUID, monthly_users: 0, app_type: 'open', platform: 'android')
       login(@user)
       get mobile_app_path(id: TEST_UUID)
       response.status.should eq 200
@@ -76,7 +76,7 @@ describe Carto::Admin::MobileAppsController do
 
     it 'creates app in Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:create_mobile_app).returns({}).once
+      allow_any_instance_of(Cartodb::Central).to receive(:create_mobile_app).and_return({})
       login(@user)
       post mobile_apps_path, mobile_app: create_app
       response.status.should eq 302
@@ -85,7 +85,7 @@ describe Carto::Admin::MobileAppsController do
 
     it 'validates app before sending to Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:create_mobile_app).returns({}).never
+      allow_any_instance_of(Cartodb::Central).to receive(:create_mobile_app).and_return({})
       login(@user)
       post mobile_apps_path, mobile_app: create_app.merge(name: '')
       response.status.should eq 200
@@ -110,8 +110,8 @@ describe Carto::Admin::MobileAppsController do
 
     it 'updates app in Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:get_mobile_app).returns(MOBILE_APP).once
-      Cartodb::Central.any_instance.stubs(:update_mobile_app).returns({}).once
+      allow_any_instance_of(Cartodb::Central).to receive(:get_mobile_app).and_return(MOBILE_APP)
+      allow_any_instance_of(Cartodb::Central).to receive(:update_mobile_app).and_return({})
       login(@user)
       put mobile_app_path(id: TEST_UUID), mobile_app: update_app
       response.status.should eq 302
@@ -120,8 +120,8 @@ describe Carto::Admin::MobileAppsController do
 
     it 'validates app before sending to Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:get_mobile_app).returns(id: TEST_UUID, monthly_users: 0, app_type: 'open', platform: 'android').once
-      Cartodb::Central.any_instance.stubs(:update_mobile_app).returns(mobile_app: {}).never
+      allow_any_instance_of(Cartodb::Central).to receive(:get_mobile_app).and_return(id: TEST_UUID, monthly_users: 0, app_type: 'open', platform: 'android')
+      allow_any_instance_of(Cartodb::Central).to receive(:update_mobile_app).and_return(mobile_app: {})
       login(@user)
       put mobile_app_path(id: TEST_UUID), mobile_app: update_app.merge(name: '')
       response.status.should eq 200
@@ -144,7 +144,7 @@ describe Carto::Admin::MobileAppsController do
   describe '#destroy' do
     it 'deletes app in Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:delete_mobile_app).returns({}).once
+      allow_any_instance_of(Cartodb::Central).to receive(:delete_mobile_app).and_return({})
       login(@user)
       delete mobile_app_path(id: TEST_UUID), password_confirmation: @carto_user.password
       response.status.should eq 302

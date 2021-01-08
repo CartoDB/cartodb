@@ -94,8 +94,8 @@ describe 'raster2pgsql acceptance tests' do
                        user: @user,
                        job: job
                      })
-      CartoDB::Importer2::Raster2Pgsql.any_instance.stubs(:exit_code).returns(256)
-      CartoDB::Importer2::Raster2Pgsql.any_instance.stubs(:command_output).returns('no space left on device')
+      allow_any_instance_of(CartoDB::Importer2::Raster2Pgsql).to receive(:exit_code).and_return(256)
+      allow_any_instance_of(CartoDB::Importer2::Raster2Pgsql).to receive(:command_output).and_return('no space left on device')
 
       runner.run
 

@@ -12,7 +12,7 @@ describe AccountTokensController do
     describe 'account validation' do
 
       before(:each) do
-        CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+        allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
         @user = FactoryGirl.create(:valid_user)
       end
 
@@ -43,7 +43,7 @@ describe AccountTokensController do
       describe 'valid user behaviour' do
 
         before(:each) do
-          CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+          allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
           @user = FactoryGirl.create(:valid_user)
         end
 

@@ -22,12 +22,12 @@ describe CartoDB::HiresGeocoder do
     @log = mock
     @log.stubs(:append)
     @log.stubs(:append_and_store)
-    CartoDB::HiresGeocoder.any_instance.stubs(:config).returns({
-        'non_batch_base_url' => 'batch.example.com',
-        'app_id' => '',
-        'token' => '',
-        'mailto' => ''
-      })
+    allow_any_instance_of(described_class).to receive(:config).and_return(
+      'non_batch_base_url' => 'batch.example.com',
+      'app_id' => '',
+      'token' => '',
+      'mailto' => ''
+    )
     @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}')
     @geocoder = CartoDB::HiresGeocoder.new(@input_csv_file, @working_dir, @log, @geocoding_model)
   end

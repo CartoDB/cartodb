@@ -6,7 +6,7 @@ describe SignupController do
   include UniqueNamesHelper
 
   before(:each) do
-    ::User.any_instance.stubs(:load_common_data).returns(true)
+    allow_any_instance_of(::User).to receive(:load_common_data).and_return(true)
   end
 
   describe 'signup page' do

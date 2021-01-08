@@ -34,21 +34,21 @@ describe Carto::VisualizationInvalidationService do
 
     describe 'named map invalidation' do
       it 'should create/update named map' do
-        Carto::NamedMaps::Api.any_instance.stubs(:show).returns(nil)
+        allow_any_instance_of(Carto::NamedMaps::Api).to receive(:show).and_return(nil)
         Carto::NamedMaps::Api.any_instance.expects(:create).once
         @service.invalidate
       end
 
       it 'should not create/update named map for maps without layers' do
         @map.layers.each(&:destroy)
-        Carto::NamedMaps::Api.any_instance.stubs(:show).returns(nil)
+        allow_any_instance_of(Carto::NamedMaps::Api).to receive(:show).and_return(nil)
         Carto::NamedMaps::Api.any_instance.expects(:create).never
         @service.invalidate
       end
 
       it 'should not create/update named map for remote visualizations' do
         @visualization.update_attribute(:type, 'remote')
-        Carto::NamedMaps::Api.any_instance.stubs(:show).returns(nil)
+        allow_any_instance_of(Carto::NamedMaps::Api).to receive(:show).and_return(nil)
         Carto::NamedMaps::Api.any_instance.expects(:create).never
         @service.invalidate
       end

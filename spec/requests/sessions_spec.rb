@@ -39,9 +39,9 @@ feature "Sessions" do
 
     scenario "Login in the application" do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
-      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+      allow_any_instance_of(SessionsController).to receive(:central_enabled?).and_return(false)
       visit login_path
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => 'blablapassword'
@@ -133,14 +133,14 @@ feature "Sessions" do
     shared_examples_for 'login with MFA setup' do
       scenario "Login in the application with MFA that needs setup" do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
         mfa = @user_mfa_setup.active_multifactor_authentication
         mfa.enabled = false
         mfa.save!
         @user_mfa_setup.reload
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        allow_any_instance_of(SessionsController).to receive(:central_enabled?).and_return(false)
         visit login_path
         fill_in 'email', with: @user_mfa_setup.email
         fill_in 'password', with: @user_mfa_setup.email.split('@').first
@@ -164,12 +164,12 @@ feature "Sessions" do
 
       scenario "MFA setup screen has skip link when mfa needs setup" do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
         mfa = @user_mfa_setup.active_multifactor_authentication
         mfa.enabled = false
         mfa.save!
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        allow_any_instance_of(SessionsController).to receive(:central_enabled?).and_return(false)
         visit login_path
         fill_in 'email', with: @user_mfa_setup.email
         fill_in 'password', with: @user_mfa_setup.email.split('@').first
@@ -184,9 +184,9 @@ feature "Sessions" do
     shared_examples_for 'login with MFA' do
       scenario "Login in the application with MFA that does not need setup" do
         # we use this to avoid generating the static assets in client_application
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        allow_any_instance_of(SessionsController).to receive(:central_enabled?).and_return(false)
         visit login_path
         fill_in 'email', with: @user_mfa.email
         fill_in 'password', with: @user_mfa.email.split('@').first
@@ -210,9 +210,9 @@ feature "Sessions" do
 
       scenario "Failed login in the application with MFA that does not need setup" do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        allow_any_instance_of(SessionsController).to receive(:central_enabled?).and_return(false)
         visit login_path
         fill_in 'email', with: @user_mfa.email
         fill_in 'password', with: @user_mfa.email.split('@').first
@@ -235,9 +235,9 @@ feature "Sessions" do
 
       scenario "MFA screen does not have skip link when mfa is active" do
         # we use this to avoid generating the static assets in CI
-        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        allow_any_instance_of(SessionsController).to receive(:central_enabled?).and_return(false)
         visit login_path
         fill_in 'email', with: @user_mfa.email
         fill_in 'password', with: @user_mfa.email.split('@').first
@@ -285,7 +285,7 @@ feature "Sessions" do
 
     it 'allows login to organization users' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
       visit org_login_url(@org_user_1.organization)
       send_login_form(@org_user_1)

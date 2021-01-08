@@ -337,7 +337,7 @@ describe Carto::Api::WidgetsController do
 
     it 'fails with 404 if widget does not belong to map' do
       payload = [serialize_widget(@widget).merge(title: 'wadus')]
-      Carto::Widget.any_instance.stubs(:belongs_to_map?).with(@map.id).returns(false)
+      allow_any_instance_of(Carto::Widget).to receive(:belongs_to_map?).with(@map.id).and_return(false)
 
       url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
                                                        map_id: @map.id,
@@ -351,7 +351,7 @@ describe Carto::Api::WidgetsController do
 
     it 'fails with 404 if not writable by user' do
       payload = [serialize_widget(@widget).merge(title: 'wadus')]
-      Carto::Widget.any_instance.stubs(:writable_by_user?).returns(false)
+      allow_any_instance_of(Carto::Widget).to receive(:writable_by_user?).and_return(false)
 
       url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
                                                        map_id: @map.id,

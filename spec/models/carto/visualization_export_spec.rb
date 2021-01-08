@@ -22,7 +22,7 @@ describe Carto::DataExporter do
       FileUtils.mkdir_p tmp_dir
 
       begin
-        Carto::Http::Request.any_instance.stubs(:run)
+        allow_any_instance_of(Carto::Http::Request).to receive(:run)
         file = File.new(Carto::DataExporter.new.export_table(user_table, tmp_dir, format))
         file.path.should match(/.#{format}$/)
         file.close

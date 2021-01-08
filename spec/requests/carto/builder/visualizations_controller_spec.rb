@@ -47,7 +47,7 @@ describe Carto::Builder::VisualizationsController do
     it 'redirects to editor for vizjson2 visualizations' do
       @visualization.version = 2
       @visualization.save
-      Carto::Visualization.any_instance.stubs(:uses_vizjson2?).returns(true)
+      allow_any_instance_of(Carto::Visualization).to receive(:uses_vizjson2?).and_return(true)
 
       get builder_visualization_url(id: @visualization.id)
 

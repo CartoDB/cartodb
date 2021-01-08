@@ -3,7 +3,7 @@ require_relative '../spec_helper_min'
 describe PasswordResetsController do
 
   before(:all) do
-    User.any_instance.stubs(:update_in_central).returns(true)
+    allow_any_instance_of(User).to receive(:update_in_central).and_return(true)
     @user = FactoryGirl.create(:user)
   end
 
@@ -100,7 +100,7 @@ describe PasswordResetsController do
       organization.stubs(:strong_passwords_enabled).returns(true)
       organization.stubs(:color)
       organization.stubs(:avatar_url)
-      Carto::User.any_instance.stubs(:organization).returns(organization)
+      allow_any_instance_of(Carto::User).to receive(:organization).and_return(organization)
 
       payload = { carto_user: { password: 'galinaa', password_confirmation: 'galinaa' } }
 

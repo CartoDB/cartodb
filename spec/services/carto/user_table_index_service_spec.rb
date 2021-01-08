@@ -85,7 +85,7 @@ describe Carto::UserTableIndexService do
       bypass_named_maps
       Carto::Widget.all.map(&:destroy)
       @table1.reload
-      Carto::UserTableIndexService.any_instance.stubs(:indexable_column?).returns(true)
+      allow_any_instance_of(Carto::UserTableIndexService).to receive(:indexable_column?).and_return(true)
     end
 
     it 'creates indices for all widgets' do

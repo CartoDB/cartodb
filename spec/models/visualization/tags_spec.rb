@@ -12,7 +12,7 @@ describe Visualization::Tags do
   include CartoDB::Factories
 
   before(:each) do
-    Varnish.any_instance.stubs(:send_command).returns(true)
+    allow_any_instance_of(Varnish).to receive(:send_command).and_return(true)
     @db = SequelRails.connection
     Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
@@ -23,7 +23,7 @@ describe Visualization::Tags do
     user_name = 'whatever'
     user_apikey = '123'
     @user_mock = create_mocked_user(user_id: user_id, user_name: user_name, user_apikey: user_apikey)
-    Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
+    allow_any_instance_of(Visualization::Relator).to receive(:user).and_return(@user_mock)
   end
 
   describe '#filters' do

@@ -33,8 +33,8 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   config.include FactoryGirl::Syntax::Methods
 
-  config.after(:each) do
-    Delorean.back_to_the_present
+  config.mock_with :rspec do |mocks|
+    mocks.syntax = [:expect, :should]
   end
 
   unless ENV['PARALLEL']
@@ -50,8 +50,11 @@ RSpec.configure do |config|
       close_pool_connections
       drop_leaked_test_user_databases
     end
+  end
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
+  config.before do
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:create_ghost_tables_event_trigger)
+    allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
   end
 
   config.after(:all) do
@@ -60,6 +63,10 @@ RSpec.configure do |config|
       drop_leaked_test_user_databases
       delete_database_test_users
     end
+  end
+
+  config.after do
+    Delorean.back_to_the_present
   end
 
   unless ENV['PARALLEL'] || ENV['BUILD_ID']

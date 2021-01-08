@@ -37,8 +37,9 @@ describe Carto::Organization do
     @user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
   end
 
+  after { bypass_named_maps }
+
   after(:all) do
-    bypass_named_maps
     begin
       @user.destroy
     rescue StandardError
@@ -55,8 +56,8 @@ describe Carto::Organization do
 
     before(:each) do
       @organization = FactoryGirl.create(:organization)
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
     end
 
     after(:each) do
@@ -142,8 +143,7 @@ describe Carto::Organization do
     it 'destroys its groups through the extension' do
       organization = create(:organization_with_users)
       create(:carto_group, organization: Carto::Organization.find(organization.id))
-
-      Carto::Group.any_instance.expects(:destroy_group_with_extension).once
+      expect_any_instance_of(Carto::Group).to receive(:destroy_group_with_extension)
 
       organization.destroy
     end
@@ -281,8 +281,8 @@ describe Carto::Organization do
   describe '#org_members_and_owner_removal' do
 
     it 'Tests removing a normal member from the organization' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
 
       org_name = unique_name('org')
       organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5)
@@ -342,8 +342,8 @@ describe Carto::Organization do
       expect { organization.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
     it 'Tests removing a normal member with analysis tables' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      ::User.any_instance.stubs(:update_in_central).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(::User).to receive(:update_in_central).and_return(true)
 
       org_name = unique_name('org')
       organization = Carto::Organization.create(quota_in_bytes: 123_456_789_000, name: org_name, seats: 5)

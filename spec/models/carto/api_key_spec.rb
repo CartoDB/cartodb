@@ -745,7 +745,7 @@ describe Carto::ApiKey do
     describe 'data services api key' do
       before :each do
         @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
-        Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
+        allow_any_instance_of(Carto::ApiKey).to receive(:db_role).and_return(@db_role)
       end
 
       after :each do
@@ -826,7 +826,7 @@ describe Carto::ApiKey do
     describe 'data observatory datasets api key' do
       before do
         db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
-        described_class.any_instance.stubs(:db_role).returns(db_role)
+        allow_any_instance_of(described_class).to receive(:db_role).and_return(db_role)
       end
 
       it 'grants with data observatory datasets' do

@@ -180,7 +180,7 @@ describe Admin::PagesController do
 
     it 'extracts username from redirection for dashboard with subdomainless' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render).and_return('')
 
       username = 'endedwithu'
       anyuser = prepare_user(username)
@@ -198,7 +198,7 @@ describe Admin::PagesController do
 
       login_as(anyuser, scope: anyuser.username)
       location = last_response.location
-      User.any_instance.stubs(:db_size_in_bytes).returns(0)
+      allow_any_instance_of(User).to receive(:db_size_in_bytes).and_return(0)
       get location
       last_response.status.should == 200
     end

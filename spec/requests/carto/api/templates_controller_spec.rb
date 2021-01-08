@@ -7,10 +7,10 @@ describe Carto::Api::TemplatesController do
   include Warden::Test::Helpers
 
   before(:each) do
-    ::User.any_instance.stubs(:has_feature_flag?).returns(false)
-    ::User.any_instance.stubs(:has_feature_flag?).with('templated_workflows').returns(true)
-    Carto::User.any_instance.stubs(:has_feature_flag?).with('templated_workflows').returns(true)
-    Carto::User.any_instance.stubs(:has_feature_flag?).with('disabled_cartodb_logo').returns(false)
+    allow_any_instance_of(::User).to receive(:has_feature_flag?).and_return(false)
+    allow_any_instance_of(::User).to receive(:has_feature_flag?).with('templated_workflows').and_return(true)
+    allow_any_instance_of(Carto::User).to receive(:has_feature_flag?).with('templated_workflows').and_return(true)
+    allow_any_instance_of(Carto::User).to receive(:has_feature_flag?).with('disabled_cartodb_logo').and_return(false)
 
     bypass_named_maps
     @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: 'table1', user_id: @org_user_owner.id)

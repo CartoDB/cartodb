@@ -33,12 +33,12 @@ describe Admin::OrganizationUsersController do
     end
 
     before(:each) do
-      User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
-      User.any_instance.stubs(:create_in_central).returns(true)
-      User.any_instance.stubs(:update_in_central).returns(true)
-      User.any_instance.stubs(:delete_in_central).returns(true)
-      User.any_instance.stubs(:load_common_data).returns(true)
-      User.any_instance.stubs(:reload_avatar).returns(true)
+      allow_any_instance_of(User).to receive(:validate_credentials_not_taken_in_central).and_return(true)
+      allow_any_instance_of(User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(User).to receive(:update_in_central).and_return(true)
+      allow_any_instance_of(User).to receive(:delete_in_central).and_return(true)
+      allow_any_instance_of(User).to receive(:load_common_data).and_return(true)
+      allow_any_instance_of(User).to receive(:reload_avatar).and_return(true)
     end
 
     describe '#show' do
@@ -296,7 +296,7 @@ describe Admin::OrganizationUsersController do
       end
 
       it 'fails if password is not strong' do
-        Carto::Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+        allow_any_instance_of(Carto::Organization).to receive(:strong_passwords_enabled).and_return(true)
         login_as(@owner, scope: @owner.username)
 
         put update_organization_user_url(user_domain: @owner.username, id: @admin.username),
@@ -361,15 +361,15 @@ describe Admin::OrganizationUsersController do
 
   describe 'owner behaviour' do
     before(:each) do
-      User.any_instance.stubs(:update_in_central).returns(true)
-      User.any_instance.stubs(:create_in_central).returns(true)
+      allow_any_instance_of(User).to receive(:update_in_central).and_return(true)
+      allow_any_instance_of(User).to receive(:create_in_central).and_return(true)
       login_as(@org_user_owner, scope: @org_user_owner.username)
     end
 
     describe '#new' do
       it 'quota defaults to organization default' do
         expected_quota = 123456789
-        Carto::Organization.any_instance.stubs(:default_quota_in_bytes).returns(expected_quota)
+        allow_any_instance_of(Carto::Organization).to receive(:default_quota_in_bytes).and_return(expected_quota)
 
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
@@ -379,7 +379,7 @@ describe Admin::OrganizationUsersController do
 
       it 'quota defaults to remaining quota if the assigned default goes overquota' do
         expected_quota = @organization.unassigned_quota
-        Carto::Organization.any_instance.stubs(:default_quota_in_bytes).returns(123_456_789_012_345)
+        allow_any_instance_of(Carto::Organization).to receive(:default_quota_in_bytes).and_return(123_456_789_012_345)
 
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
@@ -397,7 +397,7 @@ describe Admin::OrganizationUsersController do
 
     describe '#create' do
       it 'creates users' do
-        ::User.any_instance.stubs(:create_in_central).returns(true)
+        allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
         User.any_instance.expects(:load_common_data).once.returns(true)
 
         post create_organization_user_url(user_domain: @org_user_owner.username),
@@ -537,7 +537,7 @@ describe Admin::OrganizationUsersController do
 
     describe 'soft limits' do
       before(:each) do
-        User.any_instance.stubs(:load_common_data).returns(true)
+        allow_any_instance_of(User).to receive(:load_common_data).and_return(true)
       end
 
       def soft_limit_values(value = nil,

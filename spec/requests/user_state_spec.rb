@@ -473,8 +473,8 @@ describe "UserState" do
 
     it 'lets the owner access their resources' do
       # we use this to avoid generating the static assets in CI
-      Admin::UsersController.any_instance.stubs(:render)
-      Admin::VisualizationsController.any_instance.stubs(:render)
+      allow_any_instance_of(Admin::UsersController).to receive(:render)
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render)
 
       login(@locked_user)
       host! "#{@locked_user.username}.localhost.lan"
@@ -522,7 +522,7 @@ describe "UserState" do
 
     it 'lets a non locked user access resources from an active user' do
       # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render)
+      allow_any_instance_of(Admin::VisualizationsController).to receive(:render)
 
       login(@non_locked_user)
       @user_endpoints.each do |endpoint|

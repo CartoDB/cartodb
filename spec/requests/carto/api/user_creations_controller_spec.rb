@@ -25,8 +25,8 @@ describe Carto::Api::UserCreationsController do
     end
 
     it 'returns user creation data' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
@@ -47,8 +47,8 @@ describe Carto::Api::UserCreationsController do
     end
 
     it 'triggers user_creation authentication for google users' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = true
@@ -67,8 +67,8 @@ describe Carto::Api::UserCreationsController do
     end
 
     it 'does not trigger user_creation authentication for normal users' do
-      ::User.any_instance.stubs(:create_in_central).returns(true)
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      allow_any_instance_of(::User).to receive(:create_in_central).and_return(true)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
       user_data = FactoryGirl.build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false

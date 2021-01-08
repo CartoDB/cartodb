@@ -10,12 +10,12 @@ describe CartoDB::HiresBatchGeocoder do
     @log = mock
     @log.stubs(:append)
     @log.stubs(:append_and_store)
-    CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
-        'base_url' => 'http://wadus.nokia.com',
-        'app_id' => '',
-        'token' => '',
-        'mailto' => ''
-      })
+    allow_any_instance_of(CartoDB::HiresBatchGeocoder).to receive(:config).and_return(
+      'base_url' => 'http://wadus.nokia.com',
+      'app_id' => '',
+      'token' => '',
+      'mailto' => ''
+    )
     @working_dir = Dir.mktmpdir
     @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}',
                                           remote_id: 'wadus')
@@ -43,10 +43,10 @@ describe CartoDB::HiresBatchGeocoder do
   end
 
   describe '#update_status' do
-    before {
+    before do
       stub_api_request(200, 'response_status.xml')
-      CartoDB::HiresBatchGeocoder.any_instance.stubs(:request_id).returns('wadus')
-    }
+      allow_any_instance_of(CartoDB::HiresBatchGeocoder).to receive(:request_id).and_return('wadus')
+    end
     let(:geocoder) { CartoDB::HiresBatchGeocoder.new('/tmp/dummy_input_file.csv', @working_dir, @log, @geocoding_model) }
 
     it "updates status" do
@@ -75,12 +75,13 @@ describe CartoDB::HiresBatchGeocoder do
   end
 
   describe '#cancel' do
-    before {
+    before do
       stub_api_request(200, 'response_cancel.xml')
       @geocoding_model.remote_id = 'wadus'
       @geocoding_model.save
-      CartoDB::HiresBatchGeocoder.any_instance.stubs(:request_id).returns('wadus')
-    }
+      allow_any_instance_of(described_class).to receive(:request_id).and_return('wadus')
+    end
+
     let(:geocoder) { CartoDB::HiresBatchGeocoder.new('dummy_input_file.csv', @working_dir, @log, @geocoding_model) }
 
     it "updates the status" do
@@ -106,12 +107,12 @@ describe CartoDB::HiresBatchGeocoder do
   describe '#api_url' do
     # TODO move to common place for both geocoders
     before(:each) {
-      CartoDB::HiresBatchGeocoder.any_instance.stubs(:config).returns({
-        'base_url' => '',
-        'app_id' => 'a',
-        'token' => 'b',
-        'mailto' => 'c'
-        })
+      allow_any_instance_of(CartoDB::HiresBatchGeocoder).to receive(:config).and_return(
+      'base_url' => '',
+      'app_id' => 'a',
+      'token' => 'b',
+      'mailto' => 'c'
+      )
       @geocoder =  CartoDB::HiresBatchGeocoder.new('dummy_input.csv', @working_dir, @log, @geocoding_model)
     }
 

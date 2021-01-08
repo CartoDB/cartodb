@@ -54,7 +54,7 @@ describe CartoDB::TablePrivacyManager do
     it_behaves_like 'table create_canonical_visualization support'
 
     before(:each) do
-      Table.any_instance.stubs(:model_class).returns(::UserTable)
+      allow_any_instance_of(Table).to receive(:model_class).and_return(::UserTable)
     end
   end
 
@@ -62,7 +62,7 @@ describe CartoDB::TablePrivacyManager do
     it_behaves_like 'table create_canonical_visualization support'
 
     before(:each) do
-      Table.any_instance.stubs(:model_class).returns(Carto::UserTable)
+      allow_any_instance_of(Table).to receive(:model_class).and_return(Carto::UserTable)
     end
   end
 end

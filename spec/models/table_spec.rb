@@ -158,7 +158,7 @@ describe Table do
       end
 
       it 'receives a name change if table visualization name changed' do
-        Table.any_instance.stubs(:update_cdb_tablemetadata)
+        allow_any_instance_of(Table).to receive(:update_cdb_tablemetadata)
 
         table = create_table(name: 'bogus_name', user_id: @user.id)
 
@@ -334,7 +334,7 @@ describe Table do
 
       it 'propagates privacy changes to the associated visualization' do
         # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
         table = create_table(user_id: @user.id)
         table.should be_private
@@ -363,7 +363,7 @@ describe Table do
 
       it 'receives privacy changes from the associated visualization' do
         # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
         table = create_table(user_id: @user.id)
         table.should be_private
@@ -678,7 +678,7 @@ describe Table do
       before(:all) do
         bypass_named_maps
 
-        CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+        allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
         @doomed_table = create_table(user_id: @user.id)
         @doomed_table.destroy
       end
@@ -1866,16 +1866,16 @@ describe Table do
         user_mock.stubs(:database_schema).returns('public')
         user_mock.stubs(:viewer).returns(false)
 
-        ::Table.any_instance.stubs(:get_valid_name).returns('test')
-        ::Table.any_instance.stubs(:owner).returns(user_mock)
-        ::Table.any_instance.stubs(:create_table_in_database!)
-        ::Table.any_instance.stubs(:set_table_id).returns(table_id)
-        ::Table.any_instance.stubs(:set_the_geom_column!).returns(true)
-        ::UserTable.any_instance.stubs(:after_create)
-        ::Table.any_instance.stubs(:after_save)
-        ::Table.any_instance.stubs(:cartodbfy)
-        ::Table.any_instance.stubs(:schema)
-        CartoDB::TablePrivacyManager.any_instance.stubs(:owner).returns(user_mock)
+        allow_any_instance_of(::Table).to receive(:get_valid_name).and_return('test')
+        allow_any_instance_of(::Table).to receive(:owner).and_return(user_mock)
+        allow_any_instance_of(::Table).to receive(:create_table_in_database!)
+        allow_any_instance_of(::Table).to receive(:set_table_id).and_return(table_id)
+        allow_any_instance_of(::Table).to receive(:set_the_geom_column!).and_return(true)
+        allow_any_instance_of(::UserTable).to receive(:after_create)
+        allow_any_instance_of(::Table).to receive(:after_save)
+        allow_any_instance_of(::Table).to receive(:cartodbfy)
+        allow_any_instance_of(::Table).to receive(:schema)
+        allow_any_instance_of(CartoDB::TablePrivacyManager).to receive(:owner).and_return(user_mock)
 
         # A user who can create private tables has by default private tables
         user_table = ::UserTable.new
@@ -2269,7 +2269,7 @@ describe Table do
 
       it 'propagates changes to affected visualizations if privacy set to PRIVATE' do
         # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
         table = create_table(user_id: @user.id)
         table.should be_private
@@ -2300,7 +2300,7 @@ describe Table do
 
       it "doesn't propagates changes to affected visualizations if privacy set to public with link" do
         # Need to at least have this decorated in the user data or checks before becoming private will raise an error
-        CartoDB::Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
+        allow_any_instance_of(CartoDB::Visualization::Member).to receive(:supports_private_maps?).and_return(true)
 
         table = create_table(user_id: @user.id)
 
@@ -2330,7 +2330,7 @@ describe Table do
       before(:all) do
         bypass_named_maps
 
-        CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+        allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
       end
 
       before(:each) do
@@ -2439,7 +2439,7 @@ describe Table do
           table.instance_variable_set(:@user_table, Carto::UserTable.find(table.id))
         end
 
-        (table.model_class == ::UserTable ? ::Map : Carto::Map).any_instance.stubs(:save).returns(true)
+        (table.model_class == ::UserTable ? ::Map : allow_any_instance_of(Carto::Map)).to receive(:save).and_return(true)
 
         # Scenario 2: Fail setting user table privacy (unlikely, but just in case)
 
@@ -2498,9 +2498,9 @@ describe Table do
     end
 
     before(:each) do
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      Table.any_instance.stubs(:update_cdb_tablemetadata)
+      allow_any_instance_of(CartoDB::UserModule::DBService).to receive(:enable_remote_db_user).and_return(true)
+      allow_any_instance_of(CartoDB::Varnish).to receive(:send_command).and_return(true)
+      allow_any_instance_of(Table).to receive(:update_cdb_tablemetadata)
 
       bypass_named_maps
     end

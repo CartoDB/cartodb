@@ -363,7 +363,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
-      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
+      allow_any_instance_of(Carto::OauthApp).to receive(:sync_with_central?).and_return(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -420,7 +420,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       before(:each) do
-        Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
+        allow_any_instance_of(Carto::OauthApp).to receive(:sync_with_central?).and_return(false)
         host! "#{@user1.username}.localhost.lan"
       end
 
@@ -497,7 +497,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       before(:each) do
-        Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
+        allow_any_instance_of(Carto::OauthApp).to receive(:sync_with_central?).and_return(false)
         host! "#{@organization.name}.localhost.lan"
       end
 
@@ -522,7 +522,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
-      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
+      allow_any_instance_of(Carto::OauthApp).to receive(:sync_with_central?).and_return(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -583,8 +583,8 @@ describe Carto::Api::Public::OauthAppsController do
   describe 'destroy' do
     before(:each) do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      Carto::OauthAppUser.any_instance.stubs(:reassign_owners).returns(true)
-      Carto::OauthAppUser.any_instance.stubs(:drop_roles).returns(true)
+      allow_any_instance_of(Carto::OauthAppUser).to receive(:reassign_owners).and_return(true)
+      allow_any_instance_of(Carto::OauthAppUser).to receive(:drop_roles).and_return(true)
       @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
       @params = { id: @app.id, api_key: @user1.api_key }
     end
@@ -597,7 +597,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
-      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
+      allow_any_instance_of(Carto::OauthApp).to receive(:sync_with_central?).and_return(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -696,7 +696,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
-      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
+      allow_any_instance_of(Carto::OauthApp).to receive(:sync_with_central?).and_return(false)
       host! "#{@carto_org_user_1.username}.localhost.lan"
     end
 
@@ -743,7 +743,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 204 if role does not exist when reassigning' do
-      Carto::OauthAppUser.any_instance.stubs(:dataset_role_name).returns('wrong')
+      allow_any_instance_of(Carto::OauthAppUser).to receive(:dataset_role_name).and_return('wrong')
 
       post_json api_v4_oauth_apps_revoke_url(@params) do |response|
         expect(response.status).to eq(204)
@@ -755,7 +755,7 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 500 role does not exist when reassigning' do
       mock = OpenStruct.new
       mock.stubs(:execute).raises(ActiveRecord::StatementInvalid, 'Error reassigning owners')
-      Carto::User.any_instance.stubs(:in_database).returns(mock)
+      allow_any_instance_of(Carto::User).to receive(:in_database).and_return(mock)
 
       post_json api_v4_oauth_apps_revoke_url(@params) do |response|
         expect(response.status).to eq(500)

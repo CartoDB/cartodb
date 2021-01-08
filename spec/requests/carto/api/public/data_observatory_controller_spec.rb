@@ -545,7 +545,7 @@ describe Carto::Api::Public::DataObservatoryController do
     end
 
     before(:each) do
-      # allow_any_instance_of(Cartodb::Central).to receive(:check_do_enabled).and_return(true)
+      allow_any_instance_of(Cartodb::Central).to receive(:check_do_enabled).and_return(true)
       @doss = mock
       Carto::DoSyncServiceFactory.stubs(:get_for_user).returns(@doss)
       @doss.stubs(:parsed_entity_id).returns({})
@@ -833,8 +833,9 @@ describe Carto::Api::Public::DataObservatoryController do
 
   def mock_do_metadata
     (datasets_provider + cartographies_provider + special_cases_provider).each do |entry|
-      Carto::Api::Public::DataObservatoryController
-.any_instance.stubs(:request_subscription_metadata).with(entry[:id],allow_any_instance_of().to receive(:request_subscription_metadata).with(entry[:id], entry[:type]).and_return(entry[:metadata])
+      allow_any_instance_of(Carto::Api::Public::DataObservatoryController).to(
+        receive(:request_subscription_metadata).and_return(entry[:metadata])
+      )
     end
   end
 

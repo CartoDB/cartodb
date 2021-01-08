@@ -22,7 +22,7 @@ Dir['**/*'].each do |file_path|
         puts "    #{new_line}"
         puts "-------"
         any_instance_calls += 1
-        replacings[line] = new_line
+        replacings[line] = "#{new_line}\n"
       end
     end
 

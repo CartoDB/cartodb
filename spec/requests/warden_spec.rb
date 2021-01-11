@@ -383,7 +383,7 @@ describe 'Warden' do
     end
 
     it 'updates the user in Central at logout' do
-      Cartodb::Central.any_instance.expects(:send_request).once
+      Carto::Common::MessageBroker::Topic.any_instance.expects(:publish).with(:update_user, anything).once
 
       logout
     end

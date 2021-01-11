@@ -860,49 +860,35 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     describe 'with Central' do
-      before(:each) do
+      before do
         ::User.any_instance.unstub(:delete_in_central)
         Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-        @organization.reload
-        @user_to_be_deleted = @organization.non_owner_users.first
       end
 
-      def mock_delete_request(code)
-        response_mock = mock
-        response_mock.stubs(:code).returns(code)
-        response_mock.stubs(:body).returns('{"errors": []}')
-        Carto::Http::Request.any_instance.stubs(:run).returns(response_mock)
-      end
+      let(:organization) { @organization.reload }
+      let(:user_to_be_deleted) { organization.non_owner_users.first }
 
-      it 'should delete users in Central' do
-        ::User.any_instance.stubs(:destroy).once
-        mock_delete_request(204)
-        login(@organization.owner)
+      it 'requests user deletion to Central' do
+        Carto::Common::MessageBroker::Topic.any_instance.expects(:publish).once.with(
+          :delete_org_user,
+          { organization_name: organization.name, username: user_to_be_deleted.username }
+        )
 
-        delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
-                                                    u_username: @user_to_be_deleted.username)
+        login(organization.owner)
+
+        delete api_v2_organization_users_delete_url(id_or_name: organization.name,
+                                                    u_username: user_to_be_deleted.username)
 
         last_response.status.should eq 200
       end
 
-      it 'should delete users missing from Central' do
-        ::User.any_instance.stubs(:destroy).once
-        mock_delete_request(404)
-        login(@organization.owner)
-
-        delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
-                                                    u_username: @user_to_be_deleted.username)
-
-        last_response.status.should eq 200
-      end
-
-      it 'should not delete users from Central that failed to delete in the box' do
+      it 'does not request deletion to Central if deletion failed in the cloud' do
         ::User.any_instance.stubs(:delete_in_central).never
-        ::User.any_instance.stubs(:destroy).raises("BOOM")
-        login(@organization.owner)
+        ::User.any_instance.stubs(:destroy).raises('BOOM')
+        login(organization.owner)
 
-        delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
-                                                    u_username: @user_to_be_deleted.username)
+        delete api_v2_organization_users_delete_url(id_or_name: organization.name,
+                                                    u_username: user_to_be_deleted.username)
 
         last_response.status.should eq 500
       end

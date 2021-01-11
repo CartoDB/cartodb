@@ -2,8 +2,9 @@
 require 'simplecov_helper'
 require 'rspec_configuration'
 require 'helpers/spec_helper_helpers'
-require 'support/redis'
 require 'helpers/named_maps_helper'
+require './spec/support/message_broker_stubs'
+require './spec/support/redis'
 
 ENV['RAILS_ENV'] ||= 'test'
 # INFO: this is the only slow step of the test boot process

@@ -90,11 +90,11 @@ export default {
     },
     prev () {
       this.page -= 1;
-      this.$refs.carousel.scroll({left: (this.containerWidth + BOX_MARGIN) * this.page, behavior: ANIMATION});
+      this.$refs.carousel.scroll({ left: (this.containerWidth + BOX_MARGIN) * this.page, behavior: ANIMATION });
     },
     next () {
       this.page += 1;
-      this.$refs.carousel.scroll({left: (this.containerWidth + BOX_MARGIN) * this.page, behavior: ANIMATION});
+      this.$refs.carousel.scroll({ left: (this.containerWidth + BOX_MARGIN) * this.page, behavior: ANIMATION });
     },
     connectorSelected (id) {
       this.$emit('connectorSelected', id);

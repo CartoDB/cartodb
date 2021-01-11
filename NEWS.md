@@ -12,6 +12,7 @@ sudo make install
 ### Features
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 - Integrate new map_views metric. [#15969](https://github.com/CartoDB/cartodb/pull/15969)
+- Add preview/visualization of maps in DO catalog [#15973](https://github.com/CartoDB/cartodb/pull/15973)
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 
 ### Bug fixes / enhancements
@@ -36,6 +37,7 @@ sudo make install
 - Maps API client now honors 429 Too Many Requests error [#16025](https://github.com/CartoDB/cartodb/pull/16025)
 - Fix a loop between our logger and rollbar [#16026](https://github.com/CartoDB/cartodb/pull/16026)
 - Make the MessageBroker subscriber PIDFILE check more resilient [#16022](https://github.com/CartoDB/cartodb/pull/16022)
+- Bump version of lib/sql submodule to 0.37.1
 - Public profile can be disabled via Feature Flag [#15982](https://github.com/CartoDB/cartodb/pull/15995)
 
 4.44.0 (2020-11-20)

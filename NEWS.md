@@ -39,6 +39,7 @@ sudo make install
 - Bump version of lib/sql submodule to 0.37.1
 - Public profile can be disabled via Feature Flag [#15982](https://github.com/CartoDB/cartodb/pull/15995)
 - Migrate Organization CRUD to MessageBroker [#15934](https://github.com/CartoDB/cartodb/pull/15934)
+- Optimize dashboard loading when the number of datasets is very large [#16014](https://github.com/CartoDB/cartodb/pull/16014)
 
 4.44.0 (2020-11-20)
 -------------------

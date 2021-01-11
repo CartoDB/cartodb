@@ -347,6 +347,10 @@ module Carto::UserCommons
   def update_feature_flags(feature_flag_ids = nil)
     return unless feature_flag_ids
 
+    # Clear blank strings as things like [''] get parsed into SQL NULL values by ActiveRecord
+    # which will cause the query to return no records
+    feature_flag_ids = feature_flag_ids.select(&:present?)
+
     self_feature_flags_user.where.not(feature_flag_id: feature_flag_ids).destroy_all
 
     new_feature_flags_ids = feature_flag_ids - self_feature_flags_user.pluck(:feature_flag_id)
@@ -427,4 +431,13 @@ module Carto::UserCommons
     CartoDB::Varnish.new.purge("#{database_name}#{options[:regex]}")
   end
 
+  def decorate_email_notifications
+    payload = {}
+    Carto::UserEmailNotification::VALID_NOTIFICATIONS.map { |n| payload[n] = true }
+
+    carto_user.email_notifications.each do |notification|
+      payload[notification.notification] = notification.enabled
+    end
+    payload
+  end
 end

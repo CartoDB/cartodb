@@ -8,7 +8,7 @@ module Carto
       rescue_from StandardError, with: :rescue_from_standard_error
 
       def show
-        render_jsonp({ notifications: decorate_notifications }, 200)
+        render_jsonp({ notifications: @carto_user.decorate_email_notifications }, 200)
       end
 
       def update
@@ -23,16 +23,6 @@ module Carto
       def load_notifications
         @carto_user = Carto::User.find(current_user.id)
         @notifications = @carto_user.email_notifications
-      end
-
-      def decorate_notifications
-        payload = {}
-        Carto::UserEmailNotification::VALID_NOTIFICATIONS.map { |n| payload[n] = true }
-
-        @notifications.each do |notification|
-          payload[notification.notification] = notification.enabled
-        end
-        payload
       end
 
     end

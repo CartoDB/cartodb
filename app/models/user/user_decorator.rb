@@ -66,6 +66,9 @@ module CartoDB
         quota_in_bytes: quota_in_bytes,
         db_size_in_bytes: db_size_in_bytes,
         db_size_in_megabytes: db_size_in_bytes.present? ? (db_size_in_bytes / (1024.0 * 1024.0)).round(2) : nil,
+        storage: {}, # Never used here. This line is just for test compatibility
+        map_views: 0, # Never used. Only for test compatibility
+        map_views_quota: 0, # Never used. Only for test compatibility
         remaining_table_quota: remaining_table_quota,
         remaining_byte_quota: remaining_quota(db_size_in_bytes).to_f,
         unverified: unverified?,
@@ -146,6 +149,7 @@ module CartoDB
           max_layers: max_layers
         },
         notification: notification,
+        email_notifications: decorate_email_notifications,
         avatar_url: avatar,
         feature_flags: feature_flags_names,
         base_url: public_url,
@@ -189,5 +193,6 @@ module CartoDB
         data
       end
     end
+
   end
 end

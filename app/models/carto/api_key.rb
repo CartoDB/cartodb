@@ -172,8 +172,10 @@ module Carto
           FROM \"#{db_role}\"
         }
         db_run(query)
-        sequences_for_table(s, t).each do |seq|
-          db_run("REVOKE ALL ON SEQUENCE #{seq} FROM \"#{db_role}\"")
+
+        tables = [{ schema: s, table_name: t }]
+        user.db_service.sequences_for_tables(tables).each do |sequence|
+          db_run("REVOKE ALL ON SEQUENCE #{sequence} FROM \"#{db_role}\"")
         end
       end
     end
@@ -332,9 +334,9 @@ module Carto
       queries
     end
 
-    def set_enabled_for_engine
+    def set_enabled_for_engine(new_user_attributes = nil)
       # We enable/disable API keys for engine usage by adding/removing them from Redis
-      valid_user? ? add_to_redis : remove_from_redis
+      valid_user?(new_user_attributes) ? add_to_redis : remove_from_redis
     end
 
     def save_cdb_conf_info
@@ -371,13 +373,17 @@ module Carto
     end
 
     def setup_table_permissions
+      tables = []
+
       setup_permissions(table_permissions) do |tp|
         Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
           db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
-          sequences_for_table(schema, table_name).each do |seq|
-            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
-          end
+          tables << { schema: schema, table_name: table_name }
         end
+      end
+
+      user.db_service.sequences_for_tables(tables).each do |sequence|
+        db_run("GRANT USAGE, SELECT ON SEQUENCE #{sequence} TO \"#{db_role}\"")
       end
 
       schemas_from_granted_tables.each { |s| grant_usage_privileges_for_schema(s) }
@@ -585,26 +591,6 @@ module Carto
       redis_client.del(key)
     end
 
-    def sequences_for_table(schema, table)
-      db_run(%{
-        SELECT
-          n.nspname, c.relname
-        FROM
-          pg_depend d
-          JOIN pg_class c ON d.objid = c.oid
-          JOIN pg_namespace n ON c.relnamespace = n.oid
-        WHERE
-          d.refobjsubid > 0 AND
-          d.classid = 'pg_class'::regclass AND
-          c.relkind = 'S'::"char" AND
-          d.refobjid = (
-            QUOTE_IDENT(#{db_connection.quote(schema)}) ||
-            '.' ||
-            QUOTE_IDENT(#{db_connection.quote(table)})
-          )::regclass;
-      }).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
-    end
-
     def db_run(query, connection = db_connection)
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
@@ -655,7 +641,10 @@ module Carto
       errors.add(:token, "must be #{TOKEN_DEFAULT_PUBLIC} for default public keys") unless token == TOKEN_DEFAULT_PUBLIC
     end
 
-    def valid_user?
+    def valid_user?(new_user_attributes = {})
+      user.engine_enabled = new_user_attributes[:engine_enabled] if new_user_attributes[:engine_enabled].present?
+      user.state = new_user_attributes[:state] if new_user_attributes[:state].present?
+
       # This is not avalidation per-se, since we don't want to remove api keys when a user is disabled
       !(user.locked? || regular? && !user.engine_enabled?)
     end

@@ -165,7 +165,6 @@ WORKING_SPECS_4 = \
 	spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \
 	spec/connectors/importer_spec.rb \
-	spec/connectors/importer_overviews_spec.rb \
 	spec/requests/carto/api/connectors_controller_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
 	$(NULL)
@@ -185,7 +184,6 @@ WORKING_SPECS_5 = \
 	services/table-geocoder/spec/internal-geocoder/query_generator_factory_spec.rb \
 	services/table-geocoder/spec/lib/gme/table_geocoder_spec.rb \
 	spec/models/synchronization/member_spec.rb \
-	spec/models/synchronization/member_overviews_spec.rb \
 	spec/models/synchronization/collection_spec.rb \
 	spec/models/organization_spec.rb \
 	spec/models/user_organization_spec.rb \
@@ -199,6 +197,7 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/db/sql_interface_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
 	spec/lib/carto/subscribers/central_user_commands_spec.rb \
+	spec/commands \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why

@@ -1450,6 +1450,12 @@ class User < Sequel::Model
   end
 
   def sync_enabled_api_keys
-    api_keys.each(&:set_enabled_for_engine)
+    if previous_changes.present?
+      new_attributes = {}
+      new_attributes[:state] = previous_changes[:state][1] if previous_changes[:state].present?
+      new_attributes[:engine_enabled] = previous_changes[:engine_enabled][1] if previous_changes[:engine_enabled].present?
+    end
+
+    api_keys.each { |api_key| api_key.set_enabled_for_engine(new_attributes) }
   end
 end

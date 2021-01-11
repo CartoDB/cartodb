@@ -12,6 +12,11 @@
         {{ $t('SettingsDropdown.types.subscribed', { count: metadata.total_subscriptions }) }}
       </a>
     </li>
+    <li v-if="isDatasetSection" class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('sample') }">
+      <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('sample') }" @click="setFilter('sample')">
+        {{ $t('SettingsDropdown.types.sample', { count: metadata.total_samples }) }}
+      </a>
+    </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('favorited') }">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('favorited') }" @click="setFilter('favorited')">
         {{ $t('SettingsDropdown.types.favorited', { count: metadata.total_likes }) }}

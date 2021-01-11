@@ -1,31 +1,76 @@
+require './lib/carto/subscribers/central_user_commands'
+
+def process_exists?(pid)
+  Process.getpgid(pid)
+  true
+rescue Errno::ESRCH
+  false
+end
+
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task cartodb_subscribers: [:environment] do |_task, _args|
-    include ::LoggerHelper
+    $stdout.sync = true
+    logger = Carto::Common::Logger.new($stdout)
+    pid_file = ENV['PIDFILE'] || Rails.root.join('tmp/pids/cartodb_subscribers.pid')
 
-    message_broker = Carto::Common::MessageBroker.instance
-    subscription_name = Carto::Common::MessageBroker::Config.instance.central_commands_subscription
-    subscription = message_broker.get_subscription(subscription_name)
-    notifications_topic = message_broker.get_topic(:cartodb_central)
-    central_user_commands = Carto::Subscribers::CentralUserCommands.new(notifications_topic)
+    if File.exist?(pid_file)
+      pid = File.read(pid_file).to_i
 
-    subscription.register_callback(:update_user,
-                                   &central_user_commands.method(:update_user))
+      raise "PID file exists: #{pid_file}" if process_exists?(pid)
 
-    subscription.register_callback(:create_user,
-                                   &central_user_commands.method(:create_user))
-
-    subscription.register_callback(:delete_user,
-                                   &central_user_commands.method(:delete_user))
-
-    at_exit do
-      log_debug(message: 'Stopping subscriber...')
-      subscription.stop!
-      log_debug(message: 'Done')
+      # A warning should be better, but let's keep it like so until the MessageBroker is stable enough
+      logger.error(message: 'PID file exists, but process is not running. Removing PID file.')
+      File.delete(pid_file)
     end
 
-    subscription.start
-    log_debug(message: 'Consuming messages from subscription')
-    sleep
+    File.open(pid_file, 'w') { |f| f.puts Process.pid }
+
+    begin
+      message_broker = Carto::Common::MessageBroker.new(logger: logger)
+      subscription_name = Carto::Common::MessageBroker::Config.instance.central_subscription_name
+      subscription = message_broker.get_subscription(subscription_name)
+      notifications_topic = message_broker.get_topic(:cartodb_central)
+      central_user_commands = Carto::Subscribers::CentralUserCommands.new(
+        notifications_topic: notifications_topic,
+        logger: logger
+      )
+
+      subscription.register_callback(:update_user,
+                                     &central_user_commands.method(:update_user))
+
+      subscription.register_callback(:create_user,
+                                     &central_user_commands.method(:create_user))
+
+      subscription.register_callback(:delete_user,
+                                     &central_user_commands.method(:delete_user))
+
+      subscription.register_callback(:update_organization) do |payload|
+        OrganizationCommands::Update.new(payload, { logger: logger }).run
+      end
+
+      subscription.register_callback(:create_organization) do |payload|
+        OrganizationCommands::Create.new(payload, { notifications_topic: notifications_topic, logger: logger }).run
+      end
+
+      subscription.register_callback(:delete_organization) do |payload|
+        OrganizationCommands::Delete.new(payload, { notifications_topic: notifications_topic, logger: logger }).run
+      end
+
+      at_exit do
+        logger.info(message: 'Stopping subscriber...')
+        subscription.stop!
+        logger.info(message: 'Subscriber stopped')
+      end
+
+      subscription.start
+      logger.info(message: 'Consuming messages from subscription')
+      sleep
+    rescue StandardError => e
+      logger.error(exception: e)
+      exit(1)
+    ensure
+      File.delete(pid_file)
+    end
   end
 end

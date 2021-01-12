@@ -199,7 +199,7 @@ module Carto
 
     # TODO: remove when new connections are in place
     def temporay_parameters_adjustment_for_new_bigquery_connector
-      return unless @provider_name != 'bigquery'
+      return unless @provider_name == 'bigquery'
 
       if bigquery_connection_missing_refresh_token?
         @params.reverse_merge!(connection: {})

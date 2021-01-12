@@ -8,12 +8,12 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 308734419b7d6cd0811377d9553e849e89f42981
-  tag: v0.5.2
+  revision: 626bc3bb7cd2edfdd3f0a7b9236dddbb7fccfee5
+  tag: v0.5.3
   specs:
-    cartodb-common (0.5.2)
+    cartodb-common (0.5.3)
       argon2 (~> 2)
-      google-cloud-pubsub (~> 1.10)
+      google-cloud-pubsub (~> 2.3)
       rails (>= 4, < 6)
       rollbar
 
@@ -174,8 +174,8 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
-    gapic-common (0.2.1)
-      google-protobuf (~> 3.2)
+    gapic-common (0.3.4)
+      google-protobuf (~> 3.12, >= 3.12.2)
       googleapis-common-protos (>= 1.3.9, < 2.0)
       googleapis-common-protos-types (>= 1.0.4, < 2.0)
       googleauth (~> 0.9)
@@ -205,19 +205,14 @@ GEM
     google-cloud-env (1.3.0)
       faraday (~> 0.11)
     google-cloud-errors (1.0.1)
-    google-cloud-pubsub (1.10.0)
+    google-cloud-pubsub (2.3.0)
       concurrent-ruby (~> 1.1)
-      google-cloud-core (~> 1.2)
-      google-gax (~> 1.8)
-      googleapis-common-protos (>= 1.3.9, < 2.0)
-      googleapis-common-protos-types (>= 1.0.4, < 2.0)
-      grpc-google-iam-v1 (~> 0.6.9)
-    google-gax (1.8.1)
-      google-protobuf (~> 3.9)
-      googleapis-common-protos (>= 1.3.9, < 2.0)
-      googleauth (~> 0.9)
-      grpc (~> 1.24)
-      rly (~> 0.2.3)
+      google-cloud-core (~> 1.5)
+      google-cloud-pubsub-v1 (~> 0.0)
+    google-cloud-pubsub-v1 (0.2.0)
+      gapic-common (~> 0.3)
+      google-cloud-errors (~> 1.0)
+      grpc-google-iam-v1 (>= 0.6.10, < 2.0)
     google-protobuf (3.14.0)
     googleapis-common-protos (1.3.10)
       google-protobuf (~> 3.11)
@@ -377,7 +372,6 @@ GEM
       resque (~> 1.19)
     retriable (3.1.2)
     rexml (3.2.4)
-    rly (0.2.3)
     rollbar (3.1.1)
     roo (1.13.2)
       nokogiri
@@ -552,7 +546,7 @@ DEPENDENCIES
   gibbon (= 1.1.4)
   google-api-client (= 0.34.1)
   google-cloud-bigquery-storage-v1 (~> 0.2.3)
-  google-cloud-pubsub (~> 1.10)
+  google-cloud-pubsub (~> 2.3)
   hiredis (~> 0.6.1)
   instagram-continued-continued
   json-schema (= 2.1.9)

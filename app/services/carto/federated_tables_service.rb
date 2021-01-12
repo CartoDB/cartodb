@@ -207,7 +207,7 @@ module Carto
       config_server["host"] = host if host.present?
       config_server["port"] = port if port.present?
       config_server["extensions"] = "postgis"
-      config_server["updatable"] = mode != 'read-write' ? "false" : "write"
+      config_server["updatable"] = mode != 'read-write' ? "false" : "true"
       config_server["use_remote_estimate"] = "true"
       config_server["fetch_size"] = "1000"
       config_credentials = {}

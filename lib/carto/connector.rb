@@ -203,12 +203,12 @@ module Carto
 
       if bigquery_connection_missing_refresh_token?
         @params.reverse_merge!(connection: {})
-        @params[:connection].merge!(refresh_token: = @user.oauths.select('bigquery')&.token)
+        @params[:connection].merge!(refresh_token: @user.oauths.select('bigquery')&.token)
       end
       billing_project = @params.delete[:billing_project]
       if billing_project.present?
         @params.reverse_merge!(connection: {})
-        @params[:connection].merge!(billing_project: = billing_project)
+        @params[:connection].merge!(billing_project: billing_project)
       end
       delete @params[:project] if @params[:project] == '%DATABASE%'
     end

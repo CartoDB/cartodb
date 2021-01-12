@@ -667,18 +667,18 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def subscription
-    table_name = (user_table.name if user_table) || (related_tables[0].name if related_tables && related_tables[0])
-    @subscription ||= if table_name
+    table = user_table || related_tables.try(:first)
+    @subscription ||= if table
       doss = Carto::DoSyncServiceFactory.get_for_user(user)
-      doss&.subscription_from_sync_table(table_name)
+      doss&.subscription_from_sync_table(table)
     end
   end
 
   def sample
-    table_name = (user_table.name if user_table) || (related_tables[0].name if related_tables && related_tables[0])
-    @sample ||= if table_name
+    table = user_table || related_tables.try(:first)
+    @sample ||= if table
       doss = Carto::DoSampleServiceFactory.get_for_user(user)
-      doss&.dataset_from_sample_table(table_name)
+      doss&.dataset_from_sample_table(table)
     end
   end
 

@@ -7,3 +7,6 @@
 [submodule "lib/sql"]
 	path = lib/sql
 	url = git://github.com/CartoDB/cartodb-postgresql.git
+[submodule "private"]
+	path = private
+	url = git@github.com:CartoDB/cartodb-private.git

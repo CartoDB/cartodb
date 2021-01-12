@@ -1,9 +1,11 @@
 class Superadmin::SuperadminController < ActionController::Base
+
   include Carto::ControllerHelper
+  include Carto::Common::ControllerHelper
   include ::LoggerControllerHelper
 
   before_filter :authenticate
-  around_filter :set_request_id
+  around_action :set_request_id
 
   rescue_from StandardError, with: :rescue_from_superadmin_error
 

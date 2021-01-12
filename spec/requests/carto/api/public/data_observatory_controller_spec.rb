@@ -15,16 +15,15 @@ describe Carto::Api::Public::DataObservatoryController do
     do_grants = [{ type: 'apis', apis: ['do'] }]
     @granted_token = @user1.api_keys.create_regular_key!(name: 'do', grants: do_grants).token
     @headers = { 'CONTENT_TYPE' => 'application/json' }
-    populate_do_metadata
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'do-instant-licensing', restricted: true)
   end
 
   after(:all) do
-    unpopulate_do_metadata
     @feature_flag.destroy
   end
 
   before(:each) do
+    mock_do_metadata
     host! "#{@user1.username}.localhost.lan"
   end
 
@@ -624,7 +623,6 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'subscribes to public dataset' do
       dataset_id = 'carto.abc.public_dataset'
 
-      DataObservatoryMailer.expects(:user_request).never
       DataObservatoryMailer.expects(:carto_request).never
 
       expected_params = {
@@ -833,52 +831,183 @@ describe Carto::Api::Public::DataObservatoryController do
     end
   end
 
-  def populate_do_metadata
-    with_do_connection() do |connection|
-      queries = %{
-        CREATE TABLE providers(id text, name text);
-         INSERT INTO providers VALUES ('provider', 'CARTO');
-
-        CREATE TABLE datasets(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
-                              tos_link text, licenses text, licenses_link text, rights text, available_in text[],
-                              name text, is_public_data boolean, provider_id text);
-        INSERT INTO datasets VALUES ('carto.abc.dataset1', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq}', 'CARTO dataset 1', false, 'provider');
-        INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', NULL, 'Incomplete dataset', false, 'provider');
-        INSERT INTO datasets VALUES ('carto.abc.datasetnull', NULL, NULL, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq}', 'CARTO dataset null', false, 'provider');
-        INSERT INTO datasets VALUES ('carto.abc.datasetzero', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{bq}', 'CARTO dataset zero', false, 'provider');
-        INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearrayempty', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', '{}', 'CARTO dataset array empty', false, 'provider');
-        INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearraynil', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                     'rights', NULL, 'CARTO dataset array nil', false, 'provider');
-        INSERT INTO datasets VALUES ('carto.abc.deliver_1day', 1.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-          'rights', '{bq}', 'CARTO dataset 1', false, 'provider');
-        INSERT INTO datasets VALUES ('carto.abc.public_dataset', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-            'rights', '{bq}', 'CARTO dataset 1', true, 'provider');
-
-        CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
-                                 tos_link text, licenses text, licenses_link text, rights text, available_in text[],
-                                 name text, provider_id text);
-        INSERT INTO geographies VALUES ('carto.abc.geography1', 3.0, 90.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                        'rights', '{bq}', 'CARTO geography 1', 'provider');
-      }
-
-      connection.execute(queries)
+  def mock_do_metadata
+    (datasets_provider + cartographies_provider + special_cases_provider).each do |entry|
+      Carto::Api::Public::DataObservatoryController
+        .any_instance.stubs(:request_subscription_metadata).with(entry[:id], entry[:type]).returns(entry[:metadata])
     end
   end
 
-  def unpopulate_do_metadata
-    with_do_connection() do |connection|
-      queries = %{
-        DROP TABLE datasets;
-        DROP TABLE geographies;
-        DROP TABLE providers;
+  def datasets_provider
+    [
+      {
+        id: 'carto.abc.dataset1',
+        type: 'dataset',
+        metadata: {
+          estimated_delivery_days: 0.0,
+          subscription_list_price: 100.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          available_in: %w{bq},
+          name: 'CARTO dataset 1',
+          is_public_data: false,
+          provider_name: 'CARTO'
+        }
+      },
+      {
+        id: 'carto.abc.incomplete',
+        type: 'dataset',
+        metadata: {
+          estimated_delivery_days: 0.0,
+          subscription_list_price: 100.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          available_in: nil,
+          name: 'Incomplete dataset',
+          is_public_data: false,
+          provider_name: 'CARTO'
+        }
+      },
+      {
+        id: 'carto.abc.datasetvalidatearrayempty',
+        type: 'dataset',
+        metadata: {
+          estimated_delivery_days: 0.0,
+          subscription_list_price: 0.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          available_in: nil,
+          name: 'CARTO dataset array empty',
+          is_public_data: false,
+          provider_name: 'CARTO'
+        }
+      },
+      {
+        id: 'carto.abc.deliver_1day',
+        type: 'dataset',
+        metadata: {
+          estimated_delivery_days: 1.0,
+          subscription_list_price: 100.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          available_in: %w{bq},
+          name: 'CARTO dataset 1',
+          is_public_data: false,
+          provider_name: 'CARTO'
+        }
+      },
+      {
+        id: 'carto.abc.public_dataset',
+        type: 'dataset',
+        metadata: {
+          estimated_delivery_days: 0.0,
+          subscription_list_price: 0.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          available_in: %w{bq},
+          name: 'CARTO dataset 1',
+          is_public_data: true,
+          provider_name: 'CARTO'
+        }
       }
+    ]
+  end
 
-      connection.execute(queries)
-    end
+  def special_cases_provider
+    [
+      {
+        id: 'carto.abc.datasetnull',
+        type: 'dataset',
+        metadata: {
+          estimated_delivery_days: nil,
+          subscription_list_price: nil,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          available_in: %w{bq},
+          name: 'CARTO dataset null',
+          is_public_data: false,
+          provider_name: 'CARTO'
+        }
+      },
+      {
+        id: 'carto.abc.datasetzero',
+        type: 'dataset',
+        metadata: {
+          estimated_delivery_days: 0.0,
+          subscription_list_price: 0.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          available_in: %w{bq},
+          name: 'CARTO dataset zero',
+          is_public_data: false,
+          provider_name: 'CARTO'
+        }
+      },
+      {
+        id: 'carto.abc.datasetvalidatearraynil',
+        type: 'dataset',
+        metadata: {
+          estimated_delivery_days: 0.0,
+          subscription_list_price: 0.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          available_in: nil,
+          name: 'CARTO dataset array nil',
+          is_public_data: false,
+          provider_name: 'CARTO'
+        }
+      },
+      {
+        id: 'carto.abc.inexistent',
+        type: 'dataset',
+        metadata: nil
+      }
+    ]
+  end
+
+  def cartographies_provider
+    [
+      {
+        id: 'carto.abc.geography1',
+        type: 'geography',
+        metadata: {
+          estimated_delivery_days: 3.0,
+          subscription_list_price: 90.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          available_in: %w{bq},
+          name: 'CARTO geography 1',
+          is_public_data: false,
+          provider_name: 'CARTO'
+        }
+      }
+    ]
   end
 end

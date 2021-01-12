@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 2b7a0d13988e1bde309e23ac39489b93b35a9a24
-  branch: chore/ch128685/update-pubsub-ruby-clients-to-2-3-0
+  revision: 626bc3bb7cd2edfdd3f0a7b9236dddbb7fccfee5
+  tag: v0.5.3
   specs:
-    cartodb-common (0.5.2)
+    cartodb-common (0.5.3)
       argon2 (~> 2)
       google-cloud-pubsub (~> 2.3)
       rails (>= 4, < 6)

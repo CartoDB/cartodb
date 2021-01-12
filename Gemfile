@@ -53,7 +53,7 @@ group :assets do
   gem "compass",               "1.0.3"
 end
 
-gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', branch: 'chore/ch128685/update-pubsub-ruby-clients-to-2-3-0'
+gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.5.3'
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '1.3.1'

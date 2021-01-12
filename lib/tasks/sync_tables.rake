@@ -86,10 +86,11 @@ namespace :cartodb do
           Carto::ConnectorConfiguration.create!(
             connector_provider: bigquery_beta,
             user_id: bq_config.user_id,
-            configuration_id: bq_config.configuration_id,
+            organization_id: bq_config.organization_id,
             enabled: bq_config.enabled,
             max_rows: bq_config.max_rows
           )
+          puts "  configuration for #{bq_config.user&.username || bq_config.configuration.name} replicated"
         end
       end
     end

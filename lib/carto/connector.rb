@@ -205,7 +205,7 @@ module Carto
         @params.reverse_merge!(connection: {})
         @params[:connection].merge!(refresh_token: @user.oauths.select('bigquery')&.token)
       end
-      billing_project = @params.delete[:billing_project]
+      billing_project = @params.delete(:billing_project)
       if billing_project.present?
         @params.reverse_merge!(connection: {})
         @params[:connection].merge!(billing_project: billing_project)

@@ -215,6 +215,7 @@ module Carto
 
     def bigquery_connection_missing_refresh_token?
       return true if @params[:connection].blank?
+
       (@params[:connection].keys & [:service_account, :access_token, :refresh_token]).empty?
     end
 

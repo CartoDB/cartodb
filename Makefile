@@ -67,7 +67,6 @@ WORKING_SPECS_1 = \
 	spec/lib/string_spec.rb \
 	spec/lib/image_metadata_spec.rb \
 	spec/lib/central_spec.rb \
-	spec/lib/trending_maps_spec.rb \
 	spec/lib/user_account_creator_spec.rb \
 	spec/lib/carto/filename_generator_spec.rb \
 	spec/lib/carto/http_header_authentication_spec.rb \
@@ -197,6 +196,7 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/db/sql_interface_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
 	spec/lib/carto/subscribers/central_user_commands_spec.rb \
+	spec/commands \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why

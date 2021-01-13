@@ -76,7 +76,7 @@ steps:
     - -c
     - |
       docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
-      docker build --build-arg BUNDLE_JOBS=16 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:latest .
+      docker build --build-arg BUNDLE_JOBS=16 --build-arg COMPILE_ASSETS=true -t gcr.io/cartodb-on-gcp-main-artifacts/builder:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:latest .
       docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${SHORT_SHA}  -f Dockerfile.resque .
       docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA}  -f Dockerfile.subscriber .
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA}

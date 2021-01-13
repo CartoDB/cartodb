@@ -16,10 +16,13 @@
     <template #default>
 
       <template v-if="!connectionsSuccessfullId">
-        <DatabaseConnectionForm v-if="type === 'database'"
+        <DatabaseConnectionForm v-if="type === 'database' && !isBigQuery"
           :connector="importOption"
           :connection="connection"
           @connectClicked="connectionSuccess"></DatabaseConnectionForm>
+        <BigQueryConnectionForm v-else-if="isBigQuery"
+          :connector="importOption"
+          :connection="connection" @connectionSuccess="connectionSuccess"></BigQueryConnectionForm>
         <OAuthConnectionForm v-else-if="type === 'cloud'"
           :connector="importOption"
           :connection="connection" @connectionSuccess="connectionSuccess"></OAuthConnectionForm>
@@ -44,6 +47,7 @@
 import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
+import BigQueryConnectionForm from 'new-dashboard/components/Connector/BigQueryConnectionForm';
 import OAuthConnectionForm from 'new-dashboard/components/Connector/OAuthConnectionForm';
 import DatabaseConnectionForm from 'new-dashboard/components/Connector/DatabaseConnectionForm';
 import { mapState } from 'vuex';
@@ -53,7 +57,8 @@ export default {
   components: {
     Dialog,
     DatabaseConnectionForm,
-    OAuthConnectionForm
+    OAuthConnectionForm,
+    BigQueryConnectionForm
   },
   props: {
     backNamedRoute: {
@@ -69,6 +74,9 @@ export default {
     ...mapState({
       rawConnections: state => state.connectors.connections
     }),
+    isBigQuery () {
+      return this.importOption.options.service === 'bigquery';
+    },
     importOption () {
       let connector = this.editing ? (this.connection ? this.connection.connector : null) : this.$route.params.connector;
       const option = getImportOption(connector);

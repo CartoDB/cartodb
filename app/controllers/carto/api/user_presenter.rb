@@ -106,10 +106,6 @@ module Carto
 
       def data(options = {})
         return {} if @user.nil?
-
-        calls = @user.get_api_calls(from: @user.last_billing_cycle, to: Date.today)
-        calls.fill(0, calls.size..29)
-
         db_size_in_bytes = @user.db_size_in_bytes
 
         data = {
@@ -167,11 +163,8 @@ module Carto
             subscriptions_premium_estimated_size_in_bytes: @user.subscriptions_premium_estimated_size_in_bytes
           },
           map_views: @user.map_views_count,
-          map_views_quota: @user.organization_user? ? @user.organization.map_view_quota : @user.map_view_quota,
+          map_views_quota: @user.organization_user? ? @user.organization.map_views_quota : @user.map_views_quota,
           unverified: @user.unverified?,
-          api_calls: calls,
-          api_calls_quota: @user.organization_user? ? @user.organization.map_view_quota : @user.map_view_quota,
-          api_calls_block_price: @user.organization_user? ? @user.organization.map_view_block_price : @user.map_view_block_price,
           geocoding: {
             quota:       @user.organization_user? ? @user.organization.geocoding_quota : @user.geocoding_quota,
             block_price: @user.organization_user? ? @user.organization.geocoding_block_price : @user.geocoding_block_price,

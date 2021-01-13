@@ -11,6 +11,7 @@ sudo make install
 
 ### Features
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
+- Add preview/visualization of maps in DO catalog [#15973](https://github.com/CartoDB/cartodb/pull/15973)
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 
 ### Bug fixes / enhancements
@@ -31,8 +32,13 @@ sudo make install
 - Add a default connection timeout of 30 seconds to Carto::Http::Client [#16020](https://github.com/CartoDB/cartodb/pull/16020)
 - Propagate request_id in MessageBroker logs [#16006](https://github.com/CartoDB/cartodb/pull/16006)
 - Don't report Coverband errors to Rollbar [#16021](https://github.com/CartoDB/cartodb/pull/16021)
+- Add private submodule [#16023](https://github.com/CartoDB/cartodb/pull/16023)
 - Maps API client now honors 429 Too Many Requests error [#16025](https://github.com/CartoDB/cartodb/pull/16025)
+- Fix a loop between our logger and rollbar [#16026](https://github.com/CartoDB/cartodb/pull/16026)
 - Make the MessageBroker subscriber PIDFILE check more resilient [#16022](https://github.com/CartoDB/cartodb/pull/16022)
+- Bump version of lib/sql submodule to 0.37.1
+- Public profile can be disabled via Feature Flag [#15982](https://github.com/CartoDB/cartodb/pull/15995)
+- Migrate Organization CRUD to MessageBroker [#15934](https://github.com/CartoDB/cartodb/pull/15934)
 
 4.44.0 (2020-11-20)
 -------------------

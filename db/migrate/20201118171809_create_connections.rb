@@ -15,6 +15,10 @@ migration(
       DateTime :created_at, null: false
       DateTime :updated_at, null: false
     end
+    run %{
+      INSERT INTO connections(user_id, connection_type, connector, name, token)
+      SELECT user_id, 'oauth-service', service, service, token FROM synchronization_oauths
+    }
   end,
   proc do
     drop_table :connections

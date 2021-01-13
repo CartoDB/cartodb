@@ -197,6 +197,7 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/db/sql_interface_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
 	spec/lib/carto/subscribers/central_user_commands_spec.rb \
+	spec/commands \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why

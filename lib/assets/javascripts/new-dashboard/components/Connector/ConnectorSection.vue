@@ -165,12 +165,14 @@ $controlSize: 36px;
         background-repeat: no-repeat;
         background-position: center;
         background-size: 14px;
-        opacity: .2;
+        opacity: .65;
       }
 
       &.disabled {
         pointer-events: none;
-        opacity: .4;
+        &:before {
+          opacity: .4;
+        }
       }
     }
 

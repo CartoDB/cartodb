@@ -15,9 +15,10 @@ describe Admin::PagesController do
   let(:belongs_to_org) { true }
   let(:user_org) { true }
   let(:organization) { create_organization_with_users(password_expiration_in_d: nil) }
+  let(:cartodb_host) { 'localhost.lan' }
 
   describe '#index' do
-    before { host!("#{organization.name}.localhost.lan") }
+    before { host!("#{organization.name}.#{cartodb_host}") }
     after { Carto::User.delete_all }
 
     it 'returns 404 if user does not belongs to host organization' do
@@ -45,14 +46,14 @@ describe Admin::PagesController do
 
       expect(last_response.status).to eq(302)
       expect(last_response.location).to match(%r{
-        http://#{organization.name}.localhost.lan.*/u/#{org_user_name}/dashboard
+        http://#{organization.name}.#{cartodb_host}.*/u/#{org_user_name}/dashboard
       }x)
     end
 
     it 'redirects if it is an org user but gets called without organization' do
       prepare_user(org_user_name, user_org, belongs_to_org)
 
-      host! "#{org_user_name}.localhost.lan"
+      host!("#{org_user_name}.#{cartodb_host}")
       get '', {}, JSON_HEADER
 
       expect(last_response.status).to eq(302)
@@ -86,7 +87,7 @@ describe Admin::PagesController do
       anyuser = prepare_user('anyuser')
       anyviewer = prepare_user('anyviewer')
       login_as(anyviewer, scope: anyviewer.username)
-      host! "#{anyuser.username}.localhost.lan"
+      host!("#{anyuser.username}.#{cartodb_host}")
 
       get '', {}, JSON_HEADER
 
@@ -94,39 +95,38 @@ describe Admin::PagesController do
       follow_redirect!
       last_response.status.should == 200
       uri = URI.parse(last_request.url)
-      uri.host.should == 'anyuser.localhost.lan'
+      expect(uri.host).to eq("anyuser.#{cartodb_host}")
       uri.path.should == '/me'
     end
 
     it 'redirects to user feed if not logged in' do
       prepare_user('anyuser')
-      host! 'anyuser.localhost.lan'
+      host!("anyuser.#{cartodb_host}")
 
       get '', {}, JSON_HEADER
 
       last_response.status.should == 302
       uri = URI.parse(last_response.location)
-      uri.host.should == 'anyuser.localhost.lan'
+      expect(uri.host).to eq("anyuser.#{cartodb_host}")
       uri.path.should == '/me'
       follow_redirect!
       last_response.status.should == 200
     end
 
     it 'redirects to local login page if no user is specified and Central is not enabled' do
-      Cartodb.with_config(cartodb_central_api: {}) do
+      Cartodb.with_config(message_broker: {}) do
         prepare_user('anyuser')
-        host! 'localhost.lan'
-        CartoDB.stubs(:session_domain).returns('localhost.lan')
+        host!(cartodb_host)
+        CartoDB.stubs(:session_domain).returns(cartodb_host)
         CartoDB.stubs(:subdomainless_urls?).returns(true)
 
-        get '', {}, JSON_HEADER
+        get root_path, {}, JSON_HEADER
 
-        last_response.status.should == 302
-        uri = URI.parse(last_response.location)
-        uri.host.should == 'localhost.lan'
-        uri.path.should == '/login'
-        follow_redirect!
-        last_response.status.should == 200
+        last_response_uri = URI.parse(last_response.location)
+
+        expect(last_response.status).to eq(302)
+        expect(last_response_uri.path).to eq(login_path)
+        expect(last_response_uri.host).to eq(cartodb_host)
       end
     end
 
@@ -139,42 +139,49 @@ describe Admin::PagesController do
           'port' => central_port,
           'username' => 'api',
           'password' => 'test'
+        },
+        message_broker: {
+          'project_id' => 'project_id',
+          'central_subscription_name' => 'subscription_name'
         }
       ) do
         prepare_user('anyuser')
-        host! 'localhost.lan'
-        CartoDB.stubs(:session_domain).returns('localhost.lan')
+        host!(cartodb_host)
+        CartoDB.stubs(:session_domain).returns(cartodb_host)
         CartoDB.stubs(:subdomainless_urls?).returns(true)
 
         get '', {}, JSON_HEADER
 
-        last_response.status.should == 302
-        uri = URI.parse(last_response.location)
-        uri.host.should == 'localhost.lan'
-        uri.path.should == '/login'
+        # Redirects to CartoDB login
+        last_response_uri = URI.parse(last_response.location)
+        expect(last_response.status).to eq(302)
+        expect(last_response_uri.path).to eq(login_path)
+
         follow_redirect!
 
-        last_response.status.should == 302
-        uri = URI.parse(last_response.location)
-        uri.host.should == central_host
-        uri.port.should == central_port
-        uri.path.should == '/login'
+        # Redirects to Central login
+        last_response_uri = URI.parse(last_response.location)
+        expect(last_response.status).to eq(302)
+        expect(last_response_uri.path).to eq(login_path)
+        expect(last_response_uri.host).to eq(central_host)
+        expect(last_response_uri.port).to eq(central_port)
+
         follow_redirect!
       end
     end
 
     it 'redirects and loads the dashboard if the user is logged in' do
       anyuser = prepare_user('anyuser')
-      host! 'localhost.lan'
+      host!(cartodb_host)
       login_as(anyuser, scope: anyuser.username)
-      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      CartoDB.stubs(:session_domain).returns(cartodb_host)
       CartoDB.stubs(:subdomainless_urls?).returns(true)
 
       get '', {}, JSON_HEADER
 
       last_response.status.should == 302
       uri = URI.parse(last_response.location)
-      uri.host.should == 'localhost.lan'
+      expect(uri.host).to eq(cartodb_host)
       uri.path.should == '/user/anyuser/dashboard'
     end
 
@@ -184,16 +191,16 @@ describe Admin::PagesController do
 
       username = 'endedwithu'
       anyuser = prepare_user(username)
-      host! 'localhost.lan'
+      host!(cartodb_host)
       login_as(anyuser, scope: anyuser.username)
-      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      CartoDB.stubs(:session_domain).returns(cartodb_host)
       CartoDB.stubs(:subdomainless_urls?).returns(true)
 
       get '', {}, JSON_HEADER
 
       last_response.status.should == 302
       uri = URI.parse(last_response.location)
-      uri.host.should == 'localhost.lan'
+      expect(uri.host).to eq(cartodb_host)
       uri.path.should == "/user/#{username}/dashboard"
 
       login_as(anyuser, scope: anyuser.username)
@@ -204,12 +211,12 @@ describe Admin::PagesController do
     end
 
     it 'redirects to login without login' do
-      host! 'localhost.lan'
+      host!(cartodb_host)
 
       get '', {}, JSON_HEADER
 
       uri = URI.parse(last_response.location)
-      uri.host.should == 'localhost.lan'
+      expect(uri.host).to eq(cartodb_host)
       uri.path.should == "/login"
     end
   end
@@ -225,7 +232,7 @@ describe Admin::PagesController do
       include_context 'organization with users helper'
 
       before(:each) do
-        host! "#{@carto_organization.name}.localhost.lan:#{Cartodb.config[:http_port]}"
+        host!("#{@carto_organization.name}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
       end
 
       it 'returns an empty body if there are not visualizations' do
@@ -256,7 +263,7 @@ describe Admin::PagesController do
       include_context 'users helper'
 
       before(:each) do
-        host! "#{@carto_user1.username}.localhost.lan:#{Cartodb.config[:http_port]}"
+        host!("#{@carto_user1.username}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
       end
 
       it 'returns public and published visualizations' do
@@ -282,7 +289,7 @@ describe Admin::PagesController do
     include_context 'users helper'
 
     before(:each) do
-      host! "#{@carto_user1.username}.localhost.lan:#{Cartodb.config[:http_port]}"
+      host!("#{@carto_user1.username}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
       Carto::Visualization.find_each(&:destroy)
     end
 

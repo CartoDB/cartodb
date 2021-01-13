@@ -361,16 +361,8 @@ describe 'Warden' do
       request.fullpath.should eql '/login'
     end
 
-    it 'updates the session_salt at logout' do
-      initial_session_salt = @user.session_salt
-
-      logout
-
-      initial_session_salt.should_not == @user.reload.session_salt
-    end
-
-    it 'updates the user in Central at logout' do
-      TopicDouble.any_instance.expects(:publish).with(:update_user, anything).once
+    it 'invalidates all sessions after logout' do
+      ::Carto::User.any_instance.expects(:invalidate_all_sessions!).once
 
       logout
     end

@@ -76,7 +76,7 @@ namespace :cartodb do
   end
 
   def replicate_bq_config
-    puts "Replicating configuration"
+    puts 'Replicating configuration'
     bigquery = Carto::ConnectorProvider.find_by(name: 'bigquery')
     bigquery_beta = Carto::ConnectorProvider.find_by(name: 'bigquery-beta')
     Carto::ConnectorConfiguration.where(connector_provider_id: bigquery.id).find_each do |bq_config|
@@ -159,12 +159,10 @@ namespace :cartodb do
   end
 
   desc 'Port BQ beta syncs to new connector'
-  task port_beta_bq_syncs_to_new: [:environment, :username] do |task, args|
+  task port_beta_bq_syncs_to_new: [:environment, :username] do |_task, args|
     dry_mode = ENV['DRY_RUN'] != 'NO'
 
-    if dry_mode
-      puts 'running in "dry" mode; set DRY_RUN=NO to make actual changes'
-    end
+    puts 'running in "dry" mode; set DRY_RUN=NO to make actual changes' if dry_mode
 
     if args.user != 'all-the-users'
       user = Carto::User.find_by(username: args.username)

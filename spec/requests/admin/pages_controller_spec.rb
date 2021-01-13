@@ -16,9 +16,11 @@ describe Admin::PagesController do
   let(:user_org) { true }
   let(:organization) { create_organization_with_users(password_expiration_in_d: nil) }
   let(:cartodb_host) { 'localhost.lan' }
+  let!(:user) { create(:valid_user, private_tables_enabled: true, private_maps_enabled: true) }
 
   describe '#index' do
     before { host!("#{organization.name}.#{cartodb_host}") }
+
     after { Carto::User.delete_all }
 
     it 'returns 404 if user does not belongs to host organization' do
@@ -229,32 +231,31 @@ describe Admin::PagesController do
     end
 
     describe 'for organizations' do
-      include_context 'organization with users helper'
+      let(:organization) { create(:organization_with_users) }
+      let(:organization_user) { organization.non_owner_users.first }
 
-      before(:each) do
-        host!("#{@carto_organization.name}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
-      end
+      before { host!("#{organization.name}.#{cartodb_host}:#{Cartodb.config[:http_port]}") }
 
       it 'returns an empty body if there are not visualizations' do
-        get public_sitemap_url(user_domain: @carto_organization.name)
+        get public_sitemap_url(user_domain: organization.name)
         document = Nokogiri::XML(last_response.body)
         document.child.child.text.should eq "\n"
       end
 
       it 'returns public and published visualizations' do
         private_attrs = { privacy: Carto::Visualization::PRIVACY_PRIVATE }
-        create_full_visualization(@carto_org_user_1, visualization_attributes: private_attrs)
+        create_full_visualization(organization_user, visualization_attributes: private_attrs)
         unpublished_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC, version: 3 }
-        create_full_visualization(@carto_org_user_1, visualization_attributes: unpublished_attrs)
+        create_full_visualization(organization_user, visualization_attributes: unpublished_attrs)
         public_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC }
-        _, _, _, visualization = create_full_visualization(@carto_org_user_1, visualization_attributes: public_attrs)
-        get public_sitemap_url(user_domain: @carto_organization.name)
+        _, _, _, visualization = create_full_visualization(organization_user, visualization_attributes: public_attrs)
+        get public_sitemap_url(user_domain: organization.name)
         last_response.status.should eq 200
         document = Nokogiri::XML(last_response.body)
         url_and_dates = document.search('url').map { |url| [url.at('loc').text, url.at('lastmod').text] }
         url_and_dates.count.should eq 1
 
-        url1 = public_visualizations_public_map_url(user_domain: @carto_org_user_1.username, id: visualization.id)
+        url1 = public_visualizations_public_map_url(user_domain: organization_user.username, id: visualization.id)
         url_and_dates.map { |url_and_date| url_and_date[0] }.should eq [url1.gsub(/\/user\/[^\/]*\//, '/')]
       end
     end
@@ -262,18 +263,18 @@ describe Admin::PagesController do
     describe 'for users' do
       include_context 'users helper'
 
-      before(:each) do
-        host!("#{@carto_user1.username}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
+      before do
+        host!("#{user.username}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
       end
 
       it 'returns public and published visualizations' do
         private_attrs = { privacy: Carto::Visualization::PRIVACY_PRIVATE }
-        create_full_visualization(@carto_user1, visualization_attributes: private_attrs)
+        create_full_visualization(user, visualization_attributes: private_attrs)
         unpublished_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC, version: 3 }
-        create_full_visualization(@carto_user1, visualization_attributes: unpublished_attrs)
+        create_full_visualization(user, visualization_attributes: unpublished_attrs)
         public_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC }
-        _, _, _, visualization = create_full_visualization(@carto_user1, visualization_attributes: public_attrs)
-        get public_sitemap_url(user_domain: @carto_user1.username)
+        _, _, _, visualization = create_full_visualization(user, visualization_attributes: public_attrs)
+        get public_sitemap_url(user_domain: user.username)
         last_response.status.should eq 200
         document = Nokogiri::XML(last_response.body)
         url_and_dates = document.search('url').map { |url| [url.at('loc').text, url.at('lastmod').text] }
@@ -288,18 +289,18 @@ describe Admin::PagesController do
   describe '#datasets' do
     include_context 'users helper'
 
-    before(:each) do
-      host!("#{@carto_user1.username}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
+    before do
+      host!("#{user.username}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
       Carto::Visualization.find_each(&:destroy)
     end
 
     it 'returns 200 if a dataset has no table' do
-      FactoryGirl.create(:table_visualization, user_id: @carto_user1.id, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+      create(:table_visualization, user_id: user.id, privacy: Carto::Visualization::PRIVACY_PUBLIC)
       Carto::Visualization.count.should eql 1
       visualization = Carto::Visualization.first
       visualization.table.should be_nil
 
-      get public_datasets_home_url(user_domain: @carto_user1.username)
+      get public_datasets_home_url(user_domain: user.username)
 
       last_response.status.should == 200
       last_response.body.should =~ /doesn\'t have any items/

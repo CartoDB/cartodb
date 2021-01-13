@@ -12,7 +12,7 @@ FactoryGirl.define do
     here_isolines_quota { 1000 }
     obs_snapshot_quota { 1000 }
     obs_general_quota { 1000 }
-    map_view_quota { 100_000 }
+    map_views_quota { 100_000 }
     website { 'carto.com' }
     description { 'Lorem ipsum dolor sit amet' }
     display_name { 'Vizzuality Inc' }
@@ -82,7 +82,7 @@ FactoryGirl.define do
       here_isolines_quota { 1000 }
       obs_snapshot_quota { 1000 }
       obs_general_quota { 1000 }
-      map_view_quota { 100_000 }
+      map_views_quota { 100_000 }
       website { 'carto.com' }
       description { 'Lorem ipsum dolor sit amet' }
       display_name { 'Vizzuality Inc' }

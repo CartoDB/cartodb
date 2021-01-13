@@ -17,7 +17,7 @@ module Carto
     CURRENT_VERSION = '1.0.4'.freeze
     EXPORTED_ORGANIZATION_ATTRIBUTES = [
       :id, :seats, :quota_in_bytes, :created_at, :updated_at, :name, :avatar_url, :owner_id, :website, :description,
-      :display_name, :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota, :auth_token,
+      :display_name, :discus_shortname, :twitter_username, :geocoding_quota, :map_views_quota, :auth_token,
       :geocoding_block_price, :map_view_block_price, :twitter_datasource_enabled, :twitter_datasource_block_price,
       :twitter_datasource_block_size, :twitter_datasource_quota, :google_maps_key, :google_maps_private_key, :color,
       :default_quota_in_bytes, :whitelisted_email_domains, :admin_email, :auth_username_password_enabled,

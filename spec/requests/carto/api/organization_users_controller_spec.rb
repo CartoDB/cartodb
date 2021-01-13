@@ -860,24 +860,26 @@ describe Carto::Api::OrganizationUsersController do
     end
 
     describe 'with Central' do
+      include_context 'with MessageBroker stubs'
+
+      let(:organization) { create(:organization_with_users) }
+      let(:user) { organization.non_owner_users.first }
+
       before do
         ::User.any_instance.unstub(:delete_in_central)
         Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       end
 
-      let(:organization) { @organization.reload }
-      let(:user_to_be_deleted) { organization.non_owner_users.first }
-
       it 'requests user deletion to Central' do
-        Carto::Common::MessageBroker::Topic.any_instance.expects(:publish).once.with(
+        TopicDouble.any_instance.expects(:publish).once.with(
           :delete_org_user,
-          { organization_name: organization.name, username: user_to_be_deleted.username }
+          { organization_name: organization.name, username: user.username }
         )
 
         login(organization.owner)
 
         delete api_v2_organization_users_delete_url(id_or_name: organization.name,
-                                                    u_username: user_to_be_deleted.username)
+                                                    u_username: user.username)
 
         last_response.status.should eq 200
       end
@@ -888,7 +890,7 @@ describe Carto::Api::OrganizationUsersController do
         login(organization.owner)
 
         delete api_v2_organization_users_delete_url(id_or_name: organization.name,
-                                                    u_username: user_to_be_deleted.username)
+                                                    u_username: user.username)
 
         last_response.status.should eq 500
       end

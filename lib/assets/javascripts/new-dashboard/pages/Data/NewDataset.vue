@@ -19,10 +19,10 @@
         <template v-if="!loading">
           <template v-if="connections.length > 0">
             <h3 class="is-caption is-semibold">{{ $t('DataPage.fromYourConnections') }}</h3>
-            <ConnectorSection class="u-mt--24" :connectors="connections" @conenectionSelected="conenectionSelected"></ConnectorSection>
+            <ConnectorSection class="u-mt--24" :connectors="connections" @connectionSelected="connectionSelected"></ConnectorSection>
             <h3 class="is-caption is-semibold u-mt--36 u-mb--16">{{ $t('DataPage.fromNewConnections') }}</h3>
           </template>
-          <ConnectorSection @connectorSelected="fileSelected" :label="$t('DataPage.localFiles')" :connectors="localFiles" carrousel></ConnectorSection>
+          <ConnectorSection @connectorSelected="fileSelected" :label="$t('DataPage.localFiles')" :connectors="localFiles" carousel></ConnectorSection>
           <ConnectorsList @connectorSelected="connectorSelected"></ConnectorsList>
         </template>
         <LoadingState v-else primary/>
@@ -129,7 +129,7 @@ export default {
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {
         const option = getImportOption(raw.connector);
-        return { id: option.name, conenection_id: raw.id, label: raw.name, beta: option.options && option.options.beta };
+        return { id: option.name, connection_id: raw.id, label: raw.name, beta: option.options && option.options.beta };
       }) : [];
     },
     getRouteNamePrefix () {
@@ -172,7 +172,7 @@ export default {
     navigateToFile (id) {
       this.$router.push({ name: `${this.getRouteNamePrefix}add-local-file`, params: { extension: id } });
     },
-    conenectionSelected (id) {
+    connectionSelected (id) {
       this.$router.push({ name: `${this.getRouteNamePrefix}new-dataset-connection-dataset`, params: { id: id } });
     },
     selectTab (tabName) {

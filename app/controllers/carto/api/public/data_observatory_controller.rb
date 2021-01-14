@@ -263,7 +263,7 @@ module Carto
           doss = Carto::DoSyncServiceFactory.get_for_user(@user)
           entity_info = doss.parsed_entity_id(metadata[:id])
           # 'requested' datasets may no exists yet in 'bq', but let's assume it will...
-          available_in = (metadata[:available_in].blank? && status == 'requested')? ['bq'] : metadata[:available_in]
+          available_in = (metadata[:available_in].blank? && status == 'requested') ? ['bq'] : metadata[:available_in]
           entity_info.merge({
             dataset_id: metadata[:id],
             available_in: available_in,

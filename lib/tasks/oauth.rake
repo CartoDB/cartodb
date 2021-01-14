@@ -1,4 +1,3 @@
-require_relative '../../lib/cartodb/trending_maps'
 require_relative '../../lib/static_maps_url_helper'
 
 namespace :cartodb do

@@ -8,8 +8,8 @@
       <div :class="'is-' + type"></div>
       <span class="is-semibold u-mt--8">{{ label }}</span>
     </div>
-    <div class="tools">
-      <Tooltip :text="connectionParamsFormated" position="bottom-right"  class="u-flex u-pt--16 u-pb--16 u-pl--20 u-pr--20" v-if="isDatabase">
+    <Tooltip :text="connectionParamsFormated" position="bottom-right" class="tools u-pt--16 u-pb--16 u-pl--20 u-pr--20">
+      <div  class="u-flex u-width--100" v-if="isDatabase">
         <div class="text is-small u-flex__grow--1 u-mr--16 u-flex u-flex__align-center conn-name">
           <img class="u-mr--4" src="../../assets/icons/datasets/connection-title.svg" width="16" height="16" />
           <span class="conn-name">{{ connectionName }}</span>
@@ -18,11 +18,11 @@
           <img class="u-mr--4" src="../../assets/icons/datasets/connection-tool.svg" width="16" height="16" />
           {{ $t('DataPage.connectionParameters') }}
         </div>
-      </Tooltip>
+      </div>
       <div class="text is-small is-txtMidGrey u-width--100 oauth" v-else>
         {{ $t('DataPage.connectionThroughtOauth') }}
       </div>
-    </div>
+    </Tooltip>
   </div>
 </template>
 

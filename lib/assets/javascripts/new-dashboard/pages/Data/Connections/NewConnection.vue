@@ -5,7 +5,8 @@
     :showSubHeader="false"
   >
     <template #default>
-      <ConnectorsList @connectorSelected="connectorSelected" :showUrlOption="false"></ConnectorsList>
+      <ConnectorsList v-if="!loading" @connectorSelected="connectorSelected" :showUrlOption="false"></ConnectorsList>
+      <LoadingState v-else primary/>
     </template>
   </Dialog>
 </template>
@@ -14,14 +15,24 @@
 
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
+import LoadingState from 'new-dashboard/components/States/LoadingState';
+import { mapState } from 'vuex';
 
 export default {
   name: 'NewConnection',
   components: {
     Dialog,
-    ConnectorsList
+    ConnectorsList,
+    LoadingState
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      loading: state => state.connectors.loadingConnections
+    })
+  },
+  mounted: function () {
+    this.$store.dispatch('connectors/fetchConnectionsList');
+  },
   methods: {
     connectorSelected (id) {
       this.$router.push({ name: 'new-connection-connector-selected', params: { connector: id } });

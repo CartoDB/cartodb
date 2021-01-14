@@ -12,7 +12,7 @@
           <li class="grid-cell grid-cell--col12 quota-listitem">
             <MemoryQuota></MemoryQuota>
           </li>
-          <li class="grid-cell grid-cell--col12 quota-listitem" v-if="!hideMapLoadsMetrics">
+          <li class="grid-cell grid-cell--col12 quota-listitem" v-if="showMapLoadsMetrics">
             <MapLoadsQuota></MapLoadsQuota>
             <div class="quota-billing">
               <span class="quota-billingday text is-small is-txtSoftGrey">
@@ -36,7 +36,7 @@
 
 <script>
 import { mapState } from 'vuex';
-// import { hasFeatureEnabled } from 'new-dashboard/core/models/user';
+import { hasFeatureEnabled } from 'new-dashboard/core/models/user';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import MemoryQuota from './MemoryQuota';
 import MapLoadsQuota from './MapLoadsQuota';
@@ -54,7 +54,7 @@ export default {
   computed: {
     ...mapState({
       billingPeriod: state => state.user.next_billing_period,
-      hideMapLoadsMetrics: state => true // hasFeatureEnabled(state.user, 'map_loads_metric_disabled')
+      showMapLoadsMetrics: state => hasFeatureEnabled(state.user, 'map_loads_metric_enabled')
     }),
     billingDay () {
       return format(new Date(this.billingPeriod), 'Do');

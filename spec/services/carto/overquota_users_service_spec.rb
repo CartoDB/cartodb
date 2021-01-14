@@ -22,8 +22,8 @@ describe 'Carto::OverquotaUsersService' do
   end
 
   it "should return users near their geocoding quota" do
-    ::User.any_instance.stubs(:get_api_calls).returns([0])
-    ::User.any_instance.stubs(:map_view_quota).returns(120)
+    ::User.any_instance.stubs(:map_views_count).returns(0)
+    ::User.any_instance.stubs(:map_views_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(81)
     ::User.any_instance.stubs(:geocoding_quota).returns(100)
     overquota.should be_empty
@@ -33,8 +33,8 @@ describe 'Carto::OverquotaUsersService' do
   end
 
   it "should return users near their here isolines quota" do
-    ::User.any_instance.stubs(:get_api_calls).returns([0])
-    ::User.any_instance.stubs(:map_view_quota).returns(120)
+    ::User.any_instance.stubs(:map_views_count).returns(0)
+    ::User.any_instance.stubs(:map_views_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
     ::User.any_instance.stubs(:geocoding_quota).returns(100)
     ::User.any_instance.stubs(:get_here_isolines_calls).returns(81)
@@ -46,8 +46,8 @@ describe 'Carto::OverquotaUsersService' do
   end
 
   it "should return users near their data observatory snapshot quota" do
-    ::User.any_instance.stubs(:get_api_calls).returns([0])
-    ::User.any_instance.stubs(:map_view_quota).returns(120)
+    ::User.any_instance.stubs(:map_views_count).returns(0)
+    ::User.any_instance.stubs(:map_views_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
     ::User.any_instance.stubs(:geocoding_quota).returns(100)
     ::User.any_instance.stubs(:get_here_isolines_calls).returns(0)
@@ -63,8 +63,8 @@ describe 'Carto::OverquotaUsersService' do
   end
 
   it "should return users near their data observatory general quota" do
-    ::User.any_instance.stubs(:get_api_calls).returns([0])
-    ::User.any_instance.stubs(:map_view_quota).returns(120)
+    ::User.any_instance.stubs(:map_views_count).returns(0)
+    ::User.any_instance.stubs(:map_views_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
     ::User.any_instance.stubs(:geocoding_quota).returns(100)
     ::User.any_instance.stubs(:get_here_isolines_calls).returns(0)
@@ -79,8 +79,8 @@ describe 'Carto::OverquotaUsersService' do
     overquota(0.10).should be_empty
   end
   it "should return users near their twitter quota" do
-    ::User.any_instance.stubs(:get_api_calls).returns([0])
-    ::User.any_instance.stubs(:map_view_quota).returns(120)
+    ::User.any_instance.stubs(:map_views_count).returns(0)
+    ::User.any_instance.stubs(:map_views_quota).returns(120)
     ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
     ::User.any_instance.stubs(:geocoding_quota).returns(100)
     ::User.any_instance.stubs(:get_twitter_imports_count).returns(81)

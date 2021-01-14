@@ -98,11 +98,10 @@ module Carto
             unless (params[:subscribed] == 'true' and not v.subscription.present?) or (params[:sample] == 'true' and not v.sample.present?)
         end.compact
 
-        total_subscriptions = 0
-        vqb.filtered_query.find_each{|v| total_subscriptions += 1 if v.subscription.present?}
-
-        total_samples = 0
-        vqb.filtered_query.find_each{|v| total_samples += 1 if v.sample.present?}
+        total_subscriptions = vqb.filtered_query.includes(map: { user_table: :data_import })
+                                 .find_each.lazy.count { |v| v.subscription.present? }
+        total_samples = vqb.filtered_query.includes(map: { user_table: :data_import })
+                           .find_each.lazy.count { |v| v.sample.present? }
 
         total_entries = vqb.count
         total_entries = total_subscriptions if params[:subscribed] == 'true'

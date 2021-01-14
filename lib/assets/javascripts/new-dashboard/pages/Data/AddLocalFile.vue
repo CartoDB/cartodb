@@ -14,16 +14,12 @@
     <div v-show="!isFileSelected">
       <div class="u-flex u-flex__direction--column u-flex__align--center">
         <span class="is-small">{{ $t('DataPage.formats') }}: CSV, GeoJSON, GPKG, SHP, KML, OSM, CARTO, GPX, FGDB <a target="_blank" href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">{{ $t('DataPage.learnmore') }}</a></span>
-        <div v-show="extension !== 'url'">
-          <div ref="dragZone" :class="{dragged: dragged}" class="drag-zone u-mt--32 u-flex u-flex__direction--column u-flex__align--center u-flex__justify--center">
-            <img src="../../assets/icons/datasets/move-up.svg">
-            <h4 class="is-small is-semibold u-mt--16" style="text-align: center;">Drag and drop your file<br>or</h4>
-            <button @click="selectFile()" class="button is-primary u-mt--16">Browse</button>
-            <input @change="fileSelected" ref="file" type="file">
-          </div>
-          <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert">{{fileValidation.msg}}</p>
+        <div v-if="extension !== 'url'">
+          <FileInput
+            label=""
+            @change="onFileChange"></FileInput>
         </div>
-        <div v-show="extension === 'url'">
+        <div v-else-if="extension === 'url'">
           <div class="u-flex u-flex__align--center u-mt--32">
             <label class="text is-small u-mr--16">{{ $t('DataPage.url') }}</label>
             <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--longer">
@@ -74,19 +70,19 @@
 <script>
 
 import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
-import Dropzone from 'dropzone';
+import FileInput from 'new-dashboard/components/forms/FileInput';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import * as Formatter from 'new-dashboard/utils/formatter';
-require('dragster');
 
 export default {
   name: 'AddLocalFile',
   inject: ['backboneViews'],
   mixins: [uploadData],
   components: {
+    FileInput,
     Dialog,
     DatasetSyncCard,
     GuessPrivacyFooter
@@ -96,7 +92,6 @@ export default {
   },
   data () {
     return {
-      dragged: false,
       urlToUpload: '',
       fileValidation: {
         valid: false,
@@ -105,22 +100,6 @@ export default {
       extension: this.$route.params.extension,
       uploadObject: this.getUploadObject()
     };
-  },
-  mounted () {
-    this.clearFile();
-    this.dragster = new Dragster(this.$refs.dragZone); // eslint-disable-line
-    this.$refs.dragZone.addEventListener('dragster:enter', this.dragsterEnter);
-    this.$refs.dragZone.addEventListener('dragster:leave', this.dragsterLeave);
-    this.dropzone = new Dropzone(this.$refs.dragZone, {
-      url: ':)',
-      autoProcessQueue: false,
-      previewsContainer: false
-    });
-    this.dropzone.on('drop', e => {
-      this.dragster.dragleave(event);
-      this.dropzone.removeFile(event);
-      this.setFile(event.dataTransfer.files);
-    });
   },
   computed: {
     getRouteNamePrefix () {
@@ -137,27 +116,24 @@ export default {
     }
   },
   methods: {
+    clearFile () {
+      this.uploadObject.type = '';
+      this.uploadObject.value = '';
+      this.fileValidation = {
+        valid: false,
+        msg: ''
+      };
+    },
     changeSyncInterval (interval) {
       this.uploadObject.interval = interval;
     },
     setAltImage (event) {
       event.target.src = require('../../assets/icons/datasets/local-file.svg');
     },
-    dragsterEnter () {
-      this.dragged = true;
-    },
-    dragsterLeave () {
-      this.dragged = false;
-    },
-    selectFile () {
-      this.$refs.file.click();
-    },
-    fileSelected (event) {
-      this.setFile(event.target.files);
-      event.target.value = '';
+    onFileChange (file) {
+      this.setFile([file]);
     },
     setFile (files) {
-      this.clearFile();
       if (files && files.length > 0) {
         this.fileValidation = this.validateFile(files, this.remainingByteQuota);
         if (this.fileValidation.valid) {
@@ -172,14 +148,6 @@ export default {
     },
     changePrivacy (value) {
       this.uploadObject.privacy = value;
-    },
-    clearFile () {
-      this.uploadObject.type = '';
-      this.uploadObject.value = '';
-      this.fileValidation = {
-        valid: false,
-        msg: ''
-      };
     },
     humanFileSize (size) {
       return Formatter.humanFileSize(size);

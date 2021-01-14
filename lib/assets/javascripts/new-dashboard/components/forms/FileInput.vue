@@ -83,6 +83,17 @@ export default {
     clearFile () {
       this.file = null;
     }
+  },
+  beforeDestroy () {
+    if (this.dragster) {
+      this.dragster.removeListeners();
+      this.dragster.reset();
+    }
+    this.$refs.dragZone.removeEventListener('dragster:enter', this.dragsterEnter);
+    this.$refs.dragZone.removeEventListener('dragster:leave', this.dragsterLeave);
+    if (this.dropzone) {
+      this.dropzone.destroy();
+    }
   }
 };
 </script>

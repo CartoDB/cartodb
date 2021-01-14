@@ -1088,6 +1088,13 @@ from_external_source | Has the value **false** for all connector-based synchroni
 
 **Warning:** This connector is in **BETA** stage and the API might change or have limited support-
 
+**Warning:** As of 2021-01-14 the following parameters of the BETA connector has been removed:
+* `storage_api`: Now Storage API is always used
+* `location`
+* Also note that the `project` and `dataset` parameters could be used in the past as default values for table
+  names referenced in `sql_query`. Now tables in queries must be fully qualified with project and dataset names
+  (`project.dataset.table`) and these parameters are used only for `table` imports.
+
 The BigQuery Connector allows you to import data into a CARTO account as tables from BigQuery.
 
 You can use the BigQuery Connector to:

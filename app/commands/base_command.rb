@@ -7,13 +7,13 @@ class BaseCommand
     :request_id
   )
 
-  def self.run(message = nil)
-    new(message).run
+  def self.run(params = {})
+    new(params).run
   end
 
-  def initialize(message = nil, extra_context = {})
-    self.params = message.payload
-    self.request_id = Carto::Common::CurrentRequest.request_id || message.request_id
+  def initialize(params = {}, extra_context = {})
+    self.params = params.with_indifferent_access
+    self.request_id = Carto::Common::CurrentRequest.request_id || extra_context[:request_id]
     self.notifications_topic = extra_context[:notifications_topic]
     self.logger = extra_context[:logger] || Rails.logger
   end

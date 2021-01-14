@@ -46,15 +46,15 @@ namespace :message_broker do
                                      &central_user_commands.method(:delete_user))
 
       subscription.register_callback(:update_organization) do |message|
-        OrganizationCommands::Update.new(message, { logger: logger }).run
+        OrganizationCommands::Update.new(message.payload, { logger: logger, request_id: message.request_id }).run
       end
 
       subscription.register_callback(:create_organization) do |message|
-        OrganizationCommands::Create.new(message, { notifications_topic: notifications_topic, logger: logger }).run
+        OrganizationCommands::Create.new(message.payload,{ notifications_topic: notifications_topic, logger: logger, request_id: message.request_id }).run
       end
 
       subscription.register_callback(:delete_organization) do |message|
-        OrganizationCommands::Delete.new(message, { notifications_topic: notifications_topic, logger: logger }).run
+        OrganizationCommands::Delete.new(message.payload, { notifications_topic: notifications_topic, logger: logger, request_id: message.request_id }).run
       end
 
       at_exit do

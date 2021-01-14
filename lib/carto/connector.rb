@@ -15,7 +15,7 @@ module Carto
       @provider_name ||= DEFAULT_PROVIDER
 
       @user = user
-      temporay_parameters_adjustment_for_new_bigquery_connector
+      temporary_parameters_adjustment_for_new_bigquery_connector
 
       raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
       @provider = Connector.provider_class(@provider_name).try :new, parameters: @params, user: @user, **args
@@ -198,7 +198,7 @@ module Carto
     private
 
     # TODO: remove when new connections are in place
-    def temporay_parameters_adjustment_for_new_bigquery_connector
+    def temporary_parameters_adjustment_for_new_bigquery_connector
       return unless @provider_name == 'bigquery'
 
       if bigquery_connection_missing_refresh_token?

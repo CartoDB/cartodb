@@ -1171,7 +1171,6 @@ table \| sql_query | Required. Either identify the BigQuery table to be imported
 import_as | Can be used to specifiy the name of the imported dataset (optional)
 
 Note that you could either import from a query using `sql_query` or from a table using `table`.
-Note also that by default the Storage API is not used.
 
 #### Import a Table
 

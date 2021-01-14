@@ -826,6 +826,7 @@
     "BigQuery": {
       "title": "Your BigQuery credentials",
       "connName": "Name",
+      "serviceAccountError": "Invalid service account",
       "billingProject": "Billing project",
       "billingHelper": "Project ID for the Google Cloud project that will run the queries and be charged for the expenses. Example: my-project-identifies. More info <a href='#'>here</a>",
       "deafultProject": "Default project ID",

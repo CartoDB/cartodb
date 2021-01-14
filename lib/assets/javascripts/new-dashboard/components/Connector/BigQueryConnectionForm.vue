@@ -149,9 +149,7 @@ export default {
         this.error = '';
         this.projects = (await this.$store.dispatch('connectors/checkServiceAccount', serviceAccount)).map(p => ({ id: p.id, label: p.friendly_name }));
       } catch (e) {
-        this.error = 'Invalid service account';
-        this.projects = [{}] 
-        console.error('TODO: error');
+        this.error = this.$t('ConnectorsPage.BigQuery.serviceAccountError');
       }
     }
   }

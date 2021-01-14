@@ -35,7 +35,10 @@ import Pagination from 'new-dashboard/components/Pagination';
 export default {
   name: 'DatasetListForConnectors',
   props: {
-    sharedTab: Boolean
+    sharedTab: Boolean,
+    multiSelect: {
+      default: true
+    }
   },
   components: {
     DatasetCard,
@@ -68,7 +71,7 @@ export default {
   },
   methods: {
     toggleDatasetSelection (datasetId) {
-      let newSelection = { ...this.selectedDataset };
+      let newSelection = this.multiSelect ? { ...this.selectedDataset } : {};
       newSelection[datasetId] = !newSelection[datasetId];
       this.selectedDataset = newSelection;
       this.$emit(

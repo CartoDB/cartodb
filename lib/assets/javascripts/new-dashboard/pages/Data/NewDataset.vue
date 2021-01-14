@@ -27,10 +27,11 @@
         </template>
         <LoadingState v-else primary/>
       </div>
-      <div v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou">
+      <div ref="datasetListForConnectors" v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou">
         <DatasetListForConnectors
-          v-if="!creeatingMap"
+          v-if="!creeatingMapOrLayer"
           :sharedTab='selectedTab === TABS.sharedWithYou'
+          :multiSelect="mode==='map'"
           @datasetSelected="updateDatasetSelection"
           @goToConnectTab="selectTab(TABS.newDataset)"
         ></DatasetListForConnectors>
@@ -39,8 +40,8 @@
     </template>
     <template #footer>
       <div v-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou" class="modal-footer u-flex u-flex__justify--end">
-        <button v-if="mode==='map'" @click="createMap" :disabled="!canCreateMaps || selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createMap`)}}</button>
-        <button v-if="mode==='layer'" :disabled="selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createLayer`)}}</button>
+        <button v-if="mode==='map' && !creeatingMapOrLayer" @click="createMap" :disabled="!canCreateMaps || selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createMap`)}}</button>
+        <button v-if="mode==='layer' && !creeatingMapOrLayer" @click="createLayer" :disabled="selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createLayer`)}}</button>
       </div>
     </template>
   </Dialog>
@@ -108,6 +109,7 @@ const TABS = {
 
 export default {
   name: 'NewDataset',
+  inject: ['addLayer'],
   mixins: [uploadData],
   components: {
     Dialog,
@@ -136,7 +138,7 @@ export default {
       return this.$route.name.replace('new-dataset', '');
     },
     showSubheader () {
-      return this.mode === 'map' || this.mode === 'layer';
+      return (this.mode === 'map' || this.mode === 'layer') && (!this.creeatingMapOrLayer);
     },
     canCreateMaps () {
       return this.$store.getters['user/canCreateMaps'];
@@ -147,7 +149,7 @@ export default {
       localFiles: LOCAL_FILES,
       selectedTab: TABS.newDataset,
       selectedDatasets: [],
-      creeatingMap: false
+      creeatingMapOrLayer: false
     };
   },
   created: function () {
@@ -183,11 +185,14 @@ export default {
     },
     async createMap () {
       if (this.mode === 'map') {
-        this.creeatingMap = true;
+        this.creeatingMapOrLayer = true;
         const id = await this.$store.dispatch('maps/createVisualizationFromDataset', this.selectedDatasets.map(d => d.name));
-        this.creeatingMap = false;
         window.location.replace(`${this.baseUrl}/builder/${id}`);
       }
+    },
+    createLayer () {
+      this.creeatingMapOrLayer = true;
+      this.addLayer({...this.selectedDatasets[0]}, this.$refs.datasetListForConnectors);
     }
   }
 };

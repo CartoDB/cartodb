@@ -24,9 +24,14 @@
           <button @click="accept" class="button is-primary u-ml--36">Accept and connect </button>
         </div>
       </div>
-      <FileInput v-else-if="!showDisclaimer && !isFileSelected"
-        label="Upload your service account file"
-        @change="onFileChange"></FileInput>
+      <div v-else-if="!showDisclaimer && !isFileSelected">
+        <FileInput
+          label="Upload your service account file"
+          @change="onFileChange"></FileInput>
+        <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--16" v-if="error">
+          {{ error }}
+        </div>
+      </div>
       <div v-else-if="!showDisclaimer && isFileSelected" class="u-flex u-flex__direction--column">
         <h4 class="is-small is-semibold">Your BigQuery credentials</h4>
         <div class="u-flex u-flex__justify--between u-flex__align--start u-mt--24 input-wrapper">
@@ -110,7 +115,7 @@ export default {
       return this.connectionModel.billing_project && this.connectionModel.default_project;
     },
     isFileSelected () {
-      return this.fileValidation.valid;
+      return this.fileValidation.valid && this.projects && this.projects.length;
     }
   },
   methods: {
@@ -143,6 +148,8 @@ export default {
       try {
         this.projects = (await this.$store.dispatch('connectors/checkServiceAccount', serviceAccount)).map(p => ({ id: p.id, label: p.friendly_name }));
       } catch (e) {
+        this.error = 'Invalid service account';
+
         console.error('TODO: error');
       }
     }

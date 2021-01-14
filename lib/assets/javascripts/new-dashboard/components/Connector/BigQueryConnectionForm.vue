@@ -50,10 +50,13 @@
           </div>
           <SelectComponent v-model="connectionModel.default_project" :elements="projects"></SelectComponent>
         </div>
+        <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--16" v-if="error">
+          {{ error }}
+        </div>
         <div class="u-flex u-flex__justify--end u-mt--32">
           <button @click="connect" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': (!connectionModelIsValid || submited)}">
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium">
-              {{ editing ? $t('ConnectorsPage.editConnectionButton') : $t('DataPage.connect') }}
+              {{ $t('DataPage.connect') }}
             </span>
           </button>
         </div>
@@ -103,9 +106,6 @@ export default {
     };
   },
   computed: {
-    editing () {
-      return false;
-    },
     connectionModelIsValid () {
       return this.connectionModel.billing_project && this.connectionModel.default_project;
     },
@@ -127,14 +127,7 @@ export default {
       try {
         this.error = '';
         this.submited = true;
-        let id;
-        // if (this.editing) {
-        //   const params = { ...this.connectionModel };
-        //   id = await this.$store.dispatch('connectors/editExistingConnection', params);
-        // } else {
-        console.log({ ...this.serviceAccount, ...this.connectionModel });
-        id = await this.$store.dispatch('connectors/createNewBQConnection', { ...this.serviceAccount, ...this.connectionModel });
-        // }
+        const id = await this.$store.dispatch('connectors/createNewBQConnection', { ...this.serviceAccount, ...this.connectionModel });
 
         this.submited = false;
         this.$emit('connectionSuccess', id);
@@ -151,21 +144,6 @@ export default {
         this.projects = (await this.$store.dispatch('connectors/checkServiceAccount', serviceAccount)).map(p => ({ id: p.id, label: p.friendly_name }));
       } catch (e) {
         console.error('TODO: error');
-      }
-    }
-  },
-  watch: {
-    connection: {
-      immediate: true,
-      handler () {
-        if (this.editing && this.connection) {
-          // this.connectionModel = {
-          //   id: this.connection.id,
-          //   name: this.connection.name,
-          //   connector: this.connection.connector,
-          //   ...this.connection.parameters
-          // };
-        }
       }
     }
   }

@@ -10,6 +10,7 @@ sudo make install
 ```
 
 ### Features
+- New BigQuery connector [16029](https://github.com/CartoDB/cartodb/pull/16029)
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 - Integrate new map_views metric. [#15969](https://github.com/CartoDB/cartodb/pull/15969)
 - Add preview/visualization of maps in DO catalog [#15973](https://github.com/CartoDB/cartodb/pull/15973)

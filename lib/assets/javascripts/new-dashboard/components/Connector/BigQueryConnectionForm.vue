@@ -46,7 +46,7 @@
         </div>
         <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--16 input-wrapper">
           <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
-            <label class="is-small u-mt--12">Default project</label>
+            <label class="is-small">Default project</label>
           </div>
           <SelectComponent v-model="connectionModel.default_project" :elements="projects"></SelectComponent>
         </div>
@@ -137,7 +137,7 @@ export default {
         // }
 
         this.submited = false;
-        this.$emit('connectClicked', id);
+        this.$emit('connectionSuccess', id);
       } catch (error) {
         this.submited = false;
         this.error = this.$t('DataPage.imports.database.connection-error');

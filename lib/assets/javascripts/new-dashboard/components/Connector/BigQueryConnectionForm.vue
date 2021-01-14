@@ -19,9 +19,9 @@
         </ul>
         <div class="u-mt--48 u-flex u-flex__justify--center u-flex__align--center">
           <router-link :to="{ name: 'your-connections' }">
-            <button class="is-small is-semibold is-txtPrimary">Cancel</button>
+            <button class="is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.BigQuery.conditions.cancel')}}</button>
           </router-link>
-          <button @click="accept" class="button is-primary u-ml--36">Accept and connect </button>
+          <button @click="accept" class="button is-primary u-ml--36">{{$t('ConnectorsPage.BigQuery.conditions.accept')}}</button>
         </div>
       </div>
       <div v-else-if="!showDisclaimer && !isFileSelected">
@@ -33,25 +33,25 @@
         </div>
       </div>
       <div v-else-if="!showDisclaimer && isFileSelected" class="u-flex u-flex__direction--column">
-        <h4 class="is-small is-semibold">Your BigQuery credentials</h4>
+        <h4 class="is-small is-semibold">{{$t('ConnectorsPage.BigQuery.title')}}</h4>
         <div class="u-flex u-flex__justify--between u-flex__align--start u-mt--24 input-wrapper">
           <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
-            <label class="is-small u-mt--12">Name</label>
+            <label class="is-small u-mt--12">{{$t('ConnectorsPage.BigQuery.connName')}}</label>
           </div>
           <input v-model="connectionModel.name" type="text" :placeholder="$t('DataPage.imports.database.placeholder-name')">
         </div>
         <div class="u-flex u-flex__justify--between u-flex__align--start u-mt--24 input-wrapper">
           <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
-            <label class="is-small u-mt--12">Billing project ID</label>
+            <label class="is-small u-mt--12">{{$t('ConnectorsPage.BigQuery.billingProject')}}</label>
           </div>
           <div>
             <SelectComponent v-model="connectionModel.billing_project" :elements="projects"></SelectComponent>
-            <div class="text is-small is-txtMidGrey u-mt--8 helper">Project ID for the Google Cloud project that will run the queries and be charged for the expenses. Example: my-project-identifies. More info here</div>
+            <div class="text is-small is-txtMidGrey u-mt--8 helper" :html="$t('ConnectorsPage.BigQuery.billingHelper')"></div>
           </div>
         </div>
         <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--16 input-wrapper">
           <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
-            <label class="is-small">Default project</label>
+            <label class="is-small">{{$t('ConnectorsPage.BigQuery.deafultProject')}}</label>
           </div>
           <SelectComponent v-model="connectionModel.default_project" :elements="projects"></SelectComponent>
         </div>
@@ -146,10 +146,11 @@ export default {
       this.serviceAccount = JSON.parse(serviceAccount);
 
       try {
+        this.error = '';
         this.projects = (await this.$store.dispatch('connectors/checkServiceAccount', serviceAccount)).map(p => ({ id: p.id, label: p.friendly_name }));
       } catch (e) {
         this.error = 'Invalid service account';
-
+        this.projects = [{}] 
         console.error('TODO: error');
       }
     }

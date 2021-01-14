@@ -8,17 +8,17 @@
       <div :class="'is-' + type"></div>
       <span class="is-semibold u-mt--8">{{ label }}</span>
     </div>
-    <div class="tools u-pt--16 u-pb--16 u-pl--20 u-pr--20">
-      <div class="u-flex" v-if="isDatabase">
+    <div class="tools">
+      <Tooltip :text="connectionParamsFormated" position="bottom-right"  class="u-flex u-pt--16 u-pb--16 u-pl--20 u-pr--20" v-if="isDatabase">
         <div class="text is-small u-flex__grow--1 u-mr--16 u-flex u-flex__align-center conn-name">
-          <img class="u-mr--4" src="../../assets/icons/datasets/connection.svg" width="16" height="16" />
+          <img class="u-mr--4" src="../../assets/icons/datasets/connection-title.svg" width="16" height="16" />
           <span class="conn-name">{{ connectionName }}</span>
         </div>
-        <div class="text is-small u-flex u-flex__align-center conn-params" v-if="connectionParams">
-          <img class="u-mr--4" src="../../assets/icons/datasets/connection.svg" width="16" height="16" />
+        <div position="bottom-left" class="text is-small u-flex u-flex__align-center conn-params" v-if="connectionParams">
+          <img class="u-mr--4" src="../../assets/icons/datasets/connection-tool.svg" width="16" height="16" />
           {{ $t('DataPage.connectionParameters') }}
         </div>
-      </div>
+      </Tooltip>
       <div class="text is-small is-txtMidGrey u-width--100 oauth" v-else>
         {{ $t('DataPage.connectionThroughtOauth') }}
       </div>
@@ -27,14 +27,17 @@
 </template>
 
 <script>
+
 import ConnectorQuickActions from './ConnectorQuickActions';
+import Tooltip from 'new-dashboard/components/Tooltip/Tooltip';
 
 const DATABASE = 'database';
 
 export default {
   name: 'Connection',
   components: {
-    ConnectorQuickActions
+    ConnectorQuickActions,
+    Tooltip
   },
   props: {
     id: {
@@ -69,6 +72,17 @@ export default {
   computed: {
     isDatabase () {
       return this.connectionType === DATABASE;
+    },
+    connectionParamsFormated () {
+      if (this.connectionParams) {
+        const keysToRemove = ['service_account', 'password'];
+        return Object.keys(this.connectionParams)
+          .filter(key => keysToRemove.indexOf(key) < 0)
+          .reduce((accum, value) => {
+            return `${accum}<div><label class="is-txtMidGrey" style="text-transform: capitalize;">${value.replace('_', ' ')}</label> ${this.connectionParams[value]}</div><br>`;
+          }, '<br>');
+      }
+      return '';
     }
   },
   methods: {
@@ -150,6 +164,10 @@ export default {
     border-left: 0;
     border-top: 0;
     border-bottom-right-radius: 4px;
+  }
+
+  .tooltip-container {
+    width: 100%;
   }
 }
 </style>

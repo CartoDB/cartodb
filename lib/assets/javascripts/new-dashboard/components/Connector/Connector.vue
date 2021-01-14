@@ -5,14 +5,23 @@
       <i :class="'is-' + id"></i>
     </div>
     <span class="is-small is-semibold title">{{ label }}</span>
+  <div v-if="disabled" class="tooltip">
+    <Tooltip :text="$t('ConnectorsPage.disabledUniqueConnectorText', {connector: label})" position="bottom-left" hide-delay="0s" show-delay="0s">
+      <div></div>
+    </Tooltip>
+  </div>
   </div>
 </template>
 
 <script>
 
+import Tooltip from 'new-dashboard/components/Tooltip/Tooltip';
+
 export default {
   name: 'Connector',
-  components: {},
+  components: {
+    Tooltip
+  },
   props: {
     id: {
       type: String
@@ -37,10 +46,12 @@ export default {
   computed: {},
   methods: {
     connectorSelected () {
-      if (this.connection_id) {
-        this.$emit('connectionSelected', this.connection_id);
-      } else {
-        this.$emit('connectorSelected', this.id);
+      if (!this.disabled) {
+        if (this.connection_id) {
+          this.$emit('connectionSelected', this.connection_id);
+        } else {
+          this.$emit('connectorSelected', this.id);
+        }
       }
     }
   }
@@ -60,9 +71,10 @@ export default {
   position: relative;
   transition: ease 300ms box-shadow;
   cursor: pointer;
+  position: relative;
 
   &.disabled {
-    pointer-events: none;
+    cursor: default;
     opacity: .4;
   }
 
@@ -94,6 +106,23 @@ export default {
     text-overflow: ellipsis;
     max-width: 100%;
     padding: 0 12px;
+  }
+
+  .tooltip {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    /deep/ >* {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1;
+    }
   }
 }
 

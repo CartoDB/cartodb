@@ -828,7 +828,8 @@
       "subtitle": "If you have synchronized datasets, you will no longer be able to update them",
       "cancelButton": "Cancel",
       "removeButton": "Ok, remove"
-    }
+    },
+    "disabledUniqueConnectorText": "Only one {connector} connection is allowed. To create a new one, you need to delete your current connection."
   },
   "ConnectedAppsPage": {
     "title": "App permissions",

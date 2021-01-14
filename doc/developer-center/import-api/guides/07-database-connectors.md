@@ -1088,6 +1088,13 @@ from_external_source | Has the value **false** for all connector-based synchroni
 
 **Warning:** This connector is in **BETA** stage and the API might change or have limited support-
 
+**Warning:** As of 2021-01-14 the following parameters of the BETA connector has been removed:
+* `storage_api`: Now Storage API is always used
+* `location`
+* Also note that the `project` and `dataset` parameters could be used in the past as default values for table
+  names referenced in `sql_query`. Now tables in queries must be fully qualified with project and dataset names
+  (`project.dataset.table`) and these parameters are used only for `table` imports.
+
 The BigQuery Connector allows you to import data into a CARTO account as tables from BigQuery.
 
 You can use the BigQuery Connector to:
@@ -1107,8 +1114,7 @@ You can also use the BigQuery connector directly from your dashboard using the "
 #### BigQuery pricing and expenses
 
 This service is subject to charges in your BigQuery project, according to your pricing settings. Please check https://cloud.google.com/bigquery/pricing for more information.
-
-When using the [BigQuery Storage API](https://cloud.google.com/bigquery/docs/reference/storage/) (activated with the `storage_api` parameter) pricing may differ; see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api.
+Note that this connector uses the [BigQuery Storage API](https://cloud.google.com/bigquery/docs/reference/storage/) to transfer the data; see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api.
 
 ##### The billing project
 
@@ -1143,55 +1149,6 @@ In case your BigQuery table specifies geographic locations using longitude and l
 SELECT my_othercolumn, ST_GEOGPOINT(my_long_column, my_lat_column) AS the_geom FROM my_project.my_dataset.my_table
 ```
 
-#### BigQuery Storage API
-
-The [BigQuery Storage API](https://cloud.google.com/bigquery/docs/reference/storage/) allows higher data throughput
-than the standard REST API used otherwise to import the data. It can be enabled with the `storage_api` parameter.
-
-When the `storage_api` is enabled, it will be used if possible and depending on the size of the imported data.
-To use it, the BigQuery billing project that you use must have the BigQuery Storage API enabled. For more information, see "Enabling the API" in the Google BigQuery documentation: https://cloud.google.com/bigquery/docs/reference/storage/#enabling_the_api.
-
-**Warning:** Pricing for the BigQuery Storage API is different than pricing for the standard API. For more information, see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api.
-
-#### Location
-
-To use Storage API with data in locations other than `US` you'll need to set the `location` parameter to the
-[location](https://cloud.google.com/bigquery/docs/locations) of the BigQuery dataset being queried.
-This is required because, to download query data using the Storage API we need first to save the data into
-a temporary table. In order to do so, an anonimous dataset will be created in the same location as the data.
-By default an anonymous dataset in the US location will be used if Storage API used; if the data is in a different
-location an error will occur.
-
-
-#### Known Problems
-
-We're still in beta and intently enhancing this connector, so expect fast changes and improvements, but we also have some rough edges at the moment.
-Rest assured we’ll work hard to solve these problems and make the connector as capable and convenient to use as possible.
-
-##### Project Permissions
-
-If the account used to authorize CARTO (via OAuth) gives access to your BigQuery projects but some of the
-[necessary permissions](https://cloud.google.com/bigquery/docs/access-control) to execute the queries in the billing
-query are not granted to the account you won't get any error, but the imported datasets will be empty.
-Please, make sure for the time being that you have permissions to admin BigQuery and use its APIS on the billing
-project, and check the imported results if in doubt.
-
-**Tip:** The permissions that we are aware can cause this problem (when missing) are `bigquery.jobs.create` (which allows
-execution of queries in the billing project) and, if Storage API is used, `bigquery.readsessions.create` (required to read table data).
-
-##### Column Names
-
-Currently imported data from BigQuery follows a normalization process that adapts the column names
-to [CARTO conventions](https://carto.com/developers/import-api/guides/column-names-normalization/).
-
-This process eliminates uppercase letters and special characters from the column names, which can lead
-to altered and hard to understand names. If this affects you datasets, please assign lowercase names to your
-columns in the imported query (using `sql_query`) like this:
-
-```sql
-SELECT ID AS id, Name AS name, Value as value FROM my_project.my_dataset.my_table
-```
-
 #### Parameters and Usage
 
 To use the BigQuery Connector with the Import API, you must include a `connector` parameter with the following attributes:
@@ -1201,12 +1158,10 @@ To use the BigQuery Connector with the Import API, you must include a `connector
   "connector": {
     "provider": "bigquery",
     "billing_project":"mybigquerybillingproject",
-    "location":"us",
     "project":"mybigqueryproject",
     "dataset": "mybigquerydataset",
     "table": "mytable",
-    "import_as": "mycartodataset",
-    "storage_api": true
+    "import_as": "mycartodataset"
   }
 }
 ```
@@ -1217,21 +1172,18 @@ Param | Description
 --- | ---
 provider | Required. This value **MUST** be set to *bigquery*.
 billing_project | Required. Defines the Google Cloud project where the queries will be executed (charges will apply here).
-location | Location of the dataset to import data from (optional).
 project | Defines the Google Cloud project that contains the data to be imported (optional).
 dataset | Name of the dataset to import data from (optional).
 table \| sql_query | Required. Either identify the BigQuery table to be imported or use a SQL query to fetch data.
 import_as | Can be used to specifiy the name of the imported dataset (optional)
-storage_api | (true/false) specifies if BigQuery Storage API will be used or not. (optional; false by default)
 
 Note that you could either import from a query using `sql_query` or from a table using `table`.
-Note also that by default the Storage API is not used.
 
 #### Import a Table
 
 In order to connect to an external BigQuery table, the following rules apply:
 
-- The name of the remote BigQuery project can be passed in the `project` parameter. It default to the billing project.
+- The name of the remote BigQuery project can be passed in the `project` parameter. It defaults to the billing project.
 - The name of the remote BigQuery dataset must be passed in the `dataset` parameter.
 - The name of the remote BigQuery table must be passed in the `table` parameter.
 - The `sql_query` parameter **MUST NOT** be present.
@@ -1275,9 +1227,8 @@ The `item_queue_id` value is a unique identifier that references the connection 
 The query must be passed in the `sql_query` parameter as [BigQuery Standard SQL](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax).
 Note that this quey will be processed by your BigQuery billing project.
 
-If importing a query, `project` and `dataset` are optional since they query can include them
-in the table name (using the form `project.dataset.table`). They are use to define the _default_
-project and dataset if the query doesn't specifies them explicitly.
+If importing a query, `project` and `dataset` will be ignored; the query should include
+refer to tables including the project and dataset using the form `project.dataset.table`).
 
 In this case, the parameter `import_as` is mandatory to name the imported data.
 
@@ -1410,7 +1361,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
 **Warning:** This connector is in **BETA** stage and the API might change or have limited support-
 Note that **this connector is disabled by default** in the CARTO importer options.Please request access to the beta trhough the CARTO dashboard.
 
-The Redshift Connector allows you to import data into a CARTO account as tables from a Redshift database. 
+The Redshift Connector allows you to import data into a CARTO account as tables from a Redshift database.
 
 You can use the Redshift Connector to:
 

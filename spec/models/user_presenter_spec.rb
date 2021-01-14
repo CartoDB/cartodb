@@ -186,9 +186,6 @@ describe Carto::Api::UserPresenter do
     new_data[:db_size_in_megabytes].should == old_data[:db_size_in_megabytes]
     new_data[:remaining_table_quota].should == old_data[:remaining_table_quota]
     new_data[:remaining_byte_quota].should == old_data[:remaining_byte_quota]
-    new_data[:api_calls].should == old_data[:api_calls]
-    new_data[:api_calls_quota].should == old_data[:api_calls_quota]
-    new_data[:api_calls_block_price].should == old_data[:api_calls_block_price]
     new_data[:geocoding].should == old_data[:geocoding]
     new_data[:here_isolines].should == old_data[:here_isolines]
     new_data[:obs_snapshot].should == old_data[:obs_snapshot]
@@ -218,6 +215,7 @@ describe Carto::Api::UserPresenter do
 
     if org_user
       new_data[:organization].keys.sort.should == old_data[:organization].keys.sort
+      # rubocop:disable Lint/Void
 
       # This is an implicit test of OrganizationPresenter...
       # INFO: we have a weird error sometimes running builds that fails comparing dates despite having equal value...
@@ -240,7 +238,7 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:obs_snapshot_quota].should == old_data[:organization][:obs_snapshot_quota]
       new_data[:organization][:obs_general_quota].should == old_data[:organization][:obs_general_quota]
       new_data[:organization][:mapzen_routing_quota].should == old_data[:organization][:mapzen_routing_quota]
-      new_data[:organization][:map_view_quota].should == old_data[:organization][:map_view_quota]
+      new_data[:organization][:map_views_quota].should == old_data[:organization][:map_views_quota]
       new_data[:organization][:twitter_datasource_quota].should == old_data[:organization][:twitter_datasource_quota]
       new_data[:organization][:map_view_block_price].should == old_data[:organization][:map_view_block_price]
       new_data[:organization][:geocoding_block_price].should == old_data[:organization][:geocoding_block_price]
@@ -260,6 +258,7 @@ describe Carto::Api::UserPresenter do
       new_data[:geocoder_provider].should == old_data[:geocoder_provider]
       new_data[:isolines_provider].should == old_data[:isolines_provider]
       new_data[:routing_provider].should == old_data[:routing_provider]
+      # rubocop:enable Lint/Void
     end
 
     if mobile_sdk_enabled

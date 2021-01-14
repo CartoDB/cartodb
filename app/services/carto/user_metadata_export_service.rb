@@ -35,7 +35,7 @@ module Carto
     EXPORTED_USER_ATTRIBUTES = %i(
       email crypted_password database_name username admin enabled invite_token invite_token_date
       map_enabled quota_in_bytes table_quota public_map_quota regular_api_key_quota account_type private_tables_enabled
-      period_end_date map_view_quota max_layers database_timeout user_timeout upgraded_at map_view_block_price
+      period_end_date map_views_quota max_layers database_timeout user_timeout upgraded_at map_view_block_price
       geocoding_quota dashboard_viewed_at sync_tables_enabled database_host geocoding_block_price api_key
       notification organization_id created_at updated_at disqus_shortname id twitter_username website
       description name avatar_url database_schema soft_geocoding_limit auth_token

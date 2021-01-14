@@ -30,23 +30,25 @@
       <div v-else-if="!showDisclaimer && isFileSelected" class="u-flex u-flex__direction--column">
         <h4 class="is-small is-semibold">Your BigQuery credentials</h4>
         <div class="u-flex u-flex__justify--between u-flex__align--start u-mt--24 input-wrapper">
-          <label class="is-small u-mr--16">Name</label>
+          <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
+            <label class="is-small u-mt--12">Name</label>
+          </div>
           <input v-model="connectionModel.name" type="text" :placeholder="$t('DataPage.imports.database.placeholder-name')">
         </div>
         <div class="u-flex u-flex__justify--between u-flex__align--start u-mt--24 input-wrapper">
-          <label class="is-small u-mt--12 u-mr--16">Billing project ID</label>
+          <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
+            <label class="is-small u-mt--12">Billing project ID</label>
+          </div>
           <div>
-            <select class="is-select" v-model="connectionModel.billing_project">
-              <option v-for="project in projects" :key="project.id" :value="project.id">{{project.friendly_name}}</option>
-            </select>
+            <SelectComponent v-model="connectionModel.billing_project" :elements="projects"></SelectComponent>
             <div class="text is-small is-txtMidGrey u-mt--8 helper">Project ID for the Google Cloud project that will run the queries and be charged for the expenses. Example: my-project-identifies. More info here</div>
           </div>
         </div>
         <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--16 input-wrapper">
-          <label class="is-small u-mr--16">Default project</label>
-          <select class="is-select" v-model="connectionModel.default_project">
-            <option v-for="project in projects" :key="project.id" :value="project.id">{{project.friendly_name}}</option>
-          </select>
+          <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
+            <label class="is-small u-mt--12">Default project</label>
+          </div>
+          <SelectComponent v-model="connectionModel.default_project" :elements="projects"></SelectComponent>
         </div>
         <div class="u-flex u-flex__justify--end u-mt--32">
           <button @click="connect" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': (!connectionModelIsValid || submited)}">
@@ -63,12 +65,14 @@
 <script>
 
 import FileInput from 'new-dashboard/components/forms/FileInput';
+import SelectComponent from 'new-dashboard/components/forms/SelectComponent';
 import uploadData from '../../mixins/connector/uploadData';
 
 export default {
   name: 'BigQueryConnectionForm',
   components: {
-    FileInput
+    FileInput,
+    SelectComponent
   },
   inject: ['backboneViews'],
   mixins: [uploadData],
@@ -144,7 +148,7 @@ export default {
       this.serviceAccount = JSON.parse(serviceAccount);
 
       try {
-        this.projects = await this.$store.dispatch('connectors/checkServiceAccount', serviceAccount);
+        this.projects = (await this.$store.dispatch('connectors/checkServiceAccount', serviceAccount)).map(p => ({ id: p.id, label: p.friendly_name }));
       } catch (e) {
         console.error('TODO: error');
       }
@@ -184,27 +188,26 @@ ul {
   max-width: 512px;
 }
 
-input,
-.is-select {
-    width: 512px;
-    border: solid 1px #dddddd;
-    border-radius: 4px;
-    background-color: $white;
-    font-size: 12px;
-    color: $neutral--800;
-    padding: 12px;
-    height: 40px;
+input {
+  width: 512px;
+  border: solid 1px #dddddd;
+  border-radius: 4px;
+  background-color: $white;
+  font-size: 12px;
+  color: $neutral--800;
+  padding: 12px;
+  height: 40px;
 
-    &::placeholder {
-      color: rgba(46, 60, 67, 0.48);
-    }
-
-    &:-ms-input-placeholder {
-      color: rgba(46, 60, 67, 0.48);
-    }
-
-    &::-ms-input-placeholder {
-      color: rgba(46, 60, 67, 0.48);
-    }
+  &::placeholder {
+    color: rgba(46, 60, 67, 0.48);
   }
+
+  &:-ms-input-placeholder {
+    color: rgba(46, 60, 67, 0.48);
+  }
+
+  &::-ms-input-placeholder {
+    color: rgba(46, 60, 67, 0.48);
+  }
+}
 </style>

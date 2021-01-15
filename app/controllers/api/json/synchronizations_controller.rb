@@ -184,7 +184,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
     if params[:connector].present?
       member_attributes[:service_name]    = 'connector'
-      member_attributes[:service_item_id] = params[:connector].to_json
+      member_attributes[:service_item_id] = connector_parameters(params[:connector]).to_json
     end
 
     member_attributes

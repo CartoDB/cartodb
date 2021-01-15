@@ -111,6 +111,15 @@ module Carto
       connection
     end
 
+    def find_or_create_db_connection(provider, parameters)
+      find_db_connection(provider, parameters) ||
+      create_db_connection(
+        name: generate_connection_name(provider),
+        provider: provider,
+        parameters: parameters
+      )
+    end
+
     # create Oauth connection logic
     #    connection = nil
     #    loop do
@@ -215,6 +224,12 @@ module Carto
     end
 
     private
+
+    def generate_connection_name(provider)
+      # FIXME: this could produce name collisions
+      n = @user.db_connections.where(connector: provider).count
+      n > 0 ? "provider_#{n+1}" : provider
+    end
 
     def bigquery_redis_key
       "google:bq_settings:#{@user.username}"

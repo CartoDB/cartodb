@@ -9,16 +9,22 @@ module Carto
 
     attr_reader :provider_name
 
-    def initialize(parameters:, user:, connection: nil, **args)
+    # if persist_connection is true and connection not present, a new connection will
+    # be registered from parameters[:connection]
+    def initialize(parameters:, user:, connection: nil, register_connection: false, **args)
       @params = Parameters.new(parameters)
       @user = user
-      set_connection_from_connection_id!(connection)
+      set_connection!(connection, register_connection)
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
       raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
       @provider = Connector.provider_class(@provider_name).try :new, parameters: @params, user: @user, **args
       raise InvalidParametersError.new(message: "Invalid provider", provider: @provider_name) if @provider.blank?
+    end
+
+    def stored_parameters
+      @stored_parameters.parameters
     end
 
     def copy_table(schema_name:, table_name:)
@@ -212,12 +218,20 @@ module Carto
       @provider.log message, truncate
     end
 
-    def set_connection_from_connection_id!(connection)
-      connection_id = @params[:connection_id]
+    def set_connection!(connection, register)
       provider = @params[:provider]
-      if connection_id.present?
-        connection = Carto::ConnectionManager.new(@user).fetch_connection(connection_id)
+      connection_manager = Carto::ConnectionManager.new(@user)
+      unless connection.present?
+        connection_id = @params[:connection_id]
+        if connection_id.present?
+          connection = connection_manager.fetch_connection(connection_id)
+        elsif @params[:connection].present? && register
+          connection = connection_manager.find_or_create_db_connection(provider, @params[:connection])
+        end
       end
+
+      @stored_parameters = @params.dup
+
       if connection.present?
         if provider.present?
           raise "Invalid connection" if provider != connection.connector
@@ -225,9 +239,12 @@ module Carto
           @params.merge! provider: connection.connector
         end
         connection_params = connection.parameters
+        # TODO: to split Oauth/DB connections we'll need to inject @user.oauths&.select(connection.connector)&.token instead
         connection_params = connection_params.merge(refresh_token: connection.token) if connection.token.present?
         @params.merge! connection: connection_params
         @params.delete :connection_id
+        @stored_parameters.merge! connection_id: connection.id
+        @stored_parameters.delete :connection
       end
     end
   end

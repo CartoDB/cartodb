@@ -117,7 +117,7 @@ export default {
       if (c.type === 'database' && c.name !== 'bigquery') {
         return true;
       }
-      return this.rawConnections && !this.rawConnections.find(r => r.name === c.name);
+      return this.rawConnections && !this.rawConnections.find(r => r.connector === (c.options && c.options.service));
     }
   }
 };

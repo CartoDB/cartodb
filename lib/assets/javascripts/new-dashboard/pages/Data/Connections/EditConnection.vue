@@ -22,7 +22,7 @@
           @connectClicked="connectionSuccess"></DatabaseConnectionForm>
         <BigQueryConnectionForm v-else-if="isBigQuery"
           :connector="importOption"
-          :connection="connection" @connectionSuccess="connectionSuccess"></BigQueryConnectionForm>
+          :connection="connection" @cancel="onCancel" @connectionSuccess="connectionSuccess"></BigQueryConnectionForm>
         <OAuthConnectionForm v-else-if="type === 'cloud'"
           :connector="importOption"
           :connection="connection" @connectionSuccess="connectionSuccess"></OAuthConnectionForm>
@@ -101,6 +101,9 @@ export default {
   methods: {
     connectionSuccess (id) {
       this.connectionsSuccessfullId = id;
+    },
+    onCancel () {
+      this.$router.push({ name: this.backNamedRoute });
     },
     navigateNext () {
       const routeNamePrefix = !this.editing ? this.$route.name.replace('connector-selected', '') : 'new-connection-';

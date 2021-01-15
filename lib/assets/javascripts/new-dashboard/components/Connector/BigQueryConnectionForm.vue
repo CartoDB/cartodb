@@ -18,9 +18,7 @@
           </li>
         </ul>
         <div class="u-mt--48 u-flex u-flex__justify--center u-flex__align--center">
-          <router-link :to="{ name: 'your-connections' }">
-            <button class="is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.BigQuery.conditions.cancel')}}</button>
-          </router-link>
+          <button @click="cancel" class="is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.BigQuery.conditions.cancel')}}</button>
           <button @click="accept" class="button is-primary u-ml--36">{{$t('ConnectorsPage.BigQuery.conditions.accept')}}</button>
         </div>
       </div>
@@ -113,6 +111,9 @@ export default {
     }
   },
   methods: {
+    cancel () {
+      this.$emit('cancel');
+    },
     accept () {
       this.showDisclaimer = false;
     },

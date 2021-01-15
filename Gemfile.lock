@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 25bdb3553367bee6885d13d1097eb5747892dc22
-  branch: feature/ch127672/funnel-messages-shared-token
+  revision: 59a0855b9c990d8baa6ab76fcf0c8e0a4cb093fe
+  branch: feature/ch127672/funnel-messages-shared-token-merge-base-command
   specs:
     cartodb-common (0.5.3)
       argon2 (~> 2)

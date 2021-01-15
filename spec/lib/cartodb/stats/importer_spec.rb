@@ -6,8 +6,6 @@ require_relative '../../../rspec_configuration.rb'
 
 require_relative '../../../../lib/cartodb/stats/importer'
 
-include Mocha::ParameterMatchers
-
 module CartoDB
   module Stats
     describe Importer do

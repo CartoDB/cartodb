@@ -6,8 +6,6 @@ require_relative '../../../../spec/rspec_configuration.rb'
 require_relative '../doubles/job'
 require_relative '../doubles/csv_normalizer'
 
-include Mocha::ParameterMatchers
-
 describe CartoDB::Importer2::Excel2Csv do
   before(:each) do
     CartoDB.stubs(:python_path).returns('')

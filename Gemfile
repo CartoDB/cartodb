@@ -98,7 +98,6 @@ group :test do
   gem 'capybara',              '2.18.0'
   gem 'delorean'
   gem 'webrick',               '1.3.1'
-  gem 'mocha',                 '1.1.0'
   gem 'ci_reporter',           '1.8.4'
   gem 'poltergeist',           '1.18.1'
   gem 'activerecord-nulldb-adapter', '0.3.1'

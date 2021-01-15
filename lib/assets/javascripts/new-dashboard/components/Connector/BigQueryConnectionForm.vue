@@ -124,10 +124,9 @@ export default {
       try {
         this.error = '';
         this.submited = true;
-        const id = await this.$store.dispatch('connectors/createNewBQConnection', { ...this.serviceAccount, ...this.connectionModel });
-
+        const response = await this.$store.dispatch('connectors/createNewBQConnection', { ...this.serviceAccount, ...this.connectionModel });
         this.submited = false;
-        this.$emit('connectionSuccess', id);
+        this.$emit('connectionSuccess', response.id);
       } catch (error) {
         this.submited = false;
         this.error = this.$t('DataPage.imports.database.connection-error');

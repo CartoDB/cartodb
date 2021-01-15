@@ -101,6 +101,7 @@ export default {
   methods: {
     connectionSuccess (id) {
       this.connectionsSuccessfullId = id;
+      this.$store.dispatch('connectors/fetchConnectionsList');
     },
     onCancel () {
       this.$router.push({ name: this.backNamedRoute });

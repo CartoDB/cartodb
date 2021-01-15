@@ -19,6 +19,7 @@
             label=""
             :supportedFormats="supportedFormats"
             @change="onFileChange"></FileInput>
+          <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert url-error">{{fileValidation.msg}}</p>
         </div>
         <div v-else-if="extension === 'url'">
           <div class="u-flex u-flex__align--center u-mt--32">

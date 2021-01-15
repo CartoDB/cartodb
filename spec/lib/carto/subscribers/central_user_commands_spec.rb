@@ -15,23 +15,26 @@ describe Carto::Subscribers::CentralUserCommands do
 
     it 'sets the required fields to their values' do
       user_params = { remote_user_id: original_user.id,
-                      quota_in_bytes: 42 }.with_indifferent_access
-      central_user_commands.update_user(user_params)
+                      quota_in_bytes: 42 }
+      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
+      central_user_commands.update_user(message)
       expect(user.quota_in_bytes).to eq 42
     end
 
     it 'adds feature flags when they are in the payload' do
       user_params = { remote_user_id: original_user.id,
-                      feature_flags: [some_feature_flag.id] }.with_indifferent_access
-      central_user_commands.update_user(user_params)
+                      feature_flags: [some_feature_flag.id] }
+      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
+      central_user_commands.update_user(message)
       expect(user.has_feature_flag?(some_feature_flag.name)).to eq true
     end
 
     it 'removes feature flags when requested' do
       original_user.feature_flags << some_feature_flag
       user_params = { remote_user_id: original_user.id,
-                      feature_flags: [] }.with_indifferent_access
-      central_user_commands.update_user(user_params)
+                      feature_flags: [] }
+      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
+      central_user_commands.update_user(message)
       expect(user.has_feature_flag?(some_feature_flag.name)).to eq false
     end
   end
@@ -45,9 +48,10 @@ describe Carto::Subscribers::CentralUserCommands do
         email: 'testuser@acme.org',
         password: 'supersecret',
         account_type: account_type.account_type
-      }.with_indifferent_access
+      }
       notifications_topic.stubs(:publish)
-      central_user_commands.create_user(user_params)
+      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
+      central_user_commands.create_user(message)
       expect(Carto::User.exists?(username: 'testuser')).to eq true
     end
   end
@@ -56,12 +60,13 @@ describe Carto::Subscribers::CentralUserCommands do
     let(:user) { create(:user) }
 
     it 'deletes the inteded user' do
-      user_params = { id: user.id }.with_indifferent_access
+      user_params = { id: user.id }
       notifications_topic.expects(:publish).once.with(
         :user_deleted,
         { username: user.username }
       )
-      central_user_commands.delete_user(user_params)
+      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
+      central_user_commands.delete_user(message)
       expect(Carto::User.exists?(id: user.id)).to eq false
     end
   end

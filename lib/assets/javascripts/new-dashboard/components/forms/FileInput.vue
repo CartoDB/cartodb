@@ -6,7 +6,7 @@
         <img src="../../assets/icons/datasets/move-up.svg">
         <h4 class="is-small is-semibold u-mt--16" style="text-align: center;">Drag and drop your file<br>or</h4>
         <button @click="selectFile()" class="button is-primary u-mt--16">Browse</button>
-        <input @change="fileSelected" ref="file" type="file">
+        <input @change="fileSelected" :accept="supportedFormatsList" ref="file" type="file">
       </div>
     </div>
     <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__grow--1 u-flex__justify--start u-mt--16" v-if="error">
@@ -41,6 +41,9 @@ export default {
     };
   },
   computed: {
+    supportedFormatsList () {
+      return this.supportedFormats.map(format => `.${format}`);
+    },
     editing () {
       return false;
     },

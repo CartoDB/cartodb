@@ -4,7 +4,7 @@ require 'json'
 require_relative '../../spec_helper'
 require_relative '../../support/factories/organizations'
 require_relative '../../../app/controllers/admin/visualizations_controller'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 def app
   CartoDB::Application.new

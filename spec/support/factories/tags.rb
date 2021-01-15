@@ -1,4 +1,4 @@
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 module CartoDB
   module Factories

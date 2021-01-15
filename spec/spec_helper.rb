@@ -2,7 +2,7 @@ require_relative './simplecov_helper'
 require_relative './rspec_configuration'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'

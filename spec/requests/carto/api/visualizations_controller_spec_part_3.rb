@@ -6,7 +6,7 @@ require_relative '../../../../app/controllers/carto/api/visualizations_controlle
 require_relative '../../../../app/models/visualization/member'
 require_relative './vizjson_shared_examples'
 require_relative './helpers/visualization_controller_helper'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'
 require 'helpers/visualization_destruction_helper'

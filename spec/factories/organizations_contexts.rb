@@ -1,5 +1,5 @@
 require_relative '../support/factories/users'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 class TestUserFactory
 

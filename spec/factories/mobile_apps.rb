@@ -1,6 +1,6 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 include UniqueNamesHelper
 

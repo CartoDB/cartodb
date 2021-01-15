@@ -1,7 +1,7 @@
 require_relative '../../../spec_helper'
 require_relative '../../api/json/imports_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/imports_controller'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 describe Carto::Api::ImportsController do
   include UniqueNamesHelper

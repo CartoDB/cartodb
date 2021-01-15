@@ -1,5 +1,5 @@
 require_relative '../support/factories/tables'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 include Warden::Test::Helpers
 include UniqueNamesHelper

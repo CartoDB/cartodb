@@ -1,7 +1,7 @@
 require_relative '../spec_helper'
 require 'helpers/user_part_helper'
 require 'factories/organizations_contexts'
-require 'helpers/account_types_helper'
+require './spec/helpers/account_types_helper'
 require 'factories/database_configuration_contexts'
 
 describe User do

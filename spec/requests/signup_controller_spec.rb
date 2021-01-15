@@ -1,6 +1,6 @@
 require_relative '../spec_helper'
 require_relative './http_authentication_helper'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 describe SignupController do
   include UniqueNamesHelper

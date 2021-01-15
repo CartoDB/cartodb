@@ -1,6 +1,6 @@
 require 'spec_helper_min'
 require 'support/helpers'
-require 'helpers/account_types_helper'
+require './spec/helpers/account_types_helper'
 
 describe Carto::AccountType do
   include CartoDB::Factories

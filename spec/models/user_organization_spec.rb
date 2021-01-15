@@ -1,5 +1,5 @@
 require_relative '../spec_helper'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 describe UserOrganization do
   include UniqueNamesHelper

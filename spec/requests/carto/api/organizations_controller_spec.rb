@@ -1,6 +1,6 @@
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/organizations_controller'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 describe Carto::Api::OrganizationsController do
   include_context 'organization with users helper'

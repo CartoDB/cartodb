@@ -5,7 +5,7 @@ require 'ostruct'
 require_relative '../../acceptance_helper'
 require_relative '../../factories/organizations_contexts'
 require 'carto/user_authenticator'
-require 'helpers/account_types_helper'
+require './spec/helpers/account_types_helper'
 
 feature "Superadmin's users API" do
   include Carto::UserAuthenticator

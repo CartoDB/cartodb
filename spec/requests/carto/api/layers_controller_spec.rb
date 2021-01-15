@@ -1,6 +1,6 @@
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/layers_controller'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 describe Carto::Api::LayersController do
   include UniqueNamesHelper

@@ -2,7 +2,7 @@ require_relative '../../spec_helper'
 require_relative '../visualization_shared_examples'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../support/factories/organizations'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 require 'helpers/visualization_destruction_helper'
 
 describe Carto::Visualization do

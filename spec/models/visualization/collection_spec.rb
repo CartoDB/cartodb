@@ -4,7 +4,7 @@ require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/collection'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../doubles/support_tables.rb'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 include UniqueNamesHelper
 include CartoDB

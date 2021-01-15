@@ -3,7 +3,7 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/tags'
 require_relative '../../../app/models/visualization/collection'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 include UniqueNamesHelper
 include CartoDB

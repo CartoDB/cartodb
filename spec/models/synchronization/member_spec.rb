@@ -3,7 +3,7 @@ require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/synchronization/member'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 require 'helpers/file_server_helper'
 
 include UniqueNamesHelper

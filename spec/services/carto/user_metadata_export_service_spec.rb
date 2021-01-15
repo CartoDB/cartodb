@@ -1,7 +1,7 @@
 require 'spec_helper_min'
 require 'factories/carto_visualizations'
 require 'helpers/rate_limits_helper'
-require 'helpers/account_types_helper'
+require './spec/helpers/account_types_helper'
 
 describe Carto::UserMetadataExportService do
   include NamedMapsHelper

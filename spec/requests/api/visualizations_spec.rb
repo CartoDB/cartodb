@@ -4,7 +4,7 @@ require 'json'
 require 'uri'
 require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 describe Carto::Api::VisualizationsController do
   include UniqueNamesHelper

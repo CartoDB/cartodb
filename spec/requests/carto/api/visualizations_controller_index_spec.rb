@@ -6,7 +6,7 @@ require_relative '../../../../app/controllers/carto/api/visualizations_controlle
 require_relative '../../../../app/models/visualization/member'
 require_relative './vizjson_shared_examples'
 require_relative './helpers/visualization_controller_helper'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'
 require 'helpers/visualization_destruction_helper'
@@ -149,7 +149,7 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'does not return the dependent visualizations if with_dependent_visualizations = 0' do
-          with_feature_flag(@user, 'faster-dependencies', true) do          
+          with_feature_flag(@user, 'faster-dependencies', true) do
             get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
                                                 with_dependent_visualizations: 0), {}, @headers
           end

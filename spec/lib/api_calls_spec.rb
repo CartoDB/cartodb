@@ -1,6 +1,6 @@
 require 'spec_helper'
 require_relative '../../lib/cartodb/stats/api_calls'
-require 'helpers/unique_names_helper'
+require './spec/helpers/unique_names_helper'
 
 describe CartoDB::Stats::APICalls do
   include UniqueNamesHelper

@@ -1,5 +1,5 @@
 require_relative '../../acceptance_helper'
-require 'helpers/account_types_helper'
+require './spec/helpers/account_types_helper'
 
 describe Superadmin::AccountTypesController do
   include AccountTypesHelper

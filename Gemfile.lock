@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: cf8751cc366c6c8afd64e9aa8ed8f22719bdbe45
+  revision: c17399b7748627aa2c711ea57bdd6282f808c702
   branch: feature/ch127672/funnel-messages-shared-token
   specs:
     cartodb-common (0.5.3)
@@ -205,7 +205,7 @@ GEM
     google-cloud-env (1.3.0)
       faraday (~> 0.11)
     google-cloud-errors (1.0.1)
-    google-cloud-pubsub (2.3.0)
+    google-cloud-pubsub (2.3.1)
       concurrent-ruby (~> 1.1)
       google-cloud-core (~> 1.5)
       google-cloud-pubsub-v1 (~> 0.0)
@@ -253,7 +253,7 @@ GEM
     json-schema (2.1.9)
     jwt (2.2.2)
     kgio (2.11.3)
-    loofah (2.8.0)
+    loofah (2.9.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)

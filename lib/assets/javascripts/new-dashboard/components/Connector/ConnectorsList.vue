@@ -46,6 +46,7 @@
 
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
 import { IMPORT_OPTIONS, IMPORT_OPTIONS_ORDER } from 'builder/components/modals/add-layer/content/imports/import-options';
+import { mapState } from 'vuex';
 
 export default {
   name: 'ConnectorList',
@@ -65,6 +66,9 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      rawConnections: state => state.connectors.connections
+    }),
     dataBaseConnectors () {
       return this.connectorsByType('database');
     },
@@ -101,12 +105,19 @@ export default {
         return {
           id: c.name,
           label: c.title,
-          beta: c.options && c.options.beta
+          beta: c.options && c.options.beta,
+          disabled: !this.isConnectorEnabled(c)
         };
       });
     },
     connectorSelected (id) {
       this.$emit('connectorSelected', id);
+    },
+    isConnectorEnabled (c) {
+      if (c.type === 'database' && c.name !== 'bigquery') {
+        return true;
+      }
+      return this.rawConnections && !this.rawConnections.find(r => r.name === c.name);
     }
   }
 };

@@ -53,7 +53,7 @@ group :assets do
   gem "compass",               "1.0.3"
 end
 
-gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.5.1'
+gem 'cartodb-common', git: 'https://github.com/cartodb/cartodb-common.git', tag: 'v0.5.3'
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '1.3.1'
@@ -62,7 +62,7 @@ gem 'dbf',                     '2.0.6'
 gem 'google-api-client',       '0.34.1'
 gem 'dropbox_api',             '0.1.17'
 gem 'gibbon',                  '1.1.4'
-gem 'google-cloud-pubsub', '~> 1.10'
+gem 'google-cloud-pubsub', '~> 2.3'
 gem 'instagram-continued-continued'
 gem 'virtus',                   '1.0.5'
 gem 'email_address',            '~> 0.1.11'

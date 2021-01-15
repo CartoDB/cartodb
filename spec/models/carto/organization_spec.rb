@@ -56,7 +56,6 @@ describe Carto::Organization do
 
     let(:organization) { create(:organization_with_users) }
     let(:delta) { 0 }
-    let(:api_calls) { 0 }
     let(:geocoding_calls) { 0 }
     let(:obs_snapshot_calls) { 0 }
     let(:here_isolines_calls) { 0 }
@@ -64,8 +63,7 @@ describe Carto::Organization do
     let(:mapzen_routing_calls) { 0 }
 
     before do
-      organization.stubs(:get_api_calls).returns(api_calls)
-      organization.stubs(:map_view_quota).returns(100)
+      organization.stubs(:map_views_quota).returns(100)
       organization.stubs(:get_geocoding_calls).returns(geocoding_calls)
       organization.stubs(:geocoding_quota).returns(100)
       organization.stubs(:get_obs_snapshot_calls).returns(obs_snapshot_calls)

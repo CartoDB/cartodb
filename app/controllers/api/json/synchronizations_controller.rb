@@ -184,7 +184,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
     if params[:connector].present?
       member_attributes[:service_name]    = 'connector'
-      member_attributes[:service_item_id] = connector_parameters(params[:connector]).to_json
+      member_attributes[:service_item_id] = connector_parameters
     end
 
     member_attributes
@@ -215,7 +215,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       options.merge!(data_source: external_source.import_url.presence)
     elsif params[:connector].present?
       options[:service_name]    = 'connector'
-      options[:service_item_id] = connector_parameters(params[:connector]).to_json
+      options[:service_item_id] = connector_parameters
     else
       url = params[:url]
       validate_url!(url) unless Rails.env.development? || Rails.env.test? || url.nil? || url.empty?
@@ -244,12 +244,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     external_source
   end
 
-  def connector_parameters(parameters)
-    Carto::Connector.new(
-      parameters: parameters,
-      register_connection: true,
-      user: current_user,
-      logger: nil
-    ).stored_parameters
+  def connector_parameters
+    Carto::Connector.normalized_parameters(user: current_user, parameters: params[:connector]).to_json
   end
 end

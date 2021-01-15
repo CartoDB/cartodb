@@ -1,3 +1,5 @@
+require_relative 'parameters'
+
 module Carto
   class ConnectionManager
     DB_PASSWORD_PLACEHOLDER = '********'.freeze
@@ -197,6 +199,54 @@ module Carto
       new_attributes[:name] = name if name.present?
       connection.update!(new_attributes) if new_attributes.present?
       update_redis_metadata(connection)
+    end
+
+    # This adapts parameters to be passed to a db connector, optionally registering a new connection.
+    # Two parameter sets are returned, the first intended to be stored (in a DataImport or Synchronization),
+    # which references if possible the connection parameter through a `connection_id` paramter.
+    # The second result are the parameters to be passed to a db connector, where connection parameters are
+    # included in a `connection` parameter
+    #
+    # The connection can be provided by any of theas means:
+    # * through the separate `connection` argument
+    # * referenced by a `connection_id` parameter in `parameters`
+    # * passing the connection parameters in `parameters[:connection]` (for backwards compatibility with Import API v1)
+    #
+    # If the `register` argument is true, and connection parameters are embedded in the `parameters` argument,
+    # a new connection will be created if an existing one is not found with the proper parameters.
+    # If the `register` argument is not true and connections parameters are provided embedded in `parameters`,
+    # then they will be retained as such in the resulting input parameters.
+    def adapt_db_connector_parameters(parameters:, connection: nil, register: false)
+      connector_parameters = Carto::Connector::Parameters.new(parameters)
+      provider = connector_parameters[:provider]
+      connection_parameters = connector_parameters[:connection]
+      unless connection.present?
+        connection_id = connector_parameters[:connection_id]
+        if connection_id.present?
+          connection = fetch_connection(connection_id)
+        elsif connection_parameters.present? && register
+          connection = find_or_create_db_connection(provider, connection_parameters)
+        end
+      end
+
+      input_parameters = connector_parameters.dup
+
+      if connection.present?
+        if provider.present?
+          raise "Invalid connection" if provider != connection.connector
+        else
+          connector_parameters.merge! provider: connection.connector
+        end
+        connection_parameters = connection.parameters
+        # TODO: to split Oauth/DB connections we'll need to inject @user.oauths&.select(connection.connector)&.token instead
+        connection_parameters = connection_parameters.merge(refresh_token: connection.token) if connection.token.present?
+        connector_parameters.merge! connection: connection_parameters
+        connector_parameters.delete :connection_id
+        input_parameters.merge! connection_id: connection.id
+        input_parameters.delete :connection
+      end
+
+      [input_parameters, connector_parameters]
     end
 
     def self.singleton_connector?(connector, connection_type)

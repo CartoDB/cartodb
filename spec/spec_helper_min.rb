@@ -27,6 +27,8 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   config.include FactoryGirl::Syntax::Methods
 
+  config.mock_with :mocha
+
   config.after(:each) do
     Delorean.back_to_the_present
   end

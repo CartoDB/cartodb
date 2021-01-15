@@ -13,6 +13,8 @@ require File.expand_path('../../config/environment', __FILE__)
 ActiveRecord.send(:remove_const, :TestFixtures) if ActiveRecord.const_defined?(:TestFixtures)
 
 require 'rspec/rails'
+require 'mocha'
+require 'mocha/setup'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -32,6 +34,8 @@ RSpec.configure do |config|
   config.include NamedMapsHelper
   config.include Capybara::DSL
   config.include FactoryGirl::Syntax::Methods
+
+  config.mock_with :mocha
 
   config.after(:each) do
     Delorean.back_to_the_present

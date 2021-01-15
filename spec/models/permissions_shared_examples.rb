@@ -4,8 +4,6 @@ shared_examples_for 'permission models' do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    ::User.any_instance.stubs(:gravatar).returns(nil)
     @user = create_user(quota_in_bytes: 524288000, table_quota: 500)
     @carto_user = Carto::User.find(@user.id)
 
@@ -14,6 +12,11 @@ shared_examples_for 'permission models' do
     @user4 = create_user
 
     @viewer_user = create_user(viewer: true)
+  end
+
+  before do
+    CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
+    ::User.any_instance.stubs(:gravatar).returns(nil)
   end
 
   after(:all) do

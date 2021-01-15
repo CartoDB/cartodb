@@ -54,9 +54,9 @@ RSpec.configure do |config|
       close_pool_connections
       drop_leaked_test_user_databases
     end
-
-    CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
   end
+
+  config.before { CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger) }
 
   config.after(:all) do
     unless ENV['PARALLEL'] || ENV['BUILD_ID']

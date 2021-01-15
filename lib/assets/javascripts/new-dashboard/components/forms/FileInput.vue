@@ -9,6 +9,9 @@
         <input @change="fileSelected" ref="file" type="file">
       </div>
     </div>
+    <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__grow--1 u-flex__justify--start u-mt--16" v-if="error">
+      {{ error }}
+    </div>
   </div>
 </template>
 
@@ -24,10 +27,15 @@ export default {
   inject: ['backboneViews'],
   mixins: [uploadData],
   props: {
-    label: null
+    label: null,
+    supportedFormats: {
+      type: Array,
+      required: false
+    }
   },
   data () {
     return {
+      error: null,
       file: null,
       dragged: false
     };
@@ -75,13 +83,32 @@ export default {
     },
     setFile (files) {
       this.clearFile();
+
       if (files && files.length > 0) {
         this.file = files[0];
-        this.$emit('change', this.file);
+
+        if (this.validateFileExtension()) {
+          this.$emit('change', this.file);
+        } else {
+          this.error = this.$t('FileInput.extensionError');
+        }
       }
     },
     clearFile () {
       this.file = null;
+      this.error = '';
+    },
+    validateFileExtension () {
+      const name = this.file.name;
+      let ext = name.substr(name.lastIndexOf('.') + 1);
+      if (ext) {
+        ext = ext.toLowerCase();
+      }
+      if (!this.supportedFormats || !this.supportedFormats.length) {
+        return true;
+      } else {
+        return this.supportedFormats.some(format => format === ext);
+      }
     }
   },
   beforeDestroy () {
@@ -100,6 +127,9 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+.error-wrapper {
+  width: 100%;
+}
 .drag-zone {
   width: 460px;
   height: 204px;

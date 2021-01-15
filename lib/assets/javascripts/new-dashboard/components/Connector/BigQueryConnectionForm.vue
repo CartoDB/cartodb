@@ -26,11 +26,9 @@
       </div>
       <div v-else-if="!showDisclaimer && !isFileSelected">
         <FileInput
-          label="Upload your service account file"
+          :label="$t('ConnectorsPage.BigQuery.fileInputLabel')"
+          :supportedFormats="supportedFormats"
           @change="onFileChange"></FileInput>
-        <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--16" v-if="error">
-          {{ error }}
-        </div>
       </div>
       <div v-else-if="!showDisclaimer && isFileSelected" class="u-flex u-flex__direction--column">
         <h4 class="is-small is-semibold">{{$t('ConnectorsPage.BigQuery.title')}}</h4>
@@ -51,7 +49,7 @@
         </div>
         <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--16 input-wrapper">
           <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
-            <label class="is-small">{{$t('ConnectorsPage.BigQuery.deafultProject')}}</label>
+            <label class="is-small">{{$t('ConnectorsPage.BigQuery.defaultProject')}}</label>
           </div>
           <SelectComponent v-model="connectionModel.default_project" :elements="projects"></SelectComponent>
         </div>
@@ -99,6 +97,7 @@ export default {
         billing_project: null,
         default_project: null
       },
+      supportedFormats: [SERVICE_ACCOUNT_EXTENSION],
       fileValidation: {
         valid: false,
         msg: ''
@@ -110,7 +109,7 @@ export default {
       return this.connectionModel.name && this.connectionModel.billing_project && this.connectionModel.default_project;
     },
     isFileSelected () {
-      return this.fileValidation.valid && this.projects && this.projects.length;
+      return this.projects && this.projects.length;
     }
   },
   methods: {
@@ -118,18 +117,7 @@ export default {
       this.showDisclaimer = false;
     },
     onFileChange (file) {
-      if (file) {
-        var ext = file.name.substr(name.lastIndexOf('.') + 1);
-        if (ext) {
-          ext = ext.toLowerCase();
-        }
-
-        if (ext === SERVICE_ACCOUNT_EXTENSION) {
-          this.uploadServiceAccount(file);
-        } else {
-          this.error = this.$t('ConnectorsPage.BigQuery.serviceAccountExtensionError');
-        }
-      }
+      this.uploadServiceAccount(file);
     },
     async connect () {
       try {

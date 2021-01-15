@@ -17,6 +17,7 @@
         <div v-if="extension !== 'url'">
           <FileInput
             label=""
+            :supportedFormats="supportedFormats"
             @change="onFileChange"></FileInput>
         </div>
         <div v-else-if="extension === 'url'">
@@ -73,6 +74,7 @@ import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
 import FileInput from 'new-dashboard/components/forms/FileInput';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';
+import UploadConfig from 'dashboard/common/upload-config';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import * as Formatter from 'new-dashboard/utils/formatter';
@@ -97,6 +99,7 @@ export default {
         valid: false,
         msg: ''
       },
+      supportedFormats: UploadConfig.fileExtensions,
       extension: this.$route.params.extension,
       uploadObject: this.getUploadObject()
     };

@@ -236,6 +236,7 @@ module Carto
       if connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
         connection.get_service_datasource.revoke_token
       end
+    rescue CartoDB::Datasources::TokenExpiredOrInvalidError
     end
 
     def oauth_connection_url(service) # returns auth_url, doesn't actually create connection

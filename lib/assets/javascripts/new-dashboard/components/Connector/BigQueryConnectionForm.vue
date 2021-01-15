@@ -76,20 +76,15 @@ import FileInput from 'new-dashboard/components/forms/FileInput';
 import SelectComponent from 'new-dashboard/components/forms/SelectComponent';
 import uploadData from '../../mixins/connector/uploadData';
 
+const SERVICE_ACCOUNT_EXTENSION = 'json';
+
 export default {
   name: 'BigQueryConnectionForm',
   components: {
     FileInput,
     SelectComponent
   },
-  inject: ['backboneViews'],
   mixins: [uploadData],
-  props: {
-    connection: null,
-    connector: {
-      required: true
-    }
-  },
   data () {
     return {
       error: '',
@@ -112,7 +107,7 @@ export default {
   },
   computed: {
     connectionModelIsValid () {
-      return this.connectionModel.billing_project && this.connectionModel.default_project;
+      return this.connectionModel.name && this.connectionModel.billing_project && this.connectionModel.default_project;
     },
     isFileSelected () {
       return this.fileValidation.valid && this.projects && this.projects.length;
@@ -123,9 +118,17 @@ export default {
       this.showDisclaimer = false;
     },
     onFileChange (file) {
-      this.fileValidation = this.validateFile([file]);
-      if (this.fileValidation.valid) {
-        this.uploadServiceAccount(file);
+      if (file) {
+        var ext = file.name.substr(name.lastIndexOf('.') + 1);
+        if (ext) {
+          ext = ext.toLowerCase();
+        }
+
+        if (ext === SERVICE_ACCOUNT_EXTENSION) {
+          this.uploadServiceAccount(file);
+        } else {
+          this.error = this.$t('ConnectorsPage.BigQuery.serviceAccountExtensionError');
+        }
       }
     },
     async connect () {

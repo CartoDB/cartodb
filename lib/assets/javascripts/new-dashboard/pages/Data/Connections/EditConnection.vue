@@ -75,7 +75,7 @@ export default {
       rawConnections: state => state.connectors.connections
     }),
     isBigQuery () {
-      return this.importOption.options.service === 'bigquery';
+      return this.importOption.options && this.importOption.options.service === 'bigquery';
     },
     importOption () {
       let connector = this.editing ? (this.connection ? this.connection.connector : null) : this.$route.params.connector;

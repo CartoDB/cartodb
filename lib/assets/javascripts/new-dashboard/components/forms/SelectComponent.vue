@@ -1,6 +1,6 @@
 <template>
   <div class="select-wrapper">
-    <select v-model="value">
+    <select v-model="selectValue">
       <option v-for="element in elements" :key="element.id" :value="element.id">{{element.label}}</option>
     </select>
   </div>
@@ -11,6 +11,7 @@ export default {
   name: 'InputList',
   data () {
     return {
+      selectValue: this.$props.value
     };
   },
   model: {
@@ -28,8 +29,8 @@ export default {
   methods: {
   },
   watch: {
-    value () {
-      this.$emit('optionChange', this.value);
+    selectValue () {
+      this.$emit('optionChange', this.selectValue);
     }
   }
 };

@@ -6,7 +6,7 @@
     </div>
     <div class="ConnectorInfo u-flex u-flex__direction--column u-flex__align--center u-flex__align--center u-pt--20 u-pb--16">
       <div :class="'is-' + type"></div>
-      <span class="is-semibold u-mt--8">{{ label }}</span>
+      <span class="is-semibold u-mt--8 label">{{ label }}</span>
     </div>
     <Tooltip :text="connectionParamsFormated" position="bottom-right" class="tools u-pt--16 u-pb--16 u-pl--20 u-pr--20">
       <div  class="u-flex u-width--100" v-if="isDatabase">
@@ -111,6 +111,13 @@ export default {
 
   &:hover {
     box-shadow: 0 8px 12px 0 #c8d2da;
+
+    .ConnectorInfo {
+      .label {
+        color: $blue--500;
+        text-decoration: underline;
+      }
+    }
 
     .quickactions {
 

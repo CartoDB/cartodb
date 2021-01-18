@@ -232,7 +232,7 @@ export default {
 
       const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
       backgroundPollingView._addDataset({ ...this.uploadObject });
-      this.$refs.dialog.closePoup();
+      this.$refs.dialog.closePopup();
     }
   }
 };

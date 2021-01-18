@@ -114,7 +114,7 @@
     "connectionParameters": "Parameters",
     "connectWith": "Connect with",
     "gettingConnected": "Getting connected",
-    "connectInfo": "To ensure CARTO has access to your PostgreSQL database, please make sure your firewall is configured to allow the connections from these IP addresses:",
+    "connectInfo": "To ensure CARTO has access to your {connector} database, please make sure your firewall is configured to allow the connections from these IP addresses:",
     "fromYourConnections": "From your existing connections",
     "fromNewConnections": "From a new connection/file",
     "connectionsSuccessfull": "Successfully connected!",
@@ -812,6 +812,8 @@
   },
   "ConnectorsPage": {
     "addConnection": "Add new connection",
+    "successConnection": "Connected",
+    "cancel": "Cancel",
     "editConnection": "Edit your {connector} connection",
     "editConnectionDisclaimer": "<span class='is-semibold'>Some datasets are using this connection to synchronize.</span> If you modify these parameters, you'll need to ensure you still have access to them.",
     "editConnectionButton": "Save & Connect",

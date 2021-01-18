@@ -12,9 +12,11 @@ module Carto
     # if persist_connection is true and connection not present, a new connection will
     # be registered from parameters[:connection]
     def initialize(parameters:, user:, connection: nil, register_connection: false, **args)
-      @params = Parameters.new(parameters)
       @user = user
-      set_connection!(connection, register_connection)
+      connection_manager = Carto::ConnectionManager.new(@user)
+      @input_params, @params = connection_manager.adapt_db_connector_parameters(
+        parameters: parameters, connection: connection, register: register_connection
+      )
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
@@ -23,8 +25,8 @@ module Carto
       raise InvalidParametersError.new(message: "Invalid provider", provider: @provider_name) if @provider.blank?
     end
 
-    def stored_parameters
-      @stored_parameters.parameters
+    def input_parameters
+      @input_params.parameters
     end
 
     def copy_table(schema_name:, table_name:)
@@ -200,6 +202,16 @@ module Carto
       end
     end
 
+    def self.normalized_parameters(user:, parameters:)
+      # Validates and normalizes parameters to be stored, registering a new connection if necessary
+      Carto::Connector.new(
+        parameters: parameters,
+        register_connection: true,
+        user: user,
+        logger: nil
+      ).input_parameters
+    end
+
     private
 
     def self.has_feature?(provider, feature)
@@ -216,36 +228,6 @@ module Carto
 
     def log(message, truncate = true)
       @provider.log message, truncate
-    end
-
-    def set_connection!(connection, register)
-      provider = @params[:provider]
-      connection_manager = Carto::ConnectionManager.new(@user)
-      unless connection.present?
-        connection_id = @params[:connection_id]
-        if connection_id.present?
-          connection = connection_manager.fetch_connection(connection_id)
-        elsif @params[:connection].present? && register
-          connection = connection_manager.find_or_create_db_connection(provider, @params[:connection])
-        end
-      end
-
-      @stored_parameters = @params.dup
-
-      if connection.present?
-        if provider.present?
-          raise "Invalid connection" if provider != connection.connector
-        else
-          @params.merge! provider: connection.connector
-        end
-        connection_params = connection.parameters
-        # TODO: to split Oauth/DB connections we'll need to inject @user.oauths&.select(connection.connector)&.token instead
-        connection_params = connection_params.merge(refresh_token: connection.token) if connection.token.present?
-        @params.merge! connection: connection_params
-        @params.delete :connection_id
-        @stored_parameters.merge! connection_id: connection.id
-        @stored_parameters.delete :connection
-      end
     end
   end
 end

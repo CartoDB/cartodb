@@ -54,52 +54,10 @@ import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
 import DatasetListForConnectors from 'new-dashboard/components/Connector/DatasetListForConnectors';
-import { getImportOption } from 'new-dashboard/utils/connector/import-option';
 import uploadData from 'new-dashboard/mixins/connector/uploadData';
+import { getImportOption } from 'new-dashboard/utils/connector/import-option';
+import { LOCAL_FILES } from 'new-dashboard/utils/connector/local-file-option';
 import { mapState } from 'vuex';
-
-const LOCAL_FILES = [
-  {
-    id: 'file-csv',
-    label: 'CSV'
-  },
-  {
-    id: 'file-geojson',
-    label: 'GeoJSON'
-  },
-  {
-    id: 'file-shapefile',
-    label: 'Shapefile'
-  },
-  {
-    id: 'file-gpkg',
-    label: 'GeoPackage'
-  },
-  {
-    id: 'file-kml',
-    label: 'KML'
-  },
-  {
-    id: 'file-excel',
-    label: 'Excel'
-  },
-  {
-    id: 'file-carto',
-    label: 'CARTO'
-  },
-  {
-    id: 'file-osm',
-    label: 'OSM'
-  },
-  {
-    id: 'file-gpx',
-    label: 'GPX'
-  },
-  {
-    id: 'file-ods',
-    label: 'ODS'
-  }
-];
 
 const TABS = {
   newDataset: 'new-dataset',

@@ -7,7 +7,7 @@
   <template slot="sub-header">
     <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
       <img class="u-mr--8 file-icon" :src="fileIcon" @error="setAltImage">
-      {{ $t('DataPage.addLocalFile') }}
+      {{ $t('DataPage.addLocalFile', { format: typeName }) }}
     </h3>
   </template>
   <template #default>
@@ -79,6 +79,7 @@ import UploadConfig from 'dashboard/common/upload-config';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import * as Formatter from 'new-dashboard/utils/formatter';
+import { LOCAL_FILES } from 'new-dashboard/utils/connector/local-file-option';
 
 export default {
   name: 'AddLocalFile',
@@ -100,6 +101,7 @@ export default {
         valid: false,
         msg: ''
       },
+      localFiles: LOCAL_FILES,
       supportedFormats: UploadConfig.fileExtensions,
       extension: this.$route.params.extension,
       uploadObject: this.getUploadObject()
@@ -108,6 +110,9 @@ export default {
   computed: {
     getRouteNamePrefix () {
       return this.$route.name.replace('add-local-file', '');
+    },
+    typeName () {
+      return (this.localFiles.find(lf => lf.id === this.extension) || {}).label || this.$t('DataPage.defaultLocalFile');
     },
     fileIcon () {
       return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/${this.extension}.svg`;

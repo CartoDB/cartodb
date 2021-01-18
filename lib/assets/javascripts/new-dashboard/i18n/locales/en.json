@@ -98,7 +98,8 @@
     "addLayer": "Add new layer",
     "createLayer": "Add layer",
     "createMap": "Create map",
-    "addLocalFile": "Add local file",
+    "addLocalFile": "Add {format}",
+    "defaultLocalFile": "local file",
     "formats": "Formats",
     "learnmore": "Learn more",
     "guessing-desc": "Let CARTO automatically guess data types and content on import.",
@@ -963,6 +964,6 @@
     }
   },
   "FileInput": {
-    "extensionError": "Unfortunately, this file extension is not allowed"
+    "extensionError": "The file formated you added does not appear to be valid"
   }
 }

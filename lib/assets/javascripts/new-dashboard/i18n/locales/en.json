@@ -823,6 +823,19 @@
     "itemList": "{num} items found in {connector}",
     "oauthRequesting": "Requesting oAuth",
     "oauthCheckingToken": "Checking token...",
+    "BigQuery": {
+      "title": "Your BigQuery credentials",
+      "fileInputLabel": "Upload your service account file",
+      "connName": "Name",
+      "serviceAccountError": "Invalid service account",
+      "billingProject": "Billing project",
+      "billingHelper": "Project ID for the Google Cloud project that will run the queries and be charged for the expenses. Example: my-project-identifies. More info <a href='#'>here</a>",
+      "defaultProject": "Default project ID",
+      "conditions": {
+        "cancel": "Cancel",
+        "accept": "Accept and connect"
+      } 
+    },
     "removeModal": {
       "title": "You are about to delete your {connector} connection",
       "subtitle": "If you have synchronized datasets, you will no longer be able to update them",
@@ -948,5 +961,8 @@
     "sections": {
       "directSQLConnection": "Direct SQL Connection"
     }
+  },
+  "FileInput": {
+    "extensionError": "Unfortunately, this file extension is not allowed"
   }
 }

@@ -160,54 +160,6 @@ describe User do
     end
   end
 
-  it "should read api calls from external service" do
-    pending "This is deprecated. This code has been moved"
-    @user.stubs(:get_old_api_calls).returns({
-                                              "per_day" => [0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 17, 4, 0, 0, 0, 0],
-                                              "total"=>49,
-                                              "updated_at"=>1370362756
-                                            })
-    @user.stubs(:get_es_api_calls_from_redis).returns([
-                                                        21, 0, 0, 0, 2, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-                                                      ])
-    @user.get_api_calls.should == [21, 0, 0, 0, 6, 17, 0, 5, 0, 0, 0, 0, 0, 0, 8, 8, 0, 5, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0]
-    @user.get_api_calls(
-      from: (Date.today - 6.days),
-      to: Date.today
-    ).should == [21, 0, 0, 0, 6, 17, 0]
-  end
-
-  it "should get final api calls from es" do
-    yesterday = Date.today - 1
-    today = Date.today
-    from_date = DateTime.new(yesterday.year, yesterday.month, yesterday.day, 0, 0, 0).strftime("%Q")
-    to_date = DateTime.new(today.year, today.month, today.day, 0, 0, 0).strftime("%Q")
-    api_url = %r{search}
-    api_response = {
-      "aggregations" => {
-        "0" => {
-          "buckets" => [
-            {
-              "key" => from_date.to_i,
-              "doc_count" => 4
-            },
-            {
-              "key" => to_date.to_i,
-              "doc_count" => 6
-            }
-          ]
-        }
-      }
-    }
-    Typhoeus.stub(api_url,
-                  { method: :post }
-    )
-      .and_return(
-        Typhoeus::Response.new(code: 200, body: api_response.to_json.to_s)
-      )
-    @user.get_api_calls_from_es.should == {from_date.to_i => 4, to_date.to_i => 6}
-  end
-
   describe '#get_geocoding_calls' do
     before do
       delete_user_data @user

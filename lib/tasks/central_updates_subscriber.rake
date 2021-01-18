@@ -45,10 +45,22 @@ namespace :message_broker do
       subscription.register_callback(:delete_user,
                                      &central_user_commands.method(:delete_user))
 
+      subscription.register_callback(:update_organization) do |payload|
+        OrganizationCommands::Update.new(payload, { logger: logger }).run
+      end
+
+      subscription.register_callback(:create_organization) do |payload|
+        OrganizationCommands::Create.new(payload, { notifications_topic: notifications_topic, logger: logger }).run
+      end
+
+      subscription.register_callback(:delete_organization) do |payload|
+        OrganizationCommands::Delete.new(payload, { notifications_topic: notifications_topic, logger: logger }).run
+      end
+
       at_exit do
         logger.info(message: 'Stopping subscriber...')
         subscription.stop!
-        logger.info(message: 'Done')
+        logger.info(message: 'Subscriber stopped')
       end
 
       subscription.start

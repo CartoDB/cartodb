@@ -4,6 +4,7 @@ require 'securerandom'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
+require_relative 'user_map_views'
 require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/user_commons'
@@ -69,9 +70,11 @@ class Carto::User < ActiveRecord::Base
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
   has_many :granted_oauth_apps, through: :oauth_app_users, class_name: Carto::OauthApp, source: 'oauth_app'
 
+  has_many :user_map_views, class_name: 'Carto::UserMapViews', dependent: :destroy, inverse_of: :user
+
   delegate [
     :database_username, :database_password, :in_database,
-    :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
+    :db_size_in_bytes, :table_count, :public_visualization_count, :all_visualization_count,
     :visualization_count, :owned_visualization_count, :twitter_imports_count,
     :link_privacy_visualization_count, :password_privacy_visualization_count, :public_privacy_visualization_count,
     :private_privacy_visualization_count
@@ -317,7 +320,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def map_views_count
-    123 # TODO. Mocked value by now.
+    user_map_views.last_billing_cycle(last_billing_cycle).reduce(0) { |sum, item| sum + item.map_views }
   end
 
   def subscriptions_public_size_in_bytes

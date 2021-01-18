@@ -22,8 +22,9 @@
       <div class="u-flex u-flex__justify--end u-mt--32">
         <button v-if="editing" @click="cancel" class="u-mr--28 is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.cancel')}}</button>
         <button @click="connect" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': (!connectionModelIsValid || submited)}">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium">
-            {{ editing ? $t('ConnectorsPage.editConnectionButton') : $t('DataPage.connect') }}
+          <span class="u-flex CDB-Text is-semibold CDB-Size-medium">
+            <img v-if="submited" svg-inline src="../../assets/icons/common/loading.svg" class="u-mr--8 loading__svg"/>
+            {{ submited ? $t('ConnectorsPage.connecting') : (editing ? $t('ConnectorsPage.editConnectionButton') : $t('DataPage.connect')) }}
           </span>
         </button>
       </div>
@@ -125,6 +126,24 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+
+.loading__svg {
+  height: 16px;
+  width: 16px;
+  outline: none;
+
+  path {
+    stroke: $blue--400;
+    stroke-width: 2;
+  }
+
+  circle {
+    stroke: $neutral--300;
+    stroke-opacity: 1;
+    stroke-width: 2;
+  }
+}
+
 .alert {
   position: relative;
   background-color: $yellow--050;

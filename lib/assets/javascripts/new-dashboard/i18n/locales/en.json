@@ -817,6 +817,7 @@
     "editConnection": "Edit your {connector} connection",
     "editConnectionDisclaimer": "<span class='is-semibold'>Some datasets are using this connection to synchronize.</span> If you modify these parameters, you'll need to ensure you still have access to them.",
     "editConnectionButton": "Save & Connect",
+    "connecting": "Connecting...",
     "queryError": "Error. Your SQL Query doesn’t look correct.",
     "oauthErrorTitle": "Connection failed: we were unable to connect to {connector}",
     "oauthErrorSubtitle": "Be sure you have any pop-up blockers deactivated for this website.",

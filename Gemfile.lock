@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: db4221b184774a3a084a9c93630b91915d8473f0
-  branch: feature/ch127672/funnel-messages-shared-token
+  revision: 719e091a999ac33a99b286f833a277ad0ab4515e
+  tag: v1.0.0
   specs:
-    cartodb-common (0.5.3)
+    cartodb-common (1.0.0)
       argon2 (~> 2)
       google-cloud-pubsub (~> 2.3)
       rails (>= 4, < 6)

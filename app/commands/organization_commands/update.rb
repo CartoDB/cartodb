@@ -1,5 +1,5 @@
 module OrganizationCommands
-  class Update < ::BaseCommand
+  class Update < ::CartoCommand
 
     private
 

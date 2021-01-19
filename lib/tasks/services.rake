@@ -58,7 +58,7 @@ namespace :cartodb do
       orgname = args[:orgname]
       service = args[:service]
       provider = args[:provider]
-      org = orgname && ::Organization.find(name: orgname)
+      org = orgname && Carto::Organization.find_by(name: orgname)
 
       assert_valid_arg args, :orgname,  accepted_values: proc { org.present? }
       assert_valid_arg args, :service,  accepted_values: DS_PROVIDED_SERVICES
@@ -99,7 +99,7 @@ namespace :cartodb do
       orgname = args[:orgname]
       service = args[:service]
       quota = args[:quota]
-      org = orgname && ::Organization.find(name: orgname)
+      org = orgname && Carto::Organization.find_by(name: orgname)
 
       assert_valid_arg args, :orgname, accepted_values: proc { org.present? }
       assert_valid_arg args, :service, accepted_values: DS_SERVICES

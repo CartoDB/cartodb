@@ -383,7 +383,7 @@ namespace :cartodb do
 
     desc 'Set org role privileges in all organizations'
     task :set_org_privileges_in_cartodb_schema, [:org_name] => :environment do |_t, args|
-      org = ::Organization.find(name: args[:org_name])
+      org = Carto::Organization.find_by(:name=> args[:org_name])
       owner = org.owner
       if owner
         owner.db_service.setup_organization_role_permissions
@@ -394,7 +394,7 @@ namespace :cartodb do
 
     desc 'Set org role privileges in all organizations'
     task set_all_orgs_privileges_in_cartodb_schema: :environment do |_t, _args|
-      Organization.each do |org|
+      Carto::Organization.each do |org|
         owner = org.owner
         if owner
           owner.db_service.setup_organization_role_permissions
@@ -462,7 +462,7 @@ namespace :cartodb do
       usage = 'usage: rake cartodb:db:set_organization_quota[organization_name,quota_in_gb]'
       raise usage if args[:organization_name].blank? || args[:quota_in_gb].blank?
 
-      organization  = Organization.filter(:name=> args[:organization_name]).first
+      organization  = Carto::Organization.find_by(:name=> args[:organization_name])
       quota = args[:quota_in_gb].to_i * 1024 * 1024 * 1024
       organization.quota_in_bytes = quota
       organization.save
@@ -475,7 +475,7 @@ namespace :cartodb do
       usage = 'usage: rake cartodb:db:set_organization_seats[organization_name,seats]'
       raise usage if args[:organization_name].blank? || args[:seats].blank?
 
-      organization  = Organization.filter(:name=> args[:organization_name]).first
+      organization  = Carto::Organization.find_by(:name=> args[:organization_name])
       seats = args[:seats].to_i
       organization.seats = seats
       organization.save
@@ -488,7 +488,7 @@ namespace :cartodb do
       usage = 'usage: rake cartodb:db:set_organization_viewer_seats[organization_name,seats]'
       raise usage if args[:organization_name].blank? || args[:seats].blank?
 
-      organization = Organization.filter(name: args[:organization_name]).first
+      organization = Carto::Organization.find_by(:name=> args[:organization_name])
       seats = args[:seats].to_i
       organization.viewer_seats = seats
       organization.save
@@ -855,9 +855,9 @@ namespace :cartodb do
       raise "You should provide a USERNAME" if ENV['USERNAME'].blank?
       user = ::User.where(:username => ENV['USERNAME']).first
       raise "User #{ENV['USERNAME']} does not exist" if user.nil?
-      organization = Organization.where(:name => ENV['ORGANIZATION_NAME']).first
+      organization = Carto::Organization.find_by(:name => ENV['ORGANIZATION_NAME'])
       if organization.nil?
-        organization = Organization.new
+        organization = Carto::Organization.new
         organization.name = ENV['ORGANIZATION_NAME']
         organization.display_name = ENV['ORGANIZATION_DISPLAY_NAME']
         organization.seats = ENV['ORGANIZATION_SEATS']
@@ -878,9 +878,9 @@ namespace :cartodb do
       raise "You should provide a ORGANIZATION_SEATS" if ENV['ORGANIZATION_SEATS'].blank?
       raise "You should provide a ORGANIZATION_QUOTA (in Bytes)" if ENV['ORGANIZATION_QUOTA'].blank?
 
-      organization = Organization.where(:name => ENV['ORGANIZATION_NAME']).first
+      organization = Carto::Organization.find_by(:name => ENV['ORGANIZATION_NAME'])
       if organization.nil?
-        organization = Organization.new
+        organization = Carto::Organization.new
         organization.name = ENV['ORGANIZATION_NAME']
         organization.display_name = ENV['ORGANIZATION_DISPLAY_NAME']
         organization.seats = ENV['ORGANIZATION_SEATS']
@@ -932,7 +932,7 @@ namespace :cartodb do
       bytes_per_user = 50 * 1024 * 1024
 
       def create_organization(org_name, n_users, bytes_per_user)
-        organization = Organization.new
+        organization = Carto::Organization.new
         organization.name = org_name
         organization.display_name = org_name
         organization.seats = n_users * 2
@@ -959,7 +959,7 @@ namespace :cartodb do
       last_index = args[:last_index]
       bytes_per_user = 50 * 1024 * 1024
 
-      organization = Organization.where(name: org_name).first
+      organization = Carto::Organization.find_by(name: org_name)
       create_users(first_index, last_index, organization, bytes_per_user)
     end
 
@@ -1114,7 +1114,7 @@ namespace :cartodb do
 
     desc "Assign permissions to organization shared role. See #3859 and #3881. This is used to upgrade existing organizations to new permission schema. You can optionally speciy an organization name to restrict the execution to it."
     task :assign_org_permissions_to_org_role, [:organization_name] => :environment do |t, args|
-      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+      organizations = args[:organization_name].present? ? Carto::Organization.where(name: args[:organization_name]).all : Carto::Organization.all
       puts "Updating #{organizations.count} organizations"
       organizations.each { |o|
         owner = o.owner
@@ -1164,7 +1164,7 @@ namespace :cartodb do
 
     desc "Assign organization owner admin role at database. See CartoDB/cartodb-postgresql#104 and #5187"
     task :assign_org_owner_role, [:organization_name] => :environment do |t, args|
-      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+      organizations = args[:organization_name].present? ? Carto::Organization.where(name: args[:organization_name]).all : Carto::Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
           owner.db_service.grant_admin_permissions
@@ -1176,7 +1176,7 @@ namespace :cartodb do
 
     desc "Configure extension org metadata API endpoint, the one used by the extension to keep groups synched. See CartoDB/cartodb-postgresql#104 and CartoDB/cartodb/issues/5244"
     task :configure_extension_org_metadata_api_endpoint, [:organization_name] => :environment do |t, args|
-      organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
+      organizations = args[:organization_name].present? ? Carto::Organization.where(name: args[:organization_name]).all : Carto::Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
           owner.db_service.configure_extension_org_metadata_api_endpoint
@@ -1195,7 +1195,7 @@ namespace :cartodb do
         # Double check before launch an update to all the orgs
         raise "ERROR: You haven't passed an organization name and/or put the :all_organizations flag to true"
       end
-      organizations = args[:organization_name].blank? ? ::Organization.all : ::Organization.where(name: args[:organization_name]).all
+      organizations = args[:organization_name].blank? ? Carto::Organization.all : cartodb::Organization.where(name: args[:organization_name]).all
       raise "ERROR: Organization #{args[:organization_name]} don't exists" if organizations.blank? and not args[:all_organizations]
       run_for_organizations_owner(organizations) do |owner|
         begin
@@ -1313,7 +1313,7 @@ namespace :cartodb do
     task :connect_aggregation_fdw_tables_to_org, [:orgname] => [:environment] do |task, args|
       args.with_defaults(:orgname => nil)
       raise 'Not a valid orgname' if args[:orgname].blank?
-      org = ::Organization.find(name: args[:orgname])
+      org = Carto::Organization.find_by(:name=> args[:orgname])
       org.users.each do |u|
         begin
           u.db_service.connect_to_aggregation_tables

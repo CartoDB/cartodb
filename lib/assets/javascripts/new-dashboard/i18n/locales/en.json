@@ -131,6 +131,7 @@
     },
     "tabs": {
       "datasets": "Your Datasets",
+      "tilesets": "Your Tilesets",
       "subscriptions": "Your Subscriptions",
       "connections": "Your Connections",
       "catalog": "Spatial Data Catalog"
@@ -297,6 +298,13 @@
       "actionName": "Connect your data",
       "actionDescription": "to CARTO whether it's a local file, a URL, a cloud storage or a database."
     }
+  },
+  "TilesetListHeader": {
+    "name": "Name",
+    "lastUpdated": "Last Updated",
+    "created": "Created",
+    "zoom": "Zoom",
+    "properties": "Properties"
   },
   "DatasetListHeader": {
     "name": "Name",

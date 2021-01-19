@@ -384,7 +384,7 @@ describe User do
 
         it 'logs an error' do
           user.email = nil
-          Rails.logger.expects(:error).once
+          Rails.logger.expects(:error).at_least_once
 
           user.invalidate_all_sessions!
         end

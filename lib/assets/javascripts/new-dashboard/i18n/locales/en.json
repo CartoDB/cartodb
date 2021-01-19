@@ -98,7 +98,8 @@
     "addLayer": "Add new layer",
     "createLayer": "Add layer",
     "createMap": "Create map",
-    "addLocalFile": "Add local file",
+    "addLocalFile": "Add {format}",
+    "defaultLocalFile": "local file",
     "formats": "Formats",
     "learnmore": "Learn more",
     "guessing-desc": "Let CARTO automatically guess data types and content on import.",
@@ -113,7 +114,7 @@
     "connectionParameters": "Parameters",
     "connectWith": "Connect with",
     "gettingConnected": "Getting connected",
-    "connectInfo": "To ensure CARTO has access to your PostgreSQL database, please make sure your firewall is configured to allow the connections from these IP addresses:",
+    "connectInfo": "To ensure CARTO has access to your {connector} database, please make sure your firewall is configured to allow the connections from these IP addresses:",
     "fromYourConnections": "From your existing connections",
     "fromNewConnections": "From a new connection/file",
     "connectionsSuccessfull": "Successfully connected!",
@@ -811,9 +812,12 @@
   },
   "ConnectorsPage": {
     "addConnection": "Add new connection",
+    "successConnection": "Connected",
+    "cancel": "Cancel",
     "editConnection": "Edit your {connector} connection",
     "editConnectionDisclaimer": "<span class='is-semibold'>Some datasets are using this connection to synchronize.</span> If you modify these parameters, you'll need to ensure you still have access to them.",
     "editConnectionButton": "Save & Connect",
+    "connecting": "Connecting...",
     "queryError": "Error. Your SQL Query doesn’t look correct.",
     "oauthErrorTitle": "Connection failed: we were unable to connect to {connector}",
     "oauthErrorSubtitle": "Be sure you have any pop-up blockers deactivated for this website.",
@@ -963,6 +967,6 @@
     }
   },
   "FileInput": {
-    "extensionError": "Unfortunately, this file extension is not allowed"
+    "extensionError": "The file formated you added does not appear to be valid"
   }
 }

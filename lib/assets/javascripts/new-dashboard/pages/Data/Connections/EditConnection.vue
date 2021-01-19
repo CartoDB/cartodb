@@ -1,10 +1,12 @@
 <template>
   <Dialog ref="dialog"
-    :headerTitle="editing ? $t('ConnectorsPage.editConnection', {connector: title}) : $t('ConnectorsPage.addConnection')"
+    :headerTitle="connectionsSuccessfullId ?
+      $t('ConnectorsPage.successConnection') :
+      (editing ? $t('ConnectorsPage.editConnection', {connector: title}) : $t('ConnectorsPage.addConnection'))"
     :headerImage="connectionsSuccessfullId ?
       require('../../../assets/icons/datasets/conected.svg') :
       (editing ? require('../../../assets/icons/datasets/edit-connection.svg') : require('../../../assets/icons/datasets/add-connection.svg'))"
-    :showSubHeader="!editing"
+    :showSubHeader="!editing && !connectionsSuccessfullId"
     :backRoute="{name: backNamedRoute}"
   >
     <template slot="sub-header">
@@ -19,7 +21,7 @@
         <DatabaseConnectionForm v-if="type === 'database' && !isBigQuery"
           :connector="importOption"
           :connection="connection"
-          @connectClicked="connectionSuccess"></DatabaseConnectionForm>
+          @connectClicked="connectionSuccess" @cancel="onCancel"></DatabaseConnectionForm>
         <BigQueryConnectionForm v-else-if="isBigQuery"
           :connector="importOption"
           :connection="connection" @cancel="onCancel" @connectionSuccess="connectionSuccess"></BigQueryConnectionForm>
@@ -104,7 +106,7 @@ export default {
       this.$store.dispatch('connectors/fetchConnectionsList');
     },
     onCancel () {
-      this.$router.push({ name: this.backNamedRoute });
+      this.$refs.dialog.closePopup();
     },
     navigateNext () {
       const routeNamePrefix = !this.editing ? this.$route.name.replace('connector-selected', '') : 'new-connection-';

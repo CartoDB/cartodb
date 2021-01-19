@@ -3,7 +3,7 @@
     <span class="is-small">{{ label }}</span>
     <div>
       <div ref="dragZone" :class="{dragged: dragged}" class="drag-zone u-mt--32 u-flex u-flex__direction--column u-flex__align--center u-flex__justify--center">
-        <img src="../../assets/icons/datasets/move-up.svg">
+        <img svg-inline src="../../assets/icons/datasets/move-up.svg">
         <h4 class="is-small is-semibold u-mt--16" style="text-align: center;">Drag and drop your file<br>or</h4>
         <button @click="selectFile()" class="button is-primary u-mt--16">Browse</button>
         <input @change="fileSelected" :accept="supportedFormatsList" ref="file" type="file">
@@ -143,6 +143,11 @@ export default {
   >* {
     transition: opacity 0.25s linear;
   }
+
+  path {
+    fill: $neutral--600;
+  }
+
   &.dragged {
     border-color: $blue--500;
     >* {

@@ -14,23 +14,25 @@
           <label class="is-small">{{p.key}}</label>
           <span v-if="p.optional" class="is-small is-txtMidGrey">(optional)</span>
         </div>
-        <input v-model="connectionModel[p.key]" :type="p.type" :placeholder="$t('DataPage.imports.database.placeholder-' + p.key, { brand: p.title })">
+        <input v-model="connectionModel[p.key]" :type="p.type" :placeholder="$t('DataPage.imports.database.placeholder-' + p.key, { brand: connector.title })">
       </div>
       <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--16" v-if="error">
         {{ error }}
       </div>
       <div class="u-flex u-flex__justify--end u-mt--32">
+        <button v-if="editing" @click="cancel" class="u-mr--28 is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.cancel')}}</button>
         <button @click="connect" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': (!connectionModelIsValid || submited)}">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium">
-            {{ editing ? $t('ConnectorsPage.editConnectionButton') : $t('DataPage.connect') }}
+          <span class="u-flex CDB-Text is-semibold CDB-Size-medium">
+            <img v-if="submited" svg-inline src="../../assets/icons/common/loading.svg" class="u-mr--8 loading__svg"/>
+            {{ submited ? $t('ConnectorsPage.connecting') : (editing ? $t('ConnectorsPage.editConnectionButton') : $t('DataPage.connect')) }}
           </span>
         </button>
       </div>
     </div>
     <div class="info u-ml--80 ">
       <h4 class="is-small is-semibold u-mb--8">{{ $t('DataPage.gettingConnected') }}</h4>
-      <p class="u-mt--10 is-txtMidGrey is-small">
-        {{ $t('DataPage.connectInfo') }}
+      <p class="text u-mt--10 is-txtMidGrey is-small">
+        {{ $t('DataPage.connectInfo', { connector: connector.title }) }}
       </p>
       <div class="ports u-pt--16 u-pb--16 u-pl--24 u-pr--24 u-mt--16 is-txtMidGrey is-small u-flex u-flex__direction--column u-flex__justify--between">
         <span>54.68.30.98</span>
@@ -77,6 +79,9 @@ export default {
     }
   },
   methods: {
+    cancel () {
+      this.$emit('cancel');
+    },
     async connect () {
       try {
         this.error = '';
@@ -121,6 +126,24 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+
+.loading__svg {
+  height: 16px;
+  width: 16px;
+  outline: none;
+
+  path {
+    stroke: $blue--400;
+    stroke-width: 2;
+  }
+
+  circle {
+    stroke: $neutral--300;
+    stroke-opacity: 1;
+    stroke-width: 2;
+  }
+}
+
 .alert {
   position: relative;
   background-color: $yellow--050;

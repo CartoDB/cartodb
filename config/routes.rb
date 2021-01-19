@@ -618,6 +618,7 @@ CartoDB::Application.routes.draw do
       put 'connections/:id' => 'connections#update', as: :api_v4_connections_update
       get 'connections/check_oauth/:service' => 'connections#check_oauth', as: :api_v4_connections_check_oauth
       post 'connections/:id/dryrun' => 'connections#dryrun', as: :api_v4_connections_dryrun
+      get 'connections/:id/projects' => 'connections#projects', as: :api_v4_connections_projects
 
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token

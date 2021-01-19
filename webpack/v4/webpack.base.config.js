@@ -249,6 +249,16 @@ module.exports = {
         }
       },
       {
+        test: /\.svg$/,
+        use: ['@svgr/webpack', 'file-loader'],
+        include: [
+          rootDir('node_modules/@carto/viewer')
+        ],
+        exclude: [
+          rootDir('node_modules/@carto/viewer/node_modules')
+        ]
+      },
+      {
         test: /\.(png|gif|svg|jpg)$/,
         use: {
           loader: 'file-loader',

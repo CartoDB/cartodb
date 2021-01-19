@@ -93,6 +93,7 @@
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
     "@babel/preset-react": "^7.12.10",
+    "@svgr/webpack": "^5.5.0",
     "@vue/babel-plugin-transform-vue-jsx": "^1.1.2",
     "@vue/cli-service": "^4.5.8",
     "@vue/test-utils": "^1.0.0-beta.25",

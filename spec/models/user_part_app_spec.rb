@@ -378,6 +378,8 @@ describe User do
       end
 
       context 'when saving in local fails' do
+        before { Cartodb::Central.expects(:sync_data_with_cartodb_central?).returns(true) }
+
         it 'logs an error' do
           @user.email = nil
           Rails.logger.expects(:error).once

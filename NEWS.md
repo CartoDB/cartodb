@@ -10,14 +10,17 @@ sudo make install
 ```
 
 ### Features
+- New BigQuery connector [16029](https://github.com/CartoDB/cartodb/pull/16029)
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 - Integrate new map_views metric. [#15969](https://github.com/CartoDB/cartodb/pull/15969)
 - Add preview/visualization of maps in DO catalog [#15973](https://github.com/CartoDB/cartodb/pull/15973)
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 
 ### Bug fixes / enhancements
+- Rake task for renaming BQ connector [16030](https://github.com/CartoDB/cartodb/pull/16030)
 - Fix maximum of 50 projects in BQ connector billing project selector [16027](https://github.com/CartoDB/cartodb/pull/16027)
 - Replace DO metadata SQL with API request [#15983](https://github.com/CartoDB/cartodb/pull/15983)
+- Load GoogleMaps library for a map if the owner's query string is available [#15948](https://github.com/CartoDB/cartodb/pull/15948)
 - Fix update notifications when using password-validated operation [#15960](https://github.com/CartoDB/cartodb/pull/15960)
 - Improve the syncronization functions by using `CDB_GetTableQueries`.
 - Bump cartodb-common to v0.4.8
@@ -43,6 +46,7 @@ sudo make install
 - Migrate Organization CRUD to MessageBroker [#15934](https://github.com/CartoDB/cartodb/pull/15934)
 - Update cartodb-common, which in turns updates the MessageBroker to send a `publisher_validation_token` [#16041](https://github.com/CartoDB/cartodb/pull/16041)
 - Optimize dashboard loading when the number of datasets is very large [#16014](https://github.com/CartoDB/cartodb/pull/16014)
+- 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
 
 4.44.0 (2020-11-20)
 -------------------
@@ -59,7 +63,6 @@ sudo make install
 * Add DO notification in dashboard [#15929](https://github.com/CartoDB/cartodb/pull/15929)
 * Data loss on table rename due to GhostTablesManager [#15935](https://github.com/CartoDB/cartodb/pull/15935)
 * Add DO datasets sync size in /me endpoint [#15932](https://github.com/CartoDB/cartodb/pull/15932)
-* Load GoogleMaps library for a map if the owner's query string is available [#15948](https://github.com/CartoDB/cartodb/pull/15948)
 * Log subscribers to STDOUT and fix JSON format [#15957](https://github.com/CartoDB/cartodb/pull/15957)
 
 4.43.0 (2020-11-06)

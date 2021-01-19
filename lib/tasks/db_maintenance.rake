@@ -462,7 +462,7 @@ namespace :cartodb do
       usage = 'usage: rake cartodb:db:set_organization_quota[organization_name,quota_in_gb]'
       raise usage if args[:organization_name].blank? || args[:quota_in_gb].blank?
 
-      organization  = Carto::Organization.find_by(:name=> args[:organization_name])
+      organization  = Carto::Organization.find_by(:name=> args[:organization_name]).first
       quota = args[:quota_in_gb].to_i * 1024 * 1024 * 1024
       organization.quota_in_bytes = quota
       organization.save
@@ -475,7 +475,7 @@ namespace :cartodb do
       usage = 'usage: rake cartodb:db:set_organization_seats[organization_name,seats]'
       raise usage if args[:organization_name].blank? || args[:seats].blank?
 
-      organization  = Carto::Organization.find_by(:name=> args[:organization_name])
+      organization  = Carto::Organization.find_by(:name=> args[:organization_name]).first
       seats = args[:seats].to_i
       organization.seats = seats
       organization.save
@@ -488,7 +488,7 @@ namespace :cartodb do
       usage = 'usage: rake cartodb:db:set_organization_viewer_seats[organization_name,seats]'
       raise usage if args[:organization_name].blank? || args[:seats].blank?
 
-      organization = Carto::Organization.find_by(:name=> args[:organization_name])
+      organization = Carto::Organization.find_by(:name=> args[:organization_name]).first
       seats = args[:seats].to_i
       organization.viewer_seats = seats
       organization.save
@@ -855,7 +855,7 @@ namespace :cartodb do
       raise "You should provide a USERNAME" if ENV['USERNAME'].blank?
       user = ::User.where(:username => ENV['USERNAME']).first
       raise "User #{ENV['USERNAME']} does not exist" if user.nil?
-      organization = Carto::Organization.find_by(:name => ENV['ORGANIZATION_NAME'])
+      organization = Carto::Organization.find_by(:name => ENV['ORGANIZATION_NAME']).first
       if organization.nil?
         organization = Carto::Organization.new
         organization.name = ENV['ORGANIZATION_NAME']
@@ -878,7 +878,7 @@ namespace :cartodb do
       raise "You should provide a ORGANIZATION_SEATS" if ENV['ORGANIZATION_SEATS'].blank?
       raise "You should provide a ORGANIZATION_QUOTA (in Bytes)" if ENV['ORGANIZATION_QUOTA'].blank?
 
-      organization = Carto::Organization.find_by(:name => ENV['ORGANIZATION_NAME'])
+      organization = Carto::Organization.find_by(:name => ENV['ORGANIZATION_NAME']).first
       if organization.nil?
         organization = Carto::Organization.new
         organization.name = ENV['ORGANIZATION_NAME']
@@ -959,7 +959,7 @@ namespace :cartodb do
       last_index = args[:last_index]
       bytes_per_user = 50 * 1024 * 1024
 
-      organization = Carto::Organization.find_by(name: org_name)
+      organization = Carto::Organization.find_by(name: org_name).first
       create_users(first_index, last_index, organization, bytes_per_user)
     end
 
@@ -1195,7 +1195,7 @@ namespace :cartodb do
         # Double check before launch an update to all the orgs
         raise "ERROR: You haven't passed an organization name and/or put the :all_organizations flag to true"
       end
-      organizations = args[:organization_name].blank? ? Carto::Organization.all : cartodb::Organization.where(name: args[:organization_name]).all
+      organizations = args[:organization_name].blank? ? Carto::Organization.all : Carto::Organization.where(name: args[:organization_name]).all
       raise "ERROR: Organization #{args[:organization_name]} don't exists" if organizations.blank? and not args[:all_organizations]
       run_for_organizations_owner(organizations) do |owner|
         begin

@@ -15,6 +15,7 @@ module Carto
       @provider_name ||= DEFAULT_PROVIDER
 
       @user = user
+      temporary_parameters_adjustment_for_new_bigquery_connector
 
       raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
       @provider = Connector.provider_class(@provider_name).try :new, parameters: @params, user: @user, **args
@@ -195,6 +196,28 @@ module Carto
     end
 
     private
+
+    # TODO: remove when new connections are in place
+    def temporary_parameters_adjustment_for_new_bigquery_connector
+      return unless @provider_name == 'bigquery'
+
+      if bigquery_connection_missing_refresh_token?
+        @params.reverse_merge!(connection: {})
+        @params[:connection].merge!(refresh_token: @user.oauths.select('bigquery')&.token)
+      end
+      billing_project = @params.delete(:billing_project)
+      if billing_project.present?
+        @params.reverse_merge!(connection: {})
+        @params[:connection].merge!(billing_project: billing_project)
+      end
+      @params.delete(:project) if @params[:project] == '%DATABASE%'
+    end
+
+    def bigquery_connection_missing_refresh_token?
+      return true if @params[:connection].blank?
+
+      (@params[:connection].keys & [:service_account, :access_token, :refresh_token]).empty?
+    end
 
     def self.has_feature?(provider, feature)
       information = Connector.information(provider)

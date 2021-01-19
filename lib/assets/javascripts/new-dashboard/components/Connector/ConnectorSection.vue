@@ -112,10 +112,10 @@ $controlSize: 36px;
 
 .connector-section {
   position: relative;
-  margin-bottom: 16px;
 
   .connectors-list {
     flex-wrap: wrap;
+    padding-bottom: 16px;
 
     &.carousel {
       flex-wrap: nowrap;

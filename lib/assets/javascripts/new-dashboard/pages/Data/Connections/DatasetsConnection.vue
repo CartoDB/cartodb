@@ -232,7 +232,7 @@ export default {
 
       const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
       backgroundPollingView._addDataset({ ...this.uploadObject });
-      this.$refs.dialog.closePoup();
+      this.$refs.dialog.closePopup();
     }
   }
 };
@@ -270,7 +270,8 @@ export default {
       max-width: 100%;
       height: 100%;
       margin: 0;
-      padding: 0;
+      padding: 8px 0;
+      line-height: 18px;
     }
   }
 }

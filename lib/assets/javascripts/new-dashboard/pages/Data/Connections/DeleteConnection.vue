@@ -55,11 +55,11 @@ export default {
   },
   methods: {
     cancel () {
-      this.$refs.dialog.closePoup();
+      this.$refs.dialog.closePopup();
     },
     confirmDelete () {
       this.$store.dispatch('connectors/deleteConnection', this.$route.params.id);
-      this.$refs.dialog.closePoup();
+      this.$refs.dialog.closePopup();
     }
   }
 };

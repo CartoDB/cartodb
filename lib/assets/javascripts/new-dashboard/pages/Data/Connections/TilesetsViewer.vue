@@ -1,5 +1,5 @@
 <template>
-  <div ref="viewer">HOLA MUNDO</div>
+  <div ref="viewer"></div>
 </template>
 
 <script>
@@ -29,7 +29,4 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
-.viewer {
-  height: 500px;
-}
 </style>

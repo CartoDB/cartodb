@@ -154,13 +154,6 @@ module Cartodb
       cartodb_central_topic.publish(:update_organization, payload)
     end
 
-    def delete_organization(organization_name)
-      payload = {
-        organization_name: organization_name
-      }
-      cartodb_central_topic.publish(:delete_organization, payload)
-    end
-
     ############################################################################
     # Mobile apps
 

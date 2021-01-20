@@ -64,30 +64,6 @@ module CartodbCentralSynchronizable
     true
   end
 
-  def delete_in_central
-    unless Cartodb::Central.sync_data_with_cartodb_central?
-      log_central_unavailable
-      return true
-    end
-
-    if user?
-      if organization.nil?
-        cartodb_central_client.delete_user(username)
-      else
-        raise "Can't destroy the organization owner" if organization.owner == self
-
-        cartodb_central_client.delete_organization_user(organization.name, username)
-      end
-    elsif organization?
-      # See Organization#destroy_cascade
-      raise 'Delete organizations is not allowed' if Carto::Configuration.saas?
-
-      cartodb_central_client.delete_organization(name)
-    end
-
-    true
-  end
-
   def allowed_attributes_from_central(action)
     if organization?
       case action

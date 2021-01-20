@@ -13,7 +13,7 @@ module Carto
         setup_default_rescues
 
         def load_user
-          @user = ::User.where(id: current_viewer.id).first
+          @user = Carto::User.where(id: current_viewer.id).first
         end
 
         def load_service

@@ -1,7 +1,7 @@
 module Carto
   module Api
     module Public
-      class BigQueryTilesetsController < Carto::Api::Public::ApplicationController
+      class BigqueryTilesetsController < Carto::Api::Public::ApplicationController
 
         include Carto::Api::PagedSearcher
         extend Carto::DefaultRescueFroms
@@ -17,7 +17,7 @@ module Carto
         end
 
         def load_service
-          @service = Carto::BigQueryTilesetsService.new(user: @user)
+          @service = Carto::BigqueryTilesetsService.new(user: @user)
         end
 
         def check_permissions

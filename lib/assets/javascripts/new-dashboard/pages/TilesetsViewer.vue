@@ -5,6 +5,7 @@
 <script>
 
 import init from '@carto/viewer/src/init';
+import { mapState } from 'vuex';
 
 export default {
   name: 'TilesetsViewer',
@@ -13,16 +14,26 @@ export default {
   data () {
     return {};
   },
-  computed: {},
-  methods: {},
+  computed: {
+    ...mapState({
+      apiKey: state => state.user.api_key,
+      username: state => state.user.username
+    })
+  },
   mounted () {
     const element = this.$refs.viewer;
     const props = {
-      username: 'alasarr',
+      username: this.username,
       type: 'bigquery',
-      query: new URLSearchParams('?data=cartobq.maps.osm_buildings')
+      query: new URLSearchParams(`?data=${this.$route.params.id}${this.getApiKeyParam()}`)
     };
     init(element, props);
+  },
+  methods: {
+    getApiKeyParam () {
+      // return `&api_key=${this.apiKey}`;
+      return '&api_key=default_public';
+    }
   }
 };
 </script>

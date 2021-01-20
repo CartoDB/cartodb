@@ -855,7 +855,7 @@ namespace :cartodb do
       raise "You should provide a USERNAME" if ENV['USERNAME'].blank?
       user = ::User.where(:username => ENV['USERNAME']).first
       raise "User #{ENV['USERNAME']} does not exist" if user.nil?
-      organization = Carto::Organization.find_by(:name => ENV['ORGANIZATION_NAME'])
+      organization = Carto::Organization.where(name: ENV['ORGANIZATION_NAME']).first
       if organization.nil?
         organization = Carto::Organization.new
         organization.name = ENV['ORGANIZATION_NAME']
@@ -878,7 +878,7 @@ namespace :cartodb do
       raise "You should provide a ORGANIZATION_SEATS" if ENV['ORGANIZATION_SEATS'].blank?
       raise "You should provide a ORGANIZATION_QUOTA (in Bytes)" if ENV['ORGANIZATION_QUOTA'].blank?
 
-      organization = Carto::Organization.find_by(:name => ENV['ORGANIZATION_NAME'])
+      organization = Carto::Organization.find_by(name: ENV['ORGANIZATION_NAME'])
       if organization.nil?
         organization = Carto::Organization.new
         organization.name = ENV['ORGANIZATION_NAME']

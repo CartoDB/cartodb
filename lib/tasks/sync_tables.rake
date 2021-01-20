@@ -159,7 +159,7 @@ namespace :cartodb do
   end
 
   desc 'Port BQ beta syncs to new connector'
-  task port_beta_bq_syncs_to_new: [:environment, :username_or_sync_id] do |_task, args|
+  task :port_beta_bq_syncs_to_new, [:username_or_sync_id] => :environment do |_task, args|
     dry_mode = ENV['DRY_RUN'] != 'NO'
 
     puts 'running in "dry" mode; set DRY_RUN=NO to make actual changes' if dry_mode

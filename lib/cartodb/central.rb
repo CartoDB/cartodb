@@ -138,13 +138,6 @@ module Cartodb
       send_request("api/organizations/#{ organization_name }", nil, :get, [200])
     end
 
-    def update_organization(organization_name, organization_attributes)
-      payload = {
-        organization_name: organization_name
-      }.merge(organization_attributes)
-      cartodb_central_topic.publish(:update_organization, payload)
-    end
-
     ############################################################################
     # Mobile apps
 

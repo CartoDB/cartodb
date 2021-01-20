@@ -47,6 +47,7 @@ sudo make install
 - Migrate Organization CRUD to MessageBroker [#15934](https://github.com/CartoDB/cartodb/pull/15934)
 - Optimize dashboard loading when the number of datasets is very large [#16014](https://github.com/CartoDB/cartodb/pull/16014)
 - 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
+- Aggregate map_views for organization users
 
 4.44.0 (2020-11-20)
 -------------------

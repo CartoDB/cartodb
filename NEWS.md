@@ -10,12 +10,13 @@ sudo make install
 ```
 
 ### Features
+
 - New BigQuery connector [16029](https://github.com/CartoDB/cartodb/pull/16029)
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 - Integrate new map_views metric. [#15969](https://github.com/CartoDB/cartodb/pull/15969)
 - Add preview/visualization of maps in DO catalog [#15973](https://github.com/CartoDB/cartodb/pull/15973)
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
-
+- Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
 ### Bug fixes / enhancements
 - Rake task for renaming BQ connector [16030](https://github.com/CartoDB/cartodb/pull/16030)
 - Fix maximum of 50 projects in BQ connector billing project selector [16027](https://github.com/CartoDB/cartodb/pull/16027)

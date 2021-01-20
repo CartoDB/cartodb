@@ -329,7 +329,7 @@ class User < Sequel::Model
   def delete_common_data
     CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
   rescue StandardError => e
-    CartoDB.notify_error("Error deleting common data for user", user: self, error: e.inspect)
+    Rails.logger.error(message: 'Error deleting common data for user', user: self, exception: e)
   end
 
   def after_save

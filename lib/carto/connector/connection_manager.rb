@@ -238,15 +238,32 @@ module Carto
           connector_parameters.merge! provider: connection.connector
         end
         connection_parameters = connection.parameters
-        # TODO: to split Oauth/DB connections we'll need to inject @user.oauths&.select(connection.connector)&.token instead
-        connection_parameters = connection_parameters.merge(refresh_token: connection.token) if connection.token.present?
+
+        # This was to support hybrid OAuth connections that also have parameters are use connectors (BigQuery)
+        # but they're currently not supported
+        # connection_parameters = connection_parameters.merge(refresh_token: connection.token) if connection.token.present?
+
         connector_parameters.merge! connection: connection_parameters
         connector_parameters.delete :connection_id
         input_parameters.merge! connection_id: connection.id
         input_parameters.delete :connection
       end
 
+      if legacy_oauth_db_connection?(connector_parameters)
+        connection_parameters = connector_parameters[:connection] || {}
+        connection_parameters[:refresh_token] = @user.oauths&.select(connection.connector)&.token
+      end
+
       [input_parameters, connector_parameters]
+    end
+
+
+    def legacy_oauth_db_connection?(connector_parameters)
+      return false unless connector_parameters[:provider] == 'bigquery'
+
+      credentials = [:service_token, :refresh_token, :access_token]
+      connection_parameters = (connector_parameters[:connection] || {}).keys
+      (credentials & connection_parameters).empty?
     end
 
     def self.singleton_connector?(connector, connection_type)

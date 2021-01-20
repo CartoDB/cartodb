@@ -33,9 +33,8 @@ module Carto
       query = Google::Apis::BigqueryV2::QueryRequest.new
       query.query = list_tables_query(dataset_id)
       resp = @bigquery_api.query_job(@project_id, query)
-
       resp[:result].rows.map do |row|
-        { id: row.f[0].v, created_at: row.f[1].v }
+        { id: row.f[0].v, created_at: row.f[1].v, privacy: row.f[2].v }
       end
     end
 
@@ -43,7 +42,8 @@ module Carto
       %{
         SELECT
           FORMAT('%s.%s.%s', tables.table_catalog, tables.table_schema, tables.table_name) as id,
-          tables.creation_time as created_at
+          tables.creation_time as created_at,
+          'private' as privacy
         FROM
           #{@project_id}.#{dataset_id}.INFORMATION_SCHEMA.TABLES as tables
         JOIN

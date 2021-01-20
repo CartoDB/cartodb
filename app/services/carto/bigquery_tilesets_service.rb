@@ -30,12 +30,35 @@ module Carto
     end
 
     def list_tables(dataset_id)
-      tables = @bigquery_api.list_tables(project_id, dataset_id, max_results: MAX_TABLES).tables
-      return [] unless tables
+      query = Google::Apis::BigqueryV2::QueryRequest.new
+      query.query = list_tables_query(dataset_id)
+      resp = @bigquery_api.query_job(@project_id, query)
 
-      tables.select { |table| table.labels.value?(TILESET_LABEL) }.map do |table|
-        { id: table.id.tr(':', '.'), created_at: table.creation_time }
+      resp[:result].rows.map do |row|
+        { id: row.f[0].v, created_at: row.f[1].v }
       end
+    end
+
+    def list_tables_query(dataset_id)
+      %{
+        SELECT
+          FORMAT('%s.%s.%s', tables.table_catalog, tables.table_schema, tables.table_name) as id,
+          tables.creation_time as created_at
+        FROM
+          #{@project_id}.#{dataset_id}.INFORMATION_SCHEMA.TABLES as tables
+        JOIN
+          #{@project_id}.#{dataset_id}.INFORMATION_SCHEMA.TABLE_OPTIONS as table_options
+        ON
+          tables.table_catalog = table_options.table_catalog
+        AND
+          tables.table_schema = table_options.table_schema
+        AND
+          tables.table_name = table_options.table_name
+        WHERE
+          option_name = 'labels'
+        AND
+          option_value LIKE '%carto_tileset%';
+      }.squish
     end
 
   end

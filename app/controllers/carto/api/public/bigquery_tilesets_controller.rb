@@ -26,7 +26,7 @@ module Carto
           raise UnauthorizedError unless @api_key.user_id.is_a?(@user.id)
         end
 
-        def list_bigquery_tilesets
+        def list
           result = @service.list_tilesets
           render_jsonp(result, 200)
         end

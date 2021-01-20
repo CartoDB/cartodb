@@ -29,8 +29,19 @@
             </div>
           </div>
 
+          <div class="grid__head--sticky">
+            <TilesetListHeader></TilesetListHeader>
+          </div>
+          <ul>
+            <li v-for="tileset in tilesets" :key="tileset.id" class="tileset-item">
+              <TilesetListCard
+                class="tileset-item"
+                :tileset="tileset"></TilesetListCard>
+            </li>
+          </ul>
+
           <!-- EMPTY LIST -->
-          <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
+          <div v-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
             <img src="../../../assets/icons/tilesets/no-tileset.svg">
             <div class="u-ml--32">
               <div class="text is-body is-semibold u-mb--12">Tilesets not available</div>
@@ -43,10 +54,6 @@
               </div>
             </div>
           </div>
-
-          <div class="grid__head--sticky">
-            <TilesetListHeader></TilesetListHeader>
-          </div>
         </div>
 
       </div>
@@ -56,24 +63,51 @@
 
 <script>
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import TilesetListHeader from './TilesetListHeader';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import TilesetListHeader from './TilesetListHeader';
+import TilesetListCard from './TilesetListCard';
 
 export default {
   name: 'Tilesets',
   components: {
     SectionTitle,
     VisualizationsTitle,
-    TilesetListHeader
+    TilesetListHeader,
+    TilesetListCard
   },
   data () {
     return {
-      moreInfo: false
+      moreInfo: false,
+      selectedTilesets: [],
+      lastCheckedItem: null
     };
   },
   watch: {
   },
   computed: {
+    tilesets () {
+      return [{
+        id: 'cartobq.maps.osm_buildings',
+        privacy: 'public',
+        created_at: new Date('2021-01-01T10:05:14.398Z'),
+        updated_at: new Date('2021-01-15T10:05:14.398Z')
+      },
+      {
+        id: 'cartobq.maps.mypublic',
+        privacy: 'public',
+        created_at: new Date('2021-01-01T10:05:14.398Z'),
+        updated_at: new Date('2021-01-15T10:05:14.398Z')
+      },
+      {
+        id: 'cartobq.maps.myprivate',
+        privacy: 'private',
+        created_at: new Date('2021-01-01T10:05:14.398Z'),
+        updated_at: new Date('2021-01-15T10:05:14.398Z')
+      }];
+    },
+    isSomeTilesetSelected () {
+      return this.selectedTilesets.length > 0;
+    }
   },
   methods: {
     openInfo () {
@@ -96,6 +130,12 @@ export default {
     &.head-section {
       margin-bottom: 4px;
     }
+  }
+}
+
+.tileset-item {
+  &:not(:last-child) {
+    border-bottom: 1px solid $border-color;
   }
 }
 

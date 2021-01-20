@@ -16,47 +16,45 @@
     </div>
 
     <div class="viz-column--extra-info">
-      <div class="viz-column--status">
-        <div class="dataset-list-cell cell cell--large" @click="changeOrder('updated_at')">
-          <span class="text is-small is-txtSoftGrey"
-                :class="{
-                  'is-active': isOrderApplied('updated_at'),
-                  'is-reversed': isReverseOrderApplied('updated_at'),
-                  'element-sort': isSortable
-                 }">
-            {{ $t(`TilesetListHeader.lastUpdated`) }}
-          </span>
-        </div>
-        <div class="dataset-list-cell cell cell--xsmall u-txt-right" @click="changeOrder('estimated_row_count')">
-          <span class="text is-small is-txtSoftGrey"
-                :class="{
-                  'is-active': isOrderApplied('estimated_row_count'),
-                  'is-reversed': isReverseOrderApplied('estimated_row_count'),
-                  'element-sort': isSortable
-                 }">
-            {{ $t(`TilesetListHeader.created`) }}
-          </span>
-        </div>
-        <div class="dataset-list-cell cell cell--small u-txt-right" @click="changeOrder('size')">
-          <span class="text is-small is-txtSoftGrey"
-                :class="{
-                  'is-active': isOrderApplied('size'),
-                  'is-reversed': isReverseOrderApplied('size'),
-                  'element-sort': isSortable
-                 }">
-            {{ $t(`TilesetListHeader.zoom`) }}
-          </span>
-        </div>
-        <div class="dataset-list-cell cell cell--small u-txt-right" @click="changeOrder('properties')">
-          <span class="text is-small is-txtSoftGrey"
-                :class="{
-                  'is-active': isOrderApplied('properties'),
-                  'is-reversed': isReverseOrderApplied('properties'),
-                  'element-sort': isSortable
-                 }">
-            {{ $t(`TilesetListHeader.properties`) }}
-          </span>
-        </div>
+      <div class="dataset-list-cell cell cell--large" @click="changeOrder('updated_at')">
+        <span class="text is-small is-txtSoftGrey"
+              :class="{
+                'is-active': isOrderApplied('updated_at'),
+                'is-reversed': isReverseOrderApplied('updated_at'),
+                'element-sort': isSortable
+                }">
+          {{ $t(`TilesetListHeader.lastUpdated`) }}
+        </span>
+      </div>
+      <div class="dataset-list-cell cell cell--small u-txt-right" @click="changeOrder('estimated_row_count')">
+        <span class="text is-small is-txtSoftGrey"
+              :class="{
+                'is-active': isOrderApplied('estimated_row_count'),
+                'is-reversed': isReverseOrderApplied('estimated_row_count'),
+                'element-sort': isSortable
+                }">
+          {{ $t(`TilesetListHeader.created`) }}
+        </span>
+      </div>
+      <div class="dataset-list-cell cell cell--small u-txt-right" @click="changeOrder('size')">
+        <span class="text is-small is-txtSoftGrey"
+              :class="{
+                'is-active': isOrderApplied('size'),
+                'is-reversed': isReverseOrderApplied('size'),
+                'element-sort': isSortable
+                }">
+          {{ $t(`TilesetListHeader.zoom`) }}
+        </span>
+      </div>
+      <div class="dataset-list-cell cell cell--large u-txt-right" @click="changeOrder('properties')">
+        <span class="text is-small is-txtSoftGrey"
+              :class="{
+                'is-active': isOrderApplied('properties'),
+                'is-reversed': isReverseOrderApplied('properties'),
+                'element-sort': isSortable
+                }">
+          {{ $t(`TilesetListHeader.properties`) }}
+        </span>
       </div>
     </div>
   </div>

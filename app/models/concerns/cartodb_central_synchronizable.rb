@@ -11,7 +11,11 @@ module CartodbCentralSynchronizable
   # Can't be added to the model because if user creation begins at Central we can't know if user is the same or existing
   def validate_credentials_not_taken_in_central
     return true unless user?
-    return true unless Cartodb::Central.sync_data_with_cartodb_central?
+
+    unless Cartodb::Central.sync_data_with_cartodb_central?
+      log_central_unavailable
+      return true
+    end
 
     central_client = Cartodb::Central.new
 
@@ -21,7 +25,10 @@ module CartodbCentralSynchronizable
   end
 
   def create_in_central
-    return true unless sync_data_with_cartodb_central?
+    unless Cartodb::Central.sync_data_with_cartodb_central?
+      log_central_unavailable
+      return true
+    end
 
     if user?
       if organization.present?
@@ -36,7 +43,10 @@ module CartodbCentralSynchronizable
   end
 
   def update_in_central
-    return true unless sync_data_with_cartodb_central?
+    unless Cartodb::Central.sync_data_with_cartodb_central?
+      log_central_unavailable
+      return true
+    end
 
     if user?
       if organization.present?
@@ -55,7 +65,10 @@ module CartodbCentralSynchronizable
   end
 
   def delete_in_central
-    return true unless sync_data_with_cartodb_central?
+    unless Cartodb::Central.sync_data_with_cartodb_central?
+      log_central_unavailable
+      return true
+    end
 
     if user?
       if organization.nil?
@@ -193,6 +206,12 @@ module CartodbCentralSynchronizable
 
   def cartodb_central_client
     @cartodb_central_client ||= Cartodb::Central.new
+  end
+
+  private
+
+  def log_central_unavailable
+    Rails.logger.error(message: 'Skipping Central synchronization: not configured')
   end
 
 end

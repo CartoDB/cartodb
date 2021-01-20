@@ -18,7 +18,7 @@ class Carto::Api::Public::ApplicationController < ::Api::ApplicationController
   def allow_full_cross_domain_access
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Authorization'
+    response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
   end
 
   def options

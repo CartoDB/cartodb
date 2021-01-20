@@ -609,6 +609,17 @@ CartoDB::Application.routes.draw do
 
       get 'datasets', to: 'datasets#index', as: :api_v4_datasets
 
+      ## Connections
+      get 'connections' => 'connections#index', as: :api_v4_connections_list
+      post 'connections'  => 'connections#create', as: :api_v4_connections_create
+      get 'connections/:id' => 'connections#show', as: :api_v4_connections_show
+      get 'connectors' => 'connections#list_connectors', as: :api_v4_connections_list_connectors
+      delete 'connections/:id' => 'connections#destroy', as: :api_v4_connections_destroy
+      put 'connections/:id' => 'connections#update', as: :api_v4_connections_update
+      get 'connections/check_oauth/:service' => 'connections#check_oauth', as: :api_v4_connections_check_oauth
+      post 'connections/:id/dryrun' => 'connections#dryrun', as: :api_v4_connections_dryrun
+      get 'connections/:id/projects' => 'connections#projects', as: :api_v4_connections_projects
+
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token
         get 'subscriptions' => 'data_observatory#subscriptions', as: :api_v4_do_subscriptions_show
@@ -771,6 +782,7 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
       get 'connectors/:provider_id/projects' => 'connectors#projects', as: :api_v1_connectors_projects
+      post 'connectors/:provider_id/projects' => 'connectors#projects'
       get 'connectors/:provider_id/:project_id/datasets' => 'connectors#project_datasets', as: :api_v1_connectors_project_datasets
       get 'connectors/:provider_id/:project_id/:dataset_id/tables' => 'connectors#project_dataset_tables', as: :api_v1_connectors_project_dataset_tables
       post 'connectors/:provider_id/dryrun' => 'connectors#dryrun', as: :api_v1_connectors_dryrun

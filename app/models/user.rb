@@ -37,7 +37,7 @@ class User < Sequel::Model
 
   self.strict_param_setting = false
 
-  one_to_many :synchronization_oauths
+  # one_to_many :synchronization_oauths
   one_to_many :maps
   one_to_many :assets
   one_to_many :data_imports
@@ -50,7 +50,7 @@ class User < Sequel::Model
   plugin :many_through_many
 
   # Sequel setup & plugins
-  plugin :association_dependencies, synchronization_oauths: :destroy
+  # plugin :association_dependencies, synchronization_oauths: :destroy
   plugin :validation_helpers
   plugin :json_serializer
   plugin :dirty

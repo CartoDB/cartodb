@@ -198,7 +198,7 @@ module Carto
       if @provider.respond_to?(service)
         @provider.send(service)
       else
-        raise Carto::Connector::InvalidParametersError.new("Invalid connector service: #{service}")
+        raise Carto::Connector::InvalidParametersError.new(message: "Invalid connector service: #{service}")
       end
     end
 

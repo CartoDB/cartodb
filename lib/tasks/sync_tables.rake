@@ -210,7 +210,7 @@ namespace :cartodb do
             synchronization.update! run_at: nil
 
             # Change the provider id
-            parameters['provider'] = 'bigquery-beta'
+            parameters['provider'] = 'bigquery'
             # If passing the billing project out of the connection move it inside
             if parameters['billing_project'].present?
               puts '  Moving billing_project inside the connection parameter'

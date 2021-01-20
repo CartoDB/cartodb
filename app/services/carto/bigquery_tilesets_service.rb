@@ -9,7 +9,6 @@ module Carto
     TILESET_LABEL = 'carto_tileset'.freeze
 
     def initialize(user:)
-      @user = user
       conn = user.db_connections.where(connector: 'bigquery').first
       @project_id = conn.parameters['billing_project']
       credentials = JSON.parse(conn.parameters['service_account'])

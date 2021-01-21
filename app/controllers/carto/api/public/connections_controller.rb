@@ -81,6 +81,17 @@ module Carto
           end
         end
 
+        def projects
+          connection = @connection_manager.fetch_connection(params[:id])
+          if Carto::Connector.list_projects?(connection.connector)
+            connector_parameters = { connection_id: connection.id }
+            connector = Carto::Connector.new(parameters: connector_parameters, user: current_user, logger: nil)
+            render_jsonp(connector.list_projects)
+          else
+            render_jsonp({ errors: "Provider #{connection.connector} doesn't support list projects" }, 422)
+          end
+        end
+
         private
 
         def rescue_from_connection_not_found(exception)

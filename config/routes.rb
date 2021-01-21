@@ -213,7 +213,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-new-connection/:connector'                          => 'visualizations#index', as: :your_connections_new_from_new_dataset
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_new_dataset
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-add-local-file/:extension'               => 'visualizations#index', as: :datasets_local_new
-
+    
     # Datasets from home for new dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-dataset'             => 'visualizations#index', as: :datasets_new_from_home
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-new-connection/:connector'   => 'visualizations#index', as: :your_connections_new_from_home
@@ -333,6 +333,9 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions'         => 'visualizations#index', as: :solutions_bis
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started'       => 'visualizations#index', as: :get_started
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started/:id'   => 'visualizations#index', as: :get_started_onboarding
+
+    # Tileset viewer
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tilesets/:id'   => 'visualizations#index', as: :tilesets_viewer, constraints: { id: /[0-z\.\-]+/ }
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
@@ -644,6 +647,7 @@ CartoDB::Application.routes.draw do
       put 'connections/:id' => 'connections#update', as: :api_v4_connections_update
       get 'connections/check_oauth/:service' => 'connections#check_oauth', as: :api_v4_connections_check_oauth
       post 'connections/:id/dryrun' => 'connections#dryrun', as: :api_v4_connections_dryrun
+      get 'connections/:id/projects' => 'connections#projects', as: :api_v4_connections_projects
 
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token

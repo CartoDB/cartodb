@@ -1,5 +1,5 @@
 module OrganizationCommands
-  class Delete < ::BaseCommand
+  class Delete < ::CartoCommand
 
     private
 

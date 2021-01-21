@@ -5,6 +5,7 @@ module Carto
     DB_PASSWORD_PLACEHOLDER = '********'.freeze
     OAUTH_TOKEN_PLACEHOLDER = '********'.freeze
     BQ_CONNECTOR = 'bigquery'.freeze
+    BQ_NON_CONNECTOR_PARAMTERS = ['email']
 
     def initialize(user)
       @user = user
@@ -237,16 +238,33 @@ module Carto
         else
           connector_parameters.merge! provider: connection.connector
         end
-        connection_parameters = connection.parameters
-        # TODO: to split Oauth/DB connections we'll need to inject @user.oauths&.select(connection.connector)&.token instead
-        connection_parameters = connection_parameters.merge(refresh_token: connection.token) if connection.token.present?
+        connection_parameters = filtered_connection_parameters(connection)
+
+        # This was to support hybrid OAuth connections that also have parameters are use connectors (BigQuery)
+        # but they're currently not supported
+        # connection_parameters = connection_parameters.merge(refresh_token: connection.token) if connection.token.present?
+
         connector_parameters.merge! connection: connection_parameters
         connector_parameters.delete :connection_id
         input_parameters.merge! connection_id: connection.id
         input_parameters.delete :connection
       end
 
+      if legacy_oauth_db_connection?(connector_parameters)
+        connection_parameters = connector_parameters[:connection] || {}
+        connection_parameters[:refresh_token] = @user.oauths&.select(connection.connector)&.token
+      end
+
       [input_parameters, connector_parameters]
+    end
+
+
+    def legacy_oauth_db_connection?(connector_parameters)
+      return false unless connector_parameters[:provider] == 'bigquery'
+
+      credentials = [:service_token, :refresh_token, :access_token]
+      connection_parameters = (connector_parameters[:connection] || {}).keys
+      (credentials & connection_parameters).empty?
     end
 
     def self.singleton_connector?(connector, connection_type)
@@ -283,6 +301,47 @@ module Carto
 
     def bigquery_redis_key
       "google:bq_settings:#{@user.username}"
+    end
+
+    def filtered_connection_parameters(connection)
+      # TODO: move to per-connector classes
+      parameters = connection.parameters
+      parameters = parameters.except(*BQ_NON_CONNECTOR_PARAMTERS) if connection.connector == BQ_CONNECTOR
+      parameters
+    end
+
+    def create_connection_hook(connection)
+      # TODO: move to per-connector classes
+      update_redis_metadata(connection)
+      create_spatial_extension_setup(connection)
+    end
+
+    def remove_connection_hook(connection)
+      # TODO: move to per-connector classes
+      remove_redis_metadata(connection)
+      remove_spatial_extension_setup(connection)
+    end
+
+    def create_spatial_extension_setup(connection)
+      if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
+        role = Cartodb.config[:spatial_extension]['role']
+        datasets = Cartodb.config[:spatial_extension]['datasets']
+        return unless datasets.present?
+
+        spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+        spatial_extension_setup.create(connection)
+      end
+    end
+
+    def remove_spatial_extension_setup(connection)
+      if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
+        role = Cartodb.config[:spatial_extension]['role']
+        datasets = Cartodb.config[:spatial_extension]['datasets']
+        return unless datasets.present?
+
+        spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+        spatial_extension_setup.remove(connection)
+      end
     end
 
     def update_redis_metadata(connection)

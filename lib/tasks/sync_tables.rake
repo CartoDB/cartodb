@@ -159,16 +159,20 @@ namespace :cartodb do
   end
 
   desc 'Port BQ beta syncs to new connector'
-  task port_beta_bq_syncs_to_new: [:environment, :username] do |_task, args|
+  task :port_beta_bq_syncs_to_new, [:username_or_sync_id] => :environment do |_task, args|
     dry_mode = ENV['DRY_RUN'] != 'NO'
 
     puts 'running in "dry" mode; set DRY_RUN=NO to make actual changes' if dry_mode
 
-    if args.user != 'all-the-users'
-      user = Carto::User.find_by(username: args.username)
-      raise "User not found: #{args.username}" unless user
-
-      user_condition = "AND user_id = '#{user.id}'"
+    if args.username_or_sync_id != 'all-the-users'
+      user = Carto::User.find_by(username: args.username_or_sync_id)
+      if user.present?
+        user_condition = "AND user_id = '#{user.id}'"
+      else
+        sync = Carto::Synchronization.find_by(id: args.username_or_sync_id)
+        raise "User/Sync not found: #{args.username_or_sync_id}" unless sync
+        user_condition = "AND id = '#{sync.id}'"
+      end
     end
 
     number_of_pending_syncs = 0
@@ -206,7 +210,7 @@ namespace :cartodb do
             synchronization.update! run_at: nil
 
             # Change the provider id
-            parameters['provider'] = 'bigquery-beta'
+            parameters['provider'] = 'bigquery'
             # If passing the billing project out of the connection move it inside
             if parameters['billing_project'].present?
               puts '  Moving billing_project inside the connection parameter'

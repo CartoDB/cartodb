@@ -81,6 +81,14 @@ module Carto
           end
         end
 
+        def connect
+          connection = @connection_manager.fetch_connection(params[:id])
+          # TODO: check connection.type, must be a db-conector
+
+          connector = Carto::Connector.new(parameters: {}, connection: connection, user: current_user, logger: nil)
+          render_jsonp({ connected: connector.check_connection }, 200)
+        end
+
         def projects
           connection = @connection_manager.fetch_connection(params[:id])
           if Carto::Connector.list_projects?(connection.connector)

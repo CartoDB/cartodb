@@ -27,6 +27,16 @@
             <div class="text">
               Select Project
             </div>
+            <DropdownComponent ref="selector" v-model="project"
+              :elements="projects"
+              :showCreate="true"
+              placeholder='Select your BigQuery Project'
+              @createElement="useOtherProject">
+              <template v-slot:createMessage="{ data }">
+                <span v-if="!data.filteredElements.length">No results.</span>
+                Select <a @click="data.createNew">{{data.searchingText}}</a> project
+              </template>
+            </DropdownComponent>
           </div>
 
           <div class="grid__head--sticky">
@@ -64,12 +74,14 @@
 <script>
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import DropdownComponent from 'new-dashboard/components/forms/DropdownComponent';
 import TilesetListHeader from './TilesetListHeader';
 import TilesetListCard from './TilesetListCard';
 
 export default {
   name: 'Tilesets',
   components: {
+    DropdownComponent,
     SectionTitle,
     VisualizationsTitle,
     TilesetListHeader,
@@ -78,13 +90,27 @@ export default {
   data () {
     return {
       moreInfo: false,
-      selectedTilesets: [],
-      lastCheckedItem: null
+      project: null
     };
   },
   watch: {
   },
   computed: {
+    projects () {
+      return [{
+        id: 'cas.demo.test',
+        friendly_name: 'Test'
+      }, {
+        id: 'cas.demo.test2',
+        friendly_name: 'Test2'
+      }, {
+        id: 'cas.demo.test3',
+        friendly_name: 'Test3'
+      }, {
+        id: 'cas.demo.test4',
+        friendly_name: 'Test4'
+      }].map(e => ({ id: e.id, label: e.friendly_name }));
+    },
     tilesets () {
       return [{
         id: 'cartobq.maps.osm_buildings',
@@ -112,6 +138,12 @@ export default {
   methods: {
     openInfo () {
       this.moreInfo = !this.moreInfo;
+    },
+    useOtherProject (searchingText) {
+      this.project = {
+        id: searchingText,
+        label: searchingText
+      };
     }
   },
   mounted () {

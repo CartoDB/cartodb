@@ -5,6 +5,9 @@
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
           <span>{{ $t('DataPage.tabs.datasets') }}</span>
         </router-link>
+        <router-link :to="{ name: 'tilesets' }" class="tabs__item title is-small" exact active-class="is-active">
+          <span>{{ $t('DataPage.tabs.tilesets') }}</span>
+        </router-link>
         <router-link :to="{ name: 'your-connections' }" class="tabs__item title is-small" exact active-class="is-active">
           <span>{{ $t('DataPage.tabs.connections') }}</span>
         </router-link>

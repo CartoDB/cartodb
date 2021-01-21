@@ -131,6 +131,7 @@
     },
     "tabs": {
       "datasets": "Your Datasets",
+      "tilesets": "Your Tilesets",
       "subscriptions": "Your Subscriptions",
       "connections": "Your Connections",
       "catalog": "Spatial Data Catalog"
@@ -261,6 +262,21 @@
       "sample": "Samples ({count})"
     }
   },
+  "TilesetCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "copy": "Copy name",
+    "copySuccess": "Name copied!",
+    "lastSynced": "Synced {date} ago",
+    "lastUpdated": "{date} ago",
+    "numberRows": "0 rows | 1 row | {count} rows",
+    "tags": "tags",
+    "maps": "0 maps | 1 map | {n} maps"
+  },
   "DatasetCard": {
     "shared": {
       "LINK": "Link",
@@ -297,6 +313,13 @@
       "actionName": "Connect your data",
       "actionDescription": "to CARTO whether it's a local file, a URL, a cloud storage or a database."
     }
+  },
+  "TilesetListHeader": {
+    "name": "Name",
+    "lastUpdated": "Last Updated",
+    "created": "Created",
+    "zoom": "Zoom",
+    "properties": "Properties"
   },
   "DatasetListHeader": {
     "name": "Name",

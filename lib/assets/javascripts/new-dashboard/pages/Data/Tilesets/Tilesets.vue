@@ -77,6 +77,7 @@ import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import DropdownComponent from 'new-dashboard/components/forms/DropdownComponent';
 import TilesetListHeader from './TilesetListHeader';
 import TilesetListCard from './TilesetListCard';
+import { mapState } from 'vuex';
 
 export default {
   name: 'Tilesets',
@@ -93,23 +94,17 @@ export default {
       project: null
     };
   },
-  watch: {
-  },
   computed: {
+    ...mapState({
+      loading: state => state.connectors.loadingConnections,
+      rawConnections: state => state.connectors.connections,
+      _projects: state => state.connectors.projects
+    }),
+    bqConnection () {
+      return this.rawConnections && this.rawConnections.find(conn => conn.connector === 'bigquery');
+    },
     projects () {
-      return [{
-        id: 'cas.demo.test',
-        friendly_name: 'Test'
-      }, {
-        id: 'cas.demo.test2',
-        friendly_name: 'Test2'
-      }, {
-        id: 'cas.demo.test3',
-        friendly_name: 'Test3'
-      }, {
-        id: 'cas.demo.test4',
-        friendly_name: 'Test4'
-      }].map(e => ({ id: e.id, label: e.friendly_name }));
+      return this._projects ? this._projects.map(e => ({ id: e.id, label: e.friendly_name })) : [];
     },
     tilesets () {
       return [{
@@ -139,6 +134,17 @@ export default {
     openInfo () {
       this.moreInfo = !this.moreInfo;
     },
+    async fetchConnections () {
+      await this.$store.dispatch('connectors/fetchConnectionsList');
+      if (!this.bqConnection) {
+        this.$router.push({ name: 'home' });
+      }
+    },
+    fetchProjects () {
+      if (this.bqConnection) {
+        return this.$store.dispatch('connectors/fetchBQProjectsList', this.bqConnection.id);
+      }
+    },
     useOtherProject (searchingText) {
       this.project = {
         id: searchingText,
@@ -147,6 +153,13 @@ export default {
     }
   },
   mounted () {
+    this.fetchConnections();
+    this.fetchProjects();
+  },
+  watch: {
+    rawConnections () {
+      this.fetchProjects();
+    }
   }
 };
 </script>

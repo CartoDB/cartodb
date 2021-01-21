@@ -4,7 +4,8 @@ module Carto
 
       include ::LoggerHelper
 
-      def update_map_views(map_views_data)
+      def update_map_views(message)
+        map_views_data = message.payload
         log_info(message: 'Processing :update_map_views')
 
         date = map_views_data[:date]

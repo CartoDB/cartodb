@@ -440,4 +440,22 @@ module Carto::UserCommons
     end
     payload
   end
+
+  def delete_in_central
+    unless Cartodb::Central.sync_data_with_cartodb_central?
+      log_central_unavailable
+      return true
+    end
+
+    if organization.nil?
+      cartodb_central_client.delete_user(username)
+    else
+      raise "Can't destroy the organization owner" if organization.owner == self
+
+      cartodb_central_client.delete_organization_user(organization.name, username)
+    end
+
+    true
+  end
+
 end

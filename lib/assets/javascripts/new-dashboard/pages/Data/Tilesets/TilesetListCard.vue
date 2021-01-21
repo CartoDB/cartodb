@@ -100,7 +100,8 @@ export default {
   },
   computed: {
     createdAt () {
-      return this.tileset.created_at.toLocaleDateString();
+      // return this.tileset.created_at.toLocaleDateString();
+      return '';
     },
     lastUpdated () {
       return this.$t('TilesetCard.lastUpdated', { date: distanceInWordsStrict(this.tileset.updated_at, new Date()) });

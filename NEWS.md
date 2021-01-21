@@ -48,6 +48,7 @@ sudo make install
 - Update cartodb-common, which in turns updates the MessageBroker to send a `publisher_validation_token` [#16041](https://github.com/CartoDB/cartodb/pull/16041)
 - Optimize dashboard loading when the number of datasets is very large [#16014](https://github.com/CartoDB/cartodb/pull/16014)
 - 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
+- Aggregate map_views for organization users [#16064](https://github.com/CartoDB/cartodb/pull/16064)
 - Migrate Organization CRUD actions started by CartoDB to Message Broker [#16062](https://github.com/CartoDB/cartodb/pull/16062)
 
 4.44.0 (2020-11-20)

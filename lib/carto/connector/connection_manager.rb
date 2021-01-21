@@ -5,6 +5,7 @@ module Carto
     DB_PASSWORD_PLACEHOLDER = '********'.freeze
     OAUTH_TOKEN_PLACEHOLDER = '********'.freeze
     BQ_CONNECTOR = 'bigquery'.freeze
+    BQ_NON_CONNECTOR_PARAMTERS = ['email']
 
     def initialize(user)
       @user = user
@@ -237,7 +238,7 @@ module Carto
         else
           connector_parameters.merge! provider: connection.connector
         end
-        connection_parameters = connection.parameters
+        connection_parameters = filtered_connection_parameters(connection)
 
         # This was to support hybrid OAuth connections that also have parameters are use connectors (BigQuery)
         # but they're currently not supported
@@ -300,6 +301,47 @@ module Carto
 
     def bigquery_redis_key
       "google:bq_settings:#{@user.username}"
+    end
+
+    def filtered_connection_parameters(connection)
+      # TODO: move to per-connector classes
+      parameters = connection.parameters
+      parameters = parameters.except(*BQ_NON_CONNECTOR_PARAMTERS) if connection.connector == BQ_CONNECTOR
+      parameters
+    end
+
+    def create_connection_hook(connection)
+      # TODO: move to per-connector classes
+      update_redis_metadata(connection)
+      create_spatial_extension_setup(connection)
+    end
+
+    def remove_connection_hook(connection)
+      # TODO: move to per-connector classes
+      remove_redis_metadata(connection)
+      remove_spatial_extension_setup(connection)
+    end
+
+    def create_spatial_extension_setup(connection)
+      if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
+        role = Cartodb.config[:spatial_extension]['role']
+        datasets = Cartodb.config[:spatial_extension]['datasets']
+        return unless datasets.present?
+
+        spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+        spatial_extension_setup.create(connection)
+      end
+    end
+
+    def remove_spatial_extension_setup(connection)
+      if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
+        role = Cartodb.config[:spatial_extension]['role']
+        datasets = Cartodb.config[:spatial_extension]['datasets']
+        return unless datasets.present?
+
+        spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+        spatial_extension_setup.remove(connection)
+      end
     end
 
     def update_redis_metadata(connection)

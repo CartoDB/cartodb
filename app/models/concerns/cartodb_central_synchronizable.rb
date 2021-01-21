@@ -59,30 +59,12 @@ module CartodbCentralSynchronizable
         cartodb_central_client.update_user(username, allowed_attributes_to_central(:update))
       end
     elsif organization?
-      cartodb_central_client.update_organization(name, allowed_attributes_to_central(:update))
-    end
-    true
-  end
-
-  def delete_in_central
-    unless Cartodb::Central.sync_data_with_cartodb_central?
-      log_central_unavailable
-      return true
-    end
-
-    if user?
-      if organization.nil?
-        cartodb_central_client.delete_user(username)
-      else
-        raise "Can't destroy the organization owner" if organization.owner == self
-
-        cartodb_central_client.delete_organization_user(organization.name, username)
-      end
-    elsif organization?
-      # See Organization#destroy_cascade
-      raise 'Delete organizations is not allowed' if Carto::Configuration.saas?
-
-      cartodb_central_client.delete_organization(name)
+      Carto::Common::MessageBroker.new(logger: Rails.logger)
+                                  .get_topic(:cartodb_central)
+                                  .publish(
+                                    :update_organization,
+                                    { organization: allowed_attributes_to_central(:update) }
+                                  )
     end
 
     true
@@ -152,7 +134,7 @@ module CartodbCentralSynchronizable
         allowed_attributes = %i(seats viewer_seats display_name description website discus_shortname twitter_username
                                 auth_username_password_enabled auth_google_enabled password_expiration_in_d
                                 inherit_owner_ffs)
-        attributes.symbolize_keys.slice(*allowed_attributes)
+        attributes.symbolize_keys.slice(*allowed_attributes).merge(name: name)
       end
     elsif user?
       allowed_attributes = %i(

@@ -188,22 +188,6 @@
       </div>
     <% end %>
 
-    <% if !saas? && current_user.organization_owner? %>
-        <div class="FormAccount-title">
-          <p class="FormAccount-titleText">Delete organization</p>
-        </div>
-
-        <span class="FormAccount-separator"></span>
-
-        <div class="FormAccount-row FormAccount-row--wideMarginBottom">
-          <div class="FormAccount-rowLabel">
-            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Are you sure?</label>
-          </div>
-          <div class="FormAccount-rowData">
-            <span class="FormAccount-button--deleteOrganization CDB-Size-medium js-deleteOrganization">Delete organization, including all users and data</span>
-          </div>
-        </div>
-    <% end %>
   </div>
 <% end %>
 

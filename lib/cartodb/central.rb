@@ -138,29 +138,6 @@ module Cartodb
       send_request("api/organizations/#{ organization_name }", nil, :get, [200])
     end
 
-    # Returns remote organization attributes if response code is 201
-    # otherwise returns nil
-    # luisico asks: Not sure why organization_name is passed to this method. It's not used
-    # rilla answers: That's right, but this methods is just a stub: org creation from the editor is still unsupported
-    def create_organization(organization_name, organization_attributes)
-      body = {organization: organization_attributes}
-      send_request("api/organizations", body, :post, [201])
-    end
-
-    def update_organization(organization_name, organization_attributes)
-      payload = {
-        organization_name: organization_name
-      }.merge(organization_attributes)
-      cartodb_central_topic.publish(:update_organization, payload)
-    end
-
-    def delete_organization(organization_name)
-      payload = {
-        organization_name: organization_name
-      }
-      cartodb_central_topic.publish(:delete_organization, payload)
-    end
-
     ############################################################################
     # Mobile apps
 

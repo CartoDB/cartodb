@@ -216,13 +216,6 @@ module Carto
     # INFO: replacement for destroy because destroying owner triggers
     # organization destroy
     def destroy_cascade(delete_in_central: false)
-      # This remains commented because we consider that enabling this for users at SaaS is unnecessary and risky.
-      # Nevertheless, code remains, _just in case_. More info at https://github.com/CartoDB/cartodb/issues/12049
-      # Central branch: 1764-Allow_updating_inactive_users
-      # Central asks for usage information before deleting, so organization must be first deleted there
-      # Corollary: you need multithreading for organization to work if you run Central
-      # self.delete_in_central if delete_in_central
-
       groups.each(&:destroy_group_with_extension)
       destroy_non_owner_users
       owner ? owner.sequel_user.destroy_cascade : destroy

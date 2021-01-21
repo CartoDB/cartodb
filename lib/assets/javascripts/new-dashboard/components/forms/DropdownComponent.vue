@@ -2,7 +2,7 @@
   <div v-click-outside="close" class="dropdown-wrapper u-mt--12 u--mb--36">
     <div class="u-flex select-wrapper" :class="{'is-active': opened}" @click="open">
       <span @click.stop="open" class="text u-flex u-flex__align--center u-flex__grow--1" :class="{ placeholder: !(value && value.label) }" v-if="!opened">
-        {{(value && value.label) || 'Placeholder'}}
+        {{(value && value.label) || placeholder}}
       </span>
       <input v-show="opened" ref="input" v-model="searchingText" class="u-flex__grow--1" autocomplete="off" type="text" name="search">
     </div>

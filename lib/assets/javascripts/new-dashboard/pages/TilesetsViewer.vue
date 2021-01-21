@@ -21,7 +21,6 @@ export default {
     })
   },
   async mounted () {
-
     const element = this.$refs.viewer;
     const tileset = this.$route.params.id;
     const source = 'bigquery';

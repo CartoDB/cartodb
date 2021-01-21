@@ -1,12 +1,12 @@
 <template>
-  <a :href="vizUrl"
-     class="tileset-row"
-     :class="{
-       'tileset-row--quick-actions-open': areQuickActionsOpen,
-       'tileset-row--no-hover': !activeHover,
-       'tileset-row--can-hover': canHover
-     }"
-     @click="onClick">
+  <router-link
+    :to="{ name: 'tileset-viewer', params: { id: tileset.id }}"
+    class="tileset-row"
+    :class="{
+      'tileset-row--quick-actions-open': areQuickActionsOpen,
+      'tileset-row--no-hover': !activeHover,
+      'tileset-row--can-hover': canHover
+    }">
 
     <div class="viz-column--main-info">
       <div class="cell cell--start cell--first">
@@ -54,7 +54,7 @@
           @contentChanged="onContentChanged"/>
       </div>
     </div>
-  </a>
+  </router-link>
 </template>
 
 <script>
@@ -137,9 +137,7 @@ export default {
     closeQuickActions () {
       this.areQuickActionsOpen = false;
     },
-    onClick (event) {
-      // TODO
-    },
+    onClick (event) {},
     onContentChanged (type) {
       this.$emit('contentChanged', type);
     }

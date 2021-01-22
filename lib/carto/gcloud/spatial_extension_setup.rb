@@ -9,6 +9,9 @@ require_relative 'service_factory'
 module Carto
   module Gcloud
     class SpatialExtensionSetup
+      HARDCODED_LIMITS_TABLE = 'bqcartost.config.limits'.freeze
+      HARDCODED_MAX_BYTES = 250000000000
+
       def initialize(role:, datasets:, management_key: nil)
         @role = role
         @datasets = datasets
@@ -26,9 +29,16 @@ module Carto
           grant_user_access_to_bigquery_dataset(project_id, dataset_id, email, @role)
         end
 
-        # TODO: save bq limits into config.limits table
+        # FIXME: temporary hardcoded limits for test purposes
+        project_id, dataset_id, table_id = HARDCODED_LIMITS_TABLE.split('.')
+        insert_row(
+          project_id, dataset_id, table_id,
+          email: email,
+          connection_id: connection.id,
+          max_bytes_processed: HARDCODED_MAX_BYTES,
+          start_billing_period: rand(30) + 1
+        )
       end
-
 
       def remove(connection)
         check_connection!(connection)
@@ -39,10 +49,33 @@ module Carto
           revoke_user_access_from_bigquery_dataset(project_id, dataset_id, email, @role)
         end
 
-        # TODO: remove bq limits from config.limits table
+        # FIXME: temporary hardcoded limits for test purposes
+        project_id, dataset_id, table_id = HARDCODED_LIMITS_TABLE.split('.')
+        delete_row(project_id, dataset_id, table_id, connection.id)
       end
 
       private
+
+      def insert_row(project_id, dataset_id, table_id, row)
+        bqrow = Google::Apis::BigqueryV2::InsertAllTableDataRequest::Row.new
+        bqrow.json = row
+        rows = Google::Apis::BigqueryV2::InsertAllTableDataRequest.new(rows: [bqrow])
+        response = @bq_service.insert_all_table_data(project_id, dataset_id, table_id, rows)
+        if response.insert_errors.present?
+          error message = insert_errors.first.errors.map(&:message.join("\n"))
+          raise "Error inserting BQ Tiler limits: #{error_message}"
+        end
+      end
+
+      def delete_row(project_id, dataset_id, table_id, connection_id)
+        sql = "DELETE FROM `#{project_id}.#{dataset_id}.#{table_id}` WHERE connection_id='#{connection_id}'"
+        query = Google::Apis::BigqueryV2::QueryRequest.new
+        query.query = sql
+        query.use_legacy_sql = false
+        # FIXME: which project should perform this job?
+        @bq_service.query_job(project_id, query)
+        # If the SQL execution fails an exception will be raise, so no need to check the response
+      end
 
       def check_connection!(connection)
         errors = []

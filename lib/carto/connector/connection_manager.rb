@@ -1,11 +1,14 @@
+require 'carto/gcloud/spatial_extension_setup'
+
 require_relative 'parameters'
 
 module Carto
   class ConnectionManager
-    DB_PASSWORD_PLACEHOLDER = '********'.freeze
-    OAUTH_TOKEN_PLACEHOLDER = '********'.freeze
+    CONFIDENTIAL_PARAMETER_PLACEHOLDER = '********'.freeze
+    CONFIDENTIAL_PARAMS = %w(password)
     BQ_CONNECTOR = 'bigquery'.freeze
-    BQ_NON_CONNECTOR_PARAMTERS = ['email']
+    BQ_NON_CONNECTOR_PARAMETERS = ['email']
+    BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token)
 
     def initialize(user)
       @user = user
@@ -82,16 +85,8 @@ module Carto
         connector: connection.connector,
         type: connection.connection_type,
       }
-      case connection.connection_type
-      when Carto::Connection::TYPE_DB_CONNECTOR
-        presented_connection[:parameters] = connection.parameters
-        if presented_connection[:parameters].keys.include?('password')
-          presented_connection[:parameters]['password'] = DB_PASSWORD_PLACEHOLDER
-        end
-      when Carto::Connection::TYPE_OAUTH_SERVICE
-        presented_connection[:token] = OAUTH_TOKEN_PLACEHOLDER
-        # presented_connection[:parameters] = connection.parameters if connection.parameters.present?
-      end
+      presented_connection[:parameters] = presented_parameters(connection) if connection.parameters.present?
+      presented_connection[:token] = presented_token(connection) if connection.token.present?
       # TODO: compute in_use
       presented_connection
   end
@@ -110,7 +105,7 @@ module Carto
     def create_db_connection(name:, provider:, parameters:)
       check_db_provider!(provider)
       connection = @user.connections.create!(name: name, connector: provider, parameters: parameters)
-      update_redis_metadata(connection)
+      create_connection_hook(connection)
       connection
     end
 
@@ -186,7 +181,7 @@ module Carto
       revoke_token(connection)
       connection.destroy!
       @user.reload
-      remove_redis_metadata(connection)
+      remove_connection_hook(connection)
     end
 
     def fetch_connection(id)
@@ -198,8 +193,15 @@ module Carto
       new_attributes = {}
       new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
       new_attributes[:name] = name if name.present?
-      connection.update!(new_attributes) if new_attributes.present?
-      update_redis_metadata(connection)
+      if new_attributes.present?
+        old_attributes = {
+          name: connection.name,
+          paramters: connection.parameters.dup
+        }
+        update_connection_hook(connection, old_attributes, new_attributes) do
+          connection.update!(new_attributes)
+        end
+      end
     end
 
     # This adapts parameters to be passed to a db connector, optionally registering a new connection.
@@ -286,12 +288,32 @@ module Carto
         elsif connector == BQ_CONNECTOR
           errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if connection_parameters['refresh_token'].present?
           errors << "Parameter access_token not supported through connections; use import API" if connection_parameters['access_token'].present?
+
+          # FIXME: duplicated emails can occur; this just make it unlikely
+          # if Carto::Connection.where(connector: BQ_CONNECTOR, connection_type: arto::Connection::TYPE_DB_CONNECTOR).where()
+          #   %{
+
+          #   }
+          # )
+          # errors << "Email taken: #{connection_parameters['email']"
         end
       end
       errors
     end
 
     private
+
+    def presented_parameters(connection)
+      confidential_parameters = connection.connector == BQ_CONNECTOR ? BQ_CONFIDENTIAL_PARAMS : CONFIDENTIAL_PARAMS
+      connection.parameters.map do |key, value|
+        value = key.in?(confidential_parameters) ? CONFIDENTIAL_PARAMETER_PLACEHOLDER : value
+        [key, value]
+      end
+    end
+
+    def presented_token(connection)
+      CONFIDENTIAL_PARAMETER_PLACEHOLDER
+    end
 
     def generate_connection_name(provider)
       # FIXME: this could produce name collisions
@@ -306,7 +328,7 @@ module Carto
     def filtered_connection_parameters(connection)
       # TODO: move to per-connector classes
       parameters = connection.parameters
-      parameters = parameters.except(*BQ_NON_CONNECTOR_PARAMTERS) if connection.connector == BQ_CONNECTOR
+      parameters = parameters.except(*BQ_NON_CONNECTOR_PARAMETERS) if connection.connector == BQ_CONNECTOR
       parameters
     end
 
@@ -320,6 +342,18 @@ module Carto
       # TODO: move to per-connector classes
       remove_redis_metadata(connection)
       remove_spatial_extension_setup(connection)
+    end
+
+    def update_connection_hook(connection, old_attributes, new_attributes)
+      if new_attributes.has_key?(:parameters)
+        if new_attributes['email'] != old_attributes[:parameters]['email']
+          remove_spatial_extension_setup(connection)
+          yield
+          connection.reload
+          create_spatial_extension_setup(connection)
+        end
+      end
+      update_redis_metadata(connection)
     end
 
     def create_spatial_extension_setup(connection)

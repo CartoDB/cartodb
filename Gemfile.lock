@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 626bc3bb7cd2edfdd3f0a7b9236dddbb7fccfee5
-  tag: v0.5.3
+  revision: 8c86ac330a4c360b6b89da2609bf9216fffbd246
+  tag: v1.0.1
   specs:
-    cartodb-common (0.5.3)
+    cartodb-common (1.0.1)
       argon2 (~> 2)
       google-cloud-pubsub (~> 2.3)
       rails (>= 4, < 6)
@@ -70,9 +70,9 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     analytics-ruby (2.0.13)
     arel (6.0.4)
-    argon2 (2.0.2)
-      ffi (~> 1.9)
-      ffi-compiler (>= 0.1)
+    argon2 (2.0.3)
+      ffi (~> 1.14)
+      ffi-compiler (~> 1.0)
     ast (2.4.1)
     avro (1.10.0)
       multi_json (~> 1)
@@ -130,7 +130,7 @@ GEM
       sass (>= 3.3.0, < 3.5)
     compass-import-once (1.0.5)
       sass (>= 3.2, < 3.5)
-    concurrent-ruby (1.1.7)
+    concurrent-ruby (1.1.8)
     coverband (5.0.0)
       redis
     crass (1.0.6)
@@ -170,7 +170,7 @@ GEM
     faraday_middleware (0.14.0)
       faraday (>= 0.7.4, < 1.0)
     fastercsv (1.5.5)
-    ffi (1.13.1)
+    ffi (1.14.2)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
@@ -188,13 +188,14 @@ GEM
       multi_json (>= 1.3.4)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    google-api-client (0.34.1)
+    google-api-client (0.52.0)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (~> 0.9)
       httpclient (>= 2.8.1, < 3.0)
       mini_mime (~> 1.0)
       representable (~> 3.0)
       retriable (>= 2.0, < 4.0)
+      rexml
       signet (~> 0.12)
     google-cloud-bigquery-storage-v1 (0.2.3)
       gapic-common (~> 0.2)
@@ -205,11 +206,11 @@ GEM
     google-cloud-env (1.3.0)
       faraday (~> 0.11)
     google-cloud-errors (1.0.1)
-    google-cloud-pubsub (2.3.0)
+    google-cloud-pubsub (2.3.1)
       concurrent-ruby (~> 1.1)
       google-cloud-core (~> 1.5)
       google-cloud-pubsub-v1 (~> 0.0)
-    google-cloud-pubsub-v1 (0.2.0)
+    google-cloud-pubsub-v1 (0.2.1)
       gapic-common (~> 0.3)
       google-cloud-errors (~> 1.0)
       grpc-google-iam-v1 (>= 0.6.10, < 2.0)
@@ -227,8 +228,8 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (~> 0.12)
-    grpc (1.34.0)
-      google-protobuf (~> 3.13)
+    grpc (1.35.0)
+      google-protobuf (~> 3.14)
       googleapis-common-protos-types (~> 1.0)
     grpc-google-iam-v1 (0.6.10)
       google-protobuf (~> 3.11)
@@ -253,7 +254,7 @@ GEM
     json-schema (2.1.9)
     jwt (2.2.2)
     kgio (2.11.3)
-    loofah (2.8.0)
+    loofah (2.9.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -266,8 +267,8 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2020.0512)
     mini_mime (1.0.2)
-    mini_portile2 (2.4.0)
-    minitest (5.14.2)
+    mini_portile2 (2.5.0)
+    minitest (5.14.3)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
     mock_redis (0.25.0)
@@ -279,8 +280,9 @@ GEM
     net-ldap (0.16.0)
     net-telnet (0.2.0)
     netaddr (2.0.4)
-    nokogiri (1.10.10)
-      mini_portile2 (~> 2.4.0)
+    nokogiri (1.11.1)
+      mini_portile2 (~> 2.5.0)
+      racc (~> 1.4)
     oauth (0.4.7)
     oauth2 (1.4.4)
       faraday (>= 0.8, < 2.0)
@@ -307,6 +309,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     public_suffix (4.0.6)
+    racc (1.5.2)
     rack (1.6.13)
     rack-protection (1.5.5)
       rack
@@ -482,7 +485,7 @@ GEM
     trollop (2.9.10)
     typhoeus (1.3.1)
       ethon (>= 0.9.0)
-    tzinfo (1.2.8)
+    tzinfo (1.2.9)
       thread_safe (~> 0.1)
     uber (0.1.0)
     unf (0.1.4)
@@ -544,9 +547,9 @@ DEPENDENCIES
   fake_net_ldap!
   gc_tracer (= 1.5.1)
   gibbon (= 1.1.4)
-  google-api-client (= 0.34.1)
-  google-cloud-bigquery-storage-v1 (~> 0.2.3)
-  google-cloud-pubsub (~> 2.3)
+  google-api-client
+  google-cloud-bigquery-storage-v1
+  google-cloud-pubsub
   hiredis (~> 0.6.1)
   instagram-continued-continued
   json-schema (= 2.1.9)

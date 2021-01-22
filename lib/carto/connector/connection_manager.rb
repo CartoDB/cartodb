@@ -84,6 +84,7 @@ module Carto
       }
       case connection.connection_type
       when Carto::Connection::TYPE_DB_CONNECTOR
+        # FIXME: add per-connector hidden parameters
         presented_connection[:parameters] = connection.parameters
         if presented_connection[:parameters].keys.include?('password')
           presented_connection[:parameters]['password'] = DB_PASSWORD_PLACEHOLDER
@@ -110,7 +111,7 @@ module Carto
     def create_db_connection(name:, provider:, parameters:)
       check_db_provider!(provider)
       connection = @user.connections.create!(name: name, connector: provider, parameters: parameters)
-      update_redis_metadata(connection)
+      create_connection_hook(connection)
       connection
     end
 
@@ -186,7 +187,7 @@ module Carto
       revoke_token(connection)
       connection.destroy!
       @user.reload
-      remove_redis_metadata(connection)
+      remove_connection_hook(connection)
     end
 
     def fetch_connection(id)

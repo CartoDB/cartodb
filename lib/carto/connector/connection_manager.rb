@@ -290,12 +290,13 @@ module Carto
           errors << "Parameter access_token not supported through connections; use import API" if connection_parameters['access_token'].present?
 
           # FIXME: duplicated emails can occur; this just make it unlikely
-          # if Carto::Connection.where(connector: BQ_CONNECTOR, connection_type: arto::Connection::TYPE_DB_CONNECTOR).where()
-          #   %{
-
-          #   }
-          # )
-          # errors << "Email taken: #{connection_parameters['email']"
+          if connection_parameters['email'].present?
+            if Carto::Connection
+               .where(connector: BQ_CONNECTOR, connection_type: Carto::Connection::TYPE_DB_CONNECTOR)
+               .where("parameters#>>'{email}' = '#{connection_parameters['email']}'").exists?
+              errors << "Email taken: #{connection_parameters['email']}"
+            end
+          end
         end
       end
       errors
@@ -358,8 +359,8 @@ module Carto
 
     def create_spatial_extension_setup(connection)
       if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
-        role = Cartodb.config[:spatial_extension]['role']
-        datasets = Cartodb.config[:spatial_extension]['datasets']
+        role = Cartodb.get_config(:spatial_extension, 'role')
+        datasets = Cartodb.get_config(:spatial_extension, 'datasets')
         return unless datasets.present?
 
         spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
@@ -369,8 +370,8 @@ module Carto
 
     def remove_spatial_extension_setup(connection)
       if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
-        role = Cartodb.config[:spatial_extension]['role']
-        datasets = Cartodb.config[:spatial_extension]['datasets']
+        role = Cartodb.get_config(:spatial_extension, 'role')
+        datasets = Cartodb.get_config(:spatial_extension, 'datasets')
         return unless datasets.present?
 
         spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
@@ -410,7 +411,7 @@ module Carto
         # rescue MissingConfigurationError
         #   false
         # end
-        Cartodb.config[:oauth][service].present?
+        Cartodb.get_config(:oauth, service).present?
       }
     end
 

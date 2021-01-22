@@ -30,7 +30,7 @@ module Carto
         end
 
         # FIXME: temporary hardcoded limits for test purposes
-        project_id, dataset_id, table_id = HARCODED_LIMITS_TABLE.split('.')
+        project_id, dataset_id, table_id = HARDCODED_LIMITS_TABLE.split('.')
         insert_row(
           project_id, dataset_id, table_id,
           email: email,
@@ -50,7 +50,7 @@ module Carto
         end
 
         # FIXME: temporary hardcoded limits for test purposes
-        project_id, dataset_id, table_id = HARCODED_LIMITS_TABLE.split('.')
+        project_id, dataset_id, table_id = HARDCODED_LIMITS_TABLE.split('.')
         delete_row(project_id, dataset_id, table_id, connection.id)
       end
 

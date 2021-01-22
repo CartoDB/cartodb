@@ -288,6 +288,14 @@ module Carto
         elsif connector == BQ_CONNECTOR
           errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if connection_parameters['refresh_token'].present?
           errors << "Parameter access_token not supported through connections; use import API" if connection_parameters['access_token'].present?
+
+          # FIXME: duplicated emails can occur; this just make it unlikely
+          # if Carto::Connection.where(connector: BQ_CONNECTOR, connection_type: arto::Connection::TYPE_DB_CONNECTOR).where()
+          #   %{
+
+          #   }
+          # )
+          # errors << "Email taken: #{connection_parameters['email']"
         end
       end
       errors

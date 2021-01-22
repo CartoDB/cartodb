@@ -359,17 +359,6 @@ module Carto
       end
     end
 
-    def create_spatial_extension_setup(connection)
-      if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
-        role = Cartodb.config[:spatial_extension]['role']
-        datasets = Cartodb.config[:spatial_extension]['datasets']
-        return unless datasets.present?
-
-        spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
-        spatial_extension_setup.update(connection)
-      end
-    end
-
     def remove_spatial_extension_setup(connection)
       if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
         role = Cartodb.config[:spatial_extension]['role']

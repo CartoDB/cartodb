@@ -57,9 +57,9 @@ module Carto
       private
 
       def insert_row(project_id, dataset_id, table_id, row)
-        row = Google::Apis::BigqueryV2::InsertAllTableDataRequest::Row.new
-        row.json = row
-        rows = Google::Apis::BigqueryV2::InsertAllTableDataRequest.new(rows: [row])
+        bqrow = Google::Apis::BigqueryV2::InsertAllTableDataRequest::Row.new
+        bqrow.json = row
+        rows = Google::Apis::BigqueryV2::InsertAllTableDataRequest.new(rows: [bqrow])
         response = @bq_service.insert_all_table_data(project_id, dataset_id, table_id, rows)
         if response.insert_errors.present?
           error message = insert_errors.first.errors.map(&:message.join("\n"))

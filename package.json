@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.214-connectors-v11",
+  "version": "1.0.0-assets.214-connectors-v12",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -157,7 +157,7 @@
     "mini-css-extract-plugin": "^0.4.0",
     "minimist": "1.2.0",
     "open": "0.0.5",
-    "optimize-css-assets-webpack-plugin": "^4.0.2",
+    "optimize-css-assets-webpack-plugin": "^5.0.4",
     "prettysize": "0.0.3",
     "raw-loader": "0.5.1",
     "recursive-readdir": "2.2.1",

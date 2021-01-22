@@ -4,7 +4,7 @@
 
 <script>
 
-// import init from '@carto/viewer/src/init';
+import init from '@carto/viewer/src/init';
 import { mapState } from 'vuex';
 
 export default {
@@ -21,31 +21,31 @@ export default {
     })
   },
   async mounted () {
-    // const element = this.$refs.viewer;
-    // const tileset = this.$route.params.id;
-    // const source = 'bigquery';
-    // let api_key = 'default_public';
-    // let tilejson;
+    const element = this.$refs.viewer;
+    const tileset = this.$route.params.id;
+    const source = 'bigquery';
+    let api_key = 'default_public';
+    let tilejson;
 
-    // try {
-    //   tilejson = await this.getTilejson(source, tileset, api_key);
-    // } catch (error) {
-    //   if (error.message === '401') {
-    //     api_key = this.apiKey;
-    //     try {
-    //       tilejson = await this.getTilejson(source, tileset, api_key);
-    //     } catch (error) {
-    //       console.error(`ERROR: ${error}`);
-    //     }
-    //   }
-    // }
+    try {
+      tilejson = await this.getTilejson(source, tileset, api_key);
+    } catch (error) {
+      if (error.message === '401') {
+        api_key = this.apiKey;
+        try {
+          tilejson = await this.getTilejson(source, tileset, api_key);
+        } catch (error) {
+          console.error(`ERROR: ${error}`);
+        }
+      }
+    }
 
-    // const props = {
-    //   username: this.username,
-    //   type: source,
-    //   query: new URLSearchParams(`?data=${tileset}&api_key=${api_key}${this.getColorByValue(tilejson)}`)
-    // };
-    // init(element, props);
+    const props = {
+      username: this.username,
+      type: source,
+      query: new URLSearchParams(`?data=${tileset}&api_key=${api_key}${this.getColorByValue(tilejson)}`)
+    };
+    init(element, props);
   },
   methods: {
     getTilejson (source, tileset, apiKey) {

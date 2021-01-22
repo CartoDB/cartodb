@@ -21,9 +21,9 @@ module Carto
         end
 
         def check_permissions
-          @api_key = Carto::ApiKey.find_by(params['api_key'])
+          @api_key = Carto::ApiKey.find_by_token(params['api_key'])
           raise UnauthorizedError unless @api_key&.master?
-          raise UnauthorizedError unless @api_key.user_id.is_a?(@user.id)
+          raise UnauthorizedError unless @api_key.user_id === @user.id
         end
 
         def list

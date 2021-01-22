@@ -143,6 +143,8 @@ export default {
     fetchProjects () {
       if (this.bqConnection) {
         return this.$store.dispatch('connectors/fetchBQProjectsList', this.bqConnection.id);
+      } else {
+        this.fetchConnections();
       }
     },
     useOtherProject (searchingText) {
@@ -153,7 +155,6 @@ export default {
     }
   },
   mounted () {
-    this.fetchConnections();
     this.fetchProjects();
   },
   watch: {

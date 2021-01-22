@@ -5,7 +5,7 @@
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
           <span>{{ $t('DataPage.tabs.datasets') }}</span>
         </router-link>
-        <router-link :to="{ name: 'tilesets' }" class="tabs__item title is-small" exact active-class="is-active">
+        <router-link  v-if="bqConnection" :to="{ name: 'tilesets' }" class="tabs__item title is-small" exact active-class="is-active">
           <span>{{ $t('DataPage.tabs.tilesets') }}</span>
         </router-link>
         <router-link :to="{ name: 'your-connections' }" class="tabs__item title is-small" exact active-class="is-active">
@@ -27,6 +27,7 @@
 import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import { isAllowed } from 'new-dashboard/core/configuration/filters';
+import { mapState } from 'vuex';
 
 export default {
   name: 'DataPage',
@@ -35,11 +36,25 @@ export default {
     SecondaryNavigation
   },
   computed: {
+    ...mapState({
+      connections: state => state.connectors.connections
+    }),
+    bqConnection () {
+      return this.connections && this.connections.find(conn => conn.connector === 'bigquery');
+    },
     isDatasetPage () {
       return isAllowed(this.$route.params.filter);
     },
     isDOEnabled () {
       return this.$store.state.user.do_enabled;
+    }
+  },
+  mounted () {
+    this.fetchConnections();
+  },
+  methods: {
+    async fetchConnections () {
+      await this.$store.dispatch('connectors/fetchConnectionsList');
     }
   }
 };

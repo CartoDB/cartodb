@@ -1,4 +1,3 @@
-
 require 'carto/gcloud/spatial_extension_setup'
 
 require_relative 'parameters'
@@ -194,8 +193,15 @@ module Carto
       new_attributes = {}
       new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
       new_attributes[:name] = name if name.present?
-      connection.update!(new_attributes) if new_attributes.present?
-      update_redis_metadata(connection)
+      if new_attributes.present?
+        old_attributes = {
+          name: connection.name,
+          paramters: connection.parameters.dup
+        }
+        update_connection_hook(connection, old_attributes, new_attributes) do
+          connection.update!(new_attributes)
+        end
+      end
     end
 
     # This adapts parameters to be passed to a db connector, optionally registering a new connection.
@@ -329,6 +335,18 @@ module Carto
       remove_spatial_extension_setup(connection)
     end
 
+    def update_connection_hook(connection, old_attributes, new_attributes)
+      if new_attributes.has_key?(:parameters)
+        if new_attributes['email'] != old_attributes[:parameters]['email']
+          remove_spatial_extension_setup(connection)
+          yield
+          connection.reload
+          create_spatial_extension_setup(connection)
+        end
+      end
+      update_redis_metadata(connection)
+    end
+
     def create_spatial_extension_setup(connection)
       if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
         role = Cartodb.config[:spatial_extension]['role']
@@ -337,6 +355,17 @@ module Carto
 
         spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
         spatial_extension_setup.create(connection)
+      end
+    end
+
+    def create_spatial_extension_setup(connection)
+      if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
+        role = Cartodb.config[:spatial_extension]['role']
+        datasets = Cartodb.config[:spatial_extension]['datasets']
+        return unless datasets.present?
+
+        spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+        spatial_extension_setup.update(connection)
       end
     end
 

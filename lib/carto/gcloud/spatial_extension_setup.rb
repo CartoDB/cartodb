@@ -65,7 +65,7 @@ module Carto
             start_billing_period
           ) VALUES (
             '#{row[:email]}',
-            '#{row[:connection_id]},
+            '#{row[:connection_id]}',
             #{row[:max_bytes_processed]},
             #{row[:start_billing_period]}
           )

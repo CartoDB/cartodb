@@ -57,14 +57,24 @@ module Carto
       private
 
       def insert_row(project_id, dataset_id, table_id, row)
-        bqrow = Google::Apis::BigqueryV2::InsertAllTableDataRequest::Row.new
-        bqrow.json = row
-        rows = Google::Apis::BigqueryV2::InsertAllTableDataRequest.new(rows: [bqrow])
-        response = @bq_service.insert_all_table_data(project_id, dataset_id, table_id, rows)
-        if response.insert_errors.present?
-          error message = insert_errors.first.errors.map(&:message.join("\n"))
-          raise "Error inserting BQ Tiler limits: #{error_message}"
-        end
+        sql = %{
+          INSERT INTO `#{project_id}.#{dataset_id}.#{table_id}`(
+            email,
+            connection_id,
+            max_bytes_processed,
+            start_billing_period
+          ) VALUES (
+            '#{row[:email]}',
+            '#{row[:connection_id]},
+            #{row[:max_bytes_processed]},
+            #{row[:start_billing_period]}
+          )
+        }
+        query = Google::Apis::BigqueryV2::QueryRequest.new
+        query.query = sql
+        query.use_legacy_sql = false
+        # FIXME: which project should perform this job?
+        @bq_service.query_job(project_id, query)
       end
 
       def delete_row(project_id, dataset_id, table_id, connection_id)
@@ -74,7 +84,6 @@ module Carto
         query.use_legacy_sql = false
         # FIXME: which project should perform this job?
         @bq_service.query_job(project_id, query)
-        # If the SQL execution fails an exception will be raise, so no need to check the response
       end
 
       def check_connection!(connection)

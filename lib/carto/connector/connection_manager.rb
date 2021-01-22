@@ -5,10 +5,11 @@ require_relative 'parameters'
 
 module Carto
   class ConnectionManager
-    DB_PASSWORD_PLACEHOLDER = '********'.freeze
-    OAUTH_TOKEN_PLACEHOLDER = '********'.freeze
+    CONFIDENTIAL_PARAMETER_PLACEHOLDER = '********'.freeze
+    CONFIDENTIAL_PARAMS = %w(password)
     BQ_CONNECTOR = 'bigquery'.freeze
-    BQ_NON_CONNECTOR_PARAMTERS = ['email']
+    BQ_NON_CONNECTOR_PARAMETERS = ['email']
+    BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token)
 
     def initialize(user)
       @user = user
@@ -85,17 +86,8 @@ module Carto
         connector: connection.connector,
         type: connection.connection_type,
       }
-      case connection.connection_type
-      when Carto::Connection::TYPE_DB_CONNECTOR
-        # FIXME: add per-connector hidden parameters
-        presented_connection[:parameters] = connection.parameters
-        if presented_connection[:parameters].keys.include?('password')
-          presented_connection[:parameters]['password'] = DB_PASSWORD_PLACEHOLDER
-        end
-      when Carto::Connection::TYPE_OAUTH_SERVICE
-        presented_connection[:token] = OAUTH_TOKEN_PLACEHOLDER
-        # presented_connection[:parameters] = connection.parameters if connection.parameters.present?
-      end
+      presented_connection[:parameters] = presented_parameters(connection) if connection.parameters.present?
+      presented_connection[:token] = presented_token(connection) if connection.token.present?
       # TODO: compute in_use
       presented_connection
   end
@@ -297,6 +289,17 @@ module Carto
 
     private
 
+    def presented_parameters(connection)
+      confidential_parameters = connection.connector == BQ_CONNECTOR ? BQ_CONFIDENTIAL_PARAMS : CONFIDENTIAL_PARAMS
+      connection.parameters.map do |key, value|
+        [key, key.in?(confidential_parameters) ? CONFIDENTIAL_PARAMETER_PLACEHOLDER : value]
+      end
+    end
+
+    def presented_token(connection)
+      CONFIDENTIAL_PARAMETER_PLACEHOLDER
+    end
+
     def generate_connection_name(provider)
       # FIXME: this could produce name collisions
       n = @user.db_connections.where(connector: provider).count
@@ -310,7 +313,7 @@ module Carto
     def filtered_connection_parameters(connection)
       # TODO: move to per-connector classes
       parameters = connection.parameters
-      parameters = parameters.except(*BQ_NON_CONNECTOR_PARAMTERS) if connection.connector == BQ_CONNECTOR
+      parameters = parameters.except(*BQ_NON_CONNECTOR_PARAMETERS) if connection.connector == BQ_CONNECTOR
       parameters
     end
 

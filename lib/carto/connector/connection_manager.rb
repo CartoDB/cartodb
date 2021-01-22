@@ -297,8 +297,9 @@ module Carto
 
     def presented_parameters(connection)
       confidential_parameters = connection.connector == BQ_CONNECTOR ? BQ_CONFIDENTIAL_PARAMS : CONFIDENTIAL_PARAMS
-      connection.parameters.map do |key, value|
-        [key, key.in?(confidential_parameters) ? CONFIDENTIAL_PARAMETER_PLACEHOLDER : value]
+      connection.parameters.map do |key, value|
+        value = key.in?(confidential_parameters) ? CONFIDENTIAL_PARAMETER_PLACEHOLDER : value
+        [key, value]
       end
     end
 

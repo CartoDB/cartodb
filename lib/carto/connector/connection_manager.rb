@@ -290,10 +290,10 @@ module Carto
           errors << "Parameter access_token not supported through connections; use import API" if connection_parameters['access_token'].present?
 
           # FIXME: duplicated emails can occur; this just make it unlikely
-          if connections_parameters['email'].present?
+          if connection_parameters['email'].present?
             if Carto::Connection
-               .where(connector: BQ_CONNECTOR, connection_type: arto::Connection::TYPE_DB_CONNECTOR)
-               .where("parameters#>>'{email}' = '#{connections_parameters['email']}'")
+               .where(connector: BQ_CONNECTOR, connection_type: Carto::Connection::TYPE_DB_CONNECTOR)
+               .where("parameters#>>'{email}' = '#{connection_parameters['email']}'")
               errors << "Email taken: #{connection_parameters['email']}"
             end
           end

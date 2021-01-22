@@ -1,3 +1,6 @@
+
+require 'carto/gcloud/spatial_extension_setup'
+
 require_relative 'parameters'
 
 module Carto

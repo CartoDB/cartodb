@@ -4,8 +4,8 @@ module Cartodb
   class Central
 
     def self.sync_data_with_cartodb_central?
-      Cartodb.get_config(:cartodb_central_api, 'username').present? &&
-        Cartodb.get_config(:cartodb_central_api, 'password').present?
+      Cartodb.get_config(:message_broker, 'project_id').present? &&
+        Cartodb.get_config(:message_broker, 'central_subscription_name').present?
     end
 
     def initialize
@@ -72,26 +72,42 @@ module Cartodb
     end
 
     def create_organization_user(organization_name, user_attributes)
-      body = {user: user_attributes}
-      send_request("api/organizations/#{ organization_name }/users", body, :post, [201])
+      payload = {
+        organization_name: organization_name
+      }.merge(user_attributes)
+      cartodb_central_topic.publish(:create_org_user, payload)
     end
 
     def update_organization_user(organization_name, username, user_attributes)
-      body = {user: user_attributes}
-      send_request("api/organizations/#{ organization_name }/users/#{ username }", body, :put, [204])
+      payload = {
+        organization_name: organization_name,
+        username: username
+      }.merge(user_attributes)
+      cartodb_central_topic.publish(:update_org_user, payload)
     end
 
     def delete_organization_user(organization_name, username)
-      send_request("api/organizations/#{organization_name}/users/#{username}", nil, :delete, [204, 404])
+      payload = {
+        organization_name: organization_name,
+        username: username
+      }
+      cartodb_central_topic.publish(:delete_org_user, payload)
     end
 
     def update_user(username, user_attributes)
-      body = {user: user_attributes}
-      send_request("api/users/#{username}", body, :put, [204])
+      payload = {
+        username: username
+      }.merge(user_attributes)
+      cartodb_central_topic.publish(:update_user, payload)
     end
 
     def delete_user(username)
-      send_request("api/users/#{username}", nil, :delete, [204, 404])
+      remote_data = Carto::User.where(username: username).first
+      payload = {
+        username: username,
+        remote_data: remote_data
+      }
+      cartodb_central_topic.publish(:delete_user, payload)
     end
 
     def check_do_enabled(username)
@@ -120,24 +136,6 @@ module Cartodb
 
     def get_organization(organization_name)
       send_request("api/organizations/#{ organization_name }", nil, :get, [200])
-    end
-
-    # Returns remote organization attributes if response code is 201
-    # otherwise returns nil
-    # luisico asks: Not sure why organization_name is passed to this method. It's not used
-    # rilla answers: That's right, but this methods is just a stub: org creation from the editor is still unsupported
-    def create_organization(organization_name, organization_attributes)
-      body = {organization: organization_attributes}
-      send_request("api/organizations", body, :post, [201])
-    end
-
-    def update_organization(organization_name, organization_attributes)
-      body = {organization: organization_attributes}
-      send_request("api/organizations/#{ organization_name }", body, :put, [204])
-    end
-
-    def delete_organization(organization_name)
-      send_request("api/organizations/#{organization_name}", nil, :delete, [204, 404])
     end
 
     ############################################################################
@@ -180,6 +178,12 @@ module Cartodb
 
     def delete_oauth_app(username, app_id)
       send_request("api/users/#{username}/oauth_apps/#{app_id}", nil, :delete, [204])
+    end
+
+    private
+
+    def cartodb_central_topic
+      Carto::Common::MessageBroker.new(logger: Rails.logger).get_topic(:cartodb_central)
     end
   end
 end

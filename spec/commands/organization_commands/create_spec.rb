@@ -19,7 +19,7 @@ describe OrganizationCommands::Create do
 
       before do
         notifications_topic.expects(:publish)
-        BaseCommand.any_instance.expects(:notifications_topic).returns(notifications_topic)
+        CartoCommand.any_instance.expects(:notifications_topic).returns(notifications_topic)
       end
 
       it 'creates the organization' do

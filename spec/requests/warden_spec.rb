@@ -2,6 +2,8 @@ require 'spec_helper_min'
 require 'support/helpers'
 
 describe 'Warden' do
+  include_context 'with MessageBroker stubs'
+
   def login
     # Manual login because `login_as` skips normal warden hook processing
     host! "#{@user.username}.localhost.lan"
@@ -97,8 +99,6 @@ describe 'Warden' do
     end
 
     it 'UI redirects to login page if password is expired' do
-      Cartodb::Central.any_instance.stubs(:send_request)
-
       login
 
       Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
@@ -118,7 +118,6 @@ describe 'Warden' do
     it 'redirects to the original url after changing the expired password' do
       # we use this to avoid generating the static assets in CI
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
-      Cartodb::Central.any_instance.stubs(:send_request)
 
       login
 
@@ -147,8 +146,6 @@ describe 'Warden' do
     end
 
     it 'API returns 403 with an error if password is expired' do
-      Cartodb::Central.any_instance.stubs(:send_request)
-
       login
 
       Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
@@ -330,18 +327,8 @@ describe 'Warden' do
       @user = FactoryGirl.create(:valid_user)
     end
 
-    before(:each) do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:send_request)
-    end
-
     after(:all) do
       @user.destroy
-    end
-
-    after(:each) do
-      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
-      Cartodb::Central.any_instance.unstub(:send_request)
     end
 
     it 'should be valid for current security token ' do
@@ -374,16 +361,8 @@ describe 'Warden' do
       request.fullpath.should eql '/login'
     end
 
-    it 'updates the session_salt at logout' do
-      initial_session_salt = @user.session_salt
-
-      logout
-
-      initial_session_salt.should_not == @user.reload.session_salt
-    end
-
-    it 'updates the user in Central at logout' do
-      Cartodb::Central.any_instance.expects(:send_request).once
+    it 'invalidates all sessions after logout' do
+      ::Carto::User.any_instance.expects(:invalidate_all_sessions!).once
 
       logout
     end

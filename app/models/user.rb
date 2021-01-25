@@ -329,7 +329,7 @@ class User < Sequel::Model
   def delete_common_data
     CartoDB::Visualization::CommonDataService.new.delete_common_data_for_user(self)
   rescue StandardError => e
-    CartoDB.notify_error("Error deleting common data for user", user: self, error: e.inspect)
+    Rails.logger.error(message: 'Error deleting common data for user', user: self, exception: e)
   end
 
   def after_save
@@ -1267,7 +1267,8 @@ class User < Sequel::Model
 
   def copy_account_features(to)
     attributes_to_copy = %i(
-      private_tables_enabled sync_tables_enabled max_layers user_timeout database_timeout geocoding_quota map_view_quota
+      private_tables_enabled sync_tables_enabled max_layers user_timeout database_timeout geocoding_quota
+      map_views_quota
       table_quota public_map_quota regular_api_key_quota database_host period_end_date map_view_block_price
       geocoding_block_price account_type twitter_datasource_enabled soft_twitter_datasource_limit
       twitter_datasource_quota twitter_datasource_block_price twitter_datasource_block_size here_isolines_quota

@@ -42,23 +42,11 @@
           Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quo, dolorem. Porro mollitia magnam doloribus iusto neque dolor dolore nihil earum consectetur, laudantium similique aut assumenda rem. Corrupti aperiam molestiae sapiente.
         </span>
       </div>
-      <!-- <div class="cell cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <span class="quick-actions-placeholder" v-if="!showInteractiveElements"></span>
-        <TilesetQuickActions
-          v-if="showInteractiveElements"
-          :tileset="tileset"
-          :isSharedWithMe="isSharedWithMe"
-          class="tileset--quick-actions"
-          @open="openQuickActions"
-          @close="closeQuickActions"
-          @contentChanged="onContentChanged"/>
-      </div> -->
     </div>
   </a>
 </template>
 
 <script>
-import TilesetQuickActions from 'new-dashboard/components/QuickActions/TilesetQuickActions';
 import CopyDropdown from 'new-dashboard/components/Dropdowns/CopyDropdown';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
@@ -67,7 +55,6 @@ import SharedBrief from 'new-dashboard/components/SharedBrief';
 export default {
   name: 'TilesetCard',
   components: {
-    TilesetQuickActions,
     FeaturesDropdown,
     SharedBrief,
     CopyDropdown

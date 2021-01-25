@@ -85,6 +85,7 @@
       },
       "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}' class='is-bold'>Upgrade now</a> to get more datasets."
     },
+    "continue": "Continue",
     "requestConnector": "Request connector",
     "requestConnectorSubtitle": "If you can’t find your connector in this list you can request it.",
     "requestConnectorPlaceholder": "Type your connector",
@@ -852,7 +853,10 @@
     "oauthCheckingToken": "Checking token...",
     "BigQuery": {
       "title": "Your BigQuery credentials",
-      "fileInputLabel": "Upload your service account file",
+      "fileInputLabel": "Service Account Credentials",
+      "fileInputHelper": "<p>Please create a new service account with the role <a href='#'>bigquery.dataOwner</a> and upload its key (in JSON format) here. Read <a href='#'>these instructions</a> if you need help.</p><br><p>We use this service account to list geospatial tables, tilesets, grant permissions for publishing, etc. Check out <a href='#'>our documentation</a> for the exact operations we perform.</p>",
+      "emailLabel": "User name to employ in the BigQuery Console",
+      "emailHelpText": "CARTO extends BigQuery spatial capabilities with its spatial extension. It provides key functionalities for creating tilesets and carrying out spatial analysis. If you want to use these functions within the BigQuery console, please provide your Google user account (email) so we grant the necessary access permissions.",
       "connName": "Name",
       "serviceAccountError": "Invalid service account",
       "billingProject": "Billing project",

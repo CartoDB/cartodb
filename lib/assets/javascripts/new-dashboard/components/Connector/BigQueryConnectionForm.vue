@@ -1,6 +1,6 @@
 <template>
   <div class="u-flex u-flex__justify--center">
-    <div class="u-flex u-flex__align--center u-flex__direction--column">
+    <div class="main u-flex u-flex__align--center u-flex__direction--column">
       <div v-if="showDisclaimer">
         <h4 class="is-subtitle is-semibold u-mt--16">Lorem ipsum dolor sit</h4>
         <ul class="u-mt--16">
@@ -22,13 +22,34 @@
           <button @click="accept" class="button is-primary u-ml--36">{{$t('ConnectorsPage.BigQuery.conditions.accept')}}</button>
         </div>
       </div>
-      <div v-else-if="!showDisclaimer && !isFileSelected">
+      <div v-else-if="!showDisclaimer && !hasProjects">
+        <div class="section-header is-semibold is-small u-mb--4">
+          <span class="u-flex u-flex__justify--center u-flex__align--center number">1</span>
+          {{$t('ConnectorsPage.BigQuery.fileInputLabel')}}
+        </div>
+        <div class="text is-small is-txtMidGrey u-mb--24" v-html="$t('ConnectorsPage.BigQuery.fileInputHelper')"></div>
         <FileInput
-          :label="$t('ConnectorsPage.BigQuery.fileInputLabel')"
           :supportedFormats="supportedFormats"
           @change="onFileChange" :reduced="true"></FileInput>
+        <div class="section-header is-semibold is-small u-mb--4 u-mt--32">
+          <span class="u-flex u-flex__justify--center u-flex__align--center number">2</span>
+          {{$t('ConnectorsPage.BigQuery.emailLabel')}}
+        </div>
+        <div class="text is-small is-txtMidGrey u-mb--24">
+          {{$t('ConnectorsPage.BigQuery.emailHelpText')}}
+        </div>
+        <input v-model="connectionModel.email" id="email" type="text" placeholder="user@organization.com">
+
+        <div class="u-flex u-flex__justify--end u-mt--32">
+          <!-- <button @click="cancel" class="u-mr--28 is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.cancel')}}</button> -->
+          <button @click="uploadServiceAccount" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': !isFileSelected}">
+            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium">
+              {{ $t('DataPage.continue') }}
+            </span>
+          </button>
+        </div>
       </div>
-      <div v-else-if="!showDisclaimer && isFileSelected" class="u-flex u-flex__direction--column">
+      <div v-else-if="!showDisclaimer && hasProjects" class="u-flex u-flex__direction--column">
         <h4 class="is-small is-semibold">{{$t('ConnectorsPage.BigQuery.title')}}</h4>
         <div class="u-flex u-flex__justify--between u-flex__align--start u-mt--24 input-wrapper">
           <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
@@ -84,6 +105,7 @@ export default {
   data () {
     return {
       error: '',
+      file: null,
       showDisclaimer: false, // FIxME
       dragged: false,
       submited: false,
@@ -107,6 +129,9 @@ export default {
       return this.connectionModel.name && this.connectionModel.billing_project && this.connectionModel.default_project;
     },
     isFileSelected () {
+      return this.file;
+    },
+    hasProjects () {
       return this.projects && this.projects.length;
     }
   },
@@ -118,7 +143,7 @@ export default {
       this.showDisclaimer = false;
     },
     onFileChange (file) {
-      // this.uploadServiceAccount(file);
+      this.file = file;
     },
     async connect () {
       try {
@@ -132,8 +157,11 @@ export default {
         this.error = this.$t('DataPage.imports.database.connection-error');
       }
     },
-    async uploadServiceAccount (file) {
-      const serviceAccount = await file.text();
+    async uploadServiceAccount () {
+      if (!this.file) {
+        return;
+      }
+      const serviceAccount = await this.file.text();
       this.serviceAccount = JSON.parse(serviceAccount);
 
       try {
@@ -163,6 +191,24 @@ ul {
   max-width: 512px;
 }
 
+.main {
+  max-width: 460px;
+}
+
+.section-header {
+  position: relative;
+  line-height: 24px;
+
+  .number {
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    left: -36px;
+    border-radius: 4px;
+    border: 1px solid $neutral--800;
+  }
+}
+
 input {
   width: 512px;
   border: solid 1px #dddddd;
@@ -172,6 +218,10 @@ input {
   color: $neutral--800;
   padding: 12px;
   height: 40px;
+
+  &#email {
+    width: 100%;
+  }
 
   &::placeholder {
     color: rgba(46, 60, 67, 0.48);

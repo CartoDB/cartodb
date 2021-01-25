@@ -51,6 +51,7 @@ sudo make install
 - 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
 - Aggregate map_views for organization users [#16064](https://github.com/CartoDB/cartodb/pull/16064)
 - Migrate Organization CRUD actions started by CartoDB to Message Broker [#16062](https://github.com/CartoDB/cartodb/pull/16062)
+- Configure Dead Lettering & prevent flooding of map views messages [#16059](https://github.com/CartoDB/cartodb/pull/16059)
 
 4.44.0 (2020-11-20)
 -------------------

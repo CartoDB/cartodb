@@ -26,6 +26,7 @@ export default {
     const source = 'bigquery';
     let api_key = 'default_public';
     let tilejson;
+    const backRoute = this.$router.resolve({name: 'tilesets'});
 
     try {
       tilejson = await this.getTilejson(source, tileset, api_key);
@@ -43,7 +44,8 @@ export default {
     const props = {
       username: this.username,
       type: source,
-      query: new URLSearchParams(`?data=${tileset}&api_key=${api_key}${this.getColorByValue(tilejson)}`)
+      query: new URLSearchParams(`?data=${tileset}&api_key=${api_key}${this.getColorByValue(tilejson)}`),
+      backRoute: backRoute && backRoute.href
     };
     init(element, props);
   },

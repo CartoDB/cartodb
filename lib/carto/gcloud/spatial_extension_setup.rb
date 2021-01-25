@@ -9,6 +9,9 @@ require_relative 'service_factory'
 module Carto
   module Gcloud
     class SpatialExtensionSetup
+      HARDCODED_LIMITS_TABLE = 'bqcartost.config.limits'.freeze
+      HARDCODED_MAX_BYTES = 250000000000
+
       def initialize(role:, datasets:, management_key: nil)
         @role = role
         @datasets = datasets
@@ -26,9 +29,16 @@ module Carto
           grant_user_access_to_bigquery_dataset(project_id, dataset_id, email, @role)
         end
 
-        # TODO: save bq limits into config.limits table
+        # FIXME: temporary hardcoded limits for test purposes
+        project_id, dataset_id, table_id = HARDCODED_LIMITS_TABLE.split('.')
+        insert_row(
+          project_id, dataset_id, table_id,
+          email: email,
+          connection_id: connection.id,
+          max_bytes_processed: HARDCODED_MAX_BYTES,
+          start_billing_period: rand(30) + 1
+        )
       end
-
 
       def remove(connection)
         check_connection!(connection)
@@ -39,10 +49,42 @@ module Carto
           revoke_user_access_from_bigquery_dataset(project_id, dataset_id, email, @role)
         end
 
-        # TODO: remove bq limits from config.limits table
+        # FIXME: temporary hardcoded limits for test purposes
+        project_id, dataset_id, table_id = HARDCODED_LIMITS_TABLE.split('.')
+        delete_row(project_id, dataset_id, table_id, connection.id)
       end
 
       private
+
+      def insert_row(project_id, dataset_id, table_id, row)
+        sql = %{
+          INSERT INTO `#{project_id}.#{dataset_id}.#{table_id}`(
+            email,
+            connection_id,
+            max_bytes_processed,
+            start_billing_period
+          ) VALUES (
+            '#{row[:email]}',
+            '#{row[:connection_id]}',
+            #{row[:max_bytes_processed]},
+            #{row[:start_billing_period]}
+          )
+        }
+        query = Google::Apis::BigqueryV2::QueryRequest.new
+        query.query = sql
+        query.use_legacy_sql = false
+        # FIXME: which project should perform this job?
+        @bq_service.query_job(project_id, query)
+      end
+
+      def delete_row(project_id, dataset_id, table_id, connection_id)
+        sql = "DELETE FROM `#{project_id}.#{dataset_id}.#{table_id}` WHERE connection_id='#{connection_id}'"
+        query = Google::Apis::BigqueryV2::QueryRequest.new
+        query.query = sql
+        query.use_legacy_sql = false
+        # FIXME: which project should perform this job?
+        @bq_service.query_job(project_id, query)
+      end
 
       def check_connection!(connection)
         errors = []

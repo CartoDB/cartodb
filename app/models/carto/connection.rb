@@ -36,8 +36,27 @@ module Carto
     before_validation :set_type
     before_validation :set_name
     # before_validation :set_parameters
+    after_create :manage_create
+    after_update :manage_update
+    after_destroy :manage_destroy
 
     private
+
+    def connection_manager
+      Carto::ConnectionManager.new(user)
+    end
+
+    def manage_create
+      connection_manager.manage_create(self)
+    end
+
+    def manage_update
+      connection_manager.manage_update(self)
+    end
+
+    def manage_destroy
+      connection_manager.manage_destroy(self)
+    end
 
     def singleton_connection?
       Carto::ConnectionManager.singleton_connector?(connector, connection_type)

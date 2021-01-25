@@ -85,6 +85,8 @@ module Carto
           connection = @connection_manager.fetch_connection(params[:id])
           # TODO: check connection.type, must be a db-conector
 
+          # TODO: for bigquery connections with email, we should check it matches the user bq_advanced_id in central
+
           connector = Carto::Connector.new(parameters: {}, connection: connection, user: current_user, logger: nil)
           render_jsonp({ connected: connector.check_connection }, 200)
         end

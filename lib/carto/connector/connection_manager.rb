@@ -1,4 +1,4 @@
-require 'carto/gcloud/spatial_extension_setup'
+require 'cartodb/central'
 
 require_relative 'parameters'
 
@@ -9,6 +9,7 @@ module Carto
     BQ_CONNECTOR = 'bigquery'.freeze
     BQ_NON_CONNECTOR_PARAMETERS = ['email']
     BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token)
+    BQ_EMAIL_CENTRAL_ATTRIBUTE = :bq_advanced_id
 
     def initialize(user)
       @user = user
@@ -347,34 +348,31 @@ module Carto
     def create_spatial_extension_setup(connection)
       return unless requires_spatial_extension_setup?(connection)
 
-      role = Cartodb.get_config(:spatial_extension, 'role')
-      datasets = Cartodb.get_config(:spatial_extension, 'datasets')
-      return unless datasets.present?
-
-      spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
-      spatial_extension_setup.create(connection)
+      if connection.parameters['email'].present?
+        central = Cartodb::Central.new
+        central.update_user(@user.username, BQ_EMAIL_CENTRAL_ATTRIBUTE => connection.parameters['email'])
+      end
     end
 
     def remove_spatial_extension_setup(connection)
       return unless requires_spatial_extension_setup?(connection)
 
-      role = Cartodb.get_config(:spatial_extension, 'role')
-      datasets = Cartodb.get_config(:spatial_extension, 'datasets')
-      return unless datasets.present?
-
-      spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
-      spatial_extension_setup.remove(connection)
+      if connection.parameters['email'].present?
+        central = Cartodb::Central.new
+        central.update_user(@user.username, BQ_EMAIL_CENTRAL_ATTRIBUTE => nil)
+      end
     end
 
     def update_spatial_extension_setup(connection)
       return unless requires_spatial_extension_setup?(connection)
 
-      role = Cartodb.get_config(:spatial_extension, 'role')
-      datasets = Cartodb.get_config(:spatial_extension, 'datasets')
-      return unless datasets.present?
-
-      spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
-      spatial_extension_setup.update(connection)
+      if connection.changes[:parameters].present?
+        old_parameters, new_parameters = connection.changes[:parameters]
+        if old_parameters['email'] != new_parameters['email']
+          central = Cartodb::Central.new
+          central.update_user(@user.username, BQ_EMAIL_CENTRAL_ATTRIBUTE => new_parameters['email'])
+        end
+      end
     end
 
     def update_redis_metadata(connection)

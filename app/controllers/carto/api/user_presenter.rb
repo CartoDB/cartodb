@@ -162,7 +162,7 @@ module Carto
             # Estimated premium datasets size:
             subscriptions_premium_estimated_size_in_bytes: @user.subscriptions_premium_estimated_size_in_bytes
           },
-          map_views: @user.map_views_count,
+          map_views: @user.organization_user? ? @user.organization.map_views_count : @user.map_views_count,
           map_views_quota: @user.organization_user? ? @user.organization.map_views_quota : @user.map_views_quota,
           unverified: @user.unverified?,
           geocoding: {

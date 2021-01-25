@@ -254,7 +254,8 @@ module Carto
 
       if legacy_oauth_db_connection?(connector_parameters)
         connection_parameters = connector_parameters[:connection] || {}
-        connection_parameters[:refresh_token] = @user.oauths&.select(connection.connector)&.token
+        connection_parameters[:refresh_token] = @user.oauths&.select(connector_parameters[:provider])&.token
+        connector_parameters[:connection] = connection_parameters
       end
 
       [input_parameters, connector_parameters]

@@ -26,7 +26,7 @@
         <FileInput
           :label="$t('ConnectorsPage.BigQuery.fileInputLabel')"
           :supportedFormats="supportedFormats"
-          @change="onFileChange"></FileInput>
+          @change="onFileChange" :reduced="true"></FileInput>
       </div>
       <div v-else-if="!showDisclaimer && isFileSelected" class="u-flex u-flex__direction--column">
         <h4 class="is-small is-semibold">{{$t('ConnectorsPage.BigQuery.title')}}</h4>
@@ -84,7 +84,7 @@ export default {
   data () {
     return {
       error: '',
-      showDisclaimer: true,
+      showDisclaimer: false, // FIxME
       dragged: false,
       submited: false,
       projects: null,
@@ -118,7 +118,7 @@ export default {
       this.showDisclaimer = false;
     },
     onFileChange (file) {
-      this.uploadServiceAccount(file);
+      // this.uploadServiceAccount(file);
     },
     async connect () {
       try {

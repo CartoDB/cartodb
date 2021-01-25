@@ -37,12 +37,12 @@
       <div class="cell cell--small u-txt-right">
         <span class="text is-small is-txtSoftGrey">0-12</span>
       </div>
-      <div class="cell cell--large cell--overflow-hidden u-txt-right">
+      <div class="cell cell--xlarge cell--overflow-hidden cell--last u-txt-right">
         <span class="text is-small is-txtSoftGrey ellipsis">
           Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quo, dolorem. Porro mollitia magnam doloribus iusto neque dolor dolore nihil earum consectetur, laudantium similique aut assumenda rem. Corrupti aperiam molestiae sapiente.
         </span>
       </div>
-      <div class="cell cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <!-- <div class="cell cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
         <span class="quick-actions-placeholder" v-if="!showInteractiveElements"></span>
         <TilesetQuickActions
           v-if="showInteractiveElements"
@@ -52,7 +52,7 @@
           @open="openQuickActions"
           @close="closeQuickActions"
           @contentChanged="onContentChanged"/>
-      </div>
+      </div> -->
     </div>
   </a>
 </template>

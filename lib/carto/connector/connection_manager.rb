@@ -190,18 +190,12 @@ module Carto
 
     def update_db_connection(id:, parameters: nil, name: nil)
       connection = fetch_connection(id)
+
       new_attributes = {}
       new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
       new_attributes[:name] = name if name.present?
-      if new_attributes.present?
-        old_attributes = {
-          name: connection.name,
-          paramters: connection.parameters.dup
-        }
-        update_connection_hook(connection, old_attributes, new_attributes) do
-          connection.update!(new_attributes)
-        end
-      end
+      connection.update!(new_attributes)
+      update_connection_hook(connection)
     end
 
     # This adapts parameters to be passed to a db connector, optionally registering a new connection.
@@ -307,10 +301,10 @@ module Carto
 
     def presented_parameters(connection)
       confidential_parameters = connection.connector == BQ_CONNECTOR ? BQ_CONFIDENTIAL_PARAMS : CONFIDENTIAL_PARAMS
-      connection.parameters.map do |key, value|
+      Hash[connection.parameters.map do |key, value|
         value = key.in?(confidential_parameters) ? CONFIDENTIAL_PARAMETER_PLACEHOLDER : value
         [key, value]
-      end
+      end]
     end
 
     def presented_token(connection)
@@ -335,6 +329,7 @@ module Carto
     end
 
     def create_connection_hook(connection)
+      # Note that this must be called after save/creation so that connection has an id
       # TODO: move to per-connector classes
       update_redis_metadata(connection)
       create_spatial_extension_setup(connection)
@@ -346,41 +341,46 @@ module Carto
       remove_spatial_extension_setup(connection)
     end
 
-    def update_connection_hook(connection, old_attributes, new_attributes)
-      if new_attributes.has_key?(:parameters)
-        if new_attributes['email'] != old_attributes[:parameters]['email']
-          update_spatial_extension_setup = true
-        end
-      end
-      remove_spatial_extension_setup(connection) if update_spatial_extension_setup
-      yield
-      if update_spatial_extension_setup
-        connection.reload
-        create_spatial_extension_setup(connection)
-      end
+    def update_connection_hook(connection)
       update_redis_metadata(connection)
+      updatespatial_extension_setup(connection)
+    end
+
+    def requires_spatial_extension_setup?(connection)
+      connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
     end
 
     def create_spatial_extension_setup(connection)
-      if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
-        role = Cartodb.get_config(:spatial_extension, 'role')
-        datasets = Cartodb.get_config(:spatial_extension, 'datasets')
-        return unless datasets.present?
+      return unless requires_spatial_extension_setup?(connection)
 
-        spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
-        spatial_extension_setup.create(connection)
-      end
+      role = Cartodb.get_config(:spatial_extension, 'role')
+      datasets = Cartodb.get_config(:spatial_extension, 'datasets')
+      return unless datasets.present?
+
+      spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+      spatial_extension_setup.create(connection)
     end
 
     def remove_spatial_extension_setup(connection)
-      if connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
-        role = Cartodb.get_config(:spatial_extension, 'role')
-        datasets = Cartodb.get_config(:spatial_extension, 'datasets')
-        return unless datasets.present?
+      return unless requires_spatial_extension_setup?(connection)
 
-        spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
-        spatial_extension_setup.remove(connection)
-      end
+      role = Cartodb.get_config(:spatial_extension, 'role')
+      datasets = Cartodb.get_config(:spatial_extension, 'datasets')
+      return unless datasets.present?
+
+      spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+      spatial_extension_setup.remove(connection)
+    end
+
+    def update_spatial_extension_setup(connection)
+      return unless requires_spatial_extension_setup?(connection)
+
+      role = Cartodb.get_config(:spatial_extension, 'role')
+      datasets = Cartodb.get_config(:spatial_extension, 'datasets')
+      return unless datasets.present?
+
+      spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+      spatial_extension_setup.update(connection)
     end
 
     def update_redis_metadata(connection)

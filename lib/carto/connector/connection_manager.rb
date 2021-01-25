@@ -254,7 +254,8 @@ module Carto
 
       if legacy_oauth_db_connection?(connector_parameters)
         connection_parameters = connector_parameters[:connection] || {}
-        connection_parameters[:refresh_token] = @user.oauths&.select(connection.connector)&.token
+        connection_parameters[:refresh_token] = @user.oauths&.select(connector_parameters[:provider])&.token
+        connector_parameters[:connection] = connection_parameters
       end
 
       [input_parameters, connector_parameters]
@@ -348,11 +349,14 @@ module Carto
     def update_connection_hook(connection, old_attributes, new_attributes)
       if new_attributes.has_key?(:parameters)
         if new_attributes['email'] != old_attributes[:parameters]['email']
-          remove_spatial_extension_setup(connection)
-          yield
-          connection.reload
-          create_spatial_extension_setup(connection)
+          update_spatial_extension_setup = true
         end
+      end
+      remove_spatial_extension_setup(connection) if update_spatial_extension_setup
+      yield
+      if update_spatial_extension_setup
+        connection.reload
+        create_spatial_extension_setup(connection)
       end
       update_redis_metadata(connection)
     end

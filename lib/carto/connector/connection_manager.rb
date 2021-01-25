@@ -196,7 +196,7 @@ module Carto
       if new_attributes.present?
         old_attributes = {
           name: connection.name,
-          paramters: connection.parameters.dup
+          parameters: connection.parameters.dup
         }
         update_connection_hook(connection, old_attributes, new_attributes) do
           connection.update!(new_attributes)

@@ -45,7 +45,10 @@ export default {
       username: this.username,
       type: source,
       query: new URLSearchParams(`?data=${tileset}&api_key=${api_key}${this.getColorByValue(tilejson)}`),
-      backRoute: backRoute && backRoute.href
+      backRoute: backRoute && backRoute.href,
+      shareOptions: {
+        baseUrl: 'https://viewer.carto.com/'
+      }
     };
     init(element, props);
   },

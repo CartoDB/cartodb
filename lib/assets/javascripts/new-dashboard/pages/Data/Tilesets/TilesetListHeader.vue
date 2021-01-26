@@ -46,7 +46,7 @@
           {{ $t(`TilesetListHeader.zoom`) }}
         </span>
       </div>
-      <div class="dataset-list-cell cell cell--large u-txt-right" @click="changeOrder('properties')">
+      <div class="dataset-list-cell cell cell--xlarge  cell--last u-txt-right" @click="changeOrder('properties')">
         <span class="text is-small is-txtSoftGrey"
               :class="{
                 'is-active': isOrderApplied('properties'),

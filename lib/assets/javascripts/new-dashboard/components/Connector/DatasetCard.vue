@@ -140,11 +140,11 @@ export default {
 }
 
 .dataset-card__size {
-  width: 5%;
+  width: 8%;
 }
 
 .dataset-card__creation {
-  width: 9%;
+  width: 12%;
 }
 
 .dataset-card__tags {

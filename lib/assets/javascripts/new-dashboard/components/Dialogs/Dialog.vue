@@ -11,13 +11,12 @@
       <div class="Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder Dialog-body--no-spacing">
         <div class="container grid">
           <div class="grid-cell grid-cell--col12 u-flex u-flex__direction--column">
-            <div v-if="showSubHeader" class="u-flex u-flex__justify--between u-flex__align--center u-pt--10 sub-header">
-              <button @click="goBack" v-if="backText" class="is-small is-semibold is-txtPrimary u-flex u-flex__align--center">
+            <div v-if="showSubHeader" class="u-flex u-flex__justify--center u-flex__align--center u-pt--10 sub-header">
+              <button @click="goBack" v-if="backText" class="back is-small is-semibold is-txtPrimary u-flex u-flex__align--center">
                 <img class="u-mr--8" src="../../assets/icons/common/icon-prev-blue.svg">
                 {{backText}}
-                </button>
-                 <slot name="sub-header"></slot>
-              <div></div>
+              </button>
+              <slot name="sub-header"></slot>
             </div>
             <div class="u-mt--32">
               <slot />
@@ -92,6 +91,10 @@ export default {
 }
 .container {
   height: 100%;
+}
+.back {
+  position: absolute;
+  left: 0;
 }
 .sub-header, .footer {
   position: sticky;

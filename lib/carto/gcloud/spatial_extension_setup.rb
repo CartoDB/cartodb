@@ -21,9 +21,35 @@ module Carto
 
       def create(connection)
         check_connection!(connection)
-        raise "Invalid connection for Spatial Extension: #{connection.connector}" unless connection.connector == 'bigquery'
 
         email = connection.parameters['email']
+        grant(email, connection.id)
+      end
+
+      def remove(connection)
+        check_connection!(connection)
+
+        email = connection.parameters['email']
+        revoke(email, connection.id)
+      end
+
+      def update(connection)
+        check_connection!(connection)
+
+        if connection.changes[:parameters]
+          old_parameters, new_parameters = connection.changes[:parameters]
+          old_email = (old_parameters || {})['email']
+          new_email = (new_parameters || {})['email']
+          if old_email != new_email
+            revoke(old_email, connection.id) if old_email.present?
+            grant(new_email, connection.id)
+          end
+        end
+      end
+
+      private
+
+      def grant(email, connection_id)
         @datasets.each do |dataset|
           project_id, dataset_id = dataset.split('.')
           grant_user_access_to_bigquery_dataset(project_id, dataset_id, email, @role)
@@ -34,16 +60,13 @@ module Carto
         insert_row(
           project_id, dataset_id, table_id,
           email: email,
-          connection_id: connection.id,
+          connection_id: connection_id,
           max_bytes_processed: HARDCODED_MAX_BYTES,
           start_billing_period: rand(30) + 1
         )
       end
 
-      def remove(connection)
-        check_connection!(connection)
-
-        email = connection.parameters['email']
+      def revoke(email, connection_id)
         @datasets.each do |dataset|
           project_id, dataset_id = dataset.split('.')
           revoke_user_access_from_bigquery_dataset(project_id, dataset_id, email, @role)
@@ -51,10 +74,8 @@ module Carto
 
         # FIXME: temporary hardcoded limits for test purposes
         project_id, dataset_id, table_id = HARDCODED_LIMITS_TABLE.split('.')
-        delete_row(project_id, dataset_id, table_id, connection.id)
+        delete_row(project_id, dataset_id, table_id, connection_id)
       end
-
-      private
 
       def insert_row(project_id, dataset_id, table_id, row)
         sql = %{

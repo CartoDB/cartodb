@@ -7,9 +7,10 @@ module Carto
     CONFIDENTIAL_PARAMETER_PLACEHOLDER = '********'.freeze
     CONFIDENTIAL_PARAMS = %w(password)
     BQ_CONNECTOR = 'bigquery'.freeze
-    BQ_NON_CONNECTOR_PARAMETERS = ['email']
     BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token)
-    BQ_EMAIL_CENTRAL_ATTRIBUTE = :bq_advanced_id
+    BQ_ADVANCED_CENTRAL_ATTRIBUTE = :bq_advanced
+    BQ_ADVANCED_FLAG = 'bq_advanced'
+    BQ_NON_CONNECTOR_PARAMETERS = [BQ_ADVANCED_CENTRAL_ATTRIBUTE]
 
     def initialize(user)
       @user = user
@@ -280,15 +281,6 @@ module Carto
         elsif connector == BQ_CONNECTOR
           errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if connection_parameters['refresh_token'].present?
           errors << "Parameter access_token not supported through connections; use import API" if connection_parameters['access_token'].present?
-
-          # FIXME: duplicated emails can occur; this just make it unlikely
-          if connection_parameters['email'].present?
-            if Carto::Connection
-               .where(connector: BQ_CONNECTOR, connection_type: Carto::Connection::TYPE_DB_CONNECTOR)
-               .where("parameters#>>'{email}' = '#{connection_parameters['email']}'").exists?
-              errors << "Email taken: #{connection_parameters['email']}"
-            end
-          end
         end
       end
       errors
@@ -316,8 +308,11 @@ module Carto
       else
         if connection.connector == BQ_CONNECTOR
           central_user_data = Cartodb::Central.new.get_user(current_user.username)
-          if !central_user_data || (central_user_data[BQ_EMAIL_CENTRAL_ATTRIBUTE.to_s] != connection.parameters['email'])
-            raise "Advanced Spatial Extension couldn't be configured"
+          if !central_user_data || (central_user_data[BQ_ADVANCED_CENTRAL_ATTRIBUTE.to_s] != connection.parameters[BQ_ADVANCED_FLAG])
+            msg = connection.parameters[BQ_ADVANCED_FLAG] ?
+             "Advanced Spatial Extension couldn't be configured" :
+             "Advanced Spatial Extension couldn't be removed"
+            raise msg
           end
         end
         connector = Carto::Connector.new(parameters: {}, connection: connection, user: @user, logger: nil)
@@ -342,7 +337,7 @@ module Carto
     def generate_connection_name(provider)
       # FIXME: this could produce name collisions
       n = @user.db_connections.where(connector: provider).count
-      n > 0 ? "provider_#{n+1}" : provider
+      n > 0 ? "#{provider}_#{n+1}" : provider
     end
 
     def bigquery_redis_key
@@ -357,24 +352,24 @@ module Carto
     end
 
     def requires_spatial_extension_setup?(connection)
-      connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
+      connection.connector == BQ_CONNECTOR && connection.parameters.has_key?(BQ_ADVANCED_FLAG)
     end
 
     def create_spatial_extension_setup(connection)
       return unless requires_spatial_extension_setup?(connection)
 
-      if connection.parameters['email'].present?
+      if connection.parameters.has_key?(BQ_ADVANCED_FLAG)
         central = Cartodb::Central.new
-        central.update_user(@user.username, BQ_EMAIL_CENTRAL_ATTRIBUTE => connection.parameters['email'])
+        central.update_user(@user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => connection.parameters[BQ_ADVANCED_FLAG])
       end
     end
 
     def remove_spatial_extension_setup(connection)
       return unless requires_spatial_extension_setup?(connection)
 
-      if connection.parameters['email'].present?
+      if connection.parameters.has_key?(BQ_ADVANCED_FLAG)
         central = Cartodb::Central.new
-        central.update_user(@user.username, BQ_EMAIL_CENTRAL_ATTRIBUTE => nil)
+        central.update_user(@user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => false)
       end
     end
 
@@ -382,10 +377,9 @@ module Carto
       return unless requires_spatial_extension_setup?(connection)
 
       if connection.changes[:parameters].present?
-        old_parameters, new_parameters = connection.changes[:parameters]
-        if old_parameters['email'] != new_parameters['email']
+        if connection.parameters.has_key?(BQ_ADVANCED_FLAG)
           central = Cartodb::Central.new
-          central.update_user(@user.username, BQ_EMAIL_CENTRAL_ATTRIBUTE => new_parameters['email'])
+          central.update_user(@user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => connection.parameters[BQ_ADVANCED_FLAG])
         end
       end
     end

@@ -27,6 +27,16 @@
             <div class="text">
               Select Project
             </div>
+            <DropdownComponent ref="selector" v-model="project"
+              :elements="projects"
+              :showCreate="true"
+              placeholder='Select your BigQuery Project'
+              @createElement="useOtherProject">
+              <template v-slot:createMessage="{ data }">
+                <span v-if="!data.filteredElements.length">No results.</span>
+                Select <a @click="data.createNew">{{data.searchingText}}</a> project
+              </template>
+            </DropdownComponent>
           </div>
 
           <div class="grid__head--sticky">
@@ -64,12 +74,15 @@
 <script>
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import DropdownComponent from 'new-dashboard/components/forms/DropdownComponent';
 import TilesetListHeader from './TilesetListHeader';
 import TilesetListCard from './TilesetListCard';
+import { mapState } from 'vuex';
 
 export default {
   name: 'Tilesets',
   components: {
+    DropdownComponent,
     SectionTitle,
     VisualizationsTitle,
     TilesetListHeader,
@@ -78,13 +91,21 @@ export default {
   data () {
     return {
       moreInfo: false,
-      selectedTilesets: [],
-      lastCheckedItem: null
+      project: null
     };
   },
-  watch: {
-  },
   computed: {
+    ...mapState({
+      loading: state => state.connectors.loadingConnections,
+      rawConnections: state => state.connectors.connections,
+      _projects: state => state.connectors.projects
+    }),
+    bqConnection () {
+      return this.rawConnections && this.rawConnections.find(conn => conn.connector === 'bigquery');
+    },
+    projects () {
+      return this._projects ? this._projects.map(e => ({ id: e.id, label: e.friendly_name })) : [];
+    },
     tilesets () {
       return [{
         id: 'cartobq.maps.osm_buildings',
@@ -112,9 +133,34 @@ export default {
   methods: {
     openInfo () {
       this.moreInfo = !this.moreInfo;
+    },
+    async fetchConnections () {
+      await this.$store.dispatch('connectors/fetchConnectionsList');
+      if (!this.bqConnection) {
+        this.$router.push({ name: 'home' });
+      }
+    },
+    fetchProjects () {
+      if (this.bqConnection) {
+        return this.$store.dispatch('connectors/fetchBQProjectsList', this.bqConnection.id);
+      } else {
+        this.fetchConnections();
+      }
+    },
+    useOtherProject (searchingText) {
+      this.project = {
+        id: searchingText,
+        label: searchingText
+      };
     }
   },
   mounted () {
+    this.fetchProjects();
+  },
+  watch: {
+    rawConnections () {
+      this.fetchProjects();
+    }
   }
 };
 </script>

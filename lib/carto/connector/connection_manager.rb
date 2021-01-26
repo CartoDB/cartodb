@@ -310,6 +310,21 @@ module Carto
       updatespatial_extension_setup(connection)
     end
 
+    def check(connection)
+      if connection.connector_type == Carto::Connection::TYPE_OAUTH_SERVICE
+        oauth_connection_valid?(connection.connector)
+      else
+        if connection.connector == BQ_CONNECTOR
+          central_user_data = Cartodb::Central.new.get_user(current_user.username)
+          if !central_user_data || (central_user_data[BQ_EMAIL_CENTRAL_ATTRIBUTE.to_s] != connection.parameters['email'])
+            raise "Advanced Spatial Extension couldn't be configured"
+          end
+        end
+        connector = Carto::Connector.new(parameters: {}, connection: connection, user: @user, logger: nil)
+        connector.check_connection
+      end
+    end
+
     private
 
     def presented_parameters(connection)

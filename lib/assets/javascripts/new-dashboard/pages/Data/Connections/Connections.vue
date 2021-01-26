@@ -10,7 +10,7 @@
             <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.connections')"/>
           </template>
           <template slot="actionButton">
-            <router-link :to="{ name: 'new-connection' }">
+            <router-link :to="{ name: 'new-connection' }" v-if="connections.length">
               <button class="button is-primary">{{ $t(`DataPage.newConnection`) }}</button>
             </router-link>
           </template>

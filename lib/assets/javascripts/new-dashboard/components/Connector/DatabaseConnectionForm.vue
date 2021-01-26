@@ -35,10 +35,17 @@
         {{ $t('DataPage.connectInfo', { connector: connector.title }) }}
       </p>
       <div class="ports u-pt--16 u-pb--16 u-pl--24 u-pr--24 u-mt--16 is-txtMidGrey is-small u-flex u-flex__direction--column u-flex__justify--between">
-        <span>54.68.30.98</span>
-        <span> 54.68.45.3</span>
-        <span>54.164.204.122</span>
-        <span>54.172.100.146</span>
+        <span class="u-mb--4">35.188.111.175</span>
+        <span class="u-mb--4">35.192.121.157</span>
+        <span class="u-mb--4">35.238.166.16</span>
+        <span class="u-mb--4">35.224.241.96</span>
+        <span class="u-mb--4">35.232.84.56</span>
+        <span class="u-mb--4">35.205.127.169</span>
+        <span class="u-mb--4">35.233.31.201</span>
+        <span class="u-mb--4">35.187.80.96</span>
+        <span class="u-mb--4">104.197.28.44</span>
+        <span class="u-mb--4">104.199.3.149</span>
+        <span>104.155.126.89</span>
       </div>
     </div>
   </div>
@@ -70,7 +77,7 @@ export default {
       return !!this.connection;
     },
     connectionModelIsValid () {
-      return this.connector.options.params.reduce((accum, current) => {
+      return this.connectionModel.name && this.connector.options.params.reduce((accum, current) => {
         return accum && (current.optional || !!this.connectionModel[current.key]);
       }, true);
     },
@@ -173,7 +180,6 @@ export default {
 .ports {
   border: solid 1px #dddddd;
   border-radius: 4px;
-  height: 109px;
 }
 .input-wrapper {
   label {

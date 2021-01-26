@@ -11,17 +11,19 @@
     </h3>
   </template>
   <template #default>
-    <div v-show="!isFileSelected">
-      <div class="u-flex u-flex__direction--column u-flex__align--center">
-        <span class="is-small">{{ $t('DataPage.formats') }}: CSV, GeoJSON, GPKG, SHP, KML, OSM, CARTO, GPX, FGDB. <a target="_blank" href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">{{ $t('DataPage.learnmore') }}</a></span>
-        <div v-if="extension !== 'url'">
-          <FileInput
-            label=""
-            :supportedFormats="supportedFormats"
-            @change="onFileChange"></FileInput>
-          <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert url-error">{{fileValidation.msg}}</p>
-        </div>
-        <div v-else-if="extension === 'url'">
+    <div class="u-flex u-flex__direction--column u-flex__align--center">
+      <span v-if="!isFileSelected" class="is-small">{{ $t('DataPage.formats') }}: CSV, GeoJSON, GPKG, SHP, KML, OSM, CARTO, GPX, FGDB. <a target="_blank" href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">{{ $t('DataPage.learnmore') }}</a></span>
+      <div v-if="extension !== 'url'">
+        <FileInput
+          label=""
+          :supportedFormats="supportedFormats"
+          @change="onFileChange"></FileInput>
+        <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert url-error">{{fileValidation.msg}}</p>
+      </div>
+      <div v-else>
+        <!-- IF YOU WANT TO UPLOAD AN URL -->
+
+        <div v-if="!isFileSelected">
           <div class="u-flex u-flex__align--center u-mt--32">
             <label class="text is-small u-mr--16">{{ $t('DataPage.url') }}</label>
             <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--longer">
@@ -33,28 +35,17 @@
           </div>
           <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert url-error">{{fileValidation.msg}}</p>
         </div>
+        <template v-else>
+          <div class="u-flex u-flex__align--center u-flex__justify--center">
+            <DatasetSyncCard
+              :name="uploadObject.value"
+              fileType="URL" isActive
+              @inputChange="changeSyncInterval">
+            </DatasetSyncCard>
+          </div>
+        </template>
       </div>
     </div>
-    <template v-if="isFileSelected">
-      <div v-if="uploadObject.type === 'file'" class="u-flex u-flex__align--center u-flex__justify--between u-pl--24 u-pr--24 file">
-        <div class="is-txtMainTextColor u-flex u-flex__direction--column file-main">
-          <template >
-            <span class="is-caption">{{uploadObject.value.name}}</span>
-            <span class="is-small" style="margin-top:2px;">{{humanFileSize(uploadObject.value.size)}}</span>
-          </template>
-        </div>
-        <button @click="clearFile();">
-          <img src="../../assets/icons/common/delete.svg">
-        </button>
-      </div>
-      <div class="u-flex u-flex__align--center u-flex__justify--center" v-else>
-        <DatasetSyncCard
-          :name="uploadObject.value"
-          fileType="URL" isActive
-          @inputChange="changeSyncInterval">
-        </DatasetSyncCard>
-      </div>
-    </template>
   </template>
     <template slot="footer">
       <GuessPrivacyFooter
@@ -78,7 +69,6 @@ import uploadData from '../../mixins/connector/uploadData';
 import UploadConfig from 'dashboard/common/upload-config';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
-import * as Formatter from 'new-dashboard/utils/formatter';
 import { LOCAL_FILES } from 'new-dashboard/utils/connector/local-file-option';
 
 export default {
@@ -140,15 +130,17 @@ export default {
       event.target.src = require('../../assets/icons/datasets/local-file.svg');
     },
     onFileChange (file) {
-      this.setFile([file]);
+      this.setFile(file);
     },
-    setFile (files) {
-      if (files && files.length > 0) {
-        this.fileValidation = this.validateFile(files, this.remainingByteQuota);
+    setFile (file) {
+      if (file) {
+        this.fileValidation = this.validateFile([file], this.remainingByteQuota);
         if (this.fileValidation.valid) {
           this.uploadObject.type = 'file';
-          this.uploadObject.value = files[0];
+          this.uploadObject.value = file;
         }
+      } else {
+        this.clearFile();
       }
     },
     changeGuess (value) {
@@ -157,9 +149,6 @@ export default {
     },
     changePrivacy (value) {
       this.uploadObject.privacy = value;
-    },
-    humanFileSize (size) {
-      return Formatter.humanFileSize(size);
     },
     uploadUrl () {
       this.fileValidation = this.validateUrl(this.urlToUpload);

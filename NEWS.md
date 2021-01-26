@@ -18,6 +18,7 @@ sudo make install
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
 ### Bug fixes / enhancements
+- Change url Map Loads docs. in quota section [16068](https://github.com/CartoDB/cartodb/pull/16068)
 - Rake task for renaming BQ connector [16030](https://github.com/CartoDB/cartodb/pull/16030)
 - Fix maximum of 50 projects in BQ connector billing project selector [16027](https://github.com/CartoDB/cartodb/pull/16027)
 - Replace DO metadata SQL with API request [#15983](https://github.com/CartoDB/cartodb/pull/15983)
@@ -50,6 +51,7 @@ sudo make install
 - 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
 - Aggregate map_views for organization users [#16064](https://github.com/CartoDB/cartodb/pull/16064)
 - Migrate Organization CRUD actions started by CartoDB to Message Broker [#16062](https://github.com/CartoDB/cartodb/pull/16062)
+- Upgrade deck.gl version [#16072](https://github.com/CartoDB/cartodb/pull/16072)
 
 4.44.0 (2020-11-20)
 -------------------

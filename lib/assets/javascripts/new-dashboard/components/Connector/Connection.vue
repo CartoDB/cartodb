@@ -8,21 +8,21 @@
       <div :class="'is-' + type"></div>
       <span class="is-semibold u-mt--8 label">{{ label }}</span>
     </div>
-    <Tooltip :text="connectionParamsFormated" position="bottom-right" class="tools u-pt--16 u-pb--16 u-pl--20 u-pr--20">
+    <div class="tools u-pt--16 u-pb--16 u-pl--20 u-pr--20">
       <div  class="u-flex u-width--100" v-if="isDatabase">
         <div class="text is-small u-flex__grow--1 u-mr--16 u-flex u-flex__align-center conn-name">
           <img class="u-mr--4" src="../../assets/icons/datasets/connection-title.svg" width="16" height="16" />
           <span class="conn-name">{{ connectionName }}</span>
         </div>
-        <div position="bottom-left" class="text is-small u-flex u-flex__align-center conn-params" v-if="connectionParams">
+        <Tooltip :text="connectionParamsFormated" position="bottom-left" class="text is-small u-flex u-flex__align-center conn-params" v-if="connectionParams">
           <img class="u-mr--4" src="../../assets/icons/datasets/connection-tool.svg" width="16" height="16" />
           {{ $t('DataPage.connectionParameters') }}
-        </div>
+        </Tooltip>
       </div>
-      <div class="text is-small is-txtMidGrey u-width--100 oauth" v-else>
+      <Tooltip :text="connectionParamsFormated" position="bottom-left" class="text is-small u-flex__justify--center is-txtMidGrey u-width--100 oauth" v-else>
         {{ $t('DataPage.connectionThroughtOauth') }}
-      </div>
-    </Tooltip>
+      </Tooltip>
+    </div>
   </div>
 </template>
 
@@ -174,10 +174,6 @@ export default {
     border-left: 0;
     border-top: 0;
     border-bottom-right-radius: 4px;
-  }
-
-  .tooltip-container {
-    width: 100%;
   }
 }
 </style>

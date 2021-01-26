@@ -326,7 +326,7 @@ module Carto
     def generate_connection_name(provider)
       # FIXME: this could produce name collisions
       n = @user.db_connections.where(connector: provider).count
-      n > 0 ? "provider_#{n+1}" : provider
+      n > 0 ? "#{provider}_#{n+1}" : provider
     end
 
     def bigquery_redis_key

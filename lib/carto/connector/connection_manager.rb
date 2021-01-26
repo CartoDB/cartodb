@@ -90,7 +90,7 @@ module Carto
       presented_connection[:token] = presented_token(connection) if connection.token.present?
       # TODO: compute in_use
       presented_connection
-  end
+    end
 
     def find_db_connection(provider, parameters)
       @user.db_connections.find { |connection|

@@ -4,6 +4,7 @@
     :headerImage="require('../../../assets/icons/datasets/subsc-add-icon.svg')"
     :showSubHeader="true"
     :backRoute="{name: backNamedRoute}"
+    :backText="null"
   >
     <template slot="sub-header">
       <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
@@ -42,7 +43,12 @@
               </div>
             </div>
             <div class="u-flex u-flex__justify--end u-mt--24">
-              <button @click="validateQuery" class="button is-primary" :disabled="!(query && datasetName) || sending"> {{$t('DataPage.addConnector.runQuery')}} </button>
+              <button @click="validateQuery" class="button is-primary" :disabled="!(query && datasetName) || sending">
+                <span class="u-flex">
+                  <img v-if="sending" svg-inline src="../../../assets/icons/common/loading.svg" class="u-mr--8 loading__svg"/>
+                  {{sending ? $t('DataPage.addConnector.runningQuery'): $t('DataPage.addConnector.runQuery') }}
+                </span>
+              </button>
             </div>
           </div>
           <div v-else-if="queryIsValid" class="dataset-sync-card-container">
@@ -240,6 +246,23 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+
+.loading__svg {
+  height: 16px;
+  width: 16px;
+  outline: none;
+
+  path {
+    stroke: $blue--400;
+    stroke-width: 2;
+  }
+
+  circle {
+    stroke: $neutral--300;
+    stroke-opacity: 1;
+    stroke-width: 2;
+  }
+}
 
 .forms-container {
   width: 620px;

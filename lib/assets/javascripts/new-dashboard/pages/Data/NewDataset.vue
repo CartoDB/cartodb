@@ -137,6 +137,7 @@ export default {
     },
     selectTab (tabName) {
       this.selectedTab = tabName;
+      this.selectedDatasets = [];
     },
     updateDatasetSelection (datasets) {
       this.selectedDatasets = datasets;

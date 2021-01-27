@@ -175,15 +175,30 @@ describe CentralUserCommands do
     let(:user_params) { { id: user_id } }
 
     context 'when everything is OK' do
-      it 'deletes the inteded user' do
-        notifications_topic.expects(:publish).once.with(
-          :user_deleted,
-          { username: user.username }
-        )
+      before do
+        notifications_topic.expects(:publish).once.with(:user_deleted, { username: user.username })
+      end
 
+      it 'deletes the inteded user' do
         central_user_commands.delete_user(message)
 
         expect(Carto::User.exists?(id: user_id)).to eq false
+      end
+
+      it 'deletes the associated feature flag relations' do
+        user.activate_feature_flag!(create(:feature_flag))
+
+        expect { central_user_commands.delete_user(message) }.to(
+          change(Carto::FeatureFlagsUser, :count).by(-1)
+        )
+      end
+
+      it 'destroys the associated rate limit' do
+        user.carto_user.update!(rate_limit_id: create(:rate_limits).id)
+
+        expect { central_user_commands.delete_user(message) }.to(
+          change(Carto::RateLimit, :count).by(-1)
+        )
       end
     end
 

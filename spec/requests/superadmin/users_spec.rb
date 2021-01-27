@@ -514,28 +514,6 @@ feature "Superadmin's users API" do
     end
   end
 
-  describe '#destroy' do
-    let!(:user) { create(:user).carto_user }
-
-    it 'should destroy user feature flag relations' do
-      feature_flag = create(:feature_flag)
-      user.activate_feature_flag!(feature_flag)
-
-      expect do
-        delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
-      end.to change(Carto::FeatureFlagsUser, :count).by(-1)
-    end
-
-    it 'should destroy rate_limit' do
-      rate_limit = create(:rate_limits)
-      user.update!(rate_limit_id: rate_limit.id)
-
-      expect {
-        delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
-      }.to change(Carto::RateLimit, :count).by(-1)
-    end
-  end
-
   describe 'with organization' do
     include_context 'organization with users helper'
 

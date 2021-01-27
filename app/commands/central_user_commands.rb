@@ -31,7 +31,7 @@ class CentralUserCommands
     Carto::Common::CurrentRequest.with_request_id(message.request_id) do
       logger.info(message: 'Processing :create_user', class_name: self.class.name)
 
-      user = Carto::UserCreator.new.create(message.payload)
+      user = Carto::UserCreator.new.create!(message.payload)
 
       return unless user.persisted?
 

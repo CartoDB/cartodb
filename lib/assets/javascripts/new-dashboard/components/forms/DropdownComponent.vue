@@ -89,7 +89,7 @@ export default {
     filteredElements () {
       const regex = new RegExp(normalize(this.searchingText.toLowerCase()), 'gi');
       return this.elements.filter(match => {
-        return normalize(match.id).match(regex) || normalize(match.label).match(regex);
+        return normalize(`${match.id}`).match(regex) || normalize(match.label).match(regex);
       });
     }
   },

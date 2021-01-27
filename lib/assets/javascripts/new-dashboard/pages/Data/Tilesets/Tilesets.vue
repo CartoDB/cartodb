@@ -23,20 +23,37 @@
             </span>
           </div>
 
-          <div class="u-mt--20 u-mb--36">
-            <div class="text">
-              Select Project
+          <div class="u-flex u-mt--20 u-mb--36">
+            <div class="u-mr--28">
+              <div class="text is-small is-semibold">
+                Select Project
+              </div>
+              <DropdownComponent ref="selector" v-model="project"
+                :elements="projects"
+                :showCreate="true"
+                placeholder='Select your BigQuery Project'
+                @createElement="useOtherProject">
+                <template v-slot:createMessage="{ data }">
+                  <span v-if="!data.filteredElements.length">No results.</span>
+                  Select <a @click="data.createNew">{{data.searchingText}}</a> project
+                </template>
+              </DropdownComponent>
             </div>
-            <DropdownComponent ref="selector" v-model="project"
-              :elements="projects"
-              :showCreate="true"
-              placeholder='Select your BigQuery Project'
-              @createElement="useOtherProject">
-              <template v-slot:createMessage="{ data }">
-                <span v-if="!data.filteredElements.length">No results.</span>
-                Select <a @click="data.createNew">{{data.searchingText}}</a> project
-              </template>
-            </DropdownComponent>
+            <div :class="{ 'dropdown-disabled': !project }">
+              <div class="text is-small is-semibold">
+                Project datasets
+              </div>
+              <DropdownComponent ref="selector" v-model="dataset"
+                :elements="datasets"
+                :showCreate="false"
+                placeholder='Select dataset'
+                @createElement="useOtherProject">
+                <template v-slot:createMessage="{ data }">
+                  <span v-if="!data.filteredElements.length">No results.</span>
+                  Select <a @click="data.createNew">{{data.searchingText}}</a> project
+                </template>
+              </DropdownComponent>
+            </div>
           </div>
 
           <div class="grid__head--sticky">
@@ -91,7 +108,8 @@ export default {
   data () {
     return {
       moreInfo: false,
-      project: null
+      project: null,
+      dataset: null
     };
   },
   computed: {
@@ -105,6 +123,14 @@ export default {
     },
     projects () {
       return this._projects ? this._projects.map(e => ({ id: e.id, label: e.friendly_name })) : [];
+    },
+    datasets () {
+      return [
+        { id: 0, label: 'Dataset001' },
+        { id: 1, label: 'Dataset002' },
+        { id: 2, label: 'Dataset003' },
+        { id: 3, label: 'Dataset004' }
+      ];
     },
     tilesets () {
       return [{
@@ -183,6 +209,14 @@ export default {
   &:not(:last-child) {
     border-bottom: 1px solid $border-color;
   }
+}
+.dropdown-disabled {
+  pointer-events: none;
+  opacity: .38;
+}
+.dropdown-wrapper {
+  width: 295px;
+  margin-top: 8px;
 }
 
 .more-info {

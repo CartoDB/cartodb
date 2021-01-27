@@ -840,7 +840,7 @@
     "successConnection": "Connected",
     "cancel": "Cancel",
     "editConnection": "Edit your {connector} connection",
-    "editConnectionDisclaimer": "<span class='is-semibold'>Some datasets are using this connection to synchronize.</span> If you modify these parameters, you'll need to ensure you still have access to them.",
+    "editConnectionDisclaimer": "If you modify these parameters and you have datasets that are being synchronized using this connection, you'll need to ensure you still have access to them.",
     "editConnectionButton": "Save & Connect",
     "connecting": "Connecting...",
     "queryError": "Error. Your SQL Query doesn’t look correct.",

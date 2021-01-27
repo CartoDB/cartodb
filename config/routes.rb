@@ -546,7 +546,7 @@ CartoDB::Application.routes.draw do
         get '/:id/geocodings/:geocoding_id' => 'users#geocoding'
       end
     end
-    resources :organizations
+    resources :organizations, only: [:index, :show]
     resources :synchronizations
     resources :feature_flags
     resources :account_types, only: [:create, :update, :destroy]

@@ -11,39 +11,47 @@
     </h3>
   </template>
   <template #default>
-    <div class="u-flex u-flex__direction--column u-flex__align--center">
-      <span v-if="!isFileSelected" class="is-small">{{ $t('DataPage.formats') }}: CSV, GeoJSON, GPKG, SHP, KML, OSM, CARTO, GPX, FGDB. <a target="_blank" href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">{{ $t('DataPage.learnmore') }}</a></span>
-      <div v-if="extension !== 'url'">
-        <FileInput
-          label=""
-          :supportedFormats="supportedFormats"
-          @change="onFileChange"></FileInput>
-        <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert url-error">{{fileValidation.msg}}</p>
-      </div>
-      <div v-else>
-        <!-- IF YOU WANT TO UPLOAD AN URL -->
-
-        <div v-if="!isFileSelected">
-          <div class="u-flex u-flex__align--center u-mt--32">
-            <label class="text is-small u-mr--16">{{ $t('DataPage.url') }}</label>
-            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--longer">
-              <input type="text" v-model="urlToUpload" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="" placeholder="https://carto.com/data-library" />
-              <button type="submit" class="Form-inputSubmitInline button" @click="uploadUrl">
-                <span>Submit</span>
-              </button>
+    <div class="u-flex u-flex__justify--center">
+      <div class="u-flex u-flex__direction--column" :class="{main: extension !== 'url'}">
+        <div v-if="extension !== 'url'">
+          <div v-if="!isFileSelected" class="u-flex u-flex__direction--column u-mb--32">
+            <span class="is-small is-semibold u-mb--8"> {{ $t('DataPage.dataPreparation') }}</span>
+            <div class="text is-small is-txtMidGrey" v-html="$t(`DataPage.messageHelper${typeName}`)">
             </div>
           </div>
+          <FileInput
+            label=""
+            :supportedFormats="supportedFormats"
+            :reduced="true"
+            @change="onFileChange"></FileInput>
           <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert url-error">{{fileValidation.msg}}</p>
         </div>
-        <template v-else>
-          <div class="u-flex u-flex__align--center u-flex__justify--center">
-            <DatasetSyncCard
-              :name="uploadObject.value"
-              fileType="URL" isActive
-              @inputChange="changeSyncInterval">
-            </DatasetSyncCard>
+        <div v-else>
+          <!-- IF YOU WANT TO UPLOAD AN URL -->
+
+          <div v-if="!isFileSelected">
+            <span v-if="!isFileSelected" class="u-flex is-small u-flex__justify--center"><span>{{ $t('DataPage.formats') }}: CSV, GeoJSON, GPKG, SHP, KML, OSM, CARTO, GPX, FGDB. <a target="_blank" href="https://carto.com/developers/import-api/guides/importing-geospatial-data/#supported-geospatial-data-formats">{{ $t('DataPage.learnmore') }}</a></span></span>
+            <div class="u-flex u-flex__align--center u-mt--32">
+              <label class="text is-small u-mr--16">{{ $t('DataPage.url') }}</label>
+              <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--longer">
+                <input type="text" v-model="urlToUpload" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="" placeholder="https://carto.com/data-library" />
+                <button type="submit" class="Form-inputSubmitInline button" @click="uploadUrl">
+                  <span>Submit</span>
+                </button>
+              </div>
+            </div>
+            <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert url-error">{{fileValidation.msg}}</p>
           </div>
-        </template>
+          <template v-else>
+            <div class="u-flex u-flex__align--center u-flex__justify--center">
+              <DatasetSyncCard
+                :name="uploadObject.value"
+                fileType="URL" isActive
+                @inputChange="changeSyncInterval">
+              </DatasetSyncCard>
+            </div>
+          </template>
+        </div>
       </div>
     </div>
   </template>
@@ -171,6 +179,9 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+.main {
+  width: 460px;
+}
 .file-icon {
   height: 20px;
 }

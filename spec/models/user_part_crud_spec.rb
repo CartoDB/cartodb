@@ -193,8 +193,6 @@ describe User do
       end
 
       describe 'User#destroy' do
-        include TableSharing
-
         it 'blocks deletion with shared entities' do
           @not_to_be_deleted = TestUserFactory.new.create_test_user(unique_name('user'), @organization)
           table = create_random_table(@not_to_be_deleted)
@@ -347,7 +345,6 @@ describe User do
 
   describe 'User#destroy_cascade' do
     include_context 'organization with users helper'
-    include TableSharing
 
     it 'allows deletion even with shared entities' do
       table = create_random_table(@org_user_1)

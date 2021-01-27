@@ -18,7 +18,6 @@ feature "Superadmin's organization API" do
 
   describe "organization delete success" do
     include_context 'organization with users helper'
-    include TableSharing
 
     after(:all) do
       @organization_2.destroy

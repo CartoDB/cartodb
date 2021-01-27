@@ -7,7 +7,6 @@ describe Carto::Api::Public::DatasetsController do
   include_context 'organization with users helper'
 
   include HelperMethods
-  include TableSharing
 
   describe 'index' do
     before(:each) do

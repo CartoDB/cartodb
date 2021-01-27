@@ -104,9 +104,7 @@ module Carto
 
     def create_db_connection(name:, provider:, parameters:)
       check_db_provider!(provider)
-      connection = @user.connections.create!(name: name, connector: provider, parameters: parameters)
-      create_connection_hook(connection)
-      connection
+      @user.connections.create!(name: name, connector: provider, parameters: parameters)
     end
 
     def find_or_create_db_connection(provider, parameters)
@@ -181,7 +179,6 @@ module Carto
       revoke_token(connection)
       connection.destroy!
       @user.reload
-      remove_connection_hook(connection)
     end
 
     def fetch_connection(id)
@@ -195,7 +192,6 @@ module Carto
       new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
       new_attributes[:name] = name if name.present?
       connection.update!(new_attributes)
-      update_connection_hook(connection)
     end
 
     # This adapts parameters to be passed to a db connector, optionally registering a new connection.
@@ -297,6 +293,22 @@ module Carto
       errors
     end
 
+    def manage_create(connection)
+      # Note that this must be called after save/creation so that connection has an id
+      update_redis_metadata(connection)
+      create_spatial_extension_setup(connection)
+    end
+
+    def manage_destroy(connection)
+      remove_redis_metadata(connection)
+      remove_spatial_extension_setup(connection)
+    end
+
+    def manage_update(connection)
+      update_redis_metadata(connection)
+      update_spatial_extension_setup(connection)
+    end
+
     private
 
     def presented_parameters(connection)
@@ -314,7 +326,7 @@ module Carto
     def generate_connection_name(provider)
       # FIXME: this could produce name collisions
       n = @user.db_connections.where(connector: provider).count
-      n > 0 ? "provider_#{n+1}" : provider
+      n > 0 ? "#{provider}_#{n+1}" : provider
     end
 
     def bigquery_redis_key
@@ -326,24 +338,6 @@ module Carto
       parameters = connection.parameters
       parameters = parameters.except(*BQ_NON_CONNECTOR_PARAMETERS) if connection.connector == BQ_CONNECTOR
       parameters
-    end
-
-    def create_connection_hook(connection)
-      # Note that this must be called after save/creation so that connection has an id
-      # TODO: move to per-connector classes
-      update_redis_metadata(connection)
-      create_spatial_extension_setup(connection)
-    end
-
-    def remove_connection_hook(connection)
-      # TODO: move to per-connector classes
-      remove_redis_metadata(connection)
-      remove_spatial_extension_setup(connection)
-    end
-
-    def update_connection_hook(connection)
-      update_redis_metadata(connection)
-      updatespatial_extension_setup(connection)
     end
 
     def requires_spatial_extension_setup?(connection)

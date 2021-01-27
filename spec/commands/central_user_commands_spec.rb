@@ -50,6 +50,8 @@ describe CentralUserCommands do
         account_type: account_type.account_type
       }
     end
+    let(:message) { Carto::Common::MessageBroker::Message.new(payload: user_params) }
+    let(:created_user) { Carto::User.find_by(username: username) }
 
     before { notifications_topic.stubs(:publish) }
 
@@ -57,10 +59,7 @@ describe CentralUserCommands do
       let(:user_params) { default_user_params }
 
       it 'creates a user with the provided params' do
-        message = Carto::Common::MessageBroker::Message.new(payload: user_params)
         central_user_commands.create_user(message)
-
-        created_user = Carto::User.find_by(username: username)
 
         expect(created_user).to be_present
         expect(created_user.crypted_password).to be_present
@@ -71,8 +70,6 @@ describe CentralUserCommands do
       let(:user_params) { default_user_params.merge(email: nil) }
 
       it 'raises an error' do
-        message = Carto::Common::MessageBroker::Message.new(payload: user_params)
-
         expect { central_user_commands.create_user(message) }.to raise_error(Sequel::ValidationFailed)
       end
     end
@@ -84,10 +81,7 @@ describe CentralUserCommands do
       end
 
       it 'assigns the correct rate limits' do
-        message = Carto::Common::MessageBroker::Message.new(payload: user_params)
         central_user_commands.create_user(message)
-
-        created_user = Carto::User.find_by(username: username)
 
         expect(created_user).to be_present
         expect(created_user.rate_limit.api_attributes).to eq(rate_limits.api_attributes)

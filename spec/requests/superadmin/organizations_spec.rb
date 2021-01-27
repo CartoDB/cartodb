@@ -16,58 +16,6 @@ feature "Superadmin's organization API" do
     end
   end
 
-  scenario "organization create success" do
-    @org_atts = build(:organization).attributes
-    post_json superadmin_organizations_path, { organization: @org_atts }, superadmin_headers do |response|
-      expect(response.status).to eq(201)
-      expect(response.body[:name]).to eq(@org_atts['name'])
-
-      # Double check that the organization has been created properly
-      organization = Carto::Organization.find_by(name: @org_atts['name'])
-      organization.should be_present
-      organization.id.should == response.body[:id]
-      organization.destroy
-    end
-  end
-
-  scenario "organization with owner creation success" do
-    org_atts = FactoryGirl.build(:organization).values
-    user = FactoryGirl.create(:user_with_private_tables)
-    org_atts[:owner_id] = user.id
-
-    post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
-      expect(response.status).to eq(201)
-      expect(response.body[:name]).to eq(org_atts['name'])
-
-      # Double check that the organization has been created properly
-      organization = Carto::Organization.find_by(name: org_atts['name'])
-      organization.should be_present
-      organization.id.should == response.body[:id]
-
-      organization.owner_id.should == user.id
-      user.reload
-      user.organization_id.should == organization.id
-      organization.destroy_cascade
-    end
-  end
-
-  scenario "organization with owner creation failure" do
-    org_atts = FactoryGirl.build(:organization).values
-    user = FactoryGirl.create(:user_with_private_tables)
-    org_atts[:owner_id] = user.id
-
-    simulated_error = StandardError.new('promote_user_to_admin failure simulation')
-    CartoDB::UserOrganization.any_instance.stubs(:promote_user_to_admin).raises(simulated_error)
-
-    post_json superadmin_organizations_path, { organization: org_atts }, superadmin_headers do |response|
-      response.status.should == 500
-
-      Carto::Organization.find_by(name: org_atts[:name]).should be_nil
-      user.reload
-      user.organization_id.should be_nil
-    end
-  end
-
   scenario "organization update success" do
     put_json superadmin_organization_path(@organization1),
              {

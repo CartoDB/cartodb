@@ -7,6 +7,7 @@ describe CentralUserCommands do
     described_class.new(notifications_topic: notifications_topic,
                         logger: logger)
   end
+  let(:account_type) { create(:account_type, account_type: Faker::String.random(length: 8)) }
 
   describe '#update_user' do
     let(:original_user) { create(:user) }
@@ -16,13 +17,65 @@ describe CentralUserCommands do
 
     context 'when everything is OK' do
       let(:user_params) do
-        { remote_user_id: original_user.id, quota_in_bytes: 42 }
+        {
+          remote_user_id: original_user.id,
+          quota_in_bytes: 2_000,
+          table_quota: 20,
+          public_map_quota: 20,
+          public_dataset_quota: 20,
+          private_map_quota: 20,
+          regular_api_key_quota: 20,
+          max_layers: 10,
+          user_timeout: 100_000,
+          database_timeout: 200_000,
+          account_type: account_type.account_type,
+          private_tables_enabled: true,
+          sync_tables_enabled: true,
+          upgraded_at: Time.zone.now,
+          map_view_block_price: 200,
+          geocoding_quota: 230,
+          geocoding_block_price: 5,
+          here_isolines_quota: 250,
+          here_isolines_block_price: 10,
+          obs_snapshot_quota: 250,
+          obs_snapshot_block_price: 10,
+          obs_general_quota: 250,
+          obs_general_block_price: 10,
+          notification: 'Test',
+          available_for_hire: true,
+          disqus_shortname: 'abc',
+          builder_enabled: true
+        }
       end
 
       it 'sets the required fields to their values' do
         central_user_commands.update_user(message)
 
-        expect(user.quota_in_bytes).to eq(42)
+        expect(user.quota_in_bytes).to eq(2_000)
+        expect(user.table_quota).to eq(20)
+        expect(user.public_map_quota).to eq(20)
+        expect(user.public_dataset_quota).to eq(20)
+        expect(user.regular_api_key_quota).to eq(20)
+        expect(user.max_layers).to eq(10)
+        expect(user.user_timeout).to eq(100_000)
+        expect(user.database_timeout).to eq(200_000)
+        expect(user.account_type).to eq(account_type.account_type)
+        expect(user.private_tables_enabled).to eq(true)
+        expect(user.sync_tables_enabled).to eq(true)
+        expect(user.upgraded_at).to be_present
+        expect(user.map_view_block_price).to eq(200)
+        expect(user.geocoding_quota).to eq(230)
+        expect(user.geocoding_block_price).to eq(5)
+        expect(user.here_isolines_quota).to eq(250)
+        expect(user.here_isolines_block_price).to eq(10)
+        expect(user.obs_snapshot_quota).to eq(250)
+        expect(user.obs_snapshot_block_price).to eq(10)
+        expect(user.obs_general_quota).to eq(250)
+        expect(user.obs_general_block_price).to eq(10)
+        expect(user.notification).to eq('Test')
+        expect(user.available_for_hire).to eq(true)
+        expect(user.disqus_shortname).to eq('abc')
+        expect(user.builder_enabled).to eq(true)
       end
     end
 
@@ -149,7 +202,6 @@ describe CentralUserCommands do
     end
 
     context 'with custom account settings' do
-      let(:account_type) { create(:account_type, account_type: Faker::String.random(length: 8)) }
       let(:user_params) do
         default_user_params.merge(
           quota_in_bytes: 2_000,

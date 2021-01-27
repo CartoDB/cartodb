@@ -32,6 +32,9 @@ class CentralUserCommands
       logger.info(message: 'Processing :create_user', class_name: self.class.name)
 
       user = Carto::UserCreator.new.create(message.payload)
+
+      return unless user.persisted?
+
       notifications_topic.publish(:user_created, {
                                     username: user.username,
                                     id: user.id

@@ -33,16 +33,6 @@ feature "Superadmin's users API" do
     end
   end
 
-  scenario "user create fail" do
-    @user_atts[:email] = nil
-
-    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
-      response.status.should == 422
-      response.body[:errors][:email].should be_present
-      response.body[:errors][:email].should include("is not present")
-    end
-  end
-
   scenario "user create with password success" do
     @user_atts.delete(:crypted_password)
     @user_atts.merge!(password: "this_is_a_password")

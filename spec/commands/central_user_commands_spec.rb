@@ -54,6 +54,16 @@ describe CentralUserCommands do
       central_user_commands.create_user(message)
       expect(Carto::User.exists?(username: 'testuser')).to eq true
     end
+
+    context 'when the payload contains invalid attributes' do
+      it 'does not create the user and fails silently' do
+        user_params = { username: 'invalid-user' }
+        message = Carto::Common::MessageBroker::Message.new(payload: user_params)
+        central_user_commands.create_user(message)
+
+        expect(Carto::User.exists?(username: 'invalid-user')).to eq(false)
+      end
+    end
   end
 
   describe '#delete_user' do

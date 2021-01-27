@@ -12,7 +12,8 @@ describe CentralUserCommands do
   describe '#update_user' do
     let(:original_user) { create(:user) }
     let(:user) { original_user.reload } # Small trick to avoid reload in expectations
-    let(:some_feature_flag) { create(:feature_flag, restricted: true) }
+    let(:feature_flag) { create(:feature_flag, restricted: true) }
+    let(:other_feature_flag) { create(:feature_flag, restricted: true) }
     let(:message) { Carto::Common::MessageBroker::Message.new(payload: user_params) }
 
     context 'when everything is OK' do
@@ -79,28 +80,51 @@ describe CentralUserCommands do
       end
     end
 
-    context 'when payload contains feature flags' do
+    context 'when adding a new feature flag' do
       let(:user_params) do
-        { remote_user_id: original_user.id, feature_flags: [some_feature_flag.id] }
+        { remote_user_id: original_user.id, feature_flags: [feature_flag.id] }
       end
 
       it 'adds feature flags when they are in the payload' do
         central_user_commands.update_user(message)
 
-        expect(user.has_feature_flag?(some_feature_flag.name)).to eq(true)
+        expect(user.has_feature_flag?(feature_flag.name)).to eq(true)
       end
     end
 
-    context 'when removing feature flags' do
+    context 'when removing a subset of all the feature flags' do
+      let(:user_params) do
+        { remote_user_id: original_user.id, feature_flags: [feature_flag.id] }
+      end
+
+      before do
+        original_user.feature_flags << feature_flag
+        original_user.feature_flags << other_feature_flag
+      end
+
+      it 'removes only the specified feature flag' do
+        central_user_commands.update_user(message)
+
+        expect(user.has_feature_flag?(feature_flag.name)).to eq(true)
+        expect(user.has_feature_flag?(other_feature_flag.name)).to eq(false)
+      end
+    end
+
+    context 'when removing all feature flags' do
       let(:user_params) do
         { remote_user_id: original_user.id, feature_flags: [] }
       end
 
+      before do
+        original_user.feature_flags << feature_flag
+        original_user.feature_flags << other_feature_flag
+      end
+
       it 'removes feature flags when requested' do
-        original_user.feature_flags << some_feature_flag
         central_user_commands.update_user(message)
 
-        expect(user.has_feature_flag?(some_feature_flag.name)).to eq(false)
+        expect(user.has_feature_flag?(feature_flag.name)).to eq(false)
+        expect(user.has_feature_flag?(other_feature_flag.name)).to eq(false)
       end
     end
 

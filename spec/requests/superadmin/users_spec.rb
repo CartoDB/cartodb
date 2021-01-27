@@ -244,37 +244,6 @@ feature "Superadmin's users API" do
   end
 
   describe '#update' do
-    it 'should remove user feature_flag relation' do
-      user                = FactoryGirl.create(:user)
-      first_feature_flag  = FactoryGirl.create(:feature_flag)
-      second_feature_flag = FactoryGirl.create(:feature_flag)
-
-      user.activate_feature_flag!(first_feature_flag)
-      user.activate_feature_flag!(second_feature_flag)
-
-      expect do
-        put superadmin_user_url(user.id), {
-          user: { feature_flags: [second_feature_flag.id] }, id: user.id
-        }.to_json, superadmin_headers
-      end.to change(Carto::FeatureFlagsUser, :count).by(-1)
-    end
-
-    it 'should create user feature_flag relation' do
-      user = create(:user)
-      feature_flag = create(:feature_flag)
-      user.activate_feature_flag!(feature_flag)
-      new_feature_flag = create(:feature_flag)
-
-      payload = {
-        user: { feature_flags: [feature_flag.id, new_feature_flag.id] },
-        id: user.id
-      }
-
-      expect do
-        put superadmin_user_url(user.id), payload.to_json, superadmin_headers
-      end.to change(Carto::FeatureFlagsUser, :count).by(1)
-    end
-
     it 'should create new rate limit if user does not have' do
       user        = FactoryGirl.create(:user)
       rate_limit  = FactoryGirl.create(:rate_limits)

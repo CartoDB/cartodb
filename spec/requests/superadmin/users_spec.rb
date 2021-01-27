@@ -33,39 +33,6 @@ feature "Superadmin's users API" do
     end
   end
 
-  scenario "update success with new organization" do
-    pending "Organizations handling has been refactored and needs new specs"
-    user = create_user
-    @update_atts = {
-      quota_in_bytes: 2000,
-      organization_attributes: { name: 'wadus', seats: 25, quota_in_bytes: 40000 }
-    }
-
-    put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
-      response.status.should eq 204
-    end
-    user = ::User[user.id]
-    user.quota_in_bytes.should eq 2000
-    user.organization.name.should eq 'wadus'
-    user.organization.seats.should eq 25
-    user.organization.quota_in_bytes.should eq 40000
-
-    @update_atts = {
-      quota_in_bytes: 2001,
-      organization_attributes: { name: 'wadus', seats: 26 }
-    }
-    put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
-      response.status.should eq 204
-    end
-    user = ::User[user.id]
-    user.quota_in_bytes.should eq 2001
-    user.organization.name.should eq 'wadus'
-    user.organization.seats.should eq 26
-    user.organization.quota_in_bytes.should eq 40000
-
-    user.destroy
-  end
-
   scenario "user dump success" do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}

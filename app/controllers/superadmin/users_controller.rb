@@ -45,29 +45,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     end
   end
 
-  def create
-    user_param = params[:user]
-    @user = Carto::UserCreator.new.create(user_param)
-    respond_with(:superadmin, @user)
-  end
-
-  def update
-    user_param = params[:user]
-    Carto::UserUpdater.new(@user).update(user_param)
-    respond_with(:superadmin, @user)
-  end
-
-  def destroy
-    @user.set_force_destroy if params[:force] == 'true'
-    @user.destroy
-    respond_with(:superadmin, @user)
-  rescue CartoDB::SharedEntitiesError => e
-    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "userHasSharedEntities" }, status: 422
-  rescue StandardError => e
-    log_error(exception: e, message: 'Error destroying user', target_user: @user)
-    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "" }, status: 422
-  end
-
   def dump
     database_port = Cartodb.get_config(:users_dumps, 'service', 'port')
     raise "There is not a dump method configured" unless database_port

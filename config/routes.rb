@@ -535,7 +535,7 @@ CartoDB::Application.routes.draw do
   end
 
   namespace :superadmin do
-    resources :users do
+    resources :users, only: [:index, :show] do
       collection do
         get '/:id/dump' => 'users#dump'
         get '/:id/data_imports' => 'users#data_imports'

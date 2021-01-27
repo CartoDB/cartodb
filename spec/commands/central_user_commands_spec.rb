@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Carto::Subscribers::CentralUserCommands do
+describe CentralUserCommands do
   let(:notifications_topic) { mock }
   let(:logger) { Carto::Common::Logger.new(nil) }
   let(:central_user_commands) do

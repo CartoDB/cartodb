@@ -33,43 +33,6 @@ feature "Superadmin's users API" do
     end
   end
 
-  scenario "user create with password success" do
-    @user_atts.delete(:crypted_password)
-    @user_atts.merge!(password: "this_is_a_password")
-
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
-      response.status.should == 201
-      response.body[:email].should == @user_atts[:email]
-      response.body[:username].should == @user_atts[:username]
-      response.body.should_not have_key(:crypted_password)
-
-      # Double check that the user has been created properly
-      user = ::User.filter(email: @user_atts[:email]).first
-      user.should be_present
-      user.id.should == response.body[:id]
-      authenticate(user.username, "this_is_a_password").should == user
-    end
-    ::User.where(username: @user_atts[:username]).first.destroy
-  end
-
-  scenario "user create with crypted_password success" do
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
-      response.status.should == 201
-      response.body[:email].should == @user_atts[:email]
-      response.body[:username].should == @user_atts[:username]
-      response.body.should_not have_key(:crypted_password)
-
-      # Double check that the user has been created properly
-      user = ::User.filter(email: @user_atts[:email]).first
-      user.should be_present
-      user.id.should == response.body[:id]
-      authenticate(user.username, "this_is_a_password").should == user
-    end
-    ::User.where(username: @user_atts[:username]).first.destroy
-  end
-
   scenario "user create default account settings" do
     @user_atts[:private_tables_enabled] = false
     @user_atts[:sync_tables_enabled] = false

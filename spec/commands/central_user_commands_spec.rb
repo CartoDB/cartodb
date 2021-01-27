@@ -52,7 +52,11 @@ describe CentralUserCommands do
       notifications_topic.stubs(:publish)
       message = Carto::Common::MessageBroker::Message.new(payload: user_params)
       central_user_commands.create_user(message)
-      expect(Carto::User.exists?(username: 'testuser')).to eq true
+
+      created_user = Carto::User.find_by(username: 'testuser')
+
+      expect(created_user).to be_present
+      expect(created_user.crypted_password).to be_present
     end
 
     context 'when the payload contains invalid attributes' do

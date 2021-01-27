@@ -52,6 +52,7 @@ sudo make install
 - Aggregate map_views for organization users [#16064](https://github.com/CartoDB/cartodb/pull/16064)
 - Migrate Organization CRUD actions started by CartoDB to Message Broker [#16062](https://github.com/CartoDB/cartodb/pull/16062)
 - Upgrade deck.gl version [#16072](https://github.com/CartoDB/cartodb/pull/16072)
+- Configure Dead Lettering & prevent flooding of map views messages [#16059](https://github.com/CartoDB/cartodb/pull/16059)
 
 4.44.0 (2020-11-20)
 -------------------

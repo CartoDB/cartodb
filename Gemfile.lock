@@ -8,12 +8,13 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 8c86ac330a4c360b6b89da2609bf9216fffbd246
-  tag: v1.0.1
+  revision: f4c0bf5bc003186f9d6ca910d78d666d4c8e6c9c
+  tag: v1.1.0
   specs:
-    cartodb-common (1.0.1)
+    cartodb-common (1.1.0)
       argon2 (~> 2)
       google-cloud-pubsub (~> 2.3)
+      google-cloud-resource_manager
       rails (>= 4, < 6)
       rollbar
 
@@ -130,7 +131,7 @@ GEM
       sass (>= 3.3.0, < 3.5)
     compass-import-once (1.0.5)
       sass (>= 3.2, < 3.5)
-    concurrent-ruby (1.1.7)
+    concurrent-ruby (1.1.8)
     coverband (5.0.0)
       redis
     crass (1.0.6)
@@ -209,10 +210,14 @@ GEM
       concurrent-ruby (~> 1.1)
       google-cloud-core (~> 1.5)
       google-cloud-pubsub-v1 (~> 0.0)
-    google-cloud-pubsub-v1 (0.2.0)
+    google-cloud-pubsub-v1 (0.2.1)
       gapic-common (~> 0.3)
       google-cloud-errors (~> 1.0)
       grpc-google-iam-v1 (>= 0.6.10, < 2.0)
+    google-cloud-resource_manager (0.34.0)
+      google-api-client (~> 0.33)
+      google-cloud-core (~> 1.2)
+      googleauth (~> 0.9)
     google-protobuf (3.14.0)
     googleapis-common-protos (1.3.10)
       google-protobuf (~> 3.11)
@@ -227,8 +232,8 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (~> 0.12)
-    grpc (1.34.0)
-      google-protobuf (~> 3.13)
+    grpc (1.35.0)
+      google-protobuf (~> 3.14)
       googleapis-common-protos-types (~> 1.0)
     grpc-google-iam-v1 (0.6.10)
       google-protobuf (~> 3.11)
@@ -478,7 +483,7 @@ GEM
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
       rack (>= 1, < 3)
-    thor (1.0.1)
+    thor (1.1.0)
     thread_safe (0.3.6)
     tilt (2.0.10)
     trollop (2.9.10)

@@ -170,16 +170,32 @@ describe CentralUserCommands do
 
   describe '#delete_user' do
     let(:user) { create(:user) }
+    let(:message) { Carto::Common::MessageBroker::Message.new(payload: user_params) }
+    let(:user_id) { user.id }
+    let(:user_params) { { id: user_id } }
 
-    it 'deletes the inteded user' do
-      user_params = { id: user.id }
-      notifications_topic.expects(:publish).once.with(
-        :user_deleted,
-        { username: user.username }
-      )
-      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
-      central_user_commands.delete_user(message)
-      expect(Carto::User.exists?(id: user.id)).to eq false
+    context 'when everything is OK' do
+      it 'deletes the inteded user' do
+        notifications_topic.expects(:publish).once.with(
+          :user_deleted,
+          { username: user.username }
+        )
+
+        central_user_commands.delete_user(message)
+
+        expect(Carto::User.exists?(id: user_id)).to eq false
+      end
+    end
+
+    context 'when the user is not found' do
+      let(:user_id) { Faker::Internet.uuid }
+
+      it 'succeeds, publishes an empty event and logs a warning' do
+        notifications_topic.expects(:publish).once.with(:user_deleted, {})
+        logger.expects(:warn).with(message: 'User not found', user_id: user_id, class_name: 'CentralUserCommands')
+
+        central_user_commands.delete_user(message)
+      end
     end
   end
 end

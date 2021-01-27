@@ -178,14 +178,6 @@ feature "Superadmin's users API" do
     user.destroy
   end
 
-  scenario "user delete success" do
-    user = create_user
-    delete_json superadmin_user_path(user), {}, superadmin_headers do |response|
-      response.status.should == 204
-    end
-    ::User[user.id].should be_nil
-  end
-
   scenario "user dump success" do
     user = create_user
     dump_url = %r{#{user.database_host}:[0-9]+/scripts/db_dump}
@@ -524,12 +516,6 @@ feature "Superadmin's users API" do
 
   describe '#destroy' do
     let!(:user) { create(:user).carto_user }
-
-    it 'should destroy user' do
-      delete superadmin_user_url(user.id), {}.to_json, superadmin_headers
-
-      expect { user.reload }.to raise_error(ActiveRecord::RecordNotFound)
-    end
 
     it 'should destroy user feature flag relations' do
       feature_flag = create(:feature_flag)

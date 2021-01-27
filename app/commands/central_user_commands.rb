@@ -50,10 +50,16 @@ class CentralUserCommands
       logger.info(message: 'Processing :delete_user', class_name: self.class.name)
 
       user = ::User.where(id: payload[:id]).first
-      user.set_force_destroy if payload[:force] == 'true'
-      user.destroy
-      notifications_topic.publish(:user_deleted, { username: user.username })
-      logger.info(message: 'User deleted', current_user: user.username, class_name: self.class.name)
+
+      if user
+        user.set_force_destroy if payload[:force] == 'true'
+        user.destroy
+        logger.info(message: 'User deleted', current_user: user.username, class_name: self.class.name)
+        notifications_topic.publish(:user_deleted, { username: user.username })
+      else
+        logger.warn(message: 'User not found', user_id: payload[:id], class_name: self.class.name)
+        notifications_topic.publish(:user_deleted, {})
+      end
     end
   rescue CartoDB::SharedEntitiesError
     Carto::Common::CurrentRequest.with_request_id(message.request_id) do

@@ -50,7 +50,7 @@ describe CentralUserCommands do
         }
       end
 
-      it 'sets the required fields to their values' do
+      it 'updates the corresponding attributes' do
         central_user_commands.update_user(message)
 
         expect(user.quota_in_bytes).to eq(2_000)
@@ -78,6 +78,35 @@ describe CentralUserCommands do
         expect(user.available_for_hire).to eq(true)
         expect(user.disqus_shortname).to eq('abc')
         expect(user.builder_enabled).to eq(true)
+      end
+
+      it 'successfully handles updates of boolean flags' do
+        central_user_commands.update_user(
+          Carto::Common::MessageBroker::Message.new(payload: user_params.merge(builder_enabled: true))
+        )
+        expect(user.reload.builder_enabled).to eq(true)
+
+        central_user_commands.update_user(
+          Carto::Common::MessageBroker::Message.new(payload: user_params.merge(builder_enabled: nil))
+        )
+        expect(user.reload.builder_enabled).to eq(nil)
+
+        central_user_commands.update_user(
+          Carto::Common::MessageBroker::Message.new(payload: user_params.merge(builder_enabled: false))
+        )
+        expect(user.reload.builder_enabled).to eq(false)
+      end
+    end
+
+    context 'when user belongs to an organization' do
+      let(:organization) { create(:organization_with_users) }
+      let(:user) { organization.non_owner_users.first }
+      let(:user_params) { { remote_user_id: user.id, max_layers: 100 } }
+
+      it 'updates the corresponding attributes' do
+        central_user_commands.update_user(message)
+
+        expect(user.reload.max_layers).to eq(100)
       end
     end
 

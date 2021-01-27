@@ -308,53 +308,6 @@ feature "Superadmin's users API" do
     end
   end
 
-  describe 'with organization' do
-    include_context 'organization with users helper'
-
-    def update_and_verify(update_attrs)
-      put_json superadmin_user_path(@org_user_1), { user: update_attrs }, superadmin_headers do |response|
-        response.status.should eq 204
-      end
-      @org_user_1.reload
-      update_attrs.keys.each do |att|
-        @org_user_1.send(att).should eq update_attrs[att]
-      end
-    end
-
-    it 'should update users' do
-      update_attrs = {
-        quota_in_bytes: 2000,
-        table_quota: 20,
-        public_map_quota: 20,
-        public_dataset_quota: 20,
-        private_map_quota: 20,
-        regular_api_key_quota: 20,
-        max_layers: 10,
-        user_timeout: 100000,
-        database_timeout: 200000,
-        private_tables_enabled: true,
-        sync_tables_enabled: true,
-        map_view_block_price: 200,
-        geocoding_quota: 230,
-        geocoding_block_price: 5,
-        here_isolines_quota: 250,
-        here_isolines_block_price: 10,
-        obs_snapshot_quota: 250,
-        obs_snapshot_block_price: 10,
-        obs_general_quota: 250,
-        obs_general_block_price: 10,
-        notification: 'Test',
-        available_for_hire: true,
-        disqus_shortname: 'abc',
-        builder_enabled: true
-      }
-
-      update_and_verify(update_attrs)
-      update_and_verify(builder_enabled: false)
-      update_and_verify(builder_enabled: nil)
-    end
-  end
-
   describe '#data_imports' do
     before(:each) do
       @user = create_user

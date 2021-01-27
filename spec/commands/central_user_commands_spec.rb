@@ -12,30 +12,63 @@ describe CentralUserCommands do
     let(:original_user) { create(:user) }
     let(:user) { original_user.reload } # Small trick to avoid reload in expectations
     let(:some_feature_flag) { create(:feature_flag, restricted: true) }
+    let(:message) { Carto::Common::MessageBroker::Message.new(payload: user_params) }
 
-    it 'sets the required fields to their values' do
-      user_params = { remote_user_id: original_user.id,
-                      quota_in_bytes: 42 }
-      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
-      central_user_commands.update_user(message)
-      expect(user.quota_in_bytes).to eq 42
+    context 'when everything is OK' do
+      let(:user_params) do
+        { remote_user_id: original_user.id, quota_in_bytes: 42 }
+      end
+
+      it 'sets the required fields to their values' do
+        central_user_commands.update_user(message)
+
+        expect(user.quota_in_bytes).to eq(42)
+      end
     end
 
-    it 'adds feature flags when they are in the payload' do
-      user_params = { remote_user_id: original_user.id,
-                      feature_flags: [some_feature_flag.id] }
-      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
-      central_user_commands.update_user(message)
-      expect(user.has_feature_flag?(some_feature_flag.name)).to eq true
+    context 'when payload contains feature flags' do
+      let(:user_params) do
+        { remote_user_id: original_user.id, feature_flags: [some_feature_flag.id] }
+      end
+
+      it 'adds feature flags when they are in the payload' do
+        central_user_commands.update_user(message)
+
+        expect(user.has_feature_flag?(some_feature_flag.name)).to eq(true)
+      end
     end
 
-    it 'removes feature flags when requested' do
-      original_user.feature_flags << some_feature_flag
-      user_params = { remote_user_id: original_user.id,
-                      feature_flags: [] }
-      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
-      central_user_commands.update_user(message)
-      expect(user.has_feature_flag?(some_feature_flag.name)).to eq false
+    context 'when removing feature flags' do
+      let(:user_params) do
+        { remote_user_id: original_user.id, feature_flags: [] }
+      end
+
+      it 'removes feature flags when requested' do
+        original_user.feature_flags << some_feature_flag
+        central_user_commands.update_user(message)
+
+        expect(user.has_feature_flag?(some_feature_flag.name)).to eq(false)
+      end
+    end
+
+    context 'when an attribute is invalid' do
+      let(:user_params) { { remote_user_id: original_user.id, email: nil } }
+
+      it 'raises an error' do
+        expect { central_user_commands.update_user(message) }.to(
+          raise_error(Sequel::ValidationFailed)
+        )
+      end
+    end
+
+    context 'when the user is not found' do
+      let(:user_params) { { remote_user_id: Faker::Internet.uuid, quota_in_bytes: 1 } }
+
+      it 'raises an error' do
+        expect { central_user_commands.update_user(message) }.to(
+          raise_error(ActiveRecord::RecordNotFound)
+        )
+      end
     end
   end
 

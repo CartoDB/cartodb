@@ -15,13 +15,12 @@ class CentralUserCommands
     payload = message.payload
     Carto::Common::CurrentRequest.with_request_id(message.request_id) do
       logger.info(message: 'Processing :update_user', class_name: self.class.name)
-
       user_id = payload.delete('remote_user_id')
 
       return unless user_id.present? && payload.any?
 
-      user = ::User.where(id: user_id).first
-      Carto::UserUpdater.new(user).update(payload)
+      user = Carto::User.find(user_id)
+      Carto::UserUpdater.new(user.sequel_user).update!(payload)
 
       logger.info(message: 'User updated', current_user: user, class_name: self.class.name)
     end

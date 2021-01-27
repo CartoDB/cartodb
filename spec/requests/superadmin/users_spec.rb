@@ -119,32 +119,6 @@ feature "Superadmin's users API" do
     user.destroy
   end
 
-  scenario "user update fail" do
-    user = create_user
-
-    put_json superadmin_user_path(user), { user: { email: "" } }, superadmin_headers do |response|
-      response.status.should == 422
-    end
-
-    user.destroy
-  end
-
-  scenario "user update success" do
-    user = create_user
-    put_json superadmin_user_path(user),
-             { user: { email: 'newmail@test.com', map_views_quota: 80 } },
-             superadmin_headers do |response|
-      response.status.should == 204
-    end
-    user = ::User[user.id]
-    user.email.should == "newmail@test.com"
-    # rubocop:disable Lint/Void
-    user.map_views_quota.should == 80
-    # rubocop:enable Lint/Void
-
-    user.destroy
-  end
-
   scenario "update success with new organization" do
     pending "Organizations handling has been refactored and needs new specs"
     user = create_user

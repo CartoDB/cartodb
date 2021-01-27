@@ -87,6 +87,85 @@ describe CentralUserCommands do
         expect(created_user.rate_limit.api_attributes).to eq(rate_limits.api_attributes)
       end
     end
+
+    context 'with default account settings' do
+      let(:upgraded_at_timestamp) { Time.zone.now }
+      let(:user_params) do
+        default_user_params.merge(
+          private_tables_enabled: false,
+          sync_tables_enabled: false,
+          map_views_quota: 80,
+          upgraded_at: upgraded_at_timestamp
+        )
+      end
+
+      it 'creates the user with default account settings' do
+        central_user_commands.create_user(message)
+
+        expect(created_user).to be_present
+        expect(created_user.quota_in_bytes).to eq(104_857_600)
+        expect(created_user.table_quota).to eq(5)
+        expect(created_user.public_map_quota).to be_nil
+        expect(created_user.public_dataset_quota).to be_nil
+        expect(created_user.private_map_quota).to be_nil
+        expect(created_user.regular_api_key_quota).to be_nil
+        expect(created_user.account_type).to eq('FREE')
+        expect(created_user.private_tables_enabled).to eq(false)
+        expect(created_user.upgraded_at).to be_present
+      end
+    end
+
+    context 'with custom account settings' do
+      let(:account_type) { create(:account_type, account_type: Faker::String.random(length: 8)) }
+      let(:user_params) do
+        default_user_params.merge(
+          quota_in_bytes: 2_000,
+          table_quota: 20,
+          public_map_quota: 20,
+          public_dataset_quota: 20,
+          private_map_quota: 20,
+          regular_api_key_quota: 20,
+          account_type: account_type.account_type,
+          private_tables_enabled: true,
+          sync_tables_enabled: true,
+          map_view_block_price: 15,
+          geocoding_quota: 15,
+          geocoding_block_price: 2,
+          here_isolines_quota: 100,
+          here_isolines_block_price: 5,
+          obs_snapshot_quota: 100,
+          obs_snapshot_block_price: 5,
+          obs_general_quota: 100,
+          obs_general_block_price: 5,
+          notification: 'Test'
+        )
+      end
+
+      it 'creates the user with custom account settings' do
+        central_user_commands.create_user(message)
+
+        expect(created_user).to be_present
+        expect(created_user.quota_in_bytes).to eq(2_000)
+        expect(created_user.table_quota).to eq(20)
+        expect(created_user.public_map_quota).to eq(20)
+        expect(created_user.public_dataset_quota).to eq(20)
+        expect(created_user.private_map_quota).to eq(20)
+        expect(created_user.regular_api_key_quota).to eq(20)
+        expect(created_user.account_type).to eq(account_type.account_type)
+        expect(created_user.private_tables_enabled).to eq(true)
+        expect(created_user.sync_tables_enabled).to eq(true)
+        expect(created_user.map_view_block_price).to eq(15)
+        expect(created_user.geocoding_quota).to eq(15)
+        expect(created_user.geocoding_block_price).to eq(2)
+        expect(created_user.here_isolines_quota).to eq(100)
+        expect(created_user.here_isolines_block_price).to eq(5)
+        expect(created_user.obs_snapshot_quota).to eq(100)
+        expect(created_user.obs_snapshot_block_price).to eq(5)
+        expect(created_user.obs_general_quota).to eq(100)
+        expect(created_user.obs_general_block_price).to eq(5)
+        expect(created_user.notification).to eq('Test')
+      end
+    end
   end
 
   describe '#delete_user' do

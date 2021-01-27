@@ -1,10 +1,14 @@
+require 'carto/gcloud/spatial_extension_setup'
+
 require_relative 'parameters'
 
 module Carto
   class ConnectionManager
-    DB_PASSWORD_PLACEHOLDER = '********'.freeze
-    OAUTH_TOKEN_PLACEHOLDER = '********'.freeze
+    CONFIDENTIAL_PARAMETER_PLACEHOLDER = '********'.freeze
+    CONFIDENTIAL_PARAMS = %w(password)
     BQ_CONNECTOR = 'bigquery'.freeze
+    BQ_NON_CONNECTOR_PARAMETERS = ['email']
+    BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token)
 
     def initialize(user)
       @user = user
@@ -81,16 +85,8 @@ module Carto
         connector: connection.connector,
         type: connection.connection_type,
       }
-      case connection.connection_type
-      when Carto::Connection::TYPE_DB_CONNECTOR
-        presented_connection[:parameters] = connection.parameters
-        if presented_connection[:parameters].keys.include?('password')
-          presented_connection[:parameters]['password'] = DB_PASSWORD_PLACEHOLDER
-        end
-      when Carto::Connection::TYPE_OAUTH_SERVICE
-        presented_connection[:token] = OAUTH_TOKEN_PLACEHOLDER
-        # presented_connection[:parameters] = connection.parameters if connection.parameters.present?
-      end
+      presented_connection[:parameters] = presented_parameters(connection) if connection.parameters.present?
+      presented_connection[:token] = presented_token(connection) if connection.token.present?
       # TODO: compute in_use
       presented_connection
   end
@@ -108,9 +104,7 @@ module Carto
 
     def create_db_connection(name:, provider:, parameters:)
       check_db_provider!(provider)
-      connection = @user.connections.create!(name: name, connector: provider, parameters: parameters)
-      update_redis_metadata(connection)
-      connection
+      @user.connections.create!(name: name, connector: provider, parameters: parameters)
     end
 
     def find_or_create_db_connection(provider, parameters)
@@ -185,7 +179,6 @@ module Carto
       revoke_token(connection)
       connection.destroy!
       @user.reload
-      remove_redis_metadata(connection)
     end
 
     def fetch_connection(id)
@@ -194,11 +187,11 @@ module Carto
 
     def update_db_connection(id:, parameters: nil, name: nil)
       connection = fetch_connection(id)
+
       new_attributes = {}
       new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
       new_attributes[:name] = name if name.present?
-      connection.update!(new_attributes) if new_attributes.present?
-      update_redis_metadata(connection)
+      connection.update!(new_attributes)
     end
 
     # This adapts parameters to be passed to a db connector, optionally registering a new connection.
@@ -237,7 +230,7 @@ module Carto
         else
           connector_parameters.merge! provider: connection.connector
         end
-        connection_parameters = connection.parameters
+        connection_parameters = filtered_connection_parameters(connection)
 
         # This was to support hybrid OAuth connections that also have parameters are use connectors (BigQuery)
         # but they're currently not supported
@@ -251,7 +244,8 @@ module Carto
 
       if legacy_oauth_db_connection?(connector_parameters)
         connection_parameters = connector_parameters[:connection] || {}
-        connection_parameters[:refresh_token] = @user.oauths&.select(connection.connector)&.token
+        connection_parameters[:refresh_token] = @user.oauths&.select(connector_parameters[:provider])&.token
+        connector_parameters[:connection] = connection_parameters
       end
 
       [input_parameters, connector_parameters]
@@ -285,21 +279,102 @@ module Carto
         elsif connector == BQ_CONNECTOR
           errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if connection_parameters['refresh_token'].present?
           errors << "Parameter access_token not supported through connections; use import API" if connection_parameters['access_token'].present?
+
+          # FIXME: duplicated emails can occur; this just make it unlikely
+          if connection_parameters['email'].present?
+            if Carto::Connection
+               .where(connector: BQ_CONNECTOR, connection_type: Carto::Connection::TYPE_DB_CONNECTOR)
+               .where("parameters#>>'{email}' = '#{connection_parameters['email']}'").exists?
+              errors << "Email taken: #{connection_parameters['email']}"
+            end
+          end
         end
       end
       errors
     end
 
+    def manage_create(connection)
+      # Note that this must be called after save/creation so that connection has an id
+      update_redis_metadata(connection)
+      create_spatial_extension_setup(connection)
+    end
+
+    def manage_destroy(connection)
+      remove_redis_metadata(connection)
+      remove_spatial_extension_setup(connection)
+    end
+
+    def manage_update(connection)
+      update_redis_metadata(connection)
+      update_spatial_extension_setup(connection)
+    end
+
     private
+
+    def presented_parameters(connection)
+      confidential_parameters = connection.connector == BQ_CONNECTOR ? BQ_CONFIDENTIAL_PARAMS : CONFIDENTIAL_PARAMS
+      Hash[connection.parameters.map do |key, value|
+        value = key.in?(confidential_parameters) ? CONFIDENTIAL_PARAMETER_PLACEHOLDER : value
+        [key, value]
+      end]
+    end
+
+    def presented_token(connection)
+      CONFIDENTIAL_PARAMETER_PLACEHOLDER
+    end
 
     def generate_connection_name(provider)
       # FIXME: this could produce name collisions
       n = @user.db_connections.where(connector: provider).count
-      n > 0 ? "provider_#{n+1}" : provider
+      n > 0 ? "#{provider}_#{n+1}" : provider
     end
 
     def bigquery_redis_key
       "google:bq_settings:#{@user.username}"
+    end
+
+    def filtered_connection_parameters(connection)
+      # TODO: move to per-connector classes
+      parameters = connection.parameters
+      parameters = parameters.except(*BQ_NON_CONNECTOR_PARAMETERS) if connection.connector == BQ_CONNECTOR
+      parameters
+    end
+
+    def requires_spatial_extension_setup?(connection)
+      connection.connector == BQ_CONNECTOR && connection.parameters['email'].present?
+    end
+
+    def create_spatial_extension_setup(connection)
+      return unless requires_spatial_extension_setup?(connection)
+
+      role = Cartodb.get_config(:spatial_extension, 'role')
+      datasets = Cartodb.get_config(:spatial_extension, 'datasets')
+      return unless datasets.present?
+
+      spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+      spatial_extension_setup.create(connection)
+    end
+
+    def remove_spatial_extension_setup(connection)
+      return unless requires_spatial_extension_setup?(connection)
+
+      role = Cartodb.get_config(:spatial_extension, 'role')
+      datasets = Cartodb.get_config(:spatial_extension, 'datasets')
+      return unless datasets.present?
+
+      spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+      spatial_extension_setup.remove(connection)
+    end
+
+    def update_spatial_extension_setup(connection)
+      return unless requires_spatial_extension_setup?(connection)
+
+      role = Cartodb.get_config(:spatial_extension, 'role')
+      datasets = Cartodb.get_config(:spatial_extension, 'datasets')
+      return unless datasets.present?
+
+      spatial_extension_setup = Carto::Gcloud::SpatialExtensionSetup.new(role: role, datasets: datasets)
+      spatial_extension_setup.update(connection)
     end
 
     def update_redis_metadata(connection)
@@ -334,7 +409,7 @@ module Carto
         # rescue MissingConfigurationError
         #   false
         # end
-        Cartodb.config[:oauth][service].present?
+        Cartodb.get_config(:oauth, service).present?
       }
     end
 

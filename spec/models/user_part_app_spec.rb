@@ -378,11 +378,15 @@ describe User do
       end
 
       context 'when saving in local fails' do
-        it 'logs an error' do
-          @user.email = nil
-          Rails.logger.expects(:error).once
+        let(:user) { create(:valid_user) }
 
-          @user.invalidate_all_sessions!
+        include_context 'with MessageBroker stubs'
+
+        it 'logs an error' do
+          user.email = nil
+          Rails.logger.expects(:error).at_least_once
+
+          user.invalidate_all_sessions!
         end
       end
     end

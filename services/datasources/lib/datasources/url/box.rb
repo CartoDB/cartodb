@@ -150,14 +150,15 @@ module CartoDB
 
             entries = []
             offset = 0
-            do
+            loop do
               query[:offset] = offset
               query[:limit] = limit - entries.size if limit.present? # possibly capped by the Box API
               results, _response = get(SEARCH_URI, query: query)
               new_entries = results['entries']
               entries += new_entries
               offset += new_entries.size
-            while entries.size < results['total_count'] && entries.size < limit
+              break if entries.size >= results['total_count'] || entries.size >= limit
+            end
             entries
           end
 

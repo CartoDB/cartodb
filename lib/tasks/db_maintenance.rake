@@ -386,7 +386,7 @@ namespace :cartodb do
       org = Carto::Organization.find_by(name: args[:org_name])
       owner = org.owner
       if owner
-        owner.db_service.setup_organization_role_permissions
+        owner.sequel_user.db_service.setup_organization_role_permissions
       else
         puts 'Organization without owner'
       end
@@ -397,7 +397,7 @@ namespace :cartodb do
       Carto::Organization.find_each do |org|
         owner = org.owner
         if owner
-          owner.db_service.setup_organization_role_permissions
+          owner.sequel_user.db_service.setup_organization_role_permissions
         else
           puts "Organization without owner: #{org.name}"
         end
@@ -1121,7 +1121,7 @@ namespace :cartodb do
         if owner
           puts "#{o.name}\t#{o.id}\tOwner: #{owner.username}\t#{owner.id}"
           begin
-            owner.db_service.setup_organization_role_permissions
+            owner.sequel_user.db_service.setup_organization_role_permissions
           rescue StandardError => e
             puts "Error: #{e.message}"
             CartoDB.notify_exception(e)
@@ -1167,7 +1167,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Carto::Organization.where(name: args[:organization_name]) : Carto::Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.db_service.grant_admin_permissions
+          owner.sequel_user.db_service.grant_admin_permissions
         rescue StandardError => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end
@@ -1179,7 +1179,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Carto::Organization.where(name: args[:organization_name]) : Carto::Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.db_service.configure_extension_org_metadata_api_endpoint
+          owner.sequel_user.db_service.configure_extension_org_metadata_api_endpoint
         rescue StandardError => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end
@@ -1199,7 +1199,7 @@ namespace :cartodb do
       raise "ERROR: Organization #{args[:organization_name]} don't exists" if organizations.blank? and not args[:all_organizations]
       run_for_organizations_owner(organizations) do |owner|
         begin
-          result = owner.db_service.install_and_configure_geocoder_api_extension
+          result = owner.sequel_user.db_service.install_and_configure_geocoder_api_extension
           puts "Owner #{owner.username}: #{result ? 'OK' : 'ERROR'}"
           # TODO Improved using the execute_on_users_with_index when orgs have a lot more users
           owner.organization.users.each do |u|

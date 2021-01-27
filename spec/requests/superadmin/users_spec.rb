@@ -244,36 +244,6 @@ feature "Superadmin's users API" do
   end
 
   describe '#update' do
-    it 'should create new rate limit if user does not have' do
-      user        = FactoryGirl.create(:user)
-      rate_limit  = FactoryGirl.create(:rate_limits)
-
-      expect {
-        put superadmin_user_url(user.id), {
-          user: { rate_limit: rate_limit.api_attributes }, id: user.id
-        }.to_json, superadmin_headers
-
-        user.reload
-        user.rate_limit.api_attributes.should eq rate_limit.api_attributes
-
-      }.to change(Carto::RateLimit, :count).by(1)
-    end
-
-    it 'should update existing user rate limit' do
-      user        = FactoryGirl.create(:user)
-      rate_limit  = FactoryGirl.create(:rate_limits)
-      user.rate_limit_id = rate_limit.id
-      user.save
-      rate_limit_custom = FactoryGirl.create(:rate_limits_custom)
-
-      put superadmin_user_url(user.id), {
-        user: { rate_limit: rate_limit_custom.api_attributes }, id: user.id
-      }.to_json, superadmin_headers
-
-      user.reload
-      user.rate_limit.api_attributes.should eq rate_limit_custom.api_attributes
-    end
-
     describe 'gcloud settings' do
 
       before(:all) do

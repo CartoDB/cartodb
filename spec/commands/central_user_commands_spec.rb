@@ -15,6 +15,7 @@ describe CentralUserCommands do
     let(:feature_flag) { create(:feature_flag, restricted: true) }
     let(:other_feature_flag) { create(:feature_flag, restricted: true) }
     let(:message) { Carto::Common::MessageBroker::Message.new(payload: user_params) }
+    let(:rate_limit) { create(:rate_limits) }
 
     context 'when everything is OK' do
       let(:user_params) do
@@ -125,6 +126,33 @@ describe CentralUserCommands do
 
         expect(user.has_feature_flag?(feature_flag.name)).to eq(false)
         expect(user.has_feature_flag?(other_feature_flag.name)).to eq(false)
+      end
+    end
+
+    context 'when assigning a new rate limit' do
+      let(:user_params) do
+        { remote_user_id: original_user.id, rate_limit: rate_limit.api_attributes }
+      end
+
+      it 'creates a new rate limit' do
+        central_user_commands.update_user(message)
+
+        expect(user.rate_limit.api_attributes).to eq(rate_limit.api_attributes)
+      end
+    end
+
+    context 'when updating an existing rate limit' do
+      let(:new_rate_limit) { create(:rate_limits_custom) }
+      let(:user_params) do
+        { remote_user_id: original_user.id, rate_limit: new_rate_limit.api_attributes }
+      end
+
+      before { user.carto_user.update!(rate_limit_id: rate_limit.id) }
+
+      it 'updates the existing rate limit attributes' do
+        central_user_commands.update_user(message)
+
+        expect(user.reload.rate_limit.api_attributes).to eq(new_rate_limit.api_attributes)
       end
     end
 

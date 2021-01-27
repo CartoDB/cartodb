@@ -306,7 +306,7 @@ module Carto
 
     def manage_update(connection)
       update_redis_metadata(connection)
-      updatespatial_extension_setup(connection)
+      update_spatial_extension_setup(connection)
     end
 
     private

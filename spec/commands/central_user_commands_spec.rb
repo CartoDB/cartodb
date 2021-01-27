@@ -41,31 +41,56 @@ describe CentralUserCommands do
 
   describe '#create_user' do
     let(:account_type) { create_account_type_fg(nil) }
-
-    it 'creates a user with the provided params' do
-      user_params = {
-        username: 'testuser',
-        email: 'testuser@acme.org',
+    let(:username) { Faker::Internet.username(separators: ['-']) }
+    let(:default_user_params) do
+      {
+        username: username,
+        email: Faker::Internet.safe_email,
         password: 'supersecret',
         account_type: account_type.account_type
       }
-      notifications_topic.stubs(:publish)
-      message = Carto::Common::MessageBroker::Message.new(payload: user_params)
-      central_user_commands.create_user(message)
-
-      created_user = Carto::User.find_by(username: 'testuser')
-
-      expect(created_user).to be_present
-      expect(created_user.crypted_password).to be_present
     end
 
-    context 'when the payload contains invalid attributes' do
-      it 'does not create the user and fails silently' do
-        user_params = { username: 'invalid-user' }
+    before { notifications_topic.stubs(:publish) }
+
+    context 'when everything is OK' do
+      let(:user_params) { default_user_params }
+
+      it 'creates a user with the provided params' do
         message = Carto::Common::MessageBroker::Message.new(payload: user_params)
         central_user_commands.create_user(message)
 
-        expect(Carto::User.exists?(username: 'invalid-user')).to eq(false)
+        created_user = Carto::User.find_by(username: username)
+
+        expect(created_user).to be_present
+        expect(created_user.crypted_password).to be_present
+      end
+    end
+
+    context 'when the payload contains invalid attributes' do
+      let(:user_params) { default_user_params.merge(email: nil) }
+
+      it 'raises an error' do
+        message = Carto::Common::MessageBroker::Message.new(payload: user_params)
+
+        expect { central_user_commands.create_user(message) }.to raise_error(Sequel::ValidationFailed)
+      end
+    end
+
+    context 'when specifying custom rate limit attributes' do
+      let(:rate_limits) { create(:rate_limits) }
+      let(:user_params) do
+        default_user_params.merge(rate_limit: rate_limits.api_attributes)
+      end
+
+      it 'assigns the correct rate limits' do
+        message = Carto::Common::MessageBroker::Message.new(payload: user_params)
+        central_user_commands.create_user(message)
+
+        created_user = Carto::User.find_by(username: username)
+
+        expect(created_user).to be_present
+        expect(created_user.rate_limit.api_attributes).to eq(rate_limits.api_attributes)
       end
     end
   end

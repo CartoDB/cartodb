@@ -71,25 +71,6 @@ feature "Superadmin's users API" do
     ::User.where(username: @user_atts[:username]).first.destroy
   end
 
-  scenario "user create with rate limits" do
-    t = Time.now
-    @user_atts[:upgraded_at] = t
-    rate_limits = FactoryGirl.create(:rate_limits)
-    @user_atts[:rate_limit] = rate_limits.api_attributes
-
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
-      response.status.should == 201
-      response.body[:rate_limit_id].should_not be_nil
-
-      # Double check that the user has been created properly
-      user = ::User.filter(email: @user_atts[:email]).first
-      user.rate_limit.api_attributes.should eq @user_atts[:rate_limit]
-    end
-    ::User.where(username: @user_atts[:username]).first.destroy
-    rate_limits.destroy
-  end
-
   scenario "user create non-default account settings" do
     @user_atts[:quota_in_bytes] = 2000
     @user_atts[:table_quota] = 20

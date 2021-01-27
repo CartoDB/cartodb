@@ -16,10 +16,6 @@ feature "Superadmin's organization API" do
     end
   end
 
-  scenario "organization create fail" do
-    pending "Exception handling isn' implemented yet"
-  end
-
   scenario "organization create success" do
     @org_atts = build(:organization).attributes
     post_json superadmin_organizations_path, { organization: @org_atts }, superadmin_headers do |response|
@@ -70,10 +66,6 @@ feature "Superadmin's organization API" do
       user.reload
       user.organization_id.should be_nil
     end
-  end
-
-  scenario "organization update fail" do
-    pending "Exception handling isn' implemented yet"
   end
 
   scenario "organization update success" do

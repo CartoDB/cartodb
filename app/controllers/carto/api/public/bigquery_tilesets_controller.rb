@@ -6,29 +6,67 @@ module Carto
         include Carto::Api::PagedSearcher
         extend Carto::DefaultRescueFroms
 
+        VALID_ORDER_PARAMS_LIST_TILESET = %i(id).freeze
+
         before_action :load_user
         before_action :load_service
         before_action :check_permissions
 
+        before_action only: [:list_tilesets] do
+          load_pagination_params(default_order: 'id', valid_order_params: VALID_ORDER_PARAMS_LIST_TILESET)
+        end
+
         setup_default_rescues
+
+        def list_datasets
+          result = @service.list_datasets
+          render_jsonp(result, 200)
+        end
+
+        def list_tilesets
+          dataset_id = params['dataset_id']
+          result = @service.list_tilesets(dataset_id: dataset_id, **@pagination)
+          total = @service.count_tilesets(dataset_id)
+
+          enriched_response = paged_result(
+            result: result,
+            total_count: total,
+            page: @pagination[:page],
+            per_page: @pagination[:per_page],
+            params: params.except('controller', 'action', 'format')
+          ) { |params| api_v4_bigquery_list_tilesets_url(params) }
+
+          render_jsonp(enriched_response, 200)
+        end
+
+        private
 
         def load_user
           @user = Carto::User.where(id: current_viewer.id).first
         end
 
         def load_service
-          @service = Carto::BigqueryTilesetsService.new(user: @user)
+          @service = Carto::BigqueryTilesetsService.new(
+            user: @user,
+            connection_id: params['connection_id'],
+            project_id: params['project_id']
+          )
         end
 
         def check_permissions
-          @api_key = Carto::ApiKey.find_by_token(params['api_key'])
+          @api_key = Carto::ApiKey.find_by(token: params['api_key'])
           raise UnauthorizedError unless @api_key&.master?
-          raise UnauthorizedError unless @api_key.user_id === @user.id
+          raise UnauthorizedError unless @api_key.user_id == @user.id
         end
 
-        def list
-          result = @service.list_tilesets
-          render_jsonp(result, 200)
+        def load_pagination_params(default_order:, valid_order_params:)
+          page, per_page, order, direction = page_per_page_order_params(
+            valid_order_params,
+            default_order: default_order,
+            default_order_direction: 'asc'
+          )
+          offset = (page - 1) * per_page
+          @pagination = { page: page, per_page: per_page, order: order, direction: direction, offset: offset }
         end
 
       end

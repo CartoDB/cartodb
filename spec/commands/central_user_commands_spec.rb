@@ -204,6 +204,77 @@ describe CentralUserCommands do
         )
       end
     end
+
+    context 'when handling Google Cloud settings' do
+      let(:google_cloud_settings) do
+        {
+          service_account: {
+            type: 'service_account',
+            project_id: 'my_project_id',
+            private_key_id: 'my_private_key_id'
+          }.to_json,
+          bq_public_project: 'my_public_project',
+          gcp_execution_project: 'my_gcp_execution_project',
+          bq_project: 'my_bq_project',
+          gcs_bucket: 'my_gcs_bucket',
+          bq_dataset: 'my_bq_dataset'
+        }
+      end
+      let(:user_params) do
+        { remote_user_id: original_user.id, gcloud_settings: google_cloud_settings }
+      end
+      let(:redis_settings) { $users_metadata.hgetall(user_settings_key).symbolize_keys }
+      let(:user_settings_key) { "do_settings:#{original_user.username}" }
+
+      context 'when receiving settings values' do
+        it 'updates the setting values in Redis' do
+          central_user_commands.update_user(message)
+
+          expect(redis_settings[:service_account]).to eq(google_cloud_settings[:service_account])
+          expect(redis_settings[:bq_public_project]).to eq(google_cloud_settings[:bq_public_project])
+          expect(redis_settings[:gcp_execution_project]).to eq(google_cloud_settings[:gcp_execution_project])
+          expect(redis_settings[:bq_project]).to eq(google_cloud_settings[:bq_project])
+          expect(redis_settings[:gcs_bucket]).to eq(google_cloud_settings[:gcs_bucket])
+          expect(redis_settings[:bq_dataset]).to eq(google_cloud_settings[:bq_dataset])
+        end
+      end
+
+      context 'when receiving an empty hash' do
+        let(:google_cloud_settings) { {} }
+
+        it 'receiving an empty hash clears the settings' do
+          central_user_commands.update_user(message)
+
+          expect(redis_settings).to eq({})
+        end
+      end
+
+      context 'when Google Cloud settings are missing' do
+        let(:user_params) { { remote_user_id: original_user.id, quota_in_bytes: 1 } }
+
+        it 'does not alter current settings' do
+          central_user_commands.update_user(
+            Carto::Common::MessageBroker::Message.new(
+              payload: user_params.merge(gcloud_settings: google_cloud_settings)
+            )
+          )
+
+          expect(redis_settings[:service_account]).to be_present
+
+          central_user_commands.update_user(
+            Carto::Common::MessageBroker::Message.new(payload: user_params)
+          )
+
+          expect($users_metadata.hgetall(user_settings_key)['service_account']).to be_present
+        end
+
+        it 'an empty key is not added to Redis' do
+          central_user_commands.update_user(message)
+
+          expect(redis_settings).to eq({})
+        end
+      end
+    end
   end
 
   describe '#create_user' do

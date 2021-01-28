@@ -886,6 +886,12 @@
         "accept": "Accept and connect"
       } 
     },
+    "ArcGIS": {
+      "title": "Connect with ArcGIS Server",
+      "subtitle": "Import your data from an ArcGIS™ instance",
+      "placeholder": "Paste your ArcGIS™ table URL here",
+      "helper": "Format: https://&lt;host&gt;/arcgis/rest/services/&lt;folder&gt;/&lt;serviceName&gt;/&lt;serviceType&gt;<br>To retrieve a particular layer, add the layer indexat the end of the URL"
+    },
     "removeModal": {
       "title": "You are about to delete your {connector} connection",
       "subtitle": "If you have synchronized datasets, you will no longer be able to update them",

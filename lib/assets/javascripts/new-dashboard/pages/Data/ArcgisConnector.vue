@@ -2,31 +2,30 @@
   <Dialog ref="dialog"
     :headerTitle="getHeaderTitleFromMode"
     :headerImage="require('../../assets/icons/datasets/subsc-add-icon.svg')"
+    :backRoute="{name: `${getRouteNamePrefix}new-dataset`}"
   >
   <template slot="sub-header">
     <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
       <img class="u-mr--8 file-icon" width="50px" :src="fileIcon" @error="setAltImage">
-      Connect with ArcGIS Server
+      {{ $t('ConnectorsPage.ArcGIS.title') }}
     </h3>
   </template>
   <template #default>
     <div class="u-flex u-flex__justify--center">
       <div class="u-flex u-flex__direction--column">
-        <span v-if="!isFileSelected" class="is-semibold is-small">Import your data from an ArcGIS™ instance</span>
+        <span v-if="!isFileSelected" class="is-semibold is-small">{{ $t('ConnectorsPage.ArcGIS.subtitle') }}</span>
         <div>
           <div v-if="!isFileSelected">
             <div class="u-flex u-mt--32">
               <label class="text is-small u-mt--12 u-mr--16">{{ $t('DataPage.url') }}</label>
               <div>
                 <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper">
-                  <input type="text" v-model="urlToUpload" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="" placeholder="Paste your ArcGIS™ table URL here">
+                  <input type="text" v-model="urlToUpload" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="" :placeholder="$t('ConnectorsPage.ArcGIS.placeholder')">
                   <button type="submit" class="is-small is-semibold is-txtPrimary u-mr--12" @click="uploadUrl">
                     <span>Submit</span>
                   </button>
                 </div>
-                <p class="u-mt--12 text is-small is-txtMidGrey">
-                  Format: https://&lt;host&gt;/arcgis/rest/services/&lt;folder&gt;/&lt;serviceName&gt;/&lt;serviceType&gt;<br>
-                  To retrieve a particular layer, add the layer indexat the end of the URL
+                <p class="u-mt--12 text is-small is-txtMidGrey" v-html="$t('ConnectorsPage.ArcGIS.helper')">
                 </p>
                 <p v-if="!fileValidation.valid" class="is-small u-mt--24 is-txtAlert">{{ fileValidation.msg }}</p>
               </div>
@@ -96,6 +95,9 @@ export default {
     };
   },
   computed: {
+    getRouteNamePrefix () {
+      return this.$route.name.replace('import-arcgis', '');
+    },
     typeName () {
       return (this.localFiles.find(lf => lf.id === this.extension) || {}).label || this.$t('DataPage.defaultLocalFile');
     },

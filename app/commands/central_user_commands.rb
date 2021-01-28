@@ -45,10 +45,10 @@ class CentralUserCommands
 
   def delete_user(message)
     payload = message.payload
+    user = ::User.where(id: payload[:id]).first
+
     Carto::Common::CurrentRequest.with_request_id(message.request_id) do
       logger.info(message: 'Processing :delete_user', class_name: self.class.name)
-
-      user = ::User.where(id: payload[:id]).first
 
       if user
         user.set_force_destroy if payload[:force] == 'true'

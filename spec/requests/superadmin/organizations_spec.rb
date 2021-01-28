@@ -60,22 +60,6 @@ feature "Superadmin's organization API" do
     # rubocop:enable Lint/Void
   end
 
-  describe 'users destruction logic' do
-    include_context 'organization with users helper'
-
-    it 'blocks deletion of a user with shared entities' do
-      table = create_random_table(@org_user_1)
-      share_table(table, @org_user_1, @org_user_2)
-
-      delete_json superadmin_user_path(@org_user_1), {}, superadmin_headers do |response|
-        response.status.should eq 422
-        response.body[:error].should eq 'Error destroying user: Cannot delete user, has shared entities'
-      end
-      ::User[@org_user_1.id].should be
-      ::UserTable[table.id].should be
-    end
-  end
-
   describe 'sharing users destruction logic' do
     include_context 'organization with users helper'
 
@@ -97,7 +81,7 @@ feature "Superadmin's organization API" do
 
     it 'cleans sharing information when recipient user is deleted' do
       table = create_random_table(@org_user_1)
-      share_table(table, @org_user_1, @org_user_2)
+      http_share_table(table, @org_user_1, @org_user_2)
 
       Carto::SharedEntity.where(recipient_id: @org_user_2.id).count.should == 1
 

@@ -1,6 +1,21 @@
 module SharedEntitiesSpecHelper
 
-  def share_table(table, owner, user)
+  extend ActiveSupport::Concern
+
+  def share_table(table, user)
+    permission = table.table_visualization.permission
+    permission.update!(
+      acl: [
+        {
+          type: Carto::Permission::TYPE_USER,
+          entity: { id: user.id },
+          access: Carto::Permission::ACCESS_READONLY
+        }
+      ]
+    )
+  end
+
+  def http_share_table(table, owner, user)
     bypass_named_maps
     headers = { 'CONTENT_TYPE' => 'application/json' }
     perm_id = table.table_visualization.permission.id

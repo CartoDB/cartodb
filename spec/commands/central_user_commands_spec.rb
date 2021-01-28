@@ -439,6 +439,25 @@ describe CentralUserCommands do
       end
     end
 
+    context 'when the user belongs to an organization and owns shared entities' do
+      let(:organization) { create_organization_with_users(seats: 10) }
+      let(:user) { organization.non_owner_users.first }
+      let(:shared_table) { create_random_table(user) }
+
+      before { share_table(shared_table, create(:user)) }
+
+      it 'does not delete the user and notifies about the error' do
+        notifications_topic.expects(:publish).with(
+          :user_could_not_be_deleted,
+          { username: user.username, reason: 'user has shared entities' }
+        )
+
+        central_user_commands.delete_user(message)
+
+        expect(user.reload).to be_present
+      end
+    end
+
     context 'when the user is not found' do
       let(:user_id) { Faker::Internet.uuid }
 

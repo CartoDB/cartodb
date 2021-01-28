@@ -195,7 +195,8 @@
     },
     "localFiles": "Local files",
     "databases": "Databases",
-    "cloudFiles": "Cloud files"
+    "cloudFiles": "Cloud files",
+    "othersFiles": "Others files"
   },
   "MapsPage": {
     "header": {
@@ -884,6 +885,12 @@
         "cancel": "Cancel",
         "accept": "Accept and connect"
       } 
+    },
+    "ArcGIS": {
+      "title": "Connect with ArcGIS Server",
+      "subtitle": "Import your data from an ArcGIS™ instance",
+      "placeholder": "Paste your ArcGIS™ table URL here",
+      "helper": "Format: https://&lt;host&gt;/arcgis/rest/services/&lt;folder&gt;/&lt;serviceName&gt;/&lt;serviceType&gt;<br>To retrieve a particular layer, add the layer indexat the end of the URL"
     },
     "removeModal": {
       "title": "You are about to delete your {connector} connection",

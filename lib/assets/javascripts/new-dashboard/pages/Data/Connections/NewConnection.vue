@@ -5,7 +5,7 @@
     :showSubHeader="false"
   >
     <template #default>
-      <ConnectorsList v-if="!loading" @connectorSelected="connectorSelected" :showUrlOption="false"></ConnectorsList>
+      <ConnectorsList v-if="!loading" @connectorSelected="connectorSelected" :showAllConnectors="false"></ConnectorsList>
       <LoadingState v-else primary/>
     </template>
   </Dialog>

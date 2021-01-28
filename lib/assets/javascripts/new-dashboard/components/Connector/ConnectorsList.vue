@@ -4,7 +4,7 @@
     <ConnectorSection @connectorSelected="connectorSelected" :label="$t('DataPage.cloudFiles')" :connectors="cloudConnectors"></ConnectorSection>
     <ConnectorSection v-if="showAllConnectors" @connectorSelected="connectorSelected" :label="$t('DataPage.othersFiles')" :connectors="othersConnectors"></ConnectorSection>
     <template v-if="!requestedConnectorLoading">
-      <template v-if="!requestdConnectorSuccess">
+      <template v-if="!requestedConnectorSuccess">
         <div class="u-flex u-mt--48 u-pt--32 u-pb--32 u-pr--48 u-pl--48 request-connector">
           <div class="u-flex__grow--1 message">
             <div class="is-small is-semibold">{{ $t('DataPage.requestConnector') }}</div>
@@ -63,7 +63,7 @@ export default {
     return {
       requestedConnector: '',
       requestedConnectorLoading: false,
-      requestdConnectorSuccess: false
+      requestedConnectorSuccess: false
     };
   },
   computed: {
@@ -73,6 +73,9 @@ export default {
     }),
     dataBaseConnectors () {
       return this.connectorsByType('database');
+    },
+    otherConnectors () {
+      return this.connectorsByType('other');
     },
     cloudConnectors () {
       const connectors = this.connectorsByType('cloud');
@@ -97,10 +100,10 @@ export default {
         connector: this.requestedConnector
       });
       this.requestedConnectorLoading = false;
-      this.requestdConnectorSuccess = true;
+      this.requestedConnectorSuccess = true;
     },
     acceptSuccessRequest () {
-      this.requestdConnectorSuccess = false;
+      this.requestedConnectorSuccess = false;
       this.requestedConnector = '';
     },
     connectorsByType (type) {

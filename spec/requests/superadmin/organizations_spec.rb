@@ -16,24 +16,6 @@ feature "Superadmin's organization API" do
     end
   end
 
-  describe "organization delete success" do
-    include_context 'organization with users helper'
-
-    after(:all) do
-      @organization_2.destroy
-    end
-
-    it 'destroys organizations (even with shared entities)' do
-      table = create_random_table(@org_user_1)
-      share_table_with_user(table, @org_user_2)
-
-      delete_json superadmin_organization_path(@organization), {}, superadmin_headers do |response|
-        response.status.should eq 204
-      end
-      Carto::Organization.find_by(id: @organization.id).should be_nil
-    end
-  end
-
   scenario "organization get info success" do
     get_json superadmin_organization_path(@organization1), {}, superadmin_headers do |response|
       response.status.should == 200

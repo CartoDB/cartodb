@@ -55,14 +55,18 @@ module SharedEntitiesSpecHelper
 
   def share_table_with_organization(table, owner, organization)
     bypass_named_maps
-    headers = {'CONTENT_TYPE'  => 'application/json'}
+    headers = { 'CONTENT_TYPE' => 'application/json' }
     perm_id = table.table_visualization.permission.id
 
-    params = { acl: [{ type: Carto::Permission::TYPE_ORGANIZATION,
-                       entity: { id: organization.id },
-                       access: Carto::Permission::ACCESS_READONLY
-                     }]
-             }
+    params = {
+      acl: [
+        {
+          type: Carto::Permission::TYPE_ORGANIZATION,
+          entity: { id: organization.id },
+          access: Carto::Permission::ACCESS_READONLY
+        }
+      ]
+    }
     url = api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id)
     put url, params.to_json, headers
     last_response.status.should == 200
@@ -78,11 +82,15 @@ module SharedEntitiesSpecHelper
 
     owner = visualization.user
     perm_id = visualization.permission.id
-    params = { acl: [{ type: Carto::Permission::TYPE_USER,
-                       entity: { id: user.id },
-                       access: access
-                     }]
-             }
+    params = {
+      acl: [
+        {
+          type: Carto::Permission::TYPE_USER,
+          entity: { id: user.id },
+          access: access
+        }
+      ]
+    }
     url = api_v1_permissions_update_url(user_domain: owner.username, api_key: owner.api_key, id: perm_id)
     put_json url, params do |response|
       response.status.should == 200

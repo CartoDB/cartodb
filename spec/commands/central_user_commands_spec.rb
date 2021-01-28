@@ -50,6 +50,7 @@ describe CentralUserCommands do
         }
       end
 
+      # rubocop:disable RSpec/MultipleExpectations
       it 'updates the corresponding attributes' do
         central_user_commands.update_user(message)
 
@@ -79,6 +80,7 @@ describe CentralUserCommands do
         expect(user.disqus_shortname).to eq('abc')
         expect(user.builder_enabled).to eq(true)
       end
+      # rubocop:enable RSpec/MultipleExpectations
 
       it 'successfully handles updates of boolean flags' do
         central_user_commands.update_user(

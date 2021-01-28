@@ -152,6 +152,9 @@ Style/FrozenStringLiteralComment:
                   to help transition to frozen string literals by default.
   Enabled: false
 
+Style/GlobalVars:
+  Enabled: false
+
 Style/GuardClause:
   Enabled: false
 

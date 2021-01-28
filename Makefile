@@ -231,12 +231,7 @@ WORKING_SPECS_9 = \
 	spec/requests/signup_controller_spec.rb \
 	spec/requests/account_tokens_controller_spec.rb \
 	spec/requests/password_change_controller_spec.rb \
-	spec/requests/superadmin/users_spec.rb \
-	spec/requests/superadmin/organizations_spec.rb \
-	spec/requests/superadmin/feature_flag_spec.rb \
-	spec/requests/superadmin/oauth_apps_spec.rb \
-	spec/requests/superadmin/platform_controller_spec.rb \
-	spec/requests/superadmin/account_types_spec.rb \
+	spec/requests/superadmin \
 	spec/requests/api/visualizations_spec.rb \
 	spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \

@@ -656,6 +656,11 @@ CartoDB::Application.routes.draw do
       get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#show_remote_table', as: :api_v4_federated_servers_get_table
       put 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#update_remote_table', as: :api_v4_federated_servers_update_table
       delete 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#unregister_remote_table', as: :api_v4_federated_servers_unregister_table
+
+      # BigQuery Dataset and Tilesets
+
+      get '/bigquery/datasets', to: 'bigquery_tilesets#list_datasets', as: :api_v4_bigquery_list_datasets
+      get '/bigquery/tilesets', to: 'bigquery_tilesets#list_tilesets', as: :api_v4_bigquery_list_tilesets
     end
 
     scope 'v3/' do

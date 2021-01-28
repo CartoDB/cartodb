@@ -27,10 +27,10 @@ feature "Superadmin's users API" do
     @account_type_juliet.destroy if @account_type_juliet
   end
 
-  scenario "Http auth is needed" do
-    post_json superadmin_users_path, format: "json" do |response|
-      response.status.should == 401
-    end
+  it 'requires HTTP authentication' do
+    get_json superadmin_user_path(create_user), {}
+
+    expect(response.status).to eq(401)
   end
 
   scenario "user dump success" do

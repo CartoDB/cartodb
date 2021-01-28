@@ -17,7 +17,9 @@ sudo make install
 - Add preview/visualization of maps in DO catalog [#15973](https://github.com/CartoDB/cartodb/pull/15973)
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
+
 ### Bug fixes / enhancements
+
 - Change url Map Loads docs. in quota section [16068](https://github.com/CartoDB/cartodb/pull/16068)
 - Rake task for renaming BQ connector [16030](https://github.com/CartoDB/cartodb/pull/16030)
 - Fix maximum of 50 projects in BQ connector billing project selector [16027](https://github.com/CartoDB/cartodb/pull/16027)
@@ -53,6 +55,7 @@ sudo make install
 - Migrate Organization CRUD actions started by CartoDB to Message Broker [#16062](https://github.com/CartoDB/cartodb/pull/16062)
 - Upgrade deck.gl version [#16072](https://github.com/CartoDB/cartodb/pull/16072)
 - Configure Dead Lettering & prevent flooding of map views messages [#16059](https://github.com/CartoDB/cartodb/pull/16059)
+- Revamp specs for Message Broker commands and remove old endpoints [#16084](https://github.com/CartoDB/cartodb/pull/16084)
 
 4.44.0 (2020-11-20)
 -------------------

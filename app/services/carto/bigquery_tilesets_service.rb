@@ -8,6 +8,8 @@ module Carto
     MAX_DATASETS = 500
     TILESET_LABEL = 'carto_tileset'.freeze
     SCOPES = %w(https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/bigquery).freeze
+    MAPS_API_V2_US_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@avid-wavelet-844.iam.gserviceaccount.com'.freeze
+    MAPS_API_V2_EU_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@cdb-gcp-europe.iam.gserviceaccount.com'.freeze
 
     def initialize(user:, connection_id:, project_id:)
       conn = user.db_connections.where(id: connection_id, connector: 'bigquery').first
@@ -16,6 +18,7 @@ module Carto
       @connection_id = connection_id
       @project_id = project_id
       service_account = conn.parameters['service_account']
+      @billing_project_id = conn.parameters['billing_project']
 
       @bigquery_api = Google::Apis::BigqueryV2::BigqueryService.new
       @bigquery_api.authorization = Google::Auth::ServiceAccountCredentials.make_creds(
@@ -61,6 +64,26 @@ module Carto
       query.use_query_cache = true
       resp = @bigquery_api.query_job(@project_id, query)
       resp.rows[0].f[0].v.to_i
+    end
+
+    def publish(dataset_id:, tileset_id:)
+      if @billing_project_id != @project_id
+        raise Carto::UnprocesableEntityError, 'User must be the owner of the tileset'
+      end
+
+      resource = "projects/#{@project_id}/datasets/#{dataset_id}/tables/#{tileset_id}"
+
+      binding = Google::Apis::BigqueryV2::Binding.new
+      binding.members = [MAPS_API_V2_US_SERVICE_ACCOUNT, MAPS_API_V2_EU_SERVICE_ACCOUNT]
+      binding.role = 'roles/bigquery.dataViewer'
+
+      policy = Google::Apis::BigqueryV2::Policy.new
+      policy.bindings = [binding]
+
+      iam_policy_request = Google::Apis::BigqueryV2::SetIamPolicyRequest.new
+      iam_policy_request.policy = policy
+
+      @bigquery_api.set_table_iam_policy(resource, iam_policy_request)
     end
 
     private

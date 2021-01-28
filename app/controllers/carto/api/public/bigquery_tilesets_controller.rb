@@ -39,6 +39,18 @@ module Carto
           render_jsonp(enriched_response, 200)
         end
 
+        def publish
+          dataset_id = params['dataset_id']
+          raise Carto::LoadError, 'Missing dataset_id query param' if dataset_id.blank?
+
+          tileset_id = params['tileset_id']
+          raise Carto::LoadError, 'Missing tileset_id query param' if tileset_id.blank?
+
+          @service.publish(dataset_id: dataset_id, tileset_id: tileset_id)
+
+          render_jsonp({}, 204)
+        end
+
         private
 
         def load_user
@@ -46,10 +58,16 @@ module Carto
         end
 
         def load_service
+          connection_id = params['connection_id']
+          raise Carto::LoadError, 'Missing connection_id query param' if connection_id.blank?
+
+          project_id = params['project_id']
+          raise Carto::LoadError, 'Missing project_id query param' if project_id.blank?
+
           @service = Carto::BigqueryTilesetsService.new(
             user: @user,
-            connection_id: params['connection_id'],
-            project_id: params['project_id']
+            connection_id: connection_id,
+            project_id: project_id
           )
         end
 

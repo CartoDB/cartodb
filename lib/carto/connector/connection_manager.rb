@@ -9,8 +9,7 @@ module Carto
     BQ_CONNECTOR = 'bigquery'.freeze
     BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token)
     BQ_ADVANCED_CENTRAL_ATTRIBUTE = :bq_advanced
-    BQ_ADVANCED_FLAG = 'bq_advanced'
-    BQ_NON_CONNECTOR_PARAMETERS = [BQ_ADVANCED_CENTRAL_ATTRIBUTE]
+    BQ_NON_CONNECTOR_PARAMETERS = []
 
     def initialize(user)
       @user = user
@@ -302,22 +301,18 @@ module Carto
       updatespatial_extension_setup(connection)
     end
 
-    def check(connection)
+    def check(connection, check_bq_advanced: false)
       if connection.connector_type == Carto::Connection::TYPE_OAUTH_SERVICE
         oauth_connection_valid?(connection.connector)
       else
-        if connection.connector == BQ_CONNECTOR
-          central_user_data = Cartodb::Central.new.get_user(current_user.username)
-          if !central_user_data || (central_user_data[BQ_ADVANCED_CENTRAL_ATTRIBUTE.to_s] != connection.parameters[BQ_ADVANCED_FLAG])
-            msg = connection.parameters[BQ_ADVANCED_FLAG] ?
-             "Advanced Spatial Extension couldn't be configured" :
-             "Advanced Spatial Extension couldn't be removed"
-            raise msg
-          end
-        end
         connector = Carto::Connector.new(parameters: {}, connection: connection, user: @user, logger: nil)
         connector.check_connection
       end
+    end
+
+    def check_bq_advanced
+      central_user_data = Cartodb::Central.new.get_user(@user.username)
+      central_user_data[BQ_ADVANCED_CENTRAL_ATTRIBUTE.to_s]
     end
 
     private
@@ -352,36 +347,27 @@ module Carto
     end
 
     def requires_spatial_extension_setup?(connection)
-      connection.connector == BQ_CONNECTOR && connection.parameters.has_key?(BQ_ADVANCED_FLAG)
+      connection.connector == BQ_CONNECTOR
     end
 
     def create_spatial_extension_setup(connection)
       return unless requires_spatial_extension_setup?(connection)
 
-      if connection.parameters.has_key?(BQ_ADVANCED_FLAG)
-        central = Cartodb::Central.new
-        central.update_user(@user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => connection.parameters[BQ_ADVANCED_FLAG])
-      end
+      central = Cartodb::Central.new
+      central.update_user(@user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => true)
     end
 
     def remove_spatial_extension_setup(connection)
       return unless requires_spatial_extension_setup?(connection)
 
-      if connection.parameters.has_key?(BQ_ADVANCED_FLAG)
-        central = Cartodb::Central.new
-        central.update_user(@user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => false)
-      end
+      central = Cartodb::Central.new
+      central.update_user(@user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => false)
     end
 
     def update_spatial_extension_setup(connection)
       return unless requires_spatial_extension_setup?(connection)
 
-      if connection.changes[:parameters].present?
-        if connection.parameters.has_key?(BQ_ADVANCED_FLAG)
-          central = Cartodb::Central.new
-          central.update_user(@user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => connection.parameters[BQ_ADVANCED_FLAG])
-        end
-      end
+      # Nothing to do since all users have inconditionally the spatial extension now
     end
 
     def update_redis_metadata(connection)

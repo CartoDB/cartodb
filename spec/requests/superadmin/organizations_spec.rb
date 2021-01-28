@@ -27,50 +27,54 @@ describe Superadmin::OrganizationsController do
 
   # GET /superadmin/organization/:id
   describe '#show' do
+    let(:response_body) { JSON.parse(response.body).with_indifferent_access }
+
     it 'returns the specified organization' do
       get_json superadmin_organization_path(@organization1), {}, authentication_headers
 
       expect(response.status).to eq(200)
-      expect(JSON.parse(response.body)['id']).to eq(@organization1.id)
+      expect(response_body[:id]).to eq(@organization1.id)
     end
   end
 
   # GET /superadmin/organization
   describe '#index' do
-    it "gets all organizations" do
+    let(:response_body) { JSON.parse(response.body).map(&:with_indifferent_access) }
+
+    it 'returns all the organizations' do
       Carto::Organization.where(owner_id: nil).destroy_all
-      get_json superadmin_organizations_path, {}, authentication_headers do |response|
-        response.status.should == 200
-        response.body.map { |u| u["name"] }.should include(@organization1.name, @organization2.name)
-        response.body.length.should >= 2
-      end
+      get_json superadmin_organizations_path, {}, authentication_headers
+
+      expect(response.status).to eq(200)
+      expect(response_body.map { |o| o[:name] }).to include(@organization1.name, @organization2.name)
+      expect(response_body.size).to eq(2)
     end
 
-    it "gets overquota organizations" do
+    it 'returns organizations overquota' do
       Carto::Organization.stubs(:overquota).returns [@organization1]
-      get_json superadmin_organizations_path, { overquota: true }, authentication_headers do |response|
-        response.status.should == 200
-        response.body[0]["name"].should == @organization1.name
-        response.body.length.should == 1
-      end
-    end
-    # rubocop:disable Lint/Void
+      get_json superadmin_organizations_path, { overquota: true }, authentication_headers
 
-    it "returns geocoding and mapviews quotas and uses for all organizations" do
+      expect(response.status).to eq(200)
+      expect(response_body.first[:name]).to eq(@organization1.name)
+      expect(response_body.size).to eq(1)
+    end
+
+    it 'returns geocoding and mapviews quotas and uses for all organizations' do
       Carto::Organization.stubs(:overquota).returns [@organization1]
       ::User.any_instance.stubs(:get_geocoding_calls).returns(100)
       ::User.any_instance.stubs(:map_views_count).returns (0..30).to_a
-      get_json superadmin_organizations_path, { overquota: true }, authentication_headers do |response|
-        response.status.should == 200
-        response.body[0]['name'].should == @organization1.name
-        response.body[0]['geocoding']['quota'].should == @organization1.geocoding_quota
-        response.body[0]['geocoding']['monthly_use'].should == @organization1.get_geocoding_calls
-        response.body[0]['map_views_quota'].should == @organization1.map_views_quota
-        response.body[0]['map_views'].should == @organization1.map_views_count
-        response.body.length.should == 1
-      end
+
+      get_json superadmin_organizations_path, { overquota: true }, authentication_headers
+
+      expect(response.status).to eq(200)
+      first_organization = response_body.first
+      expect(first_organization[:name]).to eq(@organization1.name)
+      expect(first_organization[:geocoding][:quota]).to eq(@organization1.geocoding_quota)
+      expect(first_organization[:geocoding][:monthly_use]).to eq(@organization1.get_geocoding_calls)
+      expect(first_organization[:map_views_quota]).to eq(@organization1.map_views_quota)
+      expect(first_organization[:map_views]).to eq(@organization1.map_views_count)
+      expect(response_body.size).to eq(1)
     end
-    # rubocop:enable Lint/Void
   end
 end
 # rubocop:enable RSpec/InstanceVariable

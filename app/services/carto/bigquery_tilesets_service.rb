@@ -103,7 +103,7 @@ module Carto
           SELECT *
           FROM (""" || metadata_query || """)
           ORDER BY #{pagination[:order]} #{pagination[:direction]}
-          LIMIT #{pagination[:page] * pagination[:per_page]} OFFSET #{pagination[:offset]}
+          LIMIT #{pagination[:per_page]} OFFSET #{pagination[:offset]}
         """;
       }.squish
     end

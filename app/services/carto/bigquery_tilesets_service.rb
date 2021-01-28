@@ -65,7 +65,7 @@ module Carto
 
     private
 
-    def tileset_metadata_script (dataset_id:, **pagination)
+    def tileset_metadata_script(dataset_id:, **pagination)
       %{
         DECLARE tilesets ARRAY<STRING>;
         DECLARE i INT64 DEFAULT 0;

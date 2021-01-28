@@ -39,6 +39,12 @@ module Carto
           render_jsonp(enriched_response, 200)
         end
 
+        def tileset
+          tileset_id = params['tileset_id']
+          result = @service.tileset(tileset_id)
+          render_jsonp(result, 200)
+        end
+
         def publish
           dataset_id = params['dataset_id']
           raise Carto::LoadError, 'Missing dataset_id query param' if dataset_id.blank?

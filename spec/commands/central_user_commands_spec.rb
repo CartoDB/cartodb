@@ -457,6 +457,19 @@ describe CentralUserCommands do
         expect(user.reload).to be_present
         expect(shared_table.reload).to be_present
       end
+
+      context 'when the force flag is set' do
+        let(:user_params) { { id: user_id, force: true } }
+
+        before do
+          notifications_topic.stubs(:publish)
+          central_user_commands.delete_user(message)
+        end
+
+        it 'deletes the user' do
+          expect(Carto::User.exists?(id: user_id)).to eq(false)
+        end
+      end
     end
 
     context 'when the user belongs to an organization and has access to shared entities' do

@@ -354,6 +354,7 @@ $import-button-width: 174px;
 @include importIcon('file-ods');
 @include importIcon('file-osm');
 @include importIcon('file-shapefile');
+@include importIcon('file-mapinfo');
 
 .SelectedImport {
   &__header {

@@ -7,7 +7,7 @@
   <template slot="sub-header">
     <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
       <img class="u-mr--8 file-icon" :src="fileIcon" @error="setAltImage">
-      {{ $t('DataPage.addLocalFile', { format: typeName }) }}
+      {{ $t('DataPage.importLocalFile', { format: typeName }) }}
     </h3>
   </template>
   <template #default>

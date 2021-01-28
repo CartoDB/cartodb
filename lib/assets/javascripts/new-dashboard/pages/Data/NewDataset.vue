@@ -144,7 +144,7 @@ export default {
       this.$router.push({ name: `${this.getRouteNamePrefix}import-arcgis` });
     },
     navigateToTwitter () {
-      // this.$router.push({ name: `${this.getRouteNamePrefix}import-twitter` });
+      this.$router.push({ name: `${this.getRouteNamePrefix}import-twitter` });
       return true;
     },
     connectionSelected (id) {

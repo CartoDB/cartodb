@@ -11,9 +11,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   respond_to :json
 
-  ssl_required :show, :create, :update, :destroy, :index
-  before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
-  before_filter :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
+  ssl_required :show, :index
+  before_action :get_user, only: [:show, :dump, :data_imports, :data_import]
+  before_action :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
 
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 

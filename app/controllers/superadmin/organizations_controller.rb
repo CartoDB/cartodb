@@ -2,7 +2,7 @@ module Superadmin
   class OrganizationsController < ::Superadmin::SuperadminController
 
     respond_to :json
-    ssl_required :show, :create, :update, :destroy, :index
+    ssl_required :show, :index
     layout 'application'
 
     def show

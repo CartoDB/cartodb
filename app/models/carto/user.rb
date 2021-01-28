@@ -211,10 +211,12 @@ class Carto::User < ActiveRecord::Base
   end
 
   def oauth_for_service(service)
+    # FIXME: should we use ConnectionsManager here?
     oauth_connections.where(connector: service, connection_type: Carto::Connection::TYPE_OAUTH_SERVICE).first
   end
 
   def add_oauth(service, token)
+    # FIXME: use ConnectionsManager here
     connection = Carto::Connection.new(
       user_id: id,
       connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,

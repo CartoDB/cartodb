@@ -127,10 +127,25 @@ export default {
         this.navigateToFile(id);
         return true;
       }
+      if (id === 'arcgis') {
+        this.navigateToArcgis();
+        return true;
+      }
+      if (id === 'twitter') {
+        this.navigateToTwitter();
+        return true;
+      }
       this.$router.push({ name: `${this.$route.name}-connector-selected`, params: { connector: id } });
     },
     navigateToFile (id) {
       this.$router.push({ name: `${this.getRouteNamePrefix}add-local-file`, params: { extension: id } });
+    },
+    navigateToArcgis () {
+      this.$router.push({ name: `${this.getRouteNamePrefix}import-arcgis` });
+    },
+    navigateToTwitter () {
+      // this.$router.push({ name: `${this.getRouteNamePrefix}import-twitter` });
+      return true;
     },
     connectionSelected (id) {
       this.$router.push({ name: `${this.getRouteNamePrefix}new-dataset-connection-dataset`, params: { id: id } });

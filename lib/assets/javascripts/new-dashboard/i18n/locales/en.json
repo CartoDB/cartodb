@@ -195,7 +195,8 @@
     },
     "localFiles": "Local files",
     "databases": "Databases",
-    "cloudFiles": "Cloud files"
+    "cloudFiles": "Cloud files",
+    "othersFiles": "Others files"
   },
   "MapsPage": {
     "header": {

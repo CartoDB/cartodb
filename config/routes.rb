@@ -213,18 +213,25 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-new-connection/:connector'                          => 'visualizations#index', as: :your_connections_new_from_new_dataset
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_new_dataset
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-add-local-file/:extension'               => 'visualizations#index', as: :datasets_local_new
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-import-arcgis'               => 'visualizations#index', as: :datasets_import_arcgis
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-import-twitter'               => 'visualizations#index', as: :datasets_import_twitter
     
     # Datasets from home for new dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-dataset'             => 'visualizations#index', as: :datasets_new_from_home
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-new-connection/:connector'   => 'visualizations#index', as: :your_connections_new_from_home
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_home
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-add-local-file/:extension'   => 'visualizations#index', as: :datasets_local_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-import-arcgis'   => 'visualizations#index', as: :datasets_import_arcgis_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-import-twitter'   => 'visualizations#index', as: :datasets_import_twitter_from_home
+    
 
     # Maps from home for new dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-map'             => 'visualizations#index', as: :maps_new_from_home
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-new-connection/:connector'   => 'visualizations#index', as: :maps_your_connections_new_from_home
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-connection/:id/dataset'      => 'visualizations#index', as: :maps_your_connections_dataset_from_home
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-add-local-file/:extension'   => 'visualizations#index', as: :maps_datasets_local_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-import-arcgis'   => 'visualizations#index', as: :maps_datasets_import_arcgis_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-import-twitter'   => 'visualizations#index', as: :maps_datasets_import_twitter_from_home
 
     # Tables search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q'                    => 'visualizations#index', as: :tables_search
@@ -295,6 +302,8 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-new-connection/:connector'    => 'visualizations#index', as: :your_connections_new_from_new_map
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-connection/:id/dataset'       => 'visualizations#index', as: :your_connections_dataset_from_new_map
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-add-local-file/:extension'    => 'visualizations#index', as: :datasets_local_new_from_new_map
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-import-arcgis'    => 'visualizations#index', as: :datasets_import_arcgis_from_new_map
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-import-twitter'    => 'visualizations#index', as: :datasets_import_twitter_from_new_map
 
     # Dashboards
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/deep-insights'                        => 'visualizations#index', as: :dashboards_index

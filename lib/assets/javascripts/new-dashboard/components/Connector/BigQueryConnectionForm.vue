@@ -12,7 +12,13 @@
             <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer2')}}</span>
           </li>
           <li class="u-mb--16">
-            <span class="text is-caption" v-html="$t('ConnectorsPage.BigQuery.disclaimer3')"></span>
+            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer3')}}</span>
+          </li>
+          <li class="u-mb--16">
+            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer4')}}</span>
+          </li>
+          <li class="u-mb--16">
+            <span class="text is-caption" v-html="$t('ConnectorsPage.BigQuery.disclaimer5')"></span>
           </li>
         </ul>
         <div class="u-mt--48 u-flex u-flex__justify--center u-flex__align--center">
@@ -23,28 +29,15 @@
       <!-- UPLOAD FILE -->
       <div v-else-if="!showDisclaimer && !isServiceAccountValid">
         <div class="section-header is-semibold is-small u-mb--4">
-          <span class="u-flex u-flex__justify--center u-flex__align--center number">1</span>
           {{$t('ConnectorsPage.BigQuery.fileInputLabel')}}
         </div>
         <div class="text is-small is-txtMidGrey u-mb--24" v-html="$t('ConnectorsPage.BigQuery.fileInputHelper')"></div>
         <FileInput
           :supportedFormats="supportedFormats"
           @change="onFileChange" :reduced="true"></FileInput>
-        <div class="section-header is-semibold is-small u-mb--4 u-mt--32">
-          <span class="u-flex u-flex__justify--center u-flex__align--center number">2</span>
-          {{$t('ConnectorsPage.BigQuery.emailLabel')}}
-        </div>
-        <div class="text is-small is-txtMidGrey u-mb--24">
-          {{$t('ConnectorsPage.BigQuery.emailHelpText')}}
-        </div>
-        <input v-model="connectionModel.email" id="email" type="text" placeholder="user@organization.com">
-        <div class="error-wrapper text is-small u-mt--16" v-if="error">
-          <div class="is-small is-semibold">{{$t('ConnectorsPage.BigQuery.errorTitle')}}</div>
-          <div class="text is-small">{{error}}</div>
-        </div>
         <div class="u-flex u-flex__justify--end u-mt--32">
           <button @click="cancel" class="u-mr--28 is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.cancel')}}</button>
-          <button @click="uploadServiceAccount" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': !isFileSelectedAndEmail}">
+          <button @click="uploadServiceAccount" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': !isFileSelected}">
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium">
               {{ $t('DataPage.continue') }}
             </span>
@@ -54,7 +47,6 @@
       <!-- LAST STEP -->
       <div v-else-if="!showDisclaimer && isServiceAccountValid" class="u-flex u-flex__direction--column">
         <div class="section-header is-semibold is-small u-mb--4">
-          <span class="u-flex u-flex__justify--center u-flex__align--center number">3</span>
           {{$t('ConnectorsPage.BigQuery.billingProject')}}
         </div>
         <div class="text is-small is-txtMidGrey u-mb--24" v-html="$t('ConnectorsPage.BigQuery.billingHelper')"></div>
@@ -81,6 +73,7 @@ import FileInput from 'new-dashboard/components/forms/FileInput';
 import SelectComponent from 'new-dashboard/components/forms/SelectComponent';
 import uploadData from '../../mixins/connector/uploadData';
 import { validateEmail } from 'new-dashboard/utils/email-validation';
+import { mapState } from 'vuex';
 
 const SERVICE_ACCOUNT_EXTENSION = 'json';
 
@@ -103,6 +96,7 @@ export default {
       serviceAccount: null,
       connectionModel: {
         name: 'BigQuery',
+        email: null,
         billing_project: null,
         default_project: null
       },
@@ -114,13 +108,15 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      email: state => state.user.email
+    }),
     connectionModelIsValid () {
       return this.connectionModel.name &&
-        this.connectionModel.billing_project &&
-        this.connectionModel.email;
+        this.connectionModel.billing_project;
     },
-    isFileSelectedAndEmail () {
-      return this.file && this.connectionModel.email && this.validateEmail(this.connectionModel.email);
+    isFileSelected () {
+      return this.file;
     },
     isServiceAccountValid () {
       // If there are projects, means that ServiceAccount is valid :)
@@ -145,6 +141,7 @@ export default {
         this.error = '';
         this.submited = true;
         this.connectionModel.default_project = this.connectionModel.billing_project;
+        this.connectionModel.email = this.email;
         const response = await this.$store.dispatch('connectors/createNewBQConnection', { ...this.serviceAccount, ...this.connectionModel });
         this.submited = false;
         this.$emit('connectionSuccess', response.id);

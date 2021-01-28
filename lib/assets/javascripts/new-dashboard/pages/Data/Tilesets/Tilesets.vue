@@ -23,44 +23,62 @@
             </span>
           </div>
 
-          <div class="u-mt--20 u-mb--36">
-            <div class="text">
-              Select Project
+          <div class="u-flex u-mt--20 u-mb--36">
+            <div class="u-mr--28">
+              <div class="text is-small is-semibold">
+                Select Project
+              </div>
+              <DropdownComponent ref="selector" v-model="project"
+                :elements="projects"
+                :showCreate="true"
+                placeholder='Select your BigQuery Project'
+                @createElement="useOtherProject">
+                <template v-slot:createMessage="{ data }">
+                  <span v-if="!data.filteredElements.length">No results.</span>
+                  Select <a @click="data.createNew">{{data.searchingText}}</a> project
+                </template>
+              </DropdownComponent>
             </div>
-            <DropdownComponent ref="selector" v-model="project"
-              :elements="projects"
-              :showCreate="true"
-              placeholder='Select your BigQuery Project'
-              @createElement="useOtherProject">
-              <template v-slot:createMessage="{ data }">
-                <span v-if="!data.filteredElements.length">No results.</span>
-                Select <a @click="data.createNew">{{data.searchingText}}</a> project
-              </template>
-            </DropdownComponent>
+            <div :class="{ 'dropdown-disabled': !project }">
+              <div class="text is-small is-semibold">
+                Project datasets
+              </div>
+              <DropdownComponent ref="selector" v-model="dataset"
+                :elements="datasets"
+                :showCreate="false"
+                placeholder='Select dataset'
+                @createElement="useOtherProject">
+                <template v-slot:createMessage="{ data }">
+                  <span v-if="!data.filteredElements.length">No results.</span>
+                  Select <a @click="data.createNew">{{data.searchingText}}</a> project
+                </template>
+              </DropdownComponent>
+            </div>
           </div>
 
-          <div class="grid__head--sticky">
-            <TilesetListHeader></TilesetListHeader>
-          </div>
-          <ul>
-            <li v-for="tileset in tilesets" :key="tileset.id" class="tileset-item">
-              <TilesetListCard
-                class="tileset-item"
-                :tileset="tileset"></TilesetListCard>
-            </li>
-          </ul>
+          <template v-if="tilesets && tilesets.length">
+            <div class="grid__head--sticky">
+              <TilesetListHeader></TilesetListHeader>
+            </div>
+            <ul>
+              <li v-for="tileset in tilesets" :key="tileset.id" class="tileset-item">
+                <TilesetListCard
+                  class="tileset-item"
+                  :tileset="tileset"></TilesetListCard>
+              </li>
+            </ul>
+          </template>
 
           <!-- EMPTY LIST -->
           <div v-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
             <img src="../../../assets/icons/tilesets/no-tileset.svg">
             <div class="u-ml--32">
-              <div class="text is-body is-semibold u-mb--12">Tilesets not available</div>
-              <div class="text is-caption u-mb--16">
-                This project doesn’t have any tilesets or you don’t have permission to view them. <br>
-                Try changing the <i>Project name</i>.
+              <div class="text is-body is-semibold u-mb--12">
+                {{ project || dataset ? $t('TilesetsPage.noAvailableTitle') : $t('TilesetsPage.noDataTitle')}}
               </div>
-              <div class="text is-small is-txtMidGrey">
-                Doubts? Read the <a href="#">documentation</a> to know about how to create tilesets and integrate them in webmaps.
+              <div class="text is-caption u-mb--16" v-html="project || dataset ? $t('TilesetsPage.noAvailableSubtitle') : $t('TilesetsPage.noDataSubtitle')">
+              </div>
+              <div class="text is-small is-txtMidGrey" v-html="$t('TilesetsPage.noDataCaption')">
               </div>
             </div>
           </div>
@@ -91,7 +109,8 @@ export default {
   data () {
     return {
       moreInfo: false,
-      project: null
+      project: null,
+      dataset: null
     };
   },
   computed: {
@@ -106,8 +125,16 @@ export default {
     projects () {
       return this._projects ? this._projects.map(e => ({ id: e.id, label: e.friendly_name })) : [];
     },
+    datasets () {
+      return [
+        { id: 0, label: 'Dataset001' },
+        { id: 1, label: 'Dataset002' },
+        { id: 2, label: 'Dataset003' },
+        { id: 3, label: 'Dataset004' }
+      ];
+    },
     tilesets () {
-      return [{
+      return this.project && this.dataset ? [{
         id: 'cartobq.maps.osm_buildings',
         privacy: 'public',
         created_at: new Date('2021-01-01T10:05:14.398Z'),
@@ -124,7 +151,7 @@ export default {
         privacy: 'private',
         created_at: new Date('2021-01-01T10:05:14.398Z'),
         updated_at: new Date('2021-01-15T10:05:14.398Z')
-      }];
+      }] : [];
     },
     isSomeTilesetSelected () {
       return this.selectedTilesets.length > 0;
@@ -183,6 +210,14 @@ export default {
   &:not(:last-child) {
     border-bottom: 1px solid $border-color;
   }
+}
+.dropdown-disabled {
+  pointer-events: none;
+  opacity: .38;
+}
+.dropdown-wrapper {
+  width: 295px;
+  margin-top: 8px;
 }
 
 .more-info {

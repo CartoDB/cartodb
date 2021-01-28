@@ -68,23 +68,13 @@ module Carto
     end
 
     def publish(dataset_id:, tileset_id:)
-      if @billing_project_id != @project_id
-        raise Carto::UnprocesableEntityError, 'User must be the owner of the tileset'
-      end
+      members = [MAPS_API_V2_US_SERVICE_ACCOUNT, MAPS_API_V2_EU_SERVICE_ACCOUNT]
+      set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: members)
+    end
 
-      resource = "projects/#{@project_id}/datasets/#{dataset_id}/tables/#{tileset_id}"
-
-      binding = Google::Apis::BigqueryV2::Binding.new
-      binding.members = [MAPS_API_V2_US_SERVICE_ACCOUNT, MAPS_API_V2_EU_SERVICE_ACCOUNT]
-      binding.role = MAPS_API_V2_READ_ACCESS
-
-      policy = Google::Apis::BigqueryV2::Policy.new
-      policy.bindings = [binding]
-
-      iam_policy_request = Google::Apis::BigqueryV2::SetIamPolicyRequest.new
-      iam_policy_request.policy = policy
-
-      @bigquery_api.set_table_iam_policy(resource, iam_policy_request)
+    def unpublish(dataset_id:, tileset_id:)
+      members = []
+      set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: members)
     end
 
     private
@@ -155,6 +145,22 @@ module Carto
         AND
           option_value LIKE '%carto_tileset%'
       }.squish
+    end
+
+    def set_tileset_iam_policy(dataset_id:, tileset_id:, members:)
+      resource = "projects/#{@project_id}/datasets/#{dataset_id}/tables/#{tileset_id}"
+
+      binding = Google::Apis::BigqueryV2::Binding.new
+      binding.members = members
+      binding.role = MAPS_API_V2_READ_ACCESS
+
+      policy = Google::Apis::BigqueryV2::Policy.new
+      policy.bindings = [binding]
+
+      iam_policy_request = Google::Apis::BigqueryV2::SetIamPolicyRequest.new
+      iam_policy_request.policy = policy
+
+      @bigquery_api.set_table_iam_policy(resource, iam_policy_request)
     end
 
   end

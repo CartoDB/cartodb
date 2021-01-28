@@ -51,6 +51,18 @@ module Carto
           render_jsonp({}, 204)
         end
 
+        def unpublish
+          dataset_id = params['dataset_id']
+          raise Carto::LoadError, 'Missing dataset_id query param' if dataset_id.blank?
+
+          tileset_id = params['tileset_id']
+          raise Carto::LoadError, 'Missing tileset_id query param' if tileset_id.blank?
+
+          @service.unpublish(dataset_id: dataset_id, tileset_id: tileset_id)
+
+          render_jsonp({}, 204)
+        end
+
         private
 
         def load_user

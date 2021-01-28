@@ -455,6 +455,34 @@ describe CentralUserCommands do
         central_user_commands.delete_user(message)
 
         expect(user.reload).to be_present
+        expect(shared_table.reload).to be_present
+      end
+    end
+
+    context 'when the user belongs to an organization and has access to shared entities' do
+      let(:organization) { create_organization_with_users(seats: 10) }
+      let(:shared_table_owner) { organization.owner }
+      let(:user) { organization.non_owner_users.first }
+      let(:shared_table) { create_random_table(shared_table_owner) }
+
+      before do
+        share_table(shared_table, user)
+        notifications_topic.stubs(:publish)
+      end
+
+      it 'cleans sharing information when the recipient user is deleted' do
+        expect(Carto::SharedEntity.exists?(recipient_id: user.id)).to eq(true)
+        expect(
+          JSON.parse(shared_table.map.visualization.permission.access_control_list).count
+        ).to eq(1)
+
+        central_user_commands.delete_user(message)
+
+        expect(shared_table.reload).to be_present
+        expect(Carto::SharedEntity.exists?(recipient_id: user.id)).to eq(false)
+        expect(
+          JSON.parse(shared_table.reload.map.visualization.permission.access_control_list).count
+        ).to eq(0)
       end
     end
 

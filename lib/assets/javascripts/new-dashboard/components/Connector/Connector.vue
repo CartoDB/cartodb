@@ -101,11 +101,13 @@ export default {
   }
 
   .title {
-    white-space: nowrap;
+    white-space: pre-wrap;
+    text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-    padding: 0 12px;
+    padding: 0 8px;
+    max-height: 32px;
   }
 
   .tooltip {

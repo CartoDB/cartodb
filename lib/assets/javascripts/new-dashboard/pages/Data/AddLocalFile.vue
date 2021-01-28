@@ -16,7 +16,7 @@
         <div v-if="extension !== 'url'">
           <div v-if="!isFileSelected" class="u-flex u-flex__direction--column u-mb--32">
             <span class="is-small is-semibold u-mb--8"> {{ $t('DataPage.dataPreparation') }}</span>
-            <div class="text is-small is-txtMidGrey" v-html="$t(`DataPage.messageHelper${typeName}`)">
+            <div class="text is-small is-txtMidGrey" v-html="$t(`DataPage.messageHelper${typeNameNotWhiteSpaces}`)">
             </div>
           </div>
           <FileInput
@@ -111,6 +111,9 @@ export default {
     },
     typeName () {
       return (this.localFiles.find(lf => lf.id === this.extension) || {}).label || this.$t('DataPage.defaultLocalFile');
+    },
+    typeNameNotWhiteSpaces () {
+      return this.typeName.replace(/\s/g, '_');
     },
     fileIcon () {
       return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/${this.extension}.svg`;

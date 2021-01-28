@@ -20,6 +20,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 
+- Raise limit of Box files [16080](https://github.com/CartoDB/cartodb/pull/16080)
 - Change url Map Loads docs. in quota section [16068](https://github.com/CartoDB/cartodb/pull/16068)
 - Rake task for renaming BQ connector [16030](https://github.com/CartoDB/cartodb/pull/16030)
 - Fix maximum of 50 projects in BQ connector billing project selector [16027](https://github.com/CartoDB/cartodb/pull/16027)

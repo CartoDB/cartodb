@@ -60,7 +60,6 @@
 <script>
 
 import exportedScssVars from 'new-dashboard/styles/helpers/_assetsDir.scss';
-import FileInput from 'new-dashboard/components/forms/FileInput';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';
 import UploadConfig from 'dashboard/common/upload-config';
@@ -73,7 +72,6 @@ export default {
   inject: ['backboneViews'],
   mixins: [uploadData],
   components: {
-    FileInput,
     Dialog,
     DatasetSyncCard,
     GuessPrivacyFooter
@@ -135,7 +133,7 @@ export default {
     connectDataset () {
       if (this.isFileSelected) {
         const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
-        backgroundPollingView._addDataset({...this.uploadObject});
+        backgroundPollingView._addDataset({ ...this.uploadObject });
         this.$refs.dialog.closePopup();
       }
     }
@@ -152,45 +150,6 @@ export default {
 .Form-rowData {
   .Form-input {
     height: 36px;
-  }
-}
-
-.drag-zone {
-  width: 460px;
-  height: 204px;
-  border-radius: 4px;
-  border: dashed 2px #dddddd;
-  background-color: $white;
-  transition: border-color 0.25s linear;
-  >* {
-    transition: opacity 0.25s linear;
-  }
-  &.dragged {
-    border-color: $blue--500;
-    >* {
-      opacity: 0.5;
-    }
-  }
-}
-input[type=file] {
-  display: none;
-}
-.file {
-  background-color: $white;
-  height: 74px;
-  max-width: 460px;
-  border-radius: 4px;
-  border: 1px solid $blue--500;
-  margin: 0 auto;
-}
-
-.file-main {
-  max-width: calc(100% - 24px);
-
-  .url-text {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
   }
 }
 

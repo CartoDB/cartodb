@@ -10,6 +10,7 @@ module Carto
     SCOPES = %w(https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/bigquery).freeze
     MAPS_API_V2_US_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@avid-wavelet-844.iam.gserviceaccount.com'.freeze
     MAPS_API_V2_EU_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@cdb-gcp-europe.iam.gserviceaccount.com'.freeze
+    MAPS_API_V2_READ_ACCESS = 'roles/bigquery.dataViewer'.freeze
 
     def initialize(user:, connection_id:, project_id:)
       conn = user.db_connections.where(id: connection_id, connector: 'bigquery').first
@@ -75,7 +76,7 @@ module Carto
 
       binding = Google::Apis::BigqueryV2::Binding.new
       binding.members = [MAPS_API_V2_US_SERVICE_ACCOUNT, MAPS_API_V2_EU_SERVICE_ACCOUNT]
-      binding.role = 'roles/bigquery.dataViewer'
+      binding.role = MAPS_API_V2_READ_ACCESS
 
       policy = Google::Apis::BigqueryV2::Policy.new
       policy.bindings = [binding]

@@ -68,7 +68,7 @@ import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard'
 import { LOCAL_FILES } from 'new-dashboard/utils/connector/local-file-option';
 
 export default {
-  name: 'AddLocalFile',
+  name: 'ArcgisConnector',
   inject: ['backboneViews'],
   mixins: [uploadData],
   components: {
@@ -95,9 +95,6 @@ export default {
   computed: {
     getRouteNamePrefix () {
       return this.$route.name.replace('import-arcgis', '');
-    },
-    typeName () {
-      return (this.localFiles.find(lf => lf.id === this.extension) || {}).label || this.$t('DataPage.defaultLocalFile');
     },
     fileIcon () {
       return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/arcgis.png`;

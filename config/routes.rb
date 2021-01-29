@@ -661,6 +661,9 @@ CartoDB::Application.routes.draw do
 
       get '/bigquery/datasets', to: 'bigquery_tilesets#list_datasets', as: :api_v4_bigquery_list_datasets
       get '/bigquery/tilesets', to: 'bigquery_tilesets#list_tilesets', as: :api_v4_bigquery_list_tilesets
+      get '/bigquery/tilesets/:tileset_id', to: 'bigquery_tilesets#tileset', as: :api_v4_bigquery_get_tileset, constraints: { tileset_id: /(.*)\.(.*)\.(.*)/ }
+      get '/bigquery/tilesets/publish', to: 'bigquery_tilesets#publish', as: :api_v4_bigquery_tilesets_publish
+      get '/bigquery/tilesets/unpublish', to: 'bigquery_tilesets#unpublish', as: :api_v4_bigquery_tilesets_unpublish
     end
 
     scope 'v3/' do

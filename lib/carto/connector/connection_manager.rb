@@ -261,25 +261,25 @@ module Carto
       (credentials & connection_parameters).empty?
     end
 
-    def self.singleton_connector?(connector, connection_type)
+    def self.singleton_connector?(connection)
       # All OAuth connections are singleton (per user/connector/connection_type)
-      return true if connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+      return true if connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
 
       # BigQuery as db connection (with service account) is singleton for the time being
-      return connector == BQ_CONNECTOR
+      return connection.connector == BQ_CONNECTOR
     end
 
-    def self.validate_connector(connector, connection_type, connection_parameters)
+    def self.errors(connection)
       errors = []
-      case connection_type
+      case connection.connection_type
       when Carto::Connection::TYPE_OAUTH_SERVICE
-        errors << "Not a valid OAuth connector: #{connector}" unless connector.in?(valid_oauth_services)
+        errors << "Not a valid OAuth connector: #{connection.connector}" unless connection.connector.in?(valid_oauth_services)
       when Carto::Connection::TYPE_DB_CONNECTOR
-        if !connector.in?(valid_db_connectors)
-          errors << "Not a valid DB connector: #{connector}"
-        elsif connector == BQ_CONNECTOR
-          errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if connection_parameters['refresh_token'].present?
-          errors << "Parameter access_token not supported through connections; use import API" if connection_parameters['access_token'].present?
+        if !connection.connector.in?(valid_db_connectors)
+          errors << "Not a valid DB connector: #{connection.connector}"
+        elsif connection.connector == BQ_CONNECTOR
+          errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if connection.parameters['refresh_token'].present?
+          errors << "Parameter access_token not supported through connections; use import API" if connection.parameters['access_token'].present?
         end
       end
       errors

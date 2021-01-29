@@ -90,6 +90,9 @@ steps:
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA}
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${BRANCH_NAME}--${SHORT_SHA}
       if [ "${BRANCH_NAME}" == 'master' ];then
+        docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME} gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
+        docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${BRANCH_NAME} gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:latest
+        docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${BRANCH_NAME} gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:latest
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest

@@ -142,8 +142,24 @@ module CartoDB
             query[:limit] = limit unless limit.nil?
             query[:offset] = offset unless offset.nil?
 
-            results, _response = get(SEARCH_URI, query: query)
-            results['entries']
+            if offset.present? && offset > 0
+              # external pagination
+              results, _response = get(SEARCH_URI, query: query)
+              return results['entries']
+            end
+
+            entries = []
+            offset = 0
+            loop do
+              query[:offset] = offset
+              query[:limit] = limit - entries.size if limit.present? # possibly capped by the Box API
+              results, _response = get(SEARCH_URI, query: query)
+              new_entries = results['entries']
+              entries += new_entries
+              offset += new_entries.size
+              break if entries.size >= results['total_count'] || entries.size >= limit
+            end
+            entries
           end
 
           def download_url(file, options = {})
@@ -382,7 +398,7 @@ module CartoDB
                                  ancestor_folder_ids: nil,
                                  content_types: nil,
                                  type: nil,
-                                 limit: 200,
+                                 limit: 2000,
                                  offset: 0)
 
           result = result.map { |i| format_item_data(i) }.sort { |x, y| y[:updated_at] <=> x[:updated_at] }

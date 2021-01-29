@@ -8,12 +8,13 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 8c86ac330a4c360b6b89da2609bf9216fffbd246
-  tag: v1.0.1
+  revision: f4c0bf5bc003186f9d6ca910d78d666d4c8e6c9c
+  tag: v1.1.0
   specs:
-    cartodb-common (1.0.1)
+    cartodb-common (1.1.0)
       argon2 (~> 2)
       google-cloud-pubsub (~> 2.3)
+      google-cloud-resource_manager
       rails (>= 4, < 6)
       rollbar
 
@@ -214,6 +215,10 @@ GEM
       gapic-common (~> 0.3)
       google-cloud-errors (~> 1.0)
       grpc-google-iam-v1 (>= 0.6.10, < 2.0)
+    google-cloud-resource_manager (0.34.0)
+      google-api-client (~> 0.33)
+      google-cloud-core (~> 1.2)
+      googleauth (~> 0.9)
     google-protobuf (3.14.0)
     googleapis-common-protos (1.3.10)
       google-protobuf (~> 3.11)
@@ -479,7 +484,7 @@ GEM
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
       rack (>= 1, < 3)
-    thor (1.0.1)
+    thor (1.1.0)
     thread_safe (0.3.6)
     tilt (2.0.10)
     trollop (2.9.10)

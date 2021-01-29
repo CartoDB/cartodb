@@ -17,7 +17,9 @@ migration(
     end
     run %{
       INSERT INTO connections(user_id, connection_type, connector, name, token, created_at, updated_at)
-      SELECT user_id, 'oauth-service', service, service, token, created_at, updated_at FROM synchronization_oauths
+      SELECT user_id, 'oauth-service', service, service, token, created_at, updated_at
+        FROM synchronization_oauths
+        WHERE EXISTS (SELECT id FROM users WHERE id=synchronization_oauths.user_id);
     }
   end,
   proc do

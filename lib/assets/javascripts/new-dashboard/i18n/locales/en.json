@@ -911,7 +911,9 @@
       "startDate": "Start date",
       "endDate": "End date",
       "time": "Time",
-      "use": "Use"
+      "use": "Use",
+      "remaining": "of your remaining %{quota} Twitter credits",
+      "gmt": "Time is in GMT+0 (You are in GMT%{gmt})"
     },
     "removeModal": {
       "title": "You are about to delete your {connector} connection",

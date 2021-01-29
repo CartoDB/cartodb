@@ -14,8 +14,8 @@
     <div class="u-flex u-flex__justify--center">
       <div class="u-flex u-flex__direction--column">
         <span class="is-semibold is-small">{{ $t('ConnectorsPage.Twitter.subtitle') }}</span>
-        <span class="is-small u-mt--8">{{ $t('ConnectorsPage.Twitter.description') }}</span>  
-        <div class="u-flex u-mt--32 u-flex__align--center u-flex__justify--between u-mt--16">
+        <span class="is-small u-mt--8">{{ $t('ConnectorsPage.Twitter.description') }}</span>
+        <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--32">
           <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
             <label class="text is-small">{{ $t('ConnectorsPage.Twitter.category') }}</label>
           </div>
@@ -61,12 +61,21 @@
             </div>
           </div>
         </div>
-        <div class="u-flex u-mt--32 u-flex__align--center u-flex__justify--between u-mt--16">
-          <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
+        <div class="u-flex u-flex__align--center u-flex__justify--between">
+          <div></div>
+          <div class="Form-rowData Form-rowData--noMargin">
+            <p class="is-small is-txtSoftGrey">{{ $t('ConnectorsPage.Twitter.gmt', { gmt: getYouGMT }) }}</p>
+          </div>
+        </div>
+        <div class="u-flex u-flex__align--start u-flex__justify--between u-mt--8">
+          <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16" style="margin-top:2px;">
             <label class="text is-small">{{ $t('ConnectorsPage.Twitter.use') }}</label>
           </div>
           <div class="Form-rowData Form-rowData--noMargin">
-            <input class="u-flex__grow--1" type="range" min="0" max="100">
+            <div class="u-width--100">
+              <input class="u-flex__grow--1" type="range" min="0" max="100">
+              <p class="is-small is-txtSoftGrey u-mt--8"><span class="is-txtMainTextColor is-semibold">50%</span> {{ $t('ConnectorsPage.Twitter.remaining', { quota: twitterQuota }) }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -94,6 +103,8 @@ import UploadConfig from 'dashboard/common/upload-config';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import { LOCAL_FILES } from 'new-dashboard/utils/connector/local-file-option';
+import { mapState } from 'vuex';
+import moment from 'moment';
 
 export default {
   name: 'ArcgisConnector',
@@ -121,11 +132,17 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      twitterQuota: state => state.user && state.user.twitter && state.user.twitter.quota
+    }),
     getRouteNamePrefix () {
       return this.$route.name.replace('import-twitter', '');
     },
     fileIcon () {
       return `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/twitter.svg`;
+    },
+    getYouGMT () {
+      return moment().format('Z');
     }
   },
   methods: {

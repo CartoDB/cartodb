@@ -78,7 +78,7 @@ export default {
     },
     connectionParamsFormated () {
       if (this.connectionParams) {
-        const keysToRemove = ['service_account', 'password'];
+        const keysToRemove = ['service_account', 'password', 'default_project'];
         return Object.keys(this.connectionParams)
           .filter(key => keysToRemove.indexOf(key) < 0)
           .reduce((accum, value) => {

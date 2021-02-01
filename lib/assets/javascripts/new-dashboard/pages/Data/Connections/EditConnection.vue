@@ -37,6 +37,9 @@
           <router-link :to="{ name: 'your-connections' }">
             <button class="is-small is-semibold is-txtPrimary">{{ $t('DataPage.imports.connections') }}</button>
           </router-link>
+          <router-link :to="{ name: 'tilesets' }">
+            <button class="u-ml--36 is-small is-semibold is-txtPrimary">{{$t('DataPage.tilesets')}}</button>
+          </router-link>
           <button @click="navigateNext" class="button is-primary u-ml--36">{{ $t('DataPage.addYourData') }}</button>
         </div>
       </div>

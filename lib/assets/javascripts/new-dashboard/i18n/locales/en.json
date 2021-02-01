@@ -85,6 +85,7 @@
       },
       "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}' class='is-bold'>Upgrade now</a> to get more datasets."
     },
+    "tilesets": "Your tilesets",
     "dataPreparation": "Data preparation",
     "messageHelperCSV": "<p>Your CSV file should contain column names in the first line and should be encoded using UTF-8. If your file contains location coordinates, they must be provided as latitude-longitude coordinates in WGS84 (decimal degrees) and the corresponding columns must be named &quot;longitude&quot; and &quot;latitude&quot;.</p><br><p>By default, the importer will try to <a target='_blank' href='https://carto.com/help/working-with-data/guessing'>guess</a> the column types from the content but you can specify the column types using a <a target='_blank'   href='https://carto.com/help/working-with-data/csvt/#trophy-from-csv-to-csvt'>CSVT</a> file.</p><br><p>For additional information, please read the <a target='_blank'   href='https://carto.com/help/working-with-data/preparing-and-formatting-data/'>Preparing and Formatting Data</a> article in the Help Center and the <a target='_blank'   href='https://carto.com/developers/import-api/guides/importing-geospatial-data'>Importing Geospatial Data</a> guide.</p>",
     "messageHelperGeoJSON": "<p>Your file extension must be &quot;.json&quot; or &quot;.geojson&quot;. The importer supports all geometry types except GeometryCollection, but all the features within a FeatureCollection must be of the same geometry type.</p><br><p>For additional information, please read the <a target='_blank' href='https://carto.com/developers/import-api/guides/importing-geospatial-data'>Importing Geospatial Data</a> guide.</p>",
@@ -177,7 +178,7 @@
         "label-server": "Server",
         "placeholder-name": "Type a name for your connection",
         "label-name": "Name",
-        "placeholder-server": "Paste your %{brand} Server URL",
+        "placeholder-server": "Type your server DNS name or IP address",
         "label-port": "Port",
         "placeholder-port": "Type your port",
         "label-database": "Database",

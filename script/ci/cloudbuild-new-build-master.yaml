@@ -106,47 +106,4 @@ steps:
         echo '** Skipping, this is not a push to master **'
       fi
 
-# Build and push image: pull request
-- name: gcr.io/cloud-builders/docker
-  entrypoint: /bin/bash
-  args:
-    - -c
-    - |
-      set -x 
-      if [ ! -z "${_PR_NUMBER}" ] && [ ! "${_HEAD_BRANCH}" == 'master' ]
-      then
-        echo '** Pull request to master **'
-        
-        # Attempts to pull a tag for head branch, if doesn't exists then pulls latest to use cache.
-        echo 'Pulling most recent image for head branch...'
-        docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}
-        if [ ! -z "$?" ]
-        then
-          docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
-          docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}
-        fi
-
-        echo 'Building images...'
-        docker build --build-arg BUNDLE_JOBS=4 --build-arg COMPILE_ASSETS=true -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH} .
-        docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_HEAD_BRANCH}  -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_HEAD_BRANCH}--${SHORT_SHA}   -f Dockerfile.resque .
-        docker build -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_HEAD_BRANCH} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_HEAD_BRANCH}--${SHORT_SHA}  -f Dockerfile.subscriber .
-        
-        echo 'Pushing builder image...'
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}--${SHORT_SHA}
-        
-        echo 'Pushing builder-resque image...'
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_HEAD_BRANCH}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_HEAD_BRANCH}--${SHORT_SHA}
-        
-        echo 'Pushing builder-subscriber image...'
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_HEAD_BRANCH}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_HEAD_BRANCH}--${SHORT_SHA}
-      else
-        echo '** Skipping, this is not a pull request. **'
-      fi
-
 timeout: 1800s

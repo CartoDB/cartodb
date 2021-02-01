@@ -15,80 +15,84 @@
         </SectionTitle>
 
         <div class="grid-cell grid-cell--col12">
-          <div class="u-flex u-flex__align--center text is-small u-pt--20 u-pb--20 u-pl--24 u-pr--24 more-info" :class="{ open: moreInfo }">
-            <img class="info__svg" svg-inline src="../../../assets/icons/common/info-icon.svg" height="20px" width="20px">
-            <span class="u-ml--16">
-              Preview your Tilesets here or use them on your own application using <a href="#">CARTO for deck.gl</a> or any <a href="#">other library</a>. <br>
-              Check out the <a href="#">Documentation</a> to learn how to add Tilesets to your own application
-            </span>
-          </div>
-          <div class="u-flex u-mt--20 u-mb--36">
-            <div class="u-mr--28">
-              <div class="text is-small is-semibold">
-                Select Project
-              </div>
-              <DropdownComponent ref="selector" v-model="project"
-                :elements="projects"
-                :showCreate="true"
-                placeholder='Select your BigQuery Project'
-                @createElement="useOtherProject">
-                <template v-slot:createMessage="{ data }">
-                  <span v-if="!data.filteredElements.length">No results.</span>
-                  Select <a @click="data.createNew">{{data.searchingText}}</a> project
-                </template>
-              </DropdownComponent>
+          <template v-if="!loadingProjects">
+            <div class="u-flex u-flex__align--center text is-small u-pt--20 u-pb--20 u-pl--24 u-pr--24 more-info" :class="{ open: moreInfo }">
+              <img class="info__svg" svg-inline src="../../../assets/icons/common/info-icon.svg" height="20px" width="20px">
+              <span class="u-ml--16">
+                Preview your Tilesets here or use them on your own application using <a href="#">CARTO for deck.gl</a> or any <a href="#">other library</a>. <br>
+                Check out the <a href="#">Documentation</a> to learn how to add Tilesets to your own application
+              </span>
             </div>
-            <div :class="{ 'dropdown-disabled': !project }">
-              <div class="text is-small is-semibold">
-                Project datasets
+            <div class="u-flex u-mt--20 u-mb--36">
+              <div class="u-mr--28">
+                <div class="text is-small is-semibold">
+                  Select Project
+                </div>
+                <DropdownComponent ref="selector" v-model="project"
+                  :elements="projects"
+                  :showCreate="true"
+                  placeholder='Select your BigQuery Project'
+                  @createElement="useOtherProject">
+                  <template v-slot:createMessage="{ data }">
+                    <span v-if="!data.filteredElements.length">No results.</span>
+                    Select <a @click="data.createNew">{{data.searchingText}}</a> project
+                  </template>
+                </DropdownComponent>
               </div>
-              <DropdownComponent ref="selector" v-model="dataset"
-                :elements="datasets"
-                :showCreate="false"
-                placeholder='Select dataset'
-                @createElement="useOtherProject">
-                <template v-slot:createMessage="{ data }">
-                  <span v-if="!data.filteredElements.length">No results.</span>
-                  Select <a @click="data.createNew">{{data.searchingText}}</a> project
-                </template>
-              </DropdownComponent>
+              <div :class="{ 'dropdown-disabled': !project }">
+                <div class="text is-small is-semibold">
+                  Project datasets
+                </div>
+                <DropdownComponent ref="selector" v-model="dataset"
+                  :elements="datasets"
+                  :showCreate="false"
+                  placeholder='Select dataset'
+                  @createElement="useOtherProject">
+                  <template v-slot:createMessage="{ data }">
+                    <span v-if="!data.filteredElements.length">No results.</span>
+                    Select <a @click="data.createNew">{{data.searchingText}}</a> project
+                  </template>
+                </DropdownComponent>
+              </div>
             </div>
-          </div>
 
-          <ul v-if="loadingTilesets">
-            <li v-for="n in maxVisibleTilesets" :key="n" class="dataset-item">
-              <TilesetListCardFake></TilesetListCardFake>
-            </li>
-          </ul>
-          <template v-else>
-            <template v-if="tilesets && tilesets.length">
-              <div class="grid__head--sticky">
-                <TilesetListHeader></TilesetListHeader>
+            <ul v-if="loadingTilesets">
+              <li v-for="n in maxVisibleTilesets" :key="n" class="dataset-item">
+                <TilesetListCardFake></TilesetListCardFake>
+              </li>
+            </ul>
+            <template v-else>
+              <template v-if="tilesets && tilesets.length">
+                <div class="grid__head--sticky">
+                  <TilesetListHeader></TilesetListHeader>
+                </div>
+                <ul>
+                  <li v-for="tileset in tilesets" :key="tileset.id" class="tileset-item">
+                    <TilesetListCard
+                      class="tileset-item"
+                      :tileset="tileset"></TilesetListCard>
+                  </li>
+                </ul>
+                <Pagination v-if="needPagination" :page="page" :numPages="numPages" @pageChange="goToPage"></Pagination>
+              </template>
+
+              <!-- EMPTY LIST -->
+              <div v-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
+                <img src="../../../assets/icons/tilesets/no-tileset.svg">
+                <div class="u-ml--32">
+                  <div class="text is-body is-semibold u-mb--12">
+                    {{ project && dataset ? $t('TilesetsPage.noAvailableTitle') : $t('TilesetsPage.noDataTitle')}}
+                  </div>
+                  <div class="text is-caption u-mb--16" v-html="project && dataset ? $t('TilesetsPage.noAvailableSubtitle') : $t('TilesetsPage.noDataSubtitle')">
+                  </div>
+                  <div class="text is-small is-txtMidGrey" v-html="$t('TilesetsPage.noDataCaption')">
+                  </div>
+                </div>
               </div>
-              <ul>
-                <li v-for="tileset in tilesets" :key="tileset.id" class="tileset-item">
-                  <TilesetListCard
-                    class="tileset-item"
-                    :tileset="tileset"></TilesetListCard>
-                </li>
-              </ul>
-              <Pagination v-if="needPagination" :page="page" :numPages="numPages" @pageChange="goToPage"></Pagination>
             </template>
-
-            <!-- EMPTY LIST -->
-            <div v-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
-              <img src="../../../assets/icons/tilesets/no-tileset.svg">
-              <div class="u-ml--32">
-                <div class="text is-body is-semibold u-mb--12">
-                  {{ project && dataset ? $t('TilesetsPage.noAvailableTitle') : $t('TilesetsPage.noDataTitle')}}
-                </div>
-                <div class="text is-caption u-mb--16" v-html="project && dataset ? $t('TilesetsPage.noAvailableSubtitle') : $t('TilesetsPage.noDataSubtitle')">
-                </div>
-                <div class="text is-small is-txtMidGrey" v-html="$t('TilesetsPage.noDataCaption')">
-                </div>
-              </div>
-            </div>
           </template>
+          <LoadingState v-else primary/>
+
         </div>
       </div>
     </div>
@@ -97,6 +101,7 @@
 
 <script>
 import SectionTitle from 'new-dashboard/components/SectionTitle';
+import LoadingState from 'new-dashboard/components/States/LoadingState';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import Pagination from 'new-dashboard/components/Pagination';
 import DropdownComponent from 'new-dashboard/components/forms/DropdownComponent';
@@ -114,7 +119,8 @@ export default {
     TilesetListHeader,
     Pagination,
     TilesetListCard,
-    TilesetListCardFake
+    TilesetListCardFake,
+    LoadingState
   },
   data () {
     return {
@@ -129,6 +135,7 @@ export default {
     ...mapState({
       loading: state => state.connectors.loadingConnections,
       loadingDatasets: state => state.connectors.loadingDatasets,
+      loadingProjects: state => state.connectors.loadingProjects,
       loadingTilesets: state => state.tilesets.loadingTilesets,
       projectsInRaw: state => state.connectors.projects,
       datasetsInRaw: state => state.connectors.bqDatasets,
@@ -194,6 +201,9 @@ export default {
   },
   mounted () {
     this.fetchProjects();
+  },
+  beforeDestroy () {
+    this.$store.commit('tilesets/setTilesets', []);
   },
   watch: {
     projects () {

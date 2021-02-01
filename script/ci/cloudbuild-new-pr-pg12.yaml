@@ -76,13 +76,13 @@ steps:
     - -c
     - |
       set -x
-      docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}
+      docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}
       if [ ! -z "$?" ]
         then
           docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
-          docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}
+          docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}
         fi
-      docker build --build-arg BUNDLE_JOBS=16 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:latest .
+      docker build --build-arg BUNDLE_JOBS=16 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:latest .
 
 # Push current branch image to registry
 - name: gcr.io/cloud-builders/docker
@@ -91,11 +91,11 @@ steps:
     - -c
     - |
       set -x
-      if [ ! -z "${_HEAD_BRANCH}" ] && [ ! "${_HEAD_BRANCH}" == 'master' ]
+      if [ ! -z "${BRANCH_NAME}" ] && [ ! "${BRANCH_NAME}" == 'master' ]
       then
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}
+        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${_HEAD_BRANCH}--${SHORT_SHA}
+        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}--${SHORT_SHA}
       fi
 
 # Run tests

@@ -82,7 +82,7 @@ steps:
           docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
           docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}
         fi
-      docker build --build-arg BUNDLE_JOBS=16 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:latest .
+      docker build --build-arg BUNDLE_JOBS=16 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME} .
 
 # Push current branch image to registry
 - name: gcr.io/cloud-builders/docker

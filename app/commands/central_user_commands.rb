@@ -51,7 +51,7 @@ class CentralUserCommands
       logger.info(message: 'Processing :delete_user', class_name: self.class.name)
 
       if user
-        process_user_deletion(user)
+        process_user_deletion(user, payload)
       else
         logger.warn(message: 'User not found', user_id: payload[:id], class_name: self.class.name)
       end
@@ -72,7 +72,7 @@ class CentralUserCommands
 
   private
 
-  def process_user_deletion(user)
+  def process_user_deletion(user, payload)
     user.set_force_destroy if [true, 'true'].include?(payload[:force])
     user.destroy
     logger.info(message: 'User deleted', current_user: user.username, class_name: self.class.name)

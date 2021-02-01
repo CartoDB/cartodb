@@ -67,14 +67,9 @@ export default {
         `&color_by_value=aggregated_total`) || '';
     },
     async setPrivacy (privacy) {
-      // try {
-      //   await this.$store.dispatch('tilesets/setPrivacy', { source: this.source, tileset_id: this.tileset_id, ...this.$route.query, privacy });
-      // } catch (error) {
-      //   debugger;
-      // }
-      await this.$store.dispatch('tilesets/setPrivacy', { source: this.source, tileset_id: this.tileset_id, ...this.$route.query, privacy });
+      const [,, table] = this.tileset_id.split('.');
+      await this.$store.dispatch('tilesets/setPrivacy', { source: this.source, table, ...this.$route.query, privacy });
       this.props.shareOptions.privacy = privacy;
-      // this.props.shareOptions.privacy = privacy;
     }
   }
 };

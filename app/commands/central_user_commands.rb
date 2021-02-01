@@ -54,7 +54,6 @@ class CentralUserCommands
         process_user_deletion(user)
       else
         logger.warn(message: 'User not found', user_id: payload[:id], class_name: self.class.name)
-        notifications_topic.publish(:user_deleted, {})
       end
     end
   rescue CartoDB::SharedEntitiesError

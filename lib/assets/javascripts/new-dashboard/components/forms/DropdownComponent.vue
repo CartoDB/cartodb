@@ -108,7 +108,7 @@ export default {
   .item-list-container {
     position: absolute;
     top: 44px;
-    max-height: 200px !important;
+    max-height: 200px;
     width: 100%;
     z-index: 9;
     border: 1px solid $neutral--300;

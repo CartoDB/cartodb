@@ -70,7 +70,8 @@
                   <li v-for="tileset in tilesets" :key="tileset.id" class="tileset-item">
                     <TilesetListCard
                       class="tileset-item"
-                      :tileset="tileset"></TilesetListCard>
+                      :tileset="tileset"
+                      @onClick="openViewer"></TilesetListCard>
                   </li>
                 </ul>
                 <Pagination v-if="needPagination" :page="page" :numPages="numPages" @pageChange="goToPage"></Pagination>
@@ -139,7 +140,8 @@ export default {
       loadingTilesets: state => state.tilesets.loadingTilesets,
       projectsInRaw: state => state.connectors.projects,
       datasetsInRaw: state => state.connectors.bqDatasets,
-      tilesetsInRaw: state => state.tilesets.tilesets
+      tilesetsInRaw: state => state.tilesets.tilesets,
+      baseUrl: state => state.user.base_url
     }),
     ...mapGetters({
       bqConnection: 'connectors/getBigqueryConnection'
@@ -197,6 +199,9 @@ export default {
         id: searchingText,
         label: searchingText
       };
+    },
+    openViewer (tileset) {
+      window.open(`${this.baseUrl}/dashboard/tilesets/${tileset.id}?connection_id=${this.bqConnection.id}&project_id=${this.project.id}&dataset_id=${this.dataset.id}`, '_blank');
     }
   },
   mounted () {

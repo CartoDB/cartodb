@@ -117,7 +117,14 @@ module Carto
         DECLARE metadata_query STRING default '';
 
         SET tilesets = (
-          SELECT ARRAY_AGG(id) FROM (#{tileset_list_query(dataset_id)})
+          SELECT
+            ARRAY_AGG(id)
+          FROM (
+            SELECT *
+            FROM (#{tileset_list_query(dataset_id)})
+            ORDER BY #{pagination[:order]} #{pagination[:direction]}
+            LIMIT #{pagination[:per_page]} OFFSET #{pagination[:offset]}
+          )
         );
 
         LOOP
@@ -142,12 +149,7 @@ module Carto
           END IF;
         END LOOP;
 
-        EXECUTE IMMEDIATE """
-          SELECT *
-          FROM (""" || metadata_query || """)
-          ORDER BY #{pagination[:order]} #{pagination[:direction]}
-          LIMIT #{pagination[:per_page]} OFFSET #{pagination[:offset]}
-        """;
+        EXECUTE IMMEDIATE metadata_query;
       }.squish
     end
 

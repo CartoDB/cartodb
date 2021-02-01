@@ -506,8 +506,7 @@ describe CentralUserCommands do
     context 'when the user is not found' do
       let(:user_id) { Faker::Internet.uuid }
 
-      it 'succeeds, publishes an empty event and logs a warning' do
-        notifications_topic.expects(:publish).once.with(:user_deleted, {})
+      it 'logs a warning' do
         logger.expects(:warn).with(message: 'User not found', user_id: user_id, class_name: 'CentralUserCommands')
 
         central_user_commands.delete_user(message)

@@ -380,6 +380,7 @@ describe CentralUserCommands do
         )
       end
 
+      # rubocop:disable RSpec/MultipleExpectations
       it 'creates the user with custom account settings' do
         central_user_commands.create_user(message)
 
@@ -404,6 +405,7 @@ describe CentralUserCommands do
         expect(created_user.obs_general_block_price).to eq(5)
         expect(created_user.notification).to eq('Test')
       end
+      # rubocop:enable RSpec/MultipleExpectations
     end
   end
 

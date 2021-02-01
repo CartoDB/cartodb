@@ -128,8 +128,8 @@ export default {
       moreInfo: false,
       project: null,
       dataset: null,
-      page: 1,
-      maxVisibleTilesets: 12,
+      page: this.$route.query.page ? parseInt(this.$route.query.page) : 1,
+      maxVisibleTilesets: 1,
       datasetId: this.$route.query.dataset,
       projectId: this.$route.query.project
     };
@@ -173,6 +173,7 @@ export default {
     },
     goToPage (page) {
       this.page = page;
+      this.$router.push({ name: 'tilesets', query: { project: this.project.id, dataset: this.dataset.id, page: this.page } });
       this.fetchTilesets();
     },
     fetchProjects () {

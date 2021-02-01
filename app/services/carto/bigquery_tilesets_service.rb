@@ -8,6 +8,7 @@ module Carto
     MAX_DATASETS = 500
     TILESET_LABEL = 'carto_tileset'.freeze
     SCOPES = %w(https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/bigquery).freeze
+    MAPS_API_V2_STAGING_SERVICE_ACCOUNT = 'maps-api-v2@cartodb-on-gcp-staging.iam.gserviceaccount.com'.freeze
     MAPS_API_V2_US_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@avid-wavelet-844.iam.gserviceaccount.com'.freeze
     MAPS_API_V2_EU_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@cdb-gcp-europe.iam.gserviceaccount.com'.freeze
     MAPS_API_V2_READ_ACCESS = 'roles/bigquery.dataViewer'.freeze
@@ -97,8 +98,7 @@ module Carto
     end
 
     def publish(dataset_id:, tileset_id:)
-      members = [MAPS_API_V2_US_SERVICE_ACCOUNT, MAPS_API_V2_EU_SERVICE_ACCOUNT]
-      set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: members)
+      set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: maps_api_v2_service_accounts)
     end
 
     def unpublish(dataset_id:, tileset_id:)
@@ -219,6 +219,14 @@ module Carto
       iam_policy_request.policy = policy
 
       @bigquery_api.set_table_iam_policy(resource, iam_policy_request)
+    end
+
+    def maps_api_v2_service_accounts
+      if Rails.env.production?
+        [MAPS_API_V2_US_SERVICE_ACCOUNT, MAPS_API_V2_EU_SERVICE_ACCOUNT]
+      else
+        [MAPS_API_V2_STAGING_SERVICE_ACCOUNT]
+      end
     end
 
   end

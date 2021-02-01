@@ -102,7 +102,7 @@ export default {
       return !this.selectMode;
     },
     properties () {
-      return this.tileset.metadata.tilestats.layers ? this.tileset.metadata.tilestats.layers[0].attributes.map(({attribute}) => attribute).join(', ') : '';
+      return this.tileset.metadata.tilestats.layers ? this.tileset.metadata.tilestats.layers[0].attributes.map(({ attribute }) => attribute).join(', ') : '';
     },
     zoom () {
       return `${this.tileset.metadata.minzoom} - ${this.tileset.metadata.maxzoom}`;

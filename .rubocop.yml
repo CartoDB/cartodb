@@ -153,7 +153,16 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 
 Style/GlobalVars:
-  Enabled: false
+  # These variables were already defined when we set up the linter, so allow them for the time being
+  AllowedVariables:
+    - $api_credentials
+    - $geocoder_metrics
+    - $limits_metadata
+    - $redis_migrator_logs
+    - $tables_metadata
+    - $tables_metadata_secondary
+    - $users_metadata
+    - $users_metadata_secondary
 
 Style/GuardClause:
   Enabled: false

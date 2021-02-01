@@ -8,7 +8,7 @@ module Carto
     MAX_DATASETS = 500
     TILESET_LABEL = 'carto_tileset'.freeze
     SCOPES = %w(https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/bigquery).freeze
-    MAPS_API_V2_STAGING_SERVICE_ACCOUNT = 'maps-api-v2@cartodb-on-gcp-staging.iam.gserviceaccount.com'.freeze
+    MAPS_API_V2_STAGING_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@cartodb-on-gcp-staging.iam.gserviceaccount.com'.freeze
     MAPS_API_V2_US_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@avid-wavelet-844.iam.gserviceaccount.com'.freeze
     MAPS_API_V2_EU_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@cdb-gcp-europe.iam.gserviceaccount.com'.freeze
     MAPS_API_V2_READ_ACCESS = 'roles/bigquery.dataViewer'.freeze

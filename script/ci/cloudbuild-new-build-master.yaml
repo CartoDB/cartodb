@@ -68,7 +68,7 @@ steps:
 
 
 
-# Build and push image
+# Build and push image: push to master
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
   args:
@@ -102,8 +102,18 @@ steps:
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA}
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${BRANCH_NAME}--${SHORT_SHA}
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest
+      else
+        echo '** Skipping, this is not a push to master **'
+      fi
 
-      elif [ ! -z "${_PR_NUMBER}" ] && [ ! "${_HEAD_BRANCH}" == 'master' ]
+# Build and push image: pull request
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      set -x 
+      if [ ! -z "${_PR_NUMBER}" ] && [ ! "${_HEAD_BRANCH}" == 'master' ]
       then
         echo '** Pull request to master **'
         
@@ -136,7 +146,7 @@ steps:
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA}
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_HEAD_BRANCH}--${SHORT_SHA}
       else
-        echo '** Not building image. Conditions didn't match. **'
+        echo '** Skipping, this is not a pull request. **'
       fi
 
 timeout: 1800s

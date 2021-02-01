@@ -22,7 +22,6 @@
               Check out the <a href="#">Documentation</a> to learn how to add Tilesets to your own application
             </span>
           </div>
-
           <div class="u-flex u-mt--20 u-mb--36">
             <div class="u-mr--28">
               <div class="text is-small is-semibold">
@@ -56,34 +55,43 @@
             </div>
           </div>
 
-          <template v-if="tilesets && tilesets.length">
-            <div class="grid__head--sticky">
-              <TilesetListHeader></TilesetListHeader>
+          <ul v-if="loadingTilesets">
+            <li v-for="n in maxVisibleTilesets" :key="n" class="dataset-item">
+              <TilesetListCardFake></TilesetListCardFake>
+            </li>
+          </ul>
+          <template v-else>
+            <template v-if="tilesets && tilesets.length">
+              <div class="grid__head--sticky">
+                <TilesetListHeader></TilesetListHeader>
+              </div>
+              <ul>
+                <li v-for="tileset in tilesets" :key="tileset.id" class="tileset-item">
+                  <TilesetListCard
+                    class="tileset-item"
+                    :tileset="tileset"
+                    @onClick="openViewer"
+                    ></TilesetListCard>
+                </li>
+              </ul>
+              <Pagination v-if="needPagination" :page="page" :numPages="numPages" @pageChange="goToPage"></Pagination>
+            </template>
+
+            <!-- EMPTY LIST -->
+            <div v-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
+              <img src="../../../assets/icons/tilesets/no-tileset.svg">
+              <div class="u-ml--32">
+                <div class="text is-body is-semibold u-mb--12">
+                  {{ project || dataset ? $t('TilesetsPage.noAvailableTitle') : $t('TilesetsPage.noDataTitle')}}
+                </div>
+                <div class="text is-caption u-mb--16" v-html="project || dataset ? $t('TilesetsPage.noAvailableSubtitle') : $t('TilesetsPage.noDataSubtitle')">
+                </div>
+                <div class="text is-small is-txtMidGrey" v-html="$t('TilesetsPage.noDataCaption')">
+                </div>
+              </div>
             </div>
-            <ul>
-              <li v-for="tileset in tilesets" :key="tileset.id" class="tileset-item">
-                <TilesetListCard
-                  class="tileset-item"
-                  :tileset="tileset"></TilesetListCard>
-              </li>
-            </ul>
           </template>
-
-          <!-- EMPTY LIST -->
-          <div v-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
-            <img src="../../../assets/icons/tilesets/no-tileset.svg">
-            <div class="u-ml--32">
-              <div class="text is-body is-semibold u-mb--12">
-                {{ project || dataset ? $t('TilesetsPage.noAvailableTitle') : $t('TilesetsPage.noDataTitle')}}
-              </div>
-              <div class="text is-caption u-mb--16" v-html="project || dataset ? $t('TilesetsPage.noAvailableSubtitle') : $t('TilesetsPage.noDataSubtitle')">
-              </div>
-              <div class="text is-small is-txtMidGrey" v-html="$t('TilesetsPage.noDataCaption')">
-              </div>
-            </div>
-          </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -92,10 +100,12 @@
 <script>
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import Pagination from 'new-dashboard/components/Pagination';
 import DropdownComponent from 'new-dashboard/components/forms/DropdownComponent';
 import TilesetListHeader from './TilesetListHeader';
 import TilesetListCard from './TilesetListCard';
-import { mapState } from 'vuex';
+import TilesetListCardFake from './TilesetListCardFake';
+import { mapGetters, mapState } from 'vuex';
 
 export default {
   name: 'Tilesets',
@@ -104,74 +114,79 @@ export default {
     SectionTitle,
     VisualizationsTitle,
     TilesetListHeader,
-    TilesetListCard
+    Pagination,
+    TilesetListCard,
+    TilesetListCardFake
   },
   data () {
     return {
       moreInfo: false,
       project: null,
-      dataset: null
+      dataset: null,
+      page: 1,
+      maxVisibleTilesets: 12
     };
   },
   computed: {
     ...mapState({
       loading: state => state.connectors.loadingConnections,
+      loadingDatasets: state => state.connectors.loadingDatasets,
+      loadingTilesets: state => state.tilesets.loadingTilesets,
       rawConnections: state => state.connectors.connections,
-      _projects: state => state.connectors.projects
+      projectsInRaw: state => state.connectors.projects,
+      datasetsInRaw: state => state.connectors.bqDatasets,
+      tilesetsInRaw: state => state.tilesets.tilesets,
+      baseUrl: state => state.user.base_url
     }),
-    bqConnection () {
-      return this.rawConnections && this.rawConnections.find(conn => conn.connector === 'bigquery');
+    ...mapGetters({
+      bqConnection: 'connectors/getBigqueryConnection'
+    }),
+    numPages () {
+      return Math.ceil(this.tilesetsInRaw.total / this.maxVisibleTilesets);
     },
     projects () {
-      return this._projects ? this._projects.map(e => ({ id: e.id, label: e.friendly_name })) : [];
+      return this.projectsInRaw ? this.projectsInRaw.map(e => ({ id: e.id, label: e.friendly_name })) : [];
     },
     datasets () {
-      return [
-        { id: 0, label: 'Dataset001' },
-        { id: 1, label: 'Dataset002' },
-        { id: 2, label: 'Dataset003' },
-        { id: 3, label: 'Dataset004' }
-      ];
+      return this.datasetsInRaw && !this.loadingDatasets ? this.datasetsInRaw.map(d => ({ id: d.id, label: d.id })) : [];
     },
     tilesets () {
-      return this.project && this.dataset ? [{
-        id: 'cartobq.maps.osm_buildings',
-        privacy: 'public',
-        created_at: new Date('2021-01-01T10:05:14.398Z'),
-        updated_at: new Date('2021-01-15T10:05:14.398Z')
-      },
-      {
-        id: 'cartobq.maps.mypublic',
-        privacy: 'public',
-        created_at: new Date('2021-01-01T10:05:14.398Z'),
-        updated_at: new Date('2021-01-15T10:05:14.398Z')
-      },
-      {
-        id: 'cartobq.maps.myprivate',
-        privacy: 'private',
-        created_at: new Date('2021-01-01T10:05:14.398Z'),
-        updated_at: new Date('2021-01-15T10:05:14.398Z')
-      }] : [];
+      return this.tilesetsInRaw ? this.tilesetsInRaw.result : [];
     },
     isSomeTilesetSelected () {
       return this.selectedTilesets.length > 0;
+    },
+    needPagination () {
+      return this.tilesetsInRaw.total > this.maxVisibleTilesets;
     }
   },
   methods: {
     openInfo () {
       this.moreInfo = !this.moreInfo;
     },
-    async fetchConnections () {
-      await this.$store.dispatch('connectors/fetchConnectionsList');
-      if (!this.bqConnection) {
-        this.$router.push({ name: 'home' });
-      }
+    goToPage (page) {
+      this.page = page;
+      this.fetchTilesets();
     },
     fetchProjects () {
       if (this.bqConnection) {
         return this.$store.dispatch('connectors/fetchBQProjectsList', this.bqConnection.id);
-      } else {
-        this.fetchConnections();
+      }
+    },
+    fetchDatasets () {
+      if (this.bqConnection) {
+        return this.$store.dispatch('connectors/fetchBQDatasetsList', { connectionId: this.bqConnection.id, projectId: this.project.id });
+      }
+    },
+    fetchTilesets () {
+      if (this.bqConnection) {
+        return this.$store.dispatch('tilesets/fetchTilesetsList', {
+          connectionId: this.bqConnection.id,
+          projectId: this.project.id,
+          datasetId: this.dataset ? this.dataset.id : null,
+          perPage: this.maxVisibleTilesets,
+          page: this.page
+        });
       }
     },
     useOtherProject (searchingText) {
@@ -179,6 +194,9 @@ export default {
         id: searchingText,
         label: searchingText
       };
+    },
+    openViewer (tileset) {
+      window.open(`${this.baseUrl}/dashboard/tilesets/${tileset.id}?connection_id=${this.bqConnection.id}&project_id=${this.project.id}&dataset_id=${this.dataset.id}`, '_blank');
     }
   },
   mounted () {
@@ -187,6 +205,13 @@ export default {
   watch: {
     rawConnections () {
       this.fetchProjects();
+    },
+    project () {
+      this.fetchDatasets();
+      this.dataset = null;
+    },
+    dataset () {
+      this.fetchTilesets();
     }
   }
 };

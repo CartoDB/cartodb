@@ -1,12 +1,14 @@
 <template>
-  <router-link
+  <div
     :to="{ name: 'tileset-viewer', params: { id: tileset.id }}"
     class="tileset-row"
     :class="{
       'tileset-row--quick-actions-open': areQuickActionsOpen,
       'tileset-row--no-hover': !activeHover,
       'tileset-row--can-hover': canHover
-    }">
+    }"
+    @click="onClick"
+    >
 
     <div class="viz-column--main-info">
       <div class="cell cell--start cell--first">
@@ -18,7 +20,7 @@
       <div class="cell cell--main">
         <div class="title-container" @mouseover="showCopyDropdown" @mouseleave="hideCopyDropdown">
           <h3 class="text is-caption is-txtGrey u-ellipsis row-title" :title="tileset.id">
-            {{ tileset.id }}
+            {{ name }}
           </h3>
           <div class="dropdown-container" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <CopyDropdown :textToCopy="tileset.id" :isVisible="copyDropdownVisible" @hideDropdown="hideCopyDropdown"></CopyDropdown>
@@ -35,7 +37,7 @@
         <span class="text is-small is-txtSoftGrey">{{ createdAt }}</span>
       </div>
       <div class="cell cell--small u-txt-right">
-        <span class="text is-small is-txtSoftGrey">0-12</span>
+        <span class="text is-small is-txtSoftGrey">{{ zoom }}</span>
       </div>
       <div class="cell cell--xlarge cell--overflow-hidden cell--last u-txt-right">
         <span class="text is-small is-txtSoftGrey ellipsis">
@@ -43,7 +45,7 @@
         </span>
       </div>
     </div>
-  </router-link>
+  </div>
 </template>
 
 <script>
@@ -87,7 +89,7 @@ export default {
   },
   computed: {
     createdAt () {
-      return this.tileset.created_at.toLocaleDateString();
+      return new Date(this.tileset.created_at).toLocaleDateString();
     },
     lastUpdated () {
       return this.$t('TilesetCard.lastUpdated', { date: distanceInWordsStrict(this.tileset.updated_at, new Date()) });
@@ -101,8 +103,15 @@ export default {
     showInteractiveElements () {
       return !this.selectMode;
     },
+    zoom () {
+      return `${this.tileset.metadata.minzoom} - ${this.tileset.metadata.maxzoom}`;
+    },
     vizUrl () {
       return null;
+    },
+    name () {
+      const [,, table] = this.tileset.id.split('.');
+      return table;
     }
   },
   methods: {
@@ -124,7 +133,9 @@ export default {
     closeQuickActions () {
       this.areQuickActionsOpen = false;
     },
-    onClick (event) {},
+    onClick (event) {
+      this.$emit('onClick', this.tileset);
+    },
     onContentChanged (type) {
       this.$emit('contentChanged', type);
     }
@@ -141,6 +152,7 @@ export default {
   width: 100%;
   height: 80px;
   background-color: $white;
+  cursor: pointer;
 
   &.tileset-row--quick-actions-open,
   &:hover {

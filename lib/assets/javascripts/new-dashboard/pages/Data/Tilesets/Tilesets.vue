@@ -129,7 +129,9 @@ export default {
       project: null,
       dataset: null,
       page: 1,
-      maxVisibleTilesets: 12
+      maxVisibleTilesets: 12,
+      datasetId: this.$route.query.dataset,
+      projectId: this.$route.query.project
     };
   },
   computed: {
@@ -213,17 +215,24 @@ export default {
   watch: {
     projects () {
       const defaultProject = this.bqConnection.parameters.default_project;
-      this.project = this.projects.find(p => p.id === defaultProject) || this.projects[0];
+      this.project = this.projects.find(p => p.id === this.projectId) || this.projects.find(p => p.id === defaultProject) || this.projects[0];
+    },
+    datasets () {
+      this.dataset = this.datasets.find(d => d.id === this.datasetId);
     },
     bqConnection () {
       this.fetchProjects();
     },
     project () {
       this.fetchDatasets();
-      this.dataset = null;
+      this.$router.push({ name: 'tilesets', query: { project: this.project.id } });
     },
     dataset () {
       this.fetchTilesets();
+
+      if (this.dataset) {
+        this.$router.push({ name: 'tilesets', query: { project: this.project.id, dataset: this.dataset.id } });
+      }
     }
   }
 };

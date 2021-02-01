@@ -69,7 +69,9 @@
                 <li v-for="tileset in tilesets" :key="tileset.id" class="tileset-item">
                   <TilesetListCard
                     class="tileset-item"
-                    :tileset="tileset"></TilesetListCard>
+                    :tileset="tileset"
+                    @onClick="openViewer"
+                    ></TilesetListCard>
                 </li>
               </ul>
               <Pagination v-if="needPagination" :page="page" :numPages="numPages" @pageChange="goToPage"></Pagination>
@@ -80,9 +82,9 @@
               <img src="../../../assets/icons/tilesets/no-tileset.svg">
               <div class="u-ml--32">
                 <div class="text is-body is-semibold u-mb--12">
-                  {{ project || dataset ? $t('TilesetsPage.noAvailableTitle') : $t('TilesetsPage.noDataTitle')}}
+                  {{ project && dataset ? $t('TilesetsPage.noAvailableTitle') : $t('TilesetsPage.noDataTitle')}}
                 </div>
-                <div class="text is-caption u-mb--16" v-html="project || dataset ? $t('TilesetsPage.noAvailableSubtitle') : $t('TilesetsPage.noDataSubtitle')">
+                <div class="text is-caption u-mb--16" v-html="project && dataset ? $t('TilesetsPage.noAvailableSubtitle') : $t('TilesetsPage.noDataSubtitle')">
                 </div>
                 <div class="text is-small is-txtMidGrey" v-html="$t('TilesetsPage.noDataCaption')">
                 </div>
@@ -130,10 +132,10 @@ export default {
       loading: state => state.connectors.loadingConnections,
       loadingDatasets: state => state.connectors.loadingDatasets,
       loadingTilesets: state => state.tilesets.loadingTilesets,
-      rawConnections: state => state.connectors.connections,
       projectsInRaw: state => state.connectors.projects,
       datasetsInRaw: state => state.connectors.bqDatasets,
-      tilesetsInRaw: state => state.tilesets.tilesets
+      tilesetsInRaw: state => state.tilesets.tilesets,
+      baseUrl: state => state.user.base_url
     }),
     ...mapGetters({
       bqConnection: 'connectors/getBigqueryConnection'
@@ -191,13 +193,20 @@ export default {
         id: searchingText,
         label: searchingText
       };
+    },
+    openViewer (tileset) {
+      window.open(`${this.baseUrl}/dashboard/tilesets/${tileset.id}?connection_id=${this.bqConnection.id}&project_id=${this.project.id}&dataset_id=${this.dataset.id}`, '_blank');
     }
   },
   mounted () {
     this.fetchProjects();
   },
   watch: {
-    rawConnections () {
+    projects () {
+      const defaultProject = this.bqConnection.parameters.default_project;
+      this.project = this.projects.find(p => p.id === defaultProject) || this.projects[0];
+    },
+    bqConnection () {
       this.fetchProjects();
     },
     project () {

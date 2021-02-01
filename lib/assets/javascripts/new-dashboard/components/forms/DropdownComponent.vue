@@ -108,12 +108,13 @@ export default {
   .item-list-container {
     position: absolute;
     top: 44px;
-    height: 100px;
+    max-height: 200px;
     width: 100%;
     z-index: 9;
     border: 1px solid $neutral--300;
     border-radius: 2px;
     background: $white;
+    overflow: auto;
     cursor: pointer;
 
     .item {

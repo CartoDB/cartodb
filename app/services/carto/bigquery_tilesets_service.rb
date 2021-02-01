@@ -204,9 +204,13 @@ module Carto
     end
 
     def maps_api_v2_has_read_access(binding)
-      binding.role == MAPS_API_V2_READ_ACCESS &&
-        (binding.members.include?(MAPS_API_V2_US_SERVICE_ACCOUNT) ||
-          binding.members.include?(MAPS_API_V2_EU_SERVICE_ACCOUNT))
+      if Rails.env.production?
+        us_sa, eu_sa = MAPS_API_V2_PRODUCTION_SERVICE_ACCOUNTS
+        binding.role == MAPS_API_V2_READ_ACCESS && (binding.members.include?(us_sa) || binding.members.include?(eu_sa))
+      else
+        staging_sa, = MAPS_API_V2_STAGING_SERVICE_ACCOUNTS
+        binding.role == MAPS_API_V2_READ_ACCESS && binding.members.include?(staging_sa)
+      end
     end
 
     def set_tileset_iam_policy(dataset_id:, tileset_id:, members:)

@@ -37,9 +37,9 @@
       <div class="cell cell--small u-txt-right">
         <span class="text is-small is-txtSoftGrey">{{ zoom }}</span>
       </div>
-      <div class="cell cell--xlarge cell--overflow-hidden cell--last u-txt-right">
+      <div class="cell cell--xlarge cell--overflow-hidden u-txt-right">
         <span class="text is-small is-txtSoftGrey ellipsis">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quo, dolorem. Porro mollitia magnam doloribus iusto neque dolor dolore nihil earum consectetur, laudantium similique aut assumenda rem. Corrupti aperiam molestiae sapiente.
+          {{ properties }}
         </span>
       </div>
     </div>
@@ -100,6 +100,9 @@ export default {
     },
     showInteractiveElements () {
       return !this.selectMode;
+    },
+    properties () {
+      return this.tileset.metadata.tilestats.layers ? this.tileset.metadata.tilestats.layers[0].attributes.map(({attribute}) => attribute).join(', ') : '';
     },
     zoom () {
       return `${this.tileset.metadata.minzoom} - ${this.tileset.metadata.maxzoom}`;

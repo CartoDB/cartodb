@@ -35,7 +35,7 @@
         <span class="text is-small is-txtSoftGrey">{{ createdAt }}</span>
       </div>
       <div class="cell cell--small u-txt-right">
-        <span class="text is-small is-txtSoftGrey">0-12</span>
+        <span class="text is-small is-txtSoftGrey">{{ zoom }}</span>
       </div>
       <div class="cell cell--xlarge cell--overflow-hidden cell--last u-txt-right">
         <span class="text is-small is-txtSoftGrey ellipsis">
@@ -87,7 +87,7 @@ export default {
   },
   computed: {
     createdAt () {
-      return this.tileset.created_at.toLocaleDateString();
+      return new Date(this.tileset.created_at).toLocaleDateString();
     },
     lastUpdated () {
       return this.$t('TilesetCard.lastUpdated', { date: distanceInWordsStrict(this.tileset.updated_at, new Date()) });
@@ -100,6 +100,9 @@ export default {
     },
     showInteractiveElements () {
       return !this.selectMode;
+    },
+    zoom () {
+      return `${this.tileset.metadata.minzoom} - ${this.tileset.metadata.maxzoom}`;
     },
     vizUrl () {
       return null;

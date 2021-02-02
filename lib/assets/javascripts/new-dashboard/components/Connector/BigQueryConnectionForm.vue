@@ -84,11 +84,14 @@ export default {
     SelectComponent
   },
   mixins: [uploadData],
+  props: {
+    connection: null
+  },
   data () {
     return {
       error: '',
       file: null,
-      showDisclaimer: true,
+      showDisclaimer: !this.$props.connection,
       dragged: false,
       submited: false,
       projects: null,
@@ -111,6 +114,9 @@ export default {
     ...mapState({
       email: state => state.user.email
     }),
+    editing () {
+      return !!this.connection;
+    },
     connectionModelIsValid () {
       return this.connectionModel.name &&
         this.connectionModel.billing_project;
@@ -142,7 +148,12 @@ export default {
         this.submited = true;
         this.connectionModel.default_project = this.connectionModel.billing_project;
         this.connectionModel.email = this.email;
-        const response = await this.$store.dispatch('connectors/createNewBQConnection', { ...this.serviceAccount, ...this.connectionModel });
+        let response;
+        if (!this.editing) {
+          response = await this.$store.dispatch('connectors/createNewBQConnection', { ...this.serviceAccount, ...this.connectionModel });
+        } else {
+          response = await this.$store.dispatch('connectors/editBQConnection', { bqConnectionId: this.connection.id, ...this.serviceAccount, ...this.connectionModel });
+        }
         this.submited = false;
         this.$emit('connectionSuccess', response.id);
       } catch (error) {

@@ -52,6 +52,7 @@
 </template>
 
 <script>
+const NAME_ALREADY_TAKEN = 'Name has already been taken';
 
 export default {
   name: 'DatabaseConnectionForm',
@@ -109,7 +110,11 @@ export default {
         this.$emit('connectClicked', id);
       } catch (error) {
         this.submited = false;
-        this.error = this.$t('DataPage.imports.database.connection-error');
+        if (error.message.includes(NAME_ALREADY_TAKEN)) {
+          this.error = this.$t('DataPage.imports.database.connection-error-name-taken');
+        } else {
+          this.error = this.$t('DataPage.imports.database.connection-error');
+        }
       }
     }
   },

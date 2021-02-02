@@ -29,7 +29,9 @@
                 <div class="text is-small is-txtAlert error u-pt--10 u-pr--12 u-pl--12 u-pb--8" v-if="error">
                   {{ $t('ConnectorsPage.queryError') }}
                 </div>
-                <p class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNote')}}</p>
+                <p v-if="isMySQL" class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNoteMySQL')}}</p>
+                <p v-else-if="isSQLServer" class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNoteSQLServer')}}</p>
+                <p v-else class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNote')}}</p>
               </div>
             </div>
             <div class="u-flex u-mt--20">
@@ -162,6 +164,12 @@ export default {
     }
   },
   computed: {
+    isMySQL () {
+      return this.connection.connector === 'mysql';
+    },
+    isSQLServer () {
+      return this.connection.connector === 'sqlserver';
+    },
     connector () {
       return this.connection ? getImportOption(this.connection.connector) : null;
     },

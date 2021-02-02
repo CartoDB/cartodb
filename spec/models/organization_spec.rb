@@ -51,8 +51,6 @@ describe Carto::Organization do
   end
 
   describe '#destroy_cascade' do
-    include TableSharing
-
     before(:each) do
       @organization = FactoryGirl.create(:organization)
       ::User.any_instance.stubs(:create_in_central).returns(true)

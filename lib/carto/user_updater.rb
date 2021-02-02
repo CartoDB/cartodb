@@ -8,7 +8,7 @@ module Carto
       @user = user.sequel_user
     end
 
-    def update(user_param)
+    def update!(user_param)
       # Copied from Superadmin::UsersController#update
       @user.set_fields_from_central(user_param, :update)
       @user.update_feature_flags(user_param[:feature_flags])
@@ -16,7 +16,7 @@ module Carto
       @user.update_rate_limits(user_param[:rate_limit])
       @user.update_gcloud_settings(user_param[:gcloud_settings])
       @user.update_do_subscription(user_param[:do_subscription])
-      @user.save
+      @user.save!
     end
 
   end

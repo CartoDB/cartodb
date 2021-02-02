@@ -152,6 +152,18 @@ Style/FrozenStringLiteralComment:
                   to help transition to frozen string literals by default.
   Enabled: false
 
+Style/GlobalVars:
+  # These variables were already defined when we set up the linter, so allow them for the time being
+  AllowedVariables:
+    - $api_credentials
+    - $geocoder_metrics
+    - $limits_metadata
+    - $redis_migrator_logs
+    - $tables_metadata
+    - $tables_metadata_secondary
+    - $users_metadata
+    - $users_metadata_secondary
+
 Style/GuardClause:
   Enabled: false
 

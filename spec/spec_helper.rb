@@ -4,6 +4,7 @@ require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require 'helpers/unique_names_helper'
 require './spec/support/message_broker_stubs'
+require './spec/support/shared_entities_spec_helper'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
@@ -33,6 +34,7 @@ RSpec.configure do |config|
   config.include NamedMapsHelper
   config.include Capybara::DSL
   config.include FactoryGirl::Syntax::Methods
+  config.include SharedEntitiesSpecHelper
 
   config.after(:each) do
     Delorean.back_to_the_present

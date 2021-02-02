@@ -157,7 +157,9 @@
       "query": "SQL Query",
       "destinationDataset": "CARTO Dataset",
       "sqlNote": "If your query contains geographic data in EPSG:4326 format, name that column with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
-      "destinationDatasetNote": "Name of the new Dataset that will be created in your CARTO Dashboard with the imported data.",
+      "sqlNoteMySQL": "If your query contains geographic data in EPSG:4326 format, you need to convert that column to text representation using the ST_AsText function and name it with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
+      "sqlNoteSQLServer": "If your query contains geographic data in EPSG:4326 format, you need to convert that column to text representation using the CONVERT and STAsBinary functions as shown in the placeholder and name it with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
+      "destinationDatasetNote": "Name of the new dataset that will be created in your account with the imported data.",
       "runQuery": "Run SQL Query",
       "runningQuery": "Running..."
     },
@@ -192,7 +194,8 @@
         "label-warehouse": "Warehouse",
         "placeholder-warehouse": "Type your warehouse name",
         "successTitle": "Your %{brand} connection is ready",
-        "connection-error": "The connection could not be established. Please, check the entered parameters."
+        "connection-error": "The connection could not be established. Please, check the entered parameters.",
+        "connection-error-name-taken": "Connection name has already been taken."
       }
     },
     "localFiles": "Local files",

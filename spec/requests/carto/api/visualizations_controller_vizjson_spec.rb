@@ -160,7 +160,6 @@ describe Carto::Api::VisualizationsController do
 
       describe 'map creation from datasets' do
         include_context 'organization with users helper'
-        include TableSharing
 
         it 'creates a visualization from a dataset given the viz id' do
           table1 = create_table(user_id: @org_user_1.id)

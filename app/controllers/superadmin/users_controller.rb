@@ -11,9 +11,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   respond_to :json
 
-  ssl_required :show, :create, :update, :destroy, :index
-  before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
-  before_filter :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
+  ssl_required :show, :index
+  before_action :get_user, only: [:show, :dump, :data_imports, :data_import]
+  before_action :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
 
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 
@@ -43,29 +43,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       users = ::User.all
       respond_with(:superadmin, users.map(&:data))
     end
-  end
-
-  def create
-    user_param = params[:user]
-    @user = Carto::UserCreator.new.create(user_param)
-    respond_with(:superadmin, @user)
-  end
-
-  def update
-    user_param = params[:user]
-    Carto::UserUpdater.new(@user).update(user_param)
-    respond_with(:superadmin, @user)
-  end
-
-  def destroy
-    @user.set_force_destroy if params[:force] == 'true'
-    @user.destroy
-    respond_with(:superadmin, @user)
-  rescue CartoDB::SharedEntitiesError => e
-    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "userHasSharedEntities" }, status: 422
-  rescue StandardError => e
-    log_error(exception: e, message: 'Error destroying user', target_user: @user)
-    render json: { "error": "Error destroying user: #{e.message}", "errorCode": "" }, status: 422
   end
 
   def dump

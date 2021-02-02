@@ -48,7 +48,7 @@
           </div>
         </template>
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedMaps.length">
-          <CreateButton class="u-mr--8" visualizationType="maps" :disabled="!canCreateMaps">{{ $t(`MapsPage.createMap`) }}_old</CreateButton>
+          <!-- <CreateButton class="u-mr--8" visualizationType="maps" :disabled="!canCreateMaps">{{ $t(`MapsPage.createMap`) }}_old</CreateButton> -->
           <button @click="createMap" class="button is-primary" :disabled="!canCreateMaps">{{ $t(`MapsPage.createMap`) }}</button>
         </template>
       </SectionTitle>

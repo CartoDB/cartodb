@@ -8,6 +8,7 @@
 
 <script>
 
+import ReactDOM from 'react-dom';
 import init from '@carto/viewer/src/init';
 import { mapState } from 'vuex';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
@@ -35,7 +36,7 @@ export default {
   },
   async mounted () {
     const element = this.$refs.viewer;
-    const backRoute = this.$router.resolve({name: 'tilesets'});
+    // const backRoute = this.$router.resolve({name: 'tilesets'});
     const tileset = await this.$store.dispatch('tilesets/getTileset', { source: this.source, tileset_id: this.tileset_id, ...this.$route.query });
     const center = tileset.metadata && tileset.metadata.center && tileset.metadata.center.split(',');
     const longitude = center && parseFloat(center[0]);
@@ -47,7 +48,10 @@ export default {
       username: this.username,
       type: this.source,
       query: new URLSearchParams(`?data=${this.tileset_id}&api_key=${this.apiKey}${this.getColorByValue(tileset)}&initialViewState=${JSON.stringify(initialViewState)}`),
-      backRoute: backRoute && backRoute.href,
+      goBackFunction: () => {
+        ReactDOM.unmountComponentAtNode(this.$refs.viewer);
+        this.$router.push({ name: 'tilesets' });
+      },
       shareOptions: {
         baseUrl: 'https://viewer.carto.com',
         privacy: tileset.privacy,

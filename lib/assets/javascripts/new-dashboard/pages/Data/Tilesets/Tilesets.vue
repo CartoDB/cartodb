@@ -201,7 +201,8 @@ export default {
       };
     },
     openViewer (tileset) {
-      this.$router.push({ name: 'tileset-viewer', params: { id: tileset.id }, query: { connection_id: this.bqConnection.id, project_id: this.project.id, dataset_id: this.dataset.id } });
+      // this.$router.push({ name: 'tileset-viewer', params: { id: tileset.id }, query: { connection_id: this.bqConnection.id, project_id: this.project.id, dataset_id: this.dataset.id } });
+      window.open(`${this.baseUrl}/dashboard/tilesets/${tileset.id}?connection_id=${this.bqConnection.id}&project_id=${this.project.id}&dataset_id=${this.dataset.id}`, '_blank');
     }
   },
   mounted () {
@@ -223,6 +224,7 @@ export default {
       this.dataset = null;
     },
     dataset () {
+      this.page = 1;
       this.fetchTilesets();
     }
   }

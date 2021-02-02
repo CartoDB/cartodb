@@ -72,8 +72,6 @@ steps:
 # Build image
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
-  substitutions: 
-    _BRANCH_TAG: $_TMP_BRANCH_TAG
   args:
     - -cx
     - |
@@ -109,6 +107,8 @@ steps:
   args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 24' ]
   timeout: 2700s
 
+substitutions: 
+    _BRANCH_TAG: $_TMP_BRANCH_TAG
 options:
     machineType: 'N1_HIGHCPU_32'
 timeout: 3600s

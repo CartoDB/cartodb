@@ -57,8 +57,6 @@ steps:
 
 # Copy files to the right directories to run the tests
 - name: ubuntu
-  substitutions: 
-    _BRANCH_TAG: $_TMP_BRANCH_TAG
   entrypoint: /bin/bash
   args:
     - -c
@@ -73,8 +71,6 @@ steps:
 
 # Build image
 - name: gcr.io/cloud-builders/docker
-  substitutions: 
-    _BRANCH_TAG: $_TMP_BRANCH_TAG
   entrypoint: /bin/bash
   args:
     - -cx
@@ -97,6 +93,8 @@ steps:
   args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 24' ]
   timeout: 2700s
 
+substitutions: 
+    _BRANCH_TAG: $_TMP_BRANCH_TAG
 options:
     machineType: 'N1_HIGHCPU_32'
 timeout: 3600s

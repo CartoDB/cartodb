@@ -75,7 +75,6 @@ steps:
   args:
     - -cx
     - |
-      _TMP_BRANCH_TAG=$(echo $BRANCH_NAME | sed -r 's,/,_,g')
       docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
       if [ ! -z "$?" ]
         then
@@ -94,7 +93,7 @@ steps:
   timeout: 2700s
 
 substitutions: 
-    _BRANCH_TAG: $_TMP_BRANCH_TAG
+    _BRANCH_TAG: ${BRANCH_NAME//\//-}
 options:
     machineType: 'N1_HIGHCPU_32'
 timeout: 3600s

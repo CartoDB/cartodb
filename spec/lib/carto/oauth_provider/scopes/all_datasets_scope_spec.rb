@@ -5,7 +5,6 @@ require_dependency 'carto/oauth_provider/scopes/scopes'
 describe Carto::OauthProvider::Scopes::AllDatasetsScope do
   include CartoDB::Factories
   include Carto::Factories::Visualizations
-  include TableSharing
 
   let(:r_scope_string) { 'datasets:r:*' }
   let(:rw_scope_string) { 'datasets:rw:*' }

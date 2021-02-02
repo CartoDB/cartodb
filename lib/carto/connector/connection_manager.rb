@@ -1,158 +1,7 @@
 require 'cartodb/central'
 
 require_relative 'parameters'
-
-
-class ConnectionAdapter
-  CONFIDENTIAL_PARAMETER_PLACEHOLDER = '********'.freeze
-  CONFIDENTIAL_PARAMS = %w(password).freze
-
-  def initialize(connection, confidential_parameters: CONFIDENTIAL_PARAMS)
-    @connection = connection
-    @confidential_parameters = confidential_parameters
-  end
-
-  def presented_parameters
-    Hash[@connection.parameters.map do |key, value|
-      value = key.in?(@confidential_parameters) ? CONFIDENTIAL_PARAMETER_PLACEHOLDER : value
-      [key, value]
-    end]
-  end
-
-  def presented_token
-    CONFIDENTIAL_PARAMETER_PLACEHOLDER
-  end
-
-  def filtered_connection_parameters(connection)
-    @connection.parameters
-  end
-
-  def singleton?
-    @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
-  end
-
-  def errors
-    []
-  end
-
-  def create
-  end
-
-  def destroy
-    revoke_token
-  end
-
-  def update
-  end
-
-
-  private
-
-  def revoke_token
-    if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
-      @connection.get_service_datasource.revoke_token
-    end
-  rescue CartoDB::Datasources::TokenExpiredOrInvalidError
-  end
-
-end
-
-class BigQueryConnectionAdapter < ConnectionAdapter
-  BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token)
-  NON_CONNECTOR_PARAMETERS = []
-  BQ_ADVANCED_CENTRAL_ATTRIBUTE = :bq_advanced
-  BQ_CONNECTOR = 'bigquery'.freeze
-
-  def initialize(connection)
-    super(connection, confidential_parameters: BQ_CONFIDENTIAL_PARAMS)
-  end
-
-  def filtered_connection_parameters
-    @connection.parameters.except(*NON_CONNECTOR_PARAMETERS)
-  end
-
-  def singleton?
-    true
-  end
-
-  def errors
-    errors = super
-    if @connector.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
-      errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if @connection.parameters['refresh_token'].present?
-      errors << "Parameter access_token not supported through connections; use import API" if @connection.parameters['access_token'].present?
-    end
-    errors
-  end
-
-  def create
-    super
-    update_redis_metadata(connection)
-    create_spatial_extension_setup(connection)
-  end
-
-  def destroy
-    super
-    remove_redis_metadata
-    remove_spatial_extension_setup
-  end
-
-  def update
-    super
-    update_redis_metadata
-    update_spatial_extension_setup
-  end
-
-  # If necessary this is how to check if the spatial extension has been successfully activated:
-  # def bq_advanced?
-  #   central_user_data = Cartodb::Central.new.get_user(@user.username)
-  #   central_user_data[BQ_ADVANCED_CENTRAL_ATTRIBUTE.to_s]
-  # end
-
-  private
-
-  def create_spatial_extension_setup
-    central = Cartodb::Central.new
-    central.update_user(@connection.user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => true)
-  end
-
-  def remove_spatial_extension_setup
-    central = Cartodb::Central.new
-    central.update_user(@connection.user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => false)
-  end
-
-  def update_spatial_extension_setup
-    # Nothing to do since all users have inconditionally the spatial extension now
-  end
-
-  def update_redis_metadata
-    if @connection.connector == BQ_CONNECTOR && @connection.parameters['service_account'].present?
-      $users_metadata.hset bigquery_redis_key, 'service_account', @connection.parameters['service_account']
-    end
-  end
-
-  def remove_redis_metadata
-    if @connection.connector == BQ_CONNECTOR
-      $users_metadata.del bigquery_redis_key
-    end
-  end
-
-  def bigquery_redis_key
-    "google:bq_settings:#{@connection.user.username}"
-  end
-
-end
-
-class ConnectionAdapterFactory
-  def self.adapter_for_connection(connection)
-    case connection.connector
-    when 'bigquery'
-      BigQueryConnectionAdapter.new(connection)
-    else
-      ConnectionAdapter.new(connection)
-    end
-  end
-end
-
+require_relative 'connection_adapter/factory'
 
 module Carto
   class ConnectionManager
@@ -392,7 +241,6 @@ module Carto
       [input_parameters, connector_parameters]
     end
 
-
     def legacy_oauth_db_connection?(connector_parameters)
       return false unless connector_parameters[:provider] == 'bigquery'
 
@@ -402,7 +250,7 @@ module Carto
     end
 
     def self.adapter(connection)
-      ConnectionAdapterFactory.new.adapter_for_connection(connection)
+      Carto::ConnectionAdapter::Factory.new.adapter_for_connection(connection)
     end
 
     def self.singleton_connector?(connection)

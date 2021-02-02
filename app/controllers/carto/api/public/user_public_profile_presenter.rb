@@ -12,17 +12,11 @@ module Carto
 
           super.deep_merge(
             organization: org_hash,
-            groups: @user.has_organization? ? user_groups : [],
+            groups: @user.groups.map { |g| { name: g.name, display_name: g.display_name } },
             avatar_url: @user.avatar_url,
             first_name: @user.name,
             last_name: @user.last_name
           )
-        end
-
-        private
-
-        def user_groups
-          @user.groups.map { |g| { name: g.name, display_name: g.display_name } }
         end
 
       end

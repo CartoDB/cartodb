@@ -102,6 +102,11 @@ class BigQueryConnectionAdapter < ConnectionAdapter
     update_spatial_extension_setup
   end
 
+  # If necessary this is how to check if the spatial extension has been successfully activated:
+  # def bq_advanced?
+  #   central_user_data = Cartodb::Central.new.get_user(@user.username)
+  #   central_user_data[BQ_ADVANCED_CENTRAL_ATTRIBUTE.to_s]
+  # end
 
   private
 
@@ -429,18 +434,13 @@ module Carto
       adapter(connection).update
     end
 
-    def check(connection, check_bq_advanced: false)
+    def check(connection)
       if connection.connector_type == Carto::Connection::TYPE_OAUTH_SERVICE
         oauth_connection_valid?(connection.connector)
       else
         connector = Carto::Connector.new(parameters: {}, connection: connection, user: @user, logger: nil)
         connector.check_connection
       end
-    end
-
-    def check_bq_advanced # FIXME: optional in generic check? move to adapter
-      central_user_data = Cartodb::Central.new.get_user(@user.username)
-      central_user_data[BQ_ADVANCED_CENTRAL_ATTRIBUTE.to_s]
     end
 
     private

@@ -1,6 +1,6 @@
 <template>
-  <div ref="viewer">
-    <section class="page">
+  <div class="viewer" ref="viewer">
+    <section class="page u-flex u-flex__align--center u-flex__justify--center">
       <LoadingState primary/>
     </section>
   </div>
@@ -35,6 +35,7 @@ export default {
     }
   },
   async mounted () {
+    document.body.classList.add('u-overflow-hidden');
     const element = this.$refs.viewer;
     // const backRoute = this.$router.resolve({name: 'tilesets'});
     const tileset = await this.$store.dispatch('tilesets/getTileset', { source: this.source, tileset_id: this.tileset_id, ...this.$route.query });
@@ -49,7 +50,6 @@ export default {
       type: this.source,
       query: new URLSearchParams(`?data=${this.tileset_id}&api_key=${this.apiKey}${this.getColorByValue(tileset)}&initialViewState=${JSON.stringify(initialViewState)}`),
       goBackFunction: () => {
-        ReactDOM.unmountComponentAtNode(this.$refs.viewer);
         this.$router.push({ name: 'tilesets' });
       },
       shareOptions: {
@@ -75,12 +75,24 @@ export default {
       await this.$store.dispatch('tilesets/setPrivacy', { source: this.source, table, ...this.$route.query, privacy });
       this.props.shareOptions.privacy = privacy;
     }
+  },
+  beforeDestroy () {
+    document.body.classList.remove('u-overflow-hidden');
+    ReactDOM.unmountComponentAtNode(this.$refs.viewer);
   }
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @import "new-dashboard/styles/variables";
+.viewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background-color: $white;
+}
 .page {
   height: 100vh;
   border: none;

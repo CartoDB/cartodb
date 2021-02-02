@@ -72,7 +72,6 @@ describe Carto::UserTable do
 
   describe '#readable_by?' do
     include_context 'organization with users helper'
-    include TableSharing
 
     it 'returns true for shared tables' do
       @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "a_table_name", user_id: @org_user_1.id)

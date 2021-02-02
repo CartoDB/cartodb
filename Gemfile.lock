@@ -166,6 +166,8 @@ GEM
     factory_girl_rails (4.0.0)
       factory_girl (~> 4.0.0)
       railties (>= 3.0.0)
+    faker (2.2.1)
+      i18n (>= 0.8)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.14.0)
@@ -550,6 +552,7 @@ DEPENDENCIES
   execjs (~> 0.4)
   factory_girl_rails (~> 4.0.0)
   fake_net_ldap!
+  faker
   gc_tracer (= 1.5.1)
   gibbon (= 1.1.4)
   google-api-client

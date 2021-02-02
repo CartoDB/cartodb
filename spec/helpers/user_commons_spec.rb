@@ -3,7 +3,6 @@ require './spec/support/factories/organizations'
 
 describe Carto::UserCommons do
   include Carto::Factories::Visualizations
-  include TableSharing
 
   # This is a trick to always have the reloaded record
   let(:original_user) { create(:user) }

@@ -5,7 +5,6 @@ require './spec/support/factories/organizations'
 describe Carto::OrganizationMetadataExportService do
   include NamedMapsHelper
   include Carto::Factories::Visualizations
-  include TableSharing
   include CartoDB::Factories
 
   let!(:organization) { create_organization_with_users }

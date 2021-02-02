@@ -72,17 +72,19 @@ steps:
 # Build image
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
+  substitutions: 
+    _BRANCH_TAG: $_TMP_BRANCH_TAG
   args:
     - -cx
     - |
-      BRANCH_TAG=$(echo $BRANCH_NAME | sed -r 's,/,_,g')
-      docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_TAG}
+      _TMP_BRANCH_TAG=$(echo $BRANCH_NAME | sed -r 's,/,_,g')
+      docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
       if [ ! -z "$?" ]
         then
           docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
-          docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_TAG}
+          docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
         fi
-      docker build --build-arg BUNDLE_JOBS=16 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_TAG} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_TAG}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_TAG} .
+      docker build --build-arg BUNDLE_JOBS=16 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:current -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG} .
 
 # Push current branch image to registry
 - name: gcr.io/cloud-builders/docker
@@ -90,12 +92,12 @@ steps:
   args:
     - -cx
     - |
-      BRANCH_TAG=$(echo $BRANCH_TAG | sed -r 's,/,_,g')
-      if [ ! -z "${BRANCH_TAG}" ] && [ ! "${BRANCH_TAG}" == 'master' ]
+      _TMP_BRANCH_TAG=$(echo $BRANCH_NAME | sed -r 's,/,_,g')
+      if [ ! -z "${_BRANCH_TAG}" ] && [ ! "${_BRANCH_TAG}" == 'master' ]
       then
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_TAG}
+        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
         docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_TAG}--${SHORT_SHA}
+        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}--${SHORT_SHA}
       fi
 
 # Run tests

@@ -2,7 +2,7 @@ module Carto
   # ConnectionAdapter is a base class to provide additional connector-specific functionality to Connections
   class ConnectionAdapter
     CONFIDENTIAL_PARAMETER_PLACEHOLDER = '********'.freeze
-    CONFIDENTIAL_PARAMS = %w(password).freze
+    CONFIDENTIAL_PARAMS = %w(password).freeze
 
     def initialize(connection, confidential_parameters: CONFIDENTIAL_PARAMS)
       @connection = connection

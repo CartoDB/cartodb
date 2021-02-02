@@ -4,6 +4,7 @@ module Carto
       class UserPublicPresenter
         include SqlApiHelper
         include MapsApiHelper
+        include MapsApiV2Helper
 
         def initialize(user)
           @user = user

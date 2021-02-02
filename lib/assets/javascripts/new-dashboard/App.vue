@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <header v-if="!hideHeaderAndFooter" class="header" :class="{ 'has-user-notification': isNotificationVisible }">
+    <header v-if="showHeaderAndFooter" class="header" :class="{ 'has-user-notification': isNotificationVisible }">
       <NotificationWarning v-if="isNotificationVisible" :htmlBody=user.notification />
       <NavigationBar
         :user="user"
@@ -12,7 +12,7 @@
     </header>
     <router-view/>
 
-    <Footer v-if="!hideHeaderAndFooter" :user="user"/>
+    <Footer v-if="showHeaderAndFooter" :user="user"/>
     <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
     <MamufasImportView ref="mamufasImportView"/>
     <div id="tooltip-portal"></div>
@@ -55,8 +55,8 @@ export default {
     isFirstTimeInDashboard () {
       return this.$store.state.config.isFirstTimeViewingDashboard;
     },
-    hideHeaderAndFooter () {
-      return this.$route.name === 'tileset-viewer';
+    showHeaderAndFooter () {
+      return this.$route.name && this.$route.name !== 'tileset-viewer';
     }
   },
   provide () {

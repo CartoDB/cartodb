@@ -33,9 +33,9 @@
         </template>
 
         <template slot="actionButton" v-if="showCreateButton">
-          <CreateButton class="u-mr--8" visualizationType="dataset" :disabled="!canCreateDatasets">
+          <!-- <CreateButton class="u-mr--8" visualizationType="dataset" :disabled="!canCreateDatasets">
             {{ $t(`DataPage.createDataset`) }}_old
-          </CreateButton>
+          </CreateButton> -->
           <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.createDataset`) }}</button>
         </template>
 

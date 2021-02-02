@@ -153,7 +153,8 @@ module Carto
           END IF;
         END LOOP;
 
-        EXECUTE IMMEDIATE metadata_query;
+        EXECUTE IMMEDIATE
+          "SELECT * FROM (" || metadata_query || ") ORDER BY #{pagination[:order]} #{pagination[:direction]}";
       }.squish
     end
 

@@ -8,8 +8,13 @@ module Carto
     MAX_DATASETS = 500
     TILESET_LABEL = 'carto_tileset'.freeze
     SCOPES = %w(https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/bigquery).freeze
-    MAPS_API_V2_US_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@avid-wavelet-844.iam.gserviceaccount.com'.freeze
-    MAPS_API_V2_EU_SERVICE_ACCOUNT = 'serviceAccount:maps-api-v2@cdb-gcp-europe.iam.gserviceaccount.com'.freeze
+    MAPS_API_V2_STAGING_SERVICE_ACCOUNTS = [
+      'serviceAccount:maps-api-v2@cartodb-on-gcp-staging.iam.gserviceaccount.com'
+    ].freeze
+    MAPS_API_V2_PRODUCTION_SERVICE_ACCOUNTS = [
+      'serviceAccount:maps-api-v2@avid-wavelet-844.iam.gserviceaccount.com',
+      'serviceAccount:maps-api-v2@cdb-gcp-europe.iam.gserviceaccount.com'
+    ].freeze
     MAPS_API_V2_READ_ACCESS = 'roles/bigquery.dataViewer'.freeze
     TILESET_PRIVACY_PUBLIC = 'public'.freeze
     TILESET_PRIVACY_PRIVATE = 'private'.freeze
@@ -97,8 +102,7 @@ module Carto
     end
 
     def publish(dataset_id:, tileset_id:)
-      members = [MAPS_API_V2_US_SERVICE_ACCOUNT, MAPS_API_V2_EU_SERVICE_ACCOUNT]
-      set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: members)
+      set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: maps_api_v2_service_accounts)
     end
 
     def unpublish(dataset_id:, tileset_id:)
@@ -200,9 +204,13 @@ module Carto
     end
 
     def maps_api_v2_has_read_access(binding)
-      binding.role == MAPS_API_V2_READ_ACCESS &&
-        (binding.members.include?(MAPS_API_V2_US_SERVICE_ACCOUNT) ||
-          binding.members.include?(MAPS_API_V2_EU_SERVICE_ACCOUNT))
+      if Rails.env.production?
+        us_sa, eu_sa = MAPS_API_V2_PRODUCTION_SERVICE_ACCOUNTS
+        binding.role == MAPS_API_V2_READ_ACCESS && (binding.members.include?(us_sa) || binding.members.include?(eu_sa))
+      else
+        staging_sa, = MAPS_API_V2_STAGING_SERVICE_ACCOUNTS
+        binding.role == MAPS_API_V2_READ_ACCESS && binding.members.include?(staging_sa)
+      end
     end
 
     def set_tileset_iam_policy(dataset_id:, tileset_id:, members:)
@@ -219,6 +227,14 @@ module Carto
       iam_policy_request.policy = policy
 
       @bigquery_api.set_table_iam_policy(resource, iam_policy_request)
+    end
+
+    def maps_api_v2_service_accounts
+      if Rails.env.production?
+        MAPS_API_V2_PRODUCTION_SERVICE_ACCOUNTS
+      else
+        MAPS_API_V2_STAGING_SERVICE_ACCOUNTS
+      end
     end
 
   end

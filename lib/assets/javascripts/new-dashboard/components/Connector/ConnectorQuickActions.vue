@@ -29,8 +29,8 @@ export default {
       return [
         ...(this.editable
           ? [{
-            name: this.$t('QuickActions.editConnection'),
-            event: 'editConnection'
+            name: this.$t('QuickActions.importDataset'),
+            event: 'importDataset'
           }] : []
         ),
         {
@@ -54,9 +54,9 @@ export default {
     closeDropdown () {
       this.$refs.quickActions.closeDropdown();
     },
-    editConnection () {
+    importDataset () {
       this.closeDropdown();
-      this.$router.push({ name: 'edit-connection', params: { id: this.connection } });
+      this.$router.push({ name: 'new-connection-connection-dataset', params: { id: this.connection } });
     },
     deleteConnection () {
       this.closeDropdown();

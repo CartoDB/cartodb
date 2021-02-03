@@ -36,7 +36,7 @@
                 :connectionName="connection.raw.name"
                 :connectionParams="connection.raw.parameters"
                 :connectionType="connection.default.type"
-                @click.native="navigateToCreateDateset(connection)"/>
+                @click.native="navigateToEditConnection(connection)"/>
             </div>
           </div>
         </template>
@@ -79,8 +79,8 @@ export default {
     this.$store.dispatch('connectors/fetchConnectionsList');
   },
   methods: {
-    navigateToCreateDateset (connection) {
-      this.$router.push({ name: 'new-connection-connection-dataset', params: { id: connection.raw.id } });
+    navigateToEditConnection (connection) {
+      this.$router.push({ name: 'edit-connection', params: { id: connection.raw.id } });
     }
   }
 };

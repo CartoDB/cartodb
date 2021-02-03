@@ -34,13 +34,14 @@
         <h3 class="is-semibold u-mt--16">{{ $t('DataPage.connectionsSuccessfull') }}</h3>
         <h4 class="is-caption u-mt--16 is-regular">{{$t('DataPage.imports.database.successTitle', { brand: title })}}</h4>
         <div class="u-mt--48 u-flex u-flex__align--center">
-          <router-link :to="{ name: 'your-connections' }">
+          <button @click="onCancel" class="button is-primary">{{ $t('Dialogs.finish') }}</button>
+          <!-- <router-link :to="{ name: 'your-connections' }">
             <button class="is-small is-semibold is-txtPrimary">{{ $t('DataPage.imports.connections') }}</button>
           </router-link>
           <router-link v-if="isBigQuery" :to="{ name: 'tilesets' }">
             <button class="u-ml--36 is-small is-semibold is-txtPrimary">{{$t('DataPage.tilesets')}}</button>
           </router-link>
-          <button @click="navigateNext" class="button is-primary u-ml--36">{{ $t('DataPage.addYourData') }}</button>
+          <button @click="navigateNext" class="button is-primary u-ml--36">{{ $t('DataPage.addYourData') }}</button> -->
         </div>
       </div>
     </template>

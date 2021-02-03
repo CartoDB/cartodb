@@ -35,6 +35,9 @@
         <FileInput
           :supportedFormats="supportedFormats"
           @change="onFileChange" :reduced="true"></FileInput>
+          <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--32" v-if="error">
+            <span v-html="error"></span>
+          </div>
         <div class="u-flex u-flex__justify--end u-mt--32">
           <button @click="cancel" class="u-mr--28 is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.cancel')}}</button>
           <button @click="uploadServiceAccount" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': !isFileSelected}">
@@ -52,7 +55,7 @@
         <div class="text is-small is-txtMidGrey u-mb--24" v-html="$t('ConnectorsPage.BigQuery.billingHelper')"></div>
         <SelectComponent v-model="connectionModel.billing_project" :elements="projects"></SelectComponent>
         <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--16" v-if="error">
-          {{ error }}
+          <span v-html="error"></span>
         </div>
         <div class="u-flex u-flex__justify--end u-mt--32">
           <button @click="cancel" class="u-mr--28 is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.cancel')}}</button>
@@ -158,18 +161,23 @@ export default {
         this.$emit('connectionSuccess', response.id);
       } catch (error) {
         this.submited = false;
-        this.error = this.$t('DataPage.imports.database.connection-error');
+        this.error = (error.message === '401' || error.message === '403') ? this.$t('ConnectorsPage.BigQuery.connection-error_401') : this.$t('ConnectorsPage.BigQuery.connection-error_internal');
       }
     },
     async uploadServiceAccount () {
       if (!this.file) {
         return;
       }
+      this.error = '';
       const serviceAccount = await this.file.text();
-      this.serviceAccount = JSON.parse(serviceAccount);
+      try {
+        this.serviceAccount = JSON.parse(serviceAccount);
+      } catch (e) {
+        this.error = this.$t('ConnectorsPage.BigQuery.serviceAccountDadFormedError');
+        return false;
+      }
 
       try {
-        this.error = '';
         this.projects = (await this.$store.dispatch('connectors/checkServiceAccount', serviceAccount)).map(p => ({ id: p.id, label: p.friendly_name }));
         this.connectionModel.billing_project = this.projects[0].id;
       } catch (e) {

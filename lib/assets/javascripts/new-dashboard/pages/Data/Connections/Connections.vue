@@ -80,7 +80,9 @@ export default {
   },
   methods: {
     navigateToEditConnection (connection) {
-      this.$router.push({ name: 'edit-connection', params: { id: connection.raw.id } });
+      if (connection.default.type === 'database') {
+        this.$router.push({ name: 'edit-connection', params: { id: connection.raw.id } });
+      }
     }
   }
 };

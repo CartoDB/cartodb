@@ -90,9 +90,7 @@ export default {
   },
   methods: {
     connectorSelected () {
-      if (this.isDatabase) {
-        this.$emit('connectorSelected', this.id);
-      }
+      this.$emit('connectorSelected', this.id);
     },
     stopPropagation (e) {
       e.stopPropagation();
@@ -110,27 +108,28 @@ export default {
   position: relative;
   transition: ease 300ms box-shadow;
 
-  &.editable {
-    cursor: pointer;
-    &:hover {
-      box-shadow: 0 8px 12px 0 #c8d2da;
+  &:hover {
+    box-shadow: 0 8px 12px 0 #c8d2da;
 
-      .ConnectorInfo {
-        .label {
-          color: $blue--500;
-          text-decoration: underline;
-        }
+    .ConnectorInfo {
+      .label {
+        color: $blue--500;
+        text-decoration: underline;
       }
+    }
 
-      .quickactions {
+    .quickactions {
 
-        .quick-actions {
-          &:not(.is-open) {
-            display: initial;
-          }
+      .quick-actions {
+        &:not(.is-open) {
+          display: initial;
         }
       }
     }
+  }
+
+  &.editable {
+    cursor: pointer;
   }
 
   .tools {

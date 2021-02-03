@@ -250,7 +250,7 @@ module Carto
     end
 
     def self.adapter(connection)
-      Carto::ConnectionAdapter::Factory.new.adapter_for_connection(connection)
+      Carto::ConnectionAdapter::Factory.adapter_for_connection(connection)
     end
 
     def self.singleton_connector?(connection)

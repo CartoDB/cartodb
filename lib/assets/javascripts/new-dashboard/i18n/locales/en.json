@@ -892,13 +892,16 @@
       "connName": "Name",
       "errorTitle": "Connection error",
       "serviceAccountError": "The connection could not be established. Please, check the entered parameters.",
+      "serviceAccountDadFormedError": "Please, use a valid service account key in JSON format",
       "billingProject": "Billing project",
       "billingHelper": "You can configure the billing project CARTO should use to run queries using your service account.",
       "defaultProject": "Default project ID",
       "conditions": {
         "cancel": "Cancel",
         "accept": "Accept and connect"
-      } 
+      } ,
+      "connection-error_401": "Your service account doesn't seem to have the required permission. Please check the <a href='https://docs.carto.com/spatial-extension-bq/overview/#authorizaton' target='_blank'>documentation</a> for the specific list of roles that are needed.",
+      "connection-error_internal": "Internal error trying to fetch a billing project"
     },
     "ArcGIS": {
       "title": "Connect with ArcGIS Server",

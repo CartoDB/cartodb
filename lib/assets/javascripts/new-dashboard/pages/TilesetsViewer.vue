@@ -25,7 +25,10 @@ export default {
   computed: {
     ...mapState({
       apiKey: state => state.user.api_key,
-      username: state => state.user.username
+      username: state => state.user.username,
+      base_url: state => state.user.base_url,
+      maps_api_v2_template: state => state.config.maps_api_v2_template,
+      region: state => state.config.region
     }),
     source () {
       return 'bigquery';
@@ -47,13 +50,15 @@ export default {
 
     this.props = {
       username: this.username,
+      mapsUrl: this.maps_api_v2_template,
+      region: this.region,
       type: this.source,
       query: new URLSearchParams(`?data=${this.tileset_id}&api_key=${this.apiKey}${this.getColorByValue(tileset)}&initialViewState=${JSON.stringify(initialViewState)}`),
       goBackFunction: () => {
         this.$router.push({ name: 'tilesets' });
       },
       shareOptions: {
-        baseUrl: 'https://viewer.carto.com',
+        baseUrl: `https://viewer${this.base_url.includes('staging') ? '-staging' : ''}.carto.com`,
         privacy: tileset.privacy,
         setPrivacy: this.setPrivacy
       }

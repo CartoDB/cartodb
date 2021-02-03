@@ -1,5 +1,5 @@
 <template>
-  <div class="connector">
+  <div class="connector" :class="{editable: isDatabase}">
     <div class="beta-label text is-small" v-if="beta">Beta</div>
     <div class="quickactions" @click="stopPropagation">
       <ConnectorQuickActions :connection="id" :editable="isDatabase"/>
@@ -90,7 +90,9 @@ export default {
   },
   methods: {
     connectorSelected () {
-      this.$emit('connectorSelected', this.id);
+      if (this.isDatabase) {
+        this.$emit('connectorSelected', this.id);
+      }
     },
     stopPropagation (e) {
       e.stopPropagation();
@@ -107,23 +109,25 @@ export default {
   border: 1px solid $neutral--300;
   position: relative;
   transition: ease 300ms box-shadow;
-  cursor: pointer;
 
-  &:hover {
-    box-shadow: 0 8px 12px 0 #c8d2da;
+  &.editable {
+    cursor: pointer;
+    &:hover {
+      box-shadow: 0 8px 12px 0 #c8d2da;
 
-    .ConnectorInfo {
-      .label {
-        color: $blue--500;
-        text-decoration: underline;
+      .ConnectorInfo {
+        .label {
+          color: $blue--500;
+          text-decoration: underline;
+        }
       }
-    }
 
-    .quickactions {
+      .quickactions {
 
-      .quick-actions {
-        &:not(.is-open) {
-          display: initial;
+        .quick-actions {
+          &:not(.is-open) {
+            display: initial;
+          }
         }
       }
     }

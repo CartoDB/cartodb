@@ -59,7 +59,7 @@ module Carto
       )
       query.use_legacy_sql = false
       query.use_query_cache = true
-      resp = @bigquery_api.query_job(@project_id, query)
+      resp = @bigquery_api.query_job(@billing_project_id, query)
       return [] unless resp.rows
 
       resp.rows.map do |row|
@@ -78,7 +78,7 @@ module Carto
       query.query = count_tilesets_list(dataset_id)
       query.use_legacy_sql = false
       query.use_query_cache = true
-      resp = @bigquery_api.query_job(@project_id, query)
+      resp = @bigquery_api.query_job(@billing_project_id, query)
       resp.rows[0].f[0].v.to_i
     rescue Google::Apis::AuthorizationError => e
       raise Carto::UnauthorizedError.new(e.message, e.status_code)
@@ -212,7 +212,7 @@ module Carto
       query.query = tileset_metadata_query(tileset_id)
       query.use_legacy_sql = false
       query.use_query_cache = true
-      resp = @bigquery_api.query_job(@project_id, query)
+      resp = @bigquery_api.query_job(@billing_project_id, query)
       JSON.parse(resp.rows[0].f[0].v)
     end
 

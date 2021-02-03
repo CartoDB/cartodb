@@ -43,7 +43,7 @@ module Carto
       end
     rescue Google::Apis::AuthorizationError => e
       raise Carto::UnauthorizedError.new(e.message, e.status_code)
-    rescue Google::Apis::ClientError
+    rescue Google::Apis::ClientError => e
       raise Carto::BadRequest.new(e.message, e.status_code)
     end
 
@@ -69,7 +69,7 @@ module Carto
       end
     rescue Google::Apis::AuthorizationError => e
       raise Carto::UnauthorizedError.new(e.message, e.status_code)
-    rescue Google::Apis::ClientError
+    rescue Google::Apis::ClientError => e
       raise Carto::BadRequest.new(e.message, e.status_code)
     end
 
@@ -82,7 +82,7 @@ module Carto
       resp.rows[0].f[0].v.to_i
     rescue Google::Apis::AuthorizationError => e
       raise Carto::UnauthorizedError.new(e.message, e.status_code)
-    rescue Google::Apis::ClientError
+    rescue Google::Apis::ClientError => e
       raise Carto::BadRequest.new(e.message, e.status_code)
     end
 
@@ -113,7 +113,7 @@ module Carto
       }
     rescue Google::Apis::AuthorizationError => e
       raise Carto::UnauthorizedError.new(e.message, e.status_code)
-    rescue Google::Apis::ClientError
+    rescue Google::Apis::ClientError => e
       raise Carto::BadRequest.new(e.message, e.status_code)
     end
 
@@ -121,7 +121,7 @@ module Carto
       set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: maps_api_v2_service_accounts)
     rescue Google::Apis::AuthorizationError => e
       raise Carto::UnauthorizedError.new(e.message, e.status_code)
-    rescue Google::Apis::ClientError
+    rescue Google::Apis::ClientError => e
       raise Carto::BadRequest.new(e.message, e.status_code)
     end
 
@@ -130,7 +130,7 @@ module Carto
       set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: members)
     rescue Google::Apis::AuthorizationError => e
       raise Carto::UnauthorizedError.new(e.message, e.status_code)
-    rescue Google::Apis::ClientError
+    rescue Google::Apis::ClientError => e
       raise Carto::BadRequest.new(e.message, e.status_code)
     end
 

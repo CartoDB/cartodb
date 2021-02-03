@@ -58,7 +58,7 @@ export default {
         this.$router.push({ name: 'tilesets' });
       },
       shareOptions: {
-        baseUrl: `https://viewer${this.base_url.includes('staging') ? '-staging' : ''}.carto.com`,
+        baseUrl: `https://viewer.carto${this.base_url.includes('staging') ? '-staging' : ''}.com`,
         privacy: tileset.privacy,
         setPrivacy: this.setPrivacy
       }

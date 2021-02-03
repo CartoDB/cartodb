@@ -35,6 +35,9 @@
         <FileInput
           :supportedFormats="supportedFormats"
           @change="onFileChange" :reduced="true"></FileInput>
+          <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--32" v-if="error">
+            <span v-html="error"></span>
+          </div>
         <div class="u-flex u-flex__justify--end u-mt--32">
           <button @click="cancel" class="u-mr--28 is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.cancel')}}</button>
           <button @click="uploadServiceAccount" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': !isFileSelected}">
@@ -171,6 +174,7 @@ export default {
         this.serviceAccount = JSON.parse(serviceAccount);
       } catch (e) {
         this.error = this.$t('ConnectorsPage.BigQuery.serviceAccountDadFormedError');
+        return false;
       }
 
       try {

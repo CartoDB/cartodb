@@ -16,9 +16,11 @@ module Carto
   end
 
   class BadRequest < CartoError
+
     def initialize(message, status = 400)
       super(message, status)
     end
+
   end
 
   class ParamInvalidError < CartoError

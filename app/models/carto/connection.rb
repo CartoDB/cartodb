@@ -59,7 +59,7 @@ module Carto
     end
 
     def singleton_connection?
-      Carto::ConnectionManager.singleton_connector?(connector, connection_type)
+      Carto::ConnectionManager.singleton_connector?(self)
     end
 
     def set_type
@@ -89,7 +89,7 @@ module Carto
     end
 
     def validate_parameters
-      Carto::ConnectionManager.validate_connector(connector, connection_type, parameters).each do |error|
+      Carto::ConnectionManager.errors(self).each do |error|
         errors.add :connector, error
       end
       case connection_type

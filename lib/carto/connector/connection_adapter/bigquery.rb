@@ -36,8 +36,8 @@ module Carto
 
       def create
         super
-        update_redis_metadata(connection)
-        create_spatial_extension_setup(connection)
+        update_redis_metadata(@connection)
+        create_spatial_extension_setup(@connection)
       end
 
       def destroy

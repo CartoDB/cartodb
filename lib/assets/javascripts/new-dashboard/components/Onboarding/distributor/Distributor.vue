@@ -19,7 +19,7 @@
                 :title="$t('Wizards.cartovl.title')"
                 :text="$t('Wizards.cartovl.subtitle')"
                 :tags="$t('Wizards.cartovl.tags')"
-                @click.native="openOnboarding('carto-vl')"
+                @click.native="openDocs('#')"
                 iconModifier="map"></Selector>
               <Warning v-if="!hasEngine"></Warning>
             </div>
@@ -29,7 +29,7 @@
                 :title="$t('Wizards.cartoframes.title')"
                 :text="$t('Wizards.cartoframes.subtitle')"
                 :tags="$t('Wizards.cartoframes.tags')"
-                @click.native="openOnboarding('cartoframes')"
+                @click.native="openDocs('#')"
                 iconModifier="notebook"></Selector>
               <Warning v-if="!hasEngine"></Warning>
             </div>
@@ -39,7 +39,7 @@
                 :title="$t('Wizards.builder.title')"
                 :text="$t('Wizards.builder.subtitle')"
                 :tags="$t('Wizards.builder.tags')"
-                @click.native="openOnboarding('builder')"
+                @click.native="openDocs('#')"
                 iconModifier="window"></Selector>
             </div>
           </div>
@@ -73,12 +73,8 @@ export default {
     }
   },
   methods: {
-    openOnboarding (onboardingId) {
-      this.$router.push({
-        name: 'onboarding-open',
-        params: { onboardingId },
-        hash: '#step-1'
-      });
+    openDocs (href) {
+      window.open(href, '_blank');
     },
     closeModal () {
       this.$router.push({ name: 'home' });

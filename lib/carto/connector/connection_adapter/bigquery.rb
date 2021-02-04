@@ -65,7 +65,7 @@ module Carto
         central.update_user(
           @connection.user.username,
           BQ_ADVANCED_CENTRAL_ATTRIBUTE => true,
-          BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE => connection.parameters['billing_project']
+          BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE => @connection.parameters['billing_project']
         )
       end
 

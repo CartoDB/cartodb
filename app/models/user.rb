@@ -379,7 +379,7 @@ class User < Sequel::Model
     error_happened = false
     has_organization = false
 
-    unless organization.nil?
+    if organization.present?
       organization.reload # Avoid ORM caching
 
       if organization.owner_id == id

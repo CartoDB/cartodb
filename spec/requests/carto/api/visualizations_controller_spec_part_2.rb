@@ -1287,7 +1287,6 @@ describe Carto::Api::VisualizationsController do
 
     describe '#destroy' do
       include_context 'organization with users helper'
-      include TableSharing
 
       def destroy_url(user, vis_id)
         api_v1_visualizations_destroy_url(id: vis_id, user_domain: user.username, api_key: user.api_key)

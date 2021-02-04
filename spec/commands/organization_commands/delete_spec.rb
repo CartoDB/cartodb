@@ -1,4 +1,5 @@
 require 'spec_helper'
+require './spec/factories/visualization_creation_helpers'
 
 describe OrganizationCommands::Delete do
   let(:notifications_topic) { mock }
@@ -18,6 +19,28 @@ describe OrganizationCommands::Delete do
         command.run
 
         expect { organization.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when organization users have shared entities' do
+      let(:user_1) { organization.users.first }
+      let(:user_2) { organization.users.second }
+      let(:shared_table) { create_random_table(user_1) }
+
+      before do
+        CartoCommand.any_instance.expects(:notifications_topic).returns(notifications_topic)
+        notifications_topic.expects(:publish)
+        share_table_with_user(shared_table, user_2)
+        command.run
+      end
+
+      it 'deletes the organization' do
+        expect { organization.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it 'deletes the organization users' do
+        expect { user_1.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { user_2.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 

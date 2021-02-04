@@ -1,10 +1,18 @@
-require 'cartodb/central'
+require_dependency 'cartodb/central'
+require_dependency 'carto/errors'
 
 require_relative 'parameters'
 require_relative 'connection_adapter/factory'
 
 module Carto
   class ConnectionManager
+
+    class ConnectionNotFoundError < CartoError
+      def initialize(message)
+        super(message, 404)
+      end
+    end
+
     def initialize(user)
       @user = user
       @user = Carto::User.find(@user.id) unless @user.kind_of?(Carto::User)
@@ -143,7 +151,7 @@ module Carto
     # this may not be needed: API could perform a regular update
     def assign_db_parameters(service:, parameters:)
       connection = find_oauth_connection(service)
-      raise "Connection not found for service #{service}" unless connection.present?
+      raise ConnectionNotFoundError.new("Connection not found for service #{service}") unless connection.present?
 
       connection.update! parameters: parameters
       connection
@@ -220,7 +228,7 @@ module Carto
 
       if connection.present?
         if provider.present?
-          raise "Invalid connection" if provider != connection.connector
+          raise Carto::ParamInvalidError.new("provider: #{provider}", [connection.connector], 422) if provider != connection.connector
         else
           connector_parameters.merge! provider: connection.connector
         end
@@ -326,12 +334,14 @@ module Carto
 
     def check_oauth_service!(service)
       # TODO: check also that is enabled for @user
-      raise "Invalid OAuth service #{service}" unless service.in?(Carto::ConnectionManager.valid_oauth_services)
+      valid_services = Carto::ConnectionManager.valid_oauth_services
+      raise Carto::ParamInvalidError.new("connector: #{service}", valid_services, 422) unless service.in?(valid_services)
     end
 
     def check_db_provider!(provider)
       # TODO: check also that is enabled for @user
-      raise "Invalid DB provider #{provider}" unless provider.in?(Carto::ConnectionManager.valid_db_connectors)
+      valid_providers = Carto::ConnectionManager.valid_db_connectors
+      raise Carto::ParamInvalidError.new("connector: #{provider}", valid_providers, 422) unless provider.in?(valid_providers)
     end
   end
 end

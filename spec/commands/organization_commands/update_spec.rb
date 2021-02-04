@@ -8,11 +8,21 @@ describe OrganizationCommands::Update do
     let(:params) { { id: organization.id, organization: organization_params } }
 
     context 'when everything is ok' do
-      let(:organization_params) { { seats: 100 } }
+      let(:organization_params) do
+        {
+          seats: 100,
+          display_name: 'New Display Name',
+          map_views_quota: 100_000
+        }
+      end
 
       it 'updates changed attributes' do
         command.run
-        expect(organization.reload.seats).to eq(100)
+
+        organization.reload
+        expect(organization.seats).to eq(100)
+        expect(organization.display_name).to eq('New Display Name')
+        expect(organization.map_views_quota).to eq(100_000)
       end
     end
 

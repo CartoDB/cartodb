@@ -168,7 +168,7 @@ describe Carto::Api::TablesController do
     it 'loads my table if other user has shared a table with the same name with me' do
       table_name = unique_name('table')
       his_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: @org_user_2.id)
-      share_table(his_table, @org_user_2, @org_user_1)
+      http_share_table(his_table, @org_user_2, @org_user_1)
       my_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: @org_user_1.id)
       login(@org_user_1)
       get api_v1_tables_show_url(id: my_table.id) do |response|

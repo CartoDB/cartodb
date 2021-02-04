@@ -55,7 +55,7 @@ end
 
 gem 'cartodb-common',
     git: 'https://github.com/cartodb/cartodb-common.git',
-    tag: 'v1.0.1'
+    tag: 'v1.1.0'
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '1.3.1'
@@ -118,6 +118,7 @@ end
 
 group :development, :test do
   gem 'byebug'
+  gem 'faker'
   gem 'pry-byebug', '3.9.0'
   gem 'rack'
   gem 'rb-readline'

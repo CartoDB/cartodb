@@ -1017,7 +1017,6 @@ describe Carto::VisualizationsExportService2 do
 
     describe 'exporting + importing visualizations with shared tables' do
       include_context 'organization with users helper'
-      include TableSharing
       include Carto::Factories::Visualizations
       include CartoDB::Factories
 

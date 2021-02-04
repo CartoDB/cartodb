@@ -8,6 +8,16 @@ module Carto
     MAX_DATASETS = 500
     TILESET_LABEL = 'carto_tileset'.freeze
     SCOPES = %w(https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/bigquery).freeze
+    MAPS_API_V2_STAGING_SERVICE_ACCOUNTS = [
+      'serviceAccount:maps-api-v2@cartodb-on-gcp-staging.iam.gserviceaccount.com'
+    ].freeze
+    MAPS_API_V2_PRODUCTION_SERVICE_ACCOUNTS = [
+      'serviceAccount:maps-api-v2@avid-wavelet-844.iam.gserviceaccount.com',
+      'serviceAccount:maps-api-v2@cdb-gcp-europe.iam.gserviceaccount.com'
+    ].freeze
+    MAPS_API_V2_READ_ACCESS = 'roles/bigquery.dataViewer'.freeze
+    TILESET_PRIVACY_PUBLIC = 'public'.freeze
+    TILESET_PRIVACY_PRIVATE = 'private'.freeze
 
     def initialize(user:, connection_id:, project_id:)
       conn = user.db_connections.where(id: connection_id, connector: 'bigquery').first
@@ -15,11 +25,12 @@ module Carto
 
       @connection_id = connection_id
       @project_id = project_id
-      service_account = conn.parameters['service_account']
+      @service_account = conn.parameters['service_account']
+      @billing_project_id = conn.parameters['billing_project']
 
       @bigquery_api = Google::Apis::BigqueryV2::BigqueryService.new
       @bigquery_api.authorization = Google::Auth::ServiceAccountCredentials.make_creds(
-        json_key_io: StringIO.new(service_account), scope: SCOPES
+        json_key_io: StringIO.new(@service_account), scope: SCOPES
       )
     end
 
@@ -63,6 +74,42 @@ module Carto
       resp.rows[0].f[0].v.to_i
     end
 
+    def tileset(tileset_id)
+      project_id, dataset_id, table_id = tileset_id.split('.')
+      resource = "projects/#{project_id}/datasets/#{dataset_id}/tables/#{table_id}"
+      iam_policy = @bigquery_api.get_table_iam_policy(resource)
+
+      public = false
+      if !iam_policy.bindings.nil? && iam_policy.bindings.is_a?(Array)
+        iam_policy.bindings.map do |binding|
+          next unless maps_api_v2_has_read_access(binding)
+
+          public = true
+        end
+      end
+
+      metadata = tileset_metadata(tileset_id)
+      service_account = JSON.parse(@service_account)
+
+      {
+        id: tileset_id,
+        owner: service_account['client_email'],
+        privacy: public ? TILESET_PRIVACY_PUBLIC : TILESET_PRIVACY_PRIVATE,
+        created_at: metadata['created_at'],
+        updated_at: metadata['updated_at'],
+        metadata: metadata
+      }
+    end
+
+    def publish(dataset_id:, tileset_id:)
+      set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: maps_api_v2_service_accounts)
+    end
+
+    def unpublish(dataset_id:, tileset_id:)
+      members = []
+      set_tileset_iam_policy(dataset_id: dataset_id, tileset_id: tileset_id, members: members)
+    end
+
     private
 
     def tileset_metadata_script(dataset_id:, **pagination)
@@ -74,7 +121,14 @@ module Carto
         DECLARE metadata_query STRING default '';
 
         SET tilesets = (
-          SELECT ARRAY_AGG(id) FROM (#{tileset_list_query(dataset_id)})
+          SELECT
+            ARRAY_AGG(id)
+          FROM (
+            SELECT *
+            FROM (#{tileset_list_query(dataset_id)})
+            ORDER BY #{pagination[:order]} #{pagination[:direction]}
+            LIMIT #{pagination[:per_page]} OFFSET #{pagination[:offset]}
+          )
         );
 
         LOOP
@@ -99,12 +153,8 @@ module Carto
           END IF;
         END LOOP;
 
-        EXECUTE IMMEDIATE """
-          SELECT *
-          FROM (""" || metadata_query || """)
-          ORDER BY #{pagination[:order]} #{pagination[:direction]}
-          LIMIT #{pagination[:per_page]} OFFSET #{pagination[:offset]}
-        """;
+        EXECUTE IMMEDIATE
+          "SELECT * FROM (" || metadata_query || ") ORDER BY #{pagination[:order]} #{pagination[:direction]}";
       }.squish
     end
 
@@ -131,6 +181,63 @@ module Carto
         AND
           option_value LIKE '%carto_tileset%'
       }.squish
+    end
+
+    def tileset_metadata(tileset_id)
+      query = Google::Apis::BigqueryV2::QueryRequest.new
+      query.query = tileset_metadata_query(tileset_id)
+      query.use_legacy_sql = false
+      query.use_query_cache = true
+      resp = @bigquery_api.query_job(@project_id, query)
+      JSON.parse(resp.rows[0].f[0].v)
+    end
+
+    def tileset_metadata_query(tileset_id)
+      %{
+        SELECT
+          CAST(data AS STRING) AS metadata
+        FROM
+          `#{tileset_id}`
+        WHERE
+          carto_partition IS NULL
+        AND
+          z = -1
+        LIMIT 1
+      }.squish
+    end
+
+    def maps_api_v2_has_read_access(binding)
+      if Rails.env.production?
+        us_sa, eu_sa = MAPS_API_V2_PRODUCTION_SERVICE_ACCOUNTS
+        binding.role == MAPS_API_V2_READ_ACCESS && (binding.members.include?(us_sa) || binding.members.include?(eu_sa))
+      else
+        staging_sa, = MAPS_API_V2_STAGING_SERVICE_ACCOUNTS
+        binding.role == MAPS_API_V2_READ_ACCESS && binding.members.include?(staging_sa)
+      end
+    end
+
+    def set_tileset_iam_policy(dataset_id:, tileset_id:, members:)
+      resource = "projects/#{@project_id}/datasets/#{dataset_id}/tables/#{tileset_id}"
+
+      binding = Google::Apis::BigqueryV2::Binding.new
+      binding.members = members
+      binding.role = MAPS_API_V2_READ_ACCESS
+
+      policy = Google::Apis::BigqueryV2::Policy.new
+      policy.bindings = [binding]
+
+      iam_policy_request = Google::Apis::BigqueryV2::SetIamPolicyRequest.new
+      iam_policy_request.policy = policy
+
+      @bigquery_api.set_table_iam_policy(resource, iam_policy_request)
+    end
+
+    def maps_api_v2_service_accounts
+      if Rails.env.production?
+        MAPS_API_V2_PRODUCTION_SERVICE_ACCOUNTS
+      else
+        MAPS_API_V2_STAGING_SERVICE_ACCOUNTS
+      end
     end
 
   end

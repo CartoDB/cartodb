@@ -93,7 +93,11 @@ module Carto
 
       def update_redis_metadata
         if @connection.connector == BQ_CONNECTOR && @connection.parameters['service_account'].present?
-          $users_metadata.hset bigquery_redis_key, 'service_account', @connection.parameters['service_account']
+          $users_metadata.hmset(
+            bigquery_redis_key,
+            'service_account', @connection.parameters['service_account'],
+            'billing_project', @connection.parameters['billing_project']
+          )
         end
       end
 

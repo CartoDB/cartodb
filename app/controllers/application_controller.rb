@@ -199,7 +199,6 @@ class ApplicationController < ActionController::Base
 
   def check_user_state
     return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?("/" + path) }
-
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username
       user = Carto::User.find_by_username(viewed_username)
@@ -207,6 +206,13 @@ class ApplicationController < ActionController::Base
         render_locked_owner
         return
       end
+      if user.try(:pending_verification?)
+        render_unverified_user
+        return
+      end
+    elsif current_user.try(:pending_verification?)
+      render_unverified_user
+      return
     elsif current_user.locked?
       render_locked_user
       return

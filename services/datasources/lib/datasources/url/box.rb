@@ -534,8 +534,10 @@ module CartoDB
         def update_user_oauth(refresh_token)
           carto_user = Carto::User.find(@user.id)
           oauth = carto_user.oauth_for_service('box')
-          oauth.token = refresh_token
-          oauth.save
+          if oauth
+            oauth.token = refresh_token
+            oauth.save
+          end
         end
 
         # Formats all data to comply with our desired format

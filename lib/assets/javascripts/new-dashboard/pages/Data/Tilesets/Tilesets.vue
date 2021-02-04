@@ -10,7 +10,12 @@
             <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.tilesets')"/>
           </template>
           <template slot="actionButton">
-            <button @click="openInfo" class="is-small is-semibold is-txtPrimary">More info</button>
+            <button @click="openInfo" class="is-small is-semibold is-txtPrimary">
+              More info
+              <div class="chevron">
+                <img svg-inline href="../../../assets/icons/common/chevron.svg">
+              </div>
+            </button>
           </template>
         </SectionTitle>
 
@@ -77,8 +82,20 @@
                 <Pagination v-if="needPagination" :page="page" :numPages="numPages" @pageChange="goToPage"></Pagination>
               </template>
 
+              <template v-if="!projects || !projects.length || hasErrors">
+                <!-- ERROR -->
+                <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
+                  <img src="../../../assets/icons/tilesets/tileset-error.svg">
+                  <div class="u-ml--32">
+                    <div class="text is-body is-semibold u-mb--12">
+                      {{ $t('TilesetsPage.errorTitle') }}
+                    </div>
+                    <div class="text is-caption u-mb--16" v-html="$t('TilesetsPage.errorSubtitle')"></div>
+                  </div>
+                </div>
+              </template>
               <!-- EMPTY LIST -->
-              <div v-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
+              <div v-else-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
                 <img src="../../../assets/icons/tilesets/no-tileset.svg">
                 <div class="u-ml--32">
                   <div class="text is-body is-semibold u-mb--12">
@@ -141,6 +158,7 @@ export default {
       projectsInRaw: state => state.connectors.projects,
       datasetsInRaw: state => state.connectors.bqDatasets,
       tilesetsInRaw: state => state.tilesets.tilesets,
+      hasErrors: state => state.tilesets.error,
       baseUrl: state => state.user.base_url
     }),
     ...mapGetters({
@@ -179,7 +197,7 @@ export default {
       }
     },
     fetchDatasets () {
-      if (this.bqConnection) {
+      if (this.project) {
         return this.$store.dispatch('connectors/fetchBQDatasetsList', { connectionId: this.bqConnection.id, projectId: this.project.id });
       }
     },

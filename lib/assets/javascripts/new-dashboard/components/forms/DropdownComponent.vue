@@ -9,7 +9,7 @@
     <transition name="expand" @enter="enter" @after-enter="afterEnter" @leave="leave">
       <div class="item-list-container" v-if="opened">
         <div class="text is-small item" @click="selectItem(item)" v-for="item in filteredElements" :key="item.id">{{item.label}}</div>
-        <div class="text is-small item" v-if="!filteredElements.length && !showCreate">
+        <div class="text is-small item" v-if="(!filteredElements.length && !showCreate) || (showCreate && !searchingText && !filteredElements.length)">
           <slot v-if="hasSlot('noResults')" v-bind:data="{ searchingText, filteredElements }" name="noResults"></slot>
           <span v-else>No results</span>
         </div>

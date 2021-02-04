@@ -859,8 +859,10 @@
     "noDataTitle": "Tilesets not loaded",
     "noDataSubtitle": "Select a dataset from your BigQuery project to list the tilesets contained in it.",
     "noDataCaption": "Questions? Please read the <a href=''>documentation</a> to learn how to create tilesets and use them in your webmap applications.",
-    "noAvailableTitle": "Tilesets not available",
-    "noAvailableSubtitle": "There are no tilesets created in this dataset, or you don't have permission to view them.<br>Please try with a different project/dataset"
+    "noAvailableTitle": "We couldn’t find any tilesets",
+    "noAvailableSubtitle": "There seems to be no tilesets in the project and dataset selected.",
+    "errorTitle": "Permission error",
+    "errorSubtitle": "The selected project doesn't exist, or your Service Account doesn't have the required permission.<br>Please check the <a href=''>documentation</a> for the specific list of roles that are needed."
   },
   "ConnectorsPage": {
     "addConnection": "Add new connection",

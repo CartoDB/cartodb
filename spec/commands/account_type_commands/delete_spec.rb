@@ -22,7 +22,12 @@ describe AccountTypeCommands::Delete do
       before { account_type.destroy! }
 
       it 'logs a message and does not fail' do
-        logger.expects(:warn).with(message: 'AccountType not found')
+        logger.expects(:warn).with(
+          command_class: 'AccountTypeCommands::Delete',
+          request_id: nil,
+          account_type: 'FREE',
+          message: 'AccountType not found'
+        )
 
         command.run
       end

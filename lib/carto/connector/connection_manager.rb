@@ -6,7 +6,6 @@ require_relative 'connection_adapter/factory'
 
 module Carto
   class ConnectionManager
-
     class ConnectionNotFoundError < CartoError
       def initialize(message)
         super(message, 404)

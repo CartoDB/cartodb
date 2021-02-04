@@ -10,6 +10,7 @@ module Carto
       BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token)
       NON_CONNECTOR_PARAMETERS = []
       BQ_ADVANCED_CENTRAL_ATTRIBUTE = :bq_advanced
+      BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE = :bq_advanced_project
       BQ_CONNECTOR = 'bigquery'.freeze
 
       def initialize(connection)
@@ -61,12 +62,20 @@ module Carto
 
       def create_spatial_extension_setup
         central = Cartodb::Central.new
-        central.update_user(@connection.user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => true)
+        central.update_user(
+          @connection.user.username,
+          BQ_ADVANCED_CENTRAL_ATTRIBUTE => true,
+          BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE => connection.parameters['billing_project']
+        )
       end
 
       def remove_spatial_extension_setup
         central = Cartodb::Central.new
-        central.update_user(@connection.user.username, BQ_ADVANCED_CENTRAL_ATTRIBUTE => false)
+        central.update_user(
+          @connection.user.username,
+          BQ_ADVANCED_CENTRAL_ATTRIBUTE => false,
+          BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE => nil
+        )
       end
 
       def update_spatial_extension_setup

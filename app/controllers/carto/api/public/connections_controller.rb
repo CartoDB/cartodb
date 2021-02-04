@@ -10,7 +10,7 @@ module Carto
         setup_default_rescues
         # TODO: rescuers from ConnectionManager exceptions to be defined, e.g.
         # rescue_from Carto::ConnectionNotFoundError, with: :rescue_from_connection_not_found
-        rescue_from ActiveRecord::RecordInvalid, with: :rescue_from_connection_not_found
+        rescue_from ActiveRecord::RecordInvalid, with: :rescue_from_invalid_connection
 
         respond_to :json
 
@@ -103,6 +103,11 @@ module Carto
 
         def rescue_from_connection_not_found(exception)
           render_jsonp({ errors: exception.message }, 404)
+        end
+
+        def rescue_from_invalid_connection(exception)
+          code =  exception.message =~ /Access Denied/im ? 401 : 422
+          render_jsonp({ errors: exception.message }, code)
         end
 
         def load_user

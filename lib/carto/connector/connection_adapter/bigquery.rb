@@ -79,7 +79,16 @@ module Carto
       end
 
       def update_spatial_extension_setup
-        # Nothing to do since all users have inconditionally the spatial extension now
+        if @connection.changes(:parameters)
+          old_parameters, new_parameters = @connection.changes[:parameters]
+          if old_parameters['billing_project'] != new_parameters['billing_project']
+          central.update_user(
+            @connection.user.username,
+            BQ_ADVANCED_CENTRAL_ATTRIBUTE => true,
+            BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE => new_parameters['billing_project']
+          )
+          end
+        end
       end
 
       def update_redis_metadata

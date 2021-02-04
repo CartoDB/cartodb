@@ -2,6 +2,7 @@ module Carto
   module Api
     module Public
       class UserPublicProfilePresenter < UserPublicPresenter
+
         def initialize(user)
           @user = user
         end
@@ -11,11 +12,13 @@ module Carto
 
           super.deep_merge(
             organization: org_hash,
+            groups: @user.groups.map { |g| { name: g.name, display_name: g.display_name } },
             avatar_url: @user.avatar_url,
             first_name: @user.name,
             last_name: @user.last_name
           )
         end
+
       end
     end
   end

@@ -27,7 +27,7 @@ module Carto
 
       def errors
         errors = super
-        if @connector.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
+        if @connection.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
           errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if @connection.parameters['refresh_token'].present?
           errors << "Parameter access_token not supported through connections; use import API" if @connection.parameters['access_token'].present?
         end

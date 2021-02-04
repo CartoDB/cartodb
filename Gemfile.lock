@@ -136,6 +136,10 @@ GEM
       redis
     crass (1.0.6)
     daemons (1.3.1)
+    database_cleaner (1.99.0)
+    database_cleaner-active_record (1.99.0)
+      activerecord
+      database_cleaner (~> 1.99.0)
     db-query-matchers (0.4.0)
     dbf (2.0.6)
       fastercsv (~> 1.5.4)
@@ -542,6 +546,7 @@ DEPENDENCIES
   ci_reporter (= 1.8.4)
   compass (= 1.0.3)
   coverband
+  database_cleaner-active_record
   db-query-matchers (= 0.4.0)
   dbf (= 2.0.6)
   delorean

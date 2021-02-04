@@ -548,8 +548,6 @@ CartoDB::Application.routes.draw do
     end
     resources :organizations, only: [:index, :show]
     resources :synchronizations
-    resources :feature_flags
-    resources :account_types, only: [:create, :update, :destroy]
     resources :oauth_apps, only: [:create, :update, :destroy]
   end
 

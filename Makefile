@@ -195,11 +195,17 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/db/user_schema_spec.rb \
 	spec/lib/carto/db/sql_interface_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
+	spec/commands/feature_flag_commands/create_spec.rb \
+	spec/commands/feature_flag_commands/delete_spec.rb \
+	spec/commands/feature_flag_commands/update_spec.rb \
 	spec/commands/map_views_commands/update_spec.rb \
 	spec/commands/organization_commands/create_spec.rb \
 	spec/commands/organization_commands/delete_spec.rb \
 	spec/commands/organization_commands/update_spec.rb \
 	spec/commands/central_user_commands_spec.rb \
+	spec/commands/account_type_commands/create_spec.rb \
+	spec/commands/account_type_commands/update_spec.rb \
+	spec/commands/account_type_commands/delete_spec.rb \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why
@@ -235,8 +241,7 @@ WORKING_SPECS_9 = \
 	spec/requests/signup_controller_spec.rb \
 	spec/requests/account_tokens_controller_spec.rb \
 	spec/requests/password_change_controller_spec.rb \
-	spec/requests/superadmin/account_types_spec.rb \
-	spec/requests/superadmin/feature_flag_spec.rb \
+	spec/requests/superadmin/users_spec.rb \
 	spec/requests/superadmin/oauth_apps_spec.rb \
 	spec/requests/superadmin/organizations_controller_spec.rb \
 	spec/requests/superadmin/platform_controller_spec.rb \

@@ -94,8 +94,8 @@ module Carto
       end
       case connection_type
       when TYPE_OAUTH_SERVICE
-        if !get_service_datasource&.token_valid? # !Carto::ConnectionManager.new(user).oauth_connection_valid?(self)
-          errors.add :token, "Invalid OAuth"
+        if !token.present?
+          errors.add :token, "Missing OAuth"
         elsif parameters.present?
           # OAuth connections that also admit db-connector parameters (BigQuery)
           # can be saved incomplete without the parameters; once the parameters are assigned,

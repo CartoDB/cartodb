@@ -20,6 +20,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 
+- Include region & maps_api_v2_template in /me config [16112](https://github.com/CartoDB/cartodb/pull/16112)
 - Raise limit of Box files listed [16082](https://github.com/CartoDB/cartodb/pull/16082)
 - Change url Map Loads docs. in quota section [16068](https://github.com/CartoDB/cartodb/pull/16068)
 - Rake task for renaming BQ connector [16030](https://github.com/CartoDB/cartodb/pull/16030)

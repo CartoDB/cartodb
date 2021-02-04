@@ -12,6 +12,7 @@ module CartoGearsApi
       include FrontendConfigHelper
       include AppAssetsHelper
       include MapsApiHelper
+      include MapsApiV2Helper
       include SqlApiHelper
       include CartoGearsApi::Helpers::UrlHelper
       include CartoGearsApi::Helpers::PagesHelper

@@ -8,7 +8,7 @@ module AccountTypeCommands
 
       if rate_limit_changed?
         @account_type.rate_limit.update!(@received_rate_limit.rate_limit_attributes)
-        logger.info(message: 'Rate limit updated')
+        logger.info(log_context.merge(message: 'Rate limit updated'))
         ::Resque.enqueue(::Resque::UserJobs::RateLimitsJobs::SyncRedis, @account_type.account_type)
       end
     end

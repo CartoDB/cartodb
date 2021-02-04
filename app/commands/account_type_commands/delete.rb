@@ -10,13 +10,13 @@ module AccountTypeCommands
 
       # Don't break if account_type does not exist, as it is harmless
       if @account_type.nil?
-        logger.warn(message: 'AccountType not found')
+        logger.warn(log_context.merge(message: 'AccountType not found'))
         return
       end
 
       @account_type.destroy!
 
-      logger.info(message: 'AccountType destroyed')
+      logger.info(log_context.merge(message: 'AccountType destroyed'))
     end
 
     def account_type

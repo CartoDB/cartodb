@@ -61,6 +61,7 @@ sudo make install
 - Revamp specs for Message Broker commands and remove old endpoints [#16084](https://github.com/CartoDB/cartodb/pull/16084)
 - Prevent rspec from being executed in any env other than test [#16128](https://github.com/CartoDB/cartodb/pull/16128)
 - Add groups to v4/me endpoint [#16105](https://github.com/CartoDB/cartodb/pull/16105)
+- Add deprecation warning for DO analysis in builder [#16118](https://github.com/CartoDB/cartodb/pull/16118)
 
 4.44.0 (2020-11-20)
 -------------------

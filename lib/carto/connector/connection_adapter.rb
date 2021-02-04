@@ -20,7 +20,7 @@ module Carto
       CONFIDENTIAL_PARAMETER_PLACEHOLDER
     end
 
-    def filtered_connection_parameters(connection)
+    def filtered_connection_parameters
       @connection.parameters
     end
 

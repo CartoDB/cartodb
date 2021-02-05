@@ -862,7 +862,7 @@
     "noAvailableTitle": "We couldn’t find any tilesets",
     "noAvailableSubtitle": "There seems to be no tilesets in the project and dataset selected.",
     "errorTitle": "Permission error",
-    "errorSubtitle": "The selected project doesn't exist, or your Service Account doesn't have the required permission.<br>Please check the <a href=''>documentation</a> for the specific list of roles that are needed."
+    "errorSubtitle": "There seems to be an issue with the service account provided. It might be missing the required permissions. Please check the <a href='https://docs.carto.com/spatial-extension-bq/overview/#authorizaton' target='_blank'>documentation</a> to ensure that you have provided them correctly."
   },
   "ConnectorsPage": {
     "addConnection": "Add new connection",
@@ -895,7 +895,7 @@
       "emailHelpText": "CARTO extends BigQuery spatial capabilities with its spatial extension. It provides key functionalities for creating tilesets and carrying out spatial analysis. If you want to use these functions within the BigQuery console, please provide your Google user account (email) so we grant the necessary access permissions.",
       "connName": "Name",
       "errorTitle": "Connection error",
-      "serviceAccountError": "Your service account doesn't seem to have the required permission. Please check the <a href='https://docs.carto.com/spatial-extension-bq/overview/#authorizaton' target='_blank'>documentation<a/> for the specific list of roles that are needed.",
+      "serviceAccountError": "There seems to be an issue with the service account provided. It might be missing the required permissions. Please check the <a href='https://docs.carto.com/spatial-extension-bq/overview/#authorizaton' target='_blank'>documentation</a> to ensure that you have provided them correctly.",
       "serviceAccountDadFormedError": "Please, use a valid service account key in JSON format",
       "billingProject": "Billing project",
       "billingHelper": "You can configure the billing project CARTO should use to run queries using your service account.",

@@ -93,7 +93,7 @@
                     <div class="is-small" v-if="error">
                       <div class="u-mt--12 text is-txtMidGrey is-semibold">Error info:</div>
                       <div class="u-mt--12 u-flex text is-semibold">
-                        <div class="code u-flex__grow--1 is-code">{{ error }}</div>
+                        <input ref="inputError" class="code u-flex__grow--1 is-code" type="text" readonly :value=error.message>
                         <div @click="copyInfo" class="u-ml--4 copy">
                           <img svg-inline src="../../../assets/icons/catalog/copy.svg">
                         </div>
@@ -258,22 +258,8 @@ export default {
       // window.open(`${this.baseUrl}/dashboard/tilesets/${tileset.id}?connection_id=${this.bqConnection.id}&project_id=${this.project.id}&dataset_id=${this.dataset.id}`, '_blank');
     },
     copyInfo () {
-      const textArea = document.createElement('textarea');
-      textArea.style.position = 'fixed';
-      textArea.style.opacity = 0;
-      textArea.style.height = 0;
-      textArea.style.width = 0;
-      textArea.value = this.error.message;
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      try {
-        document.execCommand('copy');
-      } catch (err) {
-        console.error(err);
-      } finally {
-        document.body.removeChild(textArea);
-      }
+      this.$refs.inputError.select();
+      document.execCommand('copy');
     }
   },
   mounted () {
@@ -363,8 +349,9 @@ export default {
   border-radius: 4px;
   padding: 10px 12px;
   background-color: $neutral--100;
-  white-space: nowrap;
-  overflow: auto;
+  font-weight: 400;
+  height: 36px;
+  border: none;
 }
 
 .copy {

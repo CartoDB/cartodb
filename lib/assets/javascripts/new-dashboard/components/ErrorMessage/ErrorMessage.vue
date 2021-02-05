@@ -5,7 +5,7 @@
       <div class="u-mt--12 text is-semibold">Error info:</div>
       <div class="u-mt--8 u-flex text is-semibold">
         <!-- <div class="code u-flex__grow--1 is-code">{{ moreInfo }}</div> -->
-        <input type="text" class="code u-flex__grow--1 is-code" readonly :value=moreInfo>
+        <input ref="inputError" type="text" class="code u-flex__grow--1 is-code" readonly :value=moreInfo>
         <div @click="copyInfo" class="u-ml--4 copy">
           <img svg-inline src="../../assets/icons/catalog/copy.svg">
         </div>
@@ -23,22 +23,8 @@ export default {
   },
   methods: {
     copyInfo () {
-      const textArea = document.createElement('textarea');
-      textArea.style.position = 'fixed';
-      textArea.style.opacity = 0;
-      textArea.style.height = 0;
-      textArea.style.width = 0;
-      textArea.value = this.moreInfo;
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      try {
-        document.execCommand('copy');
-      } catch (err) {
-        console.error(err);
-      } finally {
-        document.body.removeChild(textArea);
-      }
+      this.$refs.inputError.select();
+      document.execCommand('copy');
     }
   }
 };

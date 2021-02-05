@@ -3,8 +3,9 @@
     <span v-html="message"></span>
     <template v-if="moreInfo">
       <div class="u-mt--12 text is-semibold">Error info:</div>
-      <div class="u-mt--12 u-flex text">
-        <div class="code u-flex__grow--1 is-code">{{ moreInfo }}</div>
+      <div class="u-mt--8 u-flex text is-semibold">
+        <!-- <div class="code u-flex__grow--1 is-code">{{ moreInfo }}</div> -->
+        <input type="text" class="code u-flex__grow--1 is-code" readonly :value=moreInfo>
         <div @click="copyInfo" class="u-ml--4 copy">
           <img svg-inline src="../../assets/icons/catalog/copy.svg">
         </div>
@@ -71,12 +72,16 @@ export default {
   }
 }
 .code {
+  font-family: 'Overpass Mono';
   max-width: 100%;
   border-radius: 4px;
   padding: 10px 12px;
   background-color: rgba(255, 255, 255, 0.4);
   white-space: nowrap;
   overflow: auto;
+  border: none;
+  height: 36px;
+  font-weight: 400;
 }
 
 .copy {

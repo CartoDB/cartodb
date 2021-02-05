@@ -59,6 +59,7 @@ sudo make install
 - Configure Dead Lettering & prevent flooding of map views messages [#16059](https://github.com/CartoDB/cartodb/pull/16059)
 - Revamp specs for Message Broker commands and remove old endpoints [#16084](https://github.com/CartoDB/cartodb/pull/16084)
 - Add groups to v4/me endpoint [#16105](https://github.com/CartoDB/cartodb/pull/16105)
+- Decrease verbosity of Resque logs [#16126](https://github.com/CartoDB/cartodb/pull/16126)
 
 4.44.0 (2020-11-20)
 -------------------

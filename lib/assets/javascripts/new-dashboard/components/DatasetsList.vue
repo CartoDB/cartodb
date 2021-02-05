@@ -57,7 +57,7 @@
           <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
+           <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</button>
         </template>
       </InitialState>
     </div>
@@ -115,7 +115,6 @@ import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
-import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 import * as accounts from 'new-dashboard/core/constants/accounts';
@@ -137,7 +136,6 @@ export default {
     }
   },
   components: {
-    CreateButton,
     SettingsDropdown,
     SectionTitle,
     VisualizationsTitle,

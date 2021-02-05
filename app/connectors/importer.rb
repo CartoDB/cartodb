@@ -192,6 +192,8 @@ module CartoDB
       end
 
       def drop(table_name)
+        return unless table_name.present?
+
         Carto::OverviewsService.new(database).delete_overviews table_name
         database.execute(%(DROP TABLE #{table_name}))
       rescue StandardError => exception

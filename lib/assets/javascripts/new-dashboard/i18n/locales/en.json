@@ -862,7 +862,9 @@
     "noAvailableTitle": "We couldn’t find any tilesets",
     "noAvailableSubtitle": "There seems to be no tilesets in the project and dataset selected.",
     "errorTitle": "Permission error",
-    "errorSubtitle": "There seems to be an issue with the service account provided. It might be missing the required permissions. Please check the <a href='https://docs.carto.com/spatial-extension-bq/overview/#authorizaton' target='_blank'>documentation</a> to ensure that you have provided them correctly."
+    "errorSubtitle": "There seems to be an issue with the service account provided. It might be missing the required permissions. Please check the <a href='https://docs.carto.com/spatial-extension-bq/overview/#authorizaton' target='_blank'>documentation</a> to ensure that you have provided them correctly.",
+    "notFoundTitle": "We couldn’t find this project",
+    "notFoundSubtitle": "The project name doesn’t return any results. Please try with a different one."
   },
   "ConnectorsPage": {
     "addConnection": "Add new connection",

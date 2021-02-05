@@ -81,8 +81,7 @@
                 </ul>
                 <Pagination v-if="needPagination" :page="page" :numPages="numPages" @pageChange="goToPage"></Pagination>
               </template>
-
-              <template v-if="!projects || !projects.length || hasErrors">
+              <template v-if="hasPermissionsError || (!projects || !projects.length)">
                 <!-- ERROR -->
                 <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
                   <img src="../../../assets/icons/tilesets/tileset-error.svg">
@@ -91,6 +90,27 @@
                       {{ $t('TilesetsPage.errorTitle') }}
                     </div>
                     <div class="text is-caption u-mb--16" v-html="$t('TilesetsPage.errorSubtitle')"></div>
+                    <div class="is-small" v-if="error">
+                      <div class="u-mt--12 text is-txtMidGrey is-semibold">Error info:</div>
+                      <div class="u-mt--12 u-flex text is-semibold">
+                        <div class="code u-flex__grow--1 is-code">{{ error }}</div>
+                        <div class="u-ml--4 copy">
+                          <img svg-inline src="../../../assets/icons/catalog/copy.svg">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <template v-else-if="error && error.status === 404 && project && !datasets.length">
+                <!-- PROJECT DOESN'T EXIST -->
+                <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
+                  <img src="../../../assets/icons/tilesets/tileset-error.svg">
+                  <div class="u-ml--32">
+                    <div class="text is-body is-semibold u-mb--12">
+                      {{ $t('TilesetsPage.notFoundTitle') }}
+                    </div>
+                    <div class="text is-caption u-mb--16" v-html="$t('TilesetsPage.notFoundSubtitle')"></div>
                   </div>
                 </div>
               </template>
@@ -146,7 +166,8 @@ export default {
       project: null,
       dataset: null,
       page: 1,
-      maxVisibleTilesets: 12
+      maxVisibleTilesets: 12,
+      error: null
     };
   },
   computed: {
@@ -158,12 +179,14 @@ export default {
       projectsInRaw: state => state.connectors.projects,
       datasetsInRaw: state => state.connectors.bqDatasets,
       tilesetsInRaw: state => state.tilesets.tilesets,
-      hasErrors: state => state.tilesets.error,
       baseUrl: state => state.user.base_url
     }),
     ...mapGetters({
       bqConnection: 'connectors/getBigqueryConnection'
     }),
+    hasPermissionsError () {
+      return this.error && (this.error.status === '401' || this.error.status === '403');
+    },
     numPages () {
       return Math.ceil(this.tilesetsInRaw.total / this.maxVisibleTilesets);
     },
@@ -191,25 +214,37 @@ export default {
       this.page = page;
       this.fetchTilesets();
     },
-    fetchProjects () {
+    async fetchProjects () {
       if (this.bqConnection) {
-        return this.$store.dispatch('connectors/fetchBQProjectsList', this.bqConnection.id);
+        try {
+          await this.$store.dispatch('connectors/fetchBQProjectsList', this.bqConnection.id);
+        } catch (e) {
+          this.error = JSON.parse(e.message);
+        }
       }
     },
-    fetchDatasets () {
+    async fetchDatasets () {
       if (this.project) {
-        return this.$store.dispatch('connectors/fetchBQDatasetsList', { connectionId: this.bqConnection.id, projectId: this.project.id });
+        try {
+          await this.$store.dispatch('connectors/fetchBQDatasetsList', { connectionId: this.bqConnection.id, projectId: this.project.id });
+        } catch (e) {
+          this.error = JSON.parse(e.message);
+        }
       }
     },
-    fetchTilesets () {
+    async fetchTilesets () {
       if (this.bqConnection) {
-        return this.$store.dispatch('tilesets/fetchTilesetsList', {
-          connectionId: this.bqConnection.id,
-          projectId: this.project.id,
-          datasetId: this.dataset ? this.dataset.id : null,
-          perPage: this.maxVisibleTilesets,
-          page: this.page
-        });
+        try {
+          await this.$store.dispatch('tilesets/fetchTilesetsList', {
+            connectionId: this.bqConnection.id,
+            projectId: this.project.id,
+            datasetId: this.dataset ? this.dataset.id : null,
+            perPage: this.maxVisibleTilesets,
+            page: this.page
+          });
+        } catch (e) {
+          this.error = JSON.parse(e.message);
+        }
       }
     },
     useOtherProject (searchingText) {
@@ -302,6 +337,40 @@ export default {
 
   i {
     font-style: italic;
+  }
+}
+
+.code {
+  max-width: 100%;
+  border-radius: 4px;
+  padding: 10px 12px;
+  background-color: $neutral--100;
+  white-space: nowrap;
+  overflow: auto;
+}
+
+.copy {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  width: 36px;
+  flex: 0 0 36px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $neutral--100;
+    border-radius: 4px;
+
+  }
+
+  svg {
+    outline: none;
+    transform: scale(1.5);
+
+    path[fill] {
+      fill: #036fe2;
+    }
   }
 }
 </style>

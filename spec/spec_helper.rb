@@ -7,8 +7,7 @@ require './spec/support/message_broker_stubs'
 require './spec/support/shared_entities_spec_helper'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-ENV['RAILS_ENV'] ||= 'test'
-raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{ENV['RAILS_ENV']}) unless ENV['RAILS_ENV'] == 'test'
+raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{Rails.env}) unless Rails.env.test?
 
 require File.expand_path('../../config/environment', __FILE__)
 

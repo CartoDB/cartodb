@@ -13,7 +13,7 @@
           </h4>
           <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.HelpCenter.description`) }}</p>
         </a>
-        <a href="https://carto.com/developers/" class="footer-link" target="_blank" rel="noopener noreferrer">
+        <a href="https://docs.carto.com/" class="footer-link" target="_blank" rel="noopener noreferrer">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.DeveloperCenter.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>

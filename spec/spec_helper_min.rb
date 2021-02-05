@@ -8,6 +8,8 @@ require './spec/support/redis'
 require './spec/support/shared_entities_spec_helper'
 
 ENV['RAILS_ENV'] ||= 'test'
+raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{ENV['RAILS_ENV']}) unless ENV['RAILS_ENV'] == 'test'
+
 # INFO: this is the only slow step of the test boot process
 require File.expand_path('../../config/environment', __FILE__)
 

@@ -138,9 +138,9 @@
     "addYourData":"Add your data",
     "url": "Enter a URL",
     "zeroCase": {
-      "title": "Upload your first dataset",
-      "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
-      "createDataset": "New Dataset"
+      "title": "Connect your database or upload a file",
+      "description": "Connect your BigQuery, Snowflake or any other database to CARTO. Then you will be able to create maps, import data and more.",
+      "createDataset": "New Connection"
     },
     "emptyCase": {
       "default": "There are no datasets here.",
@@ -873,6 +873,7 @@
     "editConnectionButton": "Save & Connect",
     "connecting": "Connecting...",
     "queryError": "Error. Your SQL Query doesn’t look correct.",
+    "queryErrorMoreInfo": "More info",
     "oauthErrorTitle": "Connection failed: we were unable to connect to {connector}",
     "oauthErrorSubtitle": "Be sure you have any pop-up blockers deactivated for this website.",
     "tryAgainButton": "Try again",

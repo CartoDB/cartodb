@@ -111,7 +111,7 @@ module CartoDB
             client_secret = options[:client_secret]
 
             @access_token = access_token
-            raise "Access token cannot be nil" if @access_token.nil?
+            raise CartoDB::Datasources::TokenExpiredOrInvalidError.new("Access token cannot be nil", DATASOURCE_NAME) if @access_token.nil?
             @client_id = client_id
             @client_secret = client_secret
           end
@@ -534,8 +534,10 @@ module CartoDB
         def update_user_oauth(refresh_token)
           carto_user = Carto::User.find(@user.id)
           oauth = carto_user.oauth_for_service('box')
-          oauth.token = refresh_token
-          oauth.save
+          if oauth
+            oauth.token = refresh_token
+            oauth.save
+          end
         end
 
         # Formats all data to comply with our desired format

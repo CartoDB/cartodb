@@ -26,8 +26,19 @@
                     :placeholder="placeholderQuery"
                     v-model="query"/>
                 </div>
-                <div class="text is-small is-txtAlert error u-pt--10 u-pr--12 u-pl--12 u-pb--8" v-if="error">
-                  {{ $t('ConnectorsPage.queryError') }}
+                <div class="is-small is-txtAlert error u-pr--12 u-pl--12 u-pb--8" v-if="error">
+                  <div class="u-flex u-flex u-flex__align--center u-flex__justify--between error-header is-semibold">
+                    <div class="text">
+                      {{ $t('ConnectorsPage.queryError') }}
+                    </div>
+                    <div class="u-flex u-flex__align--center toggle" @click="openMoreInfo">
+                      {{ $t('ConnectorsPage.queryErrorMoreInfo') }}
+                      <span class="u-flex u-ml--8 chevron" :class="{ 'open': isErrorMessageOpen }"><img svg-inline src="../../../assets/icons/common/new-chevron.svg"/></span>
+                    </div>
+                  </div>
+                  <div class="u-mt--16 text message" v-if="isErrorMessageOpen">
+                    {{ errorMessage }}
+                  </div>
                 </div>
                 <p v-if="isMySQL" class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNoteMySQL')}}</p>
                 <p v-else-if="isSQLServer" class="text is-small is-txtSoftGrey u-mt--12">{{$t('DataPage.addConnector.sqlNoteSQLServer')}}</p>
@@ -140,6 +151,8 @@ export default {
       query: '',
       datasetName: '',
       error: '',
+      errorMessage: '',
+      isErrorMessageOpen: false,
       connection: null,
       sending: false,
       queryIsValid: false,
@@ -196,6 +209,7 @@ export default {
         this.queryIsValid = true;
       } catch (error) {
         this.error = true;
+        this.errorMessage = error.message;
       } finally {
         this.sending = false;
       }
@@ -214,6 +228,9 @@ export default {
         const routeNamePrefix = this.$route.name.replace('connection-dataset', '');
         this.$router.push({ name: `${routeNamePrefix}connector-selected`, params: { connector: this.connector.options.service } });
       }
+    },
+    openMoreInfo () {
+      this.isErrorMessageOpen = !this.isErrorMessageOpen;
     },
     chooseFile (file) {
       this.selectedFile = file;
@@ -282,10 +299,26 @@ export default {
   min-width: 0;
 
   .error {
+    padding-top: 6px;
     border: 1px solid $red--400;
     background-color: transparentize($red--400, 0.92);
     border-top: 0;
     border-radius: 0 0 4px 4px;
+
+    .chevron {
+
+      &.open {
+        transform: rotate(180deg);
+      }
+
+      svg {
+        outline: none;
+
+        path {
+          fill: $red--400;;
+        }
+      }
+    }
   }
 
   .codeblock-container {
@@ -319,5 +352,9 @@ export default {
 
 .dataset-sync-card-container {
   max-width: 780px;
+}
+
+.toggle {
+  cursor: pointer;
 }
 </style>

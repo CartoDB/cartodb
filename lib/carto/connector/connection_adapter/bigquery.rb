@@ -11,7 +11,6 @@ module Carto
       NON_CONNECTOR_PARAMETERS = []
       BQ_ADVANCED_CENTRAL_ATTRIBUTE = :bq_advanced
       BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE = :bq_advanced_project
-      BQ_CONNECTOR = 'bigquery'.freeze
 
       def initialize(connection)
         super(connection, confidential_parameters: BQ_CONFIDENTIAL_PARAMS)
@@ -92,15 +91,17 @@ module Carto
       end
 
       def update_redis_metadata
-        if @connection.connector == BQ_CONNECTOR && @connection.parameters['service_account'].present?
-          $users_metadata.hset bigquery_redis_key, 'service_account', @connection.parameters['service_account']
+        if @connection.parameters['service_account'].present?
+          $users_metadata.hmset(
+            bigquery_redis_key,
+            'service_account', @connection.parameters['service_account'],
+            'billing_project', @connection.parameters['billing_project']
+          )
         end
       end
 
       def remove_redis_metadata
-        if @connection.connector == BQ_CONNECTOR
-          $users_metadata.del bigquery_redis_key
-        end
+        $users_metadata.del bigquery_redis_key
       end
 
       def bigquery_redis_key

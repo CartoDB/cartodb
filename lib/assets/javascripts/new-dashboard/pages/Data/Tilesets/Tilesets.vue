@@ -94,7 +94,7 @@
                       <div class="u-mt--12 text is-txtMidGrey is-semibold">Error info:</div>
                       <div class="u-mt--12 u-flex text is-semibold">
                         <div class="code u-flex__grow--1 is-code">{{ error }}</div>
-                        <div class="u-ml--4 copy">
+                        <div @click="copyInfo" class="u-ml--4 copy">
                           <img svg-inline src="../../../assets/icons/catalog/copy.svg">
                         </div>
                       </div>
@@ -256,6 +256,24 @@ export default {
     openViewer (tileset) {
       this.$router.push({ name: 'tileset-viewer', params: { id: tileset.id }, query: { connection_id: this.bqConnection.id, project_id: this.project.id, dataset_id: this.dataset.id } });
       // window.open(`${this.baseUrl}/dashboard/tilesets/${tileset.id}?connection_id=${this.bqConnection.id}&project_id=${this.project.id}&dataset_id=${this.dataset.id}`, '_blank');
+    },
+    copyInfo () {
+      const textArea = document.createElement('textarea');
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = 0;
+      textArea.style.height = 0;
+      textArea.style.width = 0;
+      textArea.value = this.error.message;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error(err);
+      } finally {
+        document.body.removeChild(textArea);
+      }
     }
   },
   mounted () {

@@ -3,22 +3,19 @@
     <div class="main u-flex u-flex__align--center u-flex__direction--column">
       <!-- DISCLAIMER -->
       <div v-if="showDisclaimer" class="disclaimer">
-        <h4 class="is-subtitle is-semibold u-mt--16">{{$t('ConnectorsPage.BigQuery.title')}}</h4>
-        <ul class="u-mt--16">
+        <h4 class="is-small is-semibold u-mt--16">{{$t('ConnectorsPage.BigQuery.title')}}</h4>
+        <ul class="u-mt--8">
           <li class="u-mb--16">
-            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer1')}}</span>
+            <span class="text is-small" v-html="$t('ConnectorsPage.BigQuery.disclaimer1')"></span>
           </li>
           <li class="u-mb--16">
-            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer2')}}</span>
+            <span class="text is-small" v-html="$t('ConnectorsPage.BigQuery.disclaimer2')"></span>
           </li>
           <li class="u-mb--16">
-            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer3')}}</span>
+            <span class="text is-small" v-html="$t('ConnectorsPage.BigQuery.disclaimer3')"></span>
           </li>
           <li class="u-mb--16">
-            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer4')}}</span>
-          </li>
-          <li class="u-mb--16">
-            <span class="text is-caption" v-html="$t('ConnectorsPage.BigQuery.disclaimer5')"></span>
+            <span class="text is-small" v-html="$t('ConnectorsPage.BigQuery.disclaimer4')"></span>
           </li>
         </ul>
         <div class="u-mt--48 u-flex u-flex__justify--center u-flex__align--center">
@@ -213,11 +210,7 @@ export default {
   max-width: 460px;
 }
 .disclaimer {
-  width: 620px;
-
-  h4 {
-    text-align: center;
-  }
+  width: 460px;
 }
 
 .section-header {

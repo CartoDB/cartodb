@@ -3,7 +3,7 @@
     <span v-html="message"></span>
     <template v-if="moreInfo">
       <div class="u-mt--12 text is-semibold">Error info:</div>
-      <div class="u-mt--12 u-flex text is-semibold">
+      <div class="u-mt--12 u-flex text">
         <div class="code u-flex__grow--1 is-code">{{ moreInfo }}</div>
         <div @click="copyInfo" class="u-ml--4 copy">
           <img svg-inline src="../../assets/icons/catalog/copy.svg">

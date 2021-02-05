@@ -914,6 +914,19 @@
       "placeholder": "Paste your ArcGIS™ table URL here",
       "helper": "Format: https://&lt;host&gt;/arcgis/rest/services/&lt;folder&gt;/&lt;serviceName&gt;/&lt;serviceType&gt;<br>To retrieve a particular layer, add the layer indexat the end of the URL"
     },
+    "Twitter": {
+      "title": "Connect with Twitter",
+      "subtitle": "Twitter trends",
+      "description": "Enter up to four search terms using the category fields",
+      "category": "Category",
+      "categoryPlaceholder": "Insert your terms separated by commas",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "time": "Time",
+      "use": "Use",
+      "remaining": "of your remaining %{quota} Twitter credits",
+      "gmt": "Time is in GMT+0 (You are in GMT%{gmt})"
+    },
     "removeModal": {
       "title": "You are about to delete your {connector} connection",
       "subtitle": "If you have synchronized datasets, you will no longer be able to update them",

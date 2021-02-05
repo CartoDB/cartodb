@@ -15,12 +15,12 @@
       <div class="u-flex u-flex__direction--column">
         <span class="is-semibold is-small">{{ $t('ConnectorsPage.Twitter.subtitle') }}</span>
         <span class="is-small u-mt--8">{{ $t('ConnectorsPage.Twitter.description') }}</span>
-        <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--32">
+        <div v-for="(category, index) in categories" :key="index" class="u-flex u-flex__align--center u-flex__justify--between u-mt--32">
           <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16">
-            <label class="text is-small">{{ $t('ConnectorsPage.Twitter.category') }}</label>
+            <label class="text is-small">{{ $t('ConnectorsPage.Twitter.category') }} {{ index + 1 }}</label>
           </div>
           <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper">
-            <input type="text" v-model="urlToUpload" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="" :placeholder="$t('ConnectorsPage.Twitter.categoryPlaceholder')">
+            <input type="text" v-model="categories[index]" @keydown="onCategoriesChange" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" :placeholder="$t('ConnectorsPage.Twitter.categoryPlaceholder')">
           </div>
         </div>
         <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--16">
@@ -29,16 +29,16 @@
               <label class="text is-small">{{ $t('ConnectorsPage.Twitter.startDate') }}</label>
             </div>
             <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--short">
-              <input type="date" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="">
+              <input type="date" v-model="fromDate" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium">
             </div>
           </div>
           <div class="u-flex u-flex__align--center u-ml--24">
             <label class="text is-small u-mr--16">{{ $t('ConnectorsPage.Twitter.time') }}</label>
-            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--shorter u-mr--8">
-              <input type="number" min="0" max="23" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="">
+            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--shorter time u-mr--8">
+              <input type="number" v-model="startTime.hour" min="0" max="23" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium">
             </div>
-            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--shorter">
-              <input type="number" min="0" max="59" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="">
+            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--shorter time">
+              <input type="number" v-model="startTime.min" min="0" max="59" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium">
             </div>
           </div>
         </div>
@@ -48,16 +48,16 @@
               <label class="text is-small">{{ $t('ConnectorsPage.Twitter.endDate') }}</label>
             </div>
             <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--short">
-              <input type="date" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="">
+              <input type="date" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" v-model="toDate">
             </div>
           </div>
           <div class="u-flex u-flex__align--center u-ml--24">
             <label class="text is-small u-mr--16">{{ $t('ConnectorsPage.Twitter.time') }}</label>
-            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--shorter u-mr--8">
-              <input type="number" min="0" max="23" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="">
+            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--shorter time u-mr--8">
+              <input type="number" v-model="endTime.hour" min="0" max="23" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium">
             </div>
-            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--shorter">
-              <input type="number" min="0" max="59" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium" value="">
+            <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper Form-rowData--shorter time">
+              <input type="number" v-model="endTime.min" min="0" max="59" class="Form-input Form-inputInline u-flex__grow--1 CDB-Text CDB-Size-medium">
             </div>
           </div>
         </div>
@@ -73,8 +73,8 @@
           </div>
           <div class="Form-rowData Form-rowData--noMargin">
             <div class="u-width--100">
-              <input class="u-flex__grow--1" type="range" min="0" max="100">
-              <p class="is-small is-txtSoftGrey u-mt--8"><span class="is-txtMainTextColor is-semibold">50%</span> {{ $t('ConnectorsPage.Twitter.remaining', { quota: twitterQuota }) }}</p>
+              <input class="u-flex__grow--1" v-model="quota" type="range" min="0" max="100">
+              <p class="is-small is-txtSoftGrey u-mt--8"><span class="is-txtMainTextColor is-semibold">{{quota}}%</span> {{ $t('ConnectorsPage.Twitter.remaining', { quota: twitterQuota }) }}</p>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@
       <GuessPrivacyFooter
         :guess="uploadObject.content_guessing && uploadObject.type_guessing"
         :privacy="uploadObject.privacy"
-        :disabled="!fileValidation.valid"
+        :disabled="!isValidModel"
         @guessChanged="changeGuess"
         @privacyChanged="changePrivacy"
         @connect="connectDataset"
@@ -104,7 +104,19 @@ import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyF
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import { LOCAL_FILES } from 'new-dashboard/utils/connector/local-file-option';
 import { mapState } from 'vuex';
+import { format, addDays } from 'date-fns';
 import moment from 'moment';
+
+const MAX_TERMS = 29;
+const MAX_CATEGORIES = 4;
+const BACKSPACE_KEY = 'Backspace';
+const MAX_COUNTER = 1014;
+const CHAR_MAP = {
+  ' ': 2,
+  '-': 2,
+  '_': 2,
+  '.': 2
+};
 
 export default {
   name: 'ArcgisConnector',
@@ -125,6 +137,18 @@ export default {
         valid: false,
         msg: ''
       },
+      categories: [''],
+      fromDate: this.getDateFormatted(new Date()),
+      toDate: this.getDateFormatted(addDays(new Date(), 30)),
+      startTime: {
+        hour: 0,
+        min: 0
+      },
+      endTime: {
+        hour: 0,
+        min: 0
+      },
+      quota: 50,
       localFiles: LOCAL_FILES,
       supportedFormats: UploadConfig.fileExtensions,
       extension: this.$route.params.extension,
@@ -135,6 +159,28 @@ export default {
     ...mapState({
       twitterQuota: state => state.user && state.user.twitter && state.user.twitter.quota
     }),
+    isValidModel () {
+      return !!this.model.categories.length;
+    },
+    model () {
+      return {
+        categories: this.categories.filter(cat => !!cat).map(cat => {
+          const terms = cat.split(',');
+          return {
+            terms,
+            count: this.calculeCounter(terms)
+          };
+        }),
+        dates: {
+          fromDate: this.fromDate,
+          toDate: this.toDate,
+          fromHour: this.startTime.hour,
+          toHour: this.endTime.hour,
+          fromMin: this.startTime.min,
+          toMin: this.endTime.min
+        }
+      };
+    },
     getRouteNamePrefix () {
       return this.$route.name.replace('import-twitter', '');
     },
@@ -146,6 +192,34 @@ export default {
     }
   },
   methods: {
+    onCategoriesChange (event) {
+      const inputValue = event.target.value;
+      if (inputValue) {
+        const terms = inputValue.split(',');
+
+        if (terms.length > MAX_TERMS && event.key !== BACKSPACE_KEY) {
+          event.preventDefault();
+        }
+      }
+    },
+    calculeCounter (terms) {
+      let count = MAX_COUNTER;
+      if (terms.length > 1) {
+        count = count - ((terms.length - 1) * 4);
+      }
+
+      terms.forEach(term => {
+        term.split('').forEach(char => {
+          if (CHAR_MAP[char]) {
+            count = count - CHAR_MAP[char];
+          } else {
+            count -= 1;
+          }
+        });
+      });
+
+      return Math.max(0, count);
+    },
     changeSyncInterval (interval) {
       this.uploadObject.interval = interval;
     },
@@ -159,22 +233,39 @@ export default {
     changePrivacy (value) {
       this.uploadObject.privacy = value;
     },
-    uploadUrl () {
-      this.fileValidation = this.validateUrl(this.urlToUpload);
-
-      if (this.fileValidation.valid) {
-        this.uploadObject.type = 'service';
-        this.uploadObject.value = this.urlToUpload;
-        this.uploadObject.service_name = 'arcgis';
-        this.uploadObject.service_item_id = this.urlToUpload;
-      }
+    getDateFormatted (date) {
+      return `${format(date, 'YYYY-MM-DD')}`;
     },
     connectDataset () {
-      if (this.isFileSelected) {
+      if (this.isValidModel) {
+        this.uploadObject.type = 'service';
+        this.uploadObject.value = this.model;
+        this.uploadObject.service_name = 'twitter_search';
+        this.uploadObject.service_item_id = this.model;
+        this.uploadObject.user_defined_limits = {
+          twitter_credits_limit: this.quota
+        };
+
         const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
         backgroundPollingView._addDataset({ ...this.uploadObject });
         this.$refs.dialog.closePopup();
       }
+    }
+  },
+  watch: {
+    categories: {
+      handler () {
+        const categoriesSize = this.categories.length;
+        if (this.categories[categoriesSize - 1]) {
+          if (categoriesSize < MAX_CATEGORIES) {
+            this.categories.push('');
+          }
+        }
+        if (categoriesSize >= 2 && !this.categories[categoriesSize - 2]) {
+          this.categories.splice(categoriesSize - 2, 1);
+        }
+      },
+      deep: true
     }
   }
 };
@@ -195,7 +286,7 @@ export default {
   }
 }
 
-.Form-rowData--shorter {
+.time {
   width: 56px;
 }
 

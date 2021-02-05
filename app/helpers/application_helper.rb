@@ -10,6 +10,7 @@ module ApplicationHelper
   include FrontendConfigHelper
   include AppAssetsHelper
   include MapsApiHelper
+  include MapsApiV2Helper
   include SqlApiHelper
   include Carto::HtmlSafe
   include CartoGearsApi::Helpers::PagesHelper
@@ -64,6 +65,7 @@ module ApplicationHelper
   end
 
   module_function :maps_api_template, :maps_api_url
+  module_function :maps_api_v2_template, :maps_api_v2_url
   module_function :sql_api_template, :sql_api_url
   module_function :app_assets_base_url
 
@@ -71,7 +73,11 @@ module ApplicationHelper
     api_type = (options[:https_apis].present? && options[:https_apis]) ? 'private' : 'public'
 
     config = {
+      # region:              Cartodb.get_config(:bigquery_region),
+      # FIXME: debug
+      region: 'US',
       maps_api_template:   maps_api_template(api_type),
+      maps_api_v2_template: maps_api_v2_template,
       user_name:           CartoDB.extract_subdomain(request),
       cartodb_com_hosted:  Cartodb.get_config(:cartodb_com_hosted),
       account_host:        CartoDB.account_host,

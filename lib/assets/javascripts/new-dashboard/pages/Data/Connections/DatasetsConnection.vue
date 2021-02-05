@@ -229,7 +229,7 @@ export default {
         this.$router.push({ name: `${routeNamePrefix}connector-selected`, params: { connector: this.connector.options.service } });
       }
     },
-    async openMoreInfo () {
+    openMoreInfo () {
       this.isErrorMessageOpen = !this.isErrorMessageOpen;
     },
     chooseFile (file) {
@@ -352,5 +352,9 @@ export default {
 
 .dataset-sync-card-container {
   max-width: 780px;
+}
+
+.toggle {
+  cursor: pointer;
 }
 </style>

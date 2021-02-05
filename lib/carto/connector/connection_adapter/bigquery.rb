@@ -78,7 +78,7 @@ module Carto
       end
 
       def update_spatial_extension_setup
-        if @connection.changes(:parameters)
+        if @connection.changes[:parameters]
           old_parameters, new_parameters = @connection.changes[:parameters]
           if old_parameters['billing_project'] != new_parameters['billing_project']
           central.update_user(

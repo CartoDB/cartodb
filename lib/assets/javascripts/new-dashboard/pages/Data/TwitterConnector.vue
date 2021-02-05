@@ -104,7 +104,7 @@ import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyF
 import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import { LOCAL_FILES } from 'new-dashboard/utils/connector/local-file-option';
 import { mapState } from 'vuex';
-import { format, addDays } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import moment from 'moment';
 
 const MAX_TERMS = 29;
@@ -138,15 +138,15 @@ export default {
         msg: ''
       },
       categories: [''],
-      fromDate: this.getDateFormatted(new Date()),
-      toDate: this.getDateFormatted(addDays(new Date(), 30)),
+      fromDate: this.getDateFormatted(subDays(new Date(), 29)),
+      toDate: this.getDateFormatted(new Date()),
       startTime: {
-        hour: 0,
-        min: 0
+        hour: new Date().getUTCHours(),
+        min: new Date().getUTCMinutes()
       },
       endTime: {
-        hour: 0,
-        min: 0
+        hour: new Date().getUTCHours(),
+        min: new Date().getUTCMinutes()
       },
       quota: 50,
       localFiles: LOCAL_FILES,

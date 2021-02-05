@@ -10,7 +10,12 @@
             <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.tilesets')"/>
           </template>
           <template slot="actionButton">
-            <button @click="openInfo" class="is-small is-semibold is-txtPrimary">More info</button>
+            <button @click="openInfo" class="is-small is-semibold is-txtPrimary">
+              More info
+              <div class="chevron">
+                <img svg-inline href="../../../assets/icons/common/chevron.svg">
+              </div>
+            </button>
           </template>
         </SectionTitle>
 
@@ -76,9 +81,41 @@
                 </ul>
                 <Pagination v-if="needPagination" :page="page" :numPages="numPages" @pageChange="goToPage"></Pagination>
               </template>
-
+              <template v-if="hasPermissionsError || (!projects || !projects.length)">
+                <!-- ERROR -->
+                <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
+                  <img src="../../../assets/icons/tilesets/tileset-error.svg">
+                  <div class="u-ml--32">
+                    <div class="text is-body is-semibold u-mb--12">
+                      {{ $t('TilesetsPage.errorTitle') }}
+                    </div>
+                    <div class="text is-caption u-mb--16" v-html="$t('TilesetsPage.errorSubtitle')"></div>
+                    <div class="is-small" v-if="error">
+                      <div class="u-mt--12 text is-txtMidGrey is-semibold">Error info:</div>
+                      <div class="u-mt--12 u-flex text is-semibold">
+                        <input ref="inputError" class="code u-flex__grow--1 is-code" type="text" readonly :value=error.message>
+                        <div @click="copyInfo" class="u-ml--4 copy">
+                          <img svg-inline src="../../../assets/icons/catalog/copy.svg">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <template v-else-if="error && error.status === 404 && project && !datasets.length">
+                <!-- PROJECT DOESN'T EXIST -->
+                <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
+                  <img src="../../../assets/icons/tilesets/tileset-error.svg">
+                  <div class="u-ml--32">
+                    <div class="text is-body is-semibold u-mb--12">
+                      {{ $t('TilesetsPage.notFoundTitle') }}
+                    </div>
+                    <div class="text is-caption u-mb--16" v-html="$t('TilesetsPage.notFoundSubtitle')"></div>
+                  </div>
+                </div>
+              </template>
               <!-- EMPTY LIST -->
-              <div v-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
+              <div v-else-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
                 <img src="../../../assets/icons/tilesets/no-tileset.svg">
                 <div class="u-ml--32">
                   <div class="text is-body is-semibold u-mb--12">
@@ -129,7 +166,8 @@ export default {
       project: null,
       dataset: null,
       page: 1,
-      maxVisibleTilesets: 12
+      maxVisibleTilesets: 12,
+      error: null
     };
   },
   computed: {
@@ -146,6 +184,9 @@ export default {
     ...mapGetters({
       bqConnection: 'connectors/getBigqueryConnection'
     }),
+    hasPermissionsError () {
+      return this.error && (this.error.status === '401' || this.error.status === '403');
+    },
     numPages () {
       return Math.ceil(this.tilesetsInRaw.total / this.maxVisibleTilesets);
     },
@@ -173,25 +214,37 @@ export default {
       this.page = page;
       this.fetchTilesets();
     },
-    fetchProjects () {
+    async fetchProjects () {
       if (this.bqConnection) {
-        return this.$store.dispatch('connectors/fetchBQProjectsList', this.bqConnection.id);
+        try {
+          await this.$store.dispatch('connectors/fetchBQProjectsList', this.bqConnection.id);
+        } catch (e) {
+          this.error = JSON.parse(e.message);
+        }
       }
     },
-    fetchDatasets () {
-      if (this.bqConnection) {
-        return this.$store.dispatch('connectors/fetchBQDatasetsList', { connectionId: this.bqConnection.id, projectId: this.project.id });
+    async fetchDatasets () {
+      if (this.project) {
+        try {
+          await this.$store.dispatch('connectors/fetchBQDatasetsList', { connectionId: this.bqConnection.id, projectId: this.project.id });
+        } catch (e) {
+          this.error = JSON.parse(e.message);
+        }
       }
     },
-    fetchTilesets () {
+    async fetchTilesets () {
       if (this.bqConnection) {
-        return this.$store.dispatch('tilesets/fetchTilesetsList', {
-          connectionId: this.bqConnection.id,
-          projectId: this.project.id,
-          datasetId: this.dataset ? this.dataset.id : null,
-          perPage: this.maxVisibleTilesets,
-          page: this.page
-        });
+        try {
+          await this.$store.dispatch('tilesets/fetchTilesetsList', {
+            connectionId: this.bqConnection.id,
+            projectId: this.project.id,
+            datasetId: this.dataset ? this.dataset.id : null,
+            perPage: this.maxVisibleTilesets,
+            page: this.page
+          });
+        } catch (e) {
+          this.error = JSON.parse(e.message);
+        }
       }
     },
     useOtherProject (searchingText) {
@@ -203,6 +256,10 @@ export default {
     openViewer (tileset) {
       this.$router.push({ name: 'tileset-viewer', params: { id: tileset.id }, query: { connection_id: this.bqConnection.id, project_id: this.project.id, dataset_id: this.dataset.id } });
       // window.open(`${this.baseUrl}/dashboard/tilesets/${tileset.id}?connection_id=${this.bqConnection.id}&project_id=${this.project.id}&dataset_id=${this.dataset.id}`, '_blank');
+    },
+    copyInfo () {
+      this.$refs.inputError.select();
+      document.execCommand('copy');
     }
   },
   mounted () {
@@ -284,6 +341,41 @@ export default {
 
   i {
     font-style: italic;
+  }
+}
+
+.code {
+  max-width: 100%;
+  border-radius: 4px;
+  padding: 10px 12px;
+  background-color: $neutral--100;
+  font-weight: 400;
+  height: 36px;
+  border: none;
+}
+
+.copy {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  width: 36px;
+  flex: 0 0 36px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $neutral--100;
+    border-radius: 4px;
+
+  }
+
+  svg {
+    outline: none;
+    transform: scale(1.5);
+
+    path[fill] {
+      fill: #036fe2;
+    }
   }
 }
 </style>

@@ -3,22 +3,19 @@
     <div class="main u-flex u-flex__align--center u-flex__direction--column">
       <!-- DISCLAIMER -->
       <div v-if="showDisclaimer" class="disclaimer">
-        <h4 class="is-subtitle is-semibold u-mt--16">{{$t('ConnectorsPage.BigQuery.title')}}</h4>
-        <ul class="u-mt--16">
+        <h4 class="is-small is-semibold u-mt--16">{{$t('ConnectorsPage.BigQuery.title')}}</h4>
+        <ul class="u-mt--8">
           <li class="u-mb--16">
-            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer1')}}</span>
+            <span class="text is-small" v-html="$t('ConnectorsPage.BigQuery.disclaimer1')"></span>
           </li>
           <li class="u-mb--16">
-            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer2')}}</span>
+            <span class="text is-small" v-html="$t('ConnectorsPage.BigQuery.disclaimer2')"></span>
           </li>
           <li class="u-mb--16">
-            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer3')}}</span>
+            <span class="text is-small" v-html="$t('ConnectorsPage.BigQuery.disclaimer3')"></span>
           </li>
           <li class="u-mb--16">
-            <span class="text is-caption">{{$t('ConnectorsPage.BigQuery.disclaimer4')}}</span>
-          </li>
-          <li class="u-mb--16">
-            <span class="text is-caption" v-html="$t('ConnectorsPage.BigQuery.disclaimer5')"></span>
+            <span class="text is-small" v-html="$t('ConnectorsPage.BigQuery.disclaimer4')"></span>
           </li>
         </ul>
         <div class="u-mt--48 u-flex u-flex__justify--center u-flex__align--center">
@@ -35,9 +32,10 @@
         <FileInput
           :supportedFormats="supportedFormats"
           @change="onFileChange" :reduced="true"></FileInput>
-          <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--32" v-if="error">
-            <span v-html="error"></span>
+          <div class="is-small is-txtAlert u-flex u-flex__justify--start u-mt--12" v-if="formatError">
+            <span v-html="formatError"></span>
           </div>
+          <ErrorMessage v-if="error" :message="error" :moreInfo="moreInfoError"></ErrorMessage>
         <div class="u-flex u-flex__justify--end u-mt--32">
           <button @click="cancel" class="u-mr--28 is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.cancel')}}</button>
           <button @click="uploadServiceAccount" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': !isFileSelected}">
@@ -54,9 +52,8 @@
         </div>
         <div class="text is-small is-txtMidGrey u-mb--24" v-html="$t('ConnectorsPage.BigQuery.billingHelper')"></div>
         <SelectComponent v-model="connectionModel.billing_project" :elements="projects"></SelectComponent>
-        <div class="error-wrapper text is-small is-txtAlert u-flex u-flex__justify--start u-mt--16" v-if="error">
-          <span v-html="error"></span>
-        </div>
+        <ErrorMessage v-if="error" :message="error" :moreInfo="moreInfoError"></ErrorMessage>
+
         <div class="u-flex u-flex__justify--end u-mt--32">
           <button @click="cancel" class="u-mr--28 is-small is-semibold is-txtPrimary">{{$t('ConnectorsPage.cancel')}}</button>
           <button @click="connect" class="CDB-Button CDB-Button--primary CDB-Button--big" :class="{'is-disabled': (!connectionModelIsValid || submited)}">
@@ -73,6 +70,7 @@
 <script>
 
 import FileInput from 'new-dashboard/components/forms/FileInput';
+import ErrorMessage from 'new-dashboard/components/ErrorMessage/ErrorMessage';
 import SelectComponent from 'new-dashboard/components/forms/SelectComponent';
 import uploadData from '../../mixins/connector/uploadData';
 import { validateEmail } from 'new-dashboard/utils/email-validation';
@@ -84,7 +82,8 @@ export default {
   name: 'BigQueryConnectionForm',
   components: {
     FileInput,
-    SelectComponent
+    SelectComponent,
+    ErrorMessage
   },
   mixins: [uploadData],
   props: {
@@ -93,6 +92,8 @@ export default {
   data () {
     return {
       error: '',
+      moreInfoError: '',
+      formatError: '',
       file: null,
       showDisclaimer: !this.$props.connection,
       dragged: false,
@@ -141,6 +142,9 @@ export default {
     },
     onFileChange (file) {
       this.file = file;
+      this.error = '';
+      this.moreInfoError = '';
+      this.formatError = '';
     },
     validateEmail (email) {
       return validateEmail(email);
@@ -148,6 +152,8 @@ export default {
     async connect () {
       try {
         this.error = '';
+        this.moreInfoError = '';
+        this.formatError = '';
         this.submited = true;
         this.connectionModel.default_project = this.connectionModel.billing_project;
         this.connectionModel.email = this.email;
@@ -159,9 +165,11 @@ export default {
         }
         this.submited = false;
         this.$emit('connectionSuccess', response.id);
-      } catch (error) {
+      } catch (e) {
+        const error = JSON.parse(e.message);
         this.submited = false;
-        this.error = (error.message === '401' || error.message === '403') ? this.$t('ConnectorsPage.BigQuery.connection-error_401') : this.$t('ConnectorsPage.BigQuery.connection-error_internal');
+        this.error = (error.status === '401' || error.status === '403') ? this.$t('ConnectorsPage.BigQuery.connection-error_401') : this.$t('ConnectorsPage.BigQuery.connection-error_internal');
+        this.moreInfoError = error.message;
       }
     },
     async uploadServiceAccount () {
@@ -169,11 +177,13 @@ export default {
         return;
       }
       this.error = '';
+      this.moreInfoError = '';
+      this.formatError = '';
       const serviceAccount = await this.file.text();
       try {
         this.serviceAccount = JSON.parse(serviceAccount);
       } catch (e) {
-        this.error = this.$t('ConnectorsPage.BigQuery.serviceAccountDadFormedError');
+        this.formatError = this.$t('ConnectorsPage.BigQuery.serviceAccountDadFormedError');
         return false;
       }
 
@@ -182,6 +192,7 @@ export default {
         this.connectionModel.billing_project = this.projects[0].id;
       } catch (e) {
         this.error = this.$t('ConnectorsPage.BigQuery.serviceAccountError');
+        this.moreInfoError = e.message;
       }
     }
   }
@@ -199,11 +210,7 @@ export default {
   max-width: 460px;
 }
 .disclaimer {
-  width: 620px;
-
-  h4 {
-    text-align: center;
-  }
+  width: 460px;
 }
 
 .section-header {
@@ -217,24 +224,6 @@ export default {
     left: -36px;
     border-radius: 4px;
     border: 1px solid $neutral--800;
-  }
-}
-
-.error-wrapper {
-  position: relative;
-  padding: 16px 16px 16px 44px;
-  background-color: #fde8e7;
-  border-radius: 4px;
-
-  &:before {
-    content: '';
-    position: absolute;
-    display: block;
-    background-image: url("../../assets/icons/common/error.svg");
-    height: 24px;
-    width: 24px;
-    top: 12px;
-    left: 12px;
   }
 }
 

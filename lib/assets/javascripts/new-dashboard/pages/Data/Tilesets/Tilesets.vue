@@ -185,7 +185,7 @@ export default {
       bqConnection: 'connectors/getBigqueryConnection'
     }),
     hasPermissionsError () {
-      return this.error && (this.error.status === '401' || this.error.status === '403');
+      return this.error && (parseInt(this.error.status) === 401 || parseInt(this.error.status) === 403);
     },
     numPages () {
       return Math.ceil(this.tilesetsInRaw.total / this.maxVisibleTilesets);

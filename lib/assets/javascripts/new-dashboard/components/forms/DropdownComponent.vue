@@ -4,7 +4,7 @@
       <span @click.stop="open" class="text u-flex u-flex__align--center u-flex__grow--1" :class="{ placeholder: !(value && value.label) }" v-if="!opened">
         {{(value && value.label) || placeholder}}
       </span>
-      <input v-show="opened" ref="input" v-model="searchingText" class="u-flex__grow--1" autocomplete="off" type="text" name="search">
+      <input v-show="opened" ref="input" :placeholder="placeholder" v-model="searchingText" class="u-flex__grow--1" autocomplete="off" type="text" name="search">
     </div>
     <transition name="expand" @enter="enter" @after-enter="afterEnter" @leave="leave">
       <div class="item-list-container" v-if="opened">

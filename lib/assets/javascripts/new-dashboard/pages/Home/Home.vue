@@ -3,10 +3,10 @@
     <Welcome @newDatesetClicked="onNewDatesetClicked" @newMapClicked="onNewMapClicked"/>
     <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-    <DatasetsSection v-if="isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" />
+    <DatasetsSection v-if="isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" @newConnectionClicked="onNewConnectionClicked" />
     <MapsSection v-if="isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged" @newMapClicked="onNewMapClicked"/>
     <MapsSection v-if="!isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged" @newMapClicked="onNewMapClicked"/>
-    <DatasetsSection v-if="!isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked"/>
+    <DatasetsSection v-if="!isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" @newConnectionClicked="onNewConnectionClicked"/>
     <QuotaSection></QuotaSection>
 
     <router-view name="onboarding-modal"/>
@@ -92,6 +92,9 @@ export default {
     },
     onNewMapClicked () {
       this.$router.push({ name: 'home-maps-new-dataset' });
+    },
+    onNewConnectionClicked () {
+      this.$router.push({ name: 'new-connection' });
     }
   }
 };

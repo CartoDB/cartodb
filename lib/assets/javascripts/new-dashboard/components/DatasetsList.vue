@@ -57,7 +57,7 @@
           <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
         </template>
         <template slot="actionButton">
-           <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</button>
+           <button @click="createConnection" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</button>
         </template>
       </InitialState>
     </div>
@@ -296,6 +296,9 @@ export default {
     },
     createDataset () {
       this.$emit('newDatesetClicked');
+    },
+    createConnection () {
+      this.$emit('newConnectionClicked');
     }
   },
   watch: {

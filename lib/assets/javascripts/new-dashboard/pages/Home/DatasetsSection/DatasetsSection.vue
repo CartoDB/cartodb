@@ -8,6 +8,7 @@
       @applyOrder="applyOrder"
       @contentChanged="onContentChanged"
       @newDatesetClicked="onNewDatesetClicked"
+      @newConnectionClicked="onNewConnectionClicked"
       />
 
     <router-link :to="{ name: 'datasets' }" class="title is-small viewall-link" v-if="showViewAllLink">
@@ -59,6 +60,9 @@ export default {
     },
     onNewDatesetClicked () {
       this.$emit('newDatesetClicked');
+    },
+    onNewConnectionClicked () {
+      this.$emit('newConnectionClicked');
     }
   }
 };

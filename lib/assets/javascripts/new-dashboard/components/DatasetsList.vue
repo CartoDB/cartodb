@@ -48,7 +48,7 @@
       </SectionTitle>
     </div>
 
-    <div class="grid-cell grid-cell--col12" v-if="initialState">
+    <div class="grid-cell grid-cell--col12" v-if="initialStateWithoutConnections">
       <InitialState :title="$t(`DataPage.zeroCase.title`)">
         <template slot="icon">
           <img svg-inline src="../assets/icons/datasets/initialState.svg">
@@ -58,6 +58,20 @@
         </template>
         <template slot="actionButton">
            <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</button>
+        </template>
+      </InitialState>
+    </div>
+
+    <div class="grid-cell grid-cell--col12" v-if="initialStateWithConnections">
+      <InitialState :title="$t(`DataPage.zeroCaseHasConnections.title`)">
+        <template slot="icon">
+          <img svg-inline src="../assets/icons/datasets/initialState.svg">
+        </template>
+        <template slot="description">
+          <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCaseHasConnections.description`)"></p>
+        </template>
+        <template slot="actionButton">
+           <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCaseHasConnections.createDataset`) }}</button>
         </template>
       </InitialState>
     </div>
@@ -168,7 +182,9 @@ export default {
       totalShared: state => state.datasets.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
       upgradeUrl: state => state.config.upgrade_url,
-      planAccountType: state => state.user.account_type
+      planAccountType: state => state.user.account_type,
+      isLoadingConnections: state => state.connectors.loadingConnections,
+      connections: state => state.connectors.connections
     }),
     ...mapGetters({
       datasetsCount: 'user/datasetsCount',
@@ -192,7 +208,13 @@ export default {
         !this.hasSharedDatasets &&
         !this.isFetchingDatasets &&
         this.hasFilterApplied('mine') &&
-        this.totalUserEntries <= 0;
+        (!this.totalUserEntries || this.totalUserEntries <= 0);
+    },
+    initialStateWithConnections () {
+      return this.initialState && this.connections && this.connections.length;
+    },
+    initialStateWithoutConnections () {
+      return this.initialState && (!this.connections || !this.connections.length);
     },
     emptyState () {
       return ((!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) || this.isFirstTimeViewerAfterAction) &&

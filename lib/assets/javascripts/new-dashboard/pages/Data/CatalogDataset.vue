@@ -73,6 +73,8 @@
         </transition>
       </div>
     </section>
+
+    <script v-if="publicWebsite" v-html="jsonld" type="application/ld+json"/>
   </Page>
 </template>
 
@@ -107,6 +109,7 @@ export default {
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset,
+      keyVariables: state => state.catalog.keyVariables,
       entity_type () {
         return this.$route.params.entity_type;
       }
@@ -127,6 +130,37 @@ export default {
     },
     responsive () {
       return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    },
+    jsonld () {
+      // The JSON-LD is used for SEO purposes and to index the site on Google Dataset Search
+      if (!this.dataset) {
+        return '';
+      }
+      let keyVariables = this.keyVariables && Array.isArray(this.keyVariables) ? this.keyVariables.map(elem => elem.name) : [];
+      let keywords = [...keyVariables];
+      keywords.push('Spatial data');
+      if (this.dataset.category_name) {
+        keywords.push(this.dataset.category_name);
+      }
+      if (this.dataset.data_source_name) {
+        keywords.push(this.dataset.data_source_name);
+      }
+      return {
+        '@context': 'https://schema.org/',
+        '@type': 'Dataset',
+        'name': this.dataset.name,
+        'description': this.dataset.description,
+        'keywords': keywords,
+        'license': this.dataset.licenses_link,
+        'creator': {
+          '@type': 'Organization',
+          'name': this.dataset.provider_name
+        },
+        'spatialCoverage': this.dataset.country_name,
+        'variableMeasured': keyVariables,
+        'version': this.dataset.version,
+        'url': `https://carto.com${this.$router.resolve({name: 'catalog-dataset-summary', params: {...this.$route.params}}).href}`
+      };
     }
   },
   methods: {

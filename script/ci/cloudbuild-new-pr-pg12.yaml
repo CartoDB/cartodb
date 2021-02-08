@@ -107,7 +107,7 @@ steps:
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
-    _IMAGE_LABELS: --label org.opencontainers.image.created='$(date --rfc-3339=seconds)' --label org.opencontainers.image.revision='${COMMIT_SHA}'
+    _IMAGE_LABELS: "--label org.opencontainers.image.created='$(date --rfc-3339=seconds)' --label org.opencontainers.image.revision='${COMMIT_SHA}'"
 options:
     machineType: 'N1_HIGHCPU_32'
 timeout: 3600s

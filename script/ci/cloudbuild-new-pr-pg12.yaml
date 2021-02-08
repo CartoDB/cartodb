@@ -72,7 +72,6 @@ steps:
 # Build image
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
-  env
   args:
     - -cx
     - |

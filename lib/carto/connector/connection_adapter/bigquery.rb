@@ -17,7 +17,7 @@ module Carto
       end
 
       def filtered_connection_parameters
-        @connection.parameters.except(*NON_CONNECTOR_PARAMETERS)
+        @connection.parameters&.except(*NON_CONNECTOR_PARAMETERS)
       end
 
       def singleton?

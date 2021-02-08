@@ -9,14 +9,6 @@
           <template slot="title">
             <VisualizationsTitle :defaultTitle="$t('DataPage.tabs.tilesets')"/>
           </template>
-          <template slot="actionButton">
-            <button @click="openInfo" class="is-small is-semibold is-txtPrimary">
-              More info
-              <div class="chevron">
-                <img svg-inline href="../../../assets/icons/common/chevron.svg">
-              </div>
-            </button>
-          </template>
         </SectionTitle>
 
         <div class="grid-cell grid-cell--col12">
@@ -108,8 +100,8 @@
                 </div>
               </template>
               <!-- EMPTY LIST -->
-              <div v-else-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list">
-                <img src="../../../assets/icons/tilesets/no-tileset.svg">
+              <div v-else-if="!tilesets || !tilesets.length" class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 u-flex__align--start empty-list">
+                <img src="../../../assets/icons/tilesets/tileset-empty.svg">
                 <div class="u-ml--32">
                   <div class="text is-body is-semibold u-mb--12">
                     {{ project && dataset ? $t('TilesetsPage.noAvailableTitle') : $t('TilesetsPage.noDataTitle')}}

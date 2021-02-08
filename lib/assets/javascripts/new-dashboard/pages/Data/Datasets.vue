@@ -21,7 +21,8 @@
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
       @selectionChange="updateSelected"
-      @newDatesetClicked="openCreateDatasetPopup"/>
+      @newDatesetClicked="openCreateDatasetPopup"
+      @newConnectionClicked="openCreateConnectiontPopup"/>
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     <router-view></router-view>
   </section>
@@ -142,6 +143,9 @@ export default {
     },
     openCreateDatasetPopup () {
       this.$router.push({ name: 'datasets-new-dataset' });
+    },
+    openCreateConnectiontPopup () {
+      this.$router.push({ name: 'new-connection' });
     }
   },
   watch: {

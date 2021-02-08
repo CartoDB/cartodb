@@ -21,13 +21,6 @@
 
         <div class="grid-cell grid-cell--col12">
           <template v-if="!loadingProjects">
-            <div class="u-flex u-flex__align--center text is-small u-pt--20 u-pb--20 u-pl--24 u-pr--24 more-info" :class="{ open: moreInfo }">
-              <img class="info__svg" svg-inline src="../../../assets/icons/common/info-icon.svg" height="20px" width="20px">
-              <span class="u-ml--16">
-                Preview your Tilesets here or use them on your own application using <a href="#">CARTO for deck.gl</a> or any <a href="#">other library</a>. <br>
-                Check out the <a href="#">Documentation</a> to learn how to add Tilesets to your own application
-              </span>
-            </div>
             <div class="u-flex u-mt--20 u-mb--36">
               <div class="u-mr--28">
                 <div class="text is-small is-semibold">
@@ -36,7 +29,7 @@
                 <DropdownComponent ref="selector" v-model="project"
                   :elements="projects"
                   :showCreate="true"
-                  placeholder='Select your BigQuery Project'
+                  :placeholder="$t('TilesetsPage.projectPlaceholder')"
                   @createElement="useOtherProject">
                   <template v-slot:createMessage="{ data }">
                     <span v-if="!data.filteredElements.length">No results.</span>
@@ -123,7 +116,7 @@
                   </div>
                   <div class="text is-caption u-mb--16" v-html="project && dataset ? $t('TilesetsPage.noAvailableSubtitle') : $t('TilesetsPage.noDataSubtitle')">
                   </div>
-                  <div class="text is-small is-txtMidGrey" v-html="$t('TilesetsPage.noDataCaption')">
+                  <div class="text is-small is-txtMidGrey" v-if="!project || !dataset" v-html="$t('TilesetsPage.noDataCaption')">
                   </div>
                 </div>
               </div>

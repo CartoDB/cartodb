@@ -164,10 +164,11 @@ export default {
     },
     model () {
       return {
-        categories: this.categories.filter(cat => !!cat).map(cat => {
+        categories: this.categories.filter(cat => !!cat).map((cat, index) => {
           const terms = cat.split(',');
           return {
             terms,
+            category: index + 1,
             count: this.calculeCounter(terms)
           };
         }),

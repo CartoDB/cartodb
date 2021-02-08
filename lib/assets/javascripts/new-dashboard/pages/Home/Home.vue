@@ -56,6 +56,7 @@ export default {
         this.$store.dispatch('recentContent/fetch');
         this.$store.dispatch('externalMaps/fetch');
         this.$store.dispatch('datasets/fetch');
+        this.$store.dispatch('connectors/fetchConnectionsList');
       });
     this.$store.dispatch('maps/fetch');
   },

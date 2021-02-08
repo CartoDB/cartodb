@@ -85,7 +85,7 @@ steps:
 
 # Run tests
 - name: 'docker/compose:1.22.0'
-  args: ['-f', 'docker-compose-pg11.yml', 'up', 'q--build', '-d']
+  args: ['-f', 'docker-compose-pg11.yml', 'up', '--build', '-d']
   timeout: 900s
 
 - name: gcr.io/cloud-builders/docker

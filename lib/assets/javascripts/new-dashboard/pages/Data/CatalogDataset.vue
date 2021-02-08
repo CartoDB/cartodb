@@ -159,7 +159,7 @@ export default {
         'spatialCoverage': this.dataset.country_name,
         'variableMeasured': keyVariables,
         'version': this.dataset.version,
-        'url': `https://carto.com${this.$router.resolve({name: 'catalog-dataset-summary', params: {...this.$route.params}}).href}`
+        'url': `https://carto.com${this.$router.resolve({ name: 'catalog-dataset-summary', params: {...this.$route.params} }).href}`
       };
     }
   },

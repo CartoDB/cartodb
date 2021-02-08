@@ -17,6 +17,7 @@ sudo make install
 - Add preview/visualization of maps in DO catalog [#15973](https://github.com/CartoDB/cartodb/pull/15973)
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
+- Adds JSON-LD with the dataset information in the Data Catalog [#16138](https://github.com/CartoDB/cartodb/pull/16138)
 
 ### Bug fixes / enhancements
 

@@ -10,7 +10,7 @@
 
 import ReactDOM from 'react-dom';
 import init from '@carto/viewer/src/init';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import LoadingState from 'new-dashboard/components/States/LoadingState';
 
 export default {
@@ -30,6 +30,9 @@ export default {
       maps_api_v2_template: state => state.config.maps_api_v2_template,
       region: state => state.config.region
     }),
+    ...mapGetters({
+      bqConnection: 'connectors/getBigqueryConnection'
+    }),
     source () {
       return 'bigquery';
     },
@@ -37,35 +40,41 @@ export default {
       return this.$route.params.id;
     }
   },
-  async mounted () {
+  mounted () {
     document.body.classList.add('u-overflow-hidden');
-    const element = this.$refs.viewer;
-    // const backRoute = this.$router.resolve({name: 'tilesets'});
-    const tileset = await this.$store.dispatch('tilesets/getTileset', { source: this.source, tileset_id: this.tileset_id, ...this.$route.query });
-    const center = tileset.metadata && tileset.metadata.center && tileset.metadata.center.split(',');
-    const longitude = center && parseFloat(center[0]);
-    const latitude = center && parseFloat(center[1]);
-    const zoom = center && parseFloat(center[2]);
-    const initialViewState = { longitude, latitude, zoom };
-
-    this.props = {
-      username: this.username,
-      mapsUrl: this.maps_api_v2_template,
-      region: this.region,
-      type: this.source,
-      query: new URLSearchParams(`?data=${this.tileset_id}&api_key=${this.apiKey}${this.getColorByValue(tileset)}&initialViewState=${JSON.stringify(initialViewState)}`),
-      goBackFunction: () => {
-        this.$router.push({ name: 'tilesets' });
-      },
-      shareOptions: {
-        baseUrl: `https://viewer.carto${this.base_url.includes('staging') ? '-staging' : ''}.com`,
-        privacy: tileset.privacy,
-        setPrivacy: this.setPrivacy
-      }
-    };
-    init(element, this.props);
+    this.mountViewer();
   },
   methods: {
+    async mountViewer () {
+      const element = this.$refs.viewer;
+      const connection_id = this.bqConnection && this.bqConnection.id;
+      if (element && connection_id) {
+        const [project_id, dataset_id] = this.tileset_id.split('.');
+        const tileset = await this.$store.dispatch('tilesets/getTileset', { source: this.source, tileset_id: this.tileset_id, project_id, dataset_id, connection_id });
+        const center = tileset.metadata && tileset.metadata.center && tileset.metadata.center.split(',');
+        const longitude = center && parseFloat(center[0]);
+        const latitude = center && parseFloat(center[1]);
+        const zoom = center && parseFloat(center[2]);
+        const initialViewState = { longitude, latitude, zoom };
+
+        this.props = {
+          username: this.username,
+          mapsUrl: this.maps_api_v2_template,
+          region: this.region,
+          type: this.source,
+          query: new URLSearchParams(`?data=${this.tileset_id}&api_key=${this.apiKey}${this.getColorByValue(tileset)}&initialViewState=${JSON.stringify(initialViewState)}`),
+          goBackFunction: () => {
+            this.$router.push({ name: 'tilesets' });
+          },
+          shareOptions: {
+            baseUrl: `https://viewer.carto${this.base_url.includes('staging') ? '-staging' : ''}.com`,
+            privacy: tileset.privacy,
+            setPrivacy: this.setPrivacy
+          }
+        };
+        init(element, this.props);
+      }
+    },
     getColorByValue (tileset) {
       return (tileset.metadata &&
         tileset.metadata.tilestats &&
@@ -76,9 +85,15 @@ export default {
         `&color_by_value=aggregated_total`) || '';
     },
     async setPrivacy (privacy) {
-      const [,, table] = this.tileset_id.split('.');
-      await this.$store.dispatch('tilesets/setPrivacy', { source: this.source, table, ...this.$route.query, privacy });
+      const connection_id = this.bqConnection && this.bqConnection.id;
+      const [project_id, dataset_id, table] = this.tileset_id.split('.');
+      await this.$store.dispatch('tilesets/setPrivacy', { source: this.source, project_id, dataset_id, table, connection_id, privacy });
       this.props.shareOptions.privacy = privacy;
+    }
+  },
+  watch: {
+    bqConnection () {
+      this.mountViewer();
     }
   },
   beforeDestroy () {

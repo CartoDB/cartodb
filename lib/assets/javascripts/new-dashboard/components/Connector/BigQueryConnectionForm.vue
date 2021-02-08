@@ -168,7 +168,7 @@ export default {
       } catch (e) {
         const error = JSON.parse(e.message);
         this.submited = false;
-        this.error = (error.status === '401' || error.status === '403') ? this.$t('ConnectorsPage.BigQuery.connection-error_401') : this.$t('ConnectorsPage.BigQuery.connection-error_internal');
+        this.error = (error.status === 401 || error.status === 403) ? this.$t('ConnectorsPage.BigQuery.connection-error_401') : this.$t('ConnectorsPage.BigQuery.connection-error_internal');
         this.moreInfoError = error.message;
       }
     },

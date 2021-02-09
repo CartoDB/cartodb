@@ -270,6 +270,23 @@ module Carto
       end
     end
 
+    def self.valid_oauth_services
+      CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources.select do |service|
+        # FIXME: check configuration
+        # begin
+        #   config, _ = CartoDB::Datasources::DatasourcesFactory.get_config(service)
+        #   config.present?
+        # rescue MissingConfigurationError
+        #   false
+        # end
+        Cartodb.get_config(:oauth, service).present?
+      end
+    end
+
+    def self.valid_db_connectors
+      Carto::Connector.providers.keys
+    end
+
     private
 
     def obtain_connection(connection_id, provider, connection_parameters, register)
@@ -336,23 +353,6 @@ module Carto
     # returns auth_url, doesn't actually create connection
     def oauth_connection_url(service)
       DataImportsService.new.get_service_auth_url(@user, service)
-    end
-
-    def self.valid_oauth_services
-      CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources.select do |service|
-        # FIXME: this includes twitter...
-        # begin
-        #   config, _ = CartoDB::Datasources::DatasourcesFactory.get_config(service)
-        #   config.present?
-        # rescue MissingConfigurationError
-        #   false
-        # end
-        Cartodb.get_config(:oauth, service).present?
-      end
-    end
-
-    def self.valid_db_connectors
-      Carto::Connector.providers.keys
     end
 
     def check_oauth_service!(service)

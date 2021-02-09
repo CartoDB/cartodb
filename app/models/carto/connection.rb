@@ -14,6 +14,7 @@ module Carto
     validate :validate_parameters
     validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
 
+    # rubocop:disable Naming/AccessorMethodName
     def get_service_datasource
       chek_type! TYPE_OAUTH_SERVICE, "Invalid connection type (#{connection_type}) to get service datasource"
 
@@ -25,6 +26,7 @@ module Carto
       datasource.token = token unless datasource.nil?
       datasource
     end
+    # rubocop:enable Naming/AccessorMethodName
 
     def service
       check_type! TYPE_OAUTH_SERVICE, "service not available for connection of type #{connection_type}"

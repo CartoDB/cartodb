@@ -101,7 +101,6 @@ import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import uploadData from '../../mixins/connector/uploadData';
 import UploadConfig from 'dashboard/common/upload-config';
 import GuessPrivacyFooter from 'new-dashboard/components/Connector/GuessPrivacyFooter';
-import DatasetSyncCard from 'new-dashboard/components/Connector/DatasetSyncCard';
 import { LOCAL_FILES } from 'new-dashboard/utils/connector/local-file-option';
 import { mapState } from 'vuex';
 import { format, subDays } from 'date-fns';
@@ -124,7 +123,6 @@ export default {
   mixins: [uploadData],
   components: {
     Dialog,
-    DatasetSyncCard,
     GuessPrivacyFooter
   },
   props: {

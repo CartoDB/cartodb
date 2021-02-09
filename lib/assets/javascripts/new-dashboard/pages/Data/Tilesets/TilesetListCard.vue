@@ -51,14 +51,10 @@
 <script>
 import CopyDropdown from 'new-dashboard/components/Dropdowns/CopyDropdown';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
-import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
-import SharedBrief from 'new-dashboard/components/SharedBrief';
 
 export default {
   name: 'TilesetCard',
   components: {
-    FeaturesDropdown,
-    SharedBrief,
     CopyDropdown
   },
   props: {

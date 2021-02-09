@@ -172,7 +172,7 @@ export default {
     connectDataset () {
       if (this.isFileSelected) {
         const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
-        backgroundPollingView._addDataset({...this.uploadObject});
+        backgroundPollingView._addDataset({ ...this.uploadObject });
         this.$refs.dialog.closePopup();
       }
     }

@@ -116,7 +116,7 @@ export default {
   },
   mounted: function () {
     this.$store.dispatch('connectors/fetchConnectionsList');
-    this.$store.dispatch('datasets/setURLOptions', {filter: 'mine'});
+    this.$store.dispatch('datasets/setURLOptions', { filter: 'mine' });
   },
   methods: {
     fileSelected (id) {
@@ -166,7 +166,7 @@ export default {
     },
     createLayer () {
       this.creeatingMapOrLayer = true;
-      this.addLayer({...this.selectedDatasets[0]}, this.$refs.datasetListForConnectors);
+      this.addLayer({ ...this.selectedDatasets[0] }, this.$refs.datasetListForConnectors);
     }
   }
 };

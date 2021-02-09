@@ -10,7 +10,7 @@
     :backRoute="{name: backNamedRoute}"
   >
     <template slot="sub-header">
-      <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center" v-if="!editing">
+      <h3 class="title is-caption is-regular is-txtMidGrey u-flex u-flex__align--center" v-if="!editing">
         <img height="21" class="u-mr--8" :src="logo">
         {{ $t('DataPage.connectWith') }} {{title}}
       </h3>
@@ -122,6 +122,9 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+h3.title {
+  white-space: nowrap;
+}
 .connections-successfull {
   h3 {
     font-size: 24px;

@@ -71,7 +71,7 @@ export default {
       &::before {
         content: '';
         height: 50px;
-        background-image: url('../../../assets/icons/onboarding/tilesets.svg');
+        background-image: url('../../../assets/icons/onboarding/tilesets-big.svg');
       }
     }
 

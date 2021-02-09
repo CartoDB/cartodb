@@ -366,5 +366,4 @@ module Carto
     end
 
   end
-
 end

@@ -16,10 +16,12 @@ module Carto
   end
 
   class ParamInvalidError < CartoError
+
     def initialize(parameter, valid_values = nil, status = 400)
       extra_message = valid_values ? " Valid values are one of #{valid_values}" : ''
       super("Wrong '#{parameter}' parameter value.#{extra_message}", status)
     end
+
   end
 
   class ParamCombinationInvalidError < CartoError

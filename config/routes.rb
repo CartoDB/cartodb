@@ -611,7 +611,7 @@ CartoDB::Application.routes.draw do
 
       ## Connections
       get 'connections' => 'connections#index', as: :api_v4_connections_list
-      post 'connections'  => 'connections#create', as: :api_v4_connections_create
+      post 'connections' => 'connections#create', as: :api_v4_connections_create
       get 'connections/:id' => 'connections#show', as: :api_v4_connections_show
       get 'connectors' => 'connections#list_connectors', as: :api_v4_connections_list_connectors
       delete 'connections/:id' => 'connections#destroy', as: :api_v4_connections_destroy

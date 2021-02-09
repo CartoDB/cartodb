@@ -171,6 +171,7 @@ namespace :cartodb do
       else
         sync = Carto::Synchronization.find_by(id: args.username_or_sync_id)
         raise "User/Sync not found: #{args.username_or_sync_id}" unless sync
+
         user_condition = "AND id = '#{sync.id}'"
       end
     end

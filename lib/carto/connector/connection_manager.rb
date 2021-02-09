@@ -26,33 +26,11 @@ module Carto
       oauth_connectors = db_connectors = []
 
       if type.nil? || types.include?(Carto::Connection::TYPE_OAUTH_SERVICE)
-        oauth_connectors = Carto::ConnectionManager.valid_oauth_services.map do |service|
-          # TODO: check enabled for @user
-          is_enabled = true
-          # TODO: use presenter
-          connector = {
-            type: Carto::Connection::TYPE_OAUTH_SERVICE,
-            connector: service,
-            enabled: is_enabled,
-            available: !@user.connections.exists?(connector: service)
-          }
-          connector[:connections] = list_connections(connector: service) if connections
-          connector
-        end
+        oauth_connections = list_oauth_connectors(connections: connections)
       end
 
       if type.nil? || types.include?(Carto::Connection::TYPE_DB_CONNECTOR)
-        db_connectors = Carto::ConnectionManager.valid_db_connectors.map do |provider|
-          is_enabled = Carto::Connector.provider_available?(provider, @user)
-          connector = {
-            type: Carto::Connection::TYPE_DB_CONNECTOR,
-            connector: provider,
-            enabled: is_enabled,
-            available: is_enabled
-          }
-          connector[:connections] = list_connections(connector: provider) if connections
-          connector
-        end
+        db_connectors = list_db_connectors(connections: connections)
       end
 
       oauth_connectors + db_connectors
@@ -305,6 +283,39 @@ module Carto
     end
 
     private
+
+    def list_oauth_connectors(connections: false)
+      Carto::ConnectionManager.valid_oauth_services.map do |service|
+        # TODO: check enabled for @user, e.g. @user.twitter_datasource_enabled .salesforce_datasource_enabled
+        is_enabled = true
+        connector = {
+          type: Carto::Connection::TYPE_OAUTH_SERVICE,
+          connector: service,
+          enabled: is_enabled,
+          available: is_enabled && !@user.oauth_connections.exists?(connector: service)
+        }
+        if connections
+          connector[:connections] = list_connections(type: Carto::Connection::TYPE_OAUTH_SERVICE, connector: service)
+        end
+        connector
+      end
+    end
+
+    def list_db_connectors(connections: false)
+      Carto::ConnectionManager.valid_db_connectors.map do |provider|
+        is_enabled = Carto::Connector.provider_available?(provider, @user)
+        connector = {
+          type: Carto::Connection::TYPE_DB_CONNECTOR,
+          connector: provider,
+          enabled: is_enabled,
+          available: is_enabled
+        }
+        if connections
+          connector[:connections] = list_connections(type: Carto::Connection::TYPE_DB_CONNECTOR, connector: provider)
+        end
+        connector
+      end
+    end
 
     def adapter(connection)
       self.class.adapter(connection)

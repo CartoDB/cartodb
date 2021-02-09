@@ -26,7 +26,7 @@ module Carto
       oauth_connectors = db_connectors = []
 
       if type.nil? || types.include?(Carto::Connection::TYPE_OAUTH_SERVICE)
-        oauth_connections = list_oauth_connectors(connections: connections)
+        oauth_connectors = list_oauth_connectors(connections: connections)
       end
 
       if type.nil? || types.include?(Carto::Connection::TYPE_DB_CONNECTOR)

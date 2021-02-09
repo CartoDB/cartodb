@@ -11,6 +11,7 @@ sudo make install
 
 ### Features
 
+- New connections API [15939](https://github.com/CartoDB/cartodb/pull/15939)
 - New endpoints to fetch users' datasets and tilesets from their BigQuery connection [16061](https://github.com/CartoDB/cartodb/pull/16061)
 - New BigQuery connector [16029](https://github.com/CartoDB/cartodb/pull/16029)
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)

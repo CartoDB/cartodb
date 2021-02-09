@@ -192,7 +192,7 @@ module CartoDB
       end
 
       def drop(table_name)
-        return unless table_name.present?
+        return if table_name.blank?
 
         Carto::OverviewsService.new(database).delete_overviews table_name
         database.execute(%(DROP TABLE #{table_name}))

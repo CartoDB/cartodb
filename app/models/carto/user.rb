@@ -11,7 +11,6 @@ require_dependency 'carto/helpers/user_commons'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
-  extend Forwardable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
   include Carto::UserCommons
@@ -76,13 +75,14 @@ class Carto::User < ActiveRecord::Base
 
   has_many :user_map_views, class_name: 'Carto::UserMapViews', dependent: :destroy, inverse_of: :user
 
-  delegate [
+  delegate(
     :database_username, :database_password, :in_database,
     :db_size_in_bytes, :table_count, :public_visualization_count, :all_visualization_count,
     :visualization_count, :owned_visualization_count, :twitter_imports_count,
     :link_privacy_visualization_count, :password_privacy_visualization_count, :public_privacy_visualization_count,
-    :private_privacy_visualization_count
-  ] => :service
+    :private_privacy_visualization_count,
+    to: :service
+  )
 
   attr_reader :password
 

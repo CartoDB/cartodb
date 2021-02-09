@@ -14,15 +14,12 @@ Resque::Failure::Multiple.classes = [Resque::Failure::Redis, ResqueFailureLogger
 Resque::Failure.backend = Resque::Failure::Multiple
 
 ## Logging
-
-Resque.logger.level = :info
-
 logger_output = if Rails.env.production? || Rails.env.staging?
                   Carto::Conf.new.log_file_path('resque.log')
                 else
-                  logger_stdout = STDOUT.dup
+                  logger_stdout = $stdout.dup
                   logger_stdout.sync = Rails.env.development?
                   logger_stdout
                 end
-
 Resque.logger = Carto::Common::Logger.new(logger_output)
+Resque.logger.level = Logger::INFO

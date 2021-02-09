@@ -6,8 +6,10 @@ module FrontendConfigHelper
 
   def frontend_config_hash(user = current_user)
     config = {
+      region:                     Cartodb.get_config(:bigquery_region),
       app_assets_base_url:        app_assets_base_url,
       maps_api_template:          maps_api_template,
+      maps_api_v2_template:       maps_api_v2_template,
       sql_api_template:           sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),
       cartodb_com_hosted:         Cartodb.get_config(:cartodb_com_hosted),
@@ -91,3 +93,4 @@ module FrontendConfigHelper
     frontend_config_hash.to_json
   end
 end
+

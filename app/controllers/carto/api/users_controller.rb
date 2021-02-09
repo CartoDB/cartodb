@@ -7,6 +7,7 @@ module Carto
       include OrganizationUsersHelper
       include AppAssetsHelper
       include MapsApiHelper
+      include MapsApiV2Helper
       include SqlApiHelper
       include CartoDB::ConfigUtils
       include FrontendConfigHelper

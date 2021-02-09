@@ -8,7 +8,7 @@ module CartoDB
     # @param owner_user ::User
     def initialize(owner_user)
       @owner = owner_user
-      @owner = Carto::User.find(@owner.id) unless @owner.kind_of?(Carto::User)
+      @owner = Carto::User.find(@owner.id) unless @owner.is_a?(Carto::User)
     end #initialize
 
     def all
@@ -27,7 +27,6 @@ module CartoDB
     end
 
     def remove(service)
-      # oauth = Carto::Conection.where(connection_type: Connection::TYPE_OAUTH_SERVICE, service: service, user_id: @owner.id).first
       oauth = @owner.oauth_for_service(service)
       oauth.delete unless oauth.nil?
       @owner.reload

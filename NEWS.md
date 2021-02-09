@@ -18,6 +18,7 @@ sudo make install
 - Add preview/visualization of maps in DO catalog [#15973](https://github.com/CartoDB/cartodb/pull/15973)
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
+- Adds JSON-LD with the dataset information in the Data Catalog [#16138](https://github.com/CartoDB/cartodb/pull/16138)
 
 ### Bug fixes / enhancements
 
@@ -59,6 +60,7 @@ sudo make install
 - Upgrade deck.gl version [#16072](https://github.com/CartoDB/cartodb/pull/16072)
 - Configure Dead Lettering & prevent flooding of map views messages [#16059](https://github.com/CartoDB/cartodb/pull/16059)
 - Revamp specs for Message Broker commands and remove old endpoints [#16084](https://github.com/CartoDB/cartodb/pull/16084)
+- Prevent rspec from being executed in any env other than test [#16128](https://github.com/CartoDB/cartodb/pull/16128)
 - Add groups to v4/me endpoint [#16105](https://github.com/CartoDB/cartodb/pull/16105)
 
 4.44.0 (2020-11-20)

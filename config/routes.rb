@@ -205,10 +205,10 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/tag/:tag/:page'       => 'visualizations#index', as: :datasets_library_tag_page    
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections'                  => 'visualizations#index', as: :your_connections_index
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/new-connection'   => 'visualizations#index', as: :your_connections_new
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/new-connection/:connector'   => 'visualizations#index', as: :your_connections_add
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/dataset-new-connection/:connector'   => 'visualizations#index', as: :your_connections_add
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/edit/:id'              => 'visualizations#index', as: :your_connections_edit
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/delete/:id'       => 'visualizations#index', as: :your_connections_delete
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/dataset-connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/new-dataset'                          => 'visualizations#index', as: :datasets_new
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-new-connection/:connector'                          => 'visualizations#index', as: :your_connections_new_from_new_dataset
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-connection/:id/dataset'      => 'visualizations#index', as: :your_connections_dataset_from_new_dataset

@@ -136,8 +136,8 @@ export default {
       if (!this.dataset) {
         return '';
       }
-      let keyVariables = this.keyVariables && Array.isArray(this.keyVariables) ? this.keyVariables.map(elem => elem.name) : [];
-      let keywords = [...keyVariables];
+      const keyVariables = this.keyVariables && Array.isArray(this.keyVariables) ? this.keyVariables.map(elem => elem.name) : [];
+      const keywords = [...keyVariables];
       keywords.push('Spatial data');
       if (this.dataset.category_name) {
         keywords.push(this.dataset.category_name);

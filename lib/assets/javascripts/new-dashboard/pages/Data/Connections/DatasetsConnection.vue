@@ -7,7 +7,7 @@
     :backText="null"
   >
     <template slot="sub-header">
-      <h3 class="is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
+      <h3 class="title is-caption is-regular is-txtMidGrey u-flex u-flex__align--center">
         <img height="21" class="u-mr--8" :src="logo">
         {{ $t('DataPage.connectWith') }} {{title}}
       </h3>
@@ -292,6 +292,10 @@ export default {
 .forms-container {
   width: 620px;
   max-width: 100%;
+}
+
+h3.title {
+  white-space: nowrap;
 }
 
 .query-container {

@@ -154,9 +154,9 @@ export default {
 }
 
 .sync-option input {
-  -moz-appearance: auto;
-  -webkit-appearance: auto;
-  appearance: auto;
+  -moz-appearance: revert;
+  -webkit-appearance: revert;
+  appearance: revert;
   margin-right: 4px;
 }
 </style>

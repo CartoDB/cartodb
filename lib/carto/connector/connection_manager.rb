@@ -31,7 +31,7 @@ module Carto
           is_enabled = true
           # TODO: use presenter
           connector = {
-            types: [Carto::Connection::TYPE_OAUTH_SERVICE],
+            type: Carto::Connection::TYPE_OAUTH_SERVICE,
             connector: service,
             enabled: is_enabled,
             available: !@user.connections.exists?(connector: service)
@@ -45,7 +45,7 @@ module Carto
         db_connectors = Carto::ConnectionManager.valid_db_connectors.map do |provider|
           is_enabled = Carto::Connector.provider_available?(provider, @user)
           connector = {
-            types: [Carto::Connection::TYPE_DB_CONNECTOR],
+            type: Carto::Connection::TYPE_DB_CONNECTOR,
             connector: provider,
             enabled: is_enabled,
             available: is_enabled
@@ -53,18 +53,6 @@ module Carto
           connector[:connections] = list_connections(connector: provider) if connections
           connector
         end
-      end
-
-      # Unify connectors of dual type
-      oauth_connectors.each do |oauth_connector|
-        db_connector = db_connectors.find { |c| c[:connector] == oauth_connector[:connector] }
-        next if db_connector.blank?
-
-        db_connectors.delete db_connector
-        oauth_connector[:types] += db_connector[:types]
-        # assume enabled is same for both
-        oauth_connector[:available] &&= db_connector[:available]
-        oauth_connector[:connections] += db_connector[:connections] if connections
       end
 
       oauth_connectors + db_connectors

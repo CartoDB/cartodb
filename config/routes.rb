@@ -224,7 +224,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-import-arcgis' => 'visualizations#index', as: :datasets_import_arcgis_from_home
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-import-twitter' => 'visualizations#index', as: :datasets_import_twitter_from_home
 
-
     # Maps from home for new dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-map' => 'visualizations#index', as: :maps_new_from_home
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-new-connection/:connector' => 'visualizations#index', as: :maps_your_connections_new_from_home
@@ -344,7 +343,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started/:id'   => 'visualizations#index', as: :get_started_onboarding
 
     # Tileset viewer
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tilesets/:id'   => 'visualizations#index', as: :tilesets_viewer, constraints: { id: /[0-z\.-]+/ }
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tilesets/:id'   => 'visualizations#index', as: :tilesets_viewer, constraints: { id: /[0-z.-]+/ }
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home

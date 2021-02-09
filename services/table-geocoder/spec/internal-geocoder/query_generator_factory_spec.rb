@@ -3,10 +3,6 @@ require_relative '../../lib/internal-geocoder/abstract_query_generator.rb'
 require_relative '../../../../spec/rspec_configuration.rb'
 require          'active_support/core_ext' # Needed for string.blank?
 
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
-
 =begin
 The class should generate queries to be used by the InternalGeocoder depending on the inputs.
 

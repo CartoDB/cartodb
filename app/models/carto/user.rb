@@ -46,15 +46,10 @@ class Carto::User < ActiveRecord::Base
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
-  has_many :connections, class_name: Carto::Connection, inverse_of: :user, dependent: :destroy
+  has_many :connections, class_name: 'Carto::Connection', inverse_of: :user, dependent: :destroy
 
-  def oauth_connections
-    connections.oauth_connections
-  end
-
-  def db_connections
-    connections.db_connections
-  end
+  delegate :oauth_connections, to: :connections
+  delegate :db_connections, to: :connections
 
   has_many :search_tweets, class_name: Carto::SearchTweet, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
@@ -211,12 +206,10 @@ class Carto::User < ActiveRecord::Base
   end
 
   def oauth_for_service(service)
-    # FIXME: should we use ConnectionsManager here?
-    oauth_connections.where(connector: service, connection_type: Carto::Connection::TYPE_OAUTH_SERVICE).first
+    oauth_connections.find_by(connector: service)
   end
 
   def add_oauth(service, token)
-    # FIXME: use ConnectionsManager here
     connection = Carto::Connection.new(
       user_id: id,
       connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,

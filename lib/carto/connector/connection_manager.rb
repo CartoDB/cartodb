@@ -101,7 +101,7 @@ module Carto
     end
 
     def find_oauth_connection(service)
-      @user.oauth_connections.where(connector: service).first
+      @user.oauth_connections.find_by(connector: service)
     end
 
     def create_db_connection(name:, provider:, parameters:)

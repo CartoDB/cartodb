@@ -1,7 +1,6 @@
 require_relative '../simplecov_helper'
 require 'rails'
 require 'ostruct'
-require_relative '../rspec_configuration'
 require_relative '../../config/initializers/carto_db'
 
 # Just "open" the modules so that we make sure they are defined,

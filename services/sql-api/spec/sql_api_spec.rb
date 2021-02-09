@@ -1,5 +1,4 @@
 require_relative '../sql_api.rb'
-require_relative '../../../spec/rspec_configuration.rb'
 
 module Cartodb; end
 

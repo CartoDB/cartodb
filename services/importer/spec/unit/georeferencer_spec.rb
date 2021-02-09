@@ -1,7 +1,6 @@
 require_relative '../../lib/importer/georeferencer'
 require_relative '../factories/pg_connection'
 require_relative '../../../../services/importer/spec/doubles/log'
-require_relative '../../../../spec/rspec_configuration'
 require_relative '../../../../spec/spec_helper'
 
 include CartoDB

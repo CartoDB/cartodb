@@ -4,7 +4,6 @@ require_relative '../../../../../lib/url_signer'
 require_relative '../../../lib/gme/exceptions'
 require_relative '../../factories/pg_connection'
 require_relative '../../../../../spec/spec_helper.rb'
-require_relative '../../../../../spec/rspec_configuration.rb'
 
 describe Carto::Gme::TableGeocoder do
   before(:all) do

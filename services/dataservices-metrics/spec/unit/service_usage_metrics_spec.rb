@@ -1,6 +1,5 @@
 require_relative '../../lib/service_usage_metrics'
 require 'mock_redis'
-require_relative '../../../../spec/rspec_configuration'
 
 describe CartoDB::ServiceUsageMetrics do
 

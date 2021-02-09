@@ -1,5 +1,4 @@
 require_relative '../../twitter-search'
-require_relative '../../../../spec/rspec_configuration'
 
 include CartoDB::TwitterSearch
 

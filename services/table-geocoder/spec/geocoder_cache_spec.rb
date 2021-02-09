@@ -1,7 +1,6 @@
 require 'open3'
 require_relative '../lib/table_geocoder.rb'
 require_relative 'factories/pg_connection'
-require_relative '../../../spec/rspec_configuration.rb'
 
 describe CartoDB::GeocoderCache do
   before do

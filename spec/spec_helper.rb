@@ -1,5 +1,4 @@
 require_relative './simplecov_helper'
-require_relative './rspec_configuration'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require 'helpers/unique_names_helper'

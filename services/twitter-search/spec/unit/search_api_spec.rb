@@ -1,5 +1,4 @@
 require_relative '../../twitter-search'
-require_relative '../../../../spec/rspec_configuration'
 
 include CartoDB::TwitterSearch
 
@@ -43,4 +42,3 @@ describe SearchAPI do
     File.read(File.join(File.dirname(__FILE__), "../fixtures/#{filename}"))
   end
 end
-

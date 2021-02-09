@@ -582,6 +582,10 @@
       "next": "Next: {nextStep}",
       "goToDashboard": "Go to your dashboard"
     },
+    "tilesets": {
+      "title": "Process and visualize a large dataset using tilesets",
+      "subtitle": "Turn massive amounts of data into performant webmap layers generated and served directly from your BigQuery."
+    },
     "cartovl": {
       "title": "Develop an interactive custom web map",
       "subtitle": "Develop impressive interactive maps and use them on your websites and apps.",

@@ -15,7 +15,7 @@ exports[`Distributor.vue should render engine warning for no engine users 1`] = 
         </h1>
         <div class="grid u-flex__justify--between">
           <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-            <selector-stub title="Wizards.cartovl.title" text="Wizards.cartovl.subtitle" tags="Wizards.cartovl.tags" iconmodifier="map"></selector-stub>
+            <selector-stub title="Wizards.tilesets.title" text="Wizards.tilesets.subtitle" tags="" iconmodifier="tilesets"></selector-stub>
             <warning-stub></warning-stub>
           </div>
           <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
@@ -51,7 +51,7 @@ exports[`Distributor.vue should render properly 1`] = `
         </h1>
         <div class="grid u-flex__justify--between">
           <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-            <selector-stub title="Wizards.cartovl.title" text="Wizards.cartovl.subtitle" tags="Wizards.cartovl.tags" iconmodifier="map"></selector-stub>
+            <selector-stub title="Wizards.tilesets.title" text="Wizards.tilesets.subtitle" tags="" iconmodifier="tilesets"></selector-stub>
             <!---->
           </div>
           <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">

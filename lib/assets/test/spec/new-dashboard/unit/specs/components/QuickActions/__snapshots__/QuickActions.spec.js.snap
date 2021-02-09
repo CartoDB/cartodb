@@ -7,7 +7,7 @@ exports[`QuickActions.vue methods should close dropdown 1`] = `
 `;
 
 exports[`QuickActions.vue methods should close dropdown 2`] = `
-<div class="quick-actions"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
+<div class="quick-actions is-open"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
   <div class="quick-actions-dropdown is-active">
     <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">QuickActions.title</h6>
     <ul>
@@ -35,7 +35,7 @@ exports[`QuickActions.vue methods should close dropdown 3`] = `
 `;
 
 exports[`QuickActions.vue methods should open dropdown and then close it again 1`] = `
-<div class="quick-actions"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
+<div class="quick-actions is-open"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
   <div class="quick-actions-dropdown is-active">
     <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">QuickActions.title</h6>
     <ul>
@@ -63,7 +63,7 @@ exports[`QuickActions.vue methods should open dropdown and then close it again 2
 `;
 
 exports[`QuickActions.vue should not render options with shouldBeHidden 1`] = `
-<div class="quick-actions"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
+<div class="quick-actions is-open"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
   <div class="quick-actions-dropdown is-active">
     <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">QuickActions.title</h6>
     <ul>

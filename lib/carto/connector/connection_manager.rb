@@ -211,13 +211,13 @@ module Carto
             raise Carto::ParamInvalidError.new("provider: #{provider}", [connection.connector], 422)
           end
         else
-          connector_parameters.merge! provider: connection.connector
+          connector_parameters[:provider] = connection.connector
         end
         connection_parameters = adapter(connection).filtered_connection_parameters
 
-        connector_parameters.merge! connection: connection_parameters
+        connector_parameters[:connection] = connection_parameters
         connector_parameters.delete :connection_id
-        input_parameters.merge! connection_id: connection.id
+        input_parameters[:connection_id] = connection.id
         input_parameters.delete :connection
       end
 

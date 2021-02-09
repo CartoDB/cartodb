@@ -50,11 +50,11 @@ export default {
       const connection_id = this.bqConnection && this.bqConnection.id;
       if (element && connection_id) {
         const [project_id, dataset_id] = this.tileset_id.split('.');
-        let tileset
+        let tileset;
         try {
           tileset = await this.$store.dispatch('tilesets/getTileset', { source: this.source, tileset_id: this.tileset_id, project_id, dataset_id, connection_id });
         } catch {}
-        const center = tileset&& tileset.metadata && tileset.metadata.center && tileset.metadata.center.split(',');
+        const center = tileset && tileset.metadata && tileset.metadata.center && tileset.metadata.center.split(',');
         const longitude = center && parseFloat(center[0]);
         const latitude = center && parseFloat(center[1]);
         const zoom = center && parseFloat(center[2]);

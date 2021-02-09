@@ -862,9 +862,9 @@
   },
   "TilesetsPage": {
     "projectPlaceholder": "Type to filter or select a project",
-    "noDataTitle": "Tilesets not loaded",
-    "noDataSubtitle": "Select a dataset from your BigQuery project to list the tilesets contained in it.",
-    "noDataCaption": "Questions? Please read the <a href='https://docs.carto.com/spatial-extension-bq/tiler/guides/'>documentation</a> to learn how to create tilesets and use them in your webmap applications.",
+    "noDataTitle": "Select a dataset to list your tilesets",
+    "noDataSubtitle": "Tilesets are a special type of table that allow you to handle very large amounts of data. They contain pre-processed vector tiles ready for visualization.",
+    "noDataCaption": "Read the <a href='https://docs.carto.com/spatial-extension-bq/tiler/guides/'>documentation</a> to start creating tilesets.",
     "noAvailableTitle": "No tilesets found on the selected dataset",
     "noAvailableSubtitle": "Use the BigQuery console to create tilesets. Check out the <a href='https://docs.carto.com/spatial-extension-bq/tiler/guides/'>documentation</a> to learn how to create your first tileset and then return  here to visualize it.",
     "errorTitle": "Permission error",

@@ -16,11 +16,10 @@
           <div class="grid u-flex__justify--between">
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
               <Selector
-                :title="$t('Wizards.cartovl.title')"
-                :text="$t('Wizards.cartovl.subtitle')"
-                :tags="$t('Wizards.cartovl.tags')"
-                @click.native="openDocs('#')"
-                iconModifier="map"></Selector>
+                :title="$t('Wizards.tilesets.title')"
+                :text="$t('Wizards.tilesets.subtitle')"
+                @click.native="openDocs('https://docs.carto.com/spatial-extension-bq/tiler/guides/')"
+                iconModifier="tilesets"></Selector>
               <Warning v-if="!hasEngine"></Warning>
             </div>
 
@@ -29,7 +28,7 @@
                 :title="$t('Wizards.cartoframes.title')"
                 :text="$t('Wizards.cartoframes.subtitle')"
                 :tags="$t('Wizards.cartoframes.tags')"
-                @click.native="openDocs('#')"
+                @click.native="openDocs('https://docs.carto.com/get-started/#spatial-analysis-with-cartoframes')"
                 iconModifier="notebook"></Selector>
               <Warning v-if="!hasEngine"></Warning>
             </div>
@@ -39,7 +38,7 @@
                 :title="$t('Wizards.builder.title')"
                 :text="$t('Wizards.builder.subtitle')"
                 :tags="$t('Wizards.builder.tags')"
-                @click.native="openDocs('#')"
+                @click.native="openDocs('https://docs.carto.com/get-started/#spatial-analysis-with-builder')"
                 iconModifier="window"></Selector>
             </div>
           </div>

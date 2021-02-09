@@ -7,8 +7,9 @@ module Carto
     # * Saves credentials in redis
     # * Manages Spatial Extension Setup
     class BigQuery < ConnectionAdapter
-      BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token)
-      NON_CONNECTOR_PARAMETERS = []
+
+      BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token).freeze
+      NON_CONNECTOR_PARAMETERS = [].freeze
       BQ_ADVANCED_CENTRAL_ATTRIBUTE = :bq_advanced
       BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE = :bq_advanced_project
 
@@ -27,8 +28,12 @@ module Carto
       def errors
         errors = super
         if @connection.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
-          errors << "Parameter refresh_token not supported for db-connection; use OAuth connection instead" if @connection.parameters['refresh_token'].present?
-          errors << "Parameter access_token not supported through connections; use import API" if @connection.parameters['access_token'].present?
+          if @connection.parameters['refresh_token'].present?
+            errors << 'Parameter refresh_token not supported for db-connection; use OAuth connection instead'
+          end
+          if @connection.parameters['access_token'].present?
+            errors << 'Parameter access_token not supported through connections; use import API'
+          end
         end
         errors
       end
@@ -81,11 +86,11 @@ module Carto
         if @connection.changes[:parameters]
           old_parameters, new_parameters = @connection.changes[:parameters]
           if old_parameters['billing_project'] != new_parameters['billing_project']
-          central.update_user(
-            @connection.user.username,
-            BQ_ADVANCED_CENTRAL_ATTRIBUTE => true,
-            BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE => new_parameters['billing_project']
-          )
+            central.update_user(
+              @connection.user.username,
+              BQ_ADVANCED_CENTRAL_ATTRIBUTE => true,
+              BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE => new_parameters['billing_project']
+            )
           end
         end
       end
@@ -107,6 +112,7 @@ module Carto
       def bigquery_redis_key
         "google:bq_settings:#{@connection.user.username}"
       end
+
     end
   end
 end

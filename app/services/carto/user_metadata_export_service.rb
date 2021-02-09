@@ -31,6 +31,7 @@ require_dependency 'carto/export/connector_configuration_exporter'
 
 module Carto
   module UserMetadataExportServiceConfiguration
+
     CURRENT_VERSION = '1.0.18'.freeze
     EXPORTED_USER_ATTRIBUTES = %i(
       email crypted_password database_name username admin enabled invite_token invite_token_date
@@ -155,7 +156,6 @@ module Carto
       if exported_user[:oauth_connections].present?
         exported_user[:oauth_connections].each do |oauth_connection|
           user.oauths.add(oauth_connection[:service], oauth_connection[:token])
-          # FIXME: do we need to restore oauth_connection[:created_at], oauth_connection[:updated_at] ?
         end
       end
 
@@ -346,7 +346,7 @@ module Carto
       user_hash[:notifications] = user.static_notifications.notifications
 
       # TODO: all connections, not only oauth ones, should be exported!
-      user_hash[:oauth_connections] = user.oauths.map { |oc| export_oauth_connection(so) }
+      user_hash[:oauth_connections] = user.oauths.map { |oc| export_oauth_connection(oc) }
 
       user_hash[:connector_configurations] = user.connector_configurations.map do |cc|
         export_connector_configuration(cc)
@@ -441,13 +441,10 @@ module Carto
       }
     end
 
-    def export_synchronization_oauth(connection)
+    def export_oauth_connection(connection)
       {
         service: connection.service,
         token: connection.token
-        # FIXME: do we need:
-        # created_at: ...
-        # updated_at: ...
       }
     end
 

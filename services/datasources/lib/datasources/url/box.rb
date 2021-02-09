@@ -111,7 +111,10 @@ module CartoDB
             client_secret = options[:client_secret]
 
             @access_token = access_token
-            raise CartoDB::Datasources::TokenExpiredOrInvalidError.new("Access token cannot be nil", DATASOURCE_NAME) if @access_token.nil?
+            if @access_token.nil?
+              raise CartoDB::Datasources::TokenExpiredOrInvalidError.new('Access token cannot be nil', DATASOURCE_NAME)
+            end
+
             @client_id = client_id
             @client_secret = client_secret
           end

@@ -2,6 +2,7 @@ module Carto
   module Api
     module Public
       class ConnectionsController < Carto::Api::Public::ApplicationController
+
         extend Carto::DefaultRescueFroms
 
         before_action :load_user
@@ -46,7 +47,9 @@ module Carto
         end
 
         def update
-          @connection_manager.update_db_connection(id: params[:id], parameters: params[:parameters], name: params[:name])
+          @connection_manager.update_db_connection(
+            id: params[:id], parameters: params[:parameters], name: params[:name]
+          )
           head :ok
         end
 
@@ -54,7 +57,7 @@ module Carto
           service = params[:service]
           connection = @connection_manager.find_oauth_connection(service)
           # shouldn't it return a presented connection? and raise an exception if not found?
-          if connection
+          if connection.present?
             render_jsonp(@connection_manager.present_connection(connection), 200)
           else
             render_jsonp({ errors: "OAuth connection for #{service} not found" }, 404)
@@ -83,8 +86,6 @@ module Carto
 
         def connect
           connection = @connection_manager.fetch_connection(params[:id])
-          @connection_manager.check(connection)
-          connector = Carto::Connector.new(parameters: {}, connection: connection, user: current_user, logger: nil)
           render_jsonp({ connected: @connection_manager.check(connection) }, 200)
         end
 
@@ -106,7 +107,7 @@ module Carto
         end
 
         def rescue_from_invalid_connection(exception)
-          code =  exception.message =~ /Access Denied/im ? 401 : 422
+          code = exception.message.match?(/Access Denied/im) ? 403 : 422
           render_jsonp({ errors: exception.message }, code)
         end
 
@@ -117,6 +118,7 @@ module Carto
         def load_manager
           @connection_manager = Carto::ConnectionManager.new(@user)
         end
+
       end
     end
   end

@@ -1,6 +1,7 @@
 module Carto
   # ConnectionAdapter is a base class to provide additional connector-specific functionality to Connections
   class ConnectionAdapter
+
     CONFIDENTIAL_PARAMETER_PLACEHOLDER = '********'.freeze
     CONFIDENTIAL_PARAMS = %w(password).freeze
 
@@ -33,6 +34,7 @@ module Carto
     end
 
     def create
+      # does nothing by default
     end
 
     def destroy
@@ -40,6 +42,7 @@ module Carto
     end
 
     def update
+      # does nothing by default
     end
 
     private
@@ -48,7 +51,11 @@ module Carto
       if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
         @connection.get_service_datasource.revoke_token
       end
-    rescue CartoDB::Datasources::TokenExpiredOrInvalidError
+    rescue CartoDB::Datasources::TokenExpiredOrInvalidError => e
+      message = "Error revoking token for service #{@connection.service}, user #{@connection.user&.username}"
+      message += ": #{e}"
+      Rails.logger.warn message
     end
+
   end
 end

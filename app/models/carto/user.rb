@@ -46,15 +46,10 @@ class Carto::User < ActiveRecord::Base
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
-  has_many :connections, class_name: Carto::Connection, inverse_of: :user, dependent: :destroy
+  has_many :connections, class_name: 'Carto::Connection', inverse_of: :user, dependent: :destroy
 
-  def oauth_connections
-    connections.oauth_connections
-  end
-
-  def db_connections
-    connections.db_connections
-  end
+  delegate :oauth_connections, to: :connections
+  delegate :db_connections, to: :connections
 
   has_many :search_tweets, class_name: Carto::SearchTweet, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
@@ -211,21 +206,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def oauth_for_service(service)
-    # FIXME: should we use ConnectionsManager here?
-    oauth_connections.where(connector: service, connection_type: Carto::Connection::TYPE_OAUTH_SERVICE).first
+    connection_manager.find_oauth_connection(service)
   end
 
   def add_oauth(service, token)
-    # FIXME: use ConnectionsManager here
-    connection = Carto::Connection.new(
-      user_id: id,
-      connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
-      connector: service,
-      token: token
-    )
-    connection.save
-    connections.append(connection)
-    connection
+    connection_manager.create_oauth_connection(service: service, token: token)
   end
 
   def get_geocoding_calls(options = {})
@@ -344,6 +329,10 @@ class Carto::User < ActiveRecord::Base
   end
 
   private
+
+  def connection_manager
+    Carto::ConnectionManager.new(self)
+  end
 
   def subscriptions_size_in_bytes(project, estimated: false)
     # Note we cannot filter by `project` subscription attribute, we must use the dataset ID.

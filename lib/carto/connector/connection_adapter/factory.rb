@@ -4,6 +4,7 @@ require_relative 'bigquery'
 module Carto
   class ConnectionAdapter
     class Factory
+
       BQ_CONNECTOR = 'bigquery'.freeze
 
       def self.adapter_for_connection(connection)
@@ -14,6 +15,7 @@ module Carto
           Carto::ConnectionAdapter.new(connection)
         end
       end
+
     end
   end
 end

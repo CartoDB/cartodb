@@ -21,7 +21,7 @@ module CartoDB
       end
 
       def qualified_table_name
-        %Q("#{schema}"."#{table_name}") if table_name.present?
+        %("#{schema}"."#{table_name}") if table_name.present?
       end
 
       def table_name

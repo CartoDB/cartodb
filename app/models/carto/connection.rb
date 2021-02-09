@@ -1,5 +1,6 @@
 module Carto
   class Connection < ActiveRecord::Base
+
     TYPE_OAUTH_SERVICE = 'oauth-service'.freeze
     TYPE_DB_CONNECTOR = 'db-connector'.freeze
 
@@ -14,22 +15,26 @@ module Carto
     validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
 
     def get_service_datasource
-      raise "Invalid connection type (#{connection_type}) to get service datasource" unless connection_type == TYPE_OAUTH_SERVICE
+      chek_type! TYPE_OAUTH_SERVICE, "Invalid connection type (#{connection_type}) to get service datasource"
 
-      datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(connector, user, {
+      datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
+        connector,
+        user,
         http_timeout: ::DataImport.http_timeout_for(user)
-      })
+      )
       datasource.token = token unless datasource.nil?
       datasource
     end
 
     def service
-      raise "service not available for connection of type #{connection_type}" unless connection_type == TYPE_OAUTH_SERVICE
+      check_type! TYPE_OAUTH_SERVICE, "service not available for connection of type #{connection_type}"
+
       connector
     end
 
     def provider
-      raise "provider not available for connection of type #{connection_type}"  unless connection_type == TYPE_DB_CONNECTOR
+      check_type! TYPE_DB_CONNECTOR, "provider not available for connection of type #{connection_type}"
+
       connector
     end
 
@@ -41,6 +46,10 @@ module Carto
     after_destroy :manage_destroy
 
     private
+
+    def check_type!(type, message)
+      raise message unless connection_type == type
+    end
 
     def connection_manager
       Carto::ConnectionManager.new(user)
@@ -65,27 +74,19 @@ module Carto
     def set_type
       return if connection_type.present?
 
-      if token.present?
-        self.connection_type = TYPE_OAUTH_SERVICE
-      else
-        self.connection_type = TYPE_DB_CONNECTOR
-      end
+      self.connection_type = token.present? ? TYPE_OAUTH_SERVICE : TYPE_DB_CONNECTOR
     end
 
     def set_name
       return if name.present?
 
-      if connection_type == TYPE_OAUTH_SERVICE
-        self.name = connector
-      end
+      self.name = connector if connection_type == TYPE_OAUTH_SERVICE
     end
 
     def set_parameters
       return if parameters.present?
 
-      if connection_type == TYPE_OAUTH_SERVICE
-        self.parameters = { refresh_token: token }
-      end
+      self.parameters = { refresh_token: token } if connection_type == TYPE_OAUTH_SERVICE
     end
 
     def validate_parameters
@@ -94,8 +95,8 @@ module Carto
       end
       case connection_type
       when TYPE_OAUTH_SERVICE
-        if !token.present?
-          errors.add :token, "Missing OAuth"
+        if token.blank?
+          errors.add :token, 'Missing OAuth'
         elsif parameters.present?
           # OAuth connections that also admit db-connector parameters (BigQuery)
           # can be saved incomplete without the parameters; once the parameters are assigned,
@@ -110,16 +111,17 @@ module Carto
     def validate_db_connection
       connector = Carto::Connector.new(parameters: {}, connection: self, user: user, logger: nil)
       connector.check_connection
-    rescue Carto::Connector::InvalidParametersError => error
-      if error.to_s =~ /Invalid provider/im
-        errors.add :connector, error.to_s
+    rescue Carto::Connector::InvalidParametersError => e
+      if e.to_s.match?(/Invalid provider/im)
+        errors.add :connector, e.to_s
       else
-        errors.add :parameters, error.to_s
+        errors.add :parameters, e.to_s
       end
-    rescue CartoDB::Datasources::AuthError, CartoDB::Datasources::TokenExpiredOrInvalidError => error
-      errors.add :token, error.to_s
-    rescue StandardError => error
-      errors.add :base, error.to_s
+    rescue CartoDB::Datasources::AuthError, CartoDB::Datasources::TokenExpiredOrInvalidError => e
+      errors.add :token, e.to_s
+    rescue StandardError => e
+      errors.add :base, e.to_s
     end
+
   end
 end

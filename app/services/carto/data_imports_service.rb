@@ -42,7 +42,7 @@ module Carto
     end
 
     def validate_synchronization_oauth(user, service)
-      oauth =user.oauths.select(service)
+      oauth = user.oauths.select(service)
       return false unless oauth
 
       datasource = oauth.get_service_datasource

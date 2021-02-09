@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+# TRIGGER CI PLEASE
+
 describe AccountTypeCommands::Delete do
   include_context 'with DatabaseCleaner'
 

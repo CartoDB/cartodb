@@ -143,9 +143,20 @@ module Carto
     # get_url_to_create_oauth_connection
     def create_oauth_connection_get_url(service:)
       check_oauth_service!(service)
+
       existing_connection = find_oauth_connection(service)
       delete_connection(existing_connection.id) if existing_connection.present?
       oauth_connection_url(service)
+    end
+
+    def create_oauth_connection(service:, token:)
+      check_oauth_service!(service)
+
+      @user.connections.create!(
+        name: service,
+        connector: service,
+        token: token
+      )
     end
 
     # for dual connection only (BigQuery): after fetching a valid oauth connection,

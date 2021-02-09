@@ -206,19 +206,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def oauth_for_service(service)
-    oauth_connections.find_by(connector: service)
+    connection_manager.find_oauth_connection(service)
   end
 
   def add_oauth(service, token)
-    connection = Carto::Connection.new(
-      user_id: id,
-      connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
-      connector: service,
-      token: token
-    )
-    connection.save
-    connections.append(connection)
-    connection
+    connection_manager.create_oauth_connection(service: service, token: token)
   end
 
   def get_geocoding_calls(options = {})
@@ -337,6 +329,10 @@ class Carto::User < ActiveRecord::Base
   end
 
   private
+
+  def connection_manager
+    Carto::ConnectionManager.new(self)
+  end
 
   def subscriptions_size_in_bytes(project, estimated: false)
     # Note we cannot filter by `project` subscription attribute, we must use the dataset ID.

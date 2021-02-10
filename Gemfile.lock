@@ -556,7 +556,7 @@ DEPENDENCIES
   gc_tracer (= 1.5.1)
   gibbon (= 1.1.4)
   google-api-client
-  google-cloud-bigquery-storage-v1
+  google-cloud-bigquery-storage-v1 (~> 0.2.3)
   google-cloud-pubsub
   hiredis (~> 0.6.1)
   instagram-continued-continued

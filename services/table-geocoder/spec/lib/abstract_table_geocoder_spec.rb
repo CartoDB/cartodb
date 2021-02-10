@@ -1,3 +1,4 @@
+require 'spec_helper'
 require_relative '../factories/pg_connection'
 require_relative '../../lib/abstract_table_geocoder'
 

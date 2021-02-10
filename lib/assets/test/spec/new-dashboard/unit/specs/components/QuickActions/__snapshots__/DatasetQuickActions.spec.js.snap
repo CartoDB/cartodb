@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DatasetQuickAction.vue should render open dropdown with actions for locked datasets 1`] = `
-<div class="quick-actions"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
+<div class="quick-actions is-open"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
   <div class="quick-actions-dropdown is-active">
     <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">QuickActions.title</h6>
     <ul>
@@ -15,7 +15,7 @@ exports[`DatasetQuickAction.vue should render open dropdown with actions for loc
 `;
 
 exports[`DatasetQuickAction.vue should render open dropdown with all actions for non shared non locked datasets 1`] = `
-<div class="quick-actions"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
+<div class="quick-actions is-open"><a href="javascript:void(0)" class="quick-actions-select is-active"><img svg-inline="" src="new-dashboard/assets/icons/common/options.svg"></a>
   <div class="quick-actions-dropdown is-active">
     <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">QuickActions.title</h6>
     <ul>

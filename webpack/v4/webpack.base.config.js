@@ -198,11 +198,13 @@ module.exports = {
           rootDir('node_modules/internal-carto.js'),
           rootDir('node_modules/@carto/toolkit-core'),
           rootDir('node_modules/@carto/toolkit-custom-storage'),
-          rootDir('node_modules/vue-i18n/')
+          rootDir('node_modules/vue-i18n/'),
+          rootDir('node_modules/@carto/viewer')
         ],
         exclude: [
           rootDir('node_modules/internal-carto.js/node_modules'),
           rootDir('node_modules/internal-carto.js/vendor'),
+          rootDir('node_modules/@carto/viewer/node_modules'),
           /core-js/
         ],
         options: {
@@ -245,6 +247,16 @@ module.exports = {
             publicPath: `${http_path_prefix}/assets/${version}/fonts/`
           }
         }
+      },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+        include: [
+          rootDir('node_modules/@carto/viewer')
+        ],
+        exclude: [
+          rootDir('node_modules/@carto/viewer/node_modules')
+        ]
       },
       {
         test: /\.(png|gif|svg|jpg)$/,

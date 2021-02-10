@@ -20,8 +20,11 @@
       :maxVisibleDatasets="maxVisibleDatasets"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
-      @selectionChange="updateSelected" />
+      @selectionChange="updateSelected"
+      @newDatesetClicked="openCreateDatasetPopup"
+      @newConnectionClicked="openCreateConnectiontPopup"/>
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+    <router-view></router-view>
   </section>
 </template>
 
@@ -68,7 +71,12 @@ export default {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
   beforeRouteUpdate (to, from, next) {
-    checkFilters('datasets', 'datasets', to, from, next);
+    const matched = to.matched[to.matched.length - 1];
+    // Prevent checkFilters when you open Dialog to add a new dataset
+    if (!matched.parent || !matched.parent.name) {
+      checkFilters('datasets', 'datasets', to, from, next);
+    }
+    next();
   },
   computed: {
     ...mapState({
@@ -132,6 +140,12 @@ export default {
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
       const notificationHeight = this.isNotificationVisible ? 60 : 0;
       return headerBoundingClientRect.top - notificationHeight;
+    },
+    openCreateDatasetPopup () {
+      this.$router.push({ name: 'datasets-new-dataset' });
+    },
+    openCreateConnectiontPopup () {
+      this.$router.push({ name: 'new-connection' });
     }
   },
   watch: {

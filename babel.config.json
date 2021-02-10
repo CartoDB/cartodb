@@ -6,7 +6,8 @@
         "useBuiltIns": "usage",
         "corejs": 3
       }
-    ]
+    ],
+    "@babel/preset-react"
   ],
   "plugins": [
     "@babel/plugin-proposal-object-rest-spread",
@@ -23,7 +24,8 @@
   "env": {
     "test": {
       "presets": [
-        ["@babel/env"]
+        ["@babel/env"],
+        "@babel/preset-react"
       ],
       "plugins": [
         "@babel/plugin-proposal-object-rest-spread",

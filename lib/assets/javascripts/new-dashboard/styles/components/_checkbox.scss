@@ -1,6 +1,13 @@
 .checkbox {
   position: relative;
 
+  &.small {
+    .checkbox-decoration, .checkbox-input {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
   .checkbox-decoration {
     display: flex;
     position: relative;

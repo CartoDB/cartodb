@@ -87,7 +87,7 @@ gem 'sys_cmd', '>= 1.1.3'
 
 # db-connectors (DO Sync connector)
 gem 'google-cloud-bigquery-storage-v1', '~> 0.2.3'
-gem 'avro', '~> 1.10.0"
+gem 'avro', '~> 1.10.0'
 
 group :test do
   gem 'simplecov', '0.13.0', require: false

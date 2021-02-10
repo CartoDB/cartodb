@@ -305,8 +305,9 @@ describe User do
   end
 
   describe 'session' do
+    before { Cartodb::Central.stubs(:login_redirection_enabled?).returns(true) }
+
     before(:all) do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       @user = FactoryGirl.create(:valid_user)
     end
 

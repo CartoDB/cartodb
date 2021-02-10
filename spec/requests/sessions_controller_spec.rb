@@ -42,8 +42,12 @@ describe SessionsController do
   end
 
   shared_examples_for 'LDAP' do
+    before do
+      Cartodb::Central.stubs(:login_redirection_enabled?).returns(false)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
+    end
+
     it "doesn't allows to login until admin does first" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       normal_user_username = "ldap-user"
       normal_user_password = "2{Patrañas}"
       normal_user_email = "ldap-user@test.com"
@@ -70,7 +74,6 @@ describe SessionsController do
     end
 
     it "Allows to login and triggers creation if using the org admin account" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       # @See lib/user_account_creator.rb -> promote_to_organization_owner?
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
@@ -94,7 +97,6 @@ describe SessionsController do
     end
 
     it "Allows to login and triggers creation of normal users if admin already present" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
@@ -135,7 +137,6 @@ describe SessionsController do
     end
 
     it "Just logs in if finds a cartodb username that matches with LDAP credentials " do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
       create_ldap_user(admin_user_username, admin_user_password)
@@ -151,7 +152,6 @@ describe SessionsController do
     end
 
     it "Falls back to credentials if user is not present at LDAP" do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
       admin_user_email = "#{@organization.name}-admin@test.com"
@@ -191,7 +191,6 @@ describe SessionsController do
 
     shared_examples_for 'MFA' do
       it "Redirects to multifactor_authentication if finds a cartodb username that matches with LDAP credentials" do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         admin_user_username = "#{@organization.name}-admin"
         admin_user_password = '2{Patrañas}'
         create_ldap_user(admin_user_username, admin_user_password)
@@ -347,7 +346,8 @@ describe SessionsController do
     it "Allows to login and triggers creation of normal users if user is not present" do
       new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      Cartodb::Central.stubs(:login_redirection_enabled?).returns(false)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
                                       instance_of(String), anything, instance_of(FalseClass)).returns(true)
@@ -363,7 +363,8 @@ describe SessionsController do
     it "Allows to login and triggers creation of normal users if user is not present" do
       new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      Cartodb::Central.stubs(:login_redirection_enabled?).returns(false)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
                                       instance_of(String), anything, instance_of(FalseClass)).returns(true)
@@ -567,8 +568,8 @@ describe SessionsController do
     end
 
     describe 'with Central' do
-      before(:each) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      before do
+        Cartodb::Central.stubs(:login_redirection_enabled?).returns(true)
       end
 
       it 'redirects to Central for user logins' do

@@ -8,7 +8,7 @@ module Carto
       end
 
       it 'requires user' do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+        Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
         app = OauthApp.new
         expect(app).to_not(be_valid)
         expect(app.errors[:user]).to(include("can't be blank"))
@@ -96,7 +96,7 @@ module Carto
       end
 
       it 'accepts with no user if avoid_sync_central and central enabled' do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+        Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
         app = OauthApp.new(name: 'name',
                            redirect_uris: ['https://re.dir'],
                            icon_url: 'http://localhost/some.png',
@@ -113,12 +113,12 @@ module Carto
       end
 
       before(:each) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        Cartodb::Central.stubs(:api_sync_enabled?).returns(false)
         @oauth_app = FactoryGirl.create(:oauth_app, user: @user_oauth, avoid_sync_central: false)
       end
 
       after(:each) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        Cartodb::Central.stubs(:api_sync_enabled?).returns(false)
         @oauth_app.destroy! if @oauth_app
         @oauth_app2.destroy! if @oauth_app2
       end
@@ -129,7 +129,7 @@ module Carto
 
       describe '#create' do
         it 'creates app in clouds from Central' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
           params = { id: '26da639b-0b8c-4e81-aeb4-33b81fd0cacb',
                      name: 'name1',
                      redirect_uris: ['https://re.dir'],
@@ -154,7 +154,7 @@ module Carto
         end
 
         it 'creates app if user not present and avoid_sync_central' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
           Cartodb::Central.any_instance.expects(:create_oauth_app).never
 
           expect {
@@ -195,7 +195,7 @@ module Carto
 
       describe '#update' do
         it 'updates app in clouds from Central' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
           Cartodb::Central.any_instance
                           .expects(:update_oauth_app)
                           .with(@user_oauth.username,
@@ -247,7 +247,7 @@ module Carto
         end
 
         it 'updates app to no user with avoid_sync_central' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
           Cartodb::Central.any_instance.expects(:update_oauth_app).never
 
           @oauth_app.avoid_sync_central = true
@@ -317,7 +317,7 @@ module Carto
         end
 
         it 'deletes app in clouds from Central' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
           Cartodb::Central.any_instance
                           .expects(:delete_oauth_app)
                           .with(@user_oauth.username, @oauth_app.id)

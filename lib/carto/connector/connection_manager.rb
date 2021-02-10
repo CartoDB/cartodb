@@ -292,7 +292,7 @@ module Carto
     def obtain_connection(connection_id, provider, connection_parameters, register)
       if connection_id.present?
         fetch_connection(connection_id)
-      elsif  connection_parameters.present? && register
+      elsif connection_parameters.present? && register
         find_or_create_db_connection(provider, connection_parameters)
       end
     end

@@ -514,9 +514,9 @@ describe Carto::UserMetadataExportService do
     expect(exported_search_tweet[:updated_at].to_s).to eq search_tweet.updated_at.to_s
   end
 
-  def expect_export_matches_oauth_connection(exported_so, so)
-    expect(exported_so[:service]).to eq so.service
-    expect(exported_so[:token]).to eq so.token
+  def expect_export_matches_oauth_connection(exported_connection, connection)
+    expect(exported_connection[:service]).to eq connection.service
+    expect(exported_connection[:token]).to eq connection.token
   end
 
   def expect_export_matches_connector_configuration(exported_cc, cc)

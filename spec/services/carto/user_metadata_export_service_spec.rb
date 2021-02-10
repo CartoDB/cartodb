@@ -795,6 +795,9 @@ describe Carto::UserMetadataExportService do
     end
   end
 
+  # rubocop:disable RSpec/LetBeforeExamples
+  # rubocop:disable RSpec/ScatteredLet
+
   let(:service_item_id) do
     '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":'\
       '\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":'\
@@ -888,7 +891,9 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_six) do
-    user_hash = full_export_one_zero_seven[:user].except!(:password_reset_token, :password_reset_sent_at, :oauth_connections)
+    user_hash = full_export_one_zero_seven[:user].except!(
+      :password_reset_token, :password_reset_sent_at, :oauth_connections
+    )
 
     full_export[:user] = user_hash
     full_export
@@ -903,7 +908,9 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_four) do
-    user_hash = full_export_one_zero_five[:user].except!(:synchronization_oauths, :connector_configurations, :oauth_connections)
+    user_hash = full_export_one_zero_five[:user].except!(
+      :synchronization_oauths, :connector_configurations, :oauth_connections
+    )
     full_export[:user] = user_hash
     full_export
   end
@@ -931,4 +938,7 @@ describe Carto::UserMetadataExportService do
     full_export[:user] = user_hash
     full_export
   end
+
+  # rubocop:enable RSpec/LetBeforeExamples
+  # rubocop:enable RSpec/ScatteredLet
 end

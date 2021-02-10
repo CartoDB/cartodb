@@ -2,7 +2,7 @@ class UserMetadataExportFactory
 
   def self.full_export(params = {})
     {
-      version: "1.0.18",
+      version: '1.0.18',
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -298,7 +298,7 @@ class UserMetadataExportFactory
         oauth_connections: [
           {
             service: 'gdrive',
-            token: '1234567890',
+            token: '1234567890'
           }
         ],
         connector_configurations: [

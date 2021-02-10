@@ -3,6 +3,10 @@ require_relative '../../api/json/imports_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/imports_controller'
 require 'helpers/unique_names_helper'
 
+# TODO: replace remaining instance variables with let,
+# but, for the time being, let's keep rubocop quiet:
+# rubocop:disable RSpec/InstanceVariable
+
 describe Carto::Api::ImportsController do
   include UniqueNamesHelper
   it_behaves_like 'imports controllers' do
@@ -308,7 +312,8 @@ describe Carto::Api::ImportsController do
       get api_v1_imports_service_auth_url_url(id: 'mailchimp'), params
       response.code.should == '401'
 
-      # INFO: this can never happen with the current implementation of get_service_auth_url, since it first checks there's no previous Connection
+      # INFO: this can never happen with the current implementation of get_service_auth_url,
+      #       since it first checks there's no previous Connection
       Carto::Connection.where(connector: 'mailchimp').first.should eq nil
     end
   end
@@ -416,3 +421,5 @@ describe Carto::Api::ImportsController do
   end
 
 end
+
+# rubocop:enable RSpec/InstanceVariable

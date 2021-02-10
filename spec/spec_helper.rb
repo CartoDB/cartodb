@@ -1,3 +1,4 @@
+require 'mocha'
 require_relative './simplecov_helper'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'

@@ -1,4 +1,5 @@
 # This file provides a minimal Rails integration test environment with an empty database, without users.
+require 'mocha'
 require 'simplecov_helper'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'

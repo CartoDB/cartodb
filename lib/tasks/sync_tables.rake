@@ -97,6 +97,30 @@ namespace :cartodb do
     end
   end
 
+  def bq_syncs_query(user: nil, sync: nil)
+    condition = ''
+    condition += "AND user_id = '#{user.id}'" if user.present?
+    condition += "AND id = '#{sync.id}'" if sync.present?
+    %{
+      service_name = 'connector'
+      #{condition}
+      AND (state IN (
+            '#{Carto::Synchronization::STATE_SUCCESS}', '#{Carto::Synchronization::STATE_SYNCING}',
+            '#{Carto::Synchronization::STATE_QUEUED}', '#{Carto::Synchronization::STATE_CREATED}')
+        OR (state = '#{Carto::Synchronization::STATE_FAILURE}'
+              AND retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES}))
+      AND ((service_item_id::JSON)#>>'{provider}') = 'bigquery-beta'
+    }
+  end
+
+  def bq_sync_blocked_states
+    [
+      Carto::Synchronization::STATE_CREATED,
+      Carto::Synchronization::STATE_QUEUED,
+      Carto::Synchronization::STATE_SYNCING
+    ]
+  end
+
   desc 'Port BQ syncs to beta connector'
   task port_bq_syncs_to_beta: [:environment] do
     dry_mode = ENV['DRY_RUN'] != 'NO'
@@ -109,27 +133,14 @@ namespace :cartodb do
     end
 
     number_of_pending_syncs = 0
-    Carto::Synchronization.where(%{
-        service_name = 'connector'
-        AND (state IN (
-              '#{Carto::Synchronization::STATE_SUCCESS}', '#{Carto::Synchronization::STATE_SYNCING}',
-              '#{Carto::Synchronization::STATE_QUEUED}', '#{Carto::Synchronization::STATE_CREATED}'
-            )
-          OR (state = '#{Carto::Synchronization::STATE_FAILURE}'
-                AND retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES}))
-        AND ((service_item_id::JSON)#>>'{provider}') = 'bigquery'
-    }).find_each do |synchronization|
+    Carto::Synchronization.where(bq_syncs_query).find_each do |synchronization|
       next unless synchronization.user.state == 'active'
 
       sleep 0.2
       synchronization.transaction do
         synchronization.reload
         parameters = JSON.parse(synchronization.service_item_id)
-        if synchronization.state.in? [
-          Carto::Synchronization::STATE_CREATED,
-          Carto::Synchronization::STATE_QUEUED,
-          Carto::Synchronization::STATE_SYNCING
-        ]
+        if synchronization.state.in? bq_sync_blocked_states
           puts "Synchronization #{synchronization.id} could not be modifed; state: #{synchronization.state}"
           number_of_pending_syncs += 1
         elsif dry_mode
@@ -166,38 +177,23 @@ namespace :cartodb do
 
     if args.username_or_sync_id != 'all-the-users'
       user = Carto::User.find_by(username: args.username_or_sync_id)
-      if user.present?
-        user_condition = "AND user_id = '#{user.id}'"
-      else
+      if user.blank?
         sync = Carto::Synchronization.find_by(id: args.username_or_sync_id)
         raise "User/Sync not found: #{args.username_or_sync_id}" unless sync
-
-        user_condition = "AND id = '#{sync.id}'"
       end
     end
 
+    sql = bq_syncs_query(user: user, sync: sync)
+
     number_of_pending_syncs = 0
-    Carto::Synchronization.where(%{
-        service_name = 'connector'
-        #{user_condition}
-        AND (state IN (
-              '#{Carto::Synchronization::STATE_SUCCESS}', '#{Carto::Synchronization::STATE_SYNCING}',
-              '#{Carto::Synchronization::STATE_QUEUED}', '#{Carto::Synchronization::STATE_CREATED}')
-          OR (state = '#{Carto::Synchronization::STATE_FAILURE}'
-                AND retried_times < #{CartoDB::Synchronization::Member::MAX_RETRIES}))
-        AND ((service_item_id::JSON)#>>'{provider}') = 'bigquery-beta'
-    }).find_each do |synchronization|
+    Carto::Synchronization.where(sql).find_each do |synchronization|
       next unless synchronization.user.state == 'active'
 
       sleep 0.2
       synchronization.transaction do
         synchronization.reload
         parameters = JSON.parse(synchronization.service_item_id)
-        if synchronization.state.in? [
-          Carto::Synchronization::STATE_CREATED,
-          Carto::Synchronization::STATE_QUEUED,
-          Carto::Synchronization::STATE_SYNCING
-        ]
+        if synchronization.state.in? bq_sync_blocked_states
           puts "Synchronization #{synchronization.id} could not be modifed; state: #{synchronization.state}"
           number_of_pending_syncs += 1
         elsif dry_mode

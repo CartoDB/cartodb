@@ -16,7 +16,7 @@ module Carto
 
     # rubocop:disable Naming/AccessorMethodName
     def get_service_datasource
-      chek_type! TYPE_OAUTH_SERVICE, "Invalid connection type (#{connection_type}) to get service datasource"
+      check_type! TYPE_OAUTH_SERVICE, "Invalid connection type (#{connection_type}) to get service datasource"
 
       datasource = CartoDB::Datasources::DatasourcesFactory.get_datasource(
         connector,

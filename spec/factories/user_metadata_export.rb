@@ -2,7 +2,7 @@ class UserMetadataExportFactory
 
   def self.full_export(params = {})
     {
-      version: "1.0.16",
+      version: "1.0.18",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -287,6 +287,14 @@ class UserMetadataExportFactory
             "layer-analyses-onboarding": true
           }
         },
+        synchronization_oauths: [
+          {
+            service: 'gdrive',
+            token: '1234567890',
+            created_at: Time.zone.now,
+            updated_at: Time.zone.now
+          }
+        ],
         oauth_connections: [
           {
             service: 'gdrive',

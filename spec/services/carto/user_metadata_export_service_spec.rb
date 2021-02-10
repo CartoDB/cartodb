@@ -41,7 +41,7 @@ describe Carto::UserMetadataExportService do
 
     CartoDB::GeocoderUsageMetrics.new(@user.username).incr(:geocoder_here, :success_responses)
 
-    @user.synchronization_oauths.create!(service: 'gdrive', token: 'wadus')
+    @user.oauths.add('gdrive', 'wadus')
     FactoryGirl.create(:connector_configuration, connector_provider: @connector_provider, user: @user)
 
     # Convert @table_visualization into a common data imported table
@@ -197,7 +197,11 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'imports latest' do
-      test_import_user_from_export(full_export)
+      test_import_user_from_export(full_export_one_zero_eighteen)
+    end
+
+    it 'imports 1.0.17 (without oauth_connections)' do
+      test_import_user_from_export(full_export_one_zero_seventeen)
     end
 
     it 'imports 1.0.16 (without email_verification)' do
@@ -279,7 +283,7 @@ describe Carto::UserMetadataExportService do
     it 'imports 1.0.4 (without synchornization oauths nor connector configurations)' do
       user = test_import_user_from_export(full_export_one_zero_four)
 
-      expect(user.synchronization_oauths).to be_empty
+      expect(user.oauth_connections).to be_empty
       expect(user.connector_configurations).to be_empty
     end
 
@@ -442,13 +446,14 @@ describe Carto::UserMetadataExportService do
       expect(user.search_tweets).to be_empty
     end
 
-    if export[:synchronization_oauths]
-      expect(export[:synchronization_oauths].count).to eq user.synchronization_oauths.size
-      export[:synchronization_oauths].zip(user.synchronization_oauths).each do |exported_so, so|
-        expect_export_matches_synchronization_oauth(exported_so, so)
+    oauth_connections = export[:oauth_connections] || export[:synchronization_oauths]
+    if oauth_connections
+      expect(oauth_connections.count).to eq user.oauth_connections.size
+      oauth_connections.zip(user.oauth_connections).each do |exported_so, so|
+        expect_export_matches_oauth_connection(exported_so, so)
       end
     else
-      expect(user.synchronization_oauths).to be_empty
+      expect(user.oauth_connections).to be_empty
     end
 
     if export[:connector_configurations]
@@ -507,11 +512,9 @@ describe Carto::UserMetadataExportService do
     expect(exported_search_tweet[:updated_at].to_s).to eq search_tweet.updated_at.to_s
   end
 
-  def expect_export_matches_synchronization_oauth(exported_so, so)
+  def expect_export_matches_oauth_connection(exported_so, so)
     expect(exported_so[:service]).to eq so.service
     expect(exported_so[:token]).to eq so.token
-    expect(exported_so[:created_at].to_s).to eq so.created_at.to_s
-    expect(exported_so[:updated_at].to_s).to eq so.updated_at.to_s
   end
 
   def expect_export_matches_connector_configuration(exported_cc, cc)
@@ -721,7 +724,7 @@ describe Carto::UserMetadataExportService do
 
     source_visualizations = @user.visualizations.order(:id).reject { |v| !v.remote? && !v.map }.map(&:attributes)
     source_tweets = @user.search_tweets.map(&:attributes)
-    synchronization_oauths = @user.synchronization_oauths.map(&:attributes)
+    oauth_connections = @user.oauth_connections.map(&:attributes)
     destroy_user
 
     # At this point, the user database is still there, but the tables got destroyed. We recreate some dummy ones
@@ -752,9 +755,9 @@ describe Carto::UserMetadataExportService do
     end
     @imported_user.static_notifications.notifications.should eq full_export[:user][:notifications]
 
-    @imported_user.synchronization_oauths.zip(synchronization_oauths).each do |so1, so2|
+    @imported_user.oauth_connections.zip(oauth_connections).each do |so1, so2|
       expect(so1.user_id).to eq @imported_user.id
-      expect(so1.service).to eq so2['service']
+      expect(so1.service).to eq so2['connector']
       expect(so1.token).to eq so2['token']
     end
   end
@@ -802,36 +805,50 @@ describe Carto::UserMetadataExportService do
     UserMetadataExportFactory.full_export(connector_provider: @connector_provider, oauth_app: @oauth_app, service_item_id: service_item_id)
   end
 
+  let(:full_export_one_zero_eighteen) do
+    user_hash = full_export[:user].except!(:sinchronization_oauths)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_seventeen) do
+    user_hash = full_export[:user].except!(:oauth_connections)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_sixteen) do
-    user_hash = full_export[:user].except!(:email_verification_token, :email_veritification_sent_at)
+    user_hash = full_export[:user].except!(:email_verification_token, :email_veritification_sent_at, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_fifteen) do
-    user_hash = full_export[:user].except!(:public_dataset_quota)
+    user_hash = full_export[:user].except!(:public_dataset_quota, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_fourteen) do
-    user_hash = full_export_one_zero_fifteen[:user].except!(:session_salt)
+    user_hash = full_export_one_zero_fifteen[:user].except!(:session_salt, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_thirteen) do
-    user_hash = full_export_one_zero_fourteen[:user].except!(:private_map_quota)
+    user_hash = full_export_one_zero_fourteen[:user].except!(:private_map_quota, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_twelve) do
-    user_hash = full_export_one_zero_thirteen[:user].except!(:use_case, :company_employees)
+    user_hash = full_export_one_zero_thirteen[:user].except!(:use_case, :company_employees, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
@@ -843,42 +860,42 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_ten) do
-    user_hash = full_export_one_zero_eleven[:user].except!(:regular_api_key_quota)
+    user_hash = full_export_one_zero_eleven[:user].except!(:regular_api_key_quota, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_nine) do
-    user_hash = full_export_one_zero_ten[:user].except!(:public_map_quota)
+    user_hash = full_export_one_zero_ten[:user].except!(:public_map_quota, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_eight) do
-    user_hash = full_export_one_zero_nine[:user].except!(:oauth_app_users)
+    user_hash = full_export_one_zero_nine[:user].except!(:oauth_app_users, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_seven) do
-    user_hash = full_export_one_zero_eight[:user].except!(:user_multifactor_auths)
+    user_hash = full_export_one_zero_eight[:user].except!(:user_multifactor_auths, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_six) do
-    user_hash = full_export_one_zero_seven[:user].except!(:password_reset_token, :password_reset_sent_at)
+    user_hash = full_export_one_zero_seven[:user].except!(:password_reset_token, :password_reset_sent_at, :oauth_connections)
 
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_five) do
-    user_hash = full_export_one_zero_six[:user].except!(:client_application)
+    user_hash = full_export_one_zero_six[:user].except!(:client_application, :oauth_connections)
     limits_hash = full_export[:user][:rate_limit][:limits]
     full_export[:user] = user_hash
     full_export[:user][:rate_limit][:limits] = limits_hash.except!(:sql_copy_from).except!(:sql_copy_to)
@@ -886,31 +903,31 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_four) do
-    user_hash = full_export_one_zero_five[:user].except!(:synchronization_oauths, :connector_configurations)
+    user_hash = full_export_one_zero_five[:user].except!(:synchronization_oauths, :connector_configurations, :oauth_connections)
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_three) do
-    user_hash = full_export_one_zero_four[:user].except!(:company).except!(:phone)
+    user_hash = full_export_one_zero_four[:user].except!(:company).except!(:phone, :oauth_connections)
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_two) do
-    user_hash = full_export_one_zero_three[:user].except!(:rate_limit)
+    user_hash = full_export_one_zero_three[:user].except!(:rate_limit, :oauth_connections)
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_one) do
-    user_hash = full_export_one_zero_two[:user].except!(:notifications)
+    user_hash = full_export_one_zero_two[:user].except!(:notifications, :oauth_connections)
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_zero) do
-    user_hash = full_export_one_zero_one[:user].except!(:search_tweets)
+    user_hash = full_export_one_zero_one[:user].except!(:search_tweets, :oauth_connections)
     full_export[:user] = user_hash
     full_export
   end

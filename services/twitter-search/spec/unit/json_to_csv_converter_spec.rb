@@ -1,3 +1,4 @@
+require 'spec_helper_min'
 require_relative '../../twitter-search'
 
 include CartoDB::TwitterSearch

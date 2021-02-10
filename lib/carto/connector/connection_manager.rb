@@ -181,7 +181,7 @@ module Carto
     # The second result are the parameters to be passed to a db connector, where connection parameters are
     # included in a `connection` parameter
     #
-    # The connection can be provided by any of theas means:
+    # The connection can be provided by any of these means:
     # * through the separate `connection` argument
     # * referenced by a `connection_id` parameter in `parameters`
     # * passing the connection parameters in `parameters[:connection]` (for backwards compatibility with Import API v1)
@@ -194,25 +194,13 @@ module Carto
       connector_parameters = Carto::Connector::Parameters.new(parameters)
       provider = connector_parameters[:provider]
       connection_parameters = connector_parameters[:connection]
-      if connection.blank?
-        connection_id = connector_parameters[:connection_id]
-        if connection_id.present?
-          connection = fetch_connection(connection_id)
-        elsif connection_parameters.present? && register
-          connection = find_or_create_db_connection(provider, connection_parameters)
-        end
-      end
+      connection_id = connector_parameters[:connection_id]
+
+      connection = obtain_connection(connection_id, provider, connection_parameters, register) if connection.blank?
 
       input_parameters = connector_parameters.dup
-
       if connection.present?
-        if provider.present?
-          if provider != connection.connector
-            raise Carto::ParamInvalidError.new("provider: #{provider}", [connection.connector], 422)
-          end
-        else
-          connector_parameters[:provider] = connection.connector
-        end
+        provider = obtain_checked_provider(provider, connection)
         connection_parameters = adapter(connection).filtered_connection_parameters
 
         connector_parameters[:connection] = connection_parameters
@@ -223,7 +211,7 @@ module Carto
 
       if legacy_oauth_db_connection?(connector_parameters)
         connection_parameters = connector_parameters[:connection] || {}
-        connection_parameters[:refresh_token] = @user.oauths&.select(connector_parameters[:provider])&.token
+        connection_parameters[:refresh_token] = @user.oauths&.select(provider)&.token
         connector_parameters[:connection] = connection_parameters
       end
 
@@ -282,7 +270,42 @@ module Carto
       end
     end
 
+    def self.valid_oauth_services
+      CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources.select do |service|
+        # FIXME: check configuration
+        # begin
+        #   config, _ = CartoDB::Datasources::DatasourcesFactory.get_config(service)
+        #   config.present?
+        # rescue MissingConfigurationError
+        #   false
+        # end
+        Cartodb.get_config(:oauth, service).present?
+      end
+    end
+
+    def self.valid_db_connectors
+      Carto::Connector.providers.keys
+    end
+
     private
+
+    def obtain_connection(connection_id, provider, connection_parameters, register)
+      if connection_id.present?
+        fetch_connection(connection_id)
+      elsif  connection_parameters.present? && register
+        find_or_create_db_connection(provider, connection_parameters)
+      end
+    end
+
+    def obtain_checked_provider(provider, connection)
+      return connection.connector if provider.blank?
+
+      if provider != connection.connector
+        raise Carto::ParamInvalidError.new("provider: #{provider}", [connection.connector], 422)
+      end
+
+      provider
+    end
 
     def list_oauth_connectors(connections: false)
       Carto::ConnectionManager.valid_oauth_services.map do |service|
@@ -330,23 +353,6 @@ module Carto
     # returns auth_url, doesn't actually create connection
     def oauth_connection_url(service)
       DataImportsService.new.get_service_auth_url(@user, service)
-    end
-
-    def self.valid_oauth_services
-      CartoDB::Datasources::DatasourcesFactory.get_all_oauth_datasources.select do |service|
-        # FIXME: this includes twitter...
-        # begin
-        #   config, _ = CartoDB::Datasources::DatasourcesFactory.get_config(service)
-        #   config.present?
-        # rescue MissingConfigurationError
-        #   false
-        # end
-        Cartodb.get_config(:oauth, service).present?
-      end
-    end
-
-    def self.valid_db_connectors
-      Carto::Connector.providers.keys
     end
 
     def check_oauth_service!(service)

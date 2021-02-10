@@ -54,7 +54,6 @@ module Carto
       asset_host state company phone industry job_role password_reset_token password_reset_sent_at maintenance_mode
       company_employees use_case private_map_quota session_salt public_dataset_quota
       email_verification_token email_verification_sent_at
-      oauth_connections
     ).freeze
 
     BLANK_UUID = '00000000-0000-0000-0000-000000000000'.freeze
@@ -346,7 +345,7 @@ module Carto
       user_hash[:notifications] = user.static_notifications.notifications
 
       # TODO: all connections, not only oauth ones, should be exported!
-      user_hash[:oauth_connections] = user.oauths.map { |oc| export_oauth_connection(oc) }
+      user_hash[:oauth_connections] = user.oauth_connections.map { |oc| export_oauth_connection(oc) }
 
       user_hash[:connector_configurations] = user.connector_configurations.map do |cc|
         export_connector_configuration(cc)

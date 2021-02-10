@@ -118,7 +118,8 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def initialize_cartodb_central_client
-    raise Carto::LoadError.new('Mobile apps disabled') unless Cartodb::Central.sync_data_with_cartodb_central?
+    raise(Carto::LoadError, 'Mobile apps disabled') unless Cartodb::Central.api_sync_enabled?
+
     @cartodb_central_client ||= Cartodb::Central.new
   end
 

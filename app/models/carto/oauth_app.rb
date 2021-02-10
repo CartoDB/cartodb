@@ -12,7 +12,7 @@ module Carto
     has_many :oauth_app_users, inverse_of: :oauth_app, dependent: :destroy
     has_many :oauth_app_organizations, inverse_of: :oauth_app, dependent: :destroy
 
-    validates :user, presence: true, if: -> { sync_with_central? || !central_enabled? }
+    validates :user, presence: true, if: -> { sync_with_central? || Cartodb::Central.api_sync_disabled? }
     validates :name, presence: true
     validates :website_url, presence: true, url: true
     validates :client_id, presence: true
@@ -105,11 +105,7 @@ module Carto
     end
 
     def sync_with_central?
-      central_enabled? && !avoid_sync_central
-    end
-
-    def central_enabled?
-      Cartodb::Central.sync_data_with_cartodb_central?
+      Cartodb::Central.api_sync_enabled? && !avoid_sync_central
     end
 
     def sync_attributes(attrs = attributes)

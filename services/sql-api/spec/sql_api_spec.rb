@@ -1,6 +1,5 @@
+require 'spec_helper_min'
 require_relative '../sql_api.rb'
-
-module Cartodb; end
 
 describe CartoDB::SQLApi do
 

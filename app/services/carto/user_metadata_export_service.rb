@@ -152,8 +152,9 @@ module Carto
       end
 
       # TODO: all connections, not only oauth ones should be imported
-      if exported_user[:oauth_connections].present?
-        exported_user[:oauth_connections].each do |oauth_connection|
+      oauth_connections = exported_user[:oauth_connections] || exported_user[:synchronization_oauths]
+      if oauth_connections.present?
+        oauth_connections.each do |oauth_connection|
           user.oauths.add(oauth_connection[:service], oauth_connection[:token])
         end
       end

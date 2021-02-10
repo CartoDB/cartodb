@@ -13,9 +13,12 @@ describe SynchronizationOauth do
   end
 
   after(:each) do
-    @user.synchronization_oauths.map &:destroy
+    # @user.synchronization_oauths.map &:destroy
     @user.reload
   end
+
+  # Skipped because this is being substituted by Connections
+  before { pending }
 
   context '#creation_updating' do
     it 'Tests basic creation operations' do

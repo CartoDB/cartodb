@@ -1,5 +1,4 @@
-require 'spec_helper'
-require_relative '../simplecov_helper'
+require 'spec_helper_min'
 
 describe CartoDB do
   describe '#ip?' do

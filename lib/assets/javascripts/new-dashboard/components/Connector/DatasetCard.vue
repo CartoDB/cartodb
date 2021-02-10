@@ -2,7 +2,7 @@
   <div class="text is-small is-txtMidGrey dataset-card" :class="{'is-selected': isSelected}">
     <div class="dataset-card__icon" :class="`dataset-card__icon--${dataType}`"></div>
     <div class="dataset-card__name u-ml--12 u-mr--40">
-      <h3 class="text is-caption is-txtBaseGrey text-title">{{dataset.name}}</h3>
+      <h3 class="text is-caption is-txtBaseGrey text-title u-ellipsis">{{dataset.name}}</h3>
       <p class="text is-small is-txtBaseGrey text-description">{{dataset.description? dataset.description : $t('NewMapDatasetCard.noDescription')}}</p>
     </div>
     <div class="dataset-card__property dataset-card__rows">

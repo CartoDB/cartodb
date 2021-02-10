@@ -62,7 +62,7 @@ export default {
       datasetsMetadata: state => state.datasets.metadata
     }),
     numberPages () {
-      return Math.ceil(this.datasetsMetadata.total_user_entries / this.elemsPerPage);
+      return Math.ceil(this.datasetsMetadata.total_entries / this.elemsPerPage);
     },
     isEmpty () {
       const length = Object.keys(this.datasets).length;

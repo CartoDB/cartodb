@@ -2,16 +2,11 @@
 # while trying to access our API or whatever
 
 User-agent: Googlebot
-Disallow: /api/
-
 User-Agent: Slurp
-Disallow: /api/
-
 User-agent: Yandex
-Disallow: /api/
-
 User-Agent: msnbot
-Disallow: /api/
-
 User-agent: baiduspider
 Disallow: /api/
+
+User-agent: Googlebot
+Allow: /api/v4/data/observatory

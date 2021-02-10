@@ -312,7 +312,6 @@ describe User do
     end
 
     after(:all) do
-      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
       @user.destroy
     end
 

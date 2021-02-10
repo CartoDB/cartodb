@@ -38,7 +38,6 @@ describe Superadmin::OauthAppsController do
 
         response.status.should == 201
       }.to change(Carto::OauthApp, :count).by(1)
-      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
     end
   end
 
@@ -80,8 +79,6 @@ describe Superadmin::OauthAppsController do
         @oauth_app.name.should eq 'updated_name'
         @oauth_app.user_id.should eq nil
       }.to change(Carto::OauthApp, :count).by(0)
-
-      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
     end
 
     it 'should raise an error if non-existent oauth_app' do

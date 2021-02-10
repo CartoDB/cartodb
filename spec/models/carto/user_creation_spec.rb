@@ -53,10 +53,6 @@ describe Carto::UserCreation do
   describe 'validation token' do
     include_context 'organization with users helper'
 
-
-    after(:all) do
-      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
-    end
     before { Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false) }
 
     it 'assigns an enable_account_token if user has not signed up with Google' do

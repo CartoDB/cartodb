@@ -6,10 +6,6 @@ require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
 
-  after(:each) do
-    Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
-  end
-
   def create_ldap_user(admin_user_username, admin_user_password)
     admin_user_email = "#{@organization.name}-admin@test.com"
     admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
@@ -541,7 +537,6 @@ describe SessionsController do
 
       before(:all) do
         create
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
         @user.save
 
@@ -557,7 +552,6 @@ describe SessionsController do
 
   describe '#login' do
     before(:all) do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       @organization = FactoryGirl.create(:organization)
       @user = FactoryGirl.create(:carto_user)
     end
@@ -598,10 +592,6 @@ describe SessionsController do
     end
 
     describe 'without Central' do
-      before(:each) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      end
-
       it 'does not redirect' do
         get login_url(user_domain: @user.username)
         response.status.should == 200
@@ -678,7 +668,6 @@ describe SessionsController do
       include Warden::Test::Helpers
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling not first login' do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         login(::User.where(id: @user.id).first)
         logout
 
@@ -743,7 +732,6 @@ describe SessionsController do
 
     shared_examples_for 'all users workflow' do
       before(:each) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @user.user_multifactor_auths.each(&:destroy)
         @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
         @user.reload
@@ -848,7 +836,6 @@ describe SessionsController do
             }
           }
         ) do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           @user.reset_password_rate_limit
           login
 
@@ -946,7 +933,6 @@ describe SessionsController do
 
     describe 'as individual user' do
       before(:all) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @user = FactoryGirl.create(:carto_user_mfa)
       end
 
@@ -959,7 +945,6 @@ describe SessionsController do
 
     describe 'as org owner' do
       before(:all) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.owner
         @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
@@ -980,7 +965,6 @@ describe SessionsController do
 
     describe 'as org user' do
       before(:all) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.users.last
         @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
@@ -1001,7 +985,6 @@ describe SessionsController do
 
     describe 'as org without user pass enabled' do
       before(:all) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
         @organization = FactoryGirl.create(:organization_with_users,
                                            :mfa_enabled,
@@ -1040,7 +1023,6 @@ describe SessionsController do
 
     shared_examples_for 'logout endpoint' do
       it 'redirects to user dashboard' do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         post create_session_url(email: @user.username, password: @user.password)
         get CartoDB.base_url(@user.username) + logout_path
         response.status.should eq 302
@@ -1053,7 +1035,6 @@ describe SessionsController do
 
       before(:each) do
         stub_domainful(@user.username)
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       end
     end
 
@@ -1062,14 +1043,12 @@ describe SessionsController do
 
       before(:each) do
         stub_subdomainless
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       end
     end
   end
 
   describe '#destroy' do
     it 'deletes the _cartodb_base_url cookie' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       @user = FactoryGirl.create(:carto_user)
       login_as(@user, scope: @user.username)
       host! "localhost.lan"

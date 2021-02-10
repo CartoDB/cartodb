@@ -12,7 +12,6 @@ module Carto
         app = OauthApp.new
         expect(app).to_not(be_valid)
         expect(app.errors[:user]).to(include("can't be blank"))
-        Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
       end
 
       it 'requires name' do
@@ -103,7 +102,6 @@ module Carto
                            website_url: 'http://localhost',
                            avoid_sync_central: true)
         expect(app).to(be_valid)
-        Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
       end
     end
 
@@ -167,7 +165,6 @@ module Carto
         end
 
         it 'creates app if Central is disabled' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.expects(:create_oauth_app).never
 
           expect {
@@ -181,7 +178,6 @@ module Carto
         end
 
         it 'raises error if Central is disabled and no user' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.expects(:create_oauth_app).never
 
           expect {
@@ -221,7 +217,6 @@ module Carto
         end
 
         it 'updates app if Central is disabled' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.expects(:update_oauth_app).never
 
           expect {
@@ -233,7 +228,6 @@ module Carto
         end
 
         it 'updates app if Central is avoid_sync_central' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
           Cartodb::Central.any_instance.expects(:update_oauth_app).never
 
           @oauth_app.avoid_sync_central = true
@@ -267,7 +261,6 @@ module Carto
         end
 
         it 'does not send notification if destroying app with no users' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           ::Resque.expects(:enqueue)
                   .with(::Resque::UserJobs::Notifications::Send, anything, anything)
                   .never
@@ -278,7 +271,6 @@ module Carto
         end
 
         it 'sends notification if destroying app with users' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           @app_user = Carto::OauthAppUser.create!(user_id: @oauth_app.user.id, oauth_app: @oauth_app)
           ::Resque.expects(:enqueue)
                   .with(::Resque::UserJobs::Notifications::Send, [@app_user.user.id], anything)
@@ -290,7 +282,6 @@ module Carto
         end
 
         it 'does not send notification if avoid_send_notification' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           @app_user = Carto::OauthAppUser.create!(user_id: @oauth_app.user.id, oauth_app: @oauth_app)
           ::Resque.expects(:enqueue)
                   .with(::Resque::UserJobs::Notifications::Send, [@app_user.user.id], anything)
@@ -303,7 +294,6 @@ module Carto
         end
 
         it 'logs notification errors on destroy' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           @app_user = Carto::OauthAppUser.create!(user_id: @oauth_app.user.id, oauth_app: @oauth_app)
 
           ::Resque.stubs(:enqueue).raises('unknown error')
@@ -330,7 +320,6 @@ module Carto
         end
 
         it 'deletes app if Central is disabled' do
-          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.expects(:delete_oauth_app).never
 
           expect {

@@ -189,7 +189,6 @@ describe 'Warden' do
     include HelperMethods
 
     before(:each) do
-      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
       # we use this to avoid generating the static assets in CI
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
     end

@@ -534,7 +534,6 @@ describe 'UserMigration' do
       user.in_database(as: :superuser).execute("SELECT cartodb.cdb_extension_reload()")
       result = user.in_database(as: :superuser).execute(check_cdb_conf_query)
       expect(result.count).to eq 1
-      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
       oauth_app.destroy!
     end
 

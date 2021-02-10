@@ -3,6 +3,8 @@ require 'factories/carto_visualizations'
 require 'helpers/rate_limits_helper'
 require 'helpers/account_types_helper'
 
+# rubocop:disable RSpec/InstanceVariable
+
 describe Carto::UserMetadataExportService do
   include NamedMapsHelper
   include RateLimitsHelper
@@ -942,3 +944,5 @@ describe Carto::UserMetadataExportService do
   # rubocop:enable RSpec/LetBeforeExamples
   # rubocop:enable RSpec/ScatteredLet
 end
+
+# rubocop:enable RSpec/InstanceVariable

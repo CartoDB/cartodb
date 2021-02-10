@@ -64,8 +64,11 @@ module Carto
 
       private
 
+      def central
+        @central ||= Cartodb::Central.new
+      end
+
       def create_spatial_extension_setup
-        central = Cartodb::Central.new
         central.update_user(
           @connection.user.username,
           BQ_ADVANCED_CENTRAL_ATTRIBUTE => true,
@@ -74,7 +77,6 @@ module Carto
       end
 
       def remove_spatial_extension_setup
-        central = Cartodb::Central.new
         central.update_user(
           @connection.user.username,
           BQ_ADVANCED_CENTRAL_ATTRIBUTE => false,

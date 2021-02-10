@@ -118,11 +118,19 @@ module Carto
     def create_oauth_connection(service:, token:)
       check_oauth_service!(service)
 
-      @user.connections.create!(
-        name: service,
-        connector: service,
-        token: token
-      )
+      if @user.new_record?
+        @user.connections.build(
+          name: service,
+          connector: service,
+          token: token
+        )
+      else
+        @user.connections.create!(
+          name: service,
+          connector: service,
+          token: token
+        )
+      end
     end
 
     # for dual connection only (BigQuery): after fetching a valid oauth connection,

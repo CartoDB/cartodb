@@ -287,12 +287,10 @@ class UserMetadataExportFactory
             "layer-analyses-onboarding": true
           }
         },
-        synchronization_oauths: [
+        oauth_connections: [
           {
             service: 'gdrive',
             token: '1234567890',
-            created_at: Time.zone.now,
-            updated_at: Time.zone.now
           }
         ],
         connector_configurations: [

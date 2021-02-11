@@ -1206,7 +1206,8 @@
                         "title": "SQL Function",
                         "desc": "Run your custom SQL function"
                     }
-                }
+                },
+                "deprecation-warning": "Will be deprecated"
             },
             "add-widgets": {
                 "modal-title": "Add new widgets",

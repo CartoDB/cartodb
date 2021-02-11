@@ -4,8 +4,8 @@
       <div class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
       <div class="welcome-compact__actions">
         <OnboardingButton :isFirstTimeViewingDashboard="false"></OnboardingButton>
-        <CreateButton class="button--ghost" visualizationType="map" :disabled="!canCreateMaps">{{ $t(`HomePage.WelcomeSection.actions.createMap`) }}</CreateButton>
-        <CreateButton class="button--ghost" visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`HomePage.WelcomeSection.actions.createDataset`) }}</CreateButton>
+        <button @click="onNewMapClicked" class="button is-primary button--ghost" :disabled="!canCreateMaps">{{ $t(`HomePage.WelcomeSection.actions.createMap`) }}</button>
+        <button @click="onNewDatesetClicked" class="button is-primary button--ghost" :disabled="!canCreateDatasets">{{ $t(`HomePage.WelcomeSection.actions.createDataset`) }}</button>
       </div>
 
       <div class="welcome-compact__extra">
@@ -37,6 +37,14 @@ export default {
     },
     canCreateMaps () {
       return this.$store.getters['user/canCreateMaps'];
+    }
+  },
+  methods: {
+    onNewDatesetClicked () {
+      this.$emit('newDatesetClicked');
+    },
+    onNewMapClicked () {
+      this.$emit('newMapClicked');
     }
   }
 };

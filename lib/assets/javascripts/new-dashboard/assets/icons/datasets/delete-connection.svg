@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+    <defs>
+        <filter id="grjfktf2ea">
+            <feColorMatrix in="SourceGraphic" values="0 0 0 0 0.180392 0 0 0 0 0.235294 0 0 0 0 0.262745 0 0 0 1.000000 0"/>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g>
+            <g>
+                <g>
+                    <g filter="transparent" transform="translate(-705 -32) translate(633 32) translate(72) translate(0 2.23)">
+                        <g fill="#2e3c43" fill-rule="nonzero" transform="translate(.848 .848)">
+                            <circle cx="12.727" cy="16.705" r="2.386"/>
+                            <path d="M9.545 0v4.773l5.457-.001.002.101c.03 1.082.24 2.118.598 3.082H3.182v1.59H16.37c.777 1.29 1.848 2.382 3.12 3.183H3.182c0 5.264 4.281 9.545 9.545 9.545 4.868 0 8.896-3.661 9.474-8.375.766.197 1.57.302 2.399.302.26 0 .518-.01.772-.03-.658 5.816-5.257 10.446-11.054 11.175v4.882h-3.182v-4.882C4.868 24.557 0 19.205 0 12.727V7.955c0-1.757 1.427-3.182 3.182-3.182h3.182V0h3.181z"/>
+                        </g>
+                    </g>
+                    <g fill="#EB1510">
+                        <path d="M10.523 4.43v6.647c0 .61-.497 1.108-1.108 1.108H3.877c-.611 0-1.108-.497-1.108-1.108V4.43h7.754zM9.415 5.539H3.877v5.539h5.539V5.538zM6.092 6.646V9.97H4.985V6.646h1.107zm2.216 0V9.97H7.2V6.646h1.108zm0-4.984v1.107h3.323v1.108H1.66V2.769h3.324V1.662h3.323z" transform="translate(-705 -32) translate(633 32) translate(72) translate(19.938)"/>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

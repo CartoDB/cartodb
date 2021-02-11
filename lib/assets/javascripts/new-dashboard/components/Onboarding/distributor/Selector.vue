@@ -67,6 +67,14 @@ export default {
       background-position: center;
     }
 
+    &--tilesets {
+      &::before {
+        content: '';
+        height: 50px;
+        background-image: url('../../../assets/icons/onboarding/tilesets-big.svg');
+      }
+    }
+
     &--map {
       &::before {
         content: '';

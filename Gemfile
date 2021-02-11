@@ -61,10 +61,10 @@ gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '1.3.1'
 gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
-gem 'google-api-client',       '0.34.1'
+gem 'google-api-client'
 gem 'dropbox_api',             '0.1.17'
 gem 'gibbon',                  '1.1.4'
-gem 'google-cloud-pubsub', '~> 2.3'
+gem 'google-cloud-pubsub'
 gem 'instagram-continued-continued'
 gem 'virtus',                   '1.0.5'
 gem 'email_address',            '~> 0.1.11'
@@ -86,8 +86,8 @@ gem 'rqrcode', '~> 0.10.1'
 gem 'sys_cmd', '>= 1.1.3'
 
 # db-connectors (DO Sync connector)
-gem "google-cloud-bigquery-storage-v1", "~> 0.2.3"
-gem "avro", "~> 1.10.0"
+gem 'avro', '~> 1.10.0'
+gem 'google-cloud-bigquery-storage-v1', '~> 0.2.3'
 
 group :test do
   gem 'simplecov', '0.13.0', require: false

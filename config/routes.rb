@@ -203,6 +203,34 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/:page'                => 'visualizations#index', as: :datasets_library_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/tag/:tag'             => 'visualizations#index', as: :datasets_library_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/tag/:tag/:page'       => 'visualizations#index', as: :datasets_library_tag_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections'                  => 'visualizations#index', as: :your_connections_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/new-connection'   => 'visualizations#index', as: :your_connections_new
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/dataset-new-connection/:connector' => 'visualizations#index', as: :your_connections_add
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/edit/:id' => 'visualizations#index', as: :your_connections_edit
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/delete/:id' => 'visualizations#index', as: :your_connections_delete
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/connections/dataset-connection/:id/dataset' => 'visualizations#index', as: :your_connections_dataset
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/new-dataset' => 'visualizations#index', as: :datasets_new
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-new-connection/:connector' => 'visualizations#index', as: :your_connections_new_from_new_dataset
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-connection/:id/dataset' => 'visualizations#index', as: :your_connections_dataset_from_new_dataset
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-add-local-file/:extension' => 'visualizations#index', as: :datasets_local_new
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-import-arcgis' => 'visualizations#index', as: :datasets_import_arcgis
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/dataset-import-twitter' => 'visualizations#index', as: :datasets_import_twitter
+
+    # Datasets from home for new dashboard
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-dataset' => 'visualizations#index', as: :datasets_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-new-connection/:connector' => 'visualizations#index', as: :your_connections_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-connection/:id/dataset' => 'visualizations#index', as: :your_connections_dataset_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-add-local-file/:extension' => 'visualizations#index', as: :datasets_local_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-import-arcgis' => 'visualizations#index', as: :datasets_import_arcgis_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/dataset-import-twitter' => 'visualizations#index', as: :datasets_import_twitter_from_home
+
+    # Maps from home for new dashboard
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/new-map' => 'visualizations#index', as: :maps_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-new-connection/:connector' => 'visualizations#index', as: :maps_your_connections_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-connection/:id/dataset' => 'visualizations#index', as: :maps_your_connections_dataset_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-add-local-file/:extension' => 'visualizations#index', as: :maps_datasets_local_new_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-import-arcgis' => 'visualizations#index', as: :maps_datasets_import_arcgis_from_home
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/map-import-twitter' => 'visualizations#index', as: :maps_datasets_import_twitter_from_home
 
     # Tables search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tables/search/:q'                    => 'visualizations#index', as: :tables_search
@@ -269,6 +297,12 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag/:page'        => 'visualizations#index', as: :maps_locked_tag_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/external'                     => 'visualizations#index', as: :maps_external
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/external/:page'               => 'visualizations#index', as: :maps_external_page
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/new-map' => 'visualizations#index', as: :maps_new
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-new-connection/:connector' => 'visualizations#index', as: :your_connections_new_from_new_map
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-connection/:id/dataset' => 'visualizations#index', as: :your_connections_dataset_from_new_map
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-add-local-file/:extension' => 'visualizations#index', as: :datasets_local_new_from_new_map
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-import-arcgis' => 'visualizations#index', as: :datasets_import_arcgis_from_new_map
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/map-import-twitter' => 'visualizations#index', as: :datasets_import_twitter_from_new_map
 
     # Dashboards
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/deep-insights'                        => 'visualizations#index', as: :dashboards_index
@@ -307,6 +341,9 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions'         => 'visualizations#index', as: :solutions_bis
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started'       => 'visualizations#index', as: :get_started
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started/:id'   => 'visualizations#index', as: :get_started_onboarding
+
+    # Tileset viewer
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tilesets/:id'   => 'visualizations#index', as: :tilesets_viewer, constraints: { id: /[0-z.-]+/ }
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
@@ -607,6 +644,18 @@ CartoDB::Application.routes.draw do
 
       get 'datasets', to: 'datasets#index', as: :api_v4_datasets
 
+      ## Connections
+      get 'connections' => 'connections#index', as: :api_v4_connections_list
+      post 'connections' => 'connections#create', as: :api_v4_connections_create
+      get 'connections/:id' => 'connections#show', as: :api_v4_connections_show
+      get 'connectors' => 'connections#list_connectors', as: :api_v4_connections_list_connectors
+      delete 'connections/:id' => 'connections#destroy', as: :api_v4_connections_destroy
+      put 'connections/:id' => 'connections#update', as: :api_v4_connections_update
+      get 'connections/check_oauth/:service' => 'connections#check_oauth', as: :api_v4_connections_check_oauth
+      get 'connections/:id/connect' => 'connections#connect', as: :api_v4_connections_connect
+      post 'connections/:id/dryrun' => 'connections#dryrun', as: :api_v4_connections_dryrun
+      get 'connections/:id/projects' => 'connections#projects', as: :api_v4_connections_projects
+
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token
         get 'subscriptions' => 'data_observatory#subscriptions', as: :api_v4_do_subscriptions_show
@@ -642,6 +691,14 @@ CartoDB::Application.routes.draw do
       get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#show_remote_table', as: :api_v4_federated_servers_get_table
       put 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#update_remote_table', as: :api_v4_federated_servers_update_table
       delete 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#unregister_remote_table', as: :api_v4_federated_servers_unregister_table
+
+      # BigQuery Dataset and Tilesets
+
+      get '/bigquery/datasets', to: 'bigquery_tilesets#list_datasets', as: :api_v4_bigquery_list_datasets
+      get '/bigquery/tilesets', to: 'bigquery_tilesets#list_tilesets', as: :api_v4_bigquery_list_tilesets
+      get '/bigquery/tilesets/:tileset_id', to: 'bigquery_tilesets#tileset', as: :api_v4_bigquery_get_tileset, constraints: { tileset_id: /(.*)\.(.*)\.(.*)/ }
+      get '/bigquery/tilesets/publish', to: 'bigquery_tilesets#publish', as: :api_v4_bigquery_tilesets_publish
+      get '/bigquery/tilesets/unpublish', to: 'bigquery_tilesets#unpublish', as: :api_v4_bigquery_tilesets_unpublish
     end
 
     scope 'v3/' do
@@ -736,6 +793,7 @@ CartoDB::Application.routes.draw do
     end
 
     scope 'v1/' do
+      match '*path', via: :options, to: '/api/application#options'
       resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
 
       # Organization assets
@@ -765,6 +823,7 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
       get 'connectors/:provider_id/projects' => 'connectors#projects', as: :api_v1_connectors_projects
+      post 'connectors/:provider_id/projects' => 'connectors#projects'
       get 'connectors/:provider_id/:project_id/datasets' => 'connectors#project_datasets', as: :api_v1_connectors_project_datasets
       get 'connectors/:provider_id/:project_id/:dataset_id/tables' => 'connectors#project_dataset_tables', as: :api_v1_connectors_project_dataset_tables
       post 'connectors/:provider_id/dryrun' => 'connectors#dryrun', as: :api_v1_connectors_dryrun

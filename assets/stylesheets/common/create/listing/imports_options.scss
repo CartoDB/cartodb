@@ -317,13 +317,13 @@ $import-button-width: 174px;
   display: block;
 }
 
-@mixin importIcon($name) {
-  .ImportButton .is-#{$name} {
+@mixin importIcon($name, $extension: 'svg') {
+  .ImportButton .is-#{$name}, .ConnectorInfo .is-#{$name}{
     display: block;
     width: 65px;
     height: 30px;
     margin-bottom: 8px;
-    background-image: url($assetsDir + '/images/layout/connectors/#{$name}.svg');
+    background-image: url($assetsDir + '/images/layout/connectors/#{$name}.#{$extension}');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
@@ -338,11 +338,24 @@ $import-button-width: 174px;
 @include importIcon(sqlserver);
 @include importIcon(mysql);
 @include importIcon(postgresql);
-@include importIcon(arcgis);
+@include importIcon(arcgis, png);
 @include importIcon(twitter);
 @include importIcon(dataobservatory);
 @include importIcon(snowflake);
 @include importIcon(redshift);
+@include importIcon('url');
+@include importIcon('file-carto');
+@include importIcon('file-csv');
+@include importIcon('file-excel');
+@include importIcon('file-geojson');
+@include importIcon('file-gpkg');
+@include importIcon('file-gpx');
+@include importIcon('file-kml');
+@include importIcon('file-ods');
+@include importIcon('file-osm');
+@include importIcon('file-shapefile');
+@include importIcon('file-mapinfo');
+@include importIcon('file-geodatabase');
 
 .SelectedImport {
   &__header {

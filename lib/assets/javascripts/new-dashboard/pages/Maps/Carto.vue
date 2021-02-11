@@ -22,9 +22,11 @@
       :maxVisibleMaps="maxVisibleMaps"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
-      @selectionChange="updateSelected" />
+      @selectionChange="updateSelected"
+      @newMapClicked="openCreateMapPopup"/>
 
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+    <router-view></router-view>
   </section>
 </template>
 
@@ -70,7 +72,12 @@ export default {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
   beforeRouteUpdate (to, from, next) {
-    checkFilters('maps', 'maps', to, from, next);
+    const matched = to.matched[to.matched.length - 1];
+    // Prevent checkFilters when you open Dialog to add a new dataset
+    if (!matched.parent || !matched.parent.name) {
+      checkFilters('maps', 'maps', to, from, next);
+    }
+    next();
   },
   computed: {
     ...mapState({
@@ -142,6 +149,9 @@ export default {
           this.isCondensed = false;
         }
       }
+    },
+    openCreateMapPopup () {
+      this.$router.push({ name: 'maps-new-dataset' });
     }
   }
 };

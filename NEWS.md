@@ -11,16 +11,20 @@ sudo make install
 
 ### Features
 
+- New connections API [15939](https://github.com/CartoDB/cartodb/pull/15939)
+- New endpoints to fetch users' datasets and tilesets from their BigQuery connection [16061](https://github.com/CartoDB/cartodb/pull/16061)
 - New BigQuery connector [16029](https://github.com/CartoDB/cartodb/pull/16029)
 - Add access to DO samples. Refactor samples/subscriptions UI [#15910](https://github.com/CartoDB/cartodb/pull/15910)
 - Integrate new map_views metric. [#15969](https://github.com/CartoDB/cartodb/pull/15969)
 - Add preview/visualization of maps in DO catalog [#15973](https://github.com/CartoDB/cartodb/pull/15973)
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
+- Adds JSON-LD with the dataset information in the Data Catalog [#16138](https://github.com/CartoDB/cartodb/pull/16138)
 - Migrate FeatureFlag & PricePlan synchronization to the Message Broker [#16098](https://github.com/CartoDB/cartodb/pull/16098)
 
 ### Bug fixes / enhancements
 
+- Fix pagination in new map popup [16153](https://github.com/CartoDB/cartodb/pull/16153)
 - Include region & maps_api_v2_template in /me config [16112](https://github.com/CartoDB/cartodb/pull/16112)
 - Raise limit of Box files listed [16082](https://github.com/CartoDB/cartodb/pull/16082)
 - Change url Map Loads docs. in quota section [16068](https://github.com/CartoDB/cartodb/pull/16068)
@@ -61,6 +65,9 @@ sudo make install
 - Revamp specs for Message Broker commands and remove old endpoints [#16084](https://github.com/CartoDB/cartodb/pull/16084)
 - Prevent rspec from being executed in any env other than test [#16128](https://github.com/CartoDB/cartodb/pull/16128)
 - Add groups to v4/me endpoint [#16105](https://github.com/CartoDB/cartodb/pull/16105)
+- Add deprecation warning for DO analysis in builder and hide option when user creation is later than deprecation notice date [#16118](https://github.com/CartoDB/cartodb/pull/16118)
+- Updated robots.txt to allow Google access to our datasets [#16148](https://github.com/CartoDB/cartodb/pull/16148)
+- In the Data Catalog, fixed baseurl as it added an extra `/` on the queries from public pages [#16148](https://github.com/CartoDB/cartodb/pull/16148)
 
 4.44.0 (2020-11-20)
 -------------------

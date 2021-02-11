@@ -195,13 +195,14 @@ GEM
       multi_json (>= 1.3.4)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    google-api-client (0.34.1)
+    google-api-client (0.52.0)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (~> 0.9)
       httpclient (>= 2.8.1, < 3.0)
       mini_mime (~> 1.0)
       representable (~> 3.0)
       retriable (>= 2.0, < 4.0)
+      rexml
       signet (~> 0.12)
     google-cloud-bigquery-storage-v1 (0.2.3)
       gapic-common (~> 0.2)
@@ -559,9 +560,9 @@ DEPENDENCIES
   faker
   gc_tracer (= 1.5.1)
   gibbon (= 1.1.4)
-  google-api-client (= 0.34.1)
+  google-api-client
   google-cloud-bigquery-storage-v1 (~> 0.2.3)
-  google-cloud-pubsub (~> 2.3)
+  google-cloud-pubsub
   hiredis (~> 0.6.1)
   instagram-continued-continued
   json-schema (= 2.1.9)

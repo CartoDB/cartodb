@@ -33,9 +33,10 @@
         </template>
 
         <template slot="actionButton" v-if="showCreateButton">
-          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">
-            {{ $t(`DataPage.createDataset`) }}
-          </CreateButton>
+          <!-- <CreateButton class="u-mr--8" visualizationType="dataset" :disabled="!canCreateDatasets">
+            {{ $t(`DataPage.createDataset`) }}_old
+          </CreateButton> -->
+          <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.createDataset`) }}</button>
         </template>
 
         <template v-if="shouldShowLimitsWarning" slot="warning">
@@ -47,7 +48,7 @@
       </SectionTitle>
     </div>
 
-    <div class="grid-cell grid-cell--col12" v-if="initialState">
+    <div class="grid-cell grid-cell--col12" v-if="initialStateWithoutConnections">
       <InitialState :title="$t(`DataPage.zeroCase.title`)">
         <template slot="icon">
           <img svg-inline src="../assets/icons/datasets/initialState.svg">
@@ -56,7 +57,21 @@
           <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
+           <button @click="createConnection" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</button>
+        </template>
+      </InitialState>
+    </div>
+
+    <div class="grid-cell grid-cell--col12" v-if="initialStateWithConnections">
+      <InitialState :title="$t(`DataPage.zeroCaseHasConnections.title`)">
+        <template slot="icon">
+          <img svg-inline src="../assets/icons/datasets/initialState.svg">
+        </template>
+        <template slot="description">
+          <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCaseHasConnections.description`)"></p>
+        </template>
+        <template slot="actionButton">
+           <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCaseHasConnections.createDataset`) }}</button>
         </template>
       </InitialState>
     </div>
@@ -114,7 +129,6 @@ import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
-import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 import * as accounts from 'new-dashboard/core/constants/accounts';
@@ -136,7 +150,6 @@ export default {
     }
   },
   components: {
-    CreateButton,
     SettingsDropdown,
     SectionTitle,
     VisualizationsTitle,
@@ -169,7 +182,9 @@ export default {
       totalShared: state => state.datasets.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
       upgradeUrl: state => state.config.upgrade_url,
-      planAccountType: state => state.user.account_type
+      planAccountType: state => state.user.account_type,
+      isLoadingConnections: state => state.connectors.loadingConnections,
+      connections: state => state.connectors.connections
     }),
     ...mapGetters({
       datasetsCount: 'user/datasetsCount',
@@ -193,7 +208,13 @@ export default {
         !this.hasSharedDatasets &&
         !this.isFetchingDatasets &&
         this.hasFilterApplied('mine') &&
-        this.totalUserEntries <= 0;
+        (!this.totalUserEntries || this.totalUserEntries <= 0);
+    },
+    initialStateWithConnections () {
+      return this.initialState && this.connections && this.connections.length;
+    },
+    initialStateWithoutConnections () {
+      return this.initialState && (!this.connections || !this.connections.length);
     },
     emptyState () {
       return ((!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) || this.isFirstTimeViewerAfterAction) &&
@@ -272,6 +293,12 @@ export default {
     },
     onContentChanged (type) {
       this.$emit('contentChanged', type);
+    },
+    createDataset () {
+      this.$emit('newDatesetClicked');
+    },
+    createConnection () {
+      this.$emit('newConnectionClicked');
     }
   },
   watch: {

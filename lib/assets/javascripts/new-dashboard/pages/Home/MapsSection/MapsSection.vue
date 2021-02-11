@@ -11,7 +11,8 @@
       :showToolbar="false"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
-      @contentChanged="onContentChanged">
+      @contentChanged="onContentChanged"
+      @newMapClicked="onNewMapClicked">
       <template slot="navigation">
         <MapsTabs
           v-if="!isFirst"
@@ -107,6 +108,9 @@ export default {
     showKeplerMaps () {
       this.cartoMapsVisible = false;
       this.keplerMapsVisible = true;
+    },
+    onNewMapClicked () {
+      this.$emit('newMapClicked');
     }
   }
 };

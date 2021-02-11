@@ -69,7 +69,9 @@ export default {
       get: () => this.$refs.mamufasImportView
     });
 
-    return { backboneViews };
+    const addLayer = () => console.log('Method implemented in builder');
+
+    return { backboneViews, addLayer };
   }
 };
 </script>

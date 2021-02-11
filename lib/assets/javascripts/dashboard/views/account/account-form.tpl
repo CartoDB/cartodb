@@ -155,17 +155,6 @@
     </div> 
   <% } %>
 
-  <!-- External datasources -->
-  <% if (services.length > 0) { %>
-    <div class="FormAccount-title">
-      <p class="FormAccount-titleText"><%= _t('account.views.form.connect_external_datasources') %></p>
-    </div>
-
-    <span class="FormAccount-separator"></span>
-
-    <div class="js-datasourcesContent"></div>
-  <% } %>
-
   <!-- Delete account -->
   <div class="FormAccount-footer <% if (cantBeDeletedReason) { %>FormAccount-footer--noMarginBottom<% } %>">
     <% if (cantBeDeletedReason) { %>

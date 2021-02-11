@@ -23,6 +23,7 @@
     $tooltip-multiline-line-height: 1.2;
 
     position: fixed;
+    z-index: 2000;
     max-width: $tooltip-multiline-width;
     height: auto;
     padding: 6px 10px;

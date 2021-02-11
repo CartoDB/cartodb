@@ -180,6 +180,45 @@ $sLabel-width: 140px;
   width: 735px;
 }
 
+.Form-inputWrapper {
+  display: flex;
+  position: relative;
+  z-index: 2;
+  height: 38px;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  outline: none;
+  color: #666;
+  background-color: #FFF;
+
+  &:hover {
+    border-color: #999;
+  }
+
+  .Form-inputInline {
+    padding-left: 12px;
+    border: none;
+    background-color: transparent;
+    height: 100%;
+    flex-grow: 1;
+  }
+
+  .Form-inputSubmitInline {
+    display: flex;
+    height: 100%;
+    padding: 0 12px;
+    flex-grow: 0;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+
+    &:disabled, &.disabled {
+      pointer-events: none;
+      opacity: .48;
+    } 
+  }
+}
+
 .Form-rowData {
   display: flex;
   position: relative;

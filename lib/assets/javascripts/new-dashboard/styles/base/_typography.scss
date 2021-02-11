@@ -1,7 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:400,600');
+@import url('https://fonts.googleapis.com/css2?family=Overpass+Mono&display=swap');
 
 .text {
   font-family: $base__font-family;
+}
+
+.is-code {
+  font-family: $code__font-family;
 }
 
 .title {
@@ -12,6 +17,11 @@
 .is-title {
   font-size: 48px;
   line-height: 64px;
+}
+
+.is-subtitle {
+  font-size: 24px;
+  line-height: 36px;
 }
 
 .is-subheader {

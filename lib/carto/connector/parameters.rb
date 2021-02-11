@@ -29,6 +29,10 @@ module Carto
         v
       end
 
+      def []=(name, value)
+        merge! name => value
+      end
+
       def delete(name)
         k, _v = fetch(name)
         @params.delete(k)

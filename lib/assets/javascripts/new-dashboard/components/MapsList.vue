@@ -48,7 +48,8 @@
           </div>
         </template>
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedMaps.length">
-          <CreateButton visualizationType="maps" :disabled="!canCreateMaps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
+          <!-- <CreateButton class="u-mr--8" visualizationType="maps" :disabled="!canCreateMaps">{{ $t(`MapsPage.createMap`) }}_old</CreateButton> -->
+          <button @click="createMap" class="button is-primary" :disabled="!canCreateMaps">{{ $t(`MapsPage.createMap`) }}</button>
         </template>
       </SectionTitle>
 
@@ -280,6 +281,9 @@ export default {
     },
     onContentChanged (type) {
       this.$emit('contentChanged', type);
+    },
+    createMap () {
+      this.$emit('newMapClicked');
     }
   },
   watch: {

@@ -12,6 +12,10 @@ class Api::ApplicationController < ApplicationController
 
   before_filter :setup_stats_instance
 
+  def options
+    head :ok
+  end
+
   protected
 
   def set_start_time

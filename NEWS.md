@@ -23,7 +23,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 
-- Set sideEffects webpack.prod.config to false to fix compilation problems with do-catalog and viewer [16155](https://github.com/CartoDB/cartodb/pull/16154)
+- Set sideEffects webpack.prod.config property to false to fix compilation problems with do-catalog and viewer [16155](https://github.com/CartoDB/cartodb/pull/16154)
 - Update viewer version to add copy xyz functionality [16154](https://github.com/CartoDB/cartodb/pull/16154)
 - Fix pagination in new map popup [16153](https://github.com/CartoDB/cartodb/pull/16153)
 - Include region & maps_api_v2_template in /me config [16112](https://github.com/CartoDB/cartodb/pull/16112)

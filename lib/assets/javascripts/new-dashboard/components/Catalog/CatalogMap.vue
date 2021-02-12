@@ -33,7 +33,7 @@ import { mapState } from 'vuex';
 import mapboxgl from 'mapbox-gl';
 import { Deck } from '@deck.gl/core';
 import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
-import {MVTLoader} from '@loaders.gl/mvt';
+import { MVTLoader } from '@loaders.gl/mvt';
 
 import { generateColorStyleProps, resetColorStyleProps } from './map-styles/colorStyles';
 import { getQuantiles, formatNumber, capitalize, compare } from './map-styles/utils';

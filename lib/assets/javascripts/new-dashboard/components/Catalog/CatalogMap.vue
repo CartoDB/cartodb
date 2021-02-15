@@ -121,7 +121,7 @@ export default {
       }
     },
     tilesetSampleId () {
-      const isStaging = window.location.host.includes('staging')
+      const isStaging = window.location.host.includes('staging');
       const TILESET_SAMPLE_PROJECT_MAP = {
         ...(!isStaging && {
           'do-sample-prod': 'do-tileset-sample',
@@ -131,7 +131,7 @@ export default {
           'do-sample-prod': 'do-tileset-sample-stag',
           'do-public-sample': 'do-public-tileset-sample-stag'
         })
-      }
+      };
       const [project, dataset, table] = this.dataset.sample_info.id.split('.');
       return [TILESET_SAMPLE_PROJECT_MAP[project], dataset, table].join('.');
     }

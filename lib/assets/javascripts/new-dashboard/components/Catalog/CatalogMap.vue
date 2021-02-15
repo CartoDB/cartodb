@@ -33,7 +33,6 @@ import { mapState } from 'vuex';
 import mapboxgl from 'mapbox-gl';
 import { Deck } from '@deck.gl/core';
 import { CartoBQTilerLayer, BASEMAP } from '@deck.gl/carto';
-import { MVTLoader } from '@loaders.gl/mvt';
 
 import { generateColorStyleProps, resetColorStyleProps } from './map-styles/colorStyles';
 import { getQuantiles, formatNumber, capitalize, compare } from './map-styles/utils';
@@ -70,7 +69,10 @@ export default {
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset,
-      variables: state => state.catalog.variables
+      variables: state => state.catalog.variables,
+      maps_api_v2_template: state => state.config && state.config.maps_api_v2_template,
+      apiKey: state => state.user && state.user.api_key,
+      username: state => state.user && state.user.username,
     }),
     title () {
       return this.dataset.name;
@@ -182,11 +184,11 @@ export default {
     renderLayer () {
       const layers = [
         new CartoBQTilerLayer({
-          loaders: MVTLoader,
           data: this.tilesetSampleId,
           credentials: {
-            username: 'public',
-            apiKey: 'default_public'
+            username: this.username || 'public',
+            apiKey: this.apiKey || 'default_public',
+            ...(this.maps_api_v2_template && { mapsUrl: this.maps_api_v2_template }),
             // To test in staging:
             // mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
           },

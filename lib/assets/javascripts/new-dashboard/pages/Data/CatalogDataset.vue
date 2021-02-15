@@ -190,12 +190,8 @@ export default {
       }
     },
     updateTitle () {
-      const titleEnd = this.$route.meta.titleEnd ? this.$route.meta.titleEnd : '| CARTO';
-      if (this.dataset && this.dataset.name) {
-        document.title = `${this.dataset.name} ${titleEnd}`;
-      } else {
-        document.title = `Spatial Data Catalog ${titleEnd}`;
-      }
+      const title = this.dataset && this.dataset.name ? this.dataset.name : 'Spatial Data Catalog';
+      document.title = this.$route.meta.title(title);
     }
   },
   watch: {

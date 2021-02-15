@@ -72,7 +72,7 @@ export default {
       variables: state => state.catalog.variables,
       maps_api_v2_template: state => state.config && state.config.maps_api_v2_template,
       apiKey: state => state.user && state.user.api_key,
-      username: state => state.user && state.user.username,
+      username: state => state.user && state.user.username
     }),
     title () {
       return this.dataset.name;
@@ -188,7 +188,7 @@ export default {
           credentials: {
             username: this.username || 'public',
             apiKey: this.apiKey || 'default_public',
-            ...(this.maps_api_v2_template && { mapsUrl: this.maps_api_v2_template }),
+            ...(this.maps_api_v2_template && { mapsUrl: this.maps_api_v2_template })
             // To test in staging:
             // mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
           },

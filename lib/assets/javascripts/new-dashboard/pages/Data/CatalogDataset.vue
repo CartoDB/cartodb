@@ -188,6 +188,14 @@ export default {
           }
         });
       }
+    },
+    updateTitle () {
+      const titleEnd = this.$route.meta.titleEnd ? this.$route.meta.titleEnd : '| CARTO';
+      if (this.dataset && this.dataset.name) {
+        document.title = `${this.dataset.name} ${titleEnd}`;
+      } else {
+        document.title = `Spatial Data Catalog ${titleEnd}`;
+      }
     }
   },
   watch: {
@@ -207,6 +215,12 @@ export default {
       handler () {
         this.initializeDataset();
       }
+    },
+    dataset: function () {
+      this.updateTitle();
+    },
+    $route: function (to, from) {
+      this.updateTitle();
     }
   },
   destroyed () {

@@ -115,9 +115,7 @@ module Carto
           total_subscriptions: total_subscriptions,
           total_samples: total_samples
         }
-        if current_user && load_totals?
-          response.merge!(calculate_totals(types))
-        end
+        response.merge!(calculate_totals(types)) if current_user && load_totals?
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)

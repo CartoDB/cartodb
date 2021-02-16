@@ -97,6 +97,7 @@ sudo make install
 - Remove no longer used DO metadata DB config [#16212](https://github.com/CartoDB/cartodb/pull/16212)
 - Fix CI build by changing machine spec [#16192](https://github.com/CartoDB/cartodb/pull/16192)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
+- Only load DO totals in dashboard when it is needed [#16161](https://github.com/CartoDB/cartodb/pull/16161)
 
 4.44.0 (2020-11-20)
 -------------------

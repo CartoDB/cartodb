@@ -5,7 +5,7 @@
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
     <template v-if="isFirstTimeViewingDashboard">
       <ConnectionsSection class="section" :home="true"></ConnectionsSection>
-      <DatasetsSection class="section" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" @newConnectionClicked="onNewConnectionClicked" />
+      <DatasetsSection class="section" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked"/>
       <MapsSection class="section section--noBorder" @contentChanged="onContentChanged" @newMapClicked="onNewMapClicked"/>
     </template>
     <template v-else>

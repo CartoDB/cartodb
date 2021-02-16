@@ -188,6 +188,10 @@ export default {
           }
         });
       }
+    },
+    updateTitle () {
+      const title = this.dataset && this.dataset.name ? this.dataset.name : 'Spatial Data Catalog';
+      document.title = this.$route.meta.title(title);
     }
   },
   watch: {
@@ -207,6 +211,12 @@ export default {
       handler () {
         this.initializeDataset();
       }
+    },
+    dataset: function () {
+      this.updateTitle();
+    },
+    $route: function (to, from) {
+      this.updateTitle();
     }
   },
   destroyed () {

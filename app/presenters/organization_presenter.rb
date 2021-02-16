@@ -20,7 +20,7 @@ class OrganizationPresenter < BasePresenter
       quota_in_bytes: quota_in_bytes,
       unassigned_quota: unassigned_quota,
       geocoding_quota: geocoding_quota,
-      map_view_quota: map_view_quota,
+      map_views_quota: map_views_quota,
       twitter_datasource_quota: twitter_datasource_quota,
       map_view_block_price: map_view_block_price,
       geocoding_block_price: geocoding_block_price,
@@ -85,8 +85,8 @@ class OrganizationPresenter < BasePresenter
       quota_in_bytes: quota_in_bytes,
       unassigned_quota: unassigned_quota,
       used_quota: db_size_in_bytes,
-      api_calls: api_calls,
-      api_calls_quota: map_view_quota,
+      map_views: map_views_count,
+      map_views_quota: map_views_quota,
       geocoding: {
         quota: geocoding_quota,
         monthly_use: get_geocoding_calls
@@ -123,10 +123,6 @@ class OrganizationPresenter < BasePresenter
 
   def owner_groups
     owner&.groups ? owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
-  end
-
-  def api_calls
-    get_api_calls(from: owner.present? ? owner.last_billing_cycle : nil, to: Date.today)
   end
 
 end

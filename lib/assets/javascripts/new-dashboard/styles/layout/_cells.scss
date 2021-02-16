@@ -7,6 +7,10 @@
   white-space: nowrap;
 }
 
+.cell--overflow-hidden {
+  overflow: hidden;
+}
+
 .cell--main {
   flex-grow: 1;
   flex-shrink: 1;

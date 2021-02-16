@@ -40,7 +40,7 @@ class Api::Json::ImportsController < Api::ApplicationController
           options[:data_source] = params.fetch(:url)
         elsif params[:connector].present?
           options[:service_name] = 'connector'
-          options[:service_item_id] = params[:connector].to_json
+          options[:service_item_id] = connector_parameters
         elsif params[:remote_visualization_id].present?
           external_source = external_source(params[:remote_visualization_id])
           options[:data_source] = external_source.import_url.presence
@@ -231,5 +231,9 @@ class Api::Json::ImportsController < Api::ApplicationController
       end
       privacy
     end
+  end
+
+  def connector_parameters
+    Carto::Connector.normalized_parameters(user: current_user, parameters: params[:connector]).to_json
   end
 end

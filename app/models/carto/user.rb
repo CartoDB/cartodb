@@ -3,14 +3,14 @@ require 'cartodb-common'
 require 'securerandom'
 require_relative 'user_service'
 require_relative 'user_db_service'
-require_relative 'synchronization_oauth'
+require_relative 'connection'
+require_relative 'user_map_views'
 require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/user_commons'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
-  extend Forwardable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
   include Carto::UserCommons
@@ -45,7 +45,11 @@ class Carto::User < ActiveRecord::Base
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
-  has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
+  has_many :connections, class_name: 'Carto::Connection', inverse_of: :user, dependent: :destroy
+
+  delegate :oauth_connections, to: :connections
+  delegate :db_connections, to: :connections
+
   has_many :search_tweets, class_name: Carto::SearchTweet, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
   has_many :tags, inverse_of: :user
@@ -69,13 +73,16 @@ class Carto::User < ActiveRecord::Base
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
   has_many :granted_oauth_apps, through: :oauth_app_users, class_name: Carto::OauthApp, source: 'oauth_app'
 
-  delegate [
+  has_many :user_map_views, class_name: 'Carto::UserMapViews', dependent: :destroy, inverse_of: :user
+
+  delegate(
     :database_username, :database_password, :in_database,
-    :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
+    :db_size_in_bytes, :table_count, :public_visualization_count, :all_visualization_count,
     :visualization_count, :owned_visualization_count, :twitter_imports_count,
     :link_privacy_visualization_count, :password_privacy_visualization_count, :public_privacy_visualization_count,
-    :private_privacy_visualization_count
-  ] => :service
+    :private_privacy_visualization_count,
+    to: :service
+  )
 
   attr_reader :password
 
@@ -199,26 +206,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def oauth_for_service(service)
-    synchronization_oauths.where(service: service).first
+    connection_manager.find_oauth_connection(service)
   end
 
-  # INFO: don't use, use CartoDB::OAuths#add instead
   def add_oauth(service, token)
-    # INFO: this should be the right way, but there's a problem with pgbouncer:
-    # ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist
-    # synchronization_oauths.create(
-    #    service:  service,
-    #    token:    token
-    # )
-    # INFO: even this fails eventually, th the same error. See https://github.com/CartoDB/cartodb/issues/4003
-    synchronization_oauth = Carto::SynchronizationOauth.new(
-      user_id: id,
-      service: service,
-      token: token
-    )
-    synchronization_oauth.save
-    synchronization_oauths.append(synchronization_oauth)
-    synchronization_oauth
+    connection_manager.create_oauth_connection(service: service, token: token)
   end
 
   def get_geocoding_calls(options = {})
@@ -317,7 +309,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def map_views_count
-    123 # TODO. Mocked value by now.
+    user_map_views.last_billing_cycle(last_billing_cycle).reduce(0) { |sum, item| sum + item.map_views }
   end
 
   def subscriptions_public_size_in_bytes
@@ -337,6 +329,10 @@ class Carto::User < ActiveRecord::Base
   end
 
   private
+
+  def connection_manager
+    Carto::ConnectionManager.new(self)
+  end
 
   def subscriptions_size_in_bytes(project, estimated: false)
     # Note we cannot filter by `project` subscription attribute, we must use the dataset ID.

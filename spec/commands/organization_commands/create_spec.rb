@@ -8,24 +8,35 @@ describe OrganizationCommands::Create do
   describe '#run' do
     context 'when everything is ok' do
       let(:user) { create(:valid_user) }
+      let(:organization_name) { Faker::Internet.username(separators: ['-']) }
       let(:organization_params) do
         {
-          name: 'carto',
+          name: organization_name,
           owner_id: user.id,
           seats: 1,
           quota_in_bytes: 1.gigabyte
         }
       end
+      let(:created_organization) { Carto::Organization.find_by(name: organization_name) }
 
       before do
         notifications_topic.expects(:publish)
-        BaseCommand.any_instance.expects(:notifications_topic).returns(notifications_topic)
+        CartoCommand.any_instance.expects(:notifications_topic).returns(notifications_topic)
       end
 
       it 'creates the organization' do
         command.run
 
-        expect(Carto::Organization.exists?(name: 'carto')).to be_true
+        expect(created_organization).to be_present
+      end
+
+      it 'creates an organization without owner' do
+        organization_params[:owner_id] = nil
+
+        command.run
+
+        expect(created_organization).to be_present
+        expect(created_organization.owner).to be_nil
       end
     end
 

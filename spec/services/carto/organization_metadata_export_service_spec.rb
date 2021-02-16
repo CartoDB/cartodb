@@ -5,7 +5,6 @@ require './spec/support/factories/organizations'
 describe Carto::OrganizationMetadataExportService do
   include NamedMapsHelper
   include Carto::Factories::Visualizations
-  include TableSharing
   include CartoDB::Factories
 
   let!(:organization) { create_organization_with_users }
@@ -326,7 +325,7 @@ describe Carto::OrganizationMetadataExportService do
         discus_shortname: "",
         twitter_organizationname: nil,
         geocoding_quota: 0,
-        map_view_quota: nil,
+        map_views_quota: nil,
         auth_token: "pgYcd8XnAn46HlczpvQcIw",
         geocoding_block_price: nil,
         map_view_block_price: nil,

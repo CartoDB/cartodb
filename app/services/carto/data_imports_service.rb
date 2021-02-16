@@ -42,7 +42,7 @@ module Carto
     end
 
     def validate_synchronization_oauth(user, service)
-      oauth = user.oauth_for_service(service)
+      oauth = user.oauths.select(service)
       return false unless oauth
 
       datasource = oauth.get_service_datasource
@@ -103,9 +103,7 @@ module Carto
 
       token = datasource.validate_callback(params)
 
-      # TODO: workaround for https://github.com/CartoDB/cartodb/issues/4003
-      #user.add_oauth(service, datasource.validate_callback(params))
-      CartoDB::OAuths.new(::User.where(id: user.id).first).add(service, token)
+      user.oauths.add(service, token)
     rescue StandardError => e
       delete_oauth_if_expired_and_raise(user, e, oauth)
     end
@@ -122,10 +120,8 @@ module Carto
     end
 
     def delete_oauth(user, oauth)
-      # INFO: this is the straightforward way, but sometimes it fails with "ActiveRecord::StatementInvalid: PG::Error: ERROR:  prepared statement "a1" does not exist" errors
-      # user.synchronization_oauths.delete(oauth)
-      oauth.destroy
-      user.synchronization_oauths.delete(oauth)
+      user.oauths.remove(oauth.service)
+      user.reload
     end
 
     def delete_oauth_if_expired_and_raise(user, e, oauth = nil)

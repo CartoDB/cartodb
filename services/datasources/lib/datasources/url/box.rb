@@ -111,7 +111,10 @@ module CartoDB
             client_secret = options[:client_secret]
 
             @access_token = access_token
-            raise "Access token cannot be nil" if @access_token.nil?
+            if @access_token.nil?
+              raise CartoDB::Datasources::TokenExpiredOrInvalidError.new('Access token cannot be nil', DATASOURCE_NAME)
+            end
+
             @client_id = client_id
             @client_secret = client_secret
           end
@@ -142,8 +145,24 @@ module CartoDB
             query[:limit] = limit unless limit.nil?
             query[:offset] = offset unless offset.nil?
 
-            results, _response = get(SEARCH_URI, query: query)
-            results['entries']
+            if offset.present? && offset > 0
+              # external pagination
+              results, _response = get(SEARCH_URI, query: query)
+              return results['entries']
+            end
+
+            entries = []
+            offset = 0
+            loop do
+              query[:offset] = offset
+              query[:limit] = limit - entries.size if limit.present? # possibly capped by the Box API
+              results, _response = get(SEARCH_URI, query: query)
+              new_entries = results['entries']
+              entries += new_entries
+              offset += new_entries.size
+              break if entries.size >= results['total_count'] || entries.size >= limit
+            end
+            entries
           end
 
           def download_url(file, options = {})
@@ -382,7 +401,7 @@ module CartoDB
                                  ancestor_folder_ids: nil,
                                  content_types: nil,
                                  type: nil,
-                                 limit: 200,
+                                 limit: 2000,
                                  offset: 0)
 
           result = result.map { |i| format_item_data(i) }.sort { |x, y| y[:updated_at] <=> x[:updated_at] }
@@ -518,8 +537,10 @@ module CartoDB
         def update_user_oauth(refresh_token)
           carto_user = Carto::User.find(@user.id)
           oauth = carto_user.oauth_for_service('box')
-          oauth.token = refresh_token
-          oauth.save
+          if oauth
+            oauth.token = refresh_token
+            oauth.save
+          end
         end
 
         # Formats all data to comply with our desired format

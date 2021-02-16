@@ -1,5 +1,3 @@
-require './lib/carto/subscribers/central_user_commands'
-
 def process_exists?(pid)
   Process.getpgid(pid)
   true
@@ -31,7 +29,7 @@ namespace :message_broker do
       subscription_name = Carto::Common::MessageBroker::Config.instance.central_subscription_name
       subscription = message_broker.get_subscription(subscription_name)
       notifications_topic = message_broker.get_topic(:cartodb_central)
-      central_user_commands = Carto::Subscribers::CentralUserCommands.new(
+      central_user_commands = CentralUserCommands.new(
         notifications_topic: notifications_topic,
         logger: logger
       )
@@ -45,16 +43,22 @@ namespace :message_broker do
       subscription.register_callback(:delete_user,
                                      &central_user_commands.method(:delete_user))
 
-      subscription.register_callback(:update_organization) do |payload|
-        OrganizationCommands::Update.new(payload, { logger: logger }).run
+      subscription.register_callback(:update_organization) do |message|
+        OrganizationCommands::Update.new(message.payload, { logger: logger, request_id: message.request_id }).run
       end
 
-      subscription.register_callback(:create_organization) do |payload|
-        OrganizationCommands::Create.new(payload, { notifications_topic: notifications_topic, logger: logger }).run
+      subscription.register_callback(:create_organization) do |message|
+        OrganizationCommands::Create.new(
+          message.payload,
+          { notifications_topic: notifications_topic, logger: logger, request_id: message.request_id }
+        ).run
       end
 
-      subscription.register_callback(:delete_organization) do |payload|
-        OrganizationCommands::Delete.new(payload, { notifications_topic: notifications_topic, logger: logger }).run
+      subscription.register_callback(:delete_organization) do |message|
+        OrganizationCommands::Delete.new(
+          message.payload,
+          { notifications_topic: notifications_topic, logger: logger, request_id: message.request_id }
+        ).run
       end
 
       at_exit do

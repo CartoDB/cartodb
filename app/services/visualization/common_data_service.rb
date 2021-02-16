@@ -190,12 +190,11 @@ module CartoDB
             log_error(message: "Couldn't delete, already imported", visualization: { id: visualization.id })
             false
           else
-            CartoDB.notify_error(
-              "Couldn't delete remote visualization",
-              visualization: visualization.id,
-              error: e.inspect
+            Rails.logger.error(
+              message: "Couldn't delete remote visualization",
+              visualization_id: visualization.id,
+              exception: e
             )
-            raise e
           end
         end
       end

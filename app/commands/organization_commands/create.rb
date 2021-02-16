@@ -1,5 +1,5 @@
 module OrganizationCommands
-  class Create < ::BaseCommand
+  class Create < ::CartoCommand
 
     private
 

@@ -27,14 +27,16 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.15: session_salt
 # 1.0.16: public_dataset_quota
 # 1.0.17: email_verification
+# 1.0.18: connections
 
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.17'.freeze
+
+    CURRENT_VERSION = '1.0.18'.freeze
     EXPORTED_USER_ATTRIBUTES = %i(
       email crypted_password database_name username admin enabled invite_token invite_token_date
       map_enabled quota_in_bytes table_quota public_map_quota regular_api_key_quota account_type private_tables_enabled
-      period_end_date map_view_quota max_layers database_timeout user_timeout upgraded_at map_view_block_price
+      period_end_date map_views_quota max_layers database_timeout user_timeout upgraded_at map_view_block_price
       geocoding_quota dashboard_viewed_at sync_tables_enabled database_host geocoding_block_price api_key
       notification organization_id created_at updated_at disqus_shortname id twitter_username website
       description name avatar_url database_schema soft_geocoding_limit auth_token
@@ -149,7 +151,13 @@ module Carto
         user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
       end
 
-      user.synchronization_oauths = build_synchronization_oauths_from_hash(exported_user[:synchronization_oauths])
+      # TODO: all connections, not only oauth ones should be imported
+      oauth_connections = exported_user[:oauth_connections] || exported_user[:synchronization_oauths]
+      if oauth_connections.present?
+        oauth_connections.each do |oauth_connection|
+          user.oauths.add(oauth_connection[:service], oauth_connection[:token])
+        end
+      end
 
       user.connector_configurations = build_connector_configurations_from_hash(exported_user[:connector_configurations])
 
@@ -197,21 +205,6 @@ module Carto
       rate_limit.id = exported_hash[:id]
 
       rate_limit
-    end
-
-    def build_synchronization_oauths_from_hash(exported_array)
-      return [] unless exported_array.present?
-
-      exported_array.map { |so| build_synchronization_oauth_from_hash(so) }
-    end
-
-    def build_synchronization_oauth_from_hash(exported_hash)
-      SynchronizationOauth.new(
-        service: exported_hash[:service],
-        token: exported_hash[:token],
-        created_at: exported_hash[:created_at],
-        updated_at: exported_hash[:updated_at]
-      )
     end
 
     def build_oauth_token_fom_hash(exported_oauth_token)
@@ -352,7 +345,8 @@ module Carto
 
       user_hash[:notifications] = user.static_notifications.notifications
 
-      user_hash[:synchronization_oauths] = user.synchronization_oauths.map { |so| export_synchronization_oauth(so) }
+      # TODO: all connections, not only oauth ones, should be exported!
+      user_hash[:oauth_connections] = user.oauth_connections.map { |oc| export_oauth_connection(oc) }
 
       user_hash[:connector_configurations] = user.connector_configurations.map do |cc|
         export_connector_configuration(cc)
@@ -447,12 +441,10 @@ module Carto
       }
     end
 
-    def export_synchronization_oauth(sync_oauth)
+    def export_oauth_connection(connection)
       {
-        service: sync_oauth.service,
-        token: sync_oauth.token,
-        created_at: sync_oauth.created_at,
-        updated_at: sync_oauth.updated_at
+        service: connection.service,
+        token: connection.token
       }
     end
 

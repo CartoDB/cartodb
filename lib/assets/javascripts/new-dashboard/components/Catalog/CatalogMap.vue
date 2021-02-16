@@ -69,7 +69,9 @@ export default {
   computed: {
     ...mapState({
       dataset: state => state.catalog.dataset,
-      variables: state => state.catalog.variables
+      variables: state => state.catalog.variables,
+      maps_api_v2_template: state => state.config && state.config.maps_api_v2_template,
+      username: state => state.user && state.user.username
     }),
     title () {
       return this.dataset.name;
@@ -118,12 +120,16 @@ export default {
       }
     },
     tilesetSampleId () {
+      const isStaging = window.location.host.includes('staging');
       const TILESET_SAMPLE_PROJECT_MAP = {
-        'do-sample-prod': 'do-tileset-sample',
-        'do-public-sample': 'do-public-tileset-sample'
-        // To test in staging
-        // 'do-sample-prod': 'do-tileset-sample-stag',
-        // 'do-public-sample': 'do-public-tileset-sample-stag'
+        ...(!isStaging && {
+          'do-sample-prod': 'do-tileset-sample',
+          'do-public-sample': 'do-public-tileset-sample'
+        }),
+        ...(isStaging && {
+          'do-sample-prod': 'do-tileset-sample-stag',
+          'do-public-sample': 'do-public-tileset-sample-stag'
+        })
       };
       const [project, dataset, table] = this.dataset.sample_info.id.split('.');
       return [TILESET_SAMPLE_PROJECT_MAP[project], dataset, table].join('.');
@@ -183,8 +189,9 @@ export default {
         new CartoBQTilerLayer({
           data: this.tilesetSampleId,
           credentials: {
-            username: 'public',
-            apiKey: 'default_public'
+            username: this.username || 'public',
+            apiKey: 'default_public',
+            ...(this.maps_api_v2_template && { mapsUrl: this.maps_api_v2_template })
             // To test in staging:
             // mapsUrl: 'https://maps-api-v2.carto-staging.com/user/{user}'
           },

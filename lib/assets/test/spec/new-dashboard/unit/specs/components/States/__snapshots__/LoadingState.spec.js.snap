@@ -2,7 +2,7 @@
 
 exports[`LoadingState.vue should render correctly the empty state box 1`] = `
 <div class="loading-state">
-  <div class="loading-state-icon"><img svg-inline="" src="../../assets/icons/common/loading.svg" class="loading-state__svg"></div>
+  <div class="loading-state-icon"><img svg-inline="" src="../../assets/icons/common/loading.svg" class="loading-state__svg" style="height: 48px; width: 48px;"></div>
   <h6 class="loading-state-text text is-caption is-txtSoftGrey">fake_loading_text</h6>
 </div>
 `;

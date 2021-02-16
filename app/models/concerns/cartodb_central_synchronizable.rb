@@ -11,7 +11,11 @@ module CartodbCentralSynchronizable
   # Can't be added to the model because if user creation begins at Central we can't know if user is the same or existing
   def validate_credentials_not_taken_in_central
     return true unless user?
-    return true unless Cartodb::Central.sync_data_with_cartodb_central?
+
+    unless Cartodb::Central.sync_data_with_cartodb_central?
+      log_central_unavailable
+      return true
+    end
 
     central_client = Cartodb::Central.new
 
@@ -21,7 +25,10 @@ module CartodbCentralSynchronizable
   end
 
   def create_in_central
-    return true unless sync_data_with_cartodb_central?
+    unless Cartodb::Central.sync_data_with_cartodb_central?
+      log_central_unavailable
+      return true
+    end
 
     if user?
       if organization.present?
@@ -36,7 +43,10 @@ module CartodbCentralSynchronizable
   end
 
   def update_in_central
-    return true unless sync_data_with_cartodb_central?
+    unless Cartodb::Central.sync_data_with_cartodb_central?
+      log_central_unavailable
+      return true
+    end
 
     if user?
       if organization.present?
@@ -49,27 +59,12 @@ module CartodbCentralSynchronizable
         cartodb_central_client.update_user(username, allowed_attributes_to_central(:update))
       end
     elsif organization?
-      cartodb_central_client.update_organization(name, allowed_attributes_to_central(:update))
-    end
-    true
-  end
-
-  def delete_in_central
-    return true unless sync_data_with_cartodb_central?
-
-    if user?
-      if organization.nil?
-        cartodb_central_client.delete_user(username)
-      else
-        raise "Can't destroy the organization owner" if organization.owner == self
-
-        cartodb_central_client.delete_organization_user(organization.name, username)
-      end
-    elsif organization?
-      # See Organization#destroy_cascade
-      raise 'Delete organizations is not allowed' if Carto::Configuration.saas?
-
-      cartodb_central_client.delete_organization(name)
+      Carto::Common::MessageBroker.new(logger: Rails.logger)
+                                  .get_topic(:cartodb_central)
+                                  .publish(
+                                    :update_organization,
+                                    { organization: allowed_attributes_to_central(:update) }
+                                  )
     end
 
     true
@@ -80,7 +75,7 @@ module CartodbCentralSynchronizable
       case action
       when :create
         %i(name seats viewer_seats quota_in_bytes display_name description website
-           discus_shortname twitter_username geocoding_quota map_view_quota
+           discus_shortname twitter_username geocoding_quota map_views_quota
            geocoding_block_price map_view_block_price
            twitter_datasource_enabled twitter_datasource_block_size
            twitter_datasource_block_price twitter_datasource_quota
@@ -93,7 +88,7 @@ module CartodbCentralSynchronizable
            password_expiration_in_d inherit_owner_ffs)
       when :update
         %i(seats viewer_seats quota_in_bytes display_name description website
-           discus_shortname twitter_username geocoding_quota map_view_quota
+           discus_shortname twitter_username geocoding_quota map_views_quota
            geocoding_block_price map_view_block_price
            twitter_datasource_enabled twitter_datasource_block_size
            twitter_datasource_block_price twitter_datasource_quota
@@ -108,7 +103,7 @@ module CartodbCentralSynchronizable
     elsif user?
       %i(account_type admin org_admin crypted_password database_host
          database_timeout description disqus_shortname available_for_hire email
-         geocoding_block_price geocoding_quota map_view_block_price map_view_quota max_layers
+         geocoding_block_price geocoding_quota map_view_block_price map_views_quota max_layers
          max_import_file_size max_import_table_row_count max_concurrent_import_count
          name last_name notification organization_id period_end_date private_tables_enabled quota_in_bytes
          sync_tables_enabled table_quota public_map_quota regular_api_key_quota
@@ -139,12 +134,12 @@ module CartodbCentralSynchronizable
         allowed_attributes = %i(seats viewer_seats display_name description website discus_shortname twitter_username
                                 auth_username_password_enabled auth_google_enabled password_expiration_in_d
                                 inherit_owner_ffs)
-        attributes.symbolize_keys.slice(*allowed_attributes)
+        attributes.symbolize_keys.slice(*allowed_attributes).merge(name: name)
       end
     elsif user?
       allowed_attributes = %i(
         account_type admin org_admin crypted_password database_host database_timeout description disqus_shortname
-        available_for_hire email geocoding_block_price geocoding_quota map_view_block_price map_view_quota max_layers
+        available_for_hire email geocoding_block_price geocoding_quota map_view_block_price map_views_quota max_layers
         max_import_file_size max_import_table_row_count max_concurrent_import_count name last_name notification
         organization_id period_end_date private_tables_enabled quota_in_bytes sync_tables_enabled table_quota
         public_map_quota regular_api_key_quota twitter_username upgraded_at user_timeout username website
@@ -193,6 +188,12 @@ module CartodbCentralSynchronizable
 
   def cartodb_central_client
     @cartodb_central_client ||= Cartodb::Central.new
+  end
+
+  private
+
+  def log_central_unavailable
+    Rails.logger.error(message: 'Skipping Central synchronization: not configured')
   end
 
 end

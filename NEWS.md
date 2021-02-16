@@ -71,6 +71,7 @@ sudo make install
 - Updated robots.txt to allow Google access to our datasets [#16148](https://github.com/CartoDB/cartodb/pull/16148)
 - In the Data Catalog, fixed baseurl as it added an extra `/` on the queries from public pages [#16148](https://github.com/CartoDB/cartodb/pull/16148)
 - Added dynamic meta title and canonical link to improve SEO in public pages for the Spatial Data Catalog [#16157](https://github.com/CartoDB/cartodb/pull/16157)
+- Only load DO totals in dashboard when it is needed [#16161](https://github.com/CartoDB/cartodb/pull/16161)
 
 4.44.0 (2020-11-20)
 -------------------

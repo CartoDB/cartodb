@@ -98,10 +98,12 @@ module Carto
             unless (params[:subscribed] == 'true' and not v.subscription.present?) or (params[:sample] == 'true' and not v.sample.present?)
         end.compact
 
-        total_subscriptions = vqb.filtered_query.includes(map: { user_table: :data_import })
-                                 .find_each.lazy.count { |v| v.subscription.present? }
-        total_samples = vqb.filtered_query.includes(map: { user_table: :data_import })
-                           .find_each.lazy.count { |v| v.sample.present? }
+        if dataset_section?(types) && load_totals?
+          total_subscriptions = vqb.filtered_query.includes(map: { user_table: :data_import })
+                                   .find_each.lazy.count { |v| v.subscription.present? }
+          total_samples = vqb.filtered_query.includes(map: { user_table: :data_import })
+                             .find_each.lazy.count { |v| v.sample.present? }
+        end
 
         total_entries = vqb.count
         total_entries = total_subscriptions if params[:subscribed] == 'true'
@@ -113,7 +115,7 @@ module Carto
           total_subscriptions: total_subscriptions,
           total_samples: total_samples
         }
-        if current_user && (params[:load_totals].to_s != 'false')
+        if current_user && load_totals?
           response.merge!(calculate_totals(types))
         end
         render_jsonp(response)
@@ -486,6 +488,14 @@ module Carto
           CartoDB.notify_exception(e, {user:current_user})
           return true
         end
+      end
+
+      def dataset_section?(types)
+        types == ['tables']
+      end
+
+      def load_totals?
+        params[:load_totals].to_s != 'false'
       end
 
       def calculate_totals(total_types)

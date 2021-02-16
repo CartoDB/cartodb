@@ -26,7 +26,9 @@
               <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
             </template>
             <template slot="actionButton">
-              <button @click="createConnection" class="button is-primary">{{ $t(`DataPage.zeroCase.createDataset`) }}</button>
+              <router-link :to="{ name: 'new-connection' }">
+                <button class="button is-primary">{{ $t(`DataPage.zeroCase.createDataset`) }}</button>
+              </router-link>
             </template>
           </InitialState>
         </template>
@@ -98,9 +100,6 @@ export default {
     this.$store.dispatch('connectors/fetchConnectionsList');
   },
   methods: {
-    createConnection () {
-      this.$emit('newConnectionClicked');
-    },
     navigateToEditConnection (connection) {
       if (connection.default.type === 'database') {
         this.$router.push({ name: 'edit-connection', params: { id: connection.raw.id } });

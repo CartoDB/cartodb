@@ -4,7 +4,7 @@
     <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
     <template v-if="isFirstTimeViewingDashboard">
-      <ConnectionsSection class="section" @newConnectionClicked="onNewConnectionClicked" />
+      <ConnectionsSection class="section" :home="true"></ConnectionsSection>
       <DatasetsSection class="section" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" @newConnectionClicked="onNewConnectionClicked" />
       <MapsSection class="section section--noBorder" @contentChanged="onContentChanged" @newMapClicked="onNewMapClicked"/>
     </template>
@@ -27,7 +27,7 @@ import TagsSection from './TagsSection/TagsSection.vue';
 import RecentSection from './RecentSection/RecentSection.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
-import ConnectionsSection from './ConnectionsSection/ConnectionsSection.vue';
+import ConnectionsSection from 'new-dashboard/pages/Data/Connections/Connections.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
 import Page from 'new-dashboard/components/Page';
 
@@ -112,6 +112,7 @@ export default {
 
 .section {
   position: relative;
+  margin-top: 0 !important;
 
   &--maps {
     z-index: $z-index__stack-context--first;

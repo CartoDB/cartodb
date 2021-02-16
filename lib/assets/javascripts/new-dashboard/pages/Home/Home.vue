@@ -10,7 +10,7 @@
     </template>
     <template v-else>
       <MapsSection class="section" @contentChanged="onContentChanged" @newMapClicked="onNewMapClicked"/>
-      <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" @newConnectionClicked="onNewConnectionClicked"/>
+      <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked"/>
     </template>
     <QuotaSection></QuotaSection>
 
@@ -99,9 +99,6 @@ export default {
     },
     onNewMapClicked () {
       this.$router.push({ name: 'home-maps-new-dataset' });
-    },
-    onNewConnectionClicked () {
-      this.$router.push({ name: 'new-connection' });
     }
   }
 };

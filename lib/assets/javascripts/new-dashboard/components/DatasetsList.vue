@@ -48,30 +48,16 @@
       </SectionTitle>
     </div>
 
-    <div class="grid-cell grid-cell--col12" v-if="initialStateWithoutConnections">
-      <InitialState :title="$t(`DataPage.zeroCase.title`)">
+    <div class="grid-cell grid-cell--col12" v-if="initialState">
+      <InitialState :title="$t(`DataPage.zeroCaseDatasets.title`)">
         <template slot="icon">
           <img svg-inline src="../assets/icons/datasets/initialState.svg">
         </template>
         <template slot="description">
-          <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
+          <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCaseDatasets.description`)"></p>
         </template>
         <template slot="actionButton">
-           <button @click="createConnection" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</button>
-        </template>
-      </InitialState>
-    </div>
-
-    <div class="grid-cell grid-cell--col12" v-if="initialStateWithConnections">
-      <InitialState :title="$t(`DataPage.zeroCaseHasConnections.title`)">
-        <template slot="icon">
-          <img svg-inline src="../assets/icons/datasets/initialState.svg">
-        </template>
-        <template slot="description">
-          <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCaseHasConnections.description`)"></p>
-        </template>
-        <template slot="actionButton">
-           <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCaseHasConnections.createDataset`) }}</button>
+           <button @click="createDataset" class="button is-primary" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCaseDatasets.createDataset`) }}</button>
         </template>
       </InitialState>
     </div>
@@ -210,12 +196,6 @@ export default {
         this.hasFilterApplied('mine') &&
         (!this.totalUserEntries || this.totalUserEntries <= 0);
     },
-    initialStateWithConnections () {
-      return this.initialState && this.connections && this.connections.length;
-    },
-    initialStateWithoutConnections () {
-      return this.initialState && (!this.connections || !this.connections.length);
-    },
     emptyState () {
       return ((!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) || this.isFirstTimeViewerAfterAction) &&
         !this.isFetchingDatasets &&
@@ -296,9 +276,6 @@ export default {
     },
     createDataset () {
       this.$emit('newDatesetClicked');
-    },
-    createConnection () {
-      this.$emit('newConnectionClicked');
     }
   },
   watch: {

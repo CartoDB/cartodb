@@ -137,16 +137,16 @@
     "connectionsSuccessfull": "Successfully connected!",
     "addYourData":"Add your data",
     "url": "Enter a URL",
+    "zeroCaseDatasets": {
+      "title": "Upload your first dataset",
+      "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
+      "createDataset": "New Dataset"
+    },
     "zeroCase": {
       "title": "Connect your database or upload a file",
       "description": "Connect your BigQuery, Snowflake or any other database to CARTO. Then you will be able to create maps, import data and more.",
       "createDataset": "New Connection"
     },
-    "zeroCaseHasConnections": {
-      "title": "Upload your first dataset",
-      "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
-      "createDataset": "New Dataset"
-    },	   
     "emptyCase": {
       "default": "There are no datasets here.",
       "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."

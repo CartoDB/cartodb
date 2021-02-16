@@ -3,10 +3,15 @@
     <Welcome @newDatesetClicked="onNewDatesetClicked" @newMapClicked="onNewMapClicked"/>
     <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-    <DatasetsSection v-if="isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" @newConnectionClicked="onNewConnectionClicked" />
-    <MapsSection v-if="isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged" @newMapClicked="onNewMapClicked"/>
-    <MapsSection v-if="!isFirstTimeViewingDashboard" class="section" @contentChanged="onContentChanged" @newMapClicked="onNewMapClicked"/>
-    <DatasetsSection v-if="!isFirstTimeViewingDashboard" class="section section--noBorder" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" @newConnectionClicked="onNewConnectionClicked"/>
+    <template v-if="isFirstTimeViewingDashboard">
+      <ConnectionsSection class="section" @newConnectionClicked="onNewConnectionClicked" />
+      <DatasetsSection class="section" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" @newConnectionClicked="onNewConnectionClicked" />
+      <MapsSection class="section section--noBorder" @contentChanged="onContentChanged" @newMapClicked="onNewMapClicked"/>
+    </template>
+    <template v-else>
+      <MapsSection class="section" @contentChanged="onContentChanged" @newMapClicked="onNewMapClicked"/>
+      <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged" @newDatesetClicked="onNewDatesetClicked" @newConnectionClicked="onNewConnectionClicked"/>
+    </template>
     <QuotaSection></QuotaSection>
 
     <router-view name="onboarding-modal"/>
@@ -22,6 +27,7 @@ import TagsSection from './TagsSection/TagsSection.vue';
 import RecentSection from './RecentSection/RecentSection.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
+import ConnectionsSection from './ConnectionsSection/ConnectionsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
 import Page from 'new-dashboard/components/Page';
 
@@ -33,6 +39,7 @@ export default {
     RecentSection,
     MapsSection,
     DatasetsSection,
+    ConnectionsSection,
     QuotaSection,
     Page
   },

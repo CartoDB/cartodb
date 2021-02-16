@@ -489,7 +489,7 @@ module Carto
       end
 
       def dataset_section?(types)
-        types == ['tables']
+        types == ['table']
       end
 
       def load_totals?

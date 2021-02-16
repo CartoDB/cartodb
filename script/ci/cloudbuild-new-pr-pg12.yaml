@@ -75,7 +75,7 @@ steps:
     - -cx
     - |
       docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
-      if [[ ! -z "$$?" ]]
+      if [ $? -ne 0 ]
       then
           docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
           docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}

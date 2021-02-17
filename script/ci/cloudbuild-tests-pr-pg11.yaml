@@ -68,7 +68,6 @@ steps:
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json
 
-# Build image, we don't compile assets here, since they are not required for tests and the image is not pushed to the registry
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
   args:

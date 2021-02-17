@@ -5,7 +5,7 @@ steps:
   entrypoint: /bin/bash
   args:
   - '-c'
-  - 'gcloud builds list --ongoing --filter="buildTriggerId=056221c7-f5ef-4857-9706-3bc1054799a3 AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
+  - 'gcloud builds list --ongoing --filter="buildTriggerId=e323286e-7003-4480-ae34-677e597ce4dc AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
 
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: /bin/bash
@@ -68,14 +68,14 @@ steps:
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json
 
-# Build image, we don't compile assets here, since they are not required for tests and the image is not pushed to the registry
+# Build image
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
   args:
     - -cx
     - |
       docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
-      if [ $? -ne 0 ]
+      if [ $? -ne 0 ] 
       then
           docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
           docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
@@ -84,12 +84,12 @@ steps:
 
 # Run tests
 - name: 'docker/compose:1.22.0'
-  args: ['-f', 'docker-compose-pg11.yml', 'up', '--build', '-d']
+  args: ['-f', 'docker-compose-pg12.yml', 'up', '--build', '-d']
   timeout: 900s
 
 - name: gcr.io/cloud-builders/docker
   args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 24' ]
-  timeout: 2700s
+  timeout: 3000s
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}

@@ -5,7 +5,7 @@ steps:
   entrypoint: /bin/bash
   args:
   - '-c'
-  - 'gcloud builds list --ongoing --filter="buildTriggerId=70299e98-eed0-4fc6-943b-b8a5e0cf2aca AND substitutions.BRANCH_NAME=${_BRANCH_TAG} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
+  - 'gcloud builds list --ongoing --filter="buildTriggerId=70299e98-eed0-4fc6-943b-b8a5e0cf2aca AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
 
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: /bin/bash
@@ -72,12 +72,10 @@ steps:
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
   args:
-    - -c
+    - -cx
     - |
-      set -x 
-      
       docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
-      if [ "$?" -ne 0 ]
+      if [ $? -ne 0 ]
       then
         docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
         docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}

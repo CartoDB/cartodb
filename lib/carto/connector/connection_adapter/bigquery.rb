@@ -40,19 +40,16 @@ module Carto
 
       def create
         super
-        update_redis_metadata
         create_spatial_extension_setup
       end
 
       def destroy
         super
-        remove_redis_metadata
         remove_spatial_extension_setup
       end
 
       def update
         super
-        update_redis_metadata
         update_spatial_extension_setup
       end
 
@@ -97,24 +94,19 @@ module Carto
         end
       end
 
-      def update_redis_metadata
-        if @connection.parameters['service_account'].present?
-          $users_metadata.hmset(
-            bigquery_redis_key,
-            'service_account', @connection.parameters['service_account'],
-            'billing_project', @connection.parameters['billing_project']
-          )
-        end
+      def redis_metadata?
+        true
       end
 
-      def remove_redis_metadata
-        $users_metadata.del bigquery_redis_key
+      def connection_credentials_keys
+        BQ_CONFIDENTIAL_PARAMS
       end
 
-      def bigquery_redis_key
-        "google:bq_settings:#{@connection.user.username}"
-      end
+      def connection_credentials
+        return super unless @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
 
+        { 'token': @connection.token }
+      end
     end
   end
 end

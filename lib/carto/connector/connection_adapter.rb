@@ -4,6 +4,7 @@ module Carto
 
     CONFIDENTIAL_PARAMETER_PLACEHOLDER = '********'.freeze
     CONFIDENTIAL_PARAMS = %w(password).freeze
+    CLOUD_CONNECTORS = %w(snowflake redis postgres)
 
     def initialize(connection, confidential_parameters: CONFIDENTIAL_PARAMS)
       @connection = connection
@@ -34,15 +35,16 @@ module Carto
     end
 
     def create
-      # does nothing by default
+      update_redis_metadata if redis_metadata?
     end
 
     def destroy
       revoke_token
+      remove_redis_metadata if redis_metadata?
     end
 
     def update
-      # does nothing by default
+      update_redis_metadata if redis_metadata?
     end
 
     private
@@ -57,5 +59,48 @@ module Carto
       Rails.logger.warn message
     end
 
+    def redis_metadata?
+      @connection.connection_type == Carto::Connector::TYPE_DB_CONNECTOR &&
+         @connection.connector.in?(CLOUD_CONNECTORS)
+    end
+
+    def update_redis_metadata
+      if @connection.parameters['service_account'].present?
+        $users_metadata.hset(
+          redis_key,
+          @connection.id, serialized_connection
+        )
+      end
+    end
+
+    def remove_redis_metadata
+      $users_metadata.hdel redis_key, @connection.id
+    end
+
+    def redis_key
+      "cloud_connections:#{@connection.user.username}:#{@connection.connector}"
+    end
+
+    def serialized_connection
+      {
+        connection_id: @connection.id,
+        connection_type: @connection.connection_type,
+        connector: @connection.connector,
+        credentials: connection_credentials,
+        options: connection_options
+      }.to_json
+    end
+
+    def connection_credentials_keys
+      CONFIDENTIAL_PARAMS + ['username']
+    end
+
+    def connection_credentials
+      @connection.parameters.slice(*connection_credentials_keys)
+    end
+
+    def connection_options
+      @connection.parameters.except(*connection_credentials_keys)
+    end
   end
 end

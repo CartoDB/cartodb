@@ -20,10 +20,10 @@ sudo make install
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
 - Adds JSON-LD with the dataset information in the Data Catalog [#16138](https://github.com/CartoDB/cartodb/pull/16138)
+- Add search in 'new map' screen [16166](https://github.com/CartoDB/cartodb/pull/16166)
 
 ### Bug fixes / enhancements
-
-- Bump @carto/viewer to v1.0.2 [#16164](https://github.com/CartoDB/cartodb/pull/16164)
+- Bump @carto/viewer to v1.0.2 [16164](https://github.com/CartoDB/cartodb/pull/16164)
 - Show a new message for create connections after first login [16159](https://github.com/CartoDB/cartodb/pull/16159)
 - Remove master api key from do-catalog layers request [16158](https://github.com/CartoDB/cartodb/pull/16158)
 - Set sideEffects webpack.prod.config property to false to fix compilation problems with do-catalog and viewer [16155](https://github.com/CartoDB/cartodb/pull/16154)

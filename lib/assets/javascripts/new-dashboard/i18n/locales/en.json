@@ -393,12 +393,13 @@
   "SearchComponent": {
     "placeholder": {
       "default": "Search",
-      "active": "By name, description or tag"
+      "active": "Search dataset by name, description or tag"
     }
   },
   "SearchPage": {
     "title": {
       "allFetching": "Loading results for \"{query}\"",
+      "searchResults": "0 results | {n} result | {n} results",
       "searchTerm": "0 results for \"{query}\" | {n} result for \"{query}\" | {n} results for \"{query}\"",
       "tag": "0 results for \"{query}\" tag | {n} result for \"{query}\" tag | {n} results for \"{query}\" tag"
     },

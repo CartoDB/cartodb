@@ -15,9 +15,11 @@
       </li>
     </ul>
     <div v-else-if="isEmpty" class="centered-text">
-      <img svg-inline src="../../assets/icons/datasets/add-dataset.svg"/>
-      <h4 class="text is-caption u-mt--16">{{ $t('NewMapDatasetCard.zeroCase.title') }}</h4>
-      <p class="text is-small u-mt--4"><span class="fake-link" @click="toConnectTab()">{{ $t('NewMapDatasetCard.zeroCase.actionName') }}</span> {{ $t('NewMapDatasetCard.zeroCase.actionDescription') }}</p>
+      <template v-if="!queryFiltered">
+        <img svg-inline src="../../assets/icons/datasets/add-dataset.svg"/>
+        <h4 class="text is-caption u-mt--16">{{ $t('NewMapDatasetCard.zeroCase.title') }}</h4>
+        <p class="text is-small u-mt--4"><span class="fake-link" @click="toConnectTab()">{{ $t('NewMapDatasetCard.zeroCase.actionName') }}</span> {{ $t('NewMapDatasetCard.zeroCase.actionDescription') }}</p>
+      </template>
     </div>
 
     <div v-if="!isFetchingDatasets && !isEmpty">
@@ -36,6 +38,7 @@ export default {
   name: 'DatasetListForConnectors',
   props: {
     sharedTab: Boolean,
+    queryFiltered: Boolean,
     multiSelect: {
       default: true
     }

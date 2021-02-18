@@ -6,13 +6,26 @@
     :backText="false"
   >
     <template #sub-header>
-      <ul class="modal-tab title is-small">
-        <li @click="selectTab(TABS.newDataset)" :class="{'is-selected' : selectedTab == TABS.newDataset}">{{$t('NewMapDatasetCard.tabs.newDataset')}}</li>
-        <li @click="selectTab(TABS.yourDatasets)" :class="{'is-selected' : selectedTab == TABS.yourDatasets}">{{$t('NewMapDatasetCard.tabs.yourDatasets')}}</li>
-        <li @click="selectTab(TABS.sharedWithYou)" :class="{'is-selected' : selectedTab == TABS.sharedWithYou}" v-if="datasetsMetadata.total_shared">
-          {{$tc('NewMapDatasetCard.tabs.sharedWithYou', datasetsMetadata.total_shared)}}
-        </li>
-      </ul>
+      <div class="u-flex u-width--100 tabs">
+        <div class="searcher" :class="{open: showSearch}">
+          <div @click="toggleSearch" class="u-flex u-ml--8 u-mr--12 u-flex__align--center is-txtPrimary search-btn">
+            <img svg-inline src="../../assets/icons/catalog/search.svg" height="24px" width="24px" alt="search" title="Search" />
+          </div>
+          <div class="search-input" v-if="showSearch">
+            <input v-model="searchText" @input="debounceOnFilter" class="text u-flex__grow--1 is-txtBaseGrey is-small is-regular" type="text" :placeholder="$t('SearchComponent.placeholder.active')">
+            <div @click="clearSearch" class="u-flex u-flex__align--center is-txtPrimary clear-btn">
+              <img svg-inline src="../../assets/icons/common/close.svg" height="20px" width="20px" alt="clear" title="Clear" />
+            </div>
+          </div>
+        </div>
+        <ul v-if="!showSearch" class="modal-tab title is-small u-ml--24">
+          <li @click="selectTab(TABS.newDataset)" :class="{'is-selected' : selectedTab == TABS.newDataset}">{{$t('NewMapDatasetCard.tabs.newDataset')}}</li>
+          <li @click="selectTab(TABS.yourDatasets)" :class="{'is-selected' : selectedTab == TABS.yourDatasets}">{{$t('NewMapDatasetCard.tabs.yourDatasets')}}</li>
+          <li @click="selectTab(TABS.sharedWithYou)" :class="{'is-selected' : selectedTab == TABS.sharedWithYou}" v-if="datasetsMetadata.total_shared">
+            {{$tc('NewMapDatasetCard.tabs.sharedWithYou', datasetsMetadata.total_shared)}}
+          </li>
+        </ul>
+      </div>
     </template>
     <template #default>
       <div v-if="selectedTab === TABS.newDataset">
@@ -28,10 +41,14 @@
         <LoadingState v-else primary/>
       </div>
       <div ref="datasetListForConnectors" v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou">
+        <div v-if="queryApplied && !isFetchingDatasets" class="u-mb--16 is-small is-txtMainTextColor is-semibold">
+          {{ $tc('SearchPage.title.searchResults', datasetsMetadata.total_entries) }}
+        </div>
         <DatasetListForConnectors
           v-if="!creeatingMapOrLayer"
           :sharedTab='selectedTab === TABS.sharedWithYou'
           :multiSelect="mode==='map'"
+          :queryFiltered="queryApplied"
           @datasetSelected="updateDatasetSelection"
           @goToConnectTab="selectTab(TABS.newDataset)"
         ></DatasetListForConnectors>
@@ -49,6 +66,7 @@
 
 <script>
 
+import _ from 'underscore';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
@@ -84,6 +102,7 @@ export default {
       baseUrl: state => state.user.base_url,
       loading: state => state.connectors.loadingConnections,
       rawConnections: state => state.connectors.connections,
+      isFetchingDatasets: state => state.datasets.isFetching,
       datasetsMetadata: state => state.datasets.metadata
     }),
     connections () {
@@ -102,12 +121,16 @@ export default {
       return this.$store.getters['user/canCreateMaps'];
     }
   },
-  data: () => {
+  data () {
     return {
       localFiles: LOCAL_FILES,
       selectedTab: TABS.newDataset,
       selectedDatasets: [],
-      creeatingMapOrLayer: false
+      creeatingMapOrLayer: false,
+      showSearch: false,
+      queryApplied: false,
+      searchText: '',
+      debounceOnFilter: _.debounce(this.onFilter, 500)
     };
   },
   created: function () {
@@ -119,6 +142,23 @@ export default {
     this.$store.dispatch('datasets/setURLOptions', { filter: 'mine' });
   },
   methods: {
+    onFilter () {
+      this.filterDatasets(this.searchText);
+    },
+    toggleSearch () {
+      this.showSearch = true;
+    },
+    clearSearch () {
+      this.showSearch = false;
+      if (this.searchText) {
+        this.searchText = '';
+        this.onFilter();
+      }
+    },
+    async filterDatasets (query) {
+      await this.$store.dispatch('datasets/fetch', query);
+      this.queryApplied = !!query;
+    },
     fileSelected (id) {
       this.navigateToFile(id);
     },
@@ -174,6 +214,60 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+
+.tabs {
+  position: relative;
+
+  .searcher, .search-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  .searcher.open {
+    .search-btn {
+      color: $text__color;
+      border-bottom-color: $text__color;
+    }
+  }
+
+  .clear-btn {
+    cursor: pointer;
+    svg {
+      margin-left: 8px;
+    }
+  }
+
+  .clear-btn::before,
+  .searcher:not(.open)::after {
+    content: '';
+    display: block;
+    width: 1px;
+    margin: 4px;
+    height: 24px;
+    background-color: $neutral--500;
+  }
+
+  .search-input {
+    display: flex;
+
+    input {
+      width: 270px;
+      border: none;
+      background-color: transparent;
+    }
+  }
+
+  .search-btn {
+    cursor: pointer;
+    height: 42px;
+    padding: 0 10px 0 5px;
+    border-bottom: 4px solid transparent;
+  }
+}
+
+svg {
+  outline: none;
+}
 
 .modal-tab {
   display: flex;

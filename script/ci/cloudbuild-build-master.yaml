@@ -68,43 +68,46 @@ steps:
 
 
 
-# Build and push image: push to master
+# Build and push image
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
   args:
-    - -c
+    - -cx
     - |
-      set -x 
-      if [ -z "${_PR_NUMBER}" ] && [ "${BRANCH_NAME}" == 'master' ]
+      docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
+      if [ $? -ne 0 ]
       then
-        echo '** Push to master **'
-        
-        echo 'Pulling latest image...'
-        
         docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
-        docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --build-arg COMPILE_ASSETS=true --build-arg BUNDLE_JOBS=4 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:latest .
-        docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${BRANCH_NAME}  -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${BRANCH_NAME}--${SHORT_SHA}   -f Dockerfile.resque .
-        docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${BRANCH_NAME} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${BRANCH_NAME}--${SHORT_SHA}  -f Dockerfile.subscriber .
+        docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
+      fi
         
-        echo 'Pushing builder image...'
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${BRANCH_NAME}--${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --build-arg COMPILE_ASSETS=true --build-arg BUNDLE_JOBS=4 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG} .
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_BRANCH_TAG}  -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_BRANCH_TAG}--${SHORT_SHA}   -f Dockerfile.resque .
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG}--${SHORT_SHA}  -f Dockerfile.subscriber .        
+      
+      echo 'Pushing builder image...'
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}--${SHORT_SHA}
         
-        echo 'Pushing builder-resque image...'
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${BRANCH_NAME}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${BRANCH_NAME}--${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:latest
+      echo 'Pushing builder-resque image...'
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_BRANCH_TAG}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${SHORT_SHA}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_BRANCH_TAG}--${SHORT_SHA}
         
-        echo 'Pushing builder-subscriber image...'
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${BRANCH_NAME}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${BRANCH_NAME}--${SHORT_SHA}
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest
+      echo 'Pushing builder-subscriber image...'
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG}--${SHORT_SHA}
 
-        if [ ! -z "${TAG_NAME}" ]
+      if [ "${_BRANCH_TAG}" == 'master' ]
+      then
+        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
+        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:latest
+        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest
+      fi
+
+      if [ ! -z "${TAG_NAME}" ]
         then
           echo "Tagging image with git tag: $TAG_NAME ..."
           docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} gcr.io/cartodb-on-gcp-main-artifacts/builder:${TAG_NAME}
@@ -113,10 +116,8 @@ steps:
           docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${TAG_NAME}
           docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${TAG_NAME}
           docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${TAG_NAME}
-        fi
-
-      else
-        echo '** Skipping, this is not a push to master **'
       fi
 
+substitutions: 
+    _BRANCH_TAG: ${BRANCH_NAME//\//-}
 timeout: 1800s

@@ -91,11 +91,11 @@ module Carto
     end
 
     def connection_credentials
-      @connection.parameters.slice(*connection_credentials_keys)
+      @connection.parameters&.slice(*connection_credentials_keys)
     end
 
     def connection_options
-      @connection.parameters.except(*connection_credentials_keys)
+      @connection.parameters&.except(*connection_credentials_keys)
     end
   end
 end

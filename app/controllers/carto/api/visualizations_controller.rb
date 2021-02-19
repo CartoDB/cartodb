@@ -100,7 +100,7 @@ module Carto
 
         response = { visualizations: visualizations, total_entries: vqb.count }
         response.merge!(calculate_totals(types)) if current_user && params[:load_totals].to_s != 'false'
-        response.merge!(calculate_do_totals) if params[:load_do_totals].to_s == 'true'
+        response.merge!(calculate_do_totals(vqb)) if params[:load_do_totals].to_s == 'true'
         response[:total_entries] = response[:total_subscriptions] if params[:subscribed] == 'true'
         response[:total_entries] = response[:total_samples] if params[:sample] == 'true'
 
@@ -502,7 +502,7 @@ module Carto
         }
       end
 
-      def calculate_do_totals
+      def calculate_do_totals(vqb)
         {
           total_subscriptions: vqb.filtered_query.includes(map: { user_table: :data_import })
                                   .find_each.lazy.count { |v| v.subscription.present? },

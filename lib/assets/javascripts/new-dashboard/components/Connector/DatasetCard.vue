@@ -33,17 +33,26 @@
     <div class="dataset-card__property dataset-card__privacy">
       {{ $t(`NewMapDatasetCard.shared.${dataset.privacy}`) }}
     </div>
+      <div class="u-flex dataset-card__property dataset-card__owner">
+        {{ $t(`NewMapDatasetCard.shared.by`) }}
+        <Tooltip :text="dataset.permission.owner.username" position="top-right" hide-delay="0s" show-delay="1s">
+          <img class="u-ml--4" width="18px" height="18px" :title="dataset.permission.owner.username" :alt="dataset.permission.owner.username" :src="dataset.permission.owner.avatar_url">
+        </Tooltip>
+      </div>
   </div>
 </template>
 
 <script>
 import * as Formatter from 'new-dashboard/utils/formatter';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';
+import Tooltip from 'new-dashboard/components/Tooltip/Tooltip';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 
 export default {
   name: 'DatasetCard',
-  components: {},
+  components: {
+    Tooltip
+  },
   props: {
     dataset: Object,
     isSelected: Boolean

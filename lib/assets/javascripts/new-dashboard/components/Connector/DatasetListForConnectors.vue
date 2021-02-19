@@ -109,9 +109,9 @@ export default {
     }
   },
   watch: {
-    sharedTab: function () {
+    shared: function () {
       this.currentPage = 1;
-      this.updateDatasetFilter();
+      this.debounceUpdateDatasetFilter();
     },
     queryFilter: function () {
       this.currentPage = 1;

@@ -88,11 +88,11 @@ steps:
   timeout: 900s
 
 - name: gcr.io/cloud-builders/docker
-  args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 24' ]
-  timeout: 3000s
+  args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 12' ]
+  timeout: 2700s
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
 options:
     machineType: 'N1_HIGHCPU_32'
-timeout: 3600s
+timeout: 3000s

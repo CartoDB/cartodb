@@ -4,7 +4,7 @@ module Carto
 
     CONFIDENTIAL_PARAMETER_PLACEHOLDER = '********'.freeze
     CONFIDENTIAL_PARAMS = %w(password).freeze
-    CLOUD_CONNECTORS = %w(snowflake redis postgres)
+    CLOUD_CONNECTORS = %w(snowflake redshift postgres)
 
     def initialize(connection, confidential_parameters: CONFIDENTIAL_PARAMS)
       @connection = connection

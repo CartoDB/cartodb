@@ -60,7 +60,7 @@ module Carto
     end
 
     def redis_metadata?
-      @connection.connection_type == Carto::Connector::TYPE_DB_CONNECTOR &&
+      @connection.connection_type == Carto::Connection::TYPE_DB_CONNECTOR &&
          @connection.connector.in?(CLOUD_CONNECTORS)
     end
 

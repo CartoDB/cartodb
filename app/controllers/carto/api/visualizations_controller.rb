@@ -98,24 +98,12 @@ module Carto
             unless (params[:subscribed] == 'true' and not v.subscription.present?) or (params[:sample] == 'true' and not v.sample.present?)
         end.compact
 
-        if dataset_section?(types) && load_totals?
-          total_subscriptions = vqb.filtered_query.includes(map: { user_table: :data_import })
-                                   .find_each.lazy.count { |v| v.subscription.present? }
-          total_samples = vqb.filtered_query.includes(map: { user_table: :data_import })
-                             .find_each.lazy.count { |v| v.sample.present? }
-        end
+        response = { visualizations: visualizations, total_entries: vqb.count }
+        response.merge!(calculate_totals(types)) if current_user && params[:load_totals].to_s != 'false'
+        response.merge!(calculate_do_totals) if params[:load_do_totals].to_s == 'true'
+        response[:total_entries] = response[:total_subscriptions] if params[:subscribed] == 'true'
+        response[:total_entries] = response[:total_samples] if params[:sample] == 'true'
 
-        total_entries = vqb.count
-        total_entries = total_subscriptions if params[:subscribed] == 'true'
-        total_entries = total_samples if params[:sample] == 'true'
-
-        response = {
-          visualizations: visualizations,
-          total_entries: total_entries,
-          total_subscriptions: total_subscriptions,
-          total_samples: total_samples
-        }
-        response.merge!(calculate_totals(types)) if current_user && load_totals?
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
@@ -488,14 +476,6 @@ module Carto
         end
       end
 
-      def dataset_section?(types)
-        types == ['table']
-      end
-
-      def load_totals?
-        params[:load_totals].to_s != 'false'
-      end
-
       def calculate_totals(total_types)
         # Prefetching at counts removes duplicates
         {
@@ -519,6 +499,15 @@ module Carto
                                                  .with_user_id_not(current_user.id)
                                                  .with_locked(false)
                                                  .count
+        }
+      end
+
+      def calculate_do_totals
+        {
+          total_subscriptions: vqb.filtered_query.includes(map: { user_table: :data_import })
+                                  .find_each.lazy.count { |v| v.subscription.present? },
+          total_samples: vqb.filtered_query.includes(map: { user_table: :data_import })
+                            .find_each.lazy.count { |v| v.sample.present? }
         }
       end
 

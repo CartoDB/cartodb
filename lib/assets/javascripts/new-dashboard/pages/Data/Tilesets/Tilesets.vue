@@ -203,6 +203,7 @@ export default {
       if (this.bqConnection) {
         try {
           await this.$store.dispatch('connectors/fetchBQProjectsList', this.bqConnection.id);
+          this.error = null;
         } catch (e) {
           this.error = JSON.parse(e.message);
         }
@@ -212,6 +213,7 @@ export default {
       if (this.project) {
         try {
           await this.$store.dispatch('connectors/fetchBQDatasetsList', { connectionId: this.bqConnection.id, projectId: this.project.id });
+          this.error = null;
         } catch (e) {
           this.error = JSON.parse(e.message);
         }
@@ -227,6 +229,7 @@ export default {
             perPage: this.maxVisibleTilesets,
             page: this.page
           });
+          this.error = null;
         } catch (e) {
           this.error = JSON.parse(e.message);
         }

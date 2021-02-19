@@ -65,12 +65,7 @@ module Carto
     end
 
     def update_redis_metadata
-      if @connection.parameters['service_account'].present?
-        $users_metadata.hset(
-          redis_key,
-          @connection.id, serialized_connection
-        )
-      end
+      $users_metadata.hset(redis_key, @connection.id, serialized_connection)
     end
 
     def remove_redis_metadata

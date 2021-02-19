@@ -33,12 +33,12 @@
     <div class="dataset-card__property dataset-card__privacy">
       {{ $t(`NewMapDatasetCard.shared.${dataset.privacy}`) }}
     </div>
-      <div class="u-flex dataset-card__property dataset-card__owner">
-        {{ $t(`NewMapDatasetCard.shared.by`) }}
-        <Tooltip :text="dataset.permission.owner.username" position="top-right" hide-delay="0s" show-delay="1s">
-          <img class="u-ml--4" width="18px" height="18px" :title="dataset.permission.owner.username" :alt="dataset.permission.owner.username" :src="dataset.permission.owner.avatar_url">
-        </Tooltip>
-      </div>
+    <div class="u-flex dataset-card__property dataset-card__owner" v-if="isShared">
+      {{ $t(`NewMapDatasetCard.shared.by`) }}
+      <Tooltip :text="dataset.permission.owner.username" position="top-right" hide-delay="0s" show-delay="1s">
+        <img class="u-ml--4" width="18px" height="18px" :title="dataset.permission.owner.username" :alt="dataset.permission.owner.username" :src="dataset.permission.owner.avatar_url">
+      </Tooltip>
+    </div>
   </div>
 </template>
 
@@ -47,6 +47,7 @@ import * as Formatter from 'new-dashboard/utils/formatter';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';
 import Tooltip from 'new-dashboard/components/Tooltip/Tooltip';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
+import { mapState } from 'vuex';
 
 export default {
   name: 'DatasetCard',
@@ -63,6 +64,12 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      userName: state => state.config.user_name
+    }),
+    isShared () {
+      return this.dataset && this.dataset.permission.owner.username !== this.userName;
+    },
     lastUpdated () {
       let updatedDate = this.$props.dataset.updated_at;
       if (this.$props.dataset.synchronization && this.$props.dataset.synchronization.updated_at) {

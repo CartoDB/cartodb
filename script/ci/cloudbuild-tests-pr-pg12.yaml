@@ -5,7 +5,7 @@ steps:
   entrypoint: /bin/bash
   args:
   - '-c'
-  - 'gcloud builds list --ongoing --filter="buildTriggerId=e323286e-7003-4480-ae34-677e597ce4dc AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
+  - 'gcloud builds list --ongoing --filter="buildTriggerId=e983e3b9-109f-43a3-82b2-b312e42c878e AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
 
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: /bin/bash
@@ -89,10 +89,9 @@ steps:
 
 - name: gcr.io/cloud-builders/docker
   args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 24' ]
-  timeout: 3000s
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
 options:
     machineType: 'N1_HIGHCPU_32'
-timeout: 3600s
+timeout: 2400s

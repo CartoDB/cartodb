@@ -7,12 +7,12 @@
   >
     <template #sub-header>
       <div class="u-flex u-width--100 tabs">
-        <div class="searcher" :class="{open: showSearch}">
+        <div class="searcher" :class="{'u-flex__grow--1 open': showSearch}">
           <div @click="toggleSearch" class="u-flex u-ml--8 u-mr--12 u-flex__align--center is-txtPrimary search-btn">
-            <img svg-inline src="../../assets/icons/catalog/search.svg" height="24px" width="24px" alt="search" title="Search" />
+            <img svg-inline src="../../assets/icons/catalog/search.svg" height="20px" width="20px" alt="search" title="Search" />
           </div>
-          <div class="search-input" v-if="showSearch">
-            <input v-model="searchText" @input="debounceOnFilter" class="text u-flex__grow--1 is-txtBaseGrey is-small is-regular" type="text" :placeholder="$t('SearchComponent.placeholder.active')">
+          <div class="search-input u-flex__grow--1" v-if="showSearch">
+            <input v-model="searchText" class="text u-flex__grow--1 is-txtBaseGrey is-small is-regular" type="text" :placeholder="$t('SearchComponent.placeholder.active')">
             <div @click="clearSearch" class="u-flex u-flex__align--center is-txtPrimary clear-btn">
               <img svg-inline src="../../assets/icons/common/close.svg" height="20px" width="20px" alt="clear" title="Clear" />
             </div>
@@ -40,15 +40,12 @@
         </template>
         <LoadingState v-else primary/>
       </div>
-      <div ref="datasetListForConnectors" v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou">
-        <div v-if="queryApplied && !isFetchingDatasets" class="u-mb--16 is-small is-txtMainTextColor is-semibold">
-          {{ $tc('SearchPage.title.searchResults', datasetsMetadata.total_entries) }}
-        </div>
+      <div ref="datasetListForConnectors" v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou || selectedTab === TABS.search">
         <DatasetListForConnectors
           v-if="!creeatingMapOrLayer"
-          :sharedTab='selectedTab === TABS.sharedWithYou'
+          :shared='showShared'
           :multiSelect="mode==='map'"
-          :queryFiltered="queryApplied"
+          :queryFilter="searchText"
           @datasetSelected="updateDatasetSelection"
           @goToConnectTab="selectTab(TABS.newDataset)"
         ></DatasetListForConnectors>
@@ -56,7 +53,7 @@
       </div>
     </template>
     <template #footer>
-      <div v-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou" class="modal-footer u-flex u-flex__justify--end">
+      <div v-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou || selectedTab === TABS.search" class="modal-footer u-flex u-flex__justify--end">
         <button v-if="mode==='map' && !creeatingMapOrLayer" @click="createMap" :disabled="!canCreateMaps || selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createMap`)}}</button>
         <button v-if="mode==='layer' && !creeatingMapOrLayer" @click="createLayer" :disabled="selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createLayer`)}}</button>
       </div>
@@ -66,7 +63,6 @@
 
 <script>
 
-import _ from 'underscore';
 import Dialog from 'new-dashboard/components/Dialogs/Dialog.vue';
 import ConnectorsList from 'new-dashboard/components/Connector/ConnectorsList';
 import ConnectorSection from 'new-dashboard/components/Connector/ConnectorSection';
@@ -80,7 +76,8 @@ import { mapState } from 'vuex';
 const TABS = {
   newDataset: 'new-dataset',
   yourDatasets: 'your-datasets',
-  sharedWithYou: 'shared-with-you'
+  sharedWithYou: 'shared-with-you',
+  search: 'search'
 };
 
 export default {
@@ -102,9 +99,17 @@ export default {
       baseUrl: state => state.user.base_url,
       loading: state => state.connectors.loadingConnections,
       rawConnections: state => state.connectors.connections,
-      isFetchingDatasets: state => state.datasets.isFetching,
       datasetsMetadata: state => state.datasets.metadata
     }),
+    showShared () {
+      let show = 'mine';
+      if (this.selectedTab === this.TABS.sharedWithYou) {
+        show = 'shared';
+      } else if (this.selectedTab === this.TABS.search) {
+        show = 'both';
+      }
+      return show;
+    },
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {
         const option = getImportOption(raw.connector);
@@ -128,9 +133,7 @@ export default {
       selectedDatasets: [],
       creeatingMapOrLayer: false,
       showSearch: false,
-      queryApplied: false,
-      searchText: '',
-      debounceOnFilter: _.debounce(this.onFilter, 500)
+      searchText: ''
     };
   },
   created: function () {
@@ -139,25 +142,20 @@ export default {
   },
   mounted: function () {
     this.$store.dispatch('connectors/fetchConnectionsList');
-    this.$store.dispatch('datasets/setURLOptions', { filter: 'mine' });
+    this.$store.dispatch('datasets/setURLOptions', { filter: 'mine', q: '' });
+  },
+  beforeDestroy: function () {
+    this.$store.dispatch('datasets/setURLOptions', { filter: 'mine', q: '' });
   },
   methods: {
-    onFilter () {
-      this.filterDatasets(this.searchText);
-    },
     toggleSearch () {
       this.showSearch = true;
+      this.selectTab(TABS.search);
     },
     clearSearch () {
       this.showSearch = false;
-      if (this.searchText) {
-        this.searchText = '';
-        this.onFilter();
-      }
-    },
-    async filterDatasets (query) {
-      await this.$store.dispatch('datasets/fetch', query);
-      this.queryApplied = !!query;
+      this.searchText = '';
+      this.selectedTab = this.TABS.yourDatasets;
     },
     fileSelected (id) {
       this.navigateToFile(id);

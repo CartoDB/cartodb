@@ -23,7 +23,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 
-- Bump @carto/viewer to v1.0.2 [#16164](https://github.com/CartoDB/cartodb/pull/16164)
+- Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
 - Show a new message for create connections after first login [16159](https://github.com/CartoDB/cartodb/pull/16159)
 - Remove master api key from do-catalog layers request [16158](https://github.com/CartoDB/cartodb/pull/16158)
 - Set sideEffects webpack.prod.config property to false to fix compilation problems with do-catalog and viewer [16155](https://github.com/CartoDB/cartodb/pull/16154)

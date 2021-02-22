@@ -238,6 +238,7 @@ module Carto
       Carto::ConnectionAdapter::Factory.adapter_for_connection(connection)
     end
 
+
     def self.singleton_connector?(connection)
       adapter(connection).singleton?
     end
@@ -270,7 +271,7 @@ module Carto
     end
 
     def check(connection)
-      if connection.connector_type == Carto::Connection::TYPE_OAUTH_SERVICE
+      if connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
         oauth_connection_valid?(connection.connector)
       else
         connector = Carto::Connector.new(parameters: {}, connection: connection, user: @user, logger: nil)

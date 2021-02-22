@@ -1,7 +1,7 @@
 require_relative 'connector/errors'
 require_relative 'connector/providers'
 require_relative 'connector/parameters'
-require_dependency 'carto/connector/connection_manager'
+require_relative 'connector/connection_manager'
 
 module Carto
   # This class provides remote database connection services

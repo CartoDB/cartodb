@@ -9,6 +9,7 @@ describe Carto::Api::ConnectorsController do
   before(:all) do
     create(:feature_flag, name: 'carto-connectors', restricted: false)
     @user = FactoryGirl.create(:carto_user)
+    Carto::Connector::PROVIDERS.clear
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('postgres', 'PostgreSQL')
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('hive', 'Hive')
     Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('bigquery', 'BigQuery',

@@ -5,6 +5,7 @@ require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/oauth_provider/scopes/scopes'
 require_dependency 'carto/api_key_permissions'
 
+# rtorre: adding a comment to trigger CI
 module Carto
   class ApiKey < ActiveRecord::Base
 

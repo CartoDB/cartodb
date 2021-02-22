@@ -17,7 +17,22 @@
         </SectionTitle>
       </div>
       <div class="u-width--100 u-mt-50 grid-cell">
-        <template v-if="!loading">
+        <template v-if="initialState && home">
+          <InitialState :title="$t(`DataPage.zeroCase.title`)">
+            <template slot="icon">
+              <img svg-inline src="../../../assets/icons/datasets/initialStateConnection.svg">
+            </template>
+            <template slot="description">
+              <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
+            </template>
+            <template slot="actionButton">
+              <router-link :to="{ name: 'new-connection' }">
+                <button class="button is-primary">{{ $t(`DataPage.zeroCase.createDataset`) }}</button>
+              </router-link>
+            </template>
+          </InitialState>
+        </template>
+        <template v-else-if="!loading">
           <div class="emptyState u-pl--64 u-mb--60" v-if="!connections.length">
             <h3 class="is-body is-semibold u-mt--64">{{$t('DataPage.startAddingConnections')}}</h3>
             <p class="u-mt--16 is-caption">{{$t('DataPage.connectDescription')}}</p>
@@ -54,6 +69,7 @@ import LoadingState from 'new-dashboard/components/States/LoadingState';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import Connection from 'new-dashboard/components/Connector/Connection';
 import { getImportOption } from 'new-dashboard/utils/connector/import-option';
+import InitialState from 'new-dashboard/components/States/InitialState';
 import { mapState } from 'vuex';
 
 export default {
@@ -62,12 +78,17 @@ export default {
     LoadingState,
     SectionTitle,
     VisualizationsTitle,
+    InitialState,
     Connection
+  },
+  props: {
+    home: Boolean
   },
   computed: {
     ...mapState({
       loading: state => state.connectors.loadingConnections,
-      rawConnections: state => state.connectors.connections
+      rawConnections: state => state.connectors.connections,
+      initialState: state => state.config.isFirstTimeViewingDashboard
     }),
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {

@@ -24,6 +24,8 @@ sudo make install
 
 ### Bug fixes / enhancements
 
+- Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
+- Show a new message for create connections after first login [16159](https://github.com/CartoDB/cartodb/pull/16159)
 - Remove master api key from do-catalog layers request [16158](https://github.com/CartoDB/cartodb/pull/16158)
 - Set sideEffects webpack.prod.config property to false to fix compilation problems with do-catalog and viewer [16155](https://github.com/CartoDB/cartodb/pull/16154)
 - Update viewer version to add copy xyz functionality [16154](https://github.com/CartoDB/cartodb/pull/16154)
@@ -73,6 +75,7 @@ sudo make install
 - In the Data Catalog, fixed baseurl as it added an extra `/` on the queries from public pages [#16148](https://github.com/CartoDB/cartodb/pull/16148)
 - Added dynamic meta title and canonical link to improve SEO in public pages for the Spatial Data Catalog [#16157](https://github.com/CartoDB/cartodb/pull/16157)
 - Fixed error that added multiple canonical links in the Spatial Data Catalog [#16160](https://github.com/CartoDB/cartodb/pull/16160)
+- Modify deprecation warning for DO analysis in builder [#16163](https://github.com/CartoDB/cartodb/pull/16163)
 
 4.44.0 (2020-11-20)
 -------------------

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.225",
+  "version": "1.0.0-assets.228",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "@carto/carto.js": "^4.2.1",
     "@carto/toolkit-core": "0.0.1-rc.18",
     "@carto/toolkit-custom-storage": "0.0.1-rc.18",
-    "@carto/viewer": "CartoDB/viewer#v1.0.1",
+    "@carto/viewer": "CartoDB/viewer#v1.0.3",
     "@carto/zera": "1.0.7",
     "@deck.gl/carto": "^8.4.5",
     "@deck.gl/core": "^8.4.5",

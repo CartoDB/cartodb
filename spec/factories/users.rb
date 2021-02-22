@@ -103,7 +103,6 @@ FactoryGirl.define do
     end
 
     after(:create) do |carto_user|
-      ::User.where(id: carto_user.id).first.after_create
       CartoDB::UserModule::DBService.any_instance.unstub
     end
 

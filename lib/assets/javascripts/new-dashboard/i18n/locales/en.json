@@ -137,16 +137,16 @@
     "connectionsSuccessfull": "Successfully connected!",
     "addYourData":"Add your data",
     "url": "Enter a URL",
+    "zeroCaseDatasets": {
+      "title": "Upload your first dataset",
+      "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
+      "createDataset": "New Dataset"
+    },
     "zeroCase": {
       "title": "Connect your database or upload a file",
       "description": "Connect your BigQuery, Snowflake or any other database to CARTO. Then you will be able to create maps, import data and more.",
       "createDataset": "New Connection"
     },
-    "zeroCaseHasConnections": {
-      "title": "Upload your first dataset",
-      "description": "Bring your data to CARTO to start your spatial analysis journey. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
-      "createDataset": "New Dataset"
-    },	   
     "emptyCase": {
       "default": "There are no datasets here.",
       "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."
@@ -324,7 +324,8 @@
       "LINK": "Link",
       "PUBLIC": "Public",
       "PRIVATE": "Private",
-      "PASSWORD": "Password"
+      "PASSWORD": "Password",
+      "by": "By "
     },
     "tags": "No tags | 1 tag | {n} tags",
     "lastUpdated": "{date} ago",
@@ -393,12 +394,13 @@
   "SearchComponent": {
     "placeholder": {
       "default": "Search",
-      "active": "By name, description or tag"
+      "active": "Search dataset by name, description or tag"
     }
   },
   "SearchPage": {
     "title": {
       "allFetching": "Loading results for \"{query}\"",
+      "searchResults": "0 results | {n} result | {n} results",
       "searchTerm": "0 results for \"{query}\" | {n} result for \"{query}\" | {n} results for \"{query}\"",
       "tag": "0 results for \"{query}\" tag | {n} result for \"{query}\" tag | {n} results for \"{query}\" tag"
     },

@@ -8,6 +8,10 @@ end
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task cartodb_subscribers: [:environment] do |_task, _args|
+    # Eager load Ruby classes, as Rake does not do it by default
+    # https://github.com/rails/rails/issues/28358
+    Rails.application.eager_load!
+
     $stdout.sync = true
     logger = Carto::Common::Logger.new($stdout)
     pid_file = ENV['PIDFILE'] || Rails.root.join('tmp/pids/cartodb_subscribers.pid')

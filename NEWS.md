@@ -20,9 +20,14 @@ sudo make install
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
 - Adds JSON-LD with the dataset information in the Data Catalog [#16138](https://github.com/CartoDB/cartodb/pull/16138)
+- Add search in 'new map' screen [16166](https://github.com/CartoDB/cartodb/pull/16166)
 
 ### Bug fixes / enhancements
 
+- Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
+- Show a new message for create connections after first login [16159](https://github.com/CartoDB/cartodb/pull/16159)
+- Remove master api key from do-catalog layers request [16158](https://github.com/CartoDB/cartodb/pull/16158)
+- Set sideEffects webpack.prod.config property to false to fix compilation problems with do-catalog and viewer [16155](https://github.com/CartoDB/cartodb/pull/16154)
 - Update viewer version to add copy xyz functionality [16154](https://github.com/CartoDB/cartodb/pull/16154)
 - Fix pagination in new map popup [16153](https://github.com/CartoDB/cartodb/pull/16153)
 - Include region & maps_api_v2_template in /me config [16112](https://github.com/CartoDB/cartodb/pull/16112)
@@ -68,6 +73,10 @@ sudo make install
 - Add deprecation warning for DO analysis in builder and hide option when user creation is later than deprecation notice date [#16118](https://github.com/CartoDB/cartodb/pull/16118)
 - Updated robots.txt to allow Google access to our datasets [#16148](https://github.com/CartoDB/cartodb/pull/16148)
 - In the Data Catalog, fixed baseurl as it added an extra `/` on the queries from public pages [#16148](https://github.com/CartoDB/cartodb/pull/16148)
+- Added dynamic meta title and canonical link to improve SEO in public pages for the Spatial Data Catalog [#16157](https://github.com/CartoDB/cartodb/pull/16157)
+- Fixed error that added multiple canonical links in the Spatial Data Catalog [#16160](https://github.com/CartoDB/cartodb/pull/16160)
+- Modify deprecation warning for DO analysis in builder [#16163](https://github.com/CartoDB/cartodb/pull/16163)
+- Fix autoload issues in subscriber [#16171](https://github.com/CartoDB/cartodb/pull/16171)
 
 4.44.0 (2020-11-20)
 -------------------

@@ -184,6 +184,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/spatial-data-catalog'         => 'visualizations#index', as: :datasets_docatalog_index
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/spatial-data-catalog/:type/:id'      => 'visualizations#index', as: :datasets_docatalog_dataset_summary
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/spatial-data-catalog/:type/:id/data' => 'visualizations#index', as: :datasets_docatalog_dataset_data
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/spatial-data-catalog/:type/:id/map' => 'visualizations#index', as: :datasets_docatalog_dataset_map
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/:page'                        => 'visualizations#index', as: :datasets_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag'                     => 'visualizations#index', as: :datasets_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag/:page'               => 'visualizations#index', as: :datasets_tag_page

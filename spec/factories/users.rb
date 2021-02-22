@@ -93,7 +93,7 @@ FactoryGirl.define do
     id { Carto::UUIDHelper.random_uuid }
     builder_enabled nil # Most tests still assume editor
 
-    after(:build) do |carto_user|
+    before(:build) do |carto_user|
       create_account_type_fg(carto_user.account_type)
     end
 
@@ -103,6 +103,7 @@ FactoryGirl.define do
     end
 
     after(:create) do |carto_user|
+      ::User.where(id: carto_user.id).first.after_create
       CartoDB::UserModule::DBService.any_instance.unstub
     end
 

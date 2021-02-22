@@ -65,6 +65,48 @@ namespace :message_broker do
         ).run
       end
 
+      subscription.register_callback(:create_feature_flag) do |message|
+        FeatureFlagCommands::Create.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:update_feature_flag) do |message|
+        FeatureFlagCommands::Update.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:delete_feature_flag) do |message|
+        FeatureFlagCommands::Delete.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:create_price_plan) do |message|
+        AccountTypeCommands::Create.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:update_price_plan) do |message|
+        AccountTypeCommands::Update.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:delete_price_plan) do |message|
+        AccountTypeCommands::Delete.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
       at_exit do
         logger.info(message: 'Stopping subscriber...')
         subscription.stop!

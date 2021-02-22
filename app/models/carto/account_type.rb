@@ -26,6 +26,8 @@ module Carto
       'ORGANIZATION USER'
     ].freeze
 
+    validates :rate_limit, presence: true
+
     belongs_to :rate_limit, dependent: :destroy
 
     def soft_geocoding_limit?(user)

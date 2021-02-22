@@ -1,4 +1,3 @@
-require_relative '../../../../spec/rspec_configuration'
 require_relative '../../../../spec/spec_helper'
 require 'rspec/core'
 require 'rspec/expectations'
@@ -7,7 +6,6 @@ require 'rspec/mocks'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
-require_relative '../../../../spec/rspec_configuration'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
 require_relative '../doubles/user'
@@ -69,4 +67,3 @@ describe 'geojson regression tests' do
   end
 
 end
-

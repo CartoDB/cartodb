@@ -1,3 +1,4 @@
+require 'spec_helper_min'
 require 'active_support'
 require 'active_support/core_ext'
 

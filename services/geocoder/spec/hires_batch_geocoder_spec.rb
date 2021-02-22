@@ -1,6 +1,5 @@
 require 'tmpdir'
 require 'fileutils'
-require_relative '../../../spec/rspec_configuration.rb'
 require_relative '../../../spec/spec_helper.rb'
 require_relative '../lib/hires_batch_geocoder'
 

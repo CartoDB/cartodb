@@ -21,6 +21,7 @@ sudo make install
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
 - Adds JSON-LD with the dataset information in the Data Catalog [#16138](https://github.com/CartoDB/cartodb/pull/16138)
 - Add search in 'new map' screen [16166](https://github.com/CartoDB/cartodb/pull/16166)
+- Migrate FeatureFlag & PricePlan synchronization to the Message Broker [#16098](https://github.com/CartoDB/cartodb/pull/16098)
 
 ### Bug fixes / enhancements
 

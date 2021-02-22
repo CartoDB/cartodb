@@ -1,5 +1,4 @@
 require 'yaml'
-require_relative '../../../../spec/rspec_configuration'
 
 require_relative '../../lib/datasources'
 require_relative '../doubles/user'

@@ -1,3 +1,4 @@
+require 'spec_helper_min'
 require 'minitest/autorun'
 require 'stringio'
 require_relative '../../../filesystem/local'
@@ -50,4 +51,3 @@ describe Local do
     end
   end #fetch
 end # Local
-

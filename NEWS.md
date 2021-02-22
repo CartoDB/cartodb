@@ -61,6 +61,7 @@ sudo make install
 - Migrate Organization CRUD to MessageBroker [#15934](https://github.com/CartoDB/cartodb/pull/15934)
 - Update cartodb-common, which in turns updates the MessageBroker to send a `publisher_validation_token` [#16041](https://github.com/CartoDB/cartodb/pull/16041)
 - Optimize dashboard loading when the number of datasets is very large [#16014](https://github.com/CartoDB/cartodb/pull/16014)
+- Only load DO totals in dashboard when they are needed [#16161](https://github.com/CartoDB/cartodb/pull/16161)
 - 429 error when multiple datasets are requested to be deleted [#15931](https://github.com/CartoDB/cartodb/pull/15931)
 - Aggregate map_views for organization users [#16064](https://github.com/CartoDB/cartodb/pull/16064)
 - Migrate Organization CRUD actions started by CartoDB to Message Broker [#16062](https://github.com/CartoDB/cartodb/pull/16062)
@@ -75,7 +76,7 @@ sudo make install
 - Added dynamic meta title and canonical link to improve SEO in public pages for the Spatial Data Catalog [#16157](https://github.com/CartoDB/cartodb/pull/16157)
 - Fixed error that added multiple canonical links in the Spatial Data Catalog [#16160](https://github.com/CartoDB/cartodb/pull/16160)
 - Modify deprecation warning for DO analysis in builder [#16163](https://github.com/CartoDB/cartodb/pull/16163)
-- Only load DO totals in dashboard when they are needed [#16161](https://github.com/CartoDB/cartodb/pull/16161)
+- Fix autoload issues in subscriber [#16171](https://github.com/CartoDB/cartodb/pull/16171)
 
 4.44.0 (2020-11-20)
 -------------------

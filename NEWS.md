@@ -20,8 +20,8 @@ sudo make install
 - Add new user metrics to Home page [#15950](https://github.com/CartoDB/cartodb/pull/15950)
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
 - Adds JSON-LD with the dataset information in the Data Catalog [#16138](https://github.com/CartoDB/cartodb/pull/16138)
+- Add search in 'new map' screen [16166](https://github.com/CartoDB/cartodb/pull/16166)
 - Migrate FeatureFlag & PricePlan synchronization to the Message Broker [#16098](https://github.com/CartoDB/cartodb/pull/16098)
-
 ### Bug fixes / enhancements
 
 - Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
@@ -76,6 +76,7 @@ sudo make install
 - Added dynamic meta title and canonical link to improve SEO in public pages for the Spatial Data Catalog [#16157](https://github.com/CartoDB/cartodb/pull/16157)
 - Fixed error that added multiple canonical links in the Spatial Data Catalog [#16160](https://github.com/CartoDB/cartodb/pull/16160)
 - Modify deprecation warning for DO analysis in builder [#16163](https://github.com/CartoDB/cartodb/pull/16163)
+- Fix autoload issues in subscriber [#16171](https://github.com/CartoDB/cartodb/pull/16171)
 
 4.44.0 (2020-11-20)
 -------------------

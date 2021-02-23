@@ -315,7 +315,9 @@ describe Carto::ConnectionManager do
           'password' => 'the-password'
         }
       )
-      $users_metadata.hset("cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data')
+      $users_metadata.hset(
+        "cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data'
+      )
 
       connection_manager.manage_destroy(connection)
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
@@ -338,8 +340,12 @@ describe Carto::ConnectionManager do
           'password' => 'the-password'
         }
       )
-      $users_metadata.hset("cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data')
-      $users_metadata.hset("cloud_connections:#{user.username}:#{connection.connector}", '456', 'the-connection-data')
+      $users_metadata.hset(
+        "cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data'
+      )
+      $users_metadata.hset(
+        "cloud_connections:#{user.username}:#{connection.connector}", '456', 'the-connection-data'
+      )
 
       connection_manager.manage_destroy(connection)
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
@@ -349,6 +355,56 @@ describe Carto::ConnectionManager do
     end
   end
 
-  # TODO: manage_update
+  describe "#manage_update" do
+    after do
+      $users_metadata.keys('gcloud_connections:*').each do |key|
+        $users_metadata.del(key)
+      end
+    end
+
+    it "updates snowflake db connection data in redis" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        }
+      )
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-new-password'
+        }
+      )
+      connection_manager.manage_update(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-new-password' })
+    end
+  end
 
 end

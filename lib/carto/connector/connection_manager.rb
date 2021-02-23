@@ -160,7 +160,7 @@ module Carto
       when Carto::Connection::TYPE_DB_CONNECTOR
         true
       when Carto::Connection::TYPE_OAUTH_SERVICE
-        oauth_connection_valid?(connection.connector)
+        oauth_connection_valid?(connection)
       end
     end
 
@@ -201,7 +201,7 @@ module Carto
     def adapt_db_connector_parameters(parameters:, connection: nil, register: false)
       connector_parameters = Carto::Connector::Parameters.new(parameters)
       provider = connector_parameters[:provider]
-      connection_parameters = connector_parameters[:connection]
+      connection_parameters = connector_parameters[:connection].dup
       connection_id = connector_parameters[:connection_id]
 
       connection = obtain_connection(connection_id, provider, connection_parameters, register) if connection.blank?
@@ -215,10 +215,11 @@ module Carto
         connector_parameters.delete :connection_id
         input_parameters[:connection_id] = connection.id
         input_parameters.delete :connection
+        input_parameters.delete :provider
       end
 
       if legacy_oauth_db_connection?(connector_parameters)
-        connection_parameters = connector_parameters[:connection] || {}
+        connection_parameters = connector_parameters[:connection].dup || {}
         connection_parameters[:refresh_token] = @user.oauths&.select(provider)&.token
         connector_parameters[:connection] = connection_parameters
       end
@@ -230,7 +231,7 @@ module Carto
       return false unless connector_parameters[:provider] == 'bigquery'
 
       credentials = [:service_token, :refresh_token, :access_token]
-      connection_parameters = (connector_parameters[:connection] || {}).keys
+      connection_parameters = (connector_parameters[:connection].dup || {}).keys
       (credentials & connection_parameters).empty?
     end
 
@@ -272,7 +273,7 @@ module Carto
 
     def check(connection)
       if connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
-        oauth_connection_valid?(connection.connector)
+        oauth_connection_valid?(connection)
       else
         connector = Carto::Connector.new(parameters: {}, connection: connection, user: @user, logger: nil)
         connector.check_connection

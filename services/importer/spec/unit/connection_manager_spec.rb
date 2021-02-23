@@ -5,6 +5,8 @@ describe Carto::ConnectionManager do
 
   let(:user) { create(:carto_user_light) }
   let(:connection_manager) { Carto::ConnectionManager.new(user) }
+  let(:other_user) { create(:carto_user_light) }
+  let(:other_connection_manager) { Carto::ConnectionManager.new(other_user) }
 
   before(:all) do
     # TODO: remove providers, add dummy providers: (requires parameter changes/adapting the dummy)
@@ -34,6 +36,18 @@ describe Carto::ConnectionManager do
 
   let(:connection3) do
     create(:connection, user: user, name: 'oauth2', connector: 'box', token: 'token2')
+  end
+
+  let(:other_connection1) do
+    create(:connection, user: other_user, name: 'db1', connector: 'dummy', parameters: { server: 'server1' })
+  end
+
+  let(:other_connection2) do
+    create(:connection, user: other_user, name: 'oauth1', connector: 'gdrive', token: 'token1')
+  end
+
+  let(:other_connection3) do
+    create(:connection, user: other_user, name: 'oauth2', connector: 'box', token: 'token2')
   end
 
   describe "#list_connections" do
@@ -126,6 +140,241 @@ describe Carto::ConnectionManager do
       CartoDB::Datasources::Url::Dropbox.any_instance.unstub(:get_auth_url)
     end
   end
+
+  describe "#create_oauth_connection" do
+    it "creates new connections" do
+      connection = connection_manager.create_oauth_connection(
+        service: 'dropbox',
+        token: 'the-token'
+      )
+      expect(connection.id).not_to eq(connection1.id)
+      expect(user.oauth_connections.find_by(connector: 'dropbox')).to eq(connection)
+    end
+
+    it "builds new connection if user not saved" do
+      unsaved_user = build(:carto_user_light)
+      connection_manager = Carto::ConnectionManager.new(unsaved_user)
+      connection = connection_manager.create_oauth_connection(
+        service: 'dropbox',
+        token: 'the-token'
+      )
+      expect(connection.id).to be(nil)
+      expect(unsaved_user.connections.to_a.find{|c| c.connector == 'dropbox'}).to eq(connection)
+      unsaved_user.save!
+      expect(unsaved_user.oauth_connections.find_by(connector: 'dropbox')).to eq(connection)
+    end
+  end
+
+  describe "#assign_db_parameters" do
+    it "adds parameters to created oauth connection" do
+      expect(connection2.parameters).to be(nil)
+      Carto::ConnectionManager.any_instance.stubs(:oauth_connection_valid?).returns(true)
+      connection = connection_manager.assign_db_parameters(
+        service: connection2.service, parameters: { 'billing_project' => 'the-billing-project'}
+      )
+      Carto::ConnectionManager.any_instance.unstub(:oauth_connection_valid?)
+      expect(connection.connector).to eq(connection2.connector)
+      expect(connection.id).to eq(connection2.id)
+      expect(connection.parameters).to eq({ 'billing_project' => 'the-billing-project'})
+    end
+  end
+
+  describe "#fetch_connection" do
+    it "fetches connections" do
+      expect(connection_manager.fetch_connection(connection1.id)).to eq(connection1)
+    end
+
+    it "does not fetch other user connections" do
+      expect do
+        other_connection_manager.fetch_connection(connection1.id)
+      end.to raise_exception(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe "#delete_connection" do
+    it "deletes connections" do
+      expect(Carto::Connection.find_by(id: connection1.id)).not_to be(nil)
+      connection_manager.delete_connection(connection1.id)
+      expect(Carto::Connection.find_by(id: connection1.id)).to be(nil)
+    end
+
+    it "does not delete other user connections" do
+      expect(Carto::Connection.find_by(id: connection1.id)).not_to be(nil)
+      expect do
+        other_connection_manager.delete_connection(connection1.id)
+      end.to raise_exception(ActiveRecord::RecordNotFound)
+      expect(Carto::Connection.find_by(id: connection1.id)).not_to be(nil)
+    end
+  end
+
+  describe "#update_db_connection" do
+    it "updates connection name" do
+      old_name = connection1.name
+      old_parameters = connection1.parameters
+      new_name = 'db-1'
+      expect(old_name).to eq('db1')
+      connection_manager.update_db_connection(id: connection1.id, name: new_name)
+      connection = Carto::Connection.find_by(id: connection1.id)
+      expect(connection.name).to eq(new_name)
+      expect(connection.parameters).to eq(old_parameters)
+    end
+
+    it "updates connection parameters" do
+      old_name = connection1.name
+      old_parameters = connection1.parameters
+      new_parameters = old_parameters.merge('another_param' => 'xyz')
+      connection_manager.update_db_connection(id: connection1.id, parameters: new_parameters)
+      connection = Carto::Connection.find_by(id: connection1.id)
+      expect(connection.name).to eq(old_name)
+      expect(connection.parameters).to eq(new_parameters)
+    end
+  end
+
+  describe '#adapt_db_connector_parameters' do
+    let(:params) { { extra_parameter: 1 } }
+    let(:params_with_connection_id) { params.merge(connection_id: connection1.id) }
+    let(:params_with_connection) { params.merge(provider:connection1.provider, connection: connection1.parameters) }
+    let(:params_with_different_connection) do
+      different_connection = connection1.parameters.merge('server' => 'different_server')
+      params.merge(provider:connection1.provider, connection: different_connection)
+    end
+
+    it "adapts parameters from a connection" do
+      in_params, conn_params = connection_manager.adapt_db_connector_parameters(
+        parameters: params, connection: connection1
+      )
+      expect(in_params.parameters).to eq(params_with_connection_id)
+      expect(conn_params.parameters).to eq(params_with_connection)
+    end
+
+    it "adapts parameters from a connection_id" do
+      in_params, conn_params = connection_manager.adapt_db_connector_parameters(parameters: params_with_connection_id)
+      expect(in_params.parameters).to eq(params_with_connection_id)
+      expect(conn_params.parameters).to eq(params_with_connection)
+    end
+
+    it "adapts parameters from legacy connection subparameter" do
+      in_params, conn_params = connection_manager.adapt_db_connector_parameters(parameters: params_with_connection)
+      expect(in_params.parameters).to eq(params_with_connection)
+      expect(conn_params.parameters).to eq(params_with_connection)
+    end
+
+    it "can register a new connection" do
+      in_params, conn_params = connection_manager.adapt_db_connector_parameters(
+        parameters: params_with_different_connection, register: true
+      )
+      expect(in_params.parameters[:connection_id]).not_to eq(connection1.id)
+      expect(conn_params.parameters).to eq(params_with_different_connection)
+      connection = Carto::Connection.find_by(id: in_params.parameters[:connection_id])
+      expect(connection.parameters).to eq(params_with_different_connection[:connection])
+      expect(connection.connector).to eq(params_with_different_connection[:provider])
+    end
+
+    it "will reuse an existing connection if possible" do
+      in_params, conn_params = connection_manager.adapt_db_connector_parameters(
+        parameters: params_with_connection, register: true
+      )
+      expect(in_params.parameters).to eq(params_with_connection_id)
+      expect(conn_params.parameters).to eq(params_with_connection)
+    end
+
+    it "adds parameters for legacy BQ connections" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('bigquery')
+
+      user.oauths.add('bigquery', 'the-token')
+
+      legacy_bq_params = {
+        provider: 'bigquery',
+        connection: {
+          billing_project: 'the-billing-project'
+        }
+      }
+      params_with_token = legacy_bq_params.merge(
+        connection: legacy_bq_params[:connection].merge(refresh_token: 'the-token')
+      )
+      in_params, conn_params = connection_manager.adapt_db_connector_parameters(parameters: legacy_bq_params.dup)
+      expect(in_params.parameters).to eq(legacy_bq_params)
+      expect(conn_params.parameters).to eq(params_with_token)
+    end
+  end
+
+  describe '.singleton_connector?' do
+    it "regards oauth connect as singleton" do
+      expect(Carto::ConnectionManager.singleton_connector?(connection2)).to eq(true)
+      expect(Carto::ConnectionManager.singleton_connector?(connection3)).to eq(true)
+      expect(Carto::ConnectionManager.singleton_connector?(other_connection2)).to eq(true)
+      expect(Carto::ConnectionManager.singleton_connector?(other_connection3)).to eq(true)
+    end
+
+    it "regards db connections as multiple" do
+      expect(Carto::ConnectionManager.singleton_connector?(connection1)).to eq(false)
+      expect(Carto::ConnectionManager.singleton_connector?(other_connection1)).to eq(false)
+    end
+
+    it "except for BQ db connections" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('bigquery')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'bigquery',
+        connection_type: 'db-connector',
+        parameters: {
+          'billing_project' => 'the-billing-project',
+          'service_account' => 'the-service-account'
+        }
+      )
+      expect(Carto::ConnectionManager.singleton_connector?(connection)).to eq(true)
+    end
+  end
+
+  describe '.errors' do
+    it "reports invalid OAuth connector errors" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'not-valid',
+        connection_type: 'oauth-service',
+        token: 'the-token'
+      )
+      errors = Carto::ConnectionManager.errors(connection)
+      expect(errors).to include('Not a valid OAuth connector: not-valid')
+    end
+
+    it "reports invalid db connector errors" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'not-valid',
+        connection_type: 'db-connector',
+        parameters: { 'server' => 'the-server' }
+      )
+      errors = Carto::ConnectionManager.errors(connection)
+      expect(errors).to include('Not a valid DB connector: not-valid')
+    end
+  end
+
+  describe '#check' do
+    it "checks db connections" do
+      Carto::Connector.provider_class('dummy').failing_with('BAD CONNECTION') do
+        expect do
+          connection_manager.check(connection1)
+        end.to raise_exception(RuntimeError, /BAD CONNECTION/)
+      end
+    end
+
+    it "checks oauth connections" do
+      Carto::Connector.provider_class('dummy').failing_with('BAD CONNECTION') do
+        Carto::ConnectionManager.any_instance.stubs(:oauth_connection_valid?).returns(true)
+        expect(connection_manager.check(connection2)).to eq(true)
+        Carto::ConnectionManager.any_instance.unstub(:oauth_connection_valid?)
+      end
+    end
+  end
+
 
   describe "#manage_create" do
     after do
@@ -253,7 +502,6 @@ describe Carto::ConnectionManager do
         connection_type: 'db-connector',
         parameters: {
           'server' => 'the-server',
-          'server' => 'the-password'
         }
       )
       connection_manager.manage_create(connection)
@@ -406,5 +654,4 @@ describe Carto::ConnectionManager do
       expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-new-password' })
     end
   end
-
 end

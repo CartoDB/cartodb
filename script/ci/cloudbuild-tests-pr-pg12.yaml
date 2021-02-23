@@ -91,11 +91,11 @@ steps:
   args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 24' ]
 
 - name: 'docker/compose:1.22.0'
-  args: ['-f', 'docker-compose-pg12.yml', 'logs', '--no-color', '--tail="all"', 'postgres-server' ]
+  args: ['-f', 'docker-compose-pg12.yml', 'logs', '--no-color', 'postgres-server' ]
   timeout: 900s
 
 - name: 'docker/compose:1.22.0'
-  args: ['-f', 'docker-compose-pg12.yml', 'logs', '--no-color', '--tail="all"', 'federated-server' ]
+  args: ['-f', 'docker-compose-pg12.yml', 'logs', '--no-color', 'federated-server' ]
   timeout: 900s
 
 

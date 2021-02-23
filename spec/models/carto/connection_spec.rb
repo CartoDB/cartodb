@@ -2,7 +2,7 @@ require_relative '../../spec_helper'
 require_relative '../../../services/importer/spec/doubles/connector'
 
 describe Carto::Connection do
-  let(:user) { create(:carto_user) }
+  let(:user) { create(:carto_user_light) }
   let(:fake_log) { CartoDB::Importer2::Doubles::Log.new(user) }
 
   before(:all) do

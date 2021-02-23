@@ -3,7 +3,7 @@ require_relative '../doubles/connector'
 
 describe Carto::ConnectionManager do
 
-  let(:user) { create(:carto_user) }
+  let(:user) { create(:carto_user_light) }
   let(:connection_manager) { Carto::ConnectionManager.new(user) }
 
   before(:all) do

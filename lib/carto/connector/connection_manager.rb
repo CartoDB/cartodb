@@ -160,7 +160,7 @@ module Carto
       when Carto::Connection::TYPE_DB_CONNECTOR
         true
       when Carto::Connection::TYPE_OAUTH_SERVICE
-        oauth_connection_valid?(connection.connector)
+        oauth_connection_valid?(connection)
       end
     end
 
@@ -272,7 +272,7 @@ module Carto
 
     def check(connection)
       if connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
-        oauth_connection_valid?(connection.connector)
+        oauth_connection_valid?(connection)
       else
         connector = Carto::Connector.new(parameters: {}, connection: connection, user: @user, logger: nil)
         connector.check_connection

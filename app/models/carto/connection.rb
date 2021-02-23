@@ -11,8 +11,8 @@ module Carto
 
     validates :name, uniqueness: { scope: :user_id }, presence: true
     validates :connection_type, inclusion: { in: [TYPE_OAUTH_SERVICE, TYPE_DB_CONNECTOR] }
-    validate :validate_parameters
     validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
+    validate :validate_parameters
 
     # rubocop:disable Naming/AccessorMethodName
     def get_service_datasource

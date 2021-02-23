@@ -146,7 +146,6 @@ FactoryGirl.define do
     id { Carto::UUIDHelper.random_uuid }
     builder_enabled nil # Most tests still assume editor
 
-
     after(:build) do |carto_user|
       create_account_type_fg(carto_user.account_type)
     end

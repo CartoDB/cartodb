@@ -33,7 +33,7 @@ echo "PRINT LOGS OF FAILED PARALLEL TESTS (FIRST TRY)"
 time cat parallel_tests/*.log
 
 # SECOND TRY
-script/ci/secondTry.sh || exit 1
+#script/ci/secondTry.sh || exit 1
 
 # REPORTER
-script/ci/reporter.sh || exit 1
+#script/ci/reporter.sh || exit 1

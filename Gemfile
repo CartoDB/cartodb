@@ -118,6 +118,7 @@ end
 
 group :development, :test do
   gem 'byebug'
+  gem 'database_cleaner-active_record'
   gem 'faker'
   gem 'pry-byebug', '3.9.0'
   gem 'rack'

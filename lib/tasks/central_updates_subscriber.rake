@@ -8,6 +8,10 @@ end
 namespace :message_broker do
   desc 'Consume messages from subscription "central_cartodb_commands"'
   task cartodb_subscribers: [:environment] do |_task, _args|
+    # Eager load Ruby classes, as Rake does not do it by default
+    # https://github.com/rails/rails/issues/28358
+    Rails.application.eager_load!
+
     $stdout.sync = true
     logger = Carto::Common::Logger.new($stdout)
     pid_file = ENV['PIDFILE'] || Rails.root.join('tmp/pids/cartodb_subscribers.pid')
@@ -58,6 +62,48 @@ namespace :message_broker do
         OrganizationCommands::Delete.new(
           message.payload,
           { notifications_topic: notifications_topic, logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:create_feature_flag) do |message|
+        FeatureFlagCommands::Create.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:update_feature_flag) do |message|
+        FeatureFlagCommands::Update.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:delete_feature_flag) do |message|
+        FeatureFlagCommands::Delete.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:create_price_plan) do |message|
+        AccountTypeCommands::Create.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:update_price_plan) do |message|
+        AccountTypeCommands::Update.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:delete_price_plan) do |message|
+        AccountTypeCommands::Delete.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
         ).run
       end
 

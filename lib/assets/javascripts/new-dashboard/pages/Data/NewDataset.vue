@@ -6,13 +6,26 @@
     :backText="false"
   >
     <template #sub-header>
-      <ul class="modal-tab title is-small">
-        <li @click="selectTab(TABS.newDataset)" :class="{'is-selected' : selectedTab == TABS.newDataset}">{{$t('NewMapDatasetCard.tabs.newDataset')}}</li>
-        <li @click="selectTab(TABS.yourDatasets)" :class="{'is-selected' : selectedTab == TABS.yourDatasets}">{{$t('NewMapDatasetCard.tabs.yourDatasets')}}</li>
-        <li @click="selectTab(TABS.sharedWithYou)" :class="{'is-selected' : selectedTab == TABS.sharedWithYou}" v-if="datasetsMetadata.total_shared">
-          {{$tc('NewMapDatasetCard.tabs.sharedWithYou', datasetsMetadata.total_shared)}}
-        </li>
-      </ul>
+      <div class="u-flex u-width--100 tabs">
+        <div class="searcher" :class="{'u-flex__grow--1 open': showSearch}">
+          <div @click="toggleSearch" class="u-flex u-ml--8 u-mr--12 u-flex__align--center is-txtPrimary search-btn">
+            <img svg-inline src="../../assets/icons/catalog/search.svg" height="20px" width="20px" alt="search" title="Search" />
+          </div>
+          <div class="search-input u-flex__grow--1" v-if="showSearch">
+            <input v-model="searchText" class="text u-flex__grow--1 is-txtBaseGrey is-small is-regular" type="text" :placeholder="$t('SearchComponent.placeholder.active')">
+            <div @click="clearSearch" class="u-flex u-flex__align--center is-txtPrimary clear-btn">
+              <img svg-inline src="../../assets/icons/common/close.svg" height="20px" width="20px" alt="clear" title="Clear" />
+            </div>
+          </div>
+        </div>
+        <ul v-if="!showSearch" class="modal-tab title is-small u-ml--24">
+          <li @click="selectTab(TABS.newDataset)" :class="{'is-selected' : selectedTab == TABS.newDataset}">{{$t('NewMapDatasetCard.tabs.newDataset')}}</li>
+          <li @click="selectTab(TABS.yourDatasets)" :class="{'is-selected' : selectedTab == TABS.yourDatasets}">{{$t('NewMapDatasetCard.tabs.yourDatasets')}}</li>
+          <li @click="selectTab(TABS.sharedWithYou)" :class="{'is-selected' : selectedTab == TABS.sharedWithYou}" v-if="datasetsMetadata.total_shared">
+            {{$tc('NewMapDatasetCard.tabs.sharedWithYou', datasetsMetadata.total_shared)}}
+          </li>
+        </ul>
+      </div>
     </template>
     <template #default>
       <div v-if="selectedTab === TABS.newDataset">
@@ -27,11 +40,12 @@
         </template>
         <LoadingState v-else primary/>
       </div>
-      <div ref="datasetListForConnectors" v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou">
+      <div ref="datasetListForConnectors" v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou || selectedTab === TABS.search">
         <DatasetListForConnectors
           v-if="!creeatingMapOrLayer"
-          :sharedTab='selectedTab === TABS.sharedWithYou'
+          :shared='showShared'
           :multiSelect="mode==='map'"
+          :queryFilter="searchText"
           @datasetSelected="updateDatasetSelection"
           @goToConnectTab="selectTab(TABS.newDataset)"
         ></DatasetListForConnectors>
@@ -39,7 +53,7 @@
       </div>
     </template>
     <template #footer>
-      <div v-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou" class="modal-footer u-flex u-flex__justify--end">
+      <div v-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou || selectedTab === TABS.search" class="modal-footer u-flex u-flex__justify--end">
         <button v-if="mode==='map' && !creeatingMapOrLayer" @click="createMap" :disabled="!canCreateMaps || selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createMap`)}}</button>
         <button v-if="mode==='layer' && !creeatingMapOrLayer" @click="createLayer" :disabled="selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createLayer`)}}</button>
       </div>
@@ -62,7 +76,8 @@ import { mapState } from 'vuex';
 const TABS = {
   newDataset: 'new-dataset',
   yourDatasets: 'your-datasets',
-  sharedWithYou: 'shared-with-you'
+  sharedWithYou: 'shared-with-you',
+  search: 'search'
 };
 
 export default {
@@ -86,6 +101,15 @@ export default {
       rawConnections: state => state.connectors.connections,
       datasetsMetadata: state => state.datasets.metadata
     }),
+    showShared () {
+      let show = 'mine';
+      if (this.selectedTab === this.TABS.sharedWithYou) {
+        show = 'shared';
+      } else if (this.selectedTab === this.TABS.search) {
+        show = 'both';
+      }
+      return show;
+    },
     connections () {
       return this.rawConnections ? this.rawConnections.map(raw => {
         const option = getImportOption(raw.connector);
@@ -102,12 +126,14 @@ export default {
       return this.$store.getters['user/canCreateMaps'];
     }
   },
-  data: () => {
+  data () {
     return {
       localFiles: LOCAL_FILES,
       selectedTab: TABS.newDataset,
       selectedDatasets: [],
-      creeatingMapOrLayer: false
+      creeatingMapOrLayer: false,
+      showSearch: false,
+      searchText: ''
     };
   },
   created: function () {
@@ -116,9 +142,21 @@ export default {
   },
   mounted: function () {
     this.$store.dispatch('connectors/fetchConnectionsList');
-    this.$store.dispatch('datasets/setURLOptions', { filter: 'mine' });
+    this.$store.dispatch('datasets/setURLOptions', { filter: 'mine', q: '' });
+  },
+  beforeDestroy: function () {
+    this.$store.dispatch('datasets/setURLOptions', { filter: 'mine', q: '' });
   },
   methods: {
+    toggleSearch () {
+      this.showSearch = true;
+      this.selectTab(TABS.search);
+    },
+    clearSearch () {
+      this.showSearch = false;
+      this.searchText = '';
+      this.selectedTab = this.TABS.yourDatasets;
+    },
     fileSelected (id) {
       this.navigateToFile(id);
     },
@@ -174,6 +212,60 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
+
+.tabs {
+  position: relative;
+
+  .searcher, .search-btn {
+    display: flex;
+    align-items: center;
+  }
+
+  .searcher.open {
+    .search-btn {
+      color: $text__color;
+      border-bottom-color: $text__color;
+    }
+  }
+
+  .clear-btn {
+    cursor: pointer;
+    svg {
+      margin-left: 8px;
+    }
+  }
+
+  .clear-btn::before,
+  .searcher:not(.open)::after {
+    content: '';
+    display: block;
+    width: 1px;
+    margin: 4px;
+    height: 24px;
+    background-color: $neutral--500;
+  }
+
+  .search-input {
+    display: flex;
+
+    input {
+      width: 270px;
+      border: none;
+      background-color: transparent;
+    }
+  }
+
+  .search-btn {
+    cursor: pointer;
+    height: 42px;
+    padding: 0 10px 0 5px;
+    border-bottom: 4px solid transparent;
+  }
+}
+
+svg {
+  outline: none;
+}
 
 .modal-tab {
   display: flex;

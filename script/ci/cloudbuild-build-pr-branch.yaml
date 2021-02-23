@@ -5,7 +5,7 @@ steps:
   entrypoint: /bin/bash
   args:
   - '-c'
-  - 'gcloud builds list --ongoing --filter="buildTriggerId=70299e98-eed0-4fc6-943b-b8a5e0cf2aca AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
+  - 'gcloud builds list --ongoing --filter="buildTriggerId=e460656e-80d0-4886-b3ec-2098cadbb3a0 AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
 
 - name: gcr.io/cloud-builders/gcloud
   entrypoint: /bin/bash
@@ -66,8 +66,6 @@ steps:
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json
 
-
-
 # Build and push image
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
@@ -99,24 +97,6 @@ steps:
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG}
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA}
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG}--${SHORT_SHA}
-
-      if [ "${_BRANCH_TAG}" == 'master' ]
-      then
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:latest
-        docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest
-      fi
-
-      if [ ! -z "${TAG_NAME}" ]
-        then
-          echo "Tagging image with git tag: $TAG_NAME ..."
-          docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} gcr.io/cartodb-on-gcp-main-artifacts/builder:${TAG_NAME}
-          docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${SHORT_SHA} gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${TAG_NAME}
-          docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA} gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${TAG_NAME}
-          docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${TAG_NAME}
-          docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${TAG_NAME}
-          docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${TAG_NAME}
-      fi
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}

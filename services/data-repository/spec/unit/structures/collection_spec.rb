@@ -1,3 +1,4 @@
+require 'spec_helper_min'
 require 'minitest/autorun'
 require_relative '../../../structures/collection'
 
@@ -43,7 +44,7 @@ describe Collection do
       collection.add(member)
       collection.store
 
-      rehydrated_collection = 
+      rehydrated_collection =
         Collection.new(@defaults.merge(signature: collection.signature))
       rehydrated_collection.fetch
       rehydrated_collection.to_a.first.must_be_instance_of @dummy_class
@@ -55,7 +56,7 @@ describe Collection do
       collection.add(member)
       collection.store
 
-      rehydrated_collection = 
+      rehydrated_collection =
         Collection.new(@defaults.merge(signature: collection.signature))
       rehydrated_collection.fetch
 
@@ -72,9 +73,9 @@ describe Collection do
       collection.add(member1)
       collection.store
 
-      rehydrated_collection = 
+      rehydrated_collection =
         Collection.new(@defaults.merge(signature: collection.signature))
-      rehydrated_collection.add(member2) 
+      rehydrated_collection.add(member2)
 
       rehydrated_collection.to_a.must_include(member2)
       rehydrated_collection.to_a.wont_include(member1)
@@ -100,7 +101,7 @@ describe Collection do
       collection.add(member)
       collection.store
 
-      rehydrated_collection = 
+      rehydrated_collection =
         Collection.new(@defaults.merge(signature: collection.signature))
       rehydrated_collection.fetch
       rehydrated_collection.map { |member| member.id }.must_include member.id
@@ -120,4 +121,3 @@ describe Collection do
     end
   end #to_json
 end # Collection
-

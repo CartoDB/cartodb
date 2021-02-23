@@ -1,6 +1,5 @@
 require 'fileutils'
 require_relative '../../lib/importer/unp'
-require_relative '../../../../spec/rspec_configuration.rb'
 
 include CartoDB::Importer2
 

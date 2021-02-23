@@ -68,6 +68,7 @@ sudo make install
 - Upgrade deck.gl version [#16072](https://github.com/CartoDB/cartodb/pull/16072)
 - Configure Dead Lettering & prevent flooding of map views messages [#16059](https://github.com/CartoDB/cartodb/pull/16059)
 - Revamp specs for Message Broker commands and remove old endpoints [#16084](https://github.com/CartoDB/cartodb/pull/16084)
+- Remove temp import tables when the IncompatibleSchemas exception is raised [#16181](https://github.com/CartoDB/cartodb/pull/16181)
 - Prevent rspec from being executed in any env other than test [#16128](https://github.com/CartoDB/cartodb/pull/16128)
 - Add groups to v4/me endpoint [#16105](https://github.com/CartoDB/cartodb/pull/16105)
 - Add deprecation warning for DO analysis in builder and hide option when user creation is later than deprecation notice date [#16118](https://github.com/CartoDB/cartodb/pull/16118)

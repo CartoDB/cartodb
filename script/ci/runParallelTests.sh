@@ -30,7 +30,7 @@ time parallel -j $WORKERS -a parallel_tests/specfull.txt 'script/ci/executor.sh 
 
 # print logs of first try
 echo "PRINT LOGS OF FAILED PARALLEL TESTS (FIRST TRY)"
-time cat parallel_tests/specfailed.log
+time cat parallel_tests/*.log
 
 # SECOND TRY
 script/ci/secondTry.sh || exit 1

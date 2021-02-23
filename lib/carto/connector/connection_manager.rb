@@ -215,6 +215,7 @@ module Carto
         connector_parameters.delete :connection_id
         input_parameters[:connection_id] = connection.id
         input_parameters.delete :connection
+        input_parameters.delete :provider
       end
 
       if legacy_oauth_db_connection?(connector_parameters)

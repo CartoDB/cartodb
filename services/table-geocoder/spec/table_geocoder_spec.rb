@@ -2,7 +2,6 @@ require 'open3'
 require_relative '../lib/table_geocoder'
 require_relative 'factories/pg_connection'
 require 'set'
-require_relative '../../../spec/rspec_configuration'
 require_relative '../../../spec/spec_helper'
 
 describe CartoDB::TableGeocoder do

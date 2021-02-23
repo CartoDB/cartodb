@@ -1,7 +1,6 @@
 require 'open3'
 require_relative 'factories/pg_connection'
 require_relative '../lib/internal_geocoder.rb'
-require_relative '../../../spec/rspec_configuration.rb'
 
 describe CartoDB::InternalGeocoder::Geocoder do
   before do

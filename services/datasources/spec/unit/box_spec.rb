@@ -1,3 +1,4 @@
+require 'spec_helper_min'
 require_relative '../../lib/datasources'
 require_relative '../doubles/user'
 

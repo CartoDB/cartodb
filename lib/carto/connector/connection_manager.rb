@@ -1,5 +1,5 @@
-require_dependency 'cartodb/central'
-require_dependency 'carto/errors'
+require_relative '../../cartodb/central'
+require_relative  '../errors'
 
 require_relative 'parameters'
 require_relative 'connection_adapter/factory'

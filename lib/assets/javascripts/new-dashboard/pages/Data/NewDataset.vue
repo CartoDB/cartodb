@@ -18,13 +18,24 @@
             </div>
           </div>
         </div>
-        <ul v-if="!showSearch" class="modal-tab title is-small u-ml--24">
-          <li @click="selectTab(TABS.newDataset)" :class="{'is-selected' : selectedTab == TABS.newDataset}">{{$t('NewMapDatasetCard.tabs.newDataset')}}</li>
-          <li @click="selectTab(TABS.yourDatasets)" :class="{'is-selected' : selectedTab == TABS.yourDatasets}">{{$t('NewMapDatasetCard.tabs.yourDatasets')}}</li>
-          <li @click="selectTab(TABS.sharedWithYou)" :class="{'is-selected' : selectedTab == TABS.sharedWithYou}" v-if="datasetsMetadata.total_shared">
-            {{$tc('NewMapDatasetCard.tabs.sharedWithYou', datasetsMetadata.total_shared)}}
-          </li>
-        </ul>
+        <template v-if="!showSearch">
+          <ul class="u-flex__grow--1 modal-tab title is-small u-ml--24">
+            <li @click="selectTab(TABS.newDataset)" :class="{'is-selected' : selectedTab == TABS.newDataset}">{{$t('NewMapDatasetCard.tabs.newDataset')}}</li>
+            <li @click="selectTab(TABS.yourDatasets)" :class="{'is-selected' : selectedTab == TABS.yourDatasets}">{{$t('NewMapDatasetCard.tabs.yourDatasets')}}</li>
+            <li @click="selectTab(TABS.sharedWithYou)" :class="{'is-selected' : selectedTab == TABS.sharedWithYou}" v-if="datasetsMetadata.total_shared">
+              {{$tc('NewMapDatasetCard.tabs.sharedWithYou', datasetsMetadata.total_shared)}}
+            </li>
+          </ul>
+          <div @click="createEmpty" class="u-flex u-flex__align--center create-empty is-small is-semibold">
+            <img svg-inline height="16px" width="16px" class="u-mr--12" src="../../assets/icons/common/add.svg">
+            <template v-if="mode === 'map'">
+              {{$t('NewMapDatasetCard.emptyMap')}}
+            </template>
+            <template v-else-if="mode === 'layer'">
+              {{$t('NewMapDatasetCard.emptyLayer')}}
+            </template>
+          </div>
+        </template>
       </div>
     </template>
     <template #default>
@@ -42,7 +53,7 @@
       </div>
       <div ref="datasetListForConnectors" v-else-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou || selectedTab === TABS.search">
         <DatasetListForConnectors
-          v-if="!creeatingMapOrLayer"
+          v-if="!creatingMapOrLayer"
           :shared='showShared'
           :multiSelect="mode==='map'"
           :queryFilter="searchText"
@@ -54,8 +65,8 @@
     </template>
     <template #footer>
       <div v-if="selectedTab === TABS.yourDatasets || selectedTab === TABS.sharedWithYou || selectedTab === TABS.search" class="modal-footer u-flex u-flex__justify--end">
-        <button v-if="mode==='map' && !creeatingMapOrLayer" @click="createMap" :disabled="!canCreateMaps || selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createMap`)}}</button>
-        <button v-if="mode==='layer' && !creeatingMapOrLayer" @click="createLayer" :disabled="selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createLayer`)}}</button>
+        <button v-if="mode==='map' && !creatingMapOrLayer" @click="createMap" :disabled="!canCreateMaps || selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createMap`)}}</button>
+        <button v-if="mode==='layer' && !creatingMapOrLayer" @click="createLayer" :disabled="selectedDatasets.length == 0" class="button is-primary">{{$t(`DataPage.createLayer`)}}</button>
       </div>
     </template>
   </Dialog>
@@ -120,7 +131,7 @@ export default {
       return this.$route.name.replace('new-dataset', '');
     },
     showSubheader () {
-      return (this.mode === 'map' || this.mode === 'layer') && (!this.creeatingMapOrLayer);
+      return (this.mode === 'map' || this.mode === 'layer') && (!this.creatingMapOrLayer);
     },
     canCreateMaps () {
       return this.$store.getters['user/canCreateMaps'];
@@ -131,7 +142,7 @@ export default {
       localFiles: LOCAL_FILES,
       selectedTab: TABS.newDataset,
       selectedDatasets: [],
-      creeatingMapOrLayer: false,
+      creatingMapOrLayer: false,
       showSearch: false,
       searchText: ''
     };
@@ -197,14 +208,25 @@ export default {
     },
     async createMap () {
       if (this.mode === 'map') {
-        this.creeatingMapOrLayer = true;
+        this.creatingMapOrLayer = true;
         const id = await this.$store.dispatch('maps/createVisualizationFromDataset', this.selectedDatasets.map(d => d.name));
         window.location.replace(`${this.baseUrl}/builder/${id}`);
       }
     },
     createLayer () {
-      this.creeatingMapOrLayer = true;
+      this.creatingMapOrLayer = true;
       this.addLayer({ ...this.selectedDatasets[0] }, this.$refs.datasetListForConnectors);
+    },
+    async createEmpty () {
+      if (this.mode === 'map') {
+        this.creatingMapOrLayer = true;
+        const id = await this.$store.dispatch('maps/createEmptyVisualization');
+        window.location.replace(`${this.baseUrl}/builder/${id}`);
+      } else if (this.mode === 'layer') {
+        this.creatingMapOrLayer = true;
+        const dataset = await this.$store.dispatch('datasets/createEmptyDataset');
+        this.addLayer({ table: { ...dataset } }, this.$refs.datasetListForConnectors);
+      }
     }
   }
 };
@@ -265,6 +287,12 @@ export default {
 
 svg {
   outline: none;
+}
+
+.create-empty {
+  padding: 8px 0 14px;
+  color: $link__color;
+  cursor: pointer;
 }
 
 .modal-tab {

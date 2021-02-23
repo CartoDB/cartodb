@@ -1,4 +1,3 @@
-require_relative '../../../../spec/rspec_configuration'
 require_relative '../../lib/importer/raster2pgsql'
 require_relative '../../lib/importer/downloader'
 require_relative '../../lib/importer/runner'

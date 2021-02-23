@@ -1,5 +1,6 @@
 gem 'minitest'
 require 'minitest/autorun'
+require 'spec_helper_min'
 require_relative '../../lib/synchronizer/collection'
 require_relative '../factories/pg_connection'
 require_relative '../../../data-repository/backend/sequel'
@@ -18,7 +19,7 @@ describe Collection do
 
   describe '#fetch' do
     it 'fetchs all pending jobs from the synchronizations relation' do
-      repository  = 
+      repository  =
         DataRepository::Backend::Sequel.new(@connection, :synchronizations)
 
       ensure_table_created_in(@connection)
@@ -68,4 +69,3 @@ describe Collection do
   def ensure_table_created_in(connection)
   end
 end
-

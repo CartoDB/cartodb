@@ -1,5 +1,4 @@
 require_relative '../../lib/importer/content_guesser'
-require_relative '../../../../spec/rspec_configuration.rb'
 
 describe CartoDB::Importer2::ContentGuesser do
 

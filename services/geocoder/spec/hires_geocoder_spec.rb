@@ -1,7 +1,6 @@
 require 'tmpdir'
 require 'fileutils'
 require 'csv'
-require_relative '../../../spec/rspec_configuration'
 require_relative '../../../spec/spec_helper'
 require_relative '../lib/hires_geocoder'
 

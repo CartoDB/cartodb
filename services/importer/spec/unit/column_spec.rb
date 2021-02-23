@@ -1,7 +1,6 @@
 require_relative '../../lib/importer/column'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'
-require_relative '../../../../spec/rspec_configuration.rb'
 require_relative '../../../../spec/spec_helper'
 
 include CartoDB::Importer2

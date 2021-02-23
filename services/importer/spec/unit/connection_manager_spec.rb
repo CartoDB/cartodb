@@ -137,14 +137,17 @@ describe Carto::ConnectionManager do
     it "saves snowflake db connection data to redis" do
       pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
 
-      connection = create(
-        :connection,
+      connection = mocked_record(
+        id: '123',
         user: user,
         name: 'a_connection',
         connector: 'snowflake',
         connection_type: 'db-connector',
         parameters: {
-          server: 'the-server', database: 'the-database', username: 'the-username', password: 'the-password'
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
         }
       )
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
@@ -162,14 +165,17 @@ describe Carto::ConnectionManager do
     it "saves redshift db connection data to redis" do
       pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('redshift')
 
-      connection = create(
-        :connection,
+      connection = mocked_record(
+        id: '123',
         user: user,
         name: 'a_connection',
         connector: 'redshift',
         connection_type: 'db-connector',
         parameters: {
-          server: 'the-server', database: 'the-database', username: 'the-username', password: 'the-password'
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
         }
       )
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
@@ -187,14 +193,17 @@ describe Carto::ConnectionManager do
     it "saves postgres db connection data to redis" do
       pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('postgres')
 
-      connection = create(
-        :connection,
+      connection = mocked_record(
+        id: '123',
         user: user,
         name: 'a_connection',
         connector: 'postgres',
         connection_type: 'db-connector',
         parameters: {
-          server: 'the-server', database: 'the-database', username: 'the-username', password: 'the-password'
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
         }
       )
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
@@ -212,14 +221,15 @@ describe Carto::ConnectionManager do
     it "saves bigquery db connection data to redis" do
       pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('bigquery')
 
-      connection = create(
-        :connection,
+      connection = mocked_record(
+        id: '123',
         user: user,
         name: 'a_connection',
         connector: 'bigquery',
         connection_type: 'db-connector',
         parameters: {
-          billing_project: 'the-billing-project', service_account: 'the-service-account'
+          'billing_project' => 'the-billing-project',
+          'service_account' => 'the-service-account'
         }
       )
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
@@ -235,13 +245,16 @@ describe Carto::ConnectionManager do
     end
 
     it "does not save non-cloud db connections to redis" do
-      connection = create(
-        :connection,
+      connection = mocked_record(
+        id: '123',
         user: user,
         name: 'a_connection',
         connector: 'dummy',
         connection_type: 'db-connector',
-        parameters: { server: 'the-server', password: 'the-password' }
+        parameters: {
+          'server' => 'the-server',
+          'server' => 'the-password'
+        }
       )
       connection_manager.manage_create(connection)
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
@@ -255,14 +268,16 @@ describe Carto::ConnectionManager do
     end
 
     it "except for BQ oauth connections" do
-      connection = create(
-        :connection,
+      connection = mocked_record(
+        id: '123',
         user: user,
         name: 'a_connection',
         connector: 'bigquery',
         connection_type: 'oauth-service',
         token: 'the-token',
-        parameters: { billing_project: 'the-billing-project' }
+        parameters: {
+          'billing_project' => 'the-billing-project'
+        }
       )
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:bigquery", connection.id)
       expect(redis_json).to be(nil)
@@ -287,22 +302,49 @@ describe Carto::ConnectionManager do
     it "removes snowflake db connection data from redis" do
       pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
 
-      connection = create(
-        :connection,
+      connection = mocked_record(
+        id: '123',
         user: user,
         name: 'a_connection',
         connector: 'snowflake',
         connection_type: 'db-connector',
         parameters: {
-          server: 'the-server', database: 'the-database', username: 'the-username', password: 'the-password'
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
         }
       )
-      connection_manager.manage_create(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
-      expect(redis_json).not_to be(nil)
+      $users_metadata.hset("cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data')
 
       connection_manager.manage_destroy(connection)
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+    end
+
+    it "only removes deleted snowflake connection" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        }
+      )
+      $users_metadata.hset("cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data')
+      $users_metadata.hset("cloud_connections:#{user.username}:#{connection.connector}", '456', 'the-connection-data')
+
+      connection_manager.manage_destroy(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", '456')
       expect(redis_json).not_to be(nil)
     end
   end

@@ -140,3 +140,7 @@ def set_cookies_for_next_request(previous_response)
   received_cookies = parse_set_cookie_header(previous_response.headers["Set-Cookie"])
   received_cookies.each { |key, value| cookies[key] = value }
 end
+
+def mocked_record(data)
+  Struct.new(*data.keys).new(*data.values)
+end

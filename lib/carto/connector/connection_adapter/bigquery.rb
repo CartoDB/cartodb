@@ -40,18 +40,24 @@ module Carto
 
       def create
         super
+        return if @connection.parameters.blank?
+
         update_redis_metadata
         create_spatial_extension_setup
       end
 
       def destroy
         super
+        return if @connection.parameters.blank?
+
         remove_redis_metadata
         remove_spatial_extension_setup
       end
 
       def update
         super
+        return if @connection.parameters.blank?
+
         update_redis_metadata
         update_spatial_extension_setup
       end

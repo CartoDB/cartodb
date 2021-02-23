@@ -201,7 +201,7 @@ module Carto
     def adapt_db_connector_parameters(parameters:, connection: nil, register: false)
       connector_parameters = Carto::Connector::Parameters.new(parameters)
       provider = connector_parameters[:provider]
-      connection_parameters = connector_parameters[:connection]
+      connection_parameters = connector_parameters[:connection].dup
       connection_id = connector_parameters[:connection_id]
 
       connection = obtain_connection(connection_id, provider, connection_parameters, register) if connection.blank?
@@ -219,7 +219,7 @@ module Carto
       end
 
       if legacy_oauth_db_connection?(connector_parameters)
-        connection_parameters = connector_parameters[:connection] || {}
+        connection_parameters = connector_parameters[:connection].dup || {}
         connection_parameters[:refresh_token] = @user.oauths&.select(provider)&.token
         connector_parameters[:connection] = connection_parameters
       end
@@ -231,7 +231,7 @@ module Carto
       return false unless connector_parameters[:provider] == 'bigquery'
 
       credentials = [:service_token, :refresh_token, :access_token]
-      connection_parameters = (connector_parameters[:connection] || {}).keys
+      connection_parameters = (connector_parameters[:connection].dup || {}).keys
       (credentials & connection_parameters).empty?
     end
 

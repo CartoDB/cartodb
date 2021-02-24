@@ -30,6 +30,12 @@ TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_Link
 #    echo "*****************************************************************************************************"
 #fi
 
+if [ "$failedSpecs" -gt "10" ];
+then
+  echo "ERROR: Too many failures for a second try. Giving up."
+  exit 1;
+fi
+
 echo "Giving a second try to the next specs"
 cat parallel_tests/specfailed.log
 

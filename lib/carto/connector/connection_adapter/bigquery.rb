@@ -101,7 +101,7 @@ module Carto
       end
 
       def redis_metadata?
-        true
+        @connection.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
       end
 
       def connection_credentials_keys

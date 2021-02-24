@@ -7,7 +7,6 @@ require_relative '../doubles/log'
 require_relative '../doubles/user'
 require_relative 'acceptance_helpers'
 require_relative 'cdb_importer_context'
-require_relative '../../../../spec/rspec_configuration.rb'
 require_relative 'no_stats_context'
 
 include CartoDB::Importer2

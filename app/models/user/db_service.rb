@@ -1413,7 +1413,7 @@ module CartoDB
       def create_ghost_tables_event_trigger
         return if @user.has_feature_flag?('ghost_tables_trigger_disabled')
         configure_ghost_table_event_trigger
-        @user.in_database(as: :superuser).run('SELECT CDB_EnableGhostTablesTrigger()')
+        @user.in_database(as: :superuser).run("SELECT #{SCHEMA_CARTODB}.CDB_EnableGhostTablesTrigger()")
       end
 
       def configure_ghost_table_event_trigger

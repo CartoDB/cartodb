@@ -1,10 +1,12 @@
+require 'mocha'
 require_relative './simplecov_helper'
-require_relative './rspec_configuration'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require 'helpers/unique_names_helper'
-require './spec/support/message_broker_stubs'
-require './spec/support/shared_entities_spec_helper'
+require 'database_cleaner/active_record'
+require 'support/database_cleaner'
+require 'support/message_broker_stubs'
+require 'support/shared_entities_spec_helper'
 require 'spec_helper_common'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
@@ -37,6 +39,7 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   config.include FactoryGirl::Syntax::Methods
   config.include SharedEntitiesSpecHelper
+  config.mock_with :mocha
 
   config.after(:each) do
     Delorean.back_to_the_present

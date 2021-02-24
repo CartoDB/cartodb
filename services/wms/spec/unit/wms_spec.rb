@@ -1,3 +1,4 @@
+require 'spec_helper_min'
 require_relative '../../proxy'
 
 include CartoDB::WMS
@@ -97,4 +98,3 @@ describe Proxy do
     end
   end
 end # Proxy
-

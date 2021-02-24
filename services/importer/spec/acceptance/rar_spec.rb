@@ -1,4 +1,3 @@
-require_relative '../../../../spec/rspec_configuration'
 require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'

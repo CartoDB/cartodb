@@ -2,7 +2,6 @@ require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
 require_relative '../../lib/importer/excel2csv'
-require_relative '../../../../spec/rspec_configuration.rb'
 require_relative '../doubles/job'
 require_relative '../doubles/csv_normalizer'
 

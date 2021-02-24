@@ -22,7 +22,7 @@ sudo make install
 - Replace CRUD user operations in Central API client by publishing messages to the Message Broker [#16035](https://github.com/CartoDB/cartodb/pull/16035)
 - Adds JSON-LD with the dataset information in the Data Catalog [#16138](https://github.com/CartoDB/cartodb/pull/16138)
 - Add search in 'new map' screen [16166](https://github.com/CartoDB/cartodb/pull/16166)
-
+- Migrate FeatureFlag & PricePlan synchronization to the Message Broker [#16098](https://github.com/CartoDB/cartodb/pull/16098)
 ### Bug fixes / enhancements
 
 - Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
@@ -70,6 +70,7 @@ sudo make install
 - Configure Dead Lettering & prevent flooding of map views messages [#16059](https://github.com/CartoDB/cartodb/pull/16059)
 - Revamp specs for Message Broker commands and remove old endpoints [#16084](https://github.com/CartoDB/cartodb/pull/16084)
 - Prevent rspec from being executed in any env other than test [#16128](https://github.com/CartoDB/cartodb/pull/16128)
+- Prevent a possible `PG::UndefinedFunction` error on DB creation [#16174](https://github.com/CartoDB/cartodb/pull/16174)
 - Add groups to v4/me endpoint [#16105](https://github.com/CartoDB/cartodb/pull/16105)
 - Add deprecation warning for DO analysis in builder and hide option when user creation is later than deprecation notice date [#16118](https://github.com/CartoDB/cartodb/pull/16118)
 - Updated robots.txt to allow Google access to our datasets [#16148](https://github.com/CartoDB/cartodb/pull/16148)

@@ -1,5 +1,4 @@
 require_relative '../../../spec/spec_helper'
-require_relative '../../../spec/rspec_configuration.rb'
 require_relative '../lib/hires_batch_geocoder'
 
 # TODO rename to hires_batch_geocoder_spec.rb or split into batch/non-batch

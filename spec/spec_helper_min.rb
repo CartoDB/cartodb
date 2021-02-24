@@ -6,6 +6,7 @@ require 'helpers/named_maps_helper'
 require './spec/support/message_broker_stubs'
 require './spec/support/redis'
 require './spec/support/shared_entities_spec_helper'
+require 'spec_helper_common'
 
 raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{Rails.env}) unless Rails.env.test?
 

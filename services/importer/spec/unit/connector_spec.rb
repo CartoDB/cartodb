@@ -12,13 +12,12 @@ describe Carto::Connector do
     @user = create_user
     @user.save
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
-    Carto::Connector::PROVIDERS << DummyConnectorProvider
-    Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('another_dummy')
-    Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('third_dummy')
-    Carto::Connector::PROVIDERS << DummyConnectorProviderWithModifiedDate
-    Carto::Connector.providers.keys.each do |provider_name|
-      Carto::ConnectorProvider.create! name: provider_name
-    end
+    @previous_providers = replace_connector_providers(
+      DummyConnectorProvider,
+      dummy_connector_provider_with_id('another_dummy'),
+      dummy_connector_provider_with_id('third_dummy'),
+      DummyConnectorProviderWithModifiedDate
+    )
   end
 
   before(:each) do
@@ -31,9 +30,7 @@ describe Carto::Connector do
 
   after(:all) do
     @user.destroy
-    Carto::Connector.providers.keys.each do |provider_name|
-      Carto::ConnectorProvider.find_by_name(provider_name).destroy
-    end
+    restore_connector_providers(@previous_providers)
   end
 
   it "Should list providers available for a user with default configuration" do

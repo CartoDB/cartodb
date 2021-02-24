@@ -8,22 +8,13 @@ describe Carto::ConnectionManager do
   let(:other_user) { create(:carto_user_light) }
   let(:other_connection_manager) { Carto::ConnectionManager.new(other_user) }
 
-  before(:all) do
-    # TODO: remove providers, add dummy providers: (requires parameter changes/adapting the dummy)
-    #   Carto::Connector::PROVIDERS.clear
-    #   Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('snowflake')
-    #   Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('redshift')
-    #   Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('postgres')
-    #   Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('bigquery')
-    Carto::Connector::PROVIDERS << DummyConnectorProvider
-    Carto::Connector.providers.keys.each do |provider_name|
-      Carto::ConnectorProvider.create! name: provider_name
-    end
-  end
-
-  around(:each) do |example|
+  around do |example|
     config = { 'dummy' => { 'enabled' => true } }
-    Cartodb.with_config(connectors: config, &example)
+
+    Cartodb.with_config(connectors: config) do
+      # TODO: use mock connectors for snowflake, redshift, postgres, bigquery
+      with_connector_providers(DummyConnectorProvider, incremental: true, &example)
+    end
   end
 
   let(:connection1) do

@@ -5,6 +5,7 @@ require 'helpers/named_maps_helper'
 require 'helpers/unique_names_helper'
 require './spec/support/message_broker_stubs'
 require './spec/support/shared_entities_spec_helper'
+require 'spec_helper_common'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{Rails.env}) unless Rails.env.test?
@@ -139,8 +140,4 @@ end
 def set_cookies_for_next_request(previous_response)
   received_cookies = parse_set_cookie_header(previous_response.headers["Set-Cookie"])
   received_cookies.each { |key, value| cookies[key] = value }
-end
-
-def mocked_record(data)
-  Struct.new(*data.keys).new(*data.values)
 end

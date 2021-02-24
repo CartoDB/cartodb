@@ -101,6 +101,9 @@ module Carto
       end
 
       def redis_metadata?
+        # Both OAuth & DB connections are saved in redis as long as they have some parameter.
+        # Note that legacy BQ OAuth connections (migrated from synchronization_oauths) do not have
+        # parameters, but future BQ OAuth connections will have at least one parameter (billing_project)
         @connection.parameters.present?
       end
 

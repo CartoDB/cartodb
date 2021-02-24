@@ -1,7 +1,6 @@
 require 'fileutils'
 require_relative '../../lib/importer/shp_helper'
 require_relative '../../lib/importer/exceptions'
-require_relative '../../../../spec/rspec_configuration.rb'
 
 include CartoDB::Importer2
 

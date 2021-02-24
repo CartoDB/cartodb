@@ -1,20 +1,20 @@
 steps:
 
 # Cancel previous job on the same branch
-- name: gcr.io/cloud-builders/gcloud
+- name: gcr.io/cloud-builders/gcloud-slim
   entrypoint: /bin/bash
   args:
   - '-c'
   - 'gcloud builds list --ongoing --filter="buildTriggerId=e983e3b9-109f-43a3-82b2-b312e42c878e AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
 
-- name: gcr.io/cloud-builders/gcloud
+- name: gcr.io/cloud-builders/gcloud-slim
   entrypoint: /bin/bash
   args:
   - '-c'
   - 'gcloud builds cancel $(cat jobs_to_cancel | xargs) || true'
 
 # Decrypt github key
-- name: gcr.io/cloud-builders/gcloud
+- name: gcr.io/cloud-builders/gcloud-slim
   args:
   - kms
   - decrypt
@@ -89,10 +89,18 @@ steps:
 
 - name: gcr.io/cloud-builders/docker
   args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 18' ]
+
+- name: 'docker/compose:1.22.0'
+  entrypoint: /bin/sh
+  args:
+    - -cx
+    - |
+      docker-compose -f docker-compose-pg12.yml logs --no-color > docker-compose-logs
+
 artifacts:
   objects:
-    location: 'gs://cartodb-ci-tmp-logs/'
-    paths: ['/var/lib/docker/containers/*/*-json.log', 'parallel_tests/*.log']
+    location: 'gs://cartodb-ci-tmp-logs/${BUILD_ID}'
+    paths: ['docker-compose-logs', '/cartodb/parallel_tests_logs' ]
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}

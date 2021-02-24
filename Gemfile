@@ -55,7 +55,7 @@ end
 
 gem 'cartodb-common',
     git: 'https://github.com/cartodb/cartodb-common.git',
-    tag: 'v1.1.0'
+    tag: 'v1.1.1'
 gem 'roo',                     '1.13.2'
 gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '1.3.1'

@@ -8,16 +8,12 @@ describe Carto::ConnectionManager do
   let(:other_user) { create(:carto_user_light) }
   let(:other_connection_manager) { Carto::ConnectionManager.new(other_user) }
 
-  before(:all) do
-    Carto::Connector::PROVIDERS << DummyConnectorProvider
-    Carto::Connector.providers.keys.each do |provider_name|
-      Carto::ConnectorProvider.create! name: provider_name
-    end
-  end
-
-  around(:each) do |example|
+  around do |example|
     config = { 'dummy' => { 'enabled' => true } }
-    Cartodb.with_config(connectors: config, &example)
+
+    Cartodb.with_config(connectors: config) do
+      with_connector_providers(DummyConnectorProvider, incremental: true, &example)
+    end
   end
 
   let(:connection1) do

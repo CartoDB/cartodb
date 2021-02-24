@@ -5,16 +5,12 @@ describe Carto::Connection do
   let(:user) { create(:carto_user_light) }
   let(:fake_log) { CartoDB::Importer2::Doubles::Log.new(user) }
 
-  before(:all) do
-    Carto::Connector::PROVIDERS << DummyConnectorProvider
-    Carto::Connector.providers.keys.each do |provider_name|
-      Carto::ConnectorProvider.create! name: provider_name
-    end
-  end
-
-  around(:each) do |example|
+  around do |example|
     config = { 'dummy' => { 'enabled' => true } }
-    Cartodb.with_config(connectors: config, &example)
+
+    Cartodb.with_config(connectors: config) do
+      with_connector_providers(DummyConnectorProvider, incremental: true, &example)
+    end
   end
 
   describe 'connection type is automatically computed' do

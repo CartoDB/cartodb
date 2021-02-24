@@ -124,7 +124,7 @@ module Carto
 
         return unless @connection.parameters.present?
 
-        if @connection.parameters['service_account'].present
+        if @connection.parameters['service_account'].present?
           $users_metadata.hmset(
             bigquery_redis_key,
             'service_account', @connection.parameters['service_account'],

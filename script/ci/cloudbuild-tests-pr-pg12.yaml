@@ -96,11 +96,12 @@ steps:
     - -cx
     - |
       docker-compose -f docker-compose-pg12.yml logs --no-color > docker-compose-logs
+      docker cp builder_1:/cartodb/parallel_tests_logs .
 
 artifacts:
   objects:
     location: 'gs://cartodb-ci-tmp-logs/${BUILD_ID}'
-    paths: ['docker-compose-logs', '/cartodb/parallel_tests_logs' ]
+    paths: ['docker-compose-logs', 'parallel_tests_logs' ]
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}

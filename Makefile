@@ -94,6 +94,7 @@ WORKING_SPECS_1 = \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
 	spec/services/carto/visualization_backup_service_spec.rb \
 	spec/lib/carto/common/logger_spec.rb \
+	spec/models/carto/connection_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_2 = \
@@ -141,6 +142,7 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/namedplaces_guesser_spec.rb \
 	services/importer/spec/unit/connector_spec.rb \
 	services/importer/spec/unit/connector_runner_spec.rb \
+	services/importer/spec/unit/connection_manager_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_4 = \

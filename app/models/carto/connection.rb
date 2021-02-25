@@ -9,10 +9,10 @@ module Carto
     scope :oauth_connections, -> { where(connection_type: TYPE_OAUTH_SERVICE) }
     scope :db_connections, -> { where(connection_type: TYPE_DB_CONNECTOR) }
 
-    validates :name, uniqueness: { scope: :user_id }
+    validates :name, uniqueness: { scope: :user_id }, presence: true
     validates :connection_type, inclusion: { in: [TYPE_OAUTH_SERVICE, TYPE_DB_CONNECTOR] }
-    validate :validate_parameters
     validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
+    validate :validate_parameters
 
     # rubocop:disable Naming/AccessorMethodName
     def get_service_datasource
@@ -111,8 +111,7 @@ module Carto
     end
 
     def validate_db_connection
-      connector = Carto::Connector.new(parameters: {}, connection: self, user: user, logger: nil)
-      connector.check_connection
+      connection_manager.check(self)
     rescue Carto::Connector::InvalidParametersError => e
       if e.to_s.match?(/Invalid provider/im)
         errors.add :connector, e.to_s

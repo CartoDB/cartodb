@@ -23,10 +23,10 @@ TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_Link
 # save parallel logs tests to be uploaded later"
 cat parallel_tests/6*.log  > parallel_tests_logs
 
-if [ "$failedSpecs" -gt "1" ];
+if [ "$failedSpecs" -gt "10" ];
 then
   echo "ERROR: Too many failures for a second try. Giving up."
-  echo "$failedSpecs failed tests" > tests_exit_status
+  echo "$failedSpecs failed tests, see parallel_tests_logs and docker-compose logs" > tests_exit_status
 else
   echo "*****************************************************************************************************"
   echo "Giving a second try to the next specs"
@@ -40,6 +40,6 @@ else
   if [ $RC -eq 0 ]; then
     echo ok > tests_exit_status
   else
-    echo "some tests failed after a second try" > tests_exit_status
+    echo "some tests failed after a second try, see serial_tests_logs" > tests_exit_status
   fi
 fi

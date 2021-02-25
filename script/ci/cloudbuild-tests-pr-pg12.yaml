@@ -113,7 +113,8 @@ steps:
       if [ $(cat tests_exit_status) == "ok" ];then
         exit 0
       else
-        echo "tests failed, logs are at gs://cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
+        cat tests_exit_status
+        echo "tests failed, logs are at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
         exit 1
       fi
 

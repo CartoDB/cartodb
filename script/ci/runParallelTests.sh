@@ -29,7 +29,4 @@ script/ci/wrapper.sh $WORKERS || exit 1
 time parallel -j $WORKERS -a parallel_tests/specfull.txt 'script/ci/executor.sh {} {%} {#}' || exit 1
 
 # SECOND TRY
-script/ci/secondTry.sh || exit 1
-
-# REPORTER
-script/ci/reporter.sh || exit 1
+script/ci/secondTry.sh

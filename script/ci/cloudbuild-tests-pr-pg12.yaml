@@ -95,14 +95,28 @@ steps:
   args:
     - -cx
     - |
-      docker-compose -f docker-compose-pg12.yml logs --no-color > docker-compose-logs
-      docker cp builder_1:/cartodb/parallel_tests_logs .
+      mkdir test_logs_${BUILD_ID}
+      docker-compose -f docker-compose-pg12.yml logs --no-color > test_logs_${BUILD_ID}/docker-compose-logs
+      docker cp builder_1:/cartodb/parallel_tests_logs test_logs_${BUILD_ID}/parallel_tests_logs
+      docker cp builder_1:/cartodb/serial_tests_logs test_logs_${BUILD_ID}/serial_tests_logs || true
+      docker cp builder_1:/cartodb/tests_exit_status tests_exit_status
       echo "docker-compose and parallel tests logs will be available during 1 day at gs://cartodb-ci-tmp-logs/${BUILD_ID}/"
 
-artifacts:
-  objects:
-    location: 'gs://cartodb-ci-tmp-logs/${BUILD_ID}'
-    paths: ['docker-compose-logs', 'parallel_tests_logs' ]
+- name: gcr.io/cloud-builders/gsutil
+  args: [ '-m', 'cp', '-r', 'test_logs_${BUILD_ID}', 'gs://cartodb-ci-tmp-logs/' ]
+
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  args:
+    - -cx
+    - |
+      if [ $(cat tests_exit_status) == "ok" ];then
+        exit 0
+      else
+        echo "tests failed, logs are at gs://cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
+        exit 1
+      fi
+
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}

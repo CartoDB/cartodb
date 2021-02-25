@@ -20,11 +20,7 @@ describe CartoDB::Importer2::ConnectorRunner do
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
     @providers = %w(dummy)
     @fake_log.clear
-    Carto::Connector::PROVIDERS << DummyConnectorProvider
-    Carto::Connector::PROVIDERS << DummyConnectorProviderWithModifiedDate
-    Carto::Connector.providers(all: true).keys.each do |provider_name|
-      Carto::ConnectorProvider.create! name: provider_name
-    end
+    @previous_providers = replace_connector_providers(DummyConnectorProvider, DummyConnectorProviderWithModifiedDate)
   end
 
   before(:each) do
@@ -35,10 +31,7 @@ describe CartoDB::Importer2::ConnectorRunner do
   after(:all) do
     @user.destroy
     @feature_flag.destroy
-    Carto::Connector.providers(all: true).keys.each do |provider_name|
-      Carto::ConnectorProvider.find_by_name(provider_name).destroy
-    end
-    Carto::Connector::PROVIDERS.delete DummyConnectorProvider
+    restore_connector_providers(@previous_providers)
   end
 
   after(:each) do

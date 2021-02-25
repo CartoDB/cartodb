@@ -28,6 +28,10 @@ script/ci/wrapper.sh $WORKERS || exit 1
 # TESTS
 time parallel -j $WORKERS -a parallel_tests/specfull.txt 'script/ci/executor.sh {} {%} {#}' || exit 1
 
+# print logs of first try
+echo "PRINT LOGS OF FAILED PARALLEL TESTS (FIRST TRY)"
+time cat parallel_tests/*.log
+
 # SECOND TRY
 script/ci/secondTry.sh || exit 1
 

@@ -11,7 +11,7 @@ module Carto
 
       def self.instance(csrf, base_callback_url, invitation_token: nil, organization_name: nil)
         if config['client_id'].present?
-          if Cartodb::Central.sync_data_with_cartodb_central?
+          if Cartodb::Central.api_sync_enabled?
             base_callback_url = Cartodb::Central.new.host + URI.parse(base_callback_url).path
           end
           new(csrf, base_callback_url, invitation_token, organization_name)

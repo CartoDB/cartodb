@@ -582,7 +582,6 @@ describe Carto::Api::Public::OauthAppsController do
 
   describe 'destroy' do
     before(:each) do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       Carto::OauthAppUser.any_instance.stubs(:reassign_owners).returns(true)
       Carto::OauthAppUser.any_instance.stubs(:drop_roles).returns(true)
       @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)

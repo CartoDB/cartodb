@@ -3,9 +3,28 @@ require_relative '../carto/http/client'
 module Cartodb
   class Central
 
-    def self.sync_data_with_cartodb_central?
+    def self.message_broker_sync_enabled?
       Cartodb.get_config(:message_broker, 'project_id').present? &&
         Cartodb.get_config(:message_broker, 'central_subscription_name').present?
+    end
+
+    def self.message_broker_sync_disabled?
+      !message_broker_sync_enabled?
+    end
+
+    def self.api_sync_enabled?
+      Cartodb.get_config(:cartodb_central_api, 'username').present? &&
+        Cartodb.get_config(:cartodb_central_api, 'password').present?
+    end
+
+    def self.api_sync_disabled?
+      !api_sync_enabled?
+    end
+
+    class <<self
+
+      alias login_redirection_enabled? api_sync_enabled?
+
     end
 
     def initialize

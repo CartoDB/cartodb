@@ -292,10 +292,9 @@ describe Carto::OauthProviderController do
     end
 
     it 'with valid payload, does not show the username in the consent form if the oauth_app does not have user' do
-      @oauth_app.user = nil
-      @oauth_app.avoid_sync_central = true
-      @oauth_app.stubs(:central_enabled?).returns(true)
-      @oauth_app.save!
+      Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
+      @oauth_app.update!(user: nil, avoid_sync_central: true)
+
       get oauth_provider_authorize_url(valid_payload)
 
       expect(response.status).to(eq(200))

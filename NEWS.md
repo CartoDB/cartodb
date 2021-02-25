@@ -11,6 +11,7 @@ sudo make install
 
 ### Features
 
+- Save cloud connections data to redis [#16165](https://github.com/CartoDB/cartodb/pull/16165)
 - New connections API [15939](https://github.com/CartoDB/cartodb/pull/15939)
 - New endpoints to fetch users' datasets and tilesets from their BigQuery connection [16061](https://github.com/CartoDB/cartodb/pull/16061)
 - New BigQuery connector [16029](https://github.com/CartoDB/cartodb/pull/16029)
@@ -22,6 +23,9 @@ sudo make install
 - Adds JSON-LD with the dataset information in the Data Catalog [#16138](https://github.com/CartoDB/cartodb/pull/16138)
 - Add search in 'new map' screen [16166](https://github.com/CartoDB/cartodb/pull/16166)
 - Migrate FeatureFlag & PricePlan synchronization to the Message Broker [#16098](https://github.com/CartoDB/cartodb/pull/16098)
+- Split configuration for Message Broker & Central login redirection [#16150](https://github.com/CartoDB/cartodb/pull/16150)
+- Remove Data Library gallery page (now redirected to Spatial Data Catalog) [#16133](https://github.com/CartoDB/cartodb/pull/16133)
+
 ### Bug fixes / enhancements
 
 - Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)

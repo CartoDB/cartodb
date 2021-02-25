@@ -49,7 +49,7 @@ class SessionsController < ApplicationController
     elsif saml_authentication? && !user
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
       redirect_to(saml_service.authentication_request)
-    elsif central_enabled? && !@organization.try(:auth_enabled?)
+    elsif Cartodb::Central.login_redirection_enabled? && !@organization.try(:auth_enabled?)
       url = Cartodb::Central.new.login_url
       url += "?error=#{params[:error]}" if params[:error].present?
       redirect_to(url)
@@ -76,8 +76,8 @@ class SessionsController < ApplicationController
     end
 
     candidate_user = Carto::User.where(username: username).first
-
-    if central_enabled? && @organization && candidate_user && !candidate_user.belongs_to_organization?(@organization)
+    if Cartodb::Central.login_redirection_enabled? && @organization && candidate_user &&
+       !candidate_user.belongs_to_organization?(@organization)
       @flash_login_error = 'The user is not part of the organization'
       @user_login_url = Cartodb::Central.new.login_url
       return render(action: 'new')
@@ -213,7 +213,11 @@ class SessionsController < ApplicationController
 
     respond_to do |format|
       format.html do
-        url = central_enabled? && !@organization.try(:auth_enabled?) ? Cartodb::Central.new.login_url : login_url
+        url = if Cartodb::Central.login_redirection_enabled? && !@organization.try(:auth_enabled?)
+                Cartodb::Central.new.login_url
+              else
+                login_url
+              end
         redirect_to(url + "?error=#{SESSION_EXPIRED}")
       end
       format.json do
@@ -309,10 +313,6 @@ class SessionsController < ApplicationController
   def after_login_url(user)
     return login_url unless user
     session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
-  end
-
-  def central_enabled?
-    Cartodb::Central.sync_data_with_cartodb_central?
   end
 
   def extract_username(request, params)
@@ -416,7 +416,7 @@ class SessionsController < ApplicationController
     username = CartoDB.extract_subdomain(request)
     if username && (Carto::User.exists?(username: username) || Carto::Organization.exists?(name: username))
       CartoDB.url(self, 'public_visualizations_home')
-    elsif Cartodb::Central.sync_data_with_cartodb_central?
+    elsif Cartodb::Central.login_redirection_enabled?
       "https://carto.com"
     else
       "/404.html"

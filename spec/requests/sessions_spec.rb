@@ -41,7 +41,6 @@ feature "Sessions" do
       # we use this to avoid generating the static assets in CI
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
-      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
       visit login_path
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => 'blablapassword'
@@ -140,7 +139,6 @@ feature "Sessions" do
         mfa.save!
         @user_mfa_setup.reload
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
         visit login_path
         fill_in 'email', with: @user_mfa_setup.email
         fill_in 'password', with: @user_mfa_setup.email.split('@').first
@@ -169,7 +167,6 @@ feature "Sessions" do
         mfa.enabled = false
         mfa.save!
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
         visit login_path
         fill_in 'email', with: @user_mfa_setup.email
         fill_in 'password', with: @user_mfa_setup.email.split('@').first
@@ -186,7 +183,6 @@ feature "Sessions" do
         # we use this to avoid generating the static assets in client_application
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
         visit login_path
         fill_in 'email', with: @user_mfa.email
         fill_in 'password', with: @user_mfa.email.split('@').first
@@ -212,7 +208,6 @@ feature "Sessions" do
         # we use this to avoid generating the static assets in CI
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
         visit login_path
         fill_in 'email', with: @user_mfa.email
         fill_in 'password', with: @user_mfa.email.split('@').first
@@ -237,7 +232,6 @@ feature "Sessions" do
         # we use this to avoid generating the static assets in CI
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
-        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
         visit login_path
         fill_in 'email', with: @user_mfa.email
         fill_in 'password', with: @user_mfa.email.split('@').first

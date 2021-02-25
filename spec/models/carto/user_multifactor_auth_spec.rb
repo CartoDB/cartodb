@@ -12,7 +12,7 @@ describe Carto::UserMultifactorAuth do
   end
 
   before :each do
-    Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+    Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
     @carto_user.reload.user_multifactor_auths.each(&:destroy!)
   end
 
@@ -48,7 +48,7 @@ describe Carto::UserMultifactorAuth do
     end
 
     it 'syncs to central' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
       Cartodb::Central
         .any_instance
         .expects(:update_user)
@@ -62,7 +62,7 @@ describe Carto::UserMultifactorAuth do
   describe '#update' do
     it 'syncs enabled to central' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
 
       Cartodb::Central
         .any_instance
@@ -77,7 +77,7 @@ describe Carto::UserMultifactorAuth do
 
     it 'syncs needs setup to central' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type, enabled: true)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
 
       Cartodb::Central
         .any_instance
@@ -92,7 +92,7 @@ describe Carto::UserMultifactorAuth do
 
     it 'syncs disabled to central' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
 
       Cartodb::Central
         .any_instance

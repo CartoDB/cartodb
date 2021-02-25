@@ -85,7 +85,7 @@ class Carto::UserCreation < ActiveRecord::Base
       # promoting_user -> creating_user_in_central -> load_common_data -> success
       #   creating_user_in_central is skipped if central is not configured
       #   load_common_data is skipped for viewers
-      transition promoting_user: :creating_user_in_central, if: :sync_data_with_cartodb_central?
+      transition promoting_user: :creating_user_in_central, if: -> { Cartodb::Central.message_broker_sync_enabled? }
       transition promoting_user: :load_common_data, unless: :viewer?
       transition promoting_user: :success
 
@@ -343,10 +343,5 @@ class Carto::UserCreation < ActiveRecord::Base
   def clean_password
     self.crypted_password = ''
     self.save
-  end
-
-  # INFO: state_machine needs guard methods to be instance methods
-  def sync_data_with_cartodb_central?
-    Cartodb::Central.sync_data_with_cartodb_central?
   end
 end

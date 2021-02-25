@@ -93,10 +93,10 @@ steps:
 - name: 'docker/compose:1.22.0'
   entrypoint: /bin/sh
   args:
-    - -cx
+    - -c
     - |
       mkdir test_logs_${BUILD_ID}
-      docker-compose -f docker-compose-pg12.yml logs --no-color > test_logs_${BUILD_ID}/docker-compose-logs
+      docker-compose -f docker-compose-pg12.yml logs --no-color > test_logs_${BUILD_ID}/docker_compose_logs
       docker cp builder_1:/cartodb/parallel_tests_logs test_logs_${BUILD_ID}/parallel_tests_logs
       docker cp builder_1:/cartodb/serial_tests_logs test_logs_${BUILD_ID}/serial_tests_logs || true
       docker cp builder_1:/cartodb/tests_exit_status tests_exit_status
@@ -108,7 +108,7 @@ steps:
 - name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
   args:
-    - -cx
+    - -c
     - |
       if [ $(cat tests_exit_status) == "ok" ];then
         exit 0

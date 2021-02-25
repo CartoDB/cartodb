@@ -26,7 +26,7 @@ cat parallel_tests/6*.log  > parallel_tests_logs
 if [ "$failedSpecs" -gt "10" ];
 then
   echo "ERROR: Too many failures for a second try. Giving up."
-  echo "$failedSpecs failed tests, see parallel_tests_logs and docker-compose logs" > tests_exit_status
+  echo "$failedSpecs failed tests > 10, see parallel_tests_logs and docker-compose logs" > tests_exit_status
 else
   echo "*****************************************************************************************************"
   echo "Giving a second try to the next specs"

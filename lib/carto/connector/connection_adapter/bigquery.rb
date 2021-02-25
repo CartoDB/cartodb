@@ -40,21 +40,21 @@ module Carto
 
       def create
         super
-        return if @connection.parameters.blank?
+        return unless spatial_extension?
 
         create_spatial_extension_setup
       end
 
       def destroy
         super
-        return if @connection.parameters.blank?
+        return unless spatial_extension?
 
         remove_spatial_extension_setup
       end
 
       def update
         super
-        return if @connection.parameters.blank?
+        return unless spatial_extension?
 
         update_spatial_extension_setup
       end
@@ -66,6 +66,10 @@ module Carto
       # end
 
       private
+
+      def spatial_extension?
+        @connection.parameters.present? && !@connection.global?
+      end
 
       def central
         @central ||= Cartodb::Central.new

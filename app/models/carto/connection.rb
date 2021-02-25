@@ -4,15 +4,30 @@ module Carto
     TYPE_OAUTH_SERVICE = 'oauth-service'.freeze
     TYPE_DB_CONNECTOR = 'db-connector'.freeze
 
-    belongs_to :user, class_name: 'Carto::User', inverse_of: :connections
+    GLOBAL_NAME_SEPARATOR = '/'
+
+    belongs_to :user, class_name: 'Carto::User', inverse_of: :own_connections
+    belongs_to :organization, class_name: 'Carto::Organization', inverse_of: :connections
 
     scope :oauth_connections, -> { where(connection_type: TYPE_OAUTH_SERVICE) }
     scope :db_connections, -> { where(connection_type: TYPE_DB_CONNECTOR) }
 
-    validates :name, uniqueness: { scope: :user_id }, presence: true
+    validates :name, presence: true
+    validates :global_name, presence: true, uniqueness: true
+
     validates :connection_type, inclusion: { in: [TYPE_OAUTH_SERVICE, TYPE_DB_CONNECTOR] }
     validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
+    validate :validate_ownership
+    validate :validate_name
     validate :validate_parameters
+
+    def global?
+      user.blank? && organization.present?
+    end
+
+    def own?
+      !global?
+    end
 
     # rubocop:disable Naming/AccessorMethodName
     def get_service_datasource
@@ -47,6 +62,10 @@ module Carto
     after_update :manage_update
     after_destroy :manage_destroy
 
+    def connection_owner
+      user || organization.owner
+    end
+
     private
 
     def check_type!(type, message)
@@ -54,7 +73,7 @@ module Carto
     end
 
     def connection_manager
-      Carto::ConnectionManager.new(user)
+      Carto::ConnectionManager.new(connection_owner)
     end
 
     def manage_create
@@ -80,15 +99,28 @@ module Carto
     end
 
     def set_name
-      return if name.present?
-
-      self.name = connector if connection_type == TYPE_OAUTH_SERVICE
+      self.name = connector if connection_type == TYPE_OAUTH_SERVICE && name.blank?
+      self.global_name = "#{connection_owner.username}#{GLOBAL_NAME_SEPARATOR}#{name}"
     end
 
     def set_parameters
       return if parameters.present?
 
       self.parameters = { refresh_token: token } if connection_type == TYPE_OAUTH_SERVICE
+    end
+
+    def validate_name
+      # TODO: more restrictive character set for names
+      errors.add :name, "Invalid character in name: #{GLOBAL_NAME_SEPARATOR}" if name.include?(GLOBAL_NAME_SEPARATOR)
+    end
+
+    def validate_ownership
+      # TODO: if global? then connection_type == TYPE_OAUTH_SERVICE not allowed
+      if user_id.present? && organization_id.present?
+        errors.add :base, "Connection can't belong to an user and an organization simultaneously"
+      elsif user_id.blank? && organization_id.blank?
+        errors.add :user_id, "Connection must belong to user or be global (belong to organization)"
+      end
     end
 
     def validate_parameters

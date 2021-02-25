@@ -65,6 +65,12 @@ module Carto
     end
 
     def update_redis_metadata
+      # TODO: use @connection.global_name instead of @connection.id,
+      # or, if key is changed to "cloud_connections:#{@connection.global_name}",
+      # $users_metadata.hset(redis_key, serialized_connection=
+      # or even
+      # $users_metadata.hmset(redis_key, *connection_attributes)
+      # with connection_attributes = [connection_type, @connection.connection_type, ...]
       $users_metadata.hset(redis_key, @connection.id, serialized_connection)
     end
 
@@ -73,7 +79,8 @@ module Carto
     end
 
     def redis_key
-      "cloud_connections:#{@connection.user.username}:#{@connection.connector}"
+      # TODO: "cloud_connections:#{@connection.global_name}"
+      "cloud_connections:#{@connection.connection_owner.username}:#{@connection.connector}"
     end
 
     def serialized_connection

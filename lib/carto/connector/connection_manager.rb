@@ -44,7 +44,7 @@ module Carto
     end
 
     def show_connection(id)
-      present_connection @user.connections.find(id)
+      present_connection fetch_connection(id)
     end
 
     def present_connection(connection)
@@ -170,8 +170,15 @@ module Carto
       @user.reload
     end
 
-    def fetch_connection(id)
-      @user.connections.find(id)
+    def fetch_connection(global_name_or_id)
+      connection = Carto::Connection.find_by(global_name: global_name_or_id)
+      if connection.present?
+        raise "Invalid connection ownership" unless connection.user_id == @user.id ||
+          (connection.organization_id.present? && connection.organization_id == @user.organization_id)
+      else
+        connection = @user.connections.find(global_name_or_id)
+      end
+      connection
     end
 
     def update_db_connection(id:, parameters: nil, name: nil)

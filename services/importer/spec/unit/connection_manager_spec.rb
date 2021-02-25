@@ -12,6 +12,7 @@ describe Carto::ConnectionManager do
     config = { 'dummy' => { 'enabled' => true } }
 
     Cartodb.with_config(connectors: config) do
+      # TODO: use mock connectors for snowflake, redshift, postgres, bigquery
       with_connector_providers(DummyConnectorProvider, incremental: true, &example)
     end
   end
@@ -362,6 +363,288 @@ describe Carto::ConnectionManager do
         expect(connection_manager.check(connection2)).to eq(true)
         Carto::ConnectionManager.any_instance.unstub(:oauth_connection_valid?)
       end
+    end
+  end
+
+
+  describe "#manage_create" do
+    after do
+      $users_metadata.keys('gcloud_connections:*').each do |key|
+        $users_metadata.del(key)
+      end
+    end
+
+    it "saves snowflake db connection data to redis" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        }
+      )
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['connection_type']).to eq(connection.connection_type)
+      expect(redis_data['connector']).to eq(connection.connector)
+      expect(redis_data['options']).to eq({ 'server' => 'the-server', 'database' => 'the-database' })
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
+    end
+
+    it "saves redshift db connection data to redis" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('redshift')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'redshift',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        }
+      )
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['connection_type']).to eq(connection.connection_type)
+      expect(redis_data['connector']).to eq(connection.connector)
+      expect(redis_data['options']).to eq({ 'server' => 'the-server', 'database' => 'the-database' })
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
+    end
+
+    it "saves postgres db connection data to redis" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('postgres')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'postgres',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        }
+      )
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['connection_type']).to eq(connection.connection_type)
+      expect(redis_data['connector']).to eq(connection.connector)
+      expect(redis_data['options']).to eq({ 'server' => 'the-server', 'database' => 'the-database' })
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
+    end
+
+    it "saves bigquery db connection data to redis" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('bigquery')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'bigquery',
+        connection_type: 'db-connector',
+        parameters: {
+          'billing_project' => 'the-billing-project',
+          'service_account' => 'the-service-account'
+        }
+      )
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['connection_type']).to eq(connection.connection_type)
+      expect(redis_data['connector']).to eq(connection.connector)
+      expect(redis_data['options']).to eq({ 'billing_project' => 'the-billing-project' })
+      expect(redis_data['credentials']).to eq({ 'service_account' => 'the-service-account' })
+    end
+
+    it "does not save non-cloud db connections to redis" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'dummy',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+        }
+      )
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+    end
+
+    it "does not save oauth connections to redis" do
+      connection_manager.manage_create(connection2)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection2.connector}", connection2.id)
+      expect(redis_json).to be(nil)
+    end
+
+    it "except for BQ oauth connections" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'bigquery',
+        connection_type: 'oauth-service',
+        token: 'the-token',
+        parameters: {
+          'billing_project' => 'the-billing-project'
+        }
+      )
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:bigquery", connection.id)
+      expect(redis_json).to be(nil)
+      Cartodb::Central.any_instance.stubs(:update_user)
+      connection_manager.manage_create(connection)
+      Cartodb::Central.any_instance.unstub(:update_user)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:bigquery", connection.id)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['connection_type']).to eq(connection.connection_type)
+      expect(redis_data['connector']).to eq(connection.connector)
+      expect(redis_data['options']).to eq({ 'billing_project' => 'the-billing-project' })
+      expect(redis_data['credentials']).to eq({ 'token' => 'the-token' })
+    end
+  end
+
+  describe "#manage_destroy" do
+    after do
+      $users_metadata.keys('gcloud_connections:*').each do |key|
+        $users_metadata.del(key)
+      end
+    end
+
+    it "removes snowflake db connection data from redis" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        }
+      )
+      $users_metadata.hset(
+        "cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data'
+      )
+
+      connection_manager.manage_destroy(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+    end
+
+    it "only removes deleted snowflake connection" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        }
+      )
+      $users_metadata.hset(
+        "cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data'
+      )
+      $users_metadata.hset(
+        "cloud_connections:#{user.username}:#{connection.connector}", '456', 'the-connection-data'
+      )
+
+      connection_manager.manage_destroy(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", '456')
+      expect(redis_json).not_to be(nil)
+    end
+  end
+
+  describe "#manage_update" do
+    after do
+      $users_metadata.keys('gcloud_connections:*').each do |key|
+        $users_metadata.del(key)
+      end
+    end
+
+    it "updates snowflake db connection data in redis" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        }
+      )
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      expect(redis_json).to be(nil)
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-new-password'
+        }
+      )
+      connection_manager.manage_update(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-new-password' })
     end
   end
 end

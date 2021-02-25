@@ -42,7 +42,6 @@ module Carto
         super
         return if @connection.parameters.blank?
 
-        update_redis_metadata
         create_spatial_extension_setup
       end
 
@@ -50,7 +49,6 @@ module Carto
         super
         return if @connection.parameters.blank?
 
-        remove_redis_metadata
         remove_spatial_extension_setup
       end
 
@@ -58,7 +56,6 @@ module Carto
         super
         return if @connection.parameters.blank?
 
-        update_redis_metadata
         update_spatial_extension_setup
       end
 
@@ -103,7 +100,33 @@ module Carto
         end
       end
 
+      def redis_metadata?
+        # Both OAuth & DB connections are saved in redis as long as they have some parameter.
+        # Note that legacy BQ OAuth connections (migrated from synchronization_oauths) do not have
+        # parameters, but future BQ OAuth connections will have at least one parameter (billing_project)
+        @connection.parameters.present?
+      end
+
+      def connection_credentials_keys
+        BQ_CONFIDENTIAL_PARAMS
+      end
+
+      def connection_credentials
+        return super unless @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+
+        { 'token': @connection.token }
+      end
+
+      # Temporally we need to mantain this redis key until maps api is updated
+      def bigquery_redis_key
+        "google:bq_settings:#{@connection.user.username}"
+      end
+
       def update_redis_metadata
+        super
+
+        return unless @connection.parameters.present?
+
         if @connection.parameters['service_account'].present?
           $users_metadata.hmset(
             bigquery_redis_key,
@@ -114,13 +137,10 @@ module Carto
       end
 
       def remove_redis_metadata
+        super
+
         $users_metadata.del bigquery_redis_key
       end
-
-      def bigquery_redis_key
-        "google:bq_settings:#{@connection.user.username}"
-      end
-
     end
   end
 end

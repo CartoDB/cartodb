@@ -20,19 +20,20 @@ fi
 
 TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_LinkGhostTables() called with username=\|terminating connection due to administrator command\|Error trying to connect to Invalidation Service to link Ghost Tables: No module named redis\|pg_restore:\|pg_dump:\|is already a member of\|Skipping Ghost Tables linking"
 
-echo "*****************************************************************************************************"
-echo "save logs of tests that ran in parallel"
-echo "*****************************************************************************************************"
-cat parallel_tests/6*.log | grep -v "$TRASH_MESSAGES"  > parallel_tests_logs
+# save parallel logs tests to be uploaded later"
+cat parallel_tests/6*.log  > parallel_tests_logs
 
-if [ "$failedSpecs" -gt "10" ];
+if [ "$failedSpecs" -gt "1" ];
 then
   echo "ERROR: Too many failures for a second try. Giving up."
   exit 1;
 fi
 
+echo "*****************************************************************************************************"
 echo "Giving a second try to the next specs"
+echo "*****************************************************************************************************"
 cat parallel_tests/specfailed.log
+echo "*****************************************************************************************************"
 
 RAILS_ENV=test bundle exec rspec $specs > tmp_file 2>&1
 RC=$?

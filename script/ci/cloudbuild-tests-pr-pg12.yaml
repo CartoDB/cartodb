@@ -97,6 +97,7 @@ steps:
     - |
       docker-compose -f docker-compose-pg12.yml logs --no-color > docker-compose-logs
       docker cp builder_1:/cartodb/parallel_tests_logs .
+      echo "docker-compose and parallel tests logs will be available during 1 day at gs://cartodb-ci-tmp-logs/${BUILD_ID}/"
 
 artifacts:
   objects:

@@ -75,7 +75,7 @@ steps:
     - -cx
     - |
       docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
-      if [ $? -ne 0 ] 
+      if [ $? -ne 0 ]
       then
           docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
           docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
@@ -88,9 +88,9 @@ steps:
   timeout: 900s
 
 - name: gcr.io/cloud-builders/docker
-  args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 18' ]
+  args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.new.sh 18' ]
 
-substitutions: 
+substitutions:
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
 options:
     machineType: 'N1_HIGHCPU_32'

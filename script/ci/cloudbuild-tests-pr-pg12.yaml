@@ -87,7 +87,7 @@ steps:
   args: ['-f', 'docker-compose-pg12.yml', 'up', '--build', '-d']
   timeout: 900s
 
-# Run tests, first in parallel, then give a second try in serial if some tsets fails
+# Run tests, first in parallel, then give a second try in serial if some tests fail
 - name: gcr.io/cloud-builders/docker
   args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 18' ]
   timeout: 1800s

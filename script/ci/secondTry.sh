@@ -13,6 +13,7 @@ failedSpecs=$(cat parallel_tests/specfailed.log | wc -l)
 
 if [ "$failedSpecs" -eq "0" ];
 then
+  echo ok > tests_exit_status
   exit 0;
 else
   specs=$(cat parallel_tests/specfailed.log | sed ':a;N;$!ba;s/\n/ /g')
@@ -22,6 +23,7 @@ TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_Link
 
 # save parallel logs tests to be uploaded later"
 cat parallel_tests/6*.log  > parallel_tests_logs
+
 
 if [ "$failedSpecs" -gt "10" ];
 then

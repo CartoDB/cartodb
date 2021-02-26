@@ -22,7 +22,7 @@ fi
 TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_LinkGhostTables() called with username=\|terminating connection due to administrator command\|Error trying to connect to Invalidation Service to link Ghost Tables: No module named redis\|pg_restore:\|pg_dump:\|is already a member of\|Skipping Ghost Tables linking"
 
 # save parallel logs tests to be uploaded later"
-cat parallel_tests/6*.log  > parallel_tests_logs
+cat parallel_tests/*.log  > parallel_tests_logs
 
 
 if [ "$failedSpecs" -gt "10" ];

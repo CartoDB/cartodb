@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# trigger rebuild
 set -aex
 
 CARTO_POSTGRES_HOST=localhost

@@ -24,7 +24,7 @@ require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
 require_dependency 'carto/gcloud_user_settings'
 require_dependency 'carto/helpers/user_commons'
-
+# trigger rebuild 2
 class User < Sequel::Model
   include CartoDB::MiniSequel
   include CartoDB::UserDecorator

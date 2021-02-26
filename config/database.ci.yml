@@ -1,0 +1,24 @@
+# test:
+#   adapter: postgresql
+#   encoding: unicode
+#   database: carto_db_test
+#   host: localhost
+#   port: 5432
+#   direct_port: 5432
+#   username: postgres
+#   password:
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: cartodb_test_<%= ENV['TEST_ENV_NUMBER'] %>
+  host: <%= ENV['CARTO_POSTGRES_HOST'] %>
+  port: <%= ENV['CARTO_POSTGRES_PORT'] %>
+  direct_port: <%= ENV['CARTO_POSTGRES_DIRECT_PORT'] %>
+  username: <%= ENV['CARTO_POSTGRES_USERNAME'] %>
+  password: <%= ENV['CARTO_POSTGRES_PASSWORD'] %>
+  conn_validator_timeout: -1
+  connect_timeout: -1
+  prepared_statements: false
+  variables:
+    statement_timeout: 10000

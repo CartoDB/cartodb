@@ -166,9 +166,12 @@ DESC
 
       puts "Setting up the remote database (#{user})"
 
-      raise("Could not create the new remote user") unless system("psql -U postgres -h 127.0.0.1 -p #{port} -c \"CREATE ROLE #{user} PASSWORD '#{user}' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;\"")
-      raise("Could not create the new remote database") unless system("psql -U postgres -h 127.0.0.1 -p #{port} -c \"CREATE DATABASE #{user} OWNER '#{user}';\"")
-      raise("Could not install postgis in the new remote database") unless system("psql -U postgres -h 127.0.0.1 -p #{port} -d #{user} -c \"CREATE EXTENSION postgis;\"")
+      pg_user = ENV['CARTO_POSTGRES_USERNAME']
+      pg_host = ENV['CARTO_POSTGRES_HOST']
+
+      raise("Could not create the new remote user") unless system("psql -U #{pg_user} -h #{pg_host} -p #{port} -c \"CREATE ROLE #{user} PASSWORD '#{user}' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;\"")
+      raise("Could not create the new remote database") unless system("psql -U #{pg_user} -h #{pg_host} -p #{port} -c \"CREATE DATABASE #{pg_user} OWNER '#{pg_user}';\"")
+      raise("Could not install postgis in the new remote database") unless system("psql -U #{pg_user} -h #{pg_host} -p #{port} -d #{pg_user} -c \"CREATE EXTENSION postgis;\"")
 
     end
 

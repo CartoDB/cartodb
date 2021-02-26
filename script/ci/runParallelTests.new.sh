@@ -13,9 +13,16 @@ RAILS_ENV=test
 # Avoids conflicts dropping DB & users
 PARALLEL=true
 
-# Show the previous database.yml contents as a reference:
+echo 'Contents of /cartodb/config/database.yml'
+echo '----------------------------------------'
 cat /cartodb/config/database.yml
+echo '----------------------------------------'
+
 # Copy database.yml
+echo 'Contents of /cartodb/config/database.ci.yml'
+echo '----------------------------------------'
+cat /cartodb/config/database.ci.yml
+echo '----------------------------------------'
 cp /cartodb/config/database.ci.yml /cartodb/config/database.yml
 
 # Init Builder

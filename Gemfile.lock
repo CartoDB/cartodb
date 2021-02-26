@@ -303,6 +303,8 @@ GEM
       rack (>= 1.2, < 3)
     os (1.1.1)
     parallel (1.19.2)
+    parallel_tests (3.4.0)
+      parallel
     parser (2.7.2.0)
       ast (~> 2.4.1)
     pg (0.20.0)
@@ -575,6 +577,7 @@ DEPENDENCIES
   nokogiri (~> 1.10)
   oauth (= 0.4.7)
   oauth-plugin!
+  parallel_tests
   pg (= 0.20.0)
   poltergeist (= 1.18.1)
   protected_attributes

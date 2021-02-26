@@ -32,7 +32,7 @@ createdb -T template0 -O postgres -h $CARTO_POSTGRES_HOST -U $CARTO_POSTGRES_USE
 psql -h $CARTO_POSTGRES_HOST -U $CARTO_POSTGRES_USERNAME template_postgis -c 'CREATE EXTENSION IF NOT EXISTS postgis;CREATE EXTENSION IF NOT EXISTS postgis_topology;'
 
 # Setup test databases
-bundle exec rake parallel:drop --trace || true
+# bundle exec rake parallel:drop --trace || true
 bundle exec rake parallel:create --trace
 bundle exec rake parallel:migrate --trace
 

@@ -4,16 +4,15 @@ module Carto
     TYPE_OAUTH_SERVICE = 'oauth-service'.freeze
     TYPE_DB_CONNECTOR = 'db-connector'.freeze
 
-    GLOBAL_NAME_SEPARATOR = '/'
+    SHARED_NAME_SEPARATOR = '.'
 
-    belongs_to :user, class_name: 'Carto::User', inverse_of: :own_connections
+    belongs_to :user, class_name: 'Carto::User', inverse_of: :exclusive_connections
     belongs_to :organization, class_name: 'Carto::Organization', inverse_of: :connections
 
     scope :oauth_connections, -> { where(connection_type: TYPE_OAUTH_SERVICE) }
     scope :db_connections, -> { where(connection_type: TYPE_DB_CONNECTOR) }
 
-    validates :name, presence: true
-    validates :global_name, presence: true, uniqueness: true
+    validates :name, presence: true, uniqueness: { scope: [ :user_id, :organization_id ]}
 
     validates :connection_type, inclusion: { in: [TYPE_OAUTH_SERVICE, TYPE_DB_CONNECTOR] }
     validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
@@ -21,12 +20,24 @@ module Carto
     validate :validate_name
     validate :validate_parameters
 
-    def global?
+    def display_name
+      shared? ? name.split(SHARED_NAME_SEPARATOR).last : name
+    end
+
+    def shared?
       user.blank? && organization.present?
     end
 
-    def own?
-      !global?
+    def exclusive?
+      !shared?
+    end
+
+    def editable_by?(some_user)
+      shared? ? some_user == organization.owner : some_user == user
+    end
+
+    def usable_by?(some_user)
+      shared? ? some_user.organization == organization : some_user == user
     end
 
     # rubocop:disable Naming/AccessorMethodName
@@ -62,18 +73,18 @@ module Carto
     after_update :manage_update
     after_destroy :manage_destroy
 
-    def connection_owner
+    private
+
+    def owner
       user || organization.owner
     end
-
-    private
 
     def check_type!(type, message)
       raise message unless connection_type == type
     end
 
     def connection_manager
-      Carto::ConnectionManager.new(connection_owner)
+      Carto::ConnectionManager.new(owner)
     end
 
     def manage_create
@@ -100,7 +111,7 @@ module Carto
 
     def set_name
       self.name = connector if connection_type == TYPE_OAUTH_SERVICE && name.blank?
-      self.global_name = "#{connection_owner.username}#{GLOBAL_NAME_SEPARATOR}#{name}"
+      self.name = "#{organization.name}#{SHARED_NAME_SEPARATOR}#{name}" if shared?
     end
 
     def set_parameters
@@ -110,17 +121,18 @@ module Carto
     end
 
     def validate_name
-      # TODO: more restrictive character set for names
-      errors.add :name, "Invalid character in name: #{GLOBAL_NAME_SEPARATOR}" if name.include?(GLOBAL_NAME_SEPARATOR)
+      # TODO: more restrictive character set for names?
+      max_parts = shared? ? 2 : 1
+      errors.add :name, "Invalid character in name: #{SHARED_NAME_SEPARATOR}" if name.split(SHARED_NAME_SEPARATOR).size > max_parts || name[-1] == SHARED_NAME_SEPARATOR
     end
 
     def validate_ownership
-      # TODO: if global? then connection_type == TYPE_OAUTH_SERVICE not allowed
       if user_id.present? && organization_id.present?
         errors.add :base, "Connection can't belong to an user and an organization simultaneously"
       elsif user_id.blank? && organization_id.blank?
-        errors.add :user_id, "Connection must belong to user or be global (belong to organization)"
+        errors.add :user_id, "Connection must belong to user or be shared (belong to organization)"
       end
+      # TODO: if shared? then connection_type == TYPE_OAUTH_SERVICE not allowed
     end
 
     def validate_parameters

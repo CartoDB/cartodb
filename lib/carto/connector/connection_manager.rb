@@ -50,9 +50,11 @@ module Carto
     def present_connection(connection)
       presented_connection = {
         id: connection.id,
-        name: connection.name,
+        name: connection.display_name,
         connector: connection.connector,
-        type: connection.connection_type
+        type: connection.connection_type,
+        shared: connection.shared?,
+        editable: connection.editable_by?(@user)
       }
       presented_connection[:parameters] = adapter(connection).presented_parameters if connection.parameters.present?
       presented_connection[:token] = adapter(connection).presented_token if connection.token.present?
@@ -70,9 +72,13 @@ module Carto
       @user.oauth_connections.find_by(connector: service)
     end
 
-    def create_db_connection(name:, provider:, parameters:)
+    def create_db_connection(name:, provider:, shared: false, parameters:)
       check_db_provider!(provider)
-      @user.connections.create!(name: name, connector: provider, parameters: parameters)
+      if shared
+        create_shared_db_connection(name: name, provider: provider, parameters: parameters)
+      else
+        create_exclusive_db_connection(name: name, provider: provider, parameters: parameters)
+      end
     end
 
     def find_or_create_db_connection(provider, parameters)
@@ -80,7 +86,8 @@ module Carto
         create_db_connection(
           name: generate_connection_name(provider),
           provider: provider,
-          parameters: parameters
+          parameters: parameters,
+          shared: false
         )
     end
 
@@ -170,13 +177,19 @@ module Carto
       @user.reload
     end
 
-    def fetch_connection(global_name_or_id)
-      connection = Carto::Connection.find_by(global_name: global_name_or_id)
-      if connection.present?
-        raise "Invalid connection ownership" unless connection.user_id == @user.id ||
-          (connection.organization_id.present? && connection.organization_id == @user.organization_id)
+    UUID_FORMAT = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+
+    def fetch_connection(name_or_id)
+      if name_or_id.match?(UUID_FORMAT)
+        connection = @user.connections.find_by(id: name_or_id)
+        # TODO: Should also look in @user.organization, or first find globally, then check ownership
+        # raise "Invalid connection ownership" unless connection.user_id == @user.id ||
+        #   (connection.organization_id.present? && connection.organization_id == @user.organization_id)
       else
-        connection = @user.connections.find(global_name_or_id)
+        connection = @user.connections.find_by(name: name_or_id)
+        if !connection && @user.organization.present? && name_or_id.include?(Carto::Connection::SHARED_NAME_SEPARATOR)
+          connection = @user.organization.connections.find_by(name: name_or_id)
+        end
       end
       connection
     end
@@ -305,6 +318,19 @@ module Carto
     end
 
     private
+
+    def create_exclusive_db_connection(name:, provider:, parameters:)
+      @user.connections.create!(name: name, connector: provider, parameters: parameters)
+    end
+
+    def create_shared_db_connection(name:, provider:, parameters:)
+      unless @user.organization.present? && @user == @user.organization.owner # @user.owned_organization.present?
+        raise "Only organization owners can create shared connections"
+      end
+
+      @user.organization.connections.create!(name: name, connector: provider, parameters: parameters)
+    end
+
 
     def obtain_connection(connection_id, provider, connection_parameters, register)
       if connection_id.present?

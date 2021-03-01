@@ -32,6 +32,7 @@ module Carto
             connection = @connection_manager.create_db_connection(
               name: params[:name],
               provider: params[:connector],
+              shared: !!params[:shared],
               parameters: params[:parameters]
             )
             render_jsonp({ id: connection.id }, 201)

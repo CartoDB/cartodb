@@ -55,6 +55,14 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
+# Checkout repo with submodules
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/docker-dev-env --depth 1']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
 # Prepare cartodb files
 - name: ubuntu
   entrypoint: /bin/bash

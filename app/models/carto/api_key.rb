@@ -10,6 +10,8 @@ module Carto
 
     include Carto::AuthTokenGenerator
 
+    REDIS_KEY_PREFIX = 'api_keys:'.freeze
+
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
@@ -65,6 +67,8 @@ module Carto
     validate :valid_default_public_key, if: :default_public?
 
     after_create :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
+    after_create :create_remote_do_api_key, if: ->(api_key) { api_key.master? }
+
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
@@ -145,8 +149,18 @@ module Carto
         updated_at: api_key_hash[:updated_at],
         grants: api_key_hash[:grants],
         user_id: api_key_hash[:user_id],
+        remote_cloud_id: api_key_hash[:remote_cloud_id],
         skip_role_setup: true,
         skip_cdb_conf_info: true
+      )
+    end
+
+    def create_remote_do_api_key
+      message_broker = Carto::Common::MessageBroker.new(logger: Rails.logger)
+      notifications_topic = message_broker.get_topic(:cartodb_central)
+      notifications_topic.publish(
+        :create_remote_do_api_key,
+        { type: type, token: token, user_id: user_id, username: user.username }
       )
     end
 
@@ -378,8 +392,6 @@ module Carto
     private
 
     PASSWORD_LENGTH = 40
-
-    REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
     def raise_unprocessable_entity_error(error)
       raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && $1 || 'Unexpected error')
@@ -614,11 +626,12 @@ module Carto
     end
 
     def valid_master_key
-      errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
-      unless grants == MASTER_API_KEY_GRANTS
-        errors.add(:grants, "must grant all apis")
+      errors.add(:name, "must be #{NAME_MASTER} for master keys") if name != NAME_MASTER
+      errors.add(:grants, 'must grant all apis') if grants != MASTER_API_KEY_GRANTS
+
+      if user.present? # API keys synced from on-premises won't have a user record in CARTO-managed clouds
+        errors.add(:token, 'must match user model for master keys') if token != user.api_key
       end
-      errors.add(:token, "must match user model for master keys") unless token == user.api_key
     end
 
     def valid_default_public_key

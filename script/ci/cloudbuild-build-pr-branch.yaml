@@ -82,7 +82,9 @@ steps:
       - |
         cp -r docker-dev-env/* . 
         cp -f docker-dev-env/.env.sample .env
-        sed -i 's@'"$_DOCKER_IMAGE_TO_REPLACE":latest'@'"$_DOCKER_IMAGE_TO_REPLACE":"$_BRANCH_TAG"'@' .env
+        sed -i 's@'builder:latest'@'builder:"$_BRANCH_TAG"'@' .env
+        sed -i 's@'builder-resque:latest'@'builder-resque:"$_BRANCH_TAG"'@' .env
+        sed -i 's@'builder-subscriber:latest'@'builder-subscriber:"$_BRANCH_TAG"'@' .env
         cat .env | grep 'IMAGE'
 
 # Pull images in background

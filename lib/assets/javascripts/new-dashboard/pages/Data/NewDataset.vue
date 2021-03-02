@@ -28,10 +28,7 @@
           </ul>
           <div @click="createEmpty" class="u-flex u-flex__align--center create-empty is-small is-semibold">
             <img svg-inline height="16px" width="16px" class="u-mr--12" src="../../assets/icons/common/add.svg">
-            <template v-if="mode === 'map'">
-              {{$t('NewMapDatasetCard.emptyMap')}}
-            </template>
-            <template v-else-if="mode === 'layer'">
+            <template v-if="mode === 'layer' || mode === 'map'">
               {{$t('NewMapDatasetCard.emptyLayer')}}
             </template>
           </div>

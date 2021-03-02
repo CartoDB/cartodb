@@ -6,7 +6,7 @@ module Carto
 
     SHARED_NAME_SEPARATOR = '.'
 
-    belongs_to :user, class_name: 'Carto::User', inverse_of: :exclusive_connections
+    belongs_to :user, class_name: 'Carto::User', inverse_of: :individual_connections
     belongs_to :organization, class_name: 'Carto::Organization', inverse_of: :connections
 
     scope :oauth_connections, -> { where(connection_type: TYPE_OAUTH_SERVICE) }
@@ -28,7 +28,7 @@ module Carto
       user.blank? && organization.present?
     end
 
-    def exclusive?
+    def individual?
       !shared?
     end
 

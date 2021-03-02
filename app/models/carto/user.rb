@@ -46,11 +46,11 @@ class Carto::User < ActiveRecord::Base
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
 
-  has_many :exclusive_connections, class_name: 'Carto::Connection', inverse_of: :user, dependent: :destroy
+  has_many :individual_connections, class_name: 'Carto::Connection', inverse_of: :user, dependent: :destroy
   has_many :shared_connections, class_name: 'Carto::Connection', through: :organization, source: :connections
 
   def connections
-    Carto::Connection.from(%{((#{exclusive_connections.to_sql}) UNION ALL (#{shared_connections.to_sql})) AS connections})
+    Carto::Connection.from(%{((#{individual_connections.to_sql}) UNION ALL (#{shared_connections.to_sql})) AS connections})
   end
 
   delegate :oauth_connections, to: :connections

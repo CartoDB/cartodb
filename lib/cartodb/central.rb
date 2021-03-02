@@ -1,7 +1,10 @@
 require_relative '../carto/http/client'
+require './app/helpers/message_broker_helper'
 
 module Cartodb
   class Central
+
+    include ::MessageBrokerHelper
 
     def self.message_broker_sync_enabled?
       Cartodb.get_config(:message_broker, 'project_id').present? &&
@@ -199,10 +202,5 @@ module Cartodb
       send_request("api/users/#{username}/oauth_apps/#{app_id}", nil, :delete, [204])
     end
 
-    private
-
-    def cartodb_central_topic
-      Carto::Common::MessageBroker.new(logger: Rails.logger).get_topic(:cartodb_central)
-    end
   end
 end

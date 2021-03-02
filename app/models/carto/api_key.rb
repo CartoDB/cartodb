@@ -9,6 +9,7 @@ module Carto
   class ApiKey < ActiveRecord::Base
 
     include Carto::AuthTokenGenerator
+    include ::MessageBrokerHelper
 
     REDIS_KEY_PREFIX = 'api_keys:'.freeze
 
@@ -73,11 +74,13 @@ module Carto
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
     after_save :save_cdb_conf_info, unless: :skip_cdb_conf_info?
+    after_save :regenerate_remote_do_api_key, if: ->(k) { k.master? && k.token_changed? }
 
     after_destroy :reassign_owner, :drop_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
     after_destroy :remove_cdb_conf_info, unless: :skip_cdb_conf_info?
+    after_destroy :destroy_remote_do_api_key, if: ->(api_key) { api_key.master? }
 
     scope :master, -> { where(type: TYPE_MASTER) }
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
@@ -156,11 +159,31 @@ module Carto
     end
 
     def create_remote_do_api_key
-      message_broker = Carto::Common::MessageBroker.new(logger: Rails.logger)
-      notifications_topic = message_broker.get_topic(:cartodb_central)
-      notifications_topic.publish(
+      cartodb_central_topic.publish(
         :create_remote_do_api_key,
         { type: type, token: token, user_id: user_id, username: user.username }
+      )
+    end
+
+    def regenerate_remote_do_api_key
+      original_token, saved_token = token_change
+
+      # Order of execution is not guaranteed, but since the token is different there's no danger
+      # of race conditions
+      cartodb_central_topic.publish(
+        :destroy_remote_do_api_key,
+        { token: original_token, user_id: user_id, username: user.username }
+      )
+      cartodb_central_topic.publish(
+        :create_remote_do_api_key,
+        { type: type, token: saved_token, user_id: user_id, username: user.username }
+      )
+    end
+
+    def destroy_remote_do_api_key
+      cartodb_central_topic.publish(
+        :destroy_remote_do_api_key,
+        { token: token, user_id: user_id, username: user.username }
       )
     end
 

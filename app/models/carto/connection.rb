@@ -11,17 +11,20 @@ module Carto
 
     scope :oauth_connections, -> { where(connection_type: TYPE_OAUTH_SERVICE) }
     scope :db_connections, -> { where(connection_type: TYPE_DB_CONNECTOR) }
+    scope :shared_connections, -> { where(user_id: nil) }
+    scope :individual_connections, -> { where(organization_id: nil) }
 
     validates :name, presence: true, uniqueness: { scope: [ :user_id, :organization_id ]}
+    validates :internal_name, presence: true, uniqueness: { scope: [ :user_id, :organization_id ]}
 
     validates :connection_type, inclusion: { in: [TYPE_OAUTH_SERVICE, TYPE_DB_CONNECTOR] }
     validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
     validate :validate_ownership
-    validate :validate_name
     validate :validate_parameters
 
     def display_name
-      shared? ? name.split(SHARED_NAME_SEPARATOR).last : name
+      # TODO: add something line "#{name} (#{organization})" for shared connections?
+      name
     end
 
     def shared?
@@ -111,19 +114,15 @@ module Carto
 
     def set_name
       self.name = connector if connection_type == TYPE_OAUTH_SERVICE && name.blank?
-      self.name = "#{organization.name}#{SHARED_NAME_SEPARATOR}#{name}" if shared?
+      sanitized_name = sanitize_connection_name(self.name)
+      sanitized_name = "#{organization.name}#{SHARED_NAME_SEPARATOR}#{sanitized_name}" if shared?
+      self.internal_name = sanitized_name
     end
 
     def set_parameters
       return if parameters.present?
 
       self.parameters = { refresh_token: token } if connection_type == TYPE_OAUTH_SERVICE
-    end
-
-    def validate_name
-      # TODO: more restrictive character set for names?
-      max_parts = shared? ? 2 : 1
-      errors.add :name, "Invalid character in name: #{SHARED_NAME_SEPARATOR}" if name.split(SHARED_NAME_SEPARATOR).size > max_parts || name[-1] == SHARED_NAME_SEPARATOR
     end
 
     def validate_ownership
@@ -166,6 +165,13 @@ module Carto
       errors.add :token, e.to_s
     rescue StandardError => e
       errors.add :base, e.to_s
+    end
+
+    def sanitize_connection_name(name)
+      CartoDB::Importer2::StringSanitizer.sanitize(name, transliterate_cyrillic: true, transliterate_greek: true)
+
+      # TODO: should we make it start with a letter or underscore?
+      #   name = "connection_#{name}" unless name[/^[a-z_]{1}/]
     end
 
   end

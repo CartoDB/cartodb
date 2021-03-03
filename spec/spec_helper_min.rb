@@ -33,13 +33,21 @@ RSpec.configure do |config|
   config.include SharedEntitiesSpecHelper
   config.mock_with :mocha
 
-  config.after(:each) do
-    Delorean.back_to_the_present
-  end
-
   unless ENV['PARALLEL']
     config.before(:suite) do
       CartoDB::RedisTest.up
+    end
+  end
+
+  config.before(:all) do
+    double = MessageBrokerDouble.instance
+    Carto::Common::MessageBroker.stubs(:new).returns(double)
+
+    unless ENV['PARALLEL']
+      clean_redis_databases
+      clean_metadata_database
+      close_pool_connections
+      drop_leaked_test_user_databases
     end
   end
 
@@ -48,14 +56,6 @@ RSpec.configure do |config|
     Carto::Common::MessageBroker.stubs(:new).returns(double)
   end
 
-  config.before(:all) do
-    unless ENV['PARALLEL']
-      clean_redis_databases
-      clean_metadata_database
-      close_pool_connections
-      drop_leaked_test_user_databases
-    end
-  end
   config.after(:all) do
     unless ENV['PARALLEL'] || ENV['BUILD_ID']
       close_pool_connections
@@ -68,5 +68,9 @@ RSpec.configure do |config|
     config.after(:suite) do
       CartoDB::RedisTest.down
     end
+  end
+
+  config.after do
+    Delorean.back_to_the_present
   end
 end

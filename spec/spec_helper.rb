@@ -41,22 +41,16 @@ RSpec.configure do |config|
   config.include SharedEntitiesSpecHelper
   config.mock_with :mocha
 
-  config.after(:each) do
-    Delorean.back_to_the_present
-  end
-
   unless ENV['PARALLEL']
     config.before(:suite) do
       CartoDB::RedisTest.up
     end
   end
 
-  config.before do
+  config.before(:all) do
     double = MessageBrokerDouble.instance
     Carto::Common::MessageBroker.stubs(:new).returns(double)
-  end
 
-  config.before(:all) do
     unless ENV['PARALLEL']
       clean_redis_databases
       clean_metadata_database
@@ -65,6 +59,11 @@ RSpec.configure do |config|
     end
 
     CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
+  end
+
+  config.before do
+    double = MessageBrokerDouble.instance
+    Carto::Common::MessageBroker.stubs(:new).returns(double)
   end
 
   config.after(:all) do
@@ -79,6 +78,10 @@ RSpec.configure do |config|
     config.after(:suite) do
       CartoDB::RedisTest.down
     end
+  end
+
+  config.after do
+    Delorean.back_to_the_present
   end
 
   module Rack

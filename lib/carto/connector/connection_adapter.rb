@@ -40,11 +40,17 @@ module Carto
 
     def destroy
       revoke_token
-      remove_redis_metadata if redis_metadata?
+      remove_redis_metadata(@connection.name) if redis_metadata?
     end
 
     def update
-      update_redis_metadata if redis_metadata?
+      if redis_metadata?
+        if @connection.changes[:name].present
+          old_name = @connection.changes[:name].first
+          remove_redis_metadata(old_name)
+        end
+        update_redis_metadata
+      end
     end
 
     private
@@ -64,12 +70,12 @@ module Carto
          @connection.connector.in?(CLOUD_CONNECTORS)
     end
 
-    def update_redis_metadata
+    def update_redis_metadata(name)
       $users_metadata.hset(redis_key, @connection.name, serialized_connection)
     end
 
-    def remove_redis_metadata
-      $users_metadata.hdel redis_key, @connection.name
+    def remove_redis_metadata(name)
+      $users_metadata.hdel redis_key, name
     end
 
     def redis_key

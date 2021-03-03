@@ -125,7 +125,9 @@ module Carto
       elsif user_id.blank? && organization_id.blank?
         errors.add :user_id, "Connection must belong to user or be shared (belong to organization)"
       end
-      # TODO: if shared? then connection_type == TYPE_OAUTH_SERVICE not allowed
+      if shared? && connection_type == TYPE_OAUTH_SERVICE
+        errors.add :connection_type, "OAuth connections cannot be shared"
+      end
     end
 
     def validate_parameters

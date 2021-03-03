@@ -45,7 +45,7 @@ module Carto
 
     def update
       if redis_metadata?
-        if @connection.changes[:name].present
+        if @connection.changes[:name].present?
           old_name = @connection.changes[:name].first
           remove_redis_metadata(old_name)
         end
@@ -70,7 +70,7 @@ module Carto
          @connection.connector.in?(CLOUD_CONNECTORS)
     end
 
-    def update_redis_metadata(name)
+    def update_redis_metadata
       $users_metadata.hset(redis_key, @connection.name, serialized_connection)
     end
 

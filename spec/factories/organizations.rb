@@ -34,6 +34,24 @@ FactoryGirl.define do
       auth_google_enabled { true }
     end
 
+    factory :organization_with_light_users, class: 'Carto::Organization' do
+      after(:create) do |org|
+        create_account_type_fg('ORGANIZATION USER')
+        owner = FactoryGirl.create(:carto_user_light)
+        owner.organization_id = org.id
+        owner.enabled = true
+        org.owner_id = owner.id
+        owner.save
+        org.save!
+        org.reload
+        user = FactoryGirl.build(:carto_user_light)
+        user.organization_id = org.id
+        user.enabled = true
+        user.save
+        org.reload
+      end
+    end
+
     factory :organization_with_users, class: 'Carto::Organization' do
       after(:create) do |org|
         create_account_type_fg('ORGANIZATION USER')

@@ -137,7 +137,7 @@ describe Carto::ConnectionManager do
           parameters: connection1.parameters,
           shared: true
         )
-      end.to raise_exception(RuntimeError)
+      end.to raise_exception(Carto::ConnectionManager::ConnectionUnauthorizedError)
     end
     it "does not create shared connections for non-owners" do
       expect do
@@ -147,7 +147,7 @@ describe Carto::ConnectionManager do
           parameters: connection1.parameters,
           shared: true
         )
-      end.to raise_exception(RuntimeError)
+      end.to raise_exception(Carto::ConnectionManager::ConnectionUnauthorizedError)
     end
   end
 

@@ -11,6 +11,7 @@ sudo make install
 
 ### Features
 
+- Shared connections [#16188](https://github.com/CartoDB/cartodb/pull/16188)
 - Save cloud connections data to redis [#16165](https://github.com/CartoDB/cartodb/pull/16165)
 - New connections API [15939](https://github.com/CartoDB/cartodb/pull/15939)
 - New endpoints to fetch users' datasets and tilesets from their BigQuery connection [16061](https://github.com/CartoDB/cartodb/pull/16061)

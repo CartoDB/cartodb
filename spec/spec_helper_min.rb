@@ -43,6 +43,11 @@ RSpec.configure do |config|
     end
   end
 
+  config.before do
+    double = MessageBrokerDouble.instance
+    Carto::Common::MessageBroker.stubs(:new).returns(double)
+  end
+
   config.before(:all) do
     unless ENV['PARALLEL']
       clean_redis_databases

@@ -21,6 +21,12 @@ module Carto
     validate :validate_ownership
     validate :validate_parameters
 
+    def input_name=(name)
+      normalized_name = Carto::Connection.normalize_input_name(name)
+      normalized_name = "#{organization.name}#{SHARED_NAME_SEPARATOR}#{normalized_name}" if shared?
+      self.name = normalized_name
+    end
+
     def shared?
       user.blank? && organization.present?
     end
@@ -70,6 +76,13 @@ module Carto
     after_update :manage_update
     after_destroy :manage_destroy
 
+    def self.normalize_input_name(name)
+      CartoDB::Importer2::StringSanitizer.sanitize(name, transliterate_cyrillic: true, transliterate_greek: true)
+
+      # TODO: should we make it start with a letter or underscore?
+      #   name = "connection_#{name}" unless name[/^[a-z_]{1}/]
+    end
+
     private
 
     def owner
@@ -107,10 +120,7 @@ module Carto
     end
 
     def set_name
-      self.name = connector if connection_type == TYPE_OAUTH_SERVICE && name.blank?
-      sanitized_name = sanitize_connection_name(self.name)
-      sanitized_name = "#{organization.name}#{SHARED_NAME_SEPARATOR}#{sanitized_name}" if shared?
-      self.name = sanitized_name
+      self.input_name = connector if connection_type == TYPE_OAUTH_SERVICE && name.blank?
     end
 
     def set_parameters
@@ -162,13 +172,5 @@ module Carto
     rescue StandardError => e
       errors.add :base, e.to_s
     end
-
-    def sanitize_connection_name(name)
-      CartoDB::Importer2::StringSanitizer.sanitize(name, transliterate_cyrillic: true, transliterate_greek: true)
-
-      # TODO: should we make it start with a letter or underscore?
-      #   name = "connection_#{name}" unless name[/^[a-z_]{1}/]
-    end
-
   end
 end

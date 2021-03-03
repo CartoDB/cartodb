@@ -656,6 +656,7 @@ CartoDB::Application.routes.draw do
       get 'connections/:id/connect' => 'connections#connect', as: :api_v4_connections_connect
       post 'connections/:id/dryrun' => 'connections#dryrun', as: :api_v4_connections_dryrun
       get 'connections/:id/projects' => 'connections#projects', as: :api_v4_connections_projects
+      get 'connections/normalize_name' => 'connections#normalize_name', as: :api_v4_connections_normalize_name
 
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token

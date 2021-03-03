@@ -519,10 +519,10 @@ describe Carto::ConnectionManager do
         },
         shared?: true
       )
-      redis_json = $users_metadata.hget("cloud_shared_connections:#{user.username}:#{connection.connector}", connection_name)
+      redis_json = $users_metadata.hget("cloud_shared_connections:#{organization.name}:#{connection.connector}", connection_name)
       expect(redis_json).to be(nil)
       connection_manager.manage_create(connection)
-      redis_json = $users_metadata.hget("cloud_shared_connections:#{user.username}:#{connection.connector}", connection_name)
+      redis_json = $users_metadata.hget("cloud_shared_connections:#{organization.name}:#{connection.connector}", connection_name)
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['connection_type']).to eq(connection.connection_type)
@@ -718,10 +718,10 @@ describe Carto::ConnectionManager do
         shared?: false
       )
       $users_metadata.hset(
-        "cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data'
+        "cloud_connections:#{user.username}:#{connection.connector}", connection.name, 'the-connection-data'
       )
       $users_metadata.hset(
-        "cloud_connections:#{user.username}:#{connection.connector}", '456', 'the-connection-data'
+        "cloud_connections:#{user.username}:#{connection.connector}", 'other_name', 'the-connection-data'
       )
 
       connection_manager.manage_destroy(connection)
@@ -754,7 +754,8 @@ describe Carto::ConnectionManager do
           'username' => 'the-username',
           'password' => 'the-password'
         },
-        shared?: false
+        shared?: false,
+        changes: {}
       )
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       expect(redis_json).to be(nil)
@@ -776,13 +777,53 @@ describe Carto::ConnectionManager do
           'username' => 'the-username',
           'password' => 'the-new-password'
         },
-        shared?: false
+        shared?: false,
+        changes: {}
       )
       connection_manager.manage_update(connection)
       redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-new-password' })
+    end
+
+    it "moves data in redis when connection name changes" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        },
+        shared?: false,
+        changes: {}
+      )
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
+      expect(redis_json).to be(nil)
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
+
+      old_name = connection.name
+      new_name = 'a_different_name'
+      connection.name = new_name
+      connection.changes[:name] = [old_name, new_name]
+      connection_manager.manage_update(connection)
+      old_redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", old_name)
+      expect(old_redis_json).to be(nil)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", new_name)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
     end
   end
 end

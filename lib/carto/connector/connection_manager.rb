@@ -15,6 +15,14 @@ module Carto
 
     end
 
+    class ConnectionUnauthorizedError < CartoError
+
+      def initialize(message)
+        super(message, 403)
+      end
+
+    end
+
     def initialize(user)
       @user = user
       @user = Carto::User.find(@user.id) unless @user.is_a?(Carto::User)
@@ -77,7 +85,7 @@ module Carto
       if shared
         create_shared_db_connection(name: name, provider: provider, parameters: parameters)
       else
-        create_exclusive_db_connection(name: name, provider: provider, parameters: parameters)
+        create_individual_db_connection(name: name, provider: provider, parameters: parameters)
       end
     end
 
@@ -126,13 +134,13 @@ module Carto
       check_oauth_service!(service)
 
       if @user.new_record?
-        @user.connections.build(
+        @user.individual_connections.build(
           name: service,
           connector: service,
           token: token
         )
       else
-        @user.connections.create!(
+        @user.individual_connections.create!(
           name: service,
           connector: service,
           token: token
@@ -173,6 +181,12 @@ module Carto
 
     def delete_connection(id)
       connection = fetch_connection(id)
+      raise ConnectionNotFoundError, "Connection not found: #{id}" if connection.blank?
+
+      if connection.shared? && @user != connection.organization.owner
+        raise ConnectionUnauthorizedError, "Only organization owner can delete a shared connection"
+      end
+
       connection.destroy!
       @user.reload
     end
@@ -193,6 +207,11 @@ module Carto
 
     def update_db_connection(id:, parameters: nil, name: nil)
       connection = fetch_connection(id)
+      raise ConnectionNotFoundError, "Connection not found: #{id}" if connection.blank?
+
+      if connection.shared? && @user != connection.organization.owner
+        raise ConnectionUnauthorizedError, "Only organization owner can modify a shared connection"
+      end
 
       new_attributes = {}
       new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
@@ -316,13 +335,13 @@ module Carto
 
     private
 
-    def create_exclusive_db_connection(name:, provider:, parameters:)
-      @user.connections.create!(name: name, connector: provider, parameters: parameters)
+    def create_individual_db_connection(name:, provider:, parameters:)
+      @user.individual_connections.create!(name: name, connector: provider, parameters: parameters)
     end
 
     def create_shared_db_connection(name:, provider:, parameters:)
       unless @user.organization.present? && @user == @user.organization.owner # @user.owned_organization.present?
-        raise "Only organization owners can create shared connections"
+        raise ConnectionUnauthorizedError, "Only organization owners can create shared connections"
       end
 
       @user.organization.connections.create!(name: name, connector: provider, parameters: parameters)

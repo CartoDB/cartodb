@@ -22,9 +22,10 @@ module Carto
     validate :validate_parameters
 
     def input_name=(name)
+      # The input name may be assigned before the organization is assigned for shared connections,
+      # so we may need to alter it later to add the organization prefix
       normalized_name = Carto::Connection.normalize_input_name(name)
-      normalized_name = "#{organization.name}#{SHARED_NAME_SEPARATOR}#{normalized_name}" if shared?
-      self.name = normalized_name
+      self.name = Carto::Connection.update_name_prefix(normalized_name, nil, shared_prefix)
     end
 
     def shared?
@@ -78,9 +79,18 @@ module Carto
 
     def self.normalize_input_name(name)
       CartoDB::Importer2::StringSanitizer.sanitize(name, transliterate_cyrillic: true, transliterate_greek: true)
-
       # TODO: should we make it start with a letter or underscore?
       #   name = "connection_#{name}" unless name[/^[a-z_]{1}/]
+    end
+
+    def self.update_name_prefix(name, old_prefix, new_prefix)
+      if old_prefix.present? && name.starts_with?(old_prefix + SHARED_NAME_SEPARATOR)
+        name = name.split(SHARED_NAME_SEPARATOR).last
+      end
+      if new_prefix.present?
+        name = "#{new_prefix}#{SHARED_NAME_SEPARATOR}#{name}"
+      end
+      name
     end
 
     private
@@ -171,6 +181,27 @@ module Carto
       errors.add :token, e.to_s
     rescue StandardError => e
       errors.add :base, e.to_s
+    end
+
+    def write_attribute(attr_name, value)
+      # WARNING: viewer discretion is advised. Disturbing content!
+      # No, I don't like how this is turning up, but we need to normalized the name properly,
+      # and we need both the input name provided by the user and the organization to do so,
+      # and we don't know in which order they will be assigned.
+      # :thinking: maybe it would be cleaner to keep the input_name in an instance variable
+      # and compute the normalized name from it in set_name which is done before validation.
+      if attr_name == 'organization_id'
+        self.name = Carto::Connection.update_name_prefix(name, shared_prefix, shared_prefix_for(value))
+      end
+      super
+    end
+
+    def shared_prefix
+      shared? ? organization.name : nil
+    end
+
+    def shared_prefix_for(organization_id)
+      organization_id ? Carto::Organization.find_by(id: organization_id)&.name : nil
     end
   end
 end

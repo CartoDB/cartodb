@@ -101,6 +101,7 @@ module Carto
           end
         end
 
+        # this does not include the organization prefix if the connection is shared
         def normalize_name
           render_jsonp({ normalized_name: Carto::Connector.normalize_input_name(params[:name]) }, 200)
         end

@@ -68,7 +68,7 @@ module Carto
       private
 
       def spatial_extension?
-        @connection.parameters.present? && !@connection.global?
+        @connection.parameters.present? && !@connection.shared?
       end
 
       def central

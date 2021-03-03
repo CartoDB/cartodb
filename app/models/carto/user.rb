@@ -55,8 +55,6 @@ class Carto::User < ActiveRecord::Base
 
   delegate :oauth_connections, to: :connections
   delegate :db_connections, to: :connections
-  delegate :shared_connections, to: :connections
-  delegate :individual_connections, to: :connections
 
   has_many :search_tweets, class_name: Carto::SearchTweet, inverse_of: :user
   has_many :synchronizations, inverse_of: :user

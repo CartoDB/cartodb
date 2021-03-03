@@ -15,17 +15,11 @@ module Carto
     scope :individual_connections, -> { where(organization_id: nil) }
 
     validates :name, presence: true, uniqueness: { scope: [ :user_id, :organization_id ]}
-    validates :internal_name, presence: true, uniqueness: { scope: [ :user_id, :organization_id ]}
 
     validates :connection_type, inclusion: { in: [TYPE_OAUTH_SERVICE, TYPE_DB_CONNECTOR] }
     validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
     validate :validate_ownership
     validate :validate_parameters
-
-    def display_name
-      # TODO: add something line "#{name} (#{organization})" for shared connections?
-      name
-    end
 
     def shared?
       user.blank? && organization.present?
@@ -116,7 +110,7 @@ module Carto
       self.name = connector if connection_type == TYPE_OAUTH_SERVICE && name.blank?
       sanitized_name = sanitize_connection_name(self.name)
       sanitized_name = "#{organization.name}#{SHARED_NAME_SEPARATOR}#{sanitized_name}" if shared?
-      self.internal_name = sanitized_name
+      self.name = sanitized_name
     end
 
     def set_parameters

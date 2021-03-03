@@ -65,11 +65,11 @@ module Carto
     end
 
     def update_redis_metadata
-      $users_metadata.hset(redis_key, @connection.internal_name, serialized_connection)
+      $users_metadata.hset(redis_key, @connection.name, serialized_connection)
     end
 
     def remove_redis_metadata
-      $users_metadata.hdel redis_key, @connection.internal_name
+      $users_metadata.hdel redis_key, @connection.name
     end
 
     def redis_key

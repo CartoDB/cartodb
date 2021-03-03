@@ -50,8 +50,7 @@ module Carto
     def present_connection(connection)
       presented_connection = {
         id: connection.id,
-        name: connection.display_name,
-        internal_name: connection.internal_name,
+        name: connection.name,
         connector: connection.connector,
         type: connection.connection_type,
         shared: connection.shared?,
@@ -180,13 +179,13 @@ module Carto
 
     UUID_FORMAT = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
-    def fetch_connection(internal_name_or_id)
-      if internal_name_or_id.match?(UUID_FORMAT)
-        connection = @user.connections.find_by(id: internal_name_or_id)
+    def fetch_connection(name_or_id)
+      if name_or_id.match?(UUID_FORMAT)
+        connection = @user.connections.find_by(id: name_or_id)
       else
-        connection = @user.connections.find_by(internal_name: internal_name_or_id)
-        if !connection && @user.organization.present? && internal_name_or_id.include?(Carto::Connection::SHARED_NAME_SEPARATOR)
-          connection = @user.organization.connections.find_by(internal_name: internal_name_or_id)
+        connection = @user.connections.find_by(name: name_or_id)
+        if !connection && @user.organization.present? && name_or_id.include?(Carto::Connection::SHARED_NAME_SEPARATOR)
+          connection = @user.organization.connections.find_by(name: name_or_id)
         end
       end
       connection

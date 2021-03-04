@@ -25,6 +25,12 @@ Resque.inline = true
 # in production we do check for the existance of mx records associated to the domain
 EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
 
+Carto::Common::MessageBroker.class_eval do
+  def initialize(_params)
+    MessageBrokerDouble.instance
+  end
+end
+
 RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include NamedMapsHelper

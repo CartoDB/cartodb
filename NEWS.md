@@ -85,6 +85,7 @@ sudo make install
 - Fixed error that added multiple canonical links in the Spatial Data Catalog [#16160](https://github.com/CartoDB/cartodb/pull/16160)
 - Modify deprecation warning for DO analysis in builder [#16163](https://github.com/CartoDB/cartodb/pull/16163)
 - Fix autoload issues in subscriber [#16171](https://github.com/CartoDB/cartodb/pull/16171)
+- Fix CI build by changing machine spec [#16192](https://github.com/CartoDB/cartodb/pull/16192)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
 
 4.44.0 (2020-11-20)

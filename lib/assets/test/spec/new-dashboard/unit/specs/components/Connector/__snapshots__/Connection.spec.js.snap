@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Connection.vue Render should render beta tag 1`] = `
+<div class="connector editable">
+  <div class="beta-label text is-small">Beta</div>
+  <div class="quickactions">
+    <connectorquickactions-stub connection="ID" editable="true" storeactiontype="datasets"></connectorquickactions-stub>
+  </div>
+  <div class="ConnectorInfo u-flex u-flex__direction--column u-flex__align--center u-flex__align--center u-pt--20 u-pb--16">
+    <div class="is-mysql"></div> <span class="is-semibold u-mt--8 label">CONN_LABEL</span>
+  </div>
+  <div class="tools u-pt--16 u-pb--16 u-pl--20 u-pr--20">
+    <div class="u-flex u-width--100">
+      <div class="text is-small u-flex__grow--1 u-mr--16 u-flex u-flex__align-center conn-name"><img src="../../assets/icons/datasets/connection-title.svg" width="16" height="16" class="u-mr--4"> <span class="conn-name">CONN_NAME</span></div>
+      <tooltip-stub text="<br><div><label class=&quot;is-txtMidGrey&quot; style=&quot;text-transform: capitalize;&quot;>param1</label> param1</div><br><div><label class=&quot;is-txtMidGrey&quot; style=&quot;text-transform: capitalize;&quot;>param2</label> param2</div><br>" position="bottom-left" class="text is-small u-flex u-flex__align-center conn-params"><img src="../../assets/icons/datasets/connection-tool.svg" width="16" height="16" class="u-mr--4">
+        DataPage.connectionParameters
+      </tooltip-stub>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Connection.vue Render should render properly 1`] = `
+<div class="connector editable">
+  <!---->
+  <div class="quickactions">
+    <connectorquickactions-stub connection="ID" editable="true" storeactiontype="datasets"></connectorquickactions-stub>
+  </div>
+  <div class="ConnectorInfo u-flex u-flex__direction--column u-flex__align--center u-flex__align--center u-pt--20 u-pb--16">
+    <div class="is-mysql"></div> <span class="is-semibold u-mt--8 label">CONN_LABEL</span>
+  </div>
+  <div class="tools u-pt--16 u-pb--16 u-pl--20 u-pr--20">
+    <div class="u-flex u-width--100">
+      <div class="text is-small u-flex__grow--1 u-mr--16 u-flex u-flex__align-center conn-name"><img src="../../assets/icons/datasets/connection-title.svg" width="16" height="16" class="u-mr--4"> <span class="conn-name">CONN_NAME</span></div>
+      <tooltip-stub text="<br><div><label class=&quot;is-txtMidGrey&quot; style=&quot;text-transform: capitalize;&quot;>param1</label> param1</div><br><div><label class=&quot;is-txtMidGrey&quot; style=&quot;text-transform: capitalize;&quot;>param2</label> param2</div><br>" position="bottom-left" class="text is-small u-flex u-flex__align-center conn-params"><img src="../../assets/icons/datasets/connection-tool.svg" width="16" height="16" class="u-mr--4">
+        DataPage.connectionParameters
+      </tooltip-stub>
+    </div>
+  </div>
+</div>
+`;

@@ -101,20 +101,20 @@ describe Carto::ApiKey do
   end
 
   shared_examples_for 'api key' do
-    before(:all) do
+    before do
       @table1 = create_table(user_id: @carto_user1.id)
       @table2 = create_table(user_id: @carto_user1.id)
       @table3 = create_table(user_id: @carto_user1.id)
     end
 
-    after(:all) do
+    after do
       bypass_named_maps
       @table2.destroy
       @table1.destroy
       @table3.destroy
     end
 
-    after(:each) do
+    after do
       @carto_user1.reload.api_keys.where(type: Carto::ApiKey::TYPE_REGULAR).each(&:delete)
     end
 
@@ -530,12 +530,12 @@ describe Carto::ApiKey do
       end
 
       context 'without enough regular api key quota' do
-        before(:all) do
+        before do
           @carto_user1.regular_api_key_quota = 0
           @carto_user1.save
         end
 
-        after(:all) do
+        after do
           @carto_user1.regular_api_key_quota = be_nil
           @carto_user1.save
         end
@@ -551,12 +551,12 @@ describe Carto::ApiKey do
     end
 
     describe '#table_permission_from_db' do
-      before(:all) do
+      before do
         @public_table = create_table(user_id: @carto_user1.id)
         @public_table.table_visualization.update_attributes(privacy: 'public')
       end
 
-      after(:all) do
+      after do
         @public_table.destroy
       end
 
@@ -601,11 +601,11 @@ describe Carto::ApiKey do
     end
 
     describe '#schema_permission_from_db' do
-      before(:all) do
+      before do
         @public_table = create_table(user_id: @carto_user1.id)
       end
 
-      after(:all) do
+      after do
         @public_table.destroy
       end
 
@@ -894,12 +894,12 @@ describe Carto::ApiKey do
   end
 
   describe 'with plain users' do
-    before(:all) do
+    before do
       @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
-    after(:all) do
+    after do
       @user1.destroy
     end
 
@@ -907,13 +907,13 @@ describe Carto::ApiKey do
   end
 
   describe 'with organization users' do
-    before(:all) do
+    before do
       @auth_organization = FactoryGirl.create(:organization, quota_in_bytes: 1.gigabytes)
       @user1 = TestUserFactory.new.create_owner(@auth_organization)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
-    after(:all) do
+    after do
       @user1.destroy
       @auth_organization.destroy
     end

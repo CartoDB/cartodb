@@ -42,7 +42,6 @@ RSpec.configure do |config|
       clean_redis_databases
       clean_metadata_database
       close_pool_connections
-      drop_leaked_test_user_databases
     end
   end
 
@@ -54,7 +53,6 @@ RSpec.configure do |config|
   config.after(:all) do
     unless ENV['PARALLEL'] || ENV['BUILD_ID']
       close_pool_connections
-      drop_leaked_test_user_databases
       delete_database_test_users
     end
   end
@@ -67,5 +65,6 @@ RSpec.configure do |config|
 
   config.after do
     Delorean.back_to_the_present
+    drop_leaked_test_user_databases
   end
 end

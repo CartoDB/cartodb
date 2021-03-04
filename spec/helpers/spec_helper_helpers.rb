@@ -34,7 +34,7 @@ module SpecHelperHelpers
     ]
 
     user_database_names.map(:datname).each do |user_database_name|
-      puts "Dropping leaked test database #{user_database_name}"
+      puts "Dropping test user database #{user_database_name}"
       CartoDB::UserModule::DBService.terminate_database_connections(
         user_database_name, ::SequelRails.configuration.environment_for(Rails.env)['host']
       )

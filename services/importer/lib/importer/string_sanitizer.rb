@@ -149,3 +149,4 @@ module CartoDB
     end # StringSanitizer
   end # Importer2
 end # CartoDB
+

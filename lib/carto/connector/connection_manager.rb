@@ -135,13 +135,13 @@ module Carto
 
       if @user.new_record?
         @user.individual_connections.build(
-          input_name: service,
+          name: service,
           connector: service,
           token: token
         )
       else
         @user.individual_connections.create!(
-          input_name: service,
+          name: service,
           connector: service,
           token: token
         )
@@ -215,7 +215,7 @@ module Carto
 
       new_attributes = {}
       new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
-      new_attributes[:input_name] = name if name.present?
+      new_attributes[:name] = name if name.present?
       connection.update!(new_attributes)
     end
 
@@ -336,7 +336,7 @@ module Carto
     private
 
     def create_individual_db_connection(name:, provider:, parameters:)
-      @user.individual_connections.create!(input_name: name, connector: provider, parameters: parameters)
+      @user.individual_connections.create!(name: name, connector: provider, parameters: parameters)
     end
 
     def create_shared_db_connection(name:, provider:, parameters:)
@@ -344,7 +344,7 @@ module Carto
         raise ConnectionUnauthorizedError, "Only organization owners can create shared connections"
       end
 
-      @user.organization.connections.create!(input_name: name, connector: provider, parameters: parameters)
+      @user.organization.connections.create!(name: name, connector: provider, parameters: parameters)
     end
 
 

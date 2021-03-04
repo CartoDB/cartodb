@@ -48,7 +48,7 @@ describe Carto::ConnectionManager do
   end
 
   let(:shared_connection1) do
-    create(:connection, organization: organization, name: 'db1', connector: 'dummy', parameters: { server: 'server1' })
+    create(:connection, organization: organization, name: "#{organization.name}.db1", connector: 'dummy', parameters: { server: 'server1' })
   end
 
   describe "#list_connections" do
@@ -119,7 +119,7 @@ describe Carto::ConnectionManager do
     end
     it "creates new shared connections" do
       connection = org_owner_connection_manager.create_db_connection(
-        name: 'new_connection',
+        name: "#{organization.name}.new_connection",
         provider: connection1.connector,
         parameters: connection1.parameters,
         shared: true
@@ -132,7 +132,7 @@ describe Carto::ConnectionManager do
     it "does not create shared connections for non-org users" do
       expect do
         connection_manager.create_db_connection(
-          name: 'new_connection',
+          name: "#{organization.name}.new_connection",
           provider: connection1.connector,
           parameters: connection1.parameters,
           shared: true
@@ -142,7 +142,7 @@ describe Carto::ConnectionManager do
     it "does not create shared connections for non-owners" do
       expect do
         connection = org_member_connection_manager.create_db_connection(
-          name: 'new_connection',
+          name: "#{organization.name}.new_connection",
           provider: connection1.connector,
           parameters: connection1.parameters,
           shared: true

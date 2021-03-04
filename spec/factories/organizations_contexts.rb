@@ -31,7 +31,7 @@ shared_context 'organization with users helper' do
     )
   end
 
-  before(:all) do
+  before do
     @helper = TestUserFactory.new
     @organization = test_organization
     @organization.save
@@ -49,21 +49,6 @@ shared_context 'organization with users helper' do
     @carto_org_user_owner = @org_user_owner.carto_user
     @carto_org_user_1 = @org_user_1.carto_user
     @carto_org_user_2 = @org_user_2.carto_user
-  end
-
-  before(:each) do
-    bypass_named_maps
-    delete_user_data @org_user_owner
-    delete_user_data @org_user_1
-    delete_user_data @org_user_2
-  end
-
-  after(:all) do
-    bypass_named_maps
-    delete_user_data @org_user_owner if @org_user_owner
-    @organization.destroy_cascade
-
-    @organization_2.destroy_cascade
   end
 
 end

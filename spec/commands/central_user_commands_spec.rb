@@ -208,6 +208,8 @@ describe CentralUserCommands do
     end
 
     context 'when handling Google Cloud settings' do
+      before { pending('test GCloudUserSettingsCommands::Set instead') }
+
       let(:google_cloud_settings) do
         {
           service_account: {

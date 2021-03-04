@@ -98,7 +98,7 @@ module Carto
             response.response_body
           elsif (response_code_string.match?(/^5/) || response.code == 429) && retries < MAX_RETRY_ATTEMPTS
             sleep(RETRY_TIME_SECONDS**retries)
-            update(retries: retries + 1)
+            destroy(retries: retries + 1)
           else
             log_response(response, 'destroy') unless response.code == 404
           end
@@ -190,7 +190,7 @@ module Carto
         # Hotfix for preventing https://rollbar.com/carto/CartoDB/items/41457 until we find the root cause
         # https://cartoteam.slack.com/archives/CEQLWTW9Z/p1599134417001900
         # https://app.clubhouse.io/cartoteam/story/101908/fix-encoding-error-while-logging-request
-        Rollbar.error(e)
+        # Rollbar.error(e)
       end
 
       def log_context

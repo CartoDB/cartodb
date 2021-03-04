@@ -8,6 +8,7 @@ shared_context 'with DatabaseCleaner' do
       users
       user_tables
       maps
+      api_keys
     ) }
     DatabaseCleaner.start
 

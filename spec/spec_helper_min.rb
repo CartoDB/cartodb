@@ -1,11 +1,5 @@
 # This file provides a minimal Rails integration test environment with an empty database, without users.
-require 'mocha'
-require 'simplecov_helper'
-require 'helpers/spec_helper_helpers'
-require 'helpers/named_maps_helper'
-require './spec/support/message_broker_stubs'
-require './spec/support/redis'
-require './spec/support/shared_entities_spec_helper'
+require 'support/redis'
 require 'spec_helper_common'
 
 raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{Rails.env}) unless Rails.env.test?
@@ -32,6 +26,7 @@ RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include SharedEntitiesSpecHelper
   config.mock_with :mocha
+  config.profile_examples = 25
 
   unless ENV['PARALLEL']
     config.before(:suite) do

@@ -1,3 +1,12 @@
+require 'mocha'
+require 'simplecov_helper'
+require 'helpers/spec_helper_helpers'
+require 'helpers/named_maps_helper'
+require 'database_cleaner/active_record'
+require 'support/database_cleaner'
+require 'support/message_broker_stubs'
+require 'support/shared_entities_spec_helper'
+
 def mocked_record(data)
   Struct.new(*data.keys).new(*data.values)
 end

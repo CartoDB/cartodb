@@ -202,6 +202,8 @@ module CartoDB
     end
 
     def delete_user_data(user)
+      return unless user&.reload&.present?
+
       user.tables.destroy
       user.maps_dataset.destroy
       user.layers_dataset.destroy

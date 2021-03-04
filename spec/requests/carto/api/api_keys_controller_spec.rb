@@ -77,22 +77,12 @@ describe Carto::Api::ApiKeysController do
     }
   end
 
-  before(:all) do
+  before do
     @user = FactoryGirl.create(:valid_user)
     @carto_user = Carto::User.find(@user.id)
     @other_user = FactoryGirl.create(:valid_user)
     @table1 = create_table(user_id: @carto_user.id)
     @table2 = create_table(user_id: @carto_user.id)
-  end
-
-  after(:all) do
-    @table2.destroy
-    @table1.destroy
-    @user.destroy
-  end
-
-  after(:each) do
-    @carto_user.api_keys.where(type: Carto::ApiKey::TYPE_REGULAR).each(&:destroy)
   end
 
   def generate_api_key_url(req_params, name: nil)
@@ -105,12 +95,8 @@ describe Carto::Api::ApiKeysController do
 
   describe '#authorization' do
     shared_examples 'unauthorized' do
-      before(:all) do
+      before do
         @api_key = FactoryGirl.create(:api_key_apis, user: @unauthorized_user)
-      end
-
-      after(:all) do
-        @api_key.destroy
       end
 
       it 'to create api keys' do
@@ -146,12 +132,8 @@ describe Carto::Api::ApiKeysController do
     end
 
     describe 'without engine_enabled' do
-      before(:all) do
+      before do
         @unauthorized_user = Carto::User.find(FactoryGirl.create(:valid_user, engine_enabled: false).id)
-      end
-
-      after(:all) do
-        ::User[@unauthorized_user.id].destroy
       end
 
       it_behaves_like 'unauthorized'
@@ -386,13 +368,8 @@ describe Carto::Api::ApiKeysController do
       end
 
       context 'without enough regular api key quota' do
-        before(:all) do
+        before do
           @carto_user.regular_api_key_quota = 0
-          @carto_user.save
-        end
-
-        after(:all) do
-          @carto_user.regular_api_key_quota = be_nil
           @carto_user.save
         end
 
@@ -587,7 +564,7 @@ describe Carto::Api::ApiKeysController do
     end
 
     describe '#index' do
-      before(:all) do
+      before do
         @user_index = FactoryGirl.create(:valid_user)
         @carto_user_index = Carto::User.find(@user_index.id)
 
@@ -1163,7 +1140,7 @@ describe Carto::Api::ApiKeysController do
       { user_domain: @auth_user.username }
     end
 
-    before :all do
+    before do
       @num_api_keys_owner_user = 4
       @num_api_keys_admin_user = 3
       @num_api_keys_regular_user = 2
@@ -1342,17 +1319,6 @@ describe Carto::Api::ApiKeysController do
         grants: @external_api_key_grants
       }
 
-    end
-
-    after :all do
-      @owner_table1.destroy
-      @owner_table2.destroy
-      @admin_table1.destroy
-      @admin_table2.destroy
-      @regular_table1.destroy
-      @regular_table2.destroy
-      @external_table1.destroy
-      @external_table2.destroy
     end
 
     describe '#index' do

@@ -13,6 +13,7 @@ sudo make install
 
 - Shared connections [#16188](https://github.com/CartoDB/cartodb/pull/16188)
 - Save cloud connections data to redis [#16165](https://github.com/CartoDB/cartodb/pull/16165)
+- New sign up flow [16137](https://github.com/CartoDB/cartodb/pull/16137)
 - New connections API [15939](https://github.com/CartoDB/cartodb/pull/15939)
 - New endpoints to fetch users' datasets and tilesets from their BigQuery connection [16061](https://github.com/CartoDB/cartodb/pull/16061)
 - New BigQuery connector [16029](https://github.com/CartoDB/cartodb/pull/16029)
@@ -25,9 +26,11 @@ sudo make install
 - Add search in 'new map' screen [16166](https://github.com/CartoDB/cartodb/pull/16166)
 - Migrate FeatureFlag & PricePlan synchronization to the Message Broker [#16098](https://github.com/CartoDB/cartodb/pull/16098)
 - Split configuration for Message Broker & Central login redirection [#16150](https://github.com/CartoDB/cartodb/pull/16150)
+- Remove Data Library gallery page (now redirected to Spatial Data Catalog) [#16133](https://github.com/CartoDB/cartodb/pull/16133)
 
 ### Bug fixes / enhancements
 
+- Some CI improvements [16179](https://github.com/CartoDB/cartodb/pull/16179)
 - Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
 - Show a new message for create connections after first login [16159](https://github.com/CartoDB/cartodb/pull/16159)
 - Remove master api key from do-catalog layers request [16158](https://github.com/CartoDB/cartodb/pull/16158)
@@ -72,6 +75,7 @@ sudo make install
 - Upgrade deck.gl version [#16072](https://github.com/CartoDB/cartodb/pull/16072)
 - Configure Dead Lettering & prevent flooding of map views messages [#16059](https://github.com/CartoDB/cartodb/pull/16059)
 - Revamp specs for Message Broker commands and remove old endpoints [#16084](https://github.com/CartoDB/cartodb/pull/16084)
+- Remove temp import tables when the IncompatibleSchemas exception is raised [#16181](https://github.com/CartoDB/cartodb/pull/16181)
 - Prevent rspec from being executed in any env other than test [#16128](https://github.com/CartoDB/cartodb/pull/16128)
 - Prevent a possible `PG::UndefinedFunction` error on DB creation [#16174](https://github.com/CartoDB/cartodb/pull/16174)
 - Add groups to v4/me endpoint [#16105](https://github.com/CartoDB/cartodb/pull/16105)
@@ -82,6 +86,7 @@ sudo make install
 - Fixed error that added multiple canonical links in the Spatial Data Catalog [#16160](https://github.com/CartoDB/cartodb/pull/16160)
 - Modify deprecation warning for DO analysis in builder [#16163](https://github.com/CartoDB/cartodb/pull/16163)
 - Fix autoload issues in subscriber [#16171](https://github.com/CartoDB/cartodb/pull/16171)
+- Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
 
 4.44.0 (2020-11-20)
 -------------------

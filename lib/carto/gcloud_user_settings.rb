@@ -7,8 +7,8 @@ module Carto
                     gcp_execution_project bq_project bq_dataset
                     gcs_bucket).freeze
 
-    def initialize(user)
-      @username = user.username
+    def initialize(username)
+      @username = username
     end
 
     def update(attributes)

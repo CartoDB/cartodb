@@ -43,7 +43,7 @@ describe Carto::User do
   end
 
   describe '#soft_geocoding_limit' do
-    before(:all) do
+    before do
       @carto_user = FactoryGirl.build(:carto_user)
     end
 
@@ -73,12 +73,8 @@ describe Carto::User do
   end
 
   describe "#send_password_reset!" do
-    before(:all) do
+    before do
       @user = FactoryGirl.create(:carto_user)
-    end
-
-    after(:all) do
-      @user.destroy
     end
 
     it 'enqueues a job to send an email' do
@@ -103,7 +99,7 @@ describe Carto::User do
   end
 
   describe '#is_email_notification_enabled' do
-    before(:all) do
+    before do
       @carto_user = FactoryGirl.create(:carto_user)
     end
 
@@ -148,7 +144,7 @@ describe Carto::User do
   end
 
   describe '#email_notification=' do
-    before(:all) do
+    before do
       @carto_user = FactoryGirl.create(:carto_user)
     end
 

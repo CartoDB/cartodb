@@ -322,23 +322,16 @@ describe Carto::Api::LayersController do
     end
 
     describe "API 1.0 map layers management" do
-      before(:all) do
+      before do
         Capybara.current_driver = :rack_test
         @user = create_user
-      end
 
-      before(:each) do
         bypass_named_maps
         delete_user_data @user
         host! "#{@user.username}.localhost.lan"
         @table = create_table(user_id: @user.id)
         @map = create_map(user_id: @user.id, table_id: @table.id)
         @table.reload
-      end
-
-      after(:all) do
-        bypass_named_maps
-        @user.destroy
       end
 
       let(:params) { { api_key: @user.api_key } }
@@ -478,7 +471,7 @@ describe Carto::Api::LayersController do
     end
 
     describe "API 1.0 user layers management" do
-      before(:all) do
+      before do
         Capybara.current_driver = :rack_test
         @user = create_user
       end
@@ -488,11 +481,6 @@ describe Carto::Api::LayersController do
         delete_user_data @user
         host! "#{@user.username}.localhost.lan"
         @table = create_table(user_id: @user.id)
-      end
-
-      after(:all) do
-        bypass_named_maps
-        @user.destroy
       end
 
       let(:params) { { api_key: @user.api_key } }
@@ -542,7 +530,7 @@ describe Carto::Api::LayersController do
     include Rack::Test::Methods
     include Warden::Test::Helpers
 
-    before(:all) do
+    before do
       CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
 
       @headers = { 'CONTENT_TYPE' => 'application/json' }
@@ -723,7 +711,7 @@ describe Carto::Api::LayersController do
   end
 
   describe '#show legacy tests' do
-    before(:all) do
+    before do
       @user = create_user
 
       host! "#{@user.username}.localhost.lan"
@@ -733,11 +721,6 @@ describe Carto::Api::LayersController do
       bypass_named_maps
       delete_user_data @user
       @table = create_table user_id: @user.id
-    end
-
-    after(:all) do
-      bypass_named_maps
-      @user.destroy
     end
 
     let(:params) { { api_key: @user.api_key } }

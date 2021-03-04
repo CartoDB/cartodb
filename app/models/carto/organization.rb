@@ -22,7 +22,6 @@ module Carto
     has_many :connector_configurations, inverse_of: :organization, dependent: :destroy
     has_many :oauth_app_organizations, inverse_of: :oauth_app, dependent: :destroy
 
-    # Global Connections
     has_many :connections, class_name: 'Carto::Connection', inverse_of: :organization, dependent: :destroy
     delegate :oauth_connections, to: :connections
     delegate :db_connections, to: :connections

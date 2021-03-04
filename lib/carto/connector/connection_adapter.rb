@@ -86,7 +86,7 @@ module Carto
       "cloud_shared_connections:#{@connection.organization.name}:#{@connection.connector}"
     end
 
-    def user_connection_redis_key # FIXME: individual_? exclusive_?
+    def user_connection_redis_key
       "cloud_connections:#{@connection.user.username}:#{@connection.connector}"
     end
 

@@ -206,6 +206,7 @@ WORKING_SPECS_5 = \
 	spec/commands/organization_commands/delete_spec.rb \
 	spec/commands/organization_commands/update_spec.rb \
 	spec/commands/central_user_commands_spec.rb \
+	spec/commands/gcloud_user_settings_commands/set_spec.rb \
 	spec/commands/account_type_commands/create_spec.rb \
 	spec/commands/account_type_commands/update_spec.rb \
 	spec/commands/account_type_commands/delete_spec.rb \

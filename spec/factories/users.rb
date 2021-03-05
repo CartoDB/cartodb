@@ -78,8 +78,8 @@ FactoryGirl.define do
   end
 
   factory :carto_user, class: Carto::User do
-    username { unique_name('user') }
-    email { unique_email }
+    username { Faker::Internet.username(separators: ['-']) }
+    email { Faker::Internet.safe_email }
 
     password { email.split('@').first }
     password_confirmation { email.split('@').first }

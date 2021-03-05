@@ -606,17 +606,17 @@ module CartoDB
                                                 export_job_logger: exportjob_logger)
             end
           end
-        rescue StandardError => e
-          export_log[:end] = Time.now
-          export_log[:elapsed_time] = (export_log[:end] - export_log[:start]).ceil
-          export_log[:status] = 'failure'
-          export_log[:trace] = e.to_s
-          if options[:organization_name]
-            @org_users.each do |org_user|
-              remove_user_mover_banner(org_user['id']) if options[:set_banner]
-            end
-          end
-          raise
+        # rescue StandardError => e
+        #   export_log[:end] = Time.now
+        #   export_log[:elapsed_time] = (export_log[:end] - export_log[:start]).ceil
+        #   export_log[:status] = 'failure'
+        #   export_log[:trace] = e.to_s
+        #   if options[:organization_name]
+        #     @org_users.each do |org_user|
+        #       remove_user_mover_banner(org_user['id']) if options[:set_banner]
+        #     end
+        #   end
+        #   raise
         else
           export_log[:end] = Time.now
           export_log[:elapsed_time] = (export_log[:end] - export_log[:start]).ceil

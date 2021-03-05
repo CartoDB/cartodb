@@ -7,8 +7,9 @@ module Carto
                     gcp_execution_project bq_project bq_dataset
                     gcs_bucket).freeze
 
-    def initialize(username)
+    def initialize(username, redis = $users_metadata)
       @username = username
+      @redis = redis
     end
 
     def update(attributes)
@@ -20,13 +21,13 @@ module Carto
     end
 
     def read
-      Hash[REDIS_KEYS.zip($users_metadata.hmget(key, *REDIS_KEYS))]
+      Hash[REDIS_KEYS.zip(@redis.hmget(key, *REDIS_KEYS))]
     end
 
     private
 
     def store(attributes)
-      $users_metadata.hmset(key, *values(attributes).to_a)
+      @redis.hmset(key, *values(attributes).to_a)
     end
 
     def values(attributes)
@@ -34,7 +35,7 @@ module Carto
     end
 
     def remove
-      $users_metadata.del(key)
+      @redis.del(key)
     end
 
     def key

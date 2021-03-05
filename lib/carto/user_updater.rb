@@ -14,6 +14,12 @@ module Carto
       @user.update_feature_flags(user_param[:feature_flags])
       @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
       @user.update_rate_limits(user_param[:rate_limit])
+
+      # NOTE: For backwards compatibility, to be removed once
+      # https://github.com/CartoDB/cartodb-central/pull/3078 is
+      # deployed
+      @user.update_gcloud_settings(user_param[:gcloud_settings])
+
       @user.update_do_subscription(user_param[:do_subscription])
       @user.save!
     end

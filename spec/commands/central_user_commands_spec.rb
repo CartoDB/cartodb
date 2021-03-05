@@ -207,9 +207,9 @@ describe CentralUserCommands do
       end
     end
 
+    # TODO: this tests old behavior, remove once
+    # https://github.com/CartoDB/cartodb-central/pull/3078 is merged
     context 'when handling Google Cloud settings' do
-      before { pending('test GCloudUserSettingsCommands::Set instead') }
-
       let(:google_cloud_settings) do
         {
           service_account: {

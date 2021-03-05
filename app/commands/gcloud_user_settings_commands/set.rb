@@ -1,4 +1,4 @@
-module GCloudUserSettingsCommands
+module GcloudUserSettingsCommands
   class Set < ::CartoCommand
 
     private

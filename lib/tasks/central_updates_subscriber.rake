@@ -122,7 +122,7 @@ namespace :message_broker do
       end
 
       subscription.register_callback(:set_do_gcloud_settings) do |message|
-        GCloudUserSettingsCommands::Set.new(
+        GcloudUserSettingsCommands::Set.new(
           message.payload,
           { logger: logger, request_id: message.request_id }
         ).run

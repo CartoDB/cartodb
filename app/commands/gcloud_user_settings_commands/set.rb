@@ -5,7 +5,6 @@ module GCloudUserSettingsCommands
 
     def run_command
       Carto::GCloudUserSettings.new(username).update(gcloud_settings)
-      logger.info(log_context.merge(message: 'gcloud user settings updated'))
     end
 
     def username

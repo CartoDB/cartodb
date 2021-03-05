@@ -66,6 +66,7 @@ sudo make install
 - Bump version of lib/sql submodule to 0.37.1
 - Public profile can be disabled via Feature Flag [#15982](https://github.com/CartoDB/cartodb/pull/15995)
 - Update cartodb-common to v0.5.3, which in turns udpates pubsub to 2.3.0 [#16038](https://github.com/CartoDB/cartodb/pull/16038)
+- Select distinct permissions on OAuth all datasets scope [#16196](https://github.com/CartoDB/cartodb/pull/16196)
 - Migrate Organization CRUD to MessageBroker [#15934](https://github.com/CartoDB/cartodb/pull/15934)
 - Update cartodb-common, which in turns updates the MessageBroker to send a `publisher_validation_token` [#16041](https://github.com/CartoDB/cartodb/pull/16041)
 - Optimize dashboard loading when the number of datasets is very large [#16014](https://github.com/CartoDB/cartodb/pull/16014)

@@ -25,6 +25,15 @@ Resque.inline = true
 # in production we do check for the existance of mx records associated to the domain
 EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
 
+Carto::ApiKey.class_eval do
+  def create_remote_do_api_key; end
+
+  def regenerate_remote_do_api_key; end
+
+  def destroy_remote_do_api_key; end
+end
+
+
 RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include NamedMapsHelper

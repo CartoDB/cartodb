@@ -5,7 +5,7 @@ module MessageBrokerHelper
   end
 
   def cartodb_central_topic
-    Carto::Common::MessageBroker.new(logger: Rails.logger).get_topic(:cartodb_central)
+    message_broker.get_topic(:cartodb_central)
   end
 
 end

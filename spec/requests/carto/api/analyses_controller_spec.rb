@@ -7,22 +7,15 @@ describe Carto::Api::AnalysesController do
   include Carto::Factories::Visualizations
   include HelperMethods
 
-  before(:all) do
+  include_context 'with DatabaseCleaner'
+
+  before do
     create(:feature_flag, name: 'editor-3', restricted: false)
     @user = FactoryGirl.create(:carto_user, builder_enabled: true)
     @user2 = FactoryGirl.create(:carto_user, builder_enabled: true)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
     bypass_named_maps
     @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
-  end
-
-  after(:all) do
-    Carto::FeatureFlag.destroy_all
-    destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-    # This avoids connection leaking.
-    ::User[@user.id].destroy
-    ::User[@user2.id].destroy
-    @analysis.destroy
   end
 
   def viz_analysis_url(user, visualization, analysis_id)
@@ -359,12 +352,9 @@ describe Carto::Api::AnalysesController do
   end
 
   describe '#LayerNodeStyle cache' do
-    before(:all) do
+    before do
       @styled_analysis = FactoryGirl.create(:analysis_point_in_polygon, visualization_id: @visualization.id, user_id: @user.id)
       @layer_id = @visualization.data_layers.first.id
-    end
-
-    before(:each) do
       @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
         Carto::LayerNodeStyle.create(
           layer_id: @layer_id,
@@ -376,10 +366,6 @@ describe Carto::Api::AnalysesController do
           tooltip: {}
         )
       end
-    end
-
-    after(:each) do
-      Carto::LayerNodeStyle.where(layer_id: @layer_id).delete_all
     end
 
     it '#show returns tile styles' do

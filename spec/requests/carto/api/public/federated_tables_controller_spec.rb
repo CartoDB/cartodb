@@ -3,11 +3,12 @@ require 'support/helpers'
 require 'helpers/feature_flag_helper'
 
 describe Carto::Api::Public::FederatedTablesController do
-  include_context 'users helper'
   include HelperMethods
   include FeatureFlagHelper
 
-  before(:all) do
+  before do
+    @user1 = create(:user)
+
     host! "#{@user1.username}.localhost.lan"
 
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'federated_tables', restricted: true)
@@ -36,8 +37,10 @@ describe Carto::Api::Public::FederatedTablesController do
     @remote_password = "#{user}"
   end
 
-  after(:all) do
-    @feature_flag.destroy
+  after do
+    Carto::FeatureFlagsUser.delete_all
+    Carto::FeatureFlag.delete_all
+    Carto::User.delete_all
   end
 
   def remote_query(query)
@@ -69,7 +72,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#list_federated_servers' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
       @params_register_server = { api_key: @user1.api_key }
       @params_unregister_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
@@ -166,7 +169,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#register_federated_server' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_002_from_#{@user1.username}_to_remote"
       @payload_register_server = get_payload(@federated_server_name)
       @params_unregister_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
@@ -347,7 +350,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#show_federated_server' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_003_from_#{@user1.username}_to_remote"
       @params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@federated_server_name)
@@ -356,7 +359,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    after(:all) do
+    after do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)
@@ -436,7 +439,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#update_federated_server' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_004_from_#{@user1.username}_to_remote"
       @payload_update_server = get_payload()
       payload_register_server = get_payload(@federated_server_name)
@@ -446,7 +449,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    after(:all) do
+    after do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)
@@ -591,7 +594,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#unregister_federated_server' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_006_from_#{@user1.username}_to_remote"
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@federated_server_name)
@@ -642,7 +645,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#list_remote_schemas' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_007_from_#{@user1.username}_to_remote"
       params_register_server= { api_key: @user1.api_key }
       payload_register_server = get_payload(@federated_server_name)
@@ -651,7 +654,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    after(:all) do
+    after do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)
@@ -757,7 +760,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#list_remote_tables' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_008_from_#{@user1.username}_to_remote"
       @remote_schema_name = 'list_remote'
       @remote_table_name = 'my_table_list_remote'
@@ -770,7 +773,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    after(:all) do
+    after do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)
@@ -828,7 +831,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#register_remote_table' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_009_from_#{@user1.username}_to_remote"
       @remote_schema_name = 'register_remote_table'
       @remote_geo_table_name = 'my_table_full'
@@ -850,7 +853,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    after(:all) do
+    after do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)
@@ -1053,7 +1056,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#show_remote_table' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_010_from_#{@user1.username}_to_remote"
       @remote_schema_name = 'public'
       @remote_table_name = 'my_table_show_remote'
@@ -1076,7 +1079,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    after(:all) do
+    after do
       params = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
         expect(response.status).to eq(204)
@@ -1143,7 +1146,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#update_remote_table' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_011_from_#{@user1.username}_to_remote"
       @remote_schema_name = 'update_remote_table_schema'
       @remote_table_name = 'my_table_update_remote_1'
@@ -1181,7 +1184,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    after(:all) do
+    after do
       params_unregister_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_server) do |response|
         expect(response.status).to eq(204)
@@ -1316,7 +1319,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#unregister_remote_table' do
-    before(:all) do
+    before do
       @federated_server_name = "fs_012_from_#{@user1.username}_to_remote"
       @remote_schema_name = 'unregister_schema'
       @remote_table_name = 'my_table_unregister_remote'
@@ -1342,7 +1345,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    after(:all) do
+    after do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)

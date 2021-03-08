@@ -336,6 +336,9 @@
       "yourDatasets": "Your datasets",
       "sharedWithYou": "{n} Shared with you"
     },
+    "emptyLayer": "Add empty layer",
+    "emptyDataset": "Create empty dataset",
+    "emptyMap": "Create empty map",
     "zeroCase": {
       "title": "You have not connected any dataset yet",
       "actionName": "Connect your data",

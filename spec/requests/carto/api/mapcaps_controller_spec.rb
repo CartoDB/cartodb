@@ -7,31 +7,22 @@ describe Carto::Api::MapcapsController do
   include Carto::Factories::Visualizations
   include HelperMethods
 
+  include_context 'with DatabaseCleaner'
+
   let(:dummy_mapcap) do
     dummy = mock
     dummy.stubs(:id).returns(Carto::UUIDHelper.random_uuid)
     dummy
   end
 
-  before(:all) do
+  before do
+    bypass_named_maps
     create(:feature_flag, name: 'editor-3', restricted: false)
 
-    @user = FactoryGirl.create(:carto_user, builder_enabled: true)
-    @intruder = FactoryGirl.create(:carto_user, builder_enabled: true)
+    @user = create(:carto_user, builder_enabled: true)
+    @intruder = create(:carto_user, builder_enabled: true)
 
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-  end
-
-  before(:each) { bypass_named_maps }
-
-  after(:all) do
-    Carto::FeatureFlag.destroy_all
-
-    @torque_layer&.destroy
-    destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-
-    @user.destroy
-    @intruder.destroy
   end
 
   def mapcap_should_be_correct(response)
@@ -46,8 +37,6 @@ describe Carto::Api::MapcapsController do
   end
 
   describe '#create' do
-    after(:all) { Carto::Mapcap.all.each(&:destroy) }
-
     def create_mapcap_url(user: @user, visualization: @visualization)
       mapcaps_url(user_domain: user.subdomain, visualization_id: visualization.id, api_key: user.api_key)
     end
@@ -102,19 +91,16 @@ describe Carto::Api::MapcapsController do
   end
 
   describe '#index' do
-    before(:all) do
+    before do
       5.times { Carto::Mapcap.create(visualization_id: @visualization.id) }
-
       @mapcaps = Carto::Mapcap.all
     end
-
-    after(:all) { @mapcaps.each(&:destroy) }
 
     def index_mapcap_url(user: @user, visualization: @visualization)
       mapcaps_url(
         user_domain: user.subdomain,
         visualization_id: visualization.id,
-        api_key: user.api_key
+        api_key: @user.api_key
       )
     end
 
@@ -136,12 +122,13 @@ describe Carto::Api::MapcapsController do
   end
 
   describe '#show' do
-    before (:all) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id) }
-    after  (:all) { @mapcap.destroy }
+    before do
+      @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id)
+    end
 
     def show_mapcap_url(user: @user, visualization: @visualization, mapcap: @mapcap)
       mapcap_url(
-        user_domain: user.subdomain,
+        user_domain: @user.subdomain,
         visualization_id: visualization.id,
         id: mapcap.id,
         api_key: user.api_key
@@ -170,8 +157,9 @@ describe Carto::Api::MapcapsController do
   end
 
   describe '#destroy' do
-    before (:each) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id) }
-    after  (:each) { @mapcap.destroy if @mapcap }
+    before do
+      @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id)
+    end
 
     def destroy_mapcap_url(user: @user, visualization: @visualization, mapcap: @mapcap)
       mapcap_url(

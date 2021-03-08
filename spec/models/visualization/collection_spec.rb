@@ -11,21 +11,14 @@ include CartoDB
 describe Visualization::Collection do
   include Carto::Factories::Visualizations
 
-  before(:all) do
-    @user_1 = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
-    @user_2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
-  end
+  include_context 'with DatabaseCleaner'
 
-  before(:each) do
-    Carto::Visualization.destroy_all
+  before do
+    @user_1 = create(:valid_user, quota_in_bytes: 524_288_000, table_quota: 500, private_tables_enabled: true)
+    @user_2 = create(:valid_user, private_tables_enabled: true)
     bypass_named_maps
     delete_user_data @user_1
     delete_user_data @user_2
-  end
-
-  after(:all) do
-    @user_1.destroy
-    @user_2.destroy
   end
 
   describe '#fetch' do

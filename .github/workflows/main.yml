@@ -6,7 +6,7 @@ on:
 
 jobs:
   cartodb-news:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
     steps:
       - name: Checkout current repository
         uses: actions/checkout@v1

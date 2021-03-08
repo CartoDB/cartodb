@@ -128,7 +128,7 @@ describe Carto::Api::MapcapsController do
 
     def show_mapcap_url(user: @user, visualization: @visualization, mapcap: @mapcap)
       mapcap_url(
-        user_domain: @user.subdomain,
+        user_domain: user.subdomain,
         visualization_id: visualization.id,
         id: mapcap.id,
         api_key: user.api_key

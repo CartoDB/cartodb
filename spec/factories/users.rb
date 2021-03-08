@@ -14,8 +14,8 @@ FactoryGirl.define do
 
     username               { Faker::Internet.username(separators: ['-']) }
     email                  { Faker::Internet.safe_email }
-    password               { email.split('@').first }
-    password_confirmation  { email.split('@').first }
+    password               { "#{username}123" }
+    password_confirmation  { password }
     table_quota            5
     quota_in_bytes         5000000
     id                     { Carto::UUIDHelper.random_uuid }

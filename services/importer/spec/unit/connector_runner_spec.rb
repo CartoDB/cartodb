@@ -12,31 +12,21 @@ require_relative '../../../../spec/helpers/feature_flag_helper'
 require_relative '../doubles/connector'
 
 describe CartoDB::Importer2::ConnectorRunner do
-  before(:all) do
-    @user = create_user
-    @user.save
+  before do
+    @user = create(:user)
     @pg_options = @user.db_service.db_configuration_for
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'carto-connectors', restricted: true)
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
     @providers = %w(dummy)
-    @fake_log.clear
     @previous_providers = replace_connector_providers(DummyConnectorProvider, DummyConnectorProviderWithModifiedDate)
-  end
-
-  before(:each) do
     CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
-    @fake_log.clear
   end
 
-  after(:all) do
-    @user.destroy
-    @feature_flag.destroy
-    restore_connector_providers(@previous_providers)
-  end
-
-  after(:each) do
-    DummyConnectorProvider.copies.clear
-    DummyConnectorProviderWithModifiedDate.copies.clear
+  after do
+    Carto::FeatureFlagsUser.delete_all
+    Carto::FeatureFlag.delete_all
+    Carto::ConnectorProvider.delete_all
+    DummyConnectorProvider.instance_variable_set(:@copies, [])
   end
 
   include FeatureFlagHelper

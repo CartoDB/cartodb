@@ -138,6 +138,7 @@ describe Carto::Api::UserPresenter do
     compare_data(owner.data, Carto::Api::UserPresenter.new(Carto::User.find(owner.id)).data, true)
 
     SequelRails.connection.run( %Q{ DELETE FROM geocodings } )
+    SequelRails.connection.run( %Q{ DELETE FROM external_data_imports } )
     SequelRails.connection.run( %Q{ DELETE FROM data_imports } )
     user.destroy
     organization.destroy

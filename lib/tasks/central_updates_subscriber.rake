@@ -107,6 +107,13 @@ namespace :message_broker do
         ).run
       end
 
+      subscription.register_callback(:set_do_gcloud_settings) do |message|
+        GcloudUserSettingsCommands::Set.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
       at_exit do
         logger.info(message: 'Stopping subscriber...')
         subscription.stop!

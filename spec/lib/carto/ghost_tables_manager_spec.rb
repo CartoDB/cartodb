@@ -12,12 +12,16 @@ module Carto
     let!(:user) { Carto::User.find(sequel_user.id) }
     let!(:ghost_tables_manager) { Carto::GhostTablesManager.new(user.id) }
 
-    before(:each) do
+    before do
       bypass_named_maps
       Rails.logger.expects(:error).never
     end
 
-    after { Carto::User.destroy_all }
+    after do
+      Carto::User.delete_all
+      Carto::AccountType.delete_all
+      Carto::RateLimit.delete_all
+    end
 
     def run_in_user_database(query)
       sequel_user.in_database.run(query)

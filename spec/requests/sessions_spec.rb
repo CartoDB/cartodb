@@ -2,6 +2,8 @@ require_relative '../acceptance_helper'
 require_relative '../factories/visualization_creation_helpers'
 
 feature "Sessions" do
+  let(:password) { 'password123456' }
+
   before do
     Capybara.current_driver = :rack_test
 
@@ -50,7 +52,7 @@ feature "Sessions" do
       page.should have_css("[@data-content='Your account or your password is not ok']")
 
       fill_in 'email', :with => @user.email
-      fill_in 'password', :with => @user.email.split('@').first
+      fill_in 'password', :with => @user.password
       click_link_or_button 'Log in'
       page.status_code.should eq 200
 
@@ -185,7 +187,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.email.split('@').first
+        fill_in 'password', with: @user_mfa.password
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
@@ -210,7 +212,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.email.split('@').first
+        fill_in 'password', with: @user_mfa.password
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
@@ -234,7 +236,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.email.split('@').first
+        fill_in 'password', with: @user_mfa.password
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
@@ -262,6 +264,9 @@ feature "Sessions" do
       before(:all) do
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user_mfa = @organization.owner
+        @user_mfa.password = password
+        @user_mfa.password_confirmation = password
+        @user_mfa.save!
         @user_mfa_setup = @organization.users.last
       end
 

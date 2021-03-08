@@ -4,9 +4,13 @@
 shared_context 'with DatabaseCleaner' do
   around do |example|
     DatabaseCleaner[:active_record].strategy = [:truncation, { only: %w(
+      rate_limits
       account_types
       feature_flags_users
       feature_flags
+      client_applications
+      oauth_tokens
+      search_tweets
     ) }]
     DatabaseCleaner.start
 

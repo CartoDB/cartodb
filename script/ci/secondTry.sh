@@ -24,6 +24,10 @@ TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_Link
 # save parallel logs tests to be uploaded later"
 cat parallel_tests/*.log  > parallel_tests_logs
 
+echo 'Parallel tests logs'
+echo "*****************************************************************************************************"
+cat parallel_tests/parallel_tests_logs
+echo "*****************************************************************************************************"
 
 if [ "$failedSpecs" -gt "50" ];
 then

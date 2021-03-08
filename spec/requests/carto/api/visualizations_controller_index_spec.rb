@@ -21,6 +21,10 @@ describe Carto::Api::VisualizationsController do
   include FeatureFlagHelper
   include VisualizationControllerHelper
 
+  let(:organization) { create(:organization_with_users) }
+  let(:organization_user) { organization.users.first }
+  let(:other_organization_user) { organization.users.second }
+
   before(:all) do
     create_account_type_fg('ORGANIZATION USER')
   end
@@ -149,7 +153,7 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'does not return the dependent visualizations if with_dependent_visualizations = 0' do
-          with_feature_flag(@user, 'faster-dependencies', true) do          
+          with_feature_flag(@user, 'faster-dependencies', true) do
             get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
                                                 with_dependent_visualizations: 0), {}, @headers
           end
@@ -453,18 +457,17 @@ describe Carto::Api::VisualizationsController do
   end
 
   describe 'index' do
-    include_context 'organization with users helper'
     include_context 'visualization creation helpers'
 
     describe 'shared_only' do
       it 'should not display nor count the shared visualizations you own' do
-        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_1.id)
+        table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: organization_user.id)
         u1_t_1_id = table.table_visualization.id
         u1_t_1_perm_id = table.table_visualization.permission.id
 
-        share_table_with_organization(table, @org_user_1, @organization)
+        share_table_with_organization(table, organization_user, organization)
 
-        get api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
+        get api_v1_visualizations_index_url(user_domain: organization_user.username, api_key: organization_user.api_key,
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at',
                                             shared: CartoDB::Visualization::Collection::FILTER_SHARED_ONLY), @headers
         body = JSON.parse(last_response.body)
@@ -474,14 +477,14 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'returns auth tokens for password protected viz for the owner but not for users that have them shared' do
-      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_org_user_1)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(organization_user.carto_user)
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.password = 'wontbeused'
       @visualization.save!
 
-      share_visualization(@visualization, @org_user_2)
+      share_visualization(@visualization, other_organization_user)
 
-      get_json api_v1_visualizations_index_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key,
+      get_json api_v1_visualizations_index_url(user_domain: organization_user.username, api_key: organization_user.api_key,
                                                type: Carto::Visualization::TYPE_DERIVED,
                                                shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
         response.status.should eq 200
@@ -489,7 +492,7 @@ describe Carto::Api::VisualizationsController do
         response.body[:visualizations][0][:auth_tokens].should_not be_empty
       end
 
-      get_json api_v1_visualizations_index_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key,
+      get_json api_v1_visualizations_index_url(user_domain: other_organization_user.username, api_key: other_organization_user.api_key,
                                                type: Carto::Visualization::TYPE_DERIVED,
                                                shared: CartoDB::Visualization::Collection::FILTER_SHARED_YES), @headers do |response|
         response.status.should eq 200
@@ -503,7 +506,6 @@ describe Carto::Api::VisualizationsController do
 
   describe 'visualization url generation' do
     include_context 'visualization creation helpers'
-    include_context 'organization with users helper'
 
     before(:all) do
       @user = FactoryGirl.create(:valid_user)
@@ -534,33 +536,33 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'generates a org user table visualization url' do
-      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @org_user_1.id)
+      table = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: organization_user.id)
       vis_id = table.table_visualization.id
 
-      get_json api_v1_visualizations_show_url(user_domain: @org_user_1.username, id: vis_id, api_key: @org_user_1.api_key), {}, http_json_headers do |response|
+      get_json api_v1_visualizations_show_url(user_domain: organization_user.username, id: vis_id, api_key: organization_user.api_key), {}, http_json_headers do |response|
         response.status.should == 200
 
-        response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/tables/#{table.name}"
+        response.body[:url].should == "http://#{organization_user.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{organization_user.username}/tables/#{table.name}"
       end
     end
 
     it 'generates a organization user map url' do
-      visualization = api_visualization_creation(@org_user_1, http_json_headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
-      get_json api_v1_visualizations_show_url(user_domain: @org_user_1.username, id: visualization.id, api_key: @org_user_1.api_key), {}, http_json_headers do |response|
+      visualization = api_visualization_creation(organization_user, http_json_headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+      get_json api_v1_visualizations_show_url(user_domain: organization_user.username, id: visualization.id, api_key: organization_user.api_key), {}, http_json_headers do |response|
         response.status.should == 200
 
-        response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/viz/#{visualization.id}/map"
+        response.body[:url].should == "http://#{organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{organization_user.username}/viz/#{visualization.id}/map"
       end
     end
 
     it 'generates the URL for tables shared by another user with hyphens in their username' do
-      user_with_hyphen = FactoryGirl.create(:user, username: 'fulano-de-tal', organization: @organization)
+      user_with_hyphen = FactoryGirl.create(:user, username: 'fulano-de-tal', organization: organization)
       table = create_random_table(user_with_hyphen, 'tabluca', UserTable::PRIVACY_PRIVATE)
       shared_table = table.table_visualization
-      share_visualization(shared_table, @org_user_1)
+      share_visualization(shared_table, organization_user)
 
-      request_url = api_v1_visualizations_show_url(user_domain: @org_user_1.username,
-                                                   id: shared_table.id, api_key: @org_user_1.api_key)
+      request_url = api_v1_visualizations_show_url(user_domain: organization_user.username,
+                                                   id: shared_table.id, api_key: organization_user.api_key)
       get_json request_url, {}, http_json_headers do |response|
         response.status.should == 200
         response.body[:url].should include("/tables/fulano-de-tal.tabluca")

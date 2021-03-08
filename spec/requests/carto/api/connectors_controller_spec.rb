@@ -4,11 +4,15 @@ require_relative '../../../../services/importer/spec/doubles/connector'
 
 describe Carto::Api::ConnectorsController do
   include HelperMethods
-  include_context 'organization with users helper'
 
-  before(:all) do
+  include_context 'with DatabaseCleaner'
+
+  before do
+    @organization = create(:organization_with_users)
     create(:feature_flag, name: 'carto-connectors', restricted: false)
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
+    @org_user_1 = @organization.users.first
+    @org_user_2 = @organization.users.second
 
     @previous_providers = replace_connector_providers(
       dummy_connector_provider_with_id('postgres', 'PostgreSQL'),
@@ -42,15 +46,6 @@ describe Carto::Api::ConnectorsController do
                                                 connector_provider_id: @connector_provider_hive.id,
                                                 enabled: true,
                                                 max_rows: 100)
-  end
-
-  after(:all) do
-    Carto::FeatureFlag.destroy_all
-    @user.destroy
-    @connector_config_user.destroy
-    @connector_config_org_user.destroy
-    @connector_config_org.destroy
-    restore_connector_providers(@previous_providers)
   end
 
   describe '#index' do

@@ -107,6 +107,20 @@ namespace :message_broker do
         ).run
       end
 
+      subscription.register_callback(:create_do_api_key) do |message|
+        RemoteDoApiKeyCommands::Create.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
+      subscription.register_callback(:destroy_do_api_key) do |message|
+        RemoteDoApiKeyCommands::Destroy.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
       at_exit do
         logger.info(message: 'Stopping subscriber...')
         subscription.stop!

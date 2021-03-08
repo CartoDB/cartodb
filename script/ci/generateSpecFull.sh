@@ -10,7 +10,7 @@ mkdir parallel_tests
 # This script will try to follow that order, but any unlisted tests will be put at the beginning
 ORDERED_TESTS='script/ci/ordered_tests.txt'
 
-cat Makefile | \
+cat spec_list.txt | \
 grep -v 'require ./spec/rspec_configuration.rb'| \
 grep 'rb'| sed -e 's/^\s*//' -e '/^$/d' | sed '/^#/ d' | sed 's/\\//' | sed 's/\s.*$//' > parallel_tests/specfull.txt
 

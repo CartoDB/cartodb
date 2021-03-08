@@ -4,35 +4,32 @@ require_relative '../../app/models/visualization/member'
 require_dependency 'carto/bounding_box_utils'
 
 describe Map do
-  before(:each) do
+  include_context 'with DatabaseCleaner'
+
+  before do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     bypass_named_maps
-
-    @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
-    @table = create_table(user_id: @user.id)
   end
 
-  after(:each) do
-    @table.destroy
-    @user.destroy
-  end
+  let(:user) { create(:valid_user, private_tables_enabled: true) }
+  let!(:table) { create_table(user_id: user.id) }
 
   describe 'viewer role support' do
     describe '#save' do
       it 'should fail for viewer users' do
-        @user.stubs(:viewer).returns(true)
-        new_map = Map.new(user: @user, table_id: @table.id)
+        user.stubs(:viewer).returns(true)
+        new_map = described_class.new(user: user, table_id: table.id)
 
         new_map.save.should eq nil
         new_map.errors[:user].should eq ["Viewer users can't save maps"]
 
-        @user.stubs(:viewer).returns(false)
+        user.stubs(:viewer).returns(false)
       end
     end
 
     describe '#update' do
       it 'should fail for existing maps and viewer users' do
-        new_map = Map.create(user_id: @user.id, table_id: @table.id)
+        new_map = described_class.create(user_id: user.id, table_id: table.id)
         new_map.user.stubs(:viewer).returns(true)
 
         new_map.save.should eq nil
@@ -44,114 +41,107 @@ describe Map do
     end
 
     describe '#validations' do
-      before(:all) do
-        @map_user = FactoryGirl.create(:carto_user)
-        @map = Carto::Map.create(user_id: @map_user.id)
-      end
-
-      after(:all) do
-        @map.destroy
-        @map_user.destroy
-      end
+      let(:user) { create(:carto_user) }
+      let!(:map) { Carto::Map.create(user_id: user.id) }
 
       describe '#options' do
         it 'sets dashboard_menu true by default' do
-          @map.dashboard_menu.should eq true
+          map.dashboard_menu.should eq true
         end
 
         it 'sets layer_selector false by default' do
-          @map.layer_selector.should eq false
+          map.layer_selector.should eq false
         end
 
         it 'allows to change dashboard_menu' do
-          @map.dashboard_menu = false
-          @map.dashboard_menu.should be_false
+          map.dashboard_menu = false
+          map.dashboard_menu.should be_false
 
-          @map.dashboard_menu = true
-          @map.dashboard_menu.should be_true
+          map.dashboard_menu = true
+          map.dashboard_menu.should be_true
         end
 
         it 'allows to change layer_selector' do
-          @map.layer_selector = false
-          @map.layer_selector.should be_false
+          map.layer_selector = false
+          map.layer_selector.should be_false
 
-          @map.layer_selector = true
-          @map.layer_selector.should be_true
+          map.layer_selector = true
+          map.layer_selector.should be_true
         end
 
         it 'rejects a non-boolean dashboard_menu value' do
-          @map.dashboard_menu = 'patata'
+          map.dashboard_menu = 'patata'
 
-          @map.valid?.should be_false
-          @map.errors[:options][0].should include('String did not match the following type: boolean')
+          map.valid?.should be_false
+          map.errors[:options][0].should include('String did not match the following type: boolean')
         end
 
         it 'rejects a non-boolean layer_selector value' do
-          @map.layer_selector = 'patata'
+          map.layer_selector = 'patata'
 
-          @map.valid?.should be_false
-          @map.errors[:options][0].should include('String did not match the following type: boolean')
+          map.valid?.should be_false
+          map.errors[:options][0].should include('String did not match the following type: boolean')
         end
 
         it 'requires a dashboard_menu value' do
-          @map.dashboard_menu = nil
+          map.dashboard_menu = nil
 
-          @map.valid?.should be_false
-          @map.errors[:options].should_not be_empty
-          @map.errors[:options][0].should include('NilClass did not match the following type: boolean')
+          map.valid?.should be_false
+          map.errors[:options].should_not be_empty
+          map.errors[:options][0].should include('NilClass did not match the following type: boolean')
         end
 
         it 'requires a layer_selector value' do
-          @map.layer_selector = nil
+          map.layer_selector = nil
 
-          @map.valid?.should be_false
-          @map.errors[:options].should_not be_empty
-          @map.errors[:options][0].should include('NilClass did not match the following type: boolean')
+          map.valid?.should be_false
+          map.errors[:options].should_not be_empty
+          map.errors[:options][0].should include('NilClass did not match the following type: boolean')
         end
 
         it 'requires dashboard_menu to be present' do
-          old_options = @map.options.dup
-          @map.options = Hash.new
+          old_options = map.options.dup
+          map.options = {}
 
-          @map.valid?.should be_false
-          @map.errors[:options].should_not be_empty
-          @map.errors[:options][0].should include('did not contain a required property of \'dashboard_menu\'')
+          map.valid?.should be_false
+          map.errors[:options].should_not be_empty
+          map.errors[:options][0].should include('did not contain a required property of \'dashboard_menu\'')
 
-          @map.options = old_options
+          map.options = old_options
         end
 
         it 'requires layer_selector to be present' do
-          old_options = @map.options.dup
-          @map.options = Hash.new
+          old_options = map.options.dup
+          map.options = {}
 
-          @map.valid?.should be_false
-          @map.errors[:options].should_not be_empty
-          @map.errors[:options][0].should include('did not contain a required property of \'layer_selector\'')
+          map.valid?.should be_false
+          map.errors[:options].should_not be_empty
+          map.errors[:options][0].should include('did not contain a required property of \'layer_selector\'')
 
-          @map.options = old_options
+          map.options = old_options
         end
 
         it 'rejects spammy options' do
-          @map.options[:spam] = 'hell'
+          map.options[:spam] = 'hell'
 
-          @map.valid?.should be_false
-          @map.errors[:options].should_not be_empty
-          @map.errors[:options][0].should include('spam')
+          map.valid?.should be_false
+          map.errors[:options].should_not be_empty
+          map.errors[:options][0].should include('spam')
         end
 
         it 'rejects incomplete options' do
-          @map.options.delete(:dashboard_menu)
+          map.options.delete(:dashboard_menu)
 
-          @map.valid?.should be_false
-          @map.errors[:options].should_not be_empty
-          @map.errors[:options][0].should include('dashboard_menu')
+          map.valid?.should be_false
+          map.errors[:options].should_not be_empty
+          map.errors[:options][0].should include('dashboard_menu')
         end
       end
     end
 
     describe '#destroy' do
       it 'should fail for existing maps and viewer users' do
-        new_map = Map.create(user_id: @user.id, table_id: @table.id)
+        new_map = described_class.create(user_id: user.id, table_id: table.id)
         new_map.user.stubs(:viewer).returns(true)
 
         expect { new_map.destroy }.to raise_error(CartoDB::InvalidMember, /Viewer users can't destroy maps/)
@@ -164,7 +154,7 @@ describe Map do
 
   describe '#bounds' do
     it 'checks max-min bounds' do
-      new_map = Map.create(user_id: @user.id, table_id: @table.id)
+      new_map = described_class.create(user_id: user.id, table_id: table.id)
 
       max_value = :maxx  # 179
       min_value = :minx  # -179
@@ -193,29 +183,29 @@ describe Map do
 
   describe '#tables' do
     it 'returns the associated tables' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
-      @table.reload
+      map = described_class.create(user_id: user.id, table_id: table.id)
+      table.reload
       map.reload
-      map.tables.map(&:id).should include(@table.id)
+      map.tables.map(&:id).should include(table.id)
       map.destroy
     end
 
     it 'updates associated tables/vis upon change' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
-      @table.reload
+      map = described_class.create(user_id: user.id, table_id: table.id)
+      table.reload
 
       CartoDB::Visualization::Member.new(
         privacy:  CartoDB::Visualization::Member::PRIVACY_PUBLIC,
         name:     'wadus',
         type:     CartoDB::Visualization::Member::TYPE_CANONICAL,
-        user_id:  @user.id,
+        user_id:  user.id,
         map_id:   map.id
       ).store
 
-      map2 = Map.create(user_id: @user.id, table_id: @table.id)
+      map2 = described_class.create(user_id: user.id, table_id: table.id)
       # Change map_id on the table, but visualization still points to old map.id
-      @table.map_id = map2.id
-      @table.save
+      table.map_id = map2.id
+      table.save
 
       # Upon save of the original map, will sanitize all visualizations pointing to old one, saving with new one
       CartoDB::Visualization::Member.any_instance.expects(:store_from_map).at_least_once
@@ -228,7 +218,7 @@ describe Map do
 
   describe '#base_layers' do
     it 'returns the associated base layer' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = described_class.create(user_id: user.id, table_id: table.id)
       base_layer = Layer.create(kind: 'carto')
       map.add_layer(base_layer)
       5.times { map.add_layer(Layer.create(kind: 'carto')) }
@@ -240,7 +230,7 @@ describe Map do
 
   describe 'data_layers' do
     it 'returns the associated data layers' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = described_class.create(user_id: user.id, table_id: table.id)
       5.times { map.add_layer(Layer.create(kind: 'tiled')) }
       data_layer = Layer.create(kind: 'carto')
       map.add_layer(data_layer)
@@ -252,7 +242,7 @@ describe Map do
 
   describe '#user_layers' do
     it 'returns all user-defined layers' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
+      map = described_class.create(user_id: user.id, table_id: table.id)
       5.times { map.add_layer(Layer.create(kind: 'tiled')) }
       data_layer = Layer.create(kind: 'carto')
       map.add_layer(data_layer)
@@ -265,7 +255,7 @@ describe Map do
 
   describe '#after_save' do
     it 'invalidates varnish cache' do
-      map = ::Map[@table.map.id]
+      map = ::Map[table.map.id]
       # One per save, one per destroy
       map.expects(:invalidate_vizjson_varnish_cache).twice
       map.save
@@ -274,7 +264,7 @@ describe Map do
 
     it "recalculates bounds" do
       table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'Madrid Bars', :tags => 'movies, personal'
-      table.user_id = @user.id
+      table.user_id = user.id
       table.force_schema = "name text, address text, latitude float, longitude float"
       table.save
       table.insert_row!({:name => "Hawai", :address => "Calle de Pérez Galdós 9, Madrid, Spain", :latitude => 40.423012, :longitude => -3.699732})
@@ -293,7 +283,7 @@ describe Map do
 
     it "recenters map using bounds" do
       table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'bounds tests', :tags => 'testing'
-      table.user_id = @user.id
+      table.user_id = user.id
       table.force_schema = "name text, latitude float, longitude float"
       table.save
       table.insert_row!({:name => "A", :latitude => 40.0, :longitude => -20.0})
@@ -309,7 +299,7 @@ describe Map do
 
     it "recalculates zoom using bounds" do
       table = Table.new :privacy => UserTable::PRIVACY_PRIVATE, :name => 'zoom recalc test'
-      table.user_id = @user.id
+      table.user_id = user.id
       table.force_schema = "name text, latitude float, longitude float"
       table.save
 
@@ -345,13 +335,9 @@ describe Map do
 
   describe '#notify_map_change' do
     before(:each) do
-      @map = Map.create(user_id: @user.id, table_id: @table.id)
+      @map = described_class.create(user_id: user.id, table_id: table.id)
       layer = Layer.new(kind: 'tiled')
       @map.add_layer(layer)
-    end
-
-    after(:each) do
-      @map.destroy
     end
 
     it 'invalidates vizjson cache' do
@@ -372,7 +358,7 @@ describe Map do
 
   describe '#updated_at' do
     it 'is updated after saving the map' do
-      map         = Map.create(user_id: @user.id, table_id: @table.id)
+      map         = described_class.create(user_id: user.id, table_id: table.id)
       updated_at  = map.updated_at
 
       sleep 0.5
@@ -384,27 +370,27 @@ describe Map do
 
   describe '#can_add_layer?' do
     it 'should only take into account data layers' do
-      map = Map.create(user_id: @user.id, table_id: @table.id)
-      @user.max_layers = 1
-      @user.save.reload
+      map = described_class.create(user_id: user.id, table_id: table.id)
+      user.max_layers = 1
+      user.save.reload
 
       # First base layer is always allowed
       layer = Layer.new(kind: 'tiled')
-      map.can_add_layer?(@user, layer).should == true
+      map.can_add_layer?(user, layer).should == true
       map.add_layer(layer)
       map.save.reload
 
       layer_carto1 = Layer.new(kind: 'carto')
-      map.can_add_layer?(@user, layer_carto1).should == true
+      map.can_add_layer?(user, layer_carto1).should == true
       map.add_layer(layer_carto1)
       map.save.reload
 
       layer_carto2 = Layer.new(kind: 'carto')
-      map.can_add_layer?(@user, layer_carto2).should == false
+      map.can_add_layer?(user, layer_carto2).should == false
 
       # This is now a valid scenario, for example switcing from a basemap with labels on top to another that has too
       third_layer = Layer.new(kind: 'tiled', order: 15)
-      map.can_add_layer?(@user, third_layer).should == true
+      map.can_add_layer?(user, third_layer).should == true
       map.add_layer(third_layer)
       map.save.reload
 
@@ -414,7 +400,7 @@ describe Map do
 
   describe '#admits?' do
     it 'checks base layer admission rules' do
-      map   = Map.create(user_id: @user.id, table_id: @table.id)
+      map = described_class.create(user_id: user.id, table_id: table.id)
 
       # First base layer is always allowed
       layer = Layer.new(kind: 'tiled')
@@ -445,7 +431,7 @@ describe Map do
 
     describe 'when linked to a table visualization' do
       it 'returns false when passed a data layer and it is already linked to a base layer' do
-        map = ::Map[@table.map.id]
+        map = ::Map[table.map.id]
         map.remove_layer(map.data_layers.first)
         map.reload
 
@@ -459,7 +445,7 @@ describe Map do
   end
 
   it "should correcly set vizjson updated_at" do
-    map = Map.create(user_id: @user.id, table_id: @table.id)
+    map = described_class.create(user_id: user.id, table_id: table.id)
 
     # When the table data is newer
     time = Time.now + 2.minutes
@@ -474,7 +460,7 @@ describe Map do
 
   describe '#before_destroy' do
     it 'invalidates varnish cache' do
-      map = ::Map[@table.map.id]
+      map = ::Map[table.map.id]
       map.expects(:invalidate_vizjson_varnish_cache)
       map.destroy
     end
@@ -482,19 +468,19 @@ describe Map do
 
   describe '#process_privacy_in' do
     it 'sets related visualization private if layer uses private tables' do
-      @table1 = Table.new
-      @table1.user_id = @user.id
-      @table1.save
+      table1 = Table.new
+      table1.user_id = user.id
+      table1.save
 
-      @table2 = Table.new
-      @table2.user_id = @user.id
-      @table2.save
+      table2 = Table.new
+      table2.user_id = user.id
+      table2.save
 
-      visualization = @table1.table_visualization
+      visualization = table1.table_visualization
 
       visualization.data_layers.length.should eq 1
-      @table1.privacy = UserTable::PRIVACY_PUBLIC
-      @table1.save
+      table1.privacy = UserTable::PRIVACY_PUBLIC
+      table1.save
       visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
       visualization.store
 
@@ -502,12 +488,12 @@ describe Map do
 
       layer = Carto::Layer.create(
         kind:     'carto',
-        options:  { table_name: @table2.name }
+        options:  { table_name: table2.name }
       )
       layer.add_map(visualization.map)
       layer.save
       layer.reload
-      @user.reload
+      user.reload
 
       layer.uses_private_tables?.should be_true
 
@@ -517,14 +503,6 @@ describe Map do
   end
 
   context 'viewer role support on layer management' do
-    after(:each) do
-      @user.viewer = false
-      @user.save
-      @user.reload
-
-      @map.reload && @map.destroy if @map
-    end
-
     def become_viewer(user)
       user.viewer = true
       user.save
@@ -533,21 +511,21 @@ describe Map do
 
     describe 'add layers' do
       it 'should fail for viewer users' do
-        @map = Map.create(user_id: @user.id, table_id: @table.id)
+        @map = described_class.create(user_id: user.id, table_id: table.id)
 
-        become_viewer(@user)
+        become_viewer(user)
         @map.reload
 
-        @layer = Layer.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
+        @layer = Layer.create(kind: 'carto', options: { query: "select * from #{table.name}" })
         expect { @map.add_layer(@layer) }.to raise_error(/Viewer users can't edit layers/)
       end
     end
 
     describe 'remove layers' do
       it 'should fail for viewer users' do
-        @map = Map.create(user_id: @user.id, table_id: @table.id)
+        @map = described_class.create(user_id: user.id, table_id: table.id)
 
-        layer = Layer.create(kind: 'carto', options: { table_name: @table.name })
+        layer = Layer.create(kind: 'carto', options: { table_name: table.name })
         layer.add_map(@map)
         layer.save
         layer.reload
@@ -555,7 +533,7 @@ describe Map do
 
         @map.layers_dataset.where(layer_id: layer.id).should_not be_empty
 
-        become_viewer(@user)
+        become_viewer(user)
         expect {
           @map.layers_dataset.where(layer_id: layer.id).destroy
         }.to raise_error(/Viewer users can't destroy layers/)
@@ -566,13 +544,13 @@ describe Map do
 
     describe 'can_add_layer?' do
       it 'should return false for viewer users' do
-        @map = Map.create(user_id: @user.id, table_id: @table.id)
+        @map = described_class.create(user_id: user.id, table_id: table.id)
 
-        become_viewer(@user)
+        become_viewer(user)
         @map.reload
 
-        layer = Layer.create(kind: 'carto', options: { table_name: @table.name })
-        @map.can_add_layer?(@user, layer).should eq false
+        layer = Layer.create(kind: 'carto', options: { table_name: table.name })
+        @map.can_add_layer?(user, layer).should eq false
       end
     end
   end

@@ -9,6 +9,8 @@ require_relative '../../services/dataservices-metrics/lib/observatory_general_us
 # - `get_twitter_imports_count_by_user_id`
 # - `get_user_by_id`
 shared_examples_for "user models" do
+  include_context 'with DatabaseCleaner'
+
   describe '#get_twitter_imports_count' do
     include_context 'users helper'
 
@@ -23,13 +25,9 @@ shared_examples_for "user models" do
   describe 'twitter_datasource_enabled for org users' do
     include_context 'organization with users helper'
 
-    before(:all) do
+    before do
       @config = Cartodb.config.deep_dup
       CartoDB::Datasources::DatasourcesFactory.set_config(@config)
-    end
-
-    after(:all) do
-      CartoDB::Datasources::DatasourcesFactory.set_config(nil)
     end
 
     it 'is enabled if organization has it enabled and with custom config, no matter whether user has it or not,
@@ -591,14 +589,9 @@ shared_examples_for "user models" do
     end
   end
 
-
   describe 'single user' do
-    before(:all) do
+    before do
       @user = create_user
-    end
-
-    after(:all) do
-      User[@user.id].destroy
     end
 
     it 'generates auth_tokens and save them for future accesses' do
@@ -610,18 +603,8 @@ shared_examples_for "user models" do
   end
 
   describe '#needs_password_confirmation?' do
-    before(:all) do
+    before do
       @user = create_user
-    end
-
-    after(:each) do
-      @user.google_sign_in = nil
-      @user.last_password_change_date = nil
-      @user.organization = nil
-    end
-
-    after(:all) do
-      User[@user.id].destroy
     end
 
     it 'is true for a normal user' do
@@ -657,12 +640,8 @@ shared_examples_for "user models" do
   end
 
   describe 'defaults and email and password changes checks' do
-    before(:all) do
+    before do
       @user = create_user
-    end
-
-    after(:all) do
-      User[@user.id].destroy
     end
 
     it "Should properly report ability to change (or not) email & password when proceeds" do
@@ -845,12 +824,8 @@ shared_examples_for "user models" do
   end
 
   shared_examples_for 'google maps key inheritance' do
-    before(:all) do
+    before do
       @user = create_user
-    end
-
-    after(:all) do
-      @user.destroy
     end
 
     def set_user_field(value)
@@ -931,12 +906,8 @@ shared_examples_for "user models" do
   end
 
   describe '#name_or_username' do
-    before(:all) do
+    before do
       @user = create_user
-    end
-
-    after(:all) do
-      @user.destroy
     end
 
     it 'returns username if no name available' do
@@ -965,7 +936,7 @@ shared_examples_for "user models" do
   end
 
   describe '#relevant_frontend_version' do
-    before(:all) do
+    before do
       @user = create_user
     end
 
@@ -987,12 +958,8 @@ shared_examples_for "user models" do
   end
 
   describe '#valid_password?' do
-    before(:all) do
+    before do
       @user = create_user
-    end
-
-    after(:all) do
-      @user.destroy
     end
 
     it 'returns true if the password is valid' do
@@ -1009,12 +976,8 @@ shared_examples_for "user models" do
   end
 
   describe '#valid_password_confirmation' do
-    before(:all) do
+    before do
       @user = create_user
-    end
-
-    after(:all) do
-      @user.destroy
     end
 
     it 'returns true if the password is valid' do

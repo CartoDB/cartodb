@@ -1,11 +1,5 @@
 # This file provides a minimal Rails integration test environment with an empty database, without users.
-require 'mocha'
-require 'simplecov_helper'
-require 'helpers/spec_helper_helpers'
-require 'helpers/named_maps_helper'
-require './spec/support/message_broker_stubs'
-require './spec/support/redis'
-require './spec/support/shared_entities_spec_helper'
+require 'support/redis'
 require 'spec_helper_common'
 
 raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{Rails.env}) unless Rails.env.test?
@@ -32,10 +26,7 @@ RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include SharedEntitiesSpecHelper
   config.mock_with :mocha
-
-  config.after(:each) do
-    Delorean.back_to_the_present
-  end
+  config.profile_examples = 25
 
   unless ENV['PARALLEL']
     config.before(:suite) do
@@ -44,6 +35,9 @@ RSpec.configure do |config|
   end
 
   config.before(:all) do
+    double = MessageBrokerDouble.instance
+    Carto::Common::MessageBroker.stubs(:new).returns(double)
+
     unless ENV['PARALLEL']
       clean_redis_databases
       clean_metadata_database
@@ -51,6 +45,12 @@ RSpec.configure do |config|
       drop_leaked_test_user_databases
     end
   end
+
+  config.before do
+    double = MessageBrokerDouble.instance
+    Carto::Common::MessageBroker.stubs(:new).returns(double)
+  end
+
   config.after(:all) do
     unless ENV['PARALLEL'] || ENV['BUILD_ID']
       close_pool_connections
@@ -63,5 +63,9 @@ RSpec.configure do |config|
     config.after(:suite) do
       CartoDB::RedisTest.down
     end
+  end
+
+  config.after do
+    Delorean.back_to_the_present
   end
 end

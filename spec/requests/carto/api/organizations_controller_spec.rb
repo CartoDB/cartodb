@@ -9,7 +9,6 @@ describe Carto::Api::OrganizationsController do
   include Warden::Test::Helpers
 
   describe 'users unauthenticated behaviour' do
-
     it 'returns 401 for not logged users' do
       get api_v1_organization_users_url(id: @organization.id), @headers
       last_response.status.should == 401
@@ -17,21 +16,10 @@ describe Carto::Api::OrganizationsController do
   end
 
   describe 'users' do
-
-    before(:all) do
+    before do
       @org_user_3 = create_test_user(unique_name('user'), @organization)
       @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
       @group_1.add_user(@org_user_1.username)
-    end
-
-    after(:all) do
-      @group_1.destroy
-      bypass_named_maps
-      delete_user_data(@org_user_3)
-      @org_user_3.destroy
-    end
-
-    before(:each) do
       login(@org_user_1)
     end
 

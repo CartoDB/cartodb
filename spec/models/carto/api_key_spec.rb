@@ -8,6 +8,8 @@ describe Carto::ApiKey do
   include CartoDB::Factories
   include DatabaseConnectionHelper
 
+  include_context 'with DatabaseCleaner'
+
   def api_key_table_permissions(api_key, schema, table_name)
     api_key.table_permissions_from_db.find do |tp|
       tp.schema == schema && tp.name == table_name
@@ -101,21 +103,10 @@ describe Carto::ApiKey do
   end
 
   shared_examples_for 'api key' do
-    before(:all) do
+    before do
       @table1 = create_table(user_id: @carto_user1.id)
       @table2 = create_table(user_id: @carto_user1.id)
       @table3 = create_table(user_id: @carto_user1.id)
-    end
-
-    after(:all) do
-      bypass_named_maps
-      @table2.destroy
-      @table1.destroy
-      @table3.destroy
-    end
-
-    after(:each) do
-      @carto_user1.reload.api_keys.where(type: Carto::ApiKey::TYPE_REGULAR).each(&:delete)
     end
 
     it 'can grant insert, select, update delete to a database role' do
@@ -530,13 +521,8 @@ describe Carto::ApiKey do
       end
 
       context 'without enough regular api key quota' do
-        before(:all) do
+        before do
           @carto_user1.regular_api_key_quota = 0
-          @carto_user1.save
-        end
-
-        after(:all) do
-          @carto_user1.regular_api_key_quota = be_nil
           @carto_user1.save
         end
 
@@ -551,13 +537,9 @@ describe Carto::ApiKey do
     end
 
     describe '#table_permission_from_db' do
-      before(:all) do
+      before do
         @public_table = create_table(user_id: @carto_user1.id)
         @public_table.table_visualization.update_attributes(privacy: 'public')
-      end
-
-      after(:all) do
-        @public_table.destroy
       end
 
       it 'loads newly created grants for role' do
@@ -601,12 +583,8 @@ describe Carto::ApiKey do
     end
 
     describe '#schema_permission_from_db' do
-      before(:all) do
+      before do
         @public_table = create_table(user_id: @carto_user1.id)
-      end
-
-      after(:all) do
-        @public_table.destroy
       end
 
       it 'loads newly created grants for role' do
@@ -746,10 +724,6 @@ describe Carto::ApiKey do
       before :each do
         @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
         Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
-      end
-
-      after :each do
-        Carto::ApiKey.any_instance.unstub(:db_role)
       end
 
       it 'cdb_conf info with dataservices' do
@@ -894,28 +868,19 @@ describe Carto::ApiKey do
   end
 
   describe 'with plain users' do
-    before(:all) do
+    before do
       @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
-    end
-
-    after(:all) do
-      @user1.destroy
     end
 
     it_behaves_like 'api key'
   end
 
   describe 'with organization users' do
-    before(:all) do
+    before do
       @auth_organization = FactoryGirl.create(:organization, quota_in_bytes: 1.gigabytes)
       @user1 = TestUserFactory.new.create_owner(@auth_organization)
       @carto_user1 = Carto::User.find(@user1.id)
-    end
-
-    after(:all) do
-      @user1.destroy
-      @auth_organization.destroy
     end
 
     it_behaves_like 'api key'
@@ -984,21 +949,22 @@ describe Carto::ApiKey do
   end
 
   describe 'org shared tables' do
-    include_context 'organization with users helper'
+    let(:organization) { create(:organization_with_users) }
+    let(:organization_user_1) { organization.users.first }
+    let(:organization_user_2) { organization.users.second }
+    let(:shared_table) { create_table(user_id: organization_user_1.id) }
 
-    before :each do
-      @shared_table = create_table(user_id: @carto_org_user_1.id)
-
-      perm = @shared_table.table_visualization.permission
-      perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'rw' }]
+    before do
+      perm = shared_table.table_visualization.permission
+      perm.acl = [{ type: 'user', entity: { id: organization_user_2.id }, access: 'rw' }]
       perm.save!
     end
 
     it 'should create an api key using a shared table' do
-      grants = [apis_grant(['sql']), table_grant(@shared_table.database_schema, @shared_table.name)]
-      api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
+      grants = [apis_grant(['sql']), table_grant(shared_table.database_schema, shared_table.name)]
+      api_key = organization_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
 
-      schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
+      schema_table = "\"#{shared_table.database_schema}\".\"#{shared_table.name}\""
 
       with_connection_from_api_key(api_key) do |connection|
         connection.execute("select count(1) from #{schema_table}") do |result|
@@ -1009,16 +975,16 @@ describe Carto::ApiKey do
     end
 
     it 'should revoke permissions removing shared permissions (rw to r)' do
-      grants = [apis_grant(['sql']), table_grant(@shared_table.database_schema, @shared_table.name)]
-      api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
+      grants = [apis_grant(['sql']), table_grant(shared_table.database_schema, shared_table.name)]
+      api_key = organization_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
 
       # remove shared permissions
-      @shared_table.table_visualization.reload
-      perm = @shared_table.table_visualization.permission
-      perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'r' }]
+      shared_table.table_visualization.reload
+      perm = shared_table.table_visualization.permission
+      perm.acl = [{ type: 'user', entity: { id: organization_user_2.id }, access: 'r' }]
       perm.save!
 
-      schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
+      schema_table = "\"#{shared_table.database_schema}\".\"#{shared_table.name}\""
 
       with_connection_from_api_key(api_key) do |connection|
         connection.execute("select count(1) from #{schema_table}") do |result|
@@ -1034,16 +1000,16 @@ describe Carto::ApiKey do
     end
 
     it 'should revoke permissions removing shared permissions (rw to none)' do
-      grants = [apis_grant(['sql']), table_grant(@shared_table.database_schema, @shared_table.name)]
-      api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
+      grants = [apis_grant(['sql']), table_grant(shared_table.database_schema, shared_table.name)]
+      api_key = organization_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
 
       # remove shared permissions
-      @shared_table.table_visualization.reload
-      perm = @shared_table.table_visualization.permission
+      shared_table.table_visualization.reload
+      perm = shared_table.table_visualization.permission
       perm.acl = []
       perm.save!
 
-      schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
+      schema_table = "\"#{shared_table.database_schema}\".\"#{shared_table.name}\""
 
       with_connection_from_api_key(api_key) do |connection|
         expect {

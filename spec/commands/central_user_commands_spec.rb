@@ -207,6 +207,8 @@ describe CentralUserCommands do
       end
     end
 
+    # TODO: this tests old behavior, remove once
+    # https://github.com/CartoDB/cartodb-central/pull/3078 is merged
     context 'when handling Google Cloud settings' do
       let(:google_cloud_settings) do
         {

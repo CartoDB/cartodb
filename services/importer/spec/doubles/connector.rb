@@ -39,7 +39,9 @@ class DummyConnectorProvider < Carto::Connector::Provider
   end
 
   def check_connection
-    self.class.error_message ? false : true
+    raise self.class.error_message if self.class.error_message.present?
+
+    true
   end
 
   def table_name

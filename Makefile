@@ -76,6 +76,7 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/http/client_spec.rb \
 	spec/lib/carto/table_utils_spec.rb \
 	spec/lib/carto/authentication_manager_spec.rb \
+	spec/lib/carto/g_cloud_user_settings_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/helpers/logger_helper_spec.rb \
@@ -94,6 +95,7 @@ WORKING_SPECS_1 = \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
 	spec/services/carto/visualization_backup_service_spec.rb \
 	spec/lib/carto/common/logger_spec.rb \
+	spec/models/carto/connection_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_2 = \
@@ -141,6 +143,7 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/namedplaces_guesser_spec.rb \
 	services/importer/spec/unit/connector_spec.rb \
 	services/importer/spec/unit/connector_runner_spec.rb \
+	services/importer/spec/unit/connection_manager_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_4 = \
@@ -203,6 +206,7 @@ WORKING_SPECS_5 = \
 	spec/commands/organization_commands/delete_spec.rb \
 	spec/commands/organization_commands/update_spec.rb \
 	spec/commands/central_user_commands_spec.rb \
+	spec/commands/gcloud_user_settings_commands/set_spec.rb \
 	spec/commands/account_type_commands/create_spec.rb \
 	spec/commands/account_type_commands/update_spec.rb \
 	spec/commands/account_type_commands/delete_spec.rb \

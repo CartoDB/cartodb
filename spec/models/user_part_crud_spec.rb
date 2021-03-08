@@ -7,7 +7,8 @@ describe User do
 
   describe 'central synchronization' do
     it 'should create remote user in central if needed' do
-      pending "Central API credentials not provided" unless ::User.new.sync_data_with_cartodb_central?
+      pending 'Missing Message Broker config' unless Cartodb::Central.message_broker_sync_enabled?
+
       organization = create_org('testorg', 500.megabytes, 1)
       user = create_user email: 'user1@testorg.com',
                          username: 'user1',

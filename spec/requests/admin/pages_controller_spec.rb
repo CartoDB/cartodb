@@ -21,7 +21,10 @@ describe Admin::PagesController do
   describe '#index' do
     before { host!("#{organization.name}.#{cartodb_host}") }
 
-    after { Carto::User.delete_all }
+    after do
+      Carto::OauthApp.delete_all
+      Carto::User.delete_all
+    end
 
     it 'returns 404 if user does not belongs to host organization' do
       prepare_user(non_org_user_name)

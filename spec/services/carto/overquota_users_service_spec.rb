@@ -1,14 +1,11 @@
 require 'spec_helper_min'
 
 describe 'Carto::OverquotaUsersService' do
-  before(:all) do
-    @user = FactoryGirl.create(:carto_user, account_type: 'NOT_FREE')
-    @user2 = FactoryGirl.create(:carto_user, account_type: 'FREE')
-  end
+  include_context 'with DatabaseCleaner'
 
-  after(:all) do
-    @user.destroy
-    @user2.destroy
+  before do
+    @user = create(:carto_user, account_type: 'NOT_FREE')
+    @user2 = create(:carto_user, account_type: 'FREE')
   end
 
   # Filter overquota users to only those created by this spec

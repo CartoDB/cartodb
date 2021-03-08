@@ -12,7 +12,7 @@ FactoryGirl.define do
   factory :user, class: ::User do
     to_create(&:save)
 
-    sequence(:username) { |i| "user#{i}" }
+    sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
     email                  { "#{username}@example.com" }
     password               { "#{username}123" }
     password_confirmation  { password }

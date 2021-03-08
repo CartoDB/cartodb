@@ -12,8 +12,8 @@ FactoryGirl.define do
   factory :user, class: ::User do
     to_create(&:save)
 
-    username               { Faker::Internet.username(separators: ['-']) }
-    email                  { Faker::Internet.safe_email }
+    sequence(:username) { |i| "user#{i}" }
+    email                  { "#{username}@example.com" }
     password               { "#{username}123" }
     password_confirmation  { password }
     table_quota            5

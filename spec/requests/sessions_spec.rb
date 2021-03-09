@@ -235,16 +235,15 @@ feature "Sessions" do
     end
 
     describe 'org owner with MFA' do
+      let(:organization) { create(:organization_with_users, :mfa_enabled) }
+      let(:organization_user) { organization.users.last }
+
       before do
-        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
-        @user_mfa = @organization.owner
+        @user_mfa = organization.owner
         @user_mfa.password = password
         @user_mfa.password_confirmation = password
         @user_mfa.save!
-        @user_mfa_setup = @organization.users.last
       end
-
-      let(:organization_user_password) { "#{@user_mfa_setup.username}123" }
 
       scenario "Login in the application with MFA that does not need setup" do
         # we use this to avoid generating the static assets in client_application
@@ -307,25 +306,25 @@ feature "Sessions" do
         # we use this to avoid generating the static assets in CI
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
-        mfa = @user_mfa_setup.active_multifactor_authentication
+        mfa = organization_user.active_multifactor_authentication
         mfa.enabled = false
         mfa.save!
-        @user_mfa_setup.reload
+        organization_user.reload
 
         visit login_path
-        submit_login(@user_mfa_setup, organization_user_password)
+        submit_login(organization_user, "#{organization_user.username}123")
         page.status_code.should eq 200
 
-        page.body.should include(@user_mfa_setup.active_multifactor_authentication.shared_secret)
+        page.body.should include(organization_user.active_multifactor_authentication.shared_secret)
         page.body.should include("data:image/png;base64")
         page.body.should include("Verification code")
         page.body.should include("Use Google Authenticator app to scan the QR code")
 
-        fill_in 'code', with: ROTP::TOTP.new(@user_mfa_setup.active_multifactor_authentication.shared_secret).now
+        fill_in 'code', with: ROTP::TOTP.new(organization_user.active_multifactor_authentication.shared_secret).now
         click_link_or_button 'Verify'
 
         page.status_code.should eq 200
-        page.body.should_not include(@user_mfa_setup.active_multifactor_authentication.shared_secret)
+        page.body.should_not include(organization_user.active_multifactor_authentication.shared_secret)
         page.body.should_not include("data:image/png;base64")
         page.body.should_not include("Verification code")
         page.body.should_not include("Use Google Authenticator app to scan the QR code")
@@ -334,12 +333,13 @@ feature "Sessions" do
       scenario "MFA setup screen has skip link when mfa needs setup" do
         # we use this to avoid generating the static assets in CI
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
-        mfa = @user_mfa_setup.active_multifactor_authentication
+        mfa = organization_user.active_multifactor_authentication
         mfa.enabled = false
         mfa.save!
+        organization_user.reload
 
         visit login_path
-        submit_login(@user_mfa_setup, organization_user_password)
+        submit_login(organization_user, "#{organization_user.username}123")
         page.status_code.should eq 200
 
         page.body.should include("Verification code")

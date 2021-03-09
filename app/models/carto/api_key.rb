@@ -648,12 +648,11 @@ module Carto
     end
 
     def valid_master_key
-      errors.add(:name, "must be #{NAME_MASTER} for master keys") if name != NAME_MASTER
-      errors.add(:grants, 'must grant all apis') if grants != MASTER_API_KEY_GRANTS
-
-      if user.present? # API keys synced from on-premises won't have a user record in CARTO-managed clouds
-        errors.add(:token, 'must match user model for master keys') if token != user.api_key
+      errors.add(:name, "must be #{NAME_MASTER} for master keys") unless name == NAME_MASTER
+      unless grants == MASTER_API_KEY_GRANTS
+        errors.add(:grants, "must grant all apis")
       end
+      errors.add(:token, "must match user model for master keys") unless token == user.api_key
     end
 
     def valid_default_public_key

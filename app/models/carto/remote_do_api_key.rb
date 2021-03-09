@@ -13,12 +13,10 @@ module Carto
     end
 
     def save!
-      Rails.logger.info(message: 'Saving to Redis', redis_key: redis_key, redis_value: redis_hash_as_array)
       redis_client.hmset(redis_key, redis_hash_as_array)
     end
 
     def destroy!
-      Rails.logger.info(message: 'Removing from Redis', redis_key: redis_key)
       redis_client.del(redis_key)
     end
 

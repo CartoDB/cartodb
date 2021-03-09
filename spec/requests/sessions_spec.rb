@@ -4,9 +4,8 @@ require_relative '../factories/visualization_creation_helpers'
 feature "Sessions" do
   let(:password) { 'password123456' }
 
-  before { Carto::Ldap::Configuration.delete_all }
-
   after do
+    Carto::UserMultifactorAuth.delete_all
     Carto::User.delete_all
     Carto::Ldap::Configuration.delete_all
     Carto::Organization.delete_all
@@ -159,7 +158,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: "#{@user_mfa.username}123"
+        fill_in 'password', with: @user_mfa.email.split('@').first
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
@@ -183,7 +182,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: "#{@user_mfa.username}123"
+        fill_in 'password', with: @user_mfa.email.split('@').first
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 

@@ -1,6 +1,16 @@
 require_relative '../acceptance_helper'
 require_relative '../factories/visualization_creation_helpers'
 
+def org_login_url(organization)
+  login_url(host: "#{organization.name}.localhost.lan", port: Capybara.server_port)
+end
+
+def submit_login(user, password)
+  fill_in 'email', with: user.email
+  fill_in 'password', with: password
+  click_link_or_button 'Log in'
+end
+
 feature "Sessions" do
   let(:password) { 'password123456' }
 
@@ -47,16 +57,12 @@ feature "Sessions" do
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
       visit login_path
-      fill_in 'email', :with => @user.email
-      fill_in 'password', :with => 'blablapassword'
-      click_link_or_button 'Log in'
+      submit_login(@user, 'blablapassword')
 
       page.should have_css(".Sessions-fieldError.js-Sessions-fieldError")
       page.should have_css("[@data-content='Your account or your password is not ok']")
 
-      fill_in 'email', :with => @user.email
-      fill_in 'password', :with => @user.password
-      click_link_or_button 'Log in'
+      submit_login(@user, @user.password)
       page.status_code.should eq 200
 
       page.should_not have_css(".Sessions-fieldError.js-Sessions-fieldError")
@@ -132,9 +138,7 @@ feature "Sessions" do
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
         visit login_path
-        fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.email.split('@').first
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa, @user_mfa.email.split('@').first)
         page.status_code.should eq 200
 
         page.body.should_not include(@user_mfa.active_multifactor_authentication.shared_secret)
@@ -157,9 +161,7 @@ feature "Sessions" do
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
         visit login_path
-        fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.email.split('@').first
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa, @user_mfa.email.split('@').first)
         page.status_code.should eq 200
 
         page.body.should_not include(@user_mfa.active_multifactor_authentication.shared_secret)
@@ -181,9 +183,7 @@ feature "Sessions" do
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
         visit login_path
-        fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.email.split('@').first
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa, @user_mfa.email.split('@').first)
         page.status_code.should eq 200
 
         page.body.should include("Verification code")
@@ -200,9 +200,7 @@ feature "Sessions" do
         @user_mfa_setup.reload
 
         visit login_path
-        fill_in 'email', with: @user_mfa_setup.email
-        fill_in 'password', with: @user_mfa_setup.email.split('@').first
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa_setup, @user_mfa_setup.email.split('@').first)
         page.status_code.should eq 200
 
         page.body.should include(@user_mfa_setup.active_multifactor_authentication.shared_secret)
@@ -228,9 +226,7 @@ feature "Sessions" do
         mfa.save!
 
         visit login_path
-        fill_in 'email', with: @user_mfa_setup.email
-        fill_in 'password', with: @user_mfa_setup.email.split('@').first
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa_setup, @user_mfa_setup.email.split('@').first)
         page.status_code.should eq 200
 
         page.body.should include("Verification code")
@@ -255,9 +251,7 @@ feature "Sessions" do
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
         visit login_path
-        fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.password
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa, @user_mfa.password)
         page.status_code.should eq 200
 
         page.body.should_not include(@user_mfa.active_multifactor_authentication.shared_secret)
@@ -280,9 +274,7 @@ feature "Sessions" do
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
         visit login_path
-        fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.password
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa, @user_mfa.password)
         page.status_code.should eq 200
 
         page.body.should_not include(@user_mfa.active_multifactor_authentication.shared_secret)
@@ -304,9 +296,7 @@ feature "Sessions" do
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
         visit login_path
-        fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.password
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa, @user_mfa.password)
         page.status_code.should eq 200
 
         page.body.should include("Verification code")
@@ -323,9 +313,7 @@ feature "Sessions" do
         @user_mfa_setup.reload
 
         visit login_path
-        fill_in 'email', with: @user_mfa_setup.email
-        fill_in 'password', with: organization_user_password
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa_setup, organization_user_password)
         page.status_code.should eq 200
 
         page.body.should include(@user_mfa_setup.active_multifactor_authentication.shared_secret)
@@ -351,9 +339,7 @@ feature "Sessions" do
         mfa.save!
 
         visit login_path
-        fill_in 'email', with: @user_mfa_setup.email
-        fill_in 'password', with: organization_user_password
-        click_link_or_button 'Log in'
+        submit_login(@user_mfa_setup, organization_user_password)
         page.status_code.should eq 200
 
         page.body.should include("Verification code")
@@ -371,7 +357,7 @@ feature "Sessions" do
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
       visit org_login_url(organization_user.organization)
-      send_login_form(organization_user)
+      submit_login(organization_user, organization_user.password)
 
       page.status_code.should eq 200
       page.should_not have_css(".Sessions-fieldError.js-Sessions-fieldError")
@@ -396,7 +382,6 @@ feature "Sessions" do
     end
 
     describe 'ldap login' do
-
       before do
         @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: organization.id })
       end
@@ -406,19 +391,6 @@ feature "Sessions" do
         page.should_not have_css('#google_signup_access_token')
         page.should_not have_css('#google_login_button_iframe')
       end
-
     end
-
   end
-
-  def org_login_url(organization)
-    login_url(:host => "#{organization.name}.localhost.lan", :port => Capybara.server_port)
-  end
-
-  def send_login_form(user)
-    fill_in 'email', with: user.email
-    fill_in 'password', with: user.password
-    click_link_or_button 'Log in'
-  end
-
 end

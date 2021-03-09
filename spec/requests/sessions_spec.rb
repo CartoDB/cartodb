@@ -236,7 +236,7 @@ feature "Sessions" do
 
     describe 'org owner with MFA' do
       let(:organization) { create(:organization_with_users, :mfa_enabled) }
-      let(:organization_user) { organization.users.last }
+      let(:organization_user) { organization.non_owner_users.first }
 
       before do
         @user_mfa = organization.owner

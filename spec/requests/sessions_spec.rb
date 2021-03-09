@@ -245,6 +245,13 @@ feature "Sessions" do
         @user_mfa_setup = @organization.users.last
       end
 
+      after do
+        Carto::User.delete_all
+        Carto::Organization.delete_all
+      end
+
+      let(:organization_user_password) { "#{@user_mfa_setup.username}123" }
+
       scenario "Login in the application with MFA that does not need setup" do
         # we use this to avoid generating the static assets in client_application
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
@@ -319,7 +326,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa_setup.email
-        fill_in 'password', with: @user_mfa_setup.email.split('@').first
+        fill_in 'password', with: organization_user_password
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
@@ -347,7 +354,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa_setup.email
-        fill_in 'password', with: @user_mfa_setup.email.split('@').first
+        fill_in 'password', with: organization_user_password
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 

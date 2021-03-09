@@ -72,10 +72,6 @@ module CartoDB
       user.isolines_provider     = attributes[:isolines_provider] || nil
       user.here_isolines_quota   = attributes[:here_isolines_quota] || 1000
       user.here_isolines_block_price = attributes[:here_isolines_block_price] || 1500
-      user.obs_snapshot_quota = attributes[:obs_snapshot_quota] || 1000
-      user.obs_snapshot_block_price = attributes[:obs_snapshot_block_price] || 1500
-      user.obs_general_quota = attributes[:obs_general_quota] || 1000
-      user.obs_general_block_price = attributes[:obs_general_block_price] || 1500
       user.routing_provider       = attributes[:routing_provider] || nil
       user.mapzen_routing_quota   = attributes[:mapzen_routing_quota] || 1000
       user.mapzen_routing_block_price = attributes[:mapzen_routing_block_price] || 1500

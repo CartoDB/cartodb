@@ -39,10 +39,6 @@ describe CentralUserCommands do
           geocoding_block_price: 5,
           here_isolines_quota: 250,
           here_isolines_block_price: 10,
-          obs_snapshot_quota: 250,
-          obs_snapshot_block_price: 10,
-          obs_general_quota: 250,
-          obs_general_block_price: 10,
           notification: 'Test',
           available_for_hire: true,
           disqus_shortname: 'abc',
@@ -71,10 +67,6 @@ describe CentralUserCommands do
         expect(user.geocoding_block_price).to eq(5)
         expect(user.here_isolines_quota).to eq(250)
         expect(user.here_isolines_block_price).to eq(10)
-        expect(user.obs_snapshot_quota).to eq(250)
-        expect(user.obs_snapshot_block_price).to eq(10)
-        expect(user.obs_general_quota).to eq(250)
-        expect(user.obs_general_block_price).to eq(10)
         expect(user.notification).to eq('Test')
         expect(user.available_for_hire).to eq(true)
         expect(user.disqus_shortname).to eq('abc')
@@ -301,10 +293,6 @@ describe CentralUserCommands do
           geocoding_block_price: 2,
           here_isolines_quota: 100,
           here_isolines_block_price: 5,
-          obs_snapshot_quota: 100,
-          obs_snapshot_block_price: 5,
-          obs_general_quota: 100,
-          obs_general_block_price: 5,
           notification: 'Test'
         )
       end
@@ -328,10 +316,6 @@ describe CentralUserCommands do
         expect(created_user.geocoding_block_price).to eq(2)
         expect(created_user.here_isolines_quota).to eq(100)
         expect(created_user.here_isolines_block_price).to eq(5)
-        expect(created_user.obs_snapshot_quota).to eq(100)
-        expect(created_user.obs_snapshot_block_price).to eq(5)
-        expect(created_user.obs_general_quota).to eq(100)
-        expect(created_user.obs_general_block_price).to eq(5)
         expect(created_user.notification).to eq('Test')
       end
       # rubocop:enable RSpec/MultipleExpectations

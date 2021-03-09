@@ -73,8 +73,6 @@ class User < Sequel::Model
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
   DEFAULT_MAPZEN_ROUTING_QUOTA = nil
-  DEFAULT_OBS_SNAPSHOT_QUOTA = 0
-  DEFAULT_OBS_GENERAL_QUOTA = 0
 
   DEFAULT_MAX_IMPORT_FILE_SIZE = 157286400
   DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT = 500000
@@ -173,8 +171,6 @@ class User < Sequel::Model
   def validate_quotas
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
-    errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
-    errors.add(:obs_general_quota, "cannot be nil") if obs_general_quota.nil?
   end
 
   def organization_validation
@@ -220,8 +216,6 @@ class User < Sequel::Model
     self.email = clean_email(email.to_s)
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
-    self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
-    self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
     self.mapzen_routing_quota ||= DEFAULT_MAPZEN_ROUTING_QUOTA
     self.soft_geocoding_limit = false if soft_geocoding_limit.nil?
     self.viewer = false if viewer.nil?
@@ -733,14 +727,6 @@ class User < Sequel::Model
     self[:soft_here_isolines_limit] = !val
   end
 
-  def hard_obs_snapshot_limit=(val)
-    self[:soft_obs_snapshot_limit] = !val
-  end
-
-  def hard_obs_general_limit=(val)
-    self[:soft_obs_general_limit] = !val
-  end
-
   def hard_twitter_datasource_limit=(val)
     self[:soft_twitter_datasource_limit] = !val
   end
@@ -781,10 +767,6 @@ class User < Sequel::Model
                           'soft_geocoding_limit',      soft_geocoding_limit,
                           'here_isolines_quota',       here_isolines_quota,
                           'soft_here_isolines_limit',  soft_here_isolines_limit,
-                          'obs_snapshot_quota',        obs_snapshot_quota,
-                          'soft_obs_snapshot_limit',   soft_obs_snapshot_limit,
-                          'obs_general_quota',         obs_general_quota,
-                          'soft_obs_general_limit',    soft_obs_general_limit,
                           'mapzen_routing_quota',      mapzen_routing_quota,
                           'soft_mapzen_routing_limit', soft_mapzen_routing_limit,
                           'google_maps_client_id',     google_maps_key,
@@ -859,16 +841,6 @@ class User < Sequel::Model
     get_user_here_isolines_data(self, date_from, date_to)
   end
 
-  def get_obs_snapshot_calls(options = {})
-    date_from, date_to = quota_dates(options)
-    get_user_obs_snapshot_data(self, date_from, date_to)
-  end
-
-  def get_obs_general_calls(options = {})
-    date_from, date_to = quota_dates(options)
-    get_user_obs_general_data(self, date_from, date_to)
-  end
-
   def get_mapzen_routing_calls(options = {})
     date_from, date_to = quota_dates(options)
     get_user_mapzen_routing_data(self, date_from, date_to)
@@ -888,24 +860,6 @@ class User < Sequel::Model
       remaining = organization.remaining_here_isolines_quota
     else
       remaining = here_isolines_quota - get_here_isolines_calls
-    end
-    (remaining > 0 ? remaining : 0)
-  end
-
-  def remaining_obs_snapshot_quota
-    if organization.present?
-      remaining = organization.remaining_obs_snapshot_quota
-    else
-      remaining = obs_snapshot_quota - get_obs_snapshot_calls
-    end
-    (remaining > 0 ? remaining : 0)
-  end
-
-  def remaining_obs_general_quota
-    if organization.present?
-      remaining = organization.remaining_obs_general_quota
-    else
-      remaining = obs_general_quota - get_obs_general_calls
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -1272,9 +1226,7 @@ class User < Sequel::Model
       table_quota public_map_quota regular_api_key_quota database_host period_end_date map_view_block_price
       geocoding_block_price account_type twitter_datasource_enabled soft_twitter_datasource_limit
       twitter_datasource_quota twitter_datasource_block_price twitter_datasource_block_size here_isolines_quota
-      here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota obs_snapshot_block_price
-      soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit private_map_quota
-      public_dataset_quota
+      here_isolines_block_price soft_here_isolines_limit private_map_quota public_dataset_quota
     )
     to.set_fields(self, attributes_to_copy)
     to.invite_token = make_token
@@ -1390,10 +1342,6 @@ class User < Sequel::Model
     self.soft_twitter_datasource_limit = false if soft_twitter_datasource_limit
     self.here_isolines_quota = 0 unless here_isolines_quota == 0
     self.soft_here_isolines_limit = false if soft_here_isolines_limit
-    self.obs_snapshot_quota = 0 unless obs_snapshot_quota == 0
-    self.soft_obs_snapshot_limit = false if soft_obs_snapshot_limit
-    self.obs_general_quota = 0 unless obs_general_quota == 0
-    self.soft_obs_general_limit = false if soft_obs_general_limit
   end
 
   def revoke_rw_permission_on_shared_entities

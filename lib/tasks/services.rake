@@ -11,7 +11,7 @@ namespace :cartodb do
     # note that there's a couple of naming incosistence due to historical reasons:
     # * here_isolines refers to isolines in general, not only those provided by here
     # * mapzen_routing refers to routing in general
-    DS_SERVICES = ['geocoding', 'here_isolines', 'obs_snapshot', 'obs_general', 'mapzen_routing'].freeze
+    DS_SERVICES = ['geocoding', 'here_isolines', 'mapzen_routing'].freeze
 
     def assert_valid_arg(args, parameter, accepted_values: nil)
       value = args[parameter]

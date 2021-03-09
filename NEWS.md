@@ -29,6 +29,7 @@ sudo make install
 - Cleanup after [#16189](https://github.com/CartoDB/cartodb/pull/16189). See [#16200](https://github.com/CartoDB/cartodb/pull/16200)
 - Split configuration for Message Broker & Central login redirection [#16150](https://github.com/CartoDB/cartodb/pull/16150)
 - Remove Data Library gallery page (now redirected to Spatial Data Catalog) [#16133](https://github.com/CartoDB/cartodb/pull/16133)
+- Remove Data Observatory v1 [#](https://github.com/CartoDB/cartodb/pull/)
 
 ### Bug fixes / enhancements
 

@@ -11,7 +11,8 @@ describe Carto::UserMetadataExportService do
   include AccountTypesHelper
   include Carto::Factories::Visualizations
 
-  before(:all) do
+  before do
+    Cartodb::Central.any_instance.stubs(:update_user).returns(true)
     bypass_named_maps
     @feature_flag = create(:feature_flag)
     @connector_provider = FactoryGirl.create(:connector_provider)
@@ -19,13 +20,16 @@ describe Carto::UserMetadataExportService do
     @oauth_app = FactoryGirl.create(:oauth_app, user: user)
   end
 
-  after(:all) do
-    @feature_flag.destroy
-    @connector_provider.destroy
-  end
-
-  before(:each) do
-    Cartodb::Central.any_instance.stubs(:update_user).returns(true)
+  after do
+    Carto::FeatureFlagsUser.delete_all
+    Carto::FeatureFlag.delete_all
+    Carto::OauthToken.delete_all
+    Carto::OauthApp.delete_all
+    Carto::User.delete_all
+    Carto::SearchTweet.delete_all
+    Carto::AccountType.delete_all
+    Carto::RateLimit.delete_all
+    Carto::ClientApplication.delete_all
   end
 
   def create_user_with_basemaps_assets_visualizations
@@ -141,13 +145,9 @@ describe Carto::UserMetadataExportService do
   let(:service) { Carto::UserMetadataExportService.new }
 
   describe '#export' do
-    before(:all) do
+    before do
       Cartodb::Central.any_instance.stubs(:update_user).returns(true)
       create_user_with_basemaps_assets_visualizations
-    end
-
-    after(:all) do
-      destroy_user
     end
 
     it 'exports' do
@@ -167,26 +167,6 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#user import' do
-    after :each do
-      if @search_tweets
-        @search_tweets.each do |st|
-          st.data_import.try(:destroy)
-          st.destroy
-        end
-      end
-
-      @user.oauth_app_users.each do |oau|
-        unless oau.oauth_access_tokens.blank?
-          oau.oauth_access_tokens.each do |oat|
-            oat.api_key.skip_role_setup = true
-            oat.api_key.skip_cdb_conf_info = true
-          end
-        end
-      end
-
-      @user.destroy if @user
-    end
-
     def test_import_user_from_export(export)
       @user = service.build_user_from_hash_export(export)
       create_account_type_fg('FREE')
@@ -316,10 +296,6 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#user export + import' do
-    after :each do
-      destroy_user
-    end
-
     it 'export + import latest' do
       create_user_with_basemaps_assets_visualizations
       export_import(@user)
@@ -327,10 +303,6 @@ describe Carto::UserMetadataExportService do
   end
 
   describe '#full export + import (user and visualizations)' do
-    after :each do
-      destroy_user(@imported_user)
-    end
-
     it 'export + import user with rate limit and visualizations' do
       Dir.mktmpdir do |path|
         create_user_with_basemaps_assets_visualizations

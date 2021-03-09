@@ -6,7 +6,6 @@ require 'helpers/named_maps_helper'
 require './spec/support/message_broker_stubs'
 require './spec/support/redis'
 require './spec/support/shared_entities_spec_helper'
-require 'spec_helper_common'
 
 raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{Rails.env}) unless Rails.env.test?
 
@@ -18,21 +17,13 @@ require File.expand_path('../../config/environment', __FILE__)
 ActiveRecord.send(:remove_const, :TestFixtures) if ActiveRecord.const_defined?(:TestFixtures)
 
 require 'rspec/rails'
+require 'spec_helper_common'
 
 Resque.inline = true
 
 # host_validation is set to support `example.com` emails in specs
 # in production we do check for the existance of mx records associated to the domain
 EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
-
-Carto::ApiKey.class_eval do
-  def create_remote_do_api_key; end
-
-  def regenerate_remote_do_api_key; end
-
-  def destroy_remote_do_api_key; end
-end
-
 
 RSpec.configure do |config|
   config.include SpecHelperHelpers

@@ -90,7 +90,7 @@ steps:
       docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} --build-arg COMPILE_ASSETS=true --build-arg BUNDLE_JOBS=4 -t gcr.io/cartodb-on-gcp-main-artifacts/builder:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}--${SHORT_SHA} --cache-from gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG} .
       docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_BRANCH_TAG}  -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-resque:${_BRANCH_TAG}--${SHORT_SHA}   -f Dockerfile.resque .
       docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG}--${SHORT_SHA}  -f Dockerfile.subscriber .        
-      
+
       echo 'Pushing builder image...'
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder:${SHORT_SHA}
@@ -105,6 +105,27 @@ steps:
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG}
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${SHORT_SHA}
       docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-subscriber:${_BRANCH_TAG}--${SHORT_SHA}
+
+# Checkout onprem licensing gear
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/onpremises_licensing_gear --depth 1 private_gears/onpremises_licensing_gear']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Build and push onprem image
+- name: gcr.io/cloud-builders/docker
+  entrypoint: /bin/bash
+  args:
+    - -cx
+    - |
+      docker build --label="org.opencontainers.image.created=$$(date --rfc-3339=seconds)" --label=org.opencontainers.image.revision=${COMMIT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-onprem:latest -t gcr.io/cartodb-on-gcp-main-artifacts/builder-onprem:${_BRANCH_TAG}  -t gcr.io/cartodb-on-gcp-main-artifacts/builder-onprem:${SHORT_SHA} -t gcr.io/cartodb-on-gcp-main-artifacts/builder-onprem:${_BRANCH_TAG}--${SHORT_SHA} -f Dockerfile.onprem .
+
+      echo 'Pushing builder-onprem image...'
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-onprem:${_BRANCH_TAG}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-onprem:${SHORT_SHA}
+      docker push gcr.io/cartodb-on-gcp-main-artifacts/builder-onprem:${_BRANCH_TAG}--${SHORT_SHA}
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}

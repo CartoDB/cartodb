@@ -4,6 +4,11 @@ require_relative '../factories/visualization_creation_helpers'
 feature "Sessions" do
   let(:password) { 'password123456' }
 
+  after do
+    Carto::User.delete_all
+    Carto::Organization.delete_all
+  end
+
   before do
     Capybara.current_driver = :rack_test
 
@@ -31,12 +36,8 @@ feature "Sessions" do
 
   describe 'valid user' do
 
-    before(:all) do
+    before do
       @user = create_user :email => 'fernando.blat@vizzuality.com', :username => 'blat'
-    end
-
-    after(:all) do
-      @user.destroy
     end
 
     scenario "Login in the application" do
@@ -155,7 +156,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.password
+        fill_in 'password', with: "#{@user_mfa.username}123"
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
@@ -179,7 +180,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.password
+        fill_in 'password', with: "#{@user_mfa.username}123"
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
@@ -243,11 +244,6 @@ feature "Sessions" do
         @user_mfa.password_confirmation = password
         @user_mfa.save!
         @user_mfa_setup = @organization.users.last
-      end
-
-      after do
-        Carto::User.delete_all
-        Carto::Organization.delete_all
       end
 
       let(:organization_user_password) { "#{@user_mfa_setup.username}123" }
@@ -398,12 +394,8 @@ feature "Sessions" do
 
     describe 'ldap login' do
 
-      before(:all) do
+      before do
         @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: @organization.id })
-      end
-
-      after(:all) do
-        @ldap_configuration.destroy
       end
 
       it 'does not allow google login to organization users if they have ldap configuration' do
@@ -424,10 +416,6 @@ feature "Sessions" do
     fill_in 'email', with: user.email
     fill_in 'password', with: user.password
     click_link_or_button 'Log in'
-  end
-
-  def be_dashboard
-    have_css(".ContentController")
   end
 
 end

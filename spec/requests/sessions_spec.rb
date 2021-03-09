@@ -361,33 +361,34 @@ feature "Sessions" do
   end
 
   describe "Organization login" do
-    include_context 'organization with users helper'
+    let!(:organization) { create(:organization_with_users) }
+    let(:organization_user) { organization.users.first }
 
     it 'allows login to organization users' do
       # we use this to avoid generating the static assets in CI
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
-      visit org_login_url(@org_user_1.organization)
-      send_login_form(@org_user_1)
+      visit org_login_url(organization_user.organization)
+      send_login_form(organization_user)
 
       page.status_code.should eq 200
       page.should_not have_css(".Sessions-fieldError.js-Sessions-fieldError")
     end
 
     it 'does not allow user+password login to organization users if auth_username_password_enabled is false' do
-      @organization.auth_username_password_enabled = false
-      @organization.save
+      organization.auth_username_password_enabled = false
+      organization.save
 
-      visit org_login_url(@org_user_1.organization)
+      visit org_login_url(organization_user.organization)
       page.should_not have_css('#email')
       page.should_not have_css('#password')
     end
 
     it 'does not allow google login to organization users if auth_google_enabled is false' do
-      @organization.auth_google_enabled = false
-      @organization.save
+      organization.auth_google_enabled = false
+      organization.save
 
-      visit org_login_url(@org_user_1.organization)
+      visit org_login_url(organization_user.organization)
       page.should_not have_css('#google_signup_access_token')
       page.should_not have_css('#google_login_button_iframe')
     end
@@ -395,11 +396,11 @@ feature "Sessions" do
     describe 'ldap login' do
 
       before do
-        @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: @organization.id })
+        @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: organization.id })
       end
 
       it 'does not allow google login to organization users if they have ldap configuration' do
-        visit org_login_url(@org_user_1.organization)
+        visit org_login_url(organization_user.organization)
         page.should_not have_css('#google_signup_access_token')
         page.should_not have_css('#google_login_button_iframe')
       end

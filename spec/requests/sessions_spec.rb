@@ -4,8 +4,11 @@ require_relative '../factories/visualization_creation_helpers'
 feature "Sessions" do
   let(:password) { 'password123456' }
 
+  before { Carto::Ldap::Configuration.delete_all }
+
   after do
     Carto::User.delete_all
+    Carto::Ldap::Configuration.delete_all
     Carto::Organization.delete_all
   end
 

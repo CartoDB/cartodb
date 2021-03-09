@@ -136,6 +136,9 @@ module CartoDB
         persist_metadata(name, data_import_id, overwrite)
 
         log("Table '#{name}' registered")
+      rescue ::CartoDB::Importer2::IncompatibleSchemas => exception
+        drop("#{ORIGIN_SCHEMA}.#{result.table_name}")
+        raise exception
       rescue StandardError => exception
         if exception.message =~ /canceling statement due to statement timeout/i
           drop("#{ORIGIN_SCHEMA}.#{result.table_name}")

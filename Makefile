@@ -76,6 +76,7 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/http/client_spec.rb \
 	spec/lib/carto/table_utils_spec.rb \
 	spec/lib/carto/authentication_manager_spec.rb \
+	spec/lib/carto/g_cloud_user_settings_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/helpers/logger_helper_spec.rb \
@@ -205,6 +206,7 @@ WORKING_SPECS_5 = \
 	spec/commands/organization_commands/delete_spec.rb \
 	spec/commands/organization_commands/update_spec.rb \
 	spec/commands/central_user_commands_spec.rb \
+	spec/commands/gcloud_user_settings_commands/set_spec.rb \
 	spec/commands/account_type_commands/create_spec.rb \
 	spec/commands/account_type_commands/update_spec.rb \
 	spec/commands/account_type_commands/delete_spec.rb \

@@ -108,4 +108,6 @@ steps:
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
+options:
+    machineType: 'E2_HIGHCPU_8'
 timeout: 1800s

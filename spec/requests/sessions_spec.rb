@@ -118,28 +118,10 @@ feature "Sessions" do
   end
 
   describe 'Multifactor Authentication' do
-    before(:each) do
-      @user_mfa_setup.user_multifactor_auths.each(&:destroy)
-      @user_mfa_setup.user_multifactor_auths << FactoryGirl.create(:totp, :needs_setup, user_id: @user_mfa_setup.id)
-      @user_mfa_setup.reload
-
-      @user_mfa.user_multifactor_auths.each(&:destroy)
-      @user_mfa.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user_mfa.id)
-      @user_mfa.reload
-
-      @user_mfa.reset_password_rate_limit
-      @user_mfa_setup.reset_password_rate_limit
-    end
-
     describe 'valid user with MFA' do
-      before(:all) do
+      before do
         @user_mfa_setup = FactoryGirl.create(:carto_user_mfa_setup)
         @user_mfa = FactoryGirl.create(:carto_user_mfa)
-      end
-
-      after(:all) do
-        @user_mfa_setup.destroy
-        @user_mfa.destroy
       end
 
       scenario "Login in the application with MFA that does not need setup" do
@@ -148,7 +130,7 @@ feature "Sessions" do
 
         visit login_path
         fill_in 'email', with: @user_mfa.email
-        fill_in 'password', with: @user_mfa.password
+        fill_in 'password', with: @user_mfa.email.split('@').first
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
@@ -254,17 +236,13 @@ feature "Sessions" do
     end
 
     describe 'org owner with MFA' do
-      before(:all) do
+      before do
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user_mfa = @organization.owner
         @user_mfa.password = password
         @user_mfa.password_confirmation = password
         @user_mfa.save!
         @user_mfa_setup = @organization.users.last
-      end
-
-      after(:all) do
-        @organization.destroy
       end
 
       scenario "Login in the application with MFA that does not need setup" do

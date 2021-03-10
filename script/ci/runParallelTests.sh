@@ -31,6 +31,7 @@ find log/ -name 'test_worker_*.log' -delete
 script/ci/wrapper.sh $WORKERS
 
 # Generate list will all the spec files
+touch tmp/spec_list.txt
 # find . -name '*_spec.rb' > tmp/spec_list.txt
 find spec/commands -name '*_spec.rb' > tmp/spec_list.txt
 

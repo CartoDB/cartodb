@@ -10,6 +10,8 @@ CartoDB::Application.configure do
   # Code is not reloaded between requests
   config.cache_classes = false
 
+  config.allow_concurrency = true
+
   # Full error reports are disabled and caching is turned on
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false

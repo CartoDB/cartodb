@@ -322,6 +322,7 @@ module CartoDB
         @table_setup.cartodbfy(name)
         @table_setup.fix_oid(name)
         @table_setup.run_table_statements(table_statements, @database)
+        @table_setup.sanitize_columns(name)
         @table_setup.update_cdb_tablemetadata(name)
         restore_permissions_for(name)
       end
@@ -348,6 +349,16 @@ module CartoDB
       def compatible_schemas_for_overwrite?(name)
         orig_schema = user.in_database.schema(results.first.tables.first, reload: true, schema: ORIGIN_SCHEMA)
         dest_schema = user.in_database.schema(name, reload: true, schema: user.database_schema)
+
+        # NOTE: Sanitize columnn names from 'orig_schema' due to the 'dest_schema' columns were
+        #       already sanitized before table creation in `Table#before_create`
+        orig_schema.each do |column|
+          column[0] = CartoDB::Importer2::Column.get_valid_column_name(
+            column.first.to_s,
+            data_import&.column_sanitization_version || CartoDB::Importer2::Column::NO_COLUMN_SANITIZATION_VERSION,
+            orig_schema.map(&:first).map(&:to_s)
+          ).to_sym
+        end
 
         dest_schema.each do |dest_row|
           next if COLUMNS_NOT_TO_VALIDATE.include?(dest_row[0])

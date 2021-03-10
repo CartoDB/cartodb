@@ -55,6 +55,14 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
+# Checkout db-connectors
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/db-connectors --depth 1 private_gears/db-connectors']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
 # Copy files to the right directories to run the tests
 - name: ubuntu
   entrypoint: /bin/bash
@@ -100,4 +108,6 @@ steps:
 
 substitutions: 
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
+options:
+    machineType: 'E2_HIGHCPU_8'
 timeout: 1800s

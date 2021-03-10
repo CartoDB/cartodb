@@ -53,7 +53,7 @@ module CartoDB
   end
 
   def self.notify_debug(message, additional_data = {})
-    log_debug(message: message, **additional_data)
+    Rails.logger.debug(message: message, **additional_data)
   end
 
   def self.notify_warning_exception(exception)

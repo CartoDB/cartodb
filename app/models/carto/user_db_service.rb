@@ -165,7 +165,15 @@ module Carto
 
     def table_grants
       table = Arel::Table.new('information_schema.role_table_grants')
-      query_sql = table.project(Arel.sql(%{
+      uniq_grants = table.project(Arel.sql(%{
+        DISTINCT table_schema, table_name, privilege_type
+      })).where(Arel.sql(%{
+        grantee IN ('#{all_user_roles.join("','")}') AND
+        table_schema NOT IN ('cartodb', 'aggregation') AND
+        grantor != 'postgres' AND
+        privilege_type IN ('SELECT', 'UPDATE')
+      })).as('uniq_grants')
+      query_sql = Arel::SelectManager.new(Arel::Table.engine).project(Arel.sql(%{
         table_schema,
         table_name AS name,
         STRING_AGG(
@@ -175,12 +183,8 @@ module Carto
           END,
           '' ORDER BY privilege_type
         ) AS mode
-      })).where(Arel.sql(%{
-        grantee IN ('#{all_user_roles.join("','")}') AND
-        table_schema NOT IN ('cartodb', 'aggregation') AND
-        grantor != 'postgres' AND
-        privilege_type IN ('SELECT', 'UPDATE')
-      })).group(Arel.sql('table_schema, table_name')).to_sql
+      })).from(uniq_grants).group(Arel.sql('table_schema, table_name')).to_sql
+
       Arel::SelectManager.new(Arel::Table.engine, Arel.sql("(#{query_sql}) AS q"))
     end
 

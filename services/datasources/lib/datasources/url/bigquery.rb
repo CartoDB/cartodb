@@ -113,7 +113,7 @@ module CartoDB
         def check_user_email(access_token)
           auth = Signet::OAuth2::Client.new(access_token: access_token)
           service = Google::Apis::Oauth2V2::Oauth2Service.new
-          service.authorization = access_client
+          service.authorization = auth
           response = service.get_userinfo
           unless response.email.downcase == @user.email.downcase
             revoke_token

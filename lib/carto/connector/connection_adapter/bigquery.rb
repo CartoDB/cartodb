@@ -121,30 +121,6 @@ module Carto
         { 'token': @connection.token }
       end
 
-      # Temporally we need to mantain this redis key until maps api is updated
-      def bigquery_redis_key
-        "google:bq_settings:#{@connection.user.username}"
-      end
-
-      def update_redis_metadata
-        super
-
-        return unless @connection.parameters.present?
-
-        if @connection.parameters['service_account'].present?
-          $users_metadata.hmset(
-            bigquery_redis_key,
-            'service_account', @connection.parameters['service_account'],
-            'billing_project', @connection.parameters['billing_project']
-          )
-        end
-      end
-
-      def remove_redis_metadata
-        super
-
-        $users_metadata.del bigquery_redis_key
-      end
     end
   end
 end

@@ -55,6 +55,14 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
+# Checkout db-connectors
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'sh'
+  args: ['-c', 'git clone git@github.com:CartoDB/db-connectors --depth 1 private_gears/db-connectors']
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
 # Copy files to the right directories to run the tests
 - name: ubuntu
   entrypoint: /bin/bash
@@ -75,7 +83,7 @@ steps:
     - -cx
     - |
       docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
-      if [ $? -ne 0 ] 
+      if [ $? -ne 0 ]
       then
           docker pull gcr.io/cartodb-on-gcp-main-artifacts/builder:latest
           docker tag gcr.io/cartodb-on-gcp-main-artifacts/builder:latest gcr.io/cartodb-on-gcp-main-artifacts/builder:${_BRANCH_TAG}
@@ -125,7 +133,7 @@ steps:
       fi
 
 
-substitutions: 
+substitutions:
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
 options:
     machineType: 'N1_HIGHCPU_32'

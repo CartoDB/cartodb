@@ -12,10 +12,10 @@ FactoryGirl.define do
   factory :user, class: ::User do
     to_create(&:save)
 
-    username               { unique_name('user') }
-    email                  { unique_email }
-    password               { email.split('@').first }
-    password_confirmation  { email.split('@').first }
+    sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
+    email                  { "#{username}@example.com" }
+    password               { "#{username}123" }
+    password_confirmation  { password }
     table_quota            5
     quota_in_bytes         5000000
     id                     { Carto::UUIDHelper.random_uuid }
@@ -78,8 +78,8 @@ FactoryGirl.define do
   end
 
   factory :carto_user, class: Carto::User do
-    username { unique_name('user') }
-    email { unique_email }
+    username { Faker::Internet.username(separators: ['-']) }
+    email { Faker::Internet.safe_email }
 
     password { email.split('@').first }
     password_confirmation { email.split('@').first }
@@ -131,8 +131,8 @@ FactoryGirl.define do
 
   # Light user: database creation etc is skipped
   factory :carto_user_light, class: Carto::User do
-    username { unique_name('user') }
-    email { unique_email }
+    username { Faker::Internet.username(separators: ['-']) }
+    email { Faker::Internet.safe_email }
 
     password { email.split('@').first }
     password_confirmation { email.split('@').first }

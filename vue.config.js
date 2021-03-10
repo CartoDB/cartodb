@@ -9,6 +9,7 @@ module.exports = {
     resolve: {
       alias: {
         'do-catalog': path.resolve(__dirname, 'lib/assets/javascripts/do-catalog/'),
+        'tilesets-viewer': path.resolve(__dirname, 'lib/assets/javascripts/tilesets-viewer/'),
         'new-dashboard': path.resolve(__dirname, 'lib/assets/javascripts/new-dashboard/')
       },
       extensions: ['.js', '.vue', '.json', '.scss']

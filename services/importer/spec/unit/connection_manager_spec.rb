@@ -9,6 +9,12 @@ describe Carto::ConnectionManager do
   let(:other_user) { create(:carto_user_light) }
   let(:other_connection_manager) { Carto::ConnectionManager.new(other_user) }
 
+  let(:organization) { create(:organization_with_light_users) }
+  let(:org_owner) { organization.owner }
+  let(:org_member) { organization.users.all.find{|u| u != org_owner } }
+  let(:org_owner_connection_manager) { Carto::ConnectionManager.new(org_owner) }
+  let(:org_member_connection_manager) { Carto::ConnectionManager.new(org_member) }
+
   around do |example|
     config = { 'dummy' => { 'enabled' => true } }
 
@@ -42,17 +48,44 @@ describe Carto::ConnectionManager do
     create(:connection, user: other_user, name: 'oauth2', connector: 'box', token: 'token2')
   end
 
+  let(:shared_connection1) do
+    create(:connection, organization: organization, name: "#{organization.name}.db1", connector: 'dummy', parameters: { server: 'server1' })
+  end
+
   describe "#list_connections" do
-    it "presents all user connections" do
+    it "presents all individual user connections" do
       expected_connections = [
         { id: connection1.id, name: connection1.name, connector: connection1.connector,
-          type: connection1.connection_type, parameters: connection1.parameters, complete: true },
+          type: connection1.connection_type, parameters: connection1.parameters,
+          complete: true, shared: false, editable: true },
         { id: connection2.id, name: connection2.name, connector: connection2.connector,
-          type: connection2.connection_type, token: '********', complete: true },
+          type: connection2.connection_type, token: '********',
+          complete: true, shared: false, editable: true },
         { id: connection3.id, name: connection3.name, connector: connection3.connector,
-          type: connection3.connection_type, token: '********', complete: true }
+          type: connection3.connection_type, token: '********',
+          complete: true, shared: false, editable: true }
       ]
       connections = connection_manager.list_connections.sort_by { |c| c['name'] }
+      expect(connections).to eq(expected_connections)
+    end
+
+    it "presents also shared connections" do
+      expected_connections = [
+        { id: shared_connection1.id, name: shared_connection1.name, connector: shared_connection1.connector,
+          type: shared_connection1.connection_type, parameters: shared_connection1.parameters,
+          complete: true, shared: true, editable: false }
+      ]
+      connections = org_member_connection_manager.list_connections.sort_by { |c| c['name'] }
+      expect(connections).to eq(expected_connections)
+    end
+
+    it "presents owner shared connections as editable" do
+      expected_connections = [
+        { id: shared_connection1.id, name: shared_connection1.name, connector: shared_connection1.connector,
+          type: shared_connection1.connection_type, parameters: shared_connection1.parameters,
+          complete: true, shared: true, editable: true }
+      ]
+      connections = org_owner_connection_manager.list_connections.sort_by { |c| c['name'] }
       expect(connections).to eq(expected_connections)
     end
   end
@@ -61,7 +94,8 @@ describe Carto::ConnectionManager do
     it "presents a single connection" do
       expected_connection = {
         id: connection1.id, name: connection1.name, connector: connection1.connector,
-        type: connection1.connection_type, parameters: connection1.parameters, complete: true
+        type: connection1.connection_type, parameters: connection1.parameters,
+        complete: true, shared: false, editable: true
       }
       connection = connection_manager.show_connection(connection1.id)
       expect(connection).to eq(expected_connection)
@@ -79,13 +113,47 @@ describe Carto::ConnectionManager do
   end
 
   describe "#create_db_connection" do
-    it "creates new connections" do
+    it "creates new individual connections" do
       connection = connection_manager.create_db_connection(
         name: 'new_connection',
         provider: connection1.connector,
         parameters: connection1.parameters
       )
       expect(connection.id).not_to eq(connection1.id)
+      expect(connection.shared?).to eq(false)
+      expect(connection.user_id).to eq(user.id)
+    end
+    it "creates new shared connections" do
+      connection = org_owner_connection_manager.create_db_connection(
+        name: "#{organization.name}.new_connection",
+        provider: connection1.connector,
+        parameters: connection1.parameters,
+        shared: true
+      )
+      expect(connection.id).not_to eq(connection1.id)
+      expect(connection.shared?).to eq(true)
+      expect(connection.user_id).to be(nil)
+      expect(connection.organization_id).to eq(organization.id)
+    end
+    it "does not create shared connections for non-org users" do
+      expect do
+        connection_manager.create_db_connection(
+          name: "#{organization.name}.new_connection",
+          provider: connection1.connector,
+          parameters: connection1.parameters,
+          shared: true
+        )
+      end.to raise_exception(Carto::ConnectionManager::ConnectionUnauthorizedError)
+    end
+    it "does not create shared connections for non-owners" do
+      expect do
+        connection = org_member_connection_manager.create_db_connection(
+          name: "#{organization.name}.new_connection",
+          provider: connection1.connector,
+          parameters: connection1.parameters,
+          shared: true
+        )
+      end.to raise_exception(Carto::ConnectionManager::ConnectionUnauthorizedError)
     end
   end
 
@@ -151,7 +219,7 @@ describe Carto::ConnectionManager do
         token: 'the-token'
       )
       expect(connection.id).to be(nil)
-      expect(unsaved_user.connections.to_a.find{|c| c.connector == 'dropbox'}).to eq(connection)
+      expect(unsaved_user.individual_connections.to_a.find{|c| c.connector == 'dropbox'}).to eq(connection)
       unsaved_user.save!
       expect(unsaved_user.oauth_connections.find_by(connector: 'dropbox')).to eq(connection)
     end
@@ -177,9 +245,8 @@ describe Carto::ConnectionManager do
     end
 
     it "does not fetch other user connections" do
-      expect do
-        other_connection_manager.fetch_connection(connection1.id)
-      end.to raise_exception(ActiveRecord::RecordNotFound)
+      connection = other_connection_manager.fetch_connection(connection1.id)
+      expect(connection).to be(nil)
     end
   end
 
@@ -194,8 +261,22 @@ describe Carto::ConnectionManager do
       expect(Carto::Connection.find_by(id: connection1.id)).not_to be(nil)
       expect do
         other_connection_manager.delete_connection(connection1.id)
-      end.to raise_exception(ActiveRecord::RecordNotFound)
+      end.to raise_exception(Carto::ConnectionManager::ConnectionNotFoundError)
       expect(Carto::Connection.find_by(id: connection1.id)).not_to be(nil)
+    end
+
+    it "does not delete shared connection if user is not owner" do
+      expect(Carto::Connection.find_by(id: shared_connection1.id)).not_to be(nil)
+      expect do
+        org_member_connection_manager.delete_connection(shared_connection1.id)
+      end.to raise_exception(Carto::ConnectionManager::ConnectionUnauthorizedError)
+      expect(Carto::Connection.find_by(id: shared_connection1.id)).not_to be(nil)
+    end
+
+    it "deletes shared connection if user is owner" do
+      expect(Carto::Connection.find_by(id: shared_connection1.id)).not_to be(nil)
+      org_owner_connection_manager.delete_connection(shared_connection1.id)
+      expect(Carto::Connection.find_by(id: shared_connection1.id)).to be(nil)
     end
   end
 
@@ -203,7 +284,7 @@ describe Carto::ConnectionManager do
     it "updates connection name" do
       old_name = connection1.name
       old_parameters = connection1.parameters
-      new_name = 'db-1'
+      new_name = 'db_1'
       expect(old_name).to eq('db1')
       connection_manager.update_db_connection(id: connection1.id, name: new_name)
       connection = Carto::Connection.find_by(id: connection1.id)
@@ -217,6 +298,28 @@ describe Carto::ConnectionManager do
       new_parameters = old_parameters.merge('another_param' => 'xyz')
       connection_manager.update_db_connection(id: connection1.id, parameters: new_parameters)
       connection = Carto::Connection.find_by(id: connection1.id)
+      expect(connection.name).to eq(old_name)
+      expect(connection.parameters).to eq(new_parameters)
+    end
+
+    it "does not update shared connections if not the owner" do
+      old_name = shared_connection1.name
+      old_parameters = shared_connection1.parameters
+      new_parameters = old_parameters.merge('another_param' => 'xyz')
+      expect do
+        org_member_connection_manager.update_db_connection(id: shared_connection1.id, parameters: new_parameters)
+      end.to raise_exception(Carto::ConnectionManager::ConnectionUnauthorizedError)
+      connection = Carto::Connection.find_by(id: shared_connection1.id)
+      expect(connection.name).to eq(old_name)
+      expect(connection.parameters).to eq(old_parameters)
+    end
+
+    it "updates shared connections if the owner" do
+      old_name = shared_connection1.name
+      old_parameters = shared_connection1.parameters
+      new_parameters = old_parameters.merge('another_param' => 'xyz')
+      org_owner_connection_manager.update_db_connection(id: shared_connection1.id, parameters: new_parameters)
+      connection = Carto::Connection.find_by(id: shared_connection1.id)
       expect(connection.name).to eq(old_name)
       expect(connection.parameters).to eq(new_parameters)
     end
@@ -389,12 +492,43 @@ describe Carto::ConnectionManager do
           'database' => 'the-database',
           'username' => 'the-username',
           'password' => 'the-password'
-        }
+        },
+        shared?: false
       )
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       expect(redis_json).to be(nil)
       connection_manager.manage_create(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['connection_type']).to eq(connection.connection_type)
+      expect(redis_data['connector']).to eq(connection.connector)
+      expect(redis_data['options']).to eq({ 'server' => 'the-server', 'database' => 'the-database' })
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
+    end
+
+    it "saves shared snowflake db connection data to redis" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
+
+      connection_name = "#{organization.name}.a_connection"
+      connection = mocked_record(
+        id: '123',
+        organization: organization,
+        name: connection_name,
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        },
+        shared?: true
+      )
+      redis_json = $users_metadata.hget("cloud_shared_connections:#{organization.name}:#{connection.connector}", connection_name)
+      expect(redis_json).to be(nil)
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_shared_connections:#{organization.name}:#{connection.connector}", connection_name)
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['connection_type']).to eq(connection.connection_type)
@@ -417,12 +551,13 @@ describe Carto::ConnectionManager do
           'database' => 'the-database',
           'username' => 'the-username',
           'password' => 'the-password'
-        }
+        },
+        shared?: false
       )
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       expect(redis_json).to be(nil)
       connection_manager.manage_create(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['connection_type']).to eq(connection.connection_type)
@@ -445,12 +580,13 @@ describe Carto::ConnectionManager do
           'database' => 'the-database',
           'username' => 'the-username',
           'password' => 'the-password'
-        }
+        },
+        shared?: false
       )
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       expect(redis_json).to be(nil)
       connection_manager.manage_create(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['connection_type']).to eq(connection.connection_type)
@@ -471,12 +607,13 @@ describe Carto::ConnectionManager do
         parameters: {
           'billing_project' => 'the-billing-project',
           'service_account' => 'the-service-account'
-        }
+        },
+        shared?: false
       )
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       expect(redis_json).to be(nil)
       connection_manager.manage_create(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['connection_type']).to eq(connection.connection_type)
@@ -494,16 +631,17 @@ describe Carto::ConnectionManager do
         connection_type: 'db-connector',
         parameters: {
           'server' => 'the-server',
-        }
+        },
+        shared?: false
       )
       connection_manager.manage_create(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       expect(redis_json).to be(nil)
     end
 
     it "does not save oauth connections to redis" do
       connection_manager.manage_create(connection2)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection2.connector}", connection2.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection2.connector}", connection2.name)
       expect(redis_json).to be(nil)
     end
 
@@ -517,14 +655,15 @@ describe Carto::ConnectionManager do
         token: 'the-token',
         parameters: {
           'billing_project' => 'the-billing-project'
-        }
+        },
+        shared?: false
       )
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:bigquery", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:bigquery", connection.name)
       expect(redis_json).to be(nil)
       Cartodb::Central.any_instance.stubs(:update_user)
       connection_manager.manage_create(connection)
       Cartodb::Central.any_instance.unstub(:update_user)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:bigquery", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:bigquery", connection.name)
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['connection_type']).to eq(connection.connection_type)
@@ -555,14 +694,15 @@ describe Carto::ConnectionManager do
           'database' => 'the-database',
           'username' => 'the-username',
           'password' => 'the-password'
-        }
+        },
+        shared?: false
       )
       $users_metadata.hset(
-        "cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data'
+        "cloud_connections:#{user.username}:#{connection.connector}", connection.name, 'the-connection-data'
       )
 
       connection_manager.manage_destroy(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       expect(redis_json).to be(nil)
     end
 
@@ -580,19 +720,20 @@ describe Carto::ConnectionManager do
           'database' => 'the-database',
           'username' => 'the-username',
           'password' => 'the-password'
-        }
+        },
+        shared?: false
       )
       $users_metadata.hset(
-        "cloud_connections:#{user.username}:#{connection.connector}", connection.id, 'the-connection-data'
+        "cloud_connections:#{user.username}:#{connection.connector}", connection.name, 'the-connection-data'
       )
       $users_metadata.hset(
-        "cloud_connections:#{user.username}:#{connection.connector}", '456', 'the-connection-data'
+        "cloud_connections:#{user.username}:#{connection.connector}", 'other_name', 'the-connection-data'
       )
 
       connection_manager.manage_destroy(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       expect(redis_json).to be(nil)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", '456')
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", 'other_name')
       expect(redis_json).not_to be(nil)
     end
   end
@@ -618,12 +759,14 @@ describe Carto::ConnectionManager do
           'database' => 'the-database',
           'username' => 'the-username',
           'password' => 'the-password'
-        }
+        },
+        shared?: false,
+        changes: {}
       )
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       expect(redis_json).to be(nil)
       connection_manager.manage_create(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
@@ -639,13 +782,54 @@ describe Carto::ConnectionManager do
           'database' => 'the-database',
           'username' => 'the-username',
           'password' => 'the-new-password'
-        }
+        },
+        shared?: false,
+        changes: {}
       )
       connection_manager.manage_update(connection)
-      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.id)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-new-password' })
+    end
+
+    it "moves data in redis when connection name changes" do
+      pending('db-connectors required for this test') unless Carto::Connector.providers.keys.include?('snowflake')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'snowflake',
+        connection_type: 'db-connector',
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        },
+        shared?: false,
+        changes: {}
+      )
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
+      expect(redis_json).to be(nil)
+      connection_manager.manage_create(connection)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", connection.name)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
+
+      old_name = connection.name
+      new_name = 'a_different_name'
+      connection.name = new_name
+      connection.changes[:name] = [old_name, new_name]
+      connection_manager.manage_update(connection)
+      old_redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", old_name)
+      expect(old_redis_json).to be(nil)
+      redis_json = $users_metadata.hget("cloud_connections:#{user.username}:#{connection.connector}", new_name)
+      redis_data = JSON.parse(redis_json)
+      expect(redis_data['connection_id']).to eq(connection.id)
+      expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-password' })
     end
   end
 
@@ -779,7 +963,9 @@ describe Carto::ConnectionManager do
         connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
         parameters: nil,
         token: 'the-token',
-        valid?: true
+        valid?: true,
+        shared?: false,
+        editable_by?: ->(user) { true }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
 
@@ -796,7 +982,9 @@ describe Carto::ConnectionManager do
           'password' => 'the-password'
         },
         token: nil,
-        valid?: true
+        valid?: true,
+        shared?: false,
+        editable_by?: ->(user) { true }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
     end
@@ -810,7 +998,9 @@ describe Carto::ConnectionManager do
         connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
         parameters: nil,
         token: 'the-token',
-        valid?: false
+        valid?: false,
+        editable_by?: ->(user) { true },
+        shared?: false
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(false)
     end
@@ -827,7 +1017,9 @@ describe Carto::ConnectionManager do
           'billing_project' => 'the-billing-project'
         },
         token: nil,
-        valid?: true
+        valid?: true,
+        shared?: false,
+        editable_by?: ->(user) { true }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
     end
@@ -841,7 +1033,9 @@ describe Carto::ConnectionManager do
         connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
         token: 'the-token',
         parameters: nil,
-        valid?: true
+        valid?: true,
+        shared?: false,
+        editable_by?: ->(user) { true }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(false)
     end
@@ -857,7 +1051,9 @@ describe Carto::ConnectionManager do
         parameters: {
           'billing_project' => 'the-billing-project'
         },
-        valid?: true
+        valid?: true,
+        shared?: false,
+        editable_by?: ->(user) { true }
       )
       expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
     end

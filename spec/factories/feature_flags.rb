@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :feature_flag, class: 'Carto::FeatureFlag' do
-    sequence(:id)
+    id { Time.now.utc.to_i }
     sequence(:name) { |n| "feature-flag-name-#{n}" }
     restricted { true }
 

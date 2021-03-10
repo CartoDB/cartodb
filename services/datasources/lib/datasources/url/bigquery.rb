@@ -114,8 +114,8 @@ module CartoDB
           auth = Signet::OAuth2::Client.new(access_token: access_token)
           service = Google::Apis::Oauth2V2::Oauth2Service.new
           service.authorization = auth
-          response = service.get_userinfo
-          unless response.email.downcase == @user.email.downcase
+          response = service.tokeninfo
+          unless response.email.to_s.downcase == @user.email.downcase
             revoke_token
             raise AuthError.new("The email used for authorization must match the email in the CARTO account. The authorization has been revoked")
           end

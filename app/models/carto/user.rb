@@ -75,6 +75,8 @@ class Carto::User < ActiveRecord::Base
 
   has_many :user_map_views, class_name: 'Carto::UserMapViews', dependent: :destroy, inverse_of: :user
 
+  has_many :auth_codes, class_name: 'Carto::AuthCode', dependent: :destroy, inverse_of: :user
+
   delegate(
     :database_username, :database_password, :in_database,
     :db_size_in_bytes, :table_count, :public_visualization_count, :all_visualization_count,
@@ -106,6 +108,8 @@ class Carto::User < ActiveRecord::Base
 
   after_destroy { rate_limit.destroy_completely(self) if rate_limit }
   after_destroy :invalidate_varnish_cache
+
+  after_create :create_auth_code
 
   # Auto creates notifications on first access
   def static_notifications_with_creation
@@ -326,6 +330,28 @@ class Carto::User < ActiveRecord::Base
 
   def subscriptions
     Carto::DoLicensingService.new(username).subscriptions || []
+  end
+
+  def create_auth_code
+    return unless self.auth_code.nil?
+
+    self.auth_code = Carto::AuthCode.create(user_id: id)
+  end
+
+  # temp helper method for manage auth_codes
+  # like association 1:1
+  # remove this when users manage more than
+  # one key
+  def auth_code=(auth_code_value)
+    self.auth_codes[0] = auth_code_value
+  end
+
+  # temp helper method for manage auth_codes
+  # like association 1:1
+  # remove this when users manage more than
+  # one key
+  def auth_code
+    self.auth_codes[0]
   end
 
   private

@@ -45,11 +45,11 @@ describe Carto::ConnectionManager do
     it "presents all user connections" do
       expected_connections = [
         { id: connection1.id, name: connection1.name, connector: connection1.connector,
-          type: connection1.connection_type, parameters: connection1.parameters },
+          type: connection1.connection_type, parameters: connection1.parameters, complete: true },
         { id: connection2.id, name: connection2.name, connector: connection2.connector,
-          type: connection2.connection_type, token: '********' },
+          type: connection2.connection_type, token: '********', complete: true },
         { id: connection3.id, name: connection3.name, connector: connection3.connector,
-          type: connection3.connection_type, token: '********' }
+          type: connection3.connection_type, token: '********', complete: true }
       ]
       connections = connection_manager.list_connections.sort_by { |c| c['name'] }
       expect(connections).to eq(expected_connections)
@@ -60,7 +60,7 @@ describe Carto::ConnectionManager do
     it "presents a single connection" do
       expected_connection = {
         id: connection1.id, name: connection1.name, connector: connection1.connector,
-        type: connection1.connection_type, parameters: connection1.parameters
+        type: connection1.connection_type, parameters: connection1.parameters, complete: true
       }
       connection = connection_manager.show_connection(connection1.id)
       expect(connection).to eq(expected_connection)
@@ -645,6 +645,220 @@ describe Carto::ConnectionManager do
       redis_data = JSON.parse(redis_json)
       expect(redis_data['connection_id']).to eq(connection.id)
       expect(redis_data['credentials']).to eq({ 'username' => 'the-username', 'password' => 'the-new-password' })
+    end
+  end
+
+  describe "#manage_prevalidation" do
+    it "assigns connection type if not present" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'dummy',
+        connection_type: nil,
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        },
+        token: nil
+      )
+      connection_manager.manage_prevalidation(connection)
+      expect(connection.connection_type).to eq(Carto::Connection::TYPE_DB_CONNECTOR)
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'dummy',
+        connection_type: nil,
+        parameters: nil,
+        token: 'oauth-token'
+      )
+      connection_manager.manage_prevalidation(connection)
+      expect(connection.connection_type).to eq(Carto::Connection::TYPE_OAUTH_SERVICE)
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_DB_CONNECTOR,
+        parameters: nil,
+        token: 'the-token'
+      )
+      connection_manager.manage_prevalidation(connection)
+      expect(connection.connection_type).to eq(Carto::Connection::TYPE_DB_CONNECTOR)
+    end
+
+    it "assigns default name to Oauth connections" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: nil,
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        parameters: nil,
+        token: 'oauth-token'
+      )
+      connection_manager.manage_prevalidation(connection)
+      expect(connection.name).to eq('dummy')
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'not-dummy',
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        parameters: nil,
+        token: 'oauth-token'
+      )
+      connection_manager.manage_prevalidation(connection)
+      expect(connection.name).to eq('not-dummy')
+    end
+
+    it "does not assign default name to db connections" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: nil,
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_DB_CONNECTOR,
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        },
+        token: nil
+      )
+      connection_manager.manage_prevalidation(connection)
+      expect(connection.name).to be(nil)
+    end
+
+    it "sets refresh_token parameter for BQ Oauth connections" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'bq',
+        connector: 'bigquery',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        token: 'oauth-token',
+        parameters: {
+          'billing_project' => 'the-billing-project'
+        }
+      )
+      connection_manager.manage_prevalidation(connection)
+      expect(connection.parameters['refresh_token']).to eq('oauth-token')
+    end
+
+    it "does not set refresh_token parameter in incomplete connections" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'bq',
+        connector: 'bigquery',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        token: 'oauth-token',
+        parameters: nil
+      )
+      connection_manager.manage_prevalidation(connection)
+      expect(connection.parameters).to be(nil)
+    end
+  end
+
+  describe "#present_connection complete" do
+    it "returns true for regular connections" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        parameters: nil,
+        token: 'the-token',
+        valid?: true
+      )
+      expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
+
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: nil,
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_DB_CONNECTOR,
+        parameters: {
+          'server' => 'the-server',
+          'database' => 'the-database',
+          'username' => 'the-username',
+          'password' => 'the-password'
+        },
+        token: nil,
+        valid?: true
+      )
+      expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
+    end
+
+    it "returns false for invalid connections" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'a_connection',
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        parameters: nil,
+        token: 'the-token',
+        valid?: false
+      )
+      expect(connection_manager.present_connection(connection)[:complete]).to eq(false)
+    end
+
+    it "returns true for BQ db connections" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: nil,
+        connector: 'bigquery',
+        connection_type: Carto::Connection::TYPE_DB_CONNECTOR,
+        parameters: {
+          'service_account' => 'the-service-account',
+          'billing_project' => 'the-billing-project'
+        },
+        token: nil,
+        valid?: true
+      )
+      expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
+    end
+
+    it "returns false for BQ OAuth connections without parameters" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: nil,
+        connector: 'bigquery',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        token: 'the-token',
+        parameters: nil,
+        valid?: true
+      )
+      expect(connection_manager.present_connection(connection)[:complete]).to eq(false)
+    end
+
+    it "returns true for BQ OAuth connections with parameters" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: nil,
+        connector: 'bigquery',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        token: 'the-token',
+        parameters: {
+          'billing_project' => 'the-billing-project'
+        },
+        valid?: true
+      )
+      expect(connection_manager.present_connection(connection)[:complete]).to eq(true)
     end
   end
 end

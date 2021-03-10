@@ -25,6 +25,12 @@ module Carto
         true
       end
 
+      def complete?
+        return false if incomplete?
+
+        super
+      end
+
       def errors
         errors = super
         if @connection.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
@@ -35,6 +41,21 @@ module Carto
             errors << 'Parameter access_token not supported through connections; use import API'
           end
         end
+        if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+          unless incomplete? || @connection.parameters['billing_project'].present?
+            errors << "Parameter 'billing_project' must be assigned"
+          end
+        end
+        # TODO: unless @connection.shared?
+          if @connection.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
+            other_connections = @connection.user.oauth_connections
+          else
+            other_connections = @connection.user.db_connections
+          end
+          if other_connections.where(connector: 'bigquery').exists?
+            errors << 'Only a BigQuery connection (either OAuth or Service Account) per user is permitted'
+          end
+        # TODO: end
         errors
       end
 
@@ -65,7 +86,27 @@ module Carto
       #   central_user_data[BQ_ADVANCED_CENTRAL_ATTRIBUTE.to_s]
       # end
 
+      def prevalidate
+        super
+
+        if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE && !@connection.parameters.nil?
+          # Once complete, the OAuth token must be assigned to the refresh_token parameter
+          unless @connection.parameters&.has_key?('refresh_token')
+            @connection.parameters = @connection.parameters.merge('refresh_token' => @connection.token)
+          end
+        end
+      end
+
       private
+
+      def incomplete?
+        # An OAuth connection may be incomplete: it's created when the token is registered,
+        # but necessary parameters may be assigned later.
+        # And incomplete connection is not usuable until the parameters have been assigned.
+        return @connection.parameters.nil? if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+
+        false
+      end
 
       def central
         @central ||= Cartodb::Central.new
@@ -101,10 +142,7 @@ module Carto
       end
 
       def redis_metadata?
-        # Both OAuth & DB connections are saved in redis as long as they have some parameter.
-        # Note that legacy BQ OAuth connections (migrated from synchronization_oauths) do not have
-        # parameters, but future BQ OAuth connections will have at least one parameter (billing_project)
-        @connection.parameters.present?
+        !incomplete?
       end
 
       def connection_credentials_keys

@@ -52,7 +52,8 @@ module Carto
         id: connection.id,
         name: connection.name,
         connector: connection.connector,
-        type: connection.connection_type
+        type: connection.connection_type,
+        complete: adapter(connection).complete?
       }
       presented_connection[:parameters] = adapter(connection).presented_parameters if connection.parameters.present?
       presented_connection[:token] = adapter(connection).presented_token if connection.token.present?
@@ -239,7 +240,7 @@ module Carto
       Carto::ConnectionAdapter::Factory.adapter_for_connection(connection)
     end
 
-
+    # There can only be one connection of this kind per user, connection and connector type.
     def self.singleton_connector?(connection)
       adapter(connection).singleton?
     end
@@ -269,6 +270,10 @@ module Carto
 
     def manage_update(connection)
       adapter(connection).update
+    end
+
+    def manage_prevalidation(connection)
+      adapter(connection).prevalidate
     end
 
     def check(connection)

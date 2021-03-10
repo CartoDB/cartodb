@@ -12,6 +12,8 @@ module Carto
     end
 
     def presented_parameters
+      return nil if @connection.parameters.nil?
+
       Hash[@connection.parameters.map do |key, value|
         value = key.in?(@confidential_parameters) ? CONFIDENTIAL_PARAMETER_PLACEHOLDER : value
         [key, value]
@@ -45,6 +47,21 @@ module Carto
 
     def update
       update_redis_metadata if redis_metadata?
+    end
+
+    def complete?
+      # By default a valid connection should be complete and usable
+      @connection.valid?
+    end
+
+    def prevalidate
+      unless @connection.connection_type.present?
+        @connection.connection_type = @connection.token.present? ? Carto::Connection::TYPE_OAUTH_SERVICE : Carto::Connection::TYPE_DB_CONNECTOR
+      end
+
+      unless @connection.name.present?
+        @connection.name = @connection.connector if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+      end
     end
 
     private

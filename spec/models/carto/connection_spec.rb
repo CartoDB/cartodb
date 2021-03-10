@@ -14,6 +14,8 @@ describe Carto::Connection do
   end
 
   describe 'connection type is automatically computed' do
+    #  TODO: this could be removed since it's testing ConnectionManager
+
     it 'is db if parameters are present' do
       connection = FactoryGirl.create(:connection, name: 'dumb', connector: 'dummy', parameters: {server: 'server'}, user: user)
       expect(connection.connection_type).to eq(Carto::Connection::TYPE_DB_CONNECTOR)
@@ -91,7 +93,15 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection_manager.stubs(:manage_prevalidation)
+      connection = FactoryGirl.build(
+        :connection,
+        name: 'dumb',
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_DB_CONNECTOR,
+        parameters: parameters,
+        user: user
+      )
       connection_manager.expects(:manage_create).with(connection)
       connection.save!
     end
@@ -100,7 +110,15 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection_manager.stubs(:manage_prevalidation)
+      connection = FactoryGirl.build(
+        :connection,
+        name: 'dumb',
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_DB_CONNECTOR,
+        parameters: parameters,
+        user: user
+      )
       connection_manager.expects(:manage_create).with(connection)
       connection.save!
 
@@ -112,7 +130,15 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection_manager.stubs(:manage_prevalidation)
+      connection = FactoryGirl.build(
+        :connection,
+        name: 'dumb',
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_DB_CONNECTOR,
+        parameters: parameters,
+        user: user
+      )
       connection_manager.expects(:manage_create).with(connection)
       connection.save!
 
@@ -124,7 +150,15 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb2', connector: 'dummy', parameters: parameters, user: user)
+      connection_manager.stubs(:manage_prevalidation)
+      connection = FactoryGirl.build(
+        :connection,
+        name: 'dumb2',
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_DB_CONNECTOR,
+        parameters: parameters,
+        user: user
+      )
       connection_manager.expects(:manage_create).with(connection)
       Carto::ConnectionManager.expects(:singleton_connector?).with(connection).returns(false)
       connection.save!
@@ -135,11 +169,28 @@ describe Carto::Connection do
       parameters = { server: 'server' }
       connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
       connection_manager.stubs(:check).returns(true)
-      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection_manager.stubs(:manage_prevalidation)
+      connection = FactoryGirl.build(
+        :connection,
+        name: 'dumb',
+        connector: 'dummy',
+        connection_type: Carto::Connection::TYPE_DB_CONNECTOR,
+        parameters: parameters,
+        user: user
+      )
       connection_manager.expects(:manage_create).with(connection)
       Carto::ConnectionManager.expects(:errors).with(connection).returns([])
       connection.save!
       Carto::ConnectionManager.unstub(:errors)
+    end
+
+    it 'performs prevalidation' do
+      parameters = { server: 'server' }
+      connection_manager.stubs(:adapt_db_connector_parameters).returns([parameters, parameters.merge(provider: 'dummy')])
+      connection_manager.stubs(:check).returns(true)
+      connection = FactoryGirl.build(:connection, name: 'dumb', connector: 'dummy', parameters: parameters, user: user)
+      connection_manager.expects(:manage_prevalidation).with(connection)
+      connection.valid?
     end
   end
 

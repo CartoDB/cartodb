@@ -40,9 +40,7 @@ module Carto
       connector
     end
 
-    before_validation :set_type
-    before_validation :set_name
-    # before_validation :set_parameters
+    before_validation :manage_prevalidation
     after_create :manage_create
     after_update :manage_update
     after_destroy :manage_destroy
@@ -69,26 +67,12 @@ module Carto
       connection_manager.manage_destroy(self)
     end
 
+    def manage_prevalidation
+      connection_manager.manage_prevalidation(self)
+    end
+
     def singleton_connection?
       Carto::ConnectionManager.singleton_connector?(self)
-    end
-
-    def set_type
-      return if connection_type.present?
-
-      self.connection_type = token.present? ? TYPE_OAUTH_SERVICE : TYPE_DB_CONNECTOR
-    end
-
-    def set_name
-      return if name.present?
-
-      self.name = connector if connection_type == TYPE_OAUTH_SERVICE
-    end
-
-    def set_parameters
-      return if parameters.present?
-
-      self.parameters = { refresh_token: token } if connection_type == TYPE_OAUTH_SERVICE
     end
 
     def validate_parameters

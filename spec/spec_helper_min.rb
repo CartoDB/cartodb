@@ -6,7 +6,6 @@ require 'helpers/named_maps_helper'
 require './spec/support/message_broker_stubs'
 require './spec/support/redis'
 require './spec/support/shared_entities_spec_helper'
-require 'spec_helper_common'
 
 raise %(Cannot run tests in an env other than 'test', RAILS_ENV=#{Rails.env}) unless Rails.env.test?
 
@@ -18,6 +17,7 @@ require File.expand_path('../../config/environment', __FILE__)
 ActiveRecord.send(:remove_const, :TestFixtures) if ActiveRecord.const_defined?(:TestFixtures)
 
 require 'rspec/rails'
+require 'spec_helper_common'
 
 Resque.inline = true
 

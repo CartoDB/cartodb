@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe CentralUserCommands do
+  include_context 'with database purgue'
+
   let(:notifications_topic) { mock }
   let(:logger) { Carto::Common::Logger.new(nil) }
   let(:central_user_commands) do

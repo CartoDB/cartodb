@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe MapViewsCommands::Update do
+  include_context 'with database purgue'
+
   let(:command) { described_class.new(params) }
 
   describe '#run' do

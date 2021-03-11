@@ -12,3 +12,15 @@ shared_context 'with DatabaseCleaner' do
     DatabaseCleaner[:active_record].strategy = nil
   end
 end
+
+shared_context 'with database purgue' do
+  around do |example|
+    DatabaseCleaner[:active_record].strategy = :truncation
+    DatabaseCleaner.start
+
+    example.run
+
+    DatabaseCleaner.clean
+    DatabaseCleaner[:active_record].strategy = nil
+  end
+end

@@ -222,11 +222,11 @@ module Carto
         end
 
         def subscription_metadata(dataset_id, type)
-          request = request_subscription_metadata(dataset_id, type)
+          response = request_subscription_metadata(dataset_id, type)
 
           raise Carto::LoadError, "No metadata found for #{dataset_id}" if request.nil?
 
-          payload = request.with_indifferent_access
+          payload = response.with_indifferent_access
 
           {
             id: dataset_id,

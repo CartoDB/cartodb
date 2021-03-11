@@ -131,8 +131,8 @@ FactoryGirl.define do
 
   # Light user: database creation etc is skipped
   factory :carto_user_light, class: Carto::User do
-    username { Faker::Internet.username(separators: ['-']) }
-    email { Faker::Internet.safe_email }
+    sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
+    email { "#{username}@example.org" }
 
     password { email.split('@').first }
     password_confirmation { email.split('@').first }

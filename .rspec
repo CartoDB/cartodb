@@ -1,3 +1,4 @@
 --colour
---format documentation
 --order rand
+--format documentation
+--format ParallelTests::RSpec::SummaryLogger --out tmp/spec_summary.log

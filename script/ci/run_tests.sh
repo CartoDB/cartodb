@@ -13,17 +13,17 @@ cd /cartodb
 
 
 ## Setup initial configuration
-echo 'Show the initial config in CI'
-cat config/app_config.yml || true
-cat config/database.yml || true
+# echo 'Show the initial config in CI'
+# cat config/app_config.yml || true
+# cat config/database.yml || true
 
-echo 'Copy configuration files'
+# echo 'Copy configuration files'
 cp config/app_config.yml.sample config/app_config.yml || true
 cp config/database.yml.sample config/database.yml || true
 
-echo 'Show the replaced config in CI'
-cat config/app_config.yml || true
-cat config/database.yml || true
+# echo 'Show the replaced config in CI'
+# cat config/app_config.yml || true
+# cat config/database.yml || true
 
 ## Create log directories
 mkdir -p log && chmod -R 777 log/
@@ -38,3 +38,8 @@ bundle exec rake parallel:setup --trace
 
 # bundle exec rake parallel:spec['spec\/commands'] --trace [OK]
 bundle exec rake parallel:spec['spec\/models\/carto']
+set +x
+echo "============================================================"
+echo "                       RSpec summary                        "
+echo "============================================================"
+cat tmp/spec_summary.log

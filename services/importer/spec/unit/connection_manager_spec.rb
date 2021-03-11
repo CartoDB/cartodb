@@ -319,6 +319,37 @@ describe Carto::ConnectionManager do
       expect(in_params.parameters).to eq(expected_in_params)
       expect(conn_params.parameters).to eq(expected_conn_params)
     end
+
+    it "connection parameters can be overriden by import connection parameters" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'bqoauth',
+        connector: 'bigquery',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        token: 'bq-token',
+        parameters: {
+          'billing_project' => 'bq-billing-project'
+        }
+      )
+      params = {
+        connection: {
+          'billing_project' => 'another-billing-project'
+        },
+        table: 'the-table',
+        import_as: 'the-result'
+      }
+      in_params, conn_params = connection_manager.adapt_db_connector_parameters(
+        parameters: params, connection: connection
+      )
+      expect(conn_params[:connection]['refresh_token']).to eq('bq-token')
+      expect(conn_params[:connection]['billing_project']).to eq('another-billing-project')
+      expect(conn_params[:table]).to eq('the-table')
+      expect(conn_params[:import_as]).to eq('the-result')
+      expect(in_params[:connection_id]).to eq(connection.id)
+      expect(in_params[:table]).to eq('the-table')
+      expect(in_params[:import_as]).to eq('the-result')
+    end
   end
 
   describe '.singleton_connector?' do

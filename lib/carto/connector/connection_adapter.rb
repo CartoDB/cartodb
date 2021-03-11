@@ -64,6 +64,9 @@ module Carto
       end
     end
 
+    def adapt_parameters(connector_parameters)
+    end
+
     private
 
     def revoke_token

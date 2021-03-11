@@ -86,18 +86,30 @@ module Carto
       #   central_user_data[BQ_ADVANCED_CENTRAL_ATTRIBUTE.to_s]
       # end
 
-      def prevalidate
-        super
+      def adapt_parameters(connector_parameters)
+        super(connector_parameters)
 
-        if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE && !@connection.parameters.nil?
-          # Once complete, the OAuth token must be assigned to the refresh_token parameter
-          unless @connection.parameters&.has_key?('refresh_token')
-            @connection.parameters = @connection.parameters.merge('refresh_token' => @connection.token)
-          end
+        if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
+          # BQ db connector expects a refresh_token parameter for using OAuth
+          connection_parameters = connector_parameters[:connection].dup || {}
+          connection_parameters['refresh_token'] ||= @connection.token
+          connector_parameters[:connection] = connection_parameters
+        elsif legacy_oauth_db_connection?(connector_parameters)
+          # Old BQ Oauth imports didn't have any parameter
+          connection_parameters = connector_parameters[:connection].dup || {}
+          connection_parameters['refresh_token'] = @connection.user.oauths&.select(@connection.connector)&.token
+          connector_parameters[:connection] = connection_parameters
         end
-      end
+    end
 
       private
+
+      def legacy_oauth_db_connection?(connector_parameters)
+        credentials = [:service_token, :refresh_token, :access_token]
+        credentials += credentials.map(&:to_s)
+        connection_parameters = (connector_parameters[:connection].dup || {}).keys
+        (credentials & connection_parameters).empty?
+      end
 
       def incomplete?
         # An OAuth connection may be incomplete: it's created when the token is registered,

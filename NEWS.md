@@ -93,6 +93,7 @@ sudo make install
 - Modify deprecation warning for DO analysis in builder [#16163](https://github.com/CartoDB/cartodb/pull/16163)
 - Fix autoload issues in subscriber [#16171](https://github.com/CartoDB/cartodb/pull/16171)
 - Remove no longer used DO metadata DB config [#16212](https://github.com/CartoDB/cartodb/pull/16212)
+- Enable concurrent requests in cartodb dev env [#16211](https://github.com/CartoDB/cartodb/pull/16211)
 - Fix CI build by changing machine spec [#16192](https://github.com/CartoDB/cartodb/pull/16192)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
 

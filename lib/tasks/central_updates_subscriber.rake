@@ -128,6 +128,13 @@ namespace :message_broker do
         ).run
       end
 
+      subscription.register_callback(:subscription_active) do |message|
+        DoDatasetsCommands::SubscriptionActive.new(
+          message.payload,
+          { logger: logger, request_id: message.request_id }
+        ).run
+      end
+
       at_exit do
         logger.info(message: 'Stopping subscriber...')
         subscription.stop!

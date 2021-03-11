@@ -92,13 +92,13 @@ module Carto
 
         def instant_license(metadata)
           licensing_service = Carto::DoLicensingService.new(@user.username)
-          licensing_service.subscribe(license_info(metadata, 'active'))
+          licensing_service.subscribe(license_info(metadata, 'active')) # here's the initial status, so optimistic about it
         end
 
         def regular_license(metadata)
           DataObservatoryMailer.carto_request(@user, metadata[:id], metadata[:estimated_delivery_days]).deliver_now
           licensing_service = Carto::DoLicensingService.new(@user.username)
-          licensing_service.subscribe(license_info(metadata, 'requested'))
+          licensing_service.subscribe(license_info(metadata, 'requested')) # another status
         end
 
         def unsubscribe
@@ -222,11 +222,11 @@ module Carto
         end
 
         def subscription_metadata(dataset_id, type)
-          request = request_subscription_metadata(dataset_id, type)
+          response = request_subscription_metadata(dataset_id, type)
 
           raise Carto::LoadError, "No metadata found for #{dataset_id}" if request.nil?
 
-          payload = request.with_indifferent_access
+          payload = response.with_indifferent_access
 
           {
             id: dataset_id,

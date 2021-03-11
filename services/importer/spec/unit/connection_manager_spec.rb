@@ -385,11 +385,42 @@ describe Carto::ConnectionManager do
         }
       }
       params_with_token = legacy_bq_params.merge(
-        connection: legacy_bq_params[:connection].merge(refresh_token: 'the-token')
+        connection: legacy_bq_params[:connection].merge('refresh_token' => 'the-token')
       )
       in_params, conn_params = connection_manager.adapt_db_connector_parameters(parameters: legacy_bq_params.dup)
       expect(in_params.parameters).to eq(legacy_bq_params)
       expect(conn_params.parameters).to eq(params_with_token)
+    end
+
+    it "sets refresh_token parameter for BQ Oauth connections" do
+      connection = mocked_record(
+        id: '123',
+        user: user,
+        name: 'bq',
+        connector: 'bigquery',
+        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
+        token: 'oauth-token',
+        parameters: {
+          'billing_project' => 'the-billing-project'
+        }
+      )
+      params = { table: 'a-table'}
+      expected_in_params = params.merge(
+        connection_id: connection.id
+      )
+      expected_conn_params = params.merge(
+        provider: connection.connector,
+        connection: {
+          'refresh_token' => 'oauth-token',
+          'billing_project' => 'the-billing-project'
+        }
+      )
+      in_params, conn_params = connection_manager.adapt_db_connector_parameters(
+        connection: connection,
+        parameters: params
+      )
+      expect(in_params.parameters).to eq(expected_in_params)
+      expect(conn_params.parameters).to eq(expected_conn_params)
     end
   end
 
@@ -920,36 +951,6 @@ describe Carto::ConnectionManager do
       )
       connection_manager.manage_prevalidation(connection)
       expect(connection.name).to be(nil)
-    end
-
-    it "sets refresh_token parameter for BQ Oauth connections" do
-      connection = mocked_record(
-        id: '123',
-        user: user,
-        name: 'bq',
-        connector: 'bigquery',
-        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
-        token: 'oauth-token',
-        parameters: {
-          'billing_project' => 'the-billing-project'
-        }
-      )
-      connection_manager.manage_prevalidation(connection)
-      expect(connection.parameters['refresh_token']).to eq('oauth-token')
-    end
-
-    it "does not set refresh_token parameter in incomplete connections" do
-      connection = mocked_record(
-        id: '123',
-        user: user,
-        name: 'bq',
-        connector: 'bigquery',
-        connection_type: Carto::Connection::TYPE_OAUTH_SERVICE,
-        token: 'oauth-token',
-        parameters: nil
-      )
-      connection_manager.manage_prevalidation(connection)
-      expect(connection.parameters).to be(nil)
     end
   end
 

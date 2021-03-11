@@ -24,10 +24,6 @@ module Carto
       CONFIDENTIAL_PARAMETER_PLACEHOLDER
     end
 
-    def filtered_connection_parameters
-      @connection.parameters
-    end
-
     def singleton?
       @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
     end
@@ -68,6 +64,9 @@ module Carto
       unless @connection.name.present?
         @connection.name = @connection.connector if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
       end
+    end
+
+    def adapt_parameters(connector_parameters)
     end
 
     private

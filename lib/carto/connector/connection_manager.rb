@@ -210,7 +210,7 @@ module Carto
       input_parameters = connector_parameters.dup
       if connection.present?
         connector_parameters[:provider] = provider = obtain_checked_provider(provider, connection)
-        connection_parameters = adapter(connection).filtered_connection_parameters
+        connection_parameters = connection.parameters
 
         connector_parameters[:connection] = connection_parameters
         connector_parameters.delete :connection_id

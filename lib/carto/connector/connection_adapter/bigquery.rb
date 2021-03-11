@@ -9,16 +9,11 @@ module Carto
     class BigQuery < ConnectionAdapter
 
       BQ_CONFIDENTIAL_PARAMS = %w(service_account refresh_token access_token).freeze
-      NON_CONNECTOR_PARAMETERS = [].freeze
       BQ_ADVANCED_CENTRAL_ATTRIBUTE = :bq_advanced
       BQ_ADVANCED_PROJECT_CENTRAL_ATTRIBUTE = :bq_advanced_project
 
       def initialize(connection)
         super(connection, confidential_parameters: BQ_CONFIDENTIAL_PARAMS)
-      end
-
-      def filtered_connection_parameters
-        @connection.parameters&.except(*NON_CONNECTOR_PARAMETERS)
       end
 
       def singleton?

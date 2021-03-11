@@ -30,6 +30,7 @@ sudo make install
 - Split configuration for Message Broker & Central login redirection [#16150](https://github.com/CartoDB/cartodb/pull/16150)
 - Remove Data Library gallery page (now redirected to Spatial Data Catalog) [#16133](https://github.com/CartoDB/cartodb/pull/16133)
 - Sync DO API keys betwenn onpremises & CARTO-managed clouds [#16205](https://github.com/CartoDB/cartodb/pull/16205)
+- Fix master build [#16213](https://github.com/CartoDB/cartodb/pull/16213)
 
 ### Bug fixes / enhancements
 
@@ -84,12 +85,14 @@ sudo make install
 - Prevent a possible `PG::UndefinedFunction` error on DB creation [#16174](https://github.com/CartoDB/cartodb/pull/16174)
 - Add groups to v4/me endpoint [#16105](https://github.com/CartoDB/cartodb/pull/16105)
 - Add deprecation warning for DO analysis in builder and hide option when user creation is later than deprecation notice date [#16118](https://github.com/CartoDB/cartodb/pull/16118)
+- Sanitize column names on overwrite import [#16208](https://github.com/CartoDB/cartodb/pull/16208)
 - Updated robots.txt to allow Google access to our datasets [#16148](https://github.com/CartoDB/cartodb/pull/16148)
 - In the Data Catalog, fixed baseurl as it added an extra `/` on the queries from public pages [#16148](https://github.com/CartoDB/cartodb/pull/16148)
 - Added dynamic meta title and canonical link to improve SEO in public pages for the Spatial Data Catalog [#16157](https://github.com/CartoDB/cartodb/pull/16157)
 - Fixed error that added multiple canonical links in the Spatial Data Catalog [#16160](https://github.com/CartoDB/cartodb/pull/16160)
 - Modify deprecation warning for DO analysis in builder [#16163](https://github.com/CartoDB/cartodb/pull/16163)
 - Fix autoload issues in subscriber [#16171](https://github.com/CartoDB/cartodb/pull/16171)
+- Remove no longer used DO metadata DB config [#16212](https://github.com/CartoDB/cartodb/pull/16212)
 - Fix CI build by changing machine spec [#16192](https://github.com/CartoDB/cartodb/pull/16192)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
 

@@ -16,6 +16,7 @@ feature "Sessions" do
 
   after do
     Carto::UserMultifactorAuth.delete_all
+    Carto::FeatureFlagsUser.delete_all
     Carto::User.delete_all
     Carto::Ldap::Configuration.delete_all
     Carto::Organization.delete_all

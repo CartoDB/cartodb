@@ -75,7 +75,7 @@ module Carto
           dataset_id: dataset[:dataset_id],
           created_at: dataset[:created_at].to_s,
           expires_at: dataset[:expires_at].to_s,
-          status: dataset[:status],
+          status: dataset[:status], # What's the initial status?
           available_in: dataset[:available_in],
           type: dataset[:type],
           estimated_size: entity_info[:estimated_size].to_i || 0,

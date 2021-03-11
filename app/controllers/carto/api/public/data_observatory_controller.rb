@@ -92,13 +92,13 @@ module Carto
 
         def instant_license(metadata)
           licensing_service = Carto::DoLicensingService.new(@user.username)
-          licensing_service.subscribe(license_info(metadata, 'active'))
+          licensing_service.subscribe(license_info(metadata, 'active')) # here's the initial status, so optimistic about it
         end
 
         def regular_license(metadata)
           DataObservatoryMailer.carto_request(@user, metadata[:id], metadata[:estimated_delivery_days]).deliver_now
           licensing_service = Carto::DoLicensingService.new(@user.username)
-          licensing_service.subscribe(license_info(metadata, 'requested'))
+          licensing_service.subscribe(license_info(metadata, 'requested')) # another status
         end
 
         def unsubscribe

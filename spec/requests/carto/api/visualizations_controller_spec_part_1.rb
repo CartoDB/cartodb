@@ -301,8 +301,9 @@ describe Carto::Api::VisualizationsController do
 
     it 'returns DO information if "load_do_totals" flag is set' do
       get base_url, { load_do_totals: true }, @headers
-      last_response.body.should include('total_subscriptions' => 0)
-      last_response.body.should include('total_samples' => 0)
+      body = JSON.parse(last_response.body)
+      body.should include('total_subscriptions' => 0)
+      body.should include('total_samples' => 0)
     end
 
     it 'returns 400 if wrong page parameter is passed' do

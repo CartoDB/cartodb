@@ -106,6 +106,7 @@ module CartoDB
           end
           @refresh_token = @client.refresh_token
           check_user_email @client.access_token
+          @refresh_token
         rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => ex
           raise AuthError.new("validating auth code: #{ex.message}", DATASOURCE_NAME)
         end

@@ -215,7 +215,7 @@ module Carto
       end
 
       new_attributes = {}
-      new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
+      new_attributes[:parameters] = (connection.parameters || {}).merge(parameters) if parameters.present?
       new_attributes[:name] = name if name.present?
       connection.update!(new_attributes)
     end

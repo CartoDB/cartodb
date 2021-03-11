@@ -97,7 +97,6 @@ steps:
 
 # Run tests, first in parallel, then give a second try in serial if some tests fail
 - name: gcr.io/cloud-builders/docker
-  args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/runParallelTests.sh 18' ]
   args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/run_tests.sh' ]
   timeout: 1800s
 

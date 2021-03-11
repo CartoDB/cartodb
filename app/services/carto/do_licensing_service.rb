@@ -1,6 +1,8 @@
 module Carto
   class DoLicensingService
 
+    include ::MessageBrokerHelper
+
     AVAILABLE_STORAGES = %w(bq bigtable carto).freeze
     PRESELECTED_STORAGE = 'bq'.freeze
     CARTO_DO_PROJECT = 'carto-do'.freeze
@@ -13,8 +15,11 @@ module Carto
     end
 
     def subscribe(dataset)
-      Cartodb::Central.new.create_do_datasets(username: @user.username, datasets: [dataset])
-      add_to_redis(dataset)
+      cartodb_central_topic.publish(:create_subscription, {username: @user.username, datasets: [dataset]})
+      # NOTE: It is up to Central to decide when it's active. Central
+      # is the owner of the status. So setting the initial state to
+      # 'requested'.
+      add_to_redis(dataset.merge(status: 'requested'))
     end
 
     def unsubscribe(dataset_id)

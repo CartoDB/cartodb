@@ -823,12 +823,6 @@ development:
     critical: false # either the failure is considered an error or a warning
     timeout: 1 # socket timeout
     trigger_verbose: false
-  do_metadata_database:
-    host: 'localhost'
-    port: 5432
-    database: 'catalog'
-    username: ''
-    password: ''
 
 test:
   <<: *defaults
@@ -864,12 +858,6 @@ test:
     critical: false # either the failure is considered an error or a warning
     timeout: 1 # socket timeout
     trigger_verbose: false
-  do_metadata_database:
-    host: 'localhost'
-    port: 5432
-    database: 'carto_db_test'
-    username: 'postgres'
-    password: ''
 
 staging:
   <<: *defaults

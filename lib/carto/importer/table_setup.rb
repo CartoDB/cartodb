@@ -73,6 +73,13 @@ module Carto
         @user.tables.where(name: name).first.update_cdb_tablemetadata
       end
 
+      def sanitize_columns(name)
+        @user.tables.where(name: name).first.service.sanitize_columns(
+          database_schema: @user.database_schema,
+          connection: @user.in_database
+        )
+      end
+
       private
 
       def log_context

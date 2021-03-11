@@ -299,6 +299,12 @@ describe Carto::Api::VisualizationsController do
       response_body.should == expected_response
     end
 
+    it 'returns DO information if "load_do_totals" flag is set' do
+      get base_url, { load_do_totals: true }, @headers
+      last_response.body.should include('total_subscriptions' => 0)
+      last_response.body.should include('total_samples' => 0)
+    end
+
     it 'returns 400 if wrong page parameter is passed' do
       get base_url, { page: '%00' }, @headers
       last_response.status.should == 400

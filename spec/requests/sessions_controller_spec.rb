@@ -37,6 +37,14 @@ describe SessionsController do
     )
   end
 
+  after do
+    close_pool_connections
+    Carto::Ldap::Configuration.delete_all
+    Carto::FeatureFlagsUser.delete_all
+    Carto::User.delete_all
+    Carto::Organization.delete_all
+  end
+
   shared_examples_for 'LDAP' do
     before do
       Cartodb::Central.stubs(:login_redirection_enabled?).returns(false)

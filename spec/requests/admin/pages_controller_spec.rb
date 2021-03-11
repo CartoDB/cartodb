@@ -32,6 +32,7 @@ describe Admin::PagesController do
   let!(:user) { create(:valid_user, private_tables_enabled: true, private_maps_enabled: true) }
 
   after do
+    close_pool_connections
     Carto::FeatureFlagsUser.delete_all
     Carto::User.delete_all
     Carto::Organization.delete_all

@@ -3,6 +3,19 @@ require_relative '../../../app/controllers/admin/pages_controller'
 require_relative '../../factories/organizations_contexts'
 require_relative '../../factories/carto_visualizations'
 
+def prepare_user(username, organization_user = false, belongs_to_organization = false)
+  user = if organization_user && belongs_to_organization
+           organization.users.where.not(id: organization.owner.id).first
+         elsif organization_user
+           create_organization_with_users.owner
+         else
+           create(:valid_user).carto_user
+         end
+
+  user.update!(username: username, quota_in_bytes: 10_000_000)
+  user
+end
+
 describe Admin::PagesController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
@@ -17,6 +30,12 @@ describe Admin::PagesController do
   let(:organization) { create_organization_with_users(password_expiration_in_d: nil) }
   let(:cartodb_host) { 'localhost.lan' }
   let!(:user) { create(:valid_user, private_tables_enabled: true, private_maps_enabled: true) }
+
+  after do
+    Carto::FeatureFlagsUser.delete_all
+    Carto::User.delete_all
+    Carto::Organization.delete_all
+  end
 
   describe '#index' do
     before { host!("#{organization.name}.#{cartodb_host}") }
@@ -261,8 +280,6 @@ describe Admin::PagesController do
     end
 
     describe 'for users' do
-      include_context 'users helper'
-
       before do
         host!("#{user.username}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
       end
@@ -287,11 +304,9 @@ describe Admin::PagesController do
   end
 
   describe '#datasets' do
-    include_context 'users helper'
-
     before do
       host!("#{user.username}.#{cartodb_host}:#{Cartodb.config[:http_port]}")
-      Carto::Visualization.find_each(&:destroy)
+      Carto::Visualization.delete_all
     end
 
     it 'returns 200 if a dataset has no table' do
@@ -305,28 +320,5 @@ describe Admin::PagesController do
       last_response.status.should == 200
       last_response.body.should =~ /doesn\'t have any items/
     end
-  end
-
-  def mock_explore_feature_flag
-    anyuser = prepare_user('anyuser')
-    ::User.any_instance.stubs(:has_feature_flag?)
-                          .with('explore_site')
-                          .returns(true)
-    ::User.stubs(:where).returns(anyuser)
-    anyuser.stubs(:first).returns(anyuser)
-    anyuser
-  end
-
-  def prepare_user(username, organization_user = false, belongs_to_organization = false)
-    user = if organization_user && belongs_to_organization
-             organization.users.where.not(id: organization.owner.id).first
-           elsif organization_user
-             create_organization_with_users.owner
-           else
-             create(:valid_user).carto_user
-           end
-
-    user.update!(username: username, quota_in_bytes: 10_000_000)
-    user
   end
 end

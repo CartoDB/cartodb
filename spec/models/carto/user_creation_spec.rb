@@ -53,14 +53,7 @@ describe Carto::UserCreation do
   describe 'validation token' do
     include_context 'organization with users helper'
 
-    before(:each) do
-      # Disable central for these tests
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-    end
-
-    after(:all) do
-      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
-    end
+    before { Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false) }
 
     it 'assigns an enable_account_token if user has not signed up with Google' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
@@ -211,7 +204,7 @@ describe Carto::UserCreation do
     end
 
     it 'neither creates a new User nor sends the mail and marks creation as failure if saving fails' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
       ::User.any_instance.stubs(:save).raises('saving error')
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
@@ -231,11 +224,11 @@ describe Carto::UserCreation do
     end
 
     after(:each) do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
     end
 
     it 'neither creates a new User nor sends the mail and marks creation as failure if Central fails' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
       ::User.any_instance.stubs(:create_in_central).raises('Error on state creating_user_in_central, mark_as_failure: false. Error: Application server responded with http 422: {"errors":["Existing username."]}')
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
@@ -305,7 +298,7 @@ describe Carto::UserCreation do
     end
 
     def prepare_fake_central_user
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
       fake_central_client = {}
       fake_central_client.stubs(:create_organization_user).returns(true)
       ::User.any_instance.stubs(:cartodb_central_client).returns(fake_central_client)
@@ -467,7 +460,7 @@ describe Carto::UserCreation do
     end
 
     it 'with Central and builder, does all the steps' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
       User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
       @user_creation.expects(:create_in_central).once
       @user_creation.expects(:load_common_data).once
@@ -478,7 +471,7 @@ describe Carto::UserCreation do
     end
 
     it 'without Central, skips creation in central' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
       @user_creation.expects(:create_in_central).never
       @user_creation.expects(:load_common_data).once
 
@@ -487,7 +480,7 @@ describe Carto::UserCreation do
     end
 
     it 'with Central as a viewer, skips loading common data' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
       User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
       @user_creation.viewer = true
       @user_creation.expects(:create_in_central).once
@@ -498,7 +491,7 @@ describe Carto::UserCreation do
     end
 
     it 'without Central as a viewer, skips loading common data and creation in central' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
       @user_creation.viewer = true
       @user_creation.expects(:create_in_central).never
       @user_creation.expects(:load_common_data).never

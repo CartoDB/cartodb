@@ -1,4 +1,3 @@
-require_relative '../../../rspec_configuration'
 require 'ostruct'
 require_relative '../../../../app/controllers/carto/api/data_import_presenter'
 require_relative '../../../spec_helper'

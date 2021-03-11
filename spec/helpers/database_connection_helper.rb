@@ -28,11 +28,4 @@ module DatabaseConnectionHelper
     )
     with_connection options, &block
   end
-
-  def with_do_connection(&block)
-    do_configuration = Cartodb.config[:do_metadata_database].merge(
-      'adapter' => 'postgresql'
-    )
-    with_connection do_configuration, &block
-  end
 end

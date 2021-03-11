@@ -749,7 +749,7 @@ shared_examples_for "user models" do
       cartodb_central_client_mock.expects(:update_user).once.with { |username, attributes|
         username == @user1.username && attributes[:batch_queries_statement_timeout] == 42
       }
-      Cartodb::Central.expects(:sync_data_with_cartodb_central?).once.returns(true)
+      Cartodb::Central.expects(:message_broker_sync_enabled?).once.returns(true)
       @user1.expects(:cartodb_central_client).once.returns(cartodb_central_client_mock)
 
       @user1.batch_queries_statement_timeout = 42

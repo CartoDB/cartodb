@@ -867,7 +867,7 @@ describe Carto::Api::OrganizationUsersController do
 
       before do
         ::User.any_instance.unstub(:delete_in_central)
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+        Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(true)
       end
 
       it 'requests user deletion to Central' do

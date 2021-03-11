@@ -305,12 +305,12 @@ module Carto::UserCommons
 
   def update_gcloud_settings(attributes)
     return if attributes.nil?
-    settings = Carto::GCloudUserSettings.new(self)
+    settings = Carto::GCloudUserSettings.new(self.username)
     settings.update attributes
   end
 
   def gcloud_settings
-    @gcloud_settings ||= Carto::GCloudUserSettings.new(self).read&.with_indifferent_access
+    @gcloud_settings ||= Carto::GCloudUserSettings.new(self.username).read&.with_indifferent_access
   end
 
   def do_enabled?
@@ -442,7 +442,7 @@ module Carto::UserCommons
   end
 
   def delete_in_central
-    unless Cartodb::Central.sync_data_with_cartodb_central?
+    if Cartodb::Central.message_broker_sync_disabled?
       log_central_unavailable
       return true
     end

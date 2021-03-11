@@ -1,6 +1,6 @@
 # This file provides a minimal Rails integration test environment with an empty database, without users.
+require 'mocha'
 require 'simplecov_helper'
-require 'rspec_configuration'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require './spec/support/message_broker_stubs'
@@ -17,6 +17,7 @@ require File.expand_path('../../config/environment', __FILE__)
 ActiveRecord.send(:remove_const, :TestFixtures) if ActiveRecord.const_defined?(:TestFixtures)
 
 require 'rspec/rails'
+require 'spec_helper_common'
 
 Resque.inline = true
 
@@ -30,6 +31,7 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   config.include FactoryGirl::Syntax::Methods
   config.include SharedEntitiesSpecHelper
+  config.mock_with :mocha
 
   config.after(:each) do
     Delorean.back_to_the_present

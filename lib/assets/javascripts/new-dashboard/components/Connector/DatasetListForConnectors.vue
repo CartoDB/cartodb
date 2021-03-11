@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="!!queryFilter && !isFetchingDatasets" class="u-mb--16 is-small is-txtMainTextColor is-semibold">
+      {{ $tc('SearchPage.title.searchResults', datasetsMetadata.total_entries) }}
+    </div>
     <ul class="" v-if="!isFetchingDatasets && !isEmpty">
       <li v-for="dataset in datasets" :key="dataset.id" class="u-mt--12">
         <DatasetCard
@@ -15,9 +18,11 @@
       </li>
     </ul>
     <div v-else-if="isEmpty" class="centered-text">
-      <img svg-inline src="../../assets/icons/datasets/add-dataset.svg"/>
-      <h4 class="text is-caption u-mt--16">{{ $t('NewMapDatasetCard.zeroCase.title') }}</h4>
-      <p class="text is-small u-mt--4"><span class="fake-link" @click="toConnectTab()">{{ $t('NewMapDatasetCard.zeroCase.actionName') }}</span> {{ $t('NewMapDatasetCard.zeroCase.actionDescription') }}</p>
+      <template v-if="!queryFilter">
+        <img svg-inline src="../../assets/icons/datasets/add-dataset.svg"/>
+        <h4 class="text is-caption u-mt--16">{{ $t('NewMapDatasetCard.zeroCase.title') }}</h4>
+        <p class="text is-small u-mt--4"><span class="fake-link" @click="toConnectTab()">{{ $t('NewMapDatasetCard.zeroCase.actionName') }}</span> {{ $t('NewMapDatasetCard.zeroCase.actionDescription') }}</p>
+      </template>
     </div>
 
     <div v-if="!isFetchingDatasets && !isEmpty">
@@ -27,6 +32,7 @@
 </template>
 
 <script>
+import _ from 'underscore';
 import { mapState } from 'vuex';
 import DatasetCard from 'new-dashboard/components/Connector/DatasetCard';
 import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
@@ -35,7 +41,10 @@ import Pagination from 'new-dashboard/components/Pagination';
 export default {
   name: 'DatasetListForConnectors',
   props: {
-    sharedTab: Boolean,
+    shared: {
+      default: 'mine'
+    },
+    queryFilter: String,
     multiSelect: {
       default: true
     }
@@ -45,11 +54,12 @@ export default {
     DatasetCardFake,
     Pagination
   },
-  data: () => {
+  data () {
     return {
       selectedDataset: {},
       currentPage: 1,
-      elemsPerPage: 20
+      elemsPerPage: 20,
+      debounceUpdateDatasetFilter: _.debounce(this.updateDatasetFilter, 500)
     };
   },
   mounted: function () {
@@ -89,7 +99,8 @@ export default {
       let urlOptions = {
         page: this.currentPage,
         per_page: this.elemsPerPage,
-        filter: this.sharedTab ? 'shared' : 'mine'
+        filter: this.shared,
+        ...(this.queryFilter ? { q: this.queryFilter } : {})
       };
       this.$store.dispatch('datasets/setURLOptions', urlOptions);
     },
@@ -98,9 +109,13 @@ export default {
     }
   },
   watch: {
-    sharedTab: function () {
+    shared: function () {
       this.currentPage = 1;
-      this.updateDatasetFilter();
+      this.debounceUpdateDatasetFilter();
+    },
+    queryFilter: function () {
+      this.currentPage = 1;
+      this.debounceUpdateDatasetFilter();
     }
   }
 };

@@ -447,7 +447,9 @@ describe 'UserMigration' do
     end
 
     it 'keeps roles for oauth api keys with schemas grants and you can drop tables after migration' do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
+      Cartodb::Central.stubs(:api_sync_enabled?).returns(false)
+
       oauth_app = Carto::OauthApp.create!(name: 'test',
                                           user_id: @carto_user.id,
                                           redirect_uris: ['https://example.com'],
@@ -485,7 +487,7 @@ describe 'UserMigration' do
       # oauth_app must exist in the destination
       # so we remove the user_id to avoid it being cascade deleted with the user
       oauth_app.stubs(:sync_with_central?).returns(false)
-      oauth_app.stubs(:central_enabled?).returns(true)
+      Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
       oauth_app.user_id = nil
       oauth_app.save!
 
@@ -532,7 +534,6 @@ describe 'UserMigration' do
       user.in_database(as: :superuser).execute("SELECT cartodb.cdb_extension_reload()")
       result = user.in_database(as: :superuser).execute(check_cdb_conf_query)
       expect(result.count).to eq 1
-      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
       oauth_app.destroy!
     end
 

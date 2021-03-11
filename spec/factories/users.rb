@@ -12,10 +12,10 @@ FactoryGirl.define do
   factory :user, class: ::User do
     to_create(&:save)
 
-    username               { unique_name('user') }
-    email                  { unique_email }
-    password               { email.split('@').first }
-    password_confirmation  { email.split('@').first }
+    sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
+    email                  { "#{username}@example.com" }
+    password               { "#{username}123" }
+    password_confirmation  { password }
     table_quota            5
     quota_in_bytes         5000000
     id                     { Carto::UUIDHelper.random_uuid }
@@ -78,8 +78,8 @@ FactoryGirl.define do
   end
 
   factory :carto_user, class: Carto::User do
-    username { unique_name('user') }
-    email { unique_email }
+    username { Faker::Internet.username(separators: ['-']) }
+    email { Faker::Internet.safe_email }
 
     password { email.split('@').first }
     password_confirmation { email.split('@').first }
@@ -92,6 +92,7 @@ FactoryGirl.define do
     quota_in_bytes 5000000
     id { Carto::UUIDHelper.random_uuid }
     builder_enabled nil # Most tests still assume editor
+
 
     before(:build) do |carto_user|
       create_account_type_fg(carto_user.account_type)
@@ -126,5 +127,36 @@ FactoryGirl.define do
     factory :carto_locked_user, traits: [:locked]
     factory :carto_user_mfa_setup, traits: [:mfa_setup]
     factory :carto_user_mfa, traits: [:mfa_enabled]
+  end
+
+  # Light user: database creation etc is skipped
+  factory :carto_user_light, class: Carto::User do
+    username { Faker::Internet.username(separators: ['-']) }
+    email { Faker::Internet.safe_email }
+
+    password { email.split('@').first }
+    password_confirmation { email.split('@').first }
+    crypted_password do
+      Carto::Common::EncryptionService.encrypt(password: password, secret: Cartodb.config[:password_secret])
+    end
+
+    api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
+    table_quota nil
+    quota_in_bytes 5000000
+    id { Carto::UUIDHelper.random_uuid }
+    builder_enabled nil # Most tests still assume editor
+
+    after(:build) do |carto_user|
+      create_account_type_fg(carto_user.account_type)
+    end
+
+    before(:create) do |carto_user|
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      create_account_type_fg(carto_user.account_type)
+    end
+
+    after(:create) do |carto_user|
+      CartoDB::UserModule::DBService.any_instance.unstub
+    end
   end
 end

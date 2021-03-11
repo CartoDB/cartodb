@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe OrganizationCommands::Update do
-  let(:organization) { create_organization_with_users(seats: 10) }
+  let(:organization) { create(:organization_with_users, seats: 10) }
   let(:command) { described_class.new(params) }
 
   describe '#run' do

@@ -1,5 +1,7 @@
 module CartodbCentralSynchronizable
 
+  include ::MessageBrokerHelper
+
   def user?
     is_a?(::User) || is_a?(Carto::User)
   end
@@ -12,7 +14,7 @@ module CartodbCentralSynchronizable
   def validate_credentials_not_taken_in_central
     return true unless user?
 
-    unless Cartodb::Central.sync_data_with_cartodb_central?
+    if Cartodb::Central.message_broker_sync_disabled?
       log_central_unavailable
       return true
     end
@@ -25,7 +27,7 @@ module CartodbCentralSynchronizable
   end
 
   def create_in_central
-    unless Cartodb::Central.sync_data_with_cartodb_central?
+    if Cartodb::Central.message_broker_sync_disabled?
       log_central_unavailable
       return true
     end
@@ -43,7 +45,7 @@ module CartodbCentralSynchronizable
   end
 
   def update_in_central
-    unless Cartodb::Central.sync_data_with_cartodb_central?
+    if Cartodb::Central.message_broker_sync_disabled?
       log_central_unavailable
       return true
     end
@@ -59,12 +61,10 @@ module CartodbCentralSynchronizable
         cartodb_central_client.update_user(username, allowed_attributes_to_central(:update))
       end
     elsif organization?
-      Carto::Common::MessageBroker.new(logger: Rails.logger)
-                                  .get_topic(:cartodb_central)
-                                  .publish(
-                                    :update_organization,
-                                    { organization: allowed_attributes_to_central(:update) }
-                                  )
+      cartodb_central_topic.publish(
+        :update_organization,
+        { organization: allowed_attributes_to_central(:update) }
+      )
     end
 
     true
@@ -180,10 +180,6 @@ module CartodbCentralSynchronizable
     self.password = self.password_confirmation = params[:password] if user? && params.key?(:password)
 
     self
-  end
-
-  def sync_data_with_cartodb_central?
-    Cartodb::Central.sync_data_with_cartodb_central?
   end
 
   def cartodb_central_client

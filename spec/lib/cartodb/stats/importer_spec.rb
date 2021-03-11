@@ -2,7 +2,6 @@ require_relative '../../../simplecov_helper'
 require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
-require_relative '../../../rspec_configuration.rb'
 
 require_relative '../../../../lib/cartodb/stats/importer'
 

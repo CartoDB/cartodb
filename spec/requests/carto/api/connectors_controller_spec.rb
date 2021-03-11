@@ -9,19 +9,24 @@ describe Carto::Api::ConnectorsController do
   before(:all) do
     create(:feature_flag, name: 'carto-connectors', restricted: false)
     @user = FactoryGirl.create(:carto_user)
-    Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('postgres', 'PostgreSQL')
-    Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('hive', 'Hive')
-    Carto::Connector::PROVIDERS << dummy_connector_provider_with_id('bigquery', 'BigQuery',
-      'sql_queries': false,
-      'list_databases': true,
-      'list_tables': true,
-      'preview_table': true,
-      'dry_run': true,
-      'list_projects': true
+
+    @previous_providers = replace_connector_providers(
+      dummy_connector_provider_with_id('postgres', 'PostgreSQL'),
+      dummy_connector_provider_with_id('hive', 'Hive'),
+      dummy_connector_provider_with_id(
+        'bigquery', 'BigQuery',
+        'sql_queries': false,
+        'list_databases': true,
+        'list_tables': true,
+        'preview_table': true,
+        'dry_run': true,
+        'list_projects': true
+      )
     )
 
-    @connector_provider_postgres = FactoryGirl.create(:connector_provider, name: 'postgres')
-    @connector_provider_hive = FactoryGirl.create(:connector_provider, name: 'hive')
+    @connector_provider_postgres = Carto::ConnectorProvider.find_by(name: 'postgres')
+    @connector_provider_hive = Carto::ConnectorProvider.find_by(name: 'hive')
+
     @connector_config_user = FactoryGirl.create(:connector_configuration,
                                                  user_id: @user.id,
                                                  connector_provider_id: @connector_provider_postgres.id,
@@ -45,8 +50,7 @@ describe Carto::Api::ConnectorsController do
     @connector_config_user.destroy
     @connector_config_org_user.destroy
     @connector_config_org.destroy
-    @connector_provider_postgres.destroy
-    @connector_provider_hive.destroy
+    restore_connector_providers(@previous_providers)
   end
 
   describe '#index' do

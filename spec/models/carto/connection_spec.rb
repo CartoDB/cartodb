@@ -5,6 +5,12 @@ describe Carto::Connection do
   let(:user) { create(:carto_user_light) }
   let(:fake_log) { CartoDB::Importer2::Doubles::Log.new(user) }
 
+  let(:organization) { create(:organization_with_light_users) }
+  let(:org_owner) { organization.owner }
+  let(:org_member) { organization.users.all.find{|u| u != org_owner } }
+  let(:org_owner_connection_manager) { Carto::ConnectionManager.new(org_owner) }
+  let(:org_member_connection_manager) { Carto::ConnectionManager.new(org_member) }
+
   around do |example|
     config = { 'dummy' => { 'enabled' => true } }
 
@@ -15,13 +21,129 @@ describe Carto::Connection do
 
   describe 'connection type is automatically computed' do
     it 'is db if parameters are present' do
-      connection = FactoryGirl.create(:connection, name: 'dumb', connector: 'dummy', parameters: {server: 'server'}, user: user)
+      connection = FactoryGirl.create(
+        :connection, name: 'dumb', connector: 'dummy', parameters: {server: 'server'}, user: user
+      )
       expect(connection.connection_type).to eq(Carto::Connection::TYPE_DB_CONNECTOR)
     end
 
     it 'is oauth if token is present' do
-      connection = FactoryGirl.create(:connection, name: 'dumb', connector: 'gdrive', token: 'token', user: user)
+      connection = FactoryGirl.create(
+        :connection, name: 'dumb', connector: 'gdrive', token: 'token', user: user
+      )
       expect(connection.connection_type).to eq(Carto::Connection::TYPE_OAUTH_SERVICE)
+    end
+  end
+
+  describe 'connections can be shared per organization' do
+    it 'user connections are identified as individual' do
+      connection = FactoryGirl.create(
+        :connection, name: 'dumb', connector: 'dummy', parameters: {server: 'server'}, user: org_member
+      )
+      expect(connection.individual?).to eq(true)
+      expect(connection.shared?).to eq(false)
+      expect(org_member.individual_connections.find_by(id: connection.id)).to eq(connection)
+      expect(org_member.shared_connections.find_by(id: connection.id)).to be(nil)
+    end
+
+    it 'organization connections are identified as shared' do
+      connection = FactoryGirl.create(
+        :connection, name: "#{organization.name}.dumb", connector: 'dummy', parameters: {server: 'server'}, organization: organization
+      )
+      expect(connection.individual?).to eq(false)
+      expect(connection.shared?).to eq(true)
+      expect(org_member.shared_connections.find_by(id: connection.id)).to eq(connection)
+      expect(org_member.individual_connections.find_by(id: connection.id)).to be(nil)
+    end
+  end
+
+  describe 'connection name is validated' do
+    it 'requires shared connection names to be prefixed with org' do
+      connection = FactoryGirl.create(
+        :connection,
+        name: "#{organization.name}.shared_name",
+        connector: 'dummy', parameters: {server: 'server'},
+        organization: organization
+      )
+      expect(connection.valid?).to eq(true)
+
+      connection = FactoryGirl.create(
+        :connection,
+        name: "not-the-connection-name.shared_name",
+        connector: 'dummy', parameters: {server: 'server'},
+        organization: organization
+      )
+      expect(connection.valid?).to eq(false)
+      expect(connection.errors[:name]).not_to be_empty
+
+      connection = FactoryGirl.create(
+        :connection,
+        name: "shared_name",
+        connector: 'dummy', parameters: {server: 'server'},
+        organization: organization
+      )
+      expect(connection.valid?).to eq(false)
+      expect(connection.errors[:name]).not_to be_empty
+    end
+
+    it 'does not allow dots except to separate the org name' do
+      connection = FactoryGirl.create(
+        :connection,
+        name: "connection.name",
+        connector: 'dummy', parameters: {server: 'server'},
+        user: user
+      )
+      expect(connection.valid?).to eq(false)
+      expect(connection.errors[:name]).not_to be_empty
+
+      connection = FactoryGirl.create(
+        :connection,
+        name: "#{organization.name}.connection.name",
+        connector: 'dummy', parameters: {server: 'server'},
+        organization: organization
+      )
+      expect(connection.valid?).to eq(false)
+      expect(connection.errors[:name]).not_to be_empty
+    end
+
+    it 'does not allow whitespace' do
+      connection = FactoryGirl.create(
+        :connection,
+        name: "connection name",
+        connector: 'dummy', parameters: {server: 'server'},
+        user: user
+      )
+      expect(connection.valid?).to eq(false)
+      expect(connection.errors[:name]).not_to be_empty
+    end
+
+    it 'allows letters, digits, underscores, hyphens' do
+      connection = FactoryGirl.create(
+        :connection,
+        name: "connection_3-name",
+        connector: 'dummy', parameters: {server: 'server'},
+        user: user
+      )
+      expect(connection.valid?).to eq(true)
+
+      connection = FactoryGirl.create(
+        :connection,
+        name: "#{organization.name}.connection_3-name",
+        connector: 'dummy', parameters: {server: 'server'},
+        organization: organization
+      )
+      expect(connection.valid?).to eq(true)
+    end
+
+    it 'does not allow uppercase characters' do
+      connection = FactoryGirl.create(
+        :connection,
+        name: "ConnectionName",
+        connector: 'dummy', parameters: {server: 'server'},
+        user: user
+      )
+      expect(connection.valid?).to eq(false)
+      expect(connection.errors[:name]).not_to be_empty
     end
   end
 
@@ -153,6 +275,61 @@ describe Carto::Connection do
           parameters: { table: 't', req1: 'r1', req2: 'r2' }
         )
       end.to raise_exception(ActiveRecord::RecordInvalid)
+    end
+
+    it 'names are unique per user for individual connections' do
+      other_user_a = FactoryGirl.create(
+        :connection,
+        name: "a",
+        connector: 'dummy', parameters: {server: 'server'},
+        user: org_member
+      )
+      org_a = FactoryGirl.create(
+        :connection,
+        name: "a",
+        connector: 'dummy', parameters: {server: 'server'},
+        organization: organization
+      )
+      this_user_a = FactoryGirl.create(
+        :connection,
+        name: "a",
+        connector: 'dummy', parameters: {server: 'server'},
+        user: user
+      )
+      expect(this_user_a.valid?).to be(true)
+      this_user_another_a = FactoryGirl.create(
+        :connection,
+        name: "a",
+        connector: 'dummy', parameters: {server: 'server'},
+        user: user
+      )
+      expect(this_user_another_a.valid?).not_to be(true)
+      expect(this_user_another_a.errors[:name].first).to eq('has already been taken')
+    end
+
+    it 'names are unique per organization for shared connections' do
+      member_a = FactoryGirl.create(
+        :connection,
+        name: "a",
+        connector: 'dummy', parameters: {server: 'server'},
+        user: org_member
+      )
+      org_a = FactoryGirl.create(
+        :connection,
+        name: "#{organization.name}.a",
+        connector: 'dummy', parameters: {server: 'server'},
+        organization: organization
+      )
+      expect(org_a.valid?).to be(true)
+
+      org_another_a = FactoryGirl.create(
+        :connection,
+        name: "#{organization.name}.a",
+        connector: 'dummy', parameters: {server: 'server'},
+        organization: organization
+      )
+      expect(org_another_a.valid?).not_to be(true)
+      expect(org_another_a.errors[:name].first).to eq('has already been taken')
     end
 
     it 'rejects invalid db connectors' do

@@ -4,15 +4,39 @@ module Carto
     TYPE_OAUTH_SERVICE = 'oauth-service'.freeze
     TYPE_DB_CONNECTOR = 'db-connector'.freeze
 
-    belongs_to :user, class_name: 'Carto::User', inverse_of: :connections
+    SHARED_NAME_SEPARATOR = '.'
+
+    belongs_to :user, class_name: 'Carto::User', inverse_of: :individual_connections
+    belongs_to :organization, class_name: 'Carto::Organization', inverse_of: :connections
 
     scope :oauth_connections, -> { where(connection_type: TYPE_OAUTH_SERVICE) }
     scope :db_connections, -> { where(connection_type: TYPE_DB_CONNECTOR) }
+    scope :shared_connections, -> { where(user_id: nil) }
+    scope :individual_connections, -> { where(organization_id: nil) }
 
-    validates :name, uniqueness: { scope: :user_id }, presence: true
+    validates :name, presence: true, uniqueness: { scope: [ :user_id, :organization_id ]}
+
     validates :connection_type, inclusion: { in: [TYPE_OAUTH_SERVICE, TYPE_DB_CONNECTOR] }
     validates :connector, uniqueness: { scope: [:user_id, :connection_type] }, if: :singleton_connection?
+    validate :validate_name
+    validate :validate_ownership
     validate :validate_parameters
+
+    def shared?
+      user.blank? && organization.present?
+    end
+
+    def individual?
+      !shared?
+    end
+
+    def editable_by?(some_user)
+      shared? ? some_user == organization.owner : some_user == user
+    end
+
+    def usable_by?(some_user)
+      shared? ? some_user.organization == organization : some_user == user
+    end
 
     # rubocop:disable Naming/AccessorMethodName
     def get_service_datasource
@@ -49,12 +73,16 @@ module Carto
 
     private
 
+    def owner
+      user || organization.owner
+    end
+
     def check_type!(type, message)
       raise message unless connection_type == type
     end
 
     def connection_manager
-      Carto::ConnectionManager.new(user)
+      Carto::ConnectionManager.new(owner)
     end
 
     def manage_create
@@ -80,15 +108,25 @@ module Carto
     end
 
     def set_name
-      return if name.present?
-
-      self.name = connector if connection_type == TYPE_OAUTH_SERVICE
+      # Note that OAuth connections cannot be shared, so no prefix is ever needed
+      self.name = connector if connection_type == TYPE_OAUTH_SERVICE && name.blank?
     end
 
     def set_parameters
       return if parameters.present?
 
       self.parameters = { refresh_token: token } if connection_type == TYPE_OAUTH_SERVICE
+    end
+
+    def validate_ownership
+      if user_id.present? && organization_id.present?
+        errors.add :base, "Connection can't belong to an user and an organization simultaneously"
+      elsif user_id.blank? && organization_id.blank?
+        errors.add :user_id, "Connection must belong to user or be shared (belong to organization)"
+      end
+      if shared? && connection_type == TYPE_OAUTH_SERVICE
+        errors.add :connection_type, "OAuth connections cannot be shared"
+      end
     end
 
     def validate_parameters
@@ -124,5 +162,26 @@ module Carto
       errors.add :base, e.to_s
     end
 
+    def validate_name
+      if shared?
+        prefix, *rest = name.split(SHARED_NAME_SEPARATOR)
+        if rest.size > 1
+          errors.add :name, "The name must contain only one dot to separate the organization name from the rest"
+        elsif rest.size == 0
+          errors.add :name, "The connection name must be separeted from the organization name by a dot"
+        end
+        if prefix != organization.name
+          errors.add :name, "For a shared connection the name must be preceded by the organization name and a dot"
+        end
+        connection_name = rest.first
+      else
+        connection_name = name
+      end
+      if connection_name.blank?
+        errors.add :name, "The connection name cannot be blank"
+      elsif !connection_name.match?(/\A[a-z\d_-]+\Z/)
+        errors.add :name, "The connection name includes invalid characters; only letters a-z, digits 0-9, underscore (_) and hyphen (-) are allowed"
+      end
+    end
   end
 end

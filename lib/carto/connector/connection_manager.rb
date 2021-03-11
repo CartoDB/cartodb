@@ -15,6 +15,14 @@ module Carto
 
     end
 
+    class ConnectionUnauthorizedError < CartoError
+
+      def initialize(message)
+        super(message, 403)
+      end
+
+    end
+
     def initialize(user)
       @user = user
       @user = Carto::User.find(@user.id) unless @user.is_a?(Carto::User)
@@ -44,7 +52,7 @@ module Carto
     end
 
     def show_connection(id)
-      present_connection @user.connections.find(id)
+      present_connection fetch_connection(id)
     end
 
     def present_connection(connection)
@@ -52,7 +60,9 @@ module Carto
         id: connection.id,
         name: connection.name,
         connector: connection.connector,
-        type: connection.connection_type
+        type: connection.connection_type,
+        shared: connection.shared?,
+        editable: connection.editable_by?(@user)
       }
       presented_connection[:parameters] = adapter(connection).presented_parameters if connection.parameters.present?
       presented_connection[:token] = adapter(connection).presented_token if connection.token.present?
@@ -70,9 +80,13 @@ module Carto
       @user.oauth_connections.find_by(connector: service)
     end
 
-    def create_db_connection(name:, provider:, parameters:)
+    def create_db_connection(name:, provider:, shared: false, parameters:)
       check_db_provider!(provider)
-      @user.connections.create!(name: name, connector: provider, parameters: parameters)
+      if shared
+        create_shared_db_connection(name: name, provider: provider, parameters: parameters)
+      else
+        create_individual_db_connection(name: name, provider: provider, parameters: parameters)
+      end
     end
 
     def find_or_create_db_connection(provider, parameters)
@@ -80,7 +94,8 @@ module Carto
         create_db_connection(
           name: generate_connection_name(provider),
           provider: provider,
-          parameters: parameters
+          parameters: parameters,
+          shared: false
         )
     end
 
@@ -119,13 +134,13 @@ module Carto
       check_oauth_service!(service)
 
       if @user.new_record?
-        @user.connections.build(
+        @user.individual_connections.build(
           name: service,
           connector: service,
           token: token
         )
       else
-        @user.connections.create!(
+        @user.individual_connections.create!(
           name: service,
           connector: service,
           token: token
@@ -166,16 +181,37 @@ module Carto
 
     def delete_connection(id)
       connection = fetch_connection(id)
+      raise ConnectionNotFoundError, "Connection not found: #{id}" if connection.blank?
+
+      if connection.shared? && @user != connection.organization.owner
+        raise ConnectionUnauthorizedError, "Only organization owner can delete a shared connection"
+      end
+
       connection.destroy!
       @user.reload
     end
 
-    def fetch_connection(id)
-      @user.connections.find(id)
+    UUID_FORMAT = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+
+    def fetch_connection(name_or_id)
+      if name_or_id.match?(UUID_FORMAT)
+        connection = @user.connections.find_by(id: name_or_id)
+      else
+        connection = @user.connections.find_by(name: name_or_id)
+        if !connection && @user.organization.present? && name_or_id.include?(Carto::Connection::SHARED_NAME_SEPARATOR)
+          connection = @user.organization.connections.find_by(name: name_or_id)
+        end
+      end
+      connection
     end
 
     def update_db_connection(id:, parameters: nil, name: nil)
       connection = fetch_connection(id)
+      raise ConnectionNotFoundError, "Connection not found: #{id}" if connection.blank?
+
+      if connection.shared? && @user != connection.organization.owner
+        raise ConnectionUnauthorizedError, "Only organization owner can modify a shared connection"
+      end
 
       new_attributes = {}
       new_attributes[:parameters] = connection.parameters.merge(parameters) if parameters.present?
@@ -298,6 +334,19 @@ module Carto
     end
 
     private
+
+    def create_individual_db_connection(name:, provider:, parameters:)
+      @user.individual_connections.create!(name: name, connector: provider, parameters: parameters)
+    end
+
+    def create_shared_db_connection(name:, provider:, parameters:)
+      unless @user.organization.present? && @user == @user.organization.owner # @user.owned_organization.present?
+        raise ConnectionUnauthorizedError, "Only organization owners can create shared connections"
+      end
+
+      @user.organization.connections.create!(name: name, connector: provider, parameters: parameters)
+    end
+
 
     def obtain_connection(connection_id, provider, connection_parameters, register)
       if connection_id.present?

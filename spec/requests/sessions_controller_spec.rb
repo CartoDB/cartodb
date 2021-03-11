@@ -210,7 +210,7 @@ describe SessionsController do
   describe 'LDAP authentication' do
     DEFAULT_QUOTA_IN_BYTES = 1000
 
-    before(:all) do
+    before do
       bypass_named_maps
       @organization = Carto::Organization.new
       @organization.seats = 5
@@ -239,22 +239,8 @@ describe SessionsController do
                                                        group_object_class: '.',
                                                        user_id_field: @user_id_field,
                                                        username_field: @user_id_field)
-    end
 
-    before(:each) do
-      bypass_named_maps
       FakeNetLdap.register_user(username: @ldap_admin_cn, password: @ldap_admin_password)
-    end
-
-    after(:each) do
-      FakeNetLdap.clear_user_registrations
-      FakeNetLdap.clear_query_registrations
-    end
-
-    after(:all) do
-      bypass_named_maps
-      @ldap_config.delete
-      @organization.destroy_cascade
     end
 
     describe 'domainful' do
@@ -473,44 +459,55 @@ describe SessionsController do
     end
 
     describe 'domainful' do
-      it_behaves_like 'SAML'
-      it_behaves_like 'SAML no MFA'
-
       let(:user_domain) { nil }
 
-      before(:each) do
+      before do
+        create
         stub_domainful(@organization.name)
       end
 
-      before(:all) do
-        create
-      end
-
-      after(:all) do
+      after do
         cleanup
       end
+
+      it_behaves_like 'SAML'
+      it_behaves_like 'SAML no MFA'
     end
 
     describe 'subdomainless' do
-      it_behaves_like 'SAML'
-      it_behaves_like 'SAML no MFA'
-
       let(:user_domain) { @organization.name }
 
-      before(:each) do
+      before do
+        create
         stub_subdomainless
       end
 
-      before(:all) do
-        create
-      end
-
-      after(:all) do
+      after do
         cleanup
       end
+
+      it_behaves_like 'SAML'
+      it_behaves_like 'SAML no MFA'
     end
 
     describe 'user with MFA' do
+      let(:user_domain) { nil }
+
+      before do
+        create
+        @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
+        @user.save
+
+        @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @admin_user.id)
+        @admin_user.save
+
+        stub_domainful(@organization.name)
+      end
+
+      after do
+        cleanup
+      end
+
       it_behaves_like 'SAML'
 
       it "redirects to multifactor_authentication" do
@@ -528,37 +525,13 @@ describe SessionsController do
         response.status.should eq 302
         response.redirect_url.should include '/multifactor_authentication'
       end
-
-      let(:user_domain) { nil }
-
-      before(:each) do
-        stub_domainful(@organization.name)
-      end
-
-      before(:all) do
-        create
-        @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
-        @user.save
-
-        @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @admin_user.id)
-        @admin_user.save
-      end
-
-      after(:all) do
-        cleanup
-      end
     end
   end
 
   describe '#login' do
-    before(:all) do
+    before do
       @organization = FactoryGirl.create(:organization)
       @user = FactoryGirl.create(:carto_user)
-    end
-
-    after(:all) do
-      @user.destroy
-      @organization.destroy
     end
 
     describe 'with Central' do
@@ -932,27 +905,19 @@ describe SessionsController do
     end
 
     describe 'as individual user' do
-      before(:all) do
-        @user = FactoryGirl.create(:carto_user_mfa)
-      end
-
-      after(:all) do
-        @user.destroy
+      before do
+        @user = create(:carto_user_mfa)
       end
 
       it_behaves_like 'all users workflow'
     end
 
     describe 'as org owner' do
-      before(:all) do
+      before do
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.owner
         @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
-      end
-
-      after(:all) do
-        @organization.destroy
       end
 
       def create_session
@@ -964,15 +929,11 @@ describe SessionsController do
     end
 
     describe 'as org user' do
-      before(:all) do
+      before do
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.users.last
         @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
-      end
-
-      after(:all) do
-        @organization.destroy
       end
 
       def create_session
@@ -984,7 +945,7 @@ describe SessionsController do
     end
 
     describe 'as org without user pass enabled' do
-      before(:all) do
+      before do
         Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
         @organization = FactoryGirl.create(:organization_with_users,
                                            :mfa_enabled,
@@ -992,10 +953,6 @@ describe SessionsController do
         @user = @organization.users.last
         @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
-      end
-
-      after(:all) do
-        @organization.destroy
       end
 
       def login(user = @user)
@@ -1013,12 +970,8 @@ describe SessionsController do
   end
 
   describe '#logout' do
-    before(:all) do
-      @user = FactoryGirl.create(:carto_user)
-    end
-
-    after(:all) do
-      @user.destroy
+    before do
+      @user = create(:carto_user)
     end
 
     shared_examples_for 'logout endpoint' do
@@ -1033,7 +986,7 @@ describe SessionsController do
     describe 'domainful' do
       it_behaves_like 'logout endpoint'
 
-      before(:each) do
+      before do
         stub_domainful(@user.username)
       end
     end
@@ -1041,7 +994,7 @@ describe SessionsController do
     describe 'subdomainless' do
       it_behaves_like 'logout endpoint'
 
-      before(:each) do
+      before do
         stub_subdomainless
       end
     end

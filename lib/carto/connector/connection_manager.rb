@@ -61,6 +61,10 @@ module Carto
       presented_connection
     end
 
+    def complete?(connection)
+      adapter(connection).complete?
+    end
+
     def find_db_connection(provider, parameters)
       @user.db_connections.find do |connection|
         connection.connector == provider && parameters == connection.parameters

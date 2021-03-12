@@ -45,6 +45,10 @@ module Carto
     after_update :manage_update
     after_destroy :manage_destroy
 
+    def complete?
+      connection_manager.complete?(self)
+    end
+
     private
 
     def check_type!(type, message)

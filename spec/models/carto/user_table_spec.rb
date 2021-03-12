@@ -1,26 +1,22 @@
-require_relative '../../spec_helper_min'
+require 'spec_helper_min'
 require 'models/user_table_shared_examples'
 
 describe Carto::UserTable do
-  include UniqueNamesHelper
+  include_context 'with database purgue'
 
   let(:user) { create(:carto_user) }
-
-  before(:all) do
-    @user = user
-    @carto_user = user
-    @user_table = Carto::UserTable.new
-    @user_table.user = user
-    @user_table.name = unique_name('user_table')
-    @user_table.save
-
-    # The dependent visualization models are in the UserTable class for the AR model
-    @dependent_test_object = @user_table
+  let(:user_table) do
+    table = described_class.new
+    table.user = user
+    table.name = unique_name('user_table')
+    table.save!
+    table
   end
+  let(:dependent_test_object) { user_table }
 
   it_behaves_like 'user table models' do
     def build_user_table(attrs = {})
-      ut = Carto::UserTable.new
+      ut = described_class.new
       ut.assign_attributes(attrs, without_protection: true)
       ut
     end
@@ -28,7 +24,7 @@ describe Carto::UserTable do
 
   describe 'table_id column' do
     it 'supports values larger than 2^31-1' do
-      column = Carto::UserTable.columns.find{|c| c.name=='table_id'}
+      column = described_class.columns.find{|c| c.name=='table_id'}
       expect { column.type_cast_for_database(2164557046) }.to_not raise_error
     end
   end
@@ -60,49 +56,53 @@ describe Carto::UserTable do
 
   describe '#default_privacy' do
     it 'sets privacy to nil by default' do
-      expect(Carto::UserTable.new.privacy).to be_nil
+      expect(described_class.new.privacy).to be_nil
     end
 
     it 'lets caller specify privacy' do
       [UserTable::PRIVACY_PRIVATE, UserTable::PRIVACY_LINK, UserTable::PRIVACY_PUBLIC].each do |privacy|
-        expect(Carto::UserTable.new(privacy: privacy).privacy).to eq privacy
+        expect(described_class.new(privacy: privacy).privacy).to eq privacy
       end
     end
   end
 
   describe '#readable_by?' do
+    let(:organization) { create(:organization_with_users) }
+    let(:user) { organization.users.first }
+    let(:other_user) { organization.users.second }
+
     include_context 'organization with users helper'
 
     it 'returns true for shared tables' do
-      @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "a_table_name", user_id: @org_user_1.id)
-      user_table = Carto::UserTable.find(@table.id)
-      share_table_with_user(@table, @org_user_2)
+      table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "a_table_name", user_id: user.id)
+      user_table = described_class.find(table.id)
+      share_table_with_user(table, other_user)
 
-      user_table.readable_by?(@carto_org_user_2).should be_true
+      user_table.readable_by?(other_user).should be_true
     end
   end
 
   describe('#affected_visualizations') do
-    before(:each) do
+    before do
       # We recreate an inconsistent state where a layer has no visualization
-      @user_table.stubs(:layers).returns([Carto::Layer.new])
+      user_table.stubs(:layers).returns([Carto::Layer.new])
     end
 
     describe('#fully_dependent_visualizations') do
       it 'resists layers without visualizations' do
-        expect { @user_table.fully_dependent_visualizations }.to_not raise_error
+        expect { user_table.fully_dependent_visualizations }.to_not raise_error
       end
     end
 
     describe('#accessible_dependent_derived_maps') do
       it 'resists layers without visualizations' do
-        expect { @user_table.accessible_dependent_derived_maps }.to_not raise_error
+        expect { user_table.accessible_dependent_derived_maps }.to_not raise_error
       end
     end
 
     describe('#partially_dependent_visualizations') do
       it 'resists layers without visualizations' do
-        expect { @user_table.partially_dependent_visualizations }.to_not raise_error
+        expect { user_table.partially_dependent_visualizations }.to_not raise_error
       end
     end
   end

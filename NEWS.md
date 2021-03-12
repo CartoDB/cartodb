@@ -11,6 +11,7 @@ sudo make install
 
 ### Features
 
+- BigQuery connector with oauth [#16218](https://github.com/CartoDB/cartodb/pull/16218)
 - Save cloud connections data to redis [#16165](https://github.com/CartoDB/cartodb/pull/16165)
 - New sign up flow [16137](https://github.com/CartoDB/cartodb/pull/16137)
 - New connections API [15939](https://github.com/CartoDB/cartodb/pull/15939)

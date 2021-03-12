@@ -112,7 +112,7 @@ export default {
     async startingConnection () {
       this.error = '';
       this.loading = true;
-      const {auth_url: oauthUrl} = await this.$store.dispatch('connectors/createNewBQConnectionThroughOAuth');
+      const { auth_url: oauthUrl } = await this.$store.dispatch('connectors/createNewBQConnectionThroughOAuth');
       this.openOAuthPopup(oauthUrl);
     },
     connectionSuccess (conn) {

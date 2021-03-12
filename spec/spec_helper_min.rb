@@ -42,6 +42,9 @@ RSpec.configure do |config|
     Carto::FeatureFlag.delete_all
     Carto::OauthToken.delete_all
     Carto::OauthApp.delete_all
+    Carto::Map.delete_all
+    Carto::Visualization.delete_all
+    Carto::UserTable.delete_all
     Carto::User.delete_all
     Carto::SearchTweet.delete_all
     Carto::AccountType.delete_all

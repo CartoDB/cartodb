@@ -39,6 +39,11 @@ bundle exec rake parallel:setup --trace
 # bundle exec rake parallel:spec['spec\/commands'] --trace [OK]
 bundle exec rake parallel:spec['spec\/models\/carto']
 set +x
+
+echo "---- CI ENV ----"
+env
+echo "----------------"
+
 echo "============================================================"
 echo "                       RSpec summary                        "
 echo "============================================================"

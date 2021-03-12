@@ -10,7 +10,7 @@ include UniqueNamesHelper
 
 FactoryGirl.define do
   factory :user, class: ::User do
-    to_create(&:save)
+    to_create { |user| user.save(raise_on_failure: true) }
 
     sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
     email                  { "#{username}@example.com" }
@@ -78,6 +78,8 @@ FactoryGirl.define do
   end
 
   factory :carto_user, class: Carto::User do
+    to_create(&:save!)
+
     sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
     email { "#{username}@example.org" }
 
@@ -131,6 +133,8 @@ FactoryGirl.define do
 
   # Light user: database creation etc is skipped
   factory :carto_user_light, class: Carto::User do
+    to_create(&:save)
+
     sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
     email { "#{username}@example.org" }
 

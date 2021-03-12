@@ -13,27 +13,27 @@ describe Carto::OauthAppUser do
 
   describe 'validation' do
     before do
-      user = FactoryGirl.create(:valid_user)
+      user = create(:valid_user)
       @user = Carto::User.find(user.id)
-      @app = FactoryGirl.create(:oauth_app, user: @user)
+      @app = create(:oauth_app, user: @user)
     end
 
     it 'requires user' do
-      app_user = OauthAppUser.new
+      app_user = described_class.new
       expect(app_user).to_not(be_valid)
       expect(app_user.errors[:user]).to(include("can't be blank"))
     end
 
     it 'requires oauth app_user' do
-      app_user = OauthAppUser.new
+      app_user = described_class.new
       expect(app_user).to_not(be_valid)
       expect(app_user.errors[:oauth_app]).to(include("can't be blank"))
     end
 
     it 'does not allow duplicates' do
       begin
-        @app_user1 = OauthAppUser.create!(user: @user, oauth_app: @app)
-        app_user2 = OauthAppUser.new(user: @user, oauth_app: @app)
+        @app_user1 = described_class.create!(user: @user, oauth_app: @app)
+        app_user2 = described_class.new(user: @user, oauth_app: @app)
         expect(app_user2).to_not(be_valid)
         expect(app_user2.errors[:user]).to(include("has already been taken"))
       ensure
@@ -42,13 +42,13 @@ describe Carto::OauthAppUser do
     end
 
     it 'does not accept invalid scopes' do
-      app_user = OauthAppUser.new(scopes: ['wadus'])
+      app_user = described_class.new(scopes: ['wadus'])
       expect(app_user).to_not(be_valid)
       expect(app_user.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
     end
 
     it 'validates' do
-      app_user = OauthAppUser.new(user: @user, oauth_app: @app)
+      app_user = described_class.new(user: @user, oauth_app: @app)
       expect(app_user).to(be_valid)
     end
 
@@ -62,7 +62,7 @@ describe Carto::OauthAppUser do
       end
 
       it 'does not accept non-organization users' do
-        app_user = OauthAppUser.new(user: @user, oauth_app: @app)
+        app_user = described_class.new(user: @user, oauth_app: @app)
         expect(app_user).not_to(be_valid)
         expect(app_user.errors[:user]).to(include("is not part of an organization"))
       end
@@ -71,19 +71,19 @@ describe Carto::OauthAppUser do
         @app.oauth_app_organizations.each(&:destroy!)
         @app.oauth_app_organizations.create!(organization: other_organization, seats: 1)
 
-        app_user = OauthAppUser.new(user: organization_user, oauth_app: @app)
+        app_user = described_class.new(user: organization_user, oauth_app: @app)
         expect(app_user).not_to(be_valid)
         expect(app_user.errors[:user]).to(include("is part of an organization which is not allowed access to this application"))
       end
 
       it 'accepts users from the authorized organization' do
-        app_user = OauthAppUser.new(user: organization_user, oauth_app: @app)
+        app_user = described_class.new(user: organization_user, oauth_app: @app)
         expect(app_user).to(be_valid)
       end
 
       it 'does not accepts users over the seat limit' do
-        OauthAppUser.create!(user: organization_user, oauth_app: @app)
-        app_user = OauthAppUser.new(user: other_organization_user, oauth_app: @app)
+        described_class.create!(user: organization_user, oauth_app: @app)
+        app_user = described_class.new(user: other_organization_user, oauth_app: @app)
         expect(app_user).not_to(be_valid)
         expect(app_user.errors[:user]).to(include("does not have an available seat to use this application"))
       end
@@ -92,9 +92,9 @@ describe Carto::OauthAppUser do
 
   describe '#authorized?' do
     before do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
       @carto_user = Carto::User.find(@user.id)
-      @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+      @app = create(:oauth_app, user: @carto_user)
       @t1 = create_table(user_id: @carto_user.id)
       @t2 = create_table(user_id: @carto_user.id)
     end
@@ -104,7 +104,7 @@ describe Carto::OauthAppUser do
       o2 = "datasets:rw:#{@carto_user.database_schema}.#{@t2.name}"
       o3 = "schemas:c:#{@carto_user.database_schema}"
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2, o3])
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2, o3])
 
       expect(oau).to(be_authorized([o1]))
       expect(oau).to(be_authorized([o2]))
@@ -119,7 +119,7 @@ describe Carto::OauthAppUser do
       write_read = "datasets:rw:#{@t1.name}"
       read = "datasets:r:#{@t1.name}"
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [write_read])
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: [write_read])
 
       expect(oau).to(be_authorized([read]))
     end
@@ -128,7 +128,7 @@ describe Carto::OauthAppUser do
       write_read = "datasets:rw:#{@t1.name}"
       read = "datasets:r:#{@t1.name}"
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [read])
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: [read])
 
       expect(oau).not_to(be_authorized([write_read]))
     end
@@ -136,9 +136,9 @@ describe Carto::OauthAppUser do
 
   describe '#upgrade!' do
     before do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
       @carto_user = Carto::User.find(@user.id)
-      @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+      @app = create(:oauth_app, user: @carto_user)
       @t1 = create_table(user_id: @carto_user.id)
       @t2 = create_table(user_id: @carto_user.id)
       @t3 = create_table(user_id: @carto_user.id)
@@ -152,7 +152,7 @@ describe Carto::OauthAppUser do
       o4 = "datasets:rw:#{@t4.name}"
       o5 = "schemas:c:#{@carto_user.database_schema}"
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
 
       oau.upgrade!([])
       expect(oau.scopes).to(match_array([o1, o2]))
@@ -176,9 +176,9 @@ describe Carto::OauthAppUser do
 
   describe 'datasets scope' do
     before do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
       @carto_user = Carto::User.find(@user.id)
-      @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+      @app = create(:oauth_app, user: @carto_user)
       @table1 = create_table(user_id: @carto_user.id)
     end
 
@@ -188,7 +188,7 @@ describe Carto::OauthAppUser do
       dataset_scope2 = "datasets:r:#{table2.name}"
       scopes = ['user:profile', dataset_scope1, dataset_scope2]
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
       expect(oau.scopes).to(match_array(scopes))
 
       oau.upgrade!([])
@@ -203,7 +203,7 @@ describe Carto::OauthAppUser do
 
     it 'rename table and check how it affects the scopes' do
       scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
       expect(oau.all_scopes).to(match_array(scopes_before))
 
       @table1.name = 'table_renamed_' + @table1.name
@@ -219,9 +219,9 @@ describe Carto::OauthAppUser do
 
     it 'write on table with the proper permissions' do
       scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
       expect(oau.all_scopes).to(match_array(scopes_before))
-      access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes_before)
+      access_token = Carto::OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes_before)
 
       with_connection_from_api_key(access_token.api_key) do |connection|
         connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
@@ -236,7 +236,7 @@ describe Carto::OauthAppUser do
     it 'should fail if we change the write permissions and we try to write in the table' do
       scopes_before = ['offline', 'user:profile', "datasets:rw:#{@table1.name}"]
       scopes_after = ['offline', 'user:profile']
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
       expect(oau.all_scopes).to(match_array(scopes_before))
       refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes_before)
       access_token = refresh_token.exchange!(requested_scopes: scopes_before)[0]
@@ -262,7 +262,7 @@ describe Carto::OauthAppUser do
     it 'should let downgrade scope for datasets from rw to r scope' do
       scopes_before = ['offline', 'user:profile', "datasets:rw:#{@table1.name}"]
       scopes_after = ['offline', 'user:profile', "datasets:r:#{@table1.name}"]
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
       expect(oau.all_scopes).to(match_array(scopes_before))
       refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes_before)
       access_token = refresh_token.exchange!(requested_scopes: scopes_before)[0]
@@ -292,9 +292,9 @@ describe Carto::OauthAppUser do
 
   describe 'schemas scope' do
     before do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
       @carto_user = Carto::User.find(@user.id)
-      @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+      @app = create(:oauth_app, user: @carto_user)
       @table1 = create_table(user_id: @carto_user.id)
       @table2 = create_table(user_id: @carto_user.id)
     end
@@ -305,7 +305,7 @@ describe Carto::OauthAppUser do
       dataset_scope2 = "datasets:r:#{table2.name}"
       scopes = ['user:profile', dataset_scope1, dataset_scope2]
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
       expect(oau.scopes).to(match_array(scopes))
 
       oau.upgrade!([])
@@ -322,9 +322,9 @@ describe Carto::OauthAppUser do
       schemas_scope = "schemas:c"
       scopes = ['user:profile', schemas_scope]
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
       expect(oau.scopes).to(match_array(scopes))
-      access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
+      access_token = Carto::OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
 
       with_connection_from_api_key(access_token.api_key) do |connection|
         connection.execute("create table test_table as select 1 as test")
@@ -343,9 +343,9 @@ describe Carto::OauthAppUser do
     it 'create table without permissions should fail' do
       scopes = ['user:profile']
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
       expect(oau.scopes).to(match_array(scopes))
-      access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
+      access_token = Carto::OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
 
       with_connection_from_api_key(access_token.api_key) do |connection|
         expect {
@@ -360,7 +360,7 @@ describe Carto::OauthAppUser do
       schemas_scope = "schemas:c"
       scopes = ['offline', 'user:profile', schemas_scope]
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
       expect(oau.scopes).to(match_array(scopes))
       refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
       access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
@@ -388,7 +388,7 @@ describe Carto::OauthAppUser do
       schemas_scope = "schemas:c"
       scopes = ['offline', 'user:profile', schemas_scope]
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
       expect(oau.scopes).to(match_array(scopes))
       refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
       access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
@@ -419,7 +419,7 @@ describe Carto::OauthAppUser do
       schemas_scope = "schemas:c"
       scopes = ['offline', 'user:profile', schemas_scope]
 
-      oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+      oau = described_class.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
       expect(oau.scopes).to(match_array(scopes))
       refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
       access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
@@ -442,7 +442,7 @@ describe Carto::OauthAppUser do
 
   describe 'shared datasets' do
     before do
-      @app = FactoryGirl.create(:oauth_app, user: organization_user)
+      @app = create(:oauth_app, user: organization_user)
       @shared_table = create_table(user_id: organization_user.id)
       not_shared_table = create_table(user_id: organization_user.id)
 
@@ -455,19 +455,19 @@ describe Carto::OauthAppUser do
     end
 
     it 'works with shared dataset' do
-      oau = OauthAppUser.create!(user: other_organization_user, oauth_app: @app, scopes: [@shared_dataset_scope])
+      oau = described_class.create!(user: other_organization_user, oauth_app: @app, scopes: [@shared_dataset_scope])
       expect(oau.all_scopes).to(eq([@shared_dataset_scope]))
     end
 
     it 'should fail with non shared dataset' do
       expect {
-        OauthAppUser.create!(user: other_organization_user, oauth_app: @app, scopes: [@non_shared_dataset_scope])
+        described_class.create!(user: other_organization_user, oauth_app: @app, scopes: [@non_shared_dataset_scope])
       }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
     end
 
     it 'should fail with shared and non shared dataset' do
       expect {
-        OauthAppUser.create!(
+        described_class.create!(
           user: other_organization_user,
           oauth_app: @app,
           scopes: [@shared_dataset_scope, @non_shared_dataset_scope]
@@ -476,7 +476,7 @@ describe Carto::OauthAppUser do
     end
 
     it 'should revoke permissions removing shared permissions' do
-      oau = OauthAppUser.create!(user: other_organization_user, oauth_app: @app, scopes: [@shared_dataset_scope])
+      oau = described_class.create!(user: other_organization_user, oauth_app: @app, scopes: [@shared_dataset_scope])
       expect(oau.all_scopes).to(eq([@shared_dataset_scope]))
 
       expect(oau.authorized?([@shared_dataset_scope])).to eq(true)
@@ -514,7 +514,7 @@ describe Carto::OauthAppUser do
       it 'should fail write scope in shared dataset with only read perms' do
         rw_scope = "datasets:rw:#{organization_user.database_schema}.#{@only_read_table.name}"
         expect {
-          OauthAppUser.create!(user: other_organization_user, oauth_app: @app, scopes: [rw_scope])
+          described_class.create!(user: other_organization_user, oauth_app: @app, scopes: [rw_scope])
         }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
     end
@@ -539,19 +539,19 @@ describe Carto::OauthAppUser do
       end
 
       it 'works with org shared dataset' do
-        oau = OauthAppUser.create!(user: other_organization_user, oauth_app: @app, scopes: [@org_shared_dataset_scope])
+        oau = described_class.create!(user: other_organization_user, oauth_app: @app, scopes: [@org_shared_dataset_scope])
         expect(oau.all_scopes).to(eq([@org_shared_dataset_scope]))
       end
 
       it 'should fail with non org shared dataset' do
         expect {
-          OauthAppUser.create!(user: other_organization_user, oauth_app: @app, scopes: [@non_org_shared_dataset_scope])
+          described_class.create!(user: other_organization_user, oauth_app: @app, scopes: [@non_org_shared_dataset_scope])
         }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
 
       it 'should fail with org shared and non org shared dataset' do
         expect {
-          OauthAppUser.create!(
+          described_class.create!(
             user: other_organization_user,
             oauth_app: @app,
             scopes: [@org_shared_dataset_scope, @non_org_shared_dataset_scope]
@@ -577,7 +577,7 @@ describe Carto::OauthAppUser do
         it 'should fail write scope in org shared dataset with only read perms' do
           rw_scope = "datasets:rw:#{organization_user.database_schema}.#{@only_read_table.name}"
           expect {
-            OauthAppUser.create!(user: other_organization_user, oauth_app: @app, scopes: [rw_scope])
+            described_class.create!(user: other_organization_user, oauth_app: @app, scopes: [rw_scope])
           }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
         end
       end
@@ -586,7 +586,7 @@ describe Carto::OauthAppUser do
 
   describe 'views' do
     before do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
       @carto_user = Carto::User.find(@user.id)
       @user_table = create_table(user_id: @carto_user.id)
 
@@ -599,11 +599,11 @@ describe Carto::OauthAppUser do
         }
         db.execute(query)
       end
-      @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+      @app = create(:oauth_app, user: @carto_user)
     end
 
     it 'validates view scope' do
-      oau = OauthAppUser.create!(
+      oau = described_class.create!(
         user: @carto_user,
         oauth_app: @app,
         scopes: ["datasets:r:#{@view_name}"]
@@ -612,7 +612,7 @@ describe Carto::OauthAppUser do
     end
 
     it 'validates materialized view scope' do
-      oau = OauthAppUser.create!(
+      oau = described_class.create!(
         user: @carto_user,
         oauth_app: @app,
         scopes: ["datasets:r:#{@materialized_view_name}"]
@@ -623,10 +623,10 @@ describe Carto::OauthAppUser do
 
   describe '#destroy' do
     before do
-      @user = FactoryGirl.create(:valid_user)
-      @app = FactoryGirl.create(:oauth_app, user_id: @user.id)
-      @app_user = Carto::OauthAppUser.create!(user_id: @user.id, oauth_app: @app)
-      access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
+      @user = create(:valid_user)
+      @app = create(:oauth_app, user_id: @user.id)
+      @app_user = described_class.create!(user_id: @user.id, oauth_app: @app)
+      access_token = Carto::OauthAccessToken.create!(oauth_app_user: @app_user,
                                               scopes: ["schemas:c:#{@user.database_schema}"])
       @api_key = access_token.api_key
     end

@@ -90,9 +90,6 @@ gem 'avro', '~> 1.10.0'
 gem 'google-cloud-bigquery-storage-v1', '~> 0.2.3'
 
 group :test do
-  gem 'simplecov', '0.13.0', require: false
-  gem 'simplecov-json'
-  gem 'simplecov-rcov'
   gem 'db-query-matchers',     '0.4.0'
   gem 'factory_girl_rails', '4.9.0'
   gem 'rack-test',             '0.6.3',  require: 'rack/test'

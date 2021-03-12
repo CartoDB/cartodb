@@ -1,4 +1,3 @@
-require_relative '../simplecov_helper'
 require_relative '../../lib/cartodb/image_metadata.rb'
 
 describe CartoDB::ImageMetadata do

@@ -58,7 +58,7 @@ describe Carto::OauthAppUser do
       before do
         @app.update!(restricted: true)
         @app.oauth_app_organizations.each(&:destroy!)
-        @app.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
+        @app.oauth_app_organizations.create!(organization: organization, seats: 1)
       end
 
       it 'does not accept non-organization users' do
@@ -528,7 +528,7 @@ describe Carto::OauthAppUser do
         perm.acl = [
           {
             type: Carto::Permission::TYPE_ORGANIZATION,
-            entity: { id: @carto_organization.id },
+            entity: { id: organization.id },
             access: Carto::Permission::ACCESS_READWRITE
           }
         ]
@@ -567,7 +567,7 @@ describe Carto::OauthAppUser do
           perm.acl = [
             {
               type: Carto::Permission::TYPE_ORGANIZATION,
-              entity: { id: @carto_organization.id },
+              entity: { id: organization.id },
               access: Carto::Permission::ACCESS_READONLY
             }
           ]

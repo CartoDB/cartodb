@@ -151,12 +151,15 @@ module Carto
     private
 
     def tileset_metadata_script(dataset_id:, **pagination)
+      empty_metadata_query = %{
+        SELECT CAST(NULL AS STRING) AS id, CAST(NULL AS STRING) AS metadata LIMIT 0
+      }
       %{
         DECLARE tilesets ARRAY<STRING>;
         DECLARE i INT64 DEFAULT 0;
         DECLARE tileset STRING DEFAULT '';
         DECLARE query STRING default '';
-        DECLARE metadata_query STRING default '';
+        DECLARE metadata_query STRING default '#{empty_metadata_query}';
 
         SET tilesets = (
           SELECT

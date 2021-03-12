@@ -52,7 +52,9 @@ export default {
     };
   },
   mounted () {
-    if (this.connection) {
+    if (this.connection && this.connection.type === 'oauth-service') {
+      this.selected = CONNECTION_MODES.OAUTH;
+    } else if (this.connection) {
       this.selected = CONNECTION_MODES.SERVICE_ACCOUNT;
     }
   },

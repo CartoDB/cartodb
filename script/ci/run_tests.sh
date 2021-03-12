@@ -39,7 +39,9 @@ bundle exec rake parallel:setup --trace
 set +e
 # bundle exec rake parallel:spec['spec\/commands'] [OK]
 bundle exec rake parallel:spec['spec\/models\/carto']
-local tests_exit_code=$?
+tests_exit_code=$?
+
+echo "Tests exit code: $tests_exit_code"
 
 set -e
 set +x

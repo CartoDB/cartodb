@@ -4,7 +4,7 @@ require 'helpers/database_connection_helper'
 describe Carto::OauthAppUser do
   include_context 'with database purgue'
 
-  let(:organiation) { create(:organization_with_users) }
+  let(:organization) { create(:organization_with_users) }
   let(:organization_user) { organization.users.first }
   let(:other_organization_user) { organization.users.second }
 

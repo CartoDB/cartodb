@@ -84,7 +84,7 @@ steps:
 
 # Run tests, first in parallel, then give a second try in serial if some tests fail
 - name: gcr.io/cloud-builders/docker
-  args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/run_tests_lig.sh' ]
+  args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/run_tests_lib.sh' ]
   timeout: 1800s
 
 # Copy tests results and logs from the container

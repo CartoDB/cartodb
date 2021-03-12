@@ -71,8 +71,6 @@ describe Carto::UserTable do
     let(:user) { organization.users.first }
     let(:other_user) { organization.users.second }
 
-    include_context 'organization with users helper'
-
     it 'returns true for shared tables' do
       table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "a_table_name", user_id: user.id)
       user_table = described_class.find(table.id)

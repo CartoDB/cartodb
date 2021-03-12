@@ -45,7 +45,6 @@ module Carto
           scope: SCOPES,
           refresh_token: @refresh_token
         )
-        @service.authorization = oauth_client
       end
     end
 

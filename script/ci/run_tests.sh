@@ -38,6 +38,10 @@ bundle exec rake parallel:setup --trace
 
 # bundle exec rake parallel:spec['spec\/commands'] --trace [OK]
 bundle exec rake parallel:spec['spec\/models\/carto']
+set +e
+local tests_exit_code=$?
+
+set -e
 set +x
 
 echo "---- CI ENV ----"
@@ -48,3 +52,5 @@ echo "============================================================"
 echo "                       RSpec summary                        "
 echo "============================================================"
 cat tmp/spec_summary.log
+
+exit $tests_exit_code

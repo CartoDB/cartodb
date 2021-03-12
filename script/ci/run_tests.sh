@@ -36,9 +36,9 @@ psql -h $POSTGRES_HOST -U $POSTGRES_ADMIN_USER template_postgis -c 'CREATE EXTEN
 bundle exec rake parallel:drop --trace || true
 bundle exec rake parallel:setup --trace
 
-# bundle exec rake parallel:spec['spec\/commands'] --trace [OK]
-bundle exec rake parallel:spec['spec\/models\/carto']
 set +e
+# bundle exec rake parallel:spec['spec\/commands'] [OK]
+bundle exec rake parallel:spec['spec\/models\/carto']
 local tests_exit_code=$?
 
 set -e

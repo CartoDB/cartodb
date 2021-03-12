@@ -123,5 +123,5 @@ steps:
 substitutions:
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
 options:
-    machineType: N1_HIGHCPU_8
+    machineType: N1_HIGHCPU_32
 timeout: 2400s

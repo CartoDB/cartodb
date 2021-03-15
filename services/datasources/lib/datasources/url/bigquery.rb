@@ -118,7 +118,11 @@ module CartoDB
           response = service.tokeninfo
           unless response.email.to_s.downcase == @user.email.downcase
             revoke_token
-            raise AuthError.new("The email used for authorization must match the email in the CARTO account. The authorization has been revoked")
+            raise AuthError.new(
+              "The email used for authorization must match the email in the CARTO account. " \
+              "The authorization has been revoked",
+              DATASOURCE_NAME
+            )
           end
         end
 

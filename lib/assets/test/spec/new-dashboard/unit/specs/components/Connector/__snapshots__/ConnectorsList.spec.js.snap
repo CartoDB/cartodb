@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Connection.vue Render should render properly 1`] = `
+<div>
+  <connectorsection-stub label="DataPage.databases" connectors="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]"></connectorsection-stub>
+  <connectorsection-stub label="DataPage.cloudFiles" connectors="[object Object],[object Object],[object Object],[object Object]"></connectorsection-stub>
+  <connectorsection-stub label="DataPage.othersFiles" connectors="[object Object]"></connectorsection-stub>
+  <div class="u-flex u-mt--48 u-pt--32 u-pb--32 u-pr--48 u-pl--48 request-connector">
+    <div class="u-flex__grow--1 message">
+      <div class="is-small is-semibold">DataPage.requestConnector</div>
+      <div class="text is-small is-txtMidGrey u-mt--4">DataPage.requestConnectorSubtitle</div>
+    </div>
+    <div class="u-flex__grow--1 u-flex u-flex__justify--end form">
+      <div class="Form-rowData Form-rowData--noMargin Form-inputWrapper"><input type="text" value="" placeholder="DataPage.requestConnectorPlaceholder" class="Form-input Form-inputInline Form-input--longer CDB-Text CDB-Size-medium"> <button type="submit" disabled="disabled" class="Form-inputSubmitInline is-small is-txtPrimary is-semibold"><span>DataPage.requestConnectorSubmit</span></button></div>
+    </div>
+  </div>
+</div>
+`;

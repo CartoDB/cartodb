@@ -198,18 +198,6 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/db/user_schema_spec.rb \
 	spec/lib/carto/db/sql_interface_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
-	spec/commands/feature_flag_commands/create_spec.rb \
-	spec/commands/feature_flag_commands/delete_spec.rb \
-	spec/commands/feature_flag_commands/update_spec.rb \
-	spec/commands/map_views_commands/update_spec.rb \
-	spec/commands/organization_commands/create_spec.rb \
-	spec/commands/organization_commands/delete_spec.rb \
-	spec/commands/organization_commands/update_spec.rb \
-	spec/commands/central_user_commands_spec.rb \
-	spec/commands/gcloud_user_settings_commands/set_spec.rb \
-	spec/commands/account_type_commands/create_spec.rb \
-	spec/commands/account_type_commands/update_spec.rb \
-	spec/commands/account_type_commands/delete_spec.rb \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why

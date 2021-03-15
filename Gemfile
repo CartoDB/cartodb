@@ -90,23 +90,24 @@ gem 'avro', '~> 1.10.0'
 gem 'google-cloud-bigquery-storage-v1', '~> 0.2.3'
 
 group :test do
-  gem 'simplecov', '0.13.0', require: false
-  gem 'simplecov-json'
-  gem 'simplecov-rcov'
-  gem 'db-query-matchers',     '0.4.0'
-  gem 'rack-test',             '0.6.3',  require: 'rack/test'
-  gem 'factory_girl_rails',    '~> 4.0.0'
-  gem 'selenium-webdriver',    '>= 2.5.0'
-  gem 'capybara',              '2.18.0'
-  gem 'delorean'
-  gem 'webrick',               '1.3.1'
-  gem 'mocha',                 '1.1.0'
-  gem 'ci_reporter',           '1.8.4'
-  gem 'poltergeist',           '1.18.1'
   gem 'activerecord-nulldb-adapter', '0.3.1'
+  gem 'capybara', '2.18.0'
+  gem 'database_cleaner-active_record'
+  gem 'db-query-matchers', '0.4.0'
+  gem 'delorean'
+  gem 'factory_girl_rails', '4.9.0'
+  gem 'faker'
   # Need to use specific branch from this fork as original gem is broken and outdated
-  gem 'fake_net_ldap', git: 'https://github.com/kuldeepaggarwal/fake_net_ldap.git', :branch => 'fix-responder'
+  gem 'fake_net_ldap', git: 'https://github.com/kuldeepaggarwal/fake_net_ldap.git', branch: 'fix-responder'
+  gem 'mocha', '1.1.0'
   gem 'mock_redis'
+  gem 'parallel_tests'
+  gem 'poltergeist', '1.18.1'
+  gem 'rack-test', '0.6.3', require: 'rack/test'
+  gem 'rspec-instafail'
+  gem 'rspec-rails', '2.12.0'
+  gem 'selenium-webdriver', '>= 2.5.0'
+  gem 'webrick', '1.3.1'
 end
 
 # Profiling
@@ -118,12 +119,9 @@ end
 
 group :development, :test do
   gem 'byebug'
-  gem 'database_cleaner-active_record'
-  gem 'faker'
   gem 'pry-byebug', '3.9.0'
   gem 'rack'
   gem 'rb-readline'
-  gem 'rspec-rails', '2.12.0'
   gem 'rubocop', '~> 0.93', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe FeatureFlagCommands::Update do
   let(:feature_flag) { create(:feature_flag, restricted: false) }

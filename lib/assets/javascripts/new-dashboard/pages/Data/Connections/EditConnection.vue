@@ -94,7 +94,7 @@ export default {
       return this.rawConnections && this.editing ? this.rawConnections.find(conn => conn.id === this.$route.params.id) : null;
     },
     logo () {
-      return this.importOption && `${exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/${this.importOption.name}.svg`;
+      return this.importOption && `${exportedScssVars.assetsDir && exportedScssVars.assetsDir.replace(/\"/g, '')}/images/layout/connectors/${this.importOption.name}.svg`;
     },
     title () {
       return this.importOption && this.importOption.title;

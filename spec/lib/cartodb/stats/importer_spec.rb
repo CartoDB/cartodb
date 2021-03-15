@@ -1,4 +1,3 @@
-require_relative '../../../simplecov_helper'
 require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'

@@ -41,7 +41,7 @@ development:
 test:
   adapter: postgresql
   encoding: unicode
-  database: carto_db_test
+  database: cartodb_test<%= ENV['TEST_ENV_NUMBER'] %>
   host: localhost
   port: 5432
   direct_port: 5432
@@ -52,4 +52,3 @@ test:
   prepared_statements: false
   variables:
     statement_timeout: 10000
-

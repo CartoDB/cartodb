@@ -30,12 +30,13 @@ module Carto
       @billing_project_id = conn.parameters['billing_project']
       @bigquery_api = Google::Apis::BigqueryV2::BigqueryService.new
       if conn.connection_type == Carto::Connection::TYPE_DB_CONNECTOR
-        @service_account = conn.parameters['service_account']
+        service_account = conn.parameters['service_account']
         @bigquery_api.authorization = Google::Auth::ServiceAccountCredentials.make_creds(
-          json_key_io: StringIO.new(@service_account), scope: SCOPES
+          json_key_io: StringIO.new(service_account), scope: SCOPES
         )
+        @owner = service_account['client_email']
       else
-        @refresh_token = conn.token
+        refresh_token = conn.token
         oauth_config = Cartodb.get_config(:oauth, 'bigquery')
         @bigquery_api.authorization = Signet::OAuth2::Client.new(
           authorization_uri: oauth_config['authorization_uri'],
@@ -43,8 +44,9 @@ module Carto
           client_id: oauth_config['client_id'],
           client_secret: oauth_config['client_secret'],
           scope: SCOPES,
-          refresh_token: @refresh_token
+          refresh_token: refresh_token
         )
+        @owner = user.email
       end
     end
 
@@ -115,11 +117,9 @@ module Carto
       end
 
       metadata = tileset_metadata(tileset_id)
-      service_account = JSON.parse(@service_account)
-
       {
         id: tileset_id,
-        owner: service_account['client_email'],
+        owner: @owner,
         privacy: public ? TILESET_PRIVACY_PUBLIC : TILESET_PRIVACY_PRIVATE,
         created_at: metadata['created_at'],
         updated_at: metadata['updated_at'],

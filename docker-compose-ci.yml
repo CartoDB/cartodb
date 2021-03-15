@@ -1,0 +1,100 @@
+version: '3.7'
+services:
+
+  redis-server:
+    image: gcr.io/cartodb-on-gcp-main-artifacts/redis:latest
+    container_name: redis_base
+    entrypoint: redis-server redis.conf --appendonly no --save "" --port 6335
+    network_mode: "host"
+
+  redis-server_1:
+    image: gcr.io/cartodb-on-gcp-main-artifacts/redis:latest
+    entrypoint: redis-server redis.conf --appendonly no --save "" --port 6001
+    network_mode: "host"
+
+  redis-server_2:
+    image: gcr.io/cartodb-on-gcp-main-artifacts/redis:latest
+    entrypoint: redis-server redis.conf --appendonly no --save "" --port 6002
+    network_mode: "host"
+
+  redis-server_3:
+    image: gcr.io/cartodb-on-gcp-main-artifacts/redis:latest
+    entrypoint: redis-server redis.conf --appendonly no --save "" --port 6003
+    network_mode: "host"
+
+  postgres-server:
+    image: gcr.io/cartodb-on-gcp-main-artifacts/postgres:latest
+    network_mode: "host"
+    environment:
+      - PGDATA=/etc/postgresql/12/main
+    volumes:
+      - ./pg_hba.conf:/etc/postgresql/12/main/pg_hba.conf
+      - type: volume
+        source: tmpvolume
+        target: /tmp
+        volume:
+          nocopy: true
+      - type: volume
+        source: cartodbvolume
+        target: /cartodb
+        volume:
+          nocopy: true
+    entrypoint: su postgres -c "/usr/lib/postgresql/12/bin/postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off -c checkpoint_timeout=200min -c shared_buffers=768MB -c max_connections=1000 -c listen_addresses='*'"
+    shm_size: '1GB'
+
+  federated-server:
+    image: gcr.io/cartodb-on-gcp-main-artifacts/postgres:latest
+    network_mode: "host"
+    environment:
+      - PGDATA=/etc/postgresql/12/main
+    volumes:
+      - ./pg_hba_federated.conf:/etc/postgresql/12/main/pg_hba.conf
+      - type: volume
+        source: tmpvolume
+        target: /tmp
+        volume:
+          nocopy: true
+      - type: volume
+        source: cartodbvolume
+        target: /cartodb
+        volume:
+          nocopy: true
+    entrypoint: su postgres -c "/usr/lib/postgresql/12/bin/postgres -c port=22665 -c fsync=off -c synchronous_commit=off -c full_page_writes=off -c checkpoint_timeout=200min -c max_connections=500 -c listen_addresses='*'"
+
+  builder:
+    container_name: builder_1
+    image: gcr.io/cartodb-on-gcp-main-artifacts/builder-tests:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.tests
+    depends_on:
+      - postgres-server
+      - redis-server
+    network_mode: "host"
+    extra_hosts:
+      - "testhost.lan:127.0.0.1"
+    environment:
+      - REDIS_PORT=6335
+      - COVERBAND_DISABLE_AUTO_START=true
+      - DB_IP=127.0.0.1
+      - PGHOST=localhost
+      - CARTO_POSTGRES_USERNAME=postgres
+      - CARTO_POSTGRES_HOST=localhost
+      - CARTO_POSTGRES_PORT=5432
+    volumes:
+      - type: volume
+        source: tmpvolume
+        target: /tmp
+      - type: volume
+        source: cartodbvolume
+        target: /cartodb
+    command: sh -c "tail -f /dev/null"
+
+volumes:
+  tmpvolume:
+  cartodbvolume:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+      device: :/System/Volumes/Data/Users/amiedes/dev/docker-dev-env/src/cartodb

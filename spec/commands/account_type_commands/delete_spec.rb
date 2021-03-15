@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe AccountTypeCommands::Delete do
-  include_context 'with DatabaseCleaner'
+  include_context 'with database purgue'
 
   let(:command) { described_class.new(params, logger: logger) }
   let(:params) { { price_plan: { account_type: account_type_literal } } }

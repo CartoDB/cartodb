@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe FeatureFlagCommands::Delete do
+  include_context 'with database purgue'
+
   let(:feature_flag) { create(:feature_flag) }
   let(:command) { described_class.new(params) }
   let(:params) { { feature_flag: { id: id_param } } }

@@ -2,6 +2,8 @@ require 'spec_helper'
 require './spec/factories/visualization_creation_helpers'
 
 describe OrganizationCommands::Delete do
+  include_context 'with database purgue'
+
   let(:notifications_topic) { mock }
   let(:organization) { create_organization_with_users(seats: 10) }
   let(:organization_id) { organization.id }

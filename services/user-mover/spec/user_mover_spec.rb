@@ -1,11 +1,8 @@
-require_relative '../../../spec/spec_helper.rb'
+require 'spec_helper'
 require_relative '../import_user'
 require_relative '../export_user'
 require_relative '../../../lib/carto/ghost_tables_manager'
 
-RSpec.configure do |c|
-  c.include Helpers
-end
 describe CartoDB::DataMover::ExportJob do
   def stub_api_keys
     CartoDB::DataMover::ImportJob.any_instance.stubs(:create_org_api_key_roles)

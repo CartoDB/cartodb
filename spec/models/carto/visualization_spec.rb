@@ -6,26 +6,17 @@ require 'helpers/unique_names_helper'
 require 'helpers/visualization_destruction_helper'
 
 describe Carto::Visualization do
+  include_context 'with database purgue'
+
   include UniqueNamesHelper
   include VisualizationDestructionHelper
   include Carto::Factories::Visualizations
 
-  before(:all) do
+  before do
     @user = create_user
     @carto_user = Carto::User.find(@user.id)
     @user2 = create_user
     @carto_user2 = Carto::User.find(@user2.id)
-  end
-
-  before(:each) do
-    bypass_named_maps
-    delete_user_data(@user)
-  end
-
-  after(:all) do
-    bypass_named_maps
-    @user.destroy
-    @user2.destroy
   end
 
   it_behaves_like 'visualization models' do
@@ -260,14 +251,10 @@ describe Carto::Visualization do
   end
 
   describe '#can_be_private?' do
-    before(:all) do
+    before do
       bypass_named_maps
       @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
       @visualization.reload # to clean up the user relation (see #11134)
-    end
-
-    after(:all) do
-      @visualization.destroy
     end
 
     it 'returns private_tables_enabled for tables' do
@@ -296,12 +283,8 @@ describe Carto::Visualization do
     end
 
     describe 'without mapcap' do
-      before(:all) do
+      before do
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
-      end
-
-      after(:all) do
-        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       end
 
       it 'publishes layer style changes' do
@@ -329,14 +312,10 @@ describe Carto::Visualization do
     end
 
     describe 'with mapcap' do
-      before(:all) do
+      before do
         @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
         @visualization.create_mapcap!
         @visualization.reload
-      end
-
-      after(:all) do
-        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       end
 
       it 'does not publish layer style changes' do
@@ -407,13 +386,8 @@ describe Carto::Visualization do
   end
 
   describe '#backup' do
-    before(:all) do
+    before do
       @map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
-      Carto::VisualizationBackup.all.map(&:destroy)
-    end
-
-    after(:all) do
-      @map.destroy
       Carto::VisualizationBackup.all.map(&:destroy)
     end
 
@@ -434,14 +408,10 @@ describe Carto::Visualization do
   end
 
   describe '#update' do
-    before(:all) do
+    before do
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
       @visualization.create_mapcap!
       @visualization.reload
-    end
-
-    after(:all) do
-      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     end
 
     it 'sanitizes name on rename' do
@@ -455,7 +425,7 @@ describe Carto::Visualization do
   end
 
   describe '#invalidation_service' do
-    before(:all) do
+    before do
       @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, type: 'table')
     end
 
@@ -487,7 +457,7 @@ describe Carto::Visualization do
     end
 
     describe '#add_like_from' do
-      include_context 'organization with users helper'
+      include_context 'new organization with users helper'
       it 'registers the like action from a user with permissions' do
         expect(@visualization.likes.count).to eq(0)
 
@@ -551,7 +521,8 @@ describe Carto::Visualization do
     end
 
     describe '#remove_like_from' do
-      include_context 'organization with users helper'
+      include_context 'new organization with users helper'
+
       it 'removes an existent like from a user' do
         @visualization.add_like_from(@carto_user)
         expect(@visualization.likes.count).to eq(1)
@@ -621,7 +592,7 @@ describe Carto::Visualization do
   end
 
   context 'quota check' do
-    before(:all) do
+    before do
       @carto_user.public_map_quota = nil
       @carto_user.public_dataset_quota = nil
       @carto_user.private_map_quota = nil
@@ -630,38 +601,28 @@ describe Carto::Visualization do
       @carto_user.save
     end
 
-    after(:all) do
-      @carto_user.public_map_quota = nil
-      @carto_user.public_dataset_quota = nil
-      @carto_user.private_map_quota = nil
-      @carto_user.save
-    end
-
     context 'having a private map' do
-      before(:each) do
-        @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user,
-                                                                  privacy: Carto::Visualization::PRIVACY_PRIVATE)
-      end
+      let(:visualization) { create(:carto_visualization, user: @carto_user, privacy: Carto::Visualization::PRIVACY_PRIVATE) }
 
       it 'does not allow to make it public when the limit is reached' do
         @carto_user.public_map_quota = 0
         @carto_user.save
 
-        @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
-        @visualization.save
+        visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+        visualization.save!
 
-        @visualization.reload.privacy.should eql Carto::Visualization::PRIVACY_PRIVATE
-        @visualization.errors.count.should eql 1
+        visualization.reload.privacy.should eql Carto::Visualization::PRIVACY_PRIVATE
+        visualization.errors.count.should eql 1
       end
 
       it 'allows to make it public if the limit is not reached' do
         @carto_user.public_map_quota = 1
         @carto_user.save
 
-        @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
-        @visualization.save
+        visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+        visualization.save!
 
-        @visualization.reload.privacy.should eql Carto::Visualization::PRIVACY_PUBLIC
+        visualization.reload.privacy.should eql Carto::Visualization::PRIVACY_PUBLIC
       end
     end
 

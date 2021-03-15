@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe OrganizationCommands::Update do
+  include_context 'with database purgue'
+
   let(:organization) { create(:organization_with_users, seats: 10) }
   let(:command) { described_class.new(params) }
 

@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe FeatureFlagCommands::Update do
+  include_context 'with database purgue'
+
   let(:feature_flag) { create(:feature_flag, restricted: false) }
   let(:updated_feature_flag) { feature_flag.reload }
   let(:command) { described_class.new(params) }

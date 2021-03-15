@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe GcloudUserSettingsCommands::Set do
+  include_context 'with database purgue'
+
   let(:command) { described_class.new(params) }
   let(:sample_attributes) do
     {

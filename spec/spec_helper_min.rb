@@ -1,8 +1,9 @@
 # This file provides a minimal Rails integration test environment with an empty database, without users.
 require 'mocha'
-require 'simplecov_helper'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
+require 'database_cleaner/active_record'
+require 'support/database_cleaner'
 require './spec/support/message_broker_stubs'
 require './spec/support/redis'
 require './spec/support/shared_entities_spec_helper'
@@ -33,35 +34,23 @@ RSpec.configure do |config|
   config.include SharedEntitiesSpecHelper
   config.mock_with :mocha
 
-  config.after(:each) do
+  config.after do
     Delorean.back_to_the_present
   end
 
-  unless ENV['PARALLEL']
-    config.before(:suite) do
-      CartoDB::RedisTest.up
-    end
-  end
-
   config.before(:all) do
-    unless ENV['PARALLEL']
-      clean_redis_databases
-      clean_metadata_database
-      close_pool_connections
-      drop_leaked_test_user_databases
-    end
-  end
-  config.after(:all) do
-    unless ENV['PARALLEL'] || ENV['BUILD_ID']
-      close_pool_connections
-      drop_leaked_test_user_databases
-      delete_database_test_users
-    end
-  end
-
-  unless ENV['PARALLEL'] || ENV['BUILD_ID']
-    config.after(:suite) do
-      CartoDB::RedisTest.down
-    end
+    Carto::FeatureFlagsUser.delete_all
+    Carto::FeatureFlag.delete_all
+    Carto::OauthToken.delete_all
+    Carto::OauthApp.delete_all
+    Carto::Map.delete_all
+    Carto::Visualization.delete_all
+    Carto::UserTable.delete_all
+    Carto::User.delete_all
+    Carto::SearchTweet.delete_all
+    Carto::AccountType.delete_all
+    Carto::RateLimit.delete_all
+    Carto::ClientApplication.delete_all
+    Carto::Organization.delete_all
   end
 end

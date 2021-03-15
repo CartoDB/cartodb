@@ -90,12 +90,9 @@ gem 'avro', '~> 1.10.0'
 gem 'google-cloud-bigquery-storage-v1', '~> 0.2.3'
 
 group :test do
-  gem 'simplecov', '0.13.0', require: false
-  gem 'simplecov-json'
-  gem 'simplecov-rcov'
   gem 'db-query-matchers',     '0.4.0'
+  gem 'factory_girl_rails', '4.9.0'
   gem 'rack-test',             '0.6.3',  require: 'rack/test'
-  gem 'factory_girl_rails',    '~> 4.0.0'
   gem 'selenium-webdriver',    '>= 2.5.0'
   gem 'capybara',              '2.18.0'
   gem 'delorean'
@@ -120,9 +117,11 @@ group :development, :test do
   gem 'byebug'
   gem 'database_cleaner-active_record'
   gem 'faker'
+  gem 'parallel_tests'
   gem 'pry-byebug', '3.9.0'
   gem 'rack'
   gem 'rb-readline'
+  gem 'rspec-instafail'
   gem 'rspec-rails', '2.12.0'
   gem 'rubocop', '~> 0.93', require: false
   gem 'rubocop-performance', require: false

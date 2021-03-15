@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe OrganizationCommands::Create do
+  include_context 'with database purgue'
+
   let(:notifications_topic) { mock }
   let(:params) { { organization: organization_params } }
   let(:command) { described_class.new(params) }

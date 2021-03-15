@@ -150,7 +150,6 @@ GEM
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.1.3)
-    docile (1.1.5)
     dropbox_api (0.1.17)
       faraday (>= 0.8, <= 0.15.4)
       oauth2 (~> 1.1)
@@ -165,10 +164,10 @@ GEM
     eventmachine (1.2.7)
     execjs (0.4.0)
       multi_json (~> 1.0)
-    factory_girl (4.0.0)
+    factory_girl (4.9.0)
       activesupport (>= 3.0.0)
-    factory_girl_rails (4.0.0)
-      factory_girl (~> 4.0.0)
+    factory_girl_rails (4.9.0)
+      factory_girl (~> 4.9.0)
       railties (>= 3.0.0)
     faker (2.2.1)
       i18n (>= 0.8)
@@ -261,7 +260,6 @@ GEM
       hashie (>= 3.5.1)
       multi_json
     jmespath (1.4.0)
-    json (2.3.1)
     json-schema (2.1.9)
     jwt (2.2.2)
     kgio (2.11.3)
@@ -303,6 +301,8 @@ GEM
       rack (>= 1.2, < 3)
     os (1.1.1)
     parallel (1.19.2)
+    parallel_tests (3.5.2)
+      parallel
     parser (2.7.2.0)
       ast (~> 2.4.1)
     pg (0.20.0)
@@ -394,9 +394,15 @@ GEM
     rotp (3.3.1)
     rqrcode (0.10.1)
       chunky_png (~> 1.0)
+    rspec (2.12.0)
+      rspec-core (~> 2.12.0)
+      rspec-expectations (~> 2.12.0)
+      rspec-mocks (~> 2.12.0)
     rspec-core (2.12.2)
     rspec-expectations (2.12.1)
       diff-lcs (~> 1.1.3)
+    rspec-instafail (1.0.0)
+      rspec
     rspec-mocks (2.12.2)
     rspec-rails (2.12.0)
       actionpack (>= 3.0)
@@ -449,16 +455,6 @@ GEM
       faraday (~> 0.9)
       jwt (>= 1.5, < 3.0)
       multi_json (~> 1.10)
-    simplecov (0.13.0)
-      docile (~> 1.1.0)
-      json (>= 1.8, < 3)
-      simplecov-html (~> 0.10.0)
-    simplecov-html (0.10.2)
-    simplecov-json (0.2.1)
-      json
-      simplecov
-    simplecov-rcov (0.2.3)
-      simplecov (>= 0.4.1)
     simpleidn (0.1.1)
       unf (~> 0.1.4)
     sinatra (1.4.8)
@@ -555,7 +551,7 @@ DEPENDENCIES
   ejs (~> 1.1.1)
   email_address (~> 0.1.11)
   execjs (~> 0.4)
-  factory_girl_rails (~> 4.0.0)
+  factory_girl_rails (= 4.9.0)
   fake_net_ldap!
   faker
   gc_tracer (= 1.5.1)
@@ -575,6 +571,7 @@ DEPENDENCIES
   nokogiri (~> 1.10)
   oauth (= 0.4.7)
   oauth-plugin!
+  parallel_tests
   pg (= 0.20.0)
   poltergeist (= 1.18.1)
   protected_attributes
@@ -597,6 +594,7 @@ DEPENDENCIES
   roo (= 1.13.2)
   rotp (~> 3.3, >= 3.3.1)
   rqrcode (~> 0.10.1)
+  rspec-instafail
   rspec-rails (= 2.12.0)
   rubocop (~> 0.93)
   rubocop-performance
@@ -609,9 +607,6 @@ DEPENDENCIES
   sequel (~> 4.45.0)
   sequel-rails (~> 1.0.1)
   sequel_pg (~> 1.12.0)
-  simplecov (= 0.13.0)
-  simplecov-json
-  simplecov-rcov
   sprockets (= 3.7.2)
   state_machines-activerecord (~> 0.5.0)
   statsd-client (= 0.0.7)

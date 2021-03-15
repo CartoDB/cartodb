@@ -1,6 +1,7 @@
 require_relative '../../../../app/models/carto/helpers/billing'
 require 'ostruct'
 require 'delorean'
+require 'spec_helper_min'
 
 describe Carto::Billing do
   describe "#last_billing_cycle" do

@@ -1,21 +1,15 @@
 require 'tmpdir'
 require 'fileutils'
 require 'csv'
-require_relative '../../../spec/spec_helper'
+require 'spec_helper'
 require_relative '../lib/hires_geocoder'
-
 
 describe CartoDB::HiresGeocoder do
 
   MOCK_COORDINATES = [38.89037, -77.03196]
 
-  RSpec.configure do |config|
-    config.before :each do
-      Typhoeus::Expectation.clear
-    end
-  end
-
-  before(:each) do
+  before do
+    Typhoeus::Expectation.clear
     @working_dir = Dir.mktmpdir
     @input_csv_file = path_to '../../table-geocoder/spec/fixtures/nokia_input.csv'
     @log = mock

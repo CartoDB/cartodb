@@ -1,2 +1,6 @@
+--require rspec/instafail
 --colour
---format documentation
+--order rand
+--format progress
+--format RSpec::Instafail
+--format ParallelTests::RSpec::SummaryLogger --out tmp/spec_summary.log

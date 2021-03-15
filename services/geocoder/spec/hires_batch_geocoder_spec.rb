@@ -1,18 +1,12 @@
 require 'tmpdir'
 require 'fileutils'
-require_relative '../../../spec/spec_helper.rb'
+require 'spec_helper'
 require_relative '../lib/hires_batch_geocoder'
 
-
 describe CartoDB::HiresBatchGeocoder do
+  before do
+    Typhoeus::Expectation.clear
 
-  RSpec.configure do |config|
-    config.before :each do
-      Typhoeus::Expectation.clear
-    end
-  end
-
-  before(:each) do
     @log = mock
     @log.stubs(:append)
     @log.stubs(:append_and_store)

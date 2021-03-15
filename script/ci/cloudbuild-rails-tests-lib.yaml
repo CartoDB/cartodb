@@ -1,18 +1,5 @@
 steps:
 
-# Cancel previous job on the same branch
-- name: gcr.io/cloud-builders/gcloud-slim
-  entrypoint: /bin/bash
-  args:
-  - '-c'
-  - 'gcloud builds list --ongoing --filter="buildTriggerId=e983e3b9-109f-43a3-82b2-b312e42c878e AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
-
-- name: gcr.io/cloud-builders/gcloud-slim
-  entrypoint: /bin/bash
-  args:
-  - '-c'
-  - 'gcloud builds cancel $(cat jobs_to_cancel | xargs) || true'
-
 # Decrypt github key
 - name: gcr.io/cloud-builders/gcloud-slim
   args:
@@ -97,44 +84,44 @@ steps:
 
 # Run tests, first in parallel, then give a second try in serial if some tests fail
 - name: gcr.io/cloud-builders/docker
-  args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/run_tests.sh' ]
+  args: ['exec', '-i', 'builder_1', 'bash', '-c', '/cartodb/run_tests_lib.sh' ]
   timeout: 1800s
 
 # Copy tests results and logs from the container
-- name: 'docker/compose:1.22.0'
-  entrypoint: /bin/sh
-  args:
-    - -c
-    - |
-      mkdir test_logs_${BUILD_ID}
-      docker-compose -f docker-compose-pg12.yml logs --no-color > test_logs_${BUILD_ID}/docker_compose_logs
-      docker cp builder_1:/cartodb/tmp/spec_summary.log test_logs_${BUILD_ID}/spec_summary.log
-      docker cp builder_1:/cartodb/log/test.log test_logs_${BUILD_ID}/test.log
-      docker cp builder_1:/cartodb/tmp/tests_exit_status tests_exit_status
-      echo "Logs will be available during 1 day at gs://cartodb-ci-tmp-logs/${BUILD_ID}/"
+# - name: 'docker/compose:1.22.0'
+#   entrypoint: /bin/sh
+#   args:
+#     - -c
+#     - |
+#       mkdir test_logs_${BUILD_ID}
+#       docker-compose -f docker-compose-pg12.yml logs --no-color > test_logs_${BUILD_ID}/docker_compose_logs
+#       docker cp builder_1:/cartodb/tmp/spec_summary.log test_logs_${BUILD_ID}/spec_summary.log
+#       docker cp builder_1:/cartodb/log/test.log test_logs_${BUILD_ID}/test.log
+#       docker cp builder_1:/cartodb/tmp/tests_exit_status tests_exit_status
+#       echo "Logs will be available during 1 day at gs://cartodb-ci-tmp-logs/${BUILD_ID}/"
 
 # Upload logs to gcs
-- name: gcr.io/cloud-builders/gsutil
-  args: [ '-m', 'cp', '-r', 'test_logs_${BUILD_ID}', 'gs://cartodb-ci-tmp-logs/' ]
+# - name: gcr.io/cloud-builders/gsutil
+#   args: [ '-m', 'cp', '-r', 'test_logs_${BUILD_ID}', 'gs://cartodb-ci-tmp-logs/' ]
 
 # Check tests return value and exit accordingly
-- name: gcr.io/cloud-builders/docker
-  entrypoint: /bin/bash
-  args:
-    - -c
-    - |
-      if [ $(cat tests_exit_status) == "ok" ];then
-        echo "Tests succeeded, logs are at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
-        exit 0
-      else
-        cat tests_exit_status
-        echo "Tests failed, logs are at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
-        exit 1
-      fi
+# - name: gcr.io/cloud-builders/docker
+#   entrypoint: /bin/bash
+#   args:
+#     - -c
+#     - |
+#       if [ $(cat tests_exit_status) == "ok" ];then
+#         echo "Tests succeeded, logs are at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
+#         exit 0
+#       else
+#         cat tests_exit_status
+#         echo "Tests failed, logs are at https://console.cloud.google.com/storage/browser/cartodb-ci-tmp-logs/test_logs_${BUILD_ID}"
+#         exit 1
+#       fi
 
 
 substitutions:
     _BRANCH_TAG: ${BRANCH_NAME//\//-}
 options:
-    machineType: 'N1_HIGHCPU_32'
+    machineType: N1_HIGHCPU_32
 timeout: 2400s

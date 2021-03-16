@@ -70,6 +70,7 @@ steps:
     - -c
     - |
       cp private/Dockerfil* .
+      cp private/cfg/unicorn.conf.rb.sample .
       cp config/app_config.yml.sample config/app_config.yml
       cp config/database.yml.sample config/database.yml
       cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json

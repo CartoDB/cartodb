@@ -38,7 +38,7 @@ cd /cartodb
 
 ## Setup configuration files
 cp config/app_config.yml.sample config/app_config.yml
-cp config/database.yml.sample config/database.yml
+cp config/database.ci.yml config/database.yml
 if [ -v DEBUG ] && [ $DEBUG = 'true' ]; then
     echo 'Final configuration for running the CI'
     cat config/app_config.yml

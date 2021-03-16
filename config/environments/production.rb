@@ -61,8 +61,8 @@ CartoDB::Application.configure do
   config.assets.initialize_on_precompile = true
 
   # Send logs to stdout and set level to :info based on `CARTO_BUILDER_LOG_TO_STDOUT`
-  if ENV['CARTO_BUILDER_LOG_TO_STDOUT'] && ENV['CARTO_BUILDER_LOG_TO_STDOUT']=='true'
-    config.logger = Carto::Common::Logger.new(STDOUT)
+  if ENV['CARTO_BUILDER_LOG_TO_STDOUT'] && ENV['CARTO_BUILDER_LOG_TO_STDOUT'] == 'true'
+    config.logger = Carto::Common::Logger.new($stdout)
     config.log_level = :info
   end
 

@@ -53,7 +53,8 @@ export default {
         let tileset;
         try {
           tileset = await this.$store.dispatch('tilesets/getTileset', { source: this.source, tileset_id: this.tileset_id, project_id, dataset_id, connection_id });
-        } catch {}
+        } catch (e) {
+        }
         const center = tileset && tileset.metadata && tileset.metadata.center && tileset.metadata.center.split(',');
         const longitude = center && parseFloat(center[0]);
         const latitude = center && parseFloat(center[1]);

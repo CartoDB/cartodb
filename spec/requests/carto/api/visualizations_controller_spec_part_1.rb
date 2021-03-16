@@ -294,11 +294,16 @@ describe Carto::Api::VisualizationsController do
         'total_likes' => 0,
         'total_user_entries' => 0,
         'total_shared' => 0,
-        'total_locked' => 0,
-        'total_subscriptions' => 0,
-        'total_samples' => 0
+        'total_locked' => 0
       }
       response_body.should == expected_response
+    end
+
+    it 'returns DO information if "load_do_totals" flag is set' do
+      get base_url, { load_do_totals: true }, @headers
+      body = JSON.parse(last_response.body)
+      body.should include('total_subscriptions' => 0)
+      body.should include('total_samples' => 0)
     end
 
     it 'returns 400 if wrong page parameter is passed' do

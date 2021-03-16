@@ -1,4 +1,5 @@
-worker_processes 3
+unicorn_workers = !ENV.fetch('CARTO_BUILDER_UNICORN_WORKERS').to_s.strip.empty? ? ENV.fetch('CARTO_BUILDER_UNICORN_WORKERS').to_i : 4
+worker_processes unicorn_workers
 user "carto", "carto"
 app_root = "/cartodb"
 working_directory app_root

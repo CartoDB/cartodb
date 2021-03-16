@@ -19,7 +19,8 @@ export default {
       this.props = {
         username: username,
         type: type,
-        query: new URLSearchParams(window.location.search),
+        // FIXME: we need to add `mapsUrl`, it should change depends on environment. What about `region`?
+        query: new URLSearchParams(window.location.search + '&embed=true'),
         goBackFunction: () => {
           window.location = '/';
         }

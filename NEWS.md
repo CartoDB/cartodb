@@ -34,6 +34,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 
+- was trying to create private dataset for accounts were not available [16223](https://github.com/CartoDB/cartodb/pull/16223)
 - Some CI improvements [16179](https://github.com/CartoDB/cartodb/pull/16179)
 - Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
 - Show a new message for create connections after first login [16159](https://github.com/CartoDB/cartodb/pull/16159)

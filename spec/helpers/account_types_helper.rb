@@ -45,9 +45,9 @@ module AccountTypesHelper
 
   def new_account_type(account_type)
     if account_type == 'PRO'
-      FactoryGirl.create(:account_type_pro)
+      create(:account_type_pro)
     else
-      FactoryGirl.create(:account_type, account_type: account_type)
+      create(:account_type, account_type: account_type)
     end
   end
 end

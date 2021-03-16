@@ -6,10 +6,10 @@ describe 'oauth.rake' do
     Rake.application.rake_require('tasks/oauth')
     Rake::Task.define_task(:environment)
 
-    @sequel_developer = FactoryGirl.create(:valid_user)
+    @sequel_developer = create(:valid_user)
     @developer = Carto::User.find(@sequel_developer.id)
-    @user = FactoryGirl.create(:valid_user)
-    @oauth_app = FactoryGirl.create(:oauth_app, user: @developer)
+    @user = create(:valid_user)
+    @oauth_app = create(:oauth_app, user: @developer)
   end
 
   before(:each) do

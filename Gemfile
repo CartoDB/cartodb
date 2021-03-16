@@ -95,7 +95,7 @@ group :test do
   gem 'database_cleaner-active_record'
   gem 'db-query-matchers', '0.4.0'
   gem 'delorean'
-  gem 'factory_girl_rails', '4.9.0'
+  gem 'factory_bot_rails'
   gem 'faker'
   # Need to use specific branch from this fork as original gem is broken and outdated
   gem 'fake_net_ldap', git: 'https://github.com/kuldeepaggarwal/fake_net_ldap.git', branch: 'fix-responder'

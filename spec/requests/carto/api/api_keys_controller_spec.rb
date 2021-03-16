@@ -78,9 +78,9 @@ describe Carto::Api::ApiKeysController do
   end
 
   before(:all) do
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
     @carto_user = Carto::User.find(@user.id)
-    @other_user = FactoryGirl.create(:valid_user)
+    @other_user = create(:valid_user)
     @table1 = create_table(user_id: @carto_user.id)
     @table2 = create_table(user_id: @carto_user.id)
   end
@@ -106,7 +106,7 @@ describe Carto::Api::ApiKeysController do
   describe '#authorization' do
     shared_examples 'unauthorized' do
       before(:all) do
-        @api_key = FactoryGirl.create(:api_key_apis, user: @unauthorized_user)
+        @api_key = create(:api_key_apis, user: @unauthorized_user)
       end
 
       after(:all) do
@@ -147,7 +147,7 @@ describe Carto::Api::ApiKeysController do
 
     describe 'without engine_enabled' do
       before(:all) do
-        @unauthorized_user = Carto::User.find(FactoryGirl.create(:valid_user, engine_enabled: false).id)
+        @unauthorized_user = Carto::User.find(create(:valid_user, engine_enabled: false).id)
       end
 
       after(:all) do
@@ -408,7 +408,7 @@ describe Carto::Api::ApiKeysController do
 
     describe '#destroy' do
       it 'destroys the API key' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        api_key = create(:api_key_apis, user_id: @user.id)
         auth_user(@carto_user)
         delete_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
           response.status.should eq 204
@@ -445,7 +445,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'returns 404 if the API key doesn\'t belong to that user' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        api_key = create(:api_key_apis, user_id: @user.id)
         auth_user(@other_user)
         delete_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
           response.status.should eq 404
@@ -458,7 +458,7 @@ describe Carto::Api::ApiKeysController do
 
     describe '#regenerate' do
       before(:each) do
-        @api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        @api_key = create(:api_key_apis, user_id: @user.id)
       end
 
       it 'regenerates the token' do
@@ -568,7 +568,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'returns 404 for internal api keys' do
-        api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
+        api_key = create(:oauth_api_key, user_id: @user.id)
         auth_user(@carto_user)
         get_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
           response.status.should eq 404
@@ -577,7 +577,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'returns 404 if the API key does not belong to the user' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        api_key = create(:api_key_apis, user_id: @user.id)
         auth_user(@other_user)
         get_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
           response.status.should eq 404
@@ -588,12 +588,12 @@ describe Carto::Api::ApiKeysController do
 
     describe '#index' do
       before(:all) do
-        @user_index = FactoryGirl.create(:valid_user)
+        @user_index = create(:valid_user)
         @carto_user_index = Carto::User.find(@user_index.id)
 
         @apikeys = @carto_user_index.api_keys.order(:updated_at).all.to_a
-        3.times { @apikeys << FactoryGirl.create(:api_key_apis, user_id: @user_index.id) }
-        @apikeys << FactoryGirl.create(:oauth_api_key, user_id: @user_index.id)
+        3.times { @apikeys << create(:api_key_apis, user_id: @user_index.id) }
+        @apikeys << create(:oauth_api_key, user_id: @user_index.id)
       end
 
       it 'does not include internal keys' do
@@ -1001,7 +1001,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'destroys the API key' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        api_key = create(:api_key_apis, user_id: @user.id)
         delete_json generate_api_key_url(header_params, name: api_key.name), {}, json_headers_for_key(@master_api_key) do |response|
           response.status.should eq 204
         end
@@ -1010,7 +1010,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'regenerates the token' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        api_key = create(:api_key_apis, user_id: @user.id)
         api_key.save!
         old_token = api_key.token
         options = { user_domain: @user.username, id: api_key.name }
@@ -1025,7 +1025,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'returns requested API key' do
-        key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        key = create(:api_key_apis, user_id: @user.id)
         get_json generate_api_key_url(header_params, name: key.name), {}, json_headers_for_key(@master_api_key) do |response|
           response.status.should eq 200
           response.body[:name].should eq key.name
@@ -1051,7 +1051,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'destroy the API key' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        api_key = create(:api_key_apis, user_id: @user.id)
         delete_json generate_api_key_url({ user_domain: @carto_user.username }, name: api_key.name) do |response|
           response.status.should eq 401
           Carto::ApiKey.find(api_key.id).should be
@@ -1060,7 +1060,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'regenerate the token' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        api_key = create(:api_key_apis, user_id: @user.id)
         api_key.save!
         old_token = api_key.token
         options = { user_domain: @user.username, id: api_key.id }
@@ -1073,7 +1073,7 @@ describe Carto::Api::ApiKeysController do
       end
 
       it 'return requested API key' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        api_key = create(:api_key_apis, user_id: @user.id)
         get_json generate_api_key_url(user_domain: @carto_user.username, name: api_key.name) do |response|
           response.status.should eq 401
         end
@@ -1170,12 +1170,12 @@ describe Carto::Api::ApiKeysController do
       @num_api_keys_external_user = 1
 
       # create org and owner
-      org = FactoryGirl.create(:organization_with_users)
+      org = create(:organization_with_users)
       @owner_user = org.owner
       @carto_owner_user = Carto::User.find(@owner_user.id)
       apikeys = @carto_owner_user.api_keys.order(:updated_at).all.to_a
-      @num_api_keys_owner_user.times { apikeys << FactoryGirl.create(:api_key_apis, user_id: @owner_user.id) }
-      apikeys << FactoryGirl.create(:oauth_api_key, user_id: @owner_user.id)
+      @num_api_keys_owner_user.times { apikeys << create(:api_key_apis, user_id: @owner_user.id) }
+      apikeys << create(:oauth_api_key, user_id: @owner_user.id)
       @owner_api_key = apikeys[3]
       @owner_table1 = create_table(user_id: @carto_owner_user.id)
       @owner_table2 = create_table(user_id: @carto_owner_user.id)
@@ -1214,11 +1214,11 @@ describe Carto::Api::ApiKeysController do
       }
 
       # create admin
-      @admin_user = FactoryGirl.create(:valid_user, organization: org, org_admin: true)
+      @admin_user = create(:valid_user, organization: org, org_admin: true)
       @carto_admin_user = Carto::User.find(@admin_user.id)
       apikeys = @carto_admin_user.api_keys.order(:updated_at).all.to_a
-      @num_api_keys_admin_user.times { apikeys << FactoryGirl.create(:api_key_apis, user_id: @admin_user.id) }
-      apikeys << FactoryGirl.create(:oauth_api_key, user_id: @admin_user.id)
+      @num_api_keys_admin_user.times { apikeys << create(:api_key_apis, user_id: @admin_user.id) }
+      apikeys << create(:oauth_api_key, user_id: @admin_user.id)
       @admin_api_key = apikeys[3]
       @admin_table1 = create_table(user_id: @carto_admin_user.id)
       @admin_table2 = create_table(user_id: @carto_admin_user.id)
@@ -1257,11 +1257,11 @@ describe Carto::Api::ApiKeysController do
       }
 
       # create regular
-      @regular_user = FactoryGirl.create(:valid_user, organization: org)
+      @regular_user = create(:valid_user, organization: org)
       @carto_regular_user = Carto::User.find(@regular_user.id)
       apikeys = @carto_regular_user.api_keys.order(:updated_at).all.to_a
-      @num_api_keys_regular_user.times { apikeys << FactoryGirl.create(:api_key_apis, user_id: @regular_user.id) }
-      apikeys << FactoryGirl.create(:oauth_api_key, user_id: @regular_user.id)
+      @num_api_keys_regular_user.times { apikeys << create(:api_key_apis, user_id: @regular_user.id) }
+      apikeys << create(:oauth_api_key, user_id: @regular_user.id)
       @regular_api_key = apikeys[3]
       @regular_table1 = create_table(user_id: @carto_regular_user.id)
       @regular_table2 = create_table(user_id: @carto_regular_user.id)
@@ -1300,11 +1300,11 @@ describe Carto::Api::ApiKeysController do
       }
 
       # external user
-      @external_user = FactoryGirl.create(:valid_user)
+      @external_user = create(:valid_user)
       @carto_external_user = Carto::User.find(@external_user.id)
       apikeys = @carto_external_user.api_keys.order(:updated_at).all.to_a
-      @num_api_keys_external_user.times { apikeys << FactoryGirl.create(:api_key_apis, user_id: @external_user.id) }
-      apikeys << FactoryGirl.create(:oauth_api_key, user_id: @external_user.id)
+      @num_api_keys_external_user.times { apikeys << create(:api_key_apis, user_id: @external_user.id) }
+      apikeys << create(:oauth_api_key, user_id: @external_user.id)
       @external_api_key = apikeys[3]
       @external_table1 = create_table(user_id: @carto_external_user.id)
       @external_table2 = create_table(user_id: @carto_external_user.id)
@@ -1674,7 +1674,7 @@ describe Carto::Api::ApiKeysController do
     describe '#destroy' do
       describe 'owner org' do
         it 'can destroy a regular user api key' do
-          api_key = FactoryGirl.create(:api_key_apis, user_id: @carto_regular_user.id)
+          api_key = create(:api_key_apis, user_id: @carto_regular_user.id)
           auth_user(@carto_owner_user)
           delete_json api_key_url(id: api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
             response.status.should eq 204
@@ -1684,7 +1684,7 @@ describe Carto::Api::ApiKeysController do
         end
 
         it 'can destroy an admin user api key' do
-          api_key = FactoryGirl.create(:api_key_apis, user_id: @carto_admin_user.id)
+          api_key = create(:api_key_apis, user_id: @carto_admin_user.id)
           auth_user(@carto_owner_user)
           delete_json api_key_url(id: api_key.name), auth_params.merge(target_user: @carto_admin_user.username), auth_headers do |response|
             response.status.should eq 204
@@ -1704,7 +1704,7 @@ describe Carto::Api::ApiKeysController do
 
       describe 'admin org' do
         it 'can destroy a regular user api key' do
-          api_key = FactoryGirl.create(:api_key_apis, user_id: @carto_regular_user.id)
+          api_key = create(:api_key_apis, user_id: @carto_regular_user.id)
           auth_user(@carto_admin_user)
           delete_json api_key_url(id: api_key.name), auth_params.merge(target_user: @carto_regular_user.username), auth_headers do |response|
             response.status.should eq 204
@@ -1714,7 +1714,7 @@ describe Carto::Api::ApiKeysController do
         end
 
         it 'can destroy an owner user api key' do
-          api_key = FactoryGirl.create(:api_key_apis, user_id: @carto_owner_user.id)
+          api_key = create(:api_key_apis, user_id: @carto_owner_user.id)
           auth_user(@carto_admin_user)
           delete_json api_key_url(id: api_key.name), auth_params.merge(target_user: @carto_owner_user.username), auth_headers do |response|
             response.status.should eq 204

@@ -25,7 +25,7 @@ shared_examples_for 'user table models' do
     end
 
     it 'validates that name cannot be taken' do
-      @duplicate = FactoryGirl.create(:carto_user_table, user: Carto::User.find(@user.id), name: 'ut_spec_wadus')
+      @duplicate = create(:carto_user_table, user: Carto::User.find(@user.id), name: 'ut_spec_wadus')
       ut = build_user_table(user: @user, name: 'ut_spec_wadus')
       expect(ut.valid?).to be_false
       expect(ut.errors.keys.flatten).to include :name
@@ -102,7 +102,7 @@ shared_examples_for 'user table models' do
     before(:all) do
       @map, @other_table, @table_visualization, @visualization = create_full_visualization(@carto_user)
       @first_layer = @visualization.data_layers.first
-      @second_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
+      @second_layer = create(:carto_layer, kind: 'torque', maps: [@map])
     end
 
     before(:each) do

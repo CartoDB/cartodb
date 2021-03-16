@@ -7,9 +7,9 @@ describe Carto::Asset do
   def host!(_) end
 
   before(:all) do
-    @organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
-    @user = FactoryGirl.create(:carto_user)
-    @visualization = FactoryGirl.create(:carto_visualization, user: @user)
+    @organization = Carto::Organization.find(create(:organization).id)
+    @user = create(:carto_user)
+    @visualization = create(:carto_visualization, user: @user)
   end
 
   after(:all) do

@@ -33,7 +33,7 @@ describe Carto::Group do
     include Carto::Factories::Visualizations
 
     before(:all) do
-      @group = FactoryGirl.create(:random_group, organization_id: @organization.id)
+      @group = create(:random_group, organization_id: @organization.id)
     end
 
     after(:all) do

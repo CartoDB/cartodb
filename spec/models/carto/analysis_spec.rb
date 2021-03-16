@@ -106,9 +106,9 @@ describe Carto::Analysis do
 
     before(:all) do
       bypass_named_maps
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-      @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+      @analysis = create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
     end
 
     after(:all) do
@@ -137,7 +137,7 @@ describe Carto::Analysis do
     include HelperMethods
 
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
     end
 
@@ -161,14 +161,14 @@ describe Carto::Analysis do
       @user.viewer = true
       @user.save
 
-      @analysis = FactoryGirl.build(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+      @analysis = build(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
 
       @analysis.save.should be_false
       @analysis.errors[:user].should eq(["Viewer users can't edit analyses"])
     end
 
     it "can't delete analyses" do
-      @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+      @analysis = create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
 
       @user.viewer = true
       @user.save

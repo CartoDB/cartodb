@@ -6,7 +6,7 @@ describe Carto::VisualizationInvalidationService do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
   end
 
   after(:all) do
@@ -83,7 +83,7 @@ describe Carto::VisualizationInvalidationService do
 
   describe 'on destruction' do
     before(:all) do
-      @visualization = FactoryGirl.create(:carto_visualization, user: @user)
+      @visualization = create(:carto_visualization, user: @user)
       @visualization.destroy
       @service = Carto::VisualizationInvalidationService.new(@visualization)
     end

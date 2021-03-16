@@ -2276,7 +2276,7 @@ describe Table do
         table.table_visualization.should be_private
 
         map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
-        derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id,
+        derived_vis = create(:derived_visualization, user_id: @user.id, map_id: map.id,
                                                                  privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE)
 
         bypass_named_maps
@@ -2307,7 +2307,7 @@ describe Table do
         table.privacy = UserTable::PRIVACY_PUBLIC
         table.save
         map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
-        derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+        derived_vis = create(:derived_visualization, user_id: @user.id, map_id: map.id)
 
         bypass_named_maps
         derived_vis.store
@@ -2343,7 +2343,7 @@ describe Table do
         table = create_table(name: 'bogus_name', user_id: @user.id)
 
         map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
-        derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+        derived = create(:derived_visualization, user_id: @user.id, map_id: map.id)
 
         table.reload
 
@@ -2358,8 +2358,8 @@ describe Table do
         table = create_table(name: 'bogus_name', user_id: @user.id)
 
         map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
-        derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
-        map.layers << FactoryGirl.create(:carto_layer)
+        derived = create(:derived_visualization, user_id: @user.id, map_id: map.id)
+        map.layers << create(:carto_layer)
         CartoDB::Visualization::Member.new(id: derived.id).fetch.data_layers.count.should eq 2
 
         table.reload
@@ -2395,7 +2395,7 @@ describe Table do
         Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
         map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
-        derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+        derived = create(:derived_visualization, user_id: @user.id, map_id: map.id)
         derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
         # Do not create all member objects anew to be able to set expectations
@@ -2421,7 +2421,7 @@ describe Table do
 
         Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
         map = CartoDB::Visualization::TableBlender.new(@carto_user, [table]).blend
-        derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+        derived = create(:derived_visualization, user_id: @user.id, map_id: map.id)
         derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
         # Scenario 1: Fail at map saving (can happen due to Map handlers)
@@ -2494,7 +2494,7 @@ describe Table do
 
   describe 'with Carto::UserTable model' do
     before(:all) do
-      @user = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
+      @user = create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
     end
 
     before(:each) do

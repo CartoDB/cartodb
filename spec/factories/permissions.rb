@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :carto_permission, class: Carto::Permission do
     after(:build) do |permission|

@@ -9,9 +9,9 @@ module Carto
 
     describe 'validation' do
       before(:all) do
-        user = FactoryGirl.create(:valid_user)
+        user = create(:valid_user)
         @user = Carto::User.find(user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @user)
+        @app = create(:oauth_app, user: @user)
       end
 
       after(:all) do
@@ -98,12 +98,12 @@ module Carto
 
     describe '#authorized?' do
       before(:all) do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
       end
 
       before(:each) do
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @t1 = create_table(user_id: @carto_user.id)
         @t2 = create_table(user_id: @carto_user.id)
       end
@@ -156,9 +156,9 @@ module Carto
 
     describe '#upgrade!' do
       before(:all) do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @t1 = create_table(user_id: @carto_user.id)
         @t2 = create_table(user_id: @carto_user.id)
         @t3 = create_table(user_id: @carto_user.id)
@@ -206,9 +206,9 @@ module Carto
 
     describe 'datasets scope' do
       before(:each) do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @table1 = create_table(user_id: @carto_user.id)
       end
 
@@ -329,9 +329,9 @@ module Carto
 
     describe 'schemas scope' do
       before(:all) do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @table1 = create_table(user_id: @carto_user.id)
         @table2 = create_table(user_id: @carto_user.id)
       end
@@ -487,7 +487,7 @@ module Carto
 
     describe 'shared datasets' do
       before :each do
-        @app = FactoryGirl.create(:oauth_app, user: @carto_org_user_1)
+        @app = create(:oauth_app, user: @carto_org_user_1)
         @shared_table = create_table(user_id: @carto_org_user_1.id)
         not_shared_table = create_table(user_id: @carto_org_user_1.id)
 
@@ -643,7 +643,7 @@ module Carto
 
     describe 'views' do
       before :all do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @user_table = create_table(user_id: @carto_user.id)
 
@@ -659,7 +659,7 @@ module Carto
       end
 
       before :each do
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
       end
 
       after :each do
@@ -701,8 +701,8 @@ module Carto
 
     describe '#destroy' do
       before(:each) do
-        @user = FactoryGirl.create(:valid_user)
-        @app = FactoryGirl.create(:oauth_app, user_id: @user.id)
+        @user = create(:valid_user)
+        @app = create(:oauth_app, user_id: @user.id)
         @app_user = Carto::OauthAppUser.create!(user_id: @user.id, oauth_app: @app)
         access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
                                                 scopes: ["schemas:c:#{@user.database_schema}"])

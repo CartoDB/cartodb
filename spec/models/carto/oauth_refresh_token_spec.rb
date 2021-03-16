@@ -4,9 +4,9 @@ module Carto
   describe OauthRefreshToken do
     describe '#validation' do
       before(:all) do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.new(user: @carto_user, oauth_app: @app)
       end
 
@@ -36,9 +36,9 @@ module Carto
 
     describe '#exchange!' do
       before(:all) do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create(user: @carto_user, oauth_app: @app)
       end
 
@@ -104,9 +104,9 @@ module Carto
 
     describe '#create!' do
       before(:all) do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create(user: @carto_user, oauth_app: @app)
       end
 

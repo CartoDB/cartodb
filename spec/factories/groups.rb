@@ -2,13 +2,13 @@ require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :carto_group, class: Carto::Group do
     initialize_with { Carto::Group.send :new }
 
-    name 'A_Group'
-    display_name 'A Group'
-    database_role 'database_role'
+    name { 'A_Group' }
+    display_name { 'A Group' }
+    database_role { 'database_role' }
   end
 
   factory :new_random_group, class: Carto::Group do |_g|

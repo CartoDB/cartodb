@@ -40,8 +40,8 @@ describe Api::Json::SynchronizationsController do
       it 'creates a synchronization and enqueues a import job for external sources' do
         begin
           Resque::ImporterJobs.expects(:perform).once
-          carto_visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id)
-          external_source = FactoryGirl.create(:external_source, visualization: carto_visualization)
+          carto_visualization = create(:carto_visualization, user_id: @user1.id)
+          external_source = create(:external_source, visualization: carto_visualization)
           remote_id = external_source.visualization_id
 
           expect {
@@ -71,7 +71,7 @@ describe Api::Json::SynchronizationsController do
 
   describe '#sync_now' do
     it 'syncs... now :D' do
-      sync = FactoryGirl.create(:carto_synchronization, user_id: @user1.id)
+      sync = create(:carto_synchronization, user_id: @user1.id)
       sync.state.should eq Carto::Synchronization::STATE_SUCCESS
       Resque::SynchronizationJobs.expects(:perform).once
       put_json api_v1_synchronizations_sync_now_url(id: sync.id) do |r|
@@ -84,7 +84,7 @@ describe Api::Json::SynchronizationsController do
 
   describe '#update' do
     it 'updates the interval' do
-      sync = FactoryGirl.create(:carto_synchronization, user_id: @user1.id)
+      sync = create(:carto_synchronization, user_id: @user1.id)
       new_interval = sync.interval * 2
       put_json api_v1_synchronizations_update_url(id: sync.id), interval: new_interval do |r|
         r.status.should eq 200
@@ -96,7 +96,7 @@ describe Api::Json::SynchronizationsController do
 
   describe '#destroy' do
     it 'destroys a sync' do
-      sync = FactoryGirl.create(:carto_synchronization, user_id: @user1.id)
+      sync = create(:carto_synchronization, user_id: @user1.id)
       Carto::Synchronization.exists?(sync.id).should be_true
       delete_json api_v1_synchronizations_update_url(id: sync.id) do |r|
         r.status.should eq 204
@@ -105,4 +105,3 @@ describe Api::Json::SynchronizationsController do
     end
   end
 end
-

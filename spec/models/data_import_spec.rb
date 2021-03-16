@@ -390,7 +390,7 @@ describe DataImport do
 
   it 'updates synch_job state after success data import' do
     data_import = nil
-    sync_job = FactoryGirl.create(:enqueued_sync)
+    sync_job = create(:enqueued_sync)
     Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_QUEUED
     CartoDB::Importer2::Downloader.any_instance.stubs(:validate_url!).returns(true)
     serve_file Rails.root.join('db/fake_data/clubbing.csv') do |url|
@@ -407,7 +407,7 @@ describe DataImport do
   end
 
   it 'updates synch_job state after failed data import' do
-    sync_job = FactoryGirl.create(:enqueued_sync)
+    sync_job = create(:enqueued_sync)
     Carto::Synchronization.find(sync_job.id).state.should eq Carto::Synchronization::STATE_QUEUED
 
     data_import = DataImport.create(

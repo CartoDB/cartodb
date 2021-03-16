@@ -13,7 +13,7 @@ describe AccountTokensController do
 
       before(:each) do
         CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
       end
 
       after(:each) do
@@ -44,7 +44,7 @@ describe AccountTokensController do
 
         before(:each) do
           CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-          @user = FactoryGirl.create(:valid_user)
+          @user = create(:valid_user)
         end
 
         after(:each) do

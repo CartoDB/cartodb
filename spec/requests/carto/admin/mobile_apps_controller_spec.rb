@@ -15,7 +15,7 @@ describe Carto::Admin::MobileAppsController do
   }.freeze
 
   before(:all) do
-    @carto_user = FactoryGirl.create(:carto_user, mobile_max_open_users: 10000)
+    @carto_user = create(:carto_user, mobile_max_open_users: 10000)
     @user = ::User[@carto_user.id]
   end
 

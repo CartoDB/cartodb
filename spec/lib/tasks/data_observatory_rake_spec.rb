@@ -6,7 +6,7 @@ describe 'data_observatory.rake' do
     Rake.application.rake_require('tasks/data_observatory')
     Rake::Task.define_task(:environment)
 
-    @user = FactoryGirl.create(:valid_user, username: 'fulano')
+    @user = create(:valid_user, username: 'fulano')
   end
 
   after(:all) do

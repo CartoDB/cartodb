@@ -5,7 +5,7 @@ describe Carto::Mapcap do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
+    @user = create(:carto_user, private_tables_enabled: true)
 
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
   end
@@ -45,7 +45,7 @@ describe Carto::Mapcap do
 
     describe 'with layers' do
       before(:all) do
-        @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+        @carto_layer = create(:carto_layer, kind: 'carto', maps: [@map])
         @visualization.reload
 
         @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
@@ -74,7 +74,7 @@ describe Carto::Mapcap do
 
       describe 'with widgets' do
         before(:all) do
-          @widget = FactoryGirl.create(:widget, layer: @carto_layer)
+          @widget = create(:widget, layer: @carto_layer)
           @visualization.reload
 
           @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
@@ -101,8 +101,8 @@ describe Carto::Mapcap do
 
   describe '#regenerate_visualization' do
     before(:all) do
-      FactoryGirl.create(:analysis, visualization: @visualization, user: @user)
-      FactoryGirl.create(:widget, layer: @visualization.data_layers.first)
+      create(:analysis, visualization: @visualization, user: @user)
+      create(:widget, layer: @visualization.data_layers.first)
       @visualization.reload
       @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
     end
@@ -184,7 +184,7 @@ describe Carto::Mapcap do
 
     describe 'without user DB' do
       before(:all) do
-        @user_nodb = FactoryGirl.create(:carto_user, private_tables_enabled: true)
+        @user_nodb = create(:carto_user, private_tables_enabled: true)
         @map_nodb, @table_nodb, @table_visualization_nodb, @visualization_nodb = create_full_visualization(@user_nodb)
         @mapcap_nodb = Carto::Mapcap.create!(visualization_id: @visualization_nodb.id)
         @actual_db_name = @user_nodb.database_name
@@ -208,7 +208,7 @@ describe Carto::Mapcap do
 
     describe 'with layers' do
       before(:all) do
-        @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+        @carto_layer = create(:carto_layer, kind: 'carto', maps: [@map])
         @visualization.reload
 
         @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
@@ -234,7 +234,7 @@ describe Carto::Mapcap do
 
       describe 'with widgets' do
         before(:all) do
-          @widget = FactoryGirl.create(:widget, layer: @carto_layer)
+          @widget = create(:widget, layer: @carto_layer)
           @visualization.reload
 
           @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)

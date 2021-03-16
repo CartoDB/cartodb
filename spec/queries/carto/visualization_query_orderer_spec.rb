@@ -2,11 +2,11 @@ require_relative '../../spec_helper_min'
 
 describe Carto::VisualizationQueryOrderer do
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
-    @visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id, name: 'Visualization A',
+    @user = create(:carto_user)
+    @visualization_a = create(:carto_visualization, user_id: @user.id, name: 'Visualization A',
                                                                   privacy: Carto::Visualization::PRIVACY_PUBLIC)
     Delorean.jump(1.day)
-    @visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, name: 'Visualization B',
+    @visualization_b = create(:carto_visualization, user_id: @user.id, name: 'Visualization B',
                                                                   privacy: Carto::Visualization::PRIVACY_LINK)
     @visualization_b.add_like_from(@user)
     Delorean.back_to_the_present
@@ -94,7 +94,7 @@ describe Carto::VisualizationQueryOrderer do
   context 'multiple ordering' do
     before(:each) do
       Delorean.jump(2.days)
-      @visualization_c = FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'Visualization C',
+      @visualization_c = create(:derived_visualization, user_id: @user.id, name: 'Visualization C',
                                                                     privacy: Carto::Visualization::PRIVACY_LINK)
       Delorean.back_to_the_present
     end

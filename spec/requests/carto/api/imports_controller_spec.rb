@@ -15,7 +15,7 @@ describe Carto::Api::ImportsController do
   @headers = { 'CONTENT_TYPE'  => 'application/json' }
 
   before(:all) do
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
     host! "#{@user.username}.localhost.lan"
   end
 

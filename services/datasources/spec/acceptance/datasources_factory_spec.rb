@@ -14,7 +14,7 @@ describe DatasourcesFactory do
 
   describe '#provider_instantiations' do
     it 'tests all available provider instantiations' do
-      user = FactoryGirl.build(:user)
+      user = build(:user)
       user.stubs('has_feature_flag?').with('gnip_v2').returns(false)
       DatasourcesFactory.set_config(get_config)
 
@@ -54,12 +54,12 @@ describe DatasourcesFactory do
     end
 
     it 'returns false for a random user' do
-      user = FactoryGirl.build(:carto_user, username: 'wadus')
+      user = build(:carto_user, username: 'wadus')
       DatasourcesFactory.customized_config?(twitter_datasource, user).should be_false
     end
 
     it 'returns true for a user with custom config' do
-      user = FactoryGirl.build(:carto_user, username: 'wadus')
+      user = build(:carto_user, username: 'wadus')
       @config['datasource_search']['twitter_search']['customized_user_list'] = [user.username]
       DatasourcesFactory.set_config(@config)
 
@@ -68,7 +68,7 @@ describe DatasourcesFactory do
 
     it 'returns true for a user in an organization with custom config' do
       organization = Carto::Organization.new(name: 'wadus-org')
-      user = FactoryGirl.build(:carto_user, username: 'nowadus', organization: organization)
+      user = build(:carto_user, username: 'nowadus', organization: organization)
       @config['datasource_search']['twitter_search']['customized_orgs_list'] = [organization.name]
       DatasourcesFactory.set_config(@config)
 

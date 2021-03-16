@@ -3,8 +3,8 @@ require_relative '../../spec_helper_min'
 describe Carto::Api::MobileAppPresenter do
 
   it "Compares old and new ways of 'presenting' mobile app data" do
-    user = FactoryGirl.build(:user, :mobile)
-    mobile_app = FactoryGirl.build(:mobile_app)
+    user = build(:user, :mobile)
+    mobile_app = build(:mobile_app)
 
     # Data should return mobile platforms data
     compare_data(mobile_app.data(user, fetch_mobile_platforms: true), mobile_app.as_json, fetch_mobile_platforms: true)

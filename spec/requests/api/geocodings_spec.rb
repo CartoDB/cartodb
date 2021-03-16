@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "Geocodings API" do
   before(:all) do
-    @user = FactoryGirl.create(:valid_user, table_quota: 50)
+    @user = create(:valid_user, table_quota: 50)
 
     delete_user_data @user
     host! "#{@user.username}.localhost.lan"
@@ -149,7 +149,7 @@ describe "Geocodings API" do
 
   describe 'PUT /api/v1/geocodings/:id' do
     it 'fails gracefully on job cancel failure' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user)
+      geocoding = create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user)
       Geocoding.any_instance.stubs(:cancel).raises('wadus')
 
       put_json api_v1_geocodings_update_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|

@@ -2,7 +2,7 @@ require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :user_table, class: UserTable do
     to_create(&:save)
 
@@ -53,11 +53,11 @@ FactoryGirl.define do
     end
 
     factory :private_user_table do
-      privacy Carto::UserTable::PRIVACY_PRIVATE
+      privacy { Carto::UserTable::PRIVACY_PRIVATE }
     end
 
     factory :public_user_table do
-      privacy Carto::UserTable::PRIVACY_PUBLIC
+      privacy { Carto::UserTable::PRIVACY_PUBLIC }
     end
   end
 end

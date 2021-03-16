@@ -13,8 +13,8 @@ shared_examples_for "user models" do
     include_context 'users helper'
 
     it "should count tweet imports" do
-      FactoryGirl.create(:search_tweet, user: @carto_user1, retrieved_items: 5)
-      FactoryGirl.create(:search_tweet, user: @carto_user2, retrieved_items: 6)
+      create(:search_tweet, user: @carto_user1, retrieved_items: 5)
+      create(:search_tweet, user: @carto_user2, retrieved_items: 6)
 
       get_twitter_imports_count_by_user_id(@carto_user1.id).should == 5
     end
@@ -646,7 +646,7 @@ shared_examples_for "user models" do
     end
 
     it 'is false for users within a SAML organization' do
-      organization = FactoryGirl.create(:saml_organization)
+      organization = create(:saml_organization)
       organization.auth_saml_enabled?.should == true
       @user.organization = @user.is_a?(Carto::User) ? Carto::Organization.find(organization.id) : organization
       @user.needs_password_confirmation?.should == false
@@ -1033,7 +1033,7 @@ shared_examples_for "user models" do
     end
 
     it 'returns true if SAML is enabled' do
-      organization = FactoryGirl.create(:saml_organization)
+      organization = create(:saml_organization)
       @user.organization_id = organization.id
 
       result = @user.valid_password_confirmation('wrong_pass')

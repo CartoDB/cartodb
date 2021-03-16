@@ -18,8 +18,8 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       set_tested_classes(tested_klass, model_klass)
       puts "Testing class #{tested_klass.to_s} with model #{model_klass.to_s}"
 
-      @user_1 = FactoryGirl.create(:valid_user)
-      @user_2 = FactoryGirl.create(:valid_user)
+      @user_1 = create(:valid_user)
+      @user_2 = create(:valid_user)
     end
 
     after(:all) do

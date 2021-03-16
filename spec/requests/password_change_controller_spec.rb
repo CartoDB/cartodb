@@ -5,7 +5,7 @@ describe PasswordChangeController do
   before(:each) do
     User.any_instance.stubs(:update_in_central).returns(true)
     PasswordChangeController.any_instance.stubs(:check_password_expired)
-    @user = FactoryGirl.create(:user)
+    @user = create(:user)
   end
 
   after(:each) do

@@ -197,7 +197,7 @@ describe User do
     include_context 'organization with users helper'
 
     it 'filters by type if asked' do
-      vis = FactoryGirl.create(:carto_visualization, user_id: @org_user_1.id, type: Carto::Visualization::TYPE_DERIVED)
+      vis = create(:carto_visualization, user_id: @org_user_1.id, type: Carto::Visualization::TYPE_DERIVED)
 
       @org_user_1.visualization_count.should eq 1
       @org_user_1.visualization_count(type: Carto::Visualization::TYPE_DERIVED).should eq 1
@@ -209,7 +209,7 @@ describe User do
     end
 
     it 'filters by privacy if asked' do
-      vis = FactoryGirl.create(:carto_visualization,
+      vis = create(:carto_visualization,
                                user_id: @org_user_1.id,
                                privacy: Carto::Visualization::PRIVACY_PUBLIC)
 
@@ -227,7 +227,7 @@ describe User do
     end
 
     it 'filters by shared exclusion if asked' do
-      vis = FactoryGirl.create(:carto_visualization, user_id: @org_user_1.id, type: Carto::Visualization::TYPE_DERIVED)
+      vis = create(:carto_visualization, user_id: @org_user_1.id, type: Carto::Visualization::TYPE_DERIVED)
       share_visualization_with_user(vis, @org_user_2)
 
       @org_user_2.visualization_count.should eq 1
@@ -237,7 +237,7 @@ describe User do
     end
 
     it 'filters by raster exclusion if asked' do
-      vis = FactoryGirl.create(:carto_visualization, user_id: @org_user_1.id, kind: Carto::Visualization::KIND_RASTER)
+      vis = create(:carto_visualization, user_id: @org_user_1.id, kind: Carto::Visualization::KIND_RASTER)
 
       @org_user_1.visualization_count.should eq 1
       @org_user_1.visualization_count(exclude_raster: true).should eq 0
@@ -308,7 +308,7 @@ describe User do
     before { Cartodb::Central.stubs(:login_redirection_enabled?).returns(true) }
 
     before(:all) do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
     end
 
     after(:all) do

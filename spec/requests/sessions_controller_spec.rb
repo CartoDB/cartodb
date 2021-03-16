@@ -277,7 +277,7 @@ describe SessionsController do
             organization: nil
           )
 
-          @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @admin_user.id)
+          @admin_user.user_multifactor_auths << create(:totp, :active, user_id: @admin_user.id)
           @admin_user.save
         end
 
@@ -306,7 +306,7 @@ describe SessionsController do
             organization: nil
           )
 
-          @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @admin_user.id)
+          @admin_user.user_multifactor_auths << create(:totp, :active, user_id: @admin_user.id)
           @admin_user.save
         end
 
@@ -340,7 +340,7 @@ describe SessionsController do
     end
 
     it "Allows to login and triggers creation of normal users if user is not present" do
-      new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
+      new_user = build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)
       Cartodb::Central.stubs(:login_redirection_enabled?).returns(false)
       Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
@@ -357,7 +357,7 @@ describe SessionsController do
     end
 
     it "Allows to login and triggers creation of normal users if user is not present" do
-      new_user = FactoryGirl.build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
+      new_user = build(:carto_user, username: 'new-saml-user', email: 'new-saml-user-email@carto.com')
       stub_saml_service(new_user)
       Cartodb::Central.stubs(:login_redirection_enabled?).returns(false)
       Cartodb::Central.stubs(:message_broker_sync_enabled?).returns(false)
@@ -439,10 +439,10 @@ describe SessionsController do
   end
 
   describe 'SAML authentication' do
-    def create
-      @organization = FactoryGirl.create(:saml_organization, quota_in_bytes: 1.gigabytes)
+    def setup_saml_organization
+      @organization = create(:saml_organization, quota_in_bytes: 1.gigabytes)
       @admin_user = create_admin_user(@organization)
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
       @user.organization_id = @organization.id
       @user.save
     end
@@ -482,9 +482,7 @@ describe SessionsController do
         stub_domainful(@organization.name)
       end
 
-      before(:all) do
-        create
-      end
+      before(:all) { setup_saml_organization }
 
       after(:all) do
         cleanup
@@ -501,9 +499,7 @@ describe SessionsController do
         stub_subdomainless
       end
 
-      before(:all) do
-        create
-      end
+      before(:all) { setup_saml_organization }
 
       after(:all) do
         cleanup
@@ -536,11 +532,11 @@ describe SessionsController do
       end
 
       before(:all) do
-        create
-        @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
+        setup_saml_organization
+        @user.user_multifactor_auths << create(:totp, :active, user_id: @user.id)
         @user.save
 
-        @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @admin_user.id)
+        @admin_user.user_multifactor_auths << create(:totp, :active, user_id: @admin_user.id)
         @admin_user.save
       end
 
@@ -552,8 +548,8 @@ describe SessionsController do
 
   describe '#login' do
     before(:all) do
-      @organization = FactoryGirl.create(:organization)
-      @user = FactoryGirl.create(:carto_user)
+      @organization = create(:organization)
+      @user = create(:carto_user)
     end
 
     after(:all) do
@@ -678,7 +674,7 @@ describe SessionsController do
       end
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling first login' do
-        @new_user = FactoryGirl.create(:carto_user)
+        @new_user = create(:carto_user)
         CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
           event.first_login?.should be_true
         end
@@ -733,7 +729,7 @@ describe SessionsController do
     shared_examples_for 'all users workflow' do
       before(:each) do
         @user.user_multifactor_auths.each(&:destroy)
-        @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
+        @user.user_multifactor_auths << create(:totp, :active, user_id: @user.id)
         @user.reload
         @user.reset_password_rate_limit
       end
@@ -866,7 +862,7 @@ describe SessionsController do
         end
 
         after(:each) do
-          FactoryGirl.create(:totp, :needs_setup, user_id: @user.id)
+          create(:totp, :needs_setup, user_id: @user.id)
           @user.reload
         end
 
@@ -933,7 +929,7 @@ describe SessionsController do
 
     describe 'as individual user' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user_mfa)
+        @user = create(:carto_user_mfa)
       end
 
       after(:all) do
@@ -945,7 +941,7 @@ describe SessionsController do
 
     describe 'as org owner' do
       before(:all) do
-        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
+        @organization = create(:organization_with_users, :mfa_enabled)
         @user = @organization.owner
         @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
@@ -965,7 +961,7 @@ describe SessionsController do
 
     describe 'as org user' do
       before(:all) do
-        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
+        @organization = create(:organization_with_users, :mfa_enabled)
         @user = @organization.users.last
         @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
@@ -986,7 +982,7 @@ describe SessionsController do
     describe 'as org without user pass enabled' do
       before(:all) do
         Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
-        @organization = FactoryGirl.create(:organization_with_users,
+        @organization = create(:organization_with_users,
                                            :mfa_enabled,
                                            auth_username_password_enabled: false)
         @user = @organization.users.last
@@ -1014,7 +1010,7 @@ describe SessionsController do
 
   describe '#logout' do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
     end
 
     after(:all) do
@@ -1049,7 +1045,7 @@ describe SessionsController do
 
   describe '#destroy' do
     it 'deletes the _cartodb_base_url cookie' do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
       login_as(@user, scope: @user.username)
       host! "localhost.lan"
 

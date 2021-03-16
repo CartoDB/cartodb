@@ -36,7 +36,7 @@ RSpec.configure do |config|
   config.include HelperMethods
   config.include NamedMapsHelper
   config.include Capybara::DSL
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.include SharedEntitiesSpecHelper
   config.mock_with :mocha
 

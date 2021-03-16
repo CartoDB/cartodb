@@ -22,11 +22,11 @@ describe 'user' do
       end
 
       it "should change the database host for the users and also sync the metadata" do
-        user = FactoryGirl.create(:valid_user)
+        user = create(:valid_user)
         user.database_host = "localhost"
         user.save
 
-        user2 = FactoryGirl.create(:valid_user)
+        user2 = create(:valid_user)
         user2.database_host = "127.0.0.1"
         user2.save
 

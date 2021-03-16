@@ -3,7 +3,7 @@ require 'spec_helper_min'
 describe Carto::DoLicensingService do
 
   before(:all) do
-    @user = FactoryGirl.create(:valid_user, username: 'fulano')
+    @user = create(:valid_user, username: 'fulano')
     @redis_key = "do:fulano:datasets"
     @service = Carto::DoLicensingService.new('fulano')
     @dataset_id = 'carto.abc.dataset1'

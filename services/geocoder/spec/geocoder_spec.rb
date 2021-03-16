@@ -16,7 +16,7 @@ describe CartoDB::HiresBatchGeocoder do
         'mailto' => ''
       })
     @working_dir = Dir.mktmpdir
-    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}',
+    @geocoding_model = create(:geocoding, kind: 'high-resolution', formatter: '{street}',
                                           remote_id: 'wadus')
   end
 

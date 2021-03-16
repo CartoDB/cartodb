@@ -35,8 +35,8 @@ describe Carto::Api::GrantablesController do
       end
 
       it "returns all organization users and groups as a grantable of the right type, including additional information" do
-        group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
-        group_2 = FactoryGirl.create(:random_group, display_name: 'g_2', organization: @carto_organization)
+        group_1 = create(:random_group, display_name: 'g_1', organization: @carto_organization)
+        group_2 = create(:random_group, display_name: 'g_2', organization: @carto_organization)
         @carto_organization.reload
 
         get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {}, @headers do |response|

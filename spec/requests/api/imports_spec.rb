@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "Imports API" do
 
   before(:all) do
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
   end
 
   before(:each) do
@@ -65,7 +65,7 @@ describe "Imports API" do
   end
 
   pending 'appends data to an existing table' do
-    @table = FactoryGirl.create(:table, :user_id => @user.id)
+    @table = create(:table, :user_id => @user.id)
 
     f = upload_file('db/fake_data/column_number_to_boolean.csv', 'text/csv')
     post api_v1_imports_create_url(params.merge(table_id: @table.id, append: true)),

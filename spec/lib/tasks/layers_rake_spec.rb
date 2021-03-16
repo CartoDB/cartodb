@@ -12,7 +12,7 @@ describe 'layers.rake' do
 
   describe '#sync_basemaps_from_app_config' do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+      @user = create(:carto_user, private_maps_enabled: true)
     end
 
     before(:each) do

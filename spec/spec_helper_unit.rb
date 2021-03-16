@@ -1,4 +1,5 @@
 require 'mocha'
+require 'mocha/setup'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require 'helpers/unique_names_helper'

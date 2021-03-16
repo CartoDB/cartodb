@@ -1,3 +1,4 @@
+require 'spec_helper_min'
 require_relative '../../../../app/models/carto/helpers/billing'
 require 'ostruct'
 require 'delorean'

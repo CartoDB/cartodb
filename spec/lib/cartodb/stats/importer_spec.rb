@@ -1,7 +1,4 @@
-require 'rspec/core'
-require 'rspec/expectations'
-require 'rspec/mocks'
-
+require 'spec_helper_min'
 require_relative '../../../../lib/cartodb/stats/importer'
 
 include Mocha::ParameterMatchers

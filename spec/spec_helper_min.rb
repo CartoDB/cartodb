@@ -1,5 +1,6 @@
 # This file provides a minimal Rails integration test environment with an empty database, without users.
 require 'mocha'
+require 'mocha/setup'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require './spec/support/message_broker_stubs'

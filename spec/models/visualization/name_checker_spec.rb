@@ -1,8 +1,4 @@
-require 'rspec/core'
-require 'rspec/expectations'
-require 'rspec/mocks'
-require 'sequel'
-require_relative '../../spec_helper'
+require 'spec_helper'
 require_relative '../../../app/models/visualization/name_checker'
 
 include CartoDB

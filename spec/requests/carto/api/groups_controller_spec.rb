@@ -1,7 +1,4 @@
-require 'rspec/mocks'
-require_relative '../../../spec_helper'
-require_relative '../../../../app/controllers/carto/api/database_groups_controller'
-require_relative '.././../../factories/visualization_creation_helpers'
+require 'spec_helper'
 
 # cURL samples:
 # - Rename group: curl -v -H "Content-Type: application/json" -X PUT -d '{ "display_name": "Demo Group" }' "http://central-org-b-admin.localhost.lan:3000/api/v1/organization/95c2c425-5c8c-4b20-8999-d79cd20c2f2c/groups/c662f7ee-aefb-4f49-93ea-1f671a77bb36?api_key=665646f527c3006b124c15a308bb98f4ed1f52e4"

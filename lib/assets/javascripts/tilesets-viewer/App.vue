@@ -20,6 +20,7 @@ export default {
         username: username,
         type: type,
         // FIXME: we need to add `mapsUrl`, it should change depends on environment. What about `region`?
+        mapsUrl: window.StaticConfig.map_api_v2_template,
         query: new URLSearchParams(window.location.search + '&embed=true'),
         goBackFunction: () => {
           window.location = '/';

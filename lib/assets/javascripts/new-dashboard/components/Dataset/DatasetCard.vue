@@ -225,7 +225,7 @@ export default {
       });
     },
     getNumberInLocaleFormat (number) {
-      return number ? number.toLocaleString() : 0;
+      return number ? number.toLocaleString() : '0';
     },
     humanFileSize (size) {
       return Formatter.humanFileSize(size);

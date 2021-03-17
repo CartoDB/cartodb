@@ -35,6 +35,8 @@ sudo make install
 ### Bug fixes / enhancements
 
 - Free users can't create datasets due to default state was private [16223](https://github.com/CartoDB/cartodb/pull/16223)
+- Fix Data page not loading due to null rows [16224](https://github.com/CartoDB/cartodb/pull/16224)
+- Add unicorn config sample and output log to stdout by setting environment variable [16221](https://github.com/CartoDB/cartodb/pull/16221/files)
 - Some CI improvements [16179](https://github.com/CartoDB/cartodb/pull/16179)
 - Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
 - Show a new message for create connections after first login [16159](https://github.com/CartoDB/cartodb/pull/16159)

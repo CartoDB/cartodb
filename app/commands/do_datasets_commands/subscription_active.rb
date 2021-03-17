@@ -5,7 +5,7 @@ module DoDatasetsCommands
 
     def run_command
       subscription = licensing_service.subscription(params[:dataset_id])
-      add_to_redis(subscription.merge(status: 'active'))
+      licensing_service.add_to_redis(subscription.merge(status: 'active'))
     end
 
     def licensing_service

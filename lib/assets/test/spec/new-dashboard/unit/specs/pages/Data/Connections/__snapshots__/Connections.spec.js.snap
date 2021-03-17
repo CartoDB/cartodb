@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Connections.vue Render should render initial state 1`] = `
+<section class="u-mt--64">
+  <div class="container grid">
+    <div class="u-width--100">
+      <sectiontitle-stub class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
+    </div>
+    <div class="u-width--100 u-mt-50 grid-cell">
+      <div class="emptyState u-pl--64 u-mb--60">
+        <h3 class="is-body is-semibold u-mt--64">DataPage.startAddingConnections</h3>
+        <p class="u-mt--16 is-caption">DataPage.connectDescription</p>
+        <router-link to="[object Object]"><button class="button is-primary u-mt--48" style="margin-bottom: 56px;"> DataPage.newConnection </button></router-link> <img width="314" src="../../../assets/images/connectors/connectors.png" class="logo">
+      </div>
+    </div>
+  </div>
+  <router-view></router-view>
+</section>
+`;
+
+exports[`Connections.vue Render should render one elements 1`] = `
+<section class="u-mt--64">
+  <div class="container grid">
+    <div class="u-width--100">
+      <sectiontitle-stub class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
+    </div>
+    <div class="u-width--100 u-mt-50 grid-cell">
+      <div class="connections-container grid">
+        <div class="connector-wrapper grid-cell grid-cell--col4">
+          <connection-stub id="IDENTIFIER" type="mysql" connectiontype="database" connectionname="CONNECTION NAME" connectionparams="[object Object]" label="MySQL"></connection-stub>
+        </div>
+      </div>
+    </div>
+  </div>
+  <router-view></router-view>
+</section>
+`;

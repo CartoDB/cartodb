@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Connections.vue Edit should render properly 1`] = `
+<div class="u-flex u-flex__justify--center">
+  <div>
+    <div class="alert u-pl--36 u-pt--8 u-pb--8 u-pr--8 u-mb--24"><span class="is-small">ConnectorsPage.editConnectionDisclaimer</span></div>
+    <h4 class="is-small is-semibold">DataPage.imports.database.title</h4>
+    <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper"><label class="is-small u-mr--16">DataPage.imports.database.label-name</label> <input type="text" placeholder="DataPage.imports.database.placeholder-name"></div>
+    <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
+      <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16"><label class="is-small">param1</label>
+        <!---->
+      </div> <input placeholder="DataPage.imports.database.placeholder-param1" type="text">
+    </div>
+    <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
+      <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16"><label class="is-small">param2</label>
+        <!---->
+      </div> <input placeholder="DataPage.imports.database.placeholder-param2" type="number">
+    </div>
+    <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
+      <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16"><label class="is-small">param3</label>
+        <!---->
+      </div> <input placeholder="DataPage.imports.database.placeholder-param3" type="password">
+    </div>
+    <!---->
+    <div class="u-flex u-flex__justify--end u-mt--32"><button class="u-mr--28 is-small is-semibold is-txtPrimary">ConnectorsPage.cancel</button> <button class="CDB-Button CDB-Button--primary CDB-Button--big is-disabled"><span class="u-flex CDB-Text is-semibold CDB-Size-medium"><!---->
+          ConnectorsPage.editConnectionButton
+        </span></button></div>
+  </div>
+  <div class="info u-ml--80 ">
+    <h4 class="is-small is-semibold u-mb--8">DataPage.gettingConnected</h4>
+    <p class="text u-mt--10 is-txtMidGrey is-small">
+      DataPage.connectInfo
+    </p>
+    <div class="ports u-pt--16 u-pb--16 u-pl--24 u-pr--24 u-mt--16 is-txtMidGrey is-small u-flex u-flex__direction--column u-flex__justify--between"><span class="u-mb--4">35.188.111.175</span> <span class="u-mb--4">35.192.121.157</span> <span class="u-mb--4">35.238.166.16</span> <span class="u-mb--4">35.224.241.96</span> <span class="u-mb--4">35.232.84.56</span> <span class="u-mb--4">35.205.127.169</span> <span class="u-mb--4">35.233.31.201</span> <span class="u-mb--4">35.187.80.96</span> <span class="u-mb--4">104.197.28.44</span> <span class="u-mb--4">104.199.3.149</span> <span>104.155.126.89</span></div>
+  </div>
+</div>
+`;
+
+exports[`Connections.vue Render should render properly 1`] = `
+<div class="u-flex u-flex__justify--center">
+  <div>
+    <!---->
+    <h4 class="is-small is-semibold">DataPage.imports.database.title</h4>
+    <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper"><label class="is-small u-mr--16">DataPage.imports.database.label-name</label> <input type="text" placeholder="DataPage.imports.database.placeholder-name"></div>
+    <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
+      <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16"><label class="is-small">param1</label>
+        <!---->
+      </div> <input placeholder="DataPage.imports.database.placeholder-param1" type="text">
+    </div>
+    <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
+      <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16"><label class="is-small">param2</label>
+        <!---->
+      </div> <input placeholder="DataPage.imports.database.placeholder-param2" type="number">
+    </div>
+    <div class="u-flex u-flex__align--center u-flex__justify--between u-mt--24 input-wrapper">
+      <div class="u-flex u-flex__direction--column u-flex__align--end u-flex__grow--1  u-mr--16"><label class="is-small">param3</label>
+        <!---->
+      </div> <input placeholder="DataPage.imports.database.placeholder-param3" type="password">
+    </div>
+    <!---->
+    <div class="u-flex u-flex__justify--end u-mt--32">
+      <!----> <button class="CDB-Button CDB-Button--primary CDB-Button--big is-disabled"><span class="u-flex CDB-Text is-semibold CDB-Size-medium"><!---->
+          DataPage.connect
+        </span></button></div>
+  </div>
+  <div class="info u-ml--80 ">
+    <h4 class="is-small is-semibold u-mb--8">DataPage.gettingConnected</h4>
+    <p class="text u-mt--10 is-txtMidGrey is-small">
+      DataPage.connectInfo
+    </p>
+    <div class="ports u-pt--16 u-pb--16 u-pl--24 u-pr--24 u-mt--16 is-txtMidGrey is-small u-flex u-flex__direction--column u-flex__justify--between"><span class="u-mb--4">35.188.111.175</span> <span class="u-mb--4">35.192.121.157</span> <span class="u-mb--4">35.238.166.16</span> <span class="u-mb--4">35.224.241.96</span> <span class="u-mb--4">35.232.84.56</span> <span class="u-mb--4">35.205.127.169</span> <span class="u-mb--4">35.233.31.201</span> <span class="u-mb--4">35.187.80.96</span> <span class="u-mb--4">104.197.28.44</span> <span class="u-mb--4">104.199.3.149</span> <span>104.155.126.89</span></div>
+  </div>
+</div>
+`;

@@ -3,9 +3,9 @@
 WORKERS=${1:-22}
 
 syntax_errors=0
-# check syntax of modified Ruby files before running tests 
-for i in $(git diff --name-only origin/master -- "*.rb" ); 
-    do echo $i; ruby -c $i || ((syntax_errors=syntax_errors+1)); 
+# check syntax of modified Ruby files before running tests
+for i in $(git diff --name-only origin/master -- "*.rb" );
+    do echo $i; ruby -c $i || ((syntax_errors=syntax_errors+1));
 done
 if [ $syntax_errors -gt 0 ]
 then

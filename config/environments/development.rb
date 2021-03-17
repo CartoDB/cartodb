@@ -20,6 +20,11 @@ CartoDB::Application.configure do
   # For nginx:
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect'
 
+  # If you have no front-end server that supports something like X-Sendfile,
+  # just comment this out and Rails will serve the files
+
+  config.logger = Carto::Common::Logger.new($stdout)
+
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store
 
@@ -67,17 +72,6 @@ CartoDB::Application.configure do
   config.middleware.insert_before ActionDispatch::Static, Rack::Deflater
 
   config.assets.initialize_on_precompile = true
-
-  # Send logs to stdout and set level to :info based on `CARTO_BUILDER_LOG_TO_STDOUT`
-  if ENV['CARTO_BUILDER_LOG_TO_STDOUT'] && ENV['CARTO_BUILDER_LOG_TO_STDOUT'] == 'true'
-    config.logger = Carto::Common::Logger.new($stdout)
-    config.log_level = :info
-  end
-
-  # If you have no front-end server that supports something like X-Sendfile,
-  # just comment this out and Rails will serve the files
-
-  config.logger = Carto::Common::Logger.new($stdout)
 
   config.action_controller.asset_host = Proc.new do
     Cartodb.asset_path

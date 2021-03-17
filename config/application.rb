@@ -225,6 +225,11 @@ module CartoDB
     ## Logging
     config.log_level = :info
     config.logger = Carto::Common::Logger.new(Carto::Conf.new.log_file_path("#{Rails.env}.log"))
+    # Send logs to stdout if `CARTO_BUILDER_LOG_TO_STDOUT` is set to 'true'
+    if ENV['CARTO_BUILDER_LOG_TO_STDOUT'] && ENV['CARTO_BUILDER_LOG_TO_STDOUT'] == 'true'
+      config.logger = Carto::Common::Logger.new($stdout)
+    end
+
   end
 end
 

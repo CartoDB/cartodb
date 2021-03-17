@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 #
 # This script creates config/app_config.yml and config/database.yml
 # from the corresponding .sample files as input and performing

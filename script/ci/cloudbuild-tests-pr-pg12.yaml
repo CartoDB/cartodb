@@ -53,7 +53,7 @@ steps:
   args: ['-c', 'git clone git@github.com:CartoDB/cartodb -b "${BRANCH_NAME}" --depth 1 --recursive .']
   volumes:
   - name: 'ssh'
-    path: /root/.ssh
+    path: /root/.ssh 
 
 # Checkout db-connectors
 - name: 'gcr.io/cloud-builders/git'

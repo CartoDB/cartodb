@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import getCARTOData from 'new-dashboard/store/utils/getCARTOData';
 import BigQueryConnectionForm from 'new-dashboard/components/Connector/BigQueryConnectionForm';
 import BigQueryConnectionOAuth from 'new-dashboard/components/Connector/BigQueryConnectionOAuth';
 
@@ -54,11 +55,15 @@ export default {
   mounted () {
     if (this.connection && this.connection.type === 'oauth-service') {
       this.selected = CONNECTION_MODES.OAUTH;
-    } else if (this.connection) {
+    } else if (this.connection || !this.hasBigQueryOauthEnabled) {
       this.selected = CONNECTION_MODES.SERVICE_ACCOUNT;
     }
   },
   computed: {
+    hasBigQueryOauthEnabled () {
+      const CARTOData = getCARTOData();
+      return CARTOData.config && !!CARTOData.config.oauth_bigquery;
+    },
     isServiceAccountdModeSelected () {
       return this.selected === CONNECTION_MODES.SERVICE_ACCOUNT;
     },

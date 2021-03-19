@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Connection.vue Render should render properly 1`] = `
+exports[`ConnectorsList.vue Render should render properly 1`] = `
 <div>
   <connectorsection-stub label="DataPage.databases" connectors="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]"></connectorsection-stub>
   <connectorsection-stub label="DataPage.cloudFiles" connectors="[object Object],[object Object],[object Object],[object Object]"></connectorsection-stub>

@@ -36,6 +36,8 @@ sudo make install
 ### Bug fixes / enhancements
 
 - Fix for listing tilesets from a BQ dataset witho no tilesets [16201](https://github.com/CartoDB/cartodb/pull/16201)
+- Fix Data page not loading due to null rows [16224](https://github.com/CartoDB/cartodb/pull/16224)
+- Add unicorn config sample and output log to stdout by setting environment variable [16221](https://github.com/CartoDB/cartodb/pull/16221/files)
 - Some CI improvements [16179](https://github.com/CartoDB/cartodb/pull/16179)
 - Bump @carto/viewer to v1.0.3 [16170](https://github.com/CartoDB/cartodb/pull/16170)
 - Show a new message for create connections after first login [16159](https://github.com/CartoDB/cartodb/pull/16159)

@@ -161,7 +161,7 @@ module Carto
       def connection_credentials
         return super unless @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
 
-        { 'token': @connection.token }
+        { 'refresh_token': @connection.token }
       end
 
       # Temporally we need to mantain this redis key until maps api is updated

@@ -561,7 +561,7 @@ describe Carto::ConnectionManager do
       expect(redis_data['connection_type']).to eq(connection.connection_type)
       expect(redis_data['connector']).to eq(connection.connector)
       expect(redis_data['options']).to eq({ 'billing_project' => 'the-billing-project' })
-      expect(redis_data['credentials']).to eq({ 'token' => 'the-token' })
+      expect(redis_data['credentials']).to eq({ 'refresh_token' => 'the-token' })
     end
   end
 

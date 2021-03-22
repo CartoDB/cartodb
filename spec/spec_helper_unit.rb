@@ -1,5 +1,5 @@
 require 'mocha'
-require 'mocha/setup'
+require 'mocha/api'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require 'helpers/unique_names_helper'
@@ -41,48 +41,13 @@ RSpec.configure do |config|
   config.include SharedEntitiesSpecHelper
   config.mock_with :mocha
 
+  # TODO: some state is leaking at some point in test DB initialization
+  config.before(:suite) { purgue_databases }
+
+  config.before { CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger) }
+
   config.after do
     Delorean.back_to_the_present
-  end
-
-  config.before(:all) do
-    CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
-
-    User.each do |user|
-      begin
-        puts "Closing DB connections: #{user.database_name}"
-        user.db_service.reset_pooled_connections
-      rescue Sequel::DatabaseError
-        nil
-      end
-
-      begin
-        puts "Removing DB: #{user.database_name}"
-        user.db_service.drop_database_and_user
-      rescue Sequel::DatabaseConnectionError
-        nil
-      end
-    end
-
-    Carto::FeatureFlagsUser.delete_all
-    Carto::FeatureFlag.delete_all
-    Carto::OauthToken.delete_all
-    Carto::OauthApp.delete_all
-    Carto::Map.delete_all
-    Carto::Visualization.delete_all
-    Carto::UserTable.delete_all
-    Carto::User.delete_all
-    Carto::SearchTweet.delete_all
-    Carto::AccountType.delete_all
-    Carto::RateLimit.delete_all
-    Carto::ClientApplication.delete_all
-    Carto::Organization.delete_all
-  end
-
-  config.around do |example|
-    DatabaseCleaner[:active_record].strategy = :truncation
-    DatabaseCleaner.clean
-
-    example.run
+    purgue_databases
   end
 end

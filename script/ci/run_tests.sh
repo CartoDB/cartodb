@@ -5,11 +5,11 @@
 #
 #   DEBUG: will prinnt extra debugging information
 #   LOCAL_CI: will run certain extra steps useful for running in a non-fresh local environment
-#   PARALLELIZATION_LEVEL: parallelization level. Will fallback to nº of CPU cores if undefined
+#   PARALLEL_TEST_PROCESSORS: parallelization level. Will fallback to nº of CPU cores if undefined
 #
 # Sample invocation:
 #
-#   LOCAL_CI=true DEBUG=true PARALLELIZATION_LEVEL=4 ./script/ci/run_tests.sh
+#   LOCAL_CI=true DEBUG=true PARALLEL_TEST_PROCESSORS=4 ./script/ci/run_tests.sh
 
 set -aex
 
@@ -23,15 +23,15 @@ CPU_CORES=$(nproc --all)
 POSTGRES_ADMIN_USER=postgres
 POSTGRES_HOST=localhost
 RAILS_ENV=test
-PARALLEL=true
+RUNTIME_LOG_FILE=tmp/parallel_runtime_rspec.log
 
-if [ -v PARALLELIZATION_LEVEL ]; then
+if [ -v PARALLEL_TEST_PROCESSORS ]; then
     # Prevent parallelization levels greater than CPU cores to avoid bottlenecks
-    PARALLELIZATION_LEVEL=$(( $PARALLELIZATION_LEVEL > $CPU_CORES ? $CPU_CORES : $PARALLELIZATION_LEVEL ))
+    PARALLEL_TEST_PROCESSORS=$(( $PARALLEL_TEST_PROCESSORS > $CPU_CORES ? $CPU_CORES : $PARALLEL_TEST_PROCESSORS ))
 else
-    PARALLELIZATION_LEVEL=$CPU_CORES
+    PARALLEL_TEST_PROCESSORS=$CPU_CORES
 fi
-echo "Parallelization level: ${PARALLELIZATION_LEVEL}"
+echo "Parallelization level: ${PARALLEL_TEST_PROCESSORS}"
 
 cd /cartodb
 
@@ -54,14 +54,19 @@ mkdir -p log && chmod -R 777 log/
 createdb -T template0 -O $POSTGRES_ADMIN_USER -h $POSTGRES_HOST -U $POSTGRES_ADMIN_USER -E UTF8 template_postgis || true
 psql -h $POSTGRES_HOST -U $POSTGRES_ADMIN_USER template_postgis -c 'CREATE EXTENSION IF NOT EXISTS postgis;CREATE EXTENSION IF NOT EXISTS postgis_topology;'
 if [ -v LOCAL_CI ] && [ $LOCAL_CI = 'true' ]; then
-    RAILS_ENV=test bundle exec rake parallel:drop[${PARALLELIZATION_LEVEL}] --trace || true
+    bundle exec rake parallel:drop --trace || true
 fi
-RAILS_ENV=test bundle exec rake parallel:setup[${PARALLELIZATION_LEVEL}] --trace
+bundle exec rake parallel:setup --trace
 
 
 ## Run tests
 set +e
-RAILS_ENV=test bundle exec rake parallel:spec[${PARALLELIZATION_LEVEL},'spec\/commands']
+RSPEC_PATTERN='spec\/(commands|lib\/tasks|requests\/api)'
+if [ -v DEBUG ] && [ $DEBUG = 'true' ]; then
+    bundle exec parallel_rspec spec/ --pattern ${RSPEC_PATTERN} --allowed-missing 100 --verbose --verbose-rerun-command
+else
+    bundle exec parallel_rspec spec/ --pattern ${RSPEC_PATTERN} --allowed-missing 100
+fi
 tests_exit_code=$?
 set -e
 
@@ -71,9 +76,11 @@ echo "Tests exit code: $tests_exit_code"
 
 
 ## Print aggregated RSpec report
+set +x
 echo "============================================================"
 echo "                       RSpec report                         "
 echo "============================================================"
+set -x
 cat tmp/spec_summary.log
 
 exit $tests_exit_code

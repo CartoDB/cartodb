@@ -1,5 +1,5 @@
 require 'mocha'
-require 'mocha/setup'
+require 'mocha/api'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require 'helpers/unique_names_helper'
@@ -68,6 +68,7 @@ RSpec.configure do |config|
       drop_leaked_test_user_databases
       delete_database_test_users
     end
+    purgue_databases
   end
 
   unless ENV['PARALLEL'] || ENV['BUILD_ID']

@@ -547,9 +547,11 @@ describe SessionsController do
   end
 
   describe '#login' do
+    let(:password) { '1234-abcd-5678' }
+
     before(:all) do
       @organization = create(:organization)
-      @user = create(:carto_user)
+      @user = create(:carto_user, password: password, password_confirmation: password)
     end
 
     after(:all) do
@@ -581,7 +583,7 @@ describe SessionsController do
 
       it 'disallows login from an organization login page to a non-member' do
         Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
-        post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @organization.name, email: @user.username, password: password)
         response.status.should == 200
         response.body.should include 'Not a member'
       end
@@ -595,12 +597,12 @@ describe SessionsController do
 
       it 'allows login from an organization login page to a non-member' do
         Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
-        post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @organization.name, email: @user.username, password: password)
         response.status.should == 302
       end
 
       it 'redirects to dashboard if `return_to` url is not present' do
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @user.username, email: @user.username, password: password)
         response.status.should == 302
         response.headers['Location'].should include '/dashboard'
       end
@@ -608,13 +610,13 @@ describe SessionsController do
       it 'redirects to the `return_to` url if present' do
         get api_key_credentials_url(user_domain: @user.username)
         cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @user.username, email: @user.username, password: password)
         response.status.should == 302
         response.headers['Location'].should include '/your_apps'
       end
 
       it 'redirects to current viewer dashboard if the `return_to` dashboard url belongs to other user' do
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @user.username, email: @user.username, password: password)
         cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
         get login_url(user_domain: 'wadus_user')
         response.headers['Location'].should include @user.username
@@ -625,14 +627,14 @@ describe SessionsController do
         get api_key_credentials_url(user_domain: @user.username)
 
         cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @user.username, email: @user.username, password: password)
         response.status.should == 302
         response.headers['Location'].should include '/your_apps'
         Marshal.dump(Base64.decode64(response.cookies["_cartodb_session"]))['return_to'].should be_nil
       end
 
       it 'creates _cartodb_base_url cookie' do
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @user.username, email: @user.username, password: password)
         response.cookies['_cartodb_base_url'].should eq CartoDB.base_url(@user.username)
       end
     end
@@ -647,7 +649,7 @@ describe SessionsController do
         CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
           event.class.should eq CartoGearsApi::Events::UserLoginEvent
         end
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @user.username, email: @user.username, password: password)
       end
 
       it 'sets dashboard_viewed_at just with login' do
@@ -655,7 +657,7 @@ describe SessionsController do
         @user.reload
         @user.dashboard_viewed_at.should be_nil
 
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @user.username, email: @user.username, password: password)
 
         @user.reload
         @user.dashboard_viewed_at.should_not be_nil
@@ -670,15 +672,15 @@ describe SessionsController do
         CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
           event.first_login?.should be_false
         end
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @user.username, email: @user.username, password: password)
       end
 
       it 'triggers CartoGearsApi::Events::UserLoginEvent signaling first login' do
-        @new_user = create(:carto_user)
+        @new_user = create(:carto_user, password: password, password_confirmation: password)
         CartoGearsApi::Events::EventManager.any_instance.expects(:notify).once.with do |event|
           event.first_login?.should be_true
         end
-        post create_session_url(user_domain: @new_user.username, email: @new_user.username, password: @new_user.password)
+        post create_session_url(user_domain: @new_user.username, email: @new_user.username, password: password)
         @new_user.destroy
       end
 
@@ -688,7 +690,7 @@ describe SessionsController do
           event_user.class.should eq CartoGearsApi::Users::User
           event_user.username.should eq @user.username
         end
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        post create_session_url(user_domain: @user.username, email: @user.username, password: password)
       end
     end
   end

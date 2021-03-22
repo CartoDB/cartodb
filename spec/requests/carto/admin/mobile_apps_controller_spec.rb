@@ -3,6 +3,8 @@ require_relative '../../../spec_helper_min'
 describe Carto::Admin::MobileAppsController do
   include Warden::Test::Helpers
 
+  let(:password) { '1234-abcd-5678' }
+
   TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
   MOBILE_APP = {
     id:           TEST_UUID,
@@ -15,7 +17,12 @@ describe Carto::Admin::MobileAppsController do
   }.freeze
 
   before(:all) do
-    @carto_user = create(:carto_user, mobile_max_open_users: 10000)
+    @carto_user = create(
+      :carto_user,
+      mobile_max_open_users: 10_000,
+      password: password,
+      password_confirmation: password
+    )
     @user = ::User[@carto_user.id]
   end
 
@@ -146,7 +153,7 @@ describe Carto::Admin::MobileAppsController do
       Cartodb::Central.stubs(:api_sync_enabled?).returns(true)
       Cartodb::Central.any_instance.stubs(:delete_mobile_app).returns({}).once
       login(@user)
-      delete mobile_app_path(id: TEST_UUID), password_confirmation: @carto_user.password
+      delete mobile_app_path(id: TEST_UUID), password_confirmation: password
       response.status.should eq 302
       response.location.should end_with 'your_apps/mobile'
     end

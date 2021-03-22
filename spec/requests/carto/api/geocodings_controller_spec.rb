@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper'
+require 'spec_helper_unit'
 require_relative '../../api/json/geocodings_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/geocodings_controller'
 require 'mock_redis'
@@ -10,20 +10,10 @@ describe Carto::Api::GeocodingsController do
 describe 'legacy behaviour tests' do
     let(:params) { { :api_key => @user.api_key } }
 
-    before(:all) do
+    before do
       @user = create_user
-    end
-
-    before(:each) do
-      bypass_named_maps
-      delete_user_data @user
       host! "#{@user.username}.localhost.lan"
       login_as(@user, scope: @user.username)
-    end
-
-    after(:all) do
-      bypass_named_maps
-      @user.destroy
     end
 
     describe 'GET /api/v1/geocodings' do
@@ -128,10 +118,10 @@ describe 'legacy behaviour tests' do
 
 
   describe 'available_geometries' do
-    include_context 'users helper'
     include_context 'visualization creation helpers'
 
-    before(:each) do
+    before do
+      @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       login(@user1)
     end
 
@@ -217,10 +207,10 @@ describe 'legacy behaviour tests' do
   end
 
   describe 'estimation_for' do
-    include_context 'users helper'
     include_context 'visualization creation helpers'
 
-    before(:each) do
+    before do
+      @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       login(@user1)
     end
 
@@ -241,9 +231,8 @@ describe 'legacy behaviour tests' do
   end
 
   describe 'index' do
-    include_context 'users helper'
-
-    before(:each) do
+    before do
+      @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       login(@user1)
     end
 
@@ -275,7 +264,8 @@ describe 'legacy behaviour tests' do
   describe 'show' do
     include_context 'users helper'
 
-    before(:each) do
+    before do
+      @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       login(@user1)
     end
 

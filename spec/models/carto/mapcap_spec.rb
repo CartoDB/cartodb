@@ -1,30 +1,18 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 require 'support/helpers'
 
 describe Carto::Mapcap do
   include Carto::Factories::Visualizations
 
-  before(:all) do
+  before do
     @user = create(:carto_user, private_tables_enabled: true)
-
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
   end
 
-  after(:all) do
-    destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-
-    @user.destroy
-  end
-
   describe '#ids_vizjson' do
-    before(:all) do
+    before do
       @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
       @ids_json = @mapcap.ids_json
-    end
-
-    after(:all) do
-      @mapcap.destroy
-      @ids_json = nil
     end
 
     it 'should have visualization_id' do
@@ -44,20 +32,12 @@ describe Carto::Mapcap do
     end
 
     describe 'with layers' do
-      before(:all) do
+      before do
         @carto_layer = create(:carto_layer, kind: 'carto', maps: [@map])
         @visualization.reload
 
         @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
         @ids_json_layers = @mapcap.ids_json[:layers]
-      end
-
-      after(:all) do
-        @mapcap.destroy
-        @carto_layer.destroy
-        @visualization.reload
-
-        @ids_json_layers = nil
       end
 
       it 'should not have empty layers' do
@@ -73,19 +53,12 @@ describe Carto::Mapcap do
       end
 
       describe 'with widgets' do
-        before(:all) do
+        before do
           @widget = create(:widget, layer: @carto_layer)
           @visualization.reload
 
           @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
           @ids_json_layers = @mapcap.ids_json[:layers]
-        end
-
-        after(:all) do
-          @widget.destroy
-          @visualization.reload
-          @mapcap.destroy
-          @ids_json_layers = nil
         end
 
         it 'should contain widgets only for layers with widgets and in the right order' do
@@ -100,16 +73,11 @@ describe Carto::Mapcap do
   end
 
   describe '#regenerate_visualization' do
-    before(:all) do
+    before do
       create(:analysis, visualization: @visualization, user: @user)
       create(:widget, layer: @visualization.data_layers.first)
       @visualization.reload
       @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
-    end
-
-    after(:all) do
-      @mapcap.destroy
-      @ids_json = nil
     end
 
     it 'tokens should be functional from regenerated visualizations after privacy changes' do
@@ -183,19 +151,13 @@ describe Carto::Mapcap do
     end
 
     describe 'without user DB' do
-      before(:all) do
+      before do
         @user_nodb = create(:carto_user, private_tables_enabled: true)
         @map_nodb, @table_nodb, @table_visualization_nodb, @visualization_nodb = create_full_visualization(@user_nodb)
         @mapcap_nodb = Carto::Mapcap.create!(visualization_id: @visualization_nodb.id)
         @actual_db_name = @user_nodb.database_name
         @user_nodb.update_attribute(:database_name, 'wadus')
         @mapcap_nodb.reload
-      end
-
-      after(:all) do
-        @user_nodb.update_attribute(:database_name, @actual_db_name)
-        destroy_full_visualization(@map_nodb, @table_nodb, @table_visualization_nodb, @visualization_nodb)
-        @user_nodb.destroy
       end
 
       it 'should work' do
@@ -207,17 +169,11 @@ describe Carto::Mapcap do
     end
 
     describe 'with layers' do
-      before(:all) do
+      before do
         @carto_layer = create(:carto_layer, kind: 'carto', maps: [@map])
         @visualization.reload
 
         @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
-      end
-
-      after(:all) do
-        @mapcap.destroy
-        @carto_layer.destroy
-        @visualization.reload
       end
 
       it 'should contain same layers in same order' do
@@ -233,17 +189,10 @@ describe Carto::Mapcap do
       end
 
       describe 'with widgets' do
-        before(:all) do
+        before do
           @widget = create(:widget, layer: @carto_layer)
           @visualization.reload
-
           @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
-        end
-
-        after(:all) do
-          @widget.destroy
-          @visualization.reload
-          @mapcap.destroy
         end
 
         it 'should contain widgets only for layers with widgets and in the right order' do

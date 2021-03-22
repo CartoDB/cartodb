@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper'
+require 'spec_helper_unit'
 require_relative '../../api/json/imports_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/imports_controller'
 require 'helpers/unique_names_helper'
@@ -14,18 +14,9 @@ describe Carto::Api::ImportsController do
 
   @headers = { 'CONTENT_TYPE'  => 'application/json' }
 
-  before(:all) do
+  before do
     @user = create(:valid_user)
     host! "#{@user.username}.localhost.lan"
-  end
-
-  after(:all) do
-    @user.destroy
-  end
-
-  before(:each) do
-    bypass_named_maps
-    delete_user_data @user
   end
 
   let(:params) { { api_key: @user.api_key } }

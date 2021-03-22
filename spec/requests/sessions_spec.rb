@@ -91,10 +91,10 @@ feature "Sessions" do
   end
 
   scenario "should redirect you to the user login page if unauthorized", :js => true do
-    @user  = create(:user_with_private_tables, :username => 'test')
+    user  = create(:user_with_private_tables)
 
-    visit api_key_credentials_url(:host => 'test.localhost.lan', :port => Capybara.server_port)
-    current_url.should be == login_url(:host => 'test.localhost.lan', :port => Capybara.server_port)
+    visit api_key_credentials_url(host: "#{user.username}.localhost.lan", port: Capybara.server_port)
+    current_url.should be == login_url(host: "#{user.username}.localhost.lan", port: Capybara.server_port)
   end
 
 

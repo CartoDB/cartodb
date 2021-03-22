@@ -14,11 +14,6 @@ module Carto
         @app = create(:oauth_app, user: @user)
       end
 
-      after(:all) do
-        @user.destroy
-        @app.destroy
-      end
-
       it 'requires user' do
         app_user = OauthAppUser.new
         expect(app_user).to_not(be_valid)
@@ -63,10 +58,6 @@ module Carto
           @app.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
         end
 
-        after(:all) do
-          @app.destroy
-        end
-
         it 'does not accept non-organization users' do
           app_user = OauthAppUser.new(user: @user, oauth_app: @app)
           expect(app_user).not_to(be_valid)
@@ -108,15 +99,10 @@ module Carto
         @t2 = create_table(user_id: @carto_user.id)
       end
 
-      after(:each) do
+      after do
         @t1.destroy
         @t2.destroy
         @app.destroy
-      end
-
-      after(:all) do
-        @user.destroy
-        @carto_user.destroy
       end
 
       it 'is authorized only if all requested scopes are already granted' do
@@ -165,16 +151,6 @@ module Carto
         @t4 = create_table(user_id: @carto_user.id)
       end
 
-      after(:all) do
-        @t1.destroy
-        @t2.destroy
-        @t3.destroy
-        @t4.destroy
-        @app.destroy
-        @user.destroy
-        @carto_user.destroy
-      end
-
       it 'grants all new scopes without duplicates' do
         o1 = "datasets:rw:#{@t1.name}"
         o2 = "datasets:rw:#{@t2.name}"
@@ -212,7 +188,7 @@ module Carto
         @table1 = create_table(user_id: @carto_user.id)
       end
 
-      after(:each) do
+      after do
         @table1.destroy
         @app.destroy
         @user.destroy
@@ -328,20 +304,12 @@ module Carto
     end
 
     describe 'schemas scope' do
-      before(:all) do
+      before do
         @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = create(:oauth_app, user: @carto_user)
         @table1 = create_table(user_id: @carto_user.id)
         @table2 = create_table(user_id: @carto_user.id)
-      end
-
-      after(:all) do
-        @table1.destroy
-        @table2.destroy
-        @app.destroy
-        @user.destroy
-        @carto_user.destroy
       end
 
       it 'creation and update' do
@@ -499,7 +467,7 @@ module Carto
         @non_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{not_shared_table.name}"
       end
 
-      after :each do
+      after do
         @app.destroy
       end
 
@@ -560,7 +528,7 @@ module Carto
           perm.save!
         end
 
-        after :each do
+        after do
           @only_read_table.destroy
         end
 
@@ -627,7 +595,7 @@ module Carto
             perm.save!
           end
 
-          after :each do
+          after do
             @only_read_table.destroy
           end
 
@@ -662,22 +630,8 @@ module Carto
         @app = create(:oauth_app, user: @carto_user)
       end
 
-      after :each do
+      after do
         @app.destroy
-      end
-
-      after :all do
-        @carto_user.in_database do |db|
-          query = %{
-            DROP VIEW #{@view_name};
-            DROP MATERIALIZED VIEW #{@materialized_view_name};
-          }
-          db.execute(query)
-        end
-
-        @user_table.destroy
-        @user.destroy
-        @carto_user.destroy
       end
 
       it 'validates view scope' do
@@ -709,7 +663,7 @@ module Carto
         @api_key = access_token.api_key
       end
 
-      after(:each) do
+      after do
         @app.destroy
         @user.destroy
       end

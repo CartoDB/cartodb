@@ -1,19 +1,12 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe "Geocodings API" do
-  before(:all) do
+  before do
+    bypass_named_maps
     @user = create(:valid_user, table_quota: 50)
 
     delete_user_data @user
     host! "#{@user.username}.localhost.lan"
-  end
-
-  after(:all) do
-    @user.destroy
-  end
-
-  before(:each) do
-    bypass_named_maps
   end
 
   let(:params) { { :api_key => @user.api_key } }

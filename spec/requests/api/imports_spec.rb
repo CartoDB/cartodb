@@ -1,19 +1,9 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe "Imports API" do
-
-  before(:all) do
+  before do
     @user = create(:valid_user)
-  end
-
-  before(:each) do
-    bypass_named_maps
-    delete_user_data @user
     host! "#{@user.username}.localhost.lan"
-  end
-
-  after(:all) do
-    @user.destroy
   end
 
   def auth_params

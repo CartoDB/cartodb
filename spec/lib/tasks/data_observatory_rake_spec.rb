@@ -1,25 +1,16 @@
-require 'spec_helper_min'
-require 'rake'
+require 'spec_helper_unit'
 
 describe 'data_observatory.rake' do
-  before(:all) do
+  before do
     Rake.application.rake_require('tasks/data_observatory')
     Rake::Task.define_task(:environment)
 
     @user = create(:valid_user, username: 'fulano')
   end
 
-  after(:all) do
-    @user.destroy
-  end
-
   describe '#purchase_datasets' do
-    before(:each) do
+    before do
       Rake::Task['cartodb:data_observatory:purchase_datasets'].reenable
-    end
-
-    after(:each) do
-      File.unstub(:open)
     end
 
     it 'throws an error if username is not provided' do

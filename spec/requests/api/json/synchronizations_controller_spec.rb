@@ -1,14 +1,14 @@
-require_relative '../../../spec_helper'
+require 'spec_helper_unit'
 require_relative 'synchronizations_controller_shared_examples'
 require_relative '../../../../app/controllers/api/json/synchronizations_controller'
 
 describe Api::Json::SynchronizationsController do
-  include_context 'users helper'
-
   it_behaves_like 'synchronization controllers' do
   end
 
-  before(:each) do
+  before do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
     login(@user1)
     @user1.sync_tables_enabled = true
     @user1.save
@@ -38,23 +38,17 @@ describe Api::Json::SynchronizationsController do
       end
 
       it 'creates a synchronization and enqueues a import job for external sources' do
-        begin
-          Resque::ImporterJobs.expects(:perform).once
-          carto_visualization = create(:carto_visualization, user_id: @user1.id)
-          external_source = create(:external_source, visualization: carto_visualization)
-          remote_id = external_source.visualization_id
+        Resque::ImporterJobs.expects(:perform).once
+        carto_visualization = create(:carto_visualization, user_id: @user1.id)
+        external_source = create(:external_source, visualization: carto_visualization)
+        remote_id = external_source.visualization_id
 
-          expect {
-            post_json api_v1_synchronizations_create_url(params.merge(remote_visualization_id: remote_id)) do |r|
-              r.status.should eq 200
-              Carto::Synchronization.find(r.body[:id]).state.should eq Carto::Synchronization::STATE_QUEUED
-            end
-          }.to change { Carto::Synchronization.count }.by 1
-        ensure
-          external_source.external_data_imports.each(&:destroy)
-          external_source.destroy
-          carto_visualization.destroy
-        end
+        expect {
+          post_json api_v1_synchronizations_create_url(params.merge(remote_visualization_id: remote_id)) do |r|
+            r.status.should eq 200
+            Carto::Synchronization.find(r.body[:id]).state.should eq Carto::Synchronization::STATE_QUEUED
+          end
+        }.to change { Carto::Synchronization.count }.by 1
       end
     end
 

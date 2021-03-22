@@ -1,5 +1,4 @@
-require 'spec_helper_min'
-require 'rake'
+require 'spec_helper_unit'
 require 'factories/carto_visualizations'
 
 describe 'cartodb:fix_unique_legends' do

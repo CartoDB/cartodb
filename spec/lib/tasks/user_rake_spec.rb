@@ -1,8 +1,7 @@
-require 'spec_helper_min'
-require 'rake'
+require 'spec_helper_unit'
 
 describe 'user' do
-  before :all do
+  before do
     Rake.application.rake_require "tasks/user"
     Rake::Task.define_task(:environment)
   end

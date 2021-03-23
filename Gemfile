@@ -104,7 +104,6 @@ group :test do
   gem 'parallel_tests'
   gem 'poltergeist', '1.18.1'
   gem 'rack-test', '0.6.3', require: 'rack/test'
-  gem 'rspec-instafail'
   gem 'rspec-rails', '2.12.0'
   gem 'selenium-webdriver', '>= 2.5.0'
   gem 'webrick', '1.3.1'

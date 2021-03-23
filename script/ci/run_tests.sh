@@ -13,6 +13,8 @@
 
 set -aex
 
+DEBUG=true
+
 if [ -v DEBUG ] && [ $DEBUG = 'true' ]; then
     echo 'Running with the following environment:'
     env

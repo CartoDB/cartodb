@@ -1,26 +1,27 @@
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 require_relative '../../factories/organizations_contexts'
-require_relative '../../../app/models/carto/invitation'
 require_relative '../../../app/controllers/carto/api/user_creations_controller'
 require_relative '../../../lib/resque/user_jobs'
 
 describe Carto::Invitation do
-  include_context 'organization with users helper'
+  let(:organization) { create(:organization_with_users) }
+  let(:organization_owner) { organization.owner }
+  let(:organization_user) { organization.non_owner_users.first }
 
   describe 'creation' do
     it 'fails for existing users' do
-      invitation = Carto::Invitation.create_new(@carto_org_user_owner, [@carto_org_user_1.email], 'hi', false)
+      invitation = Carto::Invitation.create_new(organization_owner, [organization_user.email], 'hi', false)
       invitation.valid?.should == false
     end
 
     it 'fails for non-owner users' do
       expect do
-        Carto::Invitation.create_new(@carto_org_user_1, ['no@carto.com'], 'hi', false)
+        Carto::Invitation.create_new(organization_user, ['no@carto.com'], 'hi', false)
       end.to raise_error CartoDB::InvalidUser
     end
 
     it 'fails for wrong emails' do
-      invitation = Carto::Invitation.create_new(@carto_org_user_owner, ['no', 'neither@'], 'hi', false)
+      invitation = Carto::Invitation.create_new(organization_owner, ['no', 'neither@'], 'hi', false)
       invitation.valid?.should == false
       invitation.errors[:users_emails].count.should == 2
     end
@@ -28,16 +29,16 @@ describe Carto::Invitation do
     it 'sends invitations' do
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
       emails = ['w_1@carto.com', 'w_2@carto.com']
-      invitation = Carto::Invitation.create_new(@carto_org_user_owner, emails, 'hi', false)
-      invitation.inviter_user_id.should == @carto_org_user_owner.id
-      invitation.organization_id.should == @carto_org_user_owner.organization_id
+      invitation = Carto::Invitation.create_new(organization_owner, emails, 'hi', false)
+      invitation.inviter_user_id.should == organization_owner.id
+      invitation.organization_id.should == organization_owner.organization_id
     end
   end
 
   describe 'token' do
-    before(:each) do
-      @invitation = Carto::Invitation.create_new(@carto_org_user_owner, [], 'Welcome!', false)
-      @invitation_2 = Carto::Invitation.create_new(@carto_org_user_owner, [], 'Welcome!', false)
+    before do
+      @invitation = Carto::Invitation.create_new(organization_owner, [], 'Welcome!', false)
+      @invitation_2 = Carto::Invitation.create_new(organization_owner, [], 'Welcome!', false)
     end
 
     it 'returns the same token for the same email' do
@@ -66,11 +67,11 @@ describe Carto::Invitation do
   end
 
   describe '#use' do
-    before(:each) do
+    before do
       @valid_email = 'email1@carto.com'
       @valid_email_2 = 'email2@carto.com'
       @invitation = Carto::Invitation.create_new(
-        @carto_org_user_owner,
+        organization_owner,
         [@valid_email, @valid_email_2],
         'Welcome!',
         false

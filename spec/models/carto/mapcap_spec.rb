@@ -4,9 +4,10 @@ require 'support/helpers'
 describe Carto::Mapcap do
   include Carto::Factories::Visualizations
 
+  let(:user) { create(:carto_user, private_tables_enabled: true, factory_bot_context: { only_db_setup: true }) }
+
   before do
-    @user = create(:carto_user, private_tables_enabled: true)
-    @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+    @map, _, _, @visualization = create_full_visualization(user)
   end
 
   describe '#ids_vizjson' do
@@ -74,7 +75,7 @@ describe Carto::Mapcap do
 
   describe '#regenerate_visualization' do
     before do
-      create(:analysis, visualization: @visualization, user: @user)
+      create(:analysis, visualization: @visualization, user: user)
       create(:widget, layer: @visualization.data_layers.first)
       @visualization.reload
       @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
@@ -152,11 +153,11 @@ describe Carto::Mapcap do
 
     describe 'without user DB' do
       before do
-        @user_nodb = create(:carto_user, private_tables_enabled: true)
-        @map_nodb, @table_nodb, @table_visualization_nodb, @visualization_nodb = create_full_visualization(@user_nodb)
+        user_nodb = create(:carto_user, private_tables_enabled: true, factory_bot_context: { only_db_setup: true })
+        @map_nodb, @table_nodb, @table_visualization_nodb, @visualization_nodb = create_full_visualization(user_nodb)
         @mapcap_nodb = Carto::Mapcap.create!(visualization_id: @visualization_nodb.id)
-        @actual_db_name = @user_nodb.database_name
-        @user_nodb.update_attribute(:database_name, 'wadus')
+        @actual_db_name = user_nodb.database_name
+        user_nodb.update_attribute(:database_name, 'wadus')
         @mapcap_nodb.reload
       end
 

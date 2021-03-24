@@ -1,4 +1,4 @@
-require_relative '../../spec_helper_min'
+require 'spec_helper_unit'
 require 'models/user_table_shared_examples'
 
 describe Carto::UserTable do
@@ -6,7 +6,7 @@ describe Carto::UserTable do
 
   let(:user) { create(:carto_user) }
 
-  before(:all) do
+  before do
     @user = user
     @carto_user = user
     @user_table = Carto::UserTable.new
@@ -71,19 +71,23 @@ describe Carto::UserTable do
   end
 
   describe '#readable_by?' do
-    include_context 'organization with users helper'
+    before do
+      organization = create(:organization_with_users)
+      @org_user_1 = organization.users.first
+      @org_user_2 = organization.users.second
+    end
 
     it 'returns true for shared tables' do
       @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "a_table_name", user_id: @org_user_1.id)
       user_table = Carto::UserTable.find(@table.id)
       share_table_with_user(@table, @org_user_2)
 
-      user_table.readable_by?(@carto_org_user_2).should be_true
+      user_table.readable_by?(@org_user_2).should be_true
     end
   end
 
   describe('#affected_visualizations') do
-    before(:each) do
+    before do
       # We recreate an inconsistent state where a layer has no visualization
       @user_table.stubs(:layers).returns([Carto::Layer.new])
     end

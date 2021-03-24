@@ -1,16 +1,12 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 module Carto
   describe UsernameProposer do
     describe '#find_unique' do
-      before(:all) do
+      before do
         @users = Array.new
-        @users << create(:carto_user, username: 'manolo')
-        @users << create(:carto_user, username: 'manolo-1')
-      end
-
-      after(:all) do
-        @users.map(&:destroy)
+        @users << create(:carto_user_light, username: 'manolo')
+        @users << create(:carto_user_light, username: 'manolo-1')
       end
 
       it 'returns same if available' do
@@ -22,7 +18,7 @@ module Carto
       end
 
       it 'fills in the gaps' do
-        @users << create(:carto_user, username: 'manolo-3')
+        @users << create(:carto_user_light, username: 'manolo-3')
 
         UsernameProposer.find_unique('manolo').should eq 'manolo-2'
       end

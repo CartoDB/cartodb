@@ -1,4 +1,4 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 require 'support/helpers'
 require 'helpers/account_types_helper'
 
@@ -6,7 +6,7 @@ describe Carto::AccountType do
   include CartoDB::Factories
   include AccountTypesHelper
 
-  before :each do
+  before do
     @account_type = create_account_type_fg('PRO')
   end
 

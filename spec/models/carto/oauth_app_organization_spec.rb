@@ -1,19 +1,12 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 module Carto
   describe OauthAppOrganization do
+    let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+    let(:organization) { create(:organization) }
+    let(:app) { create(:oauth_app, user: user) }
+
     describe '#validation' do
-      before(:all) do
-        @user = create(:carto_user)
-        @organization = create(:carto_organization)
-        @app = create(:oauth_app, user: @user)
-      end
-
-      after(:all) do
-        @user.destroy
-        @app.destroy
-      end
-
       it 'requires organization' do
         app_organization = OauthAppOrganization.new
         expect(app_organization).to_not(be_valid)
@@ -28,12 +21,12 @@ module Carto
 
       it 'does not allow duplicates' do
         begin
-          @app_organization1 = OauthAppOrganization.create!(organization: @organization, oauth_app: @app, seats: 1)
-          app_organization2 = OauthAppOrganization.new(organization: @organization, oauth_app: @app, seats: 1)
+          app_organization1 = OauthAppOrganization.create!(organization: organization, oauth_app: app, seats: 1)
+          app_organization2 = OauthAppOrganization.new(organization: organization, oauth_app: app, seats: 1)
           expect(app_organization2).to_not(be_valid)
           expect(app_organization2.errors[:organization]).to(include("has already been taken"))
         ensure
-          @app_organization1.destroy if @app_organization1
+          app_organization1.destroy if app_organization1
         end
       end
 
@@ -52,7 +45,7 @@ module Carto
       end
 
       it 'validates' do
-        app_organization = OauthAppOrganization.new(organization: @organization, oauth_app: @app, seats: 5)
+        app_organization = OauthAppOrganization.new(organization: organization, oauth_app: app, seats: 5)
         expect(app_organization).to(be_valid)
       end
     end

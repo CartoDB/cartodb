@@ -1,4 +1,4 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::AnalysisNode do
   let(:analysis_definition) do
@@ -33,7 +33,7 @@ describe Carto::AnalysisNode do
     }
   end
 
-  before(:each) do
+  before do
     @node = Carto::AnalysisNode.new(analysis_definition)
   end
 

@@ -1,4 +1,4 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 require_relative '../data_import_shared_examples'
 
 describe Carto::DataImport do

@@ -1,19 +1,13 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 module Carto
   describe OauthAuthorizationCode do
     describe '#validation' do
-      before(:all) do
+      before do
         @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = build(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.new(user: @carto_user, oauth_app: @app)
-      end
-
-      after(:all) do
-        @app_user.destroy
-        @app.destroy
-        @user.destroy
       end
 
       it 'does not accept invalid scopes' do
@@ -36,25 +30,12 @@ module Carto
     end
 
     describe '#exchange!' do
-      before(:all) do
+      before do
         @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create(user: @carto_user, oauth_app: @app)
-      end
-
-      after(:all) do
-        @app_user.destroy
-        @app.destroy
-        @user.destroy
-      end
-
-      before(:each) do
         @authorization_code = @app_user.oauth_authorization_codes.create!
-      end
-
-      after(:each) do
-        @authorization_code.destroy
       end
 
       it 'fails if the code is expired' do

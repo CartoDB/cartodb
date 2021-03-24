@@ -1,8 +1,14 @@
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 require_relative '../user_shared_examples'
 
 describe Carto::User do
   let(:user) { create(:carto_user) }
+  let(:organization_owner) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+  let(:organization) { create(:organization, :with_owner, owner: organization_owner) }
+  let(:organization_user_1) { organization.owner }
+  let(:organization_user_2) do
+    create(:carto_user, organization_id: organization.id, factory_bot_context: { only_db_setup: true })
+  end
 
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
@@ -43,21 +49,17 @@ describe Carto::User do
   end
 
   describe '#soft_geocoding_limit' do
-    before(:all) do
-      @carto_user = build(:carto_user)
-    end
-
     it 'false for free accounts' do
-      @carto_user.account_type = 'FREE'
+      user.account_type = 'FREE'
 
-      @carto_user.soft_geocoding_limit?.should be_false
+      user.soft_geocoding_limit?.should be_false
     end
 
     it 'false for BASIC and PRO accounts' do
       ['BASIC', 'PRO', 'Individual'].each do |account_type|
-        @carto_user.account_type = account_type
+        user.account_type = account_type
 
-        @carto_user.soft_geocoding_limit?.should be_false
+        user.soft_geocoding_limit?.should be_false
       end
     end
   end
@@ -73,65 +75,51 @@ describe Carto::User do
   end
 
   describe "#send_password_reset!" do
-    before(:all) do
-      @user = create(:carto_user)
-    end
-
-    after(:all) do
-      @user.destroy
-    end
-
     it 'enqueues a job to send an email' do
-      Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::PasswordReset, @user.id)
+      Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::PasswordReset, user.id)
 
-      @user.send_password_reset!
+      user.send_password_reset!
     end
 
     it 'updates password_reset_token' do
-      expect { @user.send_password_reset! }.to change(@user, :password_reset_token)
+      expect { user.send_password_reset! }.to change(user, :password_reset_token)
     end
 
     it 'updates password_reset_sent_at' do
-      now = Time.zone.now
+      original_timestamp = user.password_reset_sent_at
 
-      Delorean.time_travel_to(now) do
-        @user.send_password_reset!
-      end
+      user.send_password_reset!
 
-      @user.password_reset_sent_at.to_s.should eql now.to_s
+      expect(user.reload.password_reset_sent_at).not_to eq(original_timestamp)
     end
   end
 
   describe '#is_email_notification_enabled' do
-    before(:all) do
-      @carto_user = create(:carto_user)
-    end
-
     it 'returns the notification flag if it exists' do
       notification_type = Carto::UserEmailNotification::NOTIFICATION_DO_SUBSCRIPTIONS
       email_notification = Carto::UserEmailNotification.create(
-        user_id: @carto_user.id,
+        user_id: user.id,
         notification: notification_type,
         enabled: false
       )
 
-      expect(@carto_user.email_notification_enabled?(notification_type)).to be_false
+      expect(user.email_notification_enabled?(notification_type)).to be_false
       email_notification.destroy
     end
 
     it 'returns true as default if notification is missing' do
-      expect(@carto_user.email_notification_enabled?('missing')).to be_true
+      expect(user.email_notification_enabled?('missing')).to be_true
     end
 
     it 'cascade delete notifications if the user is destroyed' do
       notification_type = Carto::UserEmailNotification::NOTIFICATION_DO_SUBSCRIPTIONS
       email_notification = Carto::UserEmailNotification.create(
-        user_id: @carto_user.id,
+        user_id: user.id,
         notification: notification_type,
         enabled: true
       )
 
-      @carto_user.destroy
+      user.destroy
       expect do
         Carto::UserEmailNotification.find(email_notification.id)
       end.to raise_error ActiveRecord::RecordNotFound
@@ -139,7 +127,7 @@ describe Carto::User do
 
     it 'does not create object if an invalid type is provided' do
       email_notification = Carto::UserEmailNotification.new(
-        user_id: @carto_user.id,
+        user_id: user.id,
         notification: 'invalid_type',
         enabled: true
       )
@@ -148,45 +136,41 @@ describe Carto::User do
   end
 
   describe '#email_notification=' do
-    before(:all) do
-      @carto_user = create(:carto_user)
-    end
-
     it 'creates a fresh set of notifications' do
       Carto::UserEmailNotification.any_instance.stubs(:valid_notification).returns(true)
-      @carto_user.email_notifications = {
+      user.email_notifications = {
         notif_a: true,
         notif_b: false
       }
 
-      expect(@carto_user.email_notifications.length).to eq 2
-      expect(@carto_user.email_notification_enabled?('notif_a')).to be_true
-      expect(@carto_user.email_notification_enabled?('notif_b')).to be_false
+      expect(user.email_notifications.length).to eq 2
+      expect(user.email_notification_enabled?('notif_a')).to be_true
+      expect(user.email_notification_enabled?('notif_b')).to be_false
     end
 
     it 'updates notifications if they already exist' do
       Carto::UserEmailNotification.any_instance.stubs(:valid_notification).returns(true)
       Carto::UserEmailNotification.create(
-        user_id: @carto_user.id,
+        user_id: user.id,
         notification: 'existing_notification',
         enabled: true
       )
 
-      @carto_user.email_notifications = {
+      user.email_notifications = {
         notif_a: true,
         notif_b: false,
         existing_notification: false
       }
 
-      expect(@carto_user.email_notifications.length).to eq 3
-      expect(@carto_user.email_notification_enabled?('notif_a')).to be_true
-      expect(@carto_user.email_notification_enabled?('notif_b')).to be_false
-      expect(@carto_user.email_notification_enabled?('existing_notification')).to be_false
+      expect(user.email_notifications.length).to eq 3
+      expect(user.email_notification_enabled?('notif_a')).to be_true
+      expect(user.email_notification_enabled?('notif_b')).to be_false
+      expect(user.email_notification_enabled?('existing_notification')).to be_false
     end
 
     it 'raises an error if an invalid notification is set' do
       expect do
-        @carto_user.email_notifications = {
+        user.email_notifications = {
           notif_a: true
         }
       end.to raise_error StandardError

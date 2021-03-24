@@ -1,24 +1,23 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 require 'helpers/database_connection_helper'
 
 module Carto
   describe OauthAccessToken do
-    include_context 'organization with users helper'
     include DatabaseConnectionHelper
 
+    before do
+      @organization = create(:organization_with_users)
+      @org_user_1 = @organization.users.first
+      @org_user_2 = @organization.users.second
+    end
+
     describe '#validation' do
-      before(:all) do
+      before do
         @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create!(user: @carto_user, oauth_app: @app)
         @user_table = create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
-      end
-
-      after(:all) do
-        @user.destroy
-        @app.destroy
-        @user_table.destroy
       end
 
       it 'does not accept invalid scopes' do
@@ -251,7 +250,7 @@ module Carto
     end
 
     describe 'cdb_conf_info' do
-      before(:all) do
+      before do
         @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = create(:oauth_app, user: @carto_user)
@@ -259,13 +258,6 @@ module Carto
         @user_table = create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
         @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
         Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
-      end
-
-      after(:all) do
-        @user.destroy
-        @app.destroy
-        @user_table.destroy
-        Carto::ApiKey.any_instance.unstub(:db_role)
       end
 
       it 'saves ownership_role_name in cdb_conf_info if schemas granted' do
@@ -294,23 +286,18 @@ module Carto
     end
 
     describe '#shared datasets' do
-      before :each do
-        @app = create(:oauth_app, user: @carto_org_user_1)
-        @app_user = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app)
-        @shared_table = create_table(user_id: @carto_org_user_1.id)
-        @not_shared_table = create_table(user_id: @carto_org_user_1.id)
+      before do
+        @app = create(:oauth_app, user: @org_user_1)
+        @app_user = OauthAppUser.create!(user: @org_user_2, oauth_app: @app)
+        @shared_table = create_table(user_id: @org_user_1.id)
+        @not_shared_table = create_table(user_id: @org_user_1.id)
 
         perm = @shared_table.table_visualization.permission
-        perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'rw' }]
+        perm.acl = [{ type: 'user', entity: { id: @org_user_2.id }, access: 'rw' }]
         perm.save!
 
-        @shared_dataset_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
-        @non_shared_dataset_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@not_shared_table.name}"
-      end
-
-      after :each do
-        @app_user.destroy
-        @app.destroy
+        @shared_dataset_scope = "datasets:rw:#{@org_user_1.database_schema}.#{@shared_table.name}"
+        @non_shared_dataset_scope = "datasets:rw:#{@org_user_1.database_schema}.#{@not_shared_table.name}"
       end
 
       it 'works with shared dataset' do
@@ -326,7 +313,7 @@ module Carto
                 {
                   name: @shared_table.name,
                   permissions: ['select', 'insert', 'update', 'delete'],
-                  schema: @carto_org_user_1.database_schema
+                  schema: @org_user_1.database_schema
                 }
               ]
             }
@@ -338,7 +325,7 @@ module Carto
         expect(access_token.api_key.grants).to(eq(expected_grants))
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          connection.execute("select count(1) from #{@carto_org_user_1.database_schema}.#{@shared_table.name}")
+          connection.execute("select count(1) from #{@org_user_1.database_schema}.#{@shared_table.name}")
         end
       end
 
@@ -364,20 +351,16 @@ module Carto
       end
 
       describe 'read - write permissions' do
-        before :each do
-          @only_read_table = create_table(user_id: @carto_org_user_1.id)
+        before do
+          @only_read_table = create_table(user_id: @org_user_1.id)
 
           perm = @only_read_table.table_visualization.permission
-          perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'r' }]
+          perm.acl = [{ type: 'user', entity: { id: @org_user_2.id }, access: 'r' }]
           perm.save!
         end
 
-        after :each do
-          @only_read_table.destroy
-        end
-
         it 'should fail write scope in shared dataset with only read perms' do
-          rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
+          rw_scope = "datasets:rw:#{@org_user_1.database_schema}.#{@only_read_table.name}"
           expect {
             OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [rw_scope])
           }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
@@ -386,29 +369,24 @@ module Carto
     end
 
     describe 'organization shared datasets' do
-      before :each do
-        @app = create(:oauth_app, user: @carto_org_user_1)
-        @app_user = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app)
-        @org_shared_table = create_table(user_id: @carto_org_user_1.id)
-        @non_org_shared_table = create_table(user_id: @carto_org_user_1.id)
+      before do
+        @app = create(:oauth_app, user: @org_user_1)
+        @app_user = OauthAppUser.create!(user: @org_user_2, oauth_app: @app)
+        @org_shared_table = create_table(user_id: @org_user_1.id)
+        @non_org_shared_table = create_table(user_id: @org_user_1.id)
 
         perm = @org_shared_table.table_visualization.permission
         perm.acl = [
           {
             type: Carto::Permission::TYPE_ORGANIZATION,
-            entity: { id: @carto_organization.id },
+            entity: { id: @organization.id },
             access: Carto::Permission::ACCESS_READWRITE
           }
         ]
         perm.save!
 
-        @org_shared_dataset_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"
-        @non_org_shared_dataset_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@non_org_shared_table.name}"
-      end
-
-      after :each do
-        @app_user.destroy
-        @app.destroy
+        @org_shared_dataset_scope = "datasets:rw:#{@org_user_1.database_schema}.#{@org_shared_table.name}"
+        @non_org_shared_dataset_scope = "datasets:rw:#{@org_user_1.database_schema}.#{@non_org_shared_table.name}"
       end
 
       it 'works with shared dataset' do
@@ -424,7 +402,7 @@ module Carto
                 {
                   name: @org_shared_table.name,
                   permissions: ['select', 'insert', 'update', 'delete'],
-                  schema: @carto_org_user_1.database_schema
+                  schema: @org_user_1.database_schema
                 }
               ]
             }
@@ -447,7 +425,7 @@ module Carto
               type: 'database',
               schemas: [
                 {
-                  name: @carto_org_user_2.database_schema,
+                  name: @org_user_2.database_schema,
                   permissions: ['create']
                 }
               ]
@@ -455,7 +433,7 @@ module Carto
           ]
 
         access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
-                                                scopes: ["schemas:c:#{@carto_org_user_2.database_schema}"])
+                                                scopes: ["schemas:c:#{@org_user_2.database_schema}"])
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
         expect(access_token.api_key.grants).to(eq(expected_grants))
@@ -484,26 +462,22 @@ module Carto
       end
 
       describe 'read - write permissions' do
-        before :each do
-          @only_read_table = create_table(user_id: @carto_org_user_1.id)
+        before do
+          @only_read_table = create_table(user_id: @org_user_1.id)
 
           perm = @only_read_table.table_visualization.permission
           perm.acl = [
             {
               type: Carto::Permission::TYPE_ORGANIZATION,
-              entity: { id: @carto_organization.id },
+              entity: { id: @organization.id },
               access: Carto::Permission::ACCESS_READONLY
             }
           ]
           perm.save!
         end
 
-        after :each do
-          @only_read_table.destroy
-        end
-
         it 'should fail write scope in shared dataset with only read perms' do
-          rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
+          rw_scope = "datasets:rw:#{@org_user_1.database_schema}.#{@only_read_table.name}"
           expect {
             OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [rw_scope])
           }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
@@ -512,11 +486,10 @@ module Carto
     end
 
     describe 'views' do
-      before :all do
+      before do
         @user = create(:valid_user)
-        @carto_user = Carto::User.find(@user.id)
+        @carto_user = @user.carto_user
         @user_table = create_table(user_id: @carto_user.id)
-
         @view_name = "#{@user_table.name}_view"
         @materialized_view_name = "#{@user_table.name}_matview"
         @carto_user.in_database do |db|
@@ -526,30 +499,8 @@ module Carto
           }
           db.execute(query)
         end
-      end
-
-      before :each do
         @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create!(user: @carto_user, oauth_app: @app)
-      end
-
-      after :each do
-        @app_user.destroy
-        @app.destroy
-      end
-
-      after :all do
-        @carto_user.in_database do |db|
-          query = %{
-            DROP VIEW #{@view_name};
-            DROP MATERIALIZED VIEW #{@materialized_view_name};
-          }
-          db.execute(query)
-        end
-
-        @user_table.destroy
-        @user.destroy
-        @carto_user.destroy
       end
 
       it 'validates view scope' do

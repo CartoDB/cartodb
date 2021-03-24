@@ -1,21 +1,11 @@
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 
 describe Carto::Map do
   include Carto::Factories::Visualizations
 
-  before(:all) do
+  before do
     @user = create_user
     @carto_user = Carto::User.find(@user.id)
-  end
-
-  before(:each) do
-    bypass_named_maps
-    delete_user_data(@user)
-  end
-
-  after(:all) do
-    bypass_named_maps
-    @user.destroy
   end
 
   it "Tests layer ordering" do
@@ -26,14 +16,14 @@ describe Carto::Map do
     map = ::Map.create(user_id: @user.id, table_id: table.id)
 
     5.times do
-      map.add_layer(::Layer.create(kind: 'carto'))
+      map.add_layer(create(:layer, kind: 'carto'))
     end
 
     3.times do
-      map.add_layer(Layer.create(kind: 'tiled'))
+      map.add_layer(create(:layer, kind: 'tiled'))
     end
 
-    map.add_layer(Layer.create(kind: 'torque'))
+    map.add_layer(create(:layer, kind: 'torque'))
 
     layers_count = map.layers.count
     layers_count.should eq 9
@@ -78,16 +68,10 @@ describe Carto::Map do
   end
 
   describe '#update_dataset_dependencies' do
-    before(:all) do
+    before do
       @carto_layer = create(:carto_layer, kind: 'carto')
       @torque_layer = create(:carto_layer, kind: 'torque')
       @map = Carto::Map.create(user: @carto_user, layers: [@carto_layer, @torque_layer])
-    end
-
-    after(:all) do
-      @torque_layer.destroy
-      @carto_layer.destroy
-      @map.destroy
     end
 
     it 'updates dependencies of carto layers' do

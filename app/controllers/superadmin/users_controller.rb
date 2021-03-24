@@ -31,7 +31,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       respond_with(:superadmin, users)
     elsif params[:db_size_in_bytes_change].present?
       # This use case is specific: we only return cached db_size_in_bytes, which is
-      # much much faster and doesn't add load to the database.
+      # much much much faster and doesn't add load to the database.
       username_dbsize = Carto::UserDbSizeCache.new.db_size_in_bytes_change_users
       respond_with(:superadmin, username_dbsize.map do |username, db_size_in_bytes|
         { 'username' => username, 'db_size_in_bytes' => db_size_in_bytes }

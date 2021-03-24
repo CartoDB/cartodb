@@ -36,6 +36,7 @@ sudo make install
 - Split tests load evenly in the new CI [#16227](https://github.com/CartoDB/cartodb/pull/16227)
 - Catalog fixes: show products only, fix the legend formatting [#16219](https://github.com/CartoDB/cartodb/pull/16219)
 - Migrate spec/models/carto to the new CI [#16228](https://github.com/CartoDB/cartodb/pull/16228)
+- Add new static page for tilesets viewer [#16232](https://github.com/CartoDB/cartodb/pull/16232)
 
 ### Bug fixes / enhancements
 

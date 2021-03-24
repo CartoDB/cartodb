@@ -34,5 +34,32 @@ module.exports = {
         config: webpackFiles.htmlFiles[entryName]
       });
     })
-  ]
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        include: [
+          './node_modules/@carto/viewer'
+        ],
+        exclude: [
+          './node_modules/@carto/viewer/node_modules'
+        ],
+        options: {
+          babelrc: true
+        }
+      },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+        include: [
+          './node_modules/@carto/viewer'
+        ],
+        exclude: [
+          './node_modules/@carto/viewer/node_modules'
+        ]
+      }
+    ]
+  }
 };

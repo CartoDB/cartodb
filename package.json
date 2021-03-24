@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.231",
+  "version": "1.0.0-assets.232-viewer01",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "@carto/carto.js": "^4.2.1",
     "@carto/toolkit-core": "0.0.1-rc.18",
     "@carto/toolkit-custom-storage": "0.0.1-rc.18",
-    "@carto/viewer": "CartoDB/viewer#v1.0.3",
+    "@carto/viewer": "CartoDB/viewer#ivan/staging-viewer-cartodb",
     "@carto/zera": "1.0.7",
     "@deck.gl/carto": "^8.4.5",
     "@deck.gl/core": "^8.4.5",
@@ -248,6 +248,7 @@
     "dev:editor:cdb": "grunt editor-cdb",
     "dev:static": "webpack --progress --watch --config webpack/static-pages/webpack.dev.config.js",
     "dev:do-catalog": "NODE_ENV=development vue-cli-service serve --watch lib/assets/javascripts/do-catalog/main.js",
+    "dev:tilesets-viewer": "NODE_ENV=development vue-cli-service serve --watch lib/assets/javascripts/tilesets-viewer/main.js",
     "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json"
   }
 }

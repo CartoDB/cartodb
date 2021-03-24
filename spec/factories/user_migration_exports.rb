@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :user_migration_export, class: Carto::UserMigrationExport do
     user { user_id ? Carto::User.find(user_id) : nil }

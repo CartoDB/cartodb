@@ -72,13 +72,13 @@ describe Carto::VisualizationExport do
 
   describe '#export' do
     it 'exports a .carto file including the carto.json and the files' do
-      map = FactoryGirl.create(:carto_map, user: @carto_user1)
+      map = create(:carto_map, user: @carto_user1)
 
-      table1 = FactoryGirl.create(:private_user_table, user: @carto_user1)
-      table2 = FactoryGirl.create(:private_user_table, user: @carto_user1)
+      table1 = create(:private_user_table, user: @carto_user1)
+      table2 = create(:private_user_table, user: @carto_user1)
 
-      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name }, maps: [map])
-      FactoryGirl.create(:carto_layer, options: { table_name: table2.name }, maps: [map])
+      layer1 = create(:carto_layer, options: { table_name: table1.name }, maps: [map])
+      create(:carto_layer, options: { table_name: table2.name }, maps: [map])
 
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1,
                                                                                  map: map,
@@ -108,11 +108,11 @@ describe Carto::VisualizationExport do
     end
 
     it 'excludes data not accessible by the user' do
-      map = FactoryGirl.create(:carto_map, user: @carto_user1)
+      map = create(:carto_map, user: @carto_user1)
 
-      table1 = FactoryGirl.create(:private_user_table, user: @carto_user1)
+      table1 = create(:private_user_table, user: @carto_user1)
 
-      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name }, maps: [map])
+      layer1 = create(:carto_layer, options: { table_name: table1.name }, maps: [map])
 
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1,
                                                                                  map: map,
@@ -140,13 +140,13 @@ describe Carto::VisualizationExport do
     end
 
     it 'excludes layers and user_tables with user_tables_ids parameter' do
-      map = FactoryGirl.create(:carto_map, user: @carto_user1)
+      map = create(:carto_map, user: @carto_user1)
 
-      table1 = FactoryGirl.create(:private_user_table, user: @carto_user1)
-      table2 = FactoryGirl.create(:private_user_table, user: @carto_user1)
+      table1 = create(:private_user_table, user: @carto_user1)
+      table2 = create(:private_user_table, user: @carto_user1)
 
-      layer1 = FactoryGirl.create(:carto_layer, options: { table_name: table1.name }, maps: [map])
-      FactoryGirl.create(:carto_layer, options: { table_name: table2.name }, maps: [map])
+      layer1 = create(:carto_layer, options: { table_name: table1.name }, maps: [map])
+      create(:carto_layer, options: { table_name: table2.name }, maps: [map])
 
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1,
                                                                                  map: map,
@@ -180,8 +180,8 @@ describe Carto::VisualizationExport do
   describe '#run_export!' do
     # run_export! is called from the job, but the core of the logic is in `#export`, this makes sure its usage
     it 'calls #export' do
-      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1)
-      ve = FactoryGirl.create(:visualization_export, user: @carto_user1, visualization: visualization)
+      visualization = create(:carto_visualization, user: @carto_user1)
+      ve = create(:visualization_export, user: @carto_user1, visualization: visualization)
 
       fake_path = "/tmp/fakepath"
       touch(fake_path)
@@ -197,7 +197,7 @@ describe Carto::VisualizationExport do
 
     describe 'with S3' do
       before(:each) do
-        @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1)
+        @visualization = create(:carto_visualization, user: @carto_user1)
       end
 
       after(:each) do

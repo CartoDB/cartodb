@@ -14,27 +14,12 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       @model_class.where(id: creation_model.id).first
     end
 
-    before(:all) do
+    before do
       set_tested_classes(tested_klass, model_klass)
-      puts "Testing class #{tested_klass.to_s} with model #{model_klass.to_s}"
-
-      @user_1 = FactoryGirl.create(:valid_user)
-      @user_2 = FactoryGirl.create(:valid_user)
-    end
-
-    after(:all) do
-      @user_1.destroy
-      @user_2.destroy
-    end
-
-    before(:each) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    end
-
-    before(:each) do
       bypass_named_maps
-      delete_user_data @user_1
-      delete_user_data @user_2
+      @user_1 = create(:valid_user)
+      @user_2 = create(:valid_user)
     end
 
     it "Tests to_json()" do

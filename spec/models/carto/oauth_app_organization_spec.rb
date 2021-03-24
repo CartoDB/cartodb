@@ -4,9 +4,9 @@ module Carto
   describe OauthAppOrganization do
     describe '#validation' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @organization = FactoryGirl.create(:carto_organization)
-        @app = FactoryGirl.create(:oauth_app, user: @user)
+        @user = create(:carto_user)
+        @organization = create(:carto_organization)
+        @app = create(:oauth_app, user: @user)
       end
 
       after(:all) do

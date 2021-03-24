@@ -8,7 +8,7 @@ describe Carto::Api::ConnectorsController do
 
   before(:all) do
     create(:feature_flag, name: 'carto-connectors', restricted: false)
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
 
     @previous_providers = replace_connector_providers(
       dummy_connector_provider_with_id('postgres', 'PostgreSQL'),
@@ -27,17 +27,17 @@ describe Carto::Api::ConnectorsController do
     @connector_provider_postgres = Carto::ConnectorProvider.find_by(name: 'postgres')
     @connector_provider_hive = Carto::ConnectorProvider.find_by(name: 'hive')
 
-    @connector_config_user = FactoryGirl.create(:connector_configuration,
+    @connector_config_user = create(:connector_configuration,
                                                  user_id: @user.id,
                                                  connector_provider_id: @connector_provider_postgres.id,
                                                  enabled: true,
                                                  max_rows: 100)
-    @connector_config_org_user = FactoryGirl.create(:connector_configuration,
+    @connector_config_org_user = create(:connector_configuration,
                                                      user_id: @org_user_1.id,
                                                      connector_provider_id: @connector_provider_hive.id,
                                                      enabled: false,
                                                      max_rows: 100)
-    @connector_config_org = FactoryGirl.create(:connector_configuration,
+    @connector_config_org = create(:connector_configuration,
                                                 organization_id: @organization.id,
                                                 connector_provider_id: @connector_provider_hive.id,
                                                 enabled: true,

@@ -8,11 +8,11 @@ module Carto
 
     describe '#validation' do
       before(:all) do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create!(user: @carto_user, oauth_app: @app)
-        @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
+        @user_table = create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
       end
 
       after(:all) do
@@ -98,7 +98,7 @@ module Carto
       end
 
       it 'includes create permission for schemas scopes' do
-        FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
           [
             {
@@ -124,7 +124,7 @@ module Carto
       end
 
       it 'includes listing metadata permission for datasets scopes' do
-        FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
           [
             {
@@ -144,7 +144,7 @@ module Carto
       end
 
       it 'api key includes read permissions for datasets scopes' do
-        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        user_table = create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
           [
             {
@@ -171,7 +171,7 @@ module Carto
       end
 
       it 'api key includes read-write permissions for datasets scopes' do
-        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        user_table = create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
           [
             {
@@ -198,8 +198,8 @@ module Carto
       end
 
       it 'api key includes permissions for several datasets scopes' do
-        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
-        user_table2 = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        user_table = create(:carto_user_table, :with_db_table, user_id: @user.id)
+        user_table2 = create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
           [
             {
@@ -234,7 +234,7 @@ module Carto
       end
 
       it 'includes service account permission for user scopes' do
-        FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
           [
             {
@@ -252,11 +252,11 @@ module Carto
 
     describe 'cdb_conf_info' do
       before(:all) do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create!(user: @carto_user, oauth_app: @app)
-        @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
+        @user_table = create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
         @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
         Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
       end
@@ -295,7 +295,7 @@ module Carto
 
     describe '#shared datasets' do
       before :each do
-        @app = FactoryGirl.create(:oauth_app, user: @carto_org_user_1)
+        @app = create(:oauth_app, user: @carto_org_user_1)
         @app_user = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app)
         @shared_table = create_table(user_id: @carto_org_user_1.id)
         @not_shared_table = create_table(user_id: @carto_org_user_1.id)
@@ -387,7 +387,7 @@ module Carto
 
     describe 'organization shared datasets' do
       before :each do
-        @app = FactoryGirl.create(:oauth_app, user: @carto_org_user_1)
+        @app = create(:oauth_app, user: @carto_org_user_1)
         @app_user = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app)
         @org_shared_table = create_table(user_id: @carto_org_user_1.id)
         @non_org_shared_table = create_table(user_id: @carto_org_user_1.id)
@@ -513,7 +513,7 @@ module Carto
 
     describe 'views' do
       before :all do
-        @user = FactoryGirl.create(:valid_user)
+        @user = create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @user_table = create_table(user_id: @carto_user.id)
 
@@ -529,7 +529,7 @@ module Carto
       end
 
       before :each do
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create!(user: @carto_user, oauth_app: @app)
       end
 

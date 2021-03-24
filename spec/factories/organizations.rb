@@ -3,7 +3,7 @@ require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :organization, class: 'Carto::Organization' do
     name { unique_name('organization') }
     seats { 10 }
@@ -37,11 +37,11 @@ FactoryGirl.define do
     factory :organization_with_users, class: 'Carto::Organization' do
       after(:create) do |org|
         create_account_type_fg('ORGANIZATION USER')
-        owner = FactoryGirl.create(:user)
+        owner = create(:user)
         uo = CartoDB::UserOrganization.new(org.id, owner.id)
         uo.promote_user_to_admin
         org.reload
-        user = FactoryGirl.build(:user)
+        user = build(:user)
         user.organization_id = org.id
         user.enabled = true
         user.save
@@ -53,7 +53,7 @@ FactoryGirl.define do
 
         after :create do |org|
           Carto::Organization.find(org.id).users.each do |user|
-            user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: user.id)
+            user.user_multifactor_auths << create(:totp, :active, user_id: user.id)
             user.save!
           end
         end

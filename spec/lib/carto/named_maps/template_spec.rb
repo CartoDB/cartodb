@@ -11,7 +11,7 @@ module Carto
       end
 
       before(:all) do
-        @user = FactoryGirl.create(:carto_user, private_tables_enabled: true, private_maps_enabled: true)
+        @user = create(:carto_user, private_tables_enabled: true, private_maps_enabled: true)
 
         @map, _, _, @visualization = create_full_visualization(@user)
 
@@ -26,7 +26,7 @@ module Carto
 
         it 'should get view info from the map when the state center does not exist' do
           @map1, @table1, @table_visualization1, @visualization1 = create_full_visualization(@user)
-          @visualization1.state = FactoryGirl.create(:state, visualization: @visualization1)
+          @visualization1.state = create(:state, visualization: @visualization1)
           @visualization1.state.json[:map].delete(:center)
           template_hash = Carto::NamedMaps::Template.new(@visualization1).to_hash
           template_hash[:view][:center].values.reverse.should eq @visualization1.map.center_data.map(&:to_f)
@@ -52,7 +52,7 @@ module Carto
       describe '#layers' do
         describe 'carto layers' do
           before(:all) do
-            @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+            @carto_layer = create(:carto_layer, kind: 'carto', maps: [@map])
             @visualization.reload
 
             @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
@@ -260,7 +260,7 @@ module Carto
 
           describe 'with analyses' do
             before(:all) do
-              @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+              @analysis = create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
               @visualization.reload
 
               @carto_layer.options[:source] = @analysis.natural_id
@@ -327,7 +327,7 @@ module Carto
 
         describe 'torque layers' do
           before(:all) do
-            @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
+            @torque_layer = create(:carto_layer, kind: 'torque', maps: [@map])
             @visualization.reload
 
             @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
@@ -651,8 +651,8 @@ module Carto
 
         describe 'dataviews' do
           before(:all) do
-            @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
-            @widget = FactoryGirl.create(:widget, layer: @carto_layer)
+            @carto_layer = create(:carto_layer, kind: 'carto', maps: [@map])
+            @widget = create(:widget, layer: @carto_layer)
             @visualization.reload
 
             @dataview_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:dataviews]
@@ -688,7 +688,7 @@ module Carto
 
         describe '#analyses' do
           before(:all) do
-            @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+            @analysis = create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
             @visualization.reload
 
             @analysis_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:analyses].first
@@ -764,7 +764,7 @@ module Carto
 
         describe '#preview_layers' do
           before(:all) do
-            @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+            @carto_layer = create(:carto_layer, kind: 'carto', maps: [@map])
             @visualization.reload
 
             template = Carto::NamedMaps::Template.new(@visualization)

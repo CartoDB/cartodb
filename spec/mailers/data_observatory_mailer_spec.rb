@@ -4,7 +4,7 @@ describe DataObservatoryMailer do
 
   describe ".user_request" do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user, email: 'fulano@example.com', name: 'Fulano')
+      @user = create(:carto_user, email: 'fulano@example.com', name: 'Fulano')
     end
 
     before(:each) do
@@ -54,7 +54,7 @@ describe DataObservatoryMailer do
 
   describe ".carto_request" do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user, email: 'fulano@example.com', name: 'Fulano')
+      @user = create(:carto_user, email: 'fulano@example.com', name: 'Fulano')
     end
 
     before(:each) do
@@ -97,11 +97,11 @@ describe DataObservatoryMailer do
 
   describe '.carto_request from team org member' do
     before(:all) do
-      org = FactoryGirl.create(:organization)
+      org = create(:organization)
       @team_org = Carto::Organization.find(org.id)
       @team_org.name = 'team'
       @team_org.save
-      @team_user = FactoryGirl.create(:carto_user)
+      @team_user = create(:carto_user)
       @team_user.organization = @team_org
       @team_user.save
     end

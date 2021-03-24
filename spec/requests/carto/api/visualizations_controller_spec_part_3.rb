@@ -30,7 +30,7 @@ describe Carto::Api::VisualizationsController do
 
     before(:all) do
       bypass_named_maps
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
 
       @table_inside_bbox = create_geometry_table(@user, BBOX_GEOM)
       @table_outside_bbox = create_geometry_table(@user, OUTSIDE_BBOX_GEOM)
@@ -87,8 +87,8 @@ describe Carto::Api::VisualizationsController do
     describe 'normal user urls' do
       before(:all) do
         bypass_named_maps
-        @vis_owner = FactoryGirl.create(:valid_user, private_tables_enabled: true)
-        @other_user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+        @vis_owner = create(:valid_user, private_tables_enabled: true)
+        @other_user = create(:valid_user, private_tables_enabled: true)
 
         @table = create_random_table(@vis_owner, unique_name('viz'), UserTable::PRIVACY_PRIVATE)
         @vis = @table.table_visualization
@@ -169,7 +169,7 @@ describe Carto::Api::VisualizationsController do
         bypass_named_maps
 
         @vis_owner = @org_user_1
-        @shared_vis = FactoryGirl.build(:derived_visualization,
+        @shared_vis = build(:derived_visualization,
                                         user_id: @vis_owner.id,
                                         name: unique_name('viz'),
                                         description: 'wadus desc',
@@ -284,7 +284,7 @@ describe Carto::Api::VisualizationsController do
 
   describe '#google_maps_static_image' do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
       base_layer = @visualization.base_layers.first
       base_layer.options[:baseType] = 'roadmap'

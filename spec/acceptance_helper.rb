@@ -16,6 +16,7 @@ Capybara.server_port        = 53716
 Capybara.default_max_wait_time  = 5
 
 RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
   config.include Warden::Test::Helpers
   config.include Capybara::DSL, type: :acceptance
 

@@ -352,7 +352,7 @@ describe 'UserMigration' do
     it 'exports users with datasets without a physical table if metadata export is requested (see #13721)' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
-      user = FactoryGirl.build(:valid_user).save
+      user = build(:valid_user).save
       carto_user = Carto::User.find(user.id)
 
       @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
@@ -379,7 +379,7 @@ describe 'UserMigration' do
     it 'does export users with a canonical viz without user table if metadata export is requested (see #12588)' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
-      user = FactoryGirl.build(:valid_user).save
+      user = build(:valid_user).save
       carto_user = Carto::User.find(user.id)
 
       @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)

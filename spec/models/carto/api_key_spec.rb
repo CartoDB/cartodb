@@ -895,7 +895,7 @@ describe Carto::ApiKey do
 
   describe 'with plain users' do
     before(:all) do
-      @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
+      @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
@@ -908,7 +908,7 @@ describe Carto::ApiKey do
 
   describe 'with organization users' do
     before(:all) do
-      @auth_organization = FactoryGirl.create(:organization, quota_in_bytes: 1.gigabytes)
+      @auth_organization = create(:organization, quota_in_bytes: 1.gigabytes)
       @user1 = TestUserFactory.new.create_owner(@auth_organization)
       @carto_user1 = Carto::User.find(@user1.id)
     end

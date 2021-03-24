@@ -53,7 +53,7 @@ module Carto
       end
 
       def create_table_visualization(carto_user, table)
-        FactoryGirl.create(
+        create(
           :carto_visualization, user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
       end
 

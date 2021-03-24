@@ -34,7 +34,7 @@ describe Carto::AccountType do
     it 'updates the rate limits of an account_type' do
       account_type = Carto::AccountType.find(@account_type.account_type)
 
-      rate_limits = FactoryGirl.create(:rate_limits)
+      rate_limits = create(:rate_limits)
       account_type.rate_limit = rate_limits
       account_type.save
 

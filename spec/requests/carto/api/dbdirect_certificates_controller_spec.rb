@@ -57,7 +57,7 @@ describe Carto::Api::DbdirectCertificatesController do
 
   before(:all) do
     host! "#{@user1.username}.localhost.lan"
-    @feature_flag = FactoryGirl.create(:feature_flag, name: 'dbdirect', restricted: true)
+    @feature_flag = create(:feature_flag, name: 'dbdirect', restricted: true)
     @config = {
       certificates: {
         ca_arn: "the-ca-arn",

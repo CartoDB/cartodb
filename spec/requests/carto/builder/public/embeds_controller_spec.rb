@@ -8,10 +8,10 @@ describe Carto::Builder::Public::EmbedsController do
 
   before(:all) do
     bypass_named_maps
-    @user = FactoryGirl.create(:valid_user, private_maps_enabled: true)
+    @user = create(:valid_user, private_maps_enabled: true)
     @carto_user = Carto::User.find(@user.id)
-    @map = FactoryGirl.create(:map, user_id: @user.id)
-    @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3)
+    @map = create(:map, user_id: @user.id)
+    @visualization = create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3)
     # Only mapcapped visualizations are presented by default
     Carto::Mapcap.create!(visualization_id: @visualization.id)
   end
@@ -39,7 +39,7 @@ describe Carto::Builder::Public::EmbedsController do
 
   describe '#show' do
     it 'does not display public visualizations without mapcaps' do
-      unpublished_visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+      unpublished_visualization = create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC)
       get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
       response.status.should == 404
 
@@ -48,7 +48,7 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'does not display link visualizations without mapcaps' do
-      unpublished_visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_LINK)
+      unpublished_visualization = create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_LINK)
       get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
       response.status.should == 404
 
@@ -57,7 +57,7 @@ describe Carto::Builder::Public::EmbedsController do
     end
 
     it 'does not display visualizations without mapcaps' do
-      unpublished_visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3)
+      unpublished_visualization = create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3)
       get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
       response.status.should == 404
 
@@ -267,8 +267,8 @@ describe Carto::Builder::Public::EmbedsController do
       include_context 'organization with users helper'
 
       before(:each) do
-        @org_map = FactoryGirl.create(:map, user_id: @org_user_owner.id)
-        @org_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map.id, version: 3)
+        @org_map = create(:map, user_id: @org_user_owner.id)
+        @org_visualization = create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map.id, version: 3)
         @org_visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
         @org_visualization.save
 
@@ -279,9 +279,9 @@ describe Carto::Builder::Public::EmbedsController do
         Carto::Visualization.any_instance.unstub(:organization?)
         Carto::Visualization.any_instance.stubs(:needed_auth_tokens).returns([])
 
-        @org_map2 = FactoryGirl.create(:map, user_id: @org_user_owner.id)
+        @org_map2 = create(:map, user_id: @org_user_owner.id)
 
-        @org_protected_visualization = FactoryGirl.create(
+        @org_protected_visualization = create(
           :carto_visualization,
           user: @carto_org_user_owner,
           map_id: @org_map2.id,
@@ -356,7 +356,7 @@ describe Carto::Builder::Public::EmbedsController do
   describe '#show_protected' do
     it 'does not display visualizations without mapcaps' do
       stub_passwords(TEST_PASSWORD)
-      unpublished_visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
+      unpublished_visualization = create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
       unpublished_visualization.published?.should be_false
 
       post builder_visualization_public_embed_protected_url(visualization_id: unpublished_visualization.id, password: TEST_PASSWORD)
@@ -370,7 +370,7 @@ describe Carto::Builder::Public::EmbedsController do
 
     it 'does display published visualizations' do
       stub_passwords(TEST_PASSWORD)
-      published_visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
+      published_visualization = create(:carto_visualization, user: @carto_user, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
       Carto::Mapcap.create!(visualization_id: published_visualization.id)
       published_visualization.published?.should be_true
 

@@ -1,14 +1,14 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :layer, class: Layer do
     to_create(&:save)
 
-    order 1
-    kind 'carto'
+    order { 1 }
+    kind { 'carto' }
   end
 
   factory :carto_tiled_layer, class: Carto::Layer do
-    order 1
-    kind 'tiled'
+    order { 1 }
+    kind { 'tiled' }
     options do
       {
         "default": true,
@@ -26,8 +26,8 @@ FactoryGirl.define do
   end
 
   factory :carto_layer, class: Carto::Layer do
-    order 2
-    kind 'carto'
+    order { 2 }
+    kind { 'carto' }
     options do
       {
         interactivity: '',
@@ -48,7 +48,7 @@ FactoryGirl.define do
         "maxHeight": 180
       }
 
-      infowindow infowindow_light
+      infowindow { infowindow_light }
     end
 
     factory :carto_layer_with_tooltip do
@@ -60,12 +60,12 @@ FactoryGirl.define do
         "maxHeight": 180
       }
 
-      tooltip tooltip_light
+      tooltip { tooltip_light }
     end
 
     factory :carto_layer_with_sql do
-      ignore do
-        table_name 'default_table'
+      transient do
+        table_name { 'default_table' }
       end
       options do
         {

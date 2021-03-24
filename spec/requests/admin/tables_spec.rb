@@ -14,7 +14,7 @@ describe Admin::TablesController do
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
 
     @api_key = @user.api_key
     @user.stubs(:should_load_common_data?).returns(false)

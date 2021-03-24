@@ -1,5 +1,5 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :data_import, class: Carto::DataImport do
-    state 'complete'
+    state { 'complete' }
   end
 end

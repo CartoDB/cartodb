@@ -5,15 +5,15 @@ describe Carto::DashboardPreviewSearcher do
 
   describe "#search" do
     before(:each) do
-      @table_us = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL,
+      @table_us = create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL,
                                                            user: @carto_user1, name: 'new_york_polution',
                                                            description: 'Air particles caused by traffic and industry',
                                                            tags: ["United States", "contamination"])
-      @map_uk = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_DERIVED,
+      @map_uk = create(:carto_visualization, type: Carto::Visualization::TYPE_DERIVED,
                                                          user: @carto_user1, name: 'New industries in York',
                                                          description: 'Data from 2018',
                                                          tags: ["United Kingdom"])
-      @map_spain = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_DERIVED,
+      @map_spain = create(:carto_visualization, type: Carto::Visualization::TYPE_DERIVED,
                                                             user: @carto_user1, name: 'Madrid traffic',
                                                             tags: ["Spain", "contamination"])
     end

@@ -8,13 +8,13 @@ describe Carto::OauthProviderController do
   include_context 'organization with users helper'
 
   before(:all) do
-    @sequel_developer = FactoryGirl.create(:valid_user)
+    @sequel_developer = create(:valid_user)
     @developer = Carto::User.find(@sequel_developer.id)
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
   end
 
   before(:each) do
-    @oauth_app = FactoryGirl.create(:oauth_app, user: @developer)
+    @oauth_app = create(:oauth_app, user: @developer)
   end
 
   after(:each) do
@@ -115,7 +115,7 @@ describe Carto::OauthProviderController do
       end
 
       it 'redirects with an error if requesting invalid dataset scopes' do
-        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
+        user_table = create(:carto_user_table, :with_db_table, user_id: @developer.id)
         request_endpoint(valid_payload.merge(scope: "datasets:wtf:#{user_table.name}"))
 
         expect(response.status).to(eq(302))
@@ -304,7 +304,7 @@ describe Carto::OauthProviderController do
     end
 
     it 'with valid payload and datasets scopes shows the consent form' do
-      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
+      user_table = create(:carto_user_table, :with_db_table, user_id: @developer.id)
       scopes = ["datasets:r:#{user_table.name}", "datasets:metadata"]
       get oauth_provider_authorize_url(valid_payload.merge(scopes: scopes))
 
@@ -314,7 +314,7 @@ describe Carto::OauthProviderController do
     end
 
     it 'with valid payload and schemas scopes shows the consent form' do
-      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
+      user_table = create(:carto_user_table, :with_db_table, user_id: @developer.id)
       get oauth_provider_authorize_url(valid_payload.merge(scopes: "schemas:r:#{user_table.name}"))
 
       expect(response.status).to(eq(200))

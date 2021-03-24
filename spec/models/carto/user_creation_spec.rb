@@ -6,43 +6,43 @@ describe Carto::UserCreation do
   describe 'autologin?' do
 
     it 'is true for autologin_user_creation factory' do
-      FactoryGirl.build(:autologin_user_creation).autologin?.should == true
+      build(:autologin_user_creation).autologin?.should == true
     end
 
     it 'is false for states other than success' do
-      FactoryGirl.build(:autologin_user_creation, state: 'creating_user').autologin?.should == false
-      FactoryGirl.build(:autologin_user_creation, state: 'validating_user').autologin?.should == false
-      FactoryGirl.build(:autologin_user_creation, state: 'saving_user').autologin?.should == false
-      FactoryGirl.build(:autologin_user_creation, state: 'promoting_user').autologin?.should == false
-      FactoryGirl.build(:autologin_user_creation, state: 'creating_user_in_central').autologin?.should == false
-      FactoryGirl.build(:autologin_user_creation, state: 'load_common_data').autologin?.should == false
-      FactoryGirl.build(:autologin_user_creation, state: 'failure').autologin?.should == false
+      build(:autologin_user_creation, state: 'creating_user').autologin?.should == false
+      build(:autologin_user_creation, state: 'validating_user').autologin?.should == false
+      build(:autologin_user_creation, state: 'saving_user').autologin?.should == false
+      build(:autologin_user_creation, state: 'promoting_user').autologin?.should == false
+      build(:autologin_user_creation, state: 'creating_user_in_central').autologin?.should == false
+      build(:autologin_user_creation, state: 'load_common_data').autologin?.should == false
+      build(:autologin_user_creation, state: 'failure').autologin?.should == false
 
-      FactoryGirl.build(:autologin_user_creation, state: 'success').autologin?.should == true
+      build(:autologin_user_creation, state: 'success').autologin?.should == true
     end
 
     it 'is stops working after one minute' do
-      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 61.seconds).autologin?.should == false
-      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 60.seconds).autologin?.should == false
-      FactoryGirl.build(:autologin_user_creation, created_at: Time.now - 59.seconds).autologin?.should == true
+      build(:autologin_user_creation, created_at: Time.now - 61.seconds).autologin?.should == false
+      build(:autologin_user_creation, created_at: Time.now - 60.seconds).autologin?.should == false
+      build(:autologin_user_creation, created_at: Time.now - 59.seconds).autologin?.should == true
     end
 
     it 'is false for users with enable_account_token' do
-      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user_creation = build(:autologin_user_creation)
       user = user_creation.instance_variable_get(:@cartodb_user)
       user.enable_account_token = 'whatever'
       user_creation.autologin?.should == false
     end
 
     it 'is false for disabled users' do
-      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user_creation = build(:autologin_user_creation)
       user = user_creation.instance_variable_get(:@cartodb_user)
       user.enabled = false
       user_creation.autologin?.should == false
     end
 
     it 'is false for users that have seen their dashboard' do
-      user_creation = FactoryGirl.build(:autologin_user_creation)
+      user_creation = build(:autologin_user_creation)
       user = user_creation.instance_variable_get(:@cartodb_user)
       user.dashboard_viewed_at = Time.now
       user_creation.autologin?.should == false
@@ -58,7 +58,7 @@ describe Carto::UserCreation do
     it 'assigns an enable_account_token if user has not signed up with Google' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
 
@@ -72,7 +72,7 @@ describe Carto::UserCreation do
     it 'does not assign an enable_account_token if user has signed up with Google' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = true
 
@@ -87,7 +87,7 @@ describe Carto::UserCreation do
     it 'does not assign an enable_account_token if user has signed up with GitHub' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       user_data.github_user_id = 123
 
@@ -104,7 +104,7 @@ describe Carto::UserCreation do
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
 
@@ -128,7 +128,7 @@ describe Carto::UserCreation do
         .any_instance.stubs(:enable_remote_db_user)
         .returns(true)
 
-      user_data = FactoryGirl.build(
+      user_data = build(
         :valid_user,
         organization: @organization,
         google_sign_in: false
@@ -157,7 +157,7 @@ describe Carto::UserCreation do
         .any_instance.stubs(:enable_remote_db_user)
         .returns(true)
 
-      user_data = FactoryGirl.build(
+      user_data = build(
         :valid_user,
         organization: @organization,
         google_sign_in: false
@@ -189,7 +189,7 @@ describe Carto::UserCreation do
     it 'with viewer invitations creates viewer users' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      user_data = FactoryGirl.build(:valid_user, organization: @organization, google_sign_in: false)
+      user_data = build(:valid_user, organization: @organization, google_sign_in: false)
 
       invitation = Carto::Invitation.create_new(@carto_org_user_owner, [user_data.email], 'Welcome!', true)
       invitation.save
@@ -209,7 +209,7 @@ describe Carto::UserCreation do
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
 
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = true
 
@@ -233,7 +233,7 @@ describe Carto::UserCreation do
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::NewOrganizationUser).never
 
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = true
 
@@ -303,7 +303,7 @@ describe Carto::UserCreation do
       fake_central_client.stubs(:create_organization_user).returns(true)
       ::User.any_instance.stubs(:cartodb_central_client).returns(fake_central_client)
       Cartodb::Central.stubs(:new).returns(fake_central_client)
-      user = FactoryGirl.build(:valid_user)
+      user = build(:valid_user)
       central_user_data = JSON.parse(user.to_json)
       # Central doesn't return exactly the same attributes, but this is good enough for testing
       Cartodb::Central.any_instance.stubs(:get_user).returns(central_user_data)
@@ -321,7 +321,7 @@ describe Carto::UserCreation do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
 
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
 
@@ -334,7 +334,7 @@ describe Carto::UserCreation do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       ::User.any_instance.expects(:load_common_data).with('http://www.example.com').once
 
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
 
@@ -348,7 +348,7 @@ describe Carto::UserCreation do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       ::User.any_instance.expects(:load_common_data).with('http://www.example.com').never
 
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       user_data.google_sign_in = false
 
@@ -362,7 +362,7 @@ describe Carto::UserCreation do
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).never
       ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
 
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
 
       user_creation = Carto::UserCreation.new_user_signup(user_data, Carto::UserCreation::CREATED_VIA_API)
@@ -379,7 +379,7 @@ describe Carto::UserCreation do
       ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, instance_of(String)).once
 
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       @organization.quota_in_bytes = @organization.assigned_quota + @organization.default_quota_in_bytes + 1
       @organization.save
@@ -398,7 +398,7 @@ describe Carto::UserCreation do
       ::Resque.expects(:enqueue).with(Resque::UserJobs::Mail::NewOrganizationUser, instance_of(String)).once
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::SeatLimitReached, instance_of(String)).once
 
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
       user_data.organization = @organization
       @organization.seats = 4
       @organization.save
@@ -414,7 +414,7 @@ describe Carto::UserCreation do
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::SeatLimitReached, instance_of(String)).never
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::DiskQuotaLimitReached, instance_of(String)).never
 
-      user_data = FactoryGirl.build(:valid_user)
+      user_data = build(:valid_user)
 
       user_data.organization = @organization
       @organization.seats = 15
@@ -428,7 +428,7 @@ describe Carto::UserCreation do
   describe '#initialize_user' do
     it 'initializes users with http_authentication without organization' do
       created_via = Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION
-      user = FactoryGirl.build(:valid_user)
+      user = build(:valid_user)
       user.organization_id.should == nil
       user_creation = Carto::UserCreation.new_user_signup(user, created_via)
       initialized_user = user_creation.send(:initialize_user)
@@ -441,7 +441,7 @@ describe Carto::UserCreation do
     before(:each) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       created_via = Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION
-      user = FactoryGirl.build(:valid_user)
+      user = build(:valid_user)
       @user_creation = Carto::UserCreation.new_user_signup(user, created_via)
     end
 

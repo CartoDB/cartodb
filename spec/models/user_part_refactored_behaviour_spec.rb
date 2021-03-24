@@ -13,11 +13,11 @@ describe 'refactored behaviour' do
     end
 
     def create_user
-      FactoryGirl.create(:valid_user)
+      create(:valid_user)
     end
 
     def build_user
-      FactoryGirl.build(:valid_user)
+      build(:valid_user)
     end
   end
 end

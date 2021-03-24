@@ -220,8 +220,8 @@ feature "Superadmin's users API" do
     end
 
     it 'filters results if param status is present' do
-      successful_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: true, state: 'complete')
-      failed_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: false, state: 'failure')
+      successful_data_import = create(:data_import, user_id: @user.id, success: true, state: 'complete')
+      failed_data_import = create(:data_import, user_id: @user.id, success: false, state: 'failure')
 
       get_json("/superadmin/users/#{@user.id}/data_imports", { status: 'complete' }, superadmin_headers) do |response|
         expect(response.status).to eq(200)
@@ -244,7 +244,7 @@ feature "Superadmin's users API" do
     end
 
     it 'paginates results' do
-      data_imports = FactoryGirl.create_list(:data_import, 2, user_id: @user.id)
+      data_imports = create_list(:data_import, 2, user_id: @user.id)
       data_import_ids = data_imports.map(&:id)
 
       pagination_params = { page: 1, per_page: 1 }
@@ -276,7 +276,7 @@ feature "Superadmin's users API" do
     end
 
     it 'returns all the data imports if no pagination params are present' do
-      FactoryGirl.create_list(:data_import, 3, user_id: @user.id)
+      create_list(:data_import, 3, user_id: @user.id)
 
       get_json("/superadmin/users/#{@user.id}/data_imports", {}, superadmin_headers) do |response|
         expect(response.status).to eq(200)

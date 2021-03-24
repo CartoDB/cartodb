@@ -5,8 +5,8 @@ module Carto
     describe '#find_unique' do
       before(:all) do
         @users = Array.new
-        @users << FactoryGirl.create(:carto_user, username: 'manolo')
-        @users << FactoryGirl.create(:carto_user, username: 'manolo-1')
+        @users << create(:carto_user, username: 'manolo')
+        @users << create(:carto_user, username: 'manolo-1')
       end
 
       after(:all) do
@@ -22,7 +22,7 @@ module Carto
       end
 
       it 'fills in the gaps' do
-        @users << FactoryGirl.create(:carto_user, username: 'manolo-3')
+        @users << create(:carto_user, username: 'manolo-3')
 
         UsernameProposer.find_unique('manolo').should eq 'manolo-2'
       end

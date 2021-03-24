@@ -5,15 +5,15 @@ include Carto::UUIDHelper
 
 shared_context 'layer hierarchy' do
   before(:all) do
-    @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
-    @user2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
-    @map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+    @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
+    @user2 = create(:valid_user, private_tables_enabled: true)
+    @map = create(:carto_map_with_layers, user_id: @user1.id)
     @layer = @map.layers.first
-    @visualization = FactoryGirl.create(:carto_visualization, map: @map, privacy: Carto::Visualization::PRIVACY_PRIVATE, user_id: @user1.id)
+    @visualization = create(:carto_visualization, map: @map, privacy: Carto::Visualization::PRIVACY_PRIVATE, user_id: @user1.id)
   end
 
   before(:each) do
-    @widget = FactoryGirl.create(:widget, layer: @layer)
+    @widget = create(:widget, layer: @layer)
   end
 
   after(:each) do
@@ -181,7 +181,7 @@ describe Carto::Api::WidgetsController do
     end
 
     it 'creates a new widget with source_id' do
-      analysis = FactoryGirl.create(:analysis, visualization: @visualization, user_id: @user1.id)
+      analysis = create(:analysis, visualization: @visualization, user_id: @user1.id)
       payload = widget_payload.merge(source: { id: analysis.natural_id })
       url = widgets_url(
         user_domain: @user1.username,
@@ -218,7 +218,7 @@ describe Carto::Api::WidgetsController do
     end
 
     it 'returns 422 if layer id do not match map' do
-      other_map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
+      other_map = create(:carto_map_with_layers, user_id: @user1.id)
       other_layer = other_map.data_layers.first
       other_layer.should_not be_nil
 
@@ -273,7 +273,7 @@ describe Carto::Api::WidgetsController do
     end
 
     it 'returns 200 and updates the model' do
-      analysis = FactoryGirl.create(:analysis, visualization: @visualization, user_id: @user1.id)
+      analysis = create(:analysis, visualization: @visualization, user_id: @user1.id)
       new_order = @widget.order + 1
       new_type = "new #{@widget.type}"
       new_title = "new #{@widget.title}"
@@ -307,7 +307,7 @@ describe Carto::Api::WidgetsController do
 
   describe '#update_many' do
     it 'updates many' do
-      widget2 = FactoryGirl.create(:widget, layer: @layer)
+      widget2 = create(:widget, layer: @layer)
 
       payload = [serialize_widget(@widget).merge(title: 'wadus'), serialize_widget(widget2).merge(title: 'wadus2')]
       url = api_v3_maps_layers_update_many_widgets_url(user_domain: @user1.username,
@@ -364,7 +364,7 @@ describe Carto::Api::WidgetsController do
     end
 
     it 'fails if any of the widgets fails and doesn\'t update any' do
-      widget2 = FactoryGirl.create(:widget, layer: @layer)
+      widget2 = create(:widget, layer: @layer)
       Carto::Widget.stubs(:find).with(@widget.id).returns(@widget)
       Carto::Widget.stubs(:find).with(widget2.id).raises(ActiveRecord::RecordNotFound.new)
 

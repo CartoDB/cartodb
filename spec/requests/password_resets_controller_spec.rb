@@ -4,7 +4,7 @@ describe PasswordResetsController do
 
   before(:all) do
     User.any_instance.stubs(:update_in_central).returns(true)
-    @user = FactoryGirl.create(:user)
+    @user = create(:user)
   end
 
   after(:each) do

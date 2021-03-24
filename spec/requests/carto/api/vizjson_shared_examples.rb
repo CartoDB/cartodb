@@ -22,9 +22,9 @@ shared_examples_for 'vizjson generator' do
     before(:all) do
       bypass_named_maps
 
-      @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
+      @user_1 = create(:valid_user, private_tables_enabled: false)
       @api_key = @user_1.api_key
-      @user_2 = FactoryGirl.create(:valid_user)
+      @user_2 = create(:valid_user)
 
       @headers = { 'CONTENT_TYPE'  => 'application/json' }
       host! "#{@user_1.subdomain}.localhost.lan"
@@ -260,7 +260,7 @@ shared_examples_for 'vizjson generator' do
         source_visualization  = table.fetch('table_visualization')
         map_id = source_visualization[:map_id]
 
-        derived_visualization = FactoryGirl.create(:derived_visualization, user_id: @user_1.id, map_id: map_id)
+        derived_visualization = create(:derived_visualization, user_id: @user_1.id, map_id: map_id)
         viz_id = derived_visualization.id
 
         put api_v1_visualizations_show_url(user_domain: @user_1.username, id: viz_id, api_key: @api_key),
@@ -416,7 +416,7 @@ shared_examples_for 'vizjson generator' do
     include_context 'visualization creation helpers'
 
     before(:all) do
-      @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
+      @user_1 = create(:valid_user, private_tables_enabled: false)
       host! "#{@user_1.subdomain}.localhost.lan"
       @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(@user_1.id))
     end

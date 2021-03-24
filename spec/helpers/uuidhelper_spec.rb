@@ -1,4 +1,3 @@
-require_relative '../simplecov_helper'
 require_relative '../../lib/carto/uuidhelper'
 
 describe 'UUIDHelper' do

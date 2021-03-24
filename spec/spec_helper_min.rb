@@ -1,6 +1,6 @@
 # This file provides a minimal Rails integration test environment with an empty database, without users.
 require 'mocha'
-require 'simplecov_helper'
+require 'mocha/api'
 require 'helpers/spec_helper_helpers'
 require 'helpers/named_maps_helper'
 require './spec/support/message_broker_stubs'
@@ -29,7 +29,7 @@ RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include NamedMapsHelper
   config.include Capybara::DSL
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.include SharedEntitiesSpecHelper
   config.mock_with :mocha
 
@@ -51,12 +51,14 @@ RSpec.configure do |config|
       drop_leaked_test_user_databases
     end
   end
+
   config.after(:all) do
     unless ENV['PARALLEL'] || ENV['BUILD_ID']
       close_pool_connections
       drop_leaked_test_user_databases
       delete_database_test_users
     end
+    purgue_databases
   end
 
   unless ENV['PARALLEL'] || ENV['BUILD_ID']

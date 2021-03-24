@@ -8,7 +8,7 @@ describe Carto::UserMultifactorAuth do
 
   before :all do
     @valid_type = 'totp'
-    @carto_user = FactoryGirl.create(:carto_user)
+    @carto_user = create(:carto_user)
   end
 
   before :each do
@@ -141,7 +141,7 @@ describe Carto::UserMultifactorAuth do
 
   describe '#provisioning_uri' do
     before :each do
-      @multifactor_auth = FactoryGirl.create(:totp, :active, user: @carto_user)
+      @multifactor_auth = create(:totp, :active, user: @carto_user)
     end
 
     after :each do

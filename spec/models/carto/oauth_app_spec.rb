@@ -4,7 +4,7 @@ module Carto
   describe OauthApp do
     describe '#validation' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
+        @user = create(:carto_user)
       end
 
       it 'requires user' do
@@ -107,12 +107,12 @@ module Carto
 
     context 'Central sync' do
       before(:all) do
-        @user_oauth = FactoryGirl.create(:carto_user)
+        @user_oauth = create(:carto_user)
       end
 
       before(:each) do
         Cartodb::Central.stubs(:api_sync_enabled?).returns(false)
-        @oauth_app = FactoryGirl.create(:oauth_app, user: @user_oauth, avoid_sync_central: false)
+        @oauth_app = create(:oauth_app, user: @user_oauth, avoid_sync_central: false)
       end
 
       after(:each) do

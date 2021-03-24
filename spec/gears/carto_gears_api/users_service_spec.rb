@@ -6,7 +6,7 @@ describe CartoGearsApi::Users::UsersService do
 
   context "password management" do
     before(:all) do
-      @user = FactoryGirl.create(:user, password: 'my_pass', password_confirmation: 'my_pass')
+      @user = create(:user, password: 'my_pass', password_confirmation: 'my_pass')
     end
 
     after(:all) do
@@ -46,7 +46,7 @@ describe CartoGearsApi::Users::UsersService do
 
       context 'right parameters' do
         before(:each) do
-          @user = FactoryGirl.create(:user, password: 'my_pass', password_confirmation: 'my_pass')
+          @user = create(:user, password: 'my_pass', password_confirmation: 'my_pass')
         end
 
         after(:each) do

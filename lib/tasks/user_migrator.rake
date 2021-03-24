@@ -145,7 +145,7 @@ namespace :cartodb do
         include CartoDB::DataMover::Utils
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter
-        Organization.where(File.read(args[:config_file]).to_s).each { |org| clean_organization(org) }
+        Carto::Organization.where(File.read(args[:config_file]).to_s).each { |org| clean_organization(org) }
       end
 
       desc 'Cleans all user data and metadata matching filter in config file'
@@ -161,7 +161,8 @@ namespace :cartodb do
         include CartoDB::DataMover::Utils
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter
-        organization = Organization.where("name = '#{args[:name]}'").first || Organization.new(name: args[:orgname])
+        organization = Carto::Organization.where("name = '#{args[:name]}'").first ||
+                       Carto::Organization.new(name: args[:orgname])
         clean_organization(organization)
       end
 
@@ -180,7 +181,8 @@ namespace :cartodb do
         include CartoDB::DataMover::Utils
         include OrganizationMigrationCleanup
         include ::Carto::RedisExportServiceImporter
-        organization = Organization.where("name = '#{args[:orgname]}'").first || Organization.new(name: args[:orgname])
+        organization = Carto::Organization.where("name = '#{args[:orgname]}'").first ||
+                       Carto::Organization.new(name: args[:orgname])
         clean_redis_organization(organization)
       end
 

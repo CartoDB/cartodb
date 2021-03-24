@@ -20,7 +20,7 @@ describe Carto::Api::OrganizationsController do
 
     before(:all) do
       @org_user_3 = create_test_user(unique_name('user'), @organization)
-      @group_1 = FactoryGirl.create(:random_group, display_name: 'g_1', organization: @carto_organization)
+      @group_1 = create(:random_group, display_name: 'g_1', organization: @carto_organization)
       @group_1.add_user(@org_user_1.username)
     end
 

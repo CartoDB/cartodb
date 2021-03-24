@@ -9,7 +9,7 @@ describe Carto::Layer do
     def create_map(options = {})
       options.delete(:table_id)
       map = Carto::Map.create(options)
-      FactoryGirl.create(:carto_visualization, map: map, user_id: options[:user_id]) if options[:user_id].present?
+      create(:carto_visualization, map: map, user_id: options[:user_id]) if options[:user_id].present?
 
       map
     end
@@ -19,7 +19,7 @@ describe Carto::Layer do
     end
 
     before(:all) do
-      @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
+      @user = create(:carto_user, private_tables_enabled: true)
 
       @table = Table.new
       @table.user_id = @user.id
@@ -49,10 +49,10 @@ describe Carto::Layer do
   describe '#affected_tables' do
     before(:all) do
       bypass_named_maps
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
       @map, @table1, @table_visualization, @visualization = create_full_visualization(@user)
-      @table2 = FactoryGirl.create(:carto_user_table, user_id: @user.id, map_id: @map.id)
-      @analysis = FactoryGirl.create(:analysis_point_in_polygon,
+      @table2 = create(:carto_user_table, user_id: @user.id, map_id: @map.id)
+      @analysis = create(:analysis_point_in_polygon,
                                      user: @user, visualization: @visualization,
                                      source_table: @table1.name, target_table: @table2.name)
       @layer = @map.data_layers.first

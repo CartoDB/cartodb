@@ -24,7 +24,6 @@ WORKING_SPECS_1 = \
 	spec/models/layer/presenter_spec.rb \
 	spec/requests/application_controller_spec.rb \
 	spec/requests/sessions_spec.rb \
-	spec/requests/api/json/layer_presenter_spec.rb \
 	spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
@@ -163,22 +162,16 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/organizations_controller_spec.rb \
 	spec/requests/carto/api/organization_users_controller_spec.rb \
 	spec/requests/carto/api/multifactor_authentication_controller_spec.rb \
-	spec/requests/api/imports_spec.rb \
-	spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \
 	spec/connectors/importer_spec.rb \
 	spec/requests/carto/api/connectors_controller_spec.rb \
-	spec/requests/api/geocodings_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_5 = \
-	spec/requests/api/assets_spec.rb \
 	spec/requests/carto/api/assets_controller_spec.rb \
 	spec/requests/carto/api/layers_controller_spec.rb \
 	spec/requests/carto/api/records_controller_spec.rb \
 	spec/requests/carto/api/columns_controller_spec.rb \
-	spec/requests/api/synchronizations_spec.rb \
-	spec/requests/api/json/synchronizations_controller_spec.rb \
 	spec/requests/carto/api/synchronizations_controller_spec.rb \
 	services/geocoder/spec/geocoder_spec.rb \
 	services/table-geocoder/spec/table_geocoder_spec.rb \
@@ -198,23 +191,10 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/db/user_schema_spec.rb \
 	spec/lib/carto/db/sql_interface_spec.rb \
 	spec/lib/carto/file_system/sanitize_spec.rb \
-	spec/commands/feature_flag_commands/create_spec.rb \
-	spec/commands/feature_flag_commands/delete_spec.rb \
-	spec/commands/feature_flag_commands/update_spec.rb \
-	spec/commands/map_views_commands/update_spec.rb \
-	spec/commands/organization_commands/create_spec.rb \
-	spec/commands/organization_commands/delete_spec.rb \
-	spec/commands/organization_commands/update_spec.rb \
-	spec/commands/central_user_commands_spec.rb \
-	spec/commands/gcloud_user_settings_commands/set_spec.rb \
-	spec/commands/account_type_commands/create_spec.rb \
-	spec/commands/account_type_commands/update_spec.rb \
-	spec/commands/account_type_commands/delete_spec.rb \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why
 WORKING_SPECS_7 = \
-	spec/requests/api/json/geocodings_controller_spec.rb \
 	spec/requests/carto/api/geocodings_controller_spec.rb \
 	$(NULL)
 
@@ -250,7 +230,6 @@ WORKING_SPECS_9 = \
 	spec/requests/superadmin/organizations_controller_spec.rb \
 	spec/requests/superadmin/platform_controller_spec.rb \
 	spec/requests/superadmin/users_spec.rb \
-	spec/requests/api/visualizations_spec.rb \
 	spec/requests/carto/api/overlays_controller_spec.rb \
 	spec/models/carto/user_creation_spec.rb \
 	spec/requests/carto/api/invitations_controller_spec.rb \
@@ -362,16 +341,10 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/assets/html_assets_service_spec.rb \
 	spec/lib/carto/storage_options/local_spec.rb \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
-	spec/lib/tasks/layers_rake_spec.rb \
-	spec/lib/tasks/fix_unique_legends_spec.rb \
-	spec/lib/tasks/oauth_rake_spec.rb \
-	spec/lib/tasks/user_rake_spec.rb \
-	spec/lib/tasks/user_database_host_update_rake_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
 	spec/services/visualization/common_data_service_spec.rb \
 	spec/lib/carto/google_maps_api_spec.rb \
-	spec/lib/tasks/fix_unique_overlays_spec.rb \
 	spec/requests/password_resets_spec.rb \
 	spec/requests/password_resets_controller_spec.rb \
 	spec/models/carto/feature_flag_spec.rb \
@@ -391,7 +364,6 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/user_migration_rollback_spec.rb \
 	spec/models/carto/user_migration_base_spec.rb \
 	spec/requests/carto/api/public/data_observatory_controller_spec.rb \
-	spec/lib/tasks/data_observatory_rake_spec.rb \
 	spec/services/carto/do_licensing_service_spec.rb \
 	spec/requests/carto/api/public/federated_tables_controller_spec.rb \
 	spec/services/carto/federated_tables_service_spec.rb \

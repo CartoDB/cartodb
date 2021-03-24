@@ -6,7 +6,7 @@ describe Carto::Api::StaticNotificationsController do
   include HelperMethods
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
   end
 
   after(:all) do

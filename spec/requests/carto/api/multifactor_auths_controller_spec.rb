@@ -5,7 +5,7 @@ describe Carto::Api::MultifactorAuthsController do
   include HelperMethods
 
   before :all do
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
   end
 
   after :all do
@@ -14,7 +14,7 @@ describe Carto::Api::MultifactorAuthsController do
 
   before :each do
     @user.user_multifactor_auths.each(&:destroy)
-    @multifactor_auth = FactoryGirl.create(:totp, :active, user: @user)
+    @multifactor_auth = create(:totp, :active, user: @user)
     @totp = ROTP::TOTP.new(@multifactor_auth.shared_secret)
     @user.reload
   end

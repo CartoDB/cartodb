@@ -6,7 +6,7 @@ module Carto
     include Carto::Factories::Visualizations
 
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
       @layer = @visualization.layers.find(&:data_layer?)
     end

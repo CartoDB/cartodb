@@ -52,7 +52,7 @@ describe Carto::Organization do
 
   describe '#destroy_cascade' do
     before(:each) do
-      @organization = FactoryGirl.create(:organization)
+      @organization = create(:organization)
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
     end
@@ -148,7 +148,7 @@ describe Carto::Organization do
 
     it 'destroys assets' do
       bypass_storage
-      asset = FactoryGirl.create(:organization_asset,
+      asset = create(:organization_asset,
                                  organization_id: @organization.id)
 
       @organization.destroy
@@ -230,7 +230,7 @@ describe Carto::Organization do
     end
 
     it 'allows saving user if organization has no seats left' do
-      organization = FactoryGirl.create(:organization, seats: 2, viewer_seats: 0, quota_in_bytes: 10)
+      organization = create(:organization, seats: 2, viewer_seats: 0, quota_in_bytes: 10)
 
       user = create_validated_user(quota_in_bytes: 1)
       CartoDB::UserOrganization.new(organization.id, user.id).promote_user_to_admin

@@ -15,7 +15,7 @@ describe 'UserMigration' do
 
   it 'exports and imports a user with raster overviews because exporting skips them' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    user = FactoryGirl.build(:valid_user).save
+    user = build(:valid_user).save
     next unless user.in_database.table_exists?('raster_overviews')
     carto_user = Carto::User.find(user.id)
     user_attributes = carto_user.attributes
@@ -90,7 +90,7 @@ describe 'UserMigration' do
     it 'skips importing legacy functions using fixture' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)", "FUNCTION sumita(integer,integer)"].freeze
-      user = FactoryGirl.build(:valid_user).save
+      user = build(:valid_user).save
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
       user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
@@ -126,7 +126,7 @@ describe 'UserMigration' do
 
     it 'imports functions and tables that are not on the legacy list using fixture' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      user = FactoryGirl.build(:valid_user).save
+      user = build(:valid_user).save
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
       user.in_database.execute('CREATE OR REPLACE FUNCTION st_text(b boolean) RETURNS INT AS $$
@@ -358,7 +358,7 @@ describe 'UserMigration' do
 
   describe 'api keys import and exports' do
     before :each do
-      @user = FactoryGirl.build(:valid_user)
+      @user = build(:valid_user)
       @user.save
       @carto_user = Carto::User.find(@user.id)
       @master_api_key = @carto_user.api_keys.master.first

@@ -6,7 +6,7 @@ describe Carto::RateLimit do
 
   before :each do
     User.any_instance.stubs(:save_rate_limits).returns(true)
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
     @rate_limit = Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([0, 1, 2]),
                                            maps_static: Carto::RateLimitValues.new([3, 4, 5]),
                                            maps_static_named: Carto::RateLimitValues.new([6, 7, 8]),

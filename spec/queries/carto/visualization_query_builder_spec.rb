@@ -86,10 +86,10 @@ describe Carto::VisualizationQueryBuilder do
     before(:each) do
       table = create_random_table(@user1)
       @table_visualization = table.table_visualization
-      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id)
-      @visualization.map = FactoryGirl.create(:carto_map, user_id: @user1.id)
+      @visualization = create(:carto_visualization, user_id: @user1.id)
+      @visualization.map = create(:carto_map, user_id: @user1.id)
       @visualization.save!
-      layer = FactoryGirl.build(:carto_layer)
+      layer = build(:carto_layer)
       layer.options[:table_name] = table.name
       layer.save!
       @visualization.layers << layer
@@ -154,7 +154,7 @@ describe Carto::VisualizationQueryBuilder do
     end
 
     it 'lists all visualizations shared with a group' do
-      @group = FactoryGirl.create(:carto_group, organization: @carto_organization)
+      @group = create(:carto_group, organization: @carto_organization)
       @group.add_user(@org_user_2.username)
 
       table = create_random_table(@org_user_1)
@@ -510,20 +510,20 @@ describe Carto::VisualizationQueryBuilder do
 
   describe 'user visualizations helpers' do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
-      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
+      @user = create(:carto_user, private_maps_enabled: true)
+      create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
                                                privacy: Carto::Visualization::PRIVACY_PUBLIC)
-      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_KUVIZ,
+      create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_KUVIZ,
                                                privacy: Carto::Visualization::PRIVACY_PUBLIC)
-      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_APP,
+      create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_APP,
                                                privacy: Carto::Visualization::PRIVACY_PUBLIC)
-      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_CANONICAL,
+      create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_CANONICAL,
                                                privacy: Carto::Visualization::PRIVACY_PRIVATE)
-      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
+      create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
                                                privacy: Carto::Visualization::PRIVACY_PRIVATE)
-      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
+      create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
                                                privacy: Carto::Visualization::PRIVACY_LINK)
-      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
+      create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
                                                privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'x')
     end
 

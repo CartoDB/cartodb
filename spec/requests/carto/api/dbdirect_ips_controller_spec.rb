@@ -15,7 +15,7 @@ describe Carto::Api::DbdirectIpsController do
 
   before(:all) do
     host! "#{@carto_user1.username}.localhost.lan"
-    @feature_flag = FactoryGirl.create(:feature_flag, name: 'dbdirect', restricted: true)
+    @feature_flag = create(:feature_flag, name: 'dbdirect', restricted: true)
     @config = {
       metadata_persist: {
         enabled: true,
@@ -24,7 +24,7 @@ describe Carto::Api::DbdirectIpsController do
       }
     }.with_indifferent_access
 
-    @sequel_organization = FactoryGirl.create(:organization_with_users)
+    @sequel_organization = create(:organization_with_users)
     @organization = Carto::Organization.find(@sequel_organization.id)
     @org_owner = @organization.owner
     @org_user = @organization.users.reject { |u| u.id == @organization.owner_id }.first

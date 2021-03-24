@@ -32,7 +32,7 @@ module UserMigrationHelper
 
   shared_examples_for 'migrating metadata' do |migrate_metadata|
     before :each do
-      @user = FactoryGirl.build(:valid_user).save
+      @user = build(:valid_user).save
       @carto_user = Carto::User.find(@user.id)
       @user_attributes = @carto_user.attributes
 
@@ -134,7 +134,7 @@ module UserMigrationHelper
   end
 
   def create_user_with_visualizations
-    user = FactoryGirl.build(:valid_user).save
+    user = build(:valid_user).save
 
     filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
     data_import = DataImport.create(

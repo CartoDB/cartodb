@@ -79,8 +79,8 @@ describe Carto::Map do
 
   describe '#update_dataset_dependencies' do
     before(:all) do
-      @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto')
-      @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque')
+      @carto_layer = create(:carto_layer, kind: 'carto')
+      @torque_layer = create(:carto_layer, kind: 'torque')
       @map = Carto::Map.create(user: @carto_user, layers: [@carto_layer, @torque_layer])
     end
 

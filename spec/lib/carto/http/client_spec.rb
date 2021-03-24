@@ -1,9 +1,4 @@
-require_relative '../../../spec_helper'
-
-require 'rspec/core'
-require 'rspec/expectations'
-require 'rspec/mocks'
-require 'mocha'
+require 'spec_helper'
 require_relative '../../../../lib/carto/http/client'
 require_relative '../../../../lib/carto/http/request'
 

@@ -3,7 +3,7 @@ require 'spec_helper_min'
 module Carto
   describe Notification do
     before(:all) do
-      @sequel_organization = FactoryGirl.create(:organization_with_users)
+      @sequel_organization = create(:organization_with_users)
       @organization = Carto::Organization.find(@sequel_organization.id)
       @organization.users[1].update_attribute(:viewer, true)
     end
@@ -109,7 +109,7 @@ module Carto
     end
 
     it 'should be deleted when the organization is destroyed' do
-      org = FactoryGirl.create(:organization)
+      org = create(:organization)
       n = Notification.create!(organization_id: org.id,
                                icon: Carto::Notification::ICON_ALERT,
                                recipients: 'all',

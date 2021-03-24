@@ -2,7 +2,7 @@ require_relative '../../spec_helper'
 
 describe Carto::UserService do
   before(:all) do
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
   end
 
   before(:each) do

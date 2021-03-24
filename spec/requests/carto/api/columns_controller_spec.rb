@@ -4,7 +4,7 @@ describe Carto::Api::ColumnsController do
   describe '#show legacy tests' do
 
     before(:all) do
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
     end
 
     before(:each) do

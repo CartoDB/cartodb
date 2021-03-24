@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe OrganizationCommands::Update do
   let(:organization) { create(:organization_with_users, seats: 10) }

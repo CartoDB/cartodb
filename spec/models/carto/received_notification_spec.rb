@@ -1,22 +1,11 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 module Carto
   describe ReceivedNotification do
-    before(:all) do
+    before do
       @user = create(:carto_user)
-    end
-
-    before(:each) do
       @notification = create(:notification)
       @user.reload
-    end
-
-    after(:each) do
-      @notification.destroy
-    end
-
-    after(:all) do
-      @user.destroy
     end
 
     def create_received_notification(read)

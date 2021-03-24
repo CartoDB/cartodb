@@ -1,7 +1,6 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 require_relative '../../../../app/models/carto/helpers/billing'
 require 'ostruct'
-require 'delorean'
 
 describe Carto::Billing do
   describe "#last_billing_cycle" do
@@ -9,7 +8,7 @@ describe Carto::Billing do
       include Carto::Billing
     end
 
-    before(:each) do
+    before do
       @user = MyDummyUser.new
     end
 
@@ -75,7 +74,7 @@ describe Carto::Billing do
       include Carto::Billing
     end
 
-    before(:each) do
+    before do
       @user = MyDummyUser.new
     end
 

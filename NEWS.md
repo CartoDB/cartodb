@@ -34,6 +34,7 @@ sudo make install
 - Bootstrap new CI & improve stability of old CI [#16220](https://github.com/CartoDB/cartodb/pull/16220)
 - Fix for custom icons not working [#16233](https://github.com/CartoDB/cartodb/pull/16233)
 - Split tests load evenly in the new CI [#16227](https://github.com/CartoDB/cartodb/pull/16227)
+- Migrate spec/models/carto to the new CI [#16228](https://github.com/CartoDB/cartodb/pull/16228)
 
 ### Bug fixes / enhancements
 

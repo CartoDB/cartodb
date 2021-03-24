@@ -59,6 +59,10 @@ FactoryBot.define do
       end
     end
 
+    transient do
+      factory_bot_context { {} }
+    end
+
     factory :user_with_private_tables, traits: [:enabled, :private_tables]
     factory :admin, traits: [:admin]
     factory :valid_user, traits: [:valid]
@@ -103,8 +107,9 @@ FactoryBot.define do
     end
 
     after(:create) do |carto_user|
-      ::User.where(id: carto_user.id).first.after_create
+      carto_user.sequel_user.after_create
       CartoDB::UserModule::DBService.any_instance.unstub
+      carto_user.reload
     end
 
     trait :locked do

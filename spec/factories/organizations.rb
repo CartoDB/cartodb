@@ -24,6 +24,18 @@ FactoryBot.define do
     isolines_provider { 'heremaps' }
     routing_provider { 'heremaps' }
 
+    transient do
+      owner { create(:user) }
+    end
+
+    trait :with_owner do
+      after(:create) do |organization, evaluator|
+        CartoDB::UserOrganization.new(organization.id, evaluator.owner.id).promote_user_to_admin
+        create_account_type_fg('ORGANIZATION USER') # TODO: move to a global callback
+        organization.reload
+      end
+    end
+
     factory :organization_whitelist_carto, class: 'Carto::Organization' do
       whitelisted_email_domains { ['carto.com'] }
       auth_username_password_enabled { true }

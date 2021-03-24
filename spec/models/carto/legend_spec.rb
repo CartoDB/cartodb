@@ -1,19 +1,14 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 require 'factories/carto_visualizations'
 
 module Carto
   describe Legend do
     include Carto::Factories::Visualizations
 
-    before(:all) do
+    before do
       @user = create(:carto_user)
       @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
       @layer = @visualization.layers.find(&:data_layer?)
-    end
-
-    after(:all) do
-      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
-      @user.destroy
     end
 
     it 'notifies layer change on commit' do
@@ -27,12 +22,10 @@ module Carto
     end
 
     describe '#validations' do
-      before(:all) do
+      before do
         @legend = Legend.new(layer_id: @layer.id)
         @legend.valid?
       end
-
-      after(:all) { @legend = nil }
 
       it 'won\'t crash validation if layer is nil' do
         legend = Legend.new

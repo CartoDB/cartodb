@@ -78,14 +78,14 @@ describe SignupController do
     end
 
     it 'returns user error with admin mail if organization has not enough seats' do
-      fake_owner = build(:valid_user).carto_user
+      fake_owner = create(:valid_user).carto_user
       @fake_organization = create(:organization_whitelist_carto, seats: 0, owner: fake_owner)
       Carto::Organization.stubs(:where).returns([@fake_organization])
+
       get signup_url
       response.status.should == 200
       response.body.should include("organization not enough seats")
-      response.body.should include("contact the administrator of #{@fake_organization.name}</a>")
-      response.body.should match(Regexp.new @fake_organization.owner.email)
+      response.body.should include("contact the administrator of #{@fake_organization.name}")
     end
 
     it 'does not return an error if organization has no unassigned_quota left but the invited user is a viewer' do

@@ -1,4 +1,4 @@
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 require_relative '../../../services/importer/spec/doubles/connector'
 
 describe Carto::Connection do

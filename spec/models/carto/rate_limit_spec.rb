@@ -1,12 +1,13 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 require 'support/helpers'
 
 describe Carto::RateLimit do
   include CartoDB::Factories
 
-  before :each do
+  let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+
+  before do
     User.any_instance.stubs(:save_rate_limits).returns(true)
-    @user = create(:valid_user)
     @rate_limit = Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([0, 1, 2]),
                                            maps_static: Carto::RateLimitValues.new([3, 4, 5]),
                                            maps_static_named: Carto::RateLimitValues.new([6, 7, 8]),
@@ -30,13 +31,6 @@ describe Carto::RateLimit do
                                            sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
                                            sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
                                            sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
-  end
-
-  after :each do
-    User.any_instance.unstub(:save_rate_limits)
-    @user.destroy if @user
-    @rate_limit.destroy if @rate_limit
-    @rate_limit2.destroy if @rate_limit2
   end
 
   describe '#CRUD' do
@@ -106,11 +100,12 @@ describe Carto::RateLimit do
     end
 
     it 'updates a rate_limit to redis' do
+      user = create(:valid_user)
       User.any_instance.unstub(:save_rate_limits)
-      map_prefix = "limits:rate:store:#{@user.username}:maps:"
+      map_prefix = "limits:rate:store:#{user.username}:maps:"
 
-      @user.rate_limit_id = @rate_limit.id
-      @user.save
+      user.rate_limit_id = @rate_limit.id
+      user.save
 
       $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["0", "1", "2"]
 
@@ -119,14 +114,14 @@ describe Carto::RateLimit do
       @rate_limit.maps_anonymous.first.period = 3
 
       @rate_limit.save
-      @rate_limit.save_to_redis(@user)
+      @rate_limit.save_to_redis(user)
 
       $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["1", "2", "3"]
     end
 
     it 'is persisted correctly to redis' do
-      map_prefix = "limits:rate:store:#{@user.username}:maps:"
-      sql_prefix = "limits:rate:store:#{@user.username}:sql:"
+      map_prefix = "limits:rate:store:#{user.username}:maps:"
+      sql_prefix = "limits:rate:store:#{user.username}:sql:"
 
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
       $limits_metadata.EXISTS("#{map_prefix}static").should eq 0
@@ -152,7 +147,7 @@ describe Carto::RateLimit do
       $limits_metadata.EXISTS("#{sql_prefix}copy_from").should eq 0
       $limits_metadata.EXISTS("#{sql_prefix}copy_to").should eq 0
 
-      @rate_limit.save_to_redis(@user)
+      @rate_limit.save_to_redis(user)
 
       $limits_metadata.LRANGE("#{map_prefix}anonymous", 0, 2).should == ["0", "1", "2"]
       $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == ["3", "4", "5"]
@@ -179,20 +174,20 @@ describe Carto::RateLimit do
       $limits_metadata.LRANGE("#{sql_prefix}copy_to", 0, 2).should == ["1", "1", "60"]
 
       @rate_limit.maps_static.first.max_burst = 4
-      @rate_limit.save_to_redis(@user)
+      @rate_limit.save_to_redis(user)
       $limits_metadata.LRANGE("#{map_prefix}static", 0, 2).should == ["4", "4", "5"]
     end
 
     it 'is removed correctly from redis' do
-      map_prefix = "limits:rate:store:#{@user.username}:maps:"
+      map_prefix = "limits:rate:store:#{user.username}:maps:"
 
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
 
-      @rate_limit.save_to_redis(@user)
+      @rate_limit.save_to_redis(user)
 
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
 
-      @rate_limit.destroy_completely(@user)
+      @rate_limit.destroy_completely(user)
 
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
 
@@ -335,7 +330,7 @@ describe Carto::RateLimit do
                                                   sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
                                                   sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
       expect {
-        rate_limit_not_saved.save_to_redis(@user)
+        rate_limit_not_saved.save_to_redis(user)
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 

@@ -1,5 +1,5 @@
 require 'json'
-require_relative '../../spec_helper'
+require 'spec_helper_unit'
 
 describe Carto::Widget do
   describe 'Storage' do
@@ -22,33 +22,21 @@ describe Carto::Widget do
     end
 
     describe '#save' do
-      before(:each) do
-        @user = create(:carto_user)
-        @map = create(:carto_map_with_layers, user: @user)
-        @widget = create(:widget, layer: @map.data_layers.first)
-      end
-
-      after(:each) do
-        @widget.destroy
-        @map.destroy
-        @user.destroy
-      end
+      let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+      let(:map) { create(:carto_map_with_layers, user: user) }
+      let!(:widget) { create(:widget, layer: map.data_layers.first) }
 
       it 'triggers notify_map_change on related map(s)' do
-        map = mock
-        map.stubs(:id).returns(@map.id)
-        map.expects(:notify_map_change).twice
-        Map.stubs(:where).with(id: map.id).returns([map])
-
-        @widget.title = "xxx#{@widget.title}"
-        @widget.save
+        ::Map.any_instance.expects(:notify_map_change)
+        widget.title = 'Updated title'
+        widget.save
       end
     end
   end
 
   describe 'Validations' do
     describe 'Format and validation' do
-      before(:each) do
+      before do
         @widget = build(:widget_with_layer, options: { valid: 'format' })
       end
 
@@ -66,7 +54,7 @@ describe Carto::Widget do
     end
 
     describe 'Source id validation' do
-      before(:each) do
+      before do
         @widget = build(:widget_with_layer, source_id: 'foo')
       end
 
@@ -85,16 +73,10 @@ describe Carto::Widget do
   end
 
   describe '#from_visualization_id' do
-    before(:all) do
-      @user = create(:carto_user)
+    before do
+      @user = create(:carto_user, factory_bot_context: { only_db_setup: true })
       @map = create(:carto_map_with_layers, user: @user)
       @visualization = create(:carto_visualization, map: @map)
-    end
-
-    after(:all) do
-      @visualization.destroy
-      @map.destroy
-      @user.destroy
     end
 
     it 'retrieves all visualization widgets' do
@@ -115,9 +97,9 @@ describe Carto::Widget do
   end
 
   context 'viewer users' do
-    before(:all) do
+    before do
       Map.any_instance.stubs(:update_related_named_maps)
-      @user = create(:carto_user)
+      @user = create(:carto_user, factory_bot_context: { only_db_setup: true })
       @map = create(:carto_map_with_layers, user: @user)
       @visualization = create(:carto_visualization, map: @map, user: @user)
       @layer = @visualization.data_layers.first
@@ -125,12 +107,6 @@ describe Carto::Widget do
 
       @user.update_attribute(:viewer, true)
       @layer.user.reload
-    end
-
-    after(:all) do
-      @visualization.destroy
-      @map.destroy
-      @user.destroy
     end
 
     it "can't create a new widget" do

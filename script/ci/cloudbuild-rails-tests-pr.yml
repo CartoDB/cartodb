@@ -156,7 +156,7 @@ steps:
   args:
     - -cx
     - |
-      if [ "${BRANCH_NAME}" = 'feature/ch143305/split-tests-load-more-evenly' ] || [ "${BRANCH_NAME}" = 'master' ] ; then
+      if [ "${BRANCH_NAME}" = 'master' ] ; then
           gsutil cp parallel_test_logs_${BUILD_ID}/parallel_runtime_rspec.log gs://cartodb-ci-tmp-logs/
       fi
 

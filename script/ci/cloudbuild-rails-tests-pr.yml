@@ -1,5 +1,18 @@
 steps:
 
+# Cancel previous job on the same branch
+- name: gcr.io/cloud-builders/gcloud-slim
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - 'gcloud builds list --ongoing --filter="buildTriggerId=e6e94e19-02f9-4661-8819-bf8846f5c707 AND substitutions.BRANCH_NAME=${BRANCH_NAME} AND id!=${BUILD_ID}" --format="get(ID)" > jobs_to_cancel'
+
+- name: gcr.io/cloud-builders/gcloud-slim
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - 'gcloud builds cancel $(cat jobs_to_cancel | xargs) || true'
+
 # Decrypt github key
 - name: gcr.io/cloud-builders/gcloud-slim
   args:

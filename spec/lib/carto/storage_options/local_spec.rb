@@ -36,6 +36,10 @@ describe Carto::StorageOptions::Local do
       @url.should_not include '/tmp'
       @url.should_not include '/carto_uploads'
     end
+
+    it 'target file should have 0644 perms for nginx to serve them' do
+      (File.stat(@path).mode & 0777).should eq 0644
+    end
   end
 
   shared_examples_for 'upload paths' do

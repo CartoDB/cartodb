@@ -14,10 +14,13 @@ class Carto::StorageOptions::Local
     FileUtils.mkdir_p(target_directory)
     FileUtils.mv(file.path, target_directory)
 
-    identifier = File.join(target_directory, filename)
+    target_file_path = File.join(target_directory, filename)
+    # NOTE: default permissions are 0600, which don't allow nginx to
+    # serve them
+    FileUtils.chmod(0644, target_file_path)
     url = File.join('/uploads', @location, path, filename)
 
-    [identifier, url]
+    [target_file_path, url]
   end
 
   def remove(path)

@@ -8,7 +8,7 @@ describe Carto::StorageOptions::Local do
 
   shared_examples_for 'upload' do
     let(:prefix) { unique_name('prefix') }
-    let(:storage) { Carto::StorageOptions::Local.new(prefix) }
+    let(:storage) { described_class.new(prefix) }
     let(:file) { Tempfile.new('test') }
     let(:result) { storage.upload('123', file) }
     let(:path) { result[0] }
@@ -22,7 +22,7 @@ describe Carto::StorageOptions::Local do
 
     it 'uploads a file' do
       File.exist?(path).should be_true
-      open(path).read.should eq 'wadus'
+      File.open(path).read.should eq 'wadus'
     end
 
     it 'deletes source file' do

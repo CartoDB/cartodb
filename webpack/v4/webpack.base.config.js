@@ -42,7 +42,9 @@ module.exports = {
       __ENV__: JSON.stringify('prod'),
       __ASSETS_VERSION__: JSON.stringify(version),
       __ASSETS_PATH__: JSON.stringify(`${http_path_prefix}/assets/${version}`),
-      __KEPLERGL_BASE_URL__: JSON.stringify('https://kepler.gl')
+      __KEPLERGL_BASE_URL__: JSON.stringify('https://kepler.gl'),
+      __CARTO_MAPS_API_V2_EXTERNAL_URL__: JSON.stringify(process.env.CARTO_MAPS_API_V2_EXTERNAL_URL)
+      // __CARTO_MAPS_API_V2_EXTERNAL_URL__: `'http://localhost.lan:8282'`
     }),
 
     new MiniCssExtractPlugin({

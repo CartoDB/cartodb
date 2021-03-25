@@ -6,6 +6,11 @@
 <script>
 import init from '@carto/viewer/src/init';
 
+/* global __MAP_API_V2_TEMPLATE__:false */
+// __MAP_API_V2_TEMPLATE__ is injected via Webpack to avoid requiring
+// whole package.json file
+const MAPS_API_V2_TEMPLATE = __MAP_API_V2_TEMPLATE__;
+
 export default {
   name: 'App',
   mounted () {
@@ -20,7 +25,7 @@ export default {
         username: username,
         type: type,
         // FIXME: we need to add `mapsUrl`, it should change depends on environment. What about `region`?
-        mapsUrl: window.StaticConfig.map_api_v2_template,
+        mapsUrl: MAPS_API_V2_TEMPLATE,
         query: new URLSearchParams(window.location.search + '&embed=true'),
         goBackFunction: () => {
           window.location = '/';

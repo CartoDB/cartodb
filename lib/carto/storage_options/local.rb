@@ -17,7 +17,7 @@ class Carto::StorageOptions::Local
     target_file_path = File.join(target_directory, filename)
     # NOTE: default permissions are 0600, which don't allow nginx to
     # serve them
-    FileUtils.chmod(0644, target_file_path)
+    FileUtils.chmod(0o644, target_file_path)
     url = File.join('/uploads', @location, path, filename)
 
     [target_file_path, url]

@@ -38,7 +38,7 @@ describe Carto::StorageOptions::Local do
     end
 
     it 'target file should have 0644 perms for nginx to serve them' do
-      (File.stat(@path).mode & 0777).should eq 0644
+      (File.stat(@path).mode & 0o777).should eq 0o644
     end
   end
 

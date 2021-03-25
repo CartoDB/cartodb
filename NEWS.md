@@ -32,6 +32,7 @@ sudo make install
 - Sync DO API keys betwenn onpremises & CARTO-managed clouds [#16205](https://github.com/CartoDB/cartodb/pull/16205)
 - Fix master build [#16213](https://github.com/CartoDB/cartodb/pull/16213)
 - Bootstrap new CI & improve stability of old CI [#16220](https://github.com/CartoDB/cartodb/pull/16220)
+- Split tests load evenly in the new CI [#16227](https://github.com/CartoDB/cartodb/pull/16227)
 
 ### Bug fixes / enhancements
 

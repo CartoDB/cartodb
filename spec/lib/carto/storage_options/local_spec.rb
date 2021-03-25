@@ -21,12 +21,12 @@ describe Carto::StorageOptions::Local do
     end
 
     it 'uploads a file' do
-      File.exists?(path).should be_true
+      File.exist?(path).should be_true
       open(path).read.should eq 'wadus'
     end
 
     it 'deletes source file' do
-      File.exists?(file.path).should be_false
+      File.exist?(file.path).should be_false
     end
 
     it 'url starts with domain/uploads/' do
@@ -58,7 +58,7 @@ describe Carto::StorageOptions::Local do
   end
 
   describe 'domainful' do
-    before(:each) do
+    before do
       stub_domainful('org')
     end
 
@@ -66,7 +66,7 @@ describe Carto::StorageOptions::Local do
   end
 
   describe 'subdomainless' do
-    before(:each) do
+    before do
       stub_subdomainless
     end
 

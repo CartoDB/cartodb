@@ -118,7 +118,6 @@ steps:
           docker exec -i builder_1 bash -c 'mkdir /cartodb/tmp'
           docker exec -i builder_1 bash -c 'chmod 777 /cartodb/tmp'
           docker cp /workspace/parallel_runtime_rspec.log builder_1:/cartodb/tmp/parallel_runtime_rspec.log
-          # docker exec --user root -i builder_1 bash -c 'chmod 777 /cartodb/tmp/parallel_runtime_rspec.log'
       else
           echo 'Unable to copy previous runtime stats'
       fi

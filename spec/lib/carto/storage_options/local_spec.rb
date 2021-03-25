@@ -14,11 +14,17 @@ describe Carto::StorageOptions::Local do
     let(:path) { result[0] }
     let(:url) { result[1] }
 
+    # rubocop:disable RSpec/BeforeAfterAll
     before(:all) do
       storage.stubs(:public_uploaded_assets_path).returns(upload_path)
       file.write('wadus')
       file.close
     end
+
+    after(:all) do
+      file.unlink
+    end
+    # rubocop:enable RSpec/BeforeAfterAll
 
     it 'uploads a file' do
       File.exist?(path).should be_true

@@ -147,7 +147,6 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/visualizations_controller_index_spec.rb \
 	spec/requests/carto/api/visualizations_controller_vizjson_spec.rb \
 	spec/requests/carto/api/tables_controller_spec.rb \
-	spec/queries/carto/visualization_query_builder_spec.rb \
 	spec/requests/admin/tables_spec.rb \
 	spec/requests/admin/pages_controller_spec.rb \
 	spec/requests/carto/api/organizations_controller_spec.rb \
@@ -307,12 +306,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/mailers/user_mailer_spec.rb \
 	spec/services/carto/user_multifactor_auth_update_service_spec.rb \
 	spec/gears/carto_gears_api/users_service_spec.rb \
-	spec/queries/carto/visualization_query_searcher_spec.rb \
-	spec/queries/carto/visualization_query_orderer_spec.rb \
-	spec/queries/carto/tag_query_builder_spec.rb \
 	spec/requests/carto/api/tags_controller_spec.rb \
 	spec/lib/carto/oauth/google/api_spec.rb \
-	spec/queries/carto/dashboard_preview_searcher_spec.rb \
 	spec/requests/carto/api/search_preview_controller_spec.rb \
 	spec/requests/carto/api/public/oauth_apps_controller_spec.rb \
 	spec/requests/carto/api/public/datasets_controller_spec.rb \

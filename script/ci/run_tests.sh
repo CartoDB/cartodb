@@ -66,7 +66,8 @@ RSPEC_PATTERN=" \
 spec\/commands|\
 spec\/lib\/tasks|\
 spec\/requests\/api|\
-spec\/models\/carto
+spec\/models\/carto|\
+spec\/queries
 "
 
 if [ -v DEBUG ] && [ $DEBUG = 'true' ]; then

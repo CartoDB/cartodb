@@ -5,7 +5,7 @@ describe Carto::Overlay do
   include Carto::Factories::Visualizations
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
     # For this tests we want no visualization overlay
     @visualization.overlays.each(&:destroy)

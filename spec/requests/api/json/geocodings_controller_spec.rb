@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper'
+require 'spec_helper_unit'
 require_relative 'geocodings_controller_shared_examples'
 require_relative '../../../../app/controllers/api/json/geocodings_controller'
 
@@ -11,24 +11,14 @@ describe Api::Json::GeocodingsController do
   include CacheHelper
 
   describe 'POST api/v1/geocodings' do
-
-    before(:all) do
+    before do
+      bypass_named_maps
       @user = create_user
-    end
-
-    after(:all) do
-      bypass_named_maps
-      @user.destroy
-    end
-
-    let(:params) { { api_key: @user.api_key, kind: 'ipaddress', formatter: '{some_column}' } }
-
-    before(:each) do
-      bypass_named_maps
-      delete_user_data @user
       host! "#{@user.username}.localhost.lan"
       login_as(@user, scope: @user.username)
     end
+
+    let(:params) { { api_key: @user.api_key, kind: 'ipaddress', formatter: '{some_column}' } }
 
     it 'takes an optional argument force_all_rows and stores it in the model' do
       table = create_table(user_id: @user.id)

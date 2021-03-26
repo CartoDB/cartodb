@@ -207,13 +207,13 @@ describe Carto::Visualization do
 
     it 'only returns tables that a user can read' do
       @carto_user.update_attribute(:private_tables_enabled, true)
-      map = FactoryGirl.create(:carto_map, user: @carto_user)
+      map = create(:carto_map, user: @carto_user)
 
-      private_table = FactoryGirl.create(:private_user_table, user: @carto_user)
-      public_table = FactoryGirl.create(:public_user_table, user: @carto_user)
+      private_table = create(:private_user_table, user: @carto_user)
+      public_table = create(:public_user_table, user: @carto_user)
 
-      private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
-      FactoryGirl.create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
+      private_layer = create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
+      create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
 
       map, table, table_visualization, visualization = create_full_visualization(@carto_user,
                                                                                  map: map,
@@ -234,7 +234,7 @@ describe Carto::Visualization do
 
   describe '#published?' do
     before(:each) do
-      @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user)
+      @visualization = build(:carto_visualization, user: @carto_user)
     end
 
     it 'returns true for visualizations without version' do
@@ -262,7 +262,7 @@ describe Carto::Visualization do
   describe '#can_be_private?' do
     before(:all) do
       bypass_named_maps
-      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
+      @visualization = create(:carto_visualization, user: @carto_user)
       @visualization.reload # to clean up the user relation (see #11134)
     end
 
@@ -283,14 +283,14 @@ describe Carto::Visualization do
 
   describe '#save_named_map' do
     it 'should not save named map without layers' do
-      @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user)
+      @visualization = build(:carto_visualization, user: @carto_user)
       @visualization.expects(:named_maps_api).never
       @visualization.save
     end
 
     it 'should save named map with layers on map creation' do
-      @visualization = FactoryGirl.build(:carto_visualization, user: @carto_user, map: FactoryGirl.build(:carto_map))
-      @visualization.layers << FactoryGirl.build(:carto_layer)
+      @visualization = build(:carto_visualization, user: @carto_user, map: build(:carto_map))
+      @visualization.layers << build(:carto_layer)
       Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
       @visualization.save
     end
@@ -382,8 +382,8 @@ describe Carto::Visualization do
 
   describe 'creation' do
     it 'is not valid if user is viewer' do
-      viewer = FactoryGirl.build(:carto_user, viewer: true)
-      visualization = FactoryGirl.build(:carto_visualization, user: viewer)
+      viewer = build(:carto_user, viewer: true)
+      visualization = build(:carto_visualization, user: viewer)
       visualization.valid?.should be_false
       visualization.errors[:user].should_not be_empty
       visualization.errors[:user].first.should eq "cannot be viewer"
@@ -392,12 +392,12 @@ describe Carto::Visualization do
 
   describe '#destroy' do
     it 'destroys all visualization dependencies' do
-      map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
-      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: map)
-      FactoryGirl.create(:widget, layer: visualization.data_layers.first)
-      FactoryGirl.create(:analysis, visualization: visualization, user: @carto_user)
-      FactoryGirl.create(:carto_search_overlay, visualization: visualization)
-      FactoryGirl.create(:carto_synchronization, visualization: visualization)
+      map = create(:carto_map_with_layers, user: @carto_user)
+      visualization = create(:carto_visualization, user: @carto_user, map: map)
+      create(:widget, layer: visualization.data_layers.first)
+      create(:analysis, visualization: visualization, user: @carto_user)
+      create(:carto_search_overlay, visualization: visualization)
+      create(:carto_synchronization, visualization: visualization)
       visualization.create_mapcap!
       visualization.state.save
 
@@ -408,7 +408,7 @@ describe Carto::Visualization do
 
   describe '#backup' do
     before(:all) do
-      @map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
+      @map = create(:carto_map_with_layers, user: @carto_user)
       Carto::VisualizationBackup.all.map(&:destroy)
     end
 
@@ -418,7 +418,7 @@ describe Carto::Visualization do
     end
 
     it 'creates a backup when visualization is destroyed' do
-      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
+      visualization = create(:carto_visualization, user: @carto_user, map: @map)
       visualization.destroy
 
       Carto::VisualizationBackup.all.count.should eq 1
@@ -456,7 +456,7 @@ describe Carto::Visualization do
 
   describe '#invalidation_service' do
     before(:all) do
-      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, type: 'table')
+      @visualization = create(:carto_visualization, user: @carto_user, type: 'table')
     end
 
     it 'triggers invalidation after saving' do
@@ -483,7 +483,7 @@ describe Carto::Visualization do
 
   context 'like actions' do
     before(:each) do
-      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, type: 'table')
+      @visualization = create(:carto_visualization, user: @carto_user, type: 'table')
     end
 
     describe '#add_like_from' do
@@ -525,7 +525,7 @@ describe Carto::Visualization do
       end
 
       it 'can add like to a shared visualization' do
-        visualization = FactoryGirl.build(:carto_visualization,
+        visualization = build(:carto_visualization,
                                           user: @carto_org_user_1,
                                           privacy: Carto::Visualization::PRIVACY_LINK.upcase)
         Carto::SharedEntity.create(
@@ -576,7 +576,7 @@ describe Carto::Visualization do
       end
 
       it 'can remove like from a shared visualization' do
-        visualization = FactoryGirl.build(:carto_visualization,
+        visualization = build(:carto_visualization,
                                           user: @carto_org_user_1,
                                           privacy: Carto::Visualization::PRIVACY_LINK.upcase)
         Carto::SharedEntity.create(
@@ -639,7 +639,7 @@ describe Carto::Visualization do
 
     context 'having a private map' do
       before(:each) do
-        @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user,
+        @visualization = create(:carto_visualization, user: @carto_user,
                                                                   privacy: Carto::Visualization::PRIVACY_PRIVATE)
       end
 
@@ -667,7 +667,7 @@ describe Carto::Visualization do
 
     context 'having a public map' do
       before(:each) do
-        @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user,
+        @visualization = create(:carto_visualization, user: @carto_user,
                                                                   privacy: Carto::Visualization::PRIVACY_PUBLIC)
       end
 
@@ -698,7 +698,7 @@ describe Carto::Visualization do
         @carto_user.private_map_quota = 0
         @carto_user.public_map_quota = 0
         @carto_user.save
-        @visualization = FactoryGirl.create(:carto_table_visualization, user: @carto_user,
+        @visualization = create(:carto_table_visualization, user: @carto_user,
                                                                         privacy: Carto::Visualization::PRIVACY_PRIVATE)
       end
 

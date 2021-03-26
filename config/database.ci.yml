@@ -1,0 +1,31 @@
+# TODO: not sure why this is required by some step in run_tests.sh
+# We should research it and remove this to avoid confussion
+development:
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  port: 5432
+  direct_port: 5432
+  database: carto_db_development
+  username: postgres
+  password:
+  conn_validator_timeout: 900
+  connect_timeout: 3
+  pool: 50
+  prepared_statements: false
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: cartodb_test<%= ENV['TEST_ENV_NUMBER'] %>
+  host: localhost
+  port: 5432
+  direct_port: 5432
+  username: postgres
+  password:
+  conn_validator_timeout: -1
+  connect_timeout: -1
+  pool: 100
+  prepared_statements: false
+  variables:
+    statement_timeout: 10000

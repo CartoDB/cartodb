@@ -45,7 +45,7 @@ describe UserMailer do
 
   describe ".share_visualization kuviz" do
     before(:each) do
-      @kuviz = FactoryGirl.create(:kuviz_visualization, user: @carto_org_user_2)
+      @kuviz = create(:kuviz_visualization, user: @carto_org_user_2)
       @mailer = UserMailer.share_visualization(@kuviz, @carto_org_user_1)
     end
 
@@ -79,7 +79,7 @@ describe UserMailer do
 
   describe ".share_visualization app" do
     before(:each) do
-      @app = FactoryGirl.create(:app_visualization, user: @carto_org_user_2)
+      @app = create(:app_visualization, user: @carto_org_user_2)
       @mailer = UserMailer.share_visualization(@app, @carto_org_user_1)
     end
 

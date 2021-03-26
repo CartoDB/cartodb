@@ -19,7 +19,7 @@ describe CartoDB::TableGeocoder do
     @log = mock
     @log.stubs(:append)
     @log.stubs(:append_and_store)
-    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution',
+    @geocoding_model = create(:geocoding, kind: 'high-resolution',
                                           formatter: '{street}', remote_id: 'dummy_request_id')
 
     # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY

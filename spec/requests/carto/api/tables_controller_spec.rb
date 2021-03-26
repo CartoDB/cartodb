@@ -7,7 +7,7 @@ describe Carto::Api::TablesController do
   describe '#show legacy tests' do
 
     before(:all) do
-      @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+      @user = create(:valid_user, private_tables_enabled: true)
       @carto_user = Carto::User.find(@user.id)
 
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
@@ -43,10 +43,10 @@ describe Carto::Api::TablesController do
 
     it 'returns dependent visualizations' do
       table = create_table(user_id: @user.id)
-      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
-      visualization.map = FactoryGirl.create(:carto_map, user: @carto_user)
+      visualization = create(:carto_visualization, user: @carto_user)
+      visualization.map = create(:carto_map, user: @carto_user)
       visualization.save!
-      layer = FactoryGirl.build(:carto_layer)
+      layer = build(:carto_layer)
       layer.options[:table_name] = table.name
       layer.save
       visualization.layers << layer

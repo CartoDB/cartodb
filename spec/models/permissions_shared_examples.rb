@@ -27,7 +27,7 @@ shared_examples_for 'permission models' do
 
   describe '#create' do
     it 'tests basic creation' do
-      visualization = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user.id))
+      visualization = create(:carto_visualization, user: Carto::User.find(@user.id))
       entity_id = visualization.id
       entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
 
@@ -84,7 +84,7 @@ shared_examples_for 'permission models' do
       permission2.delete
 
       # Entity helper methods
-      visualization2 = FactoryGirl.create(:carto_visualization, user: Carto::User.find(@user.id))
+      visualization2 = create(:carto_visualization, user: Carto::User.find(@user.id))
       permission2 = permission_from_visualization_id(visualization2.id)
 
       # invalid ACL formats
@@ -190,7 +190,7 @@ shared_examples_for 'permission models' do
     end
 
     it 'fails granting write permission for viewer users' do
-      visualization = FactoryGirl.create(:carto_visualization, type: 'table', user: Carto::User.find(@user.id))
+      visualization = create(:carto_visualization, type: 'table', user: Carto::User.find(@user.id))
       permission = permission_from_visualization_id(visualization.id)
       permission.acl = [
         {
@@ -277,8 +277,8 @@ shared_examples_for 'permission models' do
       entity_id = visualization.id
       entity_type = Carto::Permission::ENTITY_TYPE_VISUALIZATION
 
-      organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
-      group = FactoryGirl.create(:random_group, organization: organization)
+      organization = Carto::Organization.find(create(:organization).id)
+      group = create(:random_group, organization: organization)
 
       acl_initial = []
       acl_with_data = [
@@ -611,7 +611,7 @@ shared_examples_for 'permission models' do
     end
 
     it "enqueues notifications for kuviz" do
-      visualization = FactoryGirl.create(:kuviz_visualization, user: @carto_user)
+      visualization = create(:kuviz_visualization, user: @carto_user)
       entity_id = visualization.id
       permission = permission_from_visualization_id(entity_id)
 
@@ -635,7 +635,7 @@ shared_examples_for 'permission models' do
     end
 
     it "enqueues notifications for app" do
-      visualization = FactoryGirl.create(:app_visualization, user: @carto_user)
+      visualization = create(:app_visualization, user: @carto_user)
       entity_id = visualization.id
       permission = permission_from_visualization_id(entity_id)
 
@@ -706,7 +706,7 @@ shared_examples_for 'permission models' do
 
       Carto::Permission.expects(:compare_new_acl).with(acl2, []).once
       # Hack to workaround FK while keeping the destroy test
-      fake_permission = FactoryGirl.create(:carto_permission, owner_id: @user.id)
+      fake_permission = create(:carto_permission, owner_id: @user.id)
       visualization.update_column(:permission_id, fake_permission.id)
       permission.destroy
 
@@ -771,7 +771,7 @@ shared_examples_for 'permission models' do
       include Carto::Factories::Visualizations
 
       before(:all) do
-        @group = FactoryGirl.create(:random_group, organization_id: @organization.id)
+        @group = create(:random_group, organization_id: @organization.id)
       end
 
       after(:all) do

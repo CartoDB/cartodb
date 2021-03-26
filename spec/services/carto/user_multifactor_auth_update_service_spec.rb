@@ -3,7 +3,7 @@ require 'spec_helper_min'
 describe Carto::UserMultifactorAuthUpdateService do
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
     @service = Carto::UserMultifactorAuthUpdateService.new(user_id: @user.id)
   end
 

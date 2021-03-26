@@ -16,7 +16,7 @@ describe Visualization::Member do
     bypass_named_maps
 
     user_name = 'whatever'
-    @user_mock = FactoryGirl.build(:user, username: user_name)
+    @user_mock = build(:user, username: user_name)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
@@ -53,7 +53,7 @@ describe Visualization::Member do
 
   describe 'to_poro fields' do
     it 'basic fields expected at the to_poro method' do
-      perm_mock = FactoryGirl.build(:carto_permission)
+      perm_mock = build(:carto_permission)
 
       vis_mock = mock
       vis_mock.stubs(:id).returns(Carto::UUIDHelper.random_uuid)

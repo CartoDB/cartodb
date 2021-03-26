@@ -89,17 +89,17 @@ describe User do
       end
 
       it 'should not be able to create groups without admin rights' do
-        user = FactoryGirl.create(:valid_user, organization: @organization)
+        user = create(:valid_user, organization: @organization)
         expect { create_role(user) }.to raise_error
       end
 
       it 'should be able to create groups with admin rights' do
-        user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+        user = create(:valid_user, organization: @organization, org_admin: true)
         expect { create_role(user) }.to_not raise_error
       end
 
       it 'should revoke admin rights on demotion' do
-        user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
+        user = create(:valid_user, organization: @organization, org_admin: true)
         expect { create_role(user) }.to_not raise_error
 
         user.org_admin = false
@@ -211,7 +211,7 @@ describe User do
         u.private_tables_enabled.should be_true
         u.sync_tables_enabled.should be_true
       end
-      user = FactoryGirl.build(:user, organization: organization)
+      user = build(:user, organization: organization)
       user.max_layers = 3
       user.save
       user.max_layers.should == 3

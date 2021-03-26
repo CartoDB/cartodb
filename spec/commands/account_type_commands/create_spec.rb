@@ -1,8 +1,6 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe AccountTypeCommands::Create do
-  include_context 'with DatabaseCleaner'
-
   let(:command) { described_class.new(params) }
   let(:params) do
     {

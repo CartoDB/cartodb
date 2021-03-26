@@ -1,6 +1,4 @@
-require 'rspec/core'
-require 'rspec/expectations'
-require 'rspec/mocks'
+require 'spec_helper_min'
 require_relative '../../lib/importer/excel2csv'
 require_relative '../doubles/job'
 require_relative '../doubles/csv_normalizer'

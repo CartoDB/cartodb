@@ -33,7 +33,7 @@ describe Admin::VisualizationsController do
   end
 
   before(:all) do
-    @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+    @user = create(:valid_user, private_tables_enabled: true)
 
     @api_key = @user.api_key
     @user.stubs(:should_load_common_data?).returns(false)
@@ -346,8 +346,8 @@ describe Admin::VisualizationsController do
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
-      map = FactoryGirl.create(:map, user_id: @user.id)
-      derived_visualization = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+      map = create(:map, user_id: @user.id)
+      derived_visualization = create(:derived_visualization, user_id: @user.id, map_id: map.id)
       id = derived_visualization.id
 
       get "/viz/#{id}/public", {}, @headers
@@ -412,7 +412,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'redirects to kuviz when needed' do
-      kuviz = FactoryGirl.create(:kuviz_visualization, user_id: @user.id)
+      kuviz = create(:kuviz_visualization, user_id: @user.id)
 
       get public_tables_embed_map_url(id: kuviz.id), {}, @headers
       last_response.status.should eq 302
@@ -425,7 +425,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'redirects to app when needed' do
-      app = FactoryGirl.create(:app_visualization, user_id: @user.id)
+      app = create(:app_visualization, user_id: @user.id)
 
       get public_tables_embed_map_url(id: app.id), {}, @headers
       last_response.status.should eq 302

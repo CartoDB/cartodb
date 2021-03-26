@@ -24,27 +24,27 @@ describe Carto::User do
 
   describe '#needs_password_confirmation?' do
     it 'is true for a normal user' do
-      user = FactoryGirl.build(:carto_user, google_sign_in: nil)
+      user = build(:carto_user, google_sign_in: nil)
       user.needs_password_confirmation?.should == true
 
-      user = FactoryGirl.build(:carto_user, google_sign_in: false)
+      user = build(:carto_user, google_sign_in: false)
       user.needs_password_confirmation?.should == true
     end
 
     it 'is false for users that signed in with Google' do
-      user = FactoryGirl.build(:carto_user, google_sign_in: true)
+      user = build(:carto_user, google_sign_in: true)
       user.needs_password_confirmation?.should == false
     end
 
     it 'is true for users that signed in with Google but changed the password' do
-      user = FactoryGirl.build(:carto_user, google_sign_in: true, last_password_change_date: Time.now)
+      user = build(:carto_user, google_sign_in: true, last_password_change_date: Time.now)
       user.needs_password_confirmation?.should == true
     end
   end
 
   describe '#soft_geocoding_limit' do
     before(:all) do
-      @carto_user = FactoryGirl.build(:carto_user)
+      @carto_user = build(:carto_user)
     end
 
     it 'false for free accounts' do
@@ -64,17 +64,17 @@ describe Carto::User do
 
   describe '#default_dataset_privacy' do
     it 'returns the equivalent visualization privacy' do
-      no_private_tables_user = FactoryGirl.build(:carto_user, private_tables_enabled: false)
+      no_private_tables_user = build(:carto_user, private_tables_enabled: false)
       no_private_tables_user.default_dataset_privacy.should eq Carto::Visualization::PRIVACY_PUBLIC
 
-      private_tables_user = FactoryGirl.build(:carto_user, private_tables_enabled: true)
+      private_tables_user = build(:carto_user, private_tables_enabled: true)
       private_tables_user.default_dataset_privacy.should eq Carto::Visualization::PRIVACY_PRIVATE
     end
   end
 
   describe "#send_password_reset!" do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
     end
 
     after(:all) do
@@ -104,7 +104,7 @@ describe Carto::User do
 
   describe '#is_email_notification_enabled' do
     before(:all) do
-      @carto_user = FactoryGirl.create(:carto_user)
+      @carto_user = create(:carto_user)
     end
 
     it 'returns the notification flag if it exists' do
@@ -149,7 +149,7 @@ describe Carto::User do
 
   describe '#email_notification=' do
     before(:all) do
-      @carto_user = FactoryGirl.create(:carto_user)
+      @carto_user = create(:carto_user)
     end
 
     it 'creates a fresh set of notifications' do

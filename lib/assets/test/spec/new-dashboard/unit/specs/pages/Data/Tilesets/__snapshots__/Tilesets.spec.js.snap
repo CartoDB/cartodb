@@ -1,0 +1,281 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Connections.vue Errors should render error getting 401 1`] = `
+<section class="u-mt--64">
+  <div class="container grid">
+    <div class="full-width">
+      <sectiontitle-stub class="header grid-cell"><template></template> <template></template></sectiontitle-stub>
+      <div class="grid-cell grid-cell--col12">
+        <div class="u-flex u-mt--20 u-mb--36">
+          <div class="u-mr--28">
+            <div class="text is-small is-semibold">
+              Select Project
+            </div>
+            <dropdowncomponent-stub placeholder="TilesetsPage.projectPlaceholder" elements="" showcreate="true" type="text"></dropdowncomponent-stub>
+          </div>
+          <div class="dropdown-disabled">
+            <div class="text is-small is-semibold">
+              Project datasets
+            </div>
+            <dropdowncomponent-stub placeholder="Select dataset" elements="" type="text"></dropdowncomponent-stub>
+          </div>
+        </div>
+        <!---->
+        <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list"><img src="../../../assets/icons/tilesets/tileset-error.svg">
+          <div class="u-ml--32">
+            <div class="text is-body is-semibold u-mb--12">
+              TilesetsPage.errorTitle
+            </div>
+            <div class="text is-caption u-mb--16">TilesetsPage.errorSubtitle</div>
+            <div class="is-small">
+              <div class="u-mt--12 text is-txtMidGrey is-semibold">Error info:</div>
+              <div class="u-mt--12 u-flex text is-semibold"><input type="text" readonly="readonly" class="code u-flex__grow--1 is-code">
+                <div class="u-ml--4 copy"><img svg-inline="" src="../../../assets/icons/catalog/copy.svg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`Connections.vue Errors should render error getting 403 1`] = `
+<section class="u-mt--64">
+  <div class="container grid">
+    <div class="full-width">
+      <sectiontitle-stub class="header grid-cell"><template></template> <template></template></sectiontitle-stub>
+      <div class="grid-cell grid-cell--col12">
+        <div class="u-flex u-mt--20 u-mb--36">
+          <div class="u-mr--28">
+            <div class="text is-small is-semibold">
+              Select Project
+            </div>
+            <dropdowncomponent-stub placeholder="TilesetsPage.projectPlaceholder" elements="" showcreate="true" type="text"></dropdowncomponent-stub>
+          </div>
+          <div class="dropdown-disabled">
+            <div class="text is-small is-semibold">
+              Project datasets
+            </div>
+            <dropdowncomponent-stub placeholder="Select dataset" elements="" type="text"></dropdowncomponent-stub>
+          </div>
+        </div>
+        <!---->
+        <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list"><img src="../../../assets/icons/tilesets/tileset-error.svg">
+          <div class="u-ml--32">
+            <div class="text is-body is-semibold u-mb--12">
+              TilesetsPage.errorTitle
+            </div>
+            <div class="text is-caption u-mb--16">TilesetsPage.errorSubtitle</div>
+            <div class="is-small">
+              <div class="u-mt--12 text is-txtMidGrey is-semibold">Error info:</div>
+              <div class="u-mt--12 u-flex text is-semibold"><input type="text" readonly="readonly" class="code u-flex__grow--1 is-code">
+                <div class="u-ml--4 copy"><img svg-inline="" src="../../../assets/icons/catalog/copy.svg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`Connections.vue Errors should render error getting 404 fetching datasets 1`] = `
+<section class="u-mt--64">
+  <div class="container grid">
+    <div class="full-width">
+      <sectiontitle-stub class="header grid-cell"><template></template> <template></template></sectiontitle-stub>
+      <div class="grid-cell grid-cell--col12">
+        <div class="u-flex u-mt--20 u-mb--36">
+          <div class="u-mr--28">
+            <div class="text is-small is-semibold">
+              Select Project
+            </div>
+            <dropdowncomponent-stub placeholder="TilesetsPage.projectPlaceholder" elements="[object Object]" showcreate="true" type="text" value="[object Object]"></dropdowncomponent-stub>
+          </div>
+          <div class="">
+            <div class="text is-small is-semibold">
+              Project datasets
+            </div>
+            <dropdowncomponent-stub placeholder="Select dataset" elements="" type="text"></dropdowncomponent-stub>
+          </div>
+        </div>
+        <!---->
+        <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list"><img src="../../../assets/icons/tilesets/tileset-error.svg">
+          <div class="u-ml--32">
+            <div class="text is-body is-semibold u-mb--12">
+              TilesetsPage.notFoundTitle
+            </div>
+            <div class="text is-caption u-mb--16">TilesetsPage.notFoundSubtitle</div>
+          </div>
+        </div>
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`Connections.vue Errors should render error if user has not projects 1`] = `
+<section class="u-mt--64">
+  <div class="container grid">
+    <div class="full-width">
+      <sectiontitle-stub class="header grid-cell"><template></template> <template></template></sectiontitle-stub>
+      <div class="grid-cell grid-cell--col12">
+        <div class="u-flex u-mt--20 u-mb--36">
+          <div class="u-mr--28">
+            <div class="text is-small is-semibold">
+              Select Project
+            </div>
+            <dropdowncomponent-stub placeholder="TilesetsPage.projectPlaceholder" elements="" showcreate="true" type="text"></dropdowncomponent-stub>
+          </div>
+          <div class="dropdown-disabled">
+            <div class="text is-small is-semibold">
+              Project datasets
+            </div>
+            <dropdowncomponent-stub placeholder="Select dataset" elements="" type="text"></dropdowncomponent-stub>
+          </div>
+        </div>
+        <!---->
+        <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 empty-list"><img src="../../../assets/icons/tilesets/tileset-error.svg">
+          <div class="u-ml--32">
+            <div class="text is-body is-semibold u-mb--12">
+              TilesetsPage.errorTitle
+            </div>
+            <div class="text is-caption u-mb--16">TilesetsPage.errorSubtitle</div>
+            <!---->
+          </div>
+        </div>
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`Connections.vue Errors should render no data when no tilesets 1`] = `
+<section class="u-mt--64">
+  <div class="container grid">
+    <div class="full-width">
+      <sectiontitle-stub class="header grid-cell"><template></template> <template></template></sectiontitle-stub>
+      <div class="grid-cell grid-cell--col12">
+        <div class="u-flex u-mt--20 u-mb--36">
+          <div class="u-mr--28">
+            <div class="text is-small is-semibold">
+              Select Project
+            </div>
+            <dropdowncomponent-stub placeholder="TilesetsPage.projectPlaceholder" elements="[object Object]" showcreate="true" type="text" value="[object Object]"></dropdowncomponent-stub>
+          </div>
+          <div class="">
+            <div class="text is-small is-semibold">
+              Project datasets
+            </div>
+            <dropdowncomponent-stub placeholder="Select dataset" elements="[object Object]" type="text" value="[object Object]"></dropdowncomponent-stub>
+          </div>
+        </div>
+        <!---->
+        <div class="u-flex u-pt--48 u-pb--48 u-pl--32 u-pr--32 u-flex__align--start empty-list"><img src="../../../assets/icons/tilesets/tileset-empty.svg">
+          <div class="u-ml--32">
+            <div class="text is-body is-semibold u-mb--12">
+              TilesetsPage.noAvailableTitle
+            </div>
+            <div class="text is-caption u-mb--16">TilesetsPage.noAvailableSubtitle</div>
+            <!---->
+          </div>
+        </div>
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`Connections.vue Render should render list properly 1`] = `
+<section class="u-mt--64">
+  <div class="container grid">
+    <div class="full-width">
+      <sectiontitle-stub class="header grid-cell"><template></template> <template></template></sectiontitle-stub>
+      <div class="grid-cell grid-cell--col12">
+        <div class="u-flex u-mt--20 u-mb--36">
+          <div class="u-mr--28">
+            <div class="text is-small is-semibold">
+              Select Project
+            </div>
+            <dropdowncomponent-stub placeholder="TilesetsPage.projectPlaceholder" elements="[object Object]" showcreate="true" type="text" value="[object Object]"></dropdowncomponent-stub>
+          </div>
+          <div class="">
+            <div class="text is-small is-semibold">
+              Project datasets
+            </div>
+            <dropdowncomponent-stub placeholder="Select dataset" elements="[object Object]" type="text" value="[object Object]"></dropdowncomponent-stub>
+          </div>
+        </div>
+        <div class="grid__head--sticky">
+          <tilesetlistheader-stub issortable="true"></tilesetlistheader-stub>
+        </div>
+        <ul>
+          <li class="tileset-item">
+            <tilesetlistcard-stub tileset="[object Object]" canhover="true" storeactiontype="tilesets" class="tileset-item"></tilesetlistcard-stub>
+          </li>
+          <li class="tileset-item">
+            <tilesetlistcard-stub tileset="[object Object]" canhover="true" storeactiontype="tilesets" class="tileset-item"></tilesetlistcard-stub>
+          </li>
+          <li class="tileset-item">
+            <tilesetlistcard-stub tileset="[object Object]" canhover="true" storeactiontype="tilesets" class="tileset-item"></tilesetlistcard-stub>
+          </li>
+        </ul>
+        <!---->
+        <!---->
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`Connections.vue Render should render list with pagination properly 1`] = `
+<section class="u-mt--64">
+  <div class="container grid">
+    <div class="full-width">
+      <sectiontitle-stub class="header grid-cell"><template></template> <template></template></sectiontitle-stub>
+      <div class="grid-cell grid-cell--col12">
+        <div class="u-flex u-mt--20 u-mb--36">
+          <div class="u-mr--28">
+            <div class="text is-small is-semibold">
+              Select Project
+            </div>
+            <dropdowncomponent-stub placeholder="TilesetsPage.projectPlaceholder" elements="[object Object]" showcreate="true" type="text" value="[object Object]"></dropdowncomponent-stub>
+          </div>
+          <div class="">
+            <div class="text is-small is-semibold">
+              Project datasets
+            </div>
+            <dropdowncomponent-stub placeholder="Select dataset" elements="[object Object]" type="text" value="[object Object]"></dropdowncomponent-stub>
+          </div>
+        </div>
+        <div class="grid__head--sticky">
+          <tilesetlistheader-stub issortable="true"></tilesetlistheader-stub>
+        </div>
+        <ul>
+          <li class="tileset-item">
+            <tilesetlistcard-stub tileset="[object Object]" canhover="true" storeactiontype="tilesets" class="tileset-item"></tilesetlistcard-stub>
+          </li>
+          <li class="tileset-item">
+            <tilesetlistcard-stub tileset="[object Object]" canhover="true" storeactiontype="tilesets" class="tileset-item"></tilesetlistcard-stub>
+          </li>
+          <li class="tileset-item">
+            <tilesetlistcard-stub tileset="[object Object]" canhover="true" storeactiontype="tilesets" class="tileset-item"></tilesetlistcard-stub>
+          </li>
+        </ul>
+        <pagination-stub page="1" numpages="3"></pagination-stub>
+        <!---->
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
+</section>
+`;

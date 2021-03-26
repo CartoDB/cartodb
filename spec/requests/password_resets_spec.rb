@@ -3,7 +3,7 @@ require_relative '../spec_helper_min'
 feature "Forgot password" do
 
   before(:all) do
-    @user = FactoryGirl.create(:user)
+    @user = create(:user)
   end
 
   before(:each) do

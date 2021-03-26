@@ -1,17 +1,16 @@
 require 'ostruct'
 
-FactoryGirl.define do
-
-  factory :user_creation, class: Carto::UserCreation do
-    username "whatever"
-    email "whatever@carto.com"
-    crypted_password "rgjreogjorejgpovrjeg"
-    google_sign_in false
-    quota_in_bytes 10000000
-    soft_twitter_datasource_limit false
+FactoryBot.define do
+  factory :user_creation, class: 'Carto::UserCreation' do
+    username { 'whatever' }
+    email { 'whatever@carto.com' }
+    crypted_password { 'rgjreogjorejgpovrjeg' }
+    google_sign_in { false }
+    quota_in_bytes { 10_000_000 }
+    soft_twitter_datasource_limit { false }
 
     factory :autologin_user_creation do
-      state 'success'
+      state { 'success' }
       created_at { Time.now }
 
       after(:build) do |model, evaluator|
@@ -21,5 +20,4 @@ FactoryGirl.define do
       end
     end
   end
-
 end

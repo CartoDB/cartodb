@@ -15,7 +15,7 @@ describe Carto::Api::Public::DataObservatoryController do
     do_grants = [{ type: 'apis', apis: ['do'] }]
     @granted_token = @user1.api_keys.create_regular_key!(name: 'do', grants: do_grants).token
     @headers = { 'CONTENT_TYPE' => 'application/json' }
-    @feature_flag = FactoryGirl.create(:feature_flag, name: 'do-instant-licensing', restricted: true)
+    @feature_flag = create(:feature_flag, name: 'do-instant-licensing', restricted: true)
   end
 
   after(:all) do

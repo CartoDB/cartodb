@@ -3,7 +3,7 @@ require 'spec_helper_min'
 describe Carto::DoSyncServiceFactory do
 
   before(:all) do
-    @user = FactoryGirl.create(:valid_user, username: 'fulano')
+    @user = create(:valid_user, username: 'fulano')
     @service = Carto::DoSyncServiceFactory.get_for_user(@user)
     if @service.present?
       @do_api_class = @service.do_api_class
@@ -58,13 +58,13 @@ describe Carto::DoSyncServiceFactory do
     @metadata_settings_redis_key = "do_settings:__metadata_reader"
     $users_metadata.hmset(@metadata_settings_redis_key, *metadata_gcloud_settings.to_a)
 
-    @synced_sync = FactoryGirl.create(
+    @synced_sync = create(
       :carto_synchronization,
       user_id: @user.id,
       name: 'synced_table',
       state: 'success'
     )
-    @synced_import = FactoryGirl.create(
+    @synced_import = create(
       :data_import,
       user_id: @user.id,
       table_name: 'synced_table',
@@ -73,7 +73,7 @@ describe Carto::DoSyncServiceFactory do
       service_name: 'connector',
       service_item_id: %[{"subscription_id":"#{@subscribed_synced_dataset_id}"}]
     )
-    @synced_table = FactoryGirl.create(
+    @synced_table = create(
       :user_table,
       user_id: @user.id,
       name: 'synced_table',
@@ -81,13 +81,13 @@ describe Carto::DoSyncServiceFactory do
     )
     @synced_sync.update_attributes! visualization_id: Carto::UserTable.find(@synced_table.id).visualization.id
 
-    @syncing_sync = FactoryGirl.create(
+    @syncing_sync = create(
       :carto_synchronization,
       user_id: @user.id,
       name: 'syncing_table',
       state: 'queued'
     )
-    @syncing_import = FactoryGirl.create(
+    @syncing_import = create(
       :data_import,
       user_id: @user.id,
       table_name: 'syncing_table',
@@ -96,7 +96,7 @@ describe Carto::DoSyncServiceFactory do
       service_name: 'connector',
       service_item_id: %[{"subscription_id":"#{@subscribed_syncing_dataset_id}"}]
     )
-    @syncing_table = FactoryGirl.create(
+    @syncing_table = create(
       :user_table,
       user_id: @user.id,
       name: 'syncing_table',
@@ -104,13 +104,13 @@ describe Carto::DoSyncServiceFactory do
     )
 
     @import_error_code = 12345
-    @error_sync = FactoryGirl.create(
+    @error_sync = create(
       :carto_synchronization,
       user_id: @user.id,
       name: 'error_table',
       state: 'success'
     )
-    @error_import = FactoryGirl.create(
+    @error_import = create(
       :data_import,
       user_id: @user.id,
       table_name: 'error_table',

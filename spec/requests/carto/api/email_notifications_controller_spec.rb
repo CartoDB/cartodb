@@ -5,7 +5,7 @@ describe Carto::Api::EmailNotificationsController do
   include HelperMethods
 
   before(:all) do
-    @carto_user = FactoryGirl.create(:carto_user)
+    @carto_user = create(:carto_user)
   end
 
   let(:auth_params) do

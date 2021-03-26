@@ -11,9 +11,9 @@ describe Carto::Api::Public::OauthAppsController do
       before(:all) do
         @params = { api_key: @user1.api_key, page: 1, per_page: 10 }
 
-        @app1 = FactoryGirl.create(:oauth_app, user_id: @user1.id, name: 'ZZZ', restricted: false)
-        @app2 = FactoryGirl.create(:oauth_app, user_id: @user1.id, name: 'ABC', restricted: true)
-        @app3 = FactoryGirl.create(:oauth_app, user_id: @user2.id, name: 'ABC', restricted: true)
+        @app1 = create(:oauth_app, user_id: @user1.id, name: 'ZZZ', restricted: false)
+        @app2 = create(:oauth_app, user_id: @user1.id, name: 'ABC', restricted: true)
+        @app3 = create(:oauth_app, user_id: @user2.id, name: 'ABC', restricted: true)
       end
 
       after(:all) do
@@ -59,7 +59,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       it 'returns 200 with an empty array if the current user does not have apps' do
-        @user3 = FactoryGirl.create(:valid_user)
+        @user3 = create(:valid_user)
         host! "#{@user3.username}.localhost.lan"
 
         get_json api_v4_oauth_apps_url(api_key: @user3.api_key) do |response|
@@ -125,9 +125,9 @@ describe Carto::Api::Public::OauthAppsController do
       before(:all) do
         @params = { page: 1, per_page: 10 }
 
-        @app1 = FactoryGirl.create(:oauth_app, user_id: @org_user_1.id)
-        @app2 = FactoryGirl.create(:oauth_app, user_id: @org_user_2.id)
-        @app3 = FactoryGirl.create(:oauth_app, user_id: @org_user_owner.id)
+        @app1 = create(:oauth_app, user_id: @org_user_1.id)
+        @app2 = create(:oauth_app, user_id: @org_user_2.id)
+        @app3 = create(:oauth_app, user_id: @org_user_owner.id)
       end
 
       after(:all) do
@@ -160,9 +160,9 @@ describe Carto::Api::Public::OauthAppsController do
     before(:all) do
       @params = { api_key: @carto_org_user_1.api_key, page: 1, per_page: 10 }
 
-      @app1 = FactoryGirl.create(:oauth_app, user_id: @carto_org_user_2.id, name: 'ZZZ', restricted: false)
-      @app2 = FactoryGirl.create(:oauth_app, user_id: @carto_org_user_2.id, name: 'ABC', restricted: true)
-      @app3 = FactoryGirl.create(:oauth_app, user_id: @carto_org_user_2.id)
+      @app1 = create(:oauth_app, user_id: @carto_org_user_2.id, name: 'ZZZ', restricted: false)
+      @app2 = create(:oauth_app, user_id: @carto_org_user_2.id, name: 'ABC', restricted: true)
+      @app3 = create(:oauth_app, user_id: @carto_org_user_2.id)
 
       @app1.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
       @app2.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
@@ -280,7 +280,7 @@ describe Carto::Api::Public::OauthAppsController do
 
   describe 'show' do
     before(:all) do
-      @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
+      @app = create(:oauth_app, user_id: @user1.id)
       @params = { api_key: @user1.api_key, id: @app.id }
     end
 
@@ -326,7 +326,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 404 if the app is not owned' do
-      other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
+      other_app = create(:oauth_app, user_id: @user2.id)
 
       get_json api_v4_oauth_app_url(@params.merge(id: other_app.id)) do |response|
         expect(response.status).to eq(404)
@@ -410,7 +410,7 @@ describe Carto::Api::Public::OauthAppsController do
   describe 'update' do
     context 'regular users' do
       before(:all) do
-        @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
+        @app = create(:oauth_app, user_id: @user1.id)
         @params = { id: @app.id, api_key: @user1.api_key }
         @payload = { name: 'updated name' }
       end
@@ -458,7 +458,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       it 'returns 404 if the app is not owned' do
-        other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
+        other_app = create(:oauth_app, user_id: @user2.id)
 
         put_json api_v4_oauth_app_url(@params.merge(id: other_app.id)) do |response|
           expect(response.status).to eq(404)
@@ -487,7 +487,7 @@ describe Carto::Api::Public::OauthAppsController do
 
     context 'organizational users' do
       before(:all) do
-        @app = FactoryGirl.create(:oauth_app, user_id: @org_user_1.id)
+        @app = create(:oauth_app, user_id: @org_user_1.id)
         @params = { id: @app.id, api_key: @org_user_owner.api_key, user_domain: @org_user_owner.username }
         @payload = { name: 'updated name' }
       end
@@ -513,7 +513,7 @@ describe Carto::Api::Public::OauthAppsController do
 
   describe 'regenerate_secret' do
     before(:all) do
-      @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
+      @app = create(:oauth_app, user_id: @user1.id)
       @params = { id: @app.id, api_key: @user1.api_key }
     end
 
@@ -560,7 +560,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 404 if the app is not owned' do
-      other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
+      other_app = create(:oauth_app, user_id: @user2.id)
 
       post_json api_v4_oauth_apps_regenerate_secret_url(@params.merge(id: other_app.id)) do |response|
         expect(response.status).to eq(404)
@@ -584,7 +584,7 @@ describe Carto::Api::Public::OauthAppsController do
     before(:each) do
       Carto::OauthAppUser.any_instance.stubs(:reassign_owners).returns(true)
       Carto::OauthAppUser.any_instance.stubs(:drop_roles).returns(true)
-      @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
+      @app = create(:oauth_app, user_id: @user1.id)
       @params = { id: @app.id, api_key: @user1.api_key }
     end
 
@@ -634,7 +634,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 404 if the app is not owned' do
-      other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
+      other_app = create(:oauth_app, user_id: @user2.id)
 
       delete_json api_v4_oauth_app_url(@params.merge(id: other_app.id)) do |response|
         expect(response.status).to eq(404)
@@ -683,7 +683,7 @@ describe Carto::Api::Public::OauthAppsController do
 
   describe 'revoke' do
     before(:each) do
-      @app = FactoryGirl.create(:oauth_app, user_id: @carto_org_user_2.id)
+      @app = create(:oauth_app, user_id: @carto_org_user_2.id)
       @app.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
       @oauth_app_user = Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app)
 

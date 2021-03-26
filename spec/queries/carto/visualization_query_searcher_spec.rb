@@ -2,14 +2,14 @@ require_relative '../../spec_helper_min'
 
 describe Carto::VisualizationQuerySearcher do
   before(:all) do
-    @user = FactoryGirl.create(:carto_user)
-    FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'New York polution',
+    @user = create(:carto_user)
+    create(:derived_visualization, user_id: @user.id, name: 'New York polution',
                                                description: 'Polution by traffic and industry')
     Delorean.jump(1.day)
-    FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'New industries in York',
+    create(:derived_visualization, user_id: @user.id, name: 'New industries in York',
                                                tags: ["traffic"])
     Delorean.jump(1.day)
-    FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'Madrid traffic and polution')
+    create(:derived_visualization, user_id: @user.id, name: 'Madrid traffic and polution')
     Delorean.back_to_the_present
 
     query = Carto::Visualization.all.select("visualizations.*").where(user_id: @user.id)

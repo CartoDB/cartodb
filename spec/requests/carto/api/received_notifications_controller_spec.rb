@@ -6,8 +6,8 @@ module Carto
     include HelperMethods
 
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
-      @notification = FactoryGirl.create(:notification)
+      @user = create(:carto_user)
+      @notification = create(:notification)
     end
 
     after(:all) do

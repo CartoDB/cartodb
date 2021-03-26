@@ -3,11 +3,11 @@ require 'spec_helper_min'
 module Carto
   describe ReceivedNotification do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
     end
 
     before(:each) do
-      @notification = FactoryGirl.create(:notification)
+      @notification = create(:notification)
       @user.reload
     end
 

@@ -91,10 +91,10 @@ feature "Sessions" do
   end
 
   scenario "should redirect you to the user login page if unauthorized", :js => true do
-    @user  = FactoryGirl.create(:user_with_private_tables, :username => 'test')
+    user  = create(:user_with_private_tables)
 
-    visit api_key_credentials_url(:host => 'test.localhost.lan', :port => Capybara.server_port)
-    current_url.should be == login_url(:host => 'test.localhost.lan', :port => Capybara.server_port)
+    visit api_key_credentials_url(host: "#{user.username}.localhost.lan", port: Capybara.server_port)
+    current_url.should be == login_url(host: "#{user.username}.localhost.lan", port: Capybara.server_port)
   end
 
 
@@ -130,8 +130,8 @@ feature "Sessions" do
   describe 'Multifactor Authentication' do
     describe 'valid user with MFA' do
       before do
-        @user_mfa_setup = FactoryGirl.create(:carto_user_mfa_setup)
-        @user_mfa = FactoryGirl.create(:carto_user_mfa)
+        @user_mfa_setup = create(:carto_user_mfa_setup)
+        @user_mfa = create(:carto_user_mfa)
       end
 
       scenario "Login in the application with MFA that does not need setup" do
@@ -384,7 +384,7 @@ feature "Sessions" do
 
     describe 'ldap login' do
       before do
-        @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: organization.id })
+        @ldap_configuration = create(:ldap_configuration, { organization_id: organization.id })
       end
 
       it 'does not allow google login to organization users if they have ldap configuration' do

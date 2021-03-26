@@ -1,5 +1,4 @@
 require 'spec_helper_min'
-require_relative '../simplecov_helper'
 require_relative '../../lib/carto/url_validator'
 
 class Carto::UrlValidatorInstance

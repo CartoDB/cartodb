@@ -16,7 +16,7 @@ describe Layer do
       @quota_in_bytes = 500.megabytes
       @table_quota = 500
 
-      @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+      @user = create(:valid_user, private_tables_enabled: true)
 
       @table = Table.new
       @table.user_id = @user.id
@@ -48,13 +48,13 @@ describe Layer do
 
     before(:all) do
       helper = TestUserFactory.new
-      @organization = FactoryGirl.create(:organization, quota_in_bytes: 1000000000000)
+      @organization = create(:organization, quota_in_bytes: 1000000000000)
       @owner = helper.create_owner(@organization)
       @nonhyphen_user = helper.create_test_user(unique_name('user'), @organization)
       @hyphen_user = helper.create_test_user(unique_name('user-'), @organization)
-      @nonhyphen_table = FactoryGirl.create(:user_table, user: @nonhyphen_user, name: unique_name('table'))
-      @subuser_table = FactoryGirl.create(:user_table, user: @hyphen_user, name: unique_name('table'))
-      @hyphen_table = FactoryGirl.create(:user_table, user: @hyphen_user, name: unique_name('table-'))
+      @nonhyphen_table = create(:user_table, user: @nonhyphen_user, name: unique_name('table'))
+      @subuser_table = create(:user_table, user: @hyphen_user, name: unique_name('table'))
+      @hyphen_table = create(:user_table, user: @hyphen_user, name: unique_name('table-'))
     end
 
     before(:each) do

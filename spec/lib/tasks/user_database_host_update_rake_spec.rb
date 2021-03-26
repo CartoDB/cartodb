@@ -1,8 +1,7 @@
-require 'spec_helper_min'
-require 'rake'
+require 'spec_helper_unit'
 
 describe 'user' do
-  before :all do
+  before do
     Rake.application.rake_require "tasks/user_database_host_update"
     Rake::Task.define_task(:environment)
   end
@@ -22,11 +21,11 @@ describe 'user' do
       end
 
       it "should change the database host for the users and also sync the metadata" do
-        user = FactoryGirl.create(:valid_user)
+        user = create(:valid_user)
         user.database_host = "localhost"
         user.save
 
-        user2 = FactoryGirl.create(:valid_user)
+        user2 = create(:valid_user)
         user2.database_host = "127.0.0.1"
         user2.save
 

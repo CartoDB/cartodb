@@ -24,7 +24,7 @@ describe CartoDB::HiresBatchGeocoder do
         'token' => '',
         'mailto' => ''
       })
-    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}' )
+    @geocoding_model = create(:geocoding, kind: 'high-resolution', formatter: '{street}' )
     @batch_geocoder = CartoDB::HiresBatchGeocoder.new(@input_csv_file, @working_dir, @log, @geocoding_model)
   end
 

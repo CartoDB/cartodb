@@ -19,7 +19,7 @@ describe Visualization::Member do
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    @user = FactoryGirl.create(:valid_user)
+    @user = create(:valid_user)
   end
 
   after(:all) do
@@ -221,8 +221,8 @@ describe Visualization::Member do
       include Carto::Factories::Visualizations
 
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @other_table = FactoryGirl.create(:carto_user_table, user: @user)
+        @user = create(:carto_user)
+        @other_table = create(:carto_user_table, user: @user)
       end
 
       before(:each) do
@@ -247,7 +247,7 @@ describe Visualization::Member do
 
       it 'destroys maps with join analyses if they are dependent' do
         # First layer uses tables @table, Second layer uses tables @table and @other_table. Map is dependent on @table
-        layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
+        layer = build(:carto_layer, kind: 'carto', maps: [@map])
         layer.options[:query] = "SELECT * FROM #{@other_table.name}"
         layer.save
         layer.user_tables << @table << @other_table
@@ -260,7 +260,7 @@ describe Visualization::Member do
 
       it 'unlinks only dependent data layers' do
         layer_to_be_deleted = @visualization.data_layers.first
-        layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
+        layer = build(:carto_layer, kind: 'carto', maps: [@map])
         layer.options[:query] = "SELECT * FROM #{@other_table.name}"
         layer.save
         layer.user_tables << @other_table
@@ -279,7 +279,7 @@ describe Visualization::Member do
         layer_to_be_deleted.save
         layer_to_be_deleted.user_tables << @table
 
-        layer = FactoryGirl.build(:carto_layer, kind: 'carto', maps: [@map])
+        layer = build(:carto_layer, kind: 'carto', maps: [@map])
         layer.options[:source] = 'b0'
         layer.save
         layer.user_tables << @other_table

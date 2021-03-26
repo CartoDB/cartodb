@@ -195,7 +195,7 @@ module Carto
 
     it 'should link sql created table using oauth_app api key with create permissions' do
       scopes = ['offline', 'user:profile', 'schemas:c']
-      app = FactoryGirl.create(:oauth_app, user: user)
+      app = create(:oauth_app, user: user)
       oau = OauthAppUser.create!(user: user, oauth_app: app, scopes: scopes)
       refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
       access_token = refresh_token.exchange!(requested_scopes: scopes)[0]

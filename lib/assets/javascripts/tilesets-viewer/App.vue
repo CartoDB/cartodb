@@ -24,7 +24,7 @@ export default {
         username: username,
         type: type,
         mapsUrl: CARTO_MAPS_API_V2_EXTERNAL_URL,
-        query: new URLSearchParams(window.location.search + '&embed=true'),
+        query: new URLSearchParams(window.location.search),
         goBackFunction: () => {
           window.location = '/';
         }

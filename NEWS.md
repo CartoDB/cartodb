@@ -31,6 +31,7 @@ sudo make install
 - Remove Data Library gallery page (now redirected to Spatial Data Catalog) [#16133](https://github.com/CartoDB/cartodb/pull/16133)
 - Sync DO API keys betwenn onpremises & CARTO-managed clouds [#16205](https://github.com/CartoDB/cartodb/pull/16205)
 - Fix master build [#16213](https://github.com/CartoDB/cartodb/pull/16213)
+- Catalog fixes: show products only, fix the legend formatting [##16219](https://github.com/CartoDB/cartodb/pull/16219)
 
 ### Bug fixes / enhancements
 

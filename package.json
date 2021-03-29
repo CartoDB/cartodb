@@ -45,7 +45,7 @@
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
     "confetti-js": "0.0.14",
-    "core-js": "^3.6.5",
+    "core-js": "^3.9.1",
     "d3-array": "^2.8.0",
     "d3-interpolate": "^1.1.6",
     "d3-queue": "^3.0.7",

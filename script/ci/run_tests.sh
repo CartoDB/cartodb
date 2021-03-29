@@ -9,7 +9,7 @@
 #
 # Sample invocation:
 #
-#   LOCAL_CI=true DEBUG=true PARALLEL_TEST_PROCESSORS=4 ./script/ci/run_tests.sh
+#   LOCAL_CI=true DEBUG=true PARALLEL_TEST_PROCESSORS=6 ./script/ci/run_tests.sh
 
 set -aex
 
@@ -19,6 +19,7 @@ if [ -v DEBUG ] && [ $DEBUG = 'true' ]; then
 fi
 
 ## Configuration variables
+DEBUG=true
 CPU_CORES=$(nproc --all)
 POSTGRES_ADMIN_USER=postgres
 POSTGRES_HOST=localhost
@@ -61,7 +62,14 @@ bundle exec rake parallel:setup --trace
 
 ## Run tests
 set +e
-RSPEC_PATTERN='spec\/(commands|lib\/tasks|requests\/api)'
+RSPEC_PATTERN=" \
+spec\/commands|\
+spec\/lib\/tasks|\
+spec\/requests\/api|\
+spec\/models\/carto|\
+spec\/queries
+"
+
 if [ -v DEBUG ] && [ $DEBUG = 'true' ]; then
     bundle exec parallel_rspec spec/ --pattern ${RSPEC_PATTERN} --allowed-missing 100 --verbose --verbose-rerun-command
 else

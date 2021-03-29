@@ -1,5 +1,4 @@
-require_relative '../../spec_helper'
-require_relative '../visualization_shared_examples'
+require 'spec_helper_unit'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../support/factories/organizations'
 require 'helpers/unique_names_helper'
@@ -10,41 +9,53 @@ describe Carto::Visualization do
   include VisualizationDestructionHelper
   include Carto::Factories::Visualizations
 
-  before(:all) do
-    @user = create_user
-    @carto_user = Carto::User.find(@user.id)
-    @user2 = create_user
-    @carto_user2 = Carto::User.find(@user2.id)
-  end
+  let(:user) { create(:carto_user_light) }
+  let(:other_user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
 
-  before(:each) do
-    bypass_named_maps
-    delete_user_data(@user)
-  end
+  describe '#password' do
+    it 'checks that when using password protected type, encrypted password is generated and stored correctly' do
+      password_value = '000123456'
+      password_second_value = '456789'
 
-  after(:all) do
-    bypass_named_maps
-    @user.destroy
-    @user2.destroy
-  end
+      visualization = described_class.new
+      visualization.assign_attributes(type: Visualization::Member::TYPE_DERIVED)
+      visualization.privacy = Visualization::Member::PRIVACY_PROTECTED
 
-  it_behaves_like 'visualization models' do
-    def build_visualization(attrs = {})
-      v = Carto::Visualization.new
-      v.assign_attributes(attrs, without_protection: true)
-      v
+      visualization.password = password_value
+      visualization.has_password?.should be_true
+      visualization.password_valid?(password_value).should be_true
+
+      # Shouldn't remove the password, and be equal
+      visualization.password = ''
+      visualization.has_password?.should be_true
+      visualization.password_valid?(password_value).should be_true
+      visualization.password = nil
+      visualization.has_password?.should be_true
+      visualization.password_valid?(password_value).should be_true
+
+      # Modify the password
+      visualization.password = password_second_value
+      visualization.has_password?.should be_true
+      visualization.password_valid?(password_second_value).should be_true
+      visualization.password_valid?(password_value).should be_false
+
+      # Test removing the password, should work
+      # :remove_password doesn't need to be public, so in the new model it's kept private. :send is needed here, then.
+      visualization.send(:remove_password)
+      visualization.has_password?.should be_false
+      visualization.password_valid?(password_value).should be_false
     end
   end
 
   describe '#valid?' do
     it 'validates visualization member with proper type' do
-      map = ::Map.create(user_id: @user.id)
+      map = ::Map.create(user_id: user.id)
 
       CartoDB::Visualization::Member::VALID_TYPES.each do |type|
         parent = nil
         if type == CartoDB::Visualization::Member::TYPE_SLIDE
           parent = CartoDB::Visualization::Member.new(
-            user_id: @user.id,
+            user_id: user.id,
             name:    unique_name('viz'),
             map_id:  map.id,
             type:    CartoDB::Visualization::Member::TYPE_DERIVED,
@@ -53,7 +64,7 @@ describe Carto::Visualization do
         end
 
         viz = CartoDB::Visualization::Member.new(
-          user_id: @user.id,
+          user_id: user.id,
           name:    unique_name('viz'),
           map_id:  map.id,
           type:    type,
@@ -66,11 +77,11 @@ describe Carto::Visualization do
     end
 
     it 'validates carto visualization with proper type' do
-      map = ::Map.create(user_id: @user.id)
+      map = ::Map.create(user_id: user.id)
 
       Carto::Visualization::VALID_TYPES.each do |type|
         viz = Carto::Visualization.new(
-          user_id: @user.id,
+          user_id: user.id,
           name:    unique_name('viz'),
           map_id:  map.id,
           type:    type,
@@ -82,10 +93,10 @@ describe Carto::Visualization do
     end
 
     it 'throws error if not valid type' do
-      map = ::Map.create(user_id: @user.id)
+      map = ::Map.create(user_id: user.id)
 
       viz = CartoDB::Visualization::Member.new(
-        user_id: @user.id,
+        user_id: user.id,
         name:    unique_name('viz'),
         map_id:  map.id,
         type:    'whatever',
@@ -100,10 +111,10 @@ describe Carto::Visualization do
     end
 
     it 'throws error if not valid type using carto model' do
-      map = ::Map.create(user_id: @user.id)
+      map = ::Map.create(user_id: user.id)
 
       viz = Carto::Visualization.new(
-        user_id: @user.id,
+        user_id: user.id,
         name:    unique_name('viz'),
         map_id:  map.id,
         type:    'whatever',
@@ -119,16 +130,16 @@ describe Carto::Visualization do
   end
 
   describe '#estimated_row_count and #actual_row_count' do
+    let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
 
     it 'should query Table estimated an actual row count methods' do
       ::Table.any_instance.stubs(:row_count_and_size).returns(row_count: 999)
       ::Table.any_instance.stubs(:actual_row_count).returns(1000)
-      table = create_table(name: 'table1', user_id: @user.id)
+      table = create_table(name: 'table1', user_id: user.id)
       vis = Carto::Visualization.find(table.table_visualization.id)
       vis.estimated_row_count.should == 999
       vis.actual_row_count.should == 1000
     end
-
   end
 
   describe '#tags=' do
@@ -150,10 +161,10 @@ describe Carto::Visualization do
 
   describe 'children' do
     it 'should correctly count children' do
-      map = ::Map.create(user_id: @user.id)
+      map = ::Map.create(user_id: user.id)
 
       parent = CartoDB::Visualization::Member.new(
-        user_id: @user.id,
+        user_id: user.id,
         name:    unique_name('viz'),
         map_id:  map.id,
         type:    CartoDB::Visualization::Member::TYPE_DERIVED,
@@ -161,9 +172,9 @@ describe Carto::Visualization do
       ).store
 
       child = CartoDB::Visualization::Member.new(
-        user_id:   @user.id,
+        user_id:   user.id,
         name:      unique_name('viz'),
-        map_id:    ::Map.create(user_id: @user.id).id,
+        map_id:    ::Map.create(user_id: user.id).id,
         type:      Visualization::Member::TYPE_SLIDE,
         privacy:   CartoDB::Visualization::Member::PRIVACY_PUBLIC,
         parent_id: parent.id
@@ -173,9 +184,9 @@ describe Carto::Visualization do
       parent.children.count.should == 1
 
       child2 = CartoDB::Visualization::Member.new(
-        user_id:   @user.id,
+        user_id:   user.id,
         name:      unique_name('viz'),
-        map_id:    ::Map.create(user_id: @user.id).id,
+        map_id:    ::Map.create(user_id: user.id).id,
         type:      Visualization::Member::TYPE_SLIDE,
         privacy:   CartoDB::Visualization::Member::PRIVACY_PUBLIC,
         parent_id: parent.id
@@ -190,8 +201,10 @@ describe Carto::Visualization do
   end
 
   describe 'licenses' do
+    let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+
     it 'should store correctly a visualization with its license' do
-      table = create_table(name: 'table1', user_id: @user.id)
+      table = create_table(name: 'table1', user_id: user.id)
       v = table.table_visualization
       v.license = Carto::License::APACHE_LICENSE
       v.store
@@ -199,32 +212,33 @@ describe Carto::Visualization do
       vis.license_info.id.should eq :apache
       vis.license_info.name.should eq "Apache license"
     end
-
   end
 
   describe '#related_tables_readable_by' do
     include Carto::Factories::Visualizations
 
-    it 'only returns tables that a user can read' do
-      @carto_user.update_attribute(:private_tables_enabled, true)
-      map = create(:carto_map, user: @carto_user)
+    let(:user) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
 
-      private_table = create(:private_user_table, user: @carto_user)
-      public_table = create(:public_user_table, user: @carto_user)
+    it 'only returns tables that a user can read' do
+      user.update_attribute(:private_tables_enabled, true)
+      map = create(:carto_map, user: user)
+
+      private_table = create(:private_user_table, user: user)
+      public_table = create(:public_user_table, user: user)
 
       private_layer = create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
       create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
 
-      map, table, table_visualization, visualization = create_full_visualization(@carto_user,
+      map, table, table_visualization, visualization = create_full_visualization(user,
                                                                                  map: map,
                                                                                  table: private_table,
                                                                                  data_layer: private_layer)
 
-      related_table_ids_readable_by_owner = visualization.related_tables_readable_by(@carto_user).map(&:id)
+      related_table_ids_readable_by_owner = visualization.related_tables_readable_by(user).map(&:id)
       related_table_ids_readable_by_owner.should include(private_table.id)
       related_table_ids_readable_by_owner.should include(public_table.id)
 
-      related_table_ids_readable_by_others = visualization.related_tables_readable_by(@carto_user2).map(&:id)
+      related_table_ids_readable_by_others = visualization.related_tables_readable_by(other_user).map(&:id)
       related_table_ids_readable_by_others.should_not include(private_table.id)
       related_table_ids_readable_by_others.should include(public_table.id)
 
@@ -233,8 +247,8 @@ describe Carto::Visualization do
   end
 
   describe '#published?' do
-    before(:each) do
-      @visualization = build(:carto_visualization, user: @carto_user)
+    before do
+      @visualization = build(:carto_visualization, user: user)
     end
 
     it 'returns true for visualizations without version' do
@@ -260,48 +274,40 @@ describe Carto::Visualization do
   end
 
   describe '#can_be_private?' do
-    before(:all) do
+    before do
       bypass_named_maps
-      @visualization = create(:carto_visualization, user: @carto_user)
+      @visualization = create(:carto_visualization, user: user)
       @visualization.reload # to clean up the user relation (see #11134)
-    end
-
-    after(:all) do
-      @visualization.destroy
     end
 
     it 'returns private_tables_enabled for tables' do
       @visualization.type = 'table'
-      @visualization.can_be_private?.should eq @carto_user.private_tables_enabled
+      @visualization.can_be_private?.should eq user.private_tables_enabled
     end
 
     it 'returns private_maps_enabled for maps' do
       @visualization.type = 'derived'
-      @visualization.can_be_private?.should eq @carto_user.private_maps_enabled
+      @visualization.can_be_private?.should eq user.private_maps_enabled
     end
   end
 
   describe '#save_named_map' do
     it 'should not save named map without layers' do
-      @visualization = build(:carto_visualization, user: @carto_user)
+      @visualization = build(:carto_visualization, user: user)
       @visualization.expects(:named_maps_api).never
       @visualization.save
     end
 
     it 'should save named map with layers on map creation' do
-      @visualization = build(:carto_visualization, user: @carto_user, map: build(:carto_map))
+      @visualization = build(:carto_visualization, user: user, map: build(:carto_map))
       @visualization.layers << build(:carto_layer)
       Carto::VisualizationInvalidationService.any_instance.expects(:invalidate).once
       @visualization.save
     end
 
     describe 'without mapcap' do
-      before(:all) do
-        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
-      end
-
-      after(:all) do
-        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      before do
+        @map, @table, @table_visualization, @visualization = create_full_visualization(other_user)
       end
 
       it 'publishes layer style changes' do
@@ -329,14 +335,10 @@ describe Carto::Visualization do
     end
 
     describe 'with mapcap' do
-      before(:all) do
-        @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
+      before do
+        @map, @table, @table_visualization, @visualization = create_full_visualization(other_user)
         @visualization.create_mapcap!
         @visualization.reload
-      end
-
-      after(:all) do
-        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
       end
 
       it 'does not publish layer style changes' do
@@ -392,10 +394,10 @@ describe Carto::Visualization do
 
   describe '#destroy' do
     it 'destroys all visualization dependencies' do
-      map = create(:carto_map_with_layers, user: @carto_user)
-      visualization = create(:carto_visualization, user: @carto_user, map: map)
+      map = create(:carto_map_with_layers, user: user)
+      visualization = create(:carto_visualization, user: user, map: map)
       create(:widget, layer: visualization.data_layers.first)
-      create(:analysis, visualization: visualization, user: @carto_user)
+      create(:analysis, visualization: visualization, user: user)
       create(:carto_search_overlay, visualization: visualization)
       create(:carto_synchronization, visualization: visualization)
       visualization.create_mapcap!
@@ -407,25 +409,20 @@ describe Carto::Visualization do
   end
 
   describe '#backup' do
-    before(:all) do
-      @map = create(:carto_map_with_layers, user: @carto_user)
-      Carto::VisualizationBackup.all.map(&:destroy)
-    end
-
-    after(:all) do
-      @map.destroy
+    before do
+      @map = create(:carto_map_with_layers, user: user)
       Carto::VisualizationBackup.all.map(&:destroy)
     end
 
     it 'creates a backup when visualization is destroyed' do
-      visualization = create(:carto_visualization, user: @carto_user, map: @map)
+      visualization = create(:carto_visualization, user: user, map: @map)
       visualization.destroy
 
       Carto::VisualizationBackup.all.count.should eq 1
 
       backup = Carto::VisualizationBackup.where(visualization_id: visualization.id).first
       backup.should_not eq nil
-      backup.user_id.should eq @carto_user.id
+      backup.user_id.should eq user.id
       backup.created_at.should_not eq nil
       backup.category.should eq Carto::VisualizationBackup::CATEGORY_VISUALIZATION
       backup.export.should_not be_empty
@@ -434,14 +431,10 @@ describe Carto::Visualization do
   end
 
   describe '#update' do
-    before(:all) do
-      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
+    before do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(other_user)
       @visualization.create_mapcap!
       @visualization.reload
-    end
-
-    after(:all) do
-      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     end
 
     it 'sanitizes name on rename' do
@@ -455,8 +448,8 @@ describe Carto::Visualization do
   end
 
   describe '#invalidation_service' do
-    before(:all) do
-      @visualization = create(:carto_visualization, user: @carto_user, type: 'table')
+    before do
+      @visualization = create(:carto_visualization, user: user, type: 'table')
     end
 
     it 'triggers invalidation after saving' do
@@ -482,19 +475,28 @@ describe Carto::Visualization do
   end
 
   context 'like actions' do
-    before(:each) do
-      @visualization = create(:carto_visualization, user: @carto_user, type: 'table')
+    before do
+      @visualization = create(:carto_visualization, user: user, type: 'table')
     end
 
     describe '#add_like_from' do
-      include_context 'organization with users helper'
+      let(:organization_owner) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+      let(:organization) { create(:organization, :with_owner, owner: organization_owner) }
+      let(:organization_user) do
+        create(
+          :carto_user,
+          organization_id: organization.id,
+          factory_bot_context: { only_db_setup: true }
+        )
+      end
+
       it 'registers the like action from a user with permissions' do
         expect(@visualization.likes.count).to eq(0)
 
-        @visualization.add_like_from(@carto_user)
+        @visualization.add_like_from(user)
 
         expect(@visualization.likes.count).to eq(1)
-        expect(@visualization.liked_by?(@carto_user)).to be_true
+        expect(@visualization.liked_by?(user)).to be_true
       end
 
       it 'fail if a user try to favorite a visualization without permissions' do
@@ -513,23 +515,23 @@ describe Carto::Visualization do
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
 
-        @visualization.add_like_from(@carto_user)
+        @visualization.add_like_from(user)
 
         expect(@visualization.likes.count).to eq(1)
-        expect(@visualization.liked_by?(@carto_user)).to be_true
+        expect(@visualization.liked_by?(user)).to be_true
 
         expect {
-          @visualization.add_like_from(@carto_user)
+          @visualization.add_like_from(user)
         }.to raise_error Carto::Visualization::AlreadyLikedError
         expect(@visualization.likes.count).to eq(1)
       end
 
       it 'can add like to a shared visualization' do
         visualization = build(:carto_visualization,
-                                          user: @carto_org_user_1,
+                                          user: organization.owner,
                                           privacy: Carto::Visualization::PRIVACY_LINK.upcase)
         Carto::SharedEntity.create(
-          recipient_id: @carto_org_user_2.id,
+          recipient_id: organization_user.id,
           recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
           entity_id: visualization.id,
           entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
@@ -538,27 +540,36 @@ describe Carto::Visualization do
           {
             type: Carto::Permission::TYPE_USER,
             entity: {
-              id: @carto_org_user_2.id,
-              username: @carto_org_user_2.username
+              id: organization_user.id,
+              username: organization_user.username
             },
             access: Carto::Permission::ACCESS_READONLY
           }
         ]
         visualization.permission.save
-        visualization.add_like_from(@carto_org_user_2)
+        visualization.add_like_from(organization_user)
         expect(visualization.likes.count).to eq(1)
       end
     end
 
     describe '#remove_like_from' do
-      include_context 'organization with users helper'
+      let(:organization_owner) { create(:carto_user, factory_bot_context: { only_db_setup: true }) }
+      let(:organization) { create(:organization, :with_owner, owner: organization_owner) }
+      let(:organization_user) do
+        create(
+          :carto_user,
+          organization_id: organization.id,
+          factory_bot_context: { only_db_setup: true }
+        )
+      end
+
       it 'removes an existent like from a user' do
-        @visualization.add_like_from(@carto_user)
+        @visualization.add_like_from(user)
         expect(@visualization.likes.count).to eq(1)
 
-        @visualization.remove_like_from(@carto_user)
+        @visualization.remove_like_from(user)
         expect(@visualization.likes.count).to eq(0)
-        expect(@visualization.liked_by?(@carto_user)).to be_false
+        expect(@visualization.liked_by?(user)).to be_false
       end
 
       it 'raises an error if you try to remove a favorite in a visualization you dont have permission' do
@@ -566,7 +577,7 @@ describe Carto::Visualization do
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
 
-        @visualization.add_like_from(@carto_user)
+        @visualization.add_like_from(user)
         expect(@visualization.likes.count).to eq(1)
 
         expect {
@@ -577,10 +588,10 @@ describe Carto::Visualization do
 
       it 'can remove like from a shared visualization' do
         visualization = build(:carto_visualization,
-                                          user: @carto_org_user_1,
+                                          user: organization.owner,
                                           privacy: Carto::Visualization::PRIVACY_LINK.upcase)
         Carto::SharedEntity.create(
-          recipient_id: @carto_org_user_2.id,
+          recipient_id: organization_user.id,
           recipient_type: Carto::SharedEntity::RECIPIENT_TYPE_USER,
           entity_id: visualization.id,
           entity_type: Carto::SharedEntity::ENTITY_TYPE_VISUALIZATION
@@ -589,24 +600,24 @@ describe Carto::Visualization do
           {
             type: Carto::Permission::TYPE_USER,
             entity: {
-              id: @carto_org_user_2.id,
-              username: @carto_org_user_2.username
+              id: organization_user.id,
+              username: organization_user.username
             },
             access: Carto::Permission::ACCESS_READONLY
           }
         ]
         visualization.permission.save
-        visualization.add_like_from(@carto_org_user_2)
+        visualization.add_like_from(organization_user)
         expect(visualization.likes.count).to eq(1)
-        visualization.remove_like_from(@carto_org_user_2)
+        visualization.remove_like_from(organization_user)
         expect(visualization.likes.count).to eq(0)
       end
     end
 
     describe '#liked_by?' do
       it 'returns true when the user liked the visualization' do
-        @visualization.add_like_from(@carto_user)
-        expect(@visualization.liked_by?(@carto_user)).to be_true
+        @visualization.add_like_from(user)
+        expect(@visualization.liked_by?(user)).to be_true
       end
 
       it 'returns false when checking a user without likes on the visualization' do
@@ -614,38 +625,31 @@ describe Carto::Visualization do
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
 
-        @visualization.add_like_from(@carto_user)
+        @visualization.add_like_from(user)
         expect(@visualization.liked_by?(user_mock)).to be_false
       end
     end
   end
 
   context 'quota check' do
-    before(:all) do
-      @carto_user.public_map_quota = nil
-      @carto_user.public_dataset_quota = nil
-      @carto_user.private_map_quota = nil
-      @carto_user.private_maps_enabled = true
-      @carto_user.private_tables_enabled = true
-      @carto_user.save
-    end
-
-    after(:all) do
-      @carto_user.public_map_quota = nil
-      @carto_user.public_dataset_quota = nil
-      @carto_user.private_map_quota = nil
-      @carto_user.save
+    before do
+      user.public_map_quota = nil
+      user.public_dataset_quota = nil
+      user.private_map_quota = nil
+      user.private_maps_enabled = true
+      user.private_tables_enabled = true
+      user.save
     end
 
     context 'having a private map' do
-      before(:each) do
-        @visualization = create(:carto_visualization, user: @carto_user,
+      before do
+        @visualization = create(:carto_visualization, user: user,
                                                                   privacy: Carto::Visualization::PRIVACY_PRIVATE)
       end
 
       it 'does not allow to make it public when the limit is reached' do
-        @carto_user.public_map_quota = 0
-        @carto_user.save
+        user.public_map_quota = 0
+        user.save
 
         @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
         @visualization.save
@@ -655,8 +659,8 @@ describe Carto::Visualization do
       end
 
       it 'allows to make it public if the limit is not reached' do
-        @carto_user.public_map_quota = 1
-        @carto_user.save
+        user.public_map_quota = 1
+        user.save
 
         @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
         @visualization.save
@@ -666,14 +670,14 @@ describe Carto::Visualization do
     end
 
     context 'having a public map' do
-      before(:each) do
-        @visualization = create(:carto_visualization, user: @carto_user,
+      before do
+        @visualization = create(:carto_visualization, user: user,
                                                                   privacy: Carto::Visualization::PRIVACY_PUBLIC)
       end
 
       it 'does not allow to make it private when the limit is reached' do
-        @carto_user.private_map_quota = 0
-        @carto_user.save
+        user.private_map_quota = 0
+        user.save
 
         @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
         @visualization.save
@@ -683,8 +687,8 @@ describe Carto::Visualization do
       end
 
       it 'allows to make it private if the limit is not reached' do
-        @carto_user.private_map_quota = 1
-        @carto_user.save
+        user.private_map_quota = 1
+        user.save
 
         @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
         @visualization.save
@@ -694,17 +698,17 @@ describe Carto::Visualization do
     end
 
     context 'having a private dataset' do
-      before(:each) do
-        @carto_user.private_map_quota = 0
-        @carto_user.public_map_quota = 0
-        @carto_user.save
-        @visualization = create(:carto_table_visualization, user: @carto_user,
+      before do
+        user.private_map_quota = 0
+        user.public_map_quota = 0
+        user.save
+        @visualization = create(:carto_table_visualization, user: user,
                                                                         privacy: Carto::Visualization::PRIVACY_PRIVATE)
       end
 
       it 'does not allow to make it public when the limit is reached' do
-        @carto_user.public_dataset_quota = 0
-        @carto_user.save
+        user.public_dataset_quota = 0
+        user.save
 
         @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
         @visualization.save
@@ -714,8 +718,8 @@ describe Carto::Visualization do
       end
 
       it 'allows to make it public if the limit is not reached' do
-        @carto_user.public_dataset_quota = 1
-        @carto_user.save
+        user.public_dataset_quota = 1
+        user.save
 
         @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
         @visualization.save

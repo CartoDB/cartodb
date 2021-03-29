@@ -92,7 +92,9 @@ steps:
 
 # Start necessary services (redis, postgres) in background
 - name: 'docker/compose:1.28.0'
-  args: ['-f', 'docker-compose-pg12.yml', 'up', '--build', '-d']
+  args: ['--verbose', '-f', 'docker-compose-pg12.yml', 'up', '--build', '-d']
+  env:
+    - COMPOSE_HTTP_TIMEOUT=120
   timeout: 900s
 
 # Download latest runtime stats from GCS
@@ -155,7 +157,7 @@ steps:
   args:
     - -cx
     - |
-      if [ "${BRANCH_NAME}" = 'master' ] ; then
+      if [ "${BRANCH_NAME}" = 'master' ] || [ "${BRANCH_NAME}" = 'feature/ch143303/migrate-spec-models-carto-to-the-new-ci' ] ; then
           gsutil cp parallel_test_logs_${BUILD_ID}/parallel_runtime_rspec.log gs://cartodb-ci-tmp-logs/
       fi
 

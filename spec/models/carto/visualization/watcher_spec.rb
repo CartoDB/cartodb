@@ -1,11 +1,7 @@
-require_relative '../../../spec_helper'
+require 'spec_helper_unit'
 
 describe Carto::Visualization::Watcher do
-  before(:all) do
-    $tables_metadata.flushdb
-  end
-
-  after(:all) do
+  before do
     $tables_metadata.flushdb
   end
 

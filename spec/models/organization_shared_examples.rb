@@ -1,11 +1,13 @@
-require_relative '../spec_helper'
-
 # Tests should define the following methods:
 # - get_organization: returns a correspoding Organization instance
 # - get_twitter_imports_count_by_organization_id: returns organization import count. Needed because implementations don't share a common interface
 shared_examples_for "organization models" do
-  include_context 'users helper'
-  include_context 'organization with users helper'
+  before do
+    @organization = create(:organization_with_users)
+    @org_user_1 = @organization.users.first
+    @org_user_2 = @organization.users.second
+    @user1 = create(:valid_user)
+  end
 
   describe "#get_geocoding_calls" do
 

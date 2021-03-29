@@ -1,16 +1,9 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 module Carto
   describe Notification do
-    before(:all) do
-      @sequel_organization = create(:organization_with_users)
-      @organization = Carto::Organization.find(@sequel_organization.id)
-      @organization.users[1].update_attribute(:viewer, true)
-    end
-
-    after(:all) do
-      @sequel_organization.destroy
-    end
+    let(:organization) { create(:organization) }
+    let(:organization_user) { create(:carto_user_light, organization_id: organization.id, viewer: true) }
 
     describe '#validation' do
       it 'passes for valid notification' do
@@ -21,7 +14,7 @@ module Carto
       it 'passes for valid organization notification' do
         n = Notification.new(icon: Carto::Notification::ICON_ALERT,
                              body: 'Hello, friend!',
-                             organization: @organization,
+                             organization: organization,
                              recipients: 'builders')
         expect(n).to be_valid
       end
@@ -48,7 +41,7 @@ module Carto
 
       describe 'recipients' do
         it 'is required if organization is present' do
-          n = Notification.new(organization: @organization)
+          n = Notification.new(organization: organization)
           expect(n).not_to be_valid
           expect(n.errors).to include :recipients
         end
@@ -125,21 +118,17 @@ module Carto
       end
 
       describe 'for org notifications' do
-        before(:each) do
+        before do
           @notification = Notification.new(icon: Carto::Notification::ICON_ALERT,
                                            body: 'Hello, friend!',
-                                           organization: @organization)
-        end
-
-        after(:each) do
-          @notification.destroy
+                                           organization: organization)
         end
 
         it 'should send the notification to all current organization members' do
           @notification.recipients = 'all'
           @notification.save!
 
-          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.users.map(&:id)
+          expect(@notification.received_notifications.map(&:user_id)).to eq organization.users.map(&:id)
         end
 
         it 'sent notifications should be unread' do
@@ -153,14 +142,14 @@ module Carto
           @notification.recipients = 'builders'
           @notification.save!
 
-          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.builder_users.map(&:id)
+          expect(@notification.received_notifications.map(&:user_id)).to eq organization.builder_users.map(&:id)
         end
 
         it 'should send the notification to current organization viewers' do
           @notification.recipients = 'viewers'
           @notification.save!
 
-          expect(@notification.received_notifications.map(&:user_id)).to eq @organization.viewer_users.map(&:id)
+          expect(@notification.received_notifications.map(&:user_id)).to eq organization.viewer_users.map(&:id)
         end
       end
     end

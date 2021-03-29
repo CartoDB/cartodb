@@ -35,6 +35,7 @@ sudo make install
 - Fix for custom icons not working [#16233](https://github.com/CartoDB/cartodb/pull/16233)
 - Split tests load evenly in the new CI [#16227](https://github.com/CartoDB/cartodb/pull/16227)
 - Catalog fixes: show products only, fix the legend formatting [#16219](https://github.com/CartoDB/cartodb/pull/16219)
+- Migrate spec/models/carto to the new CI [#16228](https://github.com/CartoDB/cartodb/pull/16228)
 
 ### Bug fixes / enhancements
 

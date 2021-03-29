@@ -1,8 +1,15 @@
 require 'spec_helper'
 
 describe OrganizationPresenter do
-  let(:user) { create(:carto_user, period_end_date: Time.parse('2018-01-01')) }
-  let(:organization) { create(:carto_organization, owner: user) }
+  let(:organization_owner) do
+    create(
+      :carto_user,
+      period_end_date: Time.parse('2018-01-01'),
+      factory_bot_context: { only_db_setup: true }
+    )
+  end
+  let(:organization) { create(:organization, :with_owner, owner: organization_owner) }
+  let(:user) { organization.owner }
   let(:presenter) { described_class.new(organization) }
   let(:date_range) { { Date.new(2017, 3, 20) => 1 } }
 

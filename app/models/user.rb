@@ -95,7 +95,9 @@ class User < Sequel::Model
   end
 
   def carto_user
-    persisted? ? Carto::User.find_by(id: id) : Carto::User.new(attributes)
+    user_object = persisted? ? Carto::User.find_by(id: id) : Carto::User.new(attributes)
+    user_object.factory_bot_context = factory_bot_context if user_object
+    user_object
   end
 
   def sequel_user
@@ -293,14 +295,19 @@ class User < Sequel::Model
   def after_create
     super
     setup_user
-    save_metadata
-    self.load_avatar
+
+    unless factory_bot_context && factory_bot_context[:only_db_setup]
+      save_metadata
+      load_avatar
+    end
 
     db.after_commit { create_api_keys }
 
-    db_service.monitor_user_notification
-    sleep 1
-    db_service.set_statement_timeouts
+    unless factory_bot_context && factory_bot_context[:only_db_setup]
+      db_service.monitor_user_notification
+      sleep 1
+      db_service.set_statement_timeouts
+    end
   end
 
   def notify_new_organization_user
@@ -506,6 +513,7 @@ class User < Sequel::Model
 
   # allow extra vars for auth
   attr_reader :password
+  attr_accessor :factory_bot_context
 
   def created_via=(created_via)
     @created_via = created_via

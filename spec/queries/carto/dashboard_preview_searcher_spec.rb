@@ -1,25 +1,32 @@
-require_relative '../../spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::DashboardPreviewSearcher do
-  include_context 'users helper'
+  let(:user) do
+    create(
+      :carto_user,
+      private_tables_enabled: true,
+      private_maps_enabled: true,
+      factory_bot_context: { only_db_setup: true }
+    )
+  end
 
   describe "#search" do
-    before(:each) do
+    before do
       @table_us = create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL,
-                                                           user: @carto_user1, name: 'new_york_polution',
+                                                           user: user, name: 'new_york_polution',
                                                            description: 'Air particles caused by traffic and industry',
                                                            tags: ["United States", "contamination"])
       @map_uk = create(:carto_visualization, type: Carto::Visualization::TYPE_DERIVED,
-                                                         user: @carto_user1, name: 'New industries in York',
+                                                         user: user, name: 'New industries in York',
                                                          description: 'Data from 2018',
                                                          tags: ["United Kingdom"])
       @map_spain = create(:carto_visualization, type: Carto::Visualization::TYPE_DERIVED,
-                                                            user: @carto_user1, name: 'Madrid traffic',
+                                                            user: user, name: 'Madrid traffic',
                                                             tags: ["Spain", "contamination"])
     end
 
     it 'finds maps by name' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, types: ["derived"], pattern: "Mad", limit: 5)
+      searcher = Carto::DashboardPreviewSearcher.new(user: user, types: ["derived"], pattern: "Mad", limit: 5)
       result = searcher.search
 
       result.tags.should eql []
@@ -28,7 +35,7 @@ describe Carto::DashboardPreviewSearcher do
     end
 
     it 'finds maps by description' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, types: ["derived"], pattern: "2018", limit: 5)
+      searcher = Carto::DashboardPreviewSearcher.new(user: user, types: ["derived"], pattern: "2018", limit: 5)
       result = searcher.search
 
       result.tags.should eql []
@@ -37,7 +44,7 @@ describe Carto::DashboardPreviewSearcher do
     end
 
     it 'finds maps by tag' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, types: ["derived"], pattern: "Spain", limit: 5)
+      searcher = Carto::DashboardPreviewSearcher.new(user: user, types: ["derived"], pattern: "Spain", limit: 5)
       result = searcher.search
 
       result.tags.should eql []
@@ -46,7 +53,7 @@ describe Carto::DashboardPreviewSearcher do
     end
 
     it 'finds datasets by name' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, types: ["table"], pattern: "lution", limit: 5)
+      searcher = Carto::DashboardPreviewSearcher.new(user: user, types: ["table"], pattern: "lution", limit: 5)
       result = searcher.search
 
       result.tags.should eql []
@@ -55,7 +62,7 @@ describe Carto::DashboardPreviewSearcher do
     end
 
     it 'finds datasets by description' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, types: ["table"], pattern: "air", limit: 5)
+      searcher = Carto::DashboardPreviewSearcher.new(user: user, types: ["table"], pattern: "air", limit: 5)
       result = searcher.search
 
       result.tags.should eql []
@@ -64,7 +71,7 @@ describe Carto::DashboardPreviewSearcher do
     end
 
     it 'finds datasets by tag' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, types: ["table"], pattern: "States", limit: 5)
+      searcher = Carto::DashboardPreviewSearcher.new(user: user, types: ["table"], pattern: "States", limit: 5)
       result = searcher.search
 
       result.tags.should eql []
@@ -73,7 +80,7 @@ describe Carto::DashboardPreviewSearcher do
     end
 
     it 'finds tags' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, types: ["tag"], pattern: "united", limit: 5)
+      searcher = Carto::DashboardPreviewSearcher.new(user: user, types: ["tag"], pattern: "united", limit: 5)
       result = searcher.search
 
       result.tags.should =~ ["united states", "united kingdom"]
@@ -82,7 +89,7 @@ describe Carto::DashboardPreviewSearcher do
     end
 
     it 'includes results from tags, maps and datasets' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, pattern: "contamin", limit: 5)
+      searcher = Carto::DashboardPreviewSearcher.new(user: user, pattern: "contamin", limit: 5)
       result = searcher.search
 
       result.tags.should eql ["contamination"]
@@ -91,7 +98,7 @@ describe Carto::DashboardPreviewSearcher do
     end
 
     it 'limits results by type' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, pattern: "contamin", limit: 1)
+      searcher = Carto::DashboardPreviewSearcher.new(user: user, pattern: "contamin", limit: 1)
       result = searcher.search
 
       result.tags.should eql ["contamination"]

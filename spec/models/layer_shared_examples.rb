@@ -15,11 +15,11 @@ shared_examples_for 'Layer model' do
 
     it "should allow to be linked to many maps" do
       table2 = Table.new
-      table2.user_id = @user.id
+      table2.user_id = user.id
       table2.save
       layer = layer_class.create(kind: 'carto')
-      map   = create_map(user_id: @user.id, table_id: @table.id)
-      map2  = create_map(user_id: @user.id, table_id: table2.id)
+      map   = create_map(user_id: user.id, table_id: @table.id)
+      map2  = create_map(user_id: user.id, table_id: table2.id)
 
       add_layer_to_entity(map, layer)
       add_layer_to_entity(map2, layer)
@@ -32,14 +32,14 @@ shared_examples_for 'Layer model' do
 
     it "should allow to be linked to many users" do
       layer = layer_class.create(kind: 'carto')
-      add_layer_to_entity(@user, layer)
+      add_layer_to_entity(user, layer)
 
-      @user.reload.layers.map(&:id).should include(layer.id)
-      layer.users.map(&:id).should include(@user.id)
+      user.reload.layers.map(&:id).should include(layer.id)
+      layer.users.map(&:id).should include(user.id)
     end
 
     it "should set default order when adding layers to a map" do
-      map = create_map(user_id: @user.id, table_id: @table.id)
+      map = create_map(user_id: user.id, table_id: @table.id)
       5.times do |i|
         layer = layer_class.create(kind: 'carto')
         add_layer_to_entity(map, layer)
@@ -48,18 +48,18 @@ shared_examples_for 'Layer model' do
     end
 
     it "should set default order when adding layers to a user" do
-      @user.layers.each(&:destroy)
-      @user.reload
+      user.layers.each(&:destroy)
+      user.reload
       5.times do |i|
         layer = layer_class.create(kind: 'carto')
-        add_layer_to_entity(@user, layer)
+        add_layer_to_entity(user, layer)
         layer.reload.order.should == i
       end
     end
 
     context "when the type is cartodb and the layer is updated" do
       before do
-        @map = create_map(user_id: @user.id, table_id: @table.id)
+        @map = create_map(user_id: user.id, table_id: @table.id)
         @layer = layer_class.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
         add_layer_to_entity(@map, @layer)
       end
@@ -78,7 +78,7 @@ shared_examples_for 'Layer model' do
 
     context "when the type is not cartodb" do
       before do
-        @map = create_map(user_id: @user.id, table_id: @table.id)
+        @map = create_map(user_id: user.id, table_id: @table.id)
         @layer = layer_class.create(kind: 'tiled')
         add_layer_to_entity(@map, @layer)
       end
@@ -108,9 +108,9 @@ shared_examples_for 'Layer model' do
 
     it "should correctly identify affected tables" do
       table2 = Table.new
-      table2.user_id = @user.id
+      table2.user_id = user.id
       table2.save
-      map = create_map(user_id: @user.id, table_id: @table.id)
+      map = create_map(user_id: user.id, table_id: @table.id)
       layer = layer_class.create(
         kind: 'carto',
         options: { query: "select * from #{@table.name}, #{table2.name};select 1;select * from #{table2.name}" }
@@ -122,7 +122,7 @@ shared_examples_for 'Layer model' do
     end
 
     it "should return empty affected tables when no tables are involved" do
-      map = create_map(user_id: @user.id, table_id: @table.id)
+      map = create_map(user_id: user.id, table_id: @table.id)
       layer = layer_class.create(
         kind: 'carto',
         options: { query: "select 1" }
@@ -133,7 +133,7 @@ shared_examples_for 'Layer model' do
     end
 
     it 'includes table_name option in the results' do
-      map = create_map(user_id: @user.id, table_id: @table.id)
+      map = create_map(user_id: user.id, table_id: @table.id)
       layer = layer_class.create(
         kind: 'carto',
         options: { query: "select 1", table_name: @table.name }
@@ -208,7 +208,7 @@ shared_examples_for 'Layer model' do
 
   describe '#destroy' do
     it 'invalidates the vizjson cache of all related maps' do
-      map   = create_map(user_id: @user.id, table_id: @table.id)
+      map   = create_map(user_id: user.id, table_id: @table.id)
       layer = layer_class.create(kind: 'carto')
       add_layer_to_entity(map, layer)
 
@@ -218,12 +218,12 @@ shared_examples_for 'Layer model' do
     end
 
     it 'deletes ternary relations' do
-      map   = create_map(user_id: @user.id, table_id: @table.id)
+      map   = create_map(user_id: user.id, table_id: @table.id)
       layer = layer_class.create(kind: 'carto')
       layer.options[:query] = "SELECT * FROM #{@table.name}"
       layer.register_table_dependencies
       add_layer_to_entity(map, layer)
-      add_layer_to_entity(@user, layer)
+      add_layer_to_entity(user, layer)
 
       layer.destroy
 
@@ -240,7 +240,7 @@ shared_examples_for 'Layer model' do
       layers.first.uses_private_tables?.should be_true
       @table.privacy = UserTable::PRIVACY_PUBLIC
       @table.save
-      @user.reload
+      user.reload
 
       layers.first.reload
       layers.first.uses_private_tables?.should be_false
@@ -249,17 +249,17 @@ shared_examples_for 'Layer model' do
 
   context 'viewer role' do
     after(:each) do
-      @user.viewer = false
-      @user.save
+      user.viewer = false
+      user.save
     end
 
     it "can't update layers" do
-      map   = create_map(user_id: @user.id, table_id: @table.id)
+      map   = create_map(user_id: user.id, table_id: @table.id)
       layer = layer_class.create(kind: 'carto')
       add_layer_to_entity(map, layer)
 
-      @user.viewer = true
-      @user.save
+      user.viewer = true
+      user.save
 
       layer.reload
 
@@ -274,7 +274,7 @@ shared_examples_for 'Layer model' do
   end
 
   describe '#LayerNodeStyle cache' do
-    let(:map) { create_map(user_id: @user.id, table_id: @table.id) }
+    let(:map) { create_map(user_id: user.id, table_id: @table.id) }
     let(:layer) { layer_class.create(kind: 'carto') }
 
     before { add_layer_to_entity(map, layer) }

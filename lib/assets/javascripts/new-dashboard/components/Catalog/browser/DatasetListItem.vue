@@ -38,7 +38,7 @@
         v-if="!dataset.is_geography && !minimal"
       >
         <div
-          class="grid-cell--col7 grid grid--align-end grid--no-wrap"
+          class="grid-cell--col9 grid grid--align-end grid--no-wrap"
         >
           <div class="license">
             <p>License</p> {{ dataset.license_name }}
@@ -46,12 +46,15 @@
           <div class="geography" :title="dataset.placetype_name">
             <p>Placetype</p> {{ dataset.placetype_name }}
           </div>
-        </div>
-        <div
-          class="grid-cell--col5 grid grid--align-end grid--space grid--no-wrap"
-        >
           <div class="aggregation">
             <p>Temporal aggr.</p> {{ temporalAggregation }}
+          </div>
+        </div>
+        <div
+          class="grid-cell--col3 grid grid--align-end grid--space grid--no-wrap"
+        >
+          <div class="version">
+            <p>Version</p> {{ dataset.version }}
           </div>
           <div class="provider">
             <img
@@ -209,7 +212,7 @@ export default {
       margin-bottom: 4px;
     }
 
-    .license {
+    .license, .geography {
       margin-right: 24px;
     }
 

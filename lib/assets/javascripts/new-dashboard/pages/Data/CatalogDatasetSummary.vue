@@ -72,7 +72,7 @@
             {{ updateFrequency }}
           </p>
         </li>
-        <li class="u-mb--32 u-mb--12--tablet">
+        <li class="u-mb--32 u-mb--12--tablet" v-if="hasSubscription">
           <h4 class="text is-small is-txtSoftGrey u-mb--10">
             Version
           </h4>
@@ -139,6 +139,14 @@ export default {
       dataset: state => state.catalog.dataset,
       keyVariables: state => state.catalog.keyVariables
     }),
+    hasSubscription () {
+      return this.subscriptionInfo && ['requested', 'active', 'expired'].includes(this.subscriptionInfo.status);
+    },
+    subscriptionInfo () {
+      return this.$store.getters['catalog/getSubscriptionByDataset'](
+        this.dataset.id
+      );
+    },
     temporalAggregation () {
       return temporalAggregationName(this.dataset.temporal_aggregation);
     },

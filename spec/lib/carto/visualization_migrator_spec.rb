@@ -13,7 +13,7 @@ describe Carto::VisualizationMigrator do
 
   shared_context 'full visualization' do
     before(:all) do
-      @user_1 = FactoryGirl.create(:carto_user, private_tables_enabled: false)
+      @user_1 = create(:carto_user, private_tables_enabled: false)
     end
 
     before(:each) do

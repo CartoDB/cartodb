@@ -9,7 +9,7 @@ describe Carto::Api::OrganizationAssetsController do
   before(:all) do
     @owner = @carto_organization.owner
     @sub = @carto_org_user_1
-    @intruder = FactoryGirl.create(:carto_user)
+    @intruder = create(:carto_user)
   end
 
   after(:all) do
@@ -36,7 +36,7 @@ describe Carto::Api::OrganizationAssetsController do
   describe('#index') do
     before(:all) do
       5.times do
-        FactoryGirl.create(:organization_asset,
+        create(:organization_asset,
                            organization_id: @carto_organization.id)
       end
     end
@@ -89,7 +89,7 @@ describe Carto::Api::OrganizationAssetsController do
 
   describe('#show') do
     before(:all) do
-      @asset = FactoryGirl.create(:organization_asset,
+      @asset = create(:organization_asset,
                                   organization_id: @carto_organization.id)
     end
 
@@ -152,7 +152,7 @@ describe Carto::Api::OrganizationAssetsController do
     before(:each) do
       bypass_storage
 
-      @asset = FactoryGirl.create(:organization_asset,
+      @asset = create(:organization_asset,
                                   organization_id: @carto_organization.id)
     end
 

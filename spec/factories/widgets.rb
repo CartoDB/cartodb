@@ -1,14 +1,14 @@
 require_relative '../../app/models/carto/widget'
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :widget, class: Carto::Widget do
-    ignore do
-      column_name 'pop_max'
+    transient do
+      column_name { 'pop_max' }
     end
-    order 1
-    type 'formula'
-    title 'The Title'
-    source_id 'a0'
+    order { 1 }
+    type { 'formula' }
+    title { 'The Title' }
+    source_id { 'a0'}
     options do
       {
         type: "formula",

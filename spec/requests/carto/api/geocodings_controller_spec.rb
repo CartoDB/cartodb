@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper'
+require 'spec_helper_unit'
 require_relative '../../api/json/geocodings_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/geocodings_controller'
 require 'mock_redis'
@@ -10,27 +10,17 @@ describe Carto::Api::GeocodingsController do
 describe 'legacy behaviour tests' do
     let(:params) { { :api_key => @user.api_key } }
 
-    before(:all) do
+    before do
       @user = create_user
-    end
-
-    before(:each) do
-      bypass_named_maps
-      delete_user_data @user
       host! "#{@user.username}.localhost.lan"
       login_as(@user, scope: @user.username)
-    end
-
-    after(:all) do
-      bypass_named_maps
-      @user.destroy
     end
 
     describe 'GET /api/v1/geocodings' do
 
       it 'returns every geocoding belonging to current_user' do
-        FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user: @user, state: 'wadus')
-        FactoryGirl.create(:geocoding, table_name: 'a', formatter: 'b', user_id: Carto::UUIDHelper.random_uuid)
+        create(:geocoding, table_name: 'a', formatter: 'b', user: @user, state: 'wadus')
+        create(:geocoding, table_name: 'a', formatter: 'b', user_id: Carto::UUIDHelper.random_uuid)
         get_json api_v1_geocodings_index_url(params) do |response|
           response.status.should be_success
           response.body[:geocodings].size.should == 1
@@ -47,7 +37,7 @@ describe 'legacy behaviour tests' do
         user_geocoder_metrics = CartoDB::GeocoderUsageMetrics.new(@user.username, _orgname = nil, _redis = redis_mock)
         CartoDB::GeocoderUsageMetrics.stubs(:new).returns(user_geocoder_metrics)
         user_geocoder_metrics.incr(:geocoder_here, :success_responses, 100)
-        geocoding = FactoryGirl.create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
+        geocoding = create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user: @user, used_credits: 100, processed_rows: 100, kind: 'high-resolution')
 
         get_json api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|
           response.status.should be_success
@@ -59,7 +49,7 @@ describe 'legacy behaviour tests' do
       end
 
       it 'does not return a geocoding owned by another user' do
-        geocoding = FactoryGirl.create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user_id: Carto::UUIDHelper.random_uuid)
+        geocoding = create(:geocoding, table_id: Carto::UUIDHelper.random_uuid, formatter: 'b', user_id: Carto::UUIDHelper.random_uuid)
 
         get_json api_v1_geocodings_show_url(params.merge(id: geocoding.id)) do |response|
           response.status.should eq 404
@@ -128,10 +118,10 @@ describe 'legacy behaviour tests' do
 
 
   describe 'available_geometries' do
-    include_context 'users helper'
     include_context 'visualization creation helpers'
 
-    before(:each) do
+    before do
+      @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       login(@user1)
     end
 
@@ -217,10 +207,10 @@ describe 'legacy behaviour tests' do
   end
 
   describe 'estimation_for' do
-    include_context 'users helper'
     include_context 'visualization creation helpers'
 
-    before(:each) do
+    before do
+      @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       login(@user1)
     end
 
@@ -241,16 +231,15 @@ describe 'legacy behaviour tests' do
   end
 
   describe 'index' do
-    include_context 'users helper'
-
-    before(:each) do
+    before do
+      @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       login(@user1)
     end
 
     it 'returns started geocodings but not finished' do
-      geocoding1 = FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
+      geocoding1 = create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
                                       processed_rows: 1, state: 'started', formatter: 'foo')
-      FactoryGirl.create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
+      create(:geocoding, user: @user1, kind: 'high-resolution', created_at: Time.now,
                          processed_rows: 1, state: 'finished', formatter: 'foo')
 
       get api_v1_geocodings_index_url
@@ -275,12 +264,13 @@ describe 'legacy behaviour tests' do
   describe 'show' do
     include_context 'users helper'
 
-    before(:each) do
+    before do
+      @user1 = create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       login(@user1)
     end
 
     it 'returns requested geocoding' do
-      geocoding = FactoryGirl.create(
+      geocoding = create(
         :geocoding,
         user: @user1,
         kind: 'high-resolution',

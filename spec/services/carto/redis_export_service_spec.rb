@@ -6,7 +6,7 @@ describe Carto::RedisExportService do
 
   before(:all) do
     @organization = create(:organization)
-    @user = FactoryGirl.create(:carto_user)
+    @user = create(:carto_user)
   end
 
   after(:all) do

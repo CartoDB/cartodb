@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper_min'
+require 'spec_helper_unit'
 
 module UserMigrationHelper
   records =
@@ -31,23 +31,14 @@ module UserMigrationHelper
     }
 
   shared_examples_for 'migrating metadata' do |migrate_metadata|
-    before :each do
-      @user = FactoryGirl.build(:valid_user).save
+    before do
+      @user = build(:valid_user).save
       @carto_user = Carto::User.find(@user.id)
       @user_attributes = @carto_user.attributes
 
       @table1 = create_table(user_id: @user.id)
       records.each { |row| @table1.insert_row!(row) }
       create_database('test_migration', @user) if migrate_metadata
-    end
-
-    after :each do
-      if migrate_metadata
-        @user.destroy_cascade
-        drop_database('test_migration', @user)
-      else
-        @user.destroy
-      end
     end
 
     it "exports and reimports a user #{migrate_metadata ? 'with' : 'without'} metadata" do
@@ -134,7 +125,7 @@ module UserMigrationHelper
   end
 
   def create_user_with_visualizations
-    user = FactoryGirl.build(:valid_user).save
+    user = build(:valid_user).save
 
     filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
     data_import = DataImport.create(

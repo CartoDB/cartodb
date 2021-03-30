@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe GcloudUserSettingsCommands::Set do
   let(:command) { described_class.new(params) }

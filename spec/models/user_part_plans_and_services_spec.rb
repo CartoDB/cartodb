@@ -68,7 +68,7 @@ describe User do
     before { ['FREE', 'ORGANIZATION USER'].each { |account_type| create_account_type_fg(account_type) } }
 
     it 'does create rate limits' do
-      @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits.id)
+      @user_no_ff = create(:valid_user, rate_limit_id: rate_limits.id)
       map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
       sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
       $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
@@ -93,7 +93,7 @@ describe User do
     end
 
     it 'destroy rate limits' do
-      user2 = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits_pro.id)
+      user2 = create(:valid_user, rate_limit_id: rate_limits_pro.id)
 
       expect_rate_limits_pro_saved_to_redis(user2.username)
 
@@ -107,7 +107,7 @@ describe User do
     end
 
     it 'updates rate limits when user has no rate limits' do
-      user = FactoryGirl.create(:valid_user)
+      user = create(:valid_user)
       user.update_rate_limits(rate_limits.api_attributes)
 
       user.reload
@@ -118,7 +118,7 @@ describe User do
     end
 
     it 'does nothing when user has no rate limits' do
-      user = FactoryGirl.create(:valid_user)
+      user = create(:valid_user)
       user.update_rate_limits(nil)
 
       user.reload
@@ -128,8 +128,8 @@ describe User do
     end
 
     it 'updates rate limits when user has rate limits' do
-      rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
-      user = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits_custom2.id)
+      rate_limits_custom2 = create(:rate_limits_custom2)
+      user = create(:valid_user, rate_limit_id: rate_limits_custom2.id)
       user.update_rate_limits(rate_limits.api_attributes)
       user.reload
       user.rate_limit.should_not be_nil
@@ -141,8 +141,8 @@ describe User do
     end
 
     it 'set rate limits to nil when user has rate limits' do
-      rate_limits_custom2 = FactoryGirl.create(:rate_limits_custom2)
-      user = FactoryGirl.create(:valid_user, rate_limit_id: rate_limits_custom2.id)
+      rate_limits_custom2 = create(:rate_limits_custom2)
+      user = create(:valid_user, rate_limit_id: rate_limits_custom2.id)
 
       user.update_rate_limits(nil)
 

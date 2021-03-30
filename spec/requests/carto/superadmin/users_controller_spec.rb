@@ -24,7 +24,7 @@ describe Carto::Superadmin::UsersController do
 
   describe '#usage' do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
+      @user = create(:carto_user)
     end
 
     after(:all) do

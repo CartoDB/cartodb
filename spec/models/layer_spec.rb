@@ -3,7 +3,9 @@ require 'models/layer_shared_examples'
 
 describe Layer do
   it_behaves_like 'Layer model' do
-    let(:layer_class) { Layer }
+    let(:layer_class) { described_class }
+    let(:user) { create(:valid_user, private_tables_enabled: true) }
+
     def create_map(options = {})
       Map.create(options)
     end
@@ -12,23 +14,13 @@ describe Layer do
       entity.add_layer(layer)
     end
 
-    before(:all) do
+    before do
       @quota_in_bytes = 500.megabytes
       @table_quota = 500
-
-      @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
-
       @table = Table.new
-      @table.user_id = @user.id
+      @table.user_id = user.id
       @table.save
-    end
-
-    before(:each) do
       bypass_named_maps
-    end
-
-    after(:all) do
-      @user.destroy
     end
 
     describe '#copy' do
@@ -46,18 +38,15 @@ describe Layer do
   describe '#affected_table_names' do
     include UniqueNamesHelper
 
-    before(:all) do
+    before do
       helper = TestUserFactory.new
-      @organization = FactoryGirl.create(:organization, quota_in_bytes: 1000000000000)
+      @organization = create(:organization, quota_in_bytes: 1000000000000)
       @owner = helper.create_owner(@organization)
       @nonhyphen_user = helper.create_test_user(unique_name('user'), @organization)
       @hyphen_user = helper.create_test_user(unique_name('user-'), @organization)
-      @nonhyphen_table = FactoryGirl.create(:user_table, user: @nonhyphen_user, name: unique_name('table'))
-      @subuser_table = FactoryGirl.create(:user_table, user: @hyphen_user, name: unique_name('table'))
-      @hyphen_table = FactoryGirl.create(:user_table, user: @hyphen_user, name: unique_name('table-'))
-    end
-
-    before(:each) do
+      @nonhyphen_table = create(:user_table, user: @nonhyphen_user, name: unique_name('table'))
+      @subuser_table = create(:user_table, user: @hyphen_user, name: unique_name('table'))
+      @hyphen_table = create(:user_table, user: @hyphen_user, name: unique_name('table-'))
       @hyphen_user_layer = Layer.new
       @hyphen_user_layer.stubs(:user).returns(@hyphen_user)
 

@@ -515,8 +515,8 @@ describe Carto::VisualizationsExportService2 do
   end
 
   before(:all) do
-    @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
-    @no_private_maps_user = FactoryGirl.create(:carto_user, private_maps_enabled: false)
+    @user = create(:carto_user, private_maps_enabled: true)
+    @no_private_maps_user = create(:carto_user, private_maps_enabled: false)
   end
 
   after(:all) do
@@ -713,7 +713,7 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it "Register layer tables dependencies if user table exists" do
-        user_table = FactoryGirl.create(:carto_user_table, user_id: @user.id, name: "guess_ip_1")
+        user_table = create(:carto_user_table, user_id: @user.id, name: "guess_ip_1")
         imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
         layer_with_table = visualization.layers.find { |l| l.options[:table_name].present? }
@@ -932,10 +932,10 @@ describe Carto::VisualizationsExportService2 do
 
       before(:all) do
         bypass_named_maps
-        @user = FactoryGirl.create(:carto_user, private_maps_enabled: true, private_tables_enabled: true)
-        @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+        @user = create(:carto_user, private_maps_enabled: true, private_tables_enabled: true)
+        @user2 = create(:carto_user, private_maps_enabled: true)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-        @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
+        @analysis = create(:source_analysis, visualization: @visualization, user: @user)
       end
 
       after(:all) do
@@ -949,7 +949,7 @@ describe Carto::VisualizationsExportService2 do
       describe 'visualization types' do
         before(:all) do
           bypass_named_maps
-          @remote_visualization = FactoryGirl.create(:carto_visualization, type: 'remote')
+          @remote_visualization = create(:carto_visualization, type: 'remote')
         end
 
         after(:all) do
@@ -980,13 +980,13 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'only exports layers that a user has permissions at' do
-        map = FactoryGirl.create(:carto_map, user: @user)
+        map = create(:carto_map, user: @user)
 
-        private_table = FactoryGirl.create(:private_user_table, user: @user)
-        public_table = FactoryGirl.create(:public_user_table, user: @user)
+        private_table = create(:private_user_table, user: @user)
+        public_table = create(:public_user_table, user: @user)
 
-        private_layer = FactoryGirl.create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
-        FactoryGirl.create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
+        private_layer = create(:carto_layer, options: { table_name: private_table.name }, maps: [map])
+        create(:carto_layer, options: { table_name: public_table.name }, maps: [map])
 
         map, table, table_visualization, visualization = create_full_visualization(@user,
                                                                                    map: map,
@@ -1007,7 +1007,7 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'truncates long sync logs' do
-        FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+        create(:carto_synchronization, visualization: @table_visualization)
         @table_visualization.reload
         @table_visualization.synchronization.log.update_attribute(:entries, 'X' * 15000)
         export = Carto::VisualizationsExportService2.new.export_visualization_json_hash(@table_visualization.id, @user)
@@ -1066,18 +1066,18 @@ describe Carto::VisualizationsExportService2 do
           user_name: owner_user.username,
           query_history: [query1]
         }
-        layer = FactoryGirl.create(:carto_layer, options: layer_options)
+        layer = create(:carto_layer, options: layer_options)
         layer.options['query'].should eq query1
         layer.options['user_name'].should eq owner_user.username
         layer.options['query_history'].should eq [query1]
 
-        map = FactoryGirl.create(:carto_map, layers: [layer], user: owner_user)
+        map = create(:carto_map, layers: [layer], user: owner_user)
         map, table, table_visualization, visualization = create_full_visualization(owner_user,
                                                                                        map: map,
                                                                                        table: user_table,
                                                                                        data_layer: layer)
 
-        FactoryGirl.create(:source_analysis, visualization: visualization, user: owner_user,
+        create(:source_analysis, visualization: visualization, user: owner_user,
                                              source_table: table.name, query: query1)
         return map, table, table_visualization, visualization
       end
@@ -1199,7 +1199,7 @@ describe Carto::VisualizationsExportService2 do
 
       before(:all) do
         bypass_named_maps
-        @user = FactoryGirl.create(:carto_user)
+        @user = create(:carto_user)
       end
 
       before(:each) do
@@ -1227,20 +1227,20 @@ describe Carto::VisualizationsExportService2 do
           user_name: @user.username,
           query_history: [query]
         }
-        layer = FactoryGirl.create(:carto_layer, options: layer_options)
+        layer = create(:carto_layer, options: layer_options)
         layer.options['query'].should eq query
         layer.options['user_name'].should eq @user.username
         layer.options['table_name'].should eq @table.name
         layer.options['query_history'].should eq [query]
 
-        map = FactoryGirl.create(:carto_map, layers: [layer], user: @user)
+        map = create(:carto_map, layers: [layer], user: @user)
         @map, @table, @table_visualization, @visualization = create_full_visualization(@user,
                                                                                        map: map,
                                                                                        table: user_table,
                                                                                        data_layer: layer)
-        FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user,
+        create(:source_analysis, visualization: @visualization, user: @user,
                                              source_table: @table.name, query: query)
-        FactoryGirl.create(:analysis_with_source, visualization: @visualization, user: @user,
+        create(:analysis_with_source, visualization: @visualization, user: @user,
                                                   source_table: @table.name, query: query)
       end
 
@@ -1505,8 +1505,8 @@ describe Carto::VisualizationsExportService2 do
 
     describe 'maps' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
-        @user2 = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+        @user = create(:carto_user, private_maps_enabled: true)
+        @user2 = create(:carto_user, private_maps_enabled: true)
       end
 
       after(:all) do
@@ -1521,7 +1521,7 @@ describe Carto::VisualizationsExportService2 do
         carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
         carto_layer.options[:user_name] = @user.username
         carto_layer.save
-        @analysis = FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user)
+        @analysis = create(:source_analysis, visualization: @visualization, user: @user)
       end
 
       after(:each) do
@@ -1667,7 +1667,7 @@ describe Carto::VisualizationsExportService2 do
         end
 
         it 'true, it should keep the imported uuid, permission, mapcap, synchroniztion and locked' do
-          sync = FactoryGirl.create(:carto_synchronization, visualization: @visualization)
+          sync = create(:carto_synchronization, visualization: @visualization)
           exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
           original_attributes = @visualization.attributes.symbolize_keys
           built_viz = export_service.build_visualization_from_json_export(exported_string)
@@ -1774,13 +1774,13 @@ describe Carto::VisualizationsExportService2 do
 
     describe 'datasets' do
       before(:all) do
-        @sequel_user = FactoryGirl.create(:valid_user, :private_tables, private_maps_enabled: true, table_quota: nil)
+        @sequel_user = create(:valid_user, :private_tables, private_maps_enabled: true, table_quota: nil)
         @user = Carto::User.find(@sequel_user.id)
 
-        @sequel_user2 = FactoryGirl.create(:valid_user, :private_tables, private_maps_enabled: true, table_quota: nil)
+        @sequel_user2 = create(:valid_user, :private_tables, private_maps_enabled: true, table_quota: nil)
         @user2 = Carto::User.find(@sequel_user2.id)
 
-        @sequel_user_no_private_tables = FactoryGirl.create(:valid_user, private_maps_enabled: true, table_quota: nil)
+        @sequel_user_no_private_tables = create(:valid_user, private_maps_enabled: true, table_quota: nil)
         @user_no_private_tables = Carto::User.find(@sequel_user_no_private_tables.id)
       end
 
@@ -1790,7 +1790,7 @@ describe Carto::VisualizationsExportService2 do
 
       before(:each) do
         bypass_named_maps
-        @table = FactoryGirl.create(:carto_user_table, :full, user: @user)
+        @table = create(:carto_user_table, :full, user: @user)
         @table_visualization = @table.table_visualization
         @table_visualization.reload
         @table_visualization.active_layer = @table_visualization.data_layers.first
@@ -1835,7 +1835,7 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'importing an exported dataset should keep the synchronization' do
-        FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+        create(:carto_synchronization, visualization: @table_visualization)
 
         exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
@@ -1856,7 +1856,7 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'imports a synchronization without log' do
-        FactoryGirl.create(:carto_synchronization, visualization: @table_visualization)
+        create(:carto_synchronization, visualization: @table_visualization)
         @table_visualization.synchronization.log = nil
         @table_visualization.synchronization.save
 
@@ -1876,9 +1876,9 @@ describe Carto::VisualizationsExportService2 do
       end
 
       it 'imports an exported dataset with external data import without a synchronization' do
-        @table.data_import = FactoryGirl.create(:data_import, user: @user2, table_id: @table.id)
+        @table.data_import = create(:data_import, user: @user2, table_id: @table.id)
         @table.save!
-        edi = FactoryGirl.create(:external_data_import_with_external_source, data_import: @table.data_import)
+        edi = create(:external_data_import_with_external_source, data_import: @table.data_import)
         exported_string = export_service.export_visualization_json_string(@table_visualization.id, @user2)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
         @user2.in_database.execute("CREATE TABLE #{@table_visualization.name} (cartodb_id int)")

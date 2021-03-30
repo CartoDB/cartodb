@@ -1,4 +1,4 @@
-require_relative '../../spec_helper_min'
+require 'spec_helper_unit'
 
 describe Carto::UserMigrationImport do
   it '#import throws an exception if import_metadata and dry are passed' do
@@ -33,10 +33,10 @@ describe Carto::UserMigrationImport do
 
   describe '#import' do
     before :each do
-      @org = FactoryGirl.create(:organization)
+      @org = create(:organization)
       @org.whitelisted_email_domains = []
       @org.save
-      @user = FactoryGirl.create(:valid_user)
+      @user = create(:valid_user)
       @user.save
       @user = Carto::User.find(@user.id)
       @import = Carto::UserMigrationImport.create(

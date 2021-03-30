@@ -17,7 +17,7 @@ describe SignupController do
     end
 
     it 'returns 200 when subdomainless and route is signup_subdomainless' do
-      @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
+      @fake_organization = create(:organization_whitelist_carto)
       CartoDB.stubs(:subdomainless_urls?).returns(true)
       CartoDB.stubs(:session_domain).returns('localhost.lan')
       Carto::Organization.stubs(:where).returns([@fake_organization])
@@ -27,7 +27,7 @@ describe SignupController do
     end
 
     it 'returns 404 when subdomainless and route is signup' do
-      @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
+      @fake_organization = create(:organization_whitelist_carto)
       CartoDB.stubs(:subdomainless_urls?).returns(true)
       CartoDB.stubs(:session_domain).returns('localhost.lan')
       Carto::Organization.stubs(:where).returns([@fake_organization])
@@ -44,21 +44,21 @@ describe SignupController do
     end
 
     it 'returns 200 for organizations with signup_page_enabled' do
-      @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
+      @fake_organization = create(:organization_whitelist_carto)
       Carto::Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
     end
 
     it 'returns 404 for organizations without signup_page_enabled' do
-      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: [])
+      @fake_organization = create(:organization, whitelisted_email_domains: [])
       Carto::Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 404
     end
 
     it 'returns 404 for organizations with whitelisted domains but without any authentication enabled' do
-      @fake_organization = FactoryGirl.create(:organization_whitelist_carto,
+      @fake_organization = create(:organization_whitelist_carto,
                                               auth_username_password_enabled: true,
                                               auth_google_enabled: false,
                                               auth_github_enabled: false)
@@ -69,7 +69,7 @@ describe SignupController do
     end
 
     it 'returns 200 for organizations without signup_page_enabled but with a valid invitation' do
-      @fake_organization = FactoryGirl.create(:organization_with_users, whitelisted_email_domains: [])
+      @fake_organization = create(:organization_with_users, whitelisted_email_domains: [])
       owner = Carto::User.find(@fake_organization.owner.id)
       invitation = Carto::Invitation.create_new(owner, ['wadus@wad.us'], 'Welcome!', false)
       Carto::Organization.stubs(:where).returns([@fake_organization])
@@ -78,14 +78,14 @@ describe SignupController do
     end
 
     it 'returns user error with admin mail if organization has not enough seats' do
-      fake_owner = build(:valid_user).carto_user
+      fake_owner = create(:valid_user).carto_user
       @fake_organization = create(:organization_whitelist_carto, seats: 0, owner: fake_owner)
       Carto::Organization.stubs(:where).returns([@fake_organization])
+
       get signup_url
       response.status.should == 200
       response.body.should include("organization not enough seats")
-      response.body.should include("contact the administrator of #{@fake_organization.name}</a>")
-      response.body.should match(Regexp.new @fake_organization.owner.email)
+      response.body.should include("contact the administrator of #{@fake_organization.name}")
     end
 
     it 'does not return an error if organization has no unassigned_quota left but the invited user is a viewer' do
@@ -130,7 +130,7 @@ describe SignupController do
     end
 
     it 'signs user up as viewer even if all non-viewer seats are taken' do
-      @fake_organization = FactoryGirl.create(:organization_with_users, whitelisted_email_domains: [])
+      @fake_organization = create(:organization_with_users, whitelisted_email_domains: [])
       @fake_organization.seats = @fake_organization.builder_users.count(&:builder?)
       @fake_organization.viewer_seats = 10
       @fake_organization.save
@@ -377,7 +377,7 @@ describe SignupController do
     describe 'ldap signup' do
 
       before(:all) do
-        @ldap_configuration = FactoryGirl.create(:ldap_configuration, { organization_id: @organization.id })
+        @ldap_configuration = create(:ldap_configuration, { organization_id: @organization.id })
       end
 
       after(:all) do

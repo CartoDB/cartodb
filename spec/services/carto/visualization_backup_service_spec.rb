@@ -7,7 +7,7 @@ describe Carto::VisualizationBackupService do
 
   describe '#create_visualization_backup' do
     before(:all) do
-      @map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
+      @map = create(:carto_map_with_layers, user: @carto_user)
     end
 
     before(:each) do
@@ -23,7 +23,7 @@ describe Carto::VisualizationBackupService do
     end
 
     it 'creates a backup with create_visualization_backup' do
-      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
+      visualization = create(:carto_visualization, user: @carto_user, map: @map)
 
       Carto::VisualizationBackup.all.count.should eq 0
 
@@ -59,7 +59,7 @@ describe Carto::VisualizationBackupService do
     end
 
     it 'fails backup creation without category but not raises' do
-      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
+      visualization = create(:carto_visualization, user: @carto_user, map: @map)
 
       create_visualization_backup(
         visualization: visualization,
@@ -76,10 +76,10 @@ describe Carto::VisualizationBackupService do
 
   describe '#create_visualization_backup' do
     before(:all) do
-      @map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
+      @map = create(:carto_map_with_layers, user: @carto_user)
       Carto::VisualizationBackup.all.map(&:destroy)
 
-      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
+      @visualization = create(:carto_visualization, user: @carto_user, map: @map)
       @visualization.destroy # creates a Visualization backup
     end
 

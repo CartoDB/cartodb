@@ -1,6 +1,4 @@
-require 'rspec/core'
-require 'rspec/expectations'
-require 'rspec/mocks'
+require 'spec_helper_min'
 
 # Unp includes reference to gpx_splitter
 require_relative '../../lib/importer/unp'

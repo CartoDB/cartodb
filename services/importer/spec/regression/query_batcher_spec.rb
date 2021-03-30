@@ -1,7 +1,4 @@
-require 'rspec/core'
-require 'rspec/expectations'
-require 'rspec/mocks'
-require 'mocha'
+require 'spec_helper_min'
 require_relative '../../lib/importer/query_batcher'
 require_relative '../factories/pg_connection'
 

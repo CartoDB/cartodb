@@ -37,7 +37,7 @@ module Carto
           end
         end
         if @connection.connection_type == Carto::Connection::TYPE_OAUTH_SERVICE
-          unless incomplete? || @connection.parameters['billing_project'].present?
+          if complete? && @connection.parameters['billing_project'].blank?
             errors << "Parameter 'billing_project' must be assigned"
           end
         end

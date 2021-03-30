@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'spec_helper_unit'
 
 describe CentralUserCommands do
   let(:notifications_topic) { mock }

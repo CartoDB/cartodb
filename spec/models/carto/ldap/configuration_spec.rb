@@ -1,12 +1,10 @@
-require_relative '../../../spec_helper'
+require 'spec_helper_unit'
+require 'fake_net_ldap'
 require_relative '../../../lib/fake_net_ldap_bind_as'
 
-require 'fake_net_ldap'
-
 describe Carto::Ldap::Configuration do
-  include_context 'organization with users helper'
-
-  before(:all) do
+  before do
+    @organization = create(:organization_with_users)
     @domain_bases = [ "dc=cartodb" ]
 
     @ldap_admin_username = 'user'
@@ -14,15 +12,7 @@ describe Carto::Ldap::Configuration do
     @ldap_admin_password =  '666'
 
     @user_id_field = 'cn'
-  end
-
-  before(:each) do
     FakeNetLdap.register_user(:username => @ldap_admin_cn, :password => @ldap_admin_password)
-  end
-
-  after(:each) do
-    FakeNetLdap.clear_user_registrations
-    FakeNetLdap.clear_query_registrations
   end
 
   it 'returns right away if empty user' do

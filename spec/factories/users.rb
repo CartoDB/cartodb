@@ -1,5 +1,3 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 require 'helpers/account_types_helper'
 require 'helpers/unique_names_helper'
 require 'carto/user_authenticator'
@@ -8,57 +6,61 @@ require 'cartodb-common'
 include AccountTypesHelper
 include UniqueNamesHelper
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :user, class: ::User do
-    to_create(&:save)
+    to_create { |user| user.save(raise_on_failure: true) }
 
     sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
     email                  { "#{username}@example.com" }
     password               { "#{username}123" }
     password_confirmation  { password }
-    table_quota            5
-    quota_in_bytes         5000000
+    table_quota            { 5 }
+    quota_in_bytes         { 5_000_000 }
     id                     { Carto::UUIDHelper.random_uuid }
-    builder_enabled        nil # Most tests still assume editor
+    builder_enabled        { nil } # Most tests still assume editor
 
     trait :admin_privileges do
-      username 'Admin'
-      email 'admin@example.com'
-      admin true
+      username { 'Admin' }
+      email { 'admin@example.com' }
+      admin { true }
     end
 
     trait :private_tables do
-      private_tables_enabled true
+      private_tables_enabled { true }
     end
 
     trait :sync_tables do
-      sync_tables_enabled true
+      sync_tables_enabled { true }
     end
 
     trait :enabled do
-      enabled true
+      enabled { true }
     end
 
     trait :mobile do
-      mobile_max_open_users    100000
-      mobile_max_private_users 20000
+      mobile_max_open_users    { 100_000 }
+      mobile_max_private_users { 20_000 }
     end
 
     trait :locked do
-      state 'locked'
+      state { 'locked' }
     end
 
     trait :unverified do
-      email_verification_token   'aaa'
-      email_verification_sent_at Time.current - 2.hours
+      email_verification_token   { 'aaa' }
+      email_verification_sent_at { Time.current - 2.hours }
     end
 
     trait :valid do
-      password 'kkkkkkkkk'
-      password_confirmation 'kkkkkkkkk'
+      password { 'kkkkkkkkk' }
+      password_confirmation { 'kkkkkkkkk' }
       crypted_password do
         Carto::Common::EncryptionService.encrypt(password: password, secret: Cartodb.config[:password_secret])
       end
+    end
+
+    transient do
+      factory_bot_context { {} }
     end
 
     factory :user_with_private_tables, traits: [:enabled, :private_tables]
@@ -78,20 +80,21 @@ FactoryGirl.define do
   end
 
   factory :carto_user, class: Carto::User do
-    username { Faker::Internet.username(separators: ['-']) }
-    email { Faker::Internet.safe_email }
+    to_create(&:save!)
 
+    sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
+    email { "#{username}@example.org" }
     password { email.split('@').first }
     password_confirmation { email.split('@').first }
     crypted_password do
       Carto::Common::EncryptionService.encrypt(password: password, secret: Cartodb.config[:password_secret])
     end
 
-    api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
-    table_quota nil
-    quota_in_bytes 5000000
+    api_key { '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2' }
+    table_quota { nil }
+    quota_in_bytes { 5_000_000 }
     id { Carto::UUIDHelper.random_uuid }
-    builder_enabled nil # Most tests still assume editor
+    builder_enabled { nil } # Most tests still assume editor
 
 
     before(:build) do |carto_user|
@@ -104,23 +107,24 @@ FactoryGirl.define do
     end
 
     after(:create) do |carto_user|
-      ::User.where(id: carto_user.id).first.after_create
+      carto_user.sequel_user.after_create
       CartoDB::UserModule::DBService.any_instance.unstub
+      carto_user.reload
     end
 
     trait :locked do
-      state 'locked'
+      state { 'locked' }
     end
 
     trait :mfa_setup do
       after :create do |carto_user|
-        carto_user.user_multifactor_auths << FactoryGirl.create(:totp, :needs_setup, user_id: carto_user.id)
+        carto_user.user_multifactor_auths << create(:totp, :needs_setup, user_id: carto_user.id)
       end
     end
 
     trait :mfa_enabled do
       after :create do |carto_user|
-        carto_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: carto_user.id)
+        carto_user.user_multifactor_auths << create(:totp, :active, user_id: carto_user.id)
       end
     end
 
@@ -131,20 +135,21 @@ FactoryGirl.define do
 
   # Light user: database creation etc is skipped
   factory :carto_user_light, class: Carto::User do
-    username { Faker::Internet.username(separators: ['-']) }
-    email { Faker::Internet.safe_email }
+    to_create(&:save)
 
+    sequence(:username) { |i| "#{Faker::Internet.username(separators: [])}#{i}" }
+    email { "#{username}@example.org" }
     password { email.split('@').first }
     password_confirmation { email.split('@').first }
     crypted_password do
       Carto::Common::EncryptionService.encrypt(password: password, secret: Cartodb.config[:password_secret])
     end
 
-    api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
-    table_quota nil
-    quota_in_bytes 5000000
+    api_key { '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2' }
+    table_quota { nil }
+    quota_in_bytes { 5_000_000 }
     id { Carto::UUIDHelper.random_uuid }
-    builder_enabled nil # Most tests still assume editor
+    builder_enabled { nil } # Most tests still assume editor
 
     after(:build) do |carto_user|
       create_account_type_fg(carto_user.account_type)

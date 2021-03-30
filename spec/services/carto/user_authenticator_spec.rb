@@ -7,7 +7,7 @@ describe Carto::UserAuthenticator do
 
   before(:all) do
     @user_password = 'admin123'
-    @user = FactoryGirl.create(:carto_user, password: @user_password)
+    @user = create(:carto_user, password: @user_password)
   end
 
   after(:all) do

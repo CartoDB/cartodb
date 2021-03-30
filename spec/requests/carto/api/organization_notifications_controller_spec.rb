@@ -6,7 +6,7 @@ module Carto
     include HelperMethods
 
     before(:all) do
-      @sequel_organization = FactoryGirl.create(:organization_with_users)
+      @sequel_organization = create(:organization_with_users)
       @organization = Carto::Organization.find(@sequel_organization.id)
       @owner = @organization.owner
       @user = @organization.users.reject { |u| u.id == @organization.owner_id }.first

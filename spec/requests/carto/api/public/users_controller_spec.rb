@@ -6,9 +6,9 @@ describe Carto::Api::Public::UsersController do
   include HelperMethods
 
   before(:all) do
-    @user = FactoryGirl.create(:valid_user)
-    @org = FactoryGirl.create(:organization_with_users)
-    @org_user = FactoryGirl.create(:valid_user, name: 'wa', last_name: 'dus', organization: @org)
+    @user = create(:valid_user)
+    @org = create(:organization_with_users)
+    @org_user = create(:valid_user, name: 'wa', last_name: 'dus', organization: @org)
   end
 
   before(:each) do
@@ -30,7 +30,7 @@ describe Carto::Api::Public::UsersController do
     end
 
     it 'works with regular api_key' do
-      api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
+      api_key = create(:oauth_api_key, user_id: @user.id)
 
       get_json api_v4_users_me_url(api_key: api_key.token) do |response|
         expect(response.status).to eq(200)
@@ -53,7 +53,7 @@ describe Carto::Api::Public::UsersController do
 
     it 'returns user public profile with user:profile grants' do
       host! "#{@org_user.username}.localhost.lan"
-      api_key = FactoryGirl.create(:oauth_api_key_user_profile_grant, user_id: @org_user.id)
+      api_key = create(:oauth_api_key_user_profile_grant, user_id: @org_user.id)
 
       get_json api_v4_users_me_url(api_key: api_key.token) do |response|
         expect(response.status).to eq(200)
@@ -68,7 +68,7 @@ describe Carto::Api::Public::UsersController do
 
     it 'does not return user public profile without user:profile grants' do
       host! "#{@org_user.username}.localhost.lan"
-      api_key = FactoryGirl.create(:oauth_api_key, user_id: @org_user.id)
+      api_key = create(:oauth_api_key, user_id: @org_user.id)
 
       get_json api_v4_users_me_url(api_key: api_key.token) do |response|
         expect(response.status).to eq(200)

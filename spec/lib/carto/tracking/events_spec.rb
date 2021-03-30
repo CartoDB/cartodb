@@ -8,8 +8,8 @@ module Carto
         include Carto::Factories::Visualizations
 
         before(:all) do
-          @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
-          @intruder = FactoryGirl.create(:carto_user)
+          @user = create(:carto_user, private_maps_enabled: true)
+          @intruder = create(:carto_user)
           @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
           @visualization.privacy = 'private'
           @visualization.save!
@@ -1579,7 +1579,7 @@ module Carto
 
         describe CreatedWidget do
           before(:all) do
-            @widget = FactoryGirl.create(:widget, layer: @visualization.data_layers.first)
+            @widget = create(:widget, layer: @visualization.data_layers.first)
           end
 
           after(:all) do

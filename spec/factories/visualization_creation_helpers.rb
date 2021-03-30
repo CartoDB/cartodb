@@ -59,7 +59,7 @@ shared_context 'visualization creation helpers' do
     options = JSON.parse(CARTO_OPTIONS)
     options["table_name"] = table_name
     options["user_name"] = user_name
-    FactoryGirl.build(:carto_layer, kind: kind, options: options, order: order, infowindow: infowindow)
+    build(:carto_layer, kind: kind, options: options, order: order, infowindow: infowindow)
   end
 
   before(:each) do

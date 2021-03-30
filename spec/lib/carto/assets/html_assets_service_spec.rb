@@ -27,7 +27,7 @@ describe Carto::HTMLAssetsService do
 
   describe('#upload') do
     it 'uploads file and stores in the local system' do
-      visualization = FactoryGirl.create(:carto_visualization)
+      visualization = create(:carto_visualization)
       storage_info, url = Carto::HTMLAssetsService.instance.upload(visualization, StringIO.new('test'))
       storage_info.present?.should be true
       url.present?.should be true

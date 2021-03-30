@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :connection, class: Carto::Connection do
     initialize_with { Carto::Connection.send :new }
 

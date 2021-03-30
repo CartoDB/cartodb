@@ -23,7 +23,7 @@ describe Downloader do
     @ftp_filepath   = path_to('INDEX.txt')
   end
 
-  before(:all) { @user = FactoryGirl.create(:carto_user) }
+  before(:all) { @user = create(:carto_user) }
   after(:all)  { @user.destroy }
 
   describe '#run' do

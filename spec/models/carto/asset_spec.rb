@@ -1,4 +1,4 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 require 'helpers/storage_helper'
 require 'helpers/subdomainless_helper'
 
@@ -6,16 +6,10 @@ describe Carto::Asset do
   # Needed so subdomainless_helper works
   def host!(_) end
 
-  before(:all) do
-    @organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
-    @user = FactoryGirl.create(:carto_user)
-    @visualization = FactoryGirl.create(:carto_visualization, user: @user)
-  end
-
-  after(:all) do
-    @visualization.destroy
-    @organization.destroy
-    @user.destroy
+  before do
+    @organization = Carto::Organization.find(create(:organization).id)
+    @user = create(:carto_user, factory_bot_context: { only_db_setup: true })
+    @visualization = create(:carto_visualization, user: @user)
   end
 
   let(:storage_info) do

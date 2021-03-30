@@ -1,19 +1,13 @@
-require 'spec_helper_min'
+require 'spec_helper_unit'
 
 module Carto
   describe OauthRefreshToken do
     describe '#validation' do
-      before(:all) do
-        @user = FactoryGirl.create(:valid_user)
-        @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+      before do
+        @carto_user = create(:carto_user, factory_bot_context: { only_db_setup: true })
+        @user = @carto_user.sequel_user
+        @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.new(user: @carto_user, oauth_app: @app)
-      end
-
-      after(:all) do
-        @app_user.destroy
-        @app.destroy
-        @user.destroy
       end
 
       it 'requires offline scope' do
@@ -35,25 +29,12 @@ module Carto
     end
 
     describe '#exchange!' do
-      before(:all) do
-        @user = FactoryGirl.create(:valid_user)
-        @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+      before do
+        @carto_user = create(:carto_user, factory_bot_context: { only_db_setup: true })
+        @user = @carto_user.sequel_user
+        @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create(user: @carto_user, oauth_app: @app)
-      end
-
-      after(:all) do
-        @app_user.destroy
-        @app.destroy
-        @user.destroy
-      end
-
-      before(:each) do
         @refresh_token = @app_user.oauth_refresh_tokens.create!(scopes: ['offline'])
-      end
-
-      after(:each) do
-        @refresh_token.destroy
       end
 
       it 'fails if the token is expired' do
@@ -103,20 +84,11 @@ module Carto
     end
 
     describe '#create!' do
-      before(:all) do
-        @user = FactoryGirl.create(:valid_user)
-        @carto_user = Carto::User.find(@user.id)
-        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+      before do
+        @carto_user = create(:carto_user, factory_bot_context: { only_db_setup: true })
+        @user = @carto_user.sequel_user
+        @app = create(:oauth_app, user: @carto_user)
         @app_user = OauthAppUser.create(user: @carto_user, oauth_app: @app)
-      end
-
-      after(:all) do
-        @app_user.destroy
-        @app.destroy
-        @user.destroy
-      end
-
-      before(:each) do
         OauthRefreshToken.send(:remove_const, 'MAX_TOKENS_PER_OAUTH_APP_USER')
         OauthRefreshToken::MAX_TOKENS_PER_OAUTH_APP_USER = 3
         create_tokens

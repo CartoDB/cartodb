@@ -104,6 +104,7 @@ sudo make install
 - Fix CI build by changing machine spec [#16192](https://github.com/CartoDB/cartodb/pull/16192)
 - Modify superadmin users activity endpoint to allow pagination [#16226](https://github.com/CartoDB/cartodb/pull/16226)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
+- Read config for public statics compilation [#16234](https://github.com/CartoDB/cartodb/pull/16234)
 
 4.44.0 (2020-11-20)
 -------------------

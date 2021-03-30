@@ -105,6 +105,8 @@ sudo make install
 - Modify superadmin users activity endpoint to allow pagination [#16226](https://github.com/CartoDB/cartodb/pull/16226)
 - Update cartodb-common to v1.1.1, which contains serveral logging fixes [#16182](https://github.com/CartoDB/cartodb/pull/16182)
 - Read config for public statics compilation [#16234](https://github.com/CartoDB/cartodb/pull/16234)
+- Show dataset version in subscription list and details [#16235](https://github.com/CartoDB/cartodb/pull/16235)
+- Fix error that avoid to render Spatial Data Catalog properly in Internet Explorer [#16236](https://github.com/CartoDB/cartodb/pull/16236)
 
 4.44.0 (2020-11-20)
 -------------------
